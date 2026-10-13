@@ -28,7 +28,11 @@ export async function createOrganization({ page, name }: PageInput & { name: str
   await expect(page.getByText("Inga anläggningar ännu.")).toBeVisible();
 }
 
-export async function createVenue({ page, name, city }: PageInput & { name: string; city: string }) {
+export async function createVenue({
+  page,
+  name,
+  city,
+}: PageInput & { name: string; city: string }) {
   await page.getByRole("button", { name: "Skapa anläggning" }).first().click();
   await page.getByLabel("Namn").fill(name);
   await page.getByLabel("Ort").fill(city);
@@ -36,7 +40,11 @@ export async function createVenue({ page, name, city }: PageInput & { name: stri
   await expect(page.getByRole("link", { name })).toBeVisible();
 }
 
-export async function addRoom({ page, name, capacity }: PageInput & { name: string; capacity: string }) {
+export async function addRoom({
+  page,
+  name,
+  capacity,
+}: PageInput & { name: string; capacity: string }) {
   await page.getByRole("button", { name: "Skapa rum" }).first().click();
   await page.getByLabel("Namn").fill(name);
   await page.getByLabel("Max antal personer").fill(capacity);

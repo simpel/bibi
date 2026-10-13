@@ -48,7 +48,7 @@ export async function VenueList({ locale, cursor }: VenueListProps) {
         <CursorPagination pathname={ROUTES.venues} cursor={cursor} nextCursor={nextCursor} />
       </>
     );
-  return <ListLayout header={header} body={body} withSearch />;
+  return <ListLayout header={header} body={body} withSearch={items.length > 0 || !!cursor} />;
 }
 
 type ListLayoutProps = { header: React.ReactNode; body: React.ReactNode; withSearch?: boolean };

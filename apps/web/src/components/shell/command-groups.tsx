@@ -1,11 +1,12 @@
 "use client";
 
 import { useRouter } from "@okazi/i18n/navigation";
-import { CommandGroup, CommandItem, CommandSeparator } from "@okazi/ui";
-import { BuildingIcon, DoorOpenIcon, PlusIcon } from "lucide-react";
+import { CommandGroup, CommandItem } from "@okazi/ui";
+import { BuildingIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { VenueShortcut } from "@/features/venue/actions";
-import { ROUTES, venueRoute } from "@/lib/routes";
+import { ROUTES } from "@/lib/routes";
+import { VenueCommandGroup } from "./venue-command-group";
 
 export type CommandGroupsProps = { venues: VenueShortcut[]; onDone: () => void };
 
@@ -31,22 +32,7 @@ export function CommandGroups({ venues, onDone }: CommandGroupsProps) {
           {t("createVenue")}
         </CommandItem>
       </CommandGroup>
-      {venues.length > 0 ? <CommandSeparator /> : null}
-      <CommandGroup heading={t("venuesGroup")}>
-        {venues.flatMap((venue) => [
-          <CommandItem key={venue.id} onSelect={() => go({ href: venueRoute({ id: venue.id }) })}>
-            <BuildingIcon />
-            {t("openVenue", { name: venue.name })}
-          </CommandItem>,
-          <CommandItem
-            key={`${venue.id}-room`}
-            onSelect={() => go({ href: `${venueRoute({ id: venue.id })}?createRoom=1` })}
-          >
-            <DoorOpenIcon />
-            {t("addRoomTo", { name: venue.name })}
-          </CommandItem>,
-        ])}
-      </CommandGroup>
+      <VenueCommandGroup venues={venues} onGo={go} />
     </>
   );
 }

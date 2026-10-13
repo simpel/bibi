@@ -22,7 +22,7 @@ export function VenueSearch() {
           onChange={(event) => setQuery(event.target.value)}
           placeholder={t("placeholder")}
           aria-label={t("label")}
-          className="pl-9 pr-9"
+          className="pl-9 pr-9 [&::-webkit-search-cancel-button]:hidden"
         />
         {query ? (
           <Button

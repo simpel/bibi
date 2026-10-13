@@ -5,18 +5,21 @@
  */
 export type ScalarInput = { raw: string };
 
+const DOUBLE_QUOTED = /^"((?:[^"\\]|\\.)*)"(?:\s+#.*)?$/;
+const SINGLE_QUOTED = /^'((?:[^']|'')*)'(?:\s+#.*)?$/;
+
 export function parseScalar({ raw }: ScalarInput): string {
   const value = raw.trim();
-  if (value.startsWith('"')) {
+  const double = DOUBLE_QUOTED.exec(value);
+  if (double) {
     try {
-      return String(JSON.parse(value));
+      return String(JSON.parse(`"${double[1] ?? ""}"`));
     } catch {
-      return value;
+      return double[1] ?? "";
     }
   }
-  if (value.startsWith("'") && value.endsWith("'") && value.length >= 2) {
-    return value.slice(1, -1).replace(/''/g, "'");
-  }
+  const single = SINGLE_QUOTED.exec(value);
+  if (single) return (single[1] ?? "").replace(/''/g, "'");
   return value.replace(/\s+#.*$/, "").trim();
 }
 

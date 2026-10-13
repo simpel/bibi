@@ -39,4 +39,19 @@ describe("audit log", () => {
     expect(result.ok).toBe(false);
     expect(await context.db.auditLog.count()).toBe(0);
   });
+
+  it("records who approved an AI command (approvedBy), and nothing for direct calls", async () => {
+    const userId = `user_${createId()}`;
+    const approved = testContext({
+      actor: { type: "ai", userId, conversationId: "conv_2", approvedBy: userId },
+    });
+    await execute({ operation: createVenue, input: { name: "Approved" }, context: approved });
+    const user = testContext({ organizationId: approved.organizationId, actor: { type: "user", userId } });
+    await execute({ operation: createVenue, input: { name: "Direct" }, context: user });
+    const rows = await user.db.auditLog.findMany({ orderBy: { createdAt: "asc" } });
+    expect(rows.map((row) => [row.actorType, row.approvedBy, row.conversationId])).toEqual([
+      ["AI", userId, "conv_2"],
+      ["USER", null, null],
+    ]);
+  });
 });

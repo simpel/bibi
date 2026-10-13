@@ -34,3 +34,27 @@ test("theme toggle switches the dark class", async ({ page }) => {
   await page.emulateMedia({ colorScheme: "dark" });
   await expect(page.locator("html")).toHaveClass(/dark/);
 });
+
+test("validation messages are localized and sign-in errors are mapped", async ({ page }) => {
+  const credentials = uniqueCredentials();
+  await signUp({ page, credentials });
+  await createOrganization({ page, name: "Validering AB" });
+
+  await page.getByRole("button", { name: "Skapa anläggning" }).first().click();
+  await page.getByRole("button", { name: "Spara" }).click();
+  await expect(page.getByText("Fältet är obligatoriskt.")).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  await page.getByRole("button", { name: "Användarmeny" }).click();
+  await page.getByRole("menuitem", { name: "Logga ut" }).click();
+  await expect(page).toHaveURL(/\/sv\/login/);
+
+  await page.getByLabel("E-post").fill(credentials.email);
+  await page.getByLabel("Lösenord").fill("fel-losenord-123");
+  await page.getByRole("button", { name: "Logga in" }).click();
+  await expect(page.getByText("Fel e-postadress eller lösenord.")).toBeVisible();
+
+  await page.getByLabel("Lösenord").fill(credentials.password);
+  await page.getByRole("button", { name: "Logga in" }).click();
+  await expect(page).toHaveURL(/\/sv\/venues$/);
+});

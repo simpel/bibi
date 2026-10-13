@@ -82,7 +82,9 @@ async function main(): Promise<void> {
   const redirectUri = parseRedirectUri({ args: process.argv.slice(2) });
   const clientId = await upsertClient({ db, redirectUri });
   await linkMcpResource({ db, clientId });
-  console.log(`Provisioned "${CLIENT_NAME}" (redirect ${redirectUri}, resource ${mcpResourceUrl()})`);
+  console.log(
+    `Provisioned "${CLIENT_NAME}" (redirect ${redirectUri}, resource ${mcpResourceUrl()})`,
+  );
   console.log(`WEB_OAUTH_CLIENT_ID=${clientId}`);
   await db.$disconnect();
 }
