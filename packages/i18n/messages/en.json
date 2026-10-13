@@ -246,7 +246,8 @@
     "invalid": "The value is invalid.",
     "invitationInvalid": "The invitation is invalid or has expired.",
     "loadFailed": "The information could not be loaded.",
-    "oauthQueryMissing": "The request is missing information. Start again from the application that asked for access."
+    "oauthQueryMissing": "The request is missing information. Start again from the application that asked for access.",
+    "textTooShort": "The text is too short."
   },
   "shell": {
     "mainNavigation": "Main navigation",

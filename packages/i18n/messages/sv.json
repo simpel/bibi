@@ -246,7 +246,8 @@
     "invalid": "Värdet är ogiltigt.",
     "invitationInvalid": "Inbjudan är ogiltig eller har gått ut.",
     "loadFailed": "Det gick inte att hämta informationen.",
-    "oauthQueryMissing": "Begäran saknar information. Starta om från programmet som bad om åtkomst."
+    "oauthQueryMissing": "Begäran saknar information. Starta om från programmet som bad om åtkomst.",
+    "textTooShort": "Texten är för kort."
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",

@@ -1,4 +1,5 @@
-import type { Prisma, ScopedDbClient } from "@okazi/db";
+import type { ScopedDbClient } from "@okazi/db";
+import { toJson } from "../shared/to-json";
 import type { Actor, AnyOperation, RecordedChange } from "./types";
 
 const ACTOR_TYPE = { user: "USER", ai: "AI", system: "SYSTEM" } as const;
@@ -10,13 +11,6 @@ export type WriteAuditInput = {
   changes: readonly RecordedChange[];
   output: unknown;
 };
-
-type ToJsonInput = { value: unknown };
-
-function toJson({ value }: ToJsonInput): Prisma.InputJsonValue | undefined {
-  if (value === undefined) return undefined;
-  return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
-}
 
 /** One row per recorded change; a command recording nothing still gets one row. */
 export async function writeAudit({
