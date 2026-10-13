@@ -1,0 +1,35 @@
+{
+  "name": "@okazi/auth",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./client": "./src/client.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "auth:generate": "auth generate --config src/cli-config.ts --output ../db/prisma/schema/auth.prisma --yes"
+  },
+  "dependencies": {
+    "@better-auth/api-key": "1.7.7",
+    "@better-auth/core": "1.7.7",
+    "@better-auth/mcp": "1.7.7",
+    "@better-auth/oauth-provider": "1.7.7",
+    "@better-auth/utils": "0.4.2",
+    "@okazi/config": "workspace:*",
+    "@okazi/core": "workspace:*",
+    "@okazi/db": "workspace:*",
+    "better-auth": "1.7.7",
+    "better-call": "1.4.0",
+    "nodemailer": "10.0.13",
+    "zod": "4.1.8"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "auth": "1.7.7",
+    "typescript": "5.9.2",
+    "vitest": "4.1.11"
+  }
+}

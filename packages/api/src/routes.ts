@@ -1,5 +1,5 @@
-import { venueRoutes } from "./features/venue/rest";
 import { roomRoutes } from "./features/room/rest";
+import { venueRoutes } from "./features/venue/rest";
 import type { RestRoute } from "./rest-route";
 import { searchRoutes } from "./search-rest";
 
