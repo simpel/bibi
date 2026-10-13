@@ -5,9 +5,8 @@ import { describe, expect, it } from "vitest";
 import { listMcpOperationNames, listMcpToolNames } from "../src/list-mcp-tool-names";
 import { toToolName } from "../src/tools/tool-name";
 import { fakeEmbed } from "./fake-embed";
-import { call, connect, type Json, testContext } from "./helpers";
-import { gqlRead } from "./parity-graphql";
-import { createRestClient } from "./parity-rest";
+import { connect, type Json, testContext } from "./helpers";
+import { ENTITIES } from "./parity-entities";
 
 registerOperations({ operations: createCoreOperations({ embed: fakeEmbed }) });
 
@@ -65,32 +64,6 @@ describe("surface parity: every core operation exists everywhere", () => {
   });
 });
 
-type Entity = {
-  name: string;
-  create: Record<string, unknown>;
-  field: string;
-  list: string;
-  get: string;
-};
-
-/** Entity types and how to create one; add a row when a new entity gets core operations. */
-const ENTITIES: Entity[] = [
-  {
-    name: "venue",
-    create: { name: "Parity Hall" },
-    field: "venue",
-    list: "venues",
-    get: "venue_get",
-  },
-  {
-    name: "room",
-    create: { name: "Parity Room", maxCapacity: 12 },
-    field: "room",
-    list: "rooms",
-    get: "room_get",
-  },
-];
-
 /** GraphQL deliberately hides `organizationId` (the graph is org-scoped); compare without it. */
 function withoutOrg({ value }: { value: Json }): Json {
   const { organizationId: _organizationId, ...rest } = value;
@@ -111,37 +84,26 @@ describe("entity read parity: core -> GraphQL, REST, MCP return equal data", () 
   it("covers every core entity type", () => {
     expect(
       ENTITIES.map((entity) => entity.name).sort(),
-      "Add the new entity to ENTITIES in parity.test.ts",
+      "Add the new entity to ENTITIES in parity-entities.ts",
     ).toEqual(coreEntityTypes());
   });
 
-  it("reads a created venue and room identically through all surfaces", async () => {
+  it("reads every created entity identically through all surfaces", async () => {
     const context = testContext();
     const mcp = await connect({ context });
-    const rest = createRestClient({ context });
-    const venue = (await call({ client: mcp, name: "venue_create", args: ENTITIES[0]?.create }))
-      .data;
-    const room = (
-      await call({
-        client: mcp,
-        name: "room_create",
-        args: { ...ENTITIES[1]?.create, venueId: venue.id },
-      })
-    ).data;
-    for (const [entity, created] of [
-      [ENTITIES[0], venue],
-      [ENTITIES[1], room],
-    ] as [Entity, Json][]) {
-      const viaMcp = (await call({ client: mcp, name: entity.get, args: { id: created.id } })).data;
-      const viaRest = await rest.get({ path: `/${entity.list}/${created.id}` });
+    const made: Record<string, Json> = {};
+    for (const entity of ENTITIES) {
+      const created = await entity.create({ mcp, made });
+      expect(created?.id, `${entity.name}: create via MCP`).toBeTruthy();
+      made[entity.name] = created;
       const keys = Object.keys(created).filter((key) => key !== "organizationId");
-      const viaGraph = await gqlRead({ context, entity: entity.field, id: created.id, keys });
+      const input = { context, mcp, created, keys };
       const labels = `${entity.name}: MCP vs REST vs GraphQL`;
-      expect(viaMcp, `${labels} (MCP)`).toEqual(created);
-      expect(withoutOrg({ value: viaRest }), `${labels} (REST)`).toEqual(
+      expect(await entity.viaMcp(input), `${labels} (MCP)`).toEqual(created);
+      expect(withoutOrg({ value: await entity.viaRest(input) }), `${labels} (REST)`).toEqual(
         withoutOrg({ value: created }),
       );
-      expect(viaGraph, `${labels} (GraphQL)`).toEqual(withoutOrg({ value: created }));
+      expect(await entity.viaGraph(input), `${labels} (GraphQL)`).toEqual(withoutOrg({ value: created }));
     }
   });
 });
