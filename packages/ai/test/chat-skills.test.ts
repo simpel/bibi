@@ -19,7 +19,10 @@ afterAll(() => mcp.close());
 
 /** A PUBLISHED personal skill that only allows `venue_list` (+ a tool the user lacks). */
 async function seedSkill({ user, slug }: { user: TestUser; slug: string }) {
-  const resolved = await resolveUser({ headers: user.cookies, resolveContext: resolveExecuteContext });
+  const resolved = await resolveUser({
+    headers: user.cookies,
+    resolveContext: resolveExecuteContext,
+  });
   if (!resolved.ok) throw resolved.error;
   const embed = createEmbed();
   const input = {
@@ -31,7 +34,12 @@ async function seedSkill({ user, slug }: { user: TestUser; slug: string }) {
   };
   const created = await runCore({ operation: createSkill, input, context: resolved.value, embed });
   if (!created.ok) throw created.error;
-  const published = await runCore({ operation: publishSkill, input: { id: created.value.id }, context: resolved.value, embed });
+  const published = await runCore({
+    operation: publishSkill,
+    input: { id: created.value.id },
+    context: resolved.value,
+    embed,
+  });
   if (!published.ok) throw published.error;
 }
 
@@ -47,12 +55,19 @@ describe("skills in the assistant", () => {
       ],
     });
     const { handler } = createHarness({ model, mcpUrl: mcp.url });
-    const chunks = await readChunks({ response: await handler(chatRequest({ cookies: user.cookies, text: "Lista" })) });
+    const chunks = await readChunks({
+      response: await handler(chatRequest({ cookies: user.cookies, text: "Lista" })),
+    });
 
     expect(JSON.stringify(model.doStreamCalls[0]?.prompt[0])).toContain("list-venues");
     expect(JSON.stringify(model.doStreamCalls[0]?.prompt[0])).not.toContain("Call venue_list.");
-    const loaded = chunks.find((chunk) => chunk.type === "tool-output-available" && chunk.toolCallId === "call_load_skill");
-    expect(loaded?.output).toMatchObject({ slug: "list-venues", instructions: expect.stringContaining("venue_list") });
+    const loaded = chunks.find(
+      (chunk) => chunk.type === "tool-output-available" && chunk.toolCallId === "call_load_skill",
+    );
+    expect(loaded?.output).toMatchObject({
+      slug: "list-venues",
+      instructions: expect.stringContaining("venue_list"),
+    });
     expect(loaded?.output.activeTools.sort()).toEqual(["load_skill", "skill_search", "venue_list"]);
 
     expect(offeredTools({ model, call: 0 })).toContain("venue_create");

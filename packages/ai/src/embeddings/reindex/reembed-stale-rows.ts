@@ -6,18 +6,23 @@ export type ReembedStaleRowsInput = {
   embed: EmbedFn;
   /** Model id the embedder writes; rows with another `model` are stale. */
   model: string;
-  /** Only this org (plus the global SYSTEM-skill rows); default every org. */
+  /** Only this org; default every org. */
   organizationId?: string;
+  /** Also the global SYSTEM-skill rows (default true; tests turn it off). */
+  includeGlobal?: boolean;
   batchSize: number;
 };
 
-const staleWhere = ({
-  model,
-  organizationId,
-}: Pick<ReembedStaleRowsInput, "model" | "organizationId">) => ({
-  model: { not: model },
-  ...(organizationId ? { organizationId: { in: [organizationId, GLOBAL_EMBEDDING_SCOPE] } } : {}),
-});
+type StaleWhereInput = Pick<ReembedStaleRowsInput, "model" | "organizationId" | "includeGlobal">;
+
+const staleWhere = ({ model, organizationId, includeGlobal = true }: StaleWhereInput) => {
+  const scopes = organizationId ? [organizationId] : [];
+  if (organizationId && includeGlobal) scopes.push(GLOBAL_EMBEDDING_SCOPE);
+  const orgFilter = organizationId ? { organizationId: { in: scopes } } : {};
+  const globalFilter =
+    !organizationId && !includeGlobal ? { organizationId: { not: GLOBAL_EMBEDDING_SCOPE } } : {};
+  return { model: { not: model }, ...orgFilter, ...globalFilter };
+};
 
 /**
  * Re-embeds index rows written by another embedding model from their stored `content` (the text
@@ -28,6 +33,7 @@ export async function reembedStaleRows({
   embed,
   model,
   organizationId,
+  includeGlobal,
   batchSize,
 }: ReembedStaleRowsInput): Promise<number> {
   let cursor: string | undefined;
@@ -35,7 +41,7 @@ export async function reembedStaleRows({
   for (;;) {
     const rows = await db.embedding.findMany({
       where: {
-        ...staleWhere({ model, organizationId }),
+        ...staleWhere({ model, organizationId, includeGlobal }),
         ...(cursor ? { id: { gt: cursor } } : {}),
       },
       orderBy: { id: "asc" },

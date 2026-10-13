@@ -7,6 +7,8 @@ export type ReindexAllInput = {
   embed: EmbedFn;
   /** Only this org (+ global SYSTEM-skill rows); default every organization. */
   organizationId?: string;
+  /** Re-embed the global SYSTEM-skill rows too (default true). */
+  includeGlobal?: boolean;
   db?: Db;
   batchSize?: number;
 };
@@ -38,11 +40,19 @@ const listOrganizationIds = async ({ db, organizationId }: ListOrgsInput): Promi
 export async function reindexAll({
   embed,
   organizationId,
+  includeGlobal = true,
   db = getDb(),
   batchSize = 64,
 }: ReindexAllInput): Promise<ReindexReport> {
   const { model } = await embed({ texts: [PROBE_TEXT] });
-  const reembedded = await reembedStaleRows({ db, embed, model, organizationId, batchSize });
+  const reembedded = await reembedStaleRows({
+    db,
+    embed,
+    model,
+    organizationId,
+    includeGlobal,
+    batchSize,
+  });
   const organizations = await listOrganizationIds({
     db,
     ...(organizationId ? { organizationId } : {}),

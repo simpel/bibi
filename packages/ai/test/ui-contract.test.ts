@@ -36,7 +36,11 @@ describe("generative-UI registry parity", () => {
 
   it("has no entries for tools that do not exist and no tool in both lists", () => {
     const known = new Set(ALL_TOOLS);
-    expect([...Object.keys(TOOL_UI_REGISTRY), ...Object.keys(GENERIC_UI_TOOLS)].filter((name) => !known.has(name))).toEqual([]);
+    expect(
+      [...Object.keys(TOOL_UI_REGISTRY), ...Object.keys(GENERIC_UI_TOOLS)].filter(
+        (name) => !known.has(name),
+      ),
+    ).toEqual([]);
     expect(Object.keys(TOOL_UI_REGISTRY).filter((name) => name in GENERIC_UI_TOOLS)).toEqual([]);
   });
 });
@@ -47,7 +51,10 @@ describe("resolveToolUi", () => {
       component: "venue-card",
       props: { venue },
     });
-    const list = resolveToolUi({ toolName: "venue_list", output: mcp({ value: { items: [venue], nextCursor: null } }) });
+    const list = resolveToolUi({
+      toolName: "venue_list",
+      output: mcp({ value: { items: [venue], nextCursor: null } }),
+    });
     expect(list.component).toBe("venue-table");
   });
 
@@ -60,21 +67,38 @@ describe("resolveToolUi", () => {
       approvalToken: "tok",
       expiresAt: "2026-10-13T10:10:00.000Z",
     };
-    expect(resolveToolUi({ toolName: "venue_create", output: mcp({ value: approval }) })).toMatchObject({
+    expect(
+      resolveToolUi({ toolName: "venue_create", output: mcp({ value: approval }) }),
+    ).toMatchObject({
       component: "approval-card",
       props: { approval: { operation: "venue.create", approvalToken: "tok" } },
     });
   });
 
   it("renders tool errors, invalid shapes and generic tools safely", () => {
-    const error = { isError: true, content: [], structuredContent: { code: "FORBIDDEN", message: "No" } };
+    const error = {
+      isError: true,
+      content: [],
+      structuredContent: { code: "FORBIDDEN", message: "No" },
+    };
     expect(resolveToolUi({ toolName: "venue_get", output: error })).toEqual({
       component: "error",
       props: { code: "FORBIDDEN", message: "No" },
     });
-    expect(resolveToolUi({ toolName: "venue_get", output: mcp({ value: { id: 1 } }) }).component).toBe("json");
-    expect(resolveToolUi({ toolName: "graphql_query", output: mcp({ value: { data: {} } }) }).component).toBe("json");
-    const skill = { id: "s", slug: "x", name: "X", version: 1, instructions: "do", activeTools: ["venue_list"] };
+    expect(
+      resolveToolUi({ toolName: "venue_get", output: mcp({ value: { id: 1 } }) }).component,
+    ).toBe("json");
+    expect(
+      resolveToolUi({ toolName: "graphql_query", output: mcp({ value: { data: {} } }) }).component,
+    ).toBe("json");
+    const skill = {
+      id: "s",
+      slug: "x",
+      name: "X",
+      version: 1,
+      instructions: "do",
+      activeTools: ["venue_list"],
+    };
     expect(resolveToolUi({ toolName: "load_skill", output: skill }).component).toBe("skill-card");
   });
 });

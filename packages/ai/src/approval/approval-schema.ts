@@ -35,7 +35,8 @@ export type ReadApprovalInput = { output: unknown };
 /** Approval proposal in a tool output (MCP `CallToolResult` or bare structured content). */
 export function readApproval({ output }: ReadApprovalInput): ApprovalRequired | null {
   const wrapped = McpOutputSchema.safeParse(output);
-  const content = wrapped.success ? wrapped.data.structuredContent : output;
+  const isWrapped = wrapped.success && "structuredContent" in wrapped.data;
+  const content = isWrapped ? wrapped.data.structuredContent : output;
   const parsed = ApprovalRequiredSchema.safeParse(content);
   return parsed.success ? parsed.data : null;
 }
