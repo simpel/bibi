@@ -15,6 +15,7 @@ const config: NextConfig = {
     "@okazi/api",
     "@okazi/auth",
     "@okazi/config",
+    "@okazi/ai",
     "@okazi/core",
     "@okazi/db",
     "@okazi/graphql",

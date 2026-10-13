@@ -13,7 +13,9 @@
     "provision:oauth": "tsx scripts/provision-web-oauth-client.ts"
   },
   "dependencies": {
+    "@ai-sdk/react": "4.0.141",
     "@hookform/resolvers": "5.9.1",
+    "@okazi/ai": "workspace:*",
     "@okazi/api": "workspace:*",
     "@okazi/auth": "workspace:*",
     "@okazi/config": "workspace:*",
@@ -22,6 +24,7 @@
     "@okazi/graphql": "workspace:*",
     "@okazi/i18n": "workspace:*",
     "@okazi/ui": "workspace:*",
+    "ai": "7.0.138",
     "lucide-react": "1.56.0",
     "next": "16.4.0",
     "next-intl": "4.14.9",

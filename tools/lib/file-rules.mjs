@@ -5,7 +5,8 @@ export const MAX_FILE_LINES = 150;
 // Default export tillåts bara för Next-filer, konfiguration och stories.
 const DEFAULT_EXPORT_ALLOWED =
   /(^|\/)(page|layout|route|loading|error|not-found)\.tsx?$|\.config\.tsx?$|\.stories\.tsx$|(^|\/)\.storybook\//;
-const PACKAGE_INDEX = /^packages\/[^/]+\/src\/index\.tsx?$/;
+// Paketets index, samt core:s klientsäkra schema-barrel (`@okazi/core/schemas`).
+const PACKAGE_INDEX = /^packages\/[^/]+\/src\/(index|schemas)\.tsx?$/;
 const DEFAULT_EXPORT = /^\s*export\s+default\b/m;
 const REEXPORT = /^export\s+(type\s+)?(\*|\{)[^;]*?\bfrom\s+["']/m;
 const DECLARATION =

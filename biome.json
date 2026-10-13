@@ -61,7 +61,7 @@
       }
     },
     {
-      "includes": ["**/index.ts"],
+      "includes": ["**/index.ts", "packages/core/src/schemas.ts"],
       "linter": {
         "rules": {
           "performance": {

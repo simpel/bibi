@@ -1,45 +1,17 @@
+import { RoomSchema, SearchHitSchema, SkillSchema, VenueSchema } from "@okazi/core/schemas";
 import { z } from "zod";
 
 /**
  * JSON ("wire") forms of core output schemas as tool results carry them (dates = ISO strings).
- * Client-safe on purpose: zod only, no `@okazi/core` import (its barrel pulls in Prisma), so the
- * web can import `@okazi/ai/ui` in client components. `test/ui-wire-parity.test.ts` fails when a
- * core schema gains/loses a field that is not mirrored here.
+ * Derived from `@okazi/core/schemas` (zod only, client-safe: the core barrel pulls in Prisma),
+ * so a field added in core flows through here by construction. Only the date fields are
+ * overridden; `skill` shapes are projections of `SkillSchema`.
  */
-const status = z.enum(["ACTIVE", "ARCHIVED"]);
-const audit = { createdAt: z.string(), updatedAt: z.string(), createdBy: z.string().nullable() };
+const isoDates = { createdAt: z.string(), updatedAt: z.string() };
 
-export const VenueWireSchema = z.object({
-  id: z.string(),
-  organizationId: z.string(),
-  name: z.string(),
-  description: z.string().nullable(),
-  streetAddress: z.string().nullable(),
-  postalCode: z.string().nullable(),
-  city: z.string().nullable(),
-  country: z.string(),
-  contactEmail: z.string().nullable(),
-  contactPhone: z.string().nullable(),
-  openingHours: z.string().nullable(),
-  defaultVatRatePercent: z.number().int(),
-  status,
-  ...audit,
-});
+export const VenueWireSchema = VenueSchema.extend(isoDates);
 
-export const RoomWireSchema = z.object({
-  id: z.string(),
-  organizationId: z.string(),
-  venueId: z.string(),
-  name: z.string(),
-  description: z.string().nullable(),
-  floor: z.string().nullable(),
-  areaSqm: z.number().nullable(),
-  ceilingHeightM: z.number().nullable(),
-  hasDaylight: z.boolean(),
-  maxCapacity: z.number().int().nullable(),
-  status,
-  ...audit,
-});
+export const RoomWireSchema = RoomSchema.extend(isoDates);
 
 const page = <T extends z.ZodType>({ item }: { item: T }) =>
   z.object({ items: z.array(item), nextCursor: z.string().nullable() });
@@ -47,18 +19,14 @@ const page = <T extends z.ZodType>({ item }: { item: T }) =>
 export const VenueListWireSchema = page({ item: VenueWireSchema });
 export const RoomListWireSchema = page({ item: RoomWireSchema });
 
-const skillScope = z.enum(["SYSTEM", "ORGANIZATION", "PERSONAL"]);
-const skillStatus = z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]);
-
 /** Skill row in tables (skill_list, skill_search): no instructions. */
-export const SkillRowSchema = z.object({
-  id: z.string(),
-  slug: z.string(),
-  name: z.string(),
-  description: z.string(),
-  scope: skillScope,
-  status: skillStatus.optional(),
-});
+export const SkillRowSchema = SkillSchema.pick({
+  id: true,
+  slug: true,
+  name: true,
+  description: true,
+  scope: true,
+}).extend({ status: SkillSchema.shape.status.optional() });
 
 export const SkillListWireSchema = z.object({
   items: z.array(SkillRowSchema),
@@ -69,25 +37,17 @@ export const SkillListWireSchema = z.object({
 export const SkillSearchWireSchema = z.object({ skills: z.array(SkillRowSchema) });
 
 /** Skill card: full skills (skill_get/create/...) and `load_skill` output share these fields. */
-export const SkillCardWireSchema = z.object({
-  id: z.string(),
-  slug: z.string(),
-  name: z.string(),
-  version: z.number().int(),
-  description: z.string().optional(),
-  instructions: z.string().optional(),
-  status: skillStatus.optional(),
-  scope: skillScope.optional(),
-  allowedTools: z.array(z.string()).optional(),
-  activeTools: z.array(z.string()).optional(),
-});
+export const SkillCardWireSchema = SkillSchema.pick({ id: true, slug: true, name: true, version: true })
+  .extend({
+    description: SkillSchema.shape.description.optional(),
+    instructions: SkillSchema.shape.instructions.optional(),
+    status: SkillSchema.shape.status.optional(),
+    scope: SkillSchema.shape.scope.optional(),
+    allowedTools: SkillSchema.shape.allowedTools.optional(),
+    activeTools: z.array(z.string()).optional(),
+  });
 
-export const SearchHitWireSchema = z.object({
-  entityType: z.string(),
-  entityId: z.string(),
-  score: z.number(),
-  content: z.string(),
-});
+export const SearchHitWireSchema = SearchHitSchema;
 
 export const SearchWireSchema = z.object({ hits: z.array(SearchHitWireSchema) });
 

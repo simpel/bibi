@@ -5,9 +5,7 @@
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@core-schema/venue": ["../../packages/core/src/features/venue/schema.ts"],
-      "@core-schema/room": ["../../packages/core/src/features/room/schema.ts"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
