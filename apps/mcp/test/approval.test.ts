@@ -54,6 +54,7 @@ describe("approval flow", () => {
       operation: "venue.create",
       actorType: "AI",
       actorId: base.actor.userId,
+      approvedBy: base.actor.userId,
       conversationId: "conv_42",
     });
   });
