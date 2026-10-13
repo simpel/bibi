@@ -27,6 +27,8 @@ Better Auth 1.7.7 (Prisma-adapter) + plugins: e-post/lösenord, magic link, e-po
 2. Använd `"<resurs>:read|write|admin"` som `permission` i core-operationen.
 3. Befintliga API-nycklar saknar den nya resursen och tappar därmed sin roll. Utfärda nya nycklar.
 
+Resurser i dag: `venue`, `room`, `search`, `conversation`, `skill`. `conversation` och `skill` lades till 2026-10-13: nycklar utfärdade dessförinnan måste utfärdas på nytt.
+
 ## Schema och tester
 - `auth.prisma` genereras: `pnpm --filter @okazi/auth auth:generate`. Ta bort `generator`/`datasource` ur resultatet och kör sedan `pnpm --filter @okazi/db migrate:dev --name <namn>`.
 - Mail: `sendMail({ to, subject, text })` via `SMTP_URL` (mailpit). Tester byter avsändare med `setMailSender`.

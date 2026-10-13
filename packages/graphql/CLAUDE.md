@@ -6,6 +6,8 @@ GraphQL-adaptern (Pothos + GraphQL Yoga). Tunn: all logik och behörighet ligger
 - Mutationer och primära läsningar skapas med `mutationFromOperation({ operation, type, name? })` / `fieldFromOperation(...)`. De härleder argument/input och beskrivning från operationens Zod-schema och kör alltid `execute` med requestens `ExecuteContext` (`schema/run-operation.ts`). Ny operation ≈ 1 rad.
 - Objekttyper härleds med `objectFromSchema({ name, schema, omit })`. Listor använder `pageType` (`{ items, nextCursor }` = core `paginate`).
 - Grafkanter (`Venue.rooms`, `Room.venue`, `SearchHit.entity`) läser via `ctx.core.db` (org-scopad) efter `requirePermission`. Rå `getDb()` används aldrig.
+- Entiteter med per-användarsynlighet (Conversation, Message, Skill) läses **endast via operationer**: `Conversation.messages` kör `message.list`, och `SearchEntity` laddar konversationer/skills via `conversation.get`/`skill.get` (fel → null). Gå aldrig direkt mot `ctx.core.db` för dem.
+- `Message.parts`/`metadata` och `Skill.resources` är `JSON`. `Skill.organizationId` exponeras (null = SYSTEM).
 - `listGraphqlOperationNames()` ger operationerna som exponerats (paritetstestet jämför mot `listOperations()`). `printSchemaSdl()` och `schema` är till för MCP.
 - Enum/okända Zod-typer blir `String`/`JSON`; nästlade objekt blir `JSON`. Skriv en egen typ vid behov.
 
