@@ -55,9 +55,8 @@ describe("scoping, errors and limits", () => {
   });
 
   it("rejects queries deeper than the depth limit", async () => {
-    const gql = createClient({ context: testContext(), development: true });
+    const gql = createClient({ context: testContext() });
     const res = await gql({ query: DEEP });
-    console.log(JSON.stringify(res.body).slice(0, 600));
     expect(res.body.errors?.[0]?.message).toMatch(/depth/i);
     expect(res.body.data).toBeUndefined();
   });

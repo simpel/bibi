@@ -32,8 +32,8 @@ export function createGraphqlHandler({
     maskedErrors: !development,
     context: ({ request }) => buildContext({ request, resolveContext, operations, afterCommit }),
     plugins: [
-      maxDepthPlugin({ n: MAX_DEPTH }),
-      costLimitPlugin({ maxCost: MAX_COST }),
+      maxDepthPlugin({ n: MAX_DEPTH, propagateOnRejection: false }),
+      costLimitPlugin({ maxCost: MAX_COST, propagateOnRejection: false }),
       ...(development ? [] : [useDisableIntrospection()]),
     ],
   });
