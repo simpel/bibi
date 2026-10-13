@@ -1,0 +1,42 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+  "files": {
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/.next",
+      "!**/dist",
+      "!**/.turbo",
+      "!**/generated",
+      "!**/*.generated.*",
+      "!packages/i18n/messages/*.json"
+    ]
+  },
+  "formatter": { "indentStyle": "space", "indentWidth": 2, "lineWidth": 100 },
+  "javascript": { "formatter": { "quoteStyle": "double", "semicolons": "always" } },
+  "linter": {
+    "rules": {
+      "recommended": true,
+      "suspicious": { "noExplicitAny": "error" },
+      "style": { "noDefaultExport": "error", "noBarrelFile": "error" },
+      "complexity": { "useMaxParams": { "level": "error", "options": { "max": 1 } } }
+    }
+  },
+  "overrides": [
+    {
+      "includes": [
+        "**/page.tsx",
+        "**/layout.tsx",
+        "**/route.ts",
+        "**/*.config.ts",
+        "**/*.config.mjs",
+        "**/.storybook/**"
+      ],
+      "linter": { "rules": { "style": { "noDefaultExport": "off" } } }
+    },
+    {
+      "includes": ["**/index.ts"],
+      "linter": { "rules": { "performance": { "noBarrelFile": "off", "noReExportAll": "off" } } }
+    }
+  ]
+}
