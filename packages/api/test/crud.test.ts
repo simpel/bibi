@@ -44,8 +44,8 @@ describe("venue + room CRUD over HTTP", () => {
     const archived = await call({ method: "DELETE", path: `/venues/${venueId}`, org });
     expect(archived.status).toBe(200);
     expect(archived.json.status).toBe("ARCHIVED");
-    const rooms = await call({ path: `/rooms/${room.json.id}`, org });
-    expect(rooms.json.status).toBe("ARCHIVED");
+    const hidden = await call({ path: `/rooms/${room.json.id}`, org });
+    expect(hidden.status).toBe(404);
   });
 
   it("paginates with limit and cursor", async () => {

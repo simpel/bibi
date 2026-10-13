@@ -39,7 +39,9 @@ export type CallInput = {
   roles?: string;
   body?: unknown;
 };
-export type CallOutput = { status: number; json: any; response: Response };
+// biome-ignore lint/suspicious/noExplicitAny: loosely typed JSON for test assertions
+export type Json = any;
+export type CallOutput = { status: number; json: Json; response: Response };
 
 /** Calls the handler like a real HTTP client would. */
 export async function call({

@@ -1,11 +1,11 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { describe, expect, it } from "vitest";
-import { call, handler } from "./helpers";
+import { call, handler, type Json } from "./helpers";
 
 type Doc = {
   openapi: string;
   paths: Record<string, Record<string, { operationId: string }>>;
-  [k: string]: any;
+  [k: string]: Json;
 };
 
 async function loadDocument(): Promise<Doc> {
@@ -39,12 +39,12 @@ describe("OpenAPI document", () => {
     expect(new Set(ids).size).toBe(ids.length);
     expect(doc.paths["/venues"]?.get?.operationId).toBe("venueList");
     expect(Object.keys(doc.components.securitySchemes)).toEqual(["apiKey", "session", "oauth2"]);
-    const post = doc.paths["/venues"]?.post as any;
+    const post = doc.paths["/venues"]?.post as Json;
     expect(post.requestBody.content["application/json"].schema.properties.name).toBeDefined();
     expect(
       post.responses["201"].content["application/json"].schema.properties.createdAt.format,
     ).toBe("date-time");
-    const list = doc.paths["/venues"]?.get as any;
+    const list = doc.paths["/venues"]?.get as Json;
     expect(list.parameters.map((p: { name: string }) => p.name)).toEqual(["limit", "cursor"]);
   });
 
