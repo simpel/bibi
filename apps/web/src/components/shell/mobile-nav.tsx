@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Button,
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-  SheetTrigger,
-} from "@okazi/ui";
+import { Button, Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@okazi/ui";
 import { MenuIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Sidebar } from "./sidebar";

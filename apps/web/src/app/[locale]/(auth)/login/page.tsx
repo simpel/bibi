@@ -1,3 +1,4 @@
+import { resolveLocale } from "@okazi/i18n";
 import { Link } from "@okazi/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthCard } from "@/features/auth/ui/auth-card";
@@ -12,7 +13,8 @@ type LoginPageProps = {
 };
 
 export default async function LoginPage({ params, searchParams }: LoginPageProps) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale({ value: rawLocale });
   const { next, sig } = await searchParams;
   setRequestLocale(locale);
   if (!sig) await redirectIfSignedIn({ locale });
@@ -25,7 +27,10 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
       footer={
         <>
           {t("noAccount")}{" "}
-          <Link href={withNext({ path: ROUTES.signUp, next: target })} className="text-primary hover:underline">
+          <Link
+            href={withNext({ path: ROUTES.signUp, next: target })}
+            className="text-primary hover:underline"
+          >
             {t("signUp")}
           </Link>
         </>

@@ -1,4 +1,5 @@
 import { listRooms } from "@okazi/core";
+import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
@@ -10,7 +11,7 @@ import { CreateRoomButton } from "./create-room-button";
 import { RoomTable } from "./room-table";
 
 export type RoomsSectionProps = {
-  locale: string;
+  locale: Locale;
   venueId: string;
   venueName: string;
   cursor?: string | undefined;

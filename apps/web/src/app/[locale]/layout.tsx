@@ -1,7 +1,8 @@
+import { resolveLocale } from "@okazi/i18n";
 import { routing } from "@okazi/i18n/routing";
+import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
 import "../globals.css";
@@ -14,7 +15,10 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Pick<LocaleLayoutProps, "params">) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "common" });
+  const t = await getTranslations({
+    locale: resolveLocale({ value: locale }),
+    namespace: "common",
+  });
   return { title: t("appName") };
 }
 

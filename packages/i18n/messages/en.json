@@ -87,7 +87,8 @@
     "declineInvitation": "Decline",
     "invitationAccepted": "You have joined the organization.",
     "invitationDeclined": "The invitation was declined.",
-    "signInToAccept": "Sign in or create an account with the invited email address to respond to the invitation."
+    "signInToAccept": "Sign in or create an account with the invited email address to respond to the invitation.",
+    "invitationInvalidTitle": "Invalid invitation"
   },
   "nav": {
     "dashboard": "Dashboard",

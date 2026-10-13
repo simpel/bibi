@@ -9,7 +9,7 @@ import { TextField } from "@/components/form/text-field";
 import { ErrorBanner } from "@/components/states/error-banner";
 import { authClient } from "@/lib/auth-client";
 import { useZodMessages } from "@/lib/use-zod-messages";
-import { type OtpValues, OtpSchema } from "./auth-schemas";
+import { OtpSchema, type OtpValues } from "./auth-schemas";
 import { finishSignIn } from "./finish-sign-in";
 import { useAuthSubmit } from "./use-auth-submit";
 
@@ -36,7 +36,13 @@ export function OtpCodeForm({ email, next }: OtpCodeFormProps) {
         {t("codeSent", { email })}
       </p>
       <ErrorBanner errorKey={errorKey} />
-      <TextField form={form} name="code" label={t("otpCode")} autoComplete="one-time-code" required />
+      <TextField
+        form={form}
+        name="code"
+        label={t("otpCode")}
+        autoComplete="one-time-code"
+        required
+      />
       <Button type="submit" disabled={pending}>
         {t("verifyCode")}
       </Button>

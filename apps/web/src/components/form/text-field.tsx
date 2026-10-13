@@ -31,7 +31,13 @@ export function TextField<V extends FieldValues, O>(props: TextFieldProps<V, O>)
       {multiline ? (
         <Textarea rows={3} {...common} />
       ) : (
-        <Input type={type} step={step} autoComplete={autoComplete} inputMode={type === "number" ? "decimal" : undefined} {...common} />
+        <Input
+          type={type}
+          step={step}
+          autoComplete={autoComplete}
+          inputMode={type === "number" ? "decimal" : undefined}
+          {...common}
+        />
       )}
     </FormField>
   );

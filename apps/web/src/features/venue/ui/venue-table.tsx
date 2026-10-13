@@ -1,6 +1,6 @@
 import type { VenueDto } from "@okazi/core";
-import { Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
 import { Link } from "@okazi/i18n/navigation";
+import { Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
 import { getTranslations } from "next-intl/server";
 import { venueRoute } from "@/lib/routes";
 import { VenueRowActions } from "./venue-row-actions";

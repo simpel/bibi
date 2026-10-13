@@ -26,7 +26,12 @@ export function ConsentCard({ clientId, scopes }: ConsentCardProps) {
       <ErrorBanner errorKey={errorKey} />
       <ConsentScopes scopes={scopes} />
       <div className="flex gap-2">
-        <Button variant="outline" className="flex-1" disabled={pending} onClick={() => respond({ accept: false })}>
+        <Button
+          variant="outline"
+          className="flex-1"
+          disabled={pending}
+          onClick={() => respond({ accept: false })}
+        >
           {t("deny")}
         </Button>
         <Button className="flex-1" disabled={pending} onClick={() => respond({ accept: true })}>

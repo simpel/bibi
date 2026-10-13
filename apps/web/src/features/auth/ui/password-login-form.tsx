@@ -9,7 +9,7 @@ import { TextField } from "@/components/form/text-field";
 import { ErrorBanner } from "@/components/states/error-banner";
 import { authClient } from "@/lib/auth-client";
 import { useZodMessages } from "@/lib/use-zod-messages";
-import { type SignInValues, SignInSchema } from "./auth-schemas";
+import { SignInSchema, type SignInValues } from "./auth-schemas";
 import { finishSignIn } from "./finish-sign-in";
 import { useAuthSubmit } from "./use-auth-submit";
 
@@ -33,8 +33,22 @@ export function PasswordLoginForm({ next }: PasswordLoginFormProps) {
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-4">
       <ErrorBanner errorKey={errorKey} />
-      <TextField form={form} name="email" label={t("email")} type="email" autoComplete="email" required />
-      <TextField form={form} name="password" label={t("password")} type="password" autoComplete="current-password" required />
+      <TextField
+        form={form}
+        name="email"
+        label={t("email")}
+        type="email"
+        autoComplete="email"
+        required
+      />
+      <TextField
+        form={form}
+        name="password"
+        label={t("password")}
+        type="password"
+        autoComplete="current-password"
+        required
+      />
       <Button type="submit" disabled={pending}>
         {t("signIn")}
       </Button>

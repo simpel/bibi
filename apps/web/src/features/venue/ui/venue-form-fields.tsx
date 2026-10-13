@@ -23,7 +23,12 @@ export function VenueFormFields({ form }: VenueFormFieldsProps) {
       </div>
       <div className="grid grid-cols-2 gap-4">
         <TextField form={form} name="country" label={t("country")} />
-        <TextField form={form} name="defaultVatRatePercent" label={t("defaultVatRatePercent")} type="number" />
+        <TextField
+          form={form}
+          name="defaultVatRatePercent"
+          label={t("defaultVatRatePercent")}
+          type="number"
+        />
       </div>
       <TextField form={form} name="contactEmail" label={t("contactEmail")} type="email" />
       <TextField form={form} name="contactPhone" label={t("contactPhone")} type="tel" />

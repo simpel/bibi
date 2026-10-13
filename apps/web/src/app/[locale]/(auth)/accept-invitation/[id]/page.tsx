@@ -1,3 +1,4 @@
+import { resolveLocale } from "@okazi/i18n";
 import { redirect } from "@okazi/i18n/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { InvitationCard } from "@/features/auth/ui/invitation-card";
@@ -8,7 +9,8 @@ type AcceptInvitationPageProps = { params: Promise<{ locale: string; id: string 
 
 /** Link target of the invitation mail. Anonymous visitors sign in first, then come back. */
 export default async function AcceptInvitationPage({ params }: AcceptInvitationPageProps) {
-  const { locale, id } = await params;
+  const { locale: rawLocale, id } = await params;
+  const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   const state = await getSessionState();
   if (state.status === "anonymous") {

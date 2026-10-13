@@ -1,6 +1,12 @@
 import "server-only";
-import { createIndexingHook, type ExecuteContext, execute, type Operation, type Result } from "@okazi/core";
 import { resolveExecuteContext } from "@okazi/auth";
+import {
+  createIndexingHook,
+  type ExecuteContext,
+  execute,
+  type Operation,
+  type Result,
+} from "@okazi/core";
 import { headers } from "next/headers";
 import type { z } from "zod";
 import { embed } from "./embed";

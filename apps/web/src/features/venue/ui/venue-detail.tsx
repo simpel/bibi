@@ -1,20 +1,21 @@
 import { getVenue } from "@okazi/core";
-import { Badge } from "@okazi/ui";
+import type { Locale } from "@okazi/i18n";
 import { Link } from "@okazi/i18n/navigation";
+import { Badge } from "@okazi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { CreateRoomButton } from "@/features/room/ui/create-room-button";
+import { RoomsSection } from "@/features/room/ui/rooms-section";
 import { ROUTES } from "@/lib/routes";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { CreateRoomButton } from "@/features/room/ui/create-room-button";
-import { RoomsSection } from "@/features/room/ui/rooms-section";
 import { VenueFacts } from "./venue-facts";
 import { VenueRowActions } from "./venue-row-actions";
 
 export type VenueDetailProps = {
-  locale: string;
+  locale: Locale;
   id: string;
   roomCursor?: string | undefined;
 };
@@ -28,7 +29,10 @@ export async function VenueDetail({ locale, id, roomCursor }: VenueDetailProps) 
   const venue = result.value;
   return (
     <div className="grid gap-8">
-      <Link href={ROUTES.venues} className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+      <Link
+        href={ROUTES.venues}
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeftIcon className="size-4" />
         {common("back")}
       </Link>
@@ -37,14 +41,23 @@ export async function VenueDetail({ locale, id, roomCursor }: VenueDetailProps) 
         description={venue.description ?? undefined}
         actions={<VenueRowActions venue={venue} redirectToList />}
       />
-      <Badge variant="success" className="-mt-6">{common("active")}</Badge>
+      <Badge variant="success" className="-mt-6">
+        {common("active")}
+      </Badge>
       <VenueFacts venue={venue} />
       <section className="grid gap-4" aria-labelledby="rooms-heading">
         <div className="flex items-center justify-between">
-          <h2 id="rooms-heading" className="text-xl font-semibold">{t("roomsHeading")}</h2>
+          <h2 id="rooms-heading" className="text-xl font-semibold">
+            {t("roomsHeading")}
+          </h2>
           <CreateRoomButton venueId={venue.id} venueName={venue.name} />
         </div>
-        <RoomsSection locale={locale} venueId={venue.id} venueName={venue.name} cursor={roomCursor} />
+        <RoomsSection
+          locale={locale}
+          venueId={venue.id}
+          venueName={venue.name}
+          cursor={roomCursor}
+        />
       </section>
     </div>
   );

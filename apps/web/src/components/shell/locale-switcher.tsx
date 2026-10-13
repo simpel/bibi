@@ -1,5 +1,6 @@
 "use client";
 
+import { LOCALES } from "@okazi/i18n";
 import { usePathname, useRouter } from "@okazi/i18n/navigation";
 import {
   Button,
@@ -9,9 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "@okazi/ui";
 import { CheckIcon, LanguagesIcon } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { LOCALES } from "@okazi/i18n";
+import { useLocale, useTranslations } from "next-intl";
 
 const LABEL_KEY = { sv: "languageSv", en: "languageEn" } as const;
 

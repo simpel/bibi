@@ -1,4 +1,5 @@
 import { listVenues } from "@okazi/core";
+import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
@@ -11,7 +12,7 @@ import { CreateVenueButton } from "./create-venue-button";
 import { VenueSearch } from "./venue-search";
 import { VenueTable } from "./venue-table";
 
-export type VenueListProps = { locale: string; cursor?: string | undefined };
+export type VenueListProps = { locale: Locale; cursor?: string | undefined };
 
 const PAGE_SIZE = 20;
 
@@ -23,7 +24,11 @@ export async function VenueList({ locale, cursor }: VenueListProps) {
     input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
   });
   const header = (
-    <PageHeader title={t("plural")} description={t("listDescription")} actions={<CreateVenueButton />} />
+    <PageHeader
+      title={t("plural")}
+      description={t("listDescription")}
+      actions={<CreateVenueButton />}
+    />
   );
   if (!result.ok) {
     const errorKey = handleLoadError({ error: result.error, locale });
@@ -32,7 +37,11 @@ export async function VenueList({ locale, cursor }: VenueListProps) {
   const { items, nextCursor } = result.value;
   const body =
     items.length === 0 && !cursor ? (
-      <EmptyState title={t("empty")} description={t("emptyDescription")} action={<CreateVenueButton />} />
+      <EmptyState
+        title={t("empty")}
+        description={t("emptyDescription")}
+        action={<CreateVenueButton />}
+      />
     ) : (
       <>
         <VenueTable venues={items} />

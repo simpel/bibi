@@ -22,8 +22,20 @@ export function RoomFormFields({ form }: RoomFormFieldsProps) {
         <TextField form={form} name="maxCapacity" label={t("maxCapacity")} type="number" />
       </div>
       <div className="grid grid-cols-2 gap-4">
-        <TextField form={form} name="areaSqm" label={t("areaSquareMeters")} type="number" step="any" />
-        <TextField form={form} name="ceilingHeightM" label={t("ceilingHeightM")} type="number" step="any" />
+        <TextField
+          form={form}
+          name="areaSqm"
+          label={t("areaSquareMeters")}
+          type="number"
+          step="any"
+        />
+        <TextField
+          form={form}
+          name="ceilingHeightM"
+          label={t("ceilingHeightM")}
+          type="number"
+          step="any"
+        />
       </div>
       <CheckField form={form} name="hasDaylight" label={t("hasDaylight")} />
     </div>

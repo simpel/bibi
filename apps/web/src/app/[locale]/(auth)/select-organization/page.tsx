@@ -1,3 +1,4 @@
+import { resolveLocale } from "@okazi/i18n";
 import { Separator } from "@okazi/ui";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthCard } from "@/features/auth/ui/auth-card";
@@ -9,7 +10,8 @@ type SelectOrganizationPageProps = { params: Promise<{ locale: string }> };
 
 /** Shown when the session has no active organization (also the OAuth post-login step). */
 export default async function SelectOrganizationPage({ params }: SelectOrganizationPageProps) {
-  const { locale } = await params;
+  const { locale: rawLocale } = await params;
+  const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   await requireAnySession({ locale });
   const t = await getTranslations("auth");

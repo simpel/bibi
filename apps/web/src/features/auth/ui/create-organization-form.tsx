@@ -11,7 +11,7 @@ import { authClient } from "@/lib/auth-client";
 import { slugify } from "@/lib/slugify";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { afterOrganization } from "./after-organization";
-import { type OrganizationNameValues, OrganizationNameSchema } from "./auth-schemas";
+import { OrganizationNameSchema, type OrganizationNameValues } from "./auth-schemas";
 import { useAuthSubmit } from "./use-auth-submit";
 
 /** Creates an organization (the caller becomes owner) and makes it the active one. */
@@ -40,7 +40,13 @@ export function CreateOrganizationForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-4">
       <ErrorBanner errorKey={errorKey} />
-      <TextField form={form} name="name" label={t("organizationName")} autoComplete="organization" required />
+      <TextField
+        form={form}
+        name="name"
+        label={t("organizationName")}
+        autoComplete="organization"
+        required
+      />
       <Button type="submit" disabled={pending}>
         {t("createOrganization")}
       </Button>

@@ -1,11 +1,12 @@
 import "server-only";
 import type { AppError } from "@okazi/core";
+import type { Locale } from "@okazi/i18n";
 import { redirect } from "@okazi/i18n/navigation";
 import { notFound } from "next/navigation";
 import { type ErrorKey, errorKeyForCode } from "@/lib/error-key";
 import { ROUTES } from "@/lib/routes";
 
-export type HandleLoadErrorInput = { error: AppError; locale: string };
+export type HandleLoadErrorInput = { error: AppError; locale: Locale };
 
 /**
  * Server-component handling of a failed `runOperation`: expired session → login, missing

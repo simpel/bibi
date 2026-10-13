@@ -1,9 +1,10 @@
 import "server-only";
+import type { Locale } from "@okazi/i18n";
 import { redirect } from "@okazi/i18n/navigation";
 import { ROUTES } from "@/lib/routes";
 import { getSessionState, type SessionState } from "./session";
 
-export type GuardInput = { locale: string };
+export type GuardInput = { locale: Locale };
 
 /** Protected-route guard: anonymous → /login, no active organization → /select-organization. */
 export async function requireReadySession({

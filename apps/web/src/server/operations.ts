@@ -1,10 +1,5 @@
 import "server-only";
-import {
-  type AnyOperation,
-  AppError,
-  createCoreOperations,
-  registerOperations,
-} from "@okazi/core";
+import { type AnyOperation, AppError, createCoreOperations, registerOperations } from "@okazi/core";
 import { embed } from "./embed";
 
 const holder = globalThis as typeof globalThis & { __okaziWebOperations?: AnyOperation[] };

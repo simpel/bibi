@@ -1,7 +1,7 @@
 "use client";
 
-import { Badge, Card, Skeleton } from "@okazi/ui";
 import { Link } from "@okazi/i18n/navigation";
+import { Badge, Card, Skeleton } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { ErrorBanner } from "@/components/states/error-banner";
 import type { SearchHitView } from "@/features/search/search-hit-view";
@@ -25,7 +25,9 @@ export function VenueSearchResults({ hits, pending, errorKey, query }: VenueSear
   }
   return (
     <Card className="divide-y">
-      <p className="px-4 py-2 text-xs text-muted-foreground">{t("results", { count: hits.length })}</p>
+      <p className="px-4 py-2 text-xs text-muted-foreground">
+        {t("results", { count: hits.length })}
+      </p>
       {hits.map((hit) => (
         <Link
           key={`${hit.entityType}-${hit.entityId}`}

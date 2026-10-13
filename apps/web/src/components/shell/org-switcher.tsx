@@ -14,8 +14,8 @@ import {
 } from "@okazi/ui";
 import { CheckIcon, ChevronsUpDownIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ROUTES } from "@/lib/routes";
 import { authClient } from "@/lib/auth-client";
+import { ROUTES } from "@/lib/routes";
 
 export type OrgSwitcherProps = { organizationId: string };
 
@@ -35,7 +35,11 @@ export function OrgSwitcher({ organizationId }: OrgSwitcherProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-full justify-between" aria-label={auth("switchOrganization")}>
+        <Button
+          variant="outline"
+          className="w-full justify-between"
+          aria-label={auth("switchOrganization")}
+        >
           <span className="truncate">{active?.name ?? t("noOrganization")}</span>
           <ChevronsUpDownIcon className="opacity-50" />
         </Button>

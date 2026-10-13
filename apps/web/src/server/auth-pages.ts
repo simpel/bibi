@@ -1,9 +1,10 @@
 import "server-only";
+import type { Locale } from "@okazi/i18n";
 import { redirect } from "@okazi/i18n/navigation";
 import { ROUTES } from "@/lib/routes";
 import { getSessionState, type SessionState } from "./session";
 
-export type AuthPageInput = { locale: string };
+export type AuthPageInput = { locale: Locale };
 
 /** Login/sign-up pages: signed-in users go on to the app (or to organization selection). */
 export async function redirectIfSignedIn({ locale }: AuthPageInput): Promise<void> {

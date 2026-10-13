@@ -87,7 +87,8 @@
     "declineInvitation": "Avböj",
     "invitationAccepted": "Du har gått med i organisationen.",
     "invitationDeclined": "Inbjudan har avböjts.",
-    "signInToAccept": "Logga in eller skapa ett konto med den inbjudna e-postadressen för att svara på inbjudan."
+    "signInToAccept": "Logga in eller skapa ett konto med den inbjudna e-postadressen för att svara på inbjudan.",
+    "invitationInvalidTitle": "Ogiltig inbjudan"
   },
   "nav": {
     "dashboard": "Översikt",

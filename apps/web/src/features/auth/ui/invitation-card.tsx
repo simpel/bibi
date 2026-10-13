@@ -21,7 +21,7 @@ export function InvitationCard({ invitationId }: InvitationCardProps) {
   if (invitation.status === "loading") return <Skeleton className="h-40 w-full max-w-md" />;
   if (invitation.status === "invalid") {
     return (
-      <AuthCard title={t("invitationTitle", { organization: "" })}>
+      <AuthCard title={t("invitationInvalidTitle")}>
         <ErrorBanner errorKey="invitationInvalid" />
       </AuthCard>
     );

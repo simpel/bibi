@@ -1,5 +1,5 @@
-import { Button } from "@okazi/ui";
 import { Link } from "@okazi/i18n/navigation";
+import { Button } from "@okazi/ui";
 import { getTranslations } from "next-intl/server";
 
 export type CursorPaginationProps = {

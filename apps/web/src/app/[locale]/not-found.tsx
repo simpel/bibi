@@ -1,8 +1,9 @@
-import { Button } from "@okazi/ui";
 import { Link } from "@okazi/i18n/navigation";
+import { Button } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { ROUTES } from "@/lib/routes";
 
+// biome-ignore lint/style/noDefaultExport: Next.js requires a default export for not-found.
 export default function NotFoundPage() {
   const t = useTranslations("errors");
   const common = useTranslations("common");

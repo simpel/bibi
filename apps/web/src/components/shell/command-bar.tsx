@@ -25,7 +25,12 @@ export function CommandBar() {
   return (
     <>
       <CommandBarTrigger onOpen={toggle} />
-      <CommandDialog open={open} onOpenChange={setOpen} title={t("title")} description={t("description")}>
+      <CommandDialog
+        open={open}
+        onOpenChange={setOpen}
+        title={t("title")}
+        description={t("description")}
+      >
         <CommandInput placeholder={t("placeholder")} />
         <CommandList>
           <CommandEmpty>{t("empty")}</CommandEmpty>

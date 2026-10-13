@@ -1,13 +1,7 @@
 "use client";
 
 import type { VenueDto } from "@okazi/core";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@okazi/ui";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { VenueForm } from "./venue-form";
 
