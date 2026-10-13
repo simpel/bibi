@@ -40,7 +40,7 @@ function depthOf({ selectionSet, context, seen }: DepthInput): number {
 /** Validation rule: reject operations nested deeper than `maxDepth` (fragments followed). */
 export function depthLimitRule({ maxDepth }: DepthLimitRuleInput) {
   return (context: ValidationContext): ASTVisitor => ({
-    OperationDefinition(operation) {
+    OperationDefinition: (operation) => {
       const depth = depthOf({ selectionSet: operation.selectionSet, context, seen: new Set() });
       if (depth > maxDepth) {
         const message = `Query depth limit of ${maxDepth} exceeded, found ${depth}.`;

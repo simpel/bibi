@@ -1,12 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { createClient, testContext } from "./helpers";
 
-const CREATE_VENUE = `mutation($input: VenueCreateInput!) {
-  venueCreate(input: $input) { id name city country status defaultVatRatePercent }
-}`;
-const CREATE_ROOM = `mutation($input: RoomCreateInput!) {
-  roomCreate(input: $input) { id name venueId maxCapacity hasDaylight }
-}`;
+const CREATE_VENUE =
+  "mutation($input: VenueCreateInput!) { venueCreate(input: $input) { id name city country status defaultVatRatePercent } }";
+const CREATE_ROOM =
+  "mutation($input: RoomCreateInput!) { roomCreate(input: $input) { id name venueId maxCapacity hasDaylight } }";
 
 describe("venue and room CRUD through GraphQL", () => {
   it("creates, lists, gets, updates and archives a venue", async () => {

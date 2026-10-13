@@ -70,7 +70,7 @@ function costOf({ selectionSet, parentType, context, seen }: CostInput): number 
 /** Validation rule: reject operations whose estimated cost (list sizes multiplied) is too high. */
 export function costLimitRule({ maxCost }: CostLimitRuleInput) {
   return (context: ValidationContext): ASTVisitor => ({
-    OperationDefinition(operation) {
+    OperationDefinition: (operation) => {
       const root =
         operation.operation === "mutation"
           ? context.getSchema().getMutationType()
