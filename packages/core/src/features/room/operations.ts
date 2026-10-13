@@ -1,7 +1,7 @@
 import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { paginate } from "../shared/paginate";
+import { paginate } from "../../shared/paginate";
 import { roomEmbeddable } from "./embeddable";
 import {
   RoomCreateInputSchema,
