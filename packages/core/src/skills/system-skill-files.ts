@@ -1,5 +1,5 @@
 import { readdir, readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 export type SystemSkillFile = { file: string; markdown: string };
@@ -9,7 +9,7 @@ export type LoadSystemSkillFilesInput = {
   directory?: string;
 };
 
-export const DEFAULT_SYSTEM_SKILLS_DIRECTORY = fileURLToPath(new URL("./system/", import.meta.url));
+export const DEFAULT_SYSTEM_SKILLS_DIRECTORY = join(dirname(fileURLToPath(import.meta.url)), "system");
 
 /** Reads the shipped SKILL.md files (`*.md`), sorted by file name. */
 export async function loadSystemSkillFiles({

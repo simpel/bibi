@@ -15,14 +15,15 @@ export const operations = createCoreOperations({ embed: fakeEmbed });
 
 type ResolveInput = { headers: Headers };
 
-/** Test auth: `x-test-org` (+ optional `x-test-roles`) selects the org; no header → 401. */
+/** Test auth: `x-test-org` (+ optional `x-test-roles`, `x-test-user`) selects the caller; no org → 401. */
 async function resolveContext({ headers }: ResolveInput): Promise<Result<ExecuteContext>> {
   const organizationId = headers.get("x-test-org");
   if (!organizationId) {
     return err({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
   }
   const roles = (headers.get("x-test-roles") ?? "owner").split(",");
-  const actor = { type: "user" as const, userId: `user_${organizationId}` };
+  const userId = headers.get("x-test-user") ?? `user_${organizationId}`;
+  const actor = { type: "user" as const, userId };
   return ok({ value: createExecuteContext({ organizationId, roles, actor }) });
 }
 
@@ -37,6 +38,7 @@ export type CallInput = {
   path: string;
   org?: string | null;
   roles?: string;
+  user?: string;
   body?: unknown;
 };
 // biome-ignore lint/suspicious/noExplicitAny: loosely typed JSON for test assertions
@@ -49,11 +51,13 @@ export async function call({
   path,
   org = null,
   roles,
+  user,
   body,
 }: CallInput): Promise<CallOutput> {
   const headers = new Headers({ "content-type": "application/json" });
   if (org) headers.set("x-test-org", org);
   if (roles) headers.set("x-test-roles", roles);
+  if (user) headers.set("x-test-user", user);
   const request = new Request(`http://localhost:3000/api/v1${path}`, {
     method,
     headers,

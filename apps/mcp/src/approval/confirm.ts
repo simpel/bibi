@@ -24,8 +24,9 @@ const fail = ({ code, message }: FailInput) => err({ error: appError({ code, mes
 
 /**
  * Verifies the token and runs the approved command. The caller must be the human user (not the AI
- * actor). Execution uses the `ai` actor + conversation id so the audit row says `AI`, while
- * `actorId` is the approving user. Core has no separate `approvedBy` column.
+ * actor). Execution uses the `ai` actor + conversation id so the audit row says `AI`, with
+ * `actorId` = the user the AI acted for and `approvedBy` = the user who confirmed (same person:
+ * the token is bound to that user).
  */
 export async function confirmApproval({
   token,
@@ -53,6 +54,11 @@ export async function confirmApproval({
   if (!operation) return fail({ code: "NOT_FOUND", message: `Unknown operation ${name}` });
   if (!consumeApproval({ jti, exp }))
     return fail({ code: "CONFLICT", message: "Approval already used" });
-  const aiActor = { type: "ai" as const, userId: actor.userId, conversationId };
+  const aiActor = {
+    type: "ai" as const,
+    userId: actor.userId,
+    approvedBy: actor.userId,
+    ...(conversationId ? { conversationId } : {}),
+  };
   return execute({ operation, input, context: { ...context, actor: aiActor }, afterCommit });
 }

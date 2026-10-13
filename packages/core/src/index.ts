@@ -73,13 +73,3 @@ export {
 } from "./search/search-schema";
 export { parseSkillMarkdown } from "./skills/markdown/parse-skill-markdown";
 export { renderSkillMarkdown } from "./skills/markdown/render-skill-markdown";
-export {
-  type SeedSystemSkillsInput,
-  type SeedSystemSkillsOutput,
-  seedSystemSkills,
-} from "./skills/seed-system-skills";
-export {
-  DEFAULT_SYSTEM_SKILLS_DIRECTORY,
-  loadSystemSkillFiles,
-  type SystemSkillFile,
-} from "./skills/system-skill-files";

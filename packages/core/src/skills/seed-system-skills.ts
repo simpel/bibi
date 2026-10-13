@@ -5,7 +5,9 @@ import type { SkillContent } from "../features/skill/schema";
 import type { EmbedFn } from "../search/embed";
 import { indexSystemSkills } from "./index-system-skills";
 import { parseSkillMarkdown } from "./markdown/parse-skill-markdown";
-import { loadSystemSkillFiles } from "./system-skill-files";
+import { DEFAULT_SYSTEM_SKILLS_DIRECTORY, loadSystemSkillFiles } from "./system-skill-files";
+
+export { DEFAULT_SYSTEM_SKILLS_DIRECTORY };
 import { upsertSystemSkill } from "./upsert-system-skill";
 
 export type SeedSystemSkillsInput = {
@@ -42,7 +44,8 @@ async function parseAll({ directory }: { directory?: string }): Promise<Result<P
 /**
  * Seeds the SKILL.md files shipped in the repo as SYSTEM skills: idempotent upsert by source,
  * version bump on content change, removed files archived. The only writer of SYSTEM skills.
- * Run via `pnpm --filter @okazi/core seed:skills` or at app startup.
+ * Run via `pnpm --filter @okazi/core seed:skills` or at app startup (import from the
+ * `@okazi/core/seed` subpath: it reads files, so it is kept out of the bundle-safe index).
  */
 export async function seedSystemSkills({
   db = getDb(),

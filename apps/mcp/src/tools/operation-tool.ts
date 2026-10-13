@@ -28,10 +28,10 @@ const APPROVAL_SCHEMA = {
   required: ["status", "operation", "summary", "approvalToken"],
 };
 
-/** Commands may answer with the operation output or an `approval_required` proposal. */
+/** Commands needing approval may answer with the output or an `approval_required` proposal. */
 function outputSchemaOf({ operation }: { operation: AnyOperation }) {
   const output = toJsonSchema({ schema: operation.output, io: "output" });
-  if (operation.kind === "query") return output;
+  if (operation.kind === "query" || !operation.approval) return output;
   return { type: "object", anyOf: [output, APPROVAL_SCHEMA] };
 }
 

@@ -5,9 +5,9 @@ import {
   getSkill,
   listSkills,
   publishSkill,
-  seedSystemSkills,
   updateSkill,
 } from "../src/index";
+import { seedSystemSkills } from "../src/skills/seed-system-skills";
 import { upsertSystemSkill } from "../src/skills/upsert-system-skill";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { getDb } from "@okazi/db";
