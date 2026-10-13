@@ -64,7 +64,7 @@ function lineOf({ starts, offset }) {
 }
 
 // Offset för matchande stängklammer. Hoppar över strängar, mallar och kommentarer.
-function findClose({ content, opener }) {
+export function findClose({ content, opener }) {
   let depth = 0;
   let i = opener;
   while (i < content.length) {

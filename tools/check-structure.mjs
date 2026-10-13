@@ -2,7 +2,7 @@
 // Strukturkontroll för Okazi. Körs med `pnpm check:structure` från repots rot.
 // Granskar apps/* och packages/*: filer max 150 rader, funktioner max 40 rader,
 // default export endast i Next-filer/config/stories, barrel-filer endast som
-// packages/*/src/index.ts, och feature-mappar med krävda filer (paritet).
+// packages/*/src/index.ts, en typad objektparameter per funktion, och feature-mappar med krävda filer.
 // Avslutar med kod 1 vid fel. Se tools/lib/ för reglerna.
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import { checkFeatures } from "./lib/features.mjs";
 import { checkFile } from "./lib/file-rules.mjs";
 import { analyzeFunctions } from "./lib/functions.mjs";
+import { analyzeParams } from "./lib/params.mjs";
 import { listPackageDirs, walkSources } from "./lib/scan.mjs";
 
 // Filer som krävs i feature-mappar (<paket>/src/features/<entitet>/), per paket.
@@ -32,7 +33,11 @@ export function runChecks({ root }) {
     for (const relPath of walkSources({ dir: join(root, pkg), root })) {
       fileCount++;
       const content = readFileSync(join(root, relPath), "utf8");
-      const messages = [...checkFile({ relPath, content }), ...analyzeFunctions({ content })];
+      const messages = [
+        ...checkFile({ relPath, content }),
+        ...analyzeFunctions({ content }),
+        ...analyzeParams({ relPath, content }),
+      ];
       for (const message of messages) problems.push({ file: relPath, message });
     }
   }

@@ -35,20 +35,19 @@ function usage() {
 
 function main({ argv }) {
   const [kind, name] = argv;
-  if (kind !== "entity" || !name) return fail(usage());
+  if (kind !== "entity" || !name) return fail({ message: usage() });
   if (!ENTITY_NAME.test(name))
-    return fail(`Ogiltigt namn "${name}". Använd PascalCase, t.ex. Venue.`);
+    return fail({ message: `Ogiltigt namn "${name}". Använd PascalCase, t.ex. Venue.` });
 
   const names = deriveNames({ name });
   const plan = planFiles({ names });
   const existing = plan.filter(({ relPath }) => existsSync(join(ROOT, relPath)));
   if (existing.length > 0) {
-    return fail(
-      [
-        "Avbryter, dessa filer finns redan (skrivs aldrig över):",
-        ...existing.map((f) => `  ${f.relPath}`),
-      ].join("\n"),
-    );
+    const message = [
+      "Avbryter, dessa filer finns redan (skrivs aldrig över):",
+      ...existing.map((f) => `  ${f.relPath}`),
+    ].join("\n");
+    return fail({ message });
   }
 
   for (const { templatePath, relPath } of plan) {
@@ -74,7 +73,7 @@ function nextSteps({ names, plan }) {
   ].join("\n");
 }
 
-function fail(message) {
+function fail({ message }) {
   console.error(message);
   process.exitCode = 1;
   return 1;
