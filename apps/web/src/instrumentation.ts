@@ -1,6 +1,6 @@
-/** Next calls this once when the server starts. */
-export async function register(): Promise<void> {
-  if (process.env.NEXT_RUNTIME !== "nodejs") return;
-  const { ensureOperations } = await import("@/server/operations");
+import { ensureOperations } from "@/server/operations";
+
+/** Next calls this once when the server starts: register core operations. */
+export function register(): void {
   ensureOperations();
 }
