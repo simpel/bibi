@@ -1,4 +1,4 @@
-import type { InputObjectRef } from "@pothos/core";
+import type { InputFieldRef, InputObjectRef } from "@pothos/core";
 import type { z } from "zod";
 import { builder, type Types } from "./builder";
 import { objectShapes } from "./zod-shape";
@@ -14,7 +14,7 @@ export function inputFromSchema({
   return builder.inputRef<Record<string, unknown>>(name).implement({
     ...(description ? { description } : {}),
     fields: (t) => {
-      const fields: Record<string, ReturnType<typeof t.field>> = {};
+      const fields: Record<string, InputFieldRef<Types, NonNullable<unknown> | null | undefined>> = {};
       for (const [key, shape] of objectShapes({ schema })) {
         fields[key] = t.field({
           type: shape.list ? [shape.scalar] : shape.scalar,

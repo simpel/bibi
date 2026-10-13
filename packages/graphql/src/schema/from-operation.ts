@@ -6,10 +6,13 @@ import { inputFromSchema } from "./input-from-schema";
 import { runOperation } from "./run-operation";
 import { stripNulls } from "./strip-nulls";
 
-export type FromOperationInput<T> = {
+/** Erased on purpose: the operation output is validated by core, not by the TS ref pairing. */
+type OutputRef = ObjectRefOf<unknown>;
+
+export type FromOperationInput = {
   operation: AnyOperation;
   /** GraphQL return type; the operation's output must match its parent shape. */
-  type: ObjectRefOf<T>;
+  type: OutputRef;
   /** Field name; defaults to the camel-cased operation name (`venue.list` → `venueList`). */
   name?: string;
 };
@@ -20,7 +23,7 @@ export function fieldNameOf({ operation }: { operation: AnyOperation }): string 
 }
 
 /** Registers a query field whose flat args and description come from the operation. */
-export function fieldFromOperation<T>({ operation, type, name }: FromOperationInput<T>): void {
+export function fieldFromOperation({ operation, type, name }: FromOperationInput): void {
   markExposed({ name: operation.name });
   const args = argsFromSchema({ schema: operation.input });
   builder.queryField(name ?? fieldNameOf({ operation }), (t) =>
@@ -30,14 +33,14 @@ export function fieldFromOperation<T>({ operation, type, name }: FromOperationIn
       args,
       resolve: async (_parent, rawArgs, ctx) => {
         const input = stripNulls({ schema: operation.input, args: rawArgs });
-        return (await runOperation({ operation, input, ctx })) as T;
+        return (await runOperation({ operation, input, ctx })) as never;
       },
     }),
   );
 }
 
 /** Registers a mutation `xyz(input: XyzInput!)` whose input type is derived from the operation. */
-export function mutationFromOperation<T>({ operation, type, name }: FromOperationInput<T>): void {
+export function mutationFromOperation({ operation, type, name }: FromOperationInput): void {
   markExposed({ name: operation.name });
   const fieldName = name ?? fieldNameOf({ operation });
   const inputName = `${fieldName.charAt(0).toUpperCase()}${fieldName.slice(1)}Input`;
@@ -49,7 +52,7 @@ export function mutationFromOperation<T>({ operation, type, name }: FromOperatio
       args: { input: t.arg({ type: inputType, required: true }) },
       resolve: async (_parent, { input: raw }, ctx) => {
         const input = stripNulls({ schema: operation.input, args: raw });
-        return (await runOperation({ operation, input, ctx })) as T;
+        return (await runOperation({ operation, input, ctx })) as never;
       },
     }),
   );
