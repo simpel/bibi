@@ -1,20 +1,26 @@
-// MCP-verktyg för {{Pascal}} (ADR 0003, 0007). Verktygen kör core-operationerna som inloggad användare.
-// Beskrivningarna läses av AI-assistenten: skriv dem så att en modell förstår när verktyget används.
-// TODO: inputSchema hämtas från operationen när MCP-registreringen i apps/mcp är klar.
+import { mcpTool, text } from "../../tools/meta";
+
+// MCP-metadata för {{Pascal}} (ADR 0003, 0007). Själva verktygen genereras från core-operationerna
+// (namn, beskrivning, in-/utdata-scheman); här deklareras bara MCP-specifikt per operation.
+// Beskrivningar skrivs i core (`description`) – de läses av AI-assistenten.
+// Kommandon utförs aldrig direkt av AI-aktören: `summary` är texten på godkännandekortet.
+// Kom ihåg: lägg till {{camel}}McpTools i apps/mcp/src/tools/meta-registry.ts.
 export const {{camel}}McpTools = [
-  {
-    name: "{{snake}}_get",
-    description: "TODO: hämta en {{Pascal}} med id.",
-    operation: "{{kebab}}.get",
-  },
-  {
-    name: "{{snake}}_list",
-    description: "TODO: lista {{Pascal}} i aktiv organisation.",
-    operation: "{{kebab}}.list",
-  },
-  {
-    name: "{{snake}}_create",
-    description: "TODO: skapa en {{Pascal}}. Mutationer kräver användarens godkännande (ADR 0007).",
+  mcpTool({ operation: "{{kebab}}.list" }),
+  mcpTool({ operation: "{{kebab}}.get" }),
+  mcpTool({
     operation: "{{kebab}}.create",
-  },
-] as const;
+    summary: ({ input }) => `Create {{kebab}} "${text({ value: input.name })}"`, // TODO: välj fält
+  }),
+  mcpTool({
+    operation: "{{kebab}}.update",
+    idempotent: true,
+    summary: ({ input }) => `Update {{kebab}} ${text({ value: input.id })}`,
+  }),
+  mcpTool({
+    operation: "{{kebab}}.archive",
+    destructive: true,
+    idempotent: true,
+    summary: ({ input }) => `Archive {{kebab}} ${text({ value: input.id })}`,
+  }),
+];
