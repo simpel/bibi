@@ -11,6 +11,10 @@ const envSchema = z.object({
   AI_EMBEDDING_MODEL: z.string().default("openai/text-embedding-3-small"),
   WEB_URL: z.string().url().default("http://localhost:3000"),
   MCP_URL: z.string().url().default("http://localhost:3001"),
+  /** Listen port of `apps/mcp` (Streamable HTTP). */
+  PORT: z.coerce.number().int().min(1).max(65535).default(3001),
+  /** API key used by the stdio MCP server (`apps/mcp`), resolved once at startup. */
+  OKAZI_API_KEY: z.string().min(1).optional(),
   /** OAuth client id of the web app (first-party); only it may act as `ai` actor. */
   WEB_OAUTH_CLIENT_ID: z.string().min(1).optional(),
 });
