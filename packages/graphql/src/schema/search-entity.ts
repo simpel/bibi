@@ -15,13 +15,15 @@ function tag<T extends Entity>({ row, ref }: { row: T | null; ref: ObjectRefOf<T
 }
 
 /** Entity types that search can return. Add a line here when a new entity becomes embeddable. */
-const LOADERS: Record<EntityType, (args: { id: string; ctx: GraphqlContext }) => Promise<Entity | null>> =
-  {
-    venue: async ({ id, ctx }) =>
-      tag({ row: await ctx.core.db.venue.findFirst({ where: { id } }), ref: VenueRef }),
-    room: async ({ id, ctx }) =>
-      tag({ row: await ctx.core.db.room.findFirst({ where: { id } }), ref: RoomRef }),
-  };
+const LOADERS: Record<
+  EntityType,
+  (args: { id: string; ctx: GraphqlContext }) => Promise<Entity | null>
+> = {
+  venue: async ({ id, ctx }) =>
+    tag({ row: await ctx.core.db.venue.findFirst({ where: { id } }), ref: VenueRef }),
+  room: async ({ id, ctx }) =>
+    tag({ row: await ctx.core.db.room.findFirst({ where: { id } }), ref: RoomRef }),
+};
 
 export const SearchEntityRef = builder.unionType("SearchEntity", {
   description: "The entity behind a search hit.",

@@ -14,7 +14,10 @@ export function inputFromSchema({
   return builder.inputRef<Record<string, unknown>>(name).implement({
     ...(description ? { description } : {}),
     fields: (t) => {
-      const fields: Record<string, InputFieldRef<Types, NonNullable<unknown> | null | undefined>> = {};
+      const fields: Record<
+        string,
+        InputFieldRef<Types, NonNullable<unknown> | null | undefined>
+      > = {};
       for (const [key, shape] of objectShapes({ schema })) {
         fields[key] = t.field({
           type: shape.list ? [shape.scalar] : shape.scalar,

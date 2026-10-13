@@ -9,7 +9,9 @@ export function requirePermission({ ctx, permission }: RequirePermissionInput): 
   const { actor, roles } = ctx.core;
   if (actor.type === "system") return;
   if (!actor.userId) {
-    throw toGraphqlError({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
+    throw toGraphqlError({
+      error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }),
+    });
   }
   if (!hasPermission({ roles, permission })) {
     const message = `Missing permission ${permission}`;

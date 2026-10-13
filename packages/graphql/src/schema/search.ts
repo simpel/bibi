@@ -29,6 +29,8 @@ type SearchResult = { hits: SearchHit[] };
 
 const SearchResultRef: ObjectRefOf<SearchResult> = builder
   .objectRef<SearchResult>("SearchResult")
-  .implement({ fields: (t) => ({ hits: t.field({ type: [SearchHitRef], resolve: (r) => r.hits }) }) });
+  .implement({
+    fields: (t) => ({ hits: t.field({ type: [SearchHitRef], resolve: (r) => r.hits }) }),
+  });
 
 fieldFromOperation({ operation: schemaOperation, type: SearchResultRef, name: "search" });

@@ -1,9 +1,9 @@
 import {
   type ASTVisitor,
   type FieldNode,
-  getNamedType,
   GraphQLError,
   type GraphQLObjectType,
+  getNamedType,
   isObjectType,
   Kind,
   type SelectionSetNode,
@@ -46,7 +46,8 @@ function costOf({ selectionSet, parentType, context, seen }: CostInput): number 
         : 0;
       total += 1 + multiplierOf({ field: selection, parentType }) * below;
     } else if (selection.kind === "InlineFragment") {
-      const cond = selection.typeCondition && context.getSchema().getType(selection.typeCondition.name.value);
+      const cond =
+        selection.typeCondition && context.getSchema().getType(selection.typeCondition.name.value);
       const type = isObjectType(cond) ? cond : parentType;
       total += costOf({ selectionSet: selection.selectionSet, parentType: type, context, seen });
     } else {
@@ -55,7 +56,12 @@ function costOf({ selectionSet, parentType, context, seen }: CostInput): number 
       const cond = context.getSchema().getType(fragment.typeCondition.name.value);
       const type = isObjectType(cond) ? cond : null;
       const next = new Set(seen).add(fragment.name.value);
-      total += costOf({ selectionSet: fragment.selectionSet, parentType: type, context, seen: next });
+      total += costOf({
+        selectionSet: fragment.selectionSet,
+        parentType: type,
+        context,
+        seen: next,
+      });
     }
   }
   return total;
@@ -65,8 +71,16 @@ function costOf({ selectionSet, parentType, context, seen }: CostInput): number 
 export function costLimitRule({ maxCost }: CostLimitRuleInput) {
   return (context: ValidationContext): ASTVisitor => ({
     OperationDefinition(operation) {
-      const root = operation.operation === "mutation" ? context.getSchema().getMutationType() : context.getSchema().getQueryType();
-      const cost = costOf({ selectionSet: operation.selectionSet, parentType: root ?? null, context, seen: new Set() });
+      const root =
+        operation.operation === "mutation"
+          ? context.getSchema().getMutationType()
+          : context.getSchema().getQueryType();
+      const cost = costOf({
+        selectionSet: operation.selectionSet,
+        parentType: root ?? null,
+        context,
+        seen: new Set(),
+      });
       if (cost > maxCost) {
         const message = `Query cost limit of ${maxCost} exceeded, estimated ${cost}.`;
         context.reportError(new GraphQLError(message, { nodes: [operation] }));

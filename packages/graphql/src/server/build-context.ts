@@ -1,4 +1,4 @@
-import { type AfterCommitHook, type AnyOperation, type ExecuteContext, type Result } from "@okazi/core";
+import type { AfterCommitHook, AnyOperation, ExecuteContext, Result } from "@okazi/core";
 import type { GraphqlContext } from "../schema/context";
 import { toGraphqlError } from "../schema/to-graphql-error";
 

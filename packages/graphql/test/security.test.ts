@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { createClient, testContext } from "./helpers";
 
 const CREATE = `mutation($i: VenueCreateInput!) { venueCreate(input: $i) { id } }`;
-const DEEP = "{ venues { items { rooms { venue { rooms { venue { rooms { venue { rooms { venue { rooms { venue { rooms { id } } } } } } } } } } } } } }";
+const DEEP =
+  "{ venues { items { rooms { venue { rooms { venue { rooms { venue { rooms { venue { rooms { venue { rooms { id } } } } } } } } } } } } } }";
 
 describe("scoping, errors and limits", () => {
   it("isolates organizations through queries, graph and mutations", async () => {
@@ -12,7 +13,10 @@ describe("scoping, errors and limits", () => {
     const id = created.body.data.venueCreate.id;
     const list = await b({ query: "{ venues { items { id } } }" });
     expect(list.body.data.venues.items).toEqual([]);
-    const get = await b({ query: "query($id: String!) { venue(id: $id) { id } }", variables: { id } });
+    const get = await b({
+      query: "query($id: String!) { venue(id: $id) { id } }",
+      variables: { id },
+    });
     expect(get.body.errors?.[0]?.extensions.code).toBe("NOT_FOUND");
     const update = `mutation($i: VenueUpdateInput!) { venueUpdate(input: $i) { id } }`;
     const hijack = await b({ query: update, variables: { i: { id, name: "Mitt" } } });
@@ -24,7 +28,10 @@ describe("scoping, errors and limits", () => {
 
   it("returns core validation issues in extensions", async () => {
     const gql = createClient({ context: testContext() });
-    const res = await gql({ query: CREATE, variables: { i: { name: "   ", contactEmail: "nope" } } });
+    const res = await gql({
+      query: CREATE,
+      variables: { i: { name: "   ", contactEmail: "nope" } },
+    });
     const [error] = res.body.errors ?? [];
     expect(error?.extensions.code).toBe("VALIDATION");
     expect(error?.extensions.httpStatus).toBe(400);
@@ -59,6 +66,14 @@ describe("scoping, errors and limits", () => {
     const res = await gql({ query: DEEP });
     expect(res.body.errors?.[0]?.message).toMatch(/depth/i);
     expect(res.body.data).toBeUndefined();
+  });
+
+  it("rejects queries whose estimated cost is too high", async () => {
+    const gql = createClient({ context: testContext() });
+    const query =
+      "{ venues(limit: 100) { items { rooms(limit: 100) { venue { rooms(limit: 100) { name } } } } } }";
+    const res = await gql({ query });
+    expect(res.body.errors?.[0]?.message).toMatch(/cost/i);
   });
 
   it("allows introspection in development only", async () => {

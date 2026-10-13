@@ -28,7 +28,10 @@ function depthOf({ selectionSet, context, seen }: DepthInput): number {
       const fragment = context.getFragment(selection.name.value);
       if (!fragment || seen.has(fragment.name.value)) continue;
       const next = new Set(seen).add(fragment.name.value);
-      deepest = Math.max(deepest, depthOf({ selectionSet: fragment.selectionSet, context, seen: next }));
+      deepest = Math.max(
+        deepest,
+        depthOf({ selectionSet: fragment.selectionSet, context, seen: next }),
+      );
     }
   }
   return deepest;

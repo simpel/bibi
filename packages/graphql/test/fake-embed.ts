@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { EMBEDDING_DIMENSIONS } from "@okazi/db";
 import type { EmbedFn } from "@okazi/core";
+import { EMBEDDING_DIMENSIONS } from "@okazi/db";
 
 type VectorInput = { text: string };
 

@@ -1,14 +1,14 @@
-import { createId } from "@paralleldrive/cuid2";
 import {
   type Actor,
+  appError,
   createCoreOperations,
   createExecuteContext,
   type ExecuteContext,
   err,
-  appError,
   ok,
   registerOperations,
 } from "@okazi/core";
+import { createId } from "@paralleldrive/cuid2";
 import { createGraphqlHandler } from "../src/index";
 import { fakeEmbed } from "./fake-embed";
 
@@ -42,7 +42,13 @@ export function createClient({ context, development }: TestClientInput = {}) {
         ? ok({ value: context })
         : err({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) }),
   });
-  return async ({ query, variables }: { query: string; variables?: object }): Promise<GqlResponse> => {
+  return async ({
+    query,
+    variables,
+  }: {
+    query: string;
+    variables?: object;
+  }): Promise<GqlResponse> => {
     const request = new Request("http://localhost/graphql", {
       method: "POST",
       headers: { "content-type": "application/json", accept: "application/json" },
