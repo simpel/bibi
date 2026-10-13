@@ -16,7 +16,7 @@ describe("graphql tools", () => {
     await call({
       client,
       name: "room_create",
-      args: { venueId: venue.data.id, name: "Room A", capacity: 10 },
+      args: { venueId: venue.data.id, name: "Room A", maxCapacity: 10 },
     });
     const result = await call({
       client,

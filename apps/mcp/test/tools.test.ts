@@ -1,5 +1,6 @@
-import { listOperations } from "@okazi/core";
+import { createCoreOperations } from "@okazi/core";
 import { describe, expect, it } from "vitest";
+import { fakeEmbed } from "./fake-embed";
 import { call, connect, testContext } from "./helpers";
 
 describe("MCP tools", () => {
@@ -18,7 +19,7 @@ describe("MCP tools", () => {
         "approval_confirm",
       ]),
     );
-    const operations = listOperations().length || 11;
+    const operations = createCoreOperations({ embed: fakeEmbed }).length;
     expect(tools.length).toBe(operations + 3);
   });
 
