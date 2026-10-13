@@ -1,9 +1,8 @@
-import { appError, type EmbedFn } from "@okazi/core";
+import { createEmbed } from "@okazi/ai/embed";
 
 /**
- * Placeholder until `@okazi/ai` provides the real embedding function. Search and re-indexing
- * need it; every other tool works without. Swap this import in `http.ts`/`stdio.ts`.
+ * Embedder for `search` and re-indexing: AI SDK `embedMany` via the AI Gateway
+ * (`AI_EMBEDDING_MODEL`, 1536 dimensions). Without `AI_GATEWAY_API_KEY` it is a deterministic
+ * placeholder in development and fails clearly in production (see `@okazi/ai`).
  */
-export const unconfiguredEmbed: EmbedFn = async () => {
-  throw appError({ code: "INTERNAL", message: "Embedding provider is not configured in apps/mcp" });
-};
+export const embed = createEmbed();
