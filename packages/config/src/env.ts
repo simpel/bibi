@@ -11,6 +11,8 @@ const envSchema = z.object({
   AI_EMBEDDING_MODEL: z.string().default("openai/text-embedding-3-small"),
   WEB_URL: z.string().url().default("http://localhost:3000"),
   MCP_URL: z.string().url().default("http://localhost:3001"),
+  /** OAuth client id of the web app (first-party); only it may act as `ai` actor. */
+  WEB_OAUTH_CLIENT_ID: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

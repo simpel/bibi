@@ -31,6 +31,7 @@
     "AI_DEFAULT_MODEL",
     "AI_EMBEDDING_MODEL",
     "WEB_URL",
-    "MCP_URL"
+    "MCP_URL",
+    "WEB_OAUTH_CLIENT_ID"
   ]
 }
