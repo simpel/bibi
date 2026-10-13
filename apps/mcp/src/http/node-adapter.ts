@@ -25,6 +25,9 @@ export type SendWebResponseInput = { res: ServerResponse; response: Response };
 export async function sendWebResponse({ res, response }: SendWebResponseInput): Promise<void> {
   res.writeHead(response.status, Object.fromEntries(response.headers));
   if (!response.body) return void res.end();
-  for await (const chunk of response.body) res.write(chunk);
+  const reader = response.body.getReader();
+  for (let chunk = await reader.read(); !chunk.done; chunk = await reader.read()) {
+    res.write(chunk.value);
+  }
   res.end();
 }
