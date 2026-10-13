@@ -21,6 +21,9 @@ export type RenderResourceBlocksInput = { resources: readonly SkillResource[] };
 
 export function renderResourceBlocks({ resources }: RenderResourceBlocksInput): string {
   return resources
-    .map(({ name, content }) => `<!-- okazi:resource name="${name}" -->\n${content}\n<!-- /okazi:resource -->`)
+    .map(
+      ({ name, content }) =>
+        `<!-- okazi:resource name="${name}" -->\n${content}\n<!-- /okazi:resource -->`,
+    )
     .join("\n\n");
 }

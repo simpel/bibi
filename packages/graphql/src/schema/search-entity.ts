@@ -46,7 +46,10 @@ const LOADERS: Record<EntityType, (args: LoadInput) => Promise<Entity | null>> =
   room: async ({ id, ctx }) =>
     tag({ row: await ctx.core.db.room.findFirst({ where: { id } }), ref: RoomRef }),
   conversation: async ({ id, ctx }) =>
-    tag({ row: await viaGet<ConversationDto>({ operation: getConversation, id, ctx }), ref: ConversationRef }),
+    tag({
+      row: await viaGet<ConversationDto>({ operation: getConversation, id, ctx }),
+      ref: ConversationRef,
+    }),
   skill: async ({ id, ctx }) =>
     tag({ row: await viaGet<SkillDto>({ operation: getSkill, id, ctx }), ref: SkillRef }),
 };

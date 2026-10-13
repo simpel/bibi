@@ -12,7 +12,11 @@ import {
 } from "../src/index";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
 
-type NewSkillInput = { context: ExecuteContext; scope?: "PERSONAL" | "ORGANIZATION"; name?: string };
+type NewSkillInput = {
+  context: ExecuteContext;
+  scope?: "PERSONAL" | "ORGANIZATION";
+  name?: string;
+};
 
 async function newSkill({ context, scope = "PERSONAL", name = "Offertstöd" }: NewSkillInput) {
   const input = { scope, name, description: "Hjälper till med offerter", instructions: "# Steg" };
@@ -46,12 +50,18 @@ describe("skill operations", () => {
     const updated = unwrap({
       result: await execute({
         operation: updateSkill,
-        input: { id: skill.id, allowedTools: ["venue_create"], resources: [{ name: "a.md", content: "x" }] },
+        input: {
+          id: skill.id,
+          allowedTools: ["venue_create"],
+          resources: [{ name: "a.md", content: "x" }],
+        },
         context,
       }),
     });
     expect(updated).toMatchObject({ version: 2, allowedTools: ["venue_create"] });
-    const published = unwrap({ result: await execute({ operation: publishSkill, input: { id: skill.id }, context }) });
+    const published = unwrap({
+      result: await execute({ operation: publishSkill, input: { id: skill.id }, context }),
+    });
     expect(published.status).toBe("PUBLISHED");
     await execute({ operation: archiveSkill, input: { id: skill.id }, context });
     const gone = await execute({ operation: getSkill, input: { id: skill.id }, context });
@@ -76,7 +86,11 @@ describe("skill operations", () => {
     for (const context of [member, outsider]) {
       const result = await execute({ operation: getSkill, input: { id: personal.id }, context });
       expect(errorCode({ result })).toBe("NOT_FOUND");
-      const update = await execute({ operation: updateSkill, input: { id: personal.id, name: "x" }, context });
+      const update = await execute({
+        operation: updateSkill,
+        input: { id: personal.id, name: "x" },
+        context,
+      });
       expect(errorCode({ result: update })).toBe("NOT_FOUND");
     }
   });
@@ -92,26 +106,46 @@ describe("skill operations", () => {
       const result = await execute({ operation, input: { id: orgSkill.id }, context: member });
       expect(errorCode({ result })).toBe("FORBIDDEN");
     }
-    const conflict = await execute({ operation: createSkill, input, context: admin });
-    expect(errorCode({ result: conflict })).toBeNull();
-    const duplicate = await execute({ operation: createSkill, input, context: admin });
-    expect(errorCode({ result: duplicate })).toBe("CONFLICT");
+    const [first, duplicate] = [
+      await execute({ operation: createSkill, input, context: admin }),
+      await execute({ operation: createSkill, input, context: admin }),
+    ];
+    expect([first, duplicate].map((result) => errorCode({ result }))).toEqual([null, "CONFLICT"]);
   });
 
   it("shares a personal skill to the organization as a draft copy (admin only)", async () => {
     const admin = testContext({ roles: ["admin"] });
     const member = peer({ of: admin });
     const mine = await newSkill({ context: member, name: "Delbar" });
-    const asMember = await execute({ operation: shareSkill, input: { id: mine.id }, context: member });
+    const asMember = await execute({
+      operation: shareSkill,
+      input: { id: mine.id },
+      context: member,
+    });
     expect(errorCode({ result: asMember })).toBe("FORBIDDEN");
-    const othersPersonal = await execute({ operation: shareSkill, input: { id: mine.id }, context: admin });
+    const othersPersonal = await execute({
+      operation: shareSkill,
+      input: { id: mine.id },
+      context: admin,
+    });
     expect(errorCode({ result: othersPersonal })).toBe("NOT_FOUND");
     const adminOwn = await newSkill({ context: admin, name: "Delbar" });
-    const shared = unwrap({ result: await execute({ operation: shareSkill, input: { id: adminOwn.id }, context: admin }) });
-    expect(shared).toMatchObject({ scope: "ORGANIZATION", status: "DRAFT", ownerUserId: null, slug: "delbar" });
+    const shared = unwrap({
+      result: await execute({ operation: shareSkill, input: { id: adminOwn.id }, context: admin }),
+    });
+    expect(shared).toMatchObject({
+      scope: "ORGANIZATION",
+      status: "DRAFT",
+      ownerUserId: null,
+      slug: "delbar",
+    });
     expect(shared.source).toBe(`share:${adminOwn.id}`);
     expect(await visibleIds({ context: member, scope: "ORGANIZATION" })).toEqual([shared.id]);
-    const orgShare = await execute({ operation: shareSkill, input: { id: shared.id }, context: admin });
+    const orgShare = await execute({
+      operation: shareSkill,
+      input: { id: shared.id },
+      context: admin,
+    });
     expect(errorCode({ result: orgShare })).toBe("VALIDATION");
   });
 });

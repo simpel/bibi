@@ -49,5 +49,7 @@ export function parseSkillMarkdown({ markdown }: ParseSkillMarkdownInput): Resul
     allowedTools: asToolList({ value: fields["allowed-tools"] ?? fields.allowedTools }),
     resources,
   });
-  return parsed.success ? ok({ value: parsed.data }) : err({ error: fromZodError({ error: parsed.error }) });
+  return parsed.success
+    ? ok({ value: parsed.data })
+    : err({ error: fromZodError({ error: parsed.error }) });
 }

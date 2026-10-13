@@ -9,7 +9,10 @@ export type LoadSystemSkillFilesInput = {
   directory?: string;
 };
 
-export const DEFAULT_SYSTEM_SKILLS_DIRECTORY = join(dirname(fileURLToPath(import.meta.url)), "system");
+export const DEFAULT_SYSTEM_SKILLS_DIRECTORY = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "system",
+);
 
 /** Reads the shipped SKILL.md files (`*.md`), sorted by file name. */
 export async function loadSystemSkillFiles({

@@ -12,7 +12,9 @@ export function renderSkillMarkdown({ content, version }: RenderSkillMarkdownInp
     "---",
     `name: ${content.slug}`,
     `description: ${JSON.stringify(content.description)}`,
-    ...(content.allowedTools.length > 0 ? [`allowed-tools: ${content.allowedTools.join(" ")}`] : []),
+    ...(content.allowedTools.length > 0
+      ? [`allowed-tools: ${content.allowedTools.join(" ")}`]
+      : []),
     "metadata:",
     `  title: ${JSON.stringify(content.name)}`,
     ...(version === undefined ? [] : [`  version: "${version}"`]),

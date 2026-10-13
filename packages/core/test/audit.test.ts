@@ -46,7 +46,10 @@ describe("audit log", () => {
       actor: { type: "ai", userId, conversationId: "conv_2", approvedBy: userId },
     });
     await execute({ operation: createVenue, input: { name: "Approved" }, context: approved });
-    const user = testContext({ organizationId: approved.organizationId, actor: { type: "user", userId } });
+    const user = testContext({
+      organizationId: approved.organizationId,
+      actor: { type: "user", userId },
+    });
     await execute({ operation: createVenue, input: { name: "Direct" }, context: user });
     const rows = await user.db.auditLog.findMany({ orderBy: { createdAt: "asc" } });
     expect(rows.map((row) => [row.actorType, row.approvedBy, row.conversationId])).toEqual([

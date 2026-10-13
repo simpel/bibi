@@ -11,7 +11,12 @@ const MAX_INSTRUCTIONS_TEXT = 4000;
 export const skillEmbeddable: Embeddable<Skill> = {
   entityType: "skill",
   toText: ({ entity }) =>
-    [entity.name, entity.slug, entity.description, entity.instructions.slice(0, MAX_INSTRUCTIONS_TEXT)]
+    [
+      entity.name,
+      entity.slug,
+      entity.description,
+      entity.instructions.slice(0, MAX_INSTRUCTIONS_TEXT),
+    ]
       .filter(Boolean)
       .join("\n"),
   load: ({ ids, db, viewer }) =>

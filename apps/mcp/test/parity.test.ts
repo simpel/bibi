@@ -103,7 +103,9 @@ describe("entity read parity: core -> GraphQL, REST, MCP return equal data", () 
       expect(withoutOrg({ value: await entity.viaRest(input) }), `${labels} (REST)`).toEqual(
         withoutOrg({ value: created }),
       );
-      expect(await entity.viaGraph(input), `${labels} (GraphQL)`).toEqual(withoutOrg({ value: created }));
+      expect(await entity.viaGraph(input), `${labels} (GraphQL)`).toEqual(
+        withoutOrg({ value: created }),
+      );
     }
   });
 });

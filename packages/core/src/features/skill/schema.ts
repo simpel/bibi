@@ -30,16 +30,19 @@ export const SkillResourceSchema = z.object({
   content: z
     .string()
     .max(20_000)
-    .refine((value) => !value.includes(RESOURCE_END), "Resource content contains a reserved marker"),
+    .refine(
+      (value) => !value.includes(RESOURCE_END),
+      "Resource content contains a reserved marker",
+    ),
 });
-
-type NamedList = { name: string }[];
-const uniqueNames = (list: NamedList) => new Set(list.map((item) => item.name)).size === list.length;
 
 const SkillResourcesSchema = z
   .array(SkillResourceSchema)
   .max(20)
-  .refine(uniqueNames, "Resource names must be unique")
+  .refine(
+    (list) => new Set(list.map((item) => item.name)).size === list.length,
+    "Resource names must be unique",
+  )
   .describe("Small named text resources, e.g. checklists or templates");
 
 const AllowedToolsSchema = z

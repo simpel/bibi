@@ -71,7 +71,10 @@ export const exportSkill = defineOperation({
   handler: async ({ input, context }) => {
     const skill = await findVisibleSkill({ context, id: input.id });
     if (!skill) return skillNotFound();
-    const markdown = renderSkillMarkdown({ content: contentOfSkill({ skill }), version: skill.version });
+    const markdown = renderSkillMarkdown({
+      content: contentOfSkill({ skill }),
+      version: skill.version,
+    });
     return ok({ value: { markdown, filename: `${skill.slug}/SKILL.md` } });
   },
 });

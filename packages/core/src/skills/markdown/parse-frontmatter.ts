@@ -11,7 +11,8 @@ type ValueInput = { raw: string; block: readonly string[] };
 
 function parseValue({ raw, block }: ValueInput): FrontmatterValue {
   if (/^[|>][+-]?$/.test(raw)) return parseBlockScalar({ lines: block, folded: raw[0] === ">" });
-  if (raw === "") return block.some((line) => line.trim() !== "") ? parseNested({ lines: block }) : "";
+  if (raw === "")
+    return block.some((line) => line.trim() !== "") ? parseNested({ lines: block }) : "";
   if (raw.startsWith("[")) return parseFlowList({ raw });
   const continued = block.map((line) => line.trim()).filter((line) => line !== "");
   if (continued.length > 0 && !/^["']/.test(raw)) {
@@ -50,7 +51,10 @@ export function parseFrontmatter({ yaml }: ParseFrontmatterInput): Result<Frontm
       return err({ error: new AppError({ code: "VALIDATION", message }) });
     }
     const end = blockEnd({ lines, from: index + 1 });
-    out[match[1]] = parseValue({ raw: (match[2] ?? "").trim(), block: lines.slice(index + 1, end) });
+    out[match[1]] = parseValue({
+      raw: (match[2] ?? "").trim(),
+      block: lines.slice(index + 1, end),
+    });
     index = end;
   }
   return ok({ value: out });

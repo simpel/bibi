@@ -83,7 +83,11 @@ describe("message operations", () => {
     expect(errorCode({ result: await append({ role: "TOOL" }) })).toBeNull();
     expect(errorCode({ result: await append({ role: "USER" }) })).toBe("FORBIDDEN");
     expect(errorCode({ result: await append({ role: "SYSTEM" }) })).toBe("FORBIDDEN");
-    expect(errorCode({ result: await append({ role: "ASSISTANT", conversationId: otherConversation.id }) })).toBe("FORBIDDEN");
+    expect(
+      errorCode({
+        result: await append({ role: "ASSISTANT", conversationId: otherConversation.id }),
+      }),
+    ).toBe("FORBIDDEN");
     const rows = await user.db.message.findMany({ where: { conversationId: conversation.id } });
     expect(rows.map((row) => row.actorType)).toEqual(["AI", "AI"]);
     expect(appendMessage.approval).toBe(false);
@@ -92,13 +96,19 @@ describe("message operations", () => {
   it("hides messages from other users and organizations; admins may read", async () => {
     const owner = testContext({ roles: ["member"] });
     const conversation = await start({ context: owner });
-    const input = { conversationId: conversation.id, role: "USER", parts: text({ value: "Hemligt" }) };
+    const input = {
+      conversationId: conversation.id,
+      role: "USER",
+      parts: text({ value: "Hemligt" }),
+    };
     await execute({ operation: appendMessage, input, context: owner });
     const list = ({ context }: { context: ExecuteContext }) =>
       execute({ operation: listMessages, input: { conversationId: conversation.id }, context });
     expect(errorCode({ result: await list({ context: peer({ of: owner }) }) })).toBe("NOT_FOUND");
     expect(errorCode({ result: await list({ context: testContext() }) })).toBe("NOT_FOUND");
-    expect(errorCode({ result: await list({ context: peer({ of: owner, roles: ["admin"] }) }) })).toBeNull();
+    expect(
+      errorCode({ result: await list({ context: peer({ of: owner, roles: ["admin"] }) }) }),
+    ).toBeNull();
     const asAdmin = await execute({
       operation: appendMessage,
       input,

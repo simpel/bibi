@@ -1,5 +1,5 @@
-import { createId } from "@paralleldrive/cuid2";
 import { getDb } from "@okazi/db";
+import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import {
   createConversation,
@@ -20,7 +20,9 @@ const search = createSearchOperation({ embed: fakeEmbed });
 type FindInput = { context: ExecuteContext; query: string };
 
 async function find({ context, query }: FindInput): Promise<string[]> {
-  const result = unwrap({ result: await execute({ operation: search, input: { query }, context }) });
+  const result = unwrap({
+    result: await execute({ operation: search, input: { query }, context }),
+  });
   return result.hits.map((hit) => `${hit.entityType}:${hit.entityId}`);
 }
 
@@ -83,9 +85,13 @@ describe("search over skills and conversations", () => {
     await upsertSystemSkill({ db, source, content });
     const row = await db.skill.findFirstOrThrow({ where: { source } });
     await indexSystemSkills({ db, embed: fakeEmbed, skillIds: [row.id] });
-    expect(await find({ context: testContext(), query: "zebrakalkyl" })).toContain(`skill:${row.id}`);
+    expect(await find({ context: testContext(), query: "zebrakalkyl" })).toContain(
+      `skill:${row.id}`,
+    );
     await db.skill.update({ where: { id: row.id }, data: { status: "ARCHIVED" } });
-    expect(await find({ context: testContext(), query: "zebrakalkyl" })).not.toContain(`skill:${row.id}`);
+    expect(await find({ context: testContext(), query: "zebrakalkyl" })).not.toContain(
+      `skill:${row.id}`,
+    );
     await indexSystemSkills({ db, embed: fakeEmbed, skillIds: [row.id] });
   });
 });

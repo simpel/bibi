@@ -26,13 +26,19 @@ describe("conversation operations", () => {
       }),
     });
     expect(renamed.title).toBe("Offert Volvo");
-    const list = unwrap({ result: await execute({ operation: listConversations, input: {}, context }) });
+    const list = unwrap({
+      result: await execute({ operation: listConversations, input: {}, context }),
+    });
     expect(list.items.map((item) => item.id)).toEqual([created.id]);
     await execute({ operation: archiveConversation, input: { id: created.id }, context });
     const after = await execute({ operation: getConversation, input: { id: created.id }, context });
     expect(errorCode({ result: after })).toBe("NOT_FOUND");
     const archived = unwrap({
-      result: await execute({ operation: listConversations, input: { status: "ARCHIVED" }, context }),
+      result: await execute({
+        operation: listConversations,
+        input: { status: "ARCHIVED" },
+        context,
+      }),
     });
     expect(archived.items.map((item) => item.id)).toEqual([created.id]);
   });
@@ -43,7 +49,11 @@ describe("conversation operations", () => {
     const admin = peer({ of: owner, roles: ["admin"] });
     const other = testContext({ roles: ["owner"] });
     const { id } = unwrap({
-      result: await execute({ operation: createConversation, input: { title: "Privat" }, context: owner }),
+      result: await execute({
+        operation: createConversation,
+        input: { title: "Privat" },
+        context: owner,
+      }),
     });
     const get = ({ context }: { context: ExecuteContext }) =>
       execute({ operation: getConversation, input: { id }, context });
@@ -62,7 +72,11 @@ describe("conversation operations", () => {
     });
     expect(errorCode({ result: allAsMember })).toBe("FORBIDDEN");
     const allAsAdmin = unwrap({
-      result: await execute({ operation: listConversations, input: { allUsers: true }, context: admin }),
+      result: await execute({
+        operation: listConversations,
+        input: { allUsers: true },
+        context: admin,
+      }),
     });
     expect(allAsAdmin.items.map((item) => item.id)).toEqual([id]);
 
@@ -71,9 +85,17 @@ describe("conversation operations", () => {
     expect(errorCode({ result: await rename({ context: member }) })).toBe("NOT_FOUND");
     expect(errorCode({ result: await rename({ context: admin }) })).toBe("NOT_FOUND");
     expect(errorCode({ result: await rename({ context: other }) })).toBe("NOT_FOUND");
-    const archiveAsMember = await execute({ operation: archiveConversation, input: { id }, context: member });
+    const archiveAsMember = await execute({
+      operation: archiveConversation,
+      input: { id },
+      context: member,
+    });
     expect(errorCode({ result: archiveAsMember })).toBe("NOT_FOUND");
-    const archiveAsAdmin = await execute({ operation: archiveConversation, input: { id }, context: admin });
+    const archiveAsAdmin = await execute({
+      operation: archiveConversation,
+      input: { id },
+      context: admin,
+    });
     expect(errorCode({ result: archiveAsAdmin })).toBeNull();
   });
 

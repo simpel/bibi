@@ -28,17 +28,14 @@ test("sign up, create org, venue and room, search, switch locale, archive", asyn
   await expect(page.getByText("No venues yet.")).toBeVisible();
 });
 
-test("theme toggle switches the dark class", async ({ page }) => {
-  await page.goto("/sv/login");
-  await expect(page.locator("html")).not.toHaveClass(/dark/);
-  await page.emulateMedia({ colorScheme: "dark" });
-  await expect(page.locator("html")).toHaveClass(/dark/);
-});
-
-test("validation messages are localized and sign-in errors are mapped", async ({ page }) => {
+test("theme toggle, localized validation messages and mapped sign-in errors", async ({ page }) => {
   const credentials = uniqueCredentials();
   await signUp({ page, credentials });
   await createOrganization({ page, name: "Validering AB" });
+
+  await page.getByRole("button", { name: "Tema" }).click();
+  await page.getByRole("menuitem", { name: "Mörkt" }).click();
+  await expect(page.locator("html")).toHaveClass(/dark/);
 
   await page.getByRole("button", { name: "Skapa anläggning" }).first().click();
   await page.getByRole("button", { name: "Spara" }).click();
@@ -50,11 +47,13 @@ test("validation messages are localized and sign-in errors are mapped", async ({
   await expect(page).toHaveURL(/\/sv\/login/);
 
   await page.getByLabel("E-post").fill(credentials.email);
-  await page.getByLabel("Lösenord").fill("fel-losenord-123");
+  await page.getByRole("textbox", { name: "Lösenord" }).fill("fel-losenord-123");
   await page.getByRole("button", { name: "Logga in" }).click();
   await expect(page.getByText("Fel e-postadress eller lösenord.")).toBeVisible();
 
-  await page.getByLabel("Lösenord").fill(credentials.password);
+  // Better Auth rate-limits sign-in (3 per 10 s); wait out the window before the valid attempt.
+  await page.waitForTimeout(10_500);
+  await page.getByRole("textbox", { name: "Lösenord" }).fill(credentials.password);
   await page.getByRole("button", { name: "Logga in" }).click();
   await expect(page).toHaveURL(/\/sv\/venues$/);
 });

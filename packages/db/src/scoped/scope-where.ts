@@ -29,7 +29,9 @@ export function scopeWhere({
 }: ScopeWhereInput): Args {
   const input: Args = { ...((where as Args | undefined) ?? {}) };
   const shared = GLOBAL_READ_MODELS.has(model) && READ_OPERATIONS.has(operation);
-  const base = shared ? withGlobalRows({ where: input, organizationId }) : { ...input, organizationId };
+  const base = shared
+    ? withGlobalRows({ where: input, organizationId })
+    : { ...input, organizationId };
   const statusDefault = SOFT_DELETE_DEFAULTS.get(model);
   if (softDelete && statusDefault !== undefined && base.status === undefined) {
     base.status = statusDefault;

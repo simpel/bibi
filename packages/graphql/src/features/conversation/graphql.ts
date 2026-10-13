@@ -19,7 +19,11 @@ export const ConversationRef = objectFromSchema<ConversationDto>({
 });
 const ConversationPageRef = pageType({ name: "ConversationPage", item: ConversationRef });
 
-fieldFromOperation({ operation: listConversations, type: ConversationPageRef, name: "conversations" });
+fieldFromOperation({
+  operation: listConversations,
+  type: ConversationPageRef,
+  name: "conversations",
+});
 fieldFromOperation({ operation: getConversation, type: ConversationRef, name: "conversation" });
 mutationFromOperation({ operation: createConversation, type: ConversationRef });
 mutationFromOperation({ operation: renameConversation, type: ConversationRef });

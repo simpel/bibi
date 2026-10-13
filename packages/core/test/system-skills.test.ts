@@ -1,16 +1,10 @@
+import { getDb } from "@okazi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
-import {
-  execute,
-  getSkill,
-  listSkills,
-  publishSkill,
-  updateSkill,
-} from "../src/index";
+import { execute, getSkill, listSkills, publishSkill, updateSkill } from "../src/index";
 import { seedSystemSkills } from "../src/skills/seed-system-skills";
 import { upsertSystemSkill } from "../src/skills/upsert-system-skill";
 import { errorCode, testContext, unwrap } from "./helpers";
-import { getDb } from "@okazi/db";
 
 const content = ({ slug, text }: { slug: string; text: string }) => ({
   slug,
@@ -28,7 +22,11 @@ describe("SYSTEM skills", () => {
     expect(again.created).toEqual([]);
     expect(again.updated).toEqual([]);
     expect(again.unchanged).toEqual(
-      expect.arrayContaining(["create-venue-with-rooms", "find-available-space", "summarize-booking-risks"]),
+      expect.arrayContaining([
+        "create-venue-with-rooms",
+        "find-available-space",
+        "summarize-booking-risks",
+      ]),
     );
   });
 
@@ -36,11 +34,22 @@ describe("SYSTEM skills", () => {
     const db = getDb();
     const slug = `test-${createId()}`;
     const source = `system:${slug}.md`;
-    expect(await upsertSystemSkill({ db, source, content: content({ slug, text: "v1" }) })).toBe("created");
-    expect(await upsertSystemSkill({ db, source, content: content({ slug, text: "v1" }) })).toBe("unchanged");
-    expect(await upsertSystemSkill({ db, source, content: content({ slug, text: "v2" }) })).toBe("updated");
+    expect(await upsertSystemSkill({ db, source, content: content({ slug, text: "v1" }) })).toBe(
+      "created",
+    );
+    expect(await upsertSystemSkill({ db, source, content: content({ slug, text: "v1" }) })).toBe(
+      "unchanged",
+    );
+    expect(await upsertSystemSkill({ db, source, content: content({ slug, text: "v2" }) })).toBe(
+      "updated",
+    );
     const row = await db.skill.findFirstOrThrow({ where: { source } });
-    expect(row).toMatchObject({ scope: "SYSTEM", organizationId: null, version: 2, status: "PUBLISHED" });
+    expect(row).toMatchObject({
+      scope: "SYSTEM",
+      organizationId: null,
+      version: 2,
+      status: "PUBLISHED",
+    });
     await db.skill.update({ where: { id: row.id }, data: { status: "ARCHIVED" } });
   });
 
@@ -50,17 +59,27 @@ describe("SYSTEM skills", () => {
     const orgB = testContext();
     const listed = async ({ context }: { context: typeof orgA }) =>
       unwrap({
-        result: await execute({ operation: listSkills, input: { scope: "SYSTEM", limit: 100 }, context }),
+        result: await execute({
+          operation: listSkills,
+          input: { scope: "SYSTEM", limit: 100 },
+          context,
+        }),
       }).items.map((item) => item.slug);
     expect(await listed({ context: orgA })).toContain("create-venue-with-rooms");
     expect(await listed({ context: orgB })).toContain("create-venue-with-rooms");
     const page = unwrap({
-      result: await execute({ operation: listSkills, input: { q: "create-venue-with-rooms" }, context: orgA }),
+      result: await execute({
+        operation: listSkills,
+        input: { q: "create-venue-with-rooms" },
+        context: orgA,
+      }),
     });
     const system = page.items.find((item) => item.slug === "create-venue-with-rooms");
     expect(system?.allowedTools).toContain("venue_create");
     const id = system?.id ?? "";
-    expect(errorCode({ result: await execute({ operation: getSkill, input: { id }, context: orgB }) })).toBeNull();
+    expect(
+      errorCode({ result: await execute({ operation: getSkill, input: { id }, context: orgB }) }),
+    ).toBeNull();
     for (const operation of [updateSkill, publishSkill]) {
       const result = await execute({ operation, input: { id }, context: orgA });
       expect(errorCode({ result })).toBe("FORBIDDEN");
@@ -72,7 +91,10 @@ describe("SYSTEM skills", () => {
     const { db } = testContext();
     const systemRows = await db.skill.findMany({ where: { scope: "SYSTEM" } });
     expect(systemRows.length).toBeGreaterThan(0);
-    const updated = await db.skill.updateMany({ where: { scope: "SYSTEM" }, data: { name: "Hacked" } });
+    const updated = await db.skill.updateMany({
+      where: { scope: "SYSTEM" },
+      data: { name: "Hacked" },
+    });
     expect(updated.count).toBe(0);
     const deleted = await db.skill.deleteMany({ where: { scope: "SYSTEM" } });
     expect(deleted.count).toBe(0);

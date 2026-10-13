@@ -31,12 +31,18 @@ describe("scoped client for conversations, messages and skills", () => {
     expect(await orgB.db.message.count({ where: { conversationId: conversation.id } })).toBe(0);
     for (const id of [orgSkill.id, personal.id]) {
       expect(await orgB.db.skill.findUnique({ where: { id } })).toBeNull();
-      expect(await orgB.db.skill.findFirst({ where: { id, organizationId: orgA.organizationId } })).toBeNull();
-      expect(await orgB.db.skill.findFirst({ where: { OR: [{ id }, { organizationId: null }], id } })).toBeNull();
+      expect(
+        await orgB.db.skill.findFirst({ where: { id, organizationId: orgA.organizationId } }),
+      ).toBeNull();
+      expect(
+        await orgB.db.skill.findFirst({ where: { OR: [{ id }, { organizationId: null }], id } }),
+      ).toBeNull();
       const changed = await orgB.db.skill.updateMany({ where: { id }, data: { name: "x" } });
       expect(changed.count).toBe(0);
     }
-    expect(await orgA.db.skill.count({ where: { id: { in: [orgSkill.id, personal.id] } } })).toBe(2);
+    expect(await orgA.db.skill.count({ where: { id: { in: [orgSkill.id, personal.id] } } })).toBe(
+      2,
+    );
   });
 
   it("keeps messages append-only and inside their conversation's organization", async () => {
@@ -56,7 +62,9 @@ describe("scoped client for conversations, messages and skills", () => {
     await expect(orgB.db.message.create({ data: message })).rejects.toThrow();
     await orgA.db.message.create({ data: message });
     await expect(orgA.db.message.create({ data: message })).rejects.toThrow();
-    await expect(orgA.db.message.updateMany({ data: { parts: [] } })).rejects.toThrow(/append-only/);
+    await expect(orgA.db.message.updateMany({ data: { parts: [] } })).rejects.toThrow(
+      /append-only/,
+    );
     await expect(orgA.db.message.deleteMany({})).rejects.toThrow(/append-only/);
   });
 
@@ -66,7 +74,9 @@ describe("scoped client for conversations, messages and skills", () => {
       db.skill.create({ data: { ...skillData, scope: "PERSONAL", slug: "no-owner", name: "N" } }),
     ).rejects.toThrow();
     await expect(
-      db.skill.create({ data: { ...skillData, scope: "ORGANIZATION", ownerUserId: "u", slug: "o", name: "O" } }),
+      db.skill.create({
+        data: { ...skillData, scope: "ORGANIZATION", ownerUserId: "u", slug: "o", name: "O" },
+      }),
     ).rejects.toThrow();
   });
 });

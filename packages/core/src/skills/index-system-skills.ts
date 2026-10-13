@@ -35,6 +35,14 @@ export async function indexSystemSkills({
     const { model, embeddings } = await embed({ texts: [content] });
     const [embedding] = embeddings;
     if (!embedding) continue;
-    await upsertEmbedding({ db, ...scope, entityId: skill.id, model, content, contentHash: hash, embedding });
+    await upsertEmbedding({
+      db,
+      ...scope,
+      entityId: skill.id,
+      model,
+      content,
+      contentHash: hash,
+      embedding,
+    });
   }
 }

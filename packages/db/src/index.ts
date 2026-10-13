@@ -4,9 +4,9 @@ export { searchEmbeddings } from "./embeddings/search-embeddings";
 export {
   type DeleteEmbeddingInput,
   EMBEDDING_DIMENSIONS,
+  type EmbeddingHit,
   type EmbeddingVector,
   GLOBAL_EMBEDDING_SCOPE,
-  type EmbeddingHit,
   type SearchEmbeddingsInput,
   type UpsertEmbeddingInput,
 } from "./embeddings/types";

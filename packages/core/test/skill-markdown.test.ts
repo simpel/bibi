@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { execute, exportSkill, importSkill, parseSkillMarkdown, renderSkillMarkdown } from "../src/index";
+import {
+  execute,
+  exportSkill,
+  importSkill,
+  parseSkillMarkdown,
+  renderSkillMarkdown,
+} from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 
 const SKILL_MD = `---
@@ -36,10 +42,15 @@ describe("SKILL.md import/export", () => {
     });
     const inline = unwrap({
       result: parseSkillMarkdown({
-        markdown: '---\nname: A b\ndescription: "Rad 1\\nRad 2" # x\nallowed-tools: search, room_get\n---\nBody',
+        markdown:
+          '---\nname: A b\ndescription: "Rad 1\\nRad 2" # x\nallowed-tools: search, room_get\n---\nBody',
       }),
     });
-    expect(inline).toMatchObject({ slug: "a-b", name: "A b", allowedTools: ["search", "room_get"] });
+    expect(inline).toMatchObject({
+      slug: "a-b",
+      name: "A b",
+      allowedTools: ["search", "room_get"],
+    });
     expect(inline.description).toBe("Rad 1\nRad 2");
   });
 
@@ -67,8 +78,15 @@ describe("SKILL.md import/export", () => {
     const skill = unwrap({
       result: await execute({ operation: importSkill, input: { markdown: SKILL_MD }, context }),
     });
-    expect(skill).toMatchObject({ scope: "PERSONAL", status: "DRAFT", source: "import", version: 1 });
-    const exported = unwrap({ result: await execute({ operation: exportSkill, input: { id: skill.id }, context }) });
+    expect(skill).toMatchObject({
+      scope: "PERSONAL",
+      status: "DRAFT",
+      source: "import",
+      version: 1,
+    });
+    const exported = unwrap({
+      result: await execute({ operation: exportSkill, input: { id: skill.id }, context }),
+    });
     expect(exported.filename).toBe("offert-till-kund/SKILL.md");
     expect(exported.markdown).toContain('version: "1"');
     const reparsed = unwrap({ result: parseSkillMarkdown({ markdown: exported.markdown }) });

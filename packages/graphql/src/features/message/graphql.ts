@@ -28,7 +28,11 @@ builder.objectField(ConversationRef, "messages", (t) =>
         conversationId: conversation.id,
         limit: Math.min(Math.max(limit ?? 100, 1), 200),
       };
-      const page = (await runOperation({ operation: listMessages, input, ctx })) as Page<MessageDto>;
+      const page = (await runOperation({
+        operation: listMessages,
+        input,
+        ctx,
+      })) as Page<MessageDto>;
       return page.items;
     },
   }),

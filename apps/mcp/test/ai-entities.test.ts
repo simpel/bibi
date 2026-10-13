@@ -11,7 +11,11 @@ async function setup({ conversationId = "conv_x" }: SetupInput = {}) {
     organizationId: base.organizationId,
     actor: { type: "ai", userId, conversationId },
   });
-  return { base, user: await connect({ context: base }), assistant: await connect({ context: ai }) };
+  return {
+    base,
+    user: await connect({ context: base }),
+    assistant: await connect({ context: ai }),
+  };
 }
 
 const SKILL = { name: "MCP skill", description: "D", instructions: "I", allowedTools: ["search"] };
@@ -19,7 +23,9 @@ const SKILL = { name: "MCP skill", description: "D", instructions: "I", allowedT
 describe("conversation, message and skill tools", () => {
   it("lets the user manage conversations and messages directly", async () => {
     const { user } = await setup();
-    const conversation = (await call({ client: user, name: "conversation_create", args: { title: "MCP" } })).data;
+    const conversation = (
+      await call({ client: user, name: "conversation_create", args: { title: "MCP" } })
+    ).data;
     expect(conversation).toMatchObject({ title: "MCP", status: "ACTIVE" });
     const parts = [{ type: "text", text: "Hej" }];
     const appended = await call({
@@ -28,10 +34,18 @@ describe("conversation, message and skill tools", () => {
       args: { conversationId: conversation.id, role: "USER", parts },
     });
     expect(appended.data).toMatchObject({ sequence: 0, parts });
-    const list = await call({ client: user, name: "message_list", args: { conversationId: conversation.id } });
+    const list = await call({
+      client: user,
+      name: "message_list",
+      args: { conversationId: conversation.id },
+    });
     expect(list.data.items).toHaveLength(1);
-    const exported = await call({ client: user, name: "skill_list", args: { scope: "SYSTEM" } });
-    expect(exported.isError).toBe(false);
+    const systemSkills = await call({
+      client: user,
+      name: "skill_list",
+      args: { scope: "SYSTEM" },
+    });
+    expect(systemSkills.isError).toBe(false);
   });
 
   it("lets the assistant append its own messages without approval, but never user turns", async () => {
@@ -82,7 +96,11 @@ describe("conversation, message and skill tools", () => {
       approvedBy: base.actor.userId,
       conversationId: "conv_x",
     });
-    const exported = await call({ client: assistant, name: "skill_export", args: { id: confirmed.data.id } });
+    const exported = await call({
+      client: assistant,
+      name: "skill_export",
+      args: { id: confirmed.data.id },
+    });
     expect(exported.data.markdown).toContain("name: mcp-skill");
   });
 });

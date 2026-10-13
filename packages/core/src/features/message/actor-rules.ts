@@ -11,7 +11,11 @@ const AI_ROLES = new Set(["ASSISTANT", "TOOL"]);
  * it runs in, so a prompt-injected model cannot forge user or system turns. USER/SYSTEM messages
  * are persisted by the app as the user.
  */
-export function checkAppendActor({ actor, role, conversationId }: CheckAppendActorInput): Result<true> {
+export function checkAppendActor({
+  actor,
+  role,
+  conversationId,
+}: CheckAppendActorInput): Result<true> {
   if (actor.type !== "ai") return ok({ value: true });
   if (!AI_ROLES.has(role)) {
     const message = "The assistant can only append ASSISTANT or TOOL messages";

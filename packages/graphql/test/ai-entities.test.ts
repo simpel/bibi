@@ -8,16 +8,24 @@ const APPEND =
   "mutation($input: MessageAppendInput!) { messageAppend(input: $input) { id sequence role parts } }";
 const READ_CONVERSATION =
   "query($id: String!) { conversation(id: $id) { title messages { sequence role parts metadata } } }";
-const SKILL_MD = "---\nname: graf-skill\ndescription: Testar grafen\nallowed-tools: search\n---\nGör så här.";
+const SKILL_MD =
+  "---\nname: graf-skill\ndescription: Testar grafen\nallowed-tools: search\n---\nGör så här.";
 
 describe("conversations, messages and skills through GraphQL", () => {
   it("creates a conversation, appends messages and reads them via the graph edge", async () => {
     const context = testContext({ roles: ["member"] });
     const gql = createClient({ context });
-    const created = await gql({ query: CREATE_CONVERSATION, variables: { input: { title: "Graf" } } });
+    const created = await gql({
+      query: CREATE_CONVERSATION,
+      variables: { input: { title: "Graf" } },
+    });
     expect(created.body.errors).toBeUndefined();
     const conversation = created.body.data.conversationCreate;
-    expect(conversation).toMatchObject({ title: "Graf", status: "ACTIVE", ownerUserId: context.actor.userId });
+    expect(conversation).toMatchObject({
+      title: "Graf",
+      status: "ACTIVE",
+      ownerUserId: context.actor.userId,
+    });
     const parts = [{ type: "text", text: "Hej" }];
     const appended = await gql({
       query: APPEND,
@@ -35,7 +43,10 @@ describe("conversations, messages and skills through GraphQL", () => {
     const otherUser = createClient({
       context: testContext({ organizationId: context.organizationId, roles: ["member"] }),
     });
-    const denied = await otherUser({ query: READ_CONVERSATION, variables: { id: conversation.id } });
+    const denied = await otherUser({
+      query: READ_CONVERSATION,
+      variables: { id: conversation.id },
+    });
     expect(denied.body.errors?.[0]?.extensions?.code).toBe("NOT_FOUND");
     const messages = await otherUser({
       query: "query($id: String!) { messages(conversationId: $id) { items { id } } }",
@@ -53,9 +64,15 @@ describe("conversations, messages and skills through GraphQL", () => {
     });
     expect(imported.body.errors).toBeUndefined();
     const skill = imported.body.data.skillImport;
-    expect(skill).toMatchObject({ slug: "graf-skill", scope: "PERSONAL", status: "DRAFT", allowedTools: ["search"] });
+    expect(skill).toMatchObject({
+      slug: "graf-skill",
+      scope: "PERSONAL",
+      status: "DRAFT",
+      allowedTools: ["search"],
+    });
     const published = await gql({
-      query: "mutation($input: SkillPublishInput!) { skillPublish(input: $input) { status version } }",
+      query:
+        "mutation($input: SkillPublishInput!) { skillPublish(input: $input) { status version } }",
       variables: { input: { id: skill.id } },
     });
     expect(published.body.data.skillPublish).toEqual({ status: "PUBLISHED", version: 1 });
@@ -68,7 +85,8 @@ describe("conversations, messages and skills through GraphQL", () => {
     expect(exported.body.data.skillExport.filename).toBe("graf-skill/SKILL.md");
     expect(exported.body.data.skillExport.markdown).toContain("Gör så här.");
     const created = await gql({
-      query: "mutation($input: SkillCreateInput!) { skillCreate(input: $input) { slug resources } }",
+      query:
+        "mutation($input: SkillCreateInput!) { skillCreate(input: $input) { slug resources } }",
       variables: {
         input: {
           name: `Skill ${createId()}`,

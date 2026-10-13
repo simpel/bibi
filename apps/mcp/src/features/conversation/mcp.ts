@@ -5,7 +5,8 @@ export const conversationMcpTools = [
   mcpTool({ operation: "conversation.get" }),
   mcpTool({
     operation: "conversation.create",
-    summary: ({ input }) => `Start conversation "${text({ value: input.title ?? "New conversation" })}"`,
+    summary: ({ input }) =>
+      `Start conversation "${text({ value: input.title ?? "New conversation" })}"`,
   }),
   mcpTool({
     operation: "conversation.rename",

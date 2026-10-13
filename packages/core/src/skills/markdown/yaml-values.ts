@@ -56,7 +56,9 @@ export function parseBlockScalar({ lines, folded }: BlockScalarInput): string {
 
 /** Indented lines under `key:` → a list (`- x`) or a one-level map (`k: v`). */
 export function parseNested({ lines }: BlockInput): string[] | Record<string, string> {
-  const items = lines.map((line) => line.trim()).filter((line) => line !== "" && !line.startsWith("#"));
+  const items = lines
+    .map((line) => line.trim())
+    .filter((line) => line !== "" && !line.startsWith("#"));
   if (items.length > 0 && items.every((line) => line.startsWith("-"))) {
     return items.map((line) => parseScalar({ raw: line.slice(1) }));
   }

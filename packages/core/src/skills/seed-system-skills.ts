@@ -8,6 +8,7 @@ import { parseSkillMarkdown } from "./markdown/parse-skill-markdown";
 import { DEFAULT_SYSTEM_SKILLS_DIRECTORY, loadSystemSkillFiles } from "./system-skill-files";
 
 export { DEFAULT_SYSTEM_SKILLS_DIRECTORY };
+
 import { upsertSystemSkill } from "./upsert-system-skill";
 
 export type SeedSystemSkillsInput = {
@@ -34,7 +35,9 @@ async function parseAll({ directory }: { directory?: string }): Promise<Result<P
     const result = parseSkillMarkdown({ markdown });
     if (!result.ok) {
       const message = `System skill ${file}: ${result.error.message}`;
-      return err({ error: new AppError({ code: "VALIDATION", message, issues: result.error.issues }) });
+      return err({
+        error: new AppError({ code: "VALIDATION", message, issues: result.error.issues }),
+      });
     }
     parsed.push({ source: `system:${file}`, content: result.value });
   }
