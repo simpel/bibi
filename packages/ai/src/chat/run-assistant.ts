@@ -1,0 +1,86 @@
+import type { MCPClient } from "@ai-sdk/mcp";
+import type { UIMessage } from "ai";
+import { buildSystemPrompt } from "../prompt/build-system-prompt";
+import { errorResponse } from "../server/error-response";
+import type { UserContext } from "../server/resolve-user";
+import { finishRun } from "./finish-run";
+import type { ChatRuntime } from "./handle-chat";
+import type { ChatInput } from "./parse-chat-input";
+import { persistUserMessage } from "./persist-user-message";
+import { prepareTools } from "./prepare-tools";
+import { streamChat } from "./stream-chat";
+import { toModelMessages } from "./to-model-messages";
+
+export type RunAssistantInput = {
+  runtime: ChatRuntime;
+  headers: Headers;
+  user: UserContext;
+  input: ChatInput;
+  conversation: { id: string; created: boolean };
+  history: UIMessage[];
+};
+
+type StreamRunInput = RunAssistantInput & { client: MCPClient };
+
+async function streamRun({ runtime, user, input, conversation, history, client }: StreamRunInput) {
+  const { text, page, locale, clientMessageId } = input;
+  const conversationId = conversation.id;
+  const prepared = await prepareTools({ client, userText: text });
+  const stored = await persistUserMessage({
+    user,
+    embed: runtime.embed,
+    conversationId,
+    text,
+    clientMessageId,
+    ...(page ? { page } : {}),
+  });
+  if (!stored.ok) return stored;
+  const userMessage: UIMessage = { id: stored.value.id, role: "user", parts: [{ type: "text", text }] };
+  const messages = await toModelMessages({ messages: [...history, userMessage], tools: prepared.tools });
+  const { organizationId } = user;
+  const skills = prepared.promptSkills;
+  const instructions = buildSystemPrompt({ organizationId, locale, skills, ...(page ? { page } : {}) });
+  const response = streamChat({
+    model: runtime.model,
+    instructions,
+    messages,
+    prepared,
+    conversation,
+    onFinish: ({ parts, finishReason }) => {
+      const metadata = { model: runtime.modelId, finishReason: finishReason ?? null };
+      return finishRun({ client, conversationId, parts, metadata, report: runtime.report });
+    },
+  });
+  return { ok: true as const, value: response };
+}
+
+/**
+ * Mints the user's MCP token, connects as the AI actor for this conversation and streams the run.
+ * The MCP client is closed by `finishRun` when the stream ends, or here on any earlier failure.
+ */
+export async function runAssistant({
+  runtime,
+  headers,
+  user,
+  input,
+  conversation,
+  history,
+}: RunAssistantInput): Promise<Response> {
+  const caller = { userId: user.actor.userId, organizationId: user.organizationId };
+  const token = await runtime.getAccessToken({ headers, caller });
+  if (!token.ok) return errorResponse({ error: token.error });
+  const client = await runtime.connect({
+    accessToken: token.value,
+    caller: { kind: "ai", conversationId: conversation.id },
+    ...(runtime.mcpUrl ? { url: runtime.mcpUrl } : {}),
+  });
+  try {
+    const result = await streamRun({ runtime, headers, user, input, conversation, history, client });
+    if (result.ok) return result.value;
+    await client.close();
+    return errorResponse({ error: result.error });
+  } catch (error) {
+    await client.close().catch(() => undefined);
+    throw error;
+  }
+}
