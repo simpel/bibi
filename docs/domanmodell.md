@@ -616,3 +616,37 @@ erDiagram
 
 **Relationer**
 - `N:1` öppnar för → Programpunkt
+
+## Ordlista sv↔en
+
+Svenska termer används i dokumentation och UI. Engelska namn används i kod, API:er och MCP-verktyg (se [ADR 0009](beslut/0009-sprak-i-kod-och-ui.md)).
+
+| Svenska | Engelska (kod) |
+|---|---|
+| Anläggning | Venue |
+| Rum | Room |
+| Kund | Customer |
+| Kontaktperson | Contact |
+| Förfrågan | Inquiry |
+| Option | Option |
+| Offert | Quote |
+| Avtal | Agreement |
+| Bokning | Booking |
+| Programpunkt | AgendaItem |
+| Deltagare | Attendee |
+| Kostavvikelse | DietaryRequirement |
+| Allergen | Allergen |
+| Köksorder | KitchenOrder |
+| Faktura | Invoice |
+| Förskott | Deposit |
+| Betalning | Payment |
+| Prislista | PriceList |
+| Artikel | Article |
+| Meny | Menu |
+| Konferenspaket | ConferencePackage |
+| Möblering | Layout |
+| Beläggning | Occupancy |
+| Partner | Partner |
+| Avbokningsvillkor | CancellationTerms |
+| Orderrad | OrderLine |
+| Användare | User |
