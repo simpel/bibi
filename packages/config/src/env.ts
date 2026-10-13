@@ -19,6 +19,11 @@ const envSchema = z.object({
   WEB_OAUTH_CLIENT_ID: z.string().min(1).optional(),
   /** Runtime mode; `production` disables dev-only fallbacks (e.g. the placeholder embedder). */
   NODE_ENV: z.string().default("development"),
+  /**
+   * E2E ONLY: makes the web chat route use a scripted mock language model
+   * (`apps/web/src/server/e2e-mock-model.ts`). Off by default; ignored when NODE_ENV=production.
+   */
+  E2E_MOCK_MODEL: z.stringbool().default(false),
 });
 
 export type Env = z.infer<typeof envSchema>;

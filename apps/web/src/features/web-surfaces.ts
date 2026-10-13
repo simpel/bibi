@@ -1,16 +1,25 @@
 /**
  * Which core operations have a UI surface in the web app. The parity test in `apps/mcp`
  * (and `web-surfaces.test.ts` here) read this list: a new operation must either appear in
- * `WEB_SURFACES` (with the route that exposes it) or be listed in `UI_EXEMPT` with a reason.
+ * `WEB_SURFACES` (with the route or component that exposes it) or be listed in `UI_EXEMPT` with
+ * a reason.
  */
 export type WebSurface = {
   /** Core operation name, e.g. `venue.create`. */
   operation: string;
-  /** Route pattern below `src/app/[locale]/(app)`, e.g. `/venues/[id]`. */
+  /**
+   * Route pattern below `src/app/[locale]/(app)`, e.g. `/venues/[id]`, or `"*"` for UI that
+   * lives in the app shell on every page (then `component` names the file).
+   */
   route: string;
+  /** With `route: "*"`: the component file below `src/` that provides the UI. */
+  component?: string;
 };
 
 export type UiExempt = { operation: string; reason: string };
+
+/** The assistant panel (conversation history, rename, archive, chat) is mounted on every page. */
+const PANEL = { route: "*", component: "features/assistant/ui/assistant-panel.tsx" } as const;
 
 export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "venue.list", route: "/venues" },
@@ -24,32 +33,25 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "room.update", route: "/venues/[id]" },
   { operation: "room.archive", route: "/venues/[id]" },
   { operation: "search", route: "/venues" },
+  { operation: "skill.list", route: "/skills" },
+  { operation: "skill.get", route: "/skills/[id]" },
+  { operation: "skill.create", route: "/skills/new" },
+  { operation: "skill.update", route: "/skills/[id]/edit" },
+  { operation: "skill.publish", route: "/skills/[id]" },
+  { operation: "skill.archive", route: "/skills/[id]" },
+  { operation: "skill.share", route: "/skills/[id]" },
+  { operation: "skill.export", route: "/skills/[id]" },
+  { operation: "skill.import", route: "/skills" },
+  // The chat route (`/api/chat`) creates conversations and appends messages as the user; the
+  // panel lists, opens, renames and archives them.
+  { operation: "conversation.list", ...PANEL },
+  { operation: "conversation.get", ...PANEL },
+  { operation: "conversation.create", ...PANEL },
+  { operation: "conversation.rename", ...PANEL },
+  { operation: "conversation.archive", ...PANEL },
+  { operation: "message.list", ...PANEL },
+  { operation: "message.append", ...PANEL },
 ];
 
-const AI_PHASE_REASON =
-  "UI arrives in the AI phase (assistant panel, conversations, skills pages); not built yet.";
-
-const aiPhase = ({ operations }: { operations: readonly string[] }): UiExempt[] =>
-  operations.map((operation) => ({ operation, reason: AI_PHASE_REASON }));
-
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
-export const UI_EXEMPT: readonly UiExempt[] = aiPhase({
-  operations: [
-    "conversation.list",
-    "conversation.get",
-    "conversation.create",
-    "conversation.rename",
-    "conversation.archive",
-    "message.list",
-    "message.append",
-    "skill.list",
-    "skill.get",
-    "skill.export",
-    "skill.create",
-    "skill.update",
-    "skill.publish",
-    "skill.archive",
-    "skill.share",
-    "skill.import",
-  ],
-});
+export const UI_EXEMPT: readonly UiExempt[] = [];

@@ -51,3 +51,34 @@ export async function addRoom({
   await page.getByRole("button", { name: "Spara" }).click();
   await expect(page.getByRole("cell", { name })).toBeVisible();
 }
+
+export const PANEL = '[data-slot="assistant-panel"]';
+
+/** Sign up + organization in one go; the user ends on the (empty) venue list. */
+export async function signUpWithOrganization({ page, name }: PageInput & { name: string }) {
+  await signUp({ page, credentials: uniqueCredentials() });
+  await createOrganization({ page, name });
+}
+
+/** Opens the assistant panel with the keyboard shortcut (Ctrl+J, ⌘J on macOS). */
+export async function openAssistant({ page }: PageInput) {
+  await page.keyboard.press("Control+j");
+  await expect(page.locator(PANEL)).toBeVisible();
+}
+
+/** Types into the assistant's message box and sends with Enter. */
+export async function sendChat({ page, text }: PageInput & { text: string }) {
+  const box = page
+    .locator(PANEL)
+    .getByRole("textbox", { name: "Fråga något eller be om hjälp..." });
+  await box.fill(text);
+  await box.press("Enter");
+}
+
+/** Venues of the signed-in user's organization, read through the REST API (session cookie). */
+export async function listVenueNames({ page }: PageInput): Promise<string[]> {
+  const response = await page.request.get("/api/v1/venues");
+  expect(response.ok()).toBe(true);
+  const body = (await response.json()) as { items: { name: string }[] };
+  return body.items.map((venue) => venue.name);
+}

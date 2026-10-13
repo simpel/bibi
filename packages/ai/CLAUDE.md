@@ -19,7 +19,7 @@ Serverlagret för assistenten (ADR 0007, 0008). Ramverksoberoende: Web `Request`
 - Sidkontext och skill-texter JSON-kodas i prompten (kan inte lägga till regler).
 
 ## Kontrakt för webbfasen
-- Rutter (förslag): `app/api/assistant/chat/route.ts` → `export const POST = createChatHandler({ resolveContext: resolveExecuteContext })` och `app/api/assistant/approval/route.ts` → `createApprovalHandler({ resolveContext: resolveExecuteContext })`. `runtime = "nodejs"`.
+- Rutter (som webben monterar dem): `app/api/chat/route.ts` → `export const POST = createChatHandler({ resolveContext: resolveExecuteContext })` och `app/api/assistant/approval/route.ts` → `createApprovalHandler({ resolveContext: resolveExecuteContext })`. `runtime = "nodejs"`.
 - Chat-request: `useChat` med `DefaultChatTransport({ api, body: { conversationId, pageContext: { route, locale: "sv"|"en", entity?: { type, id } } } })`. Svar: SSE (`x-vercel-ai-ui-message-stream: v1`), header `x-okazi-conversation-id`, plus transient datadel `data-okazi-conversation` `{ conversationId, created }`. Fel före strömmen: JSON `{ error: { code, message, issues } }` med status 400/401/403/404/500.
 - Godkännandekort: `extractPendingApprovals({ message })` (klientsäker: `@okazi/ai/approvals`) → `{ toolCallId, toolName, operation, input, summary, approvalToken, expiresAt }[]`. Knappar POST:ar `{ decision: "approve"|"reject", approvalToken, conversationId, toolCallId, operation }` → `{ status: "approved", result }` / `{ status: "rejected" }` / fel (409 = redan använd, 403 = ogiltig/utgången/annan användare). Beslutet sparas som TOOL-meddelande (`Approval update: …` + `data-okazi-approval`), så nästa tur vet utfallet.
 - Generative UI: `resolveToolUi({ toolName, output })` (klientsäker: `@okazi/ai/ui`) → `{ component, props }` (`ToolUi`, discriminated union). Komponentnycklar: `venue-table|venue-card|room-table|room-card|search-results|skill-table|skill-card|approval-card|error|json`. Typer får importeras från `@okazi/ai` (`import type`), värden i klientkod bara från `/ui` och `/approvals`.
@@ -28,7 +28,7 @@ Serverlagret för assistenten (ADR 0007, 0008). Ramverksoberoende: Web `Request`
 
 ## Lägga till en generative-UI-mappning
 1. Ny operation → paritetstestet `test/ui-contract.test.ts` fallerar tills verktyget finns i `TOOL_UI_REGISTRY` (`ui-contract/tool-ui-registry.ts`) eller i `GENERIC_UI_TOOLS` (med skäl).
-2. Ny komponent: nyckel + props i `ToolUiProps` (`tool-ui-types.ts`), wire-schema i `wire-schemas.ts` (endast zod, inga core-importer: core-barrel drar in Prisma). `test/ui-wire-parity.test.ts` jämför fälten mot core-schemat.
+2. Ny komponent: nyckel + props i `ToolUiProps` (`tool-ui-types.ts`), wire-schema i `wire-schemas.ts`. Det härleds ur `@okazi/core/schemas` (`Schema.extend({ createdAt: z.string(), ... })`, aldrig core-barrel: den drar in Prisma), så core-fält följer med automatiskt och ingen handkopia behöver hållas i takt.
 3. Bygg React-komponenten i webben med `@okazi/ui`.
 
 ## Inbäddningar

@@ -33,6 +33,7 @@
     "WEB_URL",
     "MCP_URL",
     "WEB_OAUTH_CLIENT_ID",
-    "NODE_ENV"
+    "NODE_ENV",
+    "E2E_MOCK_MODEL"
   ]
 }

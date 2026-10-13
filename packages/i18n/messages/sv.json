@@ -192,7 +192,88 @@
       "title": "Godkänn åtgärd",
       "description": "Assistenten vill utföra följande ändring.",
       "approve": "Godkänn",
-      "reject": "Avslå"
+      "reject": "Avslå",
+      "approving": "Godkänner...",
+      "approved": "Godkänd",
+      "rejected": "Avslagen",
+      "expired": "Förslaget har gått ut",
+      "expiresIn": "Gäller i {time}",
+      "approvedToast": "Åtgärden är utförd.",
+      "fields": {
+        "id": "Id",
+        "name": "Namn",
+        "description": "Beskrivning",
+        "streetAddress": "Gatuadress",
+        "postalCode": "Postnummer",
+        "city": "Ort",
+        "country": "Land",
+        "contactEmail": "Kontakt, e-post",
+        "contactPhone": "Kontakt, telefon",
+        "openingHours": "Öppettider",
+        "defaultVatRatePercent": "Moms (%)",
+        "venueId": "Anläggning (id)",
+        "floor": "Våning",
+        "areaSqm": "Yta (kvm)",
+        "ceilingHeightM": "Takhöjd (m)",
+        "hasDaylight": "Dagsljus",
+        "maxCapacity": "Max antal personer",
+        "slug": "Id-namn",
+        "instructions": "Instruktioner",
+        "allowedTools": "Tillåtna verktyg",
+        "resources": "Resurser",
+        "scope": "Omfattning",
+        "markdown": "SKILL.md",
+        "title": "Titel",
+        "value": "Värde"
+      },
+      "operations": {
+        "venue_create": "Skapa anläggning",
+        "venue_update": "Ändra anläggning",
+        "venue_archive": "Arkivera anläggning",
+        "room_create": "Skapa rum",
+        "room_update": "Ändra rum",
+        "room_archive": "Arkivera rum",
+        "skill_create": "Skapa färdighet",
+        "skill_update": "Ändra färdighet",
+        "skill_publish": "Publicera färdighet",
+        "skill_archive": "Arkivera färdighet",
+        "skill_share": "Dela färdighet",
+        "skill_import": "Importera färdighet",
+        "conversation_archive": "Arkivera konversation"
+      }
+    },
+    "description": "Chatta med assistenten om anläggningar, rum och färdigheter.",
+    "stop": "Stoppa",
+    "backToChat": "Tillbaka till chatten",
+    "emptyTitle": "Vad kan jag hjälpa dig med?",
+    "emptyDescription": "Jag kan söka, visa och föreslå ändringar. Ändringar kräver alltid ditt godkännande.",
+    "loadingConversation": "Laddar konversationen...",
+    "resize": "Ändra panelens bredd",
+    "shortcutHint": "Assistenten (⌘J / Ctrl+J)",
+    "suggestions": {
+      "listVenues": "Visa alla anläggningar",
+      "createVenue": "Skapa en anläggning som heter Testsalen",
+      "findRooms": "Sök efter rum med plats för 50 personer",
+      "listSkills": "Vilka färdigheter finns?"
+    },
+    "history": {
+      "title": "Tidigare konversationer",
+      "new": "Ny konversation",
+      "empty": "Inga konversationer ännu.",
+      "rename": "Byt namn",
+      "renameLabel": "Konversationens namn",
+      "archive": "Arkivera konversation",
+      "archiveConfirm": "Vill du arkivera ”{title}”?",
+      "archived": "Konversationen har arkiverats."
+    },
+    "tool": {
+      "running": "Kör {tool}..."
+    },
+    "ui": {
+      "open": "Öppna",
+      "openVenue": "Öppna anläggningen",
+      "more": "Det finns fler resultat. Be assistenten visa fler.",
+      "noHits": "Inga träffar."
     }
   },
   "skills": {
@@ -206,10 +287,70 @@
     "scope": {
       "system": "System",
       "organization": "Organisation",
-      "personal": "Personlig"
+      "personal": "Personlig",
+      "label": "Omfattning",
+      "hint": "Personliga färdigheter ser bara du. Organisationens kräver administratör."
     },
     "instructions": "Instruktioner",
-    "allowedTools": "Tillåtna verktyg"
+    "allowedTools": "Tillåtna verktyg",
+    "listDescription": "Återanvändbara instruktioner som assistenten laddar vid behov.",
+    "empty": "Inga färdigheter hittades.",
+    "emptyDescription": "Skapa en färdighet eller importera en SKILL.md.",
+    "createDescription": "Beskriv när färdigheten ska användas och vad assistenten ska göra.",
+    "edit": "Redigera färdighet",
+    "created": "Färdigheten har skapats.",
+    "updated": "Färdigheten har uppdaterats.",
+    "published": "Färdigheten är publicerad.",
+    "shared": "Färdigheten har delats som utkast i organisationen.",
+    "archive": "Arkivera färdighet",
+    "archived": "Färdigheten har arkiverats.",
+    "archiveConfirm": "Vill du arkivera {name}?",
+    "exported": "SKILL.md har laddats ner.",
+    "imported": "Färdigheten har importerats som utkast.",
+    "importTitle": "Importera färdighet",
+    "importDescription": "Klistra in eller ladda upp en SKILL.md. Innehållet behandlas som data och blir ett utkast.",
+    "importFile": "Fil (SKILL.md)",
+    "importMarkdown": "SKILL.md-innehåll",
+    "version": "Version {version}",
+    "noToolLimits": "Inga begränsningar: alla verktyg du själv har är tillåtna.",
+    "status": {
+      "draft": "Utkast",
+      "published": "Publicerad",
+      "archived": "Arkiverad"
+    },
+    "columns": {
+      "name": "Namn",
+      "scope": "Omfattning",
+      "version": "Version"
+    },
+    "filters": {
+      "placeholder": "Sök färdigheter...",
+      "query": "Sökfråga",
+      "scope": "Omfattning",
+      "status": "Status",
+      "allScopes": "Alla omfattningar",
+      "allStatuses": "Alla statusar",
+      "semantic": "Sök efter betydelse",
+      "apply": "Sök"
+    },
+    "fields": {
+      "name": "Namn",
+      "slug": "Id-namn (valfritt)",
+      "description": "När ska den användas?",
+      "instructions": "Instruktioner (markdown)",
+      "allowedTools": "Tillåtna verktyg (ett per rad eller kommaseparerade)",
+      "resources": "Resurser",
+      "resourcesHint": "Små namngivna textfiler, till exempel checklistor eller mallar.",
+      "resourceName": "Resursens namn",
+      "resourceContent": "Innehåll",
+      "addResource": "Lägg till resurs",
+      "removeResource": "Ta bort resurs"
+    },
+    "sections": {
+      "instructions": "Instruktioner",
+      "allowedTools": "Tillåtna verktyg",
+      "resources": "Resurser"
+    }
   },
   "search": {
     "placeholder": "Sök anläggningar, rum och mer...",
@@ -248,7 +389,9 @@
     "invitationInvalid": "Inbjudan är ogiltig eller har gått ut.",
     "loadFailed": "Det gick inte att hämta informationen.",
     "oauthQueryMissing": "Begäran saknar information. Starta om från programmet som bad om åtkomst.",
-    "textTooShort": "Texten är för kort."
+    "textTooShort": "Texten är för kort.",
+    "approvalUsed": "Förslaget har redan använts.",
+    "approvalExpired": "Förslaget har gått ut eller kan inte godkännas. Be assistenten föreslå på nytt."
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",
@@ -275,6 +418,9 @@
     "goToVenues": "Gå till anläggningar",
     "createVenue": "Skapa anläggning",
     "openVenue": "Öppna {name}",
-    "addRoomTo": "Lägg till rum i {name}"
+    "addRoomTo": "Lägg till rum i {name}",
+    "assistant": "Assistent",
+    "askAssistant": "Fråga assistenten: ”{query}”",
+    "openAssistant": "Öppna assistenten"
   }
 }

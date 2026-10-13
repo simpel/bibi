@@ -11,6 +11,7 @@ Paritetskärnan: varje förmåga definieras **en gång** som en operation och ex
 - Kör alltid via `execute({ operation, input, context, afterCommit? })`: Zod-validering → behörighet → handler → output-validering → AuditLog (kommandon, i samma transaktion) → `afterCommit`-hooks (t.ex. `createIndexingHook({ embed })`).
 - `context.db` är `scopedDb` – org-scoping kan inte kringgås. Bygg kontext med `createExecuteContext({ organizationId, actor, roles })`.
 - `requiresApproval({ operation, actor })`: kommandon kräver mänskligt godkännande när `actor.type === "ai"` (standard `approval: true`).
+- Klientsäkert underpaket `@okazi/core/schemas` (`src/schemas.ts`): bara zod-filerna (`features/*/schema.ts`, `search/search-schema.ts`). Importera det i klientkod och i `@okazi/ai/ui`; lägg en rad per ny entitets `schema.ts` där. Aldrig Prisma/fs/operationer i det.
 - Registret: `registerOperations({ operations: createCoreOperations({ embed }) })`, `listOperations()`, `getOperation({ name })`. Adaptrar genererar verktyg/endpoints från registret.
 
 ## Fel

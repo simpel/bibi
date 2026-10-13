@@ -6,7 +6,8 @@ import { UI_EXEMPT, WEB_SURFACES } from "./web-surfaces";
 
 const stubEmbed = async () => ({ model: "stub", embeddings: [] });
 const operationNames = createCoreOperations({ embed: stubEmbed }).map(({ name }) => name);
-const appDir = join(import.meta.dirname, "..", "app", "[locale]", "(app)");
+const srcDir = join(import.meta.dirname, "..");
+const appDir = join(srcDir, "app", "[locale]", "(app)");
 
 describe("web surfaces", () => {
   it("covers every core operation or lists it as uiExempt with a reason", () => {
@@ -29,10 +30,18 @@ describe("web surfaces", () => {
     expect(UI_EXEMPT.filter(({ operation }) => surfaced.has(operation))).toEqual([]);
   });
 
-  it("points every surface at an existing page", () => {
-    const missing = WEB_SURFACES.filter(
-      ({ route }) => !existsSync(join(appDir, route, "page.tsx")),
+  it("points every surface at an existing page, or at an existing shell component", () => {
+    const missing = WEB_SURFACES.filter(({ route, component }) =>
+      route === "*"
+        ? !component || !existsSync(join(srcDir, component))
+        : !existsSync(join(appDir, route, "page.tsx")),
     );
     expect(missing).toEqual([]);
+  });
+
+  it("only uses the shell wildcard together with a component", () => {
+    const wildcard = WEB_SURFACES.filter(({ route }) => route === "*");
+    expect(wildcard.every(({ component }) => Boolean(component))).toBe(true);
+    expect(WEB_SURFACES.filter(({ component, route }) => component && route !== "*")).toEqual([]);
   });
 });

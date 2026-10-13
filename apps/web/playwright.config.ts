@@ -1,11 +1,17 @@
 import { defineConfig } from "@playwright/test";
 
-const BASE_URL = "http://localhost:3000";
+const WEB_URL = "http://localhost:3000";
+const MCP_URL = "http://localhost:3001";
 
 /**
- * E2E smoke against a production build: `pnpm build` first, with DATABASE_URL,
- * BETTER_AUTH_SECRET and BETTER_AUTH_URL set (see CLAUDE.md). Uses the preinstalled Chromium
- * (no `playwright install`). A running server on :3000 is reused.
+ * E2E against a production build: `pnpm build` first (web and mcp), with DATABASE_URL,
+ * BETTER_AUTH_SECRET, BETTER_AUTH_URL and WEB_OAUTH_CLIENT_ID set (see CLAUDE.md). Uses the
+ * preinstalled Chromium (no `playwright install`). Servers already running on :3000 / :3001 are
+ * reused.
+ *
+ * The web server starts with `E2E_MOCK_MODEL=1`: the chat route then uses the scripted model in
+ * `src/server/e2e-mock-model.ts` instead of a real LLM. The flag is ignored in production, and
+ * `next start` sets NODE_ENV=production unless told otherwise, so the server gets NODE_ENV=test.
  */
 export default defineConfig({
   testDir: "./e2e",
@@ -14,15 +20,28 @@ export default defineConfig({
   workers: 1,
   reporter: [["list"]],
   use: {
-    baseURL: BASE_URL,
+    baseURL: WEB_URL,
     locale: "sv-SE",
     trace: "retain-on-failure",
     launchOptions: { executablePath: "/opt/pw-browsers/chromium", args: ["--no-sandbox"] },
   },
-  webServer: {
-    command: "pnpm start",
-    url: `${BASE_URL}/sv/login`,
-    reuseExistingServer: true,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: "node ../mcp/dist/http.js",
+      url: `${MCP_URL}/health`,
+      reuseExistingServer: true,
+      timeout: 60_000,
+      env: { ...process.env, MCP_URL } as Record<string, string>,
+    },
+    {
+      command: "pnpm start",
+      url: `${WEB_URL}/sv/login`,
+      reuseExistingServer: true,
+      timeout: 120_000,
+      env: { ...process.env, MCP_URL, NODE_ENV: "test", E2E_MOCK_MODEL: "1" } as Record<
+        string,
+        string
+      >,
+    },
+  ],
 });

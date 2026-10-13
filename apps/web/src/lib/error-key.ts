@@ -7,7 +7,8 @@ export type ErrorKey =
   | "unauthorized"
   | "forbidden"
   | "validation"
-  | "conflict";
+  | "conflict"
+  | "network";
 
 const KEY_BY_CODE: Record<AppErrorCode, ErrorKey> = {
   NOT_FOUND: "notFound",
@@ -23,4 +24,13 @@ export type ErrorKeyInput = { code: AppErrorCode };
 /** The single AppError code → `errors.*` i18n key mapping used by every UI surface. */
 export function errorKeyForCode({ code }: ErrorKeyInput): ErrorKey {
   return KEY_BY_CODE[code];
+}
+
+export type ParseAppErrorCodeInput = { value: unknown };
+
+/** An AppError code read from untrusted JSON (e.g. an API error body), or null. */
+export function parseAppErrorCode({ value }: ParseAppErrorCodeInput): AppErrorCode | null {
+  return typeof value === "string" && Object.hasOwn(KEY_BY_CODE, value)
+    ? (value as AppErrorCode)
+    : null;
 }

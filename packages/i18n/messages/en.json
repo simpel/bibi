@@ -192,7 +192,88 @@
       "title": "Approve action",
       "description": "The assistant wants to make the following change.",
       "approve": "Approve",
-      "reject": "Reject"
+      "reject": "Reject",
+      "approving": "Approving...",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "expired": "The proposal has expired",
+      "expiresIn": "Valid for {time}",
+      "approvedToast": "The action was carried out.",
+      "fields": {
+        "id": "Id",
+        "name": "Name",
+        "description": "Description",
+        "streetAddress": "Street address",
+        "postalCode": "Postal code",
+        "city": "City",
+        "country": "Country",
+        "contactEmail": "Contact email",
+        "contactPhone": "Contact phone",
+        "openingHours": "Opening hours",
+        "defaultVatRatePercent": "VAT (%)",
+        "venueId": "Venue (id)",
+        "floor": "Floor",
+        "areaSqm": "Area (sqm)",
+        "ceilingHeightM": "Ceiling height (m)",
+        "hasDaylight": "Daylight",
+        "maxCapacity": "Max people",
+        "slug": "Slug",
+        "instructions": "Instructions",
+        "allowedTools": "Allowed tools",
+        "resources": "Resources",
+        "scope": "Scope",
+        "markdown": "SKILL.md",
+        "title": "Title",
+        "value": "Value"
+      },
+      "operations": {
+        "venue_create": "Create venue",
+        "venue_update": "Update venue",
+        "venue_archive": "Archive venue",
+        "room_create": "Create room",
+        "room_update": "Update room",
+        "room_archive": "Archive room",
+        "skill_create": "Create skill",
+        "skill_update": "Update skill",
+        "skill_publish": "Publish skill",
+        "skill_archive": "Archive skill",
+        "skill_share": "Share skill",
+        "skill_import": "Import skill",
+        "conversation_archive": "Archive conversation"
+      }
+    },
+    "description": "Chat with the assistant about venues, rooms and skills.",
+    "stop": "Stop",
+    "backToChat": "Back to the chat",
+    "emptyTitle": "What can I help you with?",
+    "emptyDescription": "I can search, show and propose changes. Changes always need your approval.",
+    "loadingConversation": "Loading the conversation...",
+    "resize": "Resize the panel",
+    "shortcutHint": "Assistant (⌘J / Ctrl+J)",
+    "suggestions": {
+      "listVenues": "Show all venues",
+      "createVenue": "Create a venue called Test Hall",
+      "findRooms": "Find rooms that fit 50 people",
+      "listSkills": "Which skills are available?"
+    },
+    "history": {
+      "title": "Earlier conversations",
+      "new": "New conversation",
+      "empty": "No conversations yet.",
+      "rename": "Rename",
+      "renameLabel": "Conversation name",
+      "archive": "Archive conversation",
+      "archiveConfirm": "Archive “{title}”?",
+      "archived": "The conversation was archived."
+    },
+    "tool": {
+      "running": "Running {tool}..."
+    },
+    "ui": {
+      "open": "Open",
+      "openVenue": "Open the venue",
+      "more": "There are more results. Ask the assistant to show more.",
+      "noHits": "No results."
     }
   },
   "skills": {
@@ -206,10 +287,70 @@
     "scope": {
       "system": "System",
       "organization": "Organization",
-      "personal": "Personal"
+      "personal": "Personal",
+      "label": "Scope",
+      "hint": "Only you can see personal skills. Organization skills need an admin."
     },
     "instructions": "Instructions",
-    "allowedTools": "Allowed tools"
+    "allowedTools": "Allowed tools",
+    "listDescription": "Reusable instructions the assistant loads when needed.",
+    "empty": "No skills found.",
+    "emptyDescription": "Create a skill or import a SKILL.md.",
+    "createDescription": "Describe when the skill applies and what the assistant should do.",
+    "edit": "Edit skill",
+    "created": "The skill was created.",
+    "updated": "The skill was updated.",
+    "published": "The skill is published.",
+    "shared": "The skill was shared as a draft in the organization.",
+    "archive": "Archive skill",
+    "archived": "The skill was archived.",
+    "archiveConfirm": "Archive {name}?",
+    "exported": "SKILL.md was downloaded.",
+    "imported": "The skill was imported as a draft.",
+    "importTitle": "Import skill",
+    "importDescription": "Paste or upload a SKILL.md. The content is treated as data and becomes a draft.",
+    "importFile": "File (SKILL.md)",
+    "importMarkdown": "SKILL.md content",
+    "version": "Version {version}",
+    "noToolLimits": "No limits: every tool you have yourself is allowed.",
+    "status": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "columns": {
+      "name": "Name",
+      "scope": "Scope",
+      "version": "Version"
+    },
+    "filters": {
+      "placeholder": "Search skills...",
+      "query": "Search query",
+      "scope": "Scope",
+      "status": "Status",
+      "allScopes": "All scopes",
+      "allStatuses": "All statuses",
+      "semantic": "Search by meaning",
+      "apply": "Search"
+    },
+    "fields": {
+      "name": "Name",
+      "slug": "Slug (optional)",
+      "description": "When should it be used?",
+      "instructions": "Instructions (markdown)",
+      "allowedTools": "Allowed tools (one per line or comma separated)",
+      "resources": "Resources",
+      "resourcesHint": "Small named text files, such as checklists or templates.",
+      "resourceName": "Resource name",
+      "resourceContent": "Content",
+      "addResource": "Add resource",
+      "removeResource": "Remove resource"
+    },
+    "sections": {
+      "instructions": "Instructions",
+      "allowedTools": "Allowed tools",
+      "resources": "Resources"
+    }
   },
   "search": {
     "placeholder": "Search venues, rooms and more...",
@@ -248,7 +389,9 @@
     "invitationInvalid": "The invitation is invalid or has expired.",
     "loadFailed": "The information could not be loaded.",
     "oauthQueryMissing": "The request is missing information. Start again from the application that asked for access.",
-    "textTooShort": "The text is too short."
+    "textTooShort": "The text is too short.",
+    "approvalUsed": "This proposal has already been used.",
+    "approvalExpired": "The proposal has expired or cannot be approved. Ask the assistant to propose it again."
   },
   "shell": {
     "mainNavigation": "Main navigation",
@@ -275,6 +418,9 @@
     "goToVenues": "Go to venues",
     "createVenue": "Create venue",
     "openVenue": "Open {name}",
-    "addRoomTo": "Add a room to {name}"
+    "addRoomTo": "Add a room to {name}",
+    "assistant": "Assistant",
+    "askAssistant": "Ask the assistant: “{query}”",
+    "openAssistant": "Open the assistant"
   }
 }

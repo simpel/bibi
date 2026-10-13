@@ -81,14 +81,17 @@
 - Huvudagenten äger integrationen och paritetstestet. Subagenter får inte ändra varandras paket utan att huvudagenten har integrerat.
 
 ## Kommandon
-- `docker compose up -d`: startar Postgres och Mailpit.
+- `docker compose up -d`: startar Postgres och Mailpit (mejl på http://localhost:8025).
 - `pnpm install`: installerar beroenden.
 - `pnpm db:migrate`: kör databasmigrationer.
-- `pnpm dev`: startar dev-servrarna via Turborepo.
+- `pnpm --filter @okazi/core seed:skills`: seedar system-skills.
+- `pnpm --filter @okazi/web provision:oauth`: skapar assistentens OAuth-klient och skriver ut `WEB_OAUTH_CLIENT_ID=...` (lägg i `.env`, läses av webb och MCP).
+- `pnpm dev`: startar webben (:3000) och MCP-servern (:3001) via Turborepo.
 - `pnpm lint`: Biome-kontroll.
 - `pnpm check:structure`: kontrollerar filstorlek, funktionsstorlek, exporter, barrel-filer och feature-filer.
 - `pnpm typecheck`: TypeScript för alla paket.
 - `pnpm test`: Vitest och paritetstest.
+- `pnpm --filter @okazi/web test:e2e`: Playwright med skriptad modell (`E2E_MOCK_MODEL`), se `apps/web/CLAUDE.md`.
 
 ## Öppna frågor
 - Prismodell (per venue, per rum, per bokning) ej beslutad.

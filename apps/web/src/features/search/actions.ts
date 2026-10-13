@@ -36,3 +36,16 @@ export async function searchAction({
   const mapped: Result<SearchHitView[]> = { ok: true, value: views };
   return toActionResult({ result: mapped });
 }
+
+export type EnrichSearchHitsInput = { hits: SearchHit[] };
+
+/** Adds titles and the venue to open to raw `search` hits (e.g. a tool result in the chat). */
+export async function enrichSearchHitsAction({
+  hits,
+}: EnrichSearchHitsInput): Promise<ActionResult<SearchHitView[]>> {
+  const views = (await Promise.all(hits.slice(0, 20).map((hit) => toView({ hit })))).filter(
+    (view): view is SearchHitView => view !== null,
+  );
+  const mapped: Result<SearchHitView[]> = { ok: true, value: views };
+  return toActionResult({ result: mapped });
+}

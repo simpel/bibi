@@ -1,0 +1,66 @@
+"use client";
+
+import type { Approval } from "@okazi/ai";
+import { useRouter } from "@okazi/i18n/navigation";
+import { toast } from "@okazi/ui";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { type ApprovalErrorKey, approvalErrorKey } from "../../../lib/approval-error";
+import type { StoredDecision } from "../../../lib/stored-messages";
+import { type Decision, postDecision } from "./post-decision";
+
+export type DecisionState =
+  | { phase: "idle" }
+  | { phase: "pending"; decision: Decision }
+  | { phase: "approved"; result: unknown }
+  | { phase: "rejected" }
+  /** `final`: the proposal is spent or expired, so the buttons stay disabled. */
+  | { phase: "error"; errorKey: ApprovalErrorKey; final: boolean };
+
+export type UseApprovalDecisionInput = {
+  approval: Pick<Approval, "approvalToken" | "operation">;
+  toolCallId: string | undefined;
+  conversationId: string | null;
+  stored: StoredDecision | undefined;
+};
+
+const fromStored = ({ stored }: { stored: StoredDecision | undefined }): DecisionState => {
+  if (!stored) return { phase: "idle" };
+  if (stored.decision === "rejected") return { phase: "rejected" };
+  if (stored.decision === "failed") return { phase: "error", errorKey: "generic", final: true };
+  return { phase: "approved", result: stored.result };
+};
+
+/** Approve/reject state machine for one card. After an approval the server data is refreshed. */
+export function useApprovalDecision({
+  approval,
+  toolCallId,
+  conversationId,
+  stored,
+}: UseApprovalDecisionInput) {
+  const t = useTranslations("assistant.approval");
+  const router = useRouter();
+  const [state, setState] = useState<DecisionState>(() => fromStored({ stored }));
+
+  const decide = async ({ decision }: { decision: Decision }) => {
+    setState({ phase: "pending", decision });
+    const outcome = await postDecision({
+      decision,
+      approvalToken: approval.approvalToken,
+      operation: approval.operation,
+      conversationId,
+      toolCallId,
+    });
+    if (!outcome.ok) {
+      const final = outcome.status === 409 || outcome.status === 403;
+      setState({ phase: "error", errorKey: approvalErrorKey({ status: outcome.status }), final });
+    } else if (outcome.status === "rejected") {
+      setState({ phase: "rejected" });
+    } else {
+      setState({ phase: "approved", result: outcome.result });
+      toast.success(t("approvedToast"));
+      router.refresh();
+    }
+  };
+  return { state, decide };
+}

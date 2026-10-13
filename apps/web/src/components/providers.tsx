@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 
 function AppToaster() {
   const { resolvedTheme } = useTheme();
-  return <Toaster theme={resolvedTheme === "dark" ? "dark" : "light"} position="bottom-right" />;
+  return <Toaster theme={resolvedTheme === "dark" ? "dark" : "light"} position="top-center" />;
 }
 
 export type ProvidersProps = { children: ReactNode };

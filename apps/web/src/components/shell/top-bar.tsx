@@ -1,3 +1,4 @@
+import { AssistantToggle } from "@/features/assistant/ui/assistant-toggle";
 import { CommandBar } from "./command-bar";
 import { LocaleSwitcher } from "./locale-switcher";
 import { MobileNav } from "./mobile-nav";
@@ -13,6 +14,7 @@ export function TopBar({ organizationId, user }: TopBarProps) {
       <div className="flex flex-1 items-center">
         <CommandBar />
       </div>
+      <AssistantToggle />
       <LocaleSwitcher />
       <ThemeToggle />
       <UserMenu name={user.name} email={user.email} />

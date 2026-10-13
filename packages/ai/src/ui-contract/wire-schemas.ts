@@ -37,15 +37,19 @@ export const SkillListWireSchema = z.object({
 export const SkillSearchWireSchema = z.object({ skills: z.array(SkillRowSchema) });
 
 /** Skill card: full skills (skill_get/create/...) and `load_skill` output share these fields. */
-export const SkillCardWireSchema = SkillSchema.pick({ id: true, slug: true, name: true, version: true })
-  .extend({
-    description: SkillSchema.shape.description.optional(),
-    instructions: SkillSchema.shape.instructions.optional(),
-    status: SkillSchema.shape.status.optional(),
-    scope: SkillSchema.shape.scope.optional(),
-    allowedTools: SkillSchema.shape.allowedTools.optional(),
-    activeTools: z.array(z.string()).optional(),
-  });
+export const SkillCardWireSchema = SkillSchema.pick({
+  id: true,
+  slug: true,
+  name: true,
+  version: true,
+}).extend({
+  description: SkillSchema.shape.description.optional(),
+  instructions: SkillSchema.shape.instructions.optional(),
+  status: SkillSchema.shape.status.optional(),
+  scope: SkillSchema.shape.scope.optional(),
+  allowedTools: SkillSchema.shape.allowedTools.optional(),
+  activeTools: z.array(z.string()).optional(),
+});
 
 export const SearchHitWireSchema = SearchHitSchema;
 

@@ -11,6 +11,10 @@ import { createId } from "@paralleldrive/cuid2";
  * updates the redirect URI. Prints `WEB_OAUTH_CLIENT_ID=...` for `.env`.
  *
  *   pnpm --filter @okazi/web provision:oauth [--redirect-uri <url>]
+ *
+ * The redirect URI (default `${WEB_URL}/api/assistant/oauth/callback`) only has to be registered:
+ * `getFirstPartyAccessToken` runs authorization code + PKCE in-process and reads the code from
+ * the authorize response, so the redirect is never followed and no callback route exists.
  */
 const CLIENT_NAME = "Okazi Web Assistant";
 // Keep in sync with OAUTH_SCOPES in packages/auth/src/plugins/mcp.ts.
