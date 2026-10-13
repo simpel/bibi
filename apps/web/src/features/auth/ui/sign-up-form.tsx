@@ -5,12 +5,12 @@ import { useRouter } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
-import { TextField } from "@/components/form/text-field";
 import { ErrorBanner } from "@/components/states/error-banner";
 import { authClient } from "@/lib/auth-client";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { SignUpSchema, type SignUpValues } from "./auth-schemas";
 import { finishSignIn } from "./finish-sign-in";
+import { SignUpFields } from "./sign-up-fields";
 import { useAuthSubmit } from "./use-auth-submit";
 
 export type SignUpFormProps = { next: string };
@@ -34,24 +34,7 @@ export function SignUpForm({ next }: SignUpFormProps) {
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-4">
       <ErrorBanner errorKey={errorKey} />
-      <TextField form={form} name="name" label={t("name")} autoComplete="name" required />
-      <TextField
-        form={form}
-        name="email"
-        label={t("email")}
-        type="email"
-        autoComplete="email"
-        required
-      />
-      <TextField
-        form={form}
-        name="password"
-        label={t("password")}
-        type="password"
-        autoComplete="new-password"
-        required
-      />
-      <p className="-mt-2 text-xs text-muted-foreground">{t("passwordHint")}</p>
+      <SignUpFields form={form} />
       <Button type="submit" disabled={pending}>
         {t("signUp")}
       </Button>

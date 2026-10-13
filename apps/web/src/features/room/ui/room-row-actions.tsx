@@ -20,7 +20,6 @@ export function RoomRowActions({ room, venueName }: RoomRowActionsProps) {
   const t = useTranslations("room");
   const common = useTranslations("common");
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
-  const close = (open: boolean) => setDialog(open ? dialog : null);
   return (
     <>
       <DropdownMenu>
@@ -41,9 +40,13 @@ export function RoomRowActions({ room, venueName }: RoomRowActionsProps) {
         venueName={venueName}
         room={room}
         open={dialog === "edit"}
-        onOpenChange={close}
+        onOpenChange={(open) => !open && setDialog(null)}
       />
-      <ArchiveRoomDialog room={room} open={dialog === "archive"} onOpenChange={close} />
+      <ArchiveRoomDialog
+        room={room}
+        open={dialog === "archive"}
+        onOpenChange={(open) => !open && setDialog(null)}
+      />
     </>
   );
 }

@@ -32,9 +32,7 @@ export function OtpCodeForm({ email, next }: OtpCodeFormProps) {
   );
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-4">
-      <p role="status" className="text-sm text-muted-foreground">
-        {t("codeSent", { email })}
-      </p>
+      <output className="block text-sm text-muted-foreground">{t("codeSent", { email })}</output>
       <ErrorBanner errorKey={errorKey} />
       <TextField
         form={form}

@@ -14,17 +14,19 @@ export function CreateVenueButton() {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(useSearchParams().get("create") === "1");
-  const onOpenChange = (next: boolean) => {
-    setOpen(next);
-    if (!next) router.replace(pathname);
-  };
   return (
     <>
       <Button onClick={() => setOpen(true)}>
         <PlusIcon />
         {t("create")}
       </Button>
-      <VenueDialog open={open} onOpenChange={onOpenChange} />
+      <VenueDialog
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (!next) router.replace(pathname);
+        }}
+      />
     </>
   );
 }

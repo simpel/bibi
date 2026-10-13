@@ -20,12 +20,17 @@ export type IssueMessageKey =
 const isEmptyCheck = ({ minimum }: Pick<IssueFacts, "minimum">) => Number(minimum ?? 1) <= 1;
 
 /** Zod issue → `errors.*` key so field messages are localized instead of Zod's English text. */
-export function issueMessageKey(facts: IssueFacts): IssueMessageKey {
-  const { code, origin, format, expected } = facts;
+export function issueMessageKey({
+  code,
+  origin,
+  format,
+  expected,
+  minimum,
+}: IssueFacts): IssueMessageKey {
   if (code === "invalid_format") return format === "email" ? "invalidEmail" : "invalid";
   if (code === "invalid_type") return expected === "number" ? "invalidNumber" : "required";
   if (code === "too_big") return origin === "string" ? "tooLong" : "tooBig";
   if (code !== "too_small") return "invalid";
   if (origin !== "string") return "tooShort";
-  return isEmptyCheck(facts) ? "required" : "textTooShort";
+  return isEmptyCheck({ minimum }) ? "required" : "textTooShort";
 }

@@ -30,7 +30,7 @@ export function MagicLinkForm({ next }: MagicLinkFormProps) {
       onSuccess: () => setSentTo(email),
     }),
   );
-  if (sentTo) return <p role="status">{t("magicLinkSent", { email: sentTo })}</p>;
+  if (sentTo) return <output className="block">{t("magicLinkSent", { email: sentTo })}</output>;
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-4">
       <ErrorBanner errorKey={errorKey} />

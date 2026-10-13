@@ -21,7 +21,6 @@ export function VenueRowActions({ venue, redirectToList = false }: VenueRowActio
   const t = useTranslations("venue");
   const common = useTranslations("common");
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
-  const close = (open: boolean) => setDialog(open ? dialog : null);
   return (
     <>
       <DropdownMenu>
@@ -37,11 +36,15 @@ export function VenueRowActions({ venue, redirectToList = false }: VenueRowActio
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <VenueDialog venue={venue} open={dialog === "edit"} onOpenChange={close} />
+      <VenueDialog
+        venue={venue}
+        open={dialog === "edit"}
+        onOpenChange={(open) => !open && setDialog(null)}
+      />
       <ArchiveVenueDialog
         venue={venue}
         open={dialog === "archive"}
-        onOpenChange={close}
+        onOpenChange={(open) => !open && setDialog(null)}
         redirectToList={redirectToList}
       />
     </>

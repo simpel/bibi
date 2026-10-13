@@ -16,17 +16,21 @@ export function CreateRoomButton({ venueId, venueName }: CreateRoomButtonProps) 
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(useSearchParams().get("createRoom") === "1");
-  const onOpenChange = (next: boolean) => {
-    setOpen(next);
-    if (!next) router.replace(pathname);
-  };
   return (
     <>
       <Button onClick={() => setOpen(true)}>
         <PlusIcon />
         {t("create")}
       </Button>
-      <RoomDialog venueId={venueId} venueName={venueName} open={open} onOpenChange={onOpenChange} />
+      <RoomDialog
+        venueId={venueId}
+        venueName={venueName}
+        open={open}
+        onOpenChange={(next) => {
+          setOpen(next);
+          if (!next) router.replace(pathname);
+        }}
+      />
     </>
   );
 }

@@ -1,10 +1,11 @@
 import { useTranslations } from "next-intl";
 
-const KNOWN_SCOPES = ["openid", "profile", "email", "offline_access"] as const;
-type KnownScope = (typeof KNOWN_SCOPES)[number];
-
-const isKnown = (scope: string): scope is KnownScope =>
-  (KNOWN_SCOPES as readonly string[]).includes(scope);
+const KNOWN_SCOPES: Record<string, "openid" | "profile" | "email" | "offline_access"> = {
+  openid: "openid",
+  profile: "profile",
+  email: "email",
+  offline_access: "offline_access",
+};
 
 export type ConsentScopesProps = { scopes: string[] };
 
@@ -15,9 +16,10 @@ export function ConsentScopes({ scopes }: ConsentScopesProps) {
     <div className="grid gap-2">
       <p className="text-sm text-muted-foreground">{t("consentScopes")}</p>
       <ul className="grid list-disc gap-1 pl-5 text-sm">
-        {scopes.map((scope) => (
-          <li key={scope}>{isKnown(scope) ? t(`scope.${scope}`) : scope}</li>
-        ))}
+        {scopes.map((scope) => {
+          const key = KNOWN_SCOPES[scope];
+          return <li key={scope}>{key ? t(`scope.${key}`) : scope}</li>;
+        })}
       </ul>
     </div>
   );

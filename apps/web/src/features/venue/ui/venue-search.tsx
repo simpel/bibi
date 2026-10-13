@@ -3,38 +3,15 @@
 import { Button, Input } from "@okazi/ui";
 import { SearchIcon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
-import { searchAction } from "@/features/search/actions";
-import type { SearchHitView } from "@/features/search/search-hit-view";
-import { type ErrorKey, errorKeyForCode } from "@/lib/error-key";
+import { useState } from "react";
+import { useVenueSearch } from "./use-venue-search";
 import { VenueSearchResults } from "./venue-search-results";
-
-const DEBOUNCE_MS = 300;
 
 /** Semantic search box (core `search` operation) shown above the venue list. */
 export function VenueSearch() {
   const t = useTranslations("search");
   const [query, setQuery] = useState("");
-  const [hits, setHits] = useState<SearchHitView[] | null>(null);
-  const [errorKey, setErrorKey] = useState<ErrorKey | null>(null);
-  const [pending, startTransition] = useTransition();
-
-  useEffect(() => {
-    const trimmed = query.trim();
-    if (trimmed === "") {
-      setHits(null);
-      return;
-    }
-    const timer = setTimeout(() => {
-      startTransition(async () => {
-        const result = await searchAction({ query: trimmed });
-        setErrorKey(result.ok ? null : errorKeyForCode({ code: result.error.code }));
-        setHits(result.ok ? result.value : []);
-      });
-    }, DEBOUNCE_MS);
-    return () => clearTimeout(timer);
-  }, [query]);
-
+  const { hits, errorKey, pending } = useVenueSearch({ query });
   return (
     <section className="grid gap-3" aria-label={t("label")}>
       <div className="relative">

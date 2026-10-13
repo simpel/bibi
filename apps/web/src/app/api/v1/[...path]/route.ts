@@ -1,8 +1,6 @@
 import { restHandler } from "@/server/handlers";
 
-const handle = (request: Request) => restHandler()(request);
-
-export const GET = handle;
-export const POST = handle;
-export const PATCH = handle;
-export const DELETE = handle;
+export const GET = (request: Request) => restHandler()(request);
+export const POST = (request: Request) => restHandler()(request);
+export const PATCH = (request: Request) => restHandler()(request);
+export const DELETE = (request: Request) => restHandler()(request);
