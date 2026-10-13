@@ -7,8 +7,8 @@
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { checkFile } from "./lib/file-rules.mjs";
 import { checkFeatures } from "./lib/features.mjs";
+import { checkFile } from "./lib/file-rules.mjs";
 import { analyzeFunctions } from "./lib/functions.mjs";
 import { listPackageDirs, walkSources } from "./lib/scan.mjs";
 
@@ -36,8 +36,16 @@ export function runChecks({ root }) {
       for (const message of messages) problems.push({ file: relPath, message });
     }
   }
-  const features = checkFeatures({ root, requiredFiles: REQUIRED_FILES, corePackage: CORE_PACKAGE });
-  return { problems: [...problems, ...features.problems], fileCount, entityCount: features.entityCount };
+  const features = checkFeatures({
+    root,
+    requiredFiles: REQUIRED_FILES,
+    corePackage: CORE_PACKAGE,
+  });
+  return {
+    problems: [...problems, ...features.problems],
+    fileCount,
+    entityCount: features.entityCount,
+  };
 }
 
 export function formatReport({ problems, fileCount, entityCount }) {
@@ -48,7 +56,9 @@ export function formatReport({ problems, fileCount, entityCount }) {
   for (const { file, message } of problems) {
     byFile.set(file, [...(byFile.get(file) ?? []), message]);
   }
-  const lines = [`Strukturkontroll misslyckades: ${problems.length} problem i ${byFile.size} fil(er).`];
+  const lines = [
+    `Strukturkontroll misslyckades: ${problems.length} problem i ${byFile.size} fil(er).`,
+  ];
   for (const [file, messages] of byFile) {
     lines.push("", file, ...messages.map((message) => `  - ${message}`));
   }

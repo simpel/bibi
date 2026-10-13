@@ -1,0 +1,136 @@
+{
+  "common": {
+    "appName": "Okazi",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "close": "Close",
+    "loading": "Loading...",
+    "search": "Search",
+    "actions": "Actions",
+    "yes": "Yes",
+    "no": "No",
+    "name": "Name",
+    "description": "Description",
+    "status": "Status",
+    "language": "Language",
+    "theme": "Theme",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "signOut": "Sign out",
+    "email": "Email",
+    "password": "Password",
+    "magicLink": "Send sign-in link",
+    "magicLinkSent": "We have sent a sign-in link to {email}.",
+    "otpCode": "One-time code",
+    "forgotPassword": "Forgot password?",
+    "organization": "Organization",
+    "switchOrganization": "Switch organization",
+    "createOrganization": "Create organization"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "venues": "Venues",
+    "rooms": "Rooms",
+    "bookings": "Bookings",
+    "skills": "Skills",
+    "settings": "Settings",
+    "openMenu": "Open menu",
+    "commandBar": "Command bar"
+  },
+  "venue": {
+    "singular": "Venue",
+    "plural": "Venues",
+    "create": "Create venue",
+    "edit": "Edit venue",
+    "delete": "Delete venue",
+    "deleteConfirm": "Do you want to delete the venue {name}?",
+    "empty": "No venues yet.",
+    "created": "The venue has been created.",
+    "updated": "The venue has been updated.",
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "address": "Address",
+      "postalCode": "Postal code",
+      "city": "City",
+      "website": "Website"
+    },
+    "roomCount": "{count, plural, one {# room} other {# rooms}}"
+  },
+  "room": {
+    "singular": "Room",
+    "plural": "Rooms",
+    "create": "Create room",
+    "edit": "Edit room",
+    "delete": "Delete room",
+    "deleteConfirm": "Do you want to delete the room {name}?",
+    "empty": "No rooms yet.",
+    "created": "The room has been created.",
+    "updated": "The room has been updated.",
+    "fields": {
+      "name": "Name",
+      "description": "Description",
+      "venue": "Venue",
+      "capacity": "Capacity",
+      "areaSquareMeters": "Area (sq m)"
+    },
+    "capacityValue": "{count, plural, one {# seat} other {# seats}}"
+  },
+  "assistant": {
+    "title": "Assistant",
+    "open": "Open the assistant",
+    "close": "Close the assistant",
+    "placeholder": "Ask something or request help...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "newConversation": "New conversation",
+    "approval": {
+      "title": "Approve action",
+      "description": "The assistant wants to make the following change.",
+      "approve": "Approve",
+      "reject": "Reject"
+    }
+  },
+  "skills": {
+    "title": "Skills",
+    "singular": "Skill",
+    "create": "Create skill",
+    "import": "Import",
+    "export": "Export",
+    "share": "Share with organization",
+    "publish": "Publish",
+    "scope": {
+      "system": "System",
+      "organization": "Organization",
+      "personal": "Personal"
+    },
+    "instructions": "Instructions",
+    "allowedTools": "Allowed tools"
+  },
+  "search": {
+    "placeholder": "Search venues, rooms and more...",
+    "noResults": "No results for \"{query}\".",
+    "results": "{count, plural, one {# result} other {# results}}",
+    "searching": "Searching..."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "notFound": "We could not find what you were looking for.",
+    "unauthorized": "You need to sign in.",
+    "forbidden": "You do not have permission to do this.",
+    "validation": "Please check the highlighted fields.",
+    "required": "This field is required.",
+    "conflict": "The information was changed by someone else.",
+    "network": "The server could not be reached."
+  }
+}

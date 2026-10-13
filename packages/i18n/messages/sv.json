@@ -1,0 +1,136 @@
+{
+  "common": {
+    "appName": "Okazi",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "delete": "Ta bort",
+    "edit": "Redigera",
+    "create": "Skapa",
+    "back": "Tillbaka",
+    "next": "Nästa",
+    "confirm": "Bekräfta",
+    "close": "Stäng",
+    "loading": "Laddar...",
+    "search": "Sök",
+    "actions": "Åtgärder",
+    "yes": "Ja",
+    "no": "Nej",
+    "name": "Namn",
+    "description": "Beskrivning",
+    "status": "Status",
+    "language": "Språk",
+    "theme": "Tema",
+    "lightMode": "Ljust läge",
+    "darkMode": "Mörkt läge"
+  },
+  "auth": {
+    "signIn": "Logga in",
+    "signUp": "Skapa konto",
+    "signOut": "Logga ut",
+    "email": "E-post",
+    "password": "Lösenord",
+    "magicLink": "Skicka inloggningslänk",
+    "magicLinkSent": "Vi har skickat en inloggningslänk till {email}.",
+    "otpCode": "Engångskod",
+    "forgotPassword": "Glömt lösenord?",
+    "organization": "Organisation",
+    "switchOrganization": "Byt organisation",
+    "createOrganization": "Skapa organisation"
+  },
+  "nav": {
+    "dashboard": "Översikt",
+    "venues": "Anläggningar",
+    "rooms": "Rum",
+    "bookings": "Bokningar",
+    "skills": "Färdigheter",
+    "settings": "Inställningar",
+    "openMenu": "Öppna meny",
+    "commandBar": "Kommandofält"
+  },
+  "venue": {
+    "singular": "Anläggning",
+    "plural": "Anläggningar",
+    "create": "Skapa anläggning",
+    "edit": "Redigera anläggning",
+    "delete": "Ta bort anläggning",
+    "deleteConfirm": "Vill du ta bort anläggningen {name}?",
+    "empty": "Inga anläggningar ännu.",
+    "created": "Anläggningen har skapats.",
+    "updated": "Anläggningen har uppdaterats.",
+    "fields": {
+      "name": "Namn",
+      "description": "Beskrivning",
+      "address": "Adress",
+      "postalCode": "Postnummer",
+      "city": "Ort",
+      "website": "Webbplats"
+    },
+    "roomCount": "{count, plural, one {# rum} other {# rum}}"
+  },
+  "room": {
+    "singular": "Rum",
+    "plural": "Rum",
+    "create": "Skapa rum",
+    "edit": "Redigera rum",
+    "delete": "Ta bort rum",
+    "deleteConfirm": "Vill du ta bort rummet {name}?",
+    "empty": "Inga rum ännu.",
+    "created": "Rummet har skapats.",
+    "updated": "Rummet har uppdaterats.",
+    "fields": {
+      "name": "Namn",
+      "description": "Beskrivning",
+      "venue": "Anläggning",
+      "capacity": "Antal platser",
+      "areaSquareMeters": "Yta (kvm)"
+    },
+    "capacityValue": "{count, plural, one {# plats} other {# platser}}"
+  },
+  "assistant": {
+    "title": "Assistent",
+    "open": "Öppna assistenten",
+    "close": "Stäng assistenten",
+    "placeholder": "Fråga något eller be om hjälp...",
+    "send": "Skicka",
+    "thinking": "Tänker...",
+    "newConversation": "Ny konversation",
+    "approval": {
+      "title": "Godkänn åtgärd",
+      "description": "Assistenten vill utföra följande ändring.",
+      "approve": "Godkänn",
+      "reject": "Avslå"
+    }
+  },
+  "skills": {
+    "title": "Färdigheter",
+    "singular": "Färdighet",
+    "create": "Skapa färdighet",
+    "import": "Importera",
+    "export": "Exportera",
+    "share": "Dela med organisationen",
+    "publish": "Publicera",
+    "scope": {
+      "system": "System",
+      "organization": "Organisation",
+      "personal": "Personlig"
+    },
+    "instructions": "Instruktioner",
+    "allowedTools": "Tillåtna verktyg"
+  },
+  "search": {
+    "placeholder": "Sök anläggningar, rum och mer...",
+    "noResults": "Inga träffar för \"{query}\".",
+    "results": "{count, plural, one {# träff} other {# träffar}}",
+    "searching": "Söker..."
+  },
+  "errors": {
+    "generic": "Något gick fel. Försök igen.",
+    "notFound": "Vi hittade inte det du letade efter.",
+    "unauthorized": "Du behöver logga in.",
+    "forbidden": "Du har inte behörighet att göra detta.",
+    "validation": "Kontrollera de markerade fälten.",
+    "required": "Fältet är obligatoriskt.",
+    "conflict": "Informationen har ändrats av någon annan.",
+    "network": "Det gick inte att nå servern."
+  }
+}
