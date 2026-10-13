@@ -1,0 +1,19 @@
+// Generator + datasource. Models live in sibling files (one concept per file).
+// Better Auth tables are added later in their own file (auth.prisma).
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [vector]
+}
+
+/// Soft-delete status shared by all org-scoped business entities.
+enum RecordStatus {
+  ACTIVE
+  ARCHIVED
+}
