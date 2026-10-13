@@ -6,11 +6,15 @@ import type { Permission } from "./permission";
 
 export type ActorKind = "user" | "ai" | "system";
 
-/** Who is executing. AI acts on behalf of `userId`; `conversationId` links the AI chat. */
+/**
+ * Who is executing. AI acts on behalf of `userId`; `conversationId` links the AI chat.
+ * `approvedBy` is set (by the approval flow only) to the user who confirmed an AI proposal.
+ */
 export type Actor = {
   type: ActorKind;
   userId: string | null;
   conversationId?: string;
+  approvedBy?: string;
 };
 
 /** One entity change recorded by a command handler; becomes an AuditLog row. */

@@ -1,11 +1,37 @@
 /** Models that carry `organizationId` and may be accessed through `scopedDb`. */
-export const ORG_SCOPED_MODELS = new Set<string>(["Venue", "Room", "AuditLog", "Embedding"]);
+export const ORG_SCOPED_MODELS = new Set<string>([
+  "Venue",
+  "Room",
+  "AuditLog",
+  "Embedding",
+  "Conversation",
+  "Message",
+  "Skill",
+]);
 
-/** Models soft-deleted via `status`; reads exclude ARCHIVED unless `status` is filtered. */
-export const SOFT_DELETE_MODELS = new Set<string>(["Venue", "Room"]);
+/**
+ * Soft-deleted models and the `status` filter reads/updates get unless the caller filters
+ * `status` itself. Skill uses DRAFT/PUBLISHED/ARCHIVED, the others RecordStatus.
+ */
+export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string, unknown>([
+  ["Venue", "ACTIVE"],
+  ["Room", "ACTIVE"],
+  ["Conversation", "ACTIVE"],
+  ["Skill", { not: "ARCHIVED" }],
+]);
 
-/** Append-only models: no update/delete through `scopedDb`. */
-export const APPEND_ONLY_MODELS = new Set<string>(["AuditLog"]);
+/** Models soft-deleted via `status`; reads exclude archived rows unless `status` is filtered. */
+export const SOFT_DELETE_MODELS = new Set<string>(SOFT_DELETE_DEFAULTS.keys());
+
+/** Append-only models: no update/delete/upsert through `scopedDb`. */
+export const APPEND_ONLY_MODELS = new Set<string>(["AuditLog", "Message"]);
+
+/**
+ * Models with global rows (`organizationId` null, e.g. SYSTEM skills). Reads through `scopedDb`
+ * see the org's rows plus the global rows; writes stay pinned to the org, so global rows can
+ * never be created, updated or deleted through `scopedDb` (only by dedicated system code).
+ */
+export const GLOBAL_READ_MODELS = new Set<string>(["Skill"]);
 
 export const READ_OPERATIONS = new Set<string>([
   "findMany",

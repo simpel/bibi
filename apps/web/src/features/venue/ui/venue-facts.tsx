@@ -19,13 +19,15 @@ export async function VenueFacts({ venue }: VenueFactsProps) {
   if (facts.length === 0) return null;
   return (
     <Card>
-      <CardContent className="grid gap-4 pt-6 sm:grid-cols-2">
+      <CardContent className="pt-6">
+        <dl className="grid gap-4 sm:grid-cols-2">
         {facts.map((fact) => (
           <div key={fact.label} className="grid gap-0.5">
             <dt className="text-xs text-muted-foreground">{fact.label}</dt>
             <dd className="text-sm">{fact.value}</dd>
           </div>
         ))}
+        </dl>
       </CardContent>
     </Card>
   );

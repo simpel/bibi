@@ -1,10 +1,11 @@
 import type { Db } from "../client";
 import { deleteEmbedding } from "../embeddings/delete-embedding";
 import { searchEmbeddings } from "../embeddings/search-embeddings";
-import type {
-  DeleteEmbeddingInput,
-  SearchEmbeddingsInput,
-  UpsertEmbeddingInput,
+import {
+  type DeleteEmbeddingInput,
+  GLOBAL_EMBEDDING_SCOPE,
+  type SearchEmbeddingsInput,
+  type UpsertEmbeddingInput,
 } from "../embeddings/types";
 import { upsertEmbedding } from "../embeddings/upsert-embedding";
 import { getDb } from "../get-db";
@@ -61,11 +62,12 @@ export type ScopedDbClient = Omit<ScopedDb, "$transaction">;
 /**
  * Prisma client pinned to one organization: every read/write gets `organizationId` forced,
  * soft-deleted rows are hidden unless `status` is filtered explicitly, and models without
- * `organizationId` are rejected.
+ * `organizationId` are rejected. Global-read models (Skill) also return global rows on reads.
  */
 export function scopedDb({ organizationId, db }: ScopedDbInput): ScopedDb {
-  if (organizationId.trim() === "") {
-    throw new ScopeViolationError({ model: undefined, operation: "scopedDb", reason: "empty id" });
+  if (organizationId.trim() === "" || organizationId === GLOBAL_EMBEDDING_SCOPE) {
+    const reason = "empty or reserved organization id";
+    throw new ScopeViolationError({ model: undefined, operation: "scopedDb", reason });
   }
   return extend({ organizationId, db: db ?? getDb() });
 }

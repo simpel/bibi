@@ -1,5 +1,11 @@
 export const EMBEDDING_DIMENSIONS = 1536;
 
+/**
+ * `Embedding.organizationId` of index rows for global entities (SYSTEM skills). Every org's
+ * search includes these rows. Never a real org id: `scopedDb` refuses it.
+ */
+export const GLOBAL_EMBEDDING_SCOPE = "__global__";
+
 export type EmbeddingVector = readonly number[];
 
 export type UpsertEmbeddingInput = {

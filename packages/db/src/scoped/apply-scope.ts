@@ -4,10 +4,10 @@ import {
   DELETE_OPERATIONS,
   ORG_SCOPED_MODELS,
   READ_OPERATIONS,
-  SOFT_DELETE_MODELS,
   UPDATE_OPERATIONS,
 } from "./models";
 import { ScopeViolationError } from "./scope-violation";
+import { scopeWhere } from "./scope-where";
 
 type Args = Record<string, unknown>;
 
@@ -17,16 +17,6 @@ export type ApplyScopeInput = {
   args: unknown;
   organizationId: string;
 };
-
-type WhereInput = { model: string; where: unknown; organizationId: string; softDelete: boolean };
-
-function scopeWhere({ model, where, organizationId, softDelete }: WhereInput): Args {
-  const base: Args = { ...((where as Args | undefined) ?? {}), organizationId };
-  if (softDelete && SOFT_DELETE_MODELS.has(model) && base.status === undefined) {
-    base.status = "ACTIVE";
-  }
-  return base;
-}
 
 type DataInput = { data: unknown; organizationId: string };
 
@@ -58,7 +48,7 @@ export function applyScope({ model, operation, args, organizationId }: ApplyScop
     return { ...input, data: scopeCreateData({ data: input.data, organizationId }) };
   }
   const softDelete = READ_OPERATIONS.has(operation) || UPDATE_OPERATIONS.has(operation);
-  const where = scopeWhere({ model, where: input.where, organizationId, softDelete });
+  const where = scopeWhere({ model, operation, where: input.where, organizationId, softDelete });
   if (operation === "upsert") {
     const create = scopeCreateData({ data: input.create, organizationId });
     return { ...input, where, create, update: stripOrganizationId({ data: input.update }) };

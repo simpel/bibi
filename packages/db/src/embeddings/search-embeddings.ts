@@ -1,6 +1,6 @@
 import type { Db } from "../client";
 import { Prisma } from "../generated/prisma/client";
-import type { EmbeddingHit, SearchEmbeddingsInput } from "./types";
+import { type EmbeddingHit, GLOBAL_EMBEDDING_SCOPE, type SearchEmbeddingsInput } from "./types";
 import { toVectorLiteral } from "./vector-literal";
 
 export type SearchEmbeddingsArgs = SearchEmbeddingsInput & { db: Db };
@@ -11,7 +11,10 @@ const CANDIDATES = 50;
 
 type HitRow = { entityType: string; entityId: string; score: number; content: string };
 
-/** Hybrid search: full-text (tsvector) and cosine similarity (pgvector) fused with RRF. */
+/**
+ * Hybrid search: full-text (tsvector) and cosine similarity (pgvector) fused with RRF. Covers the
+ * org's rows plus global rows (SYSTEM skills); callers filter hits by per-user visibility.
+ */
 export async function searchEmbeddings({
   db,
   organizationId,
@@ -29,14 +32,16 @@ export async function searchEmbeddings({
     WITH vec AS (
       SELECT "id", row_number() OVER (ORDER BY "embedding" <=> ${vector}::vector) AS rank
       FROM "Embedding"
-      WHERE "organizationId" = ${organizationId} AND "embedding" IS NOT NULL ${typeFilter}
+      WHERE "organizationId" IN (${organizationId}, ${GLOBAL_EMBEDDING_SCOPE})
+        AND "embedding" IS NOT NULL ${typeFilter}
       ORDER BY "embedding" <=> ${vector}::vector
       LIMIT ${CANDIDATES}
     ),
     fts AS (
       SELECT "id", row_number() OVER (ORDER BY ts_rank_cd("search", q) DESC) AS rank
       FROM "Embedding", websearch_to_tsquery('simple', ${text}) AS q
-      WHERE "organizationId" = ${organizationId} AND "search" @@ q ${typeFilter}
+      WHERE "organizationId" IN (${organizationId}, ${GLOBAL_EMBEDDING_SCOPE})
+        AND "search" @@ q ${typeFilter}
       ORDER BY ts_rank_cd("search", q) DESC
       LIMIT ${CANDIDATES}
     )

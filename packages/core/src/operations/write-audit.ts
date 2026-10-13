@@ -35,6 +35,7 @@ export async function writeAudit({
       actorType: ACTOR_TYPE[actor.type],
       actorId: actor.userId,
       conversationId: actor.conversationId ?? null,
+      approvedBy: actor.approvedBy ?? null,
       operation: operation.name,
       entityType: change.entityType ?? operation.entityType,
       entityId: change.entityId || null,
