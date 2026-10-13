@@ -38,7 +38,8 @@ export function mcpPlugins() {
         shouldRedirect: ({ session }) => activeOrganizationOf({ session }) === undefined,
         consentReferenceId: ({ session }) => activeOrganizationOf({ session }),
       },
-      customAccessTokenClaims: ({ referenceId }) => (referenceId ? { [ORG_CLAIM]: referenceId } : {}),
+      customAccessTokenClaims: ({ referenceId }) =>
+        referenceId ? { [ORG_CLAIM]: referenceId } : {},
       clientPrivileges: ({ action }) => action === "read" || action === "list",
     }),
     cimd({ fetchClientMetadataResource, metadataProfile: "mcp-2026-07-28" }),

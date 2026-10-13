@@ -12,7 +12,8 @@ export type ResolveExecuteContextInput = { headers: Headers };
 const resolvePrincipal = ({ headers }: ResolveExecuteContextInput): Promise<Result<Principal>> => {
   const credential = readCredential({ headers });
   if (credential.kind === "apiKey") return principalFromApiKey({ key: credential.key });
-  if (credential.kind === "accessToken") return principalFromAccessToken({ token: credential.token });
+  if (credential.kind === "accessToken")
+    return principalFromAccessToken({ token: credential.token });
   return principalFromSession({ headers });
 };
 

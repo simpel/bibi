@@ -1,6 +1,6 @@
+import { verifyJwsAccessToken } from "@better-auth/core/oauth2";
 import { getEnv } from "@okazi/config";
 import { ok, type Result } from "@okazi/core";
-import { verifyJwsAccessToken } from "@better-auth/core/oauth2";
 import { z } from "zod";
 import { getAuth } from "../get-auth";
 import { ORG_CLAIM } from "../plugins/mcp";
@@ -38,7 +38,8 @@ export async function principalFromAccessToken({
   if (!claims.success) return unauthenticated({ message: "Invalid or expired access token" });
   const { sub: userId, azp, cnf, [ORG_CLAIM]: organizationId } = claims.data;
   if (cnf !== undefined) return unauthenticated({ message: "DPoP-bound tokens are not supported" });
-  if (!organizationId) return forbidden({ message: "Access token is not bound to an organization" });
+  if (!organizationId)
+    return forbidden({ message: "Access token is not bound to an organization" });
   const roles = await loadMemberRoles({ userId, organizationId });
   const aiAllowed = azp === getEnv().WEB_OAUTH_CLIENT_ID;
   return ok({ value: { userId, organizationId, roles, aiAllowed } });

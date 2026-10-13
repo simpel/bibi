@@ -53,3 +53,10 @@ export function withHeaders({ headers, extra }: WithHeadersInput): Headers {
   for (const [key, value] of Object.entries(extra)) merged.set(key, value);
   return merged;
 }
+
+export type CodeOfInput = { result: { ok: true } | { ok: false; error: { code: string } } };
+
+/** "OK" or the AppError code – keeps assertions one-liners. */
+export function codeOf({ result }: CodeOfInput): string {
+  return result.ok ? "OK" : result.error.code;
+}

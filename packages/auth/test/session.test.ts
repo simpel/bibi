@@ -1,23 +1,23 @@
 import { describe, expect, it } from "vitest";
 import { resolveExecuteContext } from "../src/index";
-import { createOrg, signIn, signUp, withHeaders } from "./helpers";
-
-const codeOf = (result: Awaited<ReturnType<typeof resolveExecuteContext>>) =>
-  result.ok ? "OK" : result.error.code;
+import { codeOf, createOrg, signIn, signUp, withHeaders } from "./helpers";
 
 describe("resolveExecuteContext – session cookie", () => {
   it("rejects requests without credentials", async () => {
-    expect(codeOf(await resolveExecuteContext({ headers: new Headers() }))).toBe("UNAUTHENTICATED");
+    const result = await resolveExecuteContext({ headers: new Headers() });
+    expect(codeOf({ result })).toBe("UNAUTHENTICATED");
   });
 
   it("rejects a forged session cookie", async () => {
     const headers = new Headers({ cookie: "better-auth.session_token=forged.value" });
-    expect(codeOf(await resolveExecuteContext({ headers }))).toBe("UNAUTHENTICATED");
+    expect(codeOf({ result: await resolveExecuteContext({ headers }) })).toBe("UNAUTHENTICATED");
   });
 
   it("is FORBIDDEN while the user has no organization", async () => {
     const user = await signUp();
-    expect(codeOf(await resolveExecuteContext({ headers: user.headers }))).toBe("FORBIDDEN");
+    expect(codeOf({ result: await resolveExecuteContext({ headers: user.headers }) })).toBe(
+      "FORBIDDEN",
+    );
   });
 
   it("resolves the active organization and owner role", async () => {
@@ -45,6 +45,6 @@ describe("resolveExecuteContext – session cookie", () => {
       headers: user.headers,
       extra: { "x-okazi-actor": "ai", "x-okazi-conversation-id": "conv_1" },
     });
-    expect(codeOf(await resolveExecuteContext({ headers }))).toBe("FORBIDDEN");
+    expect(codeOf({ result: await resolveExecuteContext({ headers }) })).toBe("FORBIDDEN");
   });
 });

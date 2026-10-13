@@ -1,4 +1,10 @@
-import { API_KEY_ROLES, type ApiKeyRole, ORG_ROLES, type OrgRole, statementsForRole } from "./permissions";
+import {
+  API_KEY_ROLES,
+  type ApiKeyRole,
+  ORG_ROLES,
+  type OrgRole,
+  statementsForRole,
+} from "./permissions";
 
 const rank = ({ role }: { role: OrgRole }): number => ORG_ROLES.indexOf(role);
 
@@ -39,7 +45,9 @@ export type RoleForKeyPermissionsInput = {
  * Most privileged API-key role whose full statement set the key holds. Keys narrower than
  * any role (e.g. only `venue:write`) fall back to the largest fully covered role, or null.
  */
-export function roleForKeyPermissions({ permissions }: RoleForKeyPermissionsInput): ApiKeyRole | null {
+export function roleForKeyPermissions({
+  permissions,
+}: RoleForKeyPermissionsInput): ApiKeyRole | null {
   const granted = permissions ?? {};
   const covers = ({ role }: { role: ApiKeyRole }): boolean =>
     Object.entries(statementsForRole({ role })).every(([resource, actions]) =>

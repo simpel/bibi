@@ -9,7 +9,9 @@ export type AuthSession = NonNullable<
 >;
 
 /** Session for server components/actions: `requireSession({ headers: await headers() })`. */
-export async function requireSession({ headers }: RequireSessionInput): Promise<Result<AuthSession>> {
+export async function requireSession({
+  headers,
+}: RequireSessionInput): Promise<Result<AuthSession>> {
   const session = await getAuth().api.getSession({ headers });
   if (!session) return unauthenticated({ message: "Sign in required" });
   return ok({ value: session });

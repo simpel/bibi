@@ -34,7 +34,9 @@ export function statementsForRole({ role }: StatementsForRoleInput): ResourceSta
   return Object.fromEntries(
     RESOURCES.map((resource) => [
       resource,
-      ACTIONS.filter((action) => hasPermission({ roles: [role], permission: `${resource}:${action}` })),
+      ACTIONS.filter((action) =>
+        hasPermission({ roles: [role], permission: `${resource}:${action}` }),
+      ),
     ]),
   );
 }

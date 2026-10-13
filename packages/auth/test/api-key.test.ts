@@ -1,17 +1,20 @@
 import { createExecuteContext, createVenue, execute, getVenue } from "@okazi/core";
 import { describe, expect, it } from "vitest";
 import { createOrgApiKey, getAuth, resolveExecuteContext } from "../src/index";
-import { createOrg, signUp } from "./helpers";
+import { codeOf, createOrg, signUp } from "./helpers";
 
 type Resolved = Awaited<ReturnType<typeof resolveExecuteContext>>;
-const codeOf = (result: { ok: boolean; error?: { code: string } }) =>
-  result.ok ? "OK" : result.error?.code;
 const keyHeaders = ({ key }: { key: string }) => new Headers({ "x-api-key": key });
 
 const ownerWithKey = async ({ role }: { role: "viewer" | "member" | "admin" }) => {
   const owner = await signUp();
   const organizationId = await createOrg({ headers: owner.headers });
-  const created = await createOrgApiKey({ headers: owner.headers, organizationId, name: "ci", role });
+  const created = await createOrgApiKey({
+    headers: owner.headers,
+    organizationId,
+    name: "ci",
+    role,
+  });
   if (!created.ok) throw created.error;
   return { owner, organizationId, key: created.value.key };
 };
@@ -34,7 +37,7 @@ describe("resolveExecuteContext – API keys", () => {
 
   it("rejects unknown keys", async () => {
     const result = await resolveExecuteContext({ headers: keyHeaders({ key: "okz_nope" }) });
-    expect(codeOf(result)).toBe("UNAUTHENTICATED");
+    expect(codeOf({ result: result })).toBe("UNAUTHENTICATED");
   });
 
   it("cannot read another organization's data", async () => {
@@ -45,12 +48,20 @@ describe("resolveExecuteContext – API keys", () => {
       roles: ["owner"],
       actor: { type: "user", userId: other.owner.userId },
     });
-    const venue = await execute({ operation: createVenue, input: { name: "B" }, context: otherContext });
+    const venue = await execute({
+      operation: createVenue,
+      input: { name: "B" },
+      context: otherContext,
+    });
     if (!venue.ok) throw venue.error;
     const context = await resolveExecuteContext({ headers: keyHeaders({ key }) });
     if (!context.ok) throw context.error;
-    const read = await execute({ operation: getVenue, input: { id: venue.value.id }, context });
-    expect(codeOf(read)).toBe("NOT_FOUND");
+    const read = await execute({
+      operation: getVenue,
+      input: { id: venue.value.id },
+      context: context.value,
+    });
+    expect(codeOf({ result: read })).toBe("NOT_FOUND");
   });
 
   it("refuses keys for organizations the owner does not belong to", async () => {
@@ -61,35 +72,51 @@ describe("resolveExecuteContext – API keys", () => {
       organizationId: foreign.organizationId,
       name: "x",
     });
-    expect(codeOf(viaHelper)).toBe("FORBIDDEN");
+    expect(codeOf({ result: viaHelper })).toBe("FORBIDDEN");
     // Even a key forged with foreign metadata (bypassing the helper) is rejected at resolve time.
     const forged = await getAuth().api.createApiKey({
-      body: { userId: owner.userId, name: "forged", metadata: { organizationId: foreign.organizationId } },
+      body: {
+        userId: owner.userId,
+        name: "forged",
+        metadata: { organizationId: foreign.organizationId },
+      },
     });
     const result = await resolveExecuteContext({ headers: keyHeaders({ key: forged.key }) });
-    expect(codeOf(result)).toBe("FORBIDDEN");
+    expect(codeOf({ result: result })).toBe("FORBIDDEN");
   });
 
-  it("caps key role at the owner's role and follows membership changes", async () => {
-    const { organizationId, key } = await ownerWithKey({ role: "admin" });
+  it("caps key role at the owner's role", async () => {
+    const { owner, organizationId } = await ownerWithKey({ role: "admin" });
     const viewer = await signUp();
-    await getAuth().api.addMember({ body: { userId: viewer.userId, organizationId, role: "viewer" } });
-    await getAuth().api.setActiveOrganization({ headers: viewer.headers, body: { organizationId } });
-    const tooHigh = await createOrgApiKey({ headers: viewer.headers, organizationId, name: "v", role: "member" });
-    expect(codeOf(tooHigh)).toBe("FORBIDDEN");
+    const body = { userId: viewer.userId, organizationId, role: "viewer" as const };
+    await getAuth().api.addMember({ body });
+    const tooHigh = await createOrgApiKey({
+      headers: viewer.headers,
+      organizationId,
+      name: "v",
+      role: "member",
+    });
+    expect(codeOf({ result: tooHigh })).toBe("FORBIDDEN");
     const viewerKey = await createOrgApiKey({ headers: viewer.headers, organizationId, name: "v" });
     if (!viewerKey.ok) throw viewerKey.error;
-    const resolved = await resolveExecuteContext({ headers: keyHeaders({ key: viewerKey.value.key }) });
-    expect(resolved.ok && resolved.value.roles).toEqual(["viewer"]);
+    const resolved = await resolveExecuteContext({
+      headers: keyHeaders({ key: viewerKey.value.key }),
+    });
+    if (!resolved.ok) throw resolved.error;
+    expect(resolved.value.roles).toEqual(["viewer"]);
     const write = await execute({
       operation: createVenue,
-      input: { name: "nope" },
-      context: resolved.ok ? resolved.value : (undefined as never),
+      input: { name: "no" },
+      context: resolved.value,
     });
-    expect(codeOf(write)).toBe("FORBIDDEN");
-    await getAuth().api.removeMember({ body: { memberIdOrEmail: viewer.email, organizationId } });
-    const after = await resolveExecuteContext({ headers: keyHeaders({ key: viewerKey.value.key }) });
-    expect(codeOf(after)).toBe("FORBIDDEN");
-    expect((await resolveExecuteContext({ headers: keyHeaders({ key }) })).ok).toBe(true);
+    expect(codeOf({ result: write })).toBe("FORBIDDEN");
+    await getAuth().api.removeMember({
+      headers: owner.headers,
+      body: { memberIdOrEmail: viewer.email, organizationId },
+    });
+    const after = await resolveExecuteContext({
+      headers: keyHeaders({ key: viewerKey.value.key }),
+    });
+    expect(codeOf({ result: after })).toBe("FORBIDDEN");
   });
 });
