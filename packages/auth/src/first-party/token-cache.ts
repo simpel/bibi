@@ -6,11 +6,11 @@ const MAX_ENTRIES = 1000;
 
 const cache = new Map<string, AccessToken>();
 
-export type TokenCacheKeyInput = { userId: string; organizationId: string };
+export type TokenCacheKeyInput = { client: string; userId: string; organizationId: string };
 
-/** Key from the *verified* caller (never from client input). */
-export function tokenCacheKey({ userId, organizationId }: TokenCacheKeyInput): string {
-  return `${userId}\u0000${organizationId}`;
+/** Key from the registry client + the *verified* caller (never from client input). */
+export function tokenCacheKey({ client, userId, organizationId }: TokenCacheKeyInput): string {
+  return [client, userId, organizationId].join("\u0000");
 }
 
 export type ReadCachedTokenInput = { key: string; now?: number };

@@ -1,13 +1,23 @@
-import { type GetAccessToken, getAssistantAccessToken } from "@okazi/auth";
-import type { EmbedFn } from "@okazi/core";
+import { getFirstPartyAccessToken } from "@okazi/auth";
+import type { EmbedFn, Result } from "@okazi/core";
 import { createEmbed } from "../embeddings/create-embed";
 import type { ResolveContext } from "./resolve-user";
+
+/** MCP access token for the verified user (+ org) behind the request's session. */
+export type GetAccessToken = (input: {
+  headers: Headers;
+  caller: { userId: string; organizationId: string };
+}) => Promise<Result<string>>;
+
+/** First-party client `assistant` (the only one whose tokens may carry the AI actor). */
+const assistantAccessToken: GetAccessToken = ({ headers, caller }) =>
+  getFirstPartyAccessToken({ client: "assistant", headers, caller });
 
 /** Dependencies shared by the chat and approval handlers (all injectable for tests). */
 export type AssistantServerOptions = {
   /** Resolves the caller from request headers: `resolveExecuteContext` from `@okazi/auth`. */
   resolveContext: ResolveContext;
-  /** MCP token for the user; default `getAssistantAccessToken` (first-party OAuth client). */
+  /** MCP token for the user; default `getFirstPartyAccessToken({ client: "assistant" })`. */
   getAccessToken?: GetAccessToken;
   /** MCP endpoint; default `${MCP_URL}/mcp`. */
   mcpUrl?: string;
@@ -27,7 +37,7 @@ export function resolveServerOptions({
 }: AssistantServerOptions): ResolvedServerOptions {
   return {
     resolveContext,
-    getAccessToken: getAccessToken ?? getAssistantAccessToken,
+    getAccessToken: getAccessToken ?? assistantAccessToken,
     mcpUrl,
     embed: embed ?? createEmbed(),
   };

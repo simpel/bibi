@@ -1,6 +1,9 @@
 import { simulateReadableStream } from "ai";
 import { MockLanguageModelV4 } from "ai/test";
 
+/** One scripted model step (what `doStream` resolves to). */
+type Step = Awaited<ReturnType<MockLanguageModelV4["doStream"]>>;
+
 const usage = {
   inputTokens: { total: 10, noCache: 10, cacheRead: undefined, cacheWrite: undefined },
   outputTokens: { total: 5, text: 5, reasoning: undefined },
@@ -15,7 +18,7 @@ const finish = ({ reason }: { reason: FinishReason }) => ({
 });
 
 /** One model step that answers with text. */
-export function textStep({ text }: { text: string }) {
+export function textStep({ text }: { text: string }): Step {
   return {
     stream: simulateReadableStream({
       chunks: [
@@ -31,7 +34,7 @@ export function textStep({ text }: { text: string }) {
 export type ToolStepInput = { toolName: string; input: Record<string, unknown>; id?: string };
 
 /** One model step that calls a tool. */
-export function toolStep({ toolName, input, id = `call_${toolName}` }: ToolStepInput) {
+export function toolStep({ toolName, input, id = `call_${toolName}` }: ToolStepInput): Step {
   return {
     stream: simulateReadableStream({
       chunks: [
@@ -42,7 +45,7 @@ export function toolStep({ toolName, input, id = `call_${toolName}` }: ToolStepI
   };
 }
 
-export type MockModelInput = { steps: ReturnType<typeof textStep>[] };
+export type MockModelInput = { steps: Step[] };
 
 /** Scripted model: step N of the run gets `steps[N]`. No network. */
 export function mockModel({ steps }: MockModelInput): MockLanguageModelV4 {

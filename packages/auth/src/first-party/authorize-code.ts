@@ -3,12 +3,12 @@ import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 import { getAuth } from "../get-auth";
 import { mcpResourceUrl } from "../urls";
-import { ASSISTANT_OAUTH_SCOPE, assistantRedirectUri, authEndpoint } from "./assistant-oauth";
+import { authEndpoint, type ResolvedClient } from "./endpoints";
 
 export type AuthorizeCodeInput = {
   /** Incoming request headers; only `cookie` (the user's session) is forwarded. */
   headers: Headers;
-  clientId: string;
+  client: ResolvedClient;
   challenge: string;
 };
 
@@ -34,17 +34,17 @@ const redirectTarget = async ({ response }: { response: Response }): Promise<str
  */
 export async function authorizeCode({
   headers,
-  clientId,
+  client,
   challenge,
 }: AuthorizeCodeInput): Promise<Result<string>> {
   const cookie = headers.get("cookie");
   if (!cookie) return failed({ message: "Sign in required" });
-  const redirectUri = assistantRedirectUri();
+  const { clientId, redirectUri, scope } = client;
   const query = new URLSearchParams({
     response_type: "code",
     client_id: clientId,
     redirect_uri: redirectUri,
-    scope: ASSISTANT_OAUTH_SCOPE,
+    scope,
     state: createId(),
     code_challenge: challenge,
     code_challenge_method: "S256",
@@ -56,7 +56,7 @@ export async function authorizeCode({
   const parsed = target ? new URL(target, redirectUri) : null;
   const code = parsed?.searchParams.get("code");
   if (!parsed || !code || !parsed.toString().startsWith(redirectUri)) {
-    return failed({ message: "Could not authorize the assistant for this session" });
+    return failed({ message: "Could not authorize the first-party client for this session" });
   }
   return ok({ value: code });
 }

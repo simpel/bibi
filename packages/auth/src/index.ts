@@ -4,12 +4,13 @@ export {
   CreateOrgApiKeyInputSchema,
   createOrgApiKey,
 } from "./api-keys/create-org-api-key";
-export {
-  type GetAccessToken,
-  type GetAssistantAccessTokenInput,
-  getAssistantAccessToken,
-} from "./assistant/get-assistant-access-token";
 export { type Auth, type CreateAuthInput, createAuth } from "./auth";
+export type { FirstPartyClient } from "./first-party/clients";
+export {
+  type GetFirstPartyAccessToken,
+  type GetFirstPartyAccessTokenInput,
+  getFirstPartyAccessToken,
+} from "./first-party/get-first-party-access-token";
 export { getAuth } from "./get-auth";
 export {
   type MailMessage,

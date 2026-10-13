@@ -14,14 +14,16 @@ Better Auth 1.7.7 (Prisma-adapter) + plugins: e-post/lösenord, magic link, e-po
 
 ## Förtroendegräns: AI-aktör
 - `x-okazi-actor: ai` + `x-okazi-conversation-id` ger `actor = { type: "ai", userId, conversationId }` (kommandon kräver då godkännande).
-- Accepteras **endast** för OAuth-tokens där `azp` = `WEB_OAUTH_CLIENT_ID` (webbappens förstapartsklient). Cookie, API-nyckel och andra OAuth-klienter → `FORBIDDEN`.
+- Accepteras **endast** för OAuth-tokens vars `azp` är en förstapartsklient med `allowsAiActor: true` i `FIRST_PARTY_CLIENTS` (i dag bara `assistant` = `WEB_OAUTH_CLIENT_ID`). Cookie, API-nyckel, okända och övriga OAuth-klienter → `FORBIDDEN`.
 - En AI-begäran som inte kan godtas nedgraderas aldrig tyst till `user` (då skulle godkännandet hoppas över).
 
-## Assistentens token (`src/assistant/`)
-- `getAssistantAccessToken({ headers, caller })` → `Result<string>`: MCP-token för `WEB_OAUTH_CLIENT_ID` åt användaren bakom sessionscookien. Kör authorization code + PKCE **i processen** genom `getAuth().handler` (authorize med enbart `cookie`-headern, sedan `/oauth2/token`). Ingen egen signering, ingen webbläsarrunda, scope `openid` (ingen refresh-token). Klienten måste ha `skipConsent` och redirect-URI `${WEB_URL}/api/assistant/oauth/callback` (`provision:oauth`). Webben behöver ingen sida på den sökvägen: koden läses ur authorize-svaret.
-- Token får `okazi_org` = sessionens aktiva org och `azp` = webbklienten. `caller` (`{ userId, organizationId }` från `resolveExecuteContext`) är cache-nyckel. Cachen är per process, begränsad (1000) och förnyas 2 min före utgång (15 min).
-- Förtroendegräns: den som har sessionscookien kan redan allt token tillåter. Token ger bara *dessutom* AI-läget, som är mer begränsat (kommandon blir förslag). Använd den aldrig för att godkänna åt modellen: `approval_confirm` anropas med samma token men **utan** AI-headrar, och bara när användaren klickat Godkänn.
-- Endast `getAssistantAccessToken` (+ typerna `GetAccessToken`, `GetAssistantAccessTokenInput`) exporteras. Serverkod: importera aldrig i klientkomponenter (använder `node:crypto` och Better Auth-servern).
+## Förstapartstoken (`src/first-party/`)
+- `getFirstPartyAccessToken({ client, headers, caller })` → `Result<string>`: MCP-token åt användaren bakom sessionscookien, utfärdad till en av Okazis egna OAuth-klienter. Kör authorization code + PKCE **i processen** genom `getAuth().handler` (authorize med enbart `cookie`-headern, sedan `/oauth2/token`). Ingen egen signering, ingen webbläsarrunda.
+- `client` är en nyckel i `FIRST_PARTY_CLIENTS` (`first-party/clients.ts`, inte exporterad): `clientId` (från config), `scope` (`openid`, ingen refresh-token), `redirectPath` (måste vara registrerad på klienten men följs aldrig: koden läses ur authorize-svaret) och `allowsAiActor`. Ny klient (⌘K, schemalagda skills, integrationer) = en post här + provisionering med `skipConsent`.
+- I dag finns bara `assistant`: `WEB_OAUTH_CLIENT_ID`, redirect `${WEB_URL}/api/assistant/oauth/callback` (`provision:oauth`), `allowsAiActor: true`.
+- Token får `okazi_org` = sessionens aktiva org och `azp` = klientens id. Cache per process, nyckel (klient, användare, org) där användare+org kommer från `resolveExecuteContext`; max 1000 poster, förnyas 2 min före utgång (15 min).
+- Förtroendegräns: den som har sessionscookien kan redan allt token tillåter. `assistant`-token ger bara *dessutom* AI-läget, som är mer begränsat (kommandon blir förslag). `approval_confirm` anropas med samma token men **utan** AI-headrar, och bara när användaren klickat Godkänn.
+- Export: `getFirstPartyAccessToken` + typerna `GetFirstPartyAccessToken`, `GetFirstPartyAccessTokenInput`, `FirstPartyClient`. Serverkod (`node:crypto`, Better Auth-servern): importera aldrig i klientkomponenter.
 
 ## OAuth/MCP
 - Tokens är JWT med `aud` = `${MCP_URL}/mcp`, `iss` = `${BETTER_AUTH_URL}/api/auth`, 15 min livslängd. Endast `authorization_code` + `refresh_token` (ingen `client_credentials`). DPoP-bundna och opaka tokens avvisas.

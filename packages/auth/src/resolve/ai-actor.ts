@@ -13,7 +13,7 @@ const AiRequestSchema = z.object({
 export type BuildActorInput = {
   headers: Headers;
   userId: string;
-  /** True only for OAuth tokens issued to the web app's client (`WEB_OAUTH_CLIENT_ID`). */
+  /** True only for OAuth tokens of a first-party client with `allowsAiActor` (the assistant). */
   aiAllowed: boolean;
 };
 

@@ -2,7 +2,7 @@ import { AppError, err, ok, type Result } from "@okazi/core";
 import { z } from "zod";
 import { getAuth } from "../get-auth";
 import { mcpResourceUrl } from "../urls";
-import { assistantRedirectUri, authEndpoint } from "./assistant-oauth";
+import { authEndpoint, type ResolvedClient } from "./endpoints";
 
 const TokenResponseSchema = z.object({
   access_token: z.string().min(1),
@@ -11,19 +11,19 @@ const TokenResponseSchema = z.object({
 
 export type AccessToken = { accessToken: string; expiresAt: number };
 
-export type ExchangeCodeInput = { code: string; verifier: string; clientId: string };
+export type ExchangeCodeInput = { code: string; verifier: string; client: ResolvedClient };
 
 /** Token request (`authorization_code` + PKCE, public client) through Better Auth's handler. */
 export async function exchangeCode({
   code,
   verifier,
-  clientId,
+  client,
 }: ExchangeCodeInput): Promise<Result<AccessToken>> {
   const body = new URLSearchParams({
     grant_type: "authorization_code",
     code,
-    redirect_uri: assistantRedirectUri(),
-    client_id: clientId,
+    redirect_uri: client.redirectUri,
+    client_id: client.clientId,
     code_verifier: verifier,
     resource: mcpResourceUrl(),
   });
@@ -31,7 +31,7 @@ export async function exchangeCode({
   const response = await getAuth().handler(request);
   const parsed = TokenResponseSchema.safeParse(await response.json().catch(() => null));
   if (!response.ok || !parsed.success) {
-    const message = "Token request for the assistant failed";
+    const message = "First-party token request failed";
     return err({ error: new AppError({ code: "UNAUTHENTICATED", message }) });
   }
   const expiresAt = Date.now() + parsed.data.expires_in * 1000;

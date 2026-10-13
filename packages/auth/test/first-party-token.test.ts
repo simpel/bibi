@@ -2,9 +2,11 @@ import { getEnv } from "@okazi/config";
 import { getDb } from "@okazi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { beforeAll, describe, expect, it } from "vitest";
-import { clearTokenCache } from "../src/assistant/token-cache";
-import { getAssistantAccessToken, mcpResourceUrl, resolveExecuteContext } from "../src/index";
+import { clientAllowsAiActor } from "../src/first-party/clients";
+import { clearTokenCache } from "../src/first-party/token-cache";
+import { getFirstPartyAccessToken, mcpResourceUrl, resolveExecuteContext } from "../src/index";
 import { codeOf, createOrg, signUp } from "./helpers";
+import { obtainAccessToken, registerClient } from "./oauth-flow";
 
 const AI_HEADERS = { "x-okazi-actor": "ai", "x-okazi-conversation-id": "conv_assistant" };
 
@@ -48,13 +50,17 @@ const bearer = ({ token, extra = {} }: { token: string; extra?: Record<string, s
 
 beforeAll(registerWebClient);
 
-describe("getAssistantAccessToken", () => {
+describe("getFirstPartyAccessToken (assistant)", () => {
   it("mints a web-client token for the session user + active org that may act as AI", async () => {
     clearTokenCache();
     const user = await signUp();
     const organizationId = await createOrg({ headers: user.headers });
     const caller = { userId: user.userId, organizationId };
-    const token = await getAssistantAccessToken({ headers: user.headers, caller });
+    const token = await getFirstPartyAccessToken({
+      client: "assistant",
+      headers: user.headers,
+      caller,
+    });
     if (!token.ok) throw token.error;
     const ai = await resolveExecuteContext({
       headers: bearer({ token: token.value, extra: AI_HEADERS }),
@@ -76,19 +82,49 @@ describe("getAssistantAccessToken", () => {
     const user = await signUp();
     const organizationId = await createOrg({ headers: user.headers });
     const caller = { userId: user.userId, organizationId };
-    const first = await getAssistantAccessToken({ headers: user.headers, caller });
-    const second = await getAssistantAccessToken({ headers: new Headers(), caller });
+    const first = await getFirstPartyAccessToken({
+      client: "assistant",
+      headers: user.headers,
+      caller,
+    });
+    const second = await getFirstPartyAccessToken({
+      client: "assistant",
+      headers: new Headers(),
+      caller,
+    });
     expect(first.ok && second.ok && first.value === second.value).toBe(true);
   });
 
   it("fails UNAUTHENTICATED without a valid session cookie", async () => {
     clearTokenCache();
     const caller = { userId: `user_${createId()}`, organizationId: `org_${createId()}` };
-    const none = await getAssistantAccessToken({ headers: new Headers(), caller });
+    const none = await getFirstPartyAccessToken({
+      client: "assistant",
+      headers: new Headers(),
+      caller,
+    });
     expect(codeOf({ result: none })).toBe("UNAUTHENTICATED");
     const forged = new Headers({ cookie: "better-auth.session_token=forged" });
-    expect(codeOf({ result: await getAssistantAccessToken({ headers: forged, caller }) })).toBe(
-      "UNAUTHENTICATED",
-    );
+    expect(
+      codeOf({
+        result: await getFirstPartyAccessToken({ client: "assistant", headers: forged, caller }),
+      }),
+    ).toBe("UNAUTHENTICATED");
+  });
+});
+
+describe("AI actor is a property of the first-party client", () => {
+  it("is allowed only for registry clients flagged allowsAiActor", () => {
+    expect(clientAllowsAiActor({ clientId: getEnv().WEB_OAUTH_CLIENT_ID ?? "" })).toBe(true);
+    expect(clientAllowsAiActor({ clientId: `client_${createId()}` })).toBe(false);
+  });
+
+  it("rejects the AI actor for a token issued to a non-assistant client", async () => {
+    const user = await signUp();
+    await createOrg({ headers: user.headers });
+    const clientId = await registerClient({});
+    const token = await obtainAccessToken({ clientId, cookies: user.headers });
+    const result = await resolveExecuteContext({ headers: bearer({ token, extra: AI_HEADERS }) });
+    expect(codeOf({ result })).toBe("FORBIDDEN");
   });
 });

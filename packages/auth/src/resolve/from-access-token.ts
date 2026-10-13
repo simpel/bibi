@@ -1,7 +1,7 @@
 import { verifyJwsAccessToken } from "@better-auth/core/oauth2";
-import { getEnv } from "@okazi/config";
 import { ok, type Result } from "@okazi/core";
 import { z } from "zod";
+import { clientAllowsAiActor } from "../first-party/clients";
 import { getAuth } from "../get-auth";
 import { ORG_CLAIM } from "../plugins/mcp";
 import { mcpResourceUrl } from "../urls";
@@ -41,6 +41,7 @@ export async function principalFromAccessToken({
   if (!organizationId)
     return forbidden({ message: "Access token is not bound to an organization" });
   const roles = await loadMemberRoles({ userId, organizationId });
-  const aiAllowed = azp === getEnv().WEB_OAUTH_CLIENT_ID;
+  // Only registry clients flagged `allowsAiActor` (the assistant) may act as the AI actor.
+  const aiAllowed = clientAllowsAiActor({ clientId: azp });
   return ok({ value: { userId, organizationId, roles, aiAllowed } });
 }
