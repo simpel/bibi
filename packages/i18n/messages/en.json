@@ -21,7 +21,18 @@
     "language": "Language",
     "theme": "Theme",
     "lightMode": "Light mode",
-    "darkMode": "Dark mode"
+    "darkMode": "Dark mode",
+    "system": "System theme",
+    "archive": "Archive",
+    "retry": "Try again",
+    "previous": "Previous",
+    "firstPage": "First page",
+    "nextPage": "Next page",
+    "active": "Active",
+    "archived": "Archived",
+    "or": "or",
+    "optional": "optional",
+    "skipToContent": "Skip to content"
   },
   "auth": {
     "signIn": "Sign in",
@@ -35,7 +46,48 @@
     "forgotPassword": "Forgot password?",
     "organization": "Organization",
     "switchOrganization": "Switch organization",
-    "createOrganization": "Create organization"
+    "createOrganization": "Create organization",
+    "signInTitle": "Sign in to Okazi",
+    "signInDescription": "Welcome back. Choose how you want to sign in.",
+    "tabPassword": "Password",
+    "tabMagicLink": "Sign-in link",
+    "tabCode": "One-time code",
+    "sendCode": "Send code",
+    "verifyCode": "Sign in with code",
+    "codeSent": "We sent a code to {email}.",
+    "name": "Name",
+    "signUpTitle": "Create your account",
+    "signUpDescription": "Get started with Okazi in a minute.",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "passwordHint": "At least 10 characters.",
+    "continue": "Continue",
+    "selectOrganizationTitle": "Choose organization",
+    "selectOrganizationDescription": "Pick the organization you want to work in, or create a new one.",
+    "yourOrganizations": "Your organizations",
+    "noOrganizations": "You don't belong to an organization yet.",
+    "organizationName": "Organization name",
+    "createOrganizationDescription": "An organization is your company or business in Okazi.",
+    "organizationCreated": "The organization has been created.",
+    "consentTitle": "Give {client} access?",
+    "consentDescription": "{client} wants to act in Okazi as you, with your permissions.",
+    "consentScopes": "The application requests access to:",
+    "unknownClient": "An external application",
+    "allow": "Allow",
+    "deny": "Deny",
+    "scope": {
+      "openid": "Verify who you are",
+      "profile": "Your name and profile",
+      "email": "Your email address",
+      "offline_access": "Stay signed in when you are not using the application"
+    },
+    "invitationTitle": "Invitation to {organization}",
+    "invitationDescription": "{inviter} has invited you as {role}.",
+    "acceptInvitation": "Accept invitation",
+    "declineInvitation": "Decline",
+    "invitationAccepted": "You have joined the organization.",
+    "invitationDeclined": "The invitation was declined.",
+    "signInToAccept": "Sign in or create an account with the invited email address to respond to the invitation."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -63,9 +115,30 @@
       "address": "Address",
       "postalCode": "Postal code",
       "city": "City",
-      "website": "Website"
+      "website": "Website",
+      "streetAddress": "Street address",
+      "country": "Country (ISO code)",
+      "contactEmail": "Contact email",
+      "contactPhone": "Contact phone",
+      "openingHours": "Opening hours",
+      "defaultVatRatePercent": "VAT (%)"
     },
-    "roomCount": "{count, plural, one {# room} other {# rooms}}"
+    "roomCount": "{count, plural, one {# room} other {# rooms}}",
+    "listDescription": "Buildings and sites with bookable rooms.",
+    "emptyDescription": "Create your first venue to get started.",
+    "archive": "Archive venue",
+    "archiveConfirm": "Do you want to archive {name}? All rooms in the venue are archived too.",
+    "archived": "The venue has been archived.",
+    "notFound": "The venue does not exist or is archived.",
+    "createDescription": "Enter details about the venue. You can add rooms afterwards.",
+    "editDescription": "Change the venue details.",
+    "columns": {
+      "name": "Name",
+      "city": "City",
+      "contact": "Contact",
+      "status": "Status"
+    },
+    "roomsHeading": "Rooms"
   },
   "room": {
     "singular": "Room",
@@ -82,9 +155,29 @@
       "description": "Description",
       "venue": "Venue",
       "capacity": "Capacity",
-      "areaSquareMeters": "Area (sq m)"
+      "areaSquareMeters": "Area (sq m)",
+      "floor": "Floor",
+      "ceilingHeightM": "Ceiling height (m)",
+      "hasDaylight": "The room has daylight",
+      "maxCapacity": "Max number of people"
     },
-    "capacityValue": "{count, plural, one {# seat} other {# seats}}"
+    "capacityValue": "{count, plural, one {# seat} other {# seats}}",
+    "emptyDescription": "Add rooms that guests can book in this venue.",
+    "archive": "Archive room",
+    "archiveConfirm": "Do you want to archive the room {name}?",
+    "archived": "The room has been archived.",
+    "createDescription": "Describe the room in {venue}.",
+    "editDescription": "Change the room details.",
+    "columns": {
+      "name": "Name",
+      "floor": "Floor",
+      "capacity": "Seats",
+      "area": "Area",
+      "daylight": "Daylight"
+    },
+    "areaValue": "{value} sqm",
+    "daylightYes": "Yes",
+    "daylightNo": "No"
   },
   "assistant": {
     "title": "Assistant",
@@ -121,7 +214,15 @@
     "placeholder": "Search venues, rooms and more...",
     "noResults": "No results for \"{query}\".",
     "results": "{count, plural, one {# result} other {# results}}",
-    "searching": "Searching..."
+    "searching": "Searching...",
+    "label": "Semantic search",
+    "hint": "Search by content and meaning, not just exact words.",
+    "clear": "Clear search",
+    "entity": {
+      "venue": "Venue",
+      "room": "Room"
+    },
+    "error": "The search failed."
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -131,6 +232,47 @@
     "validation": "Please check the highlighted fields.",
     "required": "This field is required.",
     "conflict": "The information was changed by someone else.",
-    "network": "The server could not be reached."
+    "network": "The server could not be reached.",
+    "invalidCredentials": "Wrong email or password.",
+    "emailTaken": "An account with that email address already exists.",
+    "passwordTooShort": "The password is too short.",
+    "invalidCode": "The code is invalid or has expired.",
+    "tooManyRequests": "Too many attempts. Wait a moment and try again.",
+    "invalidEmail": "Enter a valid email address.",
+    "invalidNumber": "Enter a valid number.",
+    "tooLong": "The text is too long.",
+    "tooShort": "The value is too small.",
+    "tooBig": "The value is too large.",
+    "invalid": "The value is invalid.",
+    "invitationInvalid": "The invitation is invalid or has expired.",
+    "loadFailed": "The information could not be loaded.",
+    "oauthQueryMissing": "The request is missing information. Start again from the application that asked for access."
+  },
+  "shell": {
+    "mainNavigation": "Main navigation",
+    "userMenu": "User menu",
+    "signedInAs": "Signed in as",
+    "organization": "Organization",
+    "noOrganization": "No organization",
+    "noOtherOrganizations": "No other organizations",
+    "switchedOrganization": "You are now working in {name}.",
+    "languageSv": "Svenska",
+    "languageEn": "English",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System"
+  },
+  "commandBar": {
+    "title": "Command bar",
+    "description": "Navigate or run a quick action.",
+    "placeholder": "Search or type a command...",
+    "empty": "No commands found.",
+    "navigate": "Navigate",
+    "actions": "Actions",
+    "venuesGroup": "Venues",
+    "goToVenues": "Go to venues",
+    "createVenue": "Create venue",
+    "openVenue": "Open {name}",
+    "addRoomTo": "Add a room to {name}"
   }
 }

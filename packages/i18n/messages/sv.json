@@ -21,7 +21,18 @@
     "language": "Språk",
     "theme": "Tema",
     "lightMode": "Ljust läge",
-    "darkMode": "Mörkt läge"
+    "darkMode": "Mörkt läge",
+    "system": "Systemets tema",
+    "archive": "Arkivera",
+    "retry": "Försök igen",
+    "previous": "Föregående",
+    "firstPage": "Första sidan",
+    "nextPage": "Nästa sida",
+    "active": "Aktiv",
+    "archived": "Arkiverad",
+    "or": "eller",
+    "optional": "valfritt",
+    "skipToContent": "Hoppa till innehållet"
   },
   "auth": {
     "signIn": "Logga in",
@@ -35,7 +46,48 @@
     "forgotPassword": "Glömt lösenord?",
     "organization": "Organisation",
     "switchOrganization": "Byt organisation",
-    "createOrganization": "Skapa organisation"
+    "createOrganization": "Skapa organisation",
+    "signInTitle": "Logga in på Okazi",
+    "signInDescription": "Välkommen tillbaka. Välj hur du vill logga in.",
+    "tabPassword": "Lösenord",
+    "tabMagicLink": "Inloggningslänk",
+    "tabCode": "Engångskod",
+    "sendCode": "Skicka kod",
+    "verifyCode": "Logga in med kod",
+    "codeSent": "Vi har skickat en kod till {email}.",
+    "name": "Namn",
+    "signUpTitle": "Skapa ditt konto",
+    "signUpDescription": "Kom igång med Okazi på någon minut.",
+    "noAccount": "Saknar du konto?",
+    "haveAccount": "Har du redan ett konto?",
+    "passwordHint": "Minst 10 tecken.",
+    "continue": "Fortsätt",
+    "selectOrganizationTitle": "Välj organisation",
+    "selectOrganizationDescription": "Välj vilken organisation du vill arbeta i, eller skapa en ny.",
+    "yourOrganizations": "Dina organisationer",
+    "noOrganizations": "Du tillhör ingen organisation ännu.",
+    "organizationName": "Organisationens namn",
+    "createOrganizationDescription": "En organisation är ditt företag eller din verksamhet i Okazi.",
+    "organizationCreated": "Organisationen har skapats.",
+    "consentTitle": "Ge {client} åtkomst?",
+    "consentDescription": "{client} vill agera i Okazi som du, med samma behörigheter.",
+    "consentScopes": "Programmet begär åtkomst till:",
+    "unknownClient": "Ett externt program",
+    "allow": "Tillåt",
+    "deny": "Neka",
+    "scope": {
+      "openid": "Verifiera vem du är",
+      "profile": "Ditt namn och din profil",
+      "email": "Din e-postadress",
+      "offline_access": "Vara inloggad när du inte använder programmet"
+    },
+    "invitationTitle": "Inbjudan till {organization}",
+    "invitationDescription": "{inviter} har bjudit in dig som {role}.",
+    "acceptInvitation": "Acceptera inbjudan",
+    "declineInvitation": "Avböj",
+    "invitationAccepted": "Du har gått med i organisationen.",
+    "invitationDeclined": "Inbjudan har avböjts.",
+    "signInToAccept": "Logga in eller skapa ett konto med den inbjudna e-postadressen för att svara på inbjudan."
   },
   "nav": {
     "dashboard": "Översikt",
@@ -63,9 +115,30 @@
       "address": "Adress",
       "postalCode": "Postnummer",
       "city": "Ort",
-      "website": "Webbplats"
+      "website": "Webbplats",
+      "streetAddress": "Gatuadress",
+      "country": "Land (ISO-kod)",
+      "contactEmail": "Kontakt, e-post",
+      "contactPhone": "Kontakt, telefon",
+      "openingHours": "Öppettider",
+      "defaultVatRatePercent": "Moms (%)"
     },
-    "roomCount": "{count, plural, one {# rum} other {# rum}}"
+    "roomCount": "{count, plural, one {# rum} other {# rum}}",
+    "listDescription": "Byggnader och platser med bokningsbara rum.",
+    "emptyDescription": "Skapa din första anläggning för att komma igång.",
+    "archive": "Arkivera anläggning",
+    "archiveConfirm": "Vill du arkivera {name}? Alla rum i anläggningen arkiveras också.",
+    "archived": "Anläggningen har arkiverats.",
+    "notFound": "Anläggningen finns inte eller är arkiverad.",
+    "createDescription": "Fyll i uppgifter om anläggningen. Du kan lägga till rum efteråt.",
+    "editDescription": "Ändra uppgifterna för anläggningen.",
+    "columns": {
+      "name": "Namn",
+      "city": "Ort",
+      "contact": "Kontakt",
+      "status": "Status"
+    },
+    "roomsHeading": "Rum"
   },
   "room": {
     "singular": "Rum",
@@ -82,9 +155,29 @@
       "description": "Beskrivning",
       "venue": "Anläggning",
       "capacity": "Antal platser",
-      "areaSquareMeters": "Yta (kvm)"
+      "areaSquareMeters": "Yta (kvm)",
+      "floor": "Våning",
+      "ceilingHeightM": "Takhöjd (m)",
+      "hasDaylight": "Rummet har dagsljus",
+      "maxCapacity": "Max antal personer"
     },
-    "capacityValue": "{count, plural, one {# plats} other {# platser}}"
+    "capacityValue": "{count, plural, one {# plats} other {# platser}}",
+    "emptyDescription": "Lägg till rum som gäster kan boka i den här anläggningen.",
+    "archive": "Arkivera rum",
+    "archiveConfirm": "Vill du arkivera rummet {name}?",
+    "archived": "Rummet har arkiverats.",
+    "createDescription": "Beskriv rummet i {venue}.",
+    "editDescription": "Ändra uppgifterna för rummet.",
+    "columns": {
+      "name": "Namn",
+      "floor": "Våning",
+      "capacity": "Platser",
+      "area": "Yta",
+      "daylight": "Dagsljus"
+    },
+    "areaValue": "{value} kvm",
+    "daylightYes": "Ja",
+    "daylightNo": "Nej"
   },
   "assistant": {
     "title": "Assistent",
@@ -121,7 +214,15 @@
     "placeholder": "Sök anläggningar, rum och mer...",
     "noResults": "Inga träffar för \"{query}\".",
     "results": "{count, plural, one {# träff} other {# träffar}}",
-    "searching": "Söker..."
+    "searching": "Söker...",
+    "label": "Semantisk sökning",
+    "hint": "Sök efter innehåll och betydelse, inte bara exakta ord.",
+    "clear": "Rensa sökningen",
+    "entity": {
+      "venue": "Anläggning",
+      "room": "Rum"
+    },
+    "error": "Sökningen misslyckades."
   },
   "errors": {
     "generic": "Något gick fel. Försök igen.",
@@ -131,6 +232,47 @@
     "validation": "Kontrollera de markerade fälten.",
     "required": "Fältet är obligatoriskt.",
     "conflict": "Informationen har ändrats av någon annan.",
-    "network": "Det gick inte att nå servern."
+    "network": "Det gick inte att nå servern.",
+    "invalidCredentials": "Fel e-postadress eller lösenord.",
+    "emailTaken": "Det finns redan ett konto med den e-postadressen.",
+    "passwordTooShort": "Lösenordet är för kort.",
+    "invalidCode": "Koden är ogiltig eller har gått ut.",
+    "tooManyRequests": "För många försök. Vänta en stund och försök igen.",
+    "invalidEmail": "Ange en giltig e-postadress.",
+    "invalidNumber": "Ange ett giltigt tal.",
+    "tooLong": "Texten är för lång.",
+    "tooShort": "Värdet är för litet.",
+    "tooBig": "Värdet är för stort.",
+    "invalid": "Värdet är ogiltigt.",
+    "invitationInvalid": "Inbjudan är ogiltig eller har gått ut.",
+    "loadFailed": "Det gick inte att hämta informationen.",
+    "oauthQueryMissing": "Begäran saknar information. Starta om från programmet som bad om åtkomst."
+  },
+  "shell": {
+    "mainNavigation": "Huvudnavigering",
+    "userMenu": "Användarmeny",
+    "signedInAs": "Inloggad som",
+    "organization": "Organisation",
+    "noOrganization": "Ingen organisation",
+    "noOtherOrganizations": "Inga andra organisationer",
+    "switchedOrganization": "Du arbetar nu i {name}.",
+    "languageSv": "Svenska",
+    "languageEn": "English",
+    "themeLight": "Ljust",
+    "themeDark": "Mörkt",
+    "themeSystem": "System"
+  },
+  "commandBar": {
+    "title": "Kommandofält",
+    "description": "Navigera eller kör en snabbåtgärd.",
+    "placeholder": "Sök eller skriv ett kommando...",
+    "empty": "Inga kommandon hittades.",
+    "navigate": "Navigera",
+    "actions": "Åtgärder",
+    "venuesGroup": "Anläggningar",
+    "goToVenues": "Gå till anläggningar",
+    "createVenue": "Skapa anläggning",
+    "openVenue": "Öppna {name}",
+    "addRoomTo": "Lägg till rum i {name}"
   }
 }
