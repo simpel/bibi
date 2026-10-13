@@ -1,0 +1,39 @@
+/// SYSTEM = shipped in the repo (organizationId null), ORGANIZATION = shared in one org,
+/// PERSONAL = one user's (ownerUserId set). Enforced by CHECK constraints in the migration.
+enum SkillScope {
+  SYSTEM
+  ORGANIZATION
+  PERSONAL
+}
+
+enum SkillStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+/// Agent-Skills-style reusable AI behaviour. Slugs are unique per scope among non-archived rows
+/// (partial unique indexes in the migration; Prisma's differ ignores partial indexes).
+/// SYSTEM rows are global: readable through every org's scopedDb, writable only by the seeder.
+model Skill {
+  id             String      @id @default(cuid(2))
+  scope          SkillScope
+  organizationId String?
+  ownerUserId    String?
+  slug           String
+  name           String
+  description    String
+  instructions   String
+  allowedTools   String[]    @default([])
+  resources      Json        @default("[]")
+  version        Int         @default(1)
+  status         SkillStatus @default(DRAFT)
+  source         String?
+  contentHash    String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  createdBy      String?
+
+  @@index([organizationId, scope, status])
+  @@index([source])
+}

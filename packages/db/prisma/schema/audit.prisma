@@ -11,6 +11,8 @@ model AuditLog {
   actorType      ActorType
   actorId        String?
   conversationId String?
+  /// User who approved an AI-proposed command (human-in-the-loop); null otherwise.
+  approvedBy     String?
   operation      String
   entityType     String?
   entityId       String?

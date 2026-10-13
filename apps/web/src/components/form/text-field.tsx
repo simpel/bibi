@@ -3,8 +3,8 @@
 import { FormField, Input, Textarea } from "@okazi/ui";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
-export type TextFieldProps<V extends FieldValues> = {
-  form: UseFormReturn<V>;
+export type TextFieldProps<V extends FieldValues, O> = {
+  form: UseFormReturn<V, unknown, O>;
   name: Path<V>;
   label: string;
   type?: "text" | "email" | "tel" | "number";
@@ -14,7 +14,7 @@ export type TextFieldProps<V extends FieldValues> = {
 };
 
 /** react-hook-form text/number/textarea input inside the ui FormField (label + error). */
-export function TextField<V extends FieldValues>(props: TextFieldProps<V>) {
+export function TextField<V extends FieldValues, O>(props: TextFieldProps<V, O>) {
   const { form, name, label, type = "text", multiline = false, required, step } = props;
   const error = form.formState.errors[name]?.message;
   const id = `field-${name}`;

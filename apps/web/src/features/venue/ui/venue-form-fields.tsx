@@ -1,12 +1,13 @@
 "use client";
 
+import type { VenueCreateInput } from "@okazi/core";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";
 import type { VenueFormValues } from "./venue-form-schema";
 
 export type VenueFormFieldsProps = {
-  form: UseFormReturn<VenueFormValues, unknown, never>;
+  form: UseFormReturn<VenueFormValues, unknown, VenueCreateInput>;
 };
 
 export function VenueFormFields({ form }: VenueFormFieldsProps) {

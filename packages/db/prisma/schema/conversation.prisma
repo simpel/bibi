@@ -1,0 +1,42 @@
+/// Who wrote a message. Mirrors AI SDK UIMessage roles plus TOOL for tool results.
+enum MessageRole {
+  USER
+  ASSISTANT
+  TOOL
+  SYSTEM
+}
+
+/// AI assistant conversation. Private to `ownerUserId` (org admins may read, see core).
+model Conversation {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  ownerUserId    String
+  title          String
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  messages       Message[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, ownerUserId, status, updatedAt])
+}
+
+/// Append-only chat message. `parts` = AI SDK UIMessage parts. Composite FK keeps it in the
+/// conversation's org; `sequence` gives a gap-free, unique order per conversation.
+model Message {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  conversationId String
+  sequence       Int
+  role           MessageRole
+  parts          Json
+  metadata       Json         @default("{}")
+  actorType      ActorType
+  createdAt      DateTime     @default(now())
+  createdBy      String?
+  conversation   Conversation @relation(fields: [conversationId, organizationId], references: [id, organizationId])
+
+  @@unique([conversationId, sequence])
+  @@index([organizationId, conversationId])
+}
