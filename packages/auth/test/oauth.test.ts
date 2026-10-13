@@ -29,11 +29,19 @@ describe("resolveExecuteContext – OAuth access tokens (MCP)", () => {
 
   it("accepts the AI actor only for the web app's client", async () => {
     const web = await setup({ clientId: getEnv().WEB_OAUTH_CLIENT_ID });
-    const ai = await resolveExecuteContext({ headers: bearer({ token: web.token, extra: AI_HEADERS }) });
+    const ai = await resolveExecuteContext({
+      headers: bearer({ token: web.token, extra: AI_HEADERS }),
+    });
     if (!ai.ok) throw ai.error;
-    expect(ai.value.actor).toEqual({ type: "ai", userId: web.user.userId, conversationId: "conv_123" });
+    expect(ai.value.actor).toEqual({
+      type: "ai",
+      userId: web.user.userId,
+      conversationId: "conv_123",
+    });
     const other = await setup({});
-    const denied = await resolveExecuteContext({ headers: bearer({ token: other.token, extra: AI_HEADERS }) });
+    const denied = await resolveExecuteContext({
+      headers: bearer({ token: other.token, extra: AI_HEADERS }),
+    });
     expect(codeOf({ result: denied })).toBe("FORBIDDEN");
   });
 
@@ -47,9 +55,9 @@ describe("resolveExecuteContext – OAuth access tokens (MCP)", () => {
     const { token } = await setup({});
     const [header, payload] = token.split(".");
     const tampered = `${header}.${payload}.${"A".repeat(86)}`;
-    expect(codeOf({ result: await resolveExecuteContext({ headers: bearer({ token: tampered }) }) })).toBe(
-      "UNAUTHENTICATED",
-    );
+    expect(
+      codeOf({ result: await resolveExecuteContext({ headers: bearer({ token: tampered }) }) }),
+    ).toBe("UNAUTHENTICATED");
     const opaque = await resolveExecuteContext({ headers: bearer({ token: "not-a-jwt" }) });
     expect(codeOf({ result: opaque })).toBe("UNAUTHENTICATED");
   });
