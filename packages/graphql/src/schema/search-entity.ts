@@ -1,11 +1,21 @@
-import type { RoomDto, VenueDto } from "@okazi/core";
+import {
+  type ConversationDto,
+  getConversation,
+  getSkill,
+  type RoomDto,
+  type SkillDto,
+  type VenueDto,
+} from "@okazi/core";
+import { ConversationRef } from "../features/conversation/graphql";
 import { RoomRef } from "../features/room/graphql";
+import { SkillRef } from "../features/skill/graphql";
 import { VenueRef } from "../features/venue/graphql";
 import { builder, type ObjectRefOf } from "./builder";
 import type { GraphqlContext } from "./context";
+import { runOperation } from "./run-operation";
 
-type Entity = VenueDto | RoomDto;
-type EntityType = "venue" | "room";
+type Entity = VenueDto | RoomDto | ConversationDto | SkillDto;
+type EntityType = "venue" | "room" | "conversation" | "skill";
 
 const refByEntity = new WeakMap<object, ObjectRefOf<never>>();
 
@@ -14,20 +24,36 @@ function tag<T extends Entity>({ row, ref }: { row: T | null; ref: ObjectRefOf<T
   return row;
 }
 
+type LoadInput = { id: string; ctx: GraphqlContext };
+
+/** Per-user visibility lives in core, so private entities load through their `get` operation. */
+async function viaGet<T extends Entity>({
+  operation,
+  id,
+  ctx,
+}: LoadInput & { operation: typeof getConversation | typeof getSkill }): Promise<T | null> {
+  try {
+    return (await runOperation({ operation, input: { id }, ctx })) as T;
+  } catch {
+    return null;
+  }
+}
+
 /** Entity types that search can return. Add a line here when a new entity becomes embeddable. */
-const LOADERS: Record<
-  EntityType,
-  (args: { id: string; ctx: GraphqlContext }) => Promise<Entity | null>
-> = {
+const LOADERS: Record<EntityType, (args: LoadInput) => Promise<Entity | null>> = {
   venue: async ({ id, ctx }) =>
     tag({ row: await ctx.core.db.venue.findFirst({ where: { id } }), ref: VenueRef }),
   room: async ({ id, ctx }) =>
     tag({ row: await ctx.core.db.room.findFirst({ where: { id } }), ref: RoomRef }),
+  conversation: async ({ id, ctx }) =>
+    tag({ row: await viaGet<ConversationDto>({ operation: getConversation, id, ctx }), ref: ConversationRef }),
+  skill: async ({ id, ctx }) =>
+    tag({ row: await viaGet<SkillDto>({ operation: getSkill, id, ctx }), ref: SkillRef }),
 };
 
 export const SearchEntityRef = builder.unionType("SearchEntity", {
   description: "The entity behind a search hit.",
-  types: [VenueRef, RoomRef],
+  types: [VenueRef, RoomRef, ConversationRef, SkillRef],
   resolveType: (entity) => refByEntity.get(entity) as ObjectRefOf<never>,
 });
 

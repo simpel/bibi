@@ -7,6 +7,8 @@ describe("permission mapping", () => {
     expect(statementsForRole({ role: "viewer" }).venue).toEqual(["read"]);
     expect(statementsForRole({ role: "member" }).room).toEqual(["read", "write"]);
     expect(statementsForRole({ role: "owner" }).search).toEqual(["read", "write", "admin"]);
+    expect(statementsForRole({ role: "member" }).conversation).toEqual(["read", "write"]);
+    expect(statementsForRole({ role: "admin" }).skill).toEqual(["read", "write", "admin"]);
   });
 
   it("parses comma-separated member roles and drops unknown ones", () => {

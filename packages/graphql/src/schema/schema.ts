@@ -1,6 +1,9 @@
 import { lexicographicSortSchema, printSchema } from "graphql";
 import "../features/venue/graphql";
 import "../features/room/graphql";
+import "../features/conversation/graphql";
+import "../features/message/graphql";
+import "../features/skill/graphql";
 import "./scalars";
 import "./search";
 import { builder } from "./builder";

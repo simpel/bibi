@@ -12,7 +12,7 @@ import {
  * New resource → add it to `RESOURCES`. Role → action semantics come from core's
  * `hasPermission`, so core authorization and Better Auth access control never drift.
  */
-export const RESOURCES = ["venue", "room", "search"] as const;
+export const RESOURCES = ["venue", "room", "search", "conversation", "skill"] as const;
 export type Resource = (typeof RESOURCES)[number];
 
 export const ACTIONS = ["read", "write", "admin"] as const satisfies readonly PermissionAction[];
