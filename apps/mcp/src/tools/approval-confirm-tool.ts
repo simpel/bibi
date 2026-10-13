@@ -19,7 +19,11 @@ export type ApprovalConfirmToolInput = {
  * `approval_confirm`: executes a proposal the user approved. Called by the Okazi web app with the
  * user's own (non-AI) credentials; the assistant never sees or calls it.
  */
-export function createApprovalConfirmTool(deps: ApprovalConfirmToolInput): McpTool {
+export function createApprovalConfirmTool({
+  operations,
+  afterCommit,
+  secret,
+}: ApprovalConfirmToolInput): McpTool {
   return {
     name: "approval_confirm",
     description:
@@ -39,7 +43,13 @@ export function createApprovalConfirmTool(deps: ApprovalConfirmToolInput): McpTo
       if (!parsed.success) {
         return errorResult({ error: fromZodError({ error: parsed.error }) });
       }
-      const result = await confirmApproval({ token: parsed.data.approvalToken, context, ...deps });
+      const result = await confirmApproval({
+        token: parsed.data.approvalToken,
+        context,
+        operations,
+        afterCommit,
+        secret,
+      });
       return result.ok
         ? successResult({ value: result.value })
         : errorResult({ error: result.error });

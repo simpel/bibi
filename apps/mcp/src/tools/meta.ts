@@ -21,8 +21,13 @@ export type McpToolMeta = McpToolMetaInput & { toolName: string };
  * Declares MCP-specific metadata for a core operation; a new operation costs ~5 lines:
  * `mcpTool({ operation: "x.create", summary: ({ input }) => \`Create x ${input.name}\` })`.
  */
-export function mcpTool(meta: McpToolMetaInput): McpToolMeta {
-  return { ...meta, toolName: toToolName({ operation: meta.operation }) };
+export function mcpTool({
+  operation,
+  destructive,
+  idempotent,
+  summary,
+}: McpToolMetaInput): McpToolMeta {
+  return { operation, destructive, idempotent, summary, toolName: toToolName({ operation }) };
 }
 
 export type TextFieldInput = { value: unknown };
