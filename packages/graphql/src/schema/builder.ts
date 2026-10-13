@@ -14,7 +14,7 @@ export type Types = PothosSchemaTypes.ExtendDefaultTypes<Params>;
 export type ObjectRefOf<T> = ObjectRef<Types, T>;
 
 /** One shared builder; feature files add their types and fields to it on import. */
-export const builder = new SchemaBuilder<Params>({});
+export const builder = new SchemaBuilder<Params>({ defaultFieldNullability: false });
 
 builder.queryType({});
 builder.mutationType({});

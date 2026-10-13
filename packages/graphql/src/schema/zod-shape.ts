@@ -14,11 +14,20 @@ export type FieldShape = {
 type Acc = Omit<FieldShape, "scalar">;
 
 function scalarOf({ schema }: { schema: z.ZodType }): ScalarName {
-  if (schema instanceof z.ZodString || schema instanceof z.ZodEnum) return "String";
-  if (schema instanceof z.ZodNumber) return schema.format === "safeint" ? "Int" : "Float";
-  if (schema instanceof z.ZodBoolean) return "Boolean";
-  if (schema instanceof z.ZodDate) return "DateTime";
-  return "JSON";
+  // `def.type` also covers string formats (z.email()) that are not ZodString instances.
+  switch (schema.def.type) {
+    case "string":
+    case "enum":
+      return "String";
+    case "number":
+      return (schema as z.ZodNumber).format === "safeint" ? "Int" : "Float";
+    case "boolean":
+      return "Boolean";
+    case "date":
+      return "DateTime";
+    default:
+      return "JSON";
+  }
 }
 
 function enumHint({ schema }: { schema: z.ZodType }): string | undefined {
