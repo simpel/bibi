@@ -6,9 +6,31 @@
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**"]
     },
-    "dev": { "cache": false, "persistent": true },
-    "typecheck": { "dependsOn": ["^build"] },
-    "test": { "dependsOn": ["^build"], "cache": false },
-    "generate": { "cache": false }
-  }
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "typecheck": {
+      "dependsOn": ["^build"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
+    "generate": {
+      "cache": false
+    }
+  },
+  "globalPassThroughEnv": [
+    "DATABASE_URL",
+    "BETTER_AUTH_SECRET",
+    "BETTER_AUTH_URL",
+    "SMTP_URL",
+    "MAIL_FROM",
+    "AI_GATEWAY_API_KEY",
+    "AI_DEFAULT_MODEL",
+    "AI_EMBEDDING_MODEL",
+    "WEB_URL",
+    "MCP_URL"
+  ]
 }
