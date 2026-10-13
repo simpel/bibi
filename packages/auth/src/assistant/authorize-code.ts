@@ -1,8 +1,8 @@
-import { getAuth } from "../get-auth";
-import { mcpResourceUrl } from "../urls";
 import { AppError, err, ok, type Result } from "@okazi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
+import { getAuth } from "../get-auth";
+import { mcpResourceUrl } from "../urls";
 import { ASSISTANT_OAUTH_SCOPE, assistantRedirectUri, authEndpoint } from "./assistant-oauth";
 
 export type AuthorizeCodeInput = {

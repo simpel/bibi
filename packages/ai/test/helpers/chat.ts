@@ -2,8 +2,8 @@ import type { MCPClient } from "@ai-sdk/mcp";
 import { resolveExecuteContext } from "@okazi/auth";
 import type { LanguageModel } from "ai";
 import { createChatHandler } from "../../src/chat/create-chat-handler";
-import { connectMcp } from "../../src/mcp/connect-mcp";
 import { createEmbed } from "../../src/embeddings/create-embed";
+import { connectMcp } from "../../src/mcp/connect-mcp";
 
 // biome-ignore lint/suspicious/noExplicitAny: loosely typed SSE JSON for assertions
 export type Json = any;
@@ -19,8 +19,12 @@ export type CreateHarnessInput = { model: LanguageModel; mcpUrl: string };
 /** Chat handler wired like the web app (real auth, real MCP over HTTP), with a mock model. */
 export function createHarness({ model, mcpUrl }: CreateHarnessInput): ChatHarness {
   const clients = { opened: 0, closed: 0 };
-  const connect = async (input: Parameters<typeof connectMcp>[0]): Promise<MCPClient> => {
-    const client = await connectMcp(input);
+  const connect = async ({
+    accessToken,
+    caller,
+    url,
+  }: Parameters<typeof connectMcp>[0]): Promise<MCPClient> => {
+    const client = await connectMcp({ accessToken, caller, ...(url ? { url } : {}) });
     clients.opened++;
     const close = client.close.bind(client);
     return Object.assign(client, {
@@ -48,7 +52,11 @@ export function chatRequest({ cookies, text, conversationId }: ChatRequestInput)
   const headers = new Headers(cookies);
   headers.set("content-type", "application/json");
   const message = { id: "client-msg-1", role: "user", parts: [{ type: "text", text }] };
-  const body = { messages: [message], pageContext: { route: "/sv/venues", locale: "sv" }, conversationId };
+  const body = {
+    messages: [message],
+    pageContext: { route: "/sv/venues", locale: "sv" },
+    conversationId,
+  };
   return new Request("http://localhost:3000/api/assistant/chat", {
     method: "POST",
     headers,

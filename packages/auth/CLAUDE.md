@@ -17,6 +17,12 @@ Better Auth 1.7.7 (Prisma-adapter) + plugins: e-post/lösenord, magic link, e-po
 - Accepteras **endast** för OAuth-tokens där `azp` = `WEB_OAUTH_CLIENT_ID` (webbappens förstapartsklient). Cookie, API-nyckel och andra OAuth-klienter → `FORBIDDEN`.
 - En AI-begäran som inte kan godtas nedgraderas aldrig tyst till `user` (då skulle godkännandet hoppas över).
 
+## Assistentens token (`src/assistant/`)
+- `getAssistantAccessToken({ headers, caller })` → `Result<string>`: MCP-token för `WEB_OAUTH_CLIENT_ID` åt användaren bakom sessionscookien. Kör authorization code + PKCE **i processen** genom `getAuth().handler` (authorize med enbart `cookie`-headern, sedan `/oauth2/token`). Ingen egen signering, ingen webbläsarrunda, scope `openid` (ingen refresh-token). Klienten måste ha `skipConsent` och redirect-URI `${WEB_URL}/api/assistant/oauth/callback` (`provision:oauth`). Webben behöver ingen sida på den sökvägen: koden läses ur authorize-svaret.
+- Token får `okazi_org` = sessionens aktiva org och `azp` = webbklienten. `caller` (`{ userId, organizationId }` från `resolveExecuteContext`) är cache-nyckel. Cachen är per process, begränsad (1000) och förnyas 2 min före utgång (15 min).
+- Förtroendegräns: den som har sessionscookien kan redan allt token tillåter. Token ger bara *dessutom* AI-läget, som är mer begränsat (kommandon blir förslag). Använd den aldrig för att godkänna åt modellen: `approval_confirm` anropas med samma token men **utan** AI-headrar, och bara när användaren klickat Godkänn.
+- Endast `getAssistantAccessToken` (+ typerna `GetAccessToken`, `GetAssistantAccessTokenInput`) exporteras. Serverkod: importera aldrig i klientkomponenter (använder `node:crypto` och Better Auth-servern).
+
 ## OAuth/MCP
 - Tokens är JWT med `aud` = `${MCP_URL}/mcp`, `iss` = `${BETTER_AUTH_URL}/api/auth`, 15 min livslängd. Endast `authorization_code` + `refresh_token` (ingen `client_credentials`). DPoP-bundna och opaka tokens avvisas.
 - Saknar sessionen aktiv org skickas användaren till `/select-organization` före consent. Webben behöver sidorna `/login`, `/oauth/consent`, `/select-organization`, `/accept-invitation/[id]`.

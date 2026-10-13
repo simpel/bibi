@@ -217,9 +217,6 @@ importers:
       '@okazi/db':
         specifier: workspace:*
         version: link:../db
-      '@paralleldrive/cuid2':
-        specifier: 3.3.0
-        version: 3.3.0
       ai:
         specifier: 7.0.138
         version: 7.0.138(zod@4.1.8)
@@ -227,6 +224,9 @@ importers:
         specifier: 4.1.8
         version: 4.1.8
     devDependencies:
+      '@paralleldrive/cuid2':
+        specifier: 3.3.0
+        version: 3.3.0
       '@types/node':
         specifier: 22.20.5
         version: 22.20.5
@@ -300,6 +300,9 @@ importers:
       '@okazi/db':
         specifier: workspace:*
         version: link:../db
+      '@paralleldrive/cuid2':
+        specifier: 3.3.0
+        version: 3.3.0
       better-auth:
         specifier: 1.7.7
         version: 1.7.7(@prisma/client@7.10.0(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.2))(typescript@5.9.2))(mysql2@3.15.3)(next@16.4.0(@babel/core@7.29.7)(@playwright/test@1.56.1)(@types/node@22.20.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(pg@8.23.1)(prisma@7.10.0(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(typescript@5.9.2))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vitest@4.1.11(@types/node@22.20.5)(vite@8.3.4(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15)))
@@ -313,9 +316,6 @@ importers:
         specifier: 4.1.8
         version: 4.1.8
     devDependencies:
-      '@paralleldrive/cuid2':
-        specifier: 3.3.0
-        version: 3.3.0
       '@types/node':
         specifier: 22.20.5
         version: 22.20.5

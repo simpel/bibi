@@ -29,7 +29,10 @@ export async function signUpWithOrg(): Promise<TestUser> {
   });
   const cookies = cookieHeaders({ response: headers });
   const slug = `org-${createId()}`;
-  const org = await getAuth().api.createOrganization({ headers: cookies, body: { name: slug, slug } });
+  const org = await getAuth().api.createOrganization({
+    headers: cookies,
+    body: { name: slug, slug },
+  });
   if (!org) throw new Error("organization not created");
   return { userId: response.user.id, organizationId: org.id, cookies };
 }

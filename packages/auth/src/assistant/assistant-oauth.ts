@@ -1,6 +1,6 @@
-import { AUTH_BASE_PATH } from "../urls";
 import { getEnv } from "@okazi/config";
 import { AppError, err, ok, type Result } from "@okazi/core";
+import { AUTH_BASE_PATH } from "../urls";
 
 /**
  * Redirect URI registered for the first-party client (`provision:oauth` default). The assistant
