@@ -12,8 +12,14 @@ const CANDIDATES = 50;
 type HitRow = { entityType: string; entityId: string; score: number; content: string };
 
 /** Hybrid search: full-text (tsvector) and cosine similarity (pgvector) fused with RRF. */
-export async function searchEmbeddings(args: SearchEmbeddingsArgs): Promise<EmbeddingHit[]> {
-  const { db, organizationId, text, embedding, entityTypes, limit = 10 } = args;
+export async function searchEmbeddings({
+  db,
+  organizationId,
+  text,
+  embedding,
+  entityTypes,
+  limit = 10,
+}: SearchEmbeddingsArgs): Promise<EmbeddingHit[]> {
   const vector = toVectorLiteral({ embedding });
   const typeFilter =
     entityTypes && entityTypes.length > 0

@@ -5,15 +5,26 @@ import { findClose } from "./functions.mjs";
 
 const HEADER = new RegExp(
   [
-    String.raw`\bfunction\b\s*\*?\s*(\w*)\s*(?:<[^>\n]*>)?\s*\(`,
-    String.raw`\b(?:const|let)\s+(\w+)\s*(?::[^=\n]+)?=\s*(?:async\s*)?(?:<[^>\n]*>\s*)?\(`,
-    String.raw`^[ \t]+(?:(?:public|private|protected|static|override|async)\s+)*(\w+)\s*(?:<[^>\n]*>)?\s*\(`,
+    String.raw`\bfunction\b\s*\*?\s*(\w*)\s*(?:<(?:[^<>\n]|<[^<>\n]*>)*>)?\s*\(`,
+    String.raw`\b(?:const|let)\s+(\w+)\s*(?::[^=\n]+)?=\s*(?:async\s*)?(?:<(?:[^<>\n]|<[^<>\n]*>)*>\s*)?\(`,
+    String.raw`^[ \t]+(?:(?:public|private|protected|static|override|async)\s+)*(\w+)\s*(?:<(?:[^<>\n]|<[^<>\n]*>)*>)?\s*\(`,
   ].join("|"),
   "gm",
 );
 // Kontrollsatser och nyckelord som ser ut som metodanrop med block.
 const SKIP_NAMES = new Set([
-  "if", "for", "while", "switch", "catch", "with", "return", "typeof", "await", "new", "super", "function",
+  "if",
+  "for",
+  "while",
+  "switch",
+  "catch",
+  "with",
+  "return",
+  "typeof",
+  "await",
+  "new",
+  "super",
+  "function",
 ]);
 const HTTP_VERBS = new Set(["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]);
 const BODY_AFTER = /^\s*(?::[^{;]*)?\{/;
@@ -30,7 +41,10 @@ export function analyzeParams({ relPath, content }) {
     const isArrow = match[2] !== undefined;
     const after = content.slice(close + 1, close + 300);
     if (!(isArrow ? ARROW_AFTER : BODY_AFTER).test(after)) continue;
-    const reason = paramViolation({ name, params: splitParams(content.slice(open + 1, close)) });
+    const reason = paramViolation({
+      name,
+      params: splitParams({ text: content.slice(open + 1, close) }),
+    });
     if (reason) {
       const line = content.slice(0, match.index).split("\n").length;
       problems.push(`${name} (rad ${line}): ${reason}`);
@@ -58,7 +72,7 @@ export function paramViolation({ name, params }) {
 }
 
 // Delar upp parameterlistan på toppnivåkomman. Hoppar över komman inne i <>, (), [] och {}.
-export function splitParams(text) {
+export function splitParams({ text }) {
   const parts = [];
   let depth = 0;
   let current = "";

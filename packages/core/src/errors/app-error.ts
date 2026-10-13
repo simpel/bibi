@@ -33,6 +33,6 @@ export class AppError extends Error {
 }
 
 /** Shorthand factory: `appError({ code: "NOT_FOUND", message: "Venue not found" })`. */
-export function appError(input: AppErrorInput): AppError {
-  return new AppError(input);
+export function appError({ code, message, issues, cause }: AppErrorInput): AppError {
+  return new AppError({ code, message, cause, ...(issues ? { issues } : {}) });
 }
