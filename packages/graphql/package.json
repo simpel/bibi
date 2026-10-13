@@ -11,8 +11,6 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@escape.tech/graphql-armor-cost-limit": "2.4.3",
-    "@escape.tech/graphql-armor-max-depth": "2.4.2",
     "@graphql-yoga/plugin-disable-introspection": "2.25.5",
     "@okazi/core": "workspace:*",
     "@okazi/db": "workspace:*",

@@ -3,6 +3,7 @@ import type { GraphqlContext } from "./context";
 
 type Params = {
   Context: GraphqlContext;
+  DefaultFieldNullability: false;
   Scalars: {
     DateTime: { Input: Date; Output: Date };
     JSON: { Input: unknown; Output: unknown };

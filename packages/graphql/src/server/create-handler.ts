@@ -1,13 +1,20 @@
 import { createCoreOperations, createIndexingHook, type EmbedFn } from "@okazi/core";
-import { costLimitPlugin } from "@escape.tech/graphql-armor-cost-limit";
-import { maxDepthPlugin } from "@escape.tech/graphql-armor-max-depth";
 import { useDisableIntrospection } from "@graphql-yoga/plugin-disable-introspection";
-import { createYoga } from "graphql-yoga";
+import { createYoga, type Plugin } from "graphql-yoga";
+import { costLimitRule } from "../limits/cost-limit";
+import { depthLimitRule } from "../limits/depth-limit";
 import { schema } from "../schema/schema";
 import { buildContext, type ResolveContext } from "./build-context";
 
 export const MAX_DEPTH = 10;
-export const MAX_COST = 5000;
+export const MAX_COST = 25_000;
+
+const limitsPlugin: Plugin = {
+  onValidate({ addValidationRule }) {
+    addValidationRule(depthLimitRule({ maxDepth: MAX_DEPTH }));
+    addValidationRule(costLimitRule({ maxCost: MAX_COST }));
+  },
+};
 
 export type CreateGraphqlHandlerInput = {
   resolveContext: ResolveContext;
@@ -32,8 +39,7 @@ export function createGraphqlHandler({
     maskedErrors: !development,
     context: ({ request }) => buildContext({ request, resolveContext, operations, afterCommit }),
     plugins: [
-      maxDepthPlugin({ n: MAX_DEPTH, propagateOnRejection: false }),
-      costLimitPlugin({ maxCost: MAX_COST, propagateOnRejection: false }),
+      limitsPlugin,
       ...(development ? [] : [useDisableIntrospection()]),
     ],
   });
