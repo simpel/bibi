@@ -5,6 +5,8 @@ export default defineConfig({
     include: ["test/**/*.test.ts"],
     // Tests hit the real Postgres; run files serially to keep connection count low.
     fileParallelism: false,
-    testTimeout: 20_000,
+    testTimeout: 30_000,
+    // First-party web client id used by the OAuth tests (see test/oauth-flow.ts).
+    env: { WEB_OAUTH_CLIENT_ID: "okazi-web-test" },
   },
 });
