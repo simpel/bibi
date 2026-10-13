@@ -8,8 +8,8 @@ generator client {
 }
 
 datasource db {
-  provider   = "postgresql"
-  extensions = [vector]
+  provider = "postgresql"
+  // pgvector is enabled by raw SQL in the initial migration.
 }
 
 /// Soft-delete status shared by all org-scoped business entities.

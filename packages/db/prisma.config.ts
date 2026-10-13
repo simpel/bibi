@@ -7,8 +7,19 @@ if (existsSync(rootEnvFile)) {
   loadEnvFile(rootEnvFile);
 }
 
+/** `prisma generate` must work without a database (e.g. Docker builds). */
+function readDatabaseUrl(): string | undefined {
+  try {
+    return env("DATABASE_URL");
+  } catch {
+    return undefined;
+  }
+}
+
+const url = readDatabaseUrl();
+
 export default defineConfig({
   schema: "prisma/schema",
   migrations: { path: "prisma/migrations" },
-  datasource: { url: env("DATABASE_URL") },
+  ...(url ? { datasource: { url } } : {}),
 });
