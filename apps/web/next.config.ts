@@ -21,9 +21,6 @@ const config: NextConfig = {
     "@okazi/i18n",
     "@okazi/ui",
   ],
-  // Client components import Zod schemas from @okazi/core; rewrite barrel imports to the
-  // schema files so Prisma/pg never reach the browser bundle.
-  experimental: { optimizePackageImports: ["@okazi/core"] },
   serverExternalPackages: ["pg", "nodemailer"],
 };
 

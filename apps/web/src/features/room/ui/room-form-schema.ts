@@ -1,4 +1,5 @@
-import { RoomCreateInputSchema, type RoomDto } from "@okazi/core";
+import { RoomCreateInputSchema } from "@core-schema/room";
+import type { RoomDto } from "@okazi/core";
 import { blankToNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 

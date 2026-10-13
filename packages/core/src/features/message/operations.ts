@@ -11,6 +11,7 @@ import {
   MessageListOutputSchema,
   MessageSchema,
 } from "./schema";
+import { toMessageDto } from "./to-message-dto";
 
 const ACTOR_TYPE = { user: "USER", ai: "AI", system: "SYSTEM" } as const;
 
@@ -35,7 +36,8 @@ export const listMessages = defineOperation({
       take: input.limit + 1,
       ...(input.cursor ? { cursor: { id: input.cursor }, skip: 1 } : {}),
     });
-    return ok({ value: paginate({ rows, limit: input.limit }) });
+    const items = rows.map((message) => toMessageDto({ message }));
+    return ok({ value: paginate({ rows: items, limit: input.limit }) });
   },
 });
 
@@ -81,7 +83,7 @@ export const appendMessage = defineOperation({
     });
     const after = { conversationId, role, sequence: message.sequence };
     context.recordChange({ entityId: message.id, after });
-    return ok({ value: message });
+    return ok({ value: toMessageDto({ message }) });
   },
 });
 

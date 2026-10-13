@@ -1,4 +1,5 @@
-import { VenueCreateInputSchema, type VenueDto } from "@okazi/core";
+import { VenueCreateInputSchema } from "@core-schema/venue";
+import type { VenueDto } from "@okazi/core";
 import { blankToNull, blankToUndefined, numberOrUndefined } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 
