@@ -11,7 +11,10 @@ export const roomMcpTools = [
   mcpTool({
     operation: "room.update",
     idempotent: true,
-    summary: ({ input }) => `Update room ${text({ value: input.id })}: ${Object.keys(input).filter((key) => key !== "id").join(", ")}`,
+    summary: ({ input }) =>
+      `Update room ${text({ value: input.id })}: ${Object.keys(input)
+        .filter((key) => key !== "id")
+        .join(", ")}`,
   }),
   mcpTool({
     operation: "room.archive",

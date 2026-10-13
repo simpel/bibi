@@ -36,7 +36,10 @@ export async function confirmApproval({
 }: ConfirmApprovalInput): Promise<Result<unknown>> {
   const { actor } = context;
   if (actor.type !== "user" || !actor.userId) {
-    return fail({ code: "FORBIDDEN", message: "Approvals must be confirmed by the user, not the assistant" });
+    return fail({
+      code: "FORBIDDEN",
+      message: "Approvals must be confirmed by the user, not the assistant",
+    });
   }
   const verified = verifyApprovalToken({
     token,
@@ -48,7 +51,8 @@ export async function confirmApproval({
   const { jti, exp, operation: name, input, conversationId } = verified.value;
   const operation = operations.find((candidate) => candidate.name === name);
   if (!operation) return fail({ code: "NOT_FOUND", message: `Unknown operation ${name}` });
-  if (!consumeApproval({ jti, exp })) return fail({ code: "CONFLICT", message: "Approval already used" });
+  if (!consumeApproval({ jti, exp }))
+    return fail({ code: "CONFLICT", message: "Approval already used" });
   const aiActor = { type: "ai" as const, userId: actor.userId, conversationId };
   return execute({ operation, input, context: { ...context, actor: aiActor }, afterCommit });
 }

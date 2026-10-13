@@ -13,7 +13,10 @@ export type SuccessResultInput = { value: unknown };
 /** Structured result plus the same JSON as text for clients that ignore `structuredContent`. */
 export function successResult({ value }: SuccessResultInput): ToolResult {
   const structuredContent = toJsonValue({ value });
-  return { content: [{ type: "text", text: JSON.stringify(structuredContent) }], structuredContent };
+  return {
+    content: [{ type: "text", text: JSON.stringify(structuredContent) }],
+    structuredContent,
+  };
 }
 
 export type ErrorResultInput = { error: AppError };

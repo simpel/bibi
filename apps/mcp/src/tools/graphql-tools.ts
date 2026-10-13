@@ -1,4 +1,4 @@
-import { appError, type EmbedFn } from "@okazi/core";
+import { type EmbedFn, fromZodError } from "@okazi/core";
 import { printSchemaSdl } from "@okazi/graphql";
 import { z } from "zod";
 import { assertReadOnly, MAX_QUERY_LENGTH } from "../graphql/read-only";
@@ -10,7 +10,11 @@ import type { McpTool, RunToolInput } from "./types";
 const READ_ONLY = { readOnlyHint: true, idempotentHint: true, openWorldHint: false };
 
 export const GraphqlQueryInputSchema = z.object({
-  query: z.string().min(1).max(MAX_QUERY_LENGTH).describe("A GraphQL query document (no mutations)"),
+  query: z
+    .string()
+    .min(1)
+    .max(MAX_QUERY_LENGTH)
+    .describe("A GraphQL query document (no mutations)"),
   variables: z.record(z.string(), z.unknown()).optional(),
   operationName: z.string().optional(),
 });
@@ -22,10 +26,14 @@ export function createGraphqlSchemaTool(): McpTool {
       "Returns the GraphQL schema (SDL) of the Okazi graph. Read it once, then use graphql_query " +
       "to read related data (e.g. venues with their rooms) in a single call.",
     inputSchema: { type: "object", properties: {} },
-    outputSchema: { type: "object", properties: { sdl: { type: "string" }, usage: { type: "string" } } },
+    outputSchema: {
+      type: "object",
+      properties: { sdl: { type: "string" }, usage: { type: "string" } },
+    },
     annotations: { title: "graphql_schema", ...READ_ONLY },
     async run() {
-      const usage = "Call graphql_query({ query, variables }). Queries only; scoped to your organization.";
+      const usage =
+        "Call graphql_query({ query, variables }). Queries only; scoped to your organization.";
       return successResult({ value: { sdl: printSchemaSdl(), usage } });
     },
   };
@@ -48,14 +56,16 @@ export function createGraphqlQueryTool({ embed }: GraphqlQueryToolInput): McpToo
     async run({ args, context }: RunToolInput) {
       const parsed = GraphqlQueryInputSchema.safeParse(args);
       if (!parsed.success) {
-        return errorResult({ error: appError({ code: "VALIDATION", message: "Invalid query input" }) });
+        return errorResult({ error: fromZodError({ error: parsed.error }) });
       }
       const readOnly = assertReadOnly({ query: parsed.data.query });
       if (!readOnly.ok) return errorResult({ error: readOnly.error });
       const result = await runGraphqlQuery({ ...parsed.data, context, embed });
       if (!result.ok) return errorResult({ error: result.error });
       const failed = !result.value.data && Boolean(result.value.errors?.length);
-      return failed ? { ...successResult({ value: result.value }), isError: true } : successResult({ value: result.value });
+      return failed
+        ? { ...successResult({ value: result.value }), isError: true }
+        : successResult({ value: result.value });
     },
   };
 }

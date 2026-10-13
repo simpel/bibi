@@ -4,7 +4,8 @@ export type CanonicalInput = { value: unknown };
 
 /** Deterministic JSON (sorted object keys) so equal inputs hash equally. */
 export function canonicalJson({ value }: CanonicalInput): string {
-  if (Array.isArray(value)) return `[${value.map((item) => canonicalJson({ value: item })).join(",")}]`;
+  if (Array.isArray(value))
+    return `[${value.map((item) => canonicalJson({ value: item })).join(",")}]`;
   if (value !== null && typeof value === "object") {
     const entries = Object.entries(value as Record<string, unknown>)
       .filter(([, item]) => item !== undefined)

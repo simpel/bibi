@@ -1,10 +1,9 @@
-import type { AfterCommitHook, AnyOperation } from "@okazi/core";
+import { type AfterCommitHook, type AnyOperation, fromZodError } from "@okazi/core";
 import { z } from "zod";
 import { confirmApproval } from "../approval/confirm";
 import { toJsonSchema } from "./json-schema";
 import { errorResult, successResult } from "./results";
 import type { McpTool, RunToolInput } from "./types";
-import { appError } from "@okazi/core";
 
 export const ApprovalConfirmInputSchema = z.object({
   approvalToken: z.string().min(1).describe("Token from an approval_required result"),
@@ -38,11 +37,12 @@ export function createApprovalConfirmTool(deps: ApprovalConfirmToolInput): McpTo
     async run({ args, context }: RunToolInput) {
       const parsed = ApprovalConfirmInputSchema.safeParse(args);
       if (!parsed.success) {
-        const error = appError({ code: "VALIDATION", message: "approvalToken is required" });
-        return errorResult({ error });
+        return errorResult({ error: fromZodError({ error: parsed.error }) });
       }
       const result = await confirmApproval({ token: parsed.data.approvalToken, context, ...deps });
-      return result.ok ? successResult({ value: result.value }) : errorResult({ error: result.error });
+      return result.ok
+        ? successResult({ value: result.value })
+        : errorResult({ error: result.error });
     },
   };
 }

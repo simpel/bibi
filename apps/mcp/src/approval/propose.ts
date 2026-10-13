@@ -8,8 +8,8 @@ import {
   ok,
   type Result,
 } from "@okazi/core";
-import { toJsonValue } from "../tools/results";
 import type { McpToolMeta } from "../tools/meta";
+import { toJsonValue } from "../tools/results";
 import { signApprovalToken } from "./sign";
 import type { ApprovalRequired } from "./types";
 
@@ -21,7 +21,11 @@ export type ProposeInput = {
   secret: string;
 };
 
-type SummaryInput = { meta: McpToolMeta | undefined; operation: AnyOperation; input: Record<string, unknown> };
+type SummaryInput = {
+  meta: McpToolMeta | undefined;
+  operation: AnyOperation;
+  input: Record<string, unknown>;
+};
 
 function summarize({ meta, operation, input }: SummaryInput): string {
   if (meta?.summary) return meta.summary({ input });
@@ -40,7 +44,8 @@ export function proposeApproval({
   secret,
 }: ProposeInput): Result<ApprovalRequired> {
   const userId = context.actor.userId;
-  if (!userId) return err({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
+  if (!userId)
+    return err({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
   const parsed = operation.input.safeParse(args);
   if (!parsed.success) return err({ error: fromZodError({ error: parsed.error }) });
   if (!hasPermission({ roles: context.roles, permission: operation.permission })) {

@@ -1,9 +1,4 @@
-import {
-  type AfterCommitHook,
-  type AnyOperation,
-  execute,
-  requiresApproval,
-} from "@okazi/core";
+import { type AfterCommitHook, type AnyOperation, execute, requiresApproval } from "@okazi/core";
 import { proposeApproval } from "../approval/propose";
 import { toAnnotations } from "./annotations";
 import { describeOperation } from "./describe";
@@ -56,10 +51,14 @@ export function createOperationTool({
     async run({ args, context }: RunToolInput) {
       if (requiresApproval({ operation, actor: context.actor })) {
         const proposal = proposeApproval({ operation, meta, args, context, secret });
-        return proposal.ok ? successResult({ value: proposal.value }) : errorResult({ error: proposal.error });
+        return proposal.ok
+          ? successResult({ value: proposal.value })
+          : errorResult({ error: proposal.error });
       }
       const result = await execute({ operation, input: args ?? {}, context, afterCommit });
-      return result.ok ? successResult({ value: result.value }) : errorResult({ error: result.error });
+      return result.ok
+        ? successResult({ value: result.value })
+        : errorResult({ error: result.error });
     },
   };
 }

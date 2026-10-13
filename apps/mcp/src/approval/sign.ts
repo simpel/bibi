@@ -1,6 +1,6 @@
 import { createHmac, randomUUID } from "node:crypto";
-import { APPROVAL_TTL_SECONDS, type ApprovalClaims } from "./types";
 import { hashInput } from "./canonical-json";
+import { APPROVAL_TTL_SECONDS, type ApprovalClaims } from "./types";
 
 const DOMAIN = "okazi.mcp.approval.v1";
 

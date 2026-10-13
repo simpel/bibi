@@ -21,7 +21,9 @@ type ParseInput = { body: string };
 
 function parseClaims({ body }: ParseInput): ApprovalClaims | undefined {
   try {
-    const parsed = ApprovalClaimsSchema.safeParse(JSON.parse(Buffer.from(body, "base64url").toString()));
+    const parsed = ApprovalClaimsSchema.safeParse(
+      JSON.parse(Buffer.from(body, "base64url").toString()),
+    );
     return parsed.success ? parsed.data : undefined;
   } catch {
     return undefined;
@@ -37,7 +39,8 @@ export function verifyApprovalToken({
   now = Math.floor(Date.now() / 1000),
 }: VerifyApprovalInput): Result<ApprovalClaims> {
   const [body, signature, extra] = token.split(".");
-  if (!body || !signature || extra !== undefined) return deny({ message: "Invalid approval token" });
+  if (!body || !signature || extra !== undefined)
+    return deny({ message: "Invalid approval token" });
   const given = Buffer.from(signature, "base64url");
   const expected = mac({ body, secret });
   if (given.length !== expected.length || !timingSafeEqual(given, expected)) {

@@ -10,7 +10,10 @@ export const venueMcpTools = [
   mcpTool({
     operation: "venue.update",
     idempotent: true,
-    summary: ({ input }) => `Update venue ${text({ value: input.id })}: ${Object.keys(input).filter((key) => key !== "id").join(", ")}`,
+    summary: ({ input }) =>
+      `Update venue ${text({ value: input.id })}: ${Object.keys(input)
+        .filter((key) => key !== "id")
+        .join(", ")}`,
   }),
   mcpTool({
     operation: "venue.archive",
