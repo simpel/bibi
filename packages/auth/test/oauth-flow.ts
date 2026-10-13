@@ -11,6 +11,8 @@ export type RegisterClientInput = { clientId?: string };
 
 /** Public PKCE client linked to the MCP resource, consent skipped (first-party style). */
 export async function registerClient({ clientId = `client_${createId()}` }: RegisterClientInput) {
+  // Auth init seeds the MCP resource row that the client link below references.
+  await getAuth().$context;
   const db = getDb();
   const now = new Date();
   await db.oauthClient.upsert({

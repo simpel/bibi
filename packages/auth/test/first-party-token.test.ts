@@ -4,7 +4,12 @@ import { createId } from "@paralleldrive/cuid2";
 import { beforeAll, describe, expect, it } from "vitest";
 import { clientAllowsAiActor } from "../src/first-party/clients";
 import { clearTokenCache } from "../src/first-party/token-cache";
-import { getFirstPartyAccessToken, mcpResourceUrl, resolveExecuteContext } from "../src/index";
+import {
+  getAuth,
+  getFirstPartyAccessToken,
+  mcpResourceUrl,
+  resolveExecuteContext,
+} from "../src/index";
 import { codeOf, createOrg, signUp } from "./helpers";
 import { obtainAccessToken, registerClient } from "./oauth-flow";
 
@@ -12,6 +17,8 @@ const AI_HEADERS = { "x-okazi-actor": "ai", "x-okazi-conversation-id": "conv_ass
 
 /** The first-party client as `provision:oauth` creates it (assistant redirect URI added). */
 async function registerWebClient(): Promise<void> {
+  // Auth init seeds the MCP resource row that the client link below references.
+  await getAuth().$context;
   const db = getDb();
   const clientId = getEnv().WEB_OAUTH_CLIENT_ID ?? "";
   const redirectUris = [
