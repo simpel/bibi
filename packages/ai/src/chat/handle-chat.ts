@@ -33,7 +33,11 @@ export async function handleChat({ request, runtime }: HandleChatInput): Promise
     ...(input.value.conversationId ? { conversationId: input.value.conversationId } : {}),
   });
   if (!conversation.ok) return errorResponse({ error: conversation.error });
-  const history = await loadHistory({ user: user.value, embed, conversationId: conversation.value.id });
+  const history = await loadHistory({
+    user: user.value,
+    embed,
+    conversationId: conversation.value.id,
+  });
   if (!history.ok) return errorResponse({ error: history.error });
   return runAssistant({
     runtime,

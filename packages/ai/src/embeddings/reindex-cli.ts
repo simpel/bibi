@@ -13,7 +13,10 @@ const orgArg = ({ args }: OrgArgInput): string | undefined => {
 
 const organizationId = orgArg({ args: process.argv.slice(2) });
 try {
-  const report = await reindexAll({ embed: createEmbed(), ...(organizationId ? { organizationId } : {}) });
+  const report = await reindexAll({
+    embed: createEmbed(),
+    ...(organizationId ? { organizationId } : {}),
+  });
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 } catch (error) {
   process.stderr.write(`${error instanceof Error ? error.message : String(error)}\n`);

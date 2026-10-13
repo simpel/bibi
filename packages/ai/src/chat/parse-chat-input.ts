@@ -17,15 +17,21 @@ const invalid = ({ message }: { message: string }) =>
   err({ error: new AppError({ code: "VALIDATION", message }) });
 
 /** Validated request: the last message must be the user's, with text within the limit. */
-export async function parseChatInput({ request }: { request: Request }): Promise<Result<ChatInput>> {
+export async function parseChatInput({
+  request,
+}: {
+  request: Request;
+}): Promise<Result<ChatInput>> {
   const body = await readJsonBody({ request, schema: ChatRequestSchema });
   if (!body.ok) return body;
   const { conversationId, messages, pageContext } = body.value;
   const last = messages.at(-1);
-  if (!last || last.role !== "user") return invalid({ message: "The last message must be the user's" });
+  if (!last || last.role !== "user")
+    return invalid({ message: "The last message must be the user's" });
   const text = userText({ message: last });
   if (text === "") return invalid({ message: "The user message has no text" });
-  if (text.length > ASSISTANT_LIMITS.maxUserTextChars) return invalid({ message: "The user message is too long" });
+  if (text.length > ASSISTANT_LIMITS.maxUserTextChars)
+    return invalid({ message: "The user message is too long" });
   return ok({
     value: {
       text,

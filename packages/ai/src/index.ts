@@ -1,14 +1,14 @@
 export {
+  type ApprovalRequest,
+  ApprovalRequestSchema,
+  type ApprovalResponse,
+} from "./approval/approval-request";
+export {
   type Approval,
   type ApprovalRequired,
   ApprovalRequiredSchema,
   readApproval,
 } from "./approval/approval-schema";
-export {
-  type ApprovalRequest,
-  ApprovalRequestSchema,
-  type ApprovalResponse,
-} from "./approval/approval-request";
 export { type ConfirmApprovalInput, confirmApproval } from "./approval/confirm-approval";
 export { createApprovalHandler } from "./approval/create-approval-handler";
 export {

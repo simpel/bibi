@@ -1,7 +1,7 @@
 import { type EmbedFn, listMessages, type MessageDto, ok, type Result } from "@okazi/core";
 import type { UIMessage } from "ai";
-import { runCore } from "../server/run-core";
 import type { UserContext } from "../server/resolve-user";
+import { runCore } from "../server/run-core";
 import { ASSISTANT_LIMITS } from "./assistant-limits";
 
 const PAGE = 200;
@@ -10,7 +10,11 @@ const MAX_PAGES = 25;
 export type LoadHistoryInput = { user: UserContext; embed: EmbedFn; conversationId: string };
 
 /** Stored messages, oldest first (all pages, capped). */
-async function loadAll({ user, embed, conversationId }: LoadHistoryInput): Promise<Result<MessageDto[]>> {
+async function loadAll({
+  user,
+  embed,
+  conversationId,
+}: LoadHistoryInput): Promise<Result<MessageDto[]>> {
   const all: MessageDto[] = [];
   let cursor: string | undefined;
   for (let page = 0; page < MAX_PAGES; page++) {
@@ -25,7 +29,9 @@ async function loadAll({ user, embed, conversationId }: LoadHistoryInput): Promi
 }
 
 const textOnly = ({ message }: { message: MessageDto }) =>
-  message.parts.flatMap((part) => (part.type === "text" && part.text ? [{ type: "text" as const, text: part.text }] : []));
+  message.parts.flatMap((part) =>
+    part.type === "text" && part.text ? [{ type: "text" as const, text: part.text }] : [],
+  );
 
 type ToUiInput = { message: MessageDto };
 
@@ -36,7 +42,8 @@ type ToUiInput = { message: MessageDto };
  */
 function toUiMessage({ message }: ToUiInput): UIMessage | null {
   const id = message.id;
-  if (message.role === "ASSISTANT") return { id, role: "assistant", parts: message.parts as UIMessage["parts"] };
+  if (message.role === "ASSISTANT")
+    return { id, role: "assistant", parts: message.parts as UIMessage["parts"] };
   if (message.role === "SYSTEM") return null;
   const parts = textOnly({ message });
   return parts.length > 0 ? { id, role: "user", parts } : null;

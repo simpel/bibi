@@ -7,7 +7,11 @@ import {
   type ResolvedServerOptions,
   resolveServerOptions,
 } from "../server/server-options";
-import { type ApprovalRequest, type ApprovalResponse, ApprovalRequestSchema } from "./approval-request";
+import {
+  type ApprovalRequest,
+  ApprovalRequestSchema,
+  type ApprovalResponse,
+} from "./approval-request";
 import { confirmApproval } from "./confirm-approval";
 import { recordApprovalDecision } from "./record-approval-decision";
 import { rejectApproval } from "./reject-approval";
@@ -21,7 +25,12 @@ type DecideInput = {
 
 async function approve({ body, user, headers, options }: DecideInput): Promise<Response> {
   const { conversationId, toolCallId, operation } = body;
-  const result = await confirmApproval({ ...options, approvalToken: body.approvalToken, headers, user });
+  const result = await confirmApproval({
+    ...options,
+    approvalToken: body.approvalToken,
+    headers,
+    user,
+  });
   if (conversationId) {
     await recordApprovalDecision({
       user,

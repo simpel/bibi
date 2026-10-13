@@ -11,11 +11,31 @@ import {
   VenueWireSchema,
 } from "./wire-schemas";
 
-const venueTable = uiEntry({ component: "venue-table", schema: VenueListWireSchema, toProps: ({ value }) => value });
-const venueCard = uiEntry({ component: "venue-card", schema: VenueWireSchema, toProps: ({ value }) => ({ venue: value }) });
-const roomTable = uiEntry({ component: "room-table", schema: RoomListWireSchema, toProps: ({ value }) => value });
-const roomCard = uiEntry({ component: "room-card", schema: RoomWireSchema, toProps: ({ value }) => ({ room: value }) });
-const skillCard = uiEntry({ component: "skill-card", schema: SkillCardWireSchema, toProps: ({ value }) => ({ skill: value }) });
+const venueTable = uiEntry({
+  component: "venue-table",
+  schema: VenueListWireSchema,
+  toProps: ({ value }) => value,
+});
+const venueCard = uiEntry({
+  component: "venue-card",
+  schema: VenueWireSchema,
+  toProps: ({ value }) => ({ venue: value }),
+});
+const roomTable = uiEntry({
+  component: "room-table",
+  schema: RoomListWireSchema,
+  toProps: ({ value }) => value,
+});
+const roomCard = uiEntry({
+  component: "room-card",
+  schema: RoomWireSchema,
+  toProps: ({ value }) => ({ room: value }),
+});
+const skillCard = uiEntry({
+  component: "skill-card",
+  schema: SkillCardWireSchema,
+  toProps: ({ value }) => ({ skill: value }),
+});
 
 /**
  * Tool name → generative-UI component. Adding an MCP tool (core operation) forces a decision:
@@ -32,8 +52,16 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   room_create: roomCard,
   room_update: roomCard,
   room_archive: roomCard,
-  search: uiEntry({ component: "search-results", schema: SearchWireSchema, toProps: ({ value }) => value }),
-  skill_list: uiEntry({ component: "skill-table", schema: SkillListWireSchema, toProps: ({ value }) => value }),
+  search: uiEntry({
+    component: "search-results",
+    schema: SearchWireSchema,
+    toProps: ({ value }) => value,
+  }),
+  skill_list: uiEntry({
+    component: "skill-table",
+    schema: SkillListWireSchema,
+    toProps: ({ value }) => value,
+  }),
   skill_get: skillCard,
   skill_create: skillCard,
   skill_update: skillCard,

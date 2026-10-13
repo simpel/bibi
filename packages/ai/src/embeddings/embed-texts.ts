@@ -21,7 +21,10 @@ type CheckInput = { vectors: unknown; modelId: string; expected: number };
 function checkVectors({ vectors, modelId, expected }: CheckInput): number[][] {
   const parsed = VectorsSchema.safeParse(vectors);
   if (!parsed.success || parsed.data.length !== expected) {
-    throw new AppError({ code: "INTERNAL", message: `Embedding model ${modelId} returned no data` });
+    throw new AppError({
+      code: "INTERNAL",
+      message: `Embedding model ${modelId} returned no data`,
+    });
   }
   const wrong = parsed.data.find((vector) => vector.length !== EMBEDDING_DIMENSIONS);
   if (wrong) {

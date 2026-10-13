@@ -31,10 +31,12 @@ export type StreamChatInput = {
 
 const SAFE_ERROR = "The assistant could not finish the answer. Please try again.";
 
-/** `streamText` with bounded steps/tokens/time, piped into an AI SDK UI message stream (SSE). */
-export function streamChat({ model, instructions, messages, prepared, conversation, onFinish }: StreamChatInput): Response {
+type StartModelInput = Pick<StreamChatInput, "model" | "instructions" | "messages" | "prepared">;
+
+/** `streamText` with bounded steps, tokens and time; skill restriction applied per step. */
+function startModel({ model, instructions, messages, prepared }: StartModelInput) {
   const { tools, restriction } = prepared;
-  const result = streamText({
+  return streamText({
     model,
     instructions,
     messages,
@@ -47,14 +49,32 @@ export function streamChat({ model, instructions, messages, prepared, conversati
       return activeTools ? { activeTools: [...activeTools] } : {};
     },
   });
+}
+
+/** The model run piped into an AI SDK UI message stream (SSE) with the conversation id. */
+export function streamChat({
+  model,
+  instructions,
+  messages,
+  prepared,
+  conversation,
+  onFinish,
+}: StreamChatInput): Response {
+  const result = startModel({ model, instructions, messages, prepared });
   const stream = createUIMessageStream({
     execute: ({ writer }) => {
       const data = { conversationId: conversation.id, created: conversation.created };
       writer.write({ type: CONVERSATION_DATA_PART, data, transient: true });
-      writer.merge(toUIMessageStream({ stream: result.stream, sendReasoning: false, onError: () => SAFE_ERROR }));
+      const ui = toUIMessageStream({
+        stream: result.stream,
+        sendReasoning: false,
+        onError: () => SAFE_ERROR,
+      });
+      writer.merge(ui);
     },
     onError: () => SAFE_ERROR,
-    onEnd: ({ responseMessage, finishReason }) => onFinish({ parts: responseMessage.parts, finishReason }),
+    onEnd: ({ responseMessage, finishReason }) =>
+      onFinish({ parts: responseMessage.parts, finishReason }),
   });
   return createUIMessageStreamResponse({
     stream,

@@ -11,7 +11,10 @@ export type ReembedStaleRowsInput = {
   batchSize: number;
 };
 
-const staleWhere = ({ model, organizationId }: Pick<ReembedStaleRowsInput, "model" | "organizationId">) => ({
+const staleWhere = ({
+  model,
+  organizationId,
+}: Pick<ReembedStaleRowsInput, "model" | "organizationId">) => ({
   model: { not: model },
   ...(organizationId ? { organizationId: { in: [organizationId, GLOBAL_EMBEDDING_SCOPE] } } : {}),
 });
@@ -31,7 +34,10 @@ export async function reembedStaleRows({
   let count = 0;
   for (;;) {
     const rows = await db.embedding.findMany({
-      where: { ...staleWhere({ model, organizationId }), ...(cursor ? { id: { gt: cursor } } : {}) },
+      where: {
+        ...staleWhere({ model, organizationId }),
+        ...(cursor ? { id: { gt: cursor } } : {}),
+      },
       orderBy: { id: "asc" },
       take: batchSize,
     });

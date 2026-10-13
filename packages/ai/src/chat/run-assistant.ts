@@ -7,7 +7,7 @@ import { finishRun } from "./finish-run";
 import type { ChatRuntime } from "./handle-chat";
 import type { ChatInput } from "./parse-chat-input";
 import { persistUserMessage } from "./persist-user-message";
-import { prepareTools } from "./prepare-tools";
+import { type PreparedTools, prepareTools } from "./prepare-tools";
 import { streamChat } from "./stream-chat";
 import { toModelMessages } from "./to-model-messages";
 
@@ -22,24 +22,58 @@ export type RunAssistantInput = {
 
 type StreamRunInput = RunAssistantInput & { client: MCPClient };
 
+type ModelInputArgs = Pick<RunAssistantInput, "user" | "input" | "history"> & {
+  prepared: PreparedTools;
+  storedMessageId: string;
+};
+
+/** Model messages (history + the new user turn) and system instructions for this run. */
+async function buildModelInput({
+  user,
+  input,
+  history,
+  prepared,
+  storedMessageId,
+}: ModelInputArgs) {
+  const { text, page, locale } = input;
+  const userMessage: UIMessage = {
+    id: storedMessageId,
+    role: "user",
+    parts: [{ type: "text", text }],
+  };
+  const messages = await toModelMessages({
+    messages: [...history, userMessage],
+    tools: prepared.tools,
+  });
+  const instructions = buildSystemPrompt({
+    organizationId: user.organizationId,
+    locale,
+    skills: prepared.promptSkills,
+    ...(page ? { page } : {}),
+  });
+  return { messages, instructions };
+}
+
 async function streamRun({ runtime, user, input, conversation, history, client }: StreamRunInput) {
-  const { text, page, locale, clientMessageId } = input;
   const conversationId = conversation.id;
-  const prepared = await prepareTools({ client, userText: text });
+  const prepared = await prepareTools({ client, userText: input.text });
   const stored = await persistUserMessage({
     user,
     embed: runtime.embed,
     conversationId,
-    text,
-    clientMessageId,
-    ...(page ? { page } : {}),
+    text: input.text,
+    clientMessageId: input.clientMessageId,
+    ...(input.page ? { page: input.page } : {}),
   });
   if (!stored.ok) return stored;
-  const userMessage: UIMessage = { id: stored.value.id, role: "user", parts: [{ type: "text", text }] };
-  const messages = await toModelMessages({ messages: [...history, userMessage], tools: prepared.tools });
-  const { organizationId } = user;
-  const skills = prepared.promptSkills;
-  const instructions = buildSystemPrompt({ organizationId, locale, skills, ...(page ? { page } : {}) });
+  const storedMessageId = stored.value.id;
+  const { messages, instructions } = await buildModelInput({
+    user,
+    input,
+    history,
+    prepared,
+    storedMessageId,
+  });
   const response = streamChat({
     model: runtime.model,
     instructions,
@@ -75,7 +109,15 @@ export async function runAssistant({
     ...(runtime.mcpUrl ? { url: runtime.mcpUrl } : {}),
   });
   try {
-    const result = await streamRun({ runtime, headers, user, input, conversation, history, client });
+    const result = await streamRun({
+      runtime,
+      headers,
+      user,
+      input,
+      conversation,
+      history,
+      client,
+    });
     if (result.ok) return result.value;
     await client.close();
     return errorResponse({ error: result.error });

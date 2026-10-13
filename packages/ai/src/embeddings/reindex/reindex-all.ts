@@ -43,7 +43,10 @@ export async function reindexAll({
 }: ReindexAllInput): Promise<ReindexReport> {
   const { model } = await embed({ texts: [PROBE_TEXT] });
   const reembedded = await reembedStaleRows({ db, embed, model, organizationId, batchSize });
-  const organizations = await listOrganizationIds({ db, ...(organizationId ? { organizationId } : {}) });
+  const organizations = await listOrganizationIds({
+    db,
+    ...(organizationId ? { organizationId } : {}),
+  });
   let indexed = 0;
   for (const id of organizations) {
     indexed += await indexMissingEntities({ db, embed, organizationId: id });

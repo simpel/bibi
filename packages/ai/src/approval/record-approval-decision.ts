@@ -1,6 +1,6 @@
 import { appendMessage, type EmbedFn, type MessageDto, type Result } from "@okazi/core";
-import { runCore } from "../server/run-core";
 import type { UserContext } from "../server/resolve-user";
+import { runCore } from "../server/run-core";
 
 export type ApprovalDecision = "approved" | "rejected" | "failed";
 

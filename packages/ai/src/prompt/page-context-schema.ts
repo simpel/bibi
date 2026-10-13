@@ -12,7 +12,12 @@ export const PageContextSchema = z.object({
   locale: AssistantLocaleSchema,
   entity: z
     .object({
-      type: z.string().trim().min(1).max(50).regex(/^[a-z][a-z_]*$/),
+      type: z
+        .string()
+        .trim()
+        .min(1)
+        .max(50)
+        .regex(/^[a-z][a-z_]*$/),
       id: z.string().trim().min(1).max(200),
     })
     .optional()

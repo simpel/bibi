@@ -1,7 +1,7 @@
 import { appendMessage, type EmbedFn, type MessageDto, type Result } from "@okazi/core";
 import type { PageContext } from "../prompt/page-context-schema";
-import { runCore } from "../server/run-core";
 import type { UserContext } from "../server/resolve-user";
+import { runCore } from "../server/run-core";
 
 export type PersistUserMessageInput = {
   user: UserContext;

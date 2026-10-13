@@ -47,7 +47,15 @@ export function createLoadSkillTool({ client, published, restriction }: CreateLo
       const { instructions, resources, allowedTools } = skill.data;
       const activeTools = restriction.activate({ allowedTools });
       const { id: loadedId, slug: loadedSlug, name, version } = skill.data;
-      return { id: loadedId, slug: loadedSlug, name, version, instructions, resources, activeTools };
+      return {
+        id: loadedId,
+        slug: loadedSlug,
+        name,
+        version,
+        instructions,
+        resources,
+        activeTools,
+      };
     },
   });
 }

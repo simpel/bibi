@@ -1,7 +1,7 @@
+import type { EmbedFn } from "@okazi/core";
 import { ok, type Result } from "@okazi/core";
 import type { UserContext } from "../server/resolve-user";
 import { recordApprovalDecision } from "./record-approval-decision";
-import type { EmbedFn } from "@okazi/core";
 
 export type RejectApprovalInput = {
   user: UserContext;

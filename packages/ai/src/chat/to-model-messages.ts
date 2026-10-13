@@ -12,7 +12,10 @@ const textOnly = ({ messages }: { messages: UIMessage[] }): UIMessage[] =>
  * UI history → model messages. Stored tool parts from older runs may no longer convert (tool
  * renamed, schema drift); then the history degrades to its text instead of failing the turn.
  */
-export async function toModelMessages({ messages, tools }: ToModelMessagesInput): Promise<ModelMessage[]> {
+export async function toModelMessages({
+  messages,
+  tools,
+}: ToModelMessagesInput): Promise<ModelMessage[]> {
   try {
     return await convertToModelMessages(messages, { tools, ignoreIncompleteToolCalls: true });
   } catch {

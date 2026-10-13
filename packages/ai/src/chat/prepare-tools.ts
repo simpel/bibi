@@ -25,8 +25,14 @@ const omit = ({ tools, names }: { tools: ToolSet; names: readonly string[] }): T
  * The run's tool set: the MCP tools the AI actor sees (`tools/list`) + local skill tools, guarded
  * by the skill restriction; plus the PUBLISHED skills listed in the prompt.
  */
-export async function prepareTools({ client, userText }: PrepareToolsInput): Promise<PreparedTools> {
-  const mcpTools = omit({ tools: await client.tools(), names: [...HUMAN_ONLY_TOOLS, ...LOCAL_SKILL_TOOLS] });
+export async function prepareTools({
+  client,
+  userText,
+}: PrepareToolsInput): Promise<PreparedTools> {
+  const mcpTools = omit({
+    tools: await client.tools(),
+    names: [...HUMAN_ONLY_TOOLS, ...LOCAL_SKILL_TOOLS],
+  });
   const published = await listPublishedSkills({ client });
   const promptSkills = await rankSkills({
     client,

@@ -32,6 +32,11 @@ export type SkillDetail = z.infer<typeof SkillDetailWireSchema>;
 /** `search` structured content. */
 export const SearchWireSchema = z.object({
   hits: z.array(
-    z.object({ entityType: z.string(), entityId: z.string(), score: z.number(), content: z.string() }),
+    z.object({
+      entityType: z.string(),
+      entityId: z.string(),
+      score: z.number(),
+      content: z.string(),
+    }),
   ),
 });

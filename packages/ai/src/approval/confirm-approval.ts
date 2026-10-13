@@ -1,4 +1,4 @@
-import { type Result } from "@okazi/core";
+import type { Result } from "@okazi/core";
 import { callMcpTool } from "../mcp/call-mcp-tool";
 import { connectMcp } from "../mcp/connect-mcp";
 import { resolveUser, type UserContext } from "../server/resolve-user";
@@ -24,7 +24,9 @@ export async function confirmApproval({
   ...options
 }: ConfirmApprovalInput): Promise<Result<Record<string, unknown>>> {
   const { resolveContext, getAccessToken, mcpUrl } = resolveServerOptions(options);
-  const resolved = user ? { ok: true as const, value: user } : await resolveUser({ headers, resolveContext });
+  const resolved = user
+    ? { ok: true as const, value: user }
+    : await resolveUser({ headers, resolveContext });
   if (!resolved.ok) return resolved;
   const { userId } = resolved.value.actor;
   const caller = { userId, organizationId: resolved.value.organizationId };

@@ -11,7 +11,9 @@ export type AuthorizeCodeInput = {
   challenge: string;
 };
 
-const RedirectBodySchema = z.object({ url: z.string().min(1) }).or(z.object({ redirect: z.string() }));
+const RedirectBodySchema = z
+  .object({ url: z.string().min(1) })
+  .or(z.object({ redirect: z.string() }));
 
 const failed = ({ message }: { message: string }) =>
   err({ error: new AppError({ code: "UNAUTHENTICATED", message }) });

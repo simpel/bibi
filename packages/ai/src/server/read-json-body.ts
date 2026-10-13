@@ -13,5 +13,7 @@ export async function readJsonBody<S extends z.ZodType>({
     return err({ error: new AppError({ code: "VALIDATION", message: "Body must be JSON" }) });
   }
   const parsed = schema.safeParse(json);
-  return parsed.success ? ok({ value: parsed.data }) : err({ error: fromZodError({ error: parsed.error }) });
+  return parsed.success
+    ? ok({ value: parsed.data })
+    : err({ error: fromZodError({ error: parsed.error }) });
 }

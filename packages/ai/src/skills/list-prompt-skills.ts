@@ -8,7 +8,9 @@ const LIST_LIMIT = 100;
 export type ListPublishedSkillsInput = { client: MCPClient };
 
 /** PUBLISHED skills visible to the user, via MCP `skill_list` (visibility enforced by core). */
-export async function listPublishedSkills({ client }: ListPublishedSkillsInput): Promise<PromptSkill[]> {
+export async function listPublishedSkills({
+  client,
+}: ListPublishedSkillsInput): Promise<PromptSkill[]> {
   const result = await callMcpTool({
     client,
     name: "skill_list",
@@ -37,7 +39,12 @@ export type RankSkillsInput = {
  * The `limit` skills most relevant to `query` (hybrid search over skills), filled up in list order.
  * Search failures fall back to list order: the prompt never blocks on search.
  */
-export async function rankSkills({ client, skills, query, limit }: RankSkillsInput): Promise<PromptSkill[]> {
+export async function rankSkills({
+  client,
+  skills,
+  query,
+  limit,
+}: RankSkillsInput): Promise<PromptSkill[]> {
   if (skills.length <= limit || query.trim() === "") return skills.slice(0, limit);
   const result = await callMcpTool({
     client,

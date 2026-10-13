@@ -1,6 +1,6 @@
 import type { EmbedFn } from "@okazi/core";
-import { createEmbed } from "../embeddings/create-embed";
 import { type GetAccessToken, getAssistantAccessToken } from "../auth/get-assistant-access-token";
+import { createEmbed } from "../embeddings/create-embed";
 import type { ResolveContext } from "./resolve-user";
 
 /** Dependencies shared by the chat and approval handlers (all injectable for tests). */

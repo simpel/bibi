@@ -31,8 +31,7 @@ export function isPlaceholderEmbed({ embed }: IsPlaceholderEmbedInput): boolean 
 
 type WithModelInput = { fn: EmbedFn; model: string };
 
-const withModel = ({ fn, model }: WithModelInput): AssistantEmbedFn =>
-  Object.assign(fn, { model });
+const withModel = ({ fn, model }: WithModelInput): AssistantEmbedFn => Object.assign(fn, { model });
 
 const defaultWarn = ({ message }: { message: string }) => console.warn(message);
 

@@ -1,6 +1,6 @@
 import { createConversation, type EmbedFn, getConversation, ok, type Result } from "@okazi/core";
-import { runCore } from "../server/run-core";
 import type { UserContext } from "../server/resolve-user";
+import { runCore } from "../server/run-core";
 import { ASSISTANT_LIMITS } from "./assistant-limits";
 
 export type ConversationTitleInput = { text: string };
@@ -28,10 +28,20 @@ export async function ensureConversation({
   firstText,
 }: EnsureConversationInput): Promise<Result<{ id: string; created: boolean }>> {
   if (conversationId) {
-    const found = await runCore({ operation: getConversation, input: { id: conversationId }, context: user, embed });
+    const found = await runCore({
+      operation: getConversation,
+      input: { id: conversationId },
+      context: user,
+      embed,
+    });
     return found.ok ? ok({ value: { id: found.value.id, created: false } }) : found;
   }
   const title = conversationTitle({ text: firstText });
-  const created = await runCore({ operation: createConversation, input: { title }, context: user, embed });
+  const created = await runCore({
+    operation: createConversation,
+    input: { title },
+    context: user,
+    embed,
+  });
   return created.ok ? ok({ value: { id: created.value.id, created: true } }) : created;
 }

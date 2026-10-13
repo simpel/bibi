@@ -12,7 +12,8 @@ const ID_LISTERS: Readonly<Record<string, ListIds>> = {
   venue: ({ db }) => db.venue.findMany({ select: { id: true } }),
   room: ({ db }) => db.room.findMany({ select: { id: true } }),
   conversation: ({ db }) => db.conversation.findMany({ select: { id: true } }),
-  skill: ({ db }) => db.skill.findMany({ where: { scope: { not: "SYSTEM" } }, select: { id: true } }),
+  skill: ({ db }) =>
+    db.skill.findMany({ where: { scope: { not: "SYSTEM" } }, select: { id: true } }),
 };
 
 export type IndexMissingEntitiesInput = { db: Db; embed: EmbedFn; organizationId: string };
