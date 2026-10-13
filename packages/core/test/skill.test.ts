@@ -2,34 +2,14 @@ import { describe, expect, it } from "vitest";
 import {
   archiveSkill,
   createSkill,
-  type ExecuteContext,
   execute,
   getSkill,
-  listSkills,
   publishSkill,
   shareSkill,
   updateSkill,
 } from "../src/index";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
-
-type NewSkillInput = {
-  context: ExecuteContext;
-  scope?: "PERSONAL" | "ORGANIZATION";
-  name?: string;
-};
-
-async function newSkill({ context, scope = "PERSONAL", name = "Offertstöd" }: NewSkillInput) {
-  const input = { scope, name, description: "Hjälper till med offerter", instructions: "# Steg" };
-  return unwrap({ result: await execute({ operation: createSkill, input, context }) });
-}
-
-type IdsInput = { context: ExecuteContext; scope?: "SYSTEM" | "ORGANIZATION" | "PERSONAL" };
-
-async function visibleIds({ context, scope }: IdsInput): Promise<string[]> {
-  const input = { limit: 100, ...(scope ? { scope } : {}) };
-  const page = unwrap({ result: await execute({ operation: listSkills, input, context }) });
-  return page.items.map((item) => item.id);
-}
+import { newSkill, visibleIds } from "./skill-helpers";
 
 describe("skill operations", () => {
   it("creates personal drafts, derives slugs and bumps the version on content changes", async () => {
