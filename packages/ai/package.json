@@ -10,7 +10,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "reindex": "tsx src/embeddings/reindex-cli.ts"
+    "reindex": "tsx --env-file-if-exists=../../.env src/embeddings/reindex-cli.ts"
   },
   "dependencies": {
     "@ai-sdk/mcp": "2.0.74",
