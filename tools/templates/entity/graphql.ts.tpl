@@ -1,33 +1,33 @@
-import type { {{Pascal}} } from "@okazi/core"; // TODO: exportera typen från packages/core/src/index.ts
-import { builder } from "../../builder"; // TODO: Pothos-builder enligt packages/graphql/src
+import {
+  archive{{Pascal}},
+  create{{Pascal}},
+  get{{Pascal}},
+  list{{Pascal}}s, // TODO: bekräfta pluralnamnet som core exporterar (t.ex. listVenues)
+  type {{Pascal}}Dto, // TODO: exportera typen från packages/core (z.infer av {{camel}}Schema)
+  {{camel}}Schema, // TODO: bekräfta exportnamnet (t.ex. VenueSchema)
+  update{{Pascal}},
+} from "@okazi/core";
+import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
+import { objectFromSchema } from "../../schema/object-from-schema";
+import { pageType } from "../../schema/page";
 
-// {{Pascal}} i GraphQL-schemat. Läsningar via graph (ADR 0003). Mutationer går via core-operationer.
-export const {{Pascal}}Type = builder.objectRef<{{Pascal}}>("{{Pascal}}").implement({
-  fields: (t) => ({
-    id: t.exposeID("id"),
-    name: t.exposeString("name"),
-    // TODO: exponera övriga fält från schema.ts
-  }),
+// GraphQL-yta för {{Pascal}}. Allt härleds från core-operationernas Zod-scheman (ADR 0003):
+// objekttypen från utdataschemat, argument och mutation-input från indataschemat.
+// Läsningar och mutationer går via core `execute`, aldrig egen logik här.
+// Kom ihåg: lägg till `import "../features/{{kebab}}/graphql";` i packages/graphql/src/schema/schema.ts.
+export const {{Pascal}}Ref = objectFromSchema<{{Pascal}}Dto>({
+  name: "{{Pascal}}",
+  schema: {{camel}}Schema,
+  omit: ["organizationId"],
 });
+const {{Pascal}}PageRef = pageType({ name: "{{Pascal}}Page", item: {{Pascal}}Ref });
 
-builder.queryField("{{camel}}", (t) =>
-  t.field({
-    type: {{Pascal}}Type,
-    nullable: true,
-    args: { id: t.arg.string({ required: true }) },
-    // TODO: anropa get{{Pascal}} med org-kontexten och mappa AppError till GraphQL-fel.
-    resolve: () => {
-      throw new Error("TODO: koppla {{camel}} till get{{Pascal}}");
-    },
-  }),
-);
+fieldFromOperation({ operation: list{{Pascal}}s, type: {{Pascal}}PageRef, name: "{{camel}}s" });
+fieldFromOperation({ operation: get{{Pascal}}, type: {{Pascal}}Ref, name: "{{camel}}" });
+mutationFromOperation({ operation: create{{Pascal}}, type: {{Pascal}}Ref });
+mutationFromOperation({ operation: update{{Pascal}}, type: {{Pascal}}Ref });
+mutationFromOperation({ operation: archive{{Pascal}}, type: {{Pascal}}Ref });
 
-builder.queryField("{{camel}}s", (t) =>
-  t.field({
-    type: [{{Pascal}}Type],
-    // TODO: anropa list{{Pascal}}. Plural "{{camel}}s" är ett naivt förslag, korrigera vid behov.
-    resolve: () => {
-      throw new Error("TODO: koppla {{camel}}s till list{{Pascal}}");
-    },
-  }),
-);
+// Relationer (graph): lägg till med builder.objectField({{Pascal}}Ref, "<fält>", ...) och läs via
+// ctx.core.db (org-scopad) efter requirePermission({ ctx, permission: "<resurs>:read" }).
+// Sökbar entitet: lägg en rad i LOADERS i packages/graphql/src/schema/search-entity.ts.

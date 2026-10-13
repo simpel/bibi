@@ -7,10 +7,10 @@ import { mcpResourceUrl } from "../urls";
 /** Claim carrying the organization the token was granted for (active org at consent). */
 export const ORG_CLAIM = "okazi_org";
 
-type SessionWithOrg = { activeOrganizationId?: unknown };
-
-const activeOrganizationOf = ({ session }: { session: SessionWithOrg }): string | undefined =>
-  typeof session.activeOrganizationId === "string" ? session.activeOrganizationId : undefined;
+const activeOrganizationOf = ({ session }: { session: Record<string, unknown> }) => {
+  const id = session.activeOrganizationId;
+  return typeof id === "string" && id.length > 0 ? id : undefined;
+};
 
 /**
  * OAuth 2.1 authorization server for MCP clients and the web assistant (ADR 0005).
@@ -23,6 +23,10 @@ export function mcpPlugins() {
       resource: mcpResourceUrl(),
       loginPage: "/login",
       consentPage: "/oauth/consent",
+      // No client_credentials: every token must represent a user (ADR 0005).
+      grantTypes: ["authorization_code", "refresh_token"],
+      // Stateless JWTs: keep them short so revocation (membership/refresh token) bites quickly.
+      accessTokenExpiresIn: 15 * 60,
       postLogin: {
         page: "/select-organization",
         shouldRedirect: ({ session }) => activeOrganizationOf({ session }) === undefined,

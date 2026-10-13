@@ -2,7 +2,7 @@ import { API_KEY_ROLES, type ApiKeyRole, ORG_ROLES, type OrgRole, statementsForR
 
 const rank = ({ role }: { role: OrgRole }): number => ORG_ROLES.indexOf(role);
 
-const isOrgRole = ({ value }: { value: string }): value is OrgRole =>
+const isOrgRole = ({ value }: { value: string }): boolean =>
   (ORG_ROLES as readonly string[]).includes(value);
 
 export type ParseRolesInput = { role: string };
