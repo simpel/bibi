@@ -17,6 +17,8 @@ const envSchema = z.object({
   OKAZI_API_KEY: z.string().min(1).optional(),
   /** OAuth client id of the web app (first-party); only it may act as `ai` actor. */
   WEB_OAUTH_CLIENT_ID: z.string().min(1).optional(),
+  /** Runtime mode; `production` disables dev-only fallbacks (e.g. the placeholder embedder). */
+  NODE_ENV: z.string().default("development"),
 });
 
 export type Env = z.infer<typeof envSchema>;
