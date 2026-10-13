@@ -4,6 +4,9 @@ import { mcp } from "@better-auth/mcp";
 import { jwt } from "better-auth/plugins";
 import { mcpResourceUrl } from "../urls";
 
+/** Scopes MCP clients may request (Better Auth defaults). */
+export const OAUTH_SCOPES = ["openid", "profile", "email", "offline_access"];
+
 /** Claim carrying the organization the token was granted for (active org at consent). */
 export const ORG_CLAIM = "okazi_org";
 
@@ -21,6 +24,9 @@ export function mcpPlugins() {
     jwt(),
     mcp({
       resource: mcpResourceUrl(),
+      // Explicit allowedScopes: Prisma list columns cannot store the plugin's `null` default.
+      resources: [{ identifier: mcpResourceUrl(), name: "Okazi MCP", allowedScopes: OAUTH_SCOPES }],
+      scopes: OAUTH_SCOPES,
       loginPage: "/login",
       consentPage: "/oauth/consent",
       // No client_credentials: every token must represent a user (ADR 0005).
