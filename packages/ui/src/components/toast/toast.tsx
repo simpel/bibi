@@ -1,7 +1,7 @@
 import type { ComponentProps, CSSProperties } from "react";
-import { Toaster as Sonner } from "sonner";
+import { Toaster as Sonner, toast as sonnerToast } from "sonner";
 
-export { toast } from "sonner";
+export const toast = sonnerToast;
 
 export type ToasterProps = ComponentProps<typeof Sonner>;
 
@@ -10,12 +10,14 @@ export function Toaster({ ...props }: ToasterProps) {
   return (
     <Sonner
       className="toaster group"
-      style={{
-        "--normal-bg": "var(--popover)",
-        "--normal-text": "var(--popover-foreground)",
-        "--normal-border": "var(--border)",
-        "--border-radius": "var(--radius)",
-      } as CSSProperties}
+      style={
+        {
+          "--normal-bg": "var(--popover)",
+          "--normal-text": "var(--popover-foreground)",
+          "--normal-border": "var(--border)",
+          "--border-radius": "var(--radius)",
+        } as CSSProperties
+      }
       {...props}
     />
   );

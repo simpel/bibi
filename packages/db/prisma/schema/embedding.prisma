@@ -9,10 +9,11 @@ model Embedding {
   content        String
   contentHash    String
   embedding      Unsupported("vector(1536)")?
-  search         Unsupported("tsvector")?
+  search         Unsupported("tsvector")?    @default(dbgenerated("to_tsvector('simple'::regconfig, content)"))
   createdAt      DateTime                  @default(now())
   updatedAt      DateTime                  @updatedAt
 
   @@unique([organizationId, entityType, entityId])
   @@index([organizationId, entityType])
+  @@index([search], type: Gin)
 }

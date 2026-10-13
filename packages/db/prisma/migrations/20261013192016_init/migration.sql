@@ -110,6 +110,7 @@ CREATE INDEX "Room_organizationId_venueId_idx" ON "Room"("organizationId", "venu
 -- AddForeignKey
 ALTER TABLE "Room" ADD CONSTRAINT "Room_venueId_organizationId_fkey" FOREIGN KEY ("venueId", "organizationId") REFERENCES "Venue"("id", "organizationId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- Search indexes (not expressible in Prisma schema)
-CREATE INDEX "Embedding_embedding_hnsw_idx" ON "Embedding" USING hnsw ("embedding" vector_cosine_ops);
-CREATE INDEX "Embedding_search_gin_idx" ON "Embedding" USING gin ("search");
+-- Search indexes. GIN is mirrored in the schema; the HNSW index is partial so
+-- Prisma's differ ignores it (Prisma cannot express vector indexes).
+CREATE INDEX "Embedding_search_idx" ON "Embedding" USING gin ("search");
+CREATE INDEX "Embedding_embedding_hnsw_idx" ON "Embedding" USING hnsw ("embedding" vector_cosine_ops) WHERE "embedding" IS NOT NULL;

@@ -25,7 +25,6 @@ export function CardHeader({ className, ...props }: CardProps) {
 
 export function CardTitle({ className, ...props }: ComponentProps<"h3">) {
   return (
-    // biome-ignore lint/a11y/useHeadingContent: content is passed through props
     <h3
       data-slot="card-title"
       className={cn("font-serif text-xl leading-none tracking-tight", className)}

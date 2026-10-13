@@ -73,7 +73,9 @@ function TokensPage() {
   );
 }
 
-const meta = { title: "Foundations/Tokens", component: TokensPage } satisfies Meta<typeof TokensPage>;
+const meta = { title: "Foundations/Tokens", component: TokensPage } satisfies Meta<
+  typeof TokensPage
+>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

@@ -31,7 +31,10 @@ export function TableRow({ className, ...props }: ComponentProps<"tr">) {
   return (
     <tr
       data-slot="table-row"
-      className={cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", className)}
+      className={cn(
+        "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+        className,
+      )}
       {...props}
     />
   );
@@ -41,7 +44,10 @@ export function TableHead({ className, ...props }: ComponentProps<"th">) {
   return (
     <th
       data-slot="table-head"
-      className={cn("h-10 px-3 text-left align-middle font-medium text-muted-foreground", className)}
+      className={cn(
+        "h-10 px-3 text-left align-middle font-medium text-muted-foreground",
+        className,
+      )}
       {...props}
     />
   );

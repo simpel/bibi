@@ -1,4 +1,3 @@
-export { cn } from "./lib/cn";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";
 export { Button, type ButtonProps, buttonVariants } from "./components/button/button";
 export {
@@ -89,3 +88,4 @@ export {
   TooltipProvider,
   TooltipTrigger,
 } from "./components/tooltip/tooltip";
+export { cn } from "./lib/cn";
