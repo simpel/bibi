@@ -21,12 +21,6 @@ export {
   recordApprovalDecision,
 } from "./approval/record-approval-decision";
 export { type RejectApprovalInput, rejectApproval } from "./approval/reject-approval";
-export { ASSISTANT_OAUTH_CALLBACK_PATH } from "./auth/assistant-oauth";
-export {
-  type GetAccessToken,
-  type GetAssistantAccessTokenInput,
-  getAssistantAccessToken,
-} from "./auth/get-assistant-access-token";
 export { ASSISTANT_LIMITS } from "./chat/assistant-limits";
 export { type ChatRequest, ChatRequestSchema, type ChatUIMessage } from "./chat/chat-request";
 export { type CreateChatHandlerInput, createChatHandler } from "./chat/create-chat-handler";

@@ -2,11 +2,13 @@ import { getAuth, mcpResourceUrl } from "@okazi/auth";
 import { getEnv } from "@okazi/config";
 import { getDb } from "@okazi/db";
 import { createId } from "@paralleldrive/cuid2";
-import { assistantRedirectUri } from "../../src/auth/assistant-oauth";
 
 const PASSWORD = "correct-horse-battery";
 /** Redirect used by packages/auth's OAuth tests for the same client id (shared test database). */
 const AUTH_TEST_REDIRECT = "http://localhost:3000/oauth/callback";
+/** Same default as `provision:oauth` and `@okazi/auth` (assistant token minting). */
+const assistantRedirectUri = () =>
+  new URL("/api/assistant/oauth/callback", getEnv().WEB_URL).toString();
 
 export type TestUser = { userId: string; organizationId: string; cookies: Headers };
 

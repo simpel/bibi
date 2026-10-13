@@ -1,4 +1,5 @@
-import { getAuth, mcpResourceUrl } from "@okazi/auth";
+import { getAuth } from "../get-auth";
+import { mcpResourceUrl } from "../urls";
 import { AppError, err, ok, type Result } from "@okazi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";

@@ -1,5 +1,5 @@
 import type { EmbedFn } from "@okazi/core";
-import { type GetAccessToken, getAssistantAccessToken } from "../auth/get-assistant-access-token";
+import { type GetAccessToken, getAssistantAccessToken } from "@okazi/auth";
 import { createEmbed } from "../embeddings/create-embed";
 import type { ResolveContext } from "./resolve-user";
 

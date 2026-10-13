@@ -4,6 +4,11 @@ export {
   CreateOrgApiKeyInputSchema,
   createOrgApiKey,
 } from "./api-keys/create-org-api-key";
+export {
+  type GetAccessToken,
+  type GetAssistantAccessTokenInput,
+  getAssistantAccessToken,
+} from "./assistant/get-assistant-access-token";
 export { type Auth, type CreateAuthInput, createAuth } from "./auth";
 export { getAuth } from "./get-auth";
 export {

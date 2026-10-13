@@ -1,4 +1,4 @@
-import { AUTH_BASE_PATH } from "@okazi/auth";
+import { AUTH_BASE_PATH } from "../urls";
 import { getEnv } from "@okazi/config";
 import { AppError, err, ok, type Result } from "@okazi/core";
 
