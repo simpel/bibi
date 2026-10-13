@@ -3,13 +3,23 @@ import { skillEmbeddable } from "../features/skill/embeddable";
 import { contentHash } from "../search/content-hash";
 import type { EmbedFn } from "../search/embed";
 
-export type IndexSystemSkillsInput = { db: Db; embed: EmbedFn };
+export type IndexSystemSkillsInput = {
+  db: Db;
+  embed: EmbedFn;
+  /** Only these SYSTEM skills (default: all). */
+  skillIds?: readonly string[];
+};
 
 const scope = { organizationId: GLOBAL_EMBEDDING_SCOPE, entityType: "skill" };
 
 /** Indexes SYSTEM skills once, globally; every org's `search` includes these rows. */
-export async function indexSystemSkills({ db, embed }: IndexSystemSkillsInput): Promise<void> {
-  const skills = await db.skill.findMany({ where: { scope: "SYSTEM" } });
+export async function indexSystemSkills({
+  db,
+  embed,
+  skillIds,
+}: IndexSystemSkillsInput): Promise<void> {
+  const ids = skillIds ? { id: { in: [...skillIds] } } : {};
+  const skills = await db.skill.findMany({ where: { scope: "SYSTEM", ...ids } });
   for (const skill of skills) {
     if (skill.status === "ARCHIVED") {
       await deleteEmbedding({ db, ...scope, entityId: skill.id });
