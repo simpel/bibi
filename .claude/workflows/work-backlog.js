@@ -10,6 +10,7 @@ export const meta = {
     { title: 'Review', detail: 'tenancy review on Opus for core/db/auth/mcp changes' },
     { title: 'Land', detail: 'one at a time: commit, rebase on origin/main, re-verify, push, board to Done' },
     { title: 'Park', detail: 'push a failed ticket to parked/<N>, comment, card to Parked' },
+    { title: 'Follow-ups', detail: 'file out-of-scope findings as source:agent issues in Backlog' },
   ],
 }
 
@@ -49,6 +50,21 @@ const needsTenancyReview = (t) =>
   t.labels.some((l) => ['area:core', 'area:db', 'area:auth', 'area:mcp'].includes(l))
 
 // ---- Schemas ---------------------------------------------------------------
+// Out-of-scope work an agent noticed. Filed as issues labelled source:agent, never fixed in place.
+const FOLLOW_UPS = {
+  type: 'array',
+  items: {
+    type: 'object',
+    properties: {
+      title: { type: 'string' },
+      problem: { type: 'string' },
+      where: { type: 'string' },
+      suggestedFix: { type: 'string' },
+      kind: { type: 'string', enum: ['bug', 'tech-debt', 'security', 'docs', 'test-gap', 'feature'] },
+    },
+    required: ['title', 'problem', 'where', 'kind'],
+  },
+}
 const TICKETS = {
   type: 'object',
   properties: {
@@ -63,6 +79,7 @@ const TICKETS = {
           title: { type: 'string' },
           labels: { type: 'array', items: { type: 'string' } },
           priority: { type: 'string' },
+          status: { type: 'string' },
           openBlockers: { type: 'array', items: { type: 'number' } },
         },
         required: ['number', 'title', 'labels', 'priority', 'openBlockers'],
@@ -83,6 +100,7 @@ const IMPL = {
     summary: { type: 'string' },
     files: { type: 'array', items: { type: 'string' } },
     notes: { type: 'string' },
+    followUps: FOLLOW_UPS,
   },
   required: ['status', 'summary', 'files'],
 }
@@ -103,7 +121,7 @@ const VERIFY = {
 }
 const REVIEW = {
   type: 'object',
-  properties: { ok: { type: 'boolean' }, findings: { type: 'array', items: { type: 'string' } } },
+  properties: { ok: { type: 'boolean' }, findings: { type: 'array', items: { type: 'string' } }, followUps: FOLLOW_UPS },
   required: ['ok', 'findings'],
 }
 const LAND = {
@@ -115,6 +133,14 @@ const LAND = {
   },
   required: ['landed'],
 }
+const FILED = {
+  type: 'object',
+  properties: {
+    created: { type: 'array', items: { type: 'number' } },
+    duplicates: { type: 'array', items: { type: 'string' } },
+  },
+  required: ['created'],
+}
 const PARK = {
   type: 'object',
   properties: { ok: { type: 'boolean' }, branch: { type: 'string' }, problem: { type: 'string' } },
@@ -122,13 +148,15 @@ const PARK = {
 }
 
 // ---- Prompts ---------------------------------------------------------------
+const FOLLOW_UP_RULE = `If you notice a real problem outside this ticket's scope (a bug, security or tenancy gap, missing test, stale doc, tech debt), do NOT fix it here. Report it in followUps with where = file:line, so it becomes its own ticket. Only concrete, verifiable problems; no style nits, no wishes, nothing this ticket already covers.`
+
 const inWorktree = (dir) => `Your checkout is the git worktree ${dir}: its own branch, its own Postgres database and its own .env (loaded automatically by Vitest, Prisma and the dev servers). Run every command with cwd ${dir} and edit only files under it. Never touch the main checkout ${REPO}.`
 
 const selectPrompt = (exclude) => `You read the board for autonomous ticket work on simpel/okazi. Do not change anything.
 1. In ${REPO}: git fetch origin. On failure return ok=false with the reason.
 2. List board items: gh project item-list 8 --owner simpel --format json -L 300. Keep open issues from simpel/okazi with status ${STATUSES.map((x) => `"${x}"`).join(' or ')}.${ONLY ? ` Only consider issues ${JSON.stringify(ONLY)}.` : ''}${exclude.length ? ` Skip issues ${JSON.stringify(exclude)}.` : ''}
 3. For each, read the issue (gh issue view N -R simpel/okazi --json title,labels,body). openBlockers = issue numbers under "Depends on" in the body, plus native blocked-by (gh api repos/simpel/okazi/issues/N/dependencies/blocked_by), that are still OPEN.
-4. priority = the board Priority value (P0/P1/P2, "" if unset). labels = label names.
+4. priority = the board Priority value (P0/P1/P2, "" if unset). status = the board Status. labels = label names.
 Return ok=true and every matching ticket, including blocked ones.`
 
 const prepPrompt = (t) => `Create an isolated worktree for issue #${t.number} in ${REPO}.
@@ -146,6 +174,7 @@ ${inWorktree(dir)}
 - Run any checks you like in your worktree, including pnpm test for the packages you touch.
 - Do NOT run git add/commit/push/rebase/stash/checkout/reset. The landing step commits.
 - If the spec needs a human decision or is blocked by missing work, stop and return status=blocked with the reason in notes.
+- ${FOLLOW_UP_RULE}
 Return files = every path you created, changed or deleted (relative to the worktree).`
 
 const verifyPrompt = (t, dir) => `Verify the work on issue #${t.number}. Do not edit files and do not run git commands that change state.
@@ -158,11 +187,11 @@ const fixPrompt = (t, dir, failures) => `Checks failed after work on issue #${t.
 ${inWorktree(dir)}
 Failures:
 ${failures.map((f) => `### ${f.check}\n${f.output}`).join('\n\n')}
-Fix the cause. No git commands that change state. Return the full list of files this ticket has touched so far (including earlier ones).`
+Fix the cause. No git commands that change state. ${FOLLOW_UP_RULE} Return the full list of files this ticket has touched so far (including earlier ones).`
 
 const reviewPrompt = (t, dir) => `Use the tenancy-review skill on the uncommitted changes for issue #${t.number} (git diff plus untracked files in the worktree).
 ${inWorktree(dir)}
-Check org scoping, permissions, AuditLog, and AI approval. Do not edit files. ok=false only for a real tenancy/permission/audit defect; list each with file:line.`
+Check org scoping, permissions, AuditLog, and AI approval. Do not edit files. ok=false only for a real tenancy/permission/audit defect in this ticket's changes; list each with file:line. Defects in code this ticket did not touch go in followUps instead (they must not block the ticket).`
 
 const landPrompt = (t, dir, summary) => `Land issue #${t.number} on main. Other tickets land one at a time, so origin/main may have moved.
 ${inWorktree(dir)}
@@ -187,6 +216,15 @@ ${CO_AUTHOR}
 6. From ${REPO}: pnpm wt:rm ${wtName(t)} --force (keeps the branch; drops the worktree database).
 Return ok and the branch name.`
 
+const followUpPrompt = (items) => `File follow-up issues on simpel/okazi for problems agents found outside their ticket's scope. Work in ${REPO}; do not edit files.
+Findings (JSON): ${JSON.stringify(items)}
+1. Merge findings that describe the same problem.
+2. Drop a finding if an open issue already covers it: search with gh issue list -R simpel/okazi --state open --search "<keywords>" (try 2-3 keyword sets). Add its number to duplicates as "#N: <title>".
+3. Verify each remaining finding by reading the code at "where". Drop it if it is not real.
+4. Create each one with gh issue create -R simpel/okazi, in English, labels "source:agent" plus a matching type label (type:tech-debt, type:feature, type:docs; bug and security use the "bug" label) and area:* label(s) from the path. Body sections, as in other issues: "### Background" (start with "Found by an agent while working on #<from>."), "### Current state" (with file:line), "### To do" (checkboxes), "### Done when".
+5. Add each to the board and set Status "Backlog" (never Todo: a human triages agent findings). gh project item-add 8 --owner simpel --url <issue>, then gh project item-edit 8 --owner simpel --url <issue> --field Status --value Backlog. Also set Size (XS-XL) by your estimate; leave Priority unset.
+Return the created issue numbers.`
+
 // ---- Ticket pipeline ---------------------------------------------------------
 // Landing is serialised: each ticket rebases on what the previous one pushed.
 let landingQueue = Promise.resolve()
@@ -202,11 +240,12 @@ async function park(t, dir, reason) {
   return { t, outcome: 'parked', branch: p ? p.branch : null, reason: reason.split('\n')[0] }
 }
 
-async function verifyAndFix(t, dir, state) {
+async function verifyAndFix(t, dir, state, collect) {
   let v = await agent(verifyPrompt(t, dir), { label: `verify #${t.number}`, phase: 'Verify', schema: VERIFY, model: 'sonnet' })
   for (let round = 1; v && !v.green && round <= MAX_FIX_ROUNDS; round++) {
     if (round === MAX_FIX_ROUNDS) state.model = assertModel(escalate(state.model))
     const r = await agent(fixPrompt(t, dir, v.failures), { label: `fix #${t.number} r${round} ${state.model}`, phase: 'Verify', schema: IMPL, model: state.model })
+    collect(r)
     if (r && r.files.length) state.files = [...new Set([...state.files, ...r.files])]
     v = await agent(verifyPrompt(t, dir), { label: `verify #${t.number}.${round}`, phase: 'Verify', schema: VERIFY, model: 'sonnet' })
   }
@@ -219,13 +258,15 @@ async function runTicket(t) {
   const dir = prep.dir
 
   const state = { model: assertModel(pickModel(t)), files: [] }
+  const collect = (r) => r && r.followUps && r.followUps.forEach((f) => followUps.push({ ...f, from: t.number }))
   const impl = await agent(implPrompt(t, dir), { label: `#${t.number} ${state.model}`, phase: 'Implement', schema: IMPL, model: state.model })
   if (!impl) return park(t, dir, 'implement agent failed')
+  collect(impl)
   if (impl.status === 'blocked') return park(t, dir, `blocked: ${impl.notes || impl.summary}`)
   if (!impl.files.length) return park(t, dir, 'implement agent reported no changes')
   state.files = impl.files
 
-  const v = await verifyAndFix(t, dir, state)
+  const v = await verifyAndFix(t, dir, state, collect)
   if (!v || !v.green) {
     const why = v ? v.failures.map((f) => `${f.check}:\n${f.output}`).join('\n\n') : 'verify agent failed'
     return park(t, dir, `checks still red after ${MAX_FIX_ROUNDS} fix rounds\n${why}`)
@@ -234,6 +275,7 @@ async function runTicket(t) {
   if (needsTenancyReview(t)) {
     const r = await agent(reviewPrompt(t, dir), { label: `tenancy #${t.number}`, phase: 'Review', schema: REVIEW, model: 'opus' })
     if (!r) return park(t, dir, 'tenancy review agent failed')
+    collect(r)
     if (!r.ok) return park(t, dir, `tenancy review rejected\n${r.findings.join('\n')}`)
   }
 
@@ -250,11 +292,15 @@ function packBatch(tickets) {
   return tickets
     .filter((t) => t.openBlockers.length === 0)
     .filter((t) => !t.labels.includes('type:decision'))
+    // Agent findings wait in Backlog until a human moves them to Todo; otherwise a run could feed itself.
+    .filter((t) => !(t.labels.includes('source:agent') && t.status === 'Backlog'))
     .sort((a, b) => (a.priority || 'P9').localeCompare(b.priority || 'P9') || a.number - b.number)
     .slice(0, BATCH_SIZE)
 }
 
 const results = []
+const followUps = []
+const filed = []
 const tried = [] // every ticket attempted this run; never reselected, so the loop always ends
 for (let n = 1; n <= MAX_BATCHES; n++) {
   phase('Select')
@@ -275,7 +321,16 @@ for (let n = 1; n <= MAX_BATCHES; n++) {
 
   const out = await parallel(batch.map((t) => () => runTicket(t)))
   out.forEach((r, i) => results.push(r || { t: batch[i], outcome: 'failed', reason: 'pipeline error' }))
+
+  // Barrier on purpose: dedup needs every finding of the batch.
+  if (followUps.length) {
+    phase('Follow-ups')
+    const items = followUps.splice(0)
+    const f = await agent(followUpPrompt(items), { label: `follow-ups #${n}`, phase: 'Follow-ups', schema: FILED, model: 'sonnet' })
+    if (f) filed.push(...f.created)
+    log(`Follow-ups: ${items.length} found, ${f ? f.created.length : 0} filed (source:agent, Backlog)${f && f.duplicates && f.duplicates.length ? `, ${f.duplicates.length} already tracked` : ''}`)
+  }
 }
 
 const pick = (o) => results.filter((r) => r.outcome === o).map((r) => ({ number: r.t.number, title: r.t.title, sha: r.sha, branch: r.branch, reason: r.reason, model: r.model }))
-return { landed: pick('landed'), parked: pick('parked'), failed: pick('failed') }
+return { landed: pick('landed'), parked: pick('parked'), failed: pick('failed'), followUpIssues: filed }

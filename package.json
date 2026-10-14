@@ -15,7 +15,10 @@
     "check:structure": "node tools/check-structure.mjs",
     "db:migrate": "pnpm --filter @okazi/db migrate",
     "db:generate": "pnpm --filter @okazi/db generate",
-    "gen": "node tools/gen.mjs"
+    "gen": "node tools/gen.mjs",
+    "wt:new": "tools/worktree/new.sh",
+    "wt:rm": "tools/worktree/rm.sh",
+    "wt:list": "tools/worktree/list.sh"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",

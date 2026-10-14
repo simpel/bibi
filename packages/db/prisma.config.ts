@@ -1,11 +1,7 @@
-import { existsSync } from "node:fs";
-import { loadEnvFile } from "node:process";
+import { loadRootEnv } from "@okazi/config/load-root-env";
 import { defineConfig, env } from "prisma/config";
 
-const rootEnvFile = new URL("../../.env", import.meta.url);
-if (existsSync(rootEnvFile)) {
-  loadEnvFile(rootEnvFile);
-}
+loadRootEnv();
 
 /** `prisma generate` must work without a database (e.g. Docker builds). */
 function readDatabaseUrl(): string | undefined {
