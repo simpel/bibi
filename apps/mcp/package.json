@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/http.ts",
-    "dev:stdio": "tsx src/stdio.ts",
+    "dev": "tsx watch --env-file-if-exists=../../.env src/http.ts",
+    "dev:stdio": "tsx --env-file-if-exists=../../.env src/stdio.ts",
     "build": "tsup",
-    "start": "node dist/http.js",
-    "start:stdio": "node dist/stdio.js",
+    "start": "node --env-file-if-exists=../../.env dist/http.js",
+    "start:stdio": "node --env-file-if-exists=../../.env dist/stdio.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
