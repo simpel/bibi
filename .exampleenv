@@ -1,0 +1,35 @@
+# Rename to .env.example (tracked template) or copy to .env and fill in.
+# Read only through @okazi/config (never process.env in app code).
+
+# --- Database (docker compose: postgres) ---
+DATABASE_URL=postgresql://okazi:okazi@localhost:5432/okazi
+
+# --- Better Auth ---
+# Generate with: openssl rand -base64 32   (min 32 chars)
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=http://localhost:3000
+
+# --- Mail (docker compose: mailpit; SMTP 1025, UI http://localhost:8025) ---
+SMTP_URL=smtp://localhost:1025
+MAIL_FROM=Okazi <no-reply@okazi.local>
+
+# --- App URLs / ports ---
+WEB_URL=http://localhost:3000
+MCP_URL=http://localhost:3001
+PORT=3001
+
+# --- AI (Vercel AI Gateway) ---
+# Unset = deterministic placeholder embedder in dev; the chat model needs a real key.
+AI_GATEWAY_API_KEY=
+AI_DEFAULT_MODEL=anthropic/claude-sonnet-5-5
+AI_EMBEDDING_MODEL=openai/text-embedding-3-small
+
+# --- Assistant OAuth client ---
+# Printed by: pnpm --filter @okazi/web provision:oauth   (read by web and mcp)
+WEB_OAUTH_CLIENT_ID=
+
+# --- Optional ---
+# API key for the stdio MCP server
+OKAZI_API_KEY=
+# E2E only: scripted mock chat model. Ignored when NODE_ENV=production.
+E2E_MOCK_MODEL=false
