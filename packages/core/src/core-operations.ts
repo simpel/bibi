@@ -1,3 +1,4 @@
+import { apiKeyOperations } from "./features/api-key/operations";
 import { assignmentOperations } from "./features/assignment/operations";
 import { auditLogOperations } from "./features/audit-log/operations";
 import { bookingOperations } from "./features/booking/operations";
@@ -14,6 +15,7 @@ import { inquiryOperations } from "./features/inquiry/operations";
 import { itemOperations } from "./features/item/operations";
 import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
+import { oauthGrantOperations } from "./features/oauth-grant/operations";
 import { occupancyOperations } from "./features/occupancy/operations";
 import { optionOperations } from "./features/option/operations";
 import { paymentOperations } from "./features/payment/operations";
@@ -69,6 +71,8 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...skillOperations,
     ...memberOperations,
     ...auditLogOperations,
+    ...apiKeyOperations,
+    ...oauthGrantOperations,
     createSearchOperation({ embed }),
   ];
 }

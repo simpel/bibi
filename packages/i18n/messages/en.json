@@ -142,7 +142,8 @@
       "work": "Work",
       "catalog": "Catalog",
       "admin": "Administration"
-    }
+    },
+    "integrations": "Integrations"
   },
   "venue": {
     "singular": "Venue",
@@ -1759,7 +1760,8 @@
       "bookingStatuses": "The statuses a booking moves through.",
       "members": "Who has access and with which role.",
       "payments": "Stripe account for card payments and invoices.",
-      "skills": "Reusable instructions for the assistant."
+      "skills": "Reusable instructions for the assistant.",
+      "integrations": "API keys for other systems that use the REST API."
     }
   },
   "commandBar": {
@@ -2207,6 +2209,65 @@
       "all": "All",
       "assigned": "Assigned to me",
       "following": "Following"
+    }
+  },
+  "integration": {
+    "title": "Integrations",
+    "description": "Keys that let other systems use the REST API on behalf of the organization.",
+    "apiKeys": {
+      "title": "API keys",
+      "description": "Keys for the REST API. Each key acts with one role and never more than its owner may do. Removing a member revokes their keys.",
+      "empty": "No API keys.",
+      "create": "Create API key",
+      "createDescription": "The key acts with the role you choose: viewer, member or admin. You cannot choose a role above your own.",
+      "creating": "Creating API key…",
+      "created": "The API key has been created.",
+      "secretTitle": "Copy your API key",
+      "secretDescription": "This is the only time the key is shown.",
+      "secretOnce": "Store the key somewhere safe now. Okazi only keeps a fingerprint of it and cannot show it again.",
+      "copy": "Copy key",
+      "copied": "The key has been copied.",
+      "copyFailed": "The key could not be copied. Select it and copy it by hand.",
+      "revoke": "Revoke",
+      "revokeConfirm": "Revoke the key \"{name}\"? Systems that use it lose access at once.",
+      "revoking": "Revoking API key…",
+      "revoked": "The API key has been revoked.",
+      "never": "Never",
+      "unknownOwner": "Former member",
+      "fields": {
+        "name": "Name",
+        "role": "Role",
+        "rolePlaceholder": "Choose a role",
+        "expires": "Expires"
+      },
+      "expiry": {
+        "never": "Never",
+        "30": "In 30 days",
+        "90": "In 90 days",
+        "365": "In a year"
+      },
+      "columns": {
+        "name": "Name",
+        "key": "Key",
+        "role": "Role",
+        "owner": "Owner",
+        "expires": "Expires",
+        "lastUsed": "Last used"
+      }
+    },
+    "oauthGrants": {
+      "title": "Connected apps",
+      "description": "Apps such as AI clients that you have given access to Okazi in this organization. Only you see your own.",
+      "empty": "You have not connected any apps.",
+      "revoke": "Disconnect",
+      "revokeConfirm": "Disconnect \"{name}\"? It loses access at once and has to ask for access again.",
+      "revoking": "Disconnecting…",
+      "revoked": "The app has been disconnected.",
+      "columns": {
+        "client": "App",
+        "scopes": "Access",
+        "connected": "Connected"
+      }
     }
   }
 }

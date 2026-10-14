@@ -9,6 +9,9 @@ import {
 } from "../embeddings/types";
 import { upsertEmbedding } from "../embeddings/upsert-embedding";
 import { getDb } from "../get-db";
+import { listOauthGrants } from "../oauth-grants/list-oauth-grants";
+import { revokeOauthGrant } from "../oauth-grants/revoke-oauth-grant";
+import type { ListOauthGrantsInput, RevokeOauthGrantInput } from "../oauth-grants/types";
 import { applyScope } from "./apply-scope";
 import { PLATFORM_SCOPE } from "./platform-scope";
 import { ScopeViolationError } from "./scope-violation";
@@ -45,6 +48,11 @@ function extend({ organizationId, actorId, db }: Required<ScopedDbInput>) {
         searchEmbeddings({ ...input, db, organizationId }),
       $deleteEmbedding: (input: Scoped<DeleteEmbeddingInput>) =>
         deleteEmbedding({ ...input, db, organizationId }),
+      // Better Auth's OAuth tables have no `organizationId` (it is their `referenceId`).
+      $listOauthGrants: (input: Scoped<ListOauthGrantsInput>) =>
+        listOauthGrants({ ...input, db, organizationId }),
+      $revokeOauthGrant: (input: Scoped<RevokeOauthGrantInput>) =>
+        revokeOauthGrant({ ...input, db, organizationId }),
     },
   });
 }

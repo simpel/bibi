@@ -32,6 +32,9 @@ describe("untrusted output flag", () => {
 
   it("flags the inbound email read operations", () => {
     const flagged = operations.filter((op) => op.untrustedOutput).map((op) => op.name);
-    expect(flagged).toEqual(expect.arrayContaining(["inboundEmail.list", "inboundEmail.get"]));
+    const expected = ["inboundEmail.list", "inboundEmail.get"];
+    // OAuth client names are chosen by whoever registered the client.
+    expected.push("oauthGrant.list", "oauthGrant.revoke");
+    expect(flagged).toEqual(expect.arrayContaining(expected));
   });
 });

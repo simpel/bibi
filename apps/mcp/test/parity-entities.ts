@@ -5,6 +5,7 @@ import { accessEntities } from "./parity-entities-access";
 import { bookingEntities } from "./parity-entities-booking";
 import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
+import { integrationEntities } from "./parity-entities-integration";
 import { optionEntities } from "./parity-entities-option";
 import { paymentAccountEntity, paymentEntity } from "./parity-entities-payment";
 import { quoteEntity } from "./parity-entities-quote";
@@ -18,7 +19,7 @@ export type EntityReadInput = {
   created: Json;
   keys: string[];
 };
-export type CreateInput = { mcp: Client; made: Record<string, Json> };
+export type CreateInput = { mcp: Client; made: Record<string, Json>; context: ExecuteContext };
 
 /** One core entity: how to create it (MCP, as the user) and read it back through each surface. */
 export type ParityEntity = {
@@ -139,4 +140,5 @@ export const ENTITIES: ParityEntity[] = [
   ...accessEntities(),
   paymentAccountEntity,
   paymentEntity(),
+  ...integrationEntities(),
 ];

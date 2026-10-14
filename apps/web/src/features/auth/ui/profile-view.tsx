@@ -1,14 +1,16 @@
+import type { Locale } from "@okazi/i18n";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@okazi/ui";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/states/page-header";
+import { OauthGrantSection } from "@/features/oauth-grant/ui/oauth-grant-section";
 import { ProfileNameForm } from "./profile-name-form";
 import { ProfilePasswordForm } from "./profile-password-form";
 import { ProfileSessions } from "./profile-sessions";
 
-export type ProfileViewProps = { name: string; email: string };
+export type ProfileViewProps = { name: string; email: string; locale: Locale };
 
-/** Profile page body: name, email (read-only), password and active sessions. */
-export async function ProfileView({ name, email }: ProfileViewProps) {
+/** Profile page body: name, email (read-only), password, active sessions and connected apps. */
+export async function ProfileView({ name, email, locale }: ProfileViewProps) {
   const t = await getTranslations("profile");
   return (
     <div className="grid max-w-2xl gap-6">
@@ -39,6 +41,7 @@ export async function ProfileView({ name, email }: ProfileViewProps) {
           <ProfileSessions />
         </CardContent>
       </Card>
+      <OauthGrantSection locale={locale} />
     </div>
   );
 }

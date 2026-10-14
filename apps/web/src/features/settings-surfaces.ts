@@ -1,6 +1,6 @@
 import type { WebSurface } from "./web-surfaces";
 
-/** The settings pages (members, payments, price lists), part of `WEB_SURFACES`. */
+/** The settings pages (members, payments, price lists, API keys), part of `WEB_SURFACES`. */
 export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "priceList.list", route: "/settings/price-lists" },
   { operation: "priceList.get", route: "/settings/price-lists" },
@@ -17,4 +17,10 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "paymentAccount.get", route: "/settings/payments" },
   { operation: "paymentAccount.startOnboarding", route: "/settings/payments" },
   { operation: "paymentAccount.sync", route: "/settings/payments" },
+  { operation: "apiKey.list", route: "/settings/integrations" },
+  { operation: "apiKey.create", route: "/settings/integrations" },
+  { operation: "apiKey.revoke", route: "/settings/integrations" },
+  // Every user's own connected OAuth/MCP clients.
+  { operation: "oauthGrant.list", route: "/profile" },
+  { operation: "oauthGrant.revoke", route: "/profile" },
 ];

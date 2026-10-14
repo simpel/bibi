@@ -785,6 +785,36 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > No one can invite with more access than they have themselves. An email that is already a member or has a pending invitation cannot be invited again.
 
+### ApiKey
+
+*MVP* · A key for the REST API, for another system such as a CRM ([ADR 0005](decisions/0005-authentication.md)). Created, listed and revoked in `/settings/integrations` by admins and owners (`integration:admin`). Only a signed-in web session can create one, and the assistant never can. The secret is shown once; only its hash is stored.
+
+**Attributes**
+- name
+- role (one fixed role: `viewer`, `member` or `admin`; never `owner` and never above the creating member's own)
+- owner (the member who created it)
+- expiry (optional)
+- last used
+
+**Relations**
+- `N:1` User owns this
+
+> The key acts with the weaker of its role and its owner's live role ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). A revoked or expired key is rejected at once, and removing the owner from the organization revokes their keys.
+
+### OauthGrant
+
+*MVP* · An app (e.g. an MCP client) a user has connected to the organization with OAuth. Each user sees and disconnects only their own, on their profile page.
+
+**Attributes**
+- app (OAuth client)
+- access (scopes)
+- connected
+
+**Relations**
+- `N:1` User has connected this
+
+> Disconnecting revokes the app's tokens at once; it has to ask for access again. A grant belongs to the organization the user approved it for.
+
 ### Task
 
 *Phase 2* · Set up room, AV test, cleaning.

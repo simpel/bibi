@@ -22,6 +22,8 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   // Better Auth tables (shape owned by Better Auth); `inviterId` records the inviter.
   ["Member", ["updatedAt", "createdBy"]],
   ["Invitation", ["updatedAt", "createdBy"]],
+  // Better Auth's API key table; the owning member is `metadata.userId` (core `apiKey.create`).
+  ["Apikey", ["createdBy"]],
 ]);
 
 /** Org-scoped models with a `createdBy` column: `scopedDb` sets it on every create. */
@@ -62,13 +64,14 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Conversation",
   "Message",
   "Skill",
+  "OauthGrantRevocation",
 ]);
 
 /**
  * Org-scoped models whose id has no `@default(cuid(2))`: the writer passes `createId()` (core for
  * Better Auth tables, raw SQL for Embedding). Rows Better Auth writes itself use its own format.
  */
-export const APP_ID_MODELS = new Set<string>(["Member", "Invitation", "Embedding"]);
+export const APP_ID_MODELS = new Set<string>(["Member", "Invitation", "Apikey", "Embedding"]);
 
 /**
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:
@@ -79,8 +82,10 @@ export const APP_ID_MODELS = new Set<string>(["Member", "Invitation", "Embedding
  * Invitation has its own `status` lifecycle; core audits both) and the payout account
  * (PaymentAccount: one row per organization with its own `status` lifecycle, never removed) and
  * payments (Payment: its own `status` lifecycle, never removed) and sheet versions (Sheet:
- * history, `sentAt` is its lifecycle, never removed) and followers (AssignmentFollower: removed on
- * unfollow, audited on its assignment).
+ * history, `sentAt` is its lifecycle, never removed), followers (AssignmentFollower: removed on
+ * unfollow, audited on its assignment) and credentials (Apikey: `enabled` is its lifecycle,
+ * revoked keys stay; OauthGrantRevocation: one row per user and client, updated on every revoke,
+ * never removed).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
   "ItemSetup",
@@ -96,4 +101,6 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "Payment",
   "Sheet",
   "AssignmentFollower",
+  "Apikey",
+  "OauthGrantRevocation",
 ]);

@@ -6,6 +6,7 @@ import {
   LayoutGridIcon,
   ListIcon,
   type LucideIcon,
+  PlugIcon,
   ShapesIcon,
   TagIcon,
   UserCheckIcon,
@@ -23,6 +24,7 @@ export type SettingsKey =
   | "bookingStatuses"
   | "members"
   | "payments"
+  | "integrations"
   | "skills";
 
 export type SettingsItem = { href: string; key: SettingsKey; icon: LucideIcon };
@@ -38,5 +40,6 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
   { href: ROUTES.settingsBookingStatuses, key: "bookingStatuses", icon: CircleDotIcon },
   { href: ROUTES.settingsMembers, key: "members", icon: UsersIcon },
   { href: ROUTES.settingsPayments, key: "payments", icon: CreditCardIcon },
+  { href: ROUTES.settingsIntegrations, key: "integrations", icon: PlugIcon },
   { href: ROUTES.skills, key: "skills", icon: BookOpenIcon },
 ];

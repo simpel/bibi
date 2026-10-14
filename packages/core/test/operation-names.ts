@@ -1,5 +1,5 @@
 import { ASSIGNMENT_NAMES } from "./operation-names-assignment";
-import { SALES_NAMES } from "./operation-names-sales";
+import { EXTRA_NAMES } from "./operation-names-integration";
 
 const NAMES = [
   "auditLog.get",
@@ -144,5 +144,5 @@ const NAMES = [
   "vocabulary.updateValue",
 ];
 /** Every core operation name, sorted. Add new operations here (registry test). */
-const EXTRA = [...SALES_NAMES, ...ASSIGNMENT_NAMES];
+const EXTRA = [...EXTRA_NAMES, ...ASSIGNMENT_NAMES];
 export const OPERATION_NAMES: readonly string[] = [...NAMES, ...EXTRA].sort();

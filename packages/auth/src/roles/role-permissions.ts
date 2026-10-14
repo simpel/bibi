@@ -23,10 +23,11 @@ const OPERATIONAL: readonly Resource[] = [
 ];
 
 /**
- * Everyone's own assistant space: their conversations and personal skills. Private to the user
- * (`conversation:admin`/`skill:admin` for everyone's and organization skills stay with admins).
+ * Everyone's own space: their conversations, personal skills and connected OAuth apps
+ * (`oauthGrant.*`). Private to the user (`conversation:admin`/`skill:admin` for everyone's and
+ * organization skills, and `integration:admin` for API keys, stay with admins).
  */
-const PERSONAL: readonly Resource[] = ["conversation", "skill"];
+const PERSONAL: readonly Resource[] = ["conversation", "skill", "integration"];
 
 const write = ({ resources }: { resources: readonly Resource[] }): PermissionSet =>
   Object.fromEntries(resources.map((resource) => [resource, ["read", "write"] as const]));

@@ -1,4 +1,4 @@
-import { API_KEY_PREFIX } from "../plugins/api-key";
+import { API_KEY_PREFIX } from "@okazi/core";
 
 /** What the caller presented. Precedence: API key > OAuth bearer token > session cookie. */
 export type Credential =

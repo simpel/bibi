@@ -1,3 +1,4 @@
+import { apiKeyRoutes } from "./features/api-key/rest";
 import { assignmentRoutes } from "./features/assignment/rest";
 import { auditLogRoutes } from "./features/audit-log/rest";
 import { bookingRoutes } from "./features/booking/rest";
@@ -14,6 +15,7 @@ import { inquiryRoutes } from "./features/inquiry/rest";
 import { itemRoutes } from "./features/item/rest";
 import { memberRoutes } from "./features/member/rest";
 import { messageRoutes } from "./features/message/rest";
+import { oauthGrantRoutes } from "./features/oauth-grant/rest";
 import { occupancyRoutes } from "./features/occupancy/rest";
 import { optionRoutes } from "./features/option/rest";
 import { paymentRoutes } from "./features/payment/rest";
@@ -66,6 +68,8 @@ export function listRestRoutes(): RestRoute[] {
     ...skillRoutes,
     ...memberRoutes,
     ...auditLogRoutes,
+    ...apiKeyRoutes,
+    ...oauthGrantRoutes,
     ...searchRoutes,
   ];
 }

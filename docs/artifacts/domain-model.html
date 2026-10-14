@@ -211,6 +211,8 @@ const E = [
   {id:"user",d:"ops",n:"User",p:"MVP",s:"A member of the organization with one of the fixed roles (viewer < member < admin < owner).",a:["name","role (viewer / member / admin / owner)","venues","platform role (user / admin)"]},
   {id:"invitation",d:"ops",n:"Invitation",p:"MVP",s:"An emailed invitation to join the organization as staff, with the fixed role the invitee gets on accepting.",a:["email","role (one of the fixed roles, never owner)","status (pending / accepted / rejected / canceled)","inviter","expires (48 hours)"]},
   {id:"auditlog",d:"ops",n:"AuditLog",p:"MVP",s:"Organization data: one row per change, read as an entity's history (permission audit:read, ADR 0006, 0014).",a:["actor (user / AI / system), approved by","assistant conversation","operation, entity type and id","before and after image (personal values redacted after 1 year, ADR 0032)","request id and surface","time","pseudonymisedAt"]},
+  {id:"apikey",d:"ops",n:"ApiKey",p:"MVP",s:"A REST API key with one fixed role (viewer, member or admin). The secret is shown once (ADR 0005).",a:["name","role (never owner)","owner","expiry (optional)","last used"],x:"Acts with the weaker of its role and the owner's live role; never above the member who created it. Revoked keys are rejected at once."},
+  {id:"oauthgrant",d:"ops",n:"OauthGrant",p:"MVP",s:"An app (e.g. an MCP client) a user has connected with OAuth. Only the user sees and disconnects it.",a:["app (OAuth client)","access (scopes)","connected"]},
   {id:"systemlog",d:"ops",n:"SystemLog",p:"MVP",s:"Platform data: every event in the system, for platform admins (ADR 0014, 0015).",a:["time, level, event","service and surface","request id","organization, user, operation, status, duration, error code","the whole row as JSON (never input or output)"]},
   {id:"aisetting",d:"ops",n:"AiSetting",p:"MVP",s:"Platform data: model per AI function, chosen by a platform admin. No default models.",a:["AI function","model (from Vercel AI Gateway)","changed by, changed"]},
   {id:"task",d:"ops",n:"Task",p:"Phase 2",s:"Set up room, AV test, cleaning.",a:["linked program item","type","responsible","deadline","status"]},
@@ -224,6 +226,7 @@ const E = [
 // [from, to, cardinality, verb (from → to)]
 const R = [
   ["etype","fielddef","1:N","has"],["etype","item","1:N","classifies"],["fielddef","vocab","N:0..1","selects from"],["setup","itemsetup","1:N","is used in"],["item","itemsetup","1:N","has"],
+  ["user","apikey","1:N","owns"],["user","oauthgrant","1:N","has connected"],
   ["sheetdef","resp","N:1","goes to"],["resp","etype","N:M","covers"],["resp","assign","1:N","scopes"],["assign","lead","N:1","answers for"],["assign","booking","N:1","answers for"],["assign","item","N:1","answers for"],["sheetdef","etype","N:M","includes"],["sheetdef","fielddef","N:M","includes"],["sheetdef","sheet","1:N","produces version"],["user","assign","1:N","is assignee or follower of"],["user","invitation","1:N","invites"],["booking","bstatus","N:1","has status"],
   ["org","contact","1:N","has"],["org","lead","1:N","sends"],["contact","lead","1:N","is contact for"],["org","pricelist","N:0..1","uses"],
   ["lead","quote","1:N","is answered by"],["lead","hold","1:N","can create"],["quote","booking","1:0..1","becomes on accept"],["quote","contract","1:0..1","is signed via"],["quote","line","1:N","contains"],

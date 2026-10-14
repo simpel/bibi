@@ -2,6 +2,7 @@ import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { paginate } from "../../shared/paginate";
+import { revokeMemberKeys } from "../api-key/revoke-member-keys";
 import { cancelInvitation, inviteMember, listInvitations } from "./invitation-operations";
 import { parseMemberRole } from "./member-roles";
 import { checkOwnerKept, checkRemovable } from "./removal-guard";
@@ -98,6 +99,7 @@ export const removeMember = defineOperation({
     if (!removable.ok) return removable;
     await context.db.member.delete({ where: { id: input.id } });
     context.recordChange({ entityId: member.id, before: member });
+    await revokeMemberKeys({ context, userId: member.userId, ownerName: member.name });
     return ok({ value: member });
   },
 });

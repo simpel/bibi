@@ -142,7 +142,8 @@
       "work": "Arbete",
       "catalog": "Katalog",
       "admin": "Administration"
-    }
+    },
+    "integrations": "Integrationer"
   },
   "venue": {
     "singular": "Anläggning",
@@ -1759,7 +1760,8 @@
       "bookingStatuses": "De statusar en bokning går igenom.",
       "members": "Vem som har åtkomst och med vilken roll.",
       "payments": "Stripe-konto för kortbetalningar och fakturor.",
-      "skills": "Återanvändbara instruktioner för assistenten."
+      "skills": "Återanvändbara instruktioner för assistenten.",
+      "integrations": "API-nycklar för andra system som använder REST-API:t."
     }
   },
   "commandBar": {
@@ -2207,6 +2209,65 @@
       "all": "Alla",
       "assigned": "Tilldelade mig",
       "following": "Följer"
+    }
+  },
+  "integration": {
+    "title": "Integrationer",
+    "description": "Nycklar som låter andra system använda REST-API:t för organisationens räkning.",
+    "apiKeys": {
+      "title": "API-nycklar",
+      "description": "Nycklar för REST-API:t. Varje nyckel agerar med en roll och aldrig med mer än dess ägare får göra. När en medlem tas bort återkallas medlemmens nycklar.",
+      "empty": "Inga API-nycklar.",
+      "create": "Skapa API-nyckel",
+      "createDescription": "Nyckeln agerar med den roll du väljer: läsare, medlem eller administratör. Du kan inte välja en roll över din egen.",
+      "creating": "Skapar API-nyckel…",
+      "created": "API-nyckeln har skapats.",
+      "secretTitle": "Kopiera din API-nyckel",
+      "secretDescription": "Det här är enda gången nyckeln visas.",
+      "secretOnce": "Spara nyckeln på ett säkert ställe nu. Okazi sparar bara ett fingeravtryck av den och kan inte visa den igen.",
+      "copy": "Kopiera nyckeln",
+      "copied": "Nyckeln har kopierats.",
+      "copyFailed": "Nyckeln kunde inte kopieras. Markera den och kopiera den för hand.",
+      "revoke": "Återkalla",
+      "revokeConfirm": "Återkalla nyckeln \"{name}\"? System som använder den förlorar åtkomsten direkt.",
+      "revoking": "Återkallar API-nyckel…",
+      "revoked": "API-nyckeln har återkallats.",
+      "never": "Aldrig",
+      "unknownOwner": "Tidigare medlem",
+      "fields": {
+        "name": "Namn",
+        "role": "Roll",
+        "rolePlaceholder": "Välj en roll",
+        "expires": "Upphör"
+      },
+      "expiry": {
+        "never": "Aldrig",
+        "30": "Om 30 dagar",
+        "90": "Om 90 dagar",
+        "365": "Om ett år"
+      },
+      "columns": {
+        "name": "Namn",
+        "key": "Nyckel",
+        "role": "Roll",
+        "owner": "Ägare",
+        "expires": "Upphör",
+        "lastUsed": "Senast använd"
+      }
+    },
+    "oauthGrants": {
+      "title": "Anslutna appar",
+      "description": "Appar, till exempel AI-klienter, som du har gett åtkomst till Okazi i den här organisationen. Bara du ser dina egna.",
+      "empty": "Du har inte anslutit några appar.",
+      "revoke": "Koppla från",
+      "revokeConfirm": "Koppla från \"{name}\"? Appen förlorar åtkomsten direkt och måste be om åtkomst igen.",
+      "revoking": "Kopplar från…",
+      "revoked": "Appen har kopplats från.",
+      "columns": {
+        "client": "App",
+        "scopes": "Åtkomst",
+        "connected": "Ansluten"
+      }
     }
   }
 }

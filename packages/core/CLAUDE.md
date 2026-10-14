@@ -3,7 +3,7 @@
 The parity core: every capability is defined **once** as an operation and then exposed the same way in web, GraphQL, REST and MCP.
 
 ## Operations
-- `defineOperation({ name, kind, description, input, output, permission, handler, approval?, embeddable?, entityType? })`.
+- `defineOperation({ name, kind, description, input, output, permission, handler, approval?, aiAllowed?, embeddable?, entityType? })`.
   - `name` = `<entity>.<verb>` (e.g. `venue.create`), stable across all surfaces. `description` is written for both humans and LLMs.
   - `input`/`output` are Zod schemas; `permission` = `<resource>:read|write|admin`.
   - `handler({ input, context })` returns `Result` (`ok({ value })` / `err({ error: AppError })`) – never throw strings.
@@ -12,6 +12,8 @@ The parity core: every capability is defined **once** as an operation and then e
 - `execute` logs exactly one line per call: `operation.completed` / `operation.rejected` (VALIDATION, FORBIDDEN, NOT_FOUND etc.) / `operation.failed` (INTERNAL, with cause). Failed `afterCommit` hooks are logged as `operation.afterCommitFailed`; the indexing hook never throws and logs `search.index_failed` instead, so the command result is unchanged (ADR 0030). The AuditLog row gets `requestId` and `surface` from the request context (`surface: system` outside a request). See ADR 0014.
 - `context.db` is `scopedDb` – org scoping cannot be bypassed. Build the context with `createExecuteContext({ organizationId, actor, roles, permissions })`. `permissions` (`PermissionSet`) is resolved by `packages/auth`; `hasPermission({ permissions, permission })` looks up exactly. `roles` are names for display only.
 - `requiresApproval({ operation, actor })`: commands require human approval when `actor.type === "ai"` (default `approval: true`).
+- `aiAllowed: false` (default true): the AI actor may never run the operation. `authorize` refuses it (also after an approval) and MCP hides the tool from the AI actor, so the assistant cannot propose it. Used by `apiKey.create` (the secret must not enter a chat).
+- `context.credential` (`session`, `accessToken`, `apiKey`) is set by `packages/auth`; absent for system and test contexts. `apiKey.create` requires `session` (ADR 0005).
 - Client-safe subpackage `@okazi/core/schemas` (`src/schemas.ts`): only the zod files (`features/*/schema.ts`, `search/search-schema.ts`). Import it in client code and in `@okazi/ai/ui`; add one line per new entity's `schema.ts` there. Never Prisma/fs/operations in it.
 - The registry: `registerOperations({ operations: createCoreOperations({ embed }) })`, `listOperations()`, `getOperation({ name })`. Adapters generate tools/endpoints from the registry.
 

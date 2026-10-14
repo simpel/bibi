@@ -31,6 +31,8 @@ import "../features/message/graphql";
 import "../features/skill/graphql";
 import "../features/member/graphql";
 import "../features/audit-log/graphql";
+import "../features/api-key/graphql";
+import "../features/oauth-grant/graphql";
 import "./scalars";
 import "./search";
 import { builder } from "./builder";

@@ -9,5 +9,5 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   const { session } = await requireReadySession({ locale });
-  return <ProfileView name={session.user.name} email={session.user.email} />;
+  return <ProfileView name={session.user.name} email={session.user.email} locale={locale} />;
 }

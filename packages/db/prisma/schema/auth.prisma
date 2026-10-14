@@ -5,9 +5,9 @@
 // Tenancy: `Organization.id` IS the `organizationId` on every business row (Venue, AuditLog,
 // Embedding, ...). There is deliberately no FK from business tables to `organization` (Better Auth
 // owns these tables, ADR 0004); `packages/auth` resolves the org and `scopedDb` pins it.
-// Auth tables are not in ORG_SCOPED_MODELS, except Member and Invitation: core `member.*` writes
-// those rows the way Better Auth would, so they are authorized and audited. `role` holds one fixed
-// role (viewer, member, admin or owner, ADR 0034).
+// Auth tables are not in ORG_SCOPED_MODELS, except Member, Invitation and Apikey: core `member.*`
+// and `apiKey.*` write those rows the way Better Auth would, so they are authorized and audited.
+// `role` holds one fixed role (viewer, member, admin or owner, ADR 0034).
 
 model User {
   id                 String              @id
@@ -131,12 +131,15 @@ model Invitation {
   @@map("invitation")
 }
 
+/// API key plugin with `references: "organization"` and `referenceId` renamed to
+/// `organizationId` (packages/auth/src/plugins/api-key.ts), so keys are org-scoped rows.
+/// The owning user and the key's role are in `metadata`. Written only by core `apiKey.*`.
 model Apikey {
   id                  String    @id
   configId            String    @default("default")
   name                String?
   start               String?
-  referenceId         String
+  organizationId      String
   prefix              String?
   key                 String
   refillInterval      Int?
@@ -156,7 +159,7 @@ model Apikey {
   metadata            String?
 
   @@index([configId])
-  @@index([referenceId])
+  @@index([organizationId])
   @@index([key])
   @@map("apikey")
 }

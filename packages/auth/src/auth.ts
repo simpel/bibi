@@ -7,7 +7,7 @@ import { authAfterHook, authLogger } from "./auth-logging";
 import { defaultActiveOrganization } from "./default-active-organization";
 import { sendPasswordResetMail } from "./mail";
 import { adminPlugin, DISABLED_ADMIN_PATHS } from "./plugins/admin";
-import { apiKeyPlugin } from "./plugins/api-key";
+import { apiKeyPlugin, DISABLED_API_KEY_PATHS } from "./plugins/api-key";
 import { devSwitchUserPlugin } from "./plugins/dev-switch-user";
 import { emailLoginPlugins } from "./plugins/email-login";
 import { mcpPlugins } from "./plugins/mcp";
@@ -20,11 +20,14 @@ export type CreateAuthInput = {
   withoutDatabase?: boolean;
 };
 
-/** System log wiring (ADR 0014) and the disabled admin-plugin endpoints (ADR 0015). */
+/**
+ * System log wiring (ADR 0014) and the disabled admin-plugin (ADR 0015) and API key (ADR 0005)
+ * endpoints.
+ */
 const HARDENING = {
   logger: authLogger,
   hooks: { after: authAfterHook },
-  disabledPaths: DISABLED_ADMIN_PATHS,
+  disabledPaths: [...DISABLED_ADMIN_PATHS, ...DISABLED_API_KEY_PATHS],
 };
 
 /** Better Auth instance for Okazi. Use `getAuth()`; call this directly only in tests/CLI. */

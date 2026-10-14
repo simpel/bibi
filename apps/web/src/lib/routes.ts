@@ -24,6 +24,7 @@ export const ROUTES = {
   settingsBookingStatuses: "/settings/booking-statuses",
   settingsMembers: "/settings/members",
   settingsPayments: "/settings/payments",
+  settingsIntegrations: "/settings/integrations",
   admin: "/admin",
   adminLogs: "/admin/logs",
   adminAiModels: "/admin/ai-models",

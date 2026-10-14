@@ -1,3 +1,4 @@
+import { apiKeyMcpTools } from "../features/api-key/mcp";
 import { assignmentMcpTools } from "../features/assignment/mcp";
 import { auditLogMcpTools } from "../features/audit-log/mcp";
 import { bookingMcpTools } from "../features/booking/mcp";
@@ -14,6 +15,7 @@ import { inquiryMcpTools } from "../features/inquiry/mcp";
 import { itemMcpTools } from "../features/item/mcp";
 import { memberMcpTools } from "../features/member/mcp";
 import { messageMcpTools } from "../features/message/mcp";
+import { oauthGrantMcpTools } from "../features/oauth-grant/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
 import { optionMcpTools } from "../features/option/mcp";
 import { paymentMcpTools } from "../features/payment/mcp";
@@ -66,6 +68,8 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...skillMcpTools,
     ...memberMcpTools,
     ...auditLogMcpTools,
+    ...apiKeyMcpTools,
+    ...oauthGrantMcpTools,
     ...searchMcpTools,
   ];
 }

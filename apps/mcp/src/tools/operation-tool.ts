@@ -42,7 +42,10 @@ function outputSchemaOf({ operation }: { operation: AnyOperation }) {
   return { type: "object", anyOf: [output, APPROVAL_SCHEMA] };
 }
 
-/** One MCP tool per core operation. Commands from the AI actor are proposed, never executed. */
+/**
+ * One MCP tool per core operation. Commands from the AI actor are proposed, never executed;
+ * operations marked `aiAllowed: false` are hidden from the AI actor altogether.
+ */
 export function createOperationTool({
   operation,
   meta,
@@ -56,6 +59,8 @@ export function createOperationTool({
     outputSchema: outputSchemaOf({ operation }),
     annotations: { title: operation.name, ...toAnnotations({ operation, meta }) },
     ...(operation.untrustedOutput && { _meta: { [UNTRUSTED_OUTPUT_META_KEY]: true } }),
+    // `aiAllowed: false` (#88): the assistant never sees the tool, so it can never propose it.
+    ...(!operation.aiAllowed && { humanOnly: true }),
     async run({ args, context }: RunToolInput) {
       if (requiresApproval({ operation, actor: context.actor })) {
         const proposal = await proposeApproval({ operation, meta, args, context, secret });

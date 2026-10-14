@@ -27,7 +27,13 @@ async function resolve({ headers, credential }: ResolveInput): Promise<Result<Ex
   const actor = buildActor({ headers, userId, aiAllowed });
   if (!actor.ok) return actor;
   return ok({
-    value: createExecuteContext({ organizationId, actor: actor.value, roles, permissions }),
+    value: createExecuteContext({
+      organizationId,
+      actor: actor.value,
+      roles,
+      permissions,
+      credential: credential.kind,
+    }),
   });
 }
 

@@ -6,12 +6,19 @@ import type { AnyOperation } from "./types";
 
 export type AuthorizeInput = { operation: AnyOperation; context: ExecuteContext };
 
-/** System actors are trusted; users and AI (acting for a user) need the operation's permission. */
+/**
+ * System actors are trusted; users and AI (acting for a user) need the operation's permission.
+ * The AI actor is refused outright for operations marked `aiAllowed: false`.
+ */
 export function authorize({ operation, context }: AuthorizeInput): Result<true> {
   const { actor, permissions } = context;
   if (actor.type === "system") return ok({ value: true });
   if (!actor.userId) {
     return err({ error: new AppError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
+  }
+  if (actor.type === "ai" && !operation.aiAllowed) {
+    const message = `The assistant cannot run ${operation.name}`;
+    return err({ error: new AppError({ code: "FORBIDDEN", message }) });
   }
   if (!hasPermission({ permissions, permission: operation.permission })) {
     const message = `Missing permission ${operation.permission}`;

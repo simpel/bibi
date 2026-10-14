@@ -7,24 +7,26 @@ import { loadMembership } from "./membership";
 import type { Principal } from "./principal";
 
 const KeyMetadataSchema = z.object({
-  organizationId: z.string().min(1),
-  role: z.string().min(1).optional(),
+  userId: z.string().min(1),
+  role: z.string().min(1),
 });
 
 export type FromApiKeyInput = { key: string };
 
 /**
- * API key → owner (`referenceId`) + `metadata.organizationId`. The key acts with the weaker of
- * its own fixed role and the owner's live role (ADR 0034), so it never outranks either. A key
- * without a valid role (or `owner`) grants nothing.
+ * API key → organization (`referenceId`, stored as `apikey.organizationId`) + owner
+ * (`metadata.userId`). The key acts with the weaker of its own fixed role and the owner's live
+ * role (ADR 0034), so it never outranks either. A key without a valid role (or `owner`) grants
+ * nothing; a key whose owner left the organization grants nothing. Revoked (disabled), expired
+ * and unknown keys are UNAUTHENTICATED.
  */
 export async function principalFromApiKey({ key }: FromApiKeyInput): Promise<Result<Principal>> {
   const result = await getAuth().api.verifyApiKey({ body: { key } });
   if (!result.valid || !result.key) return unauthenticated({ message: "Invalid API key" });
   const metadata = KeyMetadataSchema.safeParse(result.key.metadata);
-  if (!metadata.success) return forbidden({ message: "API key is not bound to an organization" });
-  const userId = result.key.referenceId;
-  const { organizationId } = metadata.data;
+  if (!metadata.success) return forbidden({ message: "API key has no owner or role" });
+  const organizationId = result.key.referenceId;
+  const { userId } = metadata.data;
   const membership = await loadMembership({ userId, organizationId });
   if (!membership) {
     return ok({

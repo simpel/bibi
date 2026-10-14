@@ -1,0 +1,16 @@
+/// Marks an OAuth grant (user + client in one organization) as revoked by core
+/// `oauthGrant.revoke` (ADR 0005). Access tokens are stateless JWTs, so `packages/auth` rejects
+/// every token for this user, client and organization issued at or before `revokedAt`.
+/// A later consent issues newer tokens, which are accepted again.
+model OauthGrantRevocation {
+  id             String   @id @default(cuid(2))
+  organizationId String
+  userId         String
+  clientId       String
+  revokedAt      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String?
+
+  @@unique([organizationId, userId, clientId])
+}

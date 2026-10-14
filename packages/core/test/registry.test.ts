@@ -10,6 +10,7 @@ import {
 } from "../src/index";
 import { fakeEmbed } from "./fake-embed";
 import { OPERATION_NAMES } from "./operation-names";
+import { AI_FORBIDDEN_NAMES } from "./operation-names-integration";
 
 describe("registry and approval", () => {
   it("registers every core operation once", () => {
@@ -17,6 +18,11 @@ describe("registry and approval", () => {
     registerOperations({ operations: [createVenue] });
     expect(listOperations().map((op) => op.name)).toEqual([...OPERATION_NAMES]);
     expect(getOperation({ name: "venue.create" })).toBe(createVenue);
+  });
+
+  it("marks exactly the operations the AI actor may never run (#88)", () => {
+    const forbidden = createCoreOperations({ embed: fakeEmbed }).filter((op) => !op.aiAllowed);
+    expect(forbidden.map((op) => op.name)).toEqual(AI_FORBIDDEN_NAMES);
   });
 
   it("requires approval only for AI-run commands", () => {

@@ -79,6 +79,7 @@ export {
   type VocabularyValue,
 } from "./generated/prisma/client";
 export { getDb } from "./get-db";
+export type { OauthGrantRow } from "./oauth-grants/types";
 export {
   GLOBAL_READ_MODELS,
   ORG_SCOPED_MODELS,

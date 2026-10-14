@@ -27,6 +27,7 @@ export type CallerAbilities = {
   paymentAdmin: boolean;
   sheetWrite: boolean;
   paymentWrite: boolean;
+  integrationAdmin: boolean;
 };
 
 const NONE: CallerAbilities = {
@@ -51,6 +52,7 @@ const NONE: CallerAbilities = {
   paymentAdmin: false,
   sheetWrite: false,
   paymentWrite: false,
+  integrationAdmin: false,
 };
 
 /**
@@ -84,5 +86,6 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     paymentAdmin: hasPermission({ permissions, permission: "payment:admin" }),
     sheetWrite: hasPermission({ permissions, permission: "sheet:write" }),
     paymentWrite: hasPermission({ permissions, permission: "payment:write" }),
+    integrationAdmin: hasPermission({ permissions, permission: "integration:admin" }),
   };
 }

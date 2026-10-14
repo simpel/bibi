@@ -7,6 +7,9 @@ import type { Permission } from "./permission";
 
 export type ActorKind = "user" | "ai" | "system";
 
+/** How the caller signed in (`packages/auth`); absent for system jobs and internal callers. */
+export type CredentialKind = "session" | "accessToken" | "apiKey";
+
 /**
  * Who is executing. AI acts on behalf of `userId`; `conversationId` links the AI chat.
  * `approvedBy` is set (by the approval flow only) to the user who confirmed an AI proposal.
@@ -33,8 +36,10 @@ export type OperationContext = {
   db: ScopedDbClient;
   /** Role names of the user in the organization, e.g. `["Sales"]`. Display and audit only. */
   roles: readonly string[];
-  /** What the caller may do, resolved from `roles` by `packages/auth` (ADR 0020). */
+  /** What the caller may do, resolved from `roles` by `packages/auth` (ADR 0034). */
   permissions: PermissionSet;
+  /** The credential the caller presented; set by `resolveExecuteContext` (ADR 0005). */
+  credential?: CredentialKind;
   /** Commands call this so audit rows carry entity id and before/after state. */
   recordChange: (change: RecordedChange) => void;
 };
@@ -56,6 +61,11 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
   handler(args: HandlerInput<z.infer<I>>): Promise<Result<z.input<O>>>;
   /** Require human approval when an AI actor runs it. Defaults to true for commands. */
   approval?: boolean;
+  /**
+   * `false`: the AI actor may never run it, so the assistant is not even offered the tool (e.g.
+   * `apiKey.create`, whose secret must not enter a chat). Defaults to true.
+   */
+  aiAllowed?: boolean;
   /** Entity re-indexed for search after a successful command (reads `output.id`). */
   embeddable?: Embeddable;
   /** Entity type for audit rows; defaults to the name prefix. */
@@ -68,8 +78,10 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
 };
 
 export type Operation<I extends z.ZodType = z.ZodType, O extends z.ZodType = z.ZodType> = Readonly<
-  Required<Pick<OperationDefinition<I, O>, "approval" | "entityType" | "untrustedOutput">> &
-    Omit<OperationDefinition<I, O>, "approval" | "entityType" | "untrustedOutput">
+  Required<
+    Pick<OperationDefinition<I, O>, "approval" | "aiAllowed" | "entityType" | "untrustedOutput">
+  > &
+    Omit<OperationDefinition<I, O>, "approval" | "aiAllowed" | "entityType" | "untrustedOutput">
 >;
 
 /** Erased operation type for registries and adapters. */

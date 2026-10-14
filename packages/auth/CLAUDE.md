@@ -5,11 +5,13 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 ## The contract
 - `resolveExecuteContext({ headers })` → `Result<ExecuteContext>` is the **only** caller lookup for web, GraphQL, REST and MCP. Never build `createExecuteContext` yourself in a surface.
   - Order: `x-api-key` / `Authorization: Bearer okz_…` (API key) → `Authorization: Bearer <jwt>` (OAuth token) → session cookie.
-  - Org: session = `session.activeOrganizationId`; API key = `metadata.organizationId`; OAuth = claim `okazi_org` (the active org when the user approved the client).
+  - Org: session = `session.activeOrganizationId`; API key = `apikey.organizationId` (Better Auth's `referenceId`, plugin `references: "organization"`); OAuth = claim `okazi_org` (the active org when the user approved the client).
   - The role is read **live** from `member` on every call and resolved to `permissions` with the constant map `ROLE_PERMISSIONS` (`roles/role-permissions.ts`, ADR 0034). A stored name that is not a fixed role gives nothing (`roles: []`).
-  - API key: `metadata.role` (`viewer`, `member` or `admin`, never `owner`). The key acts with the weaker of its role and the member's live role (`roles` = that one role).
+  - API key: owner = `metadata.userId`, role = `metadata.role` (`viewer`, `member` or `admin`, never `owner`). The key acts with the weaker of its role and the owner's live role (`roles` = that one role); an owner who left the organization gives nothing. Revoked (`enabled = false`), expired and unknown keys → `UNAUTHENTICATED`. Keys are issued, listed and revoked only by core `apiKey.*` (the plugin's HTTP endpoints are disabled).
+  - OAuth: a token for (user, `azp`, `okazi_org`) issued at or before an `OauthGrantRevocation.revokedAt` → `UNAUTHENTICATED` (`resolve/grant-revocation.ts`). JWTs are stateless, so this is what makes `oauthGrant.revoke` immediate.
   - `UNAUTHENTICATED` = missing/invalid credential. `FORBIDDEN` = no org, not a member, or a disallowed AI actor.
-- `getAuth()` (lazy singleton), `authHandler` (`export const { GET, POST } = authHandler;` in `app/api/auth/[...all]/route.ts`), `requireSession({ headers })`, `createOrgApiKey({ headers, organizationId, name, role })` (role never `owner` nor above the caller's own).
+  - `credential` on the execute context (`session`, `accessToken` or `apiKey`) says how the caller signed in; `apiKey.create` accepts only `session` (ADR 0005).
+- `getAuth()` (lazy singleton), `authHandler` (`export const { GET, POST } = authHandler;` in `app/api/auth/[...all]/route.ts`), `requireSession({ headers })`.
 - Web client: `createAuthClient({})` from `@okazi/auth/client` (imports no server code).
 - `Organization.id` = `organizationId` on all business rows. No FK (Better Auth owns the tables).
 
@@ -31,6 +33,11 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 - Trust boundary: whoever has the session cookie can already do everything the token allows. The `assistant` token only *additionally* gives the AI mode, which is more limited (commands become proposals). `approval_confirm` is called with the same token but **without** AI headers, and only when the user has clicked Approve.
 - Exports: `getFirstPartyAccessToken` + the types `GetFirstPartyAccessToken`, `GetFirstPartyAccessTokenInput`, `FirstPartyClient`. Server code (`node:crypto`, the Better Auth server): never import in client components.
 
+## API keys and OAuth grants (ADR 0005)
+- Issued, listed and revoked **only** by core `apiKey.create|list|revoke` (`integration:admin`) and `oauthGrant.list|revoke` (`integration:read|write`, the caller's own grants). Audited there; the secret is returned once and never logged or audited.
+- Core writes the `apikey` row itself with the plugin's hashing (`hashApiKey` = `defaultKeyHasher`, guarded by `test/api-key.test.ts`), prefix `okz_` and rate limit (`API_KEY_RATE_LIMIT`). The plugin is used for `verifyApiKey` only; all its HTTP endpoints are closed (`DISABLED_API_KEY_PATHS`).
+- `apiKey.create` refuses the AI actor: the secret must never enter a conversation.
+
 ## OAuth/MCP
 - Tokens are JWTs with `aud` = `${MCP_URL}/mcp`, `iss` = `${BETTER_AUTH_URL}/api/auth`, 15 min lifetime. Only `authorization_code` + `refresh_token` (no `client_credentials`). DPoP-bound and opaque tokens are rejected.
 - If the session has no active org, the user is sent to `/select-organization` before consent. The web app needs the pages `/login`, `/oauth/consent`, `/select-organization`, `/accept-invitation/[id]`.
@@ -49,7 +56,7 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 2. Use `"<resource>:read|write|admin"` as `permission` in the core operation.
 3. Decide in `ROLE_PERMISSIONS` whether `member` writes it (operational data) or only admins do (configuration). Every role reads every resource.
 
-Resources today: see `RESOURCES` (`venue`, `item`, `customer`, …, `member`, `audit`, `payment`).
+Resources today: see `RESOURCES` (`venue`, `item`, `customer`, …, `member`, `audit`, `payment`, `integration`).
 
 ## Schema and tests
 - `auth.prisma` is generated: `pnpm --filter @okazi/auth auth:generate`. Remove `generator`/`datasource` from the result, then run `pnpm --filter @okazi/db migrate:dev --name <name>`.

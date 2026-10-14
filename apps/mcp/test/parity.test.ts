@@ -52,6 +52,18 @@ describe("surface parity: every core operation exists everywhere", () => {
     const missing = expected.filter((name) => !served.includes(name));
     expect(missing, `MCP tools/list is missing: ${missing.join(", ")}`).toEqual([]);
   });
+
+  it("hides exactly the aiAllowed: false operations from the AI actor (#88)", async () => {
+    const actor = { type: "ai", userId: "user_ai", conversationId: "c" } as const;
+    const client = await connect({ context: testContext({ actor }) });
+    const served = (await client.listTools()).tools.map((tool) => tool.name);
+    const hidden = listOperations()
+      .map((op) => toToolName({ operation: op.name }))
+      .filter((name) => !served.includes(name));
+    const forbidden = listOperations().filter((op) => !op.aiAllowed);
+    expect(hidden).toEqual(forbidden.map((op) => toToolName({ operation: op.name })));
+    expect(hidden).toContain("apiKey_create");
+  });
 });
 
 /**
@@ -90,7 +102,7 @@ describe("entity read parity: core -> GraphQL, REST, MCP return equal data", () 
     const mcp = await connect({ context });
     const made: Record<string, Json> = { memberSeed: await seedOrgMember({ context }) };
     for (const entity of ENTITIES) {
-      const created = await entity.create({ mcp, made });
+      const created = await entity.create({ mcp, made, context });
       expect(created?.id, `${entity.name}: create via MCP`).toBeTruthy();
       made[entity.name] = created;
       const keys = Object.keys(created).filter((key) => key !== "organizationId");

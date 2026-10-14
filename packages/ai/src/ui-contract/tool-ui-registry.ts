@@ -117,4 +117,9 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   skill_export: "SKILL.md text; shown as code/JSON",
   graphql_schema: "SDL text",
   graphql_query: "free-form GraphQL result",
+  apiKey_list: "credentials are managed on /settings/integrations, not in chat",
+  apiKey_create: "never offered to the assistant (aiAllowed: false): the secret stays out of chat",
+  apiKey_revoke: "credentials are managed on /settings/integrations, not in chat",
+  oauthGrant_list: "connected apps are managed on /profile, not in chat",
+  oauthGrant_revoke: "connected apps are managed on /profile, not in chat",
 };
