@@ -7,7 +7,7 @@ export type Membership = { roles: string[]; permissions: PermissionSet };
 export type LoadMembershipInput = { userId: string; organizationId: string };
 
 /**
- * The user's roles in the organization and what they resolve to (ADR 0014), or `null` when the
+ * The user's roles in the organization and what they resolve to (ADR 0020), or `null` when the
  * user is not a member. Read live on every request, so role changes apply immediately.
  */
 export async function loadMembership({

@@ -10,7 +10,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "auth:generate": "auth generate --config src/cli-config.ts --output ../db/prisma/schema/auth.prisma --yes"
+    "auth:generate": "auth generate --config src/cli-config.ts --output ../db/prisma/schema/auth.prisma --yes",
+    "grant-admin": "tsx --env-file-if-exists=../../.env src/platform/grant-admin-cli.ts"
   },
   "dependencies": {
     "@better-auth/api-key": "1.7.7",
@@ -22,6 +23,7 @@
     "@okazi/config": "workspace:*",
     "@okazi/core": "workspace:*",
     "@okazi/db": "workspace:*",
+    "@okazi/logger": "workspace:*",
     "@paralleldrive/cuid2": "3.3.0",
     "better-auth": "1.7.7",
     "better-call": "1.4.0",
@@ -33,6 +35,7 @@
     "@types/react": "19.3.0",
     "auth": "1.7.7",
     "react": "19.3.0",
+    "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vitest": "5.0.4"
   },

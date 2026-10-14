@@ -45,7 +45,7 @@ MCP-servern (ADR 0003, 0007). Tunn adapter: all logik och behörighet ligger i `
 `dev` (tsx watch), `dev:stdio`, `build` (tsup → `dist/`, workspace-paket bundlas, npm-paket är externa och listade i package.json), `start` (`node dist/http.js`), `start:stdio`, `typecheck`, `test`.
 
 ## Att veta
-- `embed` (`src/embed.ts`) = `createEmbed()` från `@okazi/ai/embed` (AI Gateway, `AI_EMBEDDING_MODEL`). Utan `AI_GATEWAY_API_KEY`: deterministisk platshållare utanför produktion, tydligt fel i produktion.
+- `embed` (`src/embed.ts`) = `createEmbed()` från `@okazi/ai/embed` (AI Gateway, modellen vald i `/admin/ai-models`). Utan `AI_GATEWAY_API_KEY`: deterministisk platshållare utanför produktion, tydligt fel i produktion.
 - Engångstoken spåras i minnet per process. Flera instanser kräver delat lager för strikt engångsbruk (token är ändå bunden och giltig 10 min).
 - GraphQL-hanteraren får anroparens kontext via en intern relay-header (`graphql/context-relay.ts`), aldrig från klienten.
 

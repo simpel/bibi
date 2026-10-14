@@ -207,7 +207,9 @@ const E = [
   {id:"invoice",d:"money",n:"Faktura",p:"MVP",s:"Slutfaktura efter genomförande (fasen COMPLETED).",a:["fakturanr","förfallodatum","status","avräknat förskott","exportstatus (Fortnox / Visma)","e-faktura"]},
 
   // Drift
-  {id:"user",d:"ops",n:"Användare",p:"MVP",s:"Medlem i organisationen med organisationens egna roller.",a:["namn","roller (ur organisationens roller)","anläggningar"]},
+  {id:"user",d:"ops",n:"Användare",p:"MVP",s:"Medlem i organisationen med organisationens egna roller.",a:["namn","roller (ur organisationens roller)","anläggningar","plattformsroll (user / admin)"]},
+  {id:"systemlog",d:"ops",n:"Systemlogg",p:"MVP",s:"Plattformsdata: varje händelse i systemet, för plattformsadmins (ADR 0014, 0015).",a:["tid, nivå, händelse","tjänst och yta","request-id","organisation, användare, operation, status, varaktighet, felkod","hela raden som JSON (aldrig in- eller utdata)"]},
+  {id:"aisetting",d:"ops",n:"AI-inställning",p:"MVP",s:"Plattformsdata: modell per AI-funktion, vald av plattformsadmin. Inga standardmodeller.",a:["AI-funktion","modell (från Vercel AI Gateway)","ändrad av, ändrad"]},
   {id:"task",d:"ops",n:"Uppgift",p:"Fas 2",s:"Ställ rum, AV-test, städ.",a:["kopplad programpunkt","typ","ansvarig","deadline","status"]},
   {id:"message",d:"ops",n:"Kommunikation & logg",p:"Fas 2",s:"Mejl, anteckningar och ändringshistorik.",a:["kanal","riktning (in / ut)","ämne","kopplad förfrågan / bokning","ändringslogg"]},
   {id:"screen",d:"ops",n:"Skylt",p:"Fas 3",s:"Skärm vid en bokningsbar artikel med dagens program.",a:["artikel (BOOKABLE)","enhet","visade programpunkter"]},

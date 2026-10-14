@@ -43,7 +43,7 @@ const OWNER_CREATED_AT = new Date(0);
 
 export type OwnerRoleDtoInput = { organizationId: string };
 
-/** The fixed `owner` role (ADR 0014), listed alongside the organization's own roles. */
+/** The fixed `owner` role (ADR 0020), listed alongside the organization's own roles. */
 export function ownerRoleDto({ organizationId }: OwnerRoleDtoInput): RoleDto {
   return {
     id: OWNER_ROLE_ID,

@@ -15,7 +15,7 @@ export function organizationPlugin() {
     ac: accessControl,
     roles: orgRoles,
     creatorRole: OWNER_ROLE,
-    // Custom roles per organization (ADR 0014). Rows are written by core `role.*` only.
+    // Custom roles per organization (ADR 0020). Rows are written by core `role.*` only.
     dynamicAccessControl: { enabled: true },
     organizationHooks: {
       beforeAddMember: async ({ member }) => {

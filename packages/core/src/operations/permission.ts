@@ -9,7 +9,7 @@ export type Permission = `${string}:${PermissionAction}`;
 export type HasPermissionInput = { permissions: PermissionSet; permission: Permission };
 
 /**
- * Checks the caller's resolved permissions (ADR 0014). `packages/auth` resolves the member's
+ * Checks the caller's resolved permissions (ADR 0020). `packages/auth` resolves the member's
  * roles to a normalized `PermissionSet` once per request, so this is an exact lookup.
  */
 export function hasPermission({ permissions, permission }: HasPermissionInput): boolean {

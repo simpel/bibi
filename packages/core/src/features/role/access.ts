@@ -9,7 +9,7 @@ export type CheckCanGrantInput = {
 };
 
 /**
- * Anti-escalation (ADR 0014): a user (or the AI acting for one) can only create, change or
+ * Anti-escalation (ADR 0020): a user (or the AI acting for one) can only create, change or
  * assign roles that grant no more than they have themselves. System actors are trusted.
  */
 export function checkCanGrant({ context, permissions }: CheckCanGrantInput): Result<true> {

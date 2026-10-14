@@ -23,7 +23,7 @@ const memberSession = async ({ role }: { role: string }) => {
   return { organizationId, headers };
 };
 
-describe("role resolution (ADR 0014)", () => {
+describe("role resolution (ADR 0020)", () => {
   it("resolves owner to every permission", async () => {
     const owner = await signUp();
     await createOrg({ headers: owner.headers });

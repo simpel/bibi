@@ -20,8 +20,8 @@ const readAll: PermissionSet = {
 };
 
 /**
- * "Konferensgård" (ADR 0014). Optional data an organization imports and then edits freely.
- * Grows with each slice of ADR 0019: customers, quotes, bookings, sheets, invoices etc. are
+ * "Konferensgård" (ADR 0020). Optional data an organization imports and then edits freely.
+ * Grows with each slice of ADR 0025: customers, quotes, bookings, sheets, invoices etc. are
  * added to the roles below when those resources exist.
  */
 export const conferenceVenueTemplate: RoleTemplate = {

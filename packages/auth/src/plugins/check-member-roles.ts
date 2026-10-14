@@ -7,7 +7,7 @@ export type AssertKnownRolesInput = { organizationId: string; role: string | rea
 /**
  * Better Auth's `addMember` does not validate role names and its invitation check counts
  * archived roles. Members may only get `owner` or one of the organization's ACTIVE roles
- * (ADR 0014), so a dormant name can never start granting access later.
+ * (ADR 0020), so a dormant name can never start granting access later.
  */
 export async function assertKnownRoles({ organizationId, role }: AssertKnownRolesInput) {
   const names = (Array.isArray(role) ? role : String(role).split(","))

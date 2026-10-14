@@ -43,4 +43,4 @@ Användare och assistenten behöver hitta entiteter (anläggningar, rum och sena
 - Konversationer (ADR 0007) är privata för ägaren. Org-admin får läsa, men inte skriva, för tillsyn.
 
 ## Tillägg 2026-10-14
-- `Room` ersätts av `Item` med beteendet `BOOKABLE` (ADR 0015). `Venue` och `Item` är först ut som sökbara entiteter.
+- `Room` ersätts av `Item` med beteendet `BOOKABLE` (ADR 0021). `Venue` och `Item` är först ut som sökbara entiteter.

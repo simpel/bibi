@@ -11,7 +11,7 @@ import type { DemoMembers } from "./users";
 
 export type SeedDemoRolesInput = { context: ExecuteContext; org: DemoOrg; members: DemoMembers };
 
-/** Slice 1 of ADR 0019: templates, custom roles and role assignment, all via `execute`. */
+/** Slice 1 of ADR 0025: templates, custom roles and role assignment, all via `execute`. */
 export async function seedDemoRoles({
   context,
   org,

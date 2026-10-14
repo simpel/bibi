@@ -6,7 +6,7 @@ import { TopBar } from "./top-bar";
 
 export type AppShellProps = {
   organizationId: string;
-  user: { name: string; email: string };
+  user: { name: string; email: string; platformAdmin: boolean };
   children: ReactNode;
 };
 

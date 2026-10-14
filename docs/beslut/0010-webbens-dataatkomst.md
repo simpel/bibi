@@ -24,4 +24,4 @@ ADR 0003 säger "läsningar via GraphQL". Webbappen (`apps/web`) är Next.js med
 - Att `UI_EXEMPT` är tom betyder att alla operationer har en webbyta. Operationer vars UI sitter i skalet (assistentpanelen) listas med `route: "*"` och den komponentfil som ger UI:t.
 
 ## Tillägg 2026-10-14 – konfigurerbar domän
-- `Room` och `room.*` ersätts av `Item` och `item.*` (ADR 0015). Exemplet ovan blir `item.list` filtrerat på anläggning.
+- `Room` och `room.*` ersätts av `Item` och `item.*` (ADR 0021). Exemplet ovan blir `item.list` filtrerat på anläggning.

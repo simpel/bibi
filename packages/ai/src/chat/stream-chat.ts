@@ -25,11 +25,11 @@ export type StreamChatInput = {
   messages: ModelMessage[];
   prepared: PreparedTools;
   conversation: { id: string; created: boolean };
+  /** Logs a failure and returns the text the user sees (`streamFailure`). */
+  onError: (error: unknown) => string;
   /** Runs once when the stream ends (also on error/disconnect): persist + close the MCP client. */
   onFinish: (input: RunFinish) => Promise<void>;
 };
-
-const SAFE_ERROR = "The assistant could not finish the answer. Please try again.";
 
 type StartModelInput = Pick<StreamChatInput, "model" | "instructions" | "messages" | "prepared">;
 
@@ -58,6 +58,7 @@ export function streamChat({
   messages,
   prepared,
   conversation,
+  onError,
   onFinish,
 }: StreamChatInput): Response {
   const result = startModel({ model, instructions, messages, prepared });
@@ -68,11 +69,11 @@ export function streamChat({
       const ui = toUIMessageStream({
         stream: result.stream,
         sendReasoning: false,
-        onError: () => SAFE_ERROR,
+        onError,
       });
       writer.merge(ui);
     },
-    onError: () => SAFE_ERROR,
+    onError,
     onEnd: ({ responseMessage, finishReason }) =>
       onFinish({ parts: responseMessage.parts, finishReason }),
   });

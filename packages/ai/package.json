@@ -20,6 +20,7 @@
     "@okazi/config": "workspace:*",
     "@okazi/core": "workspace:*",
     "@okazi/db": "workspace:*",
+    "@okazi/logger": "workspace:*",
     "ai": "7.0.140",
     "zod": "4.6.7"
   },

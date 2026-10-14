@@ -3,8 +3,10 @@ import type { Db } from "@okazi/db";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
+import { authAfterHook, authLogger } from "./auth-logging";
 import { defaultActiveOrganization } from "./default-active-organization";
 import { sendMail } from "./mail";
+import { adminPlugin, DISABLED_ADMIN_PATHS } from "./plugins/admin";
 import { apiKeyPlugin } from "./plugins/api-key";
 import { emailLoginPlugins } from "./plugins/email-login";
 import { mcpPlugins } from "./plugins/mcp";
@@ -17,6 +19,13 @@ export type CreateAuthInput = {
   withoutDatabase?: boolean;
 };
 
+/** System log wiring (ADR 0014) and the disabled admin-plugin endpoints (ADR 0015). */
+const HARDENING = {
+  logger: authLogger,
+  hooks: { after: authAfterHook },
+  disabledPaths: DISABLED_ADMIN_PATHS,
+};
+
 /** Better Auth instance for Okazi. Use `getAuth()`; call this directly only in tests/CLI. */
 export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
   const env = getEnv();
@@ -26,6 +35,7 @@ export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
     baseURL: env.BETTER_AUTH_URL,
     basePath: AUTH_BASE_PATH,
     trustedOrigins: [env.WEB_URL, env.MCP_URL],
+    ...HARDENING,
     ...(withoutDatabase ? {} : { database: prismaAdapter(db, { provider: "postgresql" }) }),
     emailAndPassword: {
       enabled: true,
@@ -47,6 +57,7 @@ export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
       },
     },
     plugins: [
+      adminPlugin(),
       organizationPlugin(),
       apiKeyPlugin(),
       ...emailLoginPlugins(),

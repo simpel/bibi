@@ -20,6 +20,8 @@ Prisma 7 (`prisma-client`-generatorn, driver adapter `@prisma/adapter-pg`) mot P
   - Relationer inom org säkras även i databasen med sammansatt FK (`Room(venueId, organizationId) → Venue(id, organizationId)`). Gör likadant för nya relationer.
   - Skrivningar: använd skalära FK-fält (`venueId`), inte `connect`, eftersom `organizationId` sätts som skalärt fält.
   - Nästlade `include` filtrerar inte bort arkiverade barn – filtrera explicit.
+- Undantag från `scopedDb`: plattformskod (core `platform/`, ADR 0015) och dess tabeller `SystemLog` och `AiSetting` (`platform.prisma`). De är inte org-scopade och `scopedDb` vägrar dem. `PLATFORM_SCOPE` (`__platform__`) är `AuditLog.organizationId` för plattformskommandon och reserverat i `scopedDb`.
+- `createSystemLogSink({ retentionDays })` är loggerns sink mot `SystemLog`: batchar, har en buffertgräns och rensar gamla rader varje timme.
 - Konventioner per modell: `id String @id @default(cuid(2))`, `organizationId`, `status RecordStatus`, `createdAt`, `updatedAt`, `createdBy`.
 - Skill-invarianter i migrationen `ai_data_layer` (handskriven SQL, Prismas differ rör dem inte): CHECK att SYSTEM ⇔ org null/ägare null, ORGANIZATION ⇔ org satt/ägare null, PERSONAL ⇔ båda satta; slug-format; partiella unika index för slug per scope bland icke-arkiverade och för `source` bland SYSTEM.
 - Sökindex för globala entiteter har `organizationId = GLOBAL_EMBEDDING_SCOPE` (`__global__`); `searchEmbeddings` tar med dem i varje org. `scopedDb` vägrar det id:t.

@@ -4,7 +4,7 @@ import { call, connect, testContext } from "./helpers";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
-/** What each "Konferensgård" role may do, checked on every surface (ADR 0014). */
+/** What each "Konferensgård" role may do, checked on every surface (ADR 0020). */
 const permissionsOf = ({ name }: { name: string }) => {
   const role = getRoleTemplate({ key: "conference-venue" }).roles.find((r) => r.name === name);
   if (!role) throw new Error(`No template role ${name}`);

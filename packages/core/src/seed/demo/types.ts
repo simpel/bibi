@@ -4,7 +4,7 @@ import type { RoleTemplateKey } from "../../templates/roles/role-templates";
 /** One demo staff member. `role` is `owner` or the name of a role defined for the org. */
 export type DemoUser = { name: string; role: string };
 
-/** Everything slice 1 of ADR 0019 seeds for one organization (`docs/demo-seed.md`). */
+/** Everything slice 1 of ADR 0025 seeds for one organization (`docs/demo-seed.md`). */
 export type DemoOrg = {
   slug: string;
   name: string;

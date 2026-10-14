@@ -4,7 +4,7 @@ Entiteter för ett bokningssystem för konferens + mat & dryck. Fasning: **MVP**
 
 Interaktiv vy: [artefakter/domanmodell.html](artefakter/domanmodell.html).
 
-Modellen är konfigurerbar (se [ADR 0015](beslut/0015-configurable-items.md)). Koden innehåller inga domänord som rätt, allergen, rum eller köksorder. Varje organisation sätter upp sina egna typer, fält, listor, uppställningar, statusar, blad och roller. Koden äger bara generella beteenden och fasta faser. Se avsnittet Konfiguration.
+Modellen är konfigurerbar (se [ADR 0021](beslut/0021-configurable-items.md)). Koden innehåller inga domänord som rätt, allergen, rum eller köksorder. Varje organisation sätter upp sina egna typer, fält, listor, uppställningar, statusar, blad och roller. Koden äger bara generella beteenden och fasta faser. Se avsnittet Konfiguration.
 
 ## Kärnflöde
 
@@ -67,7 +67,7 @@ erDiagram
 
 ## Konfiguration
 
-*MVP* · Det organisationen sätter upp själv. Allt är data per organisation och skapas via vanliga operationer ([ADR 0015](beslut/0015-configurable-items.md)).
+*MVP* · Det organisationen sätter upp själv. Allt är data per organisation och skapas via vanliga operationer ([ADR 0021](beslut/0021-configurable-items.md)).
 
 En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owner` och en bokningsstatus per fas så att bokningar fungerar direkt. Mallar kan importeras, till exempel listan "EU:s 14 allergener" eller startpaketet "Konferensgård". En mall är bara data och kan ändras fritt efteråt. AI-assistenten kan föreslå en konfiguration, och användaren godkänner.
 
@@ -155,7 +155,7 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 
 ### Bokningsstatus (`BookingStatus`) med fas och övergångar
 
-*MVP* · Organisationens egna statusar för bokning. Varje status hör till en fast fas som styr systemets regler ([ADR 0016](beslut/0016-sales-pipeline-and-booking-states.md)).
+*MVP* · Organisationens egna statusar för bokning. Varje status hör till en fast fas som styr systemets regler ([ADR 0022](beslut/0022-sales-pipeline-and-booking-states.md)).
 
 **Attribut**
 - namn
@@ -179,7 +179,7 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 
 ### Roll (`organizationRole`)
 
-*MVP* · Namngiven uppsättning behörigheter per organisation ([ADR 0014](beslut/0014-custom-roles-per-organization.md)).
+*MVP* · Namngiven uppsättning behörigheter per organisation ([ADR 0020](beslut/0020-custom-roles-per-organization.md)).
 
 **Attribut**
 - namn
@@ -337,11 +337,11 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 - `N:1` Kund (organisation) beställer denna
 - `0..1:N` Kommunikation & logg gäller denna
 
-> Status ändras bara med `booking.changeStatus`. En snabbokning skapas av personalen i en `TENTATIVE`-status. Kunden betalar via Swish- eller kortlänk (då bekräftas bokningen när betalningen är klar) eller mot faktura. `booking.export` ger bokningen som json, pdf eller csv ([ADR 0018](beslut/0018-booking-export-instead-of-partner.md)).
+> Status ändras bara med `booking.changeStatus`. En snabbokning skapas av personalen i en `TENTATIVE`-status. Kunden betalar via Swish- eller kortlänk (då bekräftas bokningen när betalningen är klar) eller mot faktura. `booking.export` ger bokningen som json, pdf eller csv ([ADR 0024](beslut/0024-booking-export-instead-of-partner.md)).
 
 ### Bokningsserie
 
-*MVP* · Återkommande bokning, t.ex. ett mötesrum första tisdagen varje månad ([ADR 0017](beslut/0017-recurring-bookings-and-customer-pricing.md)).
+*MVP* · Återkommande bokning, t.ex. ett mötesrum första tisdagen varje månad ([ADR 0023](beslut/0023-recurring-bookings-and-customer-pricing.md)).
 
 **Attribut**
 - kund
@@ -380,7 +380,7 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 
 ### Behov ★ (`Requirement`)
 
-*MVP* · Antal per listvärde på en bokning eller en programpunkt, t.ex. Gluten × 3 eller Rullstol × 2. Aldrig kopplat till en person. Det finns inga personuppgifter om enskilda gäster ([ADR 0015](beslut/0015-configurable-items.md)).
+*MVP* · Antal per listvärde på en bokning eller en programpunkt, t.ex. Gluten × 3 eller Rullstol × 2. Aldrig kopplat till en person. Det finns inga personuppgifter om enskilda gäster ([ADR 0021](beslut/0021-configurable-items.md)).
 
 **Attribut**
 - bokning eller programpunkt
@@ -530,7 +530,7 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 
 ### Prislista
 
-*MVP* · Pris per säsong, veckodag eller kund ([ADR 0017](beslut/0017-recurring-bookings-and-customer-pricing.md)).
+*MVP* · Pris per säsong, veckodag eller kund ([ADR 0023](beslut/0023-recurring-bookings-and-customer-pricing.md)).
 
 **Attribut**
 - namn
@@ -633,12 +633,13 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 
 ### Användare
 
-*MVP* · Medlem i organisationen. Rollerna är organisationens egna (ADR 0014).
+*MVP* · Medlem i organisationen. Rollerna är organisationens egna (ADR 0020).
 
 **Attribut**
 - namn
 - roller (ur organisationens roller)
 - anläggningar
+- plattformsroll (`user` / `admin`): bara Okazis egen personal, ger `/admin` ([ADR 0015](beslut/0015-platform-admin.md))
 
 **Relationer**
 - `N:1` har → Roll
@@ -676,6 +677,33 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 **Relationer**
 - `N:0..1` gäller → Bokning
 - `N:0..1` gäller → Förfrågan
+
+### Systemlogg
+
+*MVP* · Plattformsdata, inte kunddata. Varje händelse i systemet (operation, anrop, inloggning, mejl, fel), sparad för plattformsadmins ([ADR 0014](beslut/0014-system-logging.md), [ADR 0015](beslut/0015-platform-admin.md)).
+
+**Attribut**
+- tid, nivå, händelse (`event`)
+- tjänst och yta (webb, REST, GraphQL, MCP, AI, auth)
+- request-id (kopplar ihop rader och granskningslogg)
+- organisation, användare, operation, status, varaktighet, felkod
+- hela raden som JSON (aldrig in- eller utdata)
+
+**Relationer**
+- `N:0..1` gäller → Användare
+- delar request-id med granskningsloggen (`AuditLog`)
+
+### AI-inställning
+
+*MVP* · Plattformsdata. Vilken modell varje AI-funktion använder, vald av en plattformsadmin. Inga standardmodeller: utan val fungerar funktionen inte.
+
+**Attribut**
+- AI-funktion (`assistant.chat`, `search.embedding`)
+- modell (från Vercel AI Gateway, måste vara möjlig för funktionen)
+- ändrad av, ändrad
+
+**Relationer**
+- `N:1` ändrad av → Användare
 
 ### Skylt
 
@@ -742,3 +770,5 @@ Svenska termer används i dokumentation och UI. Engelska namn används i kod, AP
 | Avbokningsvillkor | CancellationTerms |
 | Orderrad | OrderLine |
 | Användare | User |
+| Systemlogg | SystemLog |
+| AI-inställning | AiSetting |

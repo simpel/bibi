@@ -30,7 +30,7 @@ export type BootstrapDemoOrgInput = { db: Db; org: DemoOrg };
 export type DemoMembers = Map<string, string>;
 
 /**
- * The documented exception to "everything via execute" (ADR 0019, `docs/demo-seed.md`): the
+ * The documented exception to "everything via execute" (ADR 0025, `docs/demo-seed.md`): the
  * organization, users and memberships are Better Auth's rows, written as its signup and
  * `addMember` would. Owners get `owner`; everyone else starts without roles until the seed
  * assigns them through `member.assignRole`.

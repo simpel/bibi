@@ -3,12 +3,13 @@ import type { UIMessage } from "ai";
 import { buildSystemPrompt } from "../prompt/build-system-prompt";
 import { errorResponse } from "../server/error-response";
 import type { UserContext } from "../server/resolve-user";
-import { finishRun } from "./finish-run";
 import type { ChatRuntime } from "./handle-chat";
+import { onRunFinish } from "./on-run-finish";
 import type { ChatInput } from "./parse-chat-input";
 import { persistUserMessage } from "./persist-user-message";
 import { type PreparedTools, prepareTools } from "./prepare-tools";
 import { streamChat } from "./stream-chat";
+import { streamFailure } from "./stream-failure";
 import { toModelMessages } from "./to-model-messages";
 
 export type RunAssistantInput = {
@@ -80,10 +81,8 @@ async function streamRun({ runtime, user, input, conversation, history, client }
     messages,
     prepared,
     conversation,
-    onFinish: ({ parts, finishReason }) => {
-      const metadata = { model: runtime.modelId, finishReason: finishReason ?? null };
-      return finishRun({ client, conversationId, parts, metadata, report: runtime.report });
-    },
+    onError: streamFailure({ modelId: runtime.modelId }),
+    onFinish: onRunFinish({ runtime, client, conversationId }),
   });
   return { ok: true as const, value: response };
 }

@@ -18,8 +18,13 @@ model AuditLog {
   entityId       String?
   before         Json?
   after          Json?
+  /// Correlates with the system log (`requestId` on every log line, ADR 0014).
+  requestId      String?
+  /// Entry point: web, graphql, rest, mcp, ai, auth, cli or system.
+  surface        String?
   createdAt      DateTime  @default(now())
 
   @@index([organizationId, createdAt])
   @@index([organizationId, entityType, entityId])
+  @@index([organizationId, requestId])
 }

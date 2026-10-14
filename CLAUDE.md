@@ -9,7 +9,7 @@
 - Snabbokning för mindre möten: personalen bokar direkt utan förfrågan och offert, och kunden betalar via Swish- eller kortlänk eller mot faktura. Okazi är ett internt verktyg för personalen. Gäster och kunder använder aldrig appen, de ser bara betalsidan.
 - Behov som antal mot organisationens egna listor (t.ex. EU:s 14 allergener som importerbar mall), matchade mot artiklar och sammanställda i blad. Inga personuppgifter om gäster.
 - Versionerade blad (t.ex. köksorder) till en roll, plus export (json, pdf, csv) för överlämning utanför systemet.
-- Konfigurerbar domän: varje organisation sätter upp egna typer, fält, listor, statusar och roller (ADR 0014, 0015).
+- Konfigurerbar domän: varje organisation sätter upp egna typer, fält, listor, statusar och roller (ADR 0020, 0021).
 - Optioner med kö (1:a/2:a option) och automatiskt förfall.
 - Svenska integrationer: Fortnox, Visma, Swish, BankID, Peppol/e-faktura.
 - Okazis egna priser är publicerade och anläggningar kan registrera sig utan säljkontakt.
@@ -33,12 +33,13 @@
 - i18n: next-intl, svenska och engelska.
 - Verktyg: Biome (lint + format), Vitest (enhet/tjänstelager mot riktig Postgres), Playwright (e2e).
 - E-post: Resend (ut och in) bakom `MailProvider`, Mailpit i dev. Se `docs/beslut/0012-email-provider.md`.
+- Loggning: pino via `@okazi/logger`, JSON till stdout och tabellen `SystemLog`, request-kontext med `AsyncLocalStorage`. Se `docs/beslut/0014-system-logging.md`.
 - Drift: Docker (compose med Postgres och Mailpit, `--profile app` för web + mcp), GitHub Actions för CI.
 - Beslut: `docs/beslut/0002-teknikstack-och-monorepo.md` m.fl.
 
 ## Arkitekturprinciper
 - **Harmonisering och mönster först.** Sök efter befintliga mönster och återanvänd dem innan något nytt införs. Föreslå harmonisering hellre än ett nytt mönster. Extrahera gemensam kod vid den andra dubbletten, inte först vid den tredje.
-- **1:1-paritet.** Varje kommando finns i web, GraphQL, REST och MCP. Varje entitet går att läsa via graph, REST och MCP. Ett paritetstest i CI verifierar detta. Se `docs/beslut/0003-paritetsarkitektur.md`.
+- **1:1-paritet.** Varje kommando finns i web, GraphQL, REST och MCP. Varje entitet går att läsa via graph, REST och MCP. Ett paritetstest i CI verifierar detta. Se `docs/beslut/0003-paritetsarkitektur.md`. Enda undantaget är plattformsoperationer (`packages/core/src/platform/`, ADR 0015): de finns bara i webbens `/admin`, för plattformsadmins.
 - **Ny förmåga = ny core-operation först.** Operationen definieras en gång i `packages/core` (Zod in/ut, behörighet, handler). Adaptrarna exponerar den sedan i samma ändring.
 - **AI-first.**
   - Assistenten använder appens egen MCP-server som inloggad användare. Den får ingen särskild väg in i tjänstelagret.
@@ -47,8 +48,9 @@
   - Sökbara entiteter implementerar `Embeddable`.
   - Återanvändbart AI-beteende lever som skills (System / Organisation / Personlig), inte som ad hoc-prompter.
   - Se `docs/beslut/0007-ai-first-ux.md` och `docs/beslut/0008-semantisk-sokning-och-skills.md`.
-- **Konfigurerbar domän.** Inga domänord i koden. Organisationen definierar typer, fält, listor, bokningsstatusar och roller som data. Koden äger bara generella beteenden (`PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS`) och fasta faser. Mallar är frivillig data. Se `docs/beslut/0015-configurable-items.md`.
+- **Konfigurerbar domän.** Inga domänord i koden. Organisationen definierar typer, fält, listor, bokningsstatusar och roller som data. Koden äger bara generella beteenden (`PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS`) och fasta faser. Mallar är frivillig data. Se `docs/beslut/0021-configurable-items.md`.
 - **Multi-tenant.** Allt är scopat på `organizationId`. Varje mutation loggas i `AuditLog`. Se `docs/beslut/0004-multi-tenancy.md` och `docs/beslut/0006-databaskonventioner.md`.
+- **Allt loggas.** Core `execute` skriver en systemloggrad per operation (lyckad, avvisad eller fel). Varje ingång öppnar en request-kontext med `requestId` och `surface`, som också hamnar på `AuditLog`. Se `docs/beslut/0014-system-logging.md`.
 
 ## Kodregler
 - Max 150 rader per fil och max 40 rader per funktion. En idé per fil.
@@ -59,10 +61,24 @@
 - Zod vid alla gränser: HTTP, GraphQL-argument, MCP-verktygsinput, env och AI-output.
 - Miljövariabler läses endast via `@okazi/config`.
 - Fel är typade `AppError` och returneras som `Result`. Inga kastade strängar.
+- Logga endast via `getLogger()` från `@okazi/logger`, med ett stabilt `event` (`<område>.<händelse>`). Aldrig `console.*` (Biome `noConsole`). Logga aldrig in- eller utdata, lösenord, token eller hela mejladresser (`maskEmail`).
+- Ny HTTP-ingång wrappas i `withRequestLogging({ surface, handler })`. Annan ingång (CLI, jobb) körs i `runWithLogContext`.
 - Feature-mappar har fasta filnamn: `schema.ts`, `operations.ts`, `graphql.ts`, `rest.ts`, `mcp.ts` och `ui/`.
 - Kod och entitetsnamn är på engelska. UI-text går via next-intl (sv + en).
 - UI byggs endast från `@okazi/ui`. Varianter görs med cva. Tokens ligger i en fil.
+- `"use client"` sätts bara på klientgränsen: komponenter som en serverkomponent renderar och som själva har state, context eller webbläsarhändelser. Barn och hooks ärver gränsen och får ingen egen direktiv.
 - Verifieras med `pnpm check:structure`. Se `docs/beslut/0009-sprak-i-kod-och-ui.md`.
+
+## Formulär (gäller all inmatning i UI)
+- Varje formulär är ett shadcn-formulär: `Form`, `FormController` (shadcns `FormField`), `FormItem`, `FormLabel`, `FormControl` och `FormMessage` från `@okazi/ui`, med react-hook-form och `zodResolver(schema, useZodMessages())`. Schemat kommer från core (`@okazi/core/schemas`), aldrig ett handskrivet dubbelschema.
+- Validering visas som shadcn vill: fältfel i `FormMessage` under fältet. Serverns fältfel (`AppError.issues`, `path` = fältnamn) sätts på fälten med `form.setError`.
+- Inskick går **alltid** via en server action (`features/<entitet>/actions.ts` → `runOperation`/`runPlatformOperation` → `toActionResult`). Inga `fetch`-anrop från formulär.
+- Använd `useFormAction({ form, action, messages, onSuccess?, onError? })` (`apps/web/src/lib/use-form-action.ts`). Den äger toastflödet:
+  - Varje process har **ett** toast-id: `toast.loading("Sparar…")` byts mot `toast.success("Sparat", { id })`.
+  - Fel blir en **bestående** toast med stängknapp: `toast.error(text, { id, duration: Infinity, closeButton: true })`.
+  - Både väntande och utfall har alltid en toast. Texterna kommer från i18n (t.ex. `saving`, `saved`).
+- Auto-spara (t.ex. en select som sparar vid val) använder samma flöde. Vid fel återställs fältet via `onError`.
+- `ErrorBanner` och `useActionSubmit` är det gamla mönstret. Använd dem inte i nya formulär och byt ut dem när ett formulär ändras.
 
 ## Paketlayout
 - `apps/web`: Next.js-appen (UI, server actions, `/api/chat`).
@@ -76,6 +92,12 @@
 - `packages/i18n`: meddelanden sv och en.
 - `packages/ai`: AI SDK-uppsättning, MCP-klient, generative UI-registret och system-skills.
 - `packages/config`: miljövariabler (typat och validerat) samt tsconfig- och Biome-gemensamt.
+- `packages/logger`: systemloggen (pino), request-kontext, `withRequestLogging` och testhjälpen `captureLogs`.
+
+## Plattformsadmin
+- `/admin` i webben: systemlogg och AI-modell per funktion. Bara för `user.role = admin`, ges med `pnpm --filter @okazi/auth grant-admin <email>`. Se `docs/beslut/0015-platform-admin.md`.
+- AI-modeller styrs **bara** i `/admin/ai-models`, aldrig via env. Ovald modell = funktionen ger `UNAVAILABLE` och loggar error.
+- Ny AI-funktion: en post i `AI_FEATURES` (core), `resolveAiModel({ feature })` där den körs, och texter i `admin.aiModels.features`.
 
 ## Arbetssätt med subagenter
 - Baslinje: Sonnet.
@@ -89,7 +111,7 @@
 - `pnpm install`: installerar beroenden.
 - `pnpm db:migrate`: kör databasmigrationer.
 - `pnpm --filter @okazi/core seed:skills`: seedar system-skills.
-- `pnpm --filter @okazi/core seed:demo`: skapar två demoorganisationer via core-operationer (spec: `docs/demo-seed.md`, byggs i delar enligt ADR 0019).
+- `pnpm --filter @okazi/core seed:demo`: skapar två demoorganisationer via core-operationer (spec: `docs/demo-seed.md`, byggs i delar enligt ADR 0025).
 - `pnpm --filter @okazi/web provision:oauth`: skapar assistentens OAuth-klient och skriver ut `WEB_OAUTH_CLIENT_ID=...` (lägg i `.env`, läses av webb och MCP).
 - `pnpm dev`: startar webben (:3000) och MCP-servern (:3001) via Turborepo.
 - `pnpm lint`: Biome-kontroll.

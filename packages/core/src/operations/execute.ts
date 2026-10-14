@@ -1,9 +1,12 @@
+import { elapsedMs } from "@okazi/logger";
 import type { z } from "zod";
 import { fromUnknown } from "../errors/from-unknown";
 import { err, type Result } from "../errors/result";
 import { authorize } from "./authorize";
 import type { ExecuteContext } from "./context";
+import { logOperation } from "./log-operation";
 import { parseWith } from "./parse-with";
+import { runAfterCommit } from "./run-after-commit";
 import { runCommand } from "./run-command";
 import { runQuery } from "./run-query";
 import type { Operation } from "./types";
@@ -20,28 +23,43 @@ export type ExecuteInput<I extends z.ZodType, O extends z.ZodType> = {
   afterCommit?: readonly AfterCommitHook[];
 };
 
-/** The only way to run an operation: validate → authorize → handle → validate → audit. */
-export async function execute<I extends z.ZodType, O extends z.ZodType>({
+type AttemptInput = Omit<ExecuteInput<z.ZodType, z.ZodType>, "operation"> & {
+  operation: Operation;
+};
+
+async function attempt({
   operation,
   input,
   context,
   afterCommit = [],
-}: ExecuteInput<I, O>): Promise<Result<z.infer<O>>> {
-  const op: Operation = operation;
-  const parsed = parseWith({ schema: op.input, data: input, side: "input" });
+}: AttemptInput): Promise<Result<unknown>> {
+  const parsed = parseWith({ schema: operation.input, data: input, side: "input" });
   if (!parsed.ok) return parsed;
-  const allowed = authorize({ operation: op, context });
+  const allowed = authorize({ operation, context });
   if (!allowed.ok) return allowed;
   try {
-    const run = op.kind === "command" ? runCommand : runQuery;
-    const result = await run({ operation: op, input: parsed.value, context });
-    if (result.ok && op.kind === "command") {
-      await Promise.allSettled(
-        afterCommit.map((hook) => hook({ operation: op, output: result.value, context })),
-      );
+    const run = operation.kind === "command" ? runCommand : runQuery;
+    const result = await run({ operation, input: parsed.value, context });
+    if (result.ok && operation.kind === "command") {
+      await runAfterCommit({ hooks: afterCommit, operation, output: result.value, context });
     }
-    return result as Result<z.infer<O>>;
+    return result;
   } catch (error) {
     return err({ error: fromUnknown({ error }) });
   }
+}
+
+/**
+ * The only way to run an operation: validate → authorize → handle → validate → audit, and
+ * exactly one system-log line per call whatever the outcome (ADR 0014).
+ */
+export async function execute<I extends z.ZodType, O extends z.ZodType>({
+  operation,
+  ...rest
+}: ExecuteInput<I, O>): Promise<Result<z.infer<O>>> {
+  const op: Operation = operation;
+  const since = performance.now();
+  const result = await attempt({ operation: op, ...rest });
+  logOperation({ operation: op, context: rest.context, result, durationMs: elapsedMs({ since }) });
+  return result as Result<z.infer<O>>;
 }

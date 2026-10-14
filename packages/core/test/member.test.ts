@@ -17,7 +17,7 @@ const withRoles = async () => {
   return context;
 };
 
-describe("member operations (ADR 0014)", () => {
+describe("member operations (ADR 0020)", () => {
   it("lists members with roles and filters on the exact role name", async () => {
     const context = await withRoles();
     await addTestMember({ context, role: "owner", name: "Anna" });

@@ -6,7 +6,7 @@ export const API_KEY_PREFIX = "okz_";
 /**
  * REST API keys (ADR 0005). Keys are owned by a user and bound to one organization via
  * `metadata.organizationId`; the owner's membership is re-checked on every request.
- * Access comes from the role in `metadata.role`, set server-side by `createOrgApiKey` (ADR 0014).
+ * Access comes from the role in `metadata.role`, set server-side by `createOrgApiKey` (ADR 0020).
  */
 export function apiKeyPlugin() {
   return apiKey({

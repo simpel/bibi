@@ -5,7 +5,7 @@ import { demoEmailDomain } from "./users";
 export type ResetDemoOrgInput = { db: Db; org: DemoOrg };
 
 /**
- * Deletes one demo organization and everything it owns, so the seed can recreate it (ADR 0019:
+ * Deletes one demo organization and everything it owns, so the seed can recreate it (ADR 0025:
  * idempotent per slug). Business rows have no FK to `organization` and are deleted explicitly,
  * children first; Better Auth rows (members, roles, invitations) cascade with the organization.
  */

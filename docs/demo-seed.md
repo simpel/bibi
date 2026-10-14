@@ -1,6 +1,6 @@
 # Demodata
 
-Specifikation för `pnpm --filter @okazi/core seed:demo` (ADR 0019). Två fiktiva organisationer som är uppsatta helt olika med samma kod, för att visa den konfigurerbara domänen (ADR 0015).
+Specifikation för `pnpm --filter @okazi/core seed:demo` (ADR 0025). Två fiktiva organisationer som är uppsatta helt olika med samma kod, för att visa den konfigurerbara domänen (ADR 0021).
 
 - **Lindholmen Upplevelsecenter**: konferens, utställning och restaurang. Använder allt: listor med allergener, blad till köket, paket och serier.
 - **Vingaleden Skärgårdsturer**: båtturer i Göteborgs skärgård. Ingen mat, inga allergener, andra statusar och andra behov.
@@ -36,7 +36,7 @@ Slug `lindholmen-demo`. Anläggning: Lindholmspiren 1, 417 56 Göteborg.
 ## Konfiguration
 
 ### Roller
-Importerade från mallen "Konferensgård" (ADR 0014), plus en egen roll Vaktmästare.
+Importerade från mallen "Konferensgård" (ADR 0020), plus en egen roll Vaktmästare.
 
 | Användare | Roll |
 |---|---|
@@ -224,7 +224,7 @@ Säljare (S) och koordinator (K) anges med förnamn.
 | L8 | Göteborgs Seglarsällskap · Visning | D+2 14:00 | 22 | Utställningsvisning med guide Oskar (tyska) | Bekräftad | Sara / Johan | Visning-typ, bokningsbar guide |
 | L9 | Kvarnby Design · Konferens | D+8 | 18 | Designverkstad + Konferenslunch | Bekräftad | Sara / Maria | aktivitet som innehåller ett rum |
 
-**Not om L3:** nötallergin träffar Chokladfondant, som har alternativen Hjortronparfait och Citronsorbet. Resultatet är "kan innehålla" och ingen blockering (kontroll 4). Utbytet görs på bokningens kopia av paketet, så katalogpaketet ändras inte (snapshot, ADR 0015). L3 visar alltså också att ett paket kan anpassas för ett enskilt tillfälle.
+**Not om L3:** nötallergin träffar Chokladfondant, som har alternativen Hjortronparfait och Citronsorbet. Resultatet är "kan innehålla" och ingen blockering (kontroll 4). Utbytet görs på bokningens kopia av paketet, så katalogpaketet ändras inte (snapshot, ADR 0021). L3 visar alltså också att ett paket kan anpassas för ett enskilt tillfälle.
 
 ### Serie
 | # | Kund | Regel | Innehåll | Visar |
@@ -306,4 +306,4 @@ Kunder: Hisingen Energi AB (Företag, samma namn som hos Lindholmen men en helt 
 - `packages/core/src/seed/demo/` med en mapp per organisation (`lindholmen/`, `vingaleden/`). Filerna är rena data, uppdelade så att ingen fil går över 150 rader: `config.ts`, `rooms.ts`, `dishes.ts`, `meals.ts`, `packages.ts`, `customers.ts`, `pipeline.ts` och `bookings.ts`.
 - `run-demo-seed.ts` läser datat och kör allt via `execute` med core-operationer. Referenser mellan raderna görs med nycklar (`ref: "room.vinga"`), som löses till id under körningen.
 - `check-demo-seed.ts` innehåller kontrollerna ovan.
-- Seeden byggs ut i samma takt som delarna i ADR 0019. En del som saknar operationer hoppas över med en tydlig logg, så att demot alltid går att köra.
+- Seeden byggs ut i samma takt som delarna i ADR 0025. En del som saknar operationer hoppas över med en tydlig logg, så att demot alltid går att köra.

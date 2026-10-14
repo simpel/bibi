@@ -11,7 +11,7 @@ const testOrgs = () => {
   return [lindholmen, vingaleden].map((org) => ({ ...org, slug: `${org.slug}-${suffix}` }));
 };
 
-describe("seed:demo slice 1 (ADR 0019)", () => {
+describe("seed:demo slice 1 (ADR 0025)", () => {
   it("creates both orgs with roles and members, passes its checks and is idempotent", async () => {
     const orgs = testOrgs();
     const first = await seedDemo({ orgs });

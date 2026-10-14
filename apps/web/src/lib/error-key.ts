@@ -8,7 +8,8 @@ export type ErrorKey =
   | "forbidden"
   | "validation"
   | "conflict"
-  | "network";
+  | "network"
+  | "unavailable";
 
 const KEY_BY_CODE: Record<AppErrorCode, ErrorKey> = {
   NOT_FOUND: "notFound",
@@ -17,6 +18,7 @@ const KEY_BY_CODE: Record<AppErrorCode, ErrorKey> = {
   VALIDATION: "validation",
   CONFLICT: "conflict",
   INTERNAL: "generic",
+  UNAVAILABLE: "unavailable",
 };
 
 export type ErrorKeyInput = { code: AppErrorCode };

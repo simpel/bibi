@@ -17,4 +17,7 @@ export {
   RESOURCES,
   type Resource,
 } from "./permissions/resources";
+export * from "./platform/ai-settings/ai-features";
+export * from "./platform/ai-settings/schema";
+export * from "./platform/system-log/schema";
 export * from "./search/search-schema";

@@ -1,3 +1,4 @@
+import { APP_ERROR_CODES } from "@okazi/core";
 import type { CompiledRoute } from "../http/compile-routes";
 import type { JsonObject } from "../http/json-schema";
 import { buildOperationObject } from "./build-operation";
@@ -13,9 +14,7 @@ const ERROR_BODY = {
       type: "object",
       required: ["code", "message", "issues"],
       properties: {
-        code: {
-          enum: ["NOT_FOUND", "FORBIDDEN", "UNAUTHENTICATED", "VALIDATION", "CONFLICT", "INTERNAL"],
-        },
+        code: { enum: [...APP_ERROR_CODES] },
         message: { type: "string" },
         issues: {
           type: "array",

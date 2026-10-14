@@ -3,7 +3,7 @@ import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
 /**
- * Roles and members (ADR 0014). There is no `member.create`: the parity test seeds one member
+ * Roles and members (ADR 0020). There is no `member.create`: the parity test seeds one member
  * row (`made.memberSeed`) and the entity is "created" by assigning it the role made before.
  */
 export function accessEntities(): ParityEntity[] {

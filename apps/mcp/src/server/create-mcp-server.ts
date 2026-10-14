@@ -1,7 +1,8 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { appError, type EmbedFn, type ExecuteContext, toMcpError } from "@okazi/core";
+import type { EmbedFn, ExecuteContext } from "@okazi/core";
 import type { McpTool, ToolResult } from "../tools/types";
+import { callTool } from "./call-tool";
 import { createTools } from "./create-tools";
 
 export type CreateMcpServerInput = { context: ExecuteContext; embed: EmbedFn };
@@ -26,14 +27,10 @@ export function createMcpServer({ context, embed }: CreateMcpServerInput): Serve
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
     tools: tools.map(({ run: _run, humanOnly: _humanOnly, ...descriptor }) => descriptor),
   }));
-  server.setRequestHandler(CallToolRequestSchema, async ({ params }): Promise<ToolResult> => {
-    const tool = tools.find((candidate) => candidate.name === params.name);
-    if (!tool) {
-      return toMcpError({
-        error: appError({ code: "NOT_FOUND", message: `Unknown tool ${params.name}` }),
-      });
-    }
-    return tool.run({ args: params.arguments ?? {}, context });
-  });
+  server.setRequestHandler(
+    CallToolRequestSchema,
+    ({ params }): Promise<ToolResult> =>
+      callTool({ tools, name: params.name, args: params.arguments ?? {}, context }),
+  );
   return server;
 }

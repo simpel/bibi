@@ -33,7 +33,7 @@ export type OperationContext = {
   db: ScopedDbClient;
   /** Role names of the user in the organization, e.g. `["Säljare"]`. Display and audit only. */
   roles: readonly string[];
-  /** What the caller may do, resolved from `roles` by `packages/auth` (ADR 0014). */
+  /** What the caller may do, resolved from `roles` by `packages/auth` (ADR 0020). */
   permissions: PermissionSet;
   /** Commands call this so audit rows carry entity id and before/after state. */
   recordChange: (change: RecordedChange) => void;

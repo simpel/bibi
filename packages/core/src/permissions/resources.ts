@@ -4,7 +4,7 @@ export type PermissionAction = (typeof PERMISSION_ACTIONS)[number];
 
 /**
  * Every resource an operation can require a permission on. New resource → add it here; roles
- * (ADR 0014) can only grant resources listed here.
+ * (ADR 0020) can only grant resources listed here.
  */
 export const RESOURCES = [
   "venue",
@@ -17,5 +17,5 @@ export const RESOURCES = [
 ] as const;
 export type Resource = (typeof RESOURCES)[number];
 
-/** The fixed system role with every permission (ADR 0014). Never stored as an org role. */
+/** The fixed system role with every permission (ADR 0020). Never stored as an org role. */
 export const OWNER_ROLE = "owner";

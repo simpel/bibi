@@ -24,7 +24,7 @@ const create = ({
     context,
   });
 
-describe("role operations (ADR 0014)", () => {
+describe("role operations (ADR 0020)", () => {
   it("creates normalized roles and lists them after the fixed owner role", async () => {
     const context = await testOrg();
     const role = unwrap({ result: await create({ context, name: "Säljare" }) });

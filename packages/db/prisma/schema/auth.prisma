@@ -23,6 +23,10 @@ model User {
   oauthrefreshtokens OauthRefreshToken[]
   oauthaccesstokens  OauthAccessToken[]
   oauthconsents      OauthConsent[]
+  role               String?
+  banned             Boolean?            @default(false)
+  banReason          String?
+  banExpires         DateTime?
 
   @@unique([email])
   @@map("user")
@@ -41,6 +45,7 @@ model Session {
   activeOrganizationId String?
   oauthrefreshtokens   OauthRefreshToken[]
   oauthaccesstokens    OauthAccessToken[]
+  impersonatedBy       String?
 
   @@unique([token])
   @@index([userId])

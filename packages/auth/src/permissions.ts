@@ -35,7 +35,7 @@ const ownerAuthStatements = {
 };
 
 /**
- * Static Better Auth roles. Only `owner` is real (ADR 0014); every other role lives in
+ * Static Better Auth roles. Only `owner` is real (ADR 0020); every other role lives in
  * `organizationRole` (dynamic access control). Better Auth's built-in `admin` and `member`
  * are overridden with no statements so a custom role with that name gains nothing extra.
  */

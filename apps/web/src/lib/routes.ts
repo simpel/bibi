@@ -8,6 +8,9 @@ export const ROUTES = {
   skillNew: "/skills/new",
   settingsRoles: "/settings/roles",
   settingsMembers: "/settings/members",
+  admin: "/admin",
+  adminLogs: "/admin/logs",
+  adminAiModels: "/admin/ai-models",
 } as const;
 
 export type VenueRouteInput = { id: string };

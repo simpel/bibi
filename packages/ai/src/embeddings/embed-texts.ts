@@ -31,7 +31,7 @@ function checkVectors({ vectors, modelId, expected }: CheckInput): number[][] {
     const message =
       `Embedding model ${modelId} returned ${wrong.length} dimensions, expected ` +
       `${EMBEDDING_DIMENSIONS}. Pick a model that supports ${EMBEDDING_DIMENSIONS} dimensions ` +
-      "(AI_EMBEDDING_MODEL) or migrate the vector column.";
+      "(/admin/ai-models) or migrate the vector column.";
     throw new AppError({ code: "INTERNAL", message });
   }
   return parsed.data;

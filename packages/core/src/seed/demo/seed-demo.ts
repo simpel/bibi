@@ -42,7 +42,7 @@ async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
 }
 
 /**
- * `pnpm --filter @okazi/core seed:demo` (ADR 0019): deletes and recreates the demo
+ * `pnpm --filter @okazi/core seed:demo` (ADR 0025): deletes and recreates the demo
  * organizations through core operations as SYSTEM, then runs the checks. Refuses production.
  */
 export async function seedDemo({

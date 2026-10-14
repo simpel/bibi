@@ -22,5 +22,5 @@ Varje venue-kund är en egen organisation med egna användare, anläggningar, bo
 - Partner-åtkomst över bolagsgräns (köksorder) kräver en separat modell som ska beslutas senare.
 
 ## Tillägg 2026-10-14
-- Partneråtkomst över bolagsgräns är inte längre planerad. Raden om partner i Beslut och den sista punkten i Konsekvenser gäller inte längre (ADR 0018). Blad går till en roll i den egna organisationen, och överlämning till någon utanför sker genom export.
-- Roller är organisationens egna (ADR 0014). `packages/auth` löser medlemmens roller till behörigheter per anrop. Korsorganisatorisk åtkomst är fortsatt avstängd.
+- Partneråtkomst över bolagsgräns är inte längre planerad. Raden om partner i Beslut och den sista punkten i Konsekvenser gäller inte längre (ADR 0024). Blad går till en roll i den egna organisationen, och överlämning till någon utanför sker genom export.
+- Roller är organisationens egna (ADR 0020). `packages/auth` löser medlemmens roller till behörigheter per anrop. Korsorganisatorisk åtkomst är fortsatt avstängd.

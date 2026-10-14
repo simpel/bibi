@@ -5,7 +5,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth-klient, `
 ## Struktur
 - `src/app/[locale]/` – sidor (`(auth)` = login, sign-up, select-organization, oauth/consent, accept-invitation/[id]; `(app)` = skyddat skal med sidomeny och `venues`). `page.tsx`/`layout.tsx`/`route.ts` är tunna: de läser params och renderar en feature.
 - `src/app/[locale]/(app)/skills` (`page`, `new`, `[id]`, `[id]/edit`) – Färdigheter-sektionen.
-- `src/app/[locale]/(app)/settings/roles` och `settings/members` – roller (behörighetsmatris resurs × read/write/admin, importera mallen Konferensgård, arkivera) och medlemmar (tilldela roller). `owner` visas skrivskyddad. Knappar styrs av `roleAdmin`/`memberAdmin` i `caller-abilities.ts` (ADR 0014).
+- `src/app/[locale]/(app)/settings/roles` och `settings/members` – roller (behörighetsmatris resurs × read/write/admin, importera mallen Konferensgård, arkivera) och medlemmar (tilldela roller). `owner` visas skrivskyddad. Knappar styrs av `roleAdmin`/`memberAdmin` i `caller-abilities.ts` (ADR 0020).
 - `src/app/api/auth/[...all]` (Better Auth), `api/graphql`, `api/v1/[...path]` (REST + OpenAPI), `api/chat` (assistentens tur, `createChatHandler`), `api/assistant/approval` (godkännandekortets POST, `createApprovalHandler`), `.well-known/oauth-authorization-server` och `oauth-protected-resource` (discovery för MCP/OAuth, vidarebefordras till Better Auth). Chatt- och godkännanderutterna har `runtime = "nodejs"`, `dynamic = "force-dynamic"` och `maxDuration`.
 - `src/features/<entitet>/ui/` – komponenter per entitet (fasta namn `venue`, `room`, `skill`; `auth/ui` för inloggning; `assistant/` se nedan). `actions.ts` bredvid `ui/` = server actions. `web-surfaces.ts` = vilka operationer som har UI (`route` eller `route: "*"` + `component` för UI i skalet, t.ex. assistentpanelen; `UI_EXEMPT` är tom).
 - `src/components/` – app-nivå: `shell/` (sidomeny, org-växlare, språk, tema, användarmeny, ⌘K inkl. "Fråga assistenten"), `form/`, `states/`, `confirm-dialog`, `markdown-view` (säker markdown utan rå HTML, parser i `lib/markdown/`).
@@ -19,7 +19,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth-klient, `
 - Fel: `Result` → `handleLoadError` (401 → login, 404 → not-found, annars `ErrorState`) eller `ActionResult` + `useActionSubmit` → `ErrorBanner`. AppError-kod → `errors.*` i `lib/error-key.ts`; Better Auth-fel i `lib/auth-error-key.ts`; Zod-fel i `lib/issue-message-key.ts`.
 - Klientkomponenter får inte importera värden från `@okazi/core` (barrel drar in Prisma). Zod-scheman nås via `@okazi/core/schemas` (barrel med bara Zod-filerna; ny entitet = en rad i `packages/core/src/schemas.ts`). `import type` från `@okazi/core` är fritt.
 - Assistenten går **inte** via `runOperation`: `/api/chat` kör MCP-klienten mot `apps/mcp` som användaren (ADR 0007). Det är `runOperation` som sköter webbens egna sidor, konversationshistoriken (server actions i `features/assistant/actions.ts`) och Färdigheter.
-- Formulär: `formSchema({ schema, toInput })` gör om råa strängvärden till coreschemats indata, `zodResolver` + `useZodMessages()` ger lokaliserade fel.
+- Formulär: se "Formulär" i rot-`CLAUDE.md` (shadcn `Form`, server action, `useFormAction` med toasts). `formSchema({ schema, toInput })` gör om råa strängvärden till coreschemats indata, `zodResolver` + `useZodMessages()` ger lokaliserade fel.
 
 ## Lägga till en sida/feature
 1. Core-operation först (`packages/core`), sedan GraphQL/REST/MCP.
@@ -34,7 +34,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth-klient, `
 - Typade nycklar: `sv.json` är sanningen. Dynamiska nycklar måste vara unioner (se `ErrorKey`).
 
 ## Miljövariabler
-Läses endast via `@okazi/config`: `DATABASE_URL`, `BETTER_AUTH_SECRET` (>= 32 tecken), `BETTER_AUTH_URL`, `WEB_URL`, `MCP_URL`, `SMTP_URL`, `MAIL_FROM`, `AI_GATEWAY_API_KEY` (valfri; utan den kan assistenten inte svara), `AI_DEFAULT_MODEL`, `AI_EMBEDDING_MODEL`, `WEB_OAUTH_CLIENT_ID` (efter provisionering; samma värde i `.env` för webb och MCP), `E2E_MOCK_MODEL` (endast E2E, ignoreras i produktion), `NODE_ENV`. `next.config.ts` och scripten läser repots rot-`.env` via `@next/env`. (Enda undantaget: `NEXT_RUNTIME` i `instrumentation.ts`, Nexts egen flagga.)
+Läses endast via `@okazi/config`: `DATABASE_URL`, `BETTER_AUTH_SECRET` (>= 32 tecken), `BETTER_AUTH_URL`, `WEB_URL`, `MCP_URL`, `SMTP_URL`, `MAIL_FROM`, `AI_GATEWAY_API_KEY` (valfri; utan den kan assistenten inte svara; modellerna väljs i `/admin/ai-models`), `WEB_OAUTH_CLIENT_ID` (efter provisionering; samma värde i `.env` för webb och MCP), `E2E_MOCK_MODEL` (endast E2E, ignoreras i produktion), `NODE_ENV`. `next.config.ts` och scripten läser repots rot-`.env` via `@next/env`. (Enda undantaget: `NEXT_RUNTIME` i `instrumentation.ts`, Nexts egen flagga.)
 
 ## Kommandon
 - `pnpm --filter @okazi/web dev | build | start | typecheck | test`
@@ -54,6 +54,13 @@ Läses endast via `@okazi/config`: `DATABASE_URL`, `BETTER_AUTH_SECRET` (>= 32 t
 
 ## Färdigheter (skills)
 - `features/skill/` – lista (`?scope=&status=&q=&semantic=1&cursor=`: `skill.list`, eller core `search` för sökning på betydelse), detalj (renderade instruktioner, verktyg, resurser, version), formulär (react-hook-form + `SkillCreateInputSchema` via `@okazi/core/schemas`), publicera, arkivera, dela (personlig → organisation, bara admin: knappen visas via `server/caller-abilities.ts`, operationen kontrollerar ändå), exportera (`skill.export` → `.md`-nedladdning) och importera (fil eller inklistrad SKILL.md). `skill-abilities.ts` är enda platsen för vilka knappar som visas.
+
+## Plattformsadmin (ADR 0015)
+- `src/app/[locale]/(admin)/admin/` (`logs`, `ai-models`) med eget skal (`features/admin/ui/admin-shell.tsx`, shadcn-sidomeny). `server/platform-guard.ts`: anonym → login, annars 404 om inte plattformsadmin.
+- Data: `runPlatformOperation` (`server/run-platform-operation.ts`) med `platformOperations()` (gateway-katalogen injicerad). Aldrig `runOperation` för plattformsdata.
+- AI-modeller: TanStack-tabell med en rad per AI-funktion. Varje rad har ett shadcn-formulär med en `Select` som bara visar *möjliga* modeller (`aiModel.list({ feature })`), med pris per 1M tokens. Valet sparas direkt via `useFormAction`. Embedding-funktionen kräver bekräftelse först.
+- Loggvyn: URL:en är vyns tillstånd (`page`, `pageSize`, `level`, `q`, `requestId`, `surface`, `log`). Se `features/admin/logs/log-params.ts`.
+- `"use client"` bara på öarna som serverkomponenter renderar (`admin-nav`, `log-table`, `log-filters`, `log-detail-sheet`, `ai-feature-table`). Barn och hooks ärver klientgränsen.
 
 ## Fallgropar
 - `loading.tsx`/`error.tsx`/`not-found.tsx` är inte tillåtna default exports i Biome-konfigen: använd `// biome-ignore lint/style/noDefaultExport` (se `[locale]/error.tsx`).
