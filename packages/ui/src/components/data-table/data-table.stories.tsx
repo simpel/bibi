@@ -8,23 +8,23 @@ type Room = { id: string; name: string; seats: number };
 
 const rooms: Room[] = Array.from({ length: 120 }, (_, index) => ({
   id: `room-${index}`,
-  name: `Rum ${index + 1}`,
+  name: `Room ${index + 1}`,
   seats: 10 + index,
 }));
 
 const columns: ColumnDef<Room>[] = [
-  { accessorKey: "name", header: "Namn" },
-  { accessorKey: "seats", header: "Platser" },
+  { accessorKey: "name", header: "Name" },
+  { accessorKey: "seats", header: "Seats" },
 ];
 
 const labels: DataTableLabels = {
-  rowsPerPage: "Rader per sida",
-  pageOf: (page, pageCount) => `Sida ${page} av ${pageCount}`,
-  first: "Första sidan",
-  previous: "Föregående sida",
-  next: "Nästa sida",
-  last: "Sista sidan",
-  total: (count) => `${count} rader`,
+  rowsPerPage: "Rows per page",
+  pageOf: (page, pageCount) => `Page ${page} of ${pageCount}`,
+  first: "First page",
+  previous: "Previous page",
+  next: "Next page",
+  last: "Last page",
+  total: (count) => `${count} rows`,
 };
 
 const meta = { title: "Components/DataTable", component: DataTable } satisfies Meta<
@@ -52,7 +52,7 @@ function Demo() {
       getRowId={(row) => row.id}
       selectedRowId={selected}
       onRowClick={(row) => setSelected(row.id)}
-      emptyText="Inga rum"
+      emptyText="No rooms"
     />
   );
 }
@@ -61,12 +61,12 @@ export const Default: Story = {
   args: {
     columns: [],
     data: [],
-    emptyText: "Inga rum",
+    emptyText: "No rooms",
   },
   render: () => <Demo />,
 };
 
 export const WithoutPagination: Story = {
-  args: { columns: [], data: [], emptyText: "Inga rum" },
-  render: () => <DataTable columns={columns} data={rooms.slice(0, 5)} emptyText="Inga rum" />,
+  args: { columns: [], data: [], emptyText: "No rooms" },
+  render: () => <DataTable columns={columns} data={rooms.slice(0, 5)} emptyText="No rooms" />,
 };

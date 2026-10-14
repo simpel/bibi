@@ -1,318 +1,318 @@
-# Demodata
+# Demo data
 
-Specifikation för `pnpm --filter @okazi/core seed:demo` (ADR 0025). Två fiktiva organisationer som är uppsatta helt olika med samma kod, för att visa den konfigurerbara domänen (ADR 0021).
+Specification for `pnpm --filter @okazi/core seed:demo` (ADR 0025). Two fictional organizations set up completely differently with the same code, to show the configurable domain (ADR 0021).
 
-- **Lindholmen Upplevelsecenter**: konferens, utställning och restaurang. Använder allt: listor med allergener, blad till köket, paket och serier.
-- **Vingaleden Skärgårdsturer**: båtturer i Göteborgs skärgård. Ingen mat, inga allergener, andra statusar och andra behov.
+- **Lindholmen Experience Center**: conferences, exhibition and restaurant. Uses everything: vocabularies with allergens, sheets to the kitchen, packages and series.
+- **Vingaleden Archipelago Tours**: boat tours in the Gothenburg archipelago. No food, no allergens, other statuses and other requirements.
 
-Alla datum anges relativt körningsdagen: `D` = idag, `D+3` = om tre dagar. Tider är lokal tid (Europe/Stockholm).
+All dates are relative to the day of the run: `D` = today, `D+3` = in three days. Times are local time (Europe/Stockholm).
 
-## Kontroller efter seed (CI)
+## Checks after seeding (CI)
 
-Skriptet avslutas med kontroller som får CI att fallera om demot inte visar det det ska:
+The script ends with checks that make CI fail if the demo does not show what it should:
 
-1. Antal rader per entitet och organisation stämmer med tabellerna nedan.
-2. Vingaleden har ingen lista som heter "Allergener", och inget av dess blad tar med mat.
-3. Lindholmens köksorder för bokning L5 är **blockerad**: anafylaxi mot kräftdjur mot en obligatorisk rätt.
-4. Lindholmens köksorder för bokning L3 är **inte** blockerad: nötallergin har ett alternativ i valgruppen.
-5. Option O1 har rang 1 och O2 rang 2 på samma rum och tid.
-6. I serien S1 är tillfälle 4 flaggat för krock och flyttat till ett annat rum.
-7. Varje skrivning har en rad i `AuditLog` med aktör `SYSTEM`.
+1. The number of rows per entity and organization matches the tables below.
+2. Vingaleden has no vocabulary called "Allergens", and none of its sheets include food.
+3. Lindholmen's kitchen order for booking L5 is **blocked**: anaphylaxis to crustaceans against a mandatory dish.
+4. Lindholmen's kitchen order for booking L3 is **not** blocked: the nut allergy has an alternative in the choice group.
+5. Option O1 has rank 1 and O2 rank 2 on the same room and time.
+6. In series S1, occurrence 4 is flagged for a conflict and moved to another room.
+7. Every write has a row in `AuditLog` with actor `SYSTEM`.
 
-Kontrollerna som körs i dag:
-- **Del 1 (roller):** roller och medlemmar per organisation, och att varje användare har sin roll enligt tabellerna.
-- **Del 2 (konfiguration):**
-  - Antal rader per organisation stämmer för anläggning, listor, listvärden, uppställningar, typer, fält, artiklar och kapaciteter (punkt 1 för det som finns).
-  - Vingaleden har ingen lista "Allergener" (första halvan av punkt 2).
-  - Lindholmens importerade lista "Allergener" har 14 värden.
-- **Båda delarna:** punkt 7.
+The checks that run today:
+- **Part 1 (roles):** roles and members per organization, and that every user has their role according to the tables.
+- **Part 2 (configuration):**
+  - The number of rows per organization matches for venue, vocabularies, vocabulary values, setups, types, fields, items and capacities (point 1 for what exists).
+  - Vingaleden has no vocabulary "Allergens" (the first half of point 2).
+  - Lindholmen's imported vocabulary "Allergens" has 14 values.
+- **Both parts:** point 7.
 
-## Undantag och inloggning
+## Exceptions and sign-in
 
-- Organisationen, användarna och medlemskapen är Better Auths tabeller. De skrivs direkt (`seed/demo/users.ts`), på samma sätt som registrering och `addMember` gör. Allt annat går via `execute` som `SYSTEM`. Ägaren får `owner` direkt, övriga får sin roll via `member.assignRole`.
-- Användarnas e-post är `förnamn.efternamn@<slug>.okazi.test`, t.ex. `anna.berg@lindholmen-demo.okazi.test`. Logga in med magisk länk eller engångskod; mejlet hamnar i Mailpit.
-- Roller som ska skriva kunder, bokningar eller blad får de behörigheterna när resurserna finns (del 4–6). Tills dess läser de anläggningar, artiklar (`item`) och konfigurationen (`configuration`). Admin har `admin` på båda.
-- Del 2 seedar konfigurationen och de bokningsbara lokalerna: Lindholmens 10 konferensrum och Vingaledens 3 båtar, var och en i organisationens anläggning. Resten av katalogen (rätter, drycker, måltider, guider, visningar, utrustning, paket, skeppare, turer och tillägg) kommer i del 3. Behov-typerna under "Övriga typer" kommer i del 5, eftersom de pekar på listor via `requirement.*`.
+- The organization, the users and the memberships are Better Auth tables. They are written directly (`seed/demo/users.ts`), the same way sign-up and `addMember` do. Everything else goes through `execute` as `SYSTEM`. The owner gets `owner` directly, the others get their role via `member.assignRole`.
+- The users' email is `firstname.lastname@<slug>.okazi.test`, e.g. `anna.berg@lindholmen-demo.okazi.test`. Sign in with a magic link or a one-time code; the email ends up in Mailpit.
+- Roles that are to write customers, bookings or sheets get those permissions when the resources exist (parts 4–6). Until then they read venues, items (`item`) and the configuration (`configuration`). Admin has `admin` on both.
+- Part 2 seeds the configuration and the bookable spaces: Lindholmen's 10 conference rooms and Vingaleden's 3 boats, each in the organization's venue. The rest of the catalog (dishes, drinks, meals, guides, tours, equipment, packages, skippers, trips and add-ons) comes in part 3. The requirement types under "Other types" come in part 5, because they point to vocabularies via `requirement.*`.
 
 ---
 
-# Lindholmen Upplevelsecenter
+# Lindholmen Experience Center
 
-Slug `lindholmen-demo`. Anläggning: Lindholmspiren 1, 417 56 Göteborg.
+Slug `lindholmen-demo`. Venue: Lindholmspiren 1, 417 56 Göteborg.
 
-## Konfiguration
+## Configuration
 
-### Roller
-Importerade från mallen "Konferensgård" (ADR 0020), plus en egen roll Vaktmästare.
+### Roles
+Imported from the "Conference venue" template (ADR 0020), plus a custom role Caretaker.
 
-| Användare | Roll |
+| User | Role |
 |---|---|
 | Anna Berg | owner |
-| Erik Lund | Säljare |
-| Sara Nilsson | Säljare |
-| Johan Ek | Koordinator |
-| Maria Holm | Koordinator |
-| Ali Karimi | Kök |
-| Peter Sjö | Vaktmästare |
-| Lena Ström | Ekonomi |
+| Erik Lund | Sales |
+| Sara Nilsson | Sales |
+| Johan Ek | Coordinator |
+| Maria Holm | Coordinator |
+| Ali Karimi | Kitchen |
+| Peter Sjoberg | Caretaker |
+| Lena Strand | Finance |
 
-### Listor
-| Lista | Värden |
+### Vocabularies
+| Vocabulary | Values |
 |---|---|
-| Allergener | Importerad mall "EU:s 14 allergener": Gluten, Kräftdjur, Ägg, Fisk, Jordnötter, Soja, Mjölk, Nötter, Selleri, Senap, Sesam, Svaveldioxid/sulfiter, Lupin, Blötdjur |
-| Kost | Vegetarisk, Vegansk, Halal, Fläskfri |
-| Allvarlighetsgrad | Intolerans, Allergi, Anafylaxi |
-| Tillgänglighet | Rullstol, Hörselslinga, Ledarhund |
-| Utsikt | Älven, Innergården, Ingen |
-| Dresscode | Vardag, Kavaj, Mörk kostym |
+| Allergens | Imported template "EU 14 allergens": Gluten, Crustaceans, Eggs, Fish, Peanuts, Soy, Milk, Nuts, Celery, Mustard, Sesame, Sulphur dioxide/sulphites, Lupin, Molluscs |
+| Diet | Vegetarian, Vegan, Halal, Pork-free |
+| Severity | Intolerance, Allergy, Anaphylaxis |
+| Accessibility | Wheelchair, Hearing loop, Guide dog |
+| View | River, Courtyard, None |
+| Dresscode | Casual, Blazer, Dark suit |
 
-### Uppställningar
-Bio (15 min), Klassrum (30), U-bord (30), Styrelse (20), Ö-sittning (40), Bankett (60), Mingel (15).
+### Setups
+Theatre (15 min), Classroom (30), U-shape (30), Boardroom (20), Cabaret (40), Banquet (60), Reception (15).
 
-### Artikeltyper
-| Typ | Beteenden | Egna fält |
+### Item types
+| Type | Behaviours | Own fields |
 |---|---|---|
-| Konferensrum | `BOOKABLE`, `SETUPS`, `PRICED` | Våning (tal), Yta m² (tal), Takhöjd m (tal), Dagsljus (ja/nej), Utsikt (val: Utsikt) |
-| Rätt | – | Allergener (flerval: Allergener), Kost (flerval: Kost) |
-| Dryck | `PRICED` | Allergener (flerval), Alkoholhaltig (ja/nej) |
-| Måltid | `PRICED`, `COMPOSABLE`, `CHOICES` | Serveringsform (val: Buffé, Serverad, Plockmat) |
-| Visning | `PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE` | Språk (flerval: Svenska, Engelska, Tyska) |
-| Guide | `BOOKABLE` | Språk (flerval) |
-| Utrustning | `BOOKABLE`, `PRICED` | Inventarienummer (text) |
-| Paket | `PRICED`, `COMPOSABLE`, `CHOICES` | Minsta antal (tal) |
+| Conference room | `BOOKABLE`, `SETUPS`, `PRICED` | Floor (number), Area m² (number), Ceiling height m (number), Daylight (yes/no), View (choice: View) |
+| Dish | – | Allergens (multi-choice: Allergens), Diet (multi-choice: Diet) |
+| Drink | `PRICED` | Allergens (multi-choice), Alcoholic (yes/no) |
+| Meal | `PRICED`, `COMPOSABLE`, `CHOICES` | Service style (choice: Buffet, Plated, Finger food) |
+| Tour | `PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE` | Language (multi-choice: Swedish, English, German) |
+| Guide | `BOOKABLE` | Language (multi-choice) |
+| Equipment | `BOOKABLE`, `PRICED` | Inventory number (text) |
+| Package | `PRICED`, `COMPOSABLE`, `CHOICES` | Minimum quantity (number) |
 
-### Övriga typer
-| Grundentitet | Typer och fält |
+### Other types
+| Base entity | Types and fields |
 |---|---|
-| Kund | Företag (Orgnr, Ramavtal ja/nej) · Offentlig (Orgnr, Peppol-ID, Kräver diarienummer ja/nej) · Förening (Orgnr) |
-| Bokning | Konferens (Syfte) · Event (Dresscode: val Dresscode, Talare/underhållning) · Visning (Skolklass ja/nej) |
-| Behov | Kostbehov (lista Allergener eller Kost, fält Allvarlighetsgrad) · Tillgänglighet (lista Tillgänglighet) |
+| Customer | Company (Org no., Framework agreement yes/no) · Public sector (Org no., Peppol-ID, Requires case number yes/no) · Association (Org no.) |
+| Booking | Conference (Purpose) · Event (Dresscode: choice Dresscode, Speaker/entertainment) · Tour (School class yes/no) |
+| Requirement | Dietary requirement (vocabulary Allergens or Diet, field Severity) · Accessibility (vocabulary Accessibility) |
 
-### Bokningsstatusar
-| Status | Fas |
+### Booking statuses
+| Status | Phase |
 |---|---|
-| Preliminär | `TENTATIVE` |
-| Väntar på förskott | `TENTATIVE` |
-| Bekräftad | `CONFIRMED` |
-| Slutligt antal låst | `CONFIRMED` |
-| Genomförd | `COMPLETED` |
-| Avbokad | `CANCELLED` |
+| Tentative | `TENTATIVE` |
+| Awaiting deposit | `TENTATIVE` |
+| Confirmed | `CONFIRMED` |
+| Final count locked | `CONFIRMED` |
+| Completed | `COMPLETED` |
+| Cancelled | `CANCELLED` |
 
-### Blad
-| Blad | Artikeltyper | Behov | Till roll |
+### Sheets
+| Sheet | Item types | Requirements | To role |
 |---|---|---|---|
-| Köksorder | Rätt, Dryck, Måltid | Allergener, Kost | Kök |
-| Möbleringsorder | Konferensrum, Utrustning | Tillgänglighet | Vaktmästare |
-| Guidebrief | Visning, Guide | Tillgänglighet | Koordinator |
+| Kitchen order | Dish, Drink, Meal | Allergens, Diet | Kitchen |
+| Setup order | Conference room, Equipment | Accessibility | Caretaker |
+| Guide brief | Tour, Guide | Accessibility | Coordinator |
 
-## Katalog
+## Catalog
 
-### Konferensrum (10)
-Pris per timme exkl. moms. Kapacitet per uppställning.
+### Conference rooms (10)
+Price per hour excl. VAT. Capacity per setup.
 
-| Rum | Vån | m² | Dagsljus | Utsikt | Kapacitet | kr/h |
+| Room | Floor | m² | Daylight | View | Capacity | SEK/h |
 |---|---|---|---|---|---|---|
-| Vinga (aula) | 1 | 260 | ja | Älven | Bio 220, Klassrum 120, Bankett 160, Mingel 250 | 4 500 |
-| Hönö | 2 | 90 | ja | Älven | Bio 70, Klassrum 40, U-bord 28, Ö-sittning 48, Bankett 56 | 1 900 |
-| Öckerö | 2 | 70 | ja | Innergården | Bio 50, Klassrum 30, U-bord 22, Ö-sittning 36 | 1 500 |
-| Styrsö | 3 | 45 | ja | Älven | Styrelse 16, U-bord 14 | 950 |
-| Vrångö | 3 | 45 | ja | Innergården | Styrelse 14, U-bord 12 | 900 |
-| Donsö | 3 | 32 | ja | Älven | Styrelse 10 | 700 |
-| Brännö | 3 | 32 | ja | Innergården | Styrelse 10 | 650 |
-| Asperö | 3 | 20 | nej | Ingen | Styrelse 6 | 450 |
-| Knippla (verkstad) | 1 | 120 | ja | Innergården | Klassrum 50, Ö-sittning 60, Mingel 100 | 2 200 |
-| Utsikten (takterrass) | 5 | 150 | ja | Älven | Bankett 90, Mingel 150 | 3 800 |
+| Vinga (auditorium) | 1 | 260 | yes | River | Theatre 220, Classroom 120, Banquet 160, Reception 250 | 4,500 |
+| Hönö | 2 | 90 | yes | River | Theatre 70, Classroom 40, U-shape 28, Cabaret 48, Banquet 56 | 1,900 |
+| Öckerö | 2 | 70 | yes | Courtyard | Theatre 50, Classroom 30, U-shape 22, Cabaret 36 | 1,500 |
+| Styrsö | 3 | 45 | yes | River | Boardroom 16, U-shape 14 | 950 |
+| Vrångö | 3 | 45 | yes | Courtyard | Boardroom 14, U-shape 12 | 900 |
+| Donsö | 3 | 32 | yes | River | Boardroom 10 | 700 |
+| Brännö | 3 | 32 | yes | Courtyard | Boardroom 10 | 650 |
+| Asperö | 3 | 20 | no | None | Boardroom 6 | 450 |
+| Knippla (workshop) | 1 | 120 | yes | Courtyard | Classroom 50, Cabaret 60, Reception 100 | 2,200 |
+| The View (roof terrace) | 5 | 150 | yes | River | Banquet 90, Reception 150 | 3,800 |
 
-### Rätter (24)
-| Rätt | Allergener | Kost |
+### Dishes (24)
+| Dish | Allergens | Diet |
 |---|---|---|
-| Surdegsbröd med smör | Gluten, Mjölk | Vegetarisk |
-| Yoghurt med granola | Mjölk, Gluten, Nötter | Vegetarisk |
-| Äggröra | Ägg, Mjölk | Vegetarisk |
-| Färsk frukt | – | Vegansk |
-| Kanelbulle | Gluten, Mjölk, Ägg | Vegetarisk |
-| Morotskaka | Gluten, Ägg, Mjölk, Nötter | Vegetarisk |
-| Havreboll | Gluten | Vegansk |
-| Ugnsbakad torskrygg, brynt smör | Fisk, Mjölk | Fläskfri |
-| Kalvstek med rödvinssås | Mjölk, Selleri, Svaveldioxid/sulfiter | Fläskfri |
-| Svamprisotto | Mjölk | Vegetarisk |
-| Linsgryta med kokosris | Selleri | Vegansk |
-| Grönsallad och bröd | Gluten | Vegansk |
-| Skagenröra på rågbröd | Kräftdjur, Ägg, Gluten, Senap | – |
-| Rödbetscarpaccio med chèvre | Mjölk, Nötter | Vegetarisk |
-| Hjortytterfilé, rotselleripuré | Mjölk, Selleri, Svaveldioxid/sulfiter | Fläskfri |
-| Halstrad gös, musselsås | Fisk, Blötdjur, Mjölk, Svaveldioxid/sulfiter | Fläskfri |
-| Rotselleristeak, senapsvinägrett | Selleri, Senap | Vegansk |
-| Chokladfondant med hasselnöt | Nötter, Ägg, Mjölk, Gluten | Vegetarisk |
-| Hjortronparfait | Ägg, Mjölk | Vegetarisk |
-| Citronsorbet | – | Vegansk |
-| Toast Skagen | Kräftdjur, Gluten, Ägg | – |
-| Chark och ost | Mjölk, Senap, Svaveldioxid/sulfiter | – |
-| Hummus med grönsaksstavar | Sesam | Vegansk |
-| Kryddade nötter | Nötter, Jordnötter | Vegansk |
+| Sourdough bread with butter | Gluten, Milk | Vegetarian |
+| Yoghurt with granola | Milk, Gluten, Nuts | Vegetarian |
+| Scrambled eggs | Eggs, Milk | Vegetarian |
+| Fresh fruit | – | Vegan |
+| Cinnamon bun | Gluten, Milk, Eggs | Vegetarian |
+| Carrot cake | Gluten, Eggs, Milk, Nuts | Vegetarian |
+| Oat ball | Gluten | Vegan |
+| Oven-baked cod loin, browned butter | Fish, Milk | Pork-free |
+| Veal roast with red wine sauce | Milk, Celery, Sulphur dioxide/sulphites | Pork-free |
+| Mushroom risotto | Milk | Vegetarian |
+| Lentil stew with coconut rice | Celery | Vegan |
+| Green salad and bread | Gluten | Vegan |
+| Skagen shrimp salad on rye bread | Crustaceans, Eggs, Gluten, Mustard | – |
+| Beetroot carpaccio with chèvre | Milk, Nuts | Vegetarian |
+| Venison fillet, celeriac purée | Milk, Celery, Sulphur dioxide/sulphites | Pork-free |
+| Pan-fried pike-perch, mussel sauce | Fish, Molluscs, Milk, Sulphur dioxide/sulphites | Pork-free |
+| Celeriac steak, mustard vinaigrette | Celery, Mustard | Vegan |
+| Chocolate fondant with hazelnut | Nuts, Eggs, Milk, Gluten | Vegetarian |
+| Cloudberry parfait | Eggs, Milk | Vegetarian |
+| Lemon sorbet | – | Vegan |
+| Toast Skagen | Crustaceans, Gluten, Eggs | – |
+| Charcuterie and cheese | Milk, Mustard, Sulphur dioxide/sulphites | – |
+| Hummus with vegetable sticks | Sesame | Vegan |
+| Spiced nuts | Nuts, Peanuts | Vegan |
 
-### Drycker (6)
-| Dryck | Pris | Allergener | Alkohol |
+### Drinks (6)
+| Drink | Price | Allergens | Alcohol |
 |---|---|---|---|
-| Kaffe och te | 35 kr/pp | – | nej |
-| Mineralvatten | 25 kr/st | – | nej |
-| Mousserande välkomstdrink | 95 kr/pp | Svaveldioxid/sulfiter | ja |
-| Alkoholfri bubbel | 65 kr/pp | – | nej |
-| Lager från Göteborg | 85 kr/st | Gluten | ja |
-| Vinpaket (2 glas) | 225 kr/pp | Svaveldioxid/sulfiter | ja |
+| Coffee and tea | SEK 35/pp | – | no |
+| Mineral water | SEK 25/each | – | no |
+| Sparkling welcome drink | SEK 95/pp | Sulphur dioxide/sulphites | yes |
+| Alcohol-free bubbly | SEK 65/pp | – | no |
+| Lager from Göteborg | SEK 85/each | Gluten | yes |
+| Wine package (2 glasses) | SEK 225/pp | Sulphur dioxide/sulphites | yes |
 
-### Måltider (6)
-Delar utan valgrupp är obligatoriska.
+### Meals (6)
+Parts without a choice group are mandatory.
 
-| Måltid | Pris/pp | Delar |
+| Meal | Price/pp | Parts |
 |---|---|---|
-| Konferensfrukost | 125 | Surdegsbröd, Yoghurt med granola, Äggröra, Färsk frukt, Kaffe och te |
-| Förmiddagsfika | 65 | Kaffe och te + **välj 1:** Kanelbulle, Havreboll, Färsk frukt |
-| Eftermiddagsfika | 65 | Kaffe och te + **välj 1:** Morotskaka, Havreboll, Färsk frukt |
-| Konferenslunch | 245 | Grönsallad och bröd, Mineralvatten + **huvudrätt, välj 1:** Torskrygg, Kalvstek, Svamprisotto, Linsgryta |
-| Trerättersmiddag | 595 | **Förrätt, välj 1:** Skagenröra, Rödbetscarpaccio · **Huvudrätt, välj 1:** Hjortytterfilé, Gös, Rotselleristeak · **Dessert, välj 1:** Chokladfondant, Hjortronparfait, Citronsorbet |
-| Mingelbuffé | 245 | Toast Skagen, Chark och ost, Hummus med grönsaksstavar, Kryddade nötter (alla obligatoriska) |
+| Conference breakfast | 125 | Sourdough bread, Yoghurt with granola, Scrambled eggs, Fresh fruit, Coffee and tea |
+| Morning break | 65 | Coffee and tea + **choose 1:** Cinnamon bun, Oat ball, Fresh fruit |
+| Afternoon break | 65 | Coffee and tea + **choose 1:** Carrot cake, Oat ball, Fresh fruit |
+| Conference lunch | 245 | Green salad and bread, Mineral water + **main course, choose 1:** Cod loin, Veal roast, Mushroom risotto, Lentil stew |
+| Three-course dinner | 595 | **Starter, choose 1:** Skagen shrimp salad, Beetroot carpaccio · **Main course, choose 1:** Venison fillet, Pike-perch, Celeriac steak · **Dessert, choose 1:** Chocolate fondant, Cloudberry parfait, Lemon sorbet |
+| Reception buffet | 245 | Toast Skagen, Charcuterie and cheese, Hummus with vegetable sticks, Spiced nuts (all mandatory) |
 
-### Guider och visningar
-- Guider (`BOOKABLE`): Emma Lind (svenska, engelska), Oskar Ahl (svenska, tyska), Nora Falk (svenska, engelska).
-- Utställningsvisning: 60 min, max 25 personer, 1 450 kr per grupp. **Välj 1 guide.**
-- Kvällsvisning: 90 min, max 25 personer, 2 200 kr per grupp. **Välj 1 guide.** Visar att något bokningsbart kan ligga i en valgrupp.
-- Designverkstad: 120 min i Knippla, 395 kr/pp. Innehåller rummet Knippla i uppställningen Ö-sittning.
+### Guides and tours
+- Guides (`BOOKABLE`): Emma Lind (Swedish, English), Oskar Ahl (Swedish, German), Nora Falk (Swedish, English).
+- Exhibition tour: 60 min, max 25 people, SEK 1,450 per group. **Choose 1 guide.**
+- Evening tour: 90 min, max 25 people, SEK 2,200 per group. **Choose 1 guide.** Shows that something bookable can sit in a choice group.
+- Design workshop: 120 min in Knippla, SEK 395/pp. Contains the room Knippla in the Cabaret setup.
 
-### Utrustning
-Projektor (450 kr), Mobil ljudanläggning (900 kr), Extra whiteboard (150 kr), Hörselslinga (0 kr).
+### Equipment
+Projector (SEK 450), Mobile sound system (SEK 900), Extra whiteboard (SEK 150), Hearing loop (SEK 0).
 
-### Paket (4 i katalogen + 1 kundspecifikt)
-| Paket | Pris/pp | Innehåll (offset från start) |
+### Packages (4 in the catalog + 1 customer-specific)
+| Package | Price/pp | Contents (offset from start) |
 |---|---|---|
-| Halvdagskonferens | 545 | **Rum, välj 1:** Hönö, Öckerö, Styrsö, Vrångö (+0:00, 4 h) · Förmiddagsfika (+1:30) · Konferenslunch (+3:30) |
-| Heldagskonferens | 795 | **Rum, välj 1:** Hönö, Öckerö, Styrsö, Vrångö (+0:00, 8 h) · Förmiddagsfika (+1:30) · Konferenslunch (+3:30) · Eftermiddagsfika (+6:00) |
-| Dag + kväll | 1 016 | Mousserande välkomstdrink (+0:00) · **Rum, välj 1:** Hönö, Öckerö (+0:15, 7 h) · Förmiddagsfika (+1:30) · Konferenslunch (+3:00) · Kvällsvisning (+8:00) · Mingelbuffé (+9:30) |
-| Kvällsevent | 1 290 | Kvällsvisning (+0:00) · Mousserande välkomstdrink (+1:30) · Utsikten, Bankett (+1:30, 5 h) · Trerättersmiddag (+2:00) · Vinpaket (+2:00) |
-| Nordkust ledningsgrupp *(kund: Nordkust Logistik)* | 595 | Styrsö, Styrelse (+0:00, 4 h) · Förmiddagsfika (+0:30) · Konferenslunch (+3:00) |
+| Half-day conference | 545 | **Room, choose 1:** Hönö, Öckerö, Styrsö, Vrångö (+0:00, 4 h) · Morning break (+1:30) · Conference lunch (+3:30) |
+| Full-day conference | 795 | **Room, choose 1:** Hönö, Öckerö, Styrsö, Vrångö (+0:00, 8 h) · Morning break (+1:30) · Conference lunch (+3:30) · Afternoon break (+6:00) |
+| Day + evening | 1,016 | Sparkling welcome drink (+0:00) · **Room, choose 1:** Hönö, Öckerö (+0:15, 7 h) · Morning break (+1:30) · Conference lunch (+3:00) · Evening tour (+8:00) · Reception buffet (+9:30) |
+| Evening event | 1,290 | Evening tour (+0:00) · Sparkling welcome drink (+1:30) · The View, Banquet (+1:30, 5 h) · Three-course dinner (+2:00) · Wine package (+2:00) |
+| Nordkust management team *(customer: Nordkust Logistik)* | 595 | Styrsö, Boardroom (+0:00, 4 h) · Morning break (+0:30) · Conference lunch (+3:00) |
 
-## Kunder
+## Customers
 
-| Kund | Typ | Kontaktpersoner | Prislista |
+| Customer | Type | Contacts | Price list |
 |---|---|---|---|
-| Nordkust Logistik AB | Företag (ramavtal) | Karin Wallin (beställare), Fakturor Nordkust (fakturamottagare) | Nordkust ramavtal: −15 % på allt |
-| Hisingen Energi AB | Företag | Mats Olsson | – |
-| Västra Sjukvårdsregionen | Offentlig (Peppol, diarienummer) | Eva Sund, Ekonomienheten | – |
-| Kvarnby Design AB | Företag | Linnea Kvist | – |
-| Göta Advokatbyrå KB | Företag | Henrik Strand | – |
-| Älvstrand Tech AB | Företag | Amir Haddad | – |
-| Göteborgs Seglarsällskap | Förening | Ulla Berg | – |
+| Nordkust Logistik AB | Company (framework agreement) | Karin Wallin (orderer), Fakturor Nordkust (invoice recipient) | Nordkust framework agreement: −15% on everything |
+| Hisingen Energi AB | Company | Mats Olsson | – |
+| Västra Sjukvårdsregionen | Public sector (Peppol, case number) | Eva Sund, Ekonomienheten | – |
+| Kvarnby Design AB | Company | Linnea Kvist | – |
+| Göta Advokatbyrå KB | Company | Henrik Strand | – |
+| Älvstrand Tech AB | Company | Amir Haddad | – |
+| Göteborgs Seglarsällskap | Association | Ulla Berg | – |
 
-## Säljflöde och bokningar
+## Sales flow and bookings
 
-Säljare (S) och koordinator (K) anges med förnamn.
+Salesperson (S) and coordinator (C) are given by first name.
 
-### Förfrågningar, optioner och offerter
-| # | Kund | Vad | Status | Visar |
+### Inquiries, options and quotes
+| # | Customer | What | Status | Shows |
 |---|---|---|---|---|
-| F1 | Göteborgs Seglarsällskap | Jubileumsfest, 150 pers, D+60 | Förfrågan `NEW`, ingen säljare än | inkorgen |
-| F2 | Hisingen Energi | Kickoff, 100 pers, D+45 i Vinga | `QUALIFIED`, S Erik. **Option O1, rang 1** på Vinga D+45 09–17, förfaller D+5 | optionskö |
-| F3 | Kvarnby Design | Produktlansering, 80 pers, D+45 i Vinga | `QUALIFIED`, S Sara. **Option O2, rang 2** på samma tid | optionskö |
-| F4 | Västra Sjukvårdsregionen | Workshop, 30 pers, D+40 | `QUOTED`. Offert v1 (40 pers) ersatt av **v2 (30 pers) `SENT`**, giltig till D+10 | offertversioner |
-| F5 | Göta Advokatbyrå | Kvällsevent, 40 pers, D+20 | `LOST`, orsak "Pris". Offert v1 `DECLINED` | förlustorsak |
-| F6 | Älvstrand Tech | Teamdag, 20 pers, D+12 | `QUALIFIED`. Option O3 förföll D−1 (`ACTIVE` tills `option.expireDue` körs) | förfall |
+| F1 | Göteborgs Seglarsällskap | Anniversary party, 150 people, D+60 | Inquiry `NEW`, no salesperson yet | the inbox |
+| F2 | Hisingen Energi | Kickoff, 100 people, D+45 in Vinga | `QUALIFIED`, S Erik. **Option O1, rank 1** on Vinga D+45 09–17, expires D+5 | option queue |
+| F3 | Kvarnby Design | Product launch, 80 people, D+45 in Vinga | `QUALIFIED`, S Sara. **Option O2, rank 2** on the same time | option queue |
+| F4 | Västra Sjukvårdsregionen | Workshop, 30 people, D+40 | `QUOTED`. Quote v1 (40 people) replaced by **v2 (30 people) `SENT`**, valid until D+10 | quote versions |
+| F5 | Göta Advokatbyrå | Evening event, 40 people, D+20 | `LOST`, reason "Price". Quote v1 `DECLINED` | loss reason |
+| F6 | Älvstrand Tech | Team day, 20 people, D+12 | `QUALIFIED`. Option O3 expired D−1 (`ACTIVE` until `option.expireDue` runs) | expiry |
 
-### Bokningar
-| # | Kund · typ | När | Antal | Innehåll | Status | S / K | Visar |
+### Bookings
+| # | Customer · type | When | Count | Contents | Status | S / C | Shows |
 |---|---|---|---|---|---|---|---|
-| L1 | Hisingen Energi · Konferens | D−21 | 40 | Heldagskonferens i Hönö (U-bord) | Genomförd | Erik / Johan | historik |
-| L2 | Kvarnby Design · Event | D−10 | 80 | Kvällsevent | Genomförd | Sara / Maria | historik |
-| L3 | Västra Sjukvårdsregionen · Konferens | D+3 | 60 | Dag + kväll i Hönö (Bio) + Projektor. På kvällen är Mingelbuffé utbytt mot Trerättersmiddag. | Slutligt antal låst | Erik / Johan | **Behov:** Gluten × 4 (Allergi), Nötter × 1 (Anafylaxi), Vegetarisk × 8, Rullstol × 1. Nötterna ger "kan innehålla" utan blockering. Se not nedan. |
-| L4 | Göta Advokatbyrå · Konferens | D+5 | 12 | Halvdagskonferens, Styrsö (Styrelse) | Bekräftad | Sara / Maria | enkel bokning |
-| L5 | Älvstrand Tech · Event | D+14 | 120 | Vinga (Mingel) + Mingelbuffé + Vinpaket | Väntar på förskott | Erik / Maria | **Blockerad köksorder:** Kräftdjur × 2 (Anafylaxi) mot Toast Skagen, som är obligatorisk |
-| L6 | Hisingen Energi · Konferens | D+30 | 25 | Heldagskonferens | Avbokad, orsak "Budget" | Erik / – | avbokning |
-| L7 | Göta Advokatbyrå · Konferens | D+1 10–12 | 4 | Asperö (Styrelse) + Kaffe och te | Preliminär, Swish-länk skickad | Sara / – | snabbokning med betallänk |
-| L10 | Hisingen Energi · Konferens | D+4 13–16 | 6 | Donsö (Styrelse) + Eftermiddagsfika | Bekräftad, mot faktura | Erik / Johan | snabbokning mot faktura |
-| L8 | Göteborgs Seglarsällskap · Visning | D+2 14:00 | 22 | Utställningsvisning med guide Oskar (tyska) | Bekräftad | Sara / Johan | Visning-typ, bokningsbar guide |
-| L9 | Kvarnby Design · Konferens | D+8 | 18 | Designverkstad + Konferenslunch | Bekräftad | Sara / Maria | aktivitet som innehåller ett rum |
+| L1 | Hisingen Energi · Conference | D−21 | 40 | Full-day conference in Hönö (U-shape) | Completed | Erik / Johan | history |
+| L2 | Kvarnby Design · Event | D−10 | 80 | Evening event | Completed | Sara / Maria | history |
+| L3 | Västra Sjukvårdsregionen · Conference | D+3 | 60 | Day + evening in Hönö (Theatre) + Projector. In the evening the Reception buffet is replaced by the Three-course dinner. | Final count locked | Erik / Johan | **Requirements:** Gluten × 4 (Allergy), Nuts × 1 (Anaphylaxis), Vegetarian × 8, Wheelchair × 1. The nuts give "may contain" without blocking. See note below. |
+| L4 | Göta Advokatbyrå · Conference | D+5 | 12 | Half-day conference, Styrsö (Boardroom) | Confirmed | Sara / Maria | simple booking |
+| L5 | Älvstrand Tech · Event | D+14 | 120 | Vinga (Reception) + Reception buffet + Wine package | Awaiting deposit | Erik / Maria | **Blocked kitchen order:** Crustaceans × 2 (Anaphylaxis) against Toast Skagen, which is mandatory |
+| L6 | Hisingen Energi · Conference | D+30 | 25 | Full-day conference | Cancelled, reason "Budget" | Erik / – | cancellation |
+| L7 | Göta Advokatbyrå · Conference | D+1 10–12 | 4 | Asperö (Boardroom) + Coffee and tea | Tentative, Swish link sent | Sara / – | quick booking with payment link |
+| L10 | Hisingen Energi · Conference | D+4 13–16 | 6 | Donsö (Boardroom) + Afternoon break | Confirmed, on invoice | Erik / Johan | quick booking on invoice |
+| L8 | Göteborgs Seglarsällskap · Tour | D+2 14:00 | 22 | Exhibition tour with guide Oskar (German) | Confirmed | Sara / Johan | Tour type, bookable guide |
+| L9 | Kvarnby Design · Conference | D+8 | 18 | Design workshop + Conference lunch | Confirmed | Sara / Maria | activity that contains a room |
 
-**Not om L3:** nötallergin träffar Chokladfondant, som har alternativen Hjortronparfait och Citronsorbet. Resultatet är "kan innehålla" och ingen blockering (kontroll 4). Utbytet görs på bokningens kopia av paketet, så katalogpaketet ändras inte (snapshot, ADR 0021). L3 visar alltså också att ett paket kan anpassas för ett enskilt tillfälle.
+**Note on L3:** the nut allergy hits Chocolate fondant, which has the alternatives Cloudberry parfait and Lemon sorbet. The result is "may contain" and no blocking (check 4). The replacement is made on the booking's copy of the package, so the catalog package is not changed (snapshot, ADR 0021). L3 thus also shows that a package can be adapted for a single occasion.
 
-### Serie
-| # | Kund | Regel | Innehåll | Visar |
+### Series
+| # | Customer | Rule | Contents | Shows |
 |---|---|---|---|---|
-| S1 | Nordkust Logistik | `FREQ=MONTHLY;BYDAY=1TU;COUNT=10`, start första tisdagen för 2 månader sedan, 09–13 | Paketet Nordkust ledningsgrupp, 12 pers, prislista −15 % | Tillfälle 1–2 Genomförd, 3 Bekräftad, 4–10 Preliminär. **Tillfälle 4 krockar** med en internt blockerad tid i Styrsö och flyttas till Vrångö. |
+| S1 | Nordkust Logistik | `FREQ=MONTHLY;BYDAY=1TU;COUNT=10`, start on the first Tuesday 2 months ago, 09–13 | The package Nordkust management team, 12 people, price list −15% | Occurrences 1–2 Completed, 3 Confirmed, 4–10 Tentative. **Occurrence 4 conflicts** with an internally blocked time in Styrsö and is moved to Vrångö. |
 
 ---
 
-# Vingaleden Skärgårdsturer
+# Vingaleden Archipelago Tours
 
-Slug `vingaleden-demo`. Anläggning: Saltholmen, 426 76 Västra Frölunda. Ingen mat och inga allergener. Samma kod, annan värld.
+Slug `vingaleden-demo`. Venue: Saltholmen, 426 76 Västra Frölunda. No food and no allergens. The same code, another world.
 
-## Konfiguration
+## Configuration
 
-### Roller
-Inga mallar. Egna roller: Admin, Bokning (skriver kund, förfrågan, bokning) och Skeppare (läser bokning och blad).
+### Roles
+No templates. Custom roles: Admin, Booking (writes customer, inquiry, booking) and Skipper (reads booking and sheets).
 
-| Användare | Roll |
+| User | Role |
 |---|---|
 | Per Vinga | owner |
-| Stina Holm | Bokning |
-| Kalle Ek | Skeppare |
-| Jonna Sand | Skeppare |
+| Stina Holm | Booking |
+| Kalle Ek | Skipper |
+| Jonna Sand | Skipper |
 
-### Listor
-| Lista | Värden |
+### Vocabularies
+| Vocabulary | Values |
 |---|---|
-| Hamn | Saltholmen, Lilla Bommen, Styrsö Bratten, Vrångö |
-| Tillgänglighet | Rullstol, Rollator, Barnvagn |
-| Flytväst | Barn under 15 kg, Barn 15–40 kg |
-| Behörighet | Fartygsbefäl klass VIII, Förarbevis |
+| Harbor | Saltholmen, Lilla Bommen, Styrsö Bratten, Vrångö |
+| Accessibility | Wheelchair, Walker, Stroller |
+| Life jacket | Child under 15 kg, Child 15–40 kg |
+| Certification | Ship officer class VIII, Boat license |
 
-### Uppställningar
-Sittande (10 min), Stående (5 min), Mingel på däck (20 min).
+### Setups
+Seated (10 min), Standing (5 min), Deck reception (20 min).
 
-### Artikeltyper
-| Typ | Beteenden | Egna fält |
+### Item types
+| Type | Behaviours | Own fields |
 |---|---|---|
-| Båt | `BOOKABLE`, `SETUPS`, `PRICED` | Registreringsnummer (text), Toalett ombord (ja/nej), Max knop (tal) |
-| Skeppare | `BOOKABLE` | Behörighet (val: Behörighet) |
-| Tur | `PRICED`, `COMPOSABLE`, `CHOICES` | Avgångshamn (val: Hamn), Sträcka nm (tal) |
-| Tillägg | `PRICED` | – |
+| Boat | `BOOKABLE`, `SETUPS`, `PRICED` | Registration number (text), Toilet on board (yes/no), Max knots (number) |
+| Skipper | `BOOKABLE` | Certification (choice: Certification) |
+| Tour | `PRICED`, `COMPOSABLE`, `CHOICES` | Departure harbor (choice: Harbor), Distance nm (number) |
+| Add-on | `PRICED` | – |
 
-### Övriga typer, statusar och blad
-- Kund: Företag (Orgnr) · Privat (inga fält).
-- Bokning: Charter · Rundtur.
-- Behov: Tillgänglighet (lista Tillgänglighet) · Flytväst (lista Flytväst).
-- Statusar: Förfrågan (`TENTATIVE`), Väderreservation (`TENTATIVE`), Bekräftad (`CONFIRMED`), Väder-OK (`CONFIRMED`), Genomförd (`COMPLETED`), Inställd – väder (`CANCELLED`), Avbokad (`CANCELLED`).
-- Blad: **Bryggorder** till Skeppare med artikeltyperna Båt, Skeppare och Tillägg samt behoven Tillgänglighet och Flytväst.
+### Other types, statuses and sheets
+- Customer: Company (Org no.) · Private (no fields).
+- Booking: Charter · Round trip.
+- Requirement: Accessibility (vocabulary Accessibility) · Life jacket (vocabulary Life jacket).
+- Statuses: Inquiry (`TENTATIVE`), Weather hold (`TENTATIVE`), Confirmed (`CONFIRMED`), Weather OK (`CONFIRMED`), Completed (`COMPLETED`), Called off – weather (`CANCELLED`), Cancelled (`CANCELLED`).
+- Sheets: **Pier order** to Skipper with the item types Boat, Skipper and Add-on and the requirements Accessibility and Life jacket.
 
-## Katalog
-| Artikel | Typ | Detaljer | Pris |
+## Catalog
+| Item | Type | Details | Price |
 |---|---|---|---|
-| M/S Kajan | Båt | Sittande 48, Stående 80, Mingel på däck 60, toalett | 3 200 kr/h |
-| M/S Tärnan | Båt | Sittande 24, Stående 40, toalett | 2 100 kr/h |
-| RIB Snabben | Båt | Sittande 12, 40 knop | 2 600 kr/h |
-| Kalle Ek | Skeppare | Fartygsbefäl klass VIII | – |
-| Jonna Sand | Skeppare | Förarbevis | – |
-| Solnedgångstur | Tur | Saltholmen, 18 nm. **Båt, välj 1:** Kajan, Tärnan · **Skeppare, välj 1** · 2,5 h | 495 kr/pp |
-| Fyrtur till Vinga | Tur | Saltholmen, 14 nm. RIB Snabben + skeppare Jonna · 1,5 h | 650 kr/pp |
-| Filtar och regnställ | Tillägg | – | 40 kr/pp |
-| Kaffe ombord | Tillägg | Visar att mat kan finnas utan allergilistor | 35 kr/pp |
+| M/S Kajan | Boat | Seated 48, Standing 80, Deck reception 60, toilet | SEK 3,200/h |
+| M/S Tern | Boat | Seated 24, Standing 40, toilet | SEK 2,100/h |
+| RIB Snabben | Boat | Seated 12, 40 knots | SEK 2,600/h |
+| Kalle Ek | Skipper | Ship officer class VIII | – |
+| Jonna Sand | Skipper | Boat license | – |
+| Sunset tour | Tour | Saltholmen, 18 nm. **Boat, choose 1:** Kajan, Tern · **Skipper, choose 1** · 2.5 h | SEK 495/pp |
+| Lighthouse tour to Vinga | Tour | Saltholmen, 14 nm. RIB Snabben + skipper Jonna · 1.5 h | SEK 650/pp |
+| Blankets and rain gear | Add-on | – | SEK 40/pp |
+| Coffee on board | Add-on | Shows that food can exist without allergen vocabularies | SEK 35/pp |
 
-## Kunder och bokningar
-Kunder: Hisingen Energi AB (Företag, samma namn som hos Lindholmen men en helt separat rad i en annan organisation), Familjen Rask (Privat), Kvarnby Design AB (Företag).
+## Customers and bookings
+Customers: Hisingen Energi AB (Company, the same name as at Lindholmen but a completely separate row in another organization), Familjen Rask (Private), Kvarnby Design AB (Company).
 
-| # | Kund · typ | När | Antal | Innehåll | Status | Visar |
+| # | Customer · type | When | Count | Contents | Status | Shows |
 |---|---|---|---|---|---|---|
-| V1 | Hisingen Energi · Charter | D−7 | 40 | Solnedgångstur med Kajan, Stående | Genomförd | historik |
-| V2 | Kvarnby Design · Charter | D−2 | 20 | Solnedgångstur med Tärnan | Inställd – väder | egen status i fasen `CANCELLED` |
-| V3 | Familjen Rask · Rundtur | D+2 | 9 | Fyrtur till Vinga + Filtar | Väder-OK | **Behov:** Rullstol × 1, Flytväst barn under 15 kg × 2 → Bryggorder |
-| V4 | Hisingen Energi · Charter | D+10 | 60 | Solnedgångstur med Kajan, Mingel på däck + Kaffe ombord | Väderreservation | egen status i fasen `TENTATIVE` |
-| S2 | Familjen Rask · Rundtur | `FREQ=WEEKLY;BYDAY=TH;COUNT=6`, från D+7 | 6 | Solnedgångstur med Tärnan | Bekräftad | serie i en annan bransch |
+| V1 | Hisingen Energi · Charter | D−7 | 40 | Sunset tour with Kajan, Standing | Completed | history |
+| V2 | Kvarnby Design · Charter | D−2 | 20 | Sunset tour with Tern | Called off – weather | its own status in the phase `CANCELLED` |
+| V3 | Familjen Rask · Round trip | D+2 | 9 | Lighthouse tour to Vinga + Blankets | Weather OK | **Requirements:** Wheelchair × 1, Life jacket child under 15 kg × 2 → Pier order |
+| V4 | Hisingen Energi · Charter | D+10 | 60 | Sunset tour with Kajan, Deck reception + Coffee on board | Weather hold | its own status in the phase `TENTATIVE` |
+| S2 | Familjen Rask · Round trip | `FREQ=WEEKLY;BYDAY=TH;COUNT=6`, from D+7 | 6 | Sunset tour with Tern | Confirmed | a series in another industry |
 
 ---
 
-## Uppbyggnad i koden
+## Structure in the code
 
-- `packages/core/src/seed/demo/data/` har en mapp per organisation (`lindholmen/`, `vingaleden/`). Filerna är rena data, uppdelade så att ingen fil går över 150 rader, t.ex. `lindholmen.ts` (roller och användare), `config.ts`, `types.ts` och `rooms.ts`. Senare delar lägger till `dishes.ts`, `meals.ts`, `packages.ts`, `customers.ts`, `pipeline.ts` och `bookings.ts`.
-- `seed-demo.ts` kör delarna i ordning via `execute` med core-operationer: `seed-roles.ts`, `seed-config.ts` och `seed-items.ts`.
-  - Datat refererar till rader med namn: lista, uppställning, typ, fält och värde, t.ex. `Utsikt: "Älven"`.
-  - Namnen löses till id och fältnycklar under körningen (`demo-refs.ts`).
-- `checks.ts` och `config-checks.ts` innehåller kontrollerna ovan.
-- Seeden byggs ut i samma takt som delarna i ADR 0025. En del som saknar operationer hoppas över med en tydlig logg, så att demot alltid går att köra.
+- `packages/core/src/seed/demo/data/` has one folder per organization (`lindholmen/`, `vingaleden/`). The files are pure data, split so that no file goes over 150 lines, e.g. `lindholmen.ts` (roles and users), `config.ts`, `types.ts` and `rooms.ts`. Later parts add `dishes.ts`, `meals.ts`, `packages.ts`, `customers.ts`, `pipeline.ts` and `bookings.ts`.
+- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts` and `seed-items.ts`.
+  - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`.
+  - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
+- `checks.ts` and `config-checks.ts` contain the checks above.
+- The seed is extended at the same pace as the parts in ADR 0025. A part that lacks operations is skipped with a clear log, so the demo can always be run.

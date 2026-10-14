@@ -1,29 +1,29 @@
-# @okazi/graphql – kontext för Claude
+# @okazi/graphql – context for Claude
 
-GraphQL-adaptern (Pothos + GraphQL Yoga). Tunn: all logik och behörighet ligger i `@okazi/core` (ADR 0003).
+The GraphQL adapter (Pothos + GraphQL Yoga). Thin: all logic and permissions live in `@okazi/core` (ADR 0003).
 
-## Paritetsmekanismen
-- Mutationer och primära läsningar skapas med `mutationFromOperation({ operation, type, name? })` / `fieldFromOperation(...)`. De härleder argument/input och beskrivning från operationens Zod-schema och kör alltid `execute` med requestens `ExecuteContext` (`schema/run-operation.ts`). Ny operation ≈ 1 rad.
-- Objekttyper härleds med `objectFromSchema({ name, schema, omit })`. Listor använder `pageType` (`{ items, nextCursor }` = core `paginate`).
-- Grafkanter (`Venue.items`, `Item.venue`, `Item.entityType`, `ItemSetup.setup`, `FieldDefinition.vocabulary`, `SearchHit.entity`) läser via `ctx.core.db` (org-scopad) efter `requirePermission`. Rå `getDb()` används aldrig.
-- Entiteter med per-användarsynlighet (Conversation, Message, Skill) läses **endast via operationer**: `Conversation.messages` kör `message.list`, och `SearchEntity` laddar konversationer/skills via `conversation.get`/`skill.get` (fel → null). Gå aldrig direkt mot `ctx.core.db` för dem.
-- `Message.parts`/`metadata`, `Skill.resources` och `Item.fields` är `JSON`. Nästlade listor som ska kunna väljas ur får egna typer och kanter som lyfter DTO:ns array: `EntityType.fields`, `Vocabulary.values`, `Item.setups`. `Skill.organizationId` exponeras (null = SYSTEM).
-- `listGraphqlOperationNames()` ger operationerna som exponerats (paritetstestet jämför mot `listOperations()`). `printSchemaSdl()` och `schema` är till för MCP.
-- Enum/okända Zod-typer blir `String`/`JSON`; nästlade objekt blir `JSON`. Skriv en egen typ vid behov.
+## The parity mechanism
+- Mutations and primary reads are created with `mutationFromOperation({ operation, type, name? })` / `fieldFromOperation(...)`. They derive arguments/input and description from the operation's Zod schema and always run `execute` with the request's `ExecuteContext` (`schema/run-operation.ts`). A new operation ≈ 1 line.
+- Object types are derived with `objectFromSchema({ name, schema, omit })`. Lists use `pageType` (`{ items, nextCursor }` = core `paginate`).
+- Graph edges (`Venue.items`, `Item.venue`, `Item.entityType`, `ItemSetup.setup`, `FieldDefinition.vocabulary`, `SearchHit.entity`) read via `ctx.core.db` (org-scoped) after `requirePermission`. Raw `getDb()` is never used.
+- Entities with per-user visibility (Conversation, Message, Skill) are read **only via operations**: `Conversation.messages` runs `message.list`, and `SearchEntity` loads conversations/skills via `conversation.get`/`skill.get` (error → null). Never go directly against `ctx.core.db` for them.
+- `Message.parts`/`metadata`, `Skill.resources` and `Item.fields` are `JSON`. Nested lists that must be selectable get their own types and edges that lift the DTO's array: `EntityType.fields`, `Vocabulary.values`, `Item.setups`. `Skill.organizationId` is exposed (null = SYSTEM).
+- `listGraphqlOperationNames()` gives the operations that are exposed (the parity test compares against `listOperations()`). `printSchemaSdl()` and `schema` are for MCP.
+- Enum/unknown Zod types become `String`/`JSON`; nested objects become `JSON`. Write a custom type when needed.
 
 ## Handler
-- `createGraphqlHandler({ resolveContext, embed, development? }): (Request) => Promise<Response>`. `resolveContext({ headers })` injiceras (riktig kommer från `@okazi/auth`); `Err` → HTTP-status från `AppError` (401 vid UNAUTHENTICATED).
-- Produktion (standard): GraphiQL och introspektion av, maskerade fel. `development: true` släpper på.
-- Gränser: djup 10 (`limits/depth-limit.ts`), kostnad 25 000 (`limits/cost-limit.ts`, listor multipliceras med `limit`). Egna regler, inte armor-paketen: de kastar i stället för att rapportera och Yoga maskerar dem.
-- Fel: `toGraphqlError` använder core `toGraphqlExtensions` (`extensions.code/httpStatus/issues`).
+- `createGraphqlHandler({ resolveContext, embed, development? }): (Request) => Promise<Response>`. `resolveContext({ headers })` is injected (the real one comes from `@okazi/auth`); `Err` → HTTP status from `AppError` (401 on UNAUTHENTICATED).
+- Production (default): GraphiQL and introspection off, masked errors. `development: true` turns them on.
+- Limits: depth 10 (`limits/depth-limit.ts`), cost 25,000 (`limits/cost-limit.ts`, lists are multiplied by `limit`). Custom rules, not the armor packages: they throw instead of reporting and Yoga masks them.
+- Errors: `toGraphqlError` uses core `toGraphqlExtensions` (`extensions.code/httpStatus/issues`).
 
-## Fallgropar
-- `graphql` finns som både CJS och ESM; blandade kopior bryter `instanceof GraphQLError`. Vitest inlinar därför graphql/pothos/envelop (`vitest.config.ts`). Gör likadant i andra testmiljöer.
-- Pothos prisma-plugin används inte: klienten är en `$extends`-klient (`scopedDb`) och Prisma 7-genererad. Typerna är handskrivna/Zod-härledda.
-- Relationsläsningar har ingen dataloader ännu (N+1 per förälder, begränsat av djup/kostnad).
+## Pitfalls
+- `graphql` exists as both CJS and ESM; mixed copies break `instanceof GraphQLError`. Vitest therefore inlines graphql/pothos/envelop (`vitest.config.ts`). Do the same in other test environments.
+- The Pothos prisma plugin is not used: the client is an `$extends` client (`scopedDb`) and Prisma 7-generated. The types are hand-written/Zod-derived.
+- Relation reads have no dataloader yet (N+1 per parent, bounded by depth/cost).
 
-## Ny entitet
-`pnpm gen entity` skapar `src/features/<entitet>/graphql.ts`; importera filen i `schema/schema.ts`.
+## New entity
+`pnpm gen entity` creates `src/features/<entity>/graphql.ts`; import the file in `schema/schema.ts`.
 
-## Tester
-Vitest mot riktig Postgres (som core). `test/helpers.ts`: `createClient({ context? })` bygger en handler med fast kontext.
+## Tests
+Vitest against a real Postgres (like core). `test/helpers.ts`: `createClient({ context? })` builds a handler with a fixed context.

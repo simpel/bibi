@@ -9,23 +9,23 @@ import {
 import { errorCode, testContext, unwrap } from "./helpers";
 
 const SKILL_MD = `---
-name: offert-till-kund
+name: quote-for-customer
 description: >
-  Sammanställ en offert
-  för en konferens.
+  Compile a quote
+  for a conference.
 allowed-tools:
   - venue_get
   - room_list
 metadata:
-  title: 'Offert till kund'
+  title: 'Quote for customer'
 ---
 
-# Offert
+# Quote
 
-1. Läs anläggningen med \`venue_get\`.
+1. Read the venue with \`venue_get\`.
 
-<!-- okazi:resource name="mall.md" -->
-Hej {kund},
+<!-- okazi:resource name="template.md" -->
+Hello {customer},
 <!-- /okazi:resource -->
 `;
 
@@ -33,17 +33,17 @@ describe("SKILL.md import/export", () => {
   it("parses frontmatter variants, resources and the body", () => {
     const parsed = unwrap({ result: parseSkillMarkdown({ markdown: SKILL_MD }) });
     expect(parsed).toEqual({
-      slug: "offert-till-kund",
-      name: "Offert till kund",
-      description: "Sammanställ en offert för en konferens.",
-      instructions: "# Offert\n\n1. Läs anläggningen med `venue_get`.",
+      slug: "quote-for-customer",
+      name: "Quote for customer",
+      description: "Compile a quote for a conference.",
+      instructions: "# Quote\n\n1. Read the venue with `venue_get`.",
       allowedTools: ["venue_get", "room_list"],
-      resources: [{ name: "mall.md", content: "Hej {kund}," }],
+      resources: [{ name: "template.md", content: "Hello {customer}," }],
     });
     const inline = unwrap({
       result: parseSkillMarkdown({
         markdown:
-          '---\nname: A b\ndescription: "Rad 1\\nRad 2" # x\nallowed-tools: search, room_get\n---\nBody',
+          '---\nname: A b\ndescription: "Line 1\\nLine 2" # x\nallowed-tools: search, room_get\n---\nBody',
       }),
     });
     expect(inline).toMatchObject({
@@ -51,17 +51,17 @@ describe("SKILL.md import/export", () => {
       name: "A b",
       allowedTools: ["search", "room_get"],
     });
-    expect(inline.description).toBe("Rad 1\nRad 2");
+    expect(inline.description).toBe("Line 1\nLine 2");
   });
 
   it("round-trips render → parse exactly", () => {
     const content = {
       slug: "x-y",
-      name: 'Namn med "citat" och: kolon',
-      description: "Beskrivning – åäö\nmed radbrytning",
-      instructions: "# Rubrik\n\nText",
+      name: 'Name with "quotes" and: colon',
+      description: "Description – åäö\nwith line break",
+      instructions: "# Heading\n\nText",
       allowedTools: ["search"],
-      resources: [{ name: "a.txt", content: "rad 1\n\nrad 3\n" }],
+      resources: [{ name: "a.txt", content: "line 1\n\nline 3\n" }],
     };
     const markdown = renderSkillMarkdown({ content, version: 3 });
     expect(unwrap({ result: parseSkillMarkdown({ markdown }) })).toEqual(content);
@@ -87,7 +87,7 @@ describe("SKILL.md import/export", () => {
     const exported = unwrap({
       result: await execute({ operation: exportSkill, input: { id: skill.id }, context }),
     });
-    expect(exported.filename).toBe("offert-till-kund/SKILL.md");
+    expect(exported.filename).toBe("quote-for-customer/SKILL.md");
     expect(exported.markdown).toContain('version: "1"');
     const reparsed = unwrap({ result: parseSkillMarkdown({ markdown: exported.markdown }) });
     expect(reparsed).toEqual(unwrap({ result: parseSkillMarkdown({ markdown: SKILL_MD }) }));

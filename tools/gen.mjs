@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Skapar en ny entitet från mallarna i tools/templates/entity/.
-// Användning: pnpm gen entity <Name>   (t.ex. pnpm gen entity AgendaItem)
-// Skriver bara nya filer. Befintliga filer skrivs aldrig över; generatorn avbryter i så fall utan att skriva något.
+// Creates a new entity from the templates in tools/templates/entity/.
+// Usage: pnpm gen entity <Name>   (e.g. pnpm gen entity AgendaItem)
+// Only writes new files. Existing files are never overwritten; the generator then aborts without writing anything.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,7 +11,7 @@ const TOOLS_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(TOOLS_DIR, "..");
 const TEMPLATE_DIR = join(TOOLS_DIR, "templates", "entity");
 
-// Mall och målfil (relativt repots rot). {kebab} ersätts med entitetens kebab-namn.
+// Template and target file (relative to the repo root). {kebab} is replaced by the entity's kebab-case name.
 export const TARGETS = [
   { template: "schema.ts.tpl", target: "packages/core/src/features/{kebab}/schema.ts" },
   { template: "operations.ts.tpl", target: "packages/core/src/features/{kebab}/operations.ts" },
@@ -30,21 +30,21 @@ export function planFiles({ names }) {
 }
 
 function usage() {
-  return "Användning: pnpm gen entity <Name>   (PascalCase, t.ex. Venue eller AgendaItem)";
+  return "Usage: pnpm gen entity <Name>   (PascalCase, e.g. Venue or AgendaItem)";
 }
 
 function main({ argv }) {
   const [kind, name] = argv;
   if (kind !== "entity" || !name) return fail({ message: usage() });
   if (!ENTITY_NAME.test(name))
-    return fail({ message: `Ogiltigt namn "${name}". Använd PascalCase, t.ex. Venue.` });
+    return fail({ message: `Invalid name "${name}". Use PascalCase, e.g. Venue.` });
 
   const names = deriveNames({ name });
   const plan = planFiles({ names });
   const existing = plan.filter(({ relPath }) => existsSync(join(ROOT, relPath)));
   if (existing.length > 0) {
     const message = [
-      "Avbryter, dessa filer finns redan (skrivs aldrig över):",
+      "Aborting, these files already exist (never overwritten):",
       ...existing.map((f) => `  ${f.relPath}`),
     ].join("\n");
     return fail({ message });
@@ -61,15 +61,15 @@ function main({ argv }) {
 
 function nextSteps({ names, plan }) {
   return [
-    `Skapade ${plan.length} filer för ${names.Pascal}:`,
+    `Created ${plan.length} files for ${names.Pascal}:`,
     ...plan.map((f) => `  ${f.relPath}`),
     "",
-    "Nästa steg:",
-    `  1. Komplettera fält i schema.ts och lägg till ${names.Pascal} i ordlistan (docs/domanmodell.md).`,
-    "  2. Exportera från packages/core/src/index.ts och registrera operationerna.",
-    "  3. Lägg till Prisma-modellen i packages/db/prisma, kör pnpm db:generate och pnpm db:migrate.",
-    "  4. Koppla rutter (packages/api), GraphQL-typ (packages/graphql) och MCP-verktyg (apps/mcp).",
-    "  5. Ersätt alla TODO, sedan pnpm check:structure, pnpm typecheck och pnpm test (paritetstestet).",
+    "Next steps:",
+    `  1. Complete the fields in schema.ts and add ${names.Pascal} to the glossary (docs/domain-model.md).`,
+    "  2. Export from packages/core/src/index.ts and register the operations.",
+    "  3. Add the Prisma model in packages/db/prisma, run pnpm db:generate and pnpm db:migrate.",
+    "  4. Wire up routes (packages/api), the GraphQL type (packages/graphql) and MCP tools (apps/mcp).",
+    "  5. Replace every TODO, then run pnpm check:structure, pnpm typecheck and pnpm test (the parity test).",
   ].join("\n");
 }
 

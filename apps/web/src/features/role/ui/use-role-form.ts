@@ -10,7 +10,7 @@ import { createRoleAction, updateRoleAction } from "../actions";
 
 export type UseRoleFormInput = { role?: RoleDto | undefined; onDone: () => void };
 
-/** Create (no `role`) or edit: core's role schema, one toast per save (CLAUDE.md "Formulär"). */
+/** Create (no `role`) or edit: core's role schema, one toast per save (CLAUDE.md "Forms"). */
 export function useRoleForm({ role, onDone }: UseRoleFormInput) {
   const t = useTranslations("role");
   const router = useRouter();

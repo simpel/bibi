@@ -15,8 +15,8 @@ export const createFieldDefinition = defineOperation({
   name: "fieldDefinition.create",
   kind: "command",
   description:
-    "Add a field to one of the organization's types, e.g. Yta m² (NUMBER) on Konferensrum or " +
-    "Allergener (MULTI_CHOICE from the list Allergener) on Rätt.",
+    "Add a field to one of the organization's types, e.g. Area m² (NUMBER) on Conference room or " +
+    "Allergens (MULTI_CHOICE from the list Allergens) on Dish.",
   input: FieldDefinitionCreateInputSchema,
   output: FieldDefinitionSchema,
   permission: "configuration:write",

@@ -6,7 +6,7 @@ import { operationKey } from "../../../lib/approval-labels";
 
 export type ApprovalOperationProps = { operation: string };
 
-/** Human label of the operation (`venue.create` → "Skapa anläggning"), raw name as fallback. */
+/** Human label of the operation (`venue.create` → "Create venue"), raw name as fallback. */
 export function ApprovalOperation({ operation }: ApprovalOperationProps) {
   const t = useTranslations("assistant.approval");
   const key = operationKey({ operation });

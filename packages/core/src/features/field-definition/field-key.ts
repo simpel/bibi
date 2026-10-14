@@ -1,10 +1,17 @@
 import type { OperationContext } from "../../operations/types";
 
-const LETTERS: Record<string, string> = { å: "a", ä: "a", ö: "o", é: "e", ü: "u", "²": "2" };
+const LETTERS: Record<string, string> = {
+  "\u00e5": "a",
+  "\u00e4": "a",
+  "\u00f6": "o",
+  "\u00e9": "e",
+  "\u00fc": "u",
+  "\u00b2": "2",
+};
 
 export type ToFieldKeyInput = { name: string };
 
-/** "Yta m²" → "yta_m2", "Takhöjd m" → "takhojd_m". Always a valid `FieldKeySchema`. */
+/** "Area m²" → "area_m2", "Ceiling height m" → "ceiling_height_m". Always a valid `FieldKeySchema`. */
 export function toFieldKey({ name }: ToFieldKeyInput): string {
   const ascii = [...name.toLowerCase()].map((char) => LETTERS[char] ?? char).join("");
   const slug = ascii.replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");

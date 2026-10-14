@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-// Entiteten {{Pascal}}. Fält och statusvärden enligt docs/domanmodell.md.
-// TODO: lägg till domänfält. Varje rad har organizationId och audit-fält (ADR 0006).
+// The {{Pascal}} entity. Fields and status values per docs/domain-model.md.
+// TODO: add domain fields. Every row has organizationId and audit fields (ADR 0006).
 export const {{camel}}Schema = z.object({
   id: z.string(),
   organizationId: z.string(),

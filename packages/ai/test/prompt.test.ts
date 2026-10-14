@@ -53,7 +53,7 @@ describe("buildSystemPrompt", () => {
 
 describe("conversationTitle", () => {
   it("uses the first non-empty line, collapsed and truncated to 80 chars", () => {
-    expect(conversationTitle({ text: "\n  Hej   där \nmer" })).toBe("Hej där");
+    expect(conversationTitle({ text: "\n  Hi   there \nmore" })).toBe("Hi there");
     const long = conversationTitle({ text: "a".repeat(200) });
     expect(long).toHaveLength(80);
     expect(long.endsWith("…")).toBe(true);

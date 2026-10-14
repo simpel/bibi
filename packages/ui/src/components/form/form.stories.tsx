@@ -22,12 +22,12 @@ function EmailField() {
       control={control}
       name="email"
       rules={{
-        required: "E-post krävs",
-        pattern: { value: /.+@.+/, message: "Ogiltig e-post" },
+        required: "Email is required",
+        pattern: { value: /.+@.+/, message: "Invalid email" },
       }}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>E-post</FormLabel>
+          <FormLabel>Email</FormLabel>
           <FormControl>
             <Input type="email" {...field} />
           </FormControl>
@@ -46,20 +46,20 @@ function Demo() {
         <FormController
           control={form.control}
           name="name"
-          rules={{ required: "Namn krävs" }}
+          rules={{ required: "Name is required" }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Namn</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
-              <FormDescription>Visas för gäster.</FormDescription>
+              <FormDescription>Shown to guests.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         <EmailField />
-        <Button type="submit">Spara</Button>
+        <Button type="submit">Save</Button>
       </form>
     </Form>
   );

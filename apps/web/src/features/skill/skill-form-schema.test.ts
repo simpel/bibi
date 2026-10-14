@@ -3,12 +3,12 @@ import { type SkillFormValues, skillFormDefaults, skillFormSchema } from "./skil
 
 const values: SkillFormValues = {
   ...skillFormDefaults({}),
-  name: " Offert ",
-  description: "När en offert ska sammanställas",
-  instructions: "1. Hämta rum\n2. Räkna",
+  name: " Quote ",
+  description: "When a quote is to be compiled",
+  instructions: "1. Fetch rooms\n2. Count",
   allowedTools: "item_list, venue_list\nsearch",
   resources: [
-    { name: "mall.md", content: "# Mall" },
+    { name: "template.md", content: "# Template" },
     { name: "", content: "" },
   ],
 };
@@ -20,9 +20,9 @@ describe("skill form schema", () => {
     if (!parsed.success) return;
     expect(parsed.data).toMatchObject({
       scope: "PERSONAL",
-      name: "Offert",
+      name: "Quote",
       allowedTools: ["item_list", "venue_list", "search"],
-      resources: [{ name: "mall.md", content: "# Mall" }],
+      resources: [{ name: "template.md", content: "# Template" }],
     });
     expect(parsed.data.slug).toBeUndefined();
   });

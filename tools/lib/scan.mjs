@@ -1,11 +1,11 @@
-// Filsökning för strukturkontrollen: vilka källfiler som ska granskas.
+// File discovery for the structure check: which source files to inspect.
 import { existsSync, readdirSync } from "node:fs";
 import { join, relative, sep } from "node:path";
 
 const SKIP_DIRS = new Set(["node_modules", ".next", "dist", ".turbo", "generated", "coverage"]);
 const SOURCE_FILE = /\.tsx?$/;
 
-// Genererad kod, deklarationsfiler, i18n-meddelanden och Prisma-migrationer undantas.
+// Generated code, declaration files, i18n messages and Prisma migrations are excluded.
 export function isExcluded({ relPath }) {
   return (
     /\.d\.ts$/.test(relPath) ||
@@ -30,7 +30,7 @@ export function walkSources({ dir, root }) {
   return found;
 }
 
-// Paket i apps/* och packages/*, som relativa sökvägar (t.ex. "packages/core").
+// Packages in apps/* and packages/*, as relative paths (e.g. "packages/core").
 export function listPackageDirs({ root }) {
   return ["apps", "packages"].flatMap((group) => {
     const groupDir = join(root, group);

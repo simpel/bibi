@@ -23,19 +23,19 @@ export const Default: Story = {
         <SidebarHeader>Okazi</SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Meny</SidebarGroupLabel>
+            <SidebarGroupLabel>Menu</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton isActive tooltip="Start">
+                  <SidebarMenuButton isActive tooltip="Home">
                     <HomeIcon />
-                    <span>Start</span>
+                    <span>Home</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
                 <SidebarMenuItem>
-                  <SidebarMenuButton tooltip="Inställningar">
+                  <SidebarMenuButton tooltip="Settings">
                     <SettingsIcon />
-                    <span>Inställningar</span>
+                    <span>Settings</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>

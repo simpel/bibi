@@ -1,16 +1,16 @@
 import { mcpTool, text } from "../../tools/meta";
 
-// MCP-metadata för {{Pascal}} (ADR 0003, 0007). Själva verktygen genereras från core-operationerna
-// (namn, beskrivning, in-/utdata-scheman); här deklareras bara MCP-specifikt per operation.
-// Beskrivningar skrivs i core (`description`) – de läses av AI-assistenten.
-// Kommandon utförs aldrig direkt av AI-aktören: `summary` är texten på godkännandekortet.
-// Kom ihåg: lägg till {{camel}}McpTools i apps/mcp/src/tools/meta-registry.ts.
+// MCP metadata for {{Pascal}} (ADR 0003, 0007). The tools themselves are generated from the core operations
+// (name, description, input/output schemas); only MCP-specific settings per operation are declared here.
+// Descriptions are written in core (`description`) – they are read by the AI assistant.
+// Commands are never executed directly by the AI actor: `summary` is the text on the approval card.
+// Remember: add {{camel}}McpTools to apps/mcp/src/tools/meta-registry.ts.
 export const {{camel}}McpTools = [
   mcpTool({ operation: "{{kebab}}.list" }),
   mcpTool({ operation: "{{kebab}}.get" }),
   mcpTool({
     operation: "{{kebab}}.create",
-    summary: ({ input }) => `Create {{kebab}} "${text({ value: input.name })}"`, // TODO: välj fält
+    summary: ({ input }) => `Create {{kebab}} "${text({ value: input.name })}"`, // TODO: choose a field
   }),
   mcpTool({
     operation: "{{kebab}}.update",

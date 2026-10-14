@@ -11,54 +11,54 @@ type RoomInput = {
 };
 
 const room = ({ name, floor, area, daylight, view, setups, kr }: RoomInput): DemoItem => ({
-  type: "Konferensrum",
+  type: "Conference room",
   name,
-  fields: { Våning: floor, "Yta m²": area, Dagsljus: daylight, Utsikt: view },
+  fields: { Floor: floor, "Area m²": area, Daylight: daylight, View: view },
   priceKr: kr,
   priceUnit: "PER_HOUR",
   setups,
 });
 
-/** Lindholmen's 10 conference rooms (`docs/demo-seed.md`, Katalog). Price per hour excl. VAT. */
+/** Lindholmen's 10 conference rooms (`docs/demo-seed.md`, Catalog). Price per hour excl. VAT. */
 export const lindholmenRooms: readonly DemoItem[] = [
   room({
-    ...{ name: "Vinga (aula)", floor: 1, area: 260, daylight: true, view: "Älven", kr: 4500 },
-    setups: { Bio: 220, Klassrum: 120, Bankett: 160, Mingel: 250 },
+    ...{ name: "Vinga (auditorium)", floor: 1, area: 260, daylight: true, view: "River", kr: 4500 },
+    setups: { Theatre: 220, Classroom: 120, Banquet: 160, Reception: 250 },
   }),
   room({
-    ...{ name: "Hönö", floor: 2, area: 90, daylight: true, view: "Älven", kr: 1900 },
-    setups: { Bio: 70, Klassrum: 40, "U-bord": 28, "Ö-sittning": 48, Bankett: 56 },
+    ...{ name: "Hönö", floor: 2, area: 90, daylight: true, view: "River", kr: 1900 },
+    setups: { Theatre: 70, Classroom: 40, "U-shape": 28, Cabaret: 48, Banquet: 56 },
   }),
   room({
-    ...{ name: "Öckerö", floor: 2, area: 70, daylight: true, view: "Innergården", kr: 1500 },
-    setups: { Bio: 50, Klassrum: 30, "U-bord": 22, "Ö-sittning": 36 },
+    ...{ name: "Öckerö", floor: 2, area: 70, daylight: true, view: "Courtyard", kr: 1500 },
+    setups: { Theatre: 50, Classroom: 30, "U-shape": 22, Cabaret: 36 },
   }),
   room({
-    ...{ name: "Styrsö", floor: 3, area: 45, daylight: true, view: "Älven", kr: 950 },
-    setups: { Styrelse: 16, "U-bord": 14 },
+    ...{ name: "Styrsö", floor: 3, area: 45, daylight: true, view: "River", kr: 950 },
+    setups: { Boardroom: 16, "U-shape": 14 },
   }),
   room({
-    ...{ name: "Vrångö", floor: 3, area: 45, daylight: true, view: "Innergården", kr: 900 },
-    setups: { Styrelse: 14, "U-bord": 12 },
+    ...{ name: "Vrångö", floor: 3, area: 45, daylight: true, view: "Courtyard", kr: 900 },
+    setups: { Boardroom: 14, "U-shape": 12 },
   }),
   room({
-    ...{ name: "Donsö", floor: 3, area: 32, daylight: true, view: "Älven", kr: 700 },
-    setups: { Styrelse: 10 },
+    ...{ name: "Donsö", floor: 3, area: 32, daylight: true, view: "River", kr: 700 },
+    setups: { Boardroom: 10 },
   }),
   room({
-    ...{ name: "Brännö", floor: 3, area: 32, daylight: true, view: "Innergården", kr: 650 },
-    setups: { Styrelse: 10 },
+    ...{ name: "Brännö", floor: 3, area: 32, daylight: true, view: "Courtyard", kr: 650 },
+    setups: { Boardroom: 10 },
   }),
   room({
-    ...{ name: "Asperö", floor: 3, area: 20, daylight: false, view: "Ingen", kr: 450 },
-    setups: { Styrelse: 6 },
+    ...{ name: "Asperö", floor: 3, area: 20, daylight: false, view: "None", kr: 450 },
+    setups: { Boardroom: 6 },
   }),
   room({
-    ...{ name: "Knippla (verkstad)", floor: 1, area: 120, daylight: true, view: "Innergården" },
-    ...{ kr: 2200, setups: { Klassrum: 50, "Ö-sittning": 60, Mingel: 100 } },
+    ...{ name: "Knippla (workshop)", floor: 1, area: 120, daylight: true, view: "Courtyard" },
+    ...{ kr: 2200, setups: { Classroom: 50, Cabaret: 60, Reception: 100 } },
   }),
   room({
-    ...{ name: "Utsikten (takterrass)", floor: 5, area: 150, daylight: true, view: "Älven" },
-    ...{ kr: 3800, setups: { Bankett: 90, Mingel: 150 } },
+    ...{ name: "The View (roof terrace)", floor: 5, area: 150, daylight: true, view: "River" },
+    ...{ kr: 3800, setups: { Banquet: 90, Reception: 150 } },
   }),
 ];

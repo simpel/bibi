@@ -15,7 +15,7 @@ export const listEntityTypes = defineOperation({
   name: "entityType.list",
   kind: "query",
   description:
-    "List the organization's own types (e.g. Konferensrum, Rätt, Båt for items; Företag for " +
+    "List the organization's own types (e.g. Conference room, Dish, Boat for items; Company for " +
     "customers) with their behaviours and fields. Read this to know which fields an item has.",
   input: EntityTypeListInputSchema,
   output: EntityTypeListOutputSchema,

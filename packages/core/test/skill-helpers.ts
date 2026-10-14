@@ -10,9 +10,9 @@ export type NewSkillInput = {
 export async function newSkill({
   context,
   scope = "PERSONAL",
-  name = "Offertstöd",
+  name = "Quote support",
 }: NewSkillInput) {
-  const input = { scope, name, description: "Hjälper till med offerter", instructions: "# Steg" };
+  const input = { scope, name, description: "Helps with quotes", instructions: "# Steps" };
   return unwrap({ result: await execute({ operation: createSkill, input, context }) });
 }
 

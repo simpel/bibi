@@ -22,13 +22,13 @@ const readAll: PermissionSet = {
 };
 
 /**
- * "Konferensgård" (ADR 0020). Optional data an organization imports and then edits freely.
+ * "Conference venue" (ADR 0020). Optional data an organization imports and then edits freely.
  * Grows with each slice of ADR 0025: customers, quotes, bookings, sheets, invoices etc. are
  * added to the roles below when those resources exist.
  */
 export const conferenceVenueTemplate: RoleTemplate = {
   key: "conference-venue",
-  name: "Konferensgård",
+  name: "Conference venue",
   roles: [
     {
       name: "Admin",
@@ -43,10 +43,10 @@ export const conferenceVenueTemplate: RoleTemplate = {
         member: ["admin"],
       },
     },
-    { name: "Säljare", permissions: { ...everyone, ...catalog } },
-    { name: "Koordinator", permissions: { ...everyone, ...catalog } },
-    { name: "Kök", permissions: { ...everyone, ...catalog } },
-    { name: "Ekonomi", permissions: readAll },
-    { name: "Läsare", permissions: readAll },
+    { name: "Sales", permissions: { ...everyone, ...catalog } },
+    { name: "Coordinator", permissions: { ...everyone, ...catalog } },
+    { name: "Kitchen", permissions: { ...everyone, ...catalog } },
+    { name: "Finance", permissions: readAll },
+    { name: "Reader", permissions: readAll },
   ],
 };

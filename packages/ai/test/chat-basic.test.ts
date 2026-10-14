@@ -17,7 +17,7 @@ afterAll(() => mcp.close());
 describe("createChatHandler – plain answers", () => {
   it("streams the answer, persists USER + ASSISTANT messages and closes the MCP client", async () => {
     const user = await signUpWithOrg();
-    const model = mockModel({ steps: [textStep({ text: "Hej! Hur kan jag hjälpa?" })] });
+    const model = mockModel({ steps: [textStep({ text: "Hi! How can I help?" })] });
     const { handler, clients } = createHarness({ model, mcpUrl: mcp.url });
     const response = await handler(chatRequest({ cookies: user.cookies, text: "Hej\nmer text" }));
     expect(response.status).toBe(200);
@@ -31,7 +31,7 @@ describe("createChatHandler – plain answers", () => {
       }),
     );
     expect(chunks).toContainEqual(
-      expect.objectContaining({ type: "text-delta", delta: "Hej! Hur kan jag hjälpa?" }),
+      expect.objectContaining({ type: "text-delta", delta: "Hi! How can I help?" }),
     );
 
     const rows = await storedMessages({ conversationId, minCount: 2 });
@@ -40,7 +40,7 @@ describe("createChatHandler – plain answers", () => {
       ["ASSISTANT", "AI"],
     ]);
     expect(rows[1]?.parts).toContainEqual(
-      expect.objectContaining({ type: "text", text: "Hej! Hur kan jag hjälpa?" }),
+      expect.objectContaining({ type: "text", text: "Hi! How can I help?" }),
     );
     const conversation = await getDb().conversation.findUnique({ where: { id: conversationId } });
     expect(conversation).toMatchObject({
@@ -79,20 +79,20 @@ describe("createChatHandler – plain answers", () => {
   it("continues a conversation with the stored history", async () => {
     const user = await signUpWithOrg();
     const model = mockModel({
-      steps: [textStep({ text: "Första svaret" }), textStep({ text: "Andra" })],
+      steps: [textStep({ text: "First answer" }), textStep({ text: "Second" })],
     });
     const { handler } = createHarness({ model, mcpUrl: mcp.url });
-    const first = await handler(chatRequest({ cookies: user.cookies, text: "Fråga ett" }));
+    const first = await handler(chatRequest({ cookies: user.cookies, text: "Question one" }));
     const conversationId = first.headers.get("x-okazi-conversation-id") ?? "";
     await readChunks({ response: first });
     await storedMessages({ conversationId, minCount: 2 });
     const second = await handler(
-      chatRequest({ cookies: user.cookies, text: "Fråga två", conversationId }),
+      chatRequest({ cookies: user.cookies, text: "Question two", conversationId }),
     );
     await readChunks({ response: second });
     const prompt = JSON.stringify(model.doStreamCalls[1]?.prompt);
-    expect(prompt).toContain("Fråga ett");
-    expect(prompt).toContain("Första svaret");
+    expect(prompt).toContain("Question one");
+    expect(prompt).toContain("First answer");
     expect((await storedMessages({ conversationId, minCount: 4 })).length).toBe(4);
   });
 

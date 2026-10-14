@@ -1,41 +1,41 @@
-# @okazi/ui – designsystem
+# @okazi/ui – design system
 
-Delat komponentpaket för all UI i Okazi. Appar importerar **bara** härifrån (`@okazi/ui`); inga råa färger, radier eller typsnitt i appar.
+Shared component package for all UI in Okazi. Apps import **only** from here (`@okazi/ui`); no raw colors, radii or fonts in apps.
 
-## Struktur
-- `src/styles/tokens.css` – ENDA platsen för designtokens (färger, radie, spacing, typsnitt, skuggor; ljus + `.dark`).
-- `src/styles/base.css` – basstilar (body, rubriker) via token-utilities.
-- `src/styles/index.css` – `@import "tailwindcss"` + tokens + base. Exporteras som `@okazi/ui/styles.css`.
-- `src/components/<namn>/<namn>.tsx` – en komponentfamilj per fil (≤150 rader, funktioner ≤40 rader), plus `<namn>.stories.tsx`.
+## Structure
+- `src/styles/tokens.css` – the ONLY place for design tokens (colors, radius, spacing, fonts, shadows; light + `.dark`).
+- `src/styles/base.css` – base styles (body, headings) via token utilities.
+- `src/styles/index.css` – `@import "tailwindcss"` + tokens + base. Exported as `@okazi/ui/styles.css`.
+- `src/components/<name>/<name>.tsx` – one component family per file (≤150 lines, functions ≤40 lines), plus `<name>.stories.tsx`.
 - `src/lib/cn.ts` – `cn()` (clsx + tailwind-merge).
-- `src/index.ts` – enda barrel-filen. Lägg till varje ny komponent här.
+- `src/index.ts` – the only barrel file. Add each new component here.
 
-## Konsumera i en app
-Källexport (inget byggsteg): lägg `@okazi/ui` i `transpilePackages` (Next) och importera CSS en gång i appens globala CSS:
+## Consuming in an app
+Source export (no build step): add `@okazi/ui` to `transpilePackages` (Next) and import the CSS once in the app's global CSS:
 ```css
 @import "@okazi/ui/styles.css";
 ```
-`index.css` har `@source "../"` så Tailwind hittar klasserna i paketet.
+`index.css` has `@source "../"` so Tailwind finds the classes in the package.
 
-## Byta tokens (Claude Design-export)
-1. Ersätt värdena i `:root` och `.dark` i `tokens.css` (samma variabelnamn: `--background`, `--primary`, ...).
-2. Byt `--font-sans`/`--font-serif`/`--font-mono`, `--radius`, `--shadow-*` i `@theme` vid behov.
-3. Ladda webbtypsnitt i appen (t.ex. `next/font`) – inte i paketet.
-4. Ny semantisk token: lägg både `:root`/`.dark`-värde OCH `--color-*`-mappning i `@theme inline`.
-5. Kör `pnpm --filter @okazi/ui build-storybook` och granska Foundations/Tokens i ljust och mörkt läge.
+## Replacing tokens (Claude Design export)
+1. Replace the values in `:root` and `.dark` in `tokens.css` (same variable names: `--background`, `--primary`, ...).
+2. Change `--font-sans`/`--font-serif`/`--font-mono`, `--radius`, `--shadow-*` in `@theme` if needed.
+3. Load web fonts in the app (e.g. `next/font`) – not in the package.
+4. New semantic token: add both the `:root`/`.dark` value AND the `--color-*` mapping in `@theme inline`.
+5. Run `pnpm --filter @okazi/ui build-storybook` and review Foundations/Tokens in light and dark mode.
 
-Inget utanför `tokens.css` får innehålla hårdkodade färger (hex/rgb/oklch), radier eller typsnitt.
+Nothing outside `tokens.css` may contain hardcoded colors (hex/rgb/oklch), radii or fonts.
 
-## Lägga till en komponent
-1. Skapa `src/components/<namn>/<namn>.tsx`. Radix via `import { X as XPrimitive } from "radix-ui"`.
-2. Endast namngivna exporter. Props-typ med namn: `export type FooProps = ComponentProps<"div"> & VariantProps<typeof fooVariants>`. Komponenten tar ETT props-objekt.
-3. Varianter med `cva` (`fooVariants`, exporteras), alltid `defaultVariants`. Slutlig klass via `cn(fooVariants({ variant }), className)`.
-4. Sätt `data-slot="foo"` på rotelementet; tillåt `className` och spread av `...props`.
-5. Endast token-utilities (`bg-primary`, `text-muted-foreground`, `rounded-md`, `border-input`); aldrig `bg-[#...]`, `text-red-500` o.d.
-6. Skapa `<namn>.stories.tsx` (default-export av `meta` är tillåtet i stories) med `title: "Components/<Namn>"`.
-7. Exportera från `src/index.ts`.
-8. Hjälpfunktioner (icke-komponenter) tar ett enda typat objekt: `fn({ a, b }: FnInput)`. Enda undantaget är `cn(...inputs)`.
+## Adding a component
+1. Create `src/components/<name>/<name>.tsx`. Radix via `import { X as XPrimitive } from "radix-ui"`.
+2. Named exports only. Props type with a name: `export type FooProps = ComponentProps<"div"> & VariantProps<typeof fooVariants>`. The component takes ONE props object.
+3. Variants with `cva` (`fooVariants`, exported), always `defaultVariants`. Final class via `cn(fooVariants({ variant }), className)`.
+4. Set `data-slot="foo"` on the root element; allow `className` and spread `...props`.
+5. Token utilities only (`bg-primary`, `text-muted-foreground`, `rounded-md`, `border-input`); never `bg-[#...]`, `text-red-500` and the like.
+6. Create `<name>.stories.tsx` (a default export of `meta` is allowed in stories) with `title: "Components/<Name>"`.
+7. Export from `src/index.ts`.
+8. Helper functions (non-components) take a single typed object: `fn({ a, b }: FnInput)`. The only exception is `cn(...inputs)`.
 
-## Kommandon
-- `pnpm --filter @okazi/ui typecheck` (`build` kör samma typecheck)
-- `pnpm --filter @okazi/ui storybook` / `build-storybook` – mörkt läge växlas i verktygsfältet.
+## Commands
+- `pnpm --filter @okazi/ui typecheck` (`build` runs the same typecheck)
+- `pnpm --filter @okazi/ui storybook` / `build-storybook` – dark mode is toggled in the toolbar.

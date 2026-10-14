@@ -19,7 +19,7 @@ const toAscii = ({ value }: { value: string }): string =>
 
 export type DemoEmailInput = { org: DemoOrg; user: DemoUser };
 
-/** "Peter Sjö" → `peter.sjo@lindholmen-demo.okazi.test` (sign in with magic link or code). */
+/** "Peter Sjoberg" → `peter.sjoberg@lindholmen-demo.okazi.test` (sign in with magic link or code). */
 export function demoEmail({ org, user }: DemoEmailInput): string {
   return `${toAscii({ value: user.name })}@${demoEmailDomain({ org })}`;
 }

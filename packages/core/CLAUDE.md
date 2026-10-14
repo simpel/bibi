@@ -1,78 +1,78 @@
-# @okazi/core – kontext för Claude
+# @okazi/core – context for Claude
 
-Paritetskärnan: varje förmåga definieras **en gång** som en operation och exponeras sedan likadant i webb, GraphQL, REST och MCP.
+The parity core: every capability is defined **once** as an operation and then exposed the same way in web, GraphQL, REST and MCP.
 
-## Operationer
+## Operations
 - `defineOperation({ name, kind, description, input, output, permission, handler, approval?, embeddable?, entityType? })`.
-  - `name` = `<entitet>.<verb>` (t.ex. `venue.create`), stabilt i alla ytor. `description` skrivs för både människor och LLM:er.
-  - `input`/`output` är Zod-scheman; `permission` = `<resurs>:read|write|admin`.
-  - `handler({ input, context })` returnerar `Result` (`ok({ value })` / `err({ error: AppError })`) – kasta aldrig strängar.
-  - Kommandon anropar `context.recordChange({ entityId, before, after })` för auditraden.
-- Kör alltid via `execute({ operation, input, context, afterCommit? })`: Zod-validering → behörighet → handler → output-validering → AuditLog (kommandon, i samma transaktion) → `afterCommit`-hooks (t.ex. `createIndexingHook({ embed })`).
-- `execute` loggar exakt en rad per anrop: `operation.completed` / `operation.rejected` (VALIDATION, FORBIDDEN, NOT_FOUND m.fl.) / `operation.failed` (INTERNAL, med orsak). Misslyckade `afterCommit`-hooks loggas som `operation.afterCommitFailed`. AuditLog-raden får `requestId` och `surface` från request-kontexten (`surface: system` utanför en request). Se ADR 0014.
-- `context.db` är `scopedDb` – org-scoping kan inte kringgås. Bygg kontext med `createExecuteContext({ organizationId, actor, roles, permissions })`. `permissions` (`PermissionSet`) löses av `packages/auth`; `hasPermission({ permissions, permission })` slår upp exakt. `roles` är bara namn för visning.
-- `requiresApproval({ operation, actor })`: kommandon kräver mänskligt godkännande när `actor.type === "ai"` (standard `approval: true`).
-- Klientsäkert underpaket `@okazi/core/schemas` (`src/schemas.ts`): bara zod-filerna (`features/*/schema.ts`, `search/search-schema.ts`). Importera det i klientkod och i `@okazi/ai/ui`; lägg en rad per ny entitets `schema.ts` där. Aldrig Prisma/fs/operationer i det.
-- Registret: `registerOperations({ operations: createCoreOperations({ embed }) })`, `listOperations()`, `getOperation({ name })`. Adaptrar genererar verktyg/endpoints från registret.
+  - `name` = `<entity>.<verb>` (e.g. `venue.create`), stable across all surfaces. `description` is written for both humans and LLMs.
+  - `input`/`output` are Zod schemas; `permission` = `<resource>:read|write|admin`.
+  - `handler({ input, context })` returns `Result` (`ok({ value })` / `err({ error: AppError })`) – never throw strings.
+  - Commands call `context.recordChange({ entityId, before, after })` for the audit row.
+- Always run via `execute({ operation, input, context, afterCommit? })`: Zod validation → permission → handler → output validation → AuditLog (commands, in the same transaction) → `afterCommit` hooks (e.g. `createIndexingHook({ embed })`).
+- `execute` logs exactly one line per call: `operation.completed` / `operation.rejected` (VALIDATION, FORBIDDEN, NOT_FOUND etc.) / `operation.failed` (INTERNAL, with cause). Failed `afterCommit` hooks are logged as `operation.afterCommitFailed`. The AuditLog row gets `requestId` and `surface` from the request context (`surface: system` outside a request). See ADR 0014.
+- `context.db` is `scopedDb` – org scoping cannot be bypassed. Build the context with `createExecuteContext({ organizationId, actor, roles, permissions })`. `permissions` (`PermissionSet`) is resolved by `packages/auth`; `hasPermission({ permissions, permission })` looks up exactly. `roles` are names for display only.
+- `requiresApproval({ operation, actor })`: commands require human approval when `actor.type === "ai"` (default `approval: true`).
+- Client-safe subpackage `@okazi/core/schemas` (`src/schemas.ts`): only the zod files (`features/*/schema.ts`, `search/search-schema.ts`). Import it in client code and in `@okazi/ai/ui`; add one line per new entity's `schema.ts` there. Never Prisma/fs/operations in it.
+- The registry: `registerOperations({ operations: createCoreOperations({ embed }) })`, `listOperations()`, `getOperation({ name })`. Adapters generate tools/endpoints from the registry.
 
-## Plattformsoperationer (ADR 0015)
-- `src/platform/`: `definePlatformOperation` och `executePlatform({ operation, input, context })` med `PlatformContext` (`createPlatformContext`, byggs bara av `resolvePlatformContext` i auth). Samma kedja som `execute`. Audit med `PLATFORM_SCOPE`. Handlers ser bara `PlatformDb` (`systemLog`, `aiSetting`).
-- `createPlatformOperations({ listModels })`: `systemLog.list/get`, `aiFeature.list/update`, `aiModel.list`. Registreras **inte** i org-registret. Inte i GraphQL, REST eller MCP.
-- `resolveAiModel({ feature })` → `Result<string>`: adminens val (cache 30 s). Ingen standard: ovald → `UNAVAILABLE` och `ai.modelNotConfigured` (error). `AI_FEATURES` är registret.
+## Platform operations (ADR 0015)
+- `src/platform/`: `definePlatformOperation` and `executePlatform({ operation, input, context })` with `PlatformContext` (`createPlatformContext`, built only by `resolvePlatformContext` in auth). The same chain as `execute`. Audit with `PLATFORM_SCOPE`. Handlers see only `PlatformDb` (`systemLog`, `aiSetting`).
+- `createPlatformOperations({ listModels })`: `systemLog.list/get`, `aiFeature.list/update`, `aiModel.list`. **Not** registered in the org registry. Not in GraphQL, REST or MCP.
+- `resolveAiModel({ feature })` → `Result<string>`: the admin's choice (cache 30 s). No default: unchosen → `UNAVAILABLE` and `ai.modelNotConfigured` (error). `AI_FEATURES` is the registry.
 
-## Fel
-- `AppError` med koder `NOT_FOUND | FORBIDDEN | UNAUTHENTICATED | VALIDATION | CONFLICT | INTERNAL | UNAVAILABLE` (503: funktionen saknar konfiguration, t.ex. AI-modell). `INTERNAL` och `UNAVAILABLE` loggas som `operation.failed` (error).
-- Ytor mappar med `toHttpStatus`, `toGraphqlExtensions`, `toMcpError` – inga egna mappningar.
+## Errors
+- `AppError` with codes `NOT_FOUND | FORBIDDEN | UNAUTHENTICATED | VALIDATION | CONFLICT | INTERNAL | UNAVAILABLE` (503: the feature lacks configuration, e.g. an AI model). `INTERNAL` and `UNAVAILABLE` are logged as `operation.failed` (error).
+- Surfaces map with `toHttpStatus`, `toGraphqlExtensions`, `toMcpError` – no custom mappings.
 
-## Feature-mappar (`src/features/<entitet>/`)
-- Fasta filnamn: `schema.ts` (Zod), `operations.ts` (list/get/create/update/archive), `embeddable.ts`. Adaptrar (`graphql.ts`, `rest.ts`, `mcp.ts`, `ui/`) läggs till av respektive yta. Ny entitet: `pnpm gen entity`.
-- Arkivering = soft delete (`status: ARCHIVED`), aldrig hård radering.
+## Feature folders (`src/features/<entity>/`)
+- Fixed filenames: `schema.ts` (Zod), `operations.ts` (list/get/create/update/archive), `embeddable.ts`. Adapters (`graphql.ts`, `rest.ts`, `mcp.ts`, `ui/`) are added by the respective surface. New entity: `pnpm gen entity`.
+- Archiving = soft delete (`status: ARCHIVED`), never hard delete.
 
-## AI-datalager (konversationer, meddelanden, skills)
-- `conversation.*` (list/get/create/rename/archive) och `message.*` (list/append). Behörighet `conversation:read|write|admin`.
-  - Konversationer är privata för `ownerUserId`. Org-admin/ägare (`conversation:admin`) och systemaktör får **läsa** alla (`get`, `message.list`, `conversation.list` med `allUsers: true`), men bara ägaren byter namn och lägger till meddelanden. Arkivera: ägare eller admin. Andra användare får `NOT_FOUND` (inte `FORBIDDEN`), så att existens inte läcker. Regeln ligger i `features/conversation/access.ts`.
-  - `message.append`: `parts` = AI SDK `UIMessage`-parts (lagras som de är, endast `type`/`text` kontrolleras, max 256 kB), `metadata` fri JSON. `sequence` är 0-baserad och unik per konversation (konversationsraden låses först). AI-aktören får bara lägga till `ASSISTANT`/`TOOL` och bara i sin egen `conversationId`; `USER`/`SYSTEM` sparas av appen som användaren.
-  - `conversation.create`, `conversation.rename` och `message.append` har `approval: false` (chattens egen bokföring). `conversation.archive` kräver godkännande.
+## AI data layer (conversations, messages, skills)
+- `conversation.*` (list/get/create/rename/archive) and `message.*` (list/append). Permission `conversation:read|write|admin`.
+  - Conversations are private to `ownerUserId`. Org admin/owner (`conversation:admin`) and the system actor may **read** all (`get`, `message.list`, `conversation.list` with `allUsers: true`), but only the owner renames and appends messages. Archive: owner or admin. Other users get `NOT_FOUND` (not `FORBIDDEN`), so existence does not leak. The rule is in `features/conversation/access.ts`.
+  - `message.append`: `parts` = AI SDK `UIMessage` parts (stored as is, only `type`/`text` are checked, max 256 kB), `metadata` free JSON. `sequence` is 0-based and unique per conversation (the conversation row is locked first). The AI actor may only append `ASSISTANT`/`TOOL` and only in its own `conversationId`; `USER`/`SYSTEM` are saved by the app as the user.
+  - `conversation.create`, `conversation.rename` and `message.append` have `approval: false` (the chat's own bookkeeping). `conversation.archive` requires approval.
 - `skill.*`: list/get/export (`skill:read`), create/update/publish/archive/import (`skill:write`), share (`skill:admin`).
-  - Synlighet (`features/skill/access.ts`): SYSTEM + ORGANIZATION för alla i org, PERSONAL bara för ägaren. SYSTEM är skrivskyddade, ORGANIZATION kräver admin, PERSONAL bara ägaren.
-  - `skill.share` kopierar en egen personlig skill till ORGANIZATION som DRAFT (`source = share:<id>`). `skill.import` parsar SKILL.md (frontmatter `name` → slug, `metadata.title` → namn, `description`, `allowed-tools`; brödtext → instruktioner; resurser som `<!-- okazi:resource name="x" -->…<!-- /okazi:resource -->`) till DRAFT. `skill.export` ger `{ markdown, filename }`. Innehållsändring höjer `version`.
-  - SYSTEM-skills: `src/skills/system/*.md`. `seedSystemSkills({ db?, embed?, directory? })` (importeras från `@okazi/core/seed`, **inte** från index – den läser filer och får inte hamna i webbens bundle) upsertar per `source = system:<fil>`, idempotent, höjer version vid ändring, arkiverar borttagna filer och indexerar globalt om `embed` ges. CLI: `pnpm --filter @okazi/core seed:skills`. Ingen AuditLog-rad (raderna saknar organisation; ändringar granskas som kod).
-- `Actor.approvedBy` sätts endast av godkännandeflödet och sparas i `AuditLog.approvedBy`.
+  - Visibility (`features/skill/access.ts`): SYSTEM + ORGANIZATION for everyone in the org, PERSONAL only for the owner. SYSTEM is read-only, ORGANIZATION requires admin, PERSONAL only the owner.
+  - `skill.share` copies one's own personal skill to ORGANIZATION as DRAFT (`source = share:<id>`). `skill.import` parses SKILL.md (frontmatter `name` → slug, `metadata.title` → name, `description`, `allowed-tools`; body → instructions; resources as `<!-- okazi:resource name="x" -->…<!-- /okazi:resource -->`) into DRAFT. `skill.export` gives `{ markdown, filename }`. A content change bumps `version`.
+  - SYSTEM skills: `src/skills/system/*.md` (written in English; the assistant still answers in the user's language). `seedSystemSkills({ db?, embed?, directory? })` (imported from `@okazi/core/seed`, **not** from index – it reads files and must not end up in the web bundle) upserts per `source = system:<file>`, idempotent, bumps the version on change, archives removed files and indexes globally if `embed` is given. CLI: `pnpm --filter @okazi/core seed:skills`. No AuditLog row (the rows have no organization; changes are reviewed as code).
+- `Actor.approvedBy` is set only by the approval flow and stored in `AuditLog.approvedBy`.
 
-## Roller och medlemmar (ADR 0020)
-- `role.list|get` (`role:read`), `role.create|update|archive|importTemplate` (`role:admin`), `member.list` (`member:read`), `member.assignRole` (`member:admin`). Rader i `organizationRole`/`member` (Better Auth-tabeller, org-scopade i `scopedDb`).
-- `owner` är fast (id `"owner"` i `role.get`), kan inte skapas, ändras, tilldelas eller tas ifrån någon.
-- Anti-eskalering (`features/role/access.ts`): ingen kan skapa, ändra eller tilldela en roll som ger mer än de själva har (system undantaget).
-- Behörigheter normaliseras (admin ⇒ write ⇒ read). Namnbyte skriver om `member.role`. Arkivering nekas (CONFLICT) så länge någon har rollen.
-- Mallar är data i `templates/roles/` (`conference-venue` = "Konferensgård") och växer med varje del av ADR 0025.
-- Tester som skapar roller/medlemmar behöver en riktig `organization`-rad: `testOrg()` i `test/org-helpers.ts`.
+## Roles and members (ADR 0020)
+- `role.list|get` (`role:read`), `role.create|update|archive|importTemplate` (`role:admin`), `member.list` (`member:read`), `member.assignRole` (`member:admin`). Rows in `organizationRole`/`member` (Better Auth tables, org-scoped in `scopedDb`).
+- `owner` is fixed (id `"owner"` in `role.get`), cannot be created, changed, assigned or taken from anyone.
+- Anti-escalation (`features/role/access.ts`): nobody can create, change or assign a role that grants more than they have themselves (system excepted).
+- Permissions are normalized (admin ⇒ write ⇒ read). Renaming rewrites `member.role`. Archiving is denied (CONFLICT) as long as someone has the role.
+- Templates are data in `templates/roles/` (`conference-venue` = "Conference estate") and grow with each part of ADR 0025.
+- Tests that create roles/members need a real `organization` row: `testOrg()` in `test/org-helpers.ts`.
 
-## Konfigurerbar domän (ADR 0021, 0026)
-- `entityType.*`, `fieldDefinition.*`, `vocabulary.*` (plus `addValue|updateValue|archiveValue|importTemplate`) och `setup.*` kräver `configuration:read|write`. `item.*` kräver `item:read|write`.
-- Inga domänord i koden:
-  - Grundentiteter och beteenden: `features/entity-type/behaviour-kinds.ts`.
-  - Fälttyper: `features/field-definition/field-kinds.ts`.
-- Fältvärden ligger i `Item.fields` (JSON) under fältets `key`. `buildFieldsSchema({ specs })` (klientsäker) validerar dem, och `loadFieldSpecs` hämtar specs med listvärdenas id.
-- Regeln "data finns → CONFLICT" finns på tre ställen:
-  - beteenden: `entity-type/behaviours.ts`
-  - fältändringar: `field-definition/field-rules.ts`
-  - arkivering: i respektive operation
-- Beteendedata på artikeln kontrolleras i `item/item-rules.ts`. `COMPOSABLE`/`CHOICES` har ingen data förrän del 3.
-- Listmallar är data i `templates/vocabularies/` (`eu-14-allergens`).
-- Fel byggs med `shared/errors.ts` (`notFound`, `conflict`, `invalid`). Paginering: `shared/page-input.ts`.
+## Configurable domain (ADR 0021, 0026)
+- `entityType.*`, `fieldDefinition.*`, `vocabulary.*` (plus `addValue|updateValue|archiveValue|importTemplate`) and `setup.*` require `configuration:read|write`. `item.*` requires `item:read|write`.
+- No domain words in the code:
+  - Base entities and behaviours: `features/entity-type/behaviour-kinds.ts`.
+  - Field kinds: `features/field-definition/field-kinds.ts`.
+- Field values live in `Item.fields` (JSON) under the field's `key`. `buildFieldsSchema({ specs })` (client-safe) validates them, and `loadFieldSpecs` fetches specs with the vocabulary values' ids.
+- The rule "data exists → CONFLICT" exists in three places:
+  - behaviours: `entity-type/behaviours.ts`
+  - field changes: `field-definition/field-rules.ts`
+  - archiving: in the respective operation
+- Behaviour data on the item is checked in `item/item-rules.ts`. `COMPOSABLE`/`CHOICES` have no data until part 3.
+- Vocabulary templates are data in `templates/vocabularies/` (`eu-14-allergens`).
+- Errors are built with `shared/errors.ts` (`notFound`, `conflict`, `invalid`). Pagination: `shared/page-input.ts`.
 
-## Demodata
-- `seedDemo()` i `src/seed/demo/` (`@okazi/core/seed/demo`, CLI `seed:demo`). Specen är `docs/demo-seed.md`, och `data/<org>/*.ts` följer den. Allt går via `execute` som SYSTEM, utom Better Auth-raderna i `users.ts`.
-- Delar som är byggda:
-  - roller (`seed-roles.ts`)
-  - konfiguration (`seed-config.ts`)
-  - anläggning och bokningsbara lokaler (`seed-items.ts`)
-- Kontrollerna finns i `checks.ts` och `config-checks.ts`.
+## Demo data
+- `seedDemo()` in `src/seed/demo/` (`@okazi/core/seed/demo`, CLI `seed:demo`). The spec is `docs/demo-seed.md`, and `data/<org>/*.ts` follows it. Everything goes through `execute` as SYSTEM, except the Better Auth rows in `users.ts`.
+- Parts that are built:
+  - roles (`seed-roles.ts`)
+  - configuration (`seed-config.ts`)
+  - venue and bookable spaces (`seed-items.ts`)
+- The checks are in `checks.ts` and `config-checks.ts`.
 
-## Sök
-- Sökbar entitet implementerar `Embeddable` (`entityType`, `toText({ entity })`, `load({ ids, db })`) och sätts som `embeddable` på sina kommandon.
-- `createSearchOperation({ embed, embeddables? })` – hybrid FTS + vektor (RRF), org-scopad. `embed({ texts })` injiceras av appen; core har inget AI SDK-beroende.
-- Ny sökbar entitet registreras i `search/embeddables.ts` (`SEARCHABLE_ENTITIES`). `search` filtrerar varje träff genom `load({ ids, db, viewer })`: oregistrerade typer, arkiverade rader och sådant användaren inte får se (andras konversationer och personliga skills) tas bort. `load` utan `viewer` används av indexeraren.
+## Search
+- A searchable entity implements `Embeddable` (`entityType`, `toText({ entity })`, `load({ ids, db })`) and is set as `embeddable` on its commands.
+- `createSearchOperation({ embed, embeddables? })` – hybrid FTS + vector (RRF), org-scoped. `embed({ texts })` is injected by the app; core has no AI SDK dependency.
+- A new searchable entity is registered in `search/embeddables.ts` (`SEARCHABLE_ENTITIES`). `search` filters each hit through `load({ ids, db, viewer })`: unregistered types, archived rows and things the user may not see (other people's conversations and personal skills) are removed. `load` without `viewer` is used by the indexer.
 
-## Tester
-- Vitest mot riktig Postgres (`docker compose up -d postgres`, `pnpm db:migrate`), inga mockar. Varje test skapar egen org via `testContext()`. Deterministisk `fakeEmbed` i `test/fake-embed.ts`.
+## Tests
+- Vitest against a real Postgres (`docker compose up -d postgres`, `pnpm db:migrate`), no mocks. Each test creates its own org via `testContext()`. Deterministic `fakeEmbed` in `test/fake-embed.ts`.

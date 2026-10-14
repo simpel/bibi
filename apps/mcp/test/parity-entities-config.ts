@@ -43,7 +43,7 @@ const entityType = byId({
   field: "entityType",
   list: "entity-types",
   createTool: "entityType_create",
-  args: { base: "ITEM", name: "Parity rum", behaviours: ["BOOKABLE", "SETUPS", "PRICED"] },
+  args: { base: "ITEM", name: "Parity room", behaviours: ["BOOKABLE", "SETUPS", "PRICED"] },
   nested: { fields: FIELD, behaviours: "" },
 });
 const fieldDefinition: ParityEntity = {
@@ -60,9 +60,9 @@ const fieldDefinition: ParityEntity = {
       name: "fieldDefinition_create",
       args: {
         entityTypeId: made.entityType.id,
-        name: "Stil",
+        name: "Style",
         kind: "MULTI_CHOICE",
-        options: ["Ljus", "Mörk"],
+        options: ["Light", "Dark"],
       },
     }),
 };
@@ -71,7 +71,7 @@ const vocabulary = byId({
   field: "vocabulary",
   list: "vocabularies",
   createTool: "vocabulary_create",
-  args: { name: "Parity lista", values: ["Rullstol", "Hörselslinga"] },
+  args: { name: "Parity list", values: ["Wheelchair", "Hearing loop"] },
   nested: { values: VALUE },
 });
 const setup = byId({
@@ -79,7 +79,7 @@ const setup = byId({
   field: "setup",
   list: "setups",
   createTool: "setup_create",
-  args: { name: "Parity bio", changeoverMinutes: 15 },
+  args: { name: "Parity theatre", changeoverMinutes: 15 },
 });
 const item: ParityEntity = {
   ...byId({
@@ -98,7 +98,7 @@ const item: ParityEntity = {
         entityTypeId: made.entityType.id,
         venueId: made.venue.id,
         name: "Parity Room",
-        fields: { stil: ["Ljus"] },
+        fields: { style: ["Light"] },
         priceMinor: 190_000,
         priceUnit: "PER_HOUR",
         setups: [{ setupId: made.setup.id, capacity: 70 }],

@@ -46,7 +46,7 @@ const Behaviour = {
     .int()
     .min(0)
     .max(1_000_000_000)
-    .describe("PRICED: price excl. VAT in minor units (öre), e.g. 450000 = 4 500 kr"),
+    .describe("PRICED: price excl. VAT in minor units (1/100 kr), e.g. 450000 = 4 500 kr"),
   priceUnit: PriceUnitSchema.describe("PRICED: per person, per unit, per hour or flat"),
   vatRatePercent: z.number().int().min(0).max(100).describe("PRICED: null = the venue's default"),
   defaultDurationMinutes: z

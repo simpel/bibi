@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Strukturkontroll för Okazi. Körs med `pnpm check:structure` från repots rot.
-// Granskar apps/* och packages/*: filer max 150 rader, funktioner max 40 rader,
-// default export endast i Next-filer/config/stories, barrel-filer endast som
-// packages/*/src/index.ts, en typad objektparameter per funktion, och feature-mappar med krävda filer.
-// Avslutar med kod 1 vid fel. Se tools/lib/ för reglerna.
+// Structure check for Okazi. Run with `pnpm check:structure` from the repo root.
+// Checks apps/* and packages/*: files max 150 lines, functions max 40 lines,
+// default export only in Next files/config/stories, barrel files only as
+// packages/*/src/index.ts, one typed object parameter per function, and feature folders with required files.
+// Exits with code 1 on failure. See tools/lib/ for the rules.
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -13,11 +13,11 @@ import { analyzeFunctions } from "./lib/functions.mjs";
 import { analyzeParams } from "./lib/params.mjs";
 import { listPackageDirs, walkSources } from "./lib/scan.mjs";
 
-// Filer som krävs i feature-mappar (<paket>/src/features/<entitet>/), per paket.
-// - packages/core: kärnan. Varje entitet där måste ha schema.ts och operations.ts.
-// - Adapterpaket (graphql, api, mcp): kontrolleras bara om paketet har src/features.
-//   Då måste varje kärnentitet ha sin adapterfil (paritet). Ändra eller ta bort
-//   en rad här för att justera eller stänga av den kontrollen för ett paket.
+// Files required in feature folders (<package>/src/features/<entity>/), per package.
+// - packages/core: the core. Every entity there must have schema.ts and operations.ts.
+// - Adapter packages (graphql, api, mcp): only checked if the package has src/features.
+//   Then every core entity must have its adapter file (parity). Change or remove
+//   a line here to adjust or disable that check for a package.
 export const REQUIRED_FILES = {
   "packages/core": ["schema.ts", "operations.ts"],
   "packages/graphql": ["graphql.ts"],
@@ -55,14 +55,14 @@ export function runChecks({ root }) {
 
 export function formatReport({ problems, fileCount, entityCount }) {
   if (problems.length === 0) {
-    return `Strukturkontroll OK: ${fileCount} filer, ${entityCount} entitet(er) i ${CORE_PACKAGE}.`;
+    return `Structure check OK: ${fileCount} files, ${entityCount} entity(ies) in ${CORE_PACKAGE}.`;
   }
   const byFile = new Map();
   for (const { file, message } of problems) {
     byFile.set(file, [...(byFile.get(file) ?? []), message]);
   }
   const lines = [
-    `Strukturkontroll misslyckades: ${problems.length} problem i ${byFile.size} fil(er).`,
+    `Structure check failed: ${problems.length} problem(s) in ${byFile.size} file(s).`,
   ];
   for (const [file, messages] of byFile) {
     lines.push("", file, ...messages.map((message) => `  - ${message}`));

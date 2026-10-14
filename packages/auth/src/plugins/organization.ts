@@ -43,8 +43,8 @@ export function organizationPlugin() {
       const url = webUrl({ path: `/accept-invitation/${id}` });
       await sendMail({
         to: email,
-        subject: `Inbjudan till ${org.name} på Okazi`,
-        text: `${inviter.user.name} har bjudit in dig till ${org.name}.\n\nAcceptera: ${url}`,
+        subject: `Invitation to ${org.name} on Okazi`,
+        text: `${inviter.user.name} has invited you to ${org.name}.\n\nAccept: ${url}`,
       });
     },
   });

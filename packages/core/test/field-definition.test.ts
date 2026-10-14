@@ -17,7 +17,7 @@ async function setUp({ context }: { context: Context }) {
   const list = unwrap({
     result: await execute({
       operation: createVocabulary,
-      input: { name: "Utsikt", values: ["Älven", "Ingen"] },
+      input: { name: "View", values: ["River", "None"] },
       context,
     }),
   });
@@ -27,13 +27,13 @@ async function setUp({ context }: { context: Context }) {
       input: { entityTypeId: type.id, ...input } as never,
       context,
     });
-  const area = unwrap({ result: await field({ input: { name: "Yta m²", kind: "NUMBER" } }) });
+  const area = unwrap({ result: await field({ input: { name: "Area m²", kind: "NUMBER" } }) });
   const view = unwrap({
-    result: await field({ input: { name: "Utsikt", kind: "CHOICE", vocabularyId: list.id } }),
+    result: await field({ input: { name: "View", kind: "CHOICE", vocabularyId: list.id } }),
   });
   const style = unwrap({
     result: await field({
-      input: { name: "Stil", kind: "MULTI_CHOICE", options: ["Ljus", "Mörk"] },
+      input: { name: "Style", kind: "MULTI_CHOICE", options: ["Light", "Dark"] },
     }),
   });
   const item = await createTestItem({ context, entityTypeId: type.id, name: "Vinga" });
@@ -44,9 +44,9 @@ describe("field definitions (ADR 0021)", () => {
   it("generates stable keys and validates choice sources", async () => {
     const context = testContext();
     const { area, list, field } = await setUp({ context });
-    expect(area.key).toBe("yta_m2");
-    const again = unwrap({ result: await field({ input: { name: "Yta m2", kind: "NUMBER" } }) });
-    expect(again.key).toBe("yta_m2_2");
+    expect(area.key).toBe("area_m2");
+    const again = unwrap({ result: await field({ input: { name: "Area m2", kind: "NUMBER" } }) });
+    expect(again.key).toBe("area_m2_2");
     const both = await field({
       input: { name: "X", kind: "CHOICE", vocabularyId: list.id, options: ["a"] },
     });
@@ -64,17 +64,17 @@ describe("field definitions (ADR 0021)", () => {
       execute({ operation: updateItem, input: { id: item.id, fields }, context });
     const alven = list.values[0]?.id;
     const good = unwrap({
-      result: await set({ fields: { yta_m2: 260, utsikt: alven, stil: ["Ljus"] } }),
+      result: await set({ fields: { area_m2: 260, view: alven, style: ["Light"] } }),
     });
-    expect(good.fields).toEqual({ yta_m2: 260, utsikt: alven, stil: ["Ljus"] });
-    const bad = await set({ fields: { yta_m2: "stor", utsikt: "nope", okand: 1 } });
+    expect(good.fields).toEqual({ area_m2: 260, view: alven, style: ["Light"] });
+    const bad = await set({ fields: { area_m2: "large", view: "nope", unknown: 1 } });
     expect(bad.ok ? [] : bad.error.issues.map((issue) => issue.path).sort()).toEqual([
-      "fields.okand",
-      "fields.utsikt",
-      "fields.yta_m2",
+      "fields.area_m2",
+      "fields.unknown",
+      "fields.view",
     ]);
-    const cleared = unwrap({ result: await set({ fields: { stil: null } }) });
-    expect(cleared.fields).toEqual({ yta_m2: 260, utsikt: alven });
+    const cleared = unwrap({ result: await set({ fields: { style: null } }) });
+    expect(cleared.fields).toEqual({ area_m2: 260, view: alven });
   });
 
   it("refuses changes that would orphan existing values (CONFLICT)", async () => {
@@ -82,7 +82,7 @@ describe("field definitions (ADR 0021)", () => {
     const { area, style, item } = await setUp({ context });
     await execute({
       operation: updateItem,
-      input: { id: item.id, fields: { yta_m2: 90, stil: ["Ljus"] } },
+      input: { id: item.id, fields: { area_m2: 90, style: ["Light"] } },
       context,
     });
     const update = ({ input }: { input: Record<string, unknown> }) =>
@@ -91,10 +91,10 @@ describe("field definitions (ADR 0021)", () => {
       "CONFLICT",
     );
     expect(
-      errorCode({ result: await update({ input: { id: style.id, options: ["Mörk"] } }) }),
+      errorCode({ result: await update({ input: { id: style.id, options: ["Dark"] } }) }),
     ).toBe("CONFLICT");
     expect(
-      errorCode({ result: await update({ input: { id: style.id, options: ["Ljus", "X"] } }) }),
+      errorCode({ result: await update({ input: { id: style.id, options: ["Light", "X"] } }) }),
     ).toBeNull();
     expect(
       errorCode({ result: await update({ input: { id: area.id, name: "Area" } }) }),
@@ -116,7 +116,7 @@ describe("field definitions (ADR 0021)", () => {
       context,
     });
     expect(errorCode({ result: required })).toBe("CONFLICT");
-    const newRequired = await field({ input: { name: "Våning", kind: "NUMBER", required: true } });
+    const newRequired = await field({ input: { name: "Floor", kind: "NUMBER", required: true } });
     expect(errorCode({ result: newRequired })).toBe("CONFLICT");
   });
 });

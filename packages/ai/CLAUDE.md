@@ -1,46 +1,46 @@
-# @okazi/ai – kontext för Claude
+# @okazi/ai – context for Claude
 
-Serverlagret för assistenten (ADR 0007, 0008). Ramverksoberoende: Web `Request` → `Response`, monteras i Next-rutter av webben. Vercel AI SDK `ai` 7.0.138 och `@ai-sdk/mcp` 2.0.74 (v7: `instructions` i stället för `system`, `isStepCount`, `toUIMessageStream({ stream })`, `onEnd`). Säkerhetskritiskt: ändringar granskas på Opus-nivå.
+The server layer for the assistant (ADR 0007, 0008). Framework-independent: Web `Request` → `Response`, mounted in Next routes by the web app. Vercel AI SDK `ai` 7.0.138 and `@ai-sdk/mcp` 2.0.74 (v7: `instructions` instead of `system`, `isStepCount`, `toUIMessageStream({ stream })`, `onEnd`). Security-critical: changes are reviewed at Opus level.
 
-## Flödet (en chattur, `createChatHandler`)
-1. `resolveContext({ headers })` (webben: `resolveExecuteContext`) → måste vara en **användare** (AI-aktör → 403, ingen inloggning → 401).
-2. Body (Zod `ChatRequestSchema`): bara **sista** meddelandet (användarens text) används. Tidigare turer läses från databasen (`message.list` som användaren), så klienten kan inte förfalska historik.
-3. Konversation: `conversation.get` eller `conversation.create` (titel = första raden, max 80 tecken) via core `execute` som användaren.
-4. Token: `getFirstPartyAccessToken({ client: "assistant" })` från `@okazi/auth` (token åt användaren, aktiv org, `azp` = webbklienten).
-5. MCP-klient mot `${MCP_URL}/mcp` med `Authorization: Bearer`, `x-okazi-actor: ai`, `x-okazi-conversation-id`. Verktyg = `tools/list` för AI-aktören (+ lokala `skill_search`/`load_skill`). `approval_confirm` syns aldrig (servern döljer det, och det filtreras igen här).
-6. USER-meddelandet sparas med core `message.append` som användaren.
-7. `streamText` (gräns: 8 steg, 4096 tokens, 120 s totalt/60 s per steg; `ASSISTANT_LIMITS`) → UI message stream (SSE).
-8. När strömmen slutar (även vid fel/avbrott: en kopia dräneras): ASSISTANT-meddelandet sparas via MCP `message_append` som AI-aktören (audit `AI` + konversation), sedan stängs MCP-klienten **alltid**.
+## The flow (one chat turn, `createChatHandler`)
+1. `resolveContext({ headers })` (web: `resolveExecuteContext`) → must be a **user** (AI actor → 403, not signed in → 401).
+2. Body (Zod `ChatRequestSchema`): only the **last** message (the user's text) is used. Earlier turns are read from the database (`message.list` as the user), so the client cannot forge history.
+3. Conversation: `conversation.get` or `conversation.create` (title = first line, max 80 characters) via core `execute` as the user.
+4. Token: `getFirstPartyAccessToken({ client: "assistant" })` from `@okazi/auth` (token for the user, active org, `azp` = the web client).
+5. MCP client against `${MCP_URL}/mcp` with `Authorization: Bearer`, `x-okazi-actor: ai`, `x-okazi-conversation-id`. Tools = `tools/list` for the AI actor (+ local `skill_search`/`load_skill`). `approval_confirm` is never visible (the server hides it, and it is filtered again here).
+6. The USER message is saved with core `message.append` as the user.
+7. `streamText` (limits: 8 steps, 4096 tokens, 120 s total/60 s per step; `ASSISTANT_LIMITS`) → UI message stream (SSE).
+8. When the stream ends (also on error/abort: a copy is drained): the ASSISTANT message is saved via MCP `message_append` as the AI actor (audit `AI` + conversation), then the MCP client is **always** closed.
 
-## Förtroendegränser
-- Modellen kan inte godkänna sig själv: kommandon från AI-aktören blir `approval_required`. Bara `createApprovalHandler`/`confirmApproval` anropar `approval_confirm`, med användarens token och **utan** AI-headrar, efter användarens klick. AuditLog: `actorType=AI`, `approvedBy=<användaren>`.
-- Token-minting ligger i `@okazi/auth` (`src/first-party/`, se dess CLAUDE.md). Sessionscookien ger redan allt token kan; token ger bara AI-läget (mer begränsat).
-- Skills är data: `load_skill` kan bara **smalna av** verktygen (`allowedTools` ∩ användarens verktyg ∩ tidigare skill; tom lista = ingen extra begränsning). Gäller både `activeTools` per steg och en vakt i `execute`.
-- Sidkontext och skill-texter JSON-kodas i prompten (kan inte lägga till regler).
+## Trust boundaries
+- The model cannot approve itself: commands from the AI actor become `approval_required`. Only `createApprovalHandler`/`confirmApproval` call `approval_confirm`, with the user's token and **without** AI headers, after the user's click. AuditLog: `actorType=AI`, `approvedBy=<the user>`.
+- Token minting lives in `@okazi/auth` (`src/first-party/`, see its CLAUDE.md). The session cookie already grants everything the token can; the token only gives the AI mode (more limited).
+- Skills are data: `load_skill` can only **narrow** the tools (`allowedTools` ∩ the user's tools ∩ the previous skill; empty list = no extra restriction). Applies to both `activeTools` per step and a guard in `execute`.
+- Page context and skill texts are JSON-encoded in the prompt (they cannot add rules).
 
-## Kontrakt för webbfasen
-- Rutter (som webben monterar dem): `app/api/chat/route.ts` → `export const POST = createChatHandler({ resolveContext: resolveExecuteContext })` och `app/api/assistant/approval/route.ts` → `createApprovalHandler({ resolveContext: resolveExecuteContext })`. `runtime = "nodejs"`.
-- Chat-request: `useChat` med `DefaultChatTransport({ api, body: { conversationId, pageContext: { route, locale: "sv"|"en", entity?: { type, id } } } })`. Svar: SSE (`x-vercel-ai-ui-message-stream: v1`), header `x-okazi-conversation-id`, plus transient datadel `data-okazi-conversation` `{ conversationId, created }`. Fel före strömmen: JSON `{ error: { code, message, issues } }` med status 400/401/403/404/500.
-- Godkännandekort: `extractPendingApprovals({ message })` (klientsäker: `@okazi/ai/approvals`) → `{ toolCallId, toolName, operation, input, summary, approvalToken, expiresAt }[]`. Knappar POST:ar `{ decision: "approve"|"reject", approvalToken, conversationId, toolCallId, operation }` → `{ status: "approved", result }` / `{ status: "rejected" }` / fel (409 = redan använd, 403 = ogiltig/utgången/annan användare). Beslutet sparas som TOOL-meddelande (`Approval update: …` + `data-okazi-approval`), så nästa tur vet utfallet.
-- Generative UI: `resolveToolUi({ toolName, output })` (klientsäker: `@okazi/ai/ui`) → `{ component, props }` (`ToolUi`, discriminated union). Komponentnycklar: `venue-table|venue-card|item-table|item-card|entity-type-table|entity-type-card|field-definition-table|field-definition-card|vocabulary-table|vocabulary-card|setup-table|setup-card|search-results|skill-table|skill-card|approval-card|error|json`. Typer får importeras från `@okazi/ai` (`import type`), värden i klientkod bara från `/ui` och `/approvals`.
-- ⌘K: samma chat-handler, ny konversation per fråga (skicka inget `conversationId`).
-- Webbens platshållar-embedding (`server/embed.ts`) ersätts med `createEmbed()` från `@okazi/ai/embed` (samma modell-id `okazi-placeholder-hash-v1` utan nyckel).
+## Contract for the web phase
+- Routes (as the web app mounts them): `app/api/chat/route.ts` → `export const POST = createChatHandler({ resolveContext: resolveExecuteContext })` and `app/api/assistant/approval/route.ts` → `createApprovalHandler({ resolveContext: resolveExecuteContext })`. `runtime = "nodejs"`.
+- Chat request: `useChat` with `DefaultChatTransport({ api, body: { conversationId, pageContext: { route, locale: "sv"|"en", entity?: { type, id } } } })`. Response: SSE (`x-vercel-ai-ui-message-stream: v1`), header `x-okazi-conversation-id`, plus a transient data part `data-okazi-conversation` `{ conversationId, created }`. Errors before the stream: JSON `{ error: { code, message, issues } }` with status 400/401/403/404/500.
+- Approval cards: `extractPendingApprovals({ message })` (client-safe: `@okazi/ai/approvals`) → `{ toolCallId, toolName, operation, input, summary, approvalToken, expiresAt }[]`. Buttons POST `{ decision: "approve"|"reject", approvalToken, conversationId, toolCallId, operation }` → `{ status: "approved", result }` / `{ status: "rejected" }` / error (409 = already used, 403 = invalid/expired/other user). The decision is saved as a TOOL message (`Approval update: …` + `data-okazi-approval`), so the next turn knows the outcome.
+- Generative UI: `resolveToolUi({ toolName, output })` (client-safe: `@okazi/ai/ui`) → `{ component, props }` (`ToolUi`, discriminated union). Component keys: `venue-table|venue-card|item-table|item-card|entity-type-table|entity-type-card|field-definition-table|field-definition-card|vocabulary-table|vocabulary-card|setup-table|setup-card|search-results|skill-table|skill-card|approval-card|error|json`. Types may be imported from `@okazi/ai` (`import type`), values in client code only from `/ui` and `/approvals`.
+- ⌘K: the same chat handler, a new conversation per question (do not send a `conversationId`).
+- The web app's placeholder embedding (`server/embed.ts`) is replaced by `createEmbed()` from `@okazi/ai/embed` (the same model id `okazi-placeholder-hash-v1` without a key).
 
-## Lägga till en generative-UI-mappning
-1. Ny operation → paritetstestet `test/ui-contract.test.ts` fallerar tills verktyget finns i `TOOL_UI_REGISTRY` (`ui-contract/tool-ui-registry.ts`) eller i `GENERIC_UI_TOOLS` (med skäl).
-2. Ny komponent: nyckel + props i `ToolUiProps` (`tool-ui-types.ts`), wire-schema i `wire-schemas.ts`. Det härleds ur `@okazi/core/schemas` (`Schema.extend({ createdAt: z.string(), ... })`, aldrig core-barrel: den drar in Prisma), så core-fält följer med automatiskt och ingen handkopia behöver hållas i takt.
-3. Bygg React-komponenten i webben med `@okazi/ui`.
+## Adding a generative UI mapping
+1. New operation → the parity test `test/ui-contract.test.ts` fails until the tool is in `TOOL_UI_REGISTRY` (`ui-contract/tool-ui-registry.ts`) or in `GENERIC_UI_TOOLS` (with a reason).
+2. New component: key + props in `ToolUiProps` (`tool-ui-types.ts`), wire schema in `wire-schemas.ts`. It is derived from `@okazi/core/schemas` (`Schema.extend({ createdAt: z.string(), ... })`, never the core barrel: it pulls in Prisma), so core fields follow automatically and no hand copy has to be kept in sync.
+3. Build the React component in the web app with `@okazi/ui`.
 
-## Inbäddningar
-- `createEmbed()` = core `EmbedFn` via `embedMany` + AI Gateway med modellen vald i `/admin/ai-models` (`search.embedding`, ingen standard: ovald → `UNAVAILABLE`), batchar om 96, `dimensions: 1536`, Zod-kontroll av svaret (fel antal dimensioner → tydligt `INTERNAL`-fel). Utan `AI_GATEWAY_API_KEY`: deterministisk platshållare (varnar en gång) om `NODE_ENV !== "production"`, annars fel. `isPlaceholderEmbed({ embed })`.
-- Kopplad i `apps/mcp/src/embed.ts`. Byte av modell: `pnpm --filter @okazi/ai reindex [--org <id>]` (`reindexAll`) bäddar om rader med annat `model` från lagrad text och indexerar entiteter som saknar rad.
+## Embeddings
+- `createEmbed()` = core `EmbedFn` via `embedMany` + AI Gateway with the model chosen in `/admin/ai-models` (`search.embedding`, no default: unchosen → `UNAVAILABLE`), batches of 96, `dimensions: 1536`, Zod check of the response (wrong number of dimensions → a clear `INTERNAL` error). Without `AI_GATEWAY_API_KEY`: a deterministic placeholder (warns once) if `NODE_ENV !== "production"`, otherwise an error. `isPlaceholderEmbed({ embed })`.
+- Wired in `apps/mcp/src/embed.ts`. Changing model: `pnpm --filter @okazi/ai reindex [--org <id>]` (`reindexAll`) re-embeds rows with a different `model` from stored text and indexes entities that lack a row.
 
-## Modeller
-- Inga modeller i env. Chatt (`assistant.chat`) och embeddings (`search.embedding`) använder det en plattformsadmin valt (`resolveAiModel`, ADR 0015). Ovald modell → `UNAVAILABLE` (503) och `ai.modelNotConfigured` på error-nivå. Fel i strömmen (t.ex. okänd modell hos gatewayen) loggas som `ai.streamFailed`.
-- `createChatHandler({ model })` och `createEmbed({ model })` är bara test-/E2E-sömmar.
+## Models
+- No models in env. Chat (`assistant.chat`) and embeddings (`search.embedding`) use what a platform admin chose (`resolveAiModel`, ADR 0015). Unchosen model → `UNAVAILABLE` (503) and `ai.modelNotConfigured` at error level. Errors in the stream (e.g. an unknown model at the gateway) are logged as `ai.streamFailed`.
+- `createChatHandler({ model })` and `createEmbed({ model })` are test/E2E seams only.
 
-## Miljövariabler (via `@okazi/config`)
-`AI_GATEWAY_API_KEY`, `MCP_URL`, `WEB_URL`, `WEB_OAUTH_CLIENT_ID`, `NODE_ENV` (ny, i env-schemat och `turbo.json`).
+## Environment variables (via `@okazi/config`)
+`AI_GATEWAY_API_KEY`, `MCP_URL`, `WEB_URL`, `WEB_OAUTH_CLIENT_ID`, `NODE_ENV` (new, in the env schema and `turbo.json`).
 
-## Tester
-Vitest mot riktig Postgres, mockad modell (`MockLanguageModelV4`, `MockEmbeddingModelV4`), inga nätverksanrop. apps/mcp startas i processen via sökvägsimport (`test/helpers/mcp-server.ts`): ett paketberoende skulle ge en cykel (`apps/mcp` beror på `@okazi/ai/embed`).
+## Tests
+Vitest against a real Postgres, mocked model (`MockLanguageModelV4`, `MockEmbeddingModelV4`), no network calls. apps/mcp is started in-process via a path import (`test/helpers/mcp-server.ts`): a package dependency would create a cycle (`apps/mcp` depends on `@okazi/ai/embed`).

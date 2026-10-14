@@ -1,6 +1,6 @@
 ---
 name: create-venue-with-items
-description: "Set up a new venue (anläggning) and its items (e.g. bookable spaces) in one guided flow. Use when the user wants to add a venue, a site or a set of items, e.g. from a floor plan, a web page or a list."
+description: "Set up a new venue and its items (e.g. bookable spaces) in one guided flow. Use when the user wants to add a venue, a site or a set of items, e.g. from a floor plan, a web page or a list."
 allowed-tools: venue_list venue_create entityType_list item_list item_create setup_list search
 metadata:
   title: "Create venue with items"
@@ -28,7 +28,7 @@ item is called and which fields it has is defined by the organization, never ass
      list value ids (read them from the list), never free text.
    - BOOKABLE: `defaultDurationMinutes` when known.
    - SETUPS: `setups` as `{ setupId, capacity }` using ids from `setup_list`.
-   - PRICED: `priceMinor` (öre) and `priceUnit` only when the user gave a price.
+   - PRICED: `priceMinor` (minor currency units) and `priceUnit` only when the user gave a price.
    - Never invent numbers. Leave a field empty rather than guessing.
 6. Finish with a short summary table of what was created. Use `item_list` with the `venueId`
    to confirm.

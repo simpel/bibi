@@ -21,13 +21,13 @@ test("sign up, create org, venue, type and item, search, switch locale, archive"
   await expect(page.getByRole("heading", { name: VENUE })).toBeVisible();
   await expect(page.getByText("Inga artiklar på den här anläggningen ännu.")).toBeVisible();
 
-  await createItemType({ page, name: "Konferensrum", numberField: "Max antal personer" });
-  const item = "Stora salongen";
+  await createItemType({ page, name: "Conference room", numberField: "Max guests" });
+  const item = "Grand salon";
   await addItem({
     page,
-    type: "Konferensrum",
+    type: "Conference room",
     name: item,
-    numberField: "Max antal personer",
+    numberField: "Max guests",
     value: "40",
     venue: VENUE,
   });
@@ -69,7 +69,7 @@ test("theme toggle, localized validation messages and mapped sign-in errors", as
   await expect(page).toHaveURL(/\/sv\/login/);
 
   await page.getByLabel("E-post").fill(credentials.email);
-  await page.getByRole("textbox", { name: "Lösenord" }).fill("fel-losenord-123");
+  await page.getByRole("textbox", { name: "Lösenord" }).fill("wrong-password-123");
   await page.getByRole("button", { name: "Logga in" }).click();
   await expect(page.getByText("Fel e-postadress eller lösenord.")).toBeVisible();
 

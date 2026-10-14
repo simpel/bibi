@@ -41,7 +41,7 @@ export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
       enabled: true,
       minPasswordLength: 10,
       sendResetPassword: async ({ user, url }) => {
-        await sendMail({ to: user.email, subject: "Återställ ditt lösenord", text: url });
+        await sendMail({ to: user.email, subject: "Reset your password", text: url });
       },
     },
     databaseHooks: {

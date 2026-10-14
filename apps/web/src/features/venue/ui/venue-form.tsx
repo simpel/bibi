@@ -17,7 +17,7 @@ const save = ({ venue, values }: { venue: VenueDto | undefined; values: VenueCre
     : createVenueAction({ input: values });
 
 /**
- * Create (no `venue`) or edit form. Reference for forms (CLAUDE.md "Formulär"): shadcn `Form`,
+ * Create (no `venue`) or edit form. Reference for forms (CLAUDE.md "Forms"): shadcn `Form`,
  * core schema via the resolver, server action through `useFormAction` with one toast per save.
  */
 export function VenueForm({ venue, onDone }: VenueFormProps) {

@@ -15,7 +15,7 @@ export type RunAuthInput = {
 };
 
 /**
- * Auth forms in the one-toast-per-process flow (CLAUDE.md "Formulär"). The documented exception
+ * Auth forms in the one-toast-per-process flow (CLAUDE.md "Forms"). The documented exception
  * to "always server actions": auth calls the Better Auth client, because its OAuth provider
  * plugin carries the signed authorize query (`sig`) and redirects to the next OAuth step.
  */

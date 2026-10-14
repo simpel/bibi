@@ -39,7 +39,7 @@ describe("parseInline", () => {
 describe("parseBlocks", () => {
   it("parses headings, lists, code fences and paragraphs", () => {
     const blocks = parseBlocks({
-      markdown: "# Titel\n\nText rad ett\nrad två\n\n- a\n- b\n\n1. x\n2. y\n\n```\ncode\n```",
+      markdown: "# Title\n\nText line one\nline two\n\n- a\n- b\n\n1. x\n2. y\n\n```\ncode\n```",
     });
     expect(blocks.map((block) => block.type)).toEqual([
       "heading",
@@ -48,7 +48,7 @@ describe("parseBlocks", () => {
       "list",
       "code",
     ]);
-    expect(blocks[1]).toMatchObject({ children: [{ text: "Text rad ett rad två" }] });
+    expect(blocks[1]).toMatchObject({ children: [{ text: "Text line one line two" }] });
     expect(blocks[3]).toMatchObject({ ordered: true });
     expect(blocks[4]).toMatchObject({ type: "code", text: "code" });
   });

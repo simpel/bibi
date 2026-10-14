@@ -1,22 +1,22 @@
 ---
 name: new-core-operation
-description: Lägg till eller ändra en core-operation (query/command) och exponera den på alla ytor. Använd vid ny förmåga på en befintlig entitet, t.ex. ett nytt kommando.
+description: Add or change a core operation (query/command) and expose it on all surfaces. Use for a new capability on an existing entity, e.g. a new command.
 ---
 
-# Ny core-operation
+# New core operation
 
-Mall: `packages/core/src/features/setup/operations.ts` (enkel) eller `features/item/` (uppdelad i read/write/lifecycle).
+Template: `packages/core/src/features/setup/operations.ts` (simple) or `features/item/` (split into read/write/lifecycle).
 
-1. **Schema** i `features/<entitet>/schema.ts`: Zod för in- och utdata. Gör input till ett objekt, inga positionsargument.
-2. **Operation** med `defineOperation({ name, kind, description, input, output, permission, handler })`.
-   - `name`: `<entitet>.<verb>` (t.ex. `item.archive`).
-   - `permission`: `<resurs>:read|write|admin`.
-   - `kind: "command"` kräver godkännande som standard (AI föreslår, människa bekräftar). Sätt `approval` bara om ett undantag är motiverat.
-   - Handlern använder `context.db` (org-scopad), skriver aldrig `organizationId` själv i `where`, sätter `organizationId` och `createdBy` vid create, och anropar `context.recordChange({ entityId, before?, after })` för audit.
-   - Fel: `err({ error: new AppError({ code, message }) })`. Aldrig `throw`.
-   - Ändrar den sökbara fält: sätt `embeddable`.
-3. Lägg operationen i entitetens lista och i `core-operations.ts`. Anropa via `execute`, aldrig `handler` direkt.
-4. **Adaptrar i samma ändring:** `rest.ts` (`restRoute`), `graphql.ts` (`*FromOperation`), `mcp.ts`, `apps/web/src/features/web-surfaces.ts` (eller `UI_EXEMPT` med skäl) och `tool-ui-registry.ts`.
-5. Tester mot riktig Postgres i `packages/core`. Kör `pnpm test`.
+1. **Schema** in `features/<entity>/schema.ts`: Zod for input and output. Make the input one object, no positional arguments.
+2. **Operation** with `defineOperation({ name, kind, description, input, output, permission, handler })`.
+   - `name`: `<entity>.<verb>` (e.g. `item.archive`).
+   - `permission`: `<resource>:read|write|admin`.
+   - `kind: "command"` requires approval by default (AI proposes, human confirms). Set `approval` only if an exception is justified.
+   - The handler uses `context.db` (org-scoped), never writes `organizationId` itself in `where`, sets `organizationId` and `createdBy` on create, and calls `context.recordChange({ entityId, before?, after })` for audit.
+   - Errors: `err({ error: new AppError({ code, message }) })`. Never `throw`.
+   - If it changes searchable fields: set `embeddable`.
+3. Add the operation to the entity's list and to `core-operations.ts`. Call it through `execute`, never `handler` directly.
+4. **Adapters in the same change:** `rest.ts` (`restRoute`), `graphql.ts` (`*FromOperation`), `mcp.ts`, `apps/web/src/features/web-surfaces.ts` (or `UI_EXEMPT` with a reason) and `tool-ui-registry.ts`.
+5. Tests against a real Postgres in `packages/core`. Run `pnpm test`.
 
-Ska tillståndet ändras av AI? Se `docs/beslut/0007-ai-first-ux.md`.
+Should the state be changeable by AI? See `docs/decisions/0007-ai-first-ux.md`.

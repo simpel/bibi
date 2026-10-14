@@ -12,37 +12,39 @@ test("create a personal skill, export it and import it back", async ({ page }) =
   await expect(page.getByRole("heading", { name: "Färdigheter", level: 1 })).toBeVisible();
 
   await page.getByRole("link", { name: "Skapa färdighet" }).click();
-  await page.getByLabel(/^Namn/).fill("Rundtur");
-  await page.getByLabel(/^När ska den användas\?/).fill("När en kund vill se lokalerna");
+  await page.getByLabel(/^Namn/).fill("Round trip");
+  await page
+    .getByLabel(/^När ska den användas\?/)
+    .fill("When a customer wants to see the premises");
   await page
     .getByLabel(/^Instruktioner \(markdown\)/)
-    .fill("## Steg\n\n1. Lista **anläggningar**\n2. Visa rum");
+    .fill("## Steps\n\n1. List **venues**\n2. Show rooms");
   await page.getByLabel("Tillåtna verktyg").fill("venue_list item_list");
   await page.getByRole("button", { name: "Lägg till resurs" }).click();
-  await page.getByLabel("Resursens namn").fill("checklista.md");
-  await page.getByLabel("Innehåll").fill("- nycklar");
+  await page.getByLabel("Resursens namn").fill("checklist.md");
+  await page.getByLabel("Innehåll").fill("- keys");
   await page.getByRole("button", { name: "Spara" }).click();
 
   await expect(page).toHaveURL(/\/sv\/skills\/[^/]+$/);
-  await expect(page.getByRole("heading", { name: "Rundtur", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Round trip", level: 1 })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Steg" })).toBeVisible();
-  await expect(page.getByText("anläggningar", { exact: true })).toBeVisible();
+  await expect(page.getByText("venues", { exact: true })).toBeVisible();
   await expect(page.getByText("venue_list")).toBeVisible();
-  await expect(page.getByText("checklista.md")).toBeVisible();
+  await expect(page.getByText("checklist.md")).toBeVisible();
 
   const download = page.waitForEvent("download");
   await page.getByRole("button", { name: "Exportera" }).click();
   const file = await download;
   expect(file.suggestedFilename()).toMatch(/SKILL\.md$/);
   const markdown = await readFile((await file.path()) ?? "", "utf8");
-  expect(markdown).toContain("name: rundtur");
-  expect(markdown).toContain('title: "Rundtur"');
+  expect(markdown).toContain("name: round-trip");
+  expect(markdown).toContain('title: "Round trip"');
 
   await page.getByRole("link", { name: "Tillbaka" }).click();
   await page.getByRole("button", { name: "Importera" }).click();
   const copy = markdown
-    .replace("name: rundtur", "name: rundtur-kopia")
-    .replace('"Rundtur"', '"Rundtur kopia"');
+    .replace("name: round-trip", "name: round-trip-copy")
+    .replace('"Round trip"', '"Round trip copy"');
   await page.getByLabel("Fil (SKILL.md)").setInputFiles({
     name: "SKILL.md",
     mimeType: "text/markdown",
@@ -50,13 +52,13 @@ test("create a personal skill, export it and import it back", async ({ page }) =
   });
   await expect(page.getByLabel("SKILL.md-innehåll")).toHaveValue(copy);
   await page.getByRole("dialog").getByRole("button", { name: "Importera" }).click();
-  await expect(page.getByRole("heading", { name: "Rundtur kopia", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Round trip copy", level: 1 })).toBeVisible();
   await expect(page.getByText("Utkast").first()).toBeVisible();
-  await expect(page.getByText("checklista.md")).toBeVisible();
+  await expect(page.getByText("checklist.md")).toBeVisible();
 });
 
 test("edit, publish, filter and archive a skill; English strings", async ({ page }) => {
-  await signUpWithOrganization({ page, name: "Skills Två AB" });
+  await signUpWithOrganization({ page, name: "Skills Two AB" });
   await page.goto("/en/skills/new");
   await page.getByLabel(/^Name/).fill("Greeting");
   await page.getByLabel(/^When should it be used\?/).fill("When a guest arrives");

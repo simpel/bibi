@@ -1,20 +1,20 @@
 ---
 name: new-entity
-description: Lägg till en ny entitet i Okazi end-to-end (Prisma, core-operationer, GraphQL, REST, MCP, webb, generative UI, i18n, domänmodell). Använd när en ny domänentitet eller feature-mapp ska skapas.
+description: Add a new entity to Okazi end-to-end (Prisma, core operations, GraphQL, REST, MCP, web, generative UI, i18n, domain model). Use when a new domain entity or feature folder is to be created.
 ---
 
-# Ny entitet
+# New entity
 
-Följ ordningen. Core först, adaptrar i samma ändring (ADR 0003).
+Follow the order. Core first, adapters in the same change (ADR 0003).
 
-1. **Generera skelett:** `pnpm gen entity <PascalName>` skapar `schema.ts`, `operations.ts`, `embeddable.ts`, `graphql.ts`, `rest.ts`, `mcp.ts` och `ui/README.md`. Skriver aldrig över befintliga filer. Ersätt alla `TODO`.
-2. **Prisma** (`packages/db/prisma/schema/`): `id` cuid2, `organizationId`, `status` (mjuk radering), `createdAt`, `updatedAt`, `createdBy` (ADR 0006). Lägg modellen i `ORG_SCOPED_MODELS`. Kör `pnpm db:generate` och `pnpm --filter @okazi/db migrate:dev`.
-3. **Core:** exportera från `packages/core/src/index.ts`, lägg operationerna i `core-operations.ts`, lägg schemat som en rad i `packages/core/src/schemas.ts` (klientsäkert).
-4. **Adaptrar:** `packages/graphql/src/features/<kebab>/graphql.ts`, `packages/api/src/features/<kebab>/rest.ts`, `apps/mcp/src/features/<kebab>/mcp.ts`. Följ `setup` (enkel) eller `item` (med kontroller) som mall.
-5. **Webb:** `apps/web/src/features/<kebab>/{actions.ts,ui/}` (kopiera `venue` eller `item`), rad i `web-surfaces.ts`, rutt under `src/app/[locale]/(app)`.
-6. **Generative UI:** komponent i `@okazi/ui` plus wire-schema och rad i `packages/ai/src/ui-contract/tool-ui-registry.ts` (eller `GENERIC_UI_TOOLS`).
-7. **i18n:** nycklar i `sv.json` och `en.json` (se skill `i18n-strings`).
-8. **Docs:** uppdatera `docs/domanmodell.md` och `docs/artefakter/domanmodell.html` tillsammans.
-9. **Verifiera:** `pnpm lint && pnpm check:structure && pnpm typecheck && pnpm test`. Paritetstestet i `apps/mcp/test/parity*.ts` måste vara grönt.
+1. **Generate the skeleton:** `pnpm gen entity <PascalName>` creates `schema.ts`, `operations.ts`, `embeddable.ts`, `graphql.ts`, `rest.ts`, `mcp.ts` and `ui/README.md`. Never overwrites existing files. Replace all `TODO`s.
+2. **Prisma** (`packages/db/prisma/schema/`): `id` cuid2, `organizationId`, `status` (soft delete), `createdAt`, `updatedAt`, `createdBy` (ADR 0006). Add the model to `ORG_SCOPED_MODELS`. Run `pnpm db:generate` and `pnpm --filter @okazi/db migrate:dev`.
+3. **Core:** export from `packages/core/src/index.ts`, add the operations to `core-operations.ts`, add the schema as a line in `packages/core/src/schemas.ts` (client-safe).
+4. **Adapters:** `packages/graphql/src/features/<kebab>/graphql.ts`, `packages/api/src/features/<kebab>/rest.ts`, `apps/mcp/src/features/<kebab>/mcp.ts`. Follow `setup` (simple) or `item` (with controls) as the template.
+5. **Web:** `apps/web/src/features/<kebab>/{actions.ts,ui/}` (copy `venue` or `item`), a line in `web-surfaces.ts`, a route under `src/app/[locale]/(app)`.
+6. **Generative UI:** component in `@okazi/ui` plus wire schema and a line in `packages/ai/src/ui-contract/tool-ui-registry.ts` (or `GENERIC_UI_TOOLS`).
+7. **i18n:** keys in `sv.json` and `en.json` (see skill `i18n-strings`).
+8. **Docs:** update `docs/domain-model.md` and `docs/artifacts/domain-model.html` together.
+9. **Verify:** `pnpm lint && pnpm check:structure && pnpm typecheck && pnpm test`. The parity test in `apps/mcp/test/parity*.ts` must be green.
 
-Operationsdetaljer finns i skill `new-core-operation`.
+Operation details are in skill `new-core-operation`.

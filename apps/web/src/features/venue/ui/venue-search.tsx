@@ -9,7 +9,7 @@ import { VenueSearchResults } from "./venue-search-results";
 
 /**
  * Semantic search box (core `search` operation) shown above the venue list. A search form
- * (CLAUDE.md "Formulär"): shadcn `Form`, results as you type, no submit action and no toast.
+ * (CLAUDE.md "Forms"): shadcn `Form`, results as you type, no submit action and no toast.
  */
 export function VenueSearch() {
   const t = useTranslations("search");

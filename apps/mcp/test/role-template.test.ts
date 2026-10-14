@@ -4,7 +4,7 @@ import { call, connect, testContext } from "./helpers";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
-/** What each "Konferensgård" role may do, checked on every surface (ADR 0020). */
+/** What each "Conference venue" role may do, checked on every surface (ADR 0020). */
 const permissionsOf = ({ name }: { name: string }) => {
   const role = getRoleTemplate({ key: "conference-venue" }).roles.find((r) => r.name === name);
   if (!role) throw new Error(`No template role ${name}`);
@@ -12,8 +12,8 @@ const permissionsOf = ({ name }: { name: string }) => {
 };
 
 describe("role template parity: conference-venue", () => {
-  it("Kök reads venues but cannot write them, on MCP, REST and GraphQL", async () => {
-    const context = testContext({ permissions: permissionsOf({ name: "Kök" }) });
+  it("Kitchen reads venues but cannot write them, on MCP, REST and GraphQL", async () => {
+    const context = testContext({ permissions: permissionsOf({ name: "Kitchen" }) });
     const mcp = await connect({ context });
     expect((await call({ client: mcp, name: "venue_list" })).isError).toBe(false);
     const denied = await call({ client: mcp, name: "venue_create", args: { name: "X" } });
@@ -27,12 +27,12 @@ describe("role template parity: conference-venue", () => {
   });
 
   it("only Admin may manage roles and members", async () => {
-    for (const name of ["Säljare", "Koordinator", "Kök", "Ekonomi", "Läsare"]) {
+    for (const name of ["Sales", "Coordinator", "Kitchen", "Finance", "Reader"]) {
       const mcp = await connect({ context: testContext({ permissions: permissionsOf({ name }) }) });
       const result = await call({
         client: mcp,
         name: "role_create",
-        args: { name: "Ny", permissions: {} },
+        args: { name: "New", permissions: {} },
       });
       expect(result.data.code, name).toBe("FORBIDDEN");
     }

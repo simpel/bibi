@@ -1,146 +1,150 @@
-# Okazi – kontext för Claude
+# Okazi – context for Claude
 
-## Produkt
-- SaaS-bokningssystem för konferens + mat & dryck hos venues utan hotell-PMS: upplevelsecenter, museer, konferensgårdar, herrgårdar, restauranger med privata rum.
-- Referenskund i åtanke: World of Volvo (Göteborg).
-- Huvudkonkurrent: Lega Online (Multinet Interactive AB). Se `docs/marknad/`.
+## Product
+- SaaS booking system for conferences + food & drink at venues without a hotel PMS: experience centres, museums, conference estates, manor houses, restaurants with private rooms.
+- Reference customer in mind: World of Volvo (Gothenburg).
+- Main competitor: Lega Online (Multinet Interactive AB). See `docs/market/`.
 
-## Differentierare (styr prioritering)
-- Snabbokning för mindre möten: personalen bokar direkt utan förfrågan och offert, och kunden betalar via Swish- eller kortlänk eller mot faktura. Okazi är ett internt verktyg för personalen. Gäster och kunder använder aldrig appen, de ser bara betalsidan.
-- Behov som antal mot organisationens egna listor (t.ex. EU:s 14 allergener som importerbar mall), matchade mot artiklar och sammanställda i blad. Inga personuppgifter om gäster.
-- Versionerade blad (t.ex. köksorder) till en roll, plus export (json, pdf, csv) för överlämning utanför systemet.
-- Konfigurerbar domän: varje organisation sätter upp egna typer, fält, listor, statusar och roller (ADR 0020, 0021).
-- Optioner med kö (1:a/2:a option) och automatiskt förfall.
-- Svenska integrationer: Fortnox, Visma, Swish, BankID, Peppol/e-faktura.
-- Okazis egna priser är publicerade och anläggningar kan registrera sig utan säljkontakt.
+## Differentiators (drive prioritisation)
+- Quick booking for smaller meetings: staff book directly without an inquiry and quote, and the customer pays via a Swish or card link or by invoice. Okazi is an internal tool for staff. Guests and customers never use the app; they only see the payment page.
+- Needs as counts against the organization's own lists (e.g. the EU's 14 allergens as an importable template), matched against items and compiled into sheets. No personal data about guests.
+- Versioned sheets (e.g. kitchen order) sent to a role, plus export (json, pdf, csv) for handover outside the system.
+- Configurable domain: each organization sets up its own types, fields, lists, statuses and roles (ADR 0020, 0021).
+- Options with a queue (1st/2nd option) and automatic expiry.
+- Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing.
+- Okazi's own prices are published and venues can sign up without talking to sales.
 
-## Domänmodell
-- Källa: `docs/domanmodell.md`. Uppdatera den och `docs/artefakter/domanmodell.html` tillsammans.
+## Domain model
+- Source: `docs/domain-model.md`. Update it and `docs/artifacts/domain-model.html` together.
 
-## Konventioner
-- Dokumentation på svenska.
-- Filnamn är alltid på engelska (även ADR:er och docs). Innehållet kan vara svenskt.
-- Beslut loggas som ADR i `docs/beslut/NNNN-titel.md`.
+## Language
+- **English everywhere.** Code, comments, test names, log and error messages, docs, ADRs, CLAUDE.md/AGENTS.md, skills, AI prompts, commit messages, issues and PRs are written in English.
+- **Swedish only in translations:** `packages/i18n/messages/sv.json`. The only other exception is test input that specifically exercises Swedish text (e.g. handling of Swedish characters).
+- UI text always goes through next-intl, in both sv and en.
+- File and directory names are in English.
+- Verified with `pnpm check:language`. See `docs/decisions/0009-language-in-code-and-ui.md`.
 
-## Teknikstack
+## Conventions
+- Decisions are logged as ADRs in `docs/decisions/NNNN-title.md`.
+
+## Tech stack
 - Monorepo: pnpm workspaces + Turborepo, TypeScript (strict).
-- Webb: Next.js (App Router), React.
-- Data: Prisma mot Postgres med pgvector (Docker-image `pgvector/pgvector`).
-- Auth: Better Auth med organization-plugin (multi-tenancy), API-nyckel-plugin (REST) och OAuth-plugin (MCP).
-- API:er: GraphQL via Pothos (Prisma-plugin), REST `/api/v1` med OpenAPI genererad från operationer, MCP-server (`apps/mcp`).
-- AI: Vercel AI SDK via AI Gateway, leverantörsoberoende, Claude som standard.
-- UI: Tailwind v4 (CSS-first tokens), cva, shadcn-primitiver, Storybook för `packages/ui`.
-- i18n: next-intl, svenska och engelska.
-- Verktyg: Biome (lint + format), Vitest (enhet/tjänstelager mot riktig Postgres), Playwright (e2e).
-- E-post: Resend (ut och in) bakom `MailProvider`, Mailpit i dev. Se `docs/beslut/0012-email-provider.md`.
-- Jobb: pg-boss i `apps/worker` (kö och cron i Postgres). Jobb anropar core-operationer som SYSTEM. Se `docs/beslut/0027-job-scheduler.md`.
-- Loggning: pino via `@okazi/logger`, JSON till stdout och tabellen `SystemLog`, request-kontext med `AsyncLocalStorage`. Se `docs/beslut/0014-system-logging.md`.
-- Drift: Docker (compose med Postgres och Mailpit, `--profile app` för web + mcp), GitHub Actions för CI.
-- Beslut: `docs/beslut/0002-teknikstack-och-monorepo.md` m.fl.
+- Web: Next.js (App Router), React.
+- Data: Prisma on Postgres with pgvector (Docker image `pgvector/pgvector`).
+- Auth: Better Auth with the organization plugin (multi-tenancy), API key plugin (REST) and OAuth plugin (MCP).
+- APIs: GraphQL via Pothos (Prisma plugin), REST `/api/v1` with OpenAPI generated from operations, MCP server (`apps/mcp`).
+- AI: Vercel AI SDK via AI Gateway, provider-agnostic, Claude by default.
+- UI: Tailwind v4 (CSS-first tokens), cva, shadcn primitives, Storybook for `packages/ui`.
+- i18n: next-intl, Swedish and English.
+- Tooling: Biome (lint + format), Vitest (unit/service layer against real Postgres), Playwright (e2e).
+- Email: Resend (outbound and inbound) behind `MailProvider`, Mailpit in dev. See `docs/decisions/0012-email-provider.md`.
+- Jobs: pg-boss in `apps/worker` (queue and cron in Postgres). Jobs call core operations as SYSTEM. See `docs/decisions/0027-job-scheduler.md`.
+- Logging: pino via `@okazi/logger`, JSON to stdout and the `SystemLog` table, request context with `AsyncLocalStorage`. See `docs/decisions/0014-system-logging.md`.
+- Ops: Docker (compose with Postgres and Mailpit, `--profile app` for web + mcp), GitHub Actions for CI.
+- Decisions: `docs/decisions/0002-tech-stack-and-monorepo.md` and others.
 
-## Arkitekturprinciper
-- **Harmonisering och mönster först.** Sök efter befintliga mönster och återanvänd dem innan något nytt införs. Föreslå harmonisering hellre än ett nytt mönster. Extrahera gemensam kod vid den andra dubbletten, inte först vid den tredje.
-- **1:1-paritet.** Varje kommando finns i web, GraphQL, REST och MCP. Varje entitet går att läsa via graph, REST och MCP. Ett paritetstest i CI verifierar detta. Se `docs/beslut/0003-paritetsarkitektur.md`. Enda undantaget är plattformsoperationer (`packages/core/src/platform/`, ADR 0015): de finns bara i webbens `/admin`, för plattformsadmins.
-- **Ny förmåga = ny core-operation först.** Operationen definieras en gång i `packages/core` (Zod in/ut, behörighet, handler). Adaptrarna exponerar den sedan i samma ändring.
+## Architecture principles
+- **Harmonisation and patterns first.** Look for existing patterns and reuse them before introducing anything new. Propose harmonisation rather than a new pattern. Extract shared code at the second duplicate, not the third.
+- **1:1 parity.** Every command exists in web, GraphQL, REST and MCP. Every entity can be read via graph, REST and MCP. A parity test in CI verifies this. See `docs/decisions/0003-parity-architecture.md`. The only exception is platform operations (`packages/core/src/platform/`, ADR 0015): they exist only in the web app's `/admin`, for platform admins.
+- **New capability = new core operation first.** The operation is defined once in `packages/core` (Zod in/out, permission, handler). The adapters then expose it in the same change.
 - **AI-first.**
-  - Assistenten använder appens egen MCP-server som inloggad användare. Den får ingen särskild väg in i tjänstelagret.
-  - Mutationer kräver mänskligt godkännande. AI föreslår, användaren bekräftar. Audit loggar `actor=ai|user` och konversations-id.
-  - Varje resultattyp har en generative UI-komponent i `@okazi/ui`.
-  - Sökbara entiteter implementerar `Embeddable`.
-  - Återanvändbart AI-beteende lever som skills (System / Organisation / Personlig), inte som ad hoc-prompter.
-  - Se `docs/beslut/0007-ai-first-ux.md` och `docs/beslut/0008-semantisk-sokning-och-skills.md`.
-- **Konfigurerbar domän.** Inga domänord i koden. Organisationen definierar typer, fält, listor, bokningsstatusar och roller som data. Koden äger bara generella beteenden (`PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS`) och fasta faser. Mallar är frivillig data. Se `docs/beslut/0021-configurable-items.md`.
-- **Multi-tenant.** Allt är scopat på `organizationId`. Varje mutation loggas i `AuditLog`. Se `docs/beslut/0004-multi-tenancy.md` och `docs/beslut/0006-databaskonventioner.md`.
-- **Allt loggas.** Core `execute` skriver en systemloggrad per operation (lyckad, avvisad eller fel). Varje ingång öppnar en request-kontext med `requestId` och `surface`, som också hamnar på `AuditLog`. Se `docs/beslut/0014-system-logging.md`.
+  - The assistant uses the app's own MCP server as the signed-in user. It gets no special path into the service layer.
+  - Mutations require human approval. AI proposes, the user confirms. Audit logs `actor=ai|user` and the conversation id.
+  - Every result type has a generative UI component in `@okazi/ui`.
+  - Searchable entities implement `Embeddable`.
+  - Reusable AI behaviour lives as skills (System / Organization / Personal), not as ad hoc prompts.
+  - See `docs/decisions/0007-ai-first-ux.md` and `docs/decisions/0008-semantic-search-and-skills.md`.
+- **Configurable domain.** No domain words in code. The organization defines types, fields, lists, booking statuses and roles as data. Code owns only generic behaviours (`PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS`) and fixed phases. Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
+- **Multi-tenant.** Everything is scoped by `organizationId`. Every mutation is logged in `AuditLog`. See `docs/decisions/0004-multi-tenancy.md` and `docs/decisions/0006-database-conventions.md`.
+- **Everything is logged.** Core `execute` writes one system log row per operation (succeeded, rejected or failed). Every entry point opens a request context with `requestId` and `surface`, which also end up on `AuditLog`. See `docs/decisions/0014-system-logging.md`.
 
-## Kodregler
-- Max 150 rader per fil och max 40 rader per funktion. En idé per fil.
-- Endast named exports. `default` används bara för Next.js page, layout och route.
-- Inga barrel-filer utom paketets `src/index.ts`.
-- Funktioner tar ETT typat objekt som parameter, t.ex. `fn({ a, b }: FnInput)`. Inga positionsparametrar.
-- Strikt TypeScript. Ingen `any`.
-- Zod vid alla gränser: HTTP, GraphQL-argument, MCP-verktygsinput, env och AI-output.
-- Miljövariabler läses endast via `@okazi/config`.
-- Fel är typade `AppError` och returneras som `Result`. Inga kastade strängar.
-- Logga endast via `getLogger()` från `@okazi/logger`, med ett stabilt `event` (`<område>.<händelse>`). Aldrig `console.*` (Biome `noConsole`). Logga aldrig in- eller utdata, lösenord, token eller hela mejladresser (`maskEmail`).
-- Ny HTTP-ingång wrappas i `withRequestLogging({ surface, handler })`. Annan ingång (CLI, jobb) körs i `runWithLogContext`.
-- Feature-mappar har fasta filnamn: `schema.ts`, `operations.ts`, `graphql.ts`, `rest.ts`, `mcp.ts` och `ui/`.
-- Kod och entitetsnamn är på engelska. UI-text går via next-intl (sv + en).
-- UI byggs endast från `@okazi/ui`. Varianter görs med cva. Tokens ligger i en fil.
-- `"use client"` sätts bara på klientgränsen: komponenter som en serverkomponent renderar och som själva har state, context eller webbläsarhändelser. Barn och hooks ärver gränsen och får ingen egen direktiv.
-- Verifieras med `pnpm check:structure`. Se `docs/beslut/0009-sprak-i-kod-och-ui.md`.
+## Code rules
+- Max 150 lines per file and max 40 lines per function. One idea per file.
+- Named exports only. `default` is used only for Next.js page, layout and route.
+- No barrel files except the package's `src/index.ts`.
+- Functions take ONE typed object parameter, e.g. `fn({ a, b }: FnInput)`. No positional parameters.
+- Strict TypeScript. No `any`.
+- Zod at every boundary: HTTP, GraphQL arguments, MCP tool input, env and AI output.
+- Environment variables are read only via `@okazi/config`.
+- Errors are typed `AppError` and returned as `Result`. No thrown strings.
+- Log only via `getLogger()` from `@okazi/logger`, with a stable `event` (`<area>.<event>`). Never `console.*` (Biome `noConsole`). Never log input or output, passwords, tokens or full email addresses (`maskEmail`).
+- A new HTTP entry point is wrapped in `withRequestLogging({ surface, handler })`. Other entry points (CLI, jobs) run in `runWithLogContext`.
+- Feature folders have fixed file names: `schema.ts`, `operations.ts`, `graphql.ts`, `rest.ts`, `mcp.ts` and `ui/`.
+- UI is built only from `@okazi/ui`. Variants use cva. Tokens live in one file.
+- `"use client"` is set only at the client boundary: components that a server component renders and that themselves have state, context or browser events. Children and hooks inherit the boundary and get no directive of their own.
+- Verified with `pnpm check:structure`.
 
-## Formulär (gäller all inmatning i UI)
-- Varje formulär är ett shadcn-formulär: `Form`, `FormController` (shadcns `FormField`), `FormItem`, `FormLabel`, `FormControl` och `FormMessage` från `@okazi/ui`, med react-hook-form och `zodResolver` med lokaliserade meddelanden (`useZodMessages`). Schemat kommer från core (`@okazi/core/schemas`, vid behov via `formSchema({ schema, toInput })`), aldrig ett handskrivet dubbelschema.
-- Fält: `TextField` och `CheckField` (`apps/web/src/components/form/`) är shadcn-fält och kräver `<Form {...form}>` runt formuläret. Andra kontroller (select osv.) byggs med `FormController` direkt.
-- Validering visas som shadcn vill: fältfel i `FormMessage` under fältet. Serverns fältfel (`AppError.issues`, `path` = fältnamn) sätts på fälten med `form.setError`.
-- **Formulär som ändrar data** skickas **alltid** via en server action (`features/<entitet>/actions.ts` → `runOperation`/`runPlatformOperation` → `toActionResult`). Inga `fetch`-anrop från formulär.
-- Toastflödet ägs av hjälparna, aldrig av komponenten:
-  - Formulär: `useFormAction({ form, action, messages, onSuccess?, onError? })` (`lib/use-form-action.ts`).
-  - Åtgärder utan fält (arkivera, publicera, dela, …): `useToastAction().run({ action, messages, onSuccess? })` (`lib/use-toast-action.ts`). `ConfirmDialog` har ingen felruta: utfallet är en toast och anroparen stänger dialogen vid lyckat utfall.
-  - Varje process har **ett** toast-id: `toast.loading(pending)` byts mot `toast.success(success, { id })`.
-  - Fel blir en **bestående** toast med stängknapp (`duration: Infinity, closeButton: true`). Nätverksfel blir `errors.network`.
-  - `messages` kommer från i18n: `common.saving`/`archiving`/`sending` för väntande, entitetens egen nyckel för utfallet (t.ex. `venue.created`).
-- Auto-spara (t.ex. en select som sparar vid val) använder samma flöde. Vid fel återställs fältet via `onError`.
-- Referenser: `features/venue/ui/venue-form.tsx` (formulär) och `features/venue/ui/archive-venue-dialog.tsx` (åtgärd utan fält).
-- Undantag, med skäl:
-  - **Inloggning och konto** (`features/auth/ui`): shadcn `Form` och samma toastflöde via `useAuthFormAction`, men anropet går via Better Auth-klienten och inte via en server action. Better Auths OAuth-provider-plugin bär den signerade authorize-frågan (`sig`) och gör omdirigeringen till nästa OAuth-steg i webbläsaren, vilket MCP-inloggningen kräver.
-  - **Sök- och filterformulär** (bara navigering via URL:en): shadcn `Form`, men ingen server action och ingen toast.
-  - **Chattens composer** strömmar via `useChat` mot `/api/chat`, vilket en server action inte kan.
-- Laddningsfel (inte utfall av en åtgärd): `ErrorState` i serverkomponenter, `InlineLoadError` i klientöar (t.ex. historiklistan, livesök). Toast vid varje sökning vore brus.
-- `ErrorBanner`, `useActionSubmit` och `useAuthSubmit` är borttagna. Använd inte motsvarande mönster igen.
+## Forms (applies to all input in the UI)
+- Every form is a shadcn form: `Form`, `FormController` (shadcn's `FormField`), `FormItem`, `FormLabel`, `FormControl` and `FormMessage` from `@okazi/ui`, with react-hook-form and `zodResolver` with localised messages (`useZodMessages`). The schema comes from core (`@okazi/core/schemas`, via `formSchema({ schema, toInput })` when needed), never a hand-written duplicate schema.
+- Fields: `TextField` and `CheckField` (`apps/web/src/components/form/`) are shadcn fields and require `<Form {...form}>` around the form. Other controls (select etc.) are built with `FormController` directly.
+- Validation is shown the shadcn way: field errors in `FormMessage` under the field. Server field errors (`AppError.issues`, `path` = field name) are set on the fields with `form.setError`.
+- **Forms that change data** are **always** submitted via a server action (`features/<entity>/actions.ts` → `runOperation`/`runPlatformOperation` → `toActionResult`). No `fetch` calls from forms.
+- The toast flow is owned by the helpers, never by the component:
+  - Forms: `useFormAction({ form, action, messages, onSuccess?, onError? })` (`lib/use-form-action.ts`).
+  - Actions without fields (archive, publish, share, …): `useToastAction().run({ action, messages, onSuccess? })` (`lib/use-toast-action.ts`). `ConfirmDialog` has no error box: the outcome is a toast and the caller closes the dialog on success.
+  - Each process has **one** toast id: `toast.loading(pending)` is replaced by `toast.success(success, { id })`.
+  - Errors become a **persistent** toast with a close button (`duration: Infinity, closeButton: true`). Network errors become `errors.network`.
+  - `messages` come from i18n: `common.saving`/`archiving`/`sending` for pending, the entity's own key for the outcome (e.g. `venue.created`).
+- Auto-save (e.g. a select that saves on change) uses the same flow. On error the field is reset via `onError`.
+- References: `features/venue/ui/venue-form.tsx` (form) and `features/venue/ui/archive-venue-dialog.tsx` (action without fields).
+- Exceptions, with reasons:
+  - **Sign-in and account** (`features/auth/ui`): shadcn `Form` and the same toast flow via `useAuthFormAction`, but the call goes through the Better Auth client, not a server action. Better Auth's OAuth provider plugin carries the signed authorize query (`sig`) and performs the redirect to the next OAuth step in the browser, which the MCP sign-in requires.
+  - **Search and filter forms** (URL navigation only): shadcn `Form`, but no server action and no toast.
+  - **The chat composer** streams via `useChat` to `/api/chat`, which a server action cannot do.
+- Load errors (not the outcome of an action): `ErrorState` in server components, `InlineLoadError` in client islands (e.g. the history list, live search). A toast on every search would be noise.
+- `ErrorBanner`, `useActionSubmit` and `useAuthSubmit` have been removed. Do not reintroduce equivalent patterns.
 
-## Paketlayout
-- `apps/web`: Next.js-appen (UI, server actions, `/api/chat`).
-- `apps/mcp`: MCP-server, stdio och streamable HTTP.
-- `packages/core`: operationer, Zod-scheman, behörighet och `AppError`/`Result`. Enda sanningen för logiken.
-- `packages/db`: Prisma-schema, migrationer och org-scopad klient.
-- `packages/auth`: Better Auth-konfiguration och delad sessions- och behörighetsupplösning.
-- `packages/graphql`: Pothos-schema, genererat från core-operationer och entiteter.
-- `packages/api`: REST `/api/v1` och OpenAPI.
-- `packages/ui`: komponenter, tokens och Storybook.
-- `packages/i18n`: meddelanden sv och en.
-- `packages/ai`: AI SDK-uppsättning, MCP-klient, generative UI-registret och system-skills.
-- `packages/config`: miljövariabler (typat och validerat) samt tsconfig- och Biome-gemensamt.
-- `packages/logger`: systemloggen (pino), request-kontext, `withRequestLogging` och testhjälpen `captureLogs`.
+## Package layout
+- `apps/web`: the Next.js app (UI, server actions, `/api/chat`).
+- `apps/mcp`: MCP server, stdio and streamable HTTP.
+- `packages/core`: operations, Zod schemas, permissions and `AppError`/`Result`. The single source of truth for logic.
+- `packages/db`: Prisma schema, migrations and org-scoped client.
+- `packages/auth`: Better Auth configuration and shared session and permission resolution.
+- `packages/graphql`: Pothos schema, generated from core operations and entities.
+- `packages/api`: REST `/api/v1` and OpenAPI.
+- `packages/ui`: components, tokens and Storybook.
+- `packages/i18n`: messages, sv and en.
+- `packages/ai`: AI SDK setup, MCP client, the generative UI registry and system skills.
+- `packages/config`: environment variables (typed and validated) plus shared tsconfig and Biome config.
+- `packages/logger`: the system log (pino), request context, `withRequestLogging` and the test helper `captureLogs`.
 
-## Plattformsadmin
-- `/admin` i webben: systemlogg och AI-modell per funktion. Bara för `user.role = admin`, ges med `pnpm --filter @okazi/auth grant-admin <email>`. Se `docs/beslut/0015-platform-admin.md`.
-- AI-modeller styrs **bara** i `/admin/ai-models`, aldrig via env. Ovald modell = funktionen ger `UNAVAILABLE` och loggar error.
-- Ny AI-funktion: en post i `AI_FEATURES` (core), `resolveAiModel({ feature })` där den körs, och texter i `admin.aiModels.features`.
+## Platform admin
+- `/admin` in the web app: system log and AI model per feature. Only for `user.role = admin`, granted with `pnpm --filter @okazi/auth grant-admin <email>`. See `docs/decisions/0015-platform-admin.md`.
+- AI models are controlled **only** in `/admin/ai-models`, never via env. No model selected = the feature returns `UNAVAILABLE` and logs an error.
+- New AI feature: an entry in `AI_FEATURES` (core), `resolveAiModel({ feature })` where it runs, and texts in `admin.aiModels.features`.
 
-## Arbetssätt med subagenter
-- Baslinje: Sonnet.
-- Opus för arkitektur och säkerhet: auth, tenancy-scoping, paritetskärnan (`packages/core`), MCP-auth och godkännandeflödet.
-- Haiku för mekaniskt arbete: boilerplate, i18n-strängar och dokumentsynk.
-- Starta parallella subagenter per oberoende paket.
-- Huvudagenten äger integrationen och paritetstestet. Subagenter får inte ändra varandras paket utan att huvudagenten har integrerat.
+## Working with subagents
+- Baseline: Sonnet.
+- Opus for architecture and security: auth, tenancy scoping, the parity core (`packages/core`), MCP auth and the approval flow.
+- Haiku for mechanical work: boilerplate, i18n strings and doc sync.
+- Start parallel subagents per independent package.
+- The main agent owns integration and the parity test. Subagents must not change each other's packages until the main agent has integrated.
 
-## Ärenden och projekttavla
-- Allt arbete spåras på https://github.com/users/simpel/projects/8 (kanban). Inte projekt 7.
-- Issues, milestones och labels skrivs helt på engelska (titel och brödtext), även om docs är på svenska.
-- Varje arbete ska ha ett issue på tavlan. Finns inget: skapa det (`gh issue create`, sedan `gh project item-add 8 --owner simpel --url <issue>`) och sätt Status, Priority (P0–P2) och Size (XS–XL).
-- Flytta kortet när arbetet ändrar läge: `Backlog` → `Todo` → `In progress` när arbetet startar → `Done` när det är mergat. Uppdatera med `gh project item-edit` (fält-id via `gh project field-list 8 --owner simpel`).
-- PR:er länkar issuet med `Closes #NN`. Kommentera issuet med vad som gjorts om arbetet delas upp eller avbryts.
-- `gh` behöver scopet `project` (`gh auth refresh -s project`).
+## Issues and project board
+- All work is tracked on https://github.com/users/simpel/projects/8 (kanban). Not project 7.
+- Every piece of work has an issue on the board. If none exists, create it (`gh issue create`, then `gh project item-add 8 --owner simpel --url <issue>`) and set Status, Priority (P0–P2) and Size (XS–XL).
+- Move the card when the work changes state: `Backlog` → `Todo` → `In progress` when work starts → `Done` when merged. Update with `gh project item-edit` (field ids via `gh project field-list 8 --owner simpel`).
+- PRs link the issue with `Closes #NN`. Comment on the issue with what was done if the work is split up or abandoned.
+- `gh` needs the `project` scope (`gh auth refresh -s project`).
 
-## Kommandon
-- `docker compose up -d`: startar Postgres och Mailpit (mejl på http://localhost:8025).
-- `pnpm install`: installerar beroenden.
-- `pnpm db:migrate`: kör databasmigrationer.
-- `pnpm --filter @okazi/core seed:skills`: seedar system-skills.
-- `pnpm --filter @okazi/core seed:demo`: skapar två demoorganisationer via core-operationer (spec: `docs/demo-seed.md`, byggs i delar enligt ADR 0025).
-- `pnpm --filter @okazi/web provision:oauth`: skapar assistentens OAuth-klient och skriver ut `WEB_OAUTH_CLIENT_ID=...` (lägg i `.env`, läses av webb och MCP).
-- `pnpm dev`: startar webben (:3000) och MCP-servern (:3001) via Turborepo.
-- `pnpm lint`: Biome-kontroll.
-- `pnpm check:structure`: kontrollerar filstorlek, funktionsstorlek, exporter, barrel-filer och feature-filer.
-- `pnpm typecheck`: TypeScript för alla paket.
-- `pnpm test`: Vitest och paritetstest.
-- `pnpm --filter @okazi/web test:e2e`: Playwright med skriptad modell (`E2E_MOCK_MODEL`), se `apps/web/CLAUDE.md`.
+## Commands
+- `docker compose up -d`: starts Postgres and Mailpit (mail at http://localhost:8025).
+- `pnpm install`: installs dependencies.
+- `pnpm db:migrate`: runs database migrations.
+- `pnpm --filter @okazi/core seed:skills`: seeds system skills.
+- `pnpm --filter @okazi/core seed:demo`: creates two demo organizations via core operations (spec: `docs/demo-seed.md`, built in slices per ADR 0025).
+- `pnpm --filter @okazi/web provision:oauth`: creates the assistant's OAuth client and prints `WEB_OAUTH_CLIENT_ID=...` (put it in `.env`, read by web and MCP).
+- `pnpm dev`: starts the web app (:3000) and the MCP server (:3001) via Turborepo.
+- `pnpm lint`: Biome check.
+- `pnpm check:structure`: checks file size, function size, exports, barrel files and feature files.
+- `pnpm check:language`: fails on Swedish text outside translations and tests.
+- `pnpm typecheck`: TypeScript for all packages.
+- `pnpm test`: Vitest and the parity test.
+- `pnpm --filter @okazi/web test:e2e`: Playwright with a scripted model (`E2E_MOCK_MODEL`), see `apps/web/CLAUDE.md`.
 
-## Öppna frågor
-- Prismodell (per venue, per rum, per bokning) ej beslutad.
-- Claude Design-export (tokens) för `packages/ui` ej levererad. Placeholder-tokens används tills dess.
-- Staging ej beslutad. Hosting enligt `docs/beslut/0013-hosting-and-deploy.md` (Hetzner + Coolify, föreslaget).
-- Embedding-modell ej vald.
-- Resends EU-region och DPA (GDPR) ej bekräftade.
+## Open questions
+- Pricing model (per venue, per room, per booking) not decided.
+- Claude Design export (tokens) for `packages/ui` not delivered. Placeholder tokens are used until then.
+- Staging not decided. Hosting per `docs/decisions/0013-hosting-and-deploy.md` (Hetzner + Coolify, proposed).
+- Embedding model not chosen.
+- Resend's EU region and DPA (GDPR) not confirmed.

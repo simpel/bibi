@@ -40,7 +40,7 @@ async function askWithTool({ user, toolName, input }: AskInput): Promise<Json[]>
   const model = mockModel({ steps: [toolStep({ toolName, input }), textStep({ text: "Klart." })] });
   const { handler } = createHarness({ model, mcpUrl: mcp.url });
   return readChunks({
-    response: await handler(chatRequest({ cookies: user.cookies, text: "Visa" })),
+    response: await handler(chatRequest({ cookies: user.cookies, text: "Show" })),
   });
 }
 

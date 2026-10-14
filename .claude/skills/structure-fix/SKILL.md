@@ -1,18 +1,18 @@
 ---
 name: structure-fix
-description: Åtgärda brott mot `pnpm check:structure` (150 rader/fil, 40 rader/funktion, named exports, barrel-filer, ett objekt som parameter, feature-filer). Använd när strukturkontrollen eller CI fallerar.
+description: Fix violations of `pnpm check:structure` (150 lines/file, 40 lines/function, named exports, barrel files, one object as parameter, feature files). Use when the structure check or CI fails.
 ---
 
-# Strukturåtgärder
+# Structure fixes
 
-Regler: `docs/beslut/0009-sprak-i-kod-och-ui.md`. Kontroll: `tools/check-structure.mjs` och `tools/lib/`.
+Rules: `docs/decisions/0009-language-in-code-and-ui.md`. Check: `tools/check-structure.mjs` and `tools/lib/`.
 
-1. Kör `pnpm check:structure` och läs utdatan per fil.
-2. Åtgärda per regel:
-   - **Fil > 150 rader:** dela efter idé (en idé per fil), t.ex. schema, formulärhook, tabell, dialog som egna filer. Se `apps/web/src/features/role/` som mönster.
-   - **Funktion > 40 rader:** extrahera hjälpfunktioner i samma eller en ny fil. Extrahera gemensam kod vid andra dubbletten.
-   - **Default export:** byt till named. Tillåtet endast för Next `page`/`layout`/`route`, `*.config.ts` och `*.stories.tsx`.
-   - **Barrel-fil:** ta bort. Endast `packages/*/src/index.ts` är tillåten.
-   - **Positionsparametrar:** ett typat objekt, `fn({ a, b }: FnInput)`. Undantag: `cn(...inputs)`.
-   - **Feature-fil saknas:** skapa `schema.ts`, `operations.ts`, `graphql.ts`, `rest.ts` eller `mcp.ts` (se skill `new-entity`).
-3. Kör `pnpm lint` (Biome) och `pnpm typecheck`. Ändra inte reglerna i `tools/` för att få grönt.
+1. Run `pnpm check:structure` and read the output per file.
+2. Fix per rule:
+   - **File > 150 lines:** split by idea (one idea per file), e.g. schema, form hook, table, dialog as separate files. See `apps/web/src/features/role/` as a pattern.
+   - **Function > 40 lines:** extract helper functions in the same or a new file. Extract shared code at the second duplicate.
+   - **Default export:** change to named. Allowed only for Next `page`/`layout`/`route`, `*.config.ts` and `*.stories.tsx`.
+   - **Barrel file:** remove it. Only `packages/*/src/index.ts` is allowed.
+   - **Positional parameters:** one typed object, `fn({ a, b }: FnInput)`. Exception: `cn(...inputs)`.
+   - **Missing feature file:** create `schema.ts`, `operations.ts`, `graphql.ts`, `rest.ts` or `mcp.ts` (see skill `new-entity`).
+3. Run `pnpm lint` (Biome) and `pnpm typecheck`. Do not change the rules in `tools/` to get green.

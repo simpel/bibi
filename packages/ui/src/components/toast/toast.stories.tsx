@@ -11,7 +11,7 @@ export const Default: Story = {
   render: () => (
     <>
       <Toaster />
-      <Button onClick={() => toast.success("Rummet sparades")}>Visa toast</Button>
+      <Button onClick={() => toast.success("Room saved")}>Show toast</Button>
     </>
   ),
 };

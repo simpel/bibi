@@ -14,7 +14,7 @@ const proposal = {
 describe("extractPendingApprovals", () => {
   it("finds approval_required results in MCP (dynamic) and local tool parts", () => {
     const parts = [
-      { type: "text", text: "Jag föreslår:" },
+      { type: "text", text: "I propose:" },
       {
         type: "dynamic-tool",
         toolName: "item_create",

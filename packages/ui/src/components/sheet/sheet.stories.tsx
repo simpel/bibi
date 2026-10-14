@@ -18,12 +18,12 @@ export const AssistantPanel: Story = {
   render: () => (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Öppna assistent</Button>
+        <Button variant="outline">Open assistant</Button>
       </SheetTrigger>
       <SheetContent side="right">
         <SheetHeader>
-          <SheetTitle>Assistent</SheetTitle>
-          <SheetDescription>Fråga om anläggningar, rum och bokningar.</SheetDescription>
+          <SheetTitle>Assistant</SheetTitle>
+          <SheetDescription>Ask about venues, rooms and bookings.</SheetDescription>
         </SheetHeader>
       </SheetContent>
     </Sheet>

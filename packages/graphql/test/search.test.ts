@@ -9,7 +9,7 @@ describe("search and parity", () => {
     const v = `mutation($i: VenueCreateInput!) { venueCreate(input: $i) { id } }`;
     const venue = await gql({
       query: v,
-      variables: { i: { name: "Lindholmen konferens", description: "Havsutsikt" } },
+      variables: { i: { name: "Lindholmen conference", description: "Sea view" } },
     });
     const item = `mutation($i: ItemCreateInput!) { itemCreate(input: $i) { id } }`;
     const entityTypeId = await createItemType({ gql });
@@ -19,22 +19,22 @@ describe("search and parity", () => {
         i: {
           entityTypeId,
           venueId: venue.body.data.venueCreate.id,
-          name: "Ljusa salen",
-          description: "Konferensrum med dagsljus",
+          name: "Bright hall",
+          description: "Conference room with daylight",
         },
       },
     });
     const query = `query($q: String!) { search(query: $q) { hits {
       entityType entityId score entity { __typename ... on Venue { name } ... on Item { name venue { name } } }
     } } }`;
-    const res = await gql({ query, variables: { q: "dagsljus konferensrum" } });
+    const res = await gql({ query, variables: { q: "daylight conference" } });
     expect(res.body.errors).toBeUndefined();
     const hits = res.body.data.search.hits;
     const itemHit = hits.find((h: { entityType: string }) => h.entityType === "item");
     expect(itemHit.entity).toEqual({
       __typename: "Item",
-      name: "Ljusa salen",
-      venue: { name: "Lindholmen konferens" },
+      name: "Bright hall",
+      venue: { name: "Lindholmen conference" },
     });
     expect(typeof itemHit.score).toBe("number");
   });

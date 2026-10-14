@@ -20,7 +20,7 @@ describe("toStoredConversation", () => {
     const result = toStoredConversation({
       messages: [
         message({ id: "1", role: "USER", parts: [{ type: "text", text: "Hej" }] }),
-        message({ id: "2", role: "ASSISTANT", parts: [{ type: "text", text: "Hallå" }] }),
+        message({ id: "2", role: "ASSISTANT", parts: [{ type: "text", text: "Hello there" }] }),
         message({ id: "3", role: "SYSTEM", parts: [{ type: "text", text: "x" }] }),
       ],
     });

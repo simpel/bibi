@@ -4,7 +4,7 @@ import { Label } from "./label";
 const meta = {
   title: "Components/Label",
   component: Label,
-  args: { children: "Namn" },
+  args: { children: "Name" },
 } satisfies Meta<typeof Label>;
 
 export default meta;

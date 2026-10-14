@@ -14,7 +14,7 @@ export const Default: Story = {
         <TooltipTrigger asChild>
           <Button variant="outline">Hovra</Button>
         </TooltipTrigger>
-        <TooltipContent>Visar mer information</TooltipContent>
+        <TooltipContent>Shows more information</TooltipContent>
       </Tooltip>
     </TooltipProvider>
   ),

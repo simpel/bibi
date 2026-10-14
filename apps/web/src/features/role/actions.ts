@@ -36,7 +36,7 @@ export async function archiveRoleAction({
   return toActionResult({ result: await runOperation({ operation: archiveRole, input: { id } }) });
 }
 
-/** Imports the "Konferensgård" role template; existing names are skipped. */
+/** Imports the "Conference venue" role template; existing names are skipped. */
 export async function importRoleTemplateAction(): Promise<ActionResult<ImportRoleTemplateResult>> {
   return toActionResult({
     result: await runOperation({

@@ -12,7 +12,7 @@ export type RunToastActionInput<R> = {
 
 /**
  * Server actions without form fields (archive, publish, share, …) in the same one-toast flow as
- * `useFormAction` (CLAUDE.md "Formulär"). `pending` disables the triggering button.
+ * `useFormAction` (CLAUDE.md "Forms"). `pending` disables the triggering button.
  */
 export function useToastAction() {
   const t = useTranslations("errors");

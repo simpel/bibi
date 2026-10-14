@@ -9,7 +9,7 @@ const APPEND =
 const READ_CONVERSATION =
   "query($id: String!) { conversation(id: $id) { title messages { sequence role parts metadata } } }";
 const SKILL_MD =
-  "---\nname: graf-skill\ndescription: Testar grafen\nallowed-tools: search\n---\nGör så här.";
+  "---\nname: graph-skill\ndescription: Tests the graph\nallowed-tools: search\n---\nDo it like this.";
 
 describe("conversations, messages and skills through GraphQL", () => {
   it("creates a conversation, appends messages and reads them via the graph edge", async () => {
@@ -65,7 +65,7 @@ describe("conversations, messages and skills through GraphQL", () => {
     expect(imported.body.errors).toBeUndefined();
     const skill = imported.body.data.skillImport;
     expect(skill).toMatchObject({
-      slug: "graf-skill",
+      slug: "graph-skill",
       scope: "PERSONAL",
       status: "DRAFT",
       allowedTools: ["search"],
@@ -77,13 +77,13 @@ describe("conversations, messages and skills through GraphQL", () => {
     });
     expect(published.body.data.skillPublish).toEqual({ status: "PUBLISHED", version: 1 });
     const list = await gql({ query: '{ skills(scope: "PERSONAL") { items { id name } } }' });
-    expect(list.body.data.skills.items).toEqual([{ id: skill.id, name: "graf-skill" }]);
+    expect(list.body.data.skills.items).toEqual([{ id: skill.id, name: "graph-skill" }]);
     const exported = await gql({
       query: "query($id: String!) { skillExport(id: $id) { markdown filename } }",
       variables: { id: skill.id },
     });
-    expect(exported.body.data.skillExport.filename).toBe("graf-skill/SKILL.md");
-    expect(exported.body.data.skillExport.markdown).toContain("Gör så här.");
+    expect(exported.body.data.skillExport.filename).toBe("graph-skill/SKILL.md");
+    expect(exported.body.data.skillExport.markdown).toContain("Do it like this.");
     const created = await gql({
       query:
         "mutation($input: SkillCreateInput!) { skillCreate(input: $input) { slug resources } }",

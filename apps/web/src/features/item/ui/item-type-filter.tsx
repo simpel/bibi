@@ -37,7 +37,7 @@ function TypeOptions({ types }: TypeOptionsProps) {
   );
 }
 
-/** Type filter above the catalog. A filter form (CLAUDE.md "Formulär"): the URL is the state. */
+/** Type filter above the catalog. A filter form (CLAUDE.md "Forms"): the URL is the state. */
 export function ItemTypeFilter({ types, typeId }: ItemTypeFilterProps) {
   const t = useTranslations("item");
   const router = useRouter();

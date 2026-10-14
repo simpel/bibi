@@ -44,7 +44,7 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
 
 /**
  * Slice 2 checks: row counts per entity match the data files, lists that must not exist do
- * not (check 2: Vingaleden has no "Allergener"), and imported lists have their values.
+ * not (check 2: Vingaleden has no "Allergens"), and imported lists have their values.
  */
 export async function checkDemoConfig({ context, org }: CheckDemoConfigInput): Promise<string[]> {
   const failures = (await counts({ context, org }))

@@ -41,11 +41,11 @@ async function propose({ user, name }: { user: TestUser; name: string }) {
   const model = mockModel({
     steps: [
       toolStep({ toolName: "venue_create", input: { name } }),
-      textStep({ text: "Förslag klart." }),
+      textStep({ text: "Proposal ready." }),
     ],
   });
   const { handler } = createHarness({ model, mcpUrl: mcp.url });
-  const response = await handler(chatRequest({ cookies: user.cookies, text: `Skapa ${name}` }));
+  const response = await handler(chatRequest({ cookies: user.cookies, text: `Create ${name}` }));
   const conversationId = response.headers.get("x-okazi-conversation-id") ?? "";
   const chunks = await readChunks({ response });
   const rows = await storedMessages({ conversationId, minCount: 2 });
@@ -109,7 +109,7 @@ describe("approval flow through the chat handler", () => {
 
   it("records a rejection and executes nothing", async () => {
     const user = await signUpWithOrg();
-    const { conversationId, approvals } = await propose({ user, name: "Nej-salen" });
+    const { conversationId, approvals } = await propose({ user, name: "No-hall" });
     const body = {
       decision: "reject",
       approvalToken: approvals[0]?.approvalToken,
@@ -125,7 +125,7 @@ describe("approval flow through the chat handler", () => {
 
   it("refuses another user's approval token and unauthenticated callers", async () => {
     const owner = await signUpWithOrg();
-    const { approvals } = await propose({ user: owner, name: "Inte din" });
+    const { approvals } = await propose({ user: owner, name: "Not yours" });
     const other = await signUpWithOrg();
     const stolen = await decide({
       user: other,

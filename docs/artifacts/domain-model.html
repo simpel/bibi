@@ -1,0 +1,329 @@
+<title>Conference booking domain model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sticky tab bar, flow as a strip, entities in domain columns, competitors as a wide table with a locked first column */
+:root{
+  --bg:#f4f6f8; --surface:#ffffff; --fg:#17212b; --muted:#5a6774; --line:#d8dee5;
+  --accent:#2a5bd7; --accent-soft:#e3ebfc;
+  --d-sales:#2a5bd7; --d-booking:#7a4cc9; --d-space:#0f8a7e; --d-food:#b86a0c; --d-money:#2f7d32; --d-ops:#5f6b78; --d-config:#c2410c;
+  --yes:#2f7d32; --part:#b86a0c; --no:#9aa5b1; --unk:#5a6774;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#10161c; --surface:#18212a; --fg:#e6ebf0; --muted:#98a5b2; --line:#2b3642;
+  --accent:#7ea2ff; --accent-soft:#1f2c48;
+  --d-sales:#7ea2ff; --d-booking:#b896f0; --d-space:#4fc7b9; --d-food:#e8a54f; --d-money:#7cc77f; --d-ops:#a3afbb; --d-config:#f08a5d;
+  --yes:#7cc77f; --part:#e8a54f; --no:#5c6875; --unk:#98a5b2; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10161c; --surface:#18212a; --fg:#e6ebf0; --muted:#98a5b2; --line:#2b3642;
+  --accent:#7ea2ff; --accent-soft:#1f2c48;
+  --d-sales:#7ea2ff; --d-booking:#b896f0; --d-space:#4fc7b9; --d-food:#e8a54f; --d-money:#7cc77f; --d-ops:#a3afbb; --d-config:#f08a5d;
+  --yes:#7cc77f; --part:#e8a54f; --no:#5c6875; --unk:#98a5b2; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto;padding-inline:16px;padding-block:24px 64px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+h1{font-size:clamp(1.7rem,4vw,2.4rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:1.35rem;font-weight:700}
+.lede{color:var(--muted);max-width:68ch;margin:.5rem 0 0}
+.eyebrow{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:4px;padding-block:12px;border-bottom:1px solid var(--line);margin-top:20px;overflow-x:auto}
+nav.tabs button{font:500 .9rem var(--f-body);color:var(--muted);background:none;border:1px solid transparent;border-radius:6px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--fg);background:var(--surface);border-color:var(--line)}
+button:focus-visible,.ent:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+section.panel{padding-top:24px;display:grid;gap:20px}
+
+/* Flow */
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:.85rem;display:flex;gap:6px;align-items:center}
+.step i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.arrow{color:var(--muted);font-family:var(--f-mono)}
+
+/* Filter */
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 .82rem var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:999px;padding:4px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.hint{font-size:.82rem;color:var(--muted)}
+
+/* Entities */
+.domains{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:20px;align-items:start}
+.domain{display:grid;gap:8px;min-width:0}
+.domain h3{font-size:1rem;display:flex;align-items:center;gap:8px;padding-bottom:6px;border-bottom:2px solid var(--dc)}
+.domain h3 span{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);font-weight:400;margin-left:auto}
+.ent{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;transition:opacity .15s,border-color .15s;text-align:left;width:100%;font:inherit;color:inherit;display:block}
+.ent .top{display:flex;gap:8px;align-items:baseline}
+.ent .name{font-weight:600}
+.ent .phase{margin-left:auto;font-family:var(--f-mono);font-size:.7rem;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px;white-space:nowrap}
+.ent .phase.mvp{color:var(--accent);border-color:var(--accent)}
+.ent .desc{font-size:.83rem;color:var(--muted);margin-top:2px}
+.ent .star{color:var(--d-food);font-size:.75rem;font-weight:600}
+.ent.dim{opacity:.32}
+.ent.rel{border-color:var(--dc)}
+.ent.sel{border-color:var(--dc);box-shadow:0 0 0 2px var(--dc)}
+.detail{margin-top:10px;display:grid;gap:10px;cursor:default}
+.detail h4{margin:0;font:600 .72rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.attrs{margin:0;padding:0;list-style:none;font-family:var(--f-mono);font-size:.78rem;display:grid;gap:2px}
+.attrs li{overflow-wrap:anywhere}
+.attrs li::before{content:"· ";color:var(--muted)}
+.rels{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:.82rem}
+.rels button{font:inherit;color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.card{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);min-width:3.2em;display:inline-block}
+.diff{font-size:.82rem;background:var(--accent-soft);border-radius:6px;padding:8px 10px}
+
+/* Competitors */
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:.82rem;color:var(--muted)}
+.mark{display:inline-flex;width:22px;height:22px;border-radius:50%;align-items:center;justify-content:center;font:600 .78rem var(--f-mono)}
+.m-y{background:var(--yes);color:var(--surface)}
+.m-p{border:2px solid var(--part);color:var(--part)}
+.m-n{color:var(--no)}
+.m-u{color:var(--unk);border:1px dashed var(--line)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;font-size:.84rem;min-width:1100px;width:100%}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:center;vertical-align:middle}
+th{font-weight:600;font-size:.76rem;color:var(--muted);background:var(--surface)}
+thead th{position:sticky;top:0}
+td.p,th.p{text-align:left;position:sticky;left:0;background:var(--surface);min-width:170px;z-index:1}
+td.p b{display:block}
+td.p small{color:var(--muted)}
+td.txt{text-align:left;font-size:.8rem;color:var(--muted);min-width:160px}
+tr.group td{background:var(--bg);text-align:left;font:600 .72rem var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);position:static}
+tr.you td{background:var(--accent-soft)}
+tr.you td.p{background:var(--accent-soft)}
+.gaps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.gap{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;min-width:0}
+.gap b{display:block;margin-bottom:4px}
+.gap p{margin:0;font-size:.86rem;color:var(--muted)}
+.src{font-size:.8rem;color:var(--muted)}
+.src a{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.ent{transition:none}}
+</style>
+
+<div class="wrap">
+  <div class="eyebrow">Booking system for conferences + food & drink</div>
+  <h1>Domain model and competitor map</h1>
+  <p class="lede">The entities a system needs for venues like World of Volvo. The domain is configurable: each organization sets up its own types, fields, vocabularies, statuses, sheets and roles, and the code only owns generic behaviors and phases. Items, requirements per vocabulary value, sheets to a role, deposits and invoices. Click an entity for attributes and relations.</p>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="tab-ent" aria-selected="true" aria-controls="p-ent">Entities</button>
+    <button role="tab" id="tab-comp" aria-selected="false" aria-controls="p-comp">Competitors</button>
+  </nav>
+
+  <section class="panel" id="p-ent" role="tabpanel" aria-labelledby="tab-ent">
+    <div>
+      <div class="eyebrow" style="margin-bottom:8px">Core flow</div>
+      <div class="flow" id="flow"></div>
+    </div>
+    <div class="toolbar">
+      <div class="chips" id="phases" aria-label="Filter by phase"></div>
+      <span class="hint"><span class="star">★</span> = differentiator against Lega and the others · <span id="count"></span></span>
+    </div>
+    <div class="domains" id="domains"></div>
+  </section>
+
+  <section class="panel" id="p-comp" role="tabpanel" aria-labelledby="tab-comp" hidden>
+    <div>
+      <h2>Core flow coverage</h2>
+      <p class="lede">Based on the vendors' own pages, review sites and customer cases (Oct 2026). A question mark means it could not be confirmed publicly, not that the feature is missing.</p>
+    </div>
+    <div class="legend">
+      <span><span class="mark m-y">✓</span> Yes</span>
+      <span><span class="mark m-p">~</span> Partial</span>
+      <span><span class="mark m-n">–</span> No</span>
+      <span><span class="mark m-u">?</span> Unconfirmed</span>
+    </div>
+    <div class="tablewrap"><table id="comp"></table></div>
+
+    <h2>Market gaps</h2>
+    <div class="gaps">
+      <div class="gap"><b>No Swedish end-to-end solution</b><p>No Swedish SaaS connects inquiry, quote, room setups, a configurable domain, requirements per vocabulary value, sheets to a role and deposits with Swish, Fortnox and Visma.</p></div>
+      <div class="gap"><b>Venues without a hotel are underserved</b><p>The hotel chains are taken (Event Temple at Strawberry, Proposales at Elite, MeetingPackage at Scandic). Experience centers, museums, manor houses and restaurants have Lega or generic slot tools.</p></div>
+      <div class="gap"><b>Requirements that carry through to sheets</b><p>Only Venjue (DK) shows allergens per guest carried through to kitchen orders. Lega has special diets on kitchen lists. Okazi takes counts per vocabulary value, without personal data, and blocks the sheet on a conflict.</p></div>
+      <div class="gap"><b>Configurable domain</b><p>Every venue is different: conference estate, museum or boat company. Okazi lets each organization set up its own types, fields, vocabularies, statuses and roles, with versioned sheets and export at handover.</p></div>
+      <div class="gap"><b>Quick booking with payment</b><p>Lega takes inquiries, not bookings. Staff should be able to book small meetings with coffee directly, without an inquiry and quote. The customer pays through a Swish or card link or against invoice.</p></div>
+      <div class="gap"><b>Open pricing</b><p>None of the established vendors publish prices. Venjue and Perfect Venue do and have a free tier, which lowers the sales threshold.</p></div>
+    </div>
+    <p class="src">Sources: legaonline.com, visbook.com, amadeus-hospitality.com, oracle.com, mews.com, gomomentus.com, caspeco.com, meetingpackage.com, proposales.com, eventtemple.com, tripleseat.com, perfectvenue.com, venjue.com, spiris.se, fortnox.se, businesswith.se, G2, Capterra, HotelTechReport, worldofvolvo.com, kongres-magazine.eu.</p>
+  </section>
+</div>
+
+<script>
+const DOMAINS = [
+  {id:"config",  name:"Configuration",      color:"--d-config"},
+  {id:"sales",   name:"Sales & customer",   color:"--d-sales"},
+  {id:"booking", name:"Booking & program",  color:"--d-booking"},
+  {id:"space",   name:"Spaces & resources", color:"--d-space"},
+  {id:"food",    name:"Items & sheets",     color:"--d-food"},
+  {id:"money",   name:"Finance",            color:"--d-money"},
+  {id:"ops",     name:"Operations & system",color:"--d-ops"}
+];
+
+const E = [
+  // Configuration
+  {id:"etype",d:"config",n:"EntityType",p:"MVP",s:"The organization's own type for item, customer, contact, inquiry, booking or requirement. Organizations start empty, templates are optional data.",a:["base entity (ITEM / CUSTOMER / CONTACT / INQUIRY / BOOKING / REQUIREMENT)","name unique per base entity (e.g. Conference room, Dish, Boat, Company, Conference)","behaviors (ITEM only): PRICED, COMPOSABLE, CHOICES, BOOKABLE, SETUPS – CHOICES requires COMPOSABLE, SETUPS requires BOOKABLE (otherwise VALIDATION)"],x:"Archiving is denied (CONFLICT) as long as active items of the type exist. A behavior cannot be turned off as long as any active item has data for it."},
+  {id:"fielddef",d:"config",n:"FieldDefinition",p:"MVP",s:"A custom field on a type. Values are stored as JSON on the row.",a:["name","key – generated from the name, never changes, unique per type even among archived","field type (TEXT / NUMBER / BOOLEAN / DATE / CHOICE / MULTI_CHOICE)","required","vocabulary OR own options (options) for choice/multi-choice – exactly one source","order (position)"],x:"Rules (CONFLICT when data exists): the field type or vocabulary cannot be changed, options in use cannot be removed, the field cannot become required as long as items lack a value, the field cannot be archived as long as items have a value."},
+  {id:"vocab",d:"config",n:"Vocabulary and values",p:"MVP",s:"The organization's own word lists, e.g. Allergens, Diet, Accessibility. EU's 14 allergens can be imported via vocabulary.importTemplate.",a:["vocabulary: name – unique","value: name, order, archived"],x:"Tags = values in fields that select from a vocabulary (no separate tag rows). A value cannot be archived as long as an item carries it. A vocabulary cannot be archived as long as a field uses it."},
+  {id:"setup",d:"config",n:"Setup",p:"MVP",s:"The organization's own setups, e.g. Cinema, U-shape and Mingle.",a:["name – unique","changeover time (changeoverMinutes)"],x:"Cannot be archived as long as an active item has capacity for it."},
+  {id:"itemsetup",d:"config",n:"ItemSetup",p:"MVP",s:"Capacity per bookable item and setup, unique per pair.",a:["item","setup","capacity"],x:"Replaced as a set by item.create/update (setups)."},
+  {id:"sheetdef",d:"config",n:"SheetDefinition",p:"MVP",s:"What a sheet looks like, e.g. Kitchen order or Brewing order.",a:["name","item types and fields that are included","vocabularies whose requirements are included","receiving role"]},
+  {id:"bstatus",d:"config",n:"BookingStatus",p:"MVP",s:"The organization's own status with a fixed phase and its own transitions. The phase controls the system's rules.",a:["name","color","order","phase (TENTATIVE / CONFIRMED / COMPLETED / CANCELLED)","allowed transitions (from → to)","archived (cannot be deleted when in use)"],x:"Reports group by phase, not by status. The phase rules cannot be turned off."},
+  {id:"role",d:"config",n:"Role",p:"MVP",s:"A named set of permissions per organization (organizationRole). Resources: configuration and item. owner is fixed.",a:["name","permissions (resource:read|write|admin)","system (owner cannot be changed or deleted)","status (active / archived)"]},
+
+  // Sales & customer
+  {id:"org",d:"sales",n:"Customer (organization)",p:"MVP",s:"The company that buys the conference. Has a type with custom fields.",a:["type and custom fields (e.g. org number, Peppol ID)","name","invoice address","price list","payment terms (days)","credit limit"]},
+  {id:"contact",d:"sales",n:"Contact",p:"MVP",s:"Orderer, invoice recipient or organizer.",a:["type and custom fields","name","email","phone","role (orderer / invoice recipient)","GDPR consent"]},
+  {id:"lead",d:"sales",n:"Inquiry",p:"MVP",s:"Incoming interest before anything is booked. Fixed state machine.",a:["type and custom fields","channel (form, email, phone, Venuu)","desired dates (several alternatives)","approximate headcount","budget","status (NEW → QUALIFIED → QUOTED → WON / LOST)","loss reason (required for LOST)","responsible salesperson (required from QUALIFIED)"],x:"Pipeline with loss reason is missing at Lega. Status changes only through commands."},
+  {id:"hold",d:"sales",n:"Option",p:"MVP",s:"A preliminary hold on a bookable item with an expiry date.",a:["item (BOOKABLE)","start – end","expires (date)","rank (1st / 2nd option, automatic)","reminder before expiry","status (ACTIVE → CONVERTED / EXPIRED / RELEASED)"],x:"Queue of options per item and time. Those behind move up when an option is released or expires."},
+  {id:"quote",d:"sales",n:"Quote",p:"MVP",s:"A versioned proposal with lines and terms. Fixed state machine.",a:["version number","valid until","status (DRAFT → SENT → ACCEPTED / DECLINED / EXPIRED)","lines (copies of order lines)","total excl. and incl. VAT","terms text","acceptedBy, acceptedAt, acceptanceMethod (MANUAL now, later BANKID and LINK)"],x:"Versions with change markers against the previous one."},
+  {id:"contract",d:"sales",n:"Agreement & signing",p:"Phase 2",s:"Binding acceptance of the quote. Postponed.",a:["method (BankID / signing link)","signed by","time","document hash","attached terms"]},
+
+  // Booking & program
+  {id:"booking",d:"booking",n:"Booking",p:"MVP",s:"The conference or event as a whole. Each occurrence in a series is a regular booking.",a:["reference number","booking type and custom fields","status (the organization's own, with a fixed phase)","start – end","estimated headcount","guaranteed headcount (locked X days before)","salesperson (salesOwnerId)","coordinator (required from CONFIRMED)","cancellation terms","seriesId and occurrenceIndex"]},
+  {id:"series",d:"booking",n:"BookingSeries",p:"MVP",s:"A recurring booking, e.g. the first Tuesday of every month.",a:["customer","template (items, setup, times)","rule (subset of RRULE: FREQ, INTERVAL, BYDAY, BYMONTHDAY, COUNT/UNTIL)","price list"]},
+  {id:"function",d:"booking",n:"ProgramItem",p:"MVP",s:"A row in the day's run sheet: meeting, coffee break, lunch, activity.",a:["name and type (the organization's own)","start – end","bookable item","setup","headcount","responsible (optional)","internal note"]},
+  {id:"req",d:"booking",n:"Requirement",p:"MVP",s:"A count per vocabulary value on a booking or program item, e.g. Gluten × 3. Never tied to a person.",a:["booking or program item","vocabulary value","count","type and custom fields (e.g. severity)"],x:"Matched against items with the same vocabulary value. A hit on a required component without an alternative blocks the sheet."},
+  {id:"policy",d:"booking",n:"CancellationTerms",p:"MVP",s:"Rules for cancellation and reduced headcount.",a:["time limits (e.g. 30 / 14 / 7 days)","charge rate per limit","allowed headcount reduction (%)","applies to customer or venue"]},
+
+  // Spaces & resources
+  {id:"venue",d:"space",n:"Venue",p:"MVP",s:"A building or site. Bookable items belong to a venue.",a:["name","address","opening hours","default VAT","contact details"],x:"Archiving a venue archives its items."},
+  {id:"block",d:"space",n:"Occupancy",p:"MVP",s:"A time block on a bookable item. The basis for conflict checking.",a:["item (BOOKABLE)","start – end","type (BOOKING, OPTION, SETUP, MAINTENANCE, INTERNAL)","source"],x:"All types except OPTION may not overlap. Changeover time is added automatically."},
+
+  // Items & sheets
+  {id:"item",d:"food",n:"Item",p:"MVP",s:"Everything that can be sold or booked: dish, venue space, equipment, guide, package. The type turns on behaviors.",a:["type and custom fields (fields as JSON)","name","description","PRICED (type requires): priceMinor (minor units), priceUnit (PER_PERSON/UNIT/HOUR/FLAT), vatRatePercent (null = the venue's default)","COMPOSABLE (type requires): contains other items with count, offsetMinutes, durationMinutes","CHOICES (type requires): choice groups among components (requires COMPOSABLE)","BOOKABLE (type requires): occupancy in time, default duration (defaultDurationMinutes)","SETUPS (type requires): capacity per setup (requires BOOKABLE)","venue (optional)","customer (null = catalog item)"],x:"Room = item with BOOKABLE + SETUPS (often also PRICED). A behavior cannot be turned off as long as any active item of the type has data for it (CONFLICT). Tags via fields that select from a vocabulary. On expansion: core creates program items, occupancy and order lines with a snapshot of name, price, VAT, tags."},
+  {id:"component",d:"food",n:"ItemComponent",p:"MVP",s:"A part of a composite item. The graph is acyclic, max 5 levels.",a:["parent item","item (the component)","count","offsetMinutes","durationMinutes","required or optional","choice group"]},
+  {id:"choice",d:"food",n:"ItemChoiceGroup",p:"MVP",s:"Selectable alternatives among the components.",a:["name","minPick","maxPick"]},
+  {id:"sheet",d:"food",n:"Sheet",p:"MVP",s:"A versioned compilation for a role, e.g. kitchen order.",a:["booking","sheet definition","items and fields according to the definition","requirements per vocabulary value (count)","blocked (yes/no) and hits","receiving role","version and change markers"],x:"Versioned, changes marked since the last dispatch. Export (json, pdf, csv) for handover."},
+
+  // Finance
+  {id:"pricelist",d:"money",n:"PriceList",p:"MVP",s:"Price per season, weekday or customer.",a:["name","validity","season / weekday","customer (optional)","general discount (%)"]},
+  {id:"pricerow",d:"money",n:"PriceListItem",p:"MVP",s:"Price per item in a price list.",a:["price list","item","price"]},
+  {id:"line",d:"money",n:"OrderLine",p:"MVP",s:"What is actually charged. Copies name, price, VAT and tags.",a:["item","count","unit price","discount","VAT","program item","status (quoted / confirmed / delivered)","invoiced (yes/no)"]},
+  {id:"deposit",d:"money",n:"Deposit",p:"MVP",s:"A partial payment at confirmation.",a:["amount","due date","status","linked agreement"]},
+  {id:"payment",d:"money",n:"Payment",p:"MVP",s:"Incoming payment via Swish, card or invoice.",a:["method (Swish / card / invoice)","PSP reference","amount","time","refund"],x:"Swish and card directly in the booking. Lega shows no online payment."},
+  {id:"invoice",d:"money",n:"Invoice",p:"MVP",s:"The final invoice after delivery (COMPLETED phase).",a:["invoice number","due date","status","offset deposit","export status (Fortnox / Visma)","e-invoice"]},
+
+  // Operations
+  {id:"user",d:"ops",n:"User",p:"MVP",s:"A member of the organization with the organization's own roles.",a:["name","roles (from the organization's roles)","venues","platform role (user / admin)"]},
+  {id:"systemlog",d:"ops",n:"SystemLog",p:"MVP",s:"Platform data: every event in the system, for platform admins (ADR 0014, 0015).",a:["time, level, event","service and surface","request id","organization, user, operation, status, duration, error code","the whole row as JSON (never input or output)"]},
+  {id:"aisetting",d:"ops",n:"AiSetting",p:"MVP",s:"Platform data: model per AI function, chosen by a platform admin. No default models.",a:["AI function","model (from Vercel AI Gateway)","changed by, changed"]},
+  {id:"task",d:"ops",n:"Task",p:"Phase 2",s:"Set up room, AV test, cleaning.",a:["linked program item","type","responsible","deadline","status"]},
+  {id:"message",d:"ops",n:"Communication & log",p:"Phase 2",s:"Email, notes and change history.",a:["channel","direction (in / out)","subject","linked inquiry / booking","change log"]},
+  {id:"screen",d:"ops",n:"Sign",p:"Phase 3",s:"A screen at a bookable item showing the day's program.",a:["item (BOOKABLE)","device","displayed program items"]},
+  {id:"access",d:"ops",n:"AccessCode",p:"Phase 3",s:"A digital lock tied to the booked time.",a:["program item / item","code or mobile key","valid from – to"]}
+];
+
+// [from, to, cardinality, verb (from → to)]
+const R = [
+  ["etype","fielddef","1:N","has"],["etype","item","1:N","classifies"],["fielddef","vocab","N:0..1","selects from"],["setup","itemsetup","1:N","is used in"],["item","itemsetup","1:N","has"],
+  ["sheetdef","role","N:1","goes to"],["sheetdef","sheet","1:N","produces version"],["user","role","N:1","has"],["booking","bstatus","N:1","has status"],
+  ["org","contact","1:N","has"],["org","lead","1:N","sends"],["contact","lead","1:N","is contact for"],["org","pricelist","N:0..1","uses"],
+  ["lead","quote","1:N","is answered by"],["lead","hold","1:N","can create"],["quote","booking","1:0..1","becomes on accept"],["quote","contract","1:0..1","is signed via"],["quote","line","1:N","contains"],
+  ["series","booking","1:N","generates"],["series","pricelist","N:0..1","follows"],
+  ["booking","function","1:N","consists of"],["booking","req","1:N","has"],["function","req","1:N","adjusts"],["req","vocab","N:1","refers to value in"],["booking","policy","N:1","follows"],["booking","deposit","1:N","requires"],["booking","invoice","1:N","is invoiced via"],["booking","sheet","1:N","produces"],["user","booking","1:N","coordinates and sells"],["org","booking","1:N","orders"],
+  ["function","item","N:0..1","is held in"],["function","setup","N:0..1","is set up as"],["function","line","1:N","is charged via"],["function","block","1:1","reserves"],["hold","block","1:1","reserves"],
+  ["venue","item","1:N","has"],["item","block","1:N","has"],
+  ["item","component","1:N","contains"],["item","choice","1:N","has"],["choice","component","1:N","groups"],["item","vocab","N:M","is tagged with value in"],["line","item","N:1","refers to"],["pricelist","pricerow","1:N","contains"],["pricerow","item","N:1","refers to"],
+  ["deposit","payment","1:N","is paid with"],["invoice","payment","1:N","is settled with"],["invoice","line","1:N","invoices"],["invoice","deposit","1:N","offsets"],
+  ["user","task","1:N","is responsible for"],["function","task","1:N","requires"],["message","booking","N:0..1","concerns"],["message","lead","N:0..1","concerns"],["screen","item","N:1","is placed at"],["access","function","N:1","opens for"]
+];
+
+const FLOW = [["Inquiry","sales"],["Option","sales"],["Quote","sales"],["Signing (later)","sales"],["Booking","booking"],["Program items","booking"],["Requirements","booking"],["Sheets","food"],["Delivery","space"],["Invoice","money"],["Fortnox / Visma","money"]];
+
+const byId = Object.fromEntries(E.map(e=>[e.id,e]));
+const dom = Object.fromEntries(DOMAINS.map(d=>[d.id,d]));
+let phase = "All", selected = null;
+
+document.getElementById("flow").innerHTML = FLOW.map(([t,d],i)=>
+  `${i?'<span class="arrow" aria-hidden="true">→</span>':''}<span class="step"><i style="background:var(${dom[d].color})"></i>${t}</span>`).join("");
+
+const phasesEl = document.getElementById("phases");
+["All","MVP","Phase 2","Phase 3"].forEach(p=>{
+  const b=document.createElement("button");b.className="chip";b.id="phase-"+p.replace(" ","");b.textContent=p;
+  b.setAttribute("aria-pressed",p===phase);b.onclick=()=>{phase=p;render()};phasesEl.appendChild(b);
+});
+
+function relsOf(id){
+  return R.filter(r=>r[0]===id||r[1]===id).map(([f,t,c,v])=>
+    f===id ? {other:t,text:`${v}`,card:c} : {other:f,text:`${byId[f].n.toLowerCase()} ${v} this`,card:c.split(":").reverse().join(":")});
+}
+
+function render(){
+  phasesEl.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",b.textContent===phase));
+  const visible = E.filter(e=>phase==="All"||e.p===phase);
+  document.getElementById("count").textContent = `${visible.length} entities`;
+  const related = selected ? new Set(relsOf(selected).map(r=>r.other)) : null;
+  const root = document.getElementById("domains"); root.innerHTML="";
+  DOMAINS.forEach(d=>{
+    const list = visible.filter(e=>e.d===d.id); if(!list.length) return;
+    const col=document.createElement("div");col.className="domain";col.style.setProperty("--dc",`var(${d.color})`);
+    col.innerHTML=`<h3><i style="width:10px;height:10px;border-radius:2px;background:var(${d.color});display:inline-block"></i>${d.name}<span>${list.length}</span></h3>`;
+    list.forEach(e=>{
+      const el=document.createElement("div");el.className="ent";el.tabIndex=0;el.id="e-"+e.id;el.setAttribute("role","button");el.setAttribute("aria-expanded",selected===e.id);
+      if(selected){ if(e.id===selected) el.classList.add("sel"); else if(related.has(e.id)) el.classList.add("rel"); else el.classList.add("dim"); }
+      el.innerHTML=`<div class="top"><span class="name">${e.n}</span>${e.x?'<span class="star" title="Differentiator">★</span>':''}<span class="phase ${e.p==="MVP"?"mvp":""}">${e.p}</span></div><div class="desc">${e.s}</div>`;
+      if(selected===e.id){
+        const rels=relsOf(e.id);
+        const det=document.createElement("div");det.className="detail";
+        det.innerHTML=`<div><h4>Attributes</h4><ul class="attrs">${e.a.map(a=>`<li>${a}</li>`).join("")}</ul></div>
+          <div><h4>Relations</h4><ul class="rels">${rels.map(r=>`<li><span class="card">${r.card}</span> ${r.text} <button data-go="${r.other}">${byId[r.other].n}</button></li>`).join("")}</ul></div>
+          ${e.x?`<div class="diff">★ ${e.x}</div>`:""}`;
+        det.addEventListener("click",ev=>{const g=ev.target.closest("[data-go]");if(g){ev.stopPropagation();go(g.dataset.go)} else ev.stopPropagation();});
+        el.appendChild(det);
+      }
+      const toggle=()=>{selected = selected===e.id?null:e.id; render(); if(selected) document.getElementById("e-"+e.id).focus({preventScroll:true});};
+      el.onclick=toggle; el.onkeydown=ev=>{if(ev.target===el&&(ev.key==="Enter"||ev.key===" ")){ev.preventDefault();toggle();}};
+      col.appendChild(el);
+    });
+    root.appendChild(col);
+  });
+}
+function go(id){
+  if(phase!=="All"&&byId[id].p!==phase) phase="All";
+  selected=id; render();
+  const el=document.getElementById("e-"+id); el.focus({preventScroll:true});
+  el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"center"});
+}
+render();
+
+// Competitors: Y yes, P partial, N no, U unconfirmed
+const COLS = ["Inquiry / CRM","Quote","E-signing","Rooms & setups","Menu","Allergies per attendee","Kitchen order / sheet","Direct booking","Swish","Fortnox / Visma"];
+const COMP = [
+  {g:"Closest competitors in Sweden"},
+  {n:"Lega Online",o:"Multinet, SE",m:"PPYYPUYPUY",pr:"Not published",ref:"Ideon, WTC Malmö, Sensus (logos)"},
+  {n:"VisBook",o:"Visit Group, NO/SE",m:"UUUUYUPUUU",pr:"Revenue-based, not published",ref:"Hackholmssund, Trosa Stadshotell"},
+  {n:"Caspeco",o:"SE",m:"NYUUYUPYYY",pr:"Fixed monthly fee, not published",ref:"Restaurants; conferences unclear"},
+  {g:"Hotels' quote and S&C layer"},
+  {n:"MeetingPackage",o:"FI",m:"NYYYYUUYUN",pr:"~€350/venue/month (G2)",ref:"Scandic, Strawberry"},
+  {n:"Proposales",o:"SE",m:"PYYPYUUNUN",pr:"From SEK 2,990/month (BusinessWith)",ref:"Elite Hotels, Strawberry"},
+  {n:"Event Temple",o:"CA",m:"YYYPUPPYUN",pr:"From $249/month, annual contract",ref:"Strawberry, 174 hotels"},
+  {n:"Mews Events",o:"NL",m:"PYUPUUYPUU",pr:"Not published, requires Mews PMS",ref:"No Nordic found"},
+  {n:"Amadeus Delphi",o:"ES",m:"YYYYYUYPUU",pr:"Not published",ref:"Hilton Slussen (job ad)"},
+  {n:"Oracle OPERA SEM",o:"US",m:"YYUUYUYUUU",pr:"Not published",ref:"Solstrand (NO)"},
+  {g:"Venue and restaurant systems without a Nordic foothold"},
+  {n:"Venjue",o:"DK",m:"YYUYYYYUUN",pr:"0 / 445 / 895 DKK/month",ref:"Danish restaurants"},
+  {n:"Tripleseat",o:"US",m:"YYYYYUYYUN",pr:"Not published",ref:"No Nordic"},
+  {n:"Perfect Venue",o:"US",m:"YYYPYUYYNN",pr:"$0 / 199 / 299/month",ref:"USA/Canada only"},
+  {n:"Momentus",o:"US",m:"YYYUYUYYUU",pr:"Quote, enterprise",ref:"No Nordic"},
+  {g:"Generic booking (low-price floor)"},
+  {n:"Agendo",o:"SE",m:"NNYNNNNYYY",pr:"SEK 299–899/month",ref:"Small businesses, venue rental"},
+  {n:"BokaMera",o:"Visma, SE",m:"NNUNNNNYYY",pr:"SEK 0–569/month",ref:"6,000+ customers (2022)"},
+  {g:"Your system (target state)"},
+  {n:"Your system",o:"MVP",m:"YYYYYNYYYY",pr:"Published prices",ref:"—",you:true}
+];
+const MK = {Y:['m-y','✓','Yes'],P:['m-p','~','Partial'],N:['m-n','–','No'],U:['m-u','?','Unconfirmed']};
+const t=document.getElementById("comp");
+t.innerHTML = `<thead><tr><th class="p">Product</th>${COLS.map(c=>`<th>${c}</th>`).join("")}<th>Price</th><th>Nordic references</th></tr></thead><tbody>${
+  COMP.map(r=> r.g ? `<tr class="group"><td colspan="${COLS.length+3}">${r.g}</td></tr>` :
+  `<tr class="${r.you?'you':''}"><td class="p"><b>${r.n}</b><small>${r.o}</small></td>${[...r.m].map((c,i)=>{const[k,s,l]=MK[c];return `<td><span class="mark ${k}" title="${COLS[i]}: ${l}" aria-label="${l}">${s}</span></td>`}).join("")}<td class="txt">${r.pr}</td><td class="txt">${r.ref}</td></tr>`).join("")
+}</tbody>`;
+
+// Tabs
+const tabs=[...document.querySelectorAll('[role="tab"]')];
+function showTab(id){tabs.forEach(b=>{const on=b.id===id;b.setAttribute("aria-selected",on);document.getElementById(b.getAttribute("aria-controls")).hidden=!on;});}
+tabs.forEach(b=>b.onclick=()=>showTab(b.id));
+if(location.hash==="#competitors") showTab("tab-comp");
+</script>

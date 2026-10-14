@@ -18,12 +18,12 @@ export const Default: Story = {
   render: () => (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">Öppna</Button>
+        <Button variant="outline">Open</Button>
       </PopoverTrigger>
       <PopoverContent>
         <PopoverHeader>
-          <PopoverTitle>Dimensioner</PopoverTitle>
-          <PopoverDescription>Ange rummets mått.</PopoverDescription>
+          <PopoverTitle>Dimensions</PopoverTitle>
+          <PopoverDescription>Enter the room dimensions.</PopoverDescription>
         </PopoverHeader>
       </PopoverContent>
     </Popover>

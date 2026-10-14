@@ -27,7 +27,7 @@ async function seedSkill({ user, slug }: { user: TestUser; slug: string }) {
   const embed = createEmbed();
   const input = {
     slug,
-    name: "Lista anläggningar",
+    name: "List venues",
     description: "Use to list the venues of the organization",
     instructions: "1. Call venue_list.\n2. Summarize.",
     allowedTools: ["venue_list", "not_a_real_tool"],
@@ -56,7 +56,7 @@ describe("skills in the assistant", () => {
     });
     const { handler } = createHarness({ model, mcpUrl: mcp.url });
     const chunks = await readChunks({
-      response: await handler(chatRequest({ cookies: user.cookies, text: "Lista" })),
+      response: await handler(chatRequest({ cookies: user.cookies, text: "List" })),
     });
 
     expect(JSON.stringify(model.doStreamCalls[0]?.prompt[0])).toContain("list-venues");
