@@ -10,6 +10,7 @@ import {
 import { upsertEmbedding } from "../embeddings/upsert-embedding";
 import { getDb } from "../get-db";
 import { applyScope } from "./apply-scope";
+import { PLATFORM_SCOPE } from "./platform-scope";
 import { ScopeViolationError } from "./scope-violation";
 
 export type ScopedDbInput = {
@@ -65,7 +66,8 @@ export type ScopedDbClient = Omit<ScopedDb, "$transaction">;
  * `organizationId` are rejected. Global-read models (Skill) also return global rows on reads.
  */
 export function scopedDb({ organizationId, db }: ScopedDbInput): ScopedDb {
-  if (organizationId.trim() === "" || organizationId === GLOBAL_EMBEDDING_SCOPE) {
+  const reserved = organizationId === GLOBAL_EMBEDDING_SCOPE || organizationId === PLATFORM_SCOPE;
+  if (organizationId.trim() === "" || reserved) {
     const reason = "empty or reserved organization id";
     throw new ScopeViolationError({ model: undefined, operation: "scopedDb", reason });
   }

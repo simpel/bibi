@@ -20,7 +20,7 @@ export {
   sendMail,
   setMailSender,
 } from "./mail";
-export { authHandler } from "./next";
+export { authHandler, handleAuthRequest } from "./next";
 export {
   ACTIONS,
   API_KEY_ROLES,
@@ -33,6 +33,13 @@ export {
   type Resource,
   statementsForRole,
 } from "./permissions";
+export { type IsPlatformAdminInput, isPlatformAdmin } from "./platform/is-platform-admin";
+export {
+  type ResolvePlatformContextInput,
+  resolvePlatformContext,
+} from "./platform/resolve-platform-context";
+export { type SetPlatformAdminInput, setPlatformAdmin } from "./platform/set-platform-admin";
+export { DISABLED_ADMIN_PATHS, PLATFORM_ADMIN_ROLE } from "./plugins/admin";
 export { API_KEY_PREFIX } from "./plugins/api-key";
 export { ORG_CLAIM } from "./plugins/mcp";
 export { type AuthSession, type RequireSessionInput, requireSession } from "./require-session";

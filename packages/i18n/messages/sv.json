@@ -391,7 +391,8 @@
     "oauthQueryMissing": "Begäran saknar information. Starta om från programmet som bad om åtkomst.",
     "textTooShort": "Texten är för kort.",
     "approvalUsed": "Förslaget har redan använts.",
-    "approvalExpired": "Förslaget har gått ut eller kan inte godkännas. Be assistenten föreslå på nytt."
+    "approvalExpired": "Förslaget har gått ut eller kan inte godkännas. Be assistenten föreslå på nytt.",
+    "unavailable": "Funktionen är inte tillgänglig just nu. En administratör behöver konfigurera den."
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",
@@ -422,5 +423,107 @@
     "assistant": "Assistent",
     "askAssistant": "Fråga assistenten: ”{query}”",
     "openAssistant": "Öppna assistenten"
+  },
+  "admin": {
+    "title": "Systemadmin",
+    "navLabel": "Systemadmin",
+    "backToApp": "Till appen",
+    "toggleSidebar": "Visa eller dölj sidomenyn",
+    "sidebarTitle": "Systemadmin",
+    "sidebarDescription": "Navigering för systemadministration",
+    "nav": {
+      "logs": "Systemlogg",
+      "aiModels": "AI-modeller"
+    },
+    "logs": {
+      "title": "Systemlogg",
+      "description": "Alla händelser i systemet: operationer, anrop, inloggningar, mejl och fel. Sparas i {days} dagar.",
+      "empty": "Inga logghändelser matchar filtret.",
+      "columns": {
+        "time": "Tid",
+        "level": "Nivå",
+        "event": "Händelse",
+        "message": "Meddelande",
+        "surface": "Yta",
+        "operation": "Operation",
+        "status": "Status",
+        "duration": "Tid (ms)"
+      },
+      "filters": {
+        "search": "Sök händelse, meddelande eller operation",
+        "level": "Lägsta nivå",
+        "allLevels": "Alla nivåer",
+        "surface": "Yta",
+        "allSurfaces": "Alla ytor",
+        "requestId": "Request-id",
+        "apply": "Filtrera",
+        "clear": "Rensa filter"
+      },
+      "detail": {
+        "title": "Logghändelse",
+        "description": "Alla fält som loggades för händelsen.",
+        "fields": "Fält",
+        "raw": "Rådata (JSON)",
+        "sameRequest": "Visa hela requesten",
+        "close": "Stäng",
+        "notFound": "Logghändelsen finns inte längre."
+      },
+      "pagination": {
+        "rowsPerPage": "Rader per sida",
+        "pageOf": "Sida {page} av {pageCount}",
+        "first": "Första sidan",
+        "previous": "Föregående sida",
+        "next": "Nästa sida",
+        "last": "Sista sidan",
+        "total": "{count, plural, one {# händelse} other {# händelser}}"
+      }
+    },
+    "aiModels": {
+      "title": "AI-modeller",
+      "description": "Välj vilken modell varje AI-funktion använder. Det finns inga standardmodeller: utan val fungerar inte funktionen. Modellerna hämtas från Vercel AI Gateway.",
+      "catalogFailed": "Modellistan från Vercel AI Gateway kunde inte hämtas. Nuvarande val gäller fortfarande.",
+      "changedAt": "Ändrad {date}",
+      "choose": "Välj modell",
+      "save": "Spara",
+      "saved": "Modellen är sparad.",
+      "reindexTitle": "Byta embedding-modell?",
+      "reindexDescription": "Sökindexet är skapat med den gamla modellen. Tills det byggts om blir semantisk sökning missvisande. Kör `pnpm --filter @okazi/ai reindex` direkt efter bytet. Modellen måste stödja 1536 dimensioner.",
+      "reindexConfirm": "Byt modell",
+      "features": {
+        "assistantChat": {
+          "name": "Assistenten",
+          "description": "Språkmodellen som svarar i chatten och ⌘K."
+        },
+        "searchEmbedding": {
+          "name": "Semantisk sökning",
+          "description": "Embedding-modellen som indexerar och söker bland lokaler, rum, konversationer och färdigheter."
+        }
+      },
+      "notInCatalog": "Den valda modellen är inte längre möjlig för funktionen. Välj en ny.",
+      "notConfigured": "Inte konfigurerad",
+      "notConfiguredHint": "Funktionen fungerar inte förrän en modell är vald. Varje försök loggas som fel.",
+      "saving": "Sparar modell…",
+      "columns": {
+        "feature": "AI-funktion",
+        "model": "Modell",
+        "price": "Pris (USD / 1M tokens)",
+        "changed": "Ändrad"
+      },
+      "priceInOut": "In {input} · Ut {output}",
+      "priceIn": "In {input}",
+      "noPrice": "Pris saknas",
+      "noPossibleModels": "Inga möjliga modeller hittades. Kontrollera AI_GATEWAY_API_KEY.",
+      "modelLabel": "Modell för {feature}",
+      "possibleHint": "Bara modeller som funktionen kan använda visas.",
+      "empty": "Inga AI-funktioner."
+    },
+    "levels": {
+      "trace": "Trace",
+      "debug": "Debug",
+      "info": "Info",
+      "warn": "Varning",
+      "error": "Fel",
+      "fatal": "Kritiskt"
+    }
   }
 }

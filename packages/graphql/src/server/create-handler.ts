@@ -1,5 +1,6 @@
 import { useDisableIntrospection } from "@graphql-yoga/plugin-disable-introspection";
 import { createCoreOperations, createIndexingHook, type EmbedFn } from "@okazi/core";
+import { withRequestLogging } from "@okazi/logger";
 import { createYoga, type Plugin } from "graphql-yoga";
 import { costLimitRule } from "../limits/cost-limit";
 import { depthLimitRule } from "../limits/depth-limit";
@@ -40,5 +41,8 @@ export function createGraphqlHandler({
     context: ({ request }) => buildContext({ request, resolveContext, operations, afterCommit }),
     plugins: [limitsPlugin, ...(development ? [] : [useDisableIntrospection()])],
   });
-  return (request) => Promise.resolve(yoga.fetch(request));
+  return withRequestLogging({
+    surface: "graphql",
+    handler: (request) => Promise.resolve(yoga.fetch(request)),
+  });
 }

@@ -1,22 +1,32 @@
-import { getEnv } from "@okazi/config";
-import { fromUnknown } from "@okazi/core";
+import { fromUnknown, ok } from "@okazi/core";
+import { getLogger, withRequestLogging } from "@okazi/logger";
 import type { LanguageModel } from "ai";
 import { connectMcp } from "../mcp/connect-mcp";
 import { errorResponse } from "../server/error-response";
 import { type AssistantServerOptions, resolveServerOptions } from "../server/server-options";
 import { defaultRunErrorReporter, type RunErrorReporter } from "./finish-run";
 import { handleChat } from "./handle-chat";
-import { defaultLanguageModel } from "./language-model";
+import { configuredLanguageModel } from "./language-model";
 
 export type CreateChatHandlerInput = AssistantServerOptions & {
-  /** Language model; default `AI_DEFAULT_MODEL` via the AI Gateway. Tests: `MockLanguageModelV4`. */
+  /**
+   * Test/E2E seam only (`MockLanguageModelV4`). Without it the model is the one a platform admin
+   * chose for `assistant.chat` (ADR 0015); unconfigured → 503 UNAVAILABLE.
+   */
   model?: LanguageModel;
-  /** Model id stored in message metadata; default `AI_DEFAULT_MODEL`. */
+  /** Model id stored in message metadata with an explicit `model`; default its `modelId`. */
   modelId?: string;
   /** Test seam: wraps the MCP client factory (e.g. to observe `close()`). */
   connect?: typeof connectMcp;
   /** Where background failures (persist/close after the stream ended) are reported. */
   report?: RunErrorReporter;
+};
+
+type FixedModelInput = { model: LanguageModel; modelId: string | undefined };
+
+const fixedModel = ({ model, modelId }: FixedModelInput) => {
+  const id = modelId ?? (typeof model === "string" ? model : model.modelId);
+  return async () => ok({ value: { model, modelId: id } });
 };
 
 /**
@@ -37,16 +47,19 @@ export function createChatHandler({
 }: CreateChatHandlerInput) {
   const runtime = {
     ...resolveServerOptions({ resolveContext, getAccessToken, mcpUrl, embed }),
-    model: model ?? defaultLanguageModel({ ...(modelId ? { modelId } : {}) }),
-    modelId: modelId ?? getEnv().AI_DEFAULT_MODEL,
     connect: connect ?? connectMcp,
     report: report ?? defaultRunErrorReporter,
+    chooseModel: model ? fixedModel({ model, modelId }) : configuredLanguageModel,
   };
-  return async (request: Request): Promise<Response> => {
-    try {
-      return await handleChat({ request, runtime });
-    } catch (error) {
-      return errorResponse({ error: fromUnknown({ error }) });
-    }
-  };
+  return withRequestLogging({
+    surface: "ai",
+    handler: async (request) => {
+      try {
+        return await handleChat({ request, runtime });
+      } catch (error) {
+        getLogger().error({ event: "ai.chatFailed", err: error });
+        return errorResponse({ error: fromUnknown({ error }) });
+      }
+    },
+  });
 }

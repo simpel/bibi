@@ -1,4 +1,5 @@
 import { fromUnknown } from "@okazi/core";
+import { getLogger, withRequestLogging } from "@okazi/logger";
 import { errorResponse } from "../server/error-response";
 import { readJsonBody } from "../server/read-json-body";
 import { resolveUser, type UserContext } from "../server/resolve-user";
@@ -13,6 +14,7 @@ import {
   type ApprovalResponse,
 } from "./approval-request";
 import { confirmApproval } from "./confirm-approval";
+import { logDecision } from "./log-decision";
 import { recordApprovalDecision } from "./record-approval-decision";
 import { rejectApproval } from "./reject-approval";
 
@@ -73,17 +75,23 @@ export function createApprovalHandler({
   embed,
 }: AssistantServerOptions) {
   const options = resolveServerOptions({ resolveContext, getAccessToken, mcpUrl, embed });
-  return async (request: Request): Promise<Response> => {
-    try {
-      const { headers } = request;
-      const user = await resolveUser({ headers, resolveContext: options.resolveContext });
-      if (!user.ok) return errorResponse({ error: user.error });
-      const body = await readJsonBody({ request, schema: ApprovalRequestSchema });
-      if (!body.ok) return errorResponse({ error: body.error });
-      const decide = body.value.decision === "approve" ? approve : reject;
-      return await decide({ body: body.value, user: user.value, headers, options });
-    } catch (error) {
-      return errorResponse({ error: fromUnknown({ error }) });
-    }
-  };
+  return withRequestLogging({
+    surface: "ai",
+    handler: async (request) => {
+      try {
+        const { headers } = request;
+        const user = await resolveUser({ headers, resolveContext: options.resolveContext });
+        if (!user.ok) return errorResponse({ error: user.error });
+        const body = await readJsonBody({ request, schema: ApprovalRequestSchema });
+        if (!body.ok) return errorResponse({ error: body.error });
+        const decide = body.value.decision === "approve" ? approve : reject;
+        const response = await decide({ body: body.value, user: user.value, headers, options });
+        logDecision({ body: body.value, status: response.status });
+        return response;
+      } catch (error) {
+        getLogger().error({ event: "approval.failed", err: error });
+        return errorResponse({ error: fromUnknown({ error }) });
+      }
+    },
+  });
 }

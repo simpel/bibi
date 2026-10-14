@@ -6,6 +6,9 @@ export const ROUTES = {
   venues: "/venues",
   skills: "/skills",
   skillNew: "/skills/new",
+  admin: "/admin",
+  adminLogs: "/admin/logs",
+  adminAiModels: "/admin/ai-models",
 } as const;
 
 export type VenueRouteInput = { id: string };

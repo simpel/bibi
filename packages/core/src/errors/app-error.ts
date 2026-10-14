@@ -5,6 +5,8 @@ export const APP_ERROR_CODES = [
   "VALIDATION",
   "CONFLICT",
   "INTERNAL",
+  /** A capability that is not configured or reachable right now (e.g. no AI model chosen). */
+  "UNAVAILABLE",
 ] as const;
 
 export type AppErrorCode = (typeof APP_ERROR_CODES)[number];

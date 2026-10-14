@@ -28,7 +28,6 @@ export { conversationTitle } from "./chat/ensure-conversation";
 export { HUMAN_ONLY_TOOLS } from "./chat/prepare-tools";
 export { CONVERSATION_DATA_PART, CONVERSATION_ID_HEADER } from "./chat/stream-chat";
 export {
-  type AssistantEmbedFn,
   type CreateEmbedInput,
   createEmbed,
   isPlaceholderEmbed,
@@ -39,6 +38,22 @@ export {
   type ReindexReport,
   reindexAll,
 } from "./embeddings/reindex/reindex-all";
+export {
+  type CreateListCompatibleModelsInput,
+  createListCompatibleModels,
+} from "./gateway/list-compatible-models";
+export {
+  type CreateListGatewayModelsInput,
+  clearGatewayModelCache,
+  createListGatewayModels,
+  GATEWAY_MODELS_URL,
+  type ListGatewayModels,
+} from "./gateway/list-gateway-models";
+export {
+  createEmbeddingProbe,
+  type ProbeEmbedding,
+  type ProbeEmbeddingInput,
+} from "./gateway/probe-embedding";
 export { type BuildSystemPromptInput, buildSystemPrompt } from "./prompt/build-system-prompt";
 export {
   ASSISTANT_LOCALES,

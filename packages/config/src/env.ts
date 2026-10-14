@@ -7,8 +7,6 @@ const envSchema = z.object({
   SMTP_URL: z.string().default("smtp://localhost:1025"),
   MAIL_FROM: z.string().default("Okazi <no-reply@okazi.local>"),
   AI_GATEWAY_API_KEY: z.string().optional(),
-  AI_DEFAULT_MODEL: z.string().default("anthropic/claude-sonnet-5-5"),
-  AI_EMBEDDING_MODEL: z.string().default("openai/text-embedding-3-small"),
   WEB_URL: z.string().url().default("http://localhost:3000"),
   MCP_URL: z.string().url().default("http://localhost:3001"),
   /** Listen port of `apps/mcp` (Streamable HTTP). */
@@ -24,6 +22,12 @@ const envSchema = z.object({
    * (`apps/web/src/server/e2e-mock-model.ts`). Off by default; ignored when NODE_ENV=production.
    */
   E2E_MOCK_MODEL: z.stringbool().default(false),
+  /** Minimum log level (ADR 0014). Default: `silent` when NODE_ENV=test, else `info`. */
+  LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]).optional(),
+  /** `json` (one event per line) or `pretty`. Default: `json` in production, else `pretty`. */
+  LOG_FORMAT: z.enum(["json", "pretty"]).optional(),
+  /** Days the `SystemLog` table keeps rows for the admin view (ADR 0015). */
+  SYSTEM_LOG_RETENTION_DAYS: z.coerce.number().int().min(1).max(365).default(30),
 });
 
 export type Env = z.infer<typeof envSchema>;

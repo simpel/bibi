@@ -53,10 +53,12 @@ export function analyzeParams({ relPath, content }) {
   return problems;
 }
 
-// Undantag: stories, Next route handlers (GET(request, context)) och cn(...inputs) i packages/ui.
+// Undantag: stories, Next route handlers (GET(request, context)), Next onRequestError(error,
+// request, context) i instrumentation.ts och cn(...inputs) i packages/ui.
 function isExempt({ relPath, name }) {
   if (/\.stories\.tsx$/.test(relPath)) return true;
   if (/(^|\/)route\.ts$/.test(relPath) && HTTP_VERBS.has(name)) return true;
+  if (/(^|\/)instrumentation\.ts$/.test(relPath) && name === "onRequestError") return true;
   return name === "cn" && relPath.startsWith("packages/ui/");
 }
 

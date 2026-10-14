@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@okazi/db": "workspace:*",
+    "@okazi/logger": "workspace:*",
     "zod": "4.6.7"
   },
   "devDependencies": {

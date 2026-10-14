@@ -13,6 +13,7 @@ export {
 export { upsertEmbedding } from "./embeddings/upsert-embedding";
 export {
   ActorType,
+  type AiSetting,
   type AuditLog,
   type Conversation,
   type Embedding,
@@ -24,6 +25,7 @@ export {
   type Skill,
   SkillScope,
   SkillStatus,
+  type SystemLog,
   type Venue,
 } from "./generated/prisma/client";
 export { getDb } from "./get-db";
@@ -33,6 +35,7 @@ export {
   SOFT_DELETE_DEFAULTS,
   SOFT_DELETE_MODELS,
 } from "./scoped/models";
+export { PLATFORM_SCOPE } from "./scoped/platform-scope";
 export { ScopeViolationError } from "./scoped/scope-violation";
 export {
   type ScopedDb,
@@ -40,3 +43,8 @@ export {
   type ScopedDbInput,
   scopedDb,
 } from "./scoped/scoped-db";
+export {
+  type CreateSystemLogSinkInput,
+  createSystemLogSink,
+  type SystemLogSink,
+} from "./system-log/create-system-log-sink";

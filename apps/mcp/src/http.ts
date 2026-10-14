@@ -1,9 +1,17 @@
 import { AUTH_BASE_PATH, resolveExecuteContext } from "@okazi/auth";
 import { getEnv } from "@okazi/config";
+import { createSystemLogSink } from "@okazi/db";
+import { getLogger, initLogger, installProcessHandlers } from "@okazi/logger";
 import { embed } from "./embed";
 import { createHttpServer } from "./http/create-http-server";
 
 const env = getEnv();
+
+initLogger({
+  service: "mcp",
+  sinks: [createSystemLogSink({ retentionDays: env.SYSTEM_LOG_RETENTION_DAYS })],
+});
+installProcessHandlers({ exitOnUncaught: true });
 
 const server = createHttpServer({
   resolveContext: resolveExecuteContext,
@@ -14,5 +22,5 @@ const server = createHttpServer({
 });
 
 server.listen(env.PORT, () => {
-  console.log(`@okazi/mcp listening on :${env.PORT} (POST /mcp)`);
+  getLogger().info({ event: "process.started", msg: "@okazi/mcp listening", port: env.PORT });
 });

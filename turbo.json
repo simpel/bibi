@@ -28,13 +28,14 @@
     "SMTP_URL",
     "MAIL_FROM",
     "AI_GATEWAY_API_KEY",
-    "AI_DEFAULT_MODEL",
-    "AI_EMBEDDING_MODEL",
     "WEB_URL",
     "MCP_URL",
     "WEB_PORT",
     "WEB_OAUTH_CLIENT_ID",
     "NODE_ENV",
-    "E2E_MOCK_MODEL"
+    "E2E_MOCK_MODEL",
+    "LOG_LEVEL",
+    "LOG_FORMAT",
+    "SYSTEM_LOG_RETENTION_DAYS"
   ]
 }

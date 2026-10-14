@@ -391,7 +391,8 @@
     "oauthQueryMissing": "The request is missing information. Start again from the application that asked for access.",
     "textTooShort": "The text is too short.",
     "approvalUsed": "This proposal has already been used.",
-    "approvalExpired": "The proposal has expired or cannot be approved. Ask the assistant to propose it again."
+    "approvalExpired": "The proposal has expired or cannot be approved. Ask the assistant to propose it again.",
+    "unavailable": "This feature is not available right now. An administrator needs to configure it."
   },
   "shell": {
     "mainNavigation": "Main navigation",
@@ -422,5 +423,107 @@
     "assistant": "Assistant",
     "askAssistant": "Ask the assistant: “{query}”",
     "openAssistant": "Open the assistant"
+  },
+  "admin": {
+    "title": "System admin",
+    "navLabel": "System admin",
+    "backToApp": "Back to app",
+    "toggleSidebar": "Show or hide the sidebar",
+    "sidebarTitle": "System admin",
+    "sidebarDescription": "System administration navigation",
+    "nav": {
+      "logs": "System log",
+      "aiModels": "AI models"
+    },
+    "logs": {
+      "title": "System log",
+      "description": "Every event in the system: operations, requests, sign-ins, mail and errors. Kept for {days} days.",
+      "empty": "No log events match the filter.",
+      "columns": {
+        "time": "Time",
+        "level": "Level",
+        "event": "Event",
+        "message": "Message",
+        "surface": "Surface",
+        "operation": "Operation",
+        "status": "Status",
+        "duration": "Duration (ms)"
+      },
+      "filters": {
+        "search": "Search event, message or operation",
+        "level": "Minimum level",
+        "allLevels": "All levels",
+        "surface": "Surface",
+        "allSurfaces": "All surfaces",
+        "requestId": "Request id",
+        "apply": "Filter",
+        "clear": "Clear filters"
+      },
+      "detail": {
+        "title": "Log event",
+        "description": "Every field logged for the event.",
+        "fields": "Fields",
+        "raw": "Raw data (JSON)",
+        "sameRequest": "Show whole request",
+        "close": "Close",
+        "notFound": "The log event no longer exists."
+      },
+      "pagination": {
+        "rowsPerPage": "Rows per page",
+        "pageOf": "Page {page} of {pageCount}",
+        "first": "First page",
+        "previous": "Previous page",
+        "next": "Next page",
+        "last": "Last page",
+        "total": "{count, plural, one {# event} other {# events}}"
+      }
+    },
+    "aiModels": {
+      "title": "AI models",
+      "description": "Choose the model each AI feature uses. There are no default models: without a choice the feature does not work. Models are fetched from the Vercel AI Gateway.",
+      "catalogFailed": "The model list from the Vercel AI Gateway could not be fetched. Current choices still apply.",
+      "changedAt": "Changed {date}",
+      "choose": "Choose model",
+      "save": "Save",
+      "saved": "The model is saved.",
+      "reindexTitle": "Change the embedding model?",
+      "reindexDescription": "The search index was built with the old model. Until it is rebuilt, semantic search is unreliable. Run `pnpm --filter @okazi/ai reindex` right after the change. The model must support 1536 dimensions.",
+      "reindexConfirm": "Change model",
+      "features": {
+        "assistantChat": {
+          "name": "Assistant",
+          "description": "The language model answering in the chat and ⌘K."
+        },
+        "searchEmbedding": {
+          "name": "Semantic search",
+          "description": "The embedding model that indexes and searches venues, rooms, conversations and skills."
+        }
+      },
+      "notInCatalog": "The chosen model is no longer possible for this feature. Choose a new one.",
+      "notConfigured": "Not configured",
+      "notConfiguredHint": "The feature does not work until a model is chosen. Every attempt is logged as an error.",
+      "saving": "Saving model…",
+      "columns": {
+        "feature": "AI feature",
+        "model": "Model",
+        "price": "Price (USD / 1M tokens)",
+        "changed": "Changed"
+      },
+      "priceInOut": "In {input} · Out {output}",
+      "priceIn": "In {input}",
+      "noPrice": "No price",
+      "noPossibleModels": "No possible models found. Check AI_GATEWAY_API_KEY.",
+      "modelLabel": "Model for {feature}",
+      "possibleHint": "Only models the feature can use are shown.",
+      "empty": "No AI features."
+    },
+    "levels": {
+      "trace": "Trace",
+      "debug": "Debug",
+      "info": "Info",
+      "warn": "Warning",
+      "error": "Error",
+      "fatal": "Fatal"
+    }
   }
 }

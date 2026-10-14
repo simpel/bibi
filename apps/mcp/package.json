@@ -25,6 +25,7 @@
     "@okazi/core": "workspace:*",
     "@okazi/db": "workspace:*",
     "@okazi/graphql": "workspace:*",
+    "@okazi/logger": "workspace:*",
     "@paralleldrive/cuid2": "3.3.0",
     "@pothos/core": "4.15.1",
     "@prisma/adapter-pg": "7.10.0",
