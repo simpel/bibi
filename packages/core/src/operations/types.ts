@@ -1,6 +1,7 @@
 import type { ScopedDbClient } from "@okazi/db";
 import type { z } from "zod";
 import type { Result } from "../errors/result";
+import type { PermissionSet } from "../permissions/permission-set";
 import type { Embeddable } from "../search/embeddable";
 import type { Permission } from "./permission";
 
@@ -30,8 +31,10 @@ export type OperationContext = {
   actor: Actor;
   /** Org-scoped Prisma client (inside the command transaction for commands). */
   db: ScopedDbClient;
-  /** Organization roles of the user, e.g. `["owner"]`. */
+  /** Role names of the user in the organization, e.g. `["Säljare"]`. Display and audit only. */
   roles: readonly string[];
+  /** What the caller may do, resolved from `roles` by `packages/auth` (ADR 0014). */
+  permissions: PermissionSet;
   /** Commands call this so audit rows carry entity id and before/after state. */
   recordChange: (change: RecordedChange) => void;
 };

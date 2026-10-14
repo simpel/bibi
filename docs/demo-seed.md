@@ -19,6 +19,14 @@ Skriptet avslutas med kontroller som får CI att fallera om demot inte visar det
 6. I serien S1 är tillfälle 4 flaggat för krock och flyttat till ett annat rum.
 7. Varje skrivning har en rad i `AuditLog` med aktör `SYSTEM`.
 
+Del 1 (roller) kontrollerar i dag: roller och medlemmar per organisation, att varje användare har sin roll enligt tabellerna, och punkt 7.
+
+## Undantag och inloggning
+
+- Organisationen, användarna och medlemskapen är Better Auths tabeller. De skrivs direkt (`seed/demo/users.ts`), på samma sätt som registrering och `addMember` gör. Allt annat går via `execute` som `SYSTEM`. Ägaren får `owner` direkt, övriga får sin roll via `member.assignRole`.
+- Användarnas e-post är `förnamn.efternamn@<slug>.okazi.test`, t.ex. `anna.berg@lindholmen-demo.okazi.test`. Logga in med magisk länk eller engångskod; mejlet hamnar i Mailpit.
+- Roller som ska skriva kunder, bokningar eller blad får de behörigheterna när resurserna finns (del 2–6). Tills dess läser de anläggningar och rum.
+
 ---
 
 # Lindholmen Upplevelsecenter

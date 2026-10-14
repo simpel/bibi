@@ -1,19 +1,33 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { type Actor, createExecuteContext, type ExecuteContext } from "@okazi/core";
+import {
+  type Actor,
+  createExecuteContext,
+  type ExecuteContext,
+  grantAll,
+  type PermissionAction,
+  type PermissionSet,
+} from "@okazi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { createMcpServer } from "../src/server/create-mcp-server";
 import { fakeEmbed } from "./fake-embed";
 
-export type TestContextInput = { organizationId?: string; roles?: string[]; actor?: Actor };
+export type TestContextInput = {
+  organizationId?: string;
+  /** Every resource up to this action (default `admin`), or explicit `permissions`. */
+  access?: PermissionAction;
+  permissions?: PermissionSet;
+  actor?: Actor;
+};
 
 /** Fresh org per call: tests never share rows, so no cleanup is needed. */
 export function testContext({
   organizationId = `org_${createId()}`,
-  roles = ["owner"],
+  access = "admin",
+  permissions = grantAll({ upTo: access }),
   actor = { type: "user", userId: `user_${createId()}` },
 }: TestContextInput = {}): ExecuteContext {
-  return createExecuteContext({ organizationId, roles, actor });
+  return createExecuteContext({ organizationId, roles: [access], permissions, actor });
 }
 
 export type ConnectInput = { context: ExecuteContext };

@@ -183,8 +183,9 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 
 **Attribut**
 - namn
-- behörigheter (`<resurs>:read|write|admin`)
+- behörigheter (`<resurs>:read|write|admin`, högre åtgärd innefattar lägre)
 - system (`owner` är fast och kan inte ändras eller tas bort)
+- status (aktiv / arkiverad; kan bara arkiveras när ingen medlem har rollen)
 
 **Relationer**
 - `1:N` Användare har denna
@@ -644,7 +645,7 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 - `1:N` koordinerar och säljer → Bokning
 - `1:N` ansvarar för → Uppgift
 
-> Core slår inte upp roller. `packages/auth` löser medlemmens roller till behörigheter en gång per anrop. API-nycklar utfärdas med ett rollnamn, med `admin` som tak.
+> Core slår inte upp roller. `packages/auth` löser medlemmens roller till behörigheter en gång per anrop. API-nycklar utfärdas med ett rollnamn (aldrig `owner`) och får aldrig mer än medlemmens egna behörigheter. Ingen kan ge en roll mer än hen själv har.
 
 ### Uppgift
 

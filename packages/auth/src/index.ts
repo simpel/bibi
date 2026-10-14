@@ -21,18 +21,7 @@ export {
   setMailSender,
 } from "./mail";
 export { authHandler } from "./next";
-export {
-  ACTIONS,
-  API_KEY_ROLES,
-  type ApiKeyRole,
-  accessControl,
-  ORG_ROLES,
-  type OrgRole,
-  orgRoles,
-  RESOURCES,
-  type Resource,
-  statementsForRole,
-} from "./permissions";
+export { accessControl, orgRoles, ownerPermissions } from "./permissions";
 export { API_KEY_PREFIX } from "./plugins/api-key";
 export { ORG_CLAIM } from "./plugins/mcp";
 export { type AuthSession, type RequireSessionInput, requireSession } from "./require-session";

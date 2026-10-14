@@ -48,7 +48,7 @@ export function proposeApproval({
     return err({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
   const parsed = operation.input.safeParse(args);
   if (!parsed.success) return err({ error: fromZodError({ error: parsed.error }) });
-  if (!hasPermission({ roles: context.roles, permission: operation.permission })) {
+  if (!hasPermission({ permissions: context.permissions, permission: operation.permission })) {
     return err({
       error: appError({ code: "FORBIDDEN", message: `Missing permission ${operation.permission}` }),
     });

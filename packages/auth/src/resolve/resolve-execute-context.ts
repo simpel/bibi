@@ -28,9 +28,11 @@ export async function resolveExecuteContext({
 }: ResolveExecuteContextInput): Promise<Result<ExecuteContext>> {
   const principal = await resolvePrincipal({ headers });
   if (!principal.ok) return principal;
-  const { userId, organizationId, roles, aiAllowed } = principal.value;
-  if (roles.length === 0) return forbidden({ message: "Not a member of the organization" });
+  const { userId, organizationId, roles, permissions, aiAllowed } = principal.value;
+  if (roles === null) return forbidden({ message: "Not a member of the organization" });
   const actor = buildActor({ headers, userId, aiAllowed });
   if (!actor.ok) return actor;
-  return ok({ value: createExecuteContext({ organizationId, actor: actor.value, roles }) });
+  return ok({
+    value: createExecuteContext({ organizationId, actor: actor.value, roles, permissions }),
+  });
 }

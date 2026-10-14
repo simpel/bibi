@@ -1,5 +1,13 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
-import type { RoomWire, SearchHitWire, SkillCardWire, SkillRow, VenueWire } from "./wire-schemas";
+import type {
+  MemberWire,
+  RoleWire,
+  RoomWire,
+  SearchHitWire,
+  SkillCardWire,
+  SkillRow,
+  VenueWire,
+} from "./wire-schemas";
 
 /**
  * Generative-UI contract: component key → props. The web maps each key to an `@okazi/ui`
@@ -10,6 +18,10 @@ export type ToolUiProps = {
   "venue-card": { venue: VenueWire };
   "room-table": { items: RoomWire[]; nextCursor: string | null };
   "room-card": { room: RoomWire };
+  "role-table": { items: RoleWire[]; nextCursor: string | null };
+  "role-card": { role: RoleWire };
+  "member-table": { items: MemberWire[]; nextCursor: string | null };
+  "member-card": { member: MemberWire };
   "search-results": { hits: SearchHitWire[] };
   "skill-table": { items: SkillRow[]; nextCursor: string | null };
   "skill-card": { skill: SkillCardWire };
@@ -28,6 +40,10 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "venue-card",
   "room-table",
   "room-card",
+  "role-table",
+  "role-card",
+  "member-table",
+  "member-card",
   "search-results",
   "skill-table",
   "skill-card",

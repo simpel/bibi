@@ -6,20 +6,22 @@
   "exports": {
     ".": "./src/index.ts",
     "./schemas": "./src/schemas.ts",
-    "./seed": "./src/skills/seed-system-skills.ts"
+    "./seed": "./src/skills/seed-system-skills.ts",
+    "./seed/demo": "./src/seed/demo/seed-demo.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "seed:skills": "tsx --env-file-if-exists=../../.env src/skills/seed-cli.ts"
+    "seed:skills": "tsx --env-file-if-exists=../../.env src/skills/seed-cli.ts",
+    "seed:demo": "tsx --env-file-if-exists=../../.env src/seed/demo/seed-cli.ts"
   },
   "dependencies": {
+    "@okazi/config": "workspace:*",
     "@okazi/db": "workspace:*",
+    "@paralleldrive/cuid2": "3.3.0",
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@okazi/config": "workspace:*",
-    "@paralleldrive/cuid2": "3.3.0",
     "@types/node": "26.6.5",
     "tsx": "4.23.15",
     "typescript": "7.0.2",

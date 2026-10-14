@@ -13,7 +13,7 @@ const SKILL_MD =
 
 describe("conversations, messages and skills through GraphQL", () => {
   it("creates a conversation, appends messages and reads them via the graph edge", async () => {
-    const context = testContext({ roles: ["member"] });
+    const context = testContext({ access: "write" });
     const gql = createClient({ context });
     const created = await gql({
       query: CREATE_CONVERSATION,
@@ -41,7 +41,7 @@ describe("conversations, messages and skills through GraphQL", () => {
     expect(list.body.data.conversations.items).toEqual([{ id: conversation.id }]);
 
     const otherUser = createClient({
-      context: testContext({ organizationId: context.organizationId, roles: ["member"] }),
+      context: testContext({ organizationId: context.organizationId, access: "write" }),
     });
     const denied = await otherUser({
       query: READ_CONVERSATION,

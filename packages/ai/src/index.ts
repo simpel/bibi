@@ -59,6 +59,8 @@ export {
   type UiComponent,
 } from "./ui-contract/tool-ui-types";
 export type {
+  MemberWire,
+  RoleWire,
   RoomWire,
   SearchHitWire,
   SkillCardWire,

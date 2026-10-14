@@ -171,7 +171,7 @@ const E = [
   {id:"itemsetup",d:"config",n:"Item-uppställning",p:"MVP",s:"Kapacitet per bokningsbar artikel och uppställning. Kräver beteendet SETUPS.",a:["artikel","uppställning","kapacitet"]},
   {id:"sheetdef",d:"config",n:"Blad-definition",p:"MVP",s:"Hur ett blad ser ut, t.ex. Köksorder eller Bryggorder.",a:["namn","artikeltyper och fält som ingår","listor vars behov tas med","mottagande roll"]},
   {id:"bstatus",d:"config",n:"Bokningsstatus",p:"MVP",s:"Organisationens egen status med fast fas och egna övergångar. Fasen styr systemets regler.",a:["namn","färg","ordning","fas (TENTATIVE / CONFIRMED / COMPLETED / CANCELLED)","tillåtna övergångar (från → till)","arkiverad (kan inte tas bort när den används)"],x:"Rapporter grupperar på fas, inte på status. Fasreglerna kan inte stängas av."},
-  {id:"role",d:"config",n:"Roll",p:"MVP",s:"Namngiven uppsättning behörigheter per organisation (organizationRole). owner är fast.",a:["namn","behörigheter (resurs:read|write|admin)","system (owner kan inte ändras eller tas bort)"]},
+  {id:"role",d:"config",n:"Roll",p:"MVP",s:"Namngiven uppsättning behörigheter per organisation (organizationRole). owner är fast.",a:["namn","behörigheter (resurs:read|write|admin)","system (owner kan inte ändras eller tas bort)","status (aktiv / arkiverad)"]},
 
   // Sälj & kund
   {id:"org",d:"sales",n:"Kund (organisation)",p:"MVP",s:"Företaget som köper konferensen. Har en typ med egna fält.",a:["typ och egna fält (t.ex. orgnr, Peppol-ID)","namn","fakturaadress","prislista","betalvillkor (dagar)","kreditgräns"]},

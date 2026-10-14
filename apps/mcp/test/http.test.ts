@@ -1,7 +1,7 @@
 import type { AddressInfo } from "node:net";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { appError, createExecuteContext, err, ok } from "@okazi/core";
+import { appError, createExecuteContext, err, grantAll, ok } from "@okazi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createHttpServer } from "../src/http/create-http-server";
@@ -19,7 +19,14 @@ async function resolveContext({ headers }: ResolveInput) {
     return err({ error: appError({ code: "FORBIDDEN", message: "No access" }) });
   }
   const actor = { type: "user" as const, userId: `user_${organizationId}` };
-  return ok({ value: createExecuteContext({ organizationId, roles: ["owner"], actor }) });
+  return ok({
+    value: createExecuteContext({
+      organizationId,
+      roles: ["owner"],
+      permissions: grantAll({ upTo: "admin" }),
+      actor,
+    }),
+  });
 }
 
 const server = createHttpServer({

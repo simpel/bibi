@@ -98,7 +98,9 @@
     "skills": "Färdigheter",
     "settings": "Inställningar",
     "openMenu": "Öppna meny",
-    "commandBar": "Kommandofält"
+    "commandBar": "Kommandofält",
+    "roles": "Roller",
+    "members": "Medlemmar"
   },
   "venue": {
     "singular": "Anläggning",
@@ -422,5 +424,63 @@
     "assistant": "Assistent",
     "askAssistant": "Fråga assistenten: ”{query}”",
     "openAssistant": "Öppna assistenten"
+  },
+  "role": {
+    "singular": "Roll",
+    "plural": "Roller",
+    "listDescription": "Vad personalen får göra i organisationen. Ägarrollen är fast.",
+    "create": "Skapa roll",
+    "edit": "Redigera roll",
+    "createDescription": "Namnge rollen och välj vad den får göra.",
+    "editDescription": "Ändra namn och behörigheter. Omdöpning gäller även medlemmarna.",
+    "archive": "Arkivera roll",
+    "archiveConfirm": "Vill du arkivera rollen {name}? Det går inte så länge medlemmar har den.",
+    "archived": "Rollen har arkiverats.",
+    "created": "Rollen har skapats.",
+    "updated": "Rollen har uppdaterats.",
+    "empty": "Inga roller.",
+    "system": "Systemroll",
+    "allPermissions": "Allt",
+    "importTemplate": "Importera mall Konferensgård",
+    "imported": "{created, plural, one {# roll} other {# roller}} skapades, {skipped} fanns redan.",
+    "fields": {
+      "name": "Namn"
+    },
+    "columns": {
+      "name": "Namn",
+      "permissions": "Behörigheter"
+    },
+    "matrix": {
+      "resource": "Resurs"
+    },
+    "actions": {
+      "read": "Läsa",
+      "write": "Skriva",
+      "admin": "Administrera"
+    },
+    "resources": {
+      "venue": "Anläggningar",
+      "room": "Rum",
+      "search": "Sök",
+      "conversation": "Konversationer",
+      "skill": "Färdigheter",
+      "role": "Roller",
+      "member": "Medlemmar"
+    }
+  },
+  "member": {
+    "singular": "Medlem",
+    "plural": "Medlemmar",
+    "listDescription": "Personalen i organisationen och deras roller. Ägare kan inte ändras.",
+    "empty": "Inga medlemmar.",
+    "assignRoles": "Tilldela roller",
+    "assignDescription": "Välj roller för {name}. De ersätter nuvarande roller.",
+    "noRoles": "Det finns inga roller att tilldela. Skapa roller först.",
+    "updated": "Rollerna har uppdaterats.",
+    "columns": {
+      "name": "Namn",
+      "email": "E-post",
+      "roles": "Roller"
+    }
   }
 }

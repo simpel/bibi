@@ -4,8 +4,17 @@
  * without pulling the server into the browser bundle. Add each new feature's `schema.ts` here.
  */
 export * from "./features/conversation/schema";
+export * from "./features/member/schema";
 export * from "./features/message/schema";
+export * from "./features/role/schema";
 export * from "./features/room/schema";
 export * from "./features/skill/schema";
 export * from "./features/venue/schema";
+export { type PermissionSet, PermissionSetSchema } from "./permissions/permission-set";
+export {
+  PERMISSION_ACTIONS,
+  type PermissionAction,
+  RESOURCES,
+  type Resource,
+} from "./permissions/resources";
 export * from "./search/search-schema";

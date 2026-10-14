@@ -1,6 +1,7 @@
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { ExecuteContext } from "@okazi/core";
 import { call, type Json } from "./helpers";
+import { accessEntities } from "./parity-entities-access";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
@@ -10,7 +11,7 @@ export type EntityReadInput = {
   created: Json;
   keys: string[];
 };
-type CreateInput = { mcp: Client; made: Record<string, Json> };
+export type CreateInput = { mcp: Client; made: Record<string, Json> };
 
 /** One core entity: how to create it (MCP, as the user) and read it back through each surface. */
 export type ParityEntity = {
@@ -29,11 +30,11 @@ type ByIdInput = {
   args: CreateInput["made"];
 };
 
-const tool = async ({ mcp, name, args }: { mcp: Client; name: string; args: Json }) =>
+export const tool = async ({ mcp, name, args }: { mcp: Client; name: string; args: Json }) =>
   (await call({ client: mcp, name, args })).data;
 
 /** Entities with `<entity>_get`, `GET /<list>/{id}` and `<field>(id:)`. */
-function byId({ name, field, list, createTool, args }: ByIdInput): ParityEntity {
+export function byId({ name, field, list, createTool, args }: ByIdInput): ParityEntity {
   return {
     name,
     create: ({ mcp, made }) => tool({ mcp, name: createTool, args: { ...args, ...made } }),
@@ -114,4 +115,5 @@ export const ENTITIES: ParityEntity[] = [
       resources: [{ name: "a.md", content: "x" }],
     },
   }),
+  ...accessEntities(),
 ];

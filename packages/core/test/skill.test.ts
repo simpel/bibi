@@ -13,7 +13,7 @@ import { newSkill, visibleIds } from "./skill-helpers";
 
 describe("skill operations", () => {
   it("creates personal drafts, derives slugs and bumps the version on content changes", async () => {
-    const context = testContext({ roles: ["member"] });
+    const context = testContext({ access: "write" });
     const skill = await newSkill({ context, name: "Skapa anläggning & rum" });
     expect(skill).toMatchObject({
       scope: "PERSONAL",
@@ -51,7 +51,7 @@ describe("skill operations", () => {
   });
 
   it("shows org skills to the org, personal skills only to their owner", async () => {
-    const admin = testContext({ roles: ["admin"] });
+    const admin = testContext({ access: "admin" });
     const member = peer({ of: admin });
     const outsider = testContext();
     const orgSkill = await newSkill({ context: admin, scope: "ORGANIZATION", name: "Org" });
@@ -76,7 +76,7 @@ describe("skill operations", () => {
   });
 
   it("lets only admins create or change organization skills", async () => {
-    const admin = testContext({ roles: ["owner"] });
+    const admin = testContext({ access: "admin" });
     const member = peer({ of: admin });
     const input = { scope: "ORGANIZATION", name: "N", description: "D", instructions: "I" };
     const denied = await execute({ operation: createSkill, input, context: member });
@@ -94,7 +94,7 @@ describe("skill operations", () => {
   });
 
   it("shares a personal skill to the organization as a draft copy (admin only)", async () => {
-    const admin = testContext({ roles: ["admin"] });
+    const admin = testContext({ access: "admin" });
     const member = peer({ of: admin });
     const mine = await newSkill({ context: member, name: "Delbar" });
     const asMember = await execute({

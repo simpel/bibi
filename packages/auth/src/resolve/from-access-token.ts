@@ -6,7 +6,7 @@ import { getAuth } from "../get-auth";
 import { ORG_CLAIM } from "../plugins/mcp";
 import { mcpResourceUrl } from "../urls";
 import { forbidden, unauthenticated } from "./errors";
-import { loadMemberRoles } from "./membership";
+import { loadMembership } from "./membership";
 import type { Principal } from "./principal";
 
 const ClaimsSchema = z.object({
@@ -40,8 +40,10 @@ export async function principalFromAccessToken({
   if (cnf !== undefined) return unauthenticated({ message: "DPoP-bound tokens are not supported" });
   if (!organizationId)
     return forbidden({ message: "Access token is not bound to an organization" });
-  const roles = await loadMemberRoles({ userId, organizationId });
+  const membership = await loadMembership({ userId, organizationId });
   // Only registry clients flagged `allowsAiActor` (the assistant) may act as the AI actor.
   const aiAllowed = clientAllowsAiActor({ clientId: azp });
-  return ok({ value: { userId, organizationId, roles, aiAllowed } });
+  const roles = membership?.roles ?? null;
+  const permissions = membership?.permissions ?? {};
+  return ok({ value: { userId, organizationId, roles, permissions, aiAllowed } });
 }

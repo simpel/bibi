@@ -35,7 +35,7 @@ describe("conversations, messages and skills over REST", () => {
     const list = await call({ path: "/conversations", org });
     expect(list.json.items.map((c: { id: string }) => c.id)).toEqual([id]);
 
-    const other = { org, user: "someone-else", roles: "member" };
+    const other = { org, user: "someone-else", access: "write" };
     expect((await call({ path: `/conversations/${id}`, ...other })).status).toBe(404);
     expect((await call({ path: `/conversations/${id}/messages`, ...other })).status).toBe(404);
     expect((await call({ path: "/conversations?allUsers=true", ...other })).status).toBe(403);
@@ -75,7 +75,7 @@ describe("conversations, messages and skills over REST", () => {
       path: "/skills?scope=ORGANIZATION",
       org,
       user: "member-2",
-      roles: "member",
+      access: "write",
     });
     expect(orgSkills.json.items.map((s: { id: string }) => s.id)).toEqual([shared.json.id]);
     const created = await call({

@@ -12,7 +12,7 @@ import { errorCode, peer, testContext, unwrap } from "./helpers";
 
 describe("conversation operations", () => {
   it("creates, lists, renames and archives the caller's own conversations", async () => {
-    const context = testContext({ roles: ["member"] });
+    const context = testContext({ access: "write" });
     const created = unwrap({
       result: await execute({ operation: createConversation, input: {}, context }),
     });
@@ -44,10 +44,10 @@ describe("conversation operations", () => {
   });
 
   it("keeps conversations private: members never see others', admins may read but not write", async () => {
-    const owner = testContext({ roles: ["member"] });
+    const owner = testContext({ access: "write" });
     const member = peer({ of: owner });
-    const admin = peer({ of: owner, roles: ["admin"] });
-    const other = testContext({ roles: ["owner"] });
+    const admin = peer({ of: owner, access: "admin" });
+    const other = testContext({ access: "admin" });
     const { id } = unwrap({
       result: await execute({
         operation: createConversation,
@@ -100,7 +100,7 @@ describe("conversation operations", () => {
   });
 
   it("requires conversation permissions and a user owner", async () => {
-    const viewer = testContext({ roles: ["viewer"] });
+    const viewer = testContext({ access: "read" });
     const denied = await execute({ operation: createConversation, input: {}, context: viewer });
     expect(errorCode({ result: denied })).toBe("FORBIDDEN");
     const system = testContext({ actor: { type: "system", userId: null } });

@@ -7,6 +7,7 @@ import { toToolName } from "../src/tools/tool-name";
 import { fakeEmbed } from "./fake-embed";
 import { connect, type Json, testContext } from "./helpers";
 import { ENTITIES } from "./parity-entities";
+import { seedOrgMember } from "./seed-org-member";
 
 registerOperations({ operations: createCoreOperations({ embed: fakeEmbed }) });
 
@@ -91,7 +92,7 @@ describe("entity read parity: core -> GraphQL, REST, MCP return equal data", () 
   it("reads every created entity identically through all surfaces", async () => {
     const context = testContext();
     const mcp = await connect({ context });
-    const made: Record<string, Json> = {};
+    const made: Record<string, Json> = { memberSeed: await seedOrgMember({ context }) };
     for (const entity of ENTITIES) {
       const created = await entity.create({ mcp, made });
       expect(created?.id, `${entity.name}: create via MCP`).toBeTruthy();
