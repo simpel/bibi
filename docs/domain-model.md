@@ -743,7 +743,6 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 English is used everywhere in code and docs. Swedish appears only in UI translations (`packages/i18n/messages`, see [ADR 0009](decisions/0009-language-in-code-and-ui.md)). The table gives translators the Swedish UI term for each entity.
 
-<!-- sv-ok:start (Swedish UI terms for translators) -->
 | English term | Swedish UI term |
 |---|---|
 | Venue | Anläggning |
@@ -785,4 +784,3 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | User | Användare |
 | SystemLog | Systemlogg |
 | AiSetting | AI-inställning |
-<!-- sv-ok:end -->

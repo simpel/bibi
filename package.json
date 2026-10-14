@@ -13,7 +13,6 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "check:structure": "node tools/check-structure.mjs",
-    "check:language": "node tools/check-language.mjs",
     "db:migrate": "pnpm --filter @okazi/db migrate",
     "db:generate": "pnpm --filter @okazi/db generate",
     "gen": "node tools/gen.mjs"

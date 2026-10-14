@@ -22,7 +22,7 @@
 - **Swedish only in translations:** `packages/i18n/messages/sv.json`. The only other exception is test input that specifically exercises Swedish text (e.g. handling of Swedish characters).
 - UI text always goes through next-intl, in both sv and en.
 - File and directory names are in English.
-- Verified with `pnpm check:language`. See `docs/decisions/0009-language-in-code-and-ui.md`.
+- See `docs/decisions/0009-language-in-code-and-ui.md`.
 
 ## Conventions
 - Decisions are logged as ADRs in `docs/decisions/NNNN-title.md`.
@@ -126,6 +126,7 @@
 - Move the card when the work changes state: `Backlog` → `Todo` → `In progress` when work starts → `Done` when merged. Update with `gh project item-edit` (field ids via `gh project field-list 8 --owner simpel`).
 - PRs link the issue with `Closes #NN`. Comment on the issue with what was done if the work is split up or abandoned.
 - `gh` needs the `project` scope (`gh auth refresh -s project`).
+- Autonomous ticket work: the `work-backlog` workflow (`.claude/workflows/work-backlog.js`) picks unblocked `Todo` tickets (not `type:decision`), runs up to 3 in parallel in the main working tree, verifies once per batch and commits one commit per ticket to `main` with `Closes #N`. Model per ticket from labels: Haiku (docs, i18n, small tech debt/infra), Opus (core features, auth, db, size L), Sonnet otherwise. Never Fable.
 
 ## Commands
 - `docker compose up -d`: starts Postgres and Mailpit (mail at http://localhost:8025).
@@ -137,7 +138,6 @@
 - `pnpm dev`: starts the web app (:3000) and the MCP server (:3001) via Turborepo.
 - `pnpm lint`: Biome check.
 - `pnpm check:structure`: checks file size, function size, exports, barrel files and feature files.
-- `pnpm check:language`: fails on Swedish text outside translations and tests.
 - `pnpm typecheck`: TypeScript for all packages.
 - `pnpm test`: Vitest and the parity test.
 - `pnpm --filter @okazi/web test:e2e`: Playwright with a scripted model (`E2E_MOCK_MODEL`), see `apps/web/CLAUDE.md`.
