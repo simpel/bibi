@@ -2,7 +2,7 @@ import type { z } from "zod";
 import { AppError } from "../errors/app-error";
 import type { Operation, OperationDefinition } from "./types";
 
-const NAME_PATTERN = /^[a-z][a-zA-Z0-9]*(\.[a-z][a-zA-Z0-9]*)*$/;
+export const OPERATION_NAME_PATTERN = /^[a-z][a-zA-Z0-9]*(\.[a-z][a-zA-Z0-9]*)*$/;
 
 /**
  * Declares a capability once; adapters (UI, GraphQL, REST, MCP) are derived from it.
@@ -13,7 +13,7 @@ export function defineOperation<I extends z.ZodType, O extends z.ZodType>({
   entityType,
   ...definition
 }: OperationDefinition<I, O>): Operation<I, O> {
-  if (!NAME_PATTERN.test(definition.name)) {
+  if (!OPERATION_NAME_PATTERN.test(definition.name)) {
     const message = `Invalid operation name "${definition.name}"`;
     throw new AppError({ code: "INTERNAL", message });
   }

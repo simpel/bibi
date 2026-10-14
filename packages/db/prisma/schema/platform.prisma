@@ -1,0 +1,36 @@
+/// System log persisted for the platform admin view (ADR 0014, 0015). Platform table: NOT
+/// org-scoped and unreachable through `scopedDb`. Written in batches by the log sink, purged
+/// after `SYSTEM_LOG_RETENTION_DAYS`. Never holds request/response payloads.
+model SystemLog {
+  id             String   @id @default(cuid(2))
+  time           DateTime
+  level          String
+  event          String
+  msg            String?
+  service        String
+  surface        String?
+  requestId      String?
+  organizationId String?
+  userId         String?
+  operation      String?
+  status         Int?
+  durationMs     Float?
+  errorCode      String?
+  /// The full log line as written (redacted), for the detail view.
+  data           Json
+
+  @@index([time])
+  @@index([level, time])
+  @@index([event, time])
+  @@index([requestId])
+  @@index([organizationId, time])
+}
+
+/// Model chosen by a platform admin for one AI feature (e.g. `assistant.chat`). A missing row
+/// means the env default (`AI_DEFAULT_MODEL`, `AI_EMBEDDING_MODEL`) applies.
+model AiSetting {
+  feature   String   @id
+  modelId   String
+  updatedAt DateTime @updatedAt
+  updatedBy String
+}

@@ -20,9 +20,8 @@ PORT=3001
 
 # --- AI (Vercel AI Gateway) ---
 # Unset = deterministic placeholder embedder in dev; the chat model needs a real key.
+# Models are NOT configured here: a platform admin chooses them in /admin/ai-models (ADR 0015).
 AI_GATEWAY_API_KEY=
-AI_DEFAULT_MODEL=anthropic/claude-sonnet-5-5
-AI_EMBEDDING_MODEL=openai/text-embedding-3-small
 
 # --- Assistant OAuth client ---
 # Printed by: pnpm --filter @okazi/web provision:oauth   (read by web and mcp)
@@ -33,4 +32,10 @@ WEB_OAUTH_CLIENT_ID=
 OKAZI_API_KEY=
 # E2E only: scripted mock chat model. Ignored when NODE_ENV=production.
 E2E_MOCK_MODEL=false
+# System log (ADR 0014). Level: trace|debug|info|warn|error|fatal|silent (default info, silent in tests).
+# Format: json|pretty (default json in production, pretty otherwise).
+LOG_LEVEL=
+LOG_FORMAT=
+# Days the SystemLog table (admin view) keeps rows. Default 30.
+SYSTEM_LOG_RETENTION_DAYS=
 PW_CHROMIUM_PATH=/Users/joelsanden/Library/Caches/ms-playwright/chromium-1223/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing

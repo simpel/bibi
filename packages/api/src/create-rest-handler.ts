@@ -1,4 +1,5 @@
 import { type AnyOperation, appError, type ExecuteContext, type Result } from "@okazi/core";
+import { withRequestLogging } from "@okazi/logger";
 import { compileRoutes } from "./http/compile-routes";
 import { errorResponse } from "./http/error-response";
 import { handleRoute } from "./http/handle-route";
@@ -33,18 +34,23 @@ export function createRestHandler({
   const document = buildOpenApiDocument({ compiled, basePath });
   const docs = docsHtml({ specUrl: `${basePath}/openapi.json` });
 
-  return async (request) => {
-    const url = new URL(request.url);
-    const path = relativePath({ pathname: url.pathname, basePath });
-    if (request.method === "GET" && path === "/openapi.json") return Response.json(document);
-    if (request.method === "GET" && path === "/docs") {
-      return new Response(docs, { headers: { "content-type": "text/html; charset=utf-8" } });
-    }
-    const match = path && matchRoute({ routes: compiled, method: request.method, pathname: path });
-    if (!match) {
-      return errorResponse({ error: appError({ code: "NOT_FOUND", message: "Route not found" }) });
-    }
-    const context = await resolveContext({ headers: request.headers });
-    return handleRoute({ ...match, context, url, request });
-  };
+  return withRequestLogging({
+    surface: "rest",
+    handler: async (request) => {
+      const url = new URL(request.url);
+      const path = relativePath({ pathname: url.pathname, basePath });
+      if (request.method === "GET" && path === "/openapi.json") return Response.json(document);
+      if (request.method === "GET" && path === "/docs") {
+        return new Response(docs, { headers: { "content-type": "text/html; charset=utf-8" } });
+      }
+      const { method } = request;
+      const match = path && matchRoute({ routes: compiled, method, pathname: path });
+      if (!match) {
+        const error = appError({ code: "NOT_FOUND", message: "Route not found" });
+        return errorResponse({ error });
+      }
+      const context = await resolveContext({ headers: request.headers });
+      return handleRoute({ ...match, context, url, request });
+    },
+  });
 }

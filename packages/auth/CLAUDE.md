@@ -12,6 +12,11 @@ Better Auth 1.7.7 (Prisma-adapter) + plugins: e-post/lösenord, magic link, e-po
 - Webbklient: `createAuthClient({})` från `@okazi/auth/client` (importerar inget serverkod).
 - `Organization.id` = `organizationId` på alla affärsrader. Ingen FK (Better Auth äger tabellerna).
 
+## Plattformsadmin (ADR 0015)
+- Admin-plugin: `user.role` (`user`/`admin`) och ban. **Alla** `/admin/*`-endpoints är avstängda (`DISABLED_ADMIN_PATHS`). Roller sätts med `pnpm --filter @okazi/auth grant-admin <email> [--revoke]` (`setPlatformAdmin`, skriver AuditLog).
+- `resolvePlatformContext({ headers })`: endast sessionscookie, rollen läses live (`isPlatformAdmin`), impersonerade sessioner nekas. API-nycklar och OAuth-token ger `FORBIDDEN`.
+- `auth.prisma`-fälten för pluginet är handlagda: `auth:generate` misslyckas med `withoutDatabase` (minnesadapter).
+
 ## Förtroendegräns: AI-aktör
 - `x-okazi-actor: ai` + `x-okazi-conversation-id` ger `actor = { type: "ai", userId, conversationId }` (kommandon kräver då godkännande).
 - Accepteras **endast** för OAuth-tokens vars `azp` är en förstapartsklient med `allowsAiActor: true` i `FIRST_PARTY_CLIENTS` (i dag bara `assistant` = `WEB_OAUTH_CLIENT_ID`). Cookie, API-nyckel, okända och övriga OAuth-klienter → `FORBIDDEN`.

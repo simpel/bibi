@@ -2,6 +2,7 @@ import "server-only";
 import { createApprovalHandler, createChatHandler } from "@okazi/ai";
 import { resolveExecuteContext } from "@okazi/auth";
 import { getEnv } from "@okazi/config";
+import { getLogger } from "@okazi/logger";
 import { embed } from "./embed";
 import { shouldUseMockModel } from "./mock-model-policy";
 import { ensureOperations } from "./operations";
@@ -18,7 +19,9 @@ async function buildChatHandler(): Promise<Handler> {
   const base = { resolveContext: resolveExecuteContext, embed };
   const { E2E_MOCK_MODEL, NODE_ENV } = getEnv();
   if (!shouldUseMockModel({ flag: E2E_MOCK_MODEL, nodeEnv: NODE_ENV })) {
-    if (E2E_MOCK_MODEL) console.warn("E2E_MOCK_MODEL is ignored in production.");
+    if (E2E_MOCK_MODEL) {
+      getLogger().warn({ event: "config.ignored", msg: "E2E_MOCK_MODEL is ignored in production" });
+    }
     return createChatHandler(base);
   }
   // Only loaded when the flag is on: keeps `ai/test` and the script out of normal runs.

@@ -52,6 +52,6 @@ describe("createEmbed", () => {
   it("refuses to embed in production without a key", async () => {
     const embed = createEmbed({ apiKey: null, nodeEnv: "production" });
     expect(isPlaceholderEmbed({ embed })).toBe(false);
-    await expect(embed({ texts: ["x"] })).rejects.toMatchObject({ code: "INTERNAL" });
+    await expect(embed({ texts: ["x"] })).rejects.toMatchObject({ code: "UNAVAILABLE" });
   });
 });

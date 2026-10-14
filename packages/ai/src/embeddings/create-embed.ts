@@ -1,16 +1,15 @@
 import { getEnv } from "@okazi/config";
 import { AppError, type EmbedFn } from "@okazi/core";
-import { createGateway, type EmbeddingModel } from "ai";
+import { getLogger } from "@okazi/logger";
+import type { EmbeddingModel } from "ai";
+import { configuredEmbed } from "./configured-embed";
 import { DEFAULT_EMBED_BATCH_SIZE, embedTexts } from "./embed-texts";
 import { hashEmbedding, PLACEHOLDER_EMBEDDING_MODEL } from "./hash-embedding";
 
-/** Core's `EmbedFn` plus the model id it writes to `Embedding.model`. */
-export type AssistantEmbedFn = EmbedFn & { readonly model: string };
-
 export type CreateEmbedInput = {
-  /** Explicit model (tests: `MockEmbeddingModelV4`). Default: `AI_EMBEDDING_MODEL` via Gateway. */
+  /** Test seam (`MockEmbeddingModelV4`). Default: the model a platform admin chose (ADR 0015). */
   model?: Exclude<EmbeddingModel, string>;
-  /** Stored model id; default `model.modelId` or `AI_EMBEDDING_MODEL`. */
+  /** Stored model id with an explicit `model`; default `model.modelId`. */
   modelId?: string;
   /** Overrides for tests; default from `@okazi/config`. `null` = no key. */
   apiKey?: string | null;
@@ -29,15 +28,12 @@ export function isPlaceholderEmbed({ embed }: IsPlaceholderEmbedInput): boolean 
   return placeholders.has(embed);
 }
 
-type WithModelInput = { fn: EmbedFn; model: string };
-
-const withModel = ({ fn, model }: WithModelInput): AssistantEmbedFn => Object.assign(fn, { model });
-
-const defaultWarn = ({ message }: { message: string }) => console.warn(message);
+const defaultWarn = ({ message }: { message: string }) =>
+  getLogger().warn({ event: "ai.placeholderEmbedder", msg: message });
 
 type PlaceholderInput = { warn: (input: { message: string }) => void };
 
-function placeholderEmbed({ warn }: PlaceholderInput): AssistantEmbedFn {
+function placeholderEmbed({ warn }: PlaceholderInput): EmbedFn {
   if (!warned) {
     warned = true;
     warn({
@@ -47,50 +43,43 @@ function placeholderEmbed({ warn }: PlaceholderInput): AssistantEmbedFn {
         "and `pnpm --filter @okazi/ai reindex` has run.",
     });
   }
-  const fn = withModel({
-    fn: async ({ texts }) => ({
-      model: PLACEHOLDER_EMBEDDING_MODEL,
-      embeddings: texts.map((text) => hashEmbedding({ text })),
-    }),
+  const fn: EmbedFn = async ({ texts }) => ({
     model: PLACEHOLDER_EMBEDDING_MODEL,
+    embeddings: texts.map((text) => hashEmbedding({ text })),
   });
   placeholders.add(fn);
   return fn;
 }
 
-const missingKeyEmbed = ({ model }: { model: string }): AssistantEmbedFn =>
-  withModel({
-    fn: async () => {
-      const message = "AI_GATEWAY_API_KEY is not set: embeddings are unavailable in production";
-      throw new AppError({ code: "INTERNAL", message });
-    },
-    model,
-  });
+const missingKeyEmbed: EmbedFn = async () => {
+  const message = "AI_GATEWAY_API_KEY is not set: embeddings are unavailable in production";
+  throw new AppError({ code: "UNAVAILABLE", message });
+};
 
 /**
- * The embedder injected into core (`search`, indexing hook, reindex). Real embeddings via the AI
- * SDK (`embedMany`, AI Gateway, `AI_EMBEDDING_MODEL`, 1536 dimensions). Without
- * `AI_GATEWAY_API_KEY`: deterministic placeholder outside production, failing embedder in it.
+ * The embedder injected into core (`search`, indexing hook, reindex): AI SDK `embedMany` via the
+ * AI Gateway with the model a platform admin chose for `search.embedding` (1536 dimensions).
+ * Without `AI_GATEWAY_API_KEY`: deterministic placeholder outside production, failing embedder in
+ * it. No model chosen → every call fails with UNAVAILABLE (and an error log line).
  */
 export function createEmbed({
   model,
-  modelId: modelIdInput,
+  modelId,
   apiKey: apiKeyInput,
   nodeEnv,
   maxBatchSize = DEFAULT_EMBED_BATCH_SIZE,
   warn = defaultWarn,
-}: CreateEmbedInput = {}): AssistantEmbedFn {
+}: CreateEmbedInput = {}): EmbedFn {
   const env = getEnv();
-  const modelId = modelIdInput ?? model?.modelId ?? env.AI_EMBEDDING_MODEL;
+  if (model) {
+    const id = modelId ?? model.modelId;
+    return ({ texts }) => embedTexts({ model, modelId: id, texts, maxBatchSize });
+  }
   const apiKey = apiKeyInput === undefined ? env.AI_GATEWAY_API_KEY : apiKeyInput;
-  if (!model && !apiKey) {
+  if (!apiKey) {
     return (nodeEnv ?? env.NODE_ENV) === "production"
-      ? missingKeyEmbed({ model: modelId })
+      ? missingKeyEmbed
       : placeholderEmbed({ warn });
   }
-  const resolved = model ?? createGateway({ apiKey: apiKey ?? undefined }).embeddingModel(modelId);
-  return withModel({
-    fn: ({ texts }) => embedTexts({ model: resolved, modelId, texts, maxBatchSize }),
-    model: modelId,
-  });
+  return configuredEmbed({ apiKey, maxBatchSize });
 }

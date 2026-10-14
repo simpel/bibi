@@ -5,7 +5,10 @@ import { MobileNav } from "./mobile-nav";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
 
-export type TopBarProps = { organizationId: string; user: { name: string; email: string } };
+export type TopBarProps = {
+  organizationId: string;
+  user: { name: string; email: string; platformAdmin: boolean };
+};
 
 export function TopBar({ organizationId, user }: TopBarProps) {
   return (
@@ -17,7 +20,7 @@ export function TopBar({ organizationId, user }: TopBarProps) {
       <AssistantToggle />
       <LocaleSwitcher />
       <ThemeToggle />
-      <UserMenu name={user.name} email={user.email} />
+      <UserMenu name={user.name} email={user.email} platformAdmin={user.platformAdmin} />
     </header>
   );
 }

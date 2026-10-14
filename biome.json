@@ -36,7 +36,8 @@
     "rules": {
       "preset": "recommended",
       "suspicious": {
-        "noExplicitAny": "error"
+        "noExplicitAny": "error",
+        "noConsole": "error"
       },
       "style": {
         "noDefaultExport": "error"
@@ -73,6 +74,16 @@
           "performance": {
             "noBarrelFile": "off",
             "noReExportAll": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/scripts/**", "tools/**", "**/test/**", "**/*.config.ts", "**/*.config.mjs"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
           }
         }
       }

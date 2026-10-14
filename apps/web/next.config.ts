@@ -26,9 +26,10 @@ const config: NextConfig = {
     "@okazi/db",
     "@okazi/graphql",
     "@okazi/i18n",
+    "@okazi/logger",
     "@okazi/ui",
   ],
-  serverExternalPackages: ["pg", "nodemailer"],
+  serverExternalPackages: ["pg", "nodemailer", "pino", "pino-pretty"],
 };
 
 export default withNextIntl(config);

@@ -9,13 +9,19 @@ Paritetskärnan: varje förmåga definieras **en gång** som en operation och ex
   - `handler({ input, context })` returnerar `Result` (`ok({ value })` / `err({ error: AppError })`) – kasta aldrig strängar.
   - Kommandon anropar `context.recordChange({ entityId, before, after })` för auditraden.
 - Kör alltid via `execute({ operation, input, context, afterCommit? })`: Zod-validering → behörighet → handler → output-validering → AuditLog (kommandon, i samma transaktion) → `afterCommit`-hooks (t.ex. `createIndexingHook({ embed })`).
+- `execute` loggar exakt en rad per anrop: `operation.completed` / `operation.rejected` (VALIDATION, FORBIDDEN, NOT_FOUND m.fl.) / `operation.failed` (INTERNAL, med orsak). Misslyckade `afterCommit`-hooks loggas som `operation.afterCommitFailed`. AuditLog-raden får `requestId` och `surface` från request-kontexten (`surface: system` utanför en request). Se ADR 0014.
 - `context.db` är `scopedDb` – org-scoping kan inte kringgås. Bygg kontext med `createExecuteContext({ organizationId, actor, roles })`.
 - `requiresApproval({ operation, actor })`: kommandon kräver mänskligt godkännande när `actor.type === "ai"` (standard `approval: true`).
 - Klientsäkert underpaket `@okazi/core/schemas` (`src/schemas.ts`): bara zod-filerna (`features/*/schema.ts`, `search/search-schema.ts`). Importera det i klientkod och i `@okazi/ai/ui`; lägg en rad per ny entitets `schema.ts` där. Aldrig Prisma/fs/operationer i det.
 - Registret: `registerOperations({ operations: createCoreOperations({ embed }) })`, `listOperations()`, `getOperation({ name })`. Adaptrar genererar verktyg/endpoints från registret.
 
+## Plattformsoperationer (ADR 0015)
+- `src/platform/`: `definePlatformOperation` och `executePlatform({ operation, input, context })` med `PlatformContext` (`createPlatformContext`, byggs bara av `resolvePlatformContext` i auth). Samma kedja som `execute`. Audit med `PLATFORM_SCOPE`. Handlers ser bara `PlatformDb` (`systemLog`, `aiSetting`).
+- `createPlatformOperations({ listModels })`: `systemLog.list/get`, `aiFeature.list/update`, `aiModel.list`. Registreras **inte** i org-registret. Inte i GraphQL, REST eller MCP.
+- `resolveAiModel({ feature })` → `Result<string>`: adminens val (cache 30 s). Ingen standard: ovald → `UNAVAILABLE` och `ai.modelNotConfigured` (error). `AI_FEATURES` är registret.
+
 ## Fel
-- `AppError` med koder `NOT_FOUND | FORBIDDEN | UNAUTHENTICATED | VALIDATION | CONFLICT | INTERNAL`.
+- `AppError` med koder `NOT_FOUND | FORBIDDEN | UNAUTHENTICATED | VALIDATION | CONFLICT | INTERNAL | UNAVAILABLE` (503: funktionen saknar konfiguration, t.ex. AI-modell). `INTERNAL` och `UNAVAILABLE` loggas som `operation.failed` (error).
 - Ytor mappar med `toHttpStatus`, `toGraphqlExtensions`, `toMcpError` – inga egna mappningar.
 
 ## Feature-mappar (`src/features/<entitet>/`)

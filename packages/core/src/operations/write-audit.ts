@@ -1,8 +1,6 @@
 import type { ScopedDbClient } from "@okazi/db";
-import { toJson } from "../shared/to-json";
+import { auditRows } from "./audit-rows";
 import type { Actor, AnyOperation, RecordedChange } from "./types";
-
-const ACTOR_TYPE = { user: "USER", ai: "AI", system: "SYSTEM" } as const;
 
 export type WriteAuditInput = {
   db: ScopedDbClient;
@@ -20,21 +18,7 @@ export async function writeAudit({
   changes,
   output,
 }: WriteAuditInput): Promise<void> {
-  const outputId = (output as { id?: unknown } | null)?.id;
-  const rows: RecordedChange[] =
-    changes.length > 0 ? [...changes] : [{ entityId: String(outputId ?? ""), after: output }];
-  await db.auditLog.createMany({
-    data: rows.map((change) => ({
-      organizationId: "", // forced by scopedDb
-      actorType: ACTOR_TYPE[actor.type],
-      actorId: actor.userId,
-      conversationId: actor.conversationId ?? null,
-      approvedBy: actor.approvedBy ?? null,
-      operation: operation.name,
-      entityType: change.entityType ?? operation.entityType,
-      entityId: change.entityId || null,
-      before: toJson({ value: change.before }),
-      after: toJson({ value: change.after }),
-    })),
-  });
+  // organizationId "" is replaced by scopedDb with the caller's organization.
+  const data = auditRows({ organizationId: "", operation, actor, changes, output });
+  await db.auditLog.createMany({ data });
 }

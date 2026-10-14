@@ -1,3 +1,4 @@
+export type { ColumnDef } from "@tanstack/react-table";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";
 export { Button, type ButtonProps, buttonVariants } from "./components/button/button";
 export {
@@ -10,6 +11,8 @@ export {
   CardTitle,
 } from "./components/card/card";
 export { Checkbox, type CheckboxProps } from "./components/checkbox/checkbox";
+export { Combobox, type ComboboxProps } from "./components/combobox/combobox";
+export type { ComboboxOption } from "./components/combobox/combobox-groups";
 export {
   Command,
   CommandDialog,
@@ -22,17 +25,19 @@ export {
   CommandSeparator,
 } from "./components/command/command";
 export {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
-} from "./components/dialog/dialog";
+  DataTable,
+  type DataTableProps,
+  type DataTableServerPagination,
+} from "./components/data-table/data-table";
+export {
+  DataTablePagination,
+  type DataTablePaginationProps,
+} from "./components/data-table/data-table-pagination";
+export type {
+  DataTableLabels,
+  DataTablePaginationState,
+} from "./components/data-table/data-table-types";
+export * from "./components/dialog/dialog";
 export {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -44,14 +49,22 @@ export {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./components/dropdown-menu/dropdown-menu";
+export { Form, FormController, useFormField } from "./components/form/form-context";
+export { FormControl } from "./components/form/form-control";
+export { FormItem } from "./components/form/form-item";
+export { FormLabel } from "./components/form/form-label";
+export { FormDescription, FormMessage } from "./components/form/form-message";
 export { FormField, type FormFieldProps } from "./components/form-field/form-field";
 export { Input, type InputProps } from "./components/input/input";
 export { Label, type LabelProps } from "./components/label/label";
+export * from "./components/popover/popover";
 export {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
+  SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "./components/select/select";
@@ -68,24 +81,48 @@ export {
   SheetTrigger,
   sheetVariants,
 } from "./components/sheet/sheet";
+export {
+  Sidebar,
+  SidebarInset,
+  type SidebarProps,
+  SidebarRail,
+  SidebarTrigger,
+} from "./components/sidebar/sidebar";
+export {
+  SidebarProvider,
+  type SidebarProviderProps,
+  useSidebar,
+} from "./components/sidebar/sidebar-context";
+export {
+  SidebarGroup,
+  SidebarGroupAction,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+} from "./components/sidebar/sidebar-group";
+export {
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarInput,
+  SidebarSeparator,
+} from "./components/sidebar/sidebar-layout";
+export { SidebarMenu, SidebarMenuBadge, SidebarMenuItem } from "./components/sidebar/sidebar-menu";
+export {
+  SidebarMenuButton,
+  type SidebarMenuButtonProps,
+  sidebarMenuButtonVariants,
+} from "./components/sidebar/sidebar-menu-button";
+export { SidebarMenuAction, SidebarMenuSkeleton } from "./components/sidebar/sidebar-menu-extras";
+export {
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
+} from "./components/sidebar/sidebar-menu-sub";
 export { Skeleton, type SkeletonProps } from "./components/skeleton/skeleton";
 export { Switch, type SwitchProps } from "./components/switch/switch";
-export {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "./components/table/table";
+export * from "./components/table/table";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs/tabs";
 export { Textarea, type TextareaProps } from "./components/textarea/textarea";
 export { Toaster, type ToasterProps, toast } from "./components/toast/toast";
-export {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./components/tooltip/tooltip";
+export * from "./components/tooltip/tooltip";
 export { cn } from "./lib/cn";

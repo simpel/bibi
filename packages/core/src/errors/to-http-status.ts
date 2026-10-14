@@ -7,6 +7,7 @@ const HTTP_STATUS: Record<AppErrorCode, number> = {
   VALIDATION: 400,
   CONFLICT: 409,
   INTERNAL: 500,
+  UNAVAILABLE: 503,
 };
 
 export type ToHttpStatusInput = { error: AppError };

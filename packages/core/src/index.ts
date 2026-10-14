@@ -58,6 +58,33 @@ export type {
   OperationKind,
   RecordedChange,
 } from "./operations/types";
+export {
+  AI_FEATURE_IDS,
+  AI_FEATURES,
+  type AiFeatureId,
+  aiFeature,
+} from "./platform/ai-settings/ai-features";
+export {
+  clearAiModelCache,
+  type ResolveAiModelInput,
+  resolveAiModel,
+} from "./platform/ai-settings/resolve-ai-model";
+export * from "./platform/ai-settings/schema";
+export { type CreatePlatformContextInput, createPlatformContext } from "./platform/context";
+export { definePlatformOperation } from "./platform/define-platform-operation";
+export { type ExecutePlatformInput, executePlatform } from "./platform/execute-platform";
+export {
+  type CreatePlatformOperationsInput,
+  createPlatformOperations,
+  type PlatformOperations,
+} from "./platform/platform-operations";
+export * from "./platform/system-log/schema";
+export type {
+  AnyPlatformOperation,
+  PlatformActor,
+  PlatformContext,
+  PlatformOperation,
+} from "./platform/types";
 export type { EmbedFn, EmbedInput, EmbedOutput } from "./search/embed";
 export type { Embeddable, LoadInput, SearchViewer, ToTextInput } from "./search/embeddable";
 export { SEARCHABLE_ENTITIES } from "./search/embeddables";

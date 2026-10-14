@@ -14,10 +14,11 @@ import { LogOutIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
 import { ROUTES } from "@/lib/routes";
+import { AdminMenuItem } from "./admin-menu-item";
 
-export type UserMenuProps = { name: string; email: string };
+export type UserMenuProps = { name: string; email: string; platformAdmin: boolean };
 
-export function UserMenu({ name, email }: UserMenuProps) {
+export function UserMenu({ name, email, platformAdmin }: UserMenuProps) {
   const t = useTranslations("shell");
   const auth = useTranslations("auth");
   const router = useRouter();
@@ -42,6 +43,7 @@ export function UserMenu({ name, email }: UserMenuProps) {
           <span className="truncate text-sm font-medium">{email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {platformAdmin ? <AdminMenuItem /> : null}
         <DropdownMenuItem onSelect={signOut}>
           <LogOutIcon />
           {auth("signOut")}

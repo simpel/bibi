@@ -32,11 +32,15 @@ Serverlagret för assistenten (ADR 0007, 0008). Ramverksoberoende: Web `Request`
 3. Bygg React-komponenten i webben med `@okazi/ui`.
 
 ## Inbäddningar
-- `createEmbed()` = core `EmbedFn` via `embedMany` + AI Gateway (`AI_EMBEDDING_MODEL`), batchar om 96, `dimensions: 1536`, Zod-kontroll av svaret (fel antal dimensioner → tydligt `INTERNAL`-fel). Utan `AI_GATEWAY_API_KEY`: deterministisk platshållare (varnar en gång) om `NODE_ENV !== "production"`, annars fel. `isPlaceholderEmbed({ embed })`.
+- `createEmbed()` = core `EmbedFn` via `embedMany` + AI Gateway med modellen vald i `/admin/ai-models` (`search.embedding`, ingen standard: ovald → `UNAVAILABLE`), batchar om 96, `dimensions: 1536`, Zod-kontroll av svaret (fel antal dimensioner → tydligt `INTERNAL`-fel). Utan `AI_GATEWAY_API_KEY`: deterministisk platshållare (varnar en gång) om `NODE_ENV !== "production"`, annars fel. `isPlaceholderEmbed({ embed })`.
 - Kopplad i `apps/mcp/src/embed.ts`. Byte av modell: `pnpm --filter @okazi/ai reindex [--org <id>]` (`reindexAll`) bäddar om rader med annat `model` från lagrad text och indexerar entiteter som saknar rad.
 
+## Modeller
+- Inga modeller i env. Chatt (`assistant.chat`) och embeddings (`search.embedding`) använder det en plattformsadmin valt (`resolveAiModel`, ADR 0015). Ovald modell → `UNAVAILABLE` (503) och `ai.modelNotConfigured` på error-nivå. Fel i strömmen (t.ex. okänd modell hos gatewayen) loggas som `ai.streamFailed`.
+- `createChatHandler({ model })` och `createEmbed({ model })` är bara test-/E2E-sömmar.
+
 ## Miljövariabler (via `@okazi/config`)
-`AI_GATEWAY_API_KEY`, `AI_DEFAULT_MODEL` (standard `anthropic/claude-sonnet-5-5`), `AI_EMBEDDING_MODEL`, `MCP_URL`, `WEB_URL`, `WEB_OAUTH_CLIENT_ID`, `NODE_ENV` (ny, i env-schemat och `turbo.json`).
+`AI_GATEWAY_API_KEY`, `MCP_URL`, `WEB_URL`, `WEB_OAUTH_CLIENT_ID`, `NODE_ENV` (ny, i env-schemat och `turbo.json`).
 
 ## Tester
 Vitest mot riktig Postgres, mockad modell (`MockLanguageModelV4`, `MockEmbeddingModelV4`), inga nätverksanrop. apps/mcp startas i processen via sökvägsimport (`test/helpers/mcp-server.ts`): ett paketberoende skulle ge en cykel (`apps/mcp` beror på `@okazi/ai/embed`).
