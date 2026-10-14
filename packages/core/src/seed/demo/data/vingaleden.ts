@@ -17,7 +17,8 @@ export const vingaleden: DemoOrg = {
       name: "Admin",
       permissions: {
         venue: ["admin"],
-        room: ["admin"],
+        item: ["admin"],
+        configuration: ["admin"],
         search: ["admin"],
         conversation: ["admin"],
         skill: ["admin"],
@@ -25,8 +26,8 @@ export const vingaleden: DemoOrg = {
         member: ["admin"],
       },
     },
-    { name: "Bokning", permissions: { ...base, venue: ["read"], room: ["read"] } },
-    { name: "Skeppare", permissions: { ...base, venue: ["read"], room: ["read"] } },
+    { name: "Bokning", permissions: { ...base, venue: ["read"], item: ["read"], configuration: ["read"] } },
+    { name: "Skeppare", permissions: { ...base, venue: ["read"], item: ["read"], configuration: ["read"] } },
   ],
   users: [
     { name: "Per Vinga", role: "owner" },

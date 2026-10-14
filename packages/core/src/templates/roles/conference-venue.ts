@@ -11,10 +11,12 @@ const everyone: PermissionSet = {
   skill: ["write"],
 };
 
+/** Everyone reads the catalog and the configuration it is described by (ADR 0021). */
+const catalog: PermissionSet = { venue: ["read"], item: ["read"], configuration: ["read"] };
+
 const readAll: PermissionSet = {
   ...everyone,
-  venue: ["read"],
-  room: ["read"],
+  ...catalog,
   role: ["read"],
   member: ["read"],
 };
@@ -32,7 +34,8 @@ export const conferenceVenueTemplate: RoleTemplate = {
       name: "Admin",
       permissions: {
         venue: ["admin"],
-        room: ["admin"],
+        item: ["admin"],
+        configuration: ["admin"],
         search: ["admin"],
         conversation: ["admin"],
         skill: ["admin"],
@@ -40,9 +43,9 @@ export const conferenceVenueTemplate: RoleTemplate = {
         member: ["admin"],
       },
     },
-    { name: "Säljare", permissions: { ...everyone, venue: ["read"], room: ["read"] } },
-    { name: "Koordinator", permissions: { ...everyone, venue: ["read"], room: ["read"] } },
-    { name: "Kök", permissions: { ...everyone, venue: ["read"], room: ["read"] } },
+    { name: "Säljare", permissions: { ...everyone, ...catalog } },
+    { name: "Koordinator", permissions: { ...everyone, ...catalog } },
+    { name: "Kök", permissions: { ...everyone, ...catalog } },
     { name: "Ekonomi", permissions: readAll },
     { name: "Läsare", permissions: readAll },
   ],

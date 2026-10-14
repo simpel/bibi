@@ -1,17 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
-  archiveRoom,
+  archiveItem,
   createIndexingHook,
-  createRoom,
+  createItem,
   createSearchOperation,
   createVenue,
   type ExecuteContext,
   execute,
   indexEntity,
-  roomEmbeddable,
+  itemEmbeddable,
 } from "../src/index";
 import { fakeEmbed } from "./fake-embed";
 import { testContext, unwrap } from "./helpers";
+import { createRoomType } from "./item-helpers";
 
 const afterCommit = [createIndexingHook({ embed: fakeEmbed })];
 const search = createSearchOperation({ embed: fakeEmbed });
@@ -27,13 +28,15 @@ async function seed({ context }: SeedInput) {
       afterCommit,
     }),
   });
+  const type = await createRoomType({ context });
   const input = {
+    entityTypeId: type.id,
     venueId: venue.id,
     name: "Ljusa salen",
     description: "Konferensrum med dagsljus",
   };
   const room = unwrap({
-    result: await execute({ operation: createRoom, input, context, afterCommit }),
+    result: await execute({ operation: createItem, input, context, afterCommit }),
   });
   return { venue, room };
 }
@@ -51,29 +54,29 @@ describe("search", () => {
         context: orgA,
       }),
     });
-    expect(result.hits[0]).toMatchObject({ entityType: "room", entityId: room.id });
+    expect(result.hits[0]).toMatchObject({ entityType: "item", entityId: room.id });
     expect(result.hits).toHaveLength(2);
-    const roomsOnly = unwrap({
+    const itemsOnly = unwrap({
       result: await execute({
         operation: search,
-        input: { query: "Lindholmen", entityTypes: ["room"] },
+        input: { query: "Lindholmen", entityTypes: ["item"] },
         context: orgA,
       }),
     });
-    expect(roomsOnly.hits.every((hit) => hit.entityType === "room")).toBe(true);
+    expect(itemsOnly.hits.every((hit) => hit.entityType === "item")).toBe(true);
   });
 
   it("skips unchanged content and drops archived entities", async () => {
     const context = testContext();
     const { room } = await seed({ context });
     const again = await indexEntity({
-      embeddable: roomEmbeddable,
+      embeddable: itemEmbeddable,
       entityId: room.id,
       db: context.db,
       embed: fakeEmbed,
     });
     expect(again).toBe("unchanged");
-    await execute({ operation: archiveRoom, input: { id: room.id }, context, afterCommit });
+    await execute({ operation: archiveItem, input: { id: room.id }, context, afterCommit });
     const result = unwrap({
       result: await execute({ operation: search, input: { query: "dagsljus" }, context }),
     });

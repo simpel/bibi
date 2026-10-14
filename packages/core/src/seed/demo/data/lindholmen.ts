@@ -16,7 +16,7 @@ export const lindholmen: DemoOrg = {
         conversation: ["write"],
         skill: ["write"],
         venue: ["read"],
-        room: ["read"],
+        item: ["read"], configuration: ["read"],
       },
     },
   ],

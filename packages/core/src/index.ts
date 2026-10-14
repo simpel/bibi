@@ -17,6 +17,23 @@ export { canReadAllConversations } from "./features/conversation/access";
 export { conversationEmbeddable } from "./features/conversation/embeddable";
 export * from "./features/conversation/operations";
 export * from "./features/conversation/schema";
+export { entityTypeOperations } from "./features/entity-type/operations";
+export * from "./features/entity-type/read-operations";
+export * from "./features/entity-type/schema";
+export * from "./features/entity-type/behaviour-kinds";
+export * from "./features/entity-type/write-operations";
+export * from "./features/field-definition/field-kinds";
+export * from "./features/field-definition/fields-schema";
+export { fieldDefinitionOperations } from "./features/field-definition/operations";
+export * from "./features/field-definition/read-operations";
+export * from "./features/field-definition/schema";
+export * from "./features/field-definition/write-operations";
+export { itemEmbeddable } from "./features/item/embeddable";
+export * from "./features/item/lifecycle-operations";
+export { itemOperations } from "./features/item/operations";
+export * from "./features/item/read-operations";
+export * from "./features/item/schema";
+export * from "./features/item/write-operations";
 export { splitMemberRoles } from "./features/member/member-roles";
 export * from "./features/member/operations";
 export * from "./features/member/schema";
@@ -28,9 +45,6 @@ export * from "./features/role/read-operations";
 export * from "./features/role/schema";
 export { parseRolePermissions } from "./features/role/to-role-dto";
 export * from "./features/role/write-operations";
-export { roomEmbeddable } from "./features/room/embeddable";
-export * from "./features/room/operations";
-export * from "./features/room/schema";
 export { skillEmbeddable } from "./features/skill/embeddable";
 export * from "./features/skill/lifecycle-operations";
 export * from "./features/skill/operations";
@@ -38,9 +52,21 @@ export * from "./features/skill/read-operations";
 export * from "./features/skill/schema";
 export * from "./features/skill/transfer-operations";
 export * from "./features/skill/write-operations";
+export * from "./features/setup/operations";
+export * from "./features/setup/schema";
 export { venueEmbeddable } from "./features/venue/embeddable";
 export * from "./features/venue/operations";
 export * from "./features/venue/schema";
+export { vocabularyOperations } from "./features/vocabulary/operations";
+export * from "./features/vocabulary/read-operations";
+export * from "./features/vocabulary/schema";
+export * from "./features/vocabulary/value-operations";
+export * from "./features/vocabulary/write-operations";
+export {
+  getVocabularyTemplate,
+  VOCABULARY_TEMPLATE_KEYS,
+  type VocabularyTemplateKey,
+} from "./templates/vocabularies/vocabulary-templates";
 export {
   type CreateExecuteContextInput,
   createExecuteContext,

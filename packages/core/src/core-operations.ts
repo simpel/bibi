@@ -1,10 +1,14 @@
+import { entityTypeOperations } from "./features/entity-type/operations";
+import { fieldDefinitionOperations } from "./features/field-definition/operations";
+import { itemOperations } from "./features/item/operations";
 import { conversationOperations } from "./features/conversation/operations";
 import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
 import { roleOperations } from "./features/role/operations";
-import { roomOperations } from "./features/room/operations";
 import { skillOperations } from "./features/skill/operations";
+import { setupOperations } from "./features/setup/operations";
 import { venueOperations } from "./features/venue/operations";
+import { vocabularyOperations } from "./features/vocabulary/operations";
 import type { AnyOperation } from "./operations/types";
 import type { EmbedFn } from "./search/embed";
 import { createSearchOperation } from "./search/search-operation";
@@ -15,7 +19,11 @@ export type CreateCoreOperationsInput = { embed: EmbedFn };
 export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyOperation[] {
   return [
     ...venueOperations,
-    ...roomOperations,
+    ...entityTypeOperations,
+    ...fieldDefinitionOperations,
+    ...vocabularyOperations,
+    ...setupOperations,
+    ...itemOperations,
     ...conversationOperations,
     ...messageOperations,
     ...skillOperations,

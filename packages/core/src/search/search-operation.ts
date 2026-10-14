@@ -25,7 +25,7 @@ export function createSearchOperation({
     name: "search",
     kind: "query",
     description:
-      "Search venues, rooms, skills and your conversations in the current organization by " +
+      "Search venues, items (rooms, dishes, …), skills and your conversations in the current organization by " +
       "meaning and keywords. Returns entity type, id, score and the indexed text.",
     input: SearchInputSchema,
     output: SearchOutputSchema,
