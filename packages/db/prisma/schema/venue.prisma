@@ -1,0 +1,45 @@
+/// Anläggning – a building or site containing bookable rooms.
+model Venue {
+  id                    String       @id @default(cuid(2))
+  organizationId        String
+  name                  String
+  description           String?
+  streetAddress         String?
+  postalCode            String?
+  city                  String?
+  country               String       @default("SE")
+  contactEmail          String?
+  contactPhone          String?
+  openingHours          String?
+  defaultVatRatePercent Int          @default(25)
+  status                RecordStatus @default(ACTIVE)
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  createdBy             String?
+  rooms                 Room[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+}
+
+/// Rum – a bookable room inside a venue. Composite FK keeps room and venue in the same org.
+model Room {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  venueId        String
+  name           String
+  description    String?
+  floor          String?
+  areaSqm        Float?
+  ceilingHeightM Float?
+  hasDaylight    Boolean      @default(false)
+  maxCapacity    Int?
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  venue          Venue        @relation(fields: [venueId, organizationId], references: [id, organizationId])
+
+  @@index([organizationId, status])
+  @@index([organizationId, venueId])
+}

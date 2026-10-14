@@ -38,15 +38,17 @@ erDiagram
   Rum ||--o{ RumMoblering : "har"
   Moblering ||--o{ RumMoblering : "används i"
   Rum ||--o{ Belaggning : "har"
-  Deltagare ||--o{ Kostavvikelse : "anger"
-  Kostavvikelse }o--|| Allergen : "avser"
+  Deltagare ||--o{ Allergi : "anger"
+  Allergi }o--|| Allergen : "avser"
+  Deltagare ||--o{ Kostpreferens : "anger"
   Artikel }o--o{ Allergen : "innehåller"
   Meny }o--o{ Artikel : "består av"
   Konferenspaket }o--o{ Artikel : "innehåller"
   Orderrad }o--|| Artikel : "avser"
   Artikel }o--o{ Prislista : "prissätts i"
   Koksorder }o--|| Meny : "baseras på"
-  Koksorder }o--o{ Kostavvikelse : "sammanställer"
+  Koksorder }o--o{ Allergi : "sammanställer"
+  Koksorder }o--o{ Kostpreferens : "sammanställer"
   Koksorder }o--o| Partner : "skickas till"
   Artikel }o--o| Partner : "levereras av"
   Forskott ||--o{ Betalning : "betalas med"
@@ -221,32 +223,47 @@ erDiagram
 - namn
 - e-post
 - organisation
-- kostavvikelser
+- allergier
+- kostpreferenser
 - närvarostatus
 - källa (länk / import / manuellt)
 
 **Relationer**
 - `N:1` Bokning har denna
-- `1:N` anger → Kostavvikelse
+- `1:N` anger → Allergi
+- `1:N` anger → Kostpreferens
 
 > ★ Deltagarlista med kost per person: bara Venjue (DK) har det bekräftat.
 
-### Kostavvikelse ★
+### Allergi ★
 
-*MVP* · Allergi eller kostval per deltagare.
+*MVP* · Allergi eller överkänslighet hos en deltagare. Säkerhetskritisk: en krock med en artikels allergener är en blockerare.
 
 **Attribut**
-- typ (allergen / vegetarisk / vegansk / halal / kosher / annat)
-- allergen
-- allvarlighetsgrad
-- fritext
+- allergen (obligatorisk)
+- allvarlighetsgrad (intolerans / allergi / anafylaxi)
+- anteckning
 
 **Relationer**
 - `N:1` Deltagare anger denna
 - `N:1` avser → Allergen
 - `M:N` Köksorder sammanställer denna
 
-> ★ Slår igenom i köksordern per namn och per allergen.
+> ★ Slår igenom i köksordern per namn och per allergen. Matchas mot Artikel.allergener.
+
+### Kostpreferens
+
+*MVP* · Val av kost som inte är en säkerhetsfråga.
+
+**Attribut**
+- typ (vegetarisk / vegansk / halal / kosher / annat)
+- fritext (för annat)
+
+**Relationer**
+- `N:1` Deltagare anger denna
+- `M:N` Köksorder sammanställer denna
+
+> Matchas mot Artikel.kostmärkning, inte mot allergener. I köksordern som antal och namn, efter allergierna.
 
 ### Avbokningsvillkor
 
@@ -384,6 +401,7 @@ erDiagram
 - momssats
 - kostnadsställe
 - allergener
+- kostmärkning (vegetarisk / vegansk / halal / kosher)
 - leverantör (eget kök / partner)
 
 **Relationer**
@@ -396,7 +414,7 @@ erDiagram
 
 ### Allergen
 
-*MVP* · De 14 allergener som måste anges enligt EU:s förordning 1169/2011.
+*MVP* · De 14 allergener som måste anges enligt EU:s förordning 1169/2011. Globalt, skrivskyddat referensdata (seedat, inte per organisation).
 
 **Attribut**
 - kod
@@ -404,7 +422,7 @@ erDiagram
 - ikon
 
 **Relationer**
-- `1:N` Kostavvikelse avser denna
+- `1:N` Allergi avser denna
 - `M:N` Artikel innehåller denna
 
 ### Meny
@@ -447,14 +465,16 @@ erDiagram
 - serveringstid
 - antal kuvert
 - menyval
-- specialkost per allergen och per namn
+- allergier per allergen och per namn
+- kostpreferenser (antal och namn)
 - mottagare (eget kök / partner)
 - version och ändringsmarkering
 
 **Relationer**
 - `0..1:1` Programpunkt genererar denna
 - `N:1` baseras på → Meny
-- `N:M` sammanställer → Kostavvikelse
+- `N:M` sammanställer → Allergi
+- `N:M` sammanställer → Kostpreferens
 - `N:0..1` skickas till → Partner
 
 > ★ Versionerad, med ändringar markerade sedan senaste utskick.
@@ -616,3 +636,38 @@ erDiagram
 
 **Relationer**
 - `N:1` öppnar för → Programpunkt
+
+## Ordlista sv↔en
+
+Svenska termer används i dokumentation och UI. Engelska namn används i kod, API:er och MCP-verktyg (se [ADR 0009](beslut/0009-sprak-i-kod-och-ui.md)).
+
+| Svenska | Engelska (kod) |
+|---|---|
+| Anläggning | Venue |
+| Rum | Room |
+| Kund | Customer |
+| Kontaktperson | Contact |
+| Förfrågan | Inquiry |
+| Option | Option |
+| Offert | Quote |
+| Avtal | Agreement |
+| Bokning | Booking |
+| Programpunkt | AgendaItem |
+| Deltagare | Attendee |
+| Allergi | Allergy |
+| Kostpreferens | DietaryPreference |
+| Allergen | Allergen |
+| Köksorder | KitchenOrder |
+| Faktura | Invoice |
+| Förskott | Deposit |
+| Betalning | Payment |
+| Prislista | PriceList |
+| Artikel | Article |
+| Meny | Menu |
+| Konferenspaket | ConferencePackage |
+| Möblering | Layout |
+| Beläggning | Occupancy |
+| Partner | Partner |
+| Avbokningsvillkor | CancellationTerms |
+| Orderrad | OrderLine |
+| Användare | User |

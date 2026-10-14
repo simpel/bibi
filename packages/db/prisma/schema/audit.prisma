@@ -1,0 +1,25 @@
+enum ActorType {
+  USER
+  AI
+  SYSTEM
+}
+
+/// Append-only log of every command executed through @okazi/core.
+model AuditLog {
+  id             String    @id @default(cuid(2))
+  organizationId String
+  actorType      ActorType
+  actorId        String?
+  conversationId String?
+  /// User who approved an AI-proposed command (human-in-the-loop); null otherwise.
+  approvedBy     String?
+  operation      String
+  entityType     String?
+  entityId       String?
+  before         Json?
+  after          Json?
+  createdAt      DateTime  @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, entityType, entityId])
+}

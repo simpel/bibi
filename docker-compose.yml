@@ -1,0 +1,56 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: okazi
+      POSTGRES_PASSWORD: okazi
+      POSTGRES_DB: okazi
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U okazi -d okazi"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+  web:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args: { APP: web }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://okazi:okazi@postgres:5432/okazi
+      SMTP_URL: smtp://mailpit:1025
+      MCP_URL: http://mcp:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  mcp:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args: { APP: mcp }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://okazi:okazi@postgres:5432/okazi
+      WEB_URL: http://web:3000
+    ports:
+      - "3001:3001"
+    depends_on:
+      postgres: { condition: service_healthy }
+
+volumes:
+  postgres-data:

@@ -1,0 +1,33 @@
+{
+  "name": "@okazi/ai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./embed": "./src/embeddings/create-embed.ts",
+    "./ui": "./src/ui-contract/resolve-tool-ui.ts",
+    "./approvals": "./src/approval/extract-pending-approvals.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "reindex": "tsx --env-file-if-exists=../../.env src/embeddings/reindex-cli.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/mcp": "2.0.74",
+    "@okazi/auth": "workspace:*",
+    "@okazi/config": "workspace:*",
+    "@okazi/core": "workspace:*",
+    "@okazi/db": "workspace:*",
+    "ai": "7.0.138",
+    "zod": "4.1.8"
+  },
+  "devDependencies": {
+    "@paralleldrive/cuid2": "3.3.0",
+    "@types/node": "22.20.5",
+    "tsx": "4.23.15",
+    "typescript": "5.9.2",
+    "vitest": "4.1.11"
+  }
+}

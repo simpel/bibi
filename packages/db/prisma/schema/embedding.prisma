@@ -1,0 +1,19 @@
+/// Search index row per entity (hybrid FTS + pgvector). Written via src/embeddings/* raw SQL.
+/// `search` is a generated tsvector column (see migration); `embedding` is vector(1536).
+model Embedding {
+  id             String                       @id
+  organizationId String
+  entityType     String
+  entityId       String
+  model          String
+  content        String
+  contentHash    String
+  embedding      Unsupported("vector(1536)")?
+  search         Unsupported("tsvector")?     @default(dbgenerated("to_tsvector('simple'::regconfig, content)"))
+  createdAt      DateTime                     @default(now())
+  updatedAt      DateTime                     @updatedAt
+
+  @@unique([organizationId, entityType, entityId])
+  @@index([organizationId, entityType])
+  @@index([search], type: Gin)
+}

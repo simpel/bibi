@@ -173,8 +173,9 @@ const E = [
   // Bokning & program
   {id:"booking",d:"booking",n:"Bokning",p:"MVP",s:"Konferensen eller eventet som helhet.",a:["referensnr","status (preliminär / bekräftad / avbokad / genomförd)","start – slut","beräknat antal","garanterat antal (låses X dagar före)","koordinator","avbokningsvillkor"]},
   {id:"function",d:"booking",n:"Programpunkt",p:"MVP",s:"En rad i dagens körschema: möte, fika, lunch, aktivitet.",a:["typ (möte, fika, lunch, middag, aktivitet, mingel)","start – slut","rum","möblering","antal","ansvarig","intern notering"]},
-  {id:"attendee",d:"booking",n:"Deltagare",p:"MVP",s:"Person som kommer, registrerad via länk eller import.",a:["namn","e-post","organisation","kostavvikelser","närvarostatus","källa (länk / import / manuellt)"],x:"Deltagarlista med kost per person: bara Venjue (DK) har det bekräftat."},
-  {id:"diet",d:"booking",n:"Kostavvikelse",p:"MVP",s:"Allergi eller kostval per deltagare.",a:["typ (allergen / vegetarisk / vegansk / halal / kosher / annat)","allergen","allvarlighetsgrad","fritext"],x:"Slår igenom i köksordern per namn och per allergen."},
+  {id:"attendee",d:"booking",n:"Deltagare",p:"MVP",s:"Person som kommer, registrerad via länk eller import.",a:["namn","e-post","organisation","allergier","kostpreferenser","närvarostatus","källa (länk / import / manuellt)"],x:"Deltagarlista med kost per person: bara Venjue (DK) har det bekräftat."},
+  {id:"allergy",d:"booking",n:"Allergi",p:"MVP",s:"Allergi eller överkänslighet hos en deltagare. Säkerhetskritisk.",a:["allergen (obligatorisk)","allvarlighetsgrad (intolerans / allergi / anafylaxi)","anteckning"],x:"Slår igenom i köksordern per namn och per allergen. Matchas mot Artikel.allergener."},
+  {id:"diet",d:"booking",n:"Kostpreferens",p:"MVP",s:"Val av kost som inte är en säkerhetsfråga.",a:["typ (vegetarisk / vegansk / halal / kosher / annat)","fritext (för annat)"],x:"Matchas mot Artikel.kostmärkning. I köksordern som antal och namn."},
   {id:"policy",d:"booking",n:"Avbokningsvillkor",p:"MVP",s:"Regler för avbokning och minskat antal.",a:["tidsgränser (t.ex. 30 / 14 / 7 dagar)","debiteringsgrad per gräns","tillåten minskning av antal (%)","gäller kund eller anläggning"]},
 
   // Lokaler & resurser
@@ -187,11 +188,11 @@ const E = [
   {id:"partner",d:"space",n:"Partner",p:"MVP",s:"Extern leverantör: restaurang, aktivitet, AV.",a:["typ (restaurang / catering, aktivitet, AV, transport)","kontaktuppgifter","tar emot köksorder (ja/nej)","avräkning (inköp / provision)"],x:"World of Volvo köper all konferensmat av en extern operatör. Köksordern måste kunna gå över bolagsgräns."},
 
   // Mat & dryck
-  {id:"item",d:"food",n:"Artikel",p:"MVP",s:"Allt som kan säljas: rätt, dryck, lokalhyra, aktivitet.",a:["namn","kategori (fika, lunch, middag, dryck, lokal, utrustning, aktivitet)","prisenhet (per person / st / timme)","momssats","kostnadsställe","allergener","leverantör (eget kök / partner)"]},
-  {id:"allergen",d:"food",n:"Allergen",p:"MVP",s:"De 14 allergener som måste anges enligt EU:s förordning 1169/2011.",a:["kod","namn","ikon"]},
+  {id:"item",d:"food",n:"Artikel",p:"MVP",s:"Allt som kan säljas: rätt, dryck, lokalhyra, aktivitet.",a:["namn","kategori (fika, lunch, middag, dryck, lokal, utrustning, aktivitet)","prisenhet (per person / st / timme)","momssats","kostnadsställe","allergener","kostmärkning (vegetarisk / vegansk / halal / kosher)","leverantör (eget kök / partner)"]},
+  {id:"allergen",d:"food",n:"Allergen",p:"MVP",s:"De 14 allergener som måste anges enligt EU:s förordning 1169/2011. Globalt, skrivskyddat referensdata.",a:["kod","namn","ikon"]},
   {id:"menu",d:"food",n:"Meny",p:"MVP",s:"Uppsättning rätter med valbara alternativ.",a:["namn","rätter (artiklar)","valbara alternativ","säsong","sista dag för menyval"]},
   {id:"package",d:"food",n:"Konferenspaket",p:"MVP",s:"Pris per person för rum, fika och mat ihop.",a:["namn","pris per person","ingående artiklar och tider","minsta antal","momsfördelning per ingående del"],x:"World of Volvo säljer paket från 590 till 1 016 kr per person."},
-  {id:"kitchen",d:"food",n:"Köksorder",p:"MVP",s:"Function sheet till kök eller partner.",a:["programpunkt","serveringstid","antal kuvert","menyval","specialkost per allergen och per namn","mottagare (eget kök / partner)","version och ändringsmarkering"],x:"Versionerad, med ändringar markerade sedan senaste utskick."},
+  {id:"kitchen",d:"food",n:"Köksorder",p:"MVP",s:"Function sheet till kök eller partner.",a:["programpunkt","serveringstid","antal kuvert","menyval","allergier per allergen och per namn","kostpreferenser (antal och namn)","mottagare (eget kök / partner)","version och ändringsmarkering"],x:"Versionerad, med ändringar markerade sedan senaste utskick."},
 
   // Ekonomi
   {id:"pricelist",d:"money",n:"Prislista",p:"MVP",s:"Pris per säsong, veckodag eller kund.",a:["namn","giltighet","säsong / veckodag","kundspecifik","rabatt (%)"]},
@@ -215,8 +216,8 @@ const R = [
   ["booking","function","1:N","består av"],["booking","attendee","1:N","har"],["booking","policy","N:1","följer"],["booking","deposit","1:N","kräver"],["booking","invoice","1:N","faktureras via"],["user","booking","1:N","koordinerar"],["org","booking","1:N","beställer"],
   ["function","room","N:1","hålls i"],["function","layout","N:1","möbleras som"],["function","line","1:N","debiteras via"],["function","kitchen","1:0..1","genererar"],["function","block","1:1","reserverar"],["hold","block","1:1","reserverar"],
   ["venue","room","1:N","har"],["room","roomlayout","1:N","har"],["layout","roomlayout","1:N","används i"],["room","block","1:N","har"],
-  ["attendee","diet","1:N","anger"],["diet","allergen","N:1","avser"],["item","allergen","N:M","innehåller"],["menu","item","N:M","består av"],["package","item","N:M","innehåller"],["line","item","N:1","avser"],["item","pricelist","N:M","prissätts i"],
-  ["kitchen","menu","N:1","baseras på"],["kitchen","diet","N:M","sammanställer"],["kitchen","partner","N:0..1","skickas till"],["item","partner","N:0..1","levereras av"],["line","equipment","N:0..1","bokar"],
+  ["attendee","allergy","1:N","anger"],["allergy","allergen","N:1","avser"],["attendee","diet","1:N","anger"],["item","allergen","N:M","innehåller"],["menu","item","N:M","består av"],["package","item","N:M","innehåller"],["line","item","N:1","avser"],["item","pricelist","N:M","prissätts i"],
+  ["kitchen","menu","N:1","baseras på"],["kitchen","allergy","N:M","sammanställer"],["kitchen","diet","N:M","sammanställer"],["kitchen","partner","N:0..1","skickas till"],["item","partner","N:0..1","levereras av"],["line","equipment","N:0..1","bokar"],
   ["deposit","payment","1:N","betalas med"],["invoice","payment","1:N","regleras med"],["invoice","line","1:N","fakturerar"],["invoice","deposit","1:N","avräknar"],
   ["user","task","1:N","ansvarar för"],["function","task","1:N","kräver"],["message","booking","N:0..1","gäller"],["message","lead","N:0..1","gäller"],["screen","room","N:1","sitter vid"],["access","function","N:1","öppnar för"]
 ];

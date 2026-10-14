@@ -1,0 +1,47 @@
+{
+  "name": "@okazi/mcp",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch --env-file-if-exists=../../.env src/http.ts",
+    "dev:stdio": "tsx --env-file-if-exists=../../.env src/stdio.ts",
+    "build": "tsup",
+    "start": "node --env-file-if-exists=../../.env dist/http.js",
+    "start:stdio": "node --env-file-if-exists=../../.env dist/stdio.js",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@better-auth/api-key": "1.7.7",
+    "@better-auth/cimd": "1.7.7",
+    "@better-auth/core": "1.7.7",
+    "@better-auth/mcp": "1.7.7",
+    "@graphql-yoga/plugin-disable-introspection": "2.25.5",
+    "@modelcontextprotocol/sdk": "1.32.1",
+    "@okazi/ai": "workspace:*",
+    "@okazi/auth": "workspace:*",
+    "@okazi/config": "workspace:*",
+    "@okazi/core": "workspace:*",
+    "@okazi/db": "workspace:*",
+    "@okazi/graphql": "workspace:*",
+    "@paralleldrive/cuid2": "3.3.0",
+    "@pothos/core": "4.15.1",
+    "@prisma/adapter-pg": "7.10.0",
+    "@prisma/client": "7.10.0",
+    "ai": "7.0.138",
+    "better-auth": "1.7.7",
+    "graphql": "16.14.2",
+    "graphql-yoga": "5.24.5",
+    "nodemailer": "10.0.13",
+    "zod": "4.1.8"
+  },
+  "devDependencies": {
+    "@okazi/api": "workspace:*",
+    "@types/node": "22.20.5",
+    "tsup": "8.5.1",
+    "tsx": "4.23.15",
+    "typescript": "5.9.2",
+    "vitest": "4.1.11"
+  }
+}
