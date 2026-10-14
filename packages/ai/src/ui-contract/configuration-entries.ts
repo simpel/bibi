@@ -1,6 +1,7 @@
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 import {
+  ConfigurationImportWireSchema,
   EntityTypeListWireSchema,
   EntityTypeWireSchema,
   FieldDefinitionListWireSchema,
@@ -27,6 +28,12 @@ const entityTypeTable = uiEntry({
   component: "entity-type-table",
   schema: EntityTypeListWireSchema,
   toProps: ({ value }) => value,
+});
+/** The import's types (with their fields) are what staff go on to edit. */
+const configurationImport = uiEntry({
+  component: "entity-type-table",
+  schema: ConfigurationImportWireSchema,
+  toProps: ({ value }) => ({ items: value.created.entityTypes, nextCursor: null }),
 });
 const entityTypeCard = uiEntry({
   component: "entity-type-card",
@@ -95,4 +102,5 @@ export const CONFIGURATION_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   setup_create: setupCard,
   setup_update: setupCard,
   setup_archive: setupCard,
+  configuration_importTemplate: configurationImport,
 };

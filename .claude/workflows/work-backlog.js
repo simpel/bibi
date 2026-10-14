@@ -1,23 +1,31 @@
 export const meta = {
   name: 'work-backlog',
-  description: 'Work unblocked tickets from project 8 in parallel batches and commit each to main',
-  whenToUse: 'Run to let agents implement ready tickets from the okazi board. Args: { batchSize?: 3, maxBatches?: 3, only?: [issueNumbers] }',
+  description: 'Work unblocked tickets from project 8, one isolated worktree per ticket, landing each on main',
+  whenToUse: 'Run to let agents implement ready tickets from the okazi board until none are left. Args: { batchSize?: 3, maxBatches?: unlimited (safety cap 50), includeBacklog?: false, only?: [issueNumbers] }',
   phases: [
-    { title: 'Select', detail: 'read board + blockers, pick a non-colliding batch' },
-    { title: 'Implement', detail: 'one agent per ticket, model by complexity, no commits' },
-    { title: 'Verify', detail: 'full checks once per batch, fix loop with escalation' },
+    { title: 'Select', detail: 'read board + blockers, pick a batch' },
+    { title: 'Prepare', detail: 'pnpm wt:new per ticket: own branch, database, ports and .env' },
+    { title: 'Implement', detail: 'one agent per ticket in its worktree, model by complexity' },
+    { title: 'Verify', detail: 'full checks per worktree, fix loop with escalation' },
     { title: 'Review', detail: 'tenancy review on Opus for core/db/auth/mcp changes' },
-    { title: 'Commit', detail: 'one commit per ticket on main, push, board to Done' },
+    { title: 'Land', detail: 'one at a time: commit, rebase on origin/main, re-verify, push, board to Done' },
+    { title: 'Park', detail: 'push a failed ticket to parked/<N>, comment, card to Parked' },
   ],
 }
 
 // ---- Config ---------------------------------------------------------------
+const REPO = '/Users/joelsanden/Code/okazi'
 const BATCH_SIZE = (args && args.batchSize) || 3
-const MAX_BATCHES = (args && args.maxBatches) || 3
+const SAFETY_CAP = 50 // hard stop against runaway loops
+const MAX_BATCHES = Math.min((args && args.maxBatches) || SAFETY_CAP, SAFETY_CAP)
+const STATUSES = args && args.includeBacklog ? ['Todo', 'Backlog'] : ['Todo']
 const ONLY = (args && args.only) || null
 const MAX_FIX_ROUNDS = 2
 const TIERS = ['haiku', 'sonnet', 'opus'] // fable is never used
-const BOARD = `Project board 8 (owner simpel): project id PVT_kwHOAAOKWM4BnFHj, Status field PVTSSF_lAHOAAOKWM4BnFHjzhlrXtM, options Backlog=f75ad846 Todo=61e4505c "In progress"=47fc9ee4 Done=98236657. Item id: gh project item-list 8 --owner simpel --format json -L 300 and match content.number.`
+const BOARD = `Project board 8 (owner simpel): project id PVT_kwHOAAOKWM4BnFHj, Status field PVTSSF_lAHOAAOKWM4BnFHjzhlrXtM, options Backlog=f75ad846 Todo=61e4505c Parked=a84a90a0 "In progress"=47fc9ee4 Done=98236657. Item id: gh project item-list 8 --owner simpel --format json -L 300 and match content.number.`
+const CO_AUTHOR = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
+const wtName = (t) => `t-${t.number}`
+const CHECKS = 'pnpm db:migrate, pnpm lint, pnpm typecheck, pnpm check:structure, pnpm test'
 
 // ---- Model choice (deterministic, from labels) ----------------------------
 function pickModel(t) {
@@ -44,7 +52,7 @@ const needsTenancyReview = (t) =>
 const TICKETS = {
   type: 'object',
   properties: {
-    clean: { type: 'boolean' },
+    ok: { type: 'boolean' },
     problem: { type: 'string' },
     tickets: {
       type: 'array',
@@ -56,13 +64,17 @@ const TICKETS = {
           labels: { type: 'array', items: { type: 'string' } },
           priority: { type: 'string' },
           openBlockers: { type: 'array', items: { type: 'number' } },
-          needsMigration: { type: 'boolean' },
         },
-        required: ['number', 'title', 'labels', 'priority', 'openBlockers', 'needsMigration'],
+        required: ['number', 'title', 'labels', 'priority', 'openBlockers'],
       },
     },
   },
-  required: ['clean', 'tickets'],
+  required: ['ok', 'tickets'],
+}
+const PREP = {
+  type: 'object',
+  properties: { ok: { type: 'boolean' }, dir: { type: 'string' }, problem: { type: 'string' } },
+  required: ['ok'],
 }
 const IMPL = {
   type: 'object',
@@ -82,12 +94,8 @@ const VERIFY = {
       type: 'array',
       items: {
         type: 'object',
-        properties: {
-          ticket: { type: 'number' },
-          check: { type: 'string' },
-          output: { type: 'string' },
-        },
-        required: ['ticket', 'check', 'output'],
+        properties: { check: { type: 'string' }, output: { type: 'string' } },
+        required: ['check', 'output'],
       },
     },
   },
@@ -95,196 +103,179 @@ const VERIFY = {
 }
 const REVIEW = {
   type: 'object',
-  properties: {
-    ok: { type: 'boolean' },
-    findings: { type: 'array', items: { type: 'string' } },
-  },
+  properties: { ok: { type: 'boolean' }, findings: { type: 'array', items: { type: 'string' } } },
   required: ['ok', 'findings'],
 }
-const COMMIT = {
+const LAND = {
   type: 'object',
   properties: {
-    pushed: { type: 'boolean' },
-    commits: { type: 'array', items: { type: 'string' } },
-    problem: { type: 'string' },
+    landed: { type: 'boolean' },
+    sha: { type: 'string' },
+    reason: { type: 'string' },
   },
-  required: ['pushed', 'commits'],
+  required: ['landed'],
+}
+const PARK = {
+  type: 'object',
+  properties: { ok: { type: 'boolean' }, branch: { type: 'string' }, problem: { type: 'string' } },
+  required: ['ok'],
 }
 
 // ---- Prompts ---------------------------------------------------------------
-const selectPrompt = (exclude) => `You prepare a batch for autonomous ticket work in /Users/joelsanden/Code/okazi.
-1. Run \`git status --porcelain\` and \`git branch --show-current\`. If the tree is dirty or not on main, return clean=false with the reason and no tickets.
-2. Run \`git pull --ff-only origin main\`. On failure return clean=false.
-3. List board items: gh project item-list 8 --owner simpel --format json -L 300. Keep open issues from simpel/okazi with status "Todo".${ONLY ? ` Only consider issues ${JSON.stringify(ONLY)}.` : ''}${exclude.length ? ` Skip issues ${JSON.stringify(exclude)}.` : ''}
-4. For each, read the issue (gh issue view N -R simpel/okazi --json title,labels,body). openBlockers = issue numbers under "Depends on" in the body, plus native blocked-by (gh api repos/simpel/okazi/issues/N/dependencies/blocked_by), that are still OPEN.
-5. needsMigration = the To do list requires a Prisma schema change or migration.
-6. priority = the board Priority value (P0/P1/P2, "" if unset). labels = label names.
-Return every Todo ticket, including blocked ones. Do not change anything.`
+const inWorktree = (dir) => `Your checkout is the git worktree ${dir}: its own branch, its own Postgres database and its own .env (loaded automatically by Vitest, Prisma and the dev servers). Run every command with cwd ${dir} and edit only files under it. Never touch the main checkout ${REPO}.`
 
-const implPrompt = (t) => `Implement GitHub issue #${t.number} ("${t.title}") in /Users/joelsanden/Code/okazi on branch main.
-- First move its card to "In progress". ${BOARD}
+const selectPrompt = (exclude) => `You read the board for autonomous ticket work on simpel/okazi. Do not change anything.
+1. In ${REPO}: git fetch origin. On failure return ok=false with the reason.
+2. List board items: gh project item-list 8 --owner simpel --format json -L 300. Keep open issues from simpel/okazi with status ${STATUSES.map((x) => `"${x}"`).join(' or ')}.${ONLY ? ` Only consider issues ${JSON.stringify(ONLY)}.` : ''}${exclude.length ? ` Skip issues ${JSON.stringify(exclude)}.` : ''}
+3. For each, read the issue (gh issue view N -R simpel/okazi --json title,labels,body). openBlockers = issue numbers under "Depends on" in the body, plus native blocked-by (gh api repos/simpel/okazi/issues/N/dependencies/blocked_by), that are still OPEN.
+4. priority = the board Priority value (P0/P1/P2, "" if unset). labels = label names.
+Return ok=true and every matching ticket, including blocked ones.`
+
+const prepPrompt = (t) => `Create an isolated worktree for issue #${t.number} in ${REPO}.
+1. git fetch origin.
+2. If ${REPO}/../okazi-worktrees/${wtName(t)} exists (leftover from an earlier run): if \`git status --porcelain\` there is empty and \`git log origin/main..HEAD\` there is empty, run \`pnpm wt:rm ${wtName(t)} --force --delete-branch\` from ${REPO}; otherwise return ok=false, problem "leftover worktree with work".
+3. If branch ticket/${t.number} exists without a worktree: delete it (git branch -D) only if \`git log origin/main..ticket/${t.number}\` is empty; otherwise return ok=false, problem "leftover branch with work".
+4. From ${REPO}: pnpm wt:new ${wtName(t)} --branch ticket/${t.number} --base origin/main. It prints WORKTREE_DIR=<path> when ready. On failure return ok=false with the last 30 lines.
+5. Move the issue's board card to "In progress". ${BOARD}
+Return ok and dir (absolute path).`
+
+const implPrompt = (t, dir) => `Implement GitHub issue #${t.number} ("${t.title}").
+${inWorktree(dir)}
 - Read the issue: gh issue view ${t.number} -R simpel/okazi. Its "To do" and "Done when" sections are the spec. Read the linked ADR in docs/decisions/.
-- Follow CLAUDE.md and use the matching repo skill (new-entity, new-core-operation, db-migration, i18n-strings, new-ui-component, structure-fix) where it fits.
-- Other agents are editing other tickets in this same working tree right now. Touch only what this ticket needs. If a file changed under you, re-read it and merge; never revert others' edits.
-- Do NOT run git add/commit/push/stash/checkout/reset. Do NOT run full-repo \`pnpm test\`; run only checks scoped to your packages (e.g. pnpm --filter <pkg> typecheck / test) and pnpm check:structure.
-${t.needsMigration ? '- You own the only migration in this batch. Create it with the db-migration skill.' : '- Do not change packages/db/prisma/schema.prisma.'}
+- Use the matching repo skill (new-entity, new-core-operation, db-migration, i18n-strings, new-ui-component, structure-fix) where it fits. Migrations are fine: your database is yours alone.
+- Run any checks you like in your worktree, including pnpm test for the packages you touch.
+- Do NOT run git add/commit/push/rebase/stash/checkout/reset. The landing step commits.
 - If the spec needs a human decision or is blocked by missing work, stop and return status=blocked with the reason in notes.
-Return files = every path you created, changed or deleted (repo-relative).`
+Return files = every path you created, changed or deleted (relative to the worktree).`
 
-const fixPrompt = (t, failures) => `Checks failed after your work on issue #${t.number} ("${t.title}") in /Users/joelsanden/Code/okazi (branch main).
+const verifyPrompt = (t, dir) => `Verify the work on issue #${t.number}. Do not edit files and do not run git commands that change state.
+${inWorktree(dir)}
+1. Ensure Postgres is up: docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres.
+2. Run, in order, and collect output: ${CHECKS}.
+green=true only if every command passed. For each failure keep a short excerpt (<60 lines).`
+
+const fixPrompt = (t, dir, failures) => `Checks failed after work on issue #${t.number} ("${t.title}").
+${inWorktree(dir)}
 Failures:
 ${failures.map((f) => `### ${f.check}\n${f.output}`).join('\n\n')}
-Fix the cause. Same rules: no git commands, no full-repo pnpm test, keep other tickets' edits intact. Return the full list of files this ticket has touched so far (including earlier ones).`
+Fix the cause. No git commands that change state. Return the full list of files this ticket has touched so far (including earlier ones).`
 
-const verifyPrompt = (batch) => `Verify the working tree of /Users/joelsanden/Code/okazi after a batch of tickets. Do not edit files and do not run git commands that change state.
-Tickets and their files:
-${batch.map((b) => `#${b.t.number}: ${b.files.join(', ')}`).join('\n')}
-1. Ensure Postgres is up: docker compose up -d (wait until healthy). Run pnpm db:migrate if a migration was added.
-2. Run, in order, and collect output: pnpm lint, pnpm typecheck, pnpm check:structure, pnpm test.
-3. For each failure, attribute it to the ticket whose files are involved (best guess by path). Keep output excerpts short (<60 lines each).
-green=true only if every command passed.`
-
-const reviewPrompt = (b) => `Use the tenancy-review skill on the uncommitted changes for issue #${b.t.number} in /Users/joelsanden/Code/okazi. Files: ${b.files.join(', ')}.
+const reviewPrompt = (t, dir) => `Use the tenancy-review skill on the uncommitted changes for issue #${t.number} (git diff plus untracked files in the worktree).
+${inWorktree(dir)}
 Check org scoping, permissions, AuditLog, and AI approval. Do not edit files. ok=false only for a real tenancy/permission/audit defect; list each with file:line.`
 
-const commitPrompt = (groups) => `Commit and push finished tickets in /Users/joelsanden/Code/okazi on main. Make one commit per group, in this order:
-${groups.map((g, i) => `${i + 1}. Files: ${g.files.join(' ')}\n   Message subject: ${g.subject}\n   Body lines: ${g.tickets.map((t) => `Closes #${t.number}`).join(', ')}`).join('\n')}
-For each: git add -- <files> (use git add -A -- <file> for deletions), then git commit with the subject, a blank line, the Closes lines, a blank line, and:
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-Never use git add . or -A without paths. If unrelated files are staged, unstage them.
-Then: git pull --rebase origin main && git push origin main. Never force-push. If the push or rebase fails, stop and report it in problem.
-After a successful push, set each ticket's board card to Done. ${BOARD}
-Return the commit SHAs + subjects.`
+const landPrompt = (t, dir, summary) => `Land issue #${t.number} on main. Other tickets land one at a time, so origin/main may have moved.
+${inWorktree(dir)}
+1. If there are uncommitted changes: git add -A, then git commit with subject "${t.title}", a blank line, "Closes #${t.number}", a blank line, a 1-3 line summary (${summary}), a blank line, and:
+${CO_AUTHOR}
+2. git fetch origin, note \`git merge-base HEAD origin/main\`, then git rebase origin/main. On a conflict: git rebase --abort and return landed=false, reason "rebase conflict: <files>".
+3. If origin/main had moved (merge-base changed), re-run ${CHECKS}. On any failure return landed=false, reason "red after rebase" plus a short excerpt.
+4. git push origin HEAD:main. Never force-push. If rejected because origin moved, go back to step 2 (at most 3 tries in total).
+5. Set the issue's board card to Done. ${BOARD}
+6. From ${REPO}: pnpm wt:rm ${wtName(t)} --delete-branch.
+Return landed=true and the pushed SHA.`
 
-// ---- Helpers ---------------------------------------------------------------
-function packBatch(tickets) {
-  const ready = tickets
-    .filter((t) => t.openBlockers.length === 0)
-    .filter((t) => !t.labels.includes('type:decision'))
-    .sort((a, b) => (a.priority || 'P9').localeCompare(b.priority || 'P9') || a.number - b.number)
-  const batch = []
-  let migrations = 0
-  let core = 0
-  for (const t of ready) {
-    if (batch.length >= BATCH_SIZE) break
-    if (t.needsMigration && migrations >= 1) continue
-    const isCore = t.labels.includes('area:core')
-    if (isCore && core >= 2) continue
-    batch.push(t)
-    if (t.needsMigration) migrations++
-    if (isCore) core++
-  }
-  return batch
+const parkPrompt = (t, dir, reason) => `Issue #${t.number} could not land. Park its work so a human or a later run can pick it up.
+${inWorktree(dir)}
+Reason: ${reason}
+1. If a rebase is in progress: git rebase --abort.
+2. If there are uncommitted changes: git add -A, then git commit with subject "WIP (parked): #${t.number} ${t.title}", a blank line, "Refs #${t.number}" (never "Closes"), the reason (max 30 lines), a blank line, and:
+${CO_AUTHOR}
+3. If the branch has no commits beyond origin/main (git log origin/main..HEAD is empty), skip to step 5 and return branch "".
+4. git branch -m parked/${t.number} (append -2, -3, … if taken), then git push -u origin <branch>. Never force-push.
+5. gh issue comment ${t.number} -R simpel/okazi with a short English note: the work-backlog run parked it, the branch link (https://github.com/simpel/okazi/tree/<branch>) if any, and the reason (max 30 lines). Then move its board card to "Parked". ${BOARD}
+6. From ${REPO}: pnpm wt:rm ${wtName(t)} --force (keeps the branch; drops the worktree database).
+Return ok and the branch name.`
+
+// ---- Ticket pipeline ---------------------------------------------------------
+// Landing is serialised: each ticket rebases on what the previous one pushed.
+let landingQueue = Promise.resolve()
+function serially(fn) {
+  const run = landingQueue.then(fn)
+  landingQueue = run.catch(() => {})
+  return run
 }
-// Tickets that share files must land in the same commit.
-function commitGroups(done) {
-  const groups = []
-  for (const b of done) {
-    const hit = groups.filter((g) => b.files.some((f) => g.files.has(f)))
-    const merged = { tickets: [b.t], files: new Set(b.files), summaries: [b.summary] }
-    for (const g of hit) {
-      merged.tickets.push(...g.tickets)
-      g.files.forEach((f) => merged.files.add(f))
-      merged.summaries.push(...g.summaries)
-      groups.splice(groups.indexOf(g), 1)
-    }
-    groups.push(merged)
+
+async function park(t, dir, reason) {
+  const p = await agent(parkPrompt(t, dir, reason), { label: `park #${t.number}`, phase: 'Park', schema: PARK, model: 'haiku' })
+  log(`#${t.number} parked${p && p.branch ? ` on ${p.branch}` : ''}: ${reason.split('\n')[0]}`)
+  return { t, outcome: 'parked', branch: p ? p.branch : null, reason: reason.split('\n')[0] }
+}
+
+async function verifyAndFix(t, dir, state) {
+  let v = await agent(verifyPrompt(t, dir), { label: `verify #${t.number}`, phase: 'Verify', schema: VERIFY, model: 'sonnet' })
+  for (let round = 1; v && !v.green && round <= MAX_FIX_ROUNDS; round++) {
+    if (round === MAX_FIX_ROUNDS) state.model = assertModel(escalate(state.model))
+    const r = await agent(fixPrompt(t, dir, v.failures), { label: `fix #${t.number} r${round} ${state.model}`, phase: 'Verify', schema: IMPL, model: state.model })
+    if (r && r.files.length) state.files = [...new Set([...state.files, ...r.files])]
+    v = await agent(verifyPrompt(t, dir), { label: `verify #${t.number}.${round}`, phase: 'Verify', schema: VERIFY, model: 'sonnet' })
   }
-  return groups.map((g) => ({
-    tickets: g.tickets,
-    files: [...g.files],
-    subject:
-      g.tickets.length === 1
-        ? g.tickets[0].title
-        : g.tickets.map((t) => `#${t.number}`).join(', ') + ': ' + g.tickets.map((t) => t.title).join('; '),
-  }))
+  return v
+}
+
+async function runTicket(t) {
+  const prep = await agent(prepPrompt(t), { label: `wt #${t.number}`, phase: 'Prepare', schema: PREP, model: 'haiku' })
+  if (!prep || !prep.ok || !prep.dir) return { t, outcome: 'failed', reason: prep ? prep.problem : 'prepare agent failed' }
+  const dir = prep.dir
+
+  const state = { model: assertModel(pickModel(t)), files: [] }
+  const impl = await agent(implPrompt(t, dir), { label: `#${t.number} ${state.model}`, phase: 'Implement', schema: IMPL, model: state.model })
+  if (!impl) return park(t, dir, 'implement agent failed')
+  if (impl.status === 'blocked') return park(t, dir, `blocked: ${impl.notes || impl.summary}`)
+  if (!impl.files.length) return park(t, dir, 'implement agent reported no changes')
+  state.files = impl.files
+
+  const v = await verifyAndFix(t, dir, state)
+  if (!v || !v.green) {
+    const why = v ? v.failures.map((f) => `${f.check}:\n${f.output}`).join('\n\n') : 'verify agent failed'
+    return park(t, dir, `checks still red after ${MAX_FIX_ROUNDS} fix rounds\n${why}`)
+  }
+
+  if (needsTenancyReview(t)) {
+    const r = await agent(reviewPrompt(t, dir), { label: `tenancy #${t.number}`, phase: 'Review', schema: REVIEW, model: 'opus' })
+    if (!r) return park(t, dir, 'tenancy review agent failed')
+    if (!r.ok) return park(t, dir, `tenancy review rejected\n${r.findings.join('\n')}`)
+  }
+
+  const land = await serially(() =>
+    agent(landPrompt(t, dir, impl.summary), { label: `land #${t.number}`, phase: 'Land', schema: LAND, model: 'sonnet' }),
+  )
+  if (!land || !land.landed) return park(t, dir, land ? land.reason : 'land agent failed')
+  log(`#${t.number} landed ${land.sha || ''} (${state.model})`)
+  return { t, outcome: 'landed', sha: land.sha, model: state.model }
 }
 
 // ---- Main loop -------------------------------------------------------------
-const report = []
-const skipped = []
+function packBatch(tickets) {
+  return tickets
+    .filter((t) => t.openBlockers.length === 0)
+    .filter((t) => !t.labels.includes('type:decision'))
+    .sort((a, b) => (a.priority || 'P9').localeCompare(b.priority || 'P9') || a.number - b.number)
+    .slice(0, BATCH_SIZE)
+}
+
+const results = []
+const tried = [] // every ticket attempted this run; never reselected, so the loop always ends
 for (let n = 1; n <= MAX_BATCHES; n++) {
   phase('Select')
-  const sel = await agent(selectPrompt(skipped), { label: `select #${n}`, schema: TICKETS, model: 'haiku', effort: 'low' })
-  if (!sel || !sel.clean) {
+  const sel = await agent(selectPrompt(tried), { label: `select #${n}`, schema: TICKETS, model: 'haiku', effort: 'low' })
+  if (!sel || !sel.ok) {
     log(`Stopped: ${sel ? sel.problem : 'select agent failed'}`)
-    report.push({ batch: n, stopped: sel ? sel.problem : 'select failed' })
     break
   }
   const batch = packBatch(sel.tickets)
   const blocked = sel.tickets.filter((t) => t.openBlockers.length).length
   if (!batch.length) {
-    log(`No unblocked non-decision tickets left (${blocked} blocked).`)
+    log(`Board drained: no unblocked non-decision tickets left (${blocked} blocked).`)
     break
   }
-  log(`Batch ${n}: ${batch.map((t) => `#${t.number} (${pickModel(t)})`).join(', ')}; ${blocked} tickets still blocked`)
+  log(`Batch ${n}: ${batch.map((t) => `#${t.number} (${pickModel(t)})`).join(', ')}; ${blocked} still blocked`)
+  if (n === MAX_BATCHES) log(`Last batch allowed by maxBatches/safety cap (${MAX_BATCHES}).`)
+  batch.forEach((t) => tried.push(t.number))
 
-  phase('Implement')
-  const work = (
-    await parallel(
-      batch.map((t) => async () => {
-        const model = assertModel(pickModel(t))
-        const r = await agent(implPrompt(t), { label: `#${t.number} ${model}`, phase: 'Implement', schema: IMPL, model })
-        return r ? { t, model, ...r } : null
-      }),
-    )
-  ).filter(Boolean)
-  for (const w of work.filter((w) => w.status === 'blocked')) {
-    log(`#${w.t.number} blocked: ${w.notes || w.summary}`)
-    skipped.push(w.t.number)
-  }
-  const done = work.filter((w) => w.status === 'done' && w.files.length)
-  if (!done.length) continue
-
-  phase('Verify')
-  let v = await agent(verifyPrompt(done), { label: `verify #${n}`, schema: VERIFY, model: 'sonnet' })
-  for (let round = 1; v && !v.green && round <= MAX_FIX_ROUNDS; round++) {
-    const failing = done.filter((d) => v.failures.some((f) => f.ticket === d.t.number))
-    const targets = failing.length ? failing : done
-    await parallel(
-      targets.map((d) => async () => {
-        d.model = round === MAX_FIX_ROUNDS ? assertModel(escalate(d.model)) : d.model
-        const mine = v.failures.filter((f) => f.ticket === d.t.number)
-        const r = await agent(fixPrompt(d.t, mine.length ? mine : v.failures), {
-          label: `fix #${d.t.number} r${round} ${d.model}`,
-          phase: 'Verify',
-          schema: IMPL,
-          model: d.model,
-        })
-        if (r && r.files.length) d.files = [...new Set([...d.files, ...r.files])]
-      }),
-    )
-    v = await agent(verifyPrompt(done), { label: `verify #${n}.${round}`, schema: VERIFY, model: 'sonnet' })
-  }
-  if (!v || !v.green) {
-    log('Checks still red after fixes. Leaving the working tree uncommitted for a human.')
-    report.push({ batch: n, red: v ? v.failures : 'verify failed', tickets: done.map((d) => d.t.number) })
-    break
-  }
-
-  phase('Review')
-  const reviews = await parallel(
-    done
-      .filter((d) => needsTenancyReview(d.t))
-      .map((d) => async () => {
-        const r = await agent(reviewPrompt(d), { label: `tenancy #${d.t.number}`, phase: 'Review', schema: REVIEW, model: 'opus' })
-        return { d, r }
-      }),
-  )
-  const rejected = reviews.filter(Boolean).filter((x) => x.r && !x.r.ok)
-  if (rejected.length) {
-    log(`Tenancy review rejected ${rejected.map((x) => '#' + x.d.t.number).join(', ')}. Leaving the tree uncommitted.`)
-    report.push({ batch: n, tenancy: rejected.map((x) => ({ ticket: x.d.t.number, findings: x.r.findings })) })
-    break
-  }
-
-  phase('Commit')
-  const groups = commitGroups(done)
-  const c = await agent(commitPrompt(groups), { label: `commit #${n}`, schema: COMMIT, model: 'haiku' })
-  report.push({ batch: n, committed: c ? c.commits : [], pushed: c ? c.pushed : false, models: done.map((d) => `#${d.t.number}:${d.model}`) })
-  if (!c || !c.pushed) {
-    log(`Push failed: ${c ? c.problem : 'commit agent failed'}`)
-    break
-  }
+  const out = await parallel(batch.map((t) => () => runTicket(t)))
+  out.forEach((r, i) => results.push(r || { t: batch[i], outcome: 'failed', reason: 'pipeline error' }))
 }
-return { report, skipped }
+
+const pick = (o) => results.filter((r) => r.outcome === o).map((r) => ({ number: r.t.number, title: r.t.title, sha: r.sha, branch: r.branch, reason: r.reason, model: r.model }))
+return { landed: pick('landed'), parked: pick('parked'), failed: pick('failed') }

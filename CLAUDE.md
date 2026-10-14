@@ -123,10 +123,10 @@
 ## Issues and project board
 - All work is tracked on https://github.com/users/simpel/projects/8 (kanban). Not project 7.
 - Every piece of work has an issue on the board. If none exists, create it (`gh issue create`, then `gh project item-add 8 --owner simpel --url <issue>`) and set Status, Priority (P0–P2) and Size (XS–XL).
-- Move the card when the work changes state: `Backlog` → `Todo` → `In progress` when work starts → `Done` when merged. Update with `gh project item-edit` (field ids via `gh project field-list 8 --owner simpel`).
+- Move the card when the work changes state: `Backlog` → `Todo` → `In progress` when work starts → `Done` when merged. `Parked` = the `work-backlog` run could not land the work and pushed it to a `parked/<issues>` branch (linked in the issue comment); fix it there or move the card back to `Todo`. Update with `gh project item-edit` (field ids via `gh project field-list 8 --owner simpel`).
 - PRs link the issue with `Closes #NN`. Comment on the issue with what was done if the work is split up or abandoned.
 - `gh` needs the `project` scope (`gh auth refresh -s project`).
-- Autonomous ticket work: the `work-backlog` workflow (`.claude/workflows/work-backlog.js`) picks unblocked `Todo` tickets (not `type:decision`), runs up to 3 in parallel in the main working tree, verifies once per batch and commits one commit per ticket to `main` with `Closes #N`. Model per ticket from labels: Haiku (docs, i18n, small tech debt/infra), Opus (core features, auth, db, size L), Sonnet otherwise. Never Fable.
+- Autonomous ticket work: the `work-backlog` workflow (`.claude/workflows/work-backlog.js`) picks unblocked `Todo` tickets (not `type:decision`), up to 3 at a time. Each ticket gets its own worktree (`pnpm wt:new t-<N>`, branch `ticket/<N>`, own database), is implemented and fully verified there, then lands on `main` one ticket at a time: one commit with `Closes #N`, rebased on `origin/main`, re-verified if `main` moved, pushed. The main checkout is never touched, so you can keep working in it. A ticket that stays red, fails tenancy review, conflicts or is blocked is pushed to `parked/<N>`, commented on and moved to `Parked`; the others still land. It loops until no unblocked ticket is left (safety cap 50 batches). Model per ticket from labels: Haiku (docs, i18n, small tech debt/infra), Opus (core features, auth, db, size L), Sonnet otherwise. Never Fable.
 
 ## Commands
 - `docker compose up -d`: starts Postgres and Mailpit (mail at http://localhost:8025).
@@ -136,6 +136,8 @@
 - `pnpm --filter @okazi/core seed:demo`: creates two demo organizations via core operations (spec: `docs/demo-seed.md`, built in slices per ADR 0025).
 - `pnpm --filter @okazi/web provision:oauth`: creates the assistant's OAuth client and prints `WEB_OAUTH_CLIENT_ID=...` (put it in `.env`, read by web and MCP).
 - `pnpm dev`: starts the web app (:3000) and the MCP server (:3001) via Turborepo.
+- `pnpm wt:new <name> [--base <ref>] [--branch <branch>]`: a git worktree in `../okazi-worktrees/<name>` with its own database (`okazi_<name>`), ports (3100+/3200+) and `.env`. `pnpm wt:rm <name> [--force] [--delete-branch]` drops it, `pnpm wt:list` lists them. Scripts in `tools/worktree/` (Superset's `.superset/*.sh` just call them).
+- Tests load the root `.env` via `loadTestEnv()` (`@okazi/config/load-test-env`) in every `vitest.config.ts`, with `AI_GATEWAY_API_KEY` blanked: tests never call paid AI.
 - `pnpm lint`: Biome check.
 - `pnpm check:structure`: checks file size, function size, exports, barrel files and feature files.
 - `pnpm typecheck`: TypeScript for all packages.

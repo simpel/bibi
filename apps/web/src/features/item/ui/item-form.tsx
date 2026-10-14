@@ -1,15 +1,12 @@
 import type { ItemDto } from "@okazi/core";
 import { Button, DialogFooter, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import { BookingSection } from "./booking-section";
-import { hasBehaviour } from "./has-behaviour";
+import { BehaviourSections } from "./behaviour-sections";
 import { ItemCoreFields } from "./item-core-fields";
 import type { ItemFormData } from "./item-form-data";
 import { rawFields } from "./item-form-values";
 import { ItemTypeField } from "./item-type-field";
 import { ItemTypeFields } from "./item-type-fields";
-import { PriceSection } from "./price-section";
-import { SetupsSection } from "./setups-section";
 import { useItemForm } from "./use-item-form";
 
 export type ItemFormProps = {
@@ -40,11 +37,7 @@ export function ItemForm({ data, item, typeId, onDone }: ItemFormProps) {
           <>
             <ItemCoreFields form={form} venues={data.venues} />
             <ItemTypeFields control={form.control} type={type} vocabularies={data.vocabularies} />
-            {hasBehaviour({ type, behaviour: "PRICED" }) ? <PriceSection form={form} /> : null}
-            {hasBehaviour({ type, behaviour: "BOOKABLE" }) ? <BookingSection form={form} /> : null}
-            {hasBehaviour({ type, behaviour: "SETUPS" }) ? (
-              <SetupsSection form={form} setups={data.setups} />
-            ) : null}
+            <BehaviourSections form={form} type={type} data={data} itemId={item?.id} />
           </>
         ) : null}
         <DialogFooter>

@@ -2,8 +2,10 @@
 
 import {
   archiveEntityType,
+  type ConfigurationImportResult,
   createEntityType,
   type EntityTypeDto,
+  importConfigurationTemplate,
   updateEntityType,
 } from "@okazi/core";
 import type { EntityTypeCreateInputSchema, EntityTypeUpdateInputSchema } from "@okazi/core/schemas";
@@ -36,4 +38,14 @@ export async function archiveEntityTypeAction({
 }: ArchiveEntityTypeActionInput): Promise<ActionResult<EntityTypeDto>> {
   const input = { id };
   return toActionResult({ result: await runOperation({ operation: archiveEntityType, input }) });
+}
+
+/** Imports the "Conference venue" starter pack; anything that already exists is skipped. */
+export async function importConfigurationTemplateAction(): Promise<
+  ActionResult<ConfigurationImportResult>
+> {
+  const input = { template: "conference-venue" } as const;
+  return toActionResult({
+    result: await runOperation({ operation: importConfigurationTemplate, input }),
+  });
 }

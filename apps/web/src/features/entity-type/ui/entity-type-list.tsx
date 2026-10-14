@@ -1,6 +1,7 @@
 import { type EntityTypeDto, listEntityTypes } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
+import type { ReactNode } from "react";
 import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
@@ -11,6 +12,7 @@ import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { CreateEntityTypeButton } from "./create-entity-type-button";
 import { EntityTypeTable } from "./entity-type-table";
+import { ImportConfigurationTemplateButton } from "./import-configuration-template-button";
 
 export type EntityTypeListProps = { locale: Locale; cursor?: string | undefined };
 
@@ -22,6 +24,16 @@ function groupByBase({ types }: { types: EntityTypeDto[] }) {
   return [...groups.entries()];
 }
 
+/** Import the starter pack next to create: types that already exist are skipped. */
+function HeaderActions({ create }: { create: ReactNode }) {
+  return (
+    <>
+      <ImportConfigurationTemplateButton />
+      {create}
+    </>
+  );
+}
+
 /** Types page body: header with create, one table per base entity, cursor pagination. */
 export async function EntityTypeList({ locale, cursor }: EntityTypeListProps) {
   const t = await getTranslations("entityType");
@@ -31,8 +43,9 @@ export async function EntityTypeList({ locale, cursor }: EntityTypeListProps) {
     input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
   });
   const create = configurationWrite ? <CreateEntityTypeButton /> : undefined;
+  const actions = create && <HeaderActions create={create} />;
   const header = (
-    <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
+    <PageHeader title={t("plural")} description={t("listDescription")} actions={actions} />
   );
   if (!result.ok) {
     const errorKey = handleLoadError({ error: result.error, locale });

@@ -15,6 +15,20 @@ export type ItemFactsInput = {
   yesNo: { yes: string; no: string };
 };
 
+/** One fact per part of a COMPOSABLE item. */
+function componentFacts({ item, data, t }: ItemFactsInput): Fact[] {
+  return item.components.map(({ itemId, quantity, offsetMinutes, required }) => {
+    const name = data.parts.find(({ id }) => id === itemId)?.name ?? "–";
+    const value = t("componentValue", {
+      quantity,
+      name,
+      offset: offsetMinutes,
+      required: String(required),
+    });
+    return { label: t("sections.components"), value };
+  });
+}
+
 /** Behaviour facts: price, default length and one capacity per setup. */
 function behaviourFacts({ item, data, locale, t }: ItemFactsInput): Fact[] {
   const facts: Fact[] = [];
@@ -54,5 +68,6 @@ export function itemFacts({ item, type, data, locale, t, yesNo }: ItemFactsInput
     { label: t("fields.venue"), value: venue },
     ...own,
     ...behaviourFacts({ item, type, data, locale, t, yesNo }),
+    ...componentFacts({ item, type, data, locale, t, yesNo }),
   ];
 }

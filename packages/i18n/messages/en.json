@@ -201,7 +201,8 @@
     "sections": {
       "price": "Price",
       "booking": "Booking",
-      "setups": "Setups"
+      "setups": "Setups",
+      "components": "Parts"
     },
     "setupsHint": "Capacity, max number of people, per setup. Leave empty for setups that are not used.",
     "noSetups": "There are no setups. Create them under Setups.",
@@ -219,7 +220,19 @@
     },
     "priceValue": "{amount} SEK {unit}",
     "durationValue": "{minutes} min",
-    "capacityValue": "{name}: {capacity}"
+    "capacityValue": "{name}: {capacity}",
+    "components": {
+      "hint": "The items this item contains, with quantity and timing relative to its start.",
+      "none": "No parts yet.",
+      "add": "Add part",
+      "remove": "Remove part",
+      "part": "Part",
+      "quantity": "Quantity",
+      "offsetMinutes": "Starts after (minutes)",
+      "durationMinutes": "Length (minutes)",
+      "required": "Mandatory"
+    },
+    "componentValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (optional)}}"
   },
   "entityType": {
     "singular": "Type",
@@ -238,6 +251,9 @@
     "emptyDescription": "Create a type, e.g. Conference room or Dish, and add its fields.",
     "saving": "Saving type…",
     "archiving": "Archiving type…",
+    "importTemplate": "Import Conference venue template",
+    "importing": "Importing template…",
+    "imported": "{created, plural, one {# type} other {# types}} created, {skipped} already existed.",
     "fieldCount": "{count, plural, one {# field} other {# fields}}",
     "noBehaviours": "No behaviours",
     "behavioursHeading": "Behaviours",
@@ -454,7 +470,8 @@
         "scope": "Scope",
         "markdown": "SKILL.md",
         "title": "Title",
-        "value": "Value"
+        "value": "Value",
+        "components": "Parts"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -479,6 +496,7 @@
         "setup_create": "Create setup",
         "setup_update": "Update setup",
         "setup_archive": "Archive setup",
+        "configuration_importTemplate": "Import configuration template",
         "skill_create": "Create skill",
         "skill_update": "Update skill",
         "skill_publish": "Publish skill",
@@ -533,7 +551,8 @@
           "FLAT": "flat rate"
         },
         "duration": "{minutes} min",
-        "setupsCount": "{count, plural, one {# setup} other {# setups}}"
+        "setupsCount": "{count, plural, one {# setup} other {# setups}}",
+        "componentsCount": "{count, plural, one {# part} other {# parts}}"
       },
       "entityType": {
         "empty": "No types found.",

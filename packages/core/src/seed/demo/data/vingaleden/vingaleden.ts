@@ -1,6 +1,7 @@
 import type { PermissionSet } from "../../../../permissions/permission-set";
 import type { DemoOrg } from "../../types";
 import { vingaledenBoats, vingaledenConfig } from "./config";
+import { vingaledenTours } from "./tours";
 
 const base: PermissionSet = { search: ["read"], conversation: ["write"], skill: ["write"] };
 
@@ -50,7 +51,7 @@ export const vingaleden: DemoOrg = {
       postalCode: "426 76",
       city: "Västra Frölunda",
     },
-    items: vingaledenBoats,
+    items: [...vingaledenBoats, ...vingaledenTours],
     // Check 2: no allergen list at all. Its sheets (slice 6) will not include food either.
     checks: { absentLists: ["Allergens"] },
   },

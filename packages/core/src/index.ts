@@ -13,6 +13,8 @@ export { type Err, err, type Ok, ok, type Result } from "./errors/result";
 export { type GraphqlErrorExtensions, toGraphqlExtensions } from "./errors/to-graphql-extensions";
 export { toHttpStatus } from "./errors/to-http-status";
 export { type McpErrorResult, toMcpError } from "./errors/to-mcp-error";
+export * from "./features/configuration/operations";
+export * from "./features/configuration/schema";
 export { canReadAllConversations } from "./features/conversation/access";
 export { conversationEmbeddable } from "./features/conversation/embeddable";
 export * from "./features/conversation/operations";

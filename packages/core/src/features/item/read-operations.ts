@@ -34,7 +34,7 @@ export const listItems = defineOperation({
 export const getItem = defineOperation({
   name: "item.get",
   kind: "query",
-  description: "Get one item by id, with its field values and setup capacities.",
+  description: "Get one item by id, with its field values, setup capacities and parts.",
   input: ItemIdInputSchema,
   output: ItemSchema,
   permission: "item:read",

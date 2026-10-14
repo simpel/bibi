@@ -4,6 +4,7 @@ import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { checkItem } from "./check-item";
 import { itemEmbeddable } from "./embeddable";
+import { replaceComponents } from "./item-components";
 import { mergeFields } from "./item-fields";
 import { loadItemType } from "./item-rules";
 import { replaceSetups } from "./item-setups";
@@ -15,19 +16,19 @@ export const createItem = defineOperation({
   kind: "command",
   description:
     "Create an item of one of the organization's item types. Behaviour data (price, default " +
-    "length, setup capacities) is only accepted if the type has that behaviour; `fields` " +
+    "length, setup capacities, parts) is only accepted if the type has that behaviour; `fields` " +
     "must match the type's own fields.",
   input: ItemCreateInputSchema,
   output: ItemSchema,
   permission: "item:write",
   embeddable: itemEmbeddable,
-  handler: async ({ input: { entityTypeId, fields, setups, ...data }, context }) => {
+  handler: async ({ input: { entityTypeId, fields, setups, components, ...data }, context }) => {
     const type = await loadItemType({ context, entityTypeId });
     if (!type.ok) return type;
     const checked = await checkItem({
       context,
       type: type.value,
-      data: { ...data, setups },
+      data: { ...data, setups, components },
       fields: fields ?? {},
     });
     if (!checked.ok) return checked;
@@ -41,6 +42,7 @@ export const createItem = defineOperation({
       },
     });
     if (setups) await replaceSetups({ context, itemId: row.id, setups });
+    if (components) await replaceComponents({ context, itemId: row.id, components });
     const item = await loadItem({ context, id: row.id });
     if (!item) return notFound({ entity: "Item" });
     context.recordChange({ entityId: row.id, after: item });
@@ -53,12 +55,12 @@ export const updateItem = defineOperation({
   kind: "command",
   description:
     "Update an item. Omitted properties are unchanged; `fields` is merged by key (null " +
-    "clears a value) and `setups` replaces all capacities. The type cannot be changed.",
+    "clears a value); `setups` and `components` replace the whole set. The type cannot be changed.",
   input: ItemUpdateInputSchema,
   output: ItemSchema,
   permission: "item:write",
   embeddable: itemEmbeddable,
-  handler: async ({ input: { id, fields: patch, setups, ...data }, context }) => {
+  handler: async ({ input: { id, fields: patch, setups, components, ...data }, context }) => {
     const before = await loadItem({ context, id });
     if (!before) return notFound({ entity: "Item" });
     const type = await loadItemType({ context, entityTypeId: before.entityTypeId });
@@ -67,7 +69,8 @@ export const updateItem = defineOperation({
     const checked = await checkItem({
       context,
       type: type.value,
-      data: { ...data, setups },
+      itemId: id,
+      data: { ...data, setups, components },
       fields,
     });
     if (!checked.ok) return checked;
@@ -77,6 +80,7 @@ export const updateItem = defineOperation({
       data: { ...data, ...(json ? { fields: json } : {}) },
     });
     if (setups) await replaceSetups({ context, itemId: id, setups });
+    if (components) await replaceComponents({ context, itemId: id, components });
     const item = await loadItem({ context, id });
     if (!item) return notFound({ entity: "Item" });
     context.recordChange({ entityId: id, before, after: item });

@@ -4,6 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import type { EntityBase } from "./behaviour-kinds";
 import { checkBehaviours, checkBehavioursRemovable } from "./behaviours";
+import { insertEntityType } from "./insert-entity-type";
 import { toEntityTypeDto } from "./load-entity-type";
 import {
   EntityTypeCreateInputSchema,
@@ -37,21 +38,7 @@ export const createEntityType = defineOperation({
   input: EntityTypeCreateInputSchema,
   output: EntityTypeSchema,
   permission: "configuration:write",
-  handler: async ({ input: { base, name, behaviours = [] }, context }) => {
-    const valid = checkBehaviours({ base, behaviours });
-    if (!valid.ok) return valid;
-    if (await nameTaken({ context, base, name })) return taken({ name });
-    const row = await context.db.entityType.create({
-      data: {
-        ...{ base, name, behaviours },
-        organizationId: context.organizationId,
-        createdBy: context.actor.userId,
-      },
-    });
-    const type = await toEntityTypeDto({ context, row });
-    context.recordChange({ entityId: row.id, after: type });
-    return ok({ value: type });
-  },
+  handler: ({ input, context }) => insertEntityType({ context, ...input }),
 });
 
 export const updateEntityType = defineOperation({

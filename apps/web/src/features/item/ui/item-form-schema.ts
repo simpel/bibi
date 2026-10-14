@@ -5,7 +5,12 @@ import { blankToNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 import { specsOf } from "./field-specs";
 import { hasBehaviour } from "./has-behaviour";
-import { type ItemFormValues, NO_VENUE, type RawFieldValue } from "./item-form-values";
+import {
+  type ComponentFormValue,
+  type ItemFormValues,
+  NO_VENUE,
+  type RawFieldValue,
+} from "./item-form-values";
 
 /** What the resolver outputs: core's create input. */
 export type ItemFormOutput = z.infer<typeof ItemCreateInputSchema>;
@@ -39,6 +44,21 @@ export type ItemInputArgs = {
   specs: FieldSpec[];
 };
 
+type ComponentsInput = { components: ComponentFormValue[] };
+
+/** Raw part rows → core's `components`; rows without a part are left out. */
+function componentsToInput({ components }: ComponentsInput) {
+  return components
+    .filter((component) => component.itemId !== "")
+    .map((component) => ({
+      itemId: component.itemId,
+      quantity: numberOrNull({ value: component.quantity }) ?? 1,
+      offsetMinutes: numberOrNull({ value: component.offsetMinutes }) ?? 0,
+      durationMinutes: numberOrNull({ value: component.durationMinutes }),
+      required: component.required,
+    }));
+}
+
 /** Fields of the behaviours the type has; sections of other behaviours are left out. */
 function behaviourInput({ values, type }: Omit<ItemInputArgs, "specs">) {
   const kr = numberOrNull({ value: values.price });
@@ -59,6 +79,9 @@ function behaviourInput({ values, type }: Omit<ItemInputArgs, "specs">) {
             .filter(([, capacity]) => capacity.trim() !== "")
             .map(([setupId, capacity]) => ({ setupId, capacity: Number(capacity) })),
         }
+      : {}),
+    ...(hasBehaviour({ type, behaviour: "COMPOSABLE" })
+      ? { components: componentsToInput({ components: values.components }) }
       : {}),
   };
 }

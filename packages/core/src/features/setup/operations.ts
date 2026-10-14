@@ -4,6 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { insertSetup } from "./insert-setup";
 import {
   SetupCreateInputSchema,
   SetupIdInputSchema,
@@ -61,14 +62,7 @@ export const createSetup = defineOperation({
   input: SetupCreateInputSchema,
   output: SetupSchema,
   permission: "configuration:write",
-  handler: async ({ input, context }) => {
-    if (await nameTaken({ context, name: input.name })) return taken(input);
-    const setup = await context.db.setup.create({
-      data: { ...input, organizationId: context.organizationId, createdBy: context.actor.userId },
-    });
-    context.recordChange({ entityId: setup.id, after: setup });
-    return ok({ value: setup });
-  },
+  handler: ({ input, context }) => insertSetup({ context, ...input }),
 });
 
 export const updateSetup = defineOperation({

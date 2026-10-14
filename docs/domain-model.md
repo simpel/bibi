@@ -69,7 +69,7 @@ erDiagram
 
 *MVP* · What the organization sets up itself. Everything is data per organization and is created through regular operations ([ADR 0021](decisions/0021-configurable-items.md)).
 
-A new organization starts empty. Nothing is preinstalled, except the `owner` role and one booking status per phase so that bookings work right away. Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference estate". A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
+A new organization starts empty. Nothing is preinstalled, except the `owner` role and one booking status per phase so that bookings work right away. Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with behaviours and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
 
 ### EntityType (`EntityType`)
 
@@ -490,19 +490,19 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 **Attributes**
 - parent item
-- item (the component)
-- count
-- offsetMinutes
-- durationMinutes
-- required or optional
-- choice group
+- item (the component), unique per parent
+- quantity (default 1)
+- offsetMinutes from the parent's start (default 0)
+- durationMinutes (null = the parent's length)
+- required (default) or optional
+- choice group (with `CHOICES`, not built yet)
 
 **Relations**
 - `N:1` Item contains this
 - `N:1` refers to → Item
 - `N:0..1` is part of → ItemChoiceGroup
 
-> The graph is acyclic. Core rejects cycles and depth beyond 5 levels with `VALIDATION`. In a package, the package price is charged. VAT is distributed over the components in proportion to the components' list prices.
+> Replaced as a set by `item.create`/`item.update` (`components`), only for types with `COMPOSABLE` (otherwise `VALIDATION`). The graph is acyclic. Core rejects cycles and depth beyond 5 levels (the top item included, parents above counted) with `VALIDATION`. In a package, the package price is charged. VAT is distributed over the components in proportion to the components' list prices.
 
 ### ItemChoiceGroup (`ItemChoiceGroup`)
 

@@ -11,6 +11,28 @@ export const ItemSetupSchema = z.object({
   capacity: z.number().int().positive().max(100_000).describe("Max people in this setup"),
 });
 
+export const ItemComponentSchema = z.object({
+  itemId: z.string().min(1).describe("Id of the part (another item)"),
+  quantity: z.number().int().positive().max(100_000).describe("How many of the part"),
+  offsetMinutes: z
+    .number()
+    .int()
+    .min(-7 * 24 * 60)
+    .max(7 * 24 * 60)
+    .describe("Start of the part relative to the start of the parent, in minutes"),
+  durationMinutes: z
+    .number()
+    .int()
+    .positive()
+    .max(7 * 24 * 60)
+    .nullable()
+    .describe("Length of the part in minutes; null = the parent's length"),
+  required: z.boolean().describe("true = mandatory part, false = optional part"),
+});
+
+/** Max levels in a composition, the top item included (ADR 0021). */
+export const MAX_COMPONENT_DEPTH = 5;
+
 /** Max keys in `fields`: well above any type's field count, low enough to bound the input. */
 export const MAX_FIELD_VALUES = 200;
 
@@ -34,6 +56,7 @@ export const ItemSchema = z.object({
   vatRatePercent: z.number().int().nullable(),
   defaultDurationMinutes: z.number().int().nullable(),
   setups: z.array(ItemSetupSchema),
+  components: z.array(ItemComponentSchema),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -59,6 +82,19 @@ const Behaviour = {
     .array(ItemSetupSchema)
     .max(100)
     .describe("SETUPS: capacity per setup. Replaces the whole set."),
+  components: z
+    .array(
+      ItemComponentSchema.extend({
+        offsetMinutes: ItemComponentSchema.shape.offsetMinutes.default(0),
+        durationMinutes: ItemComponentSchema.shape.durationMinutes.default(null),
+        quantity: ItemComponentSchema.shape.quantity.default(1),
+        required: ItemComponentSchema.shape.required.default(true),
+      }),
+    )
+    .max(100)
+    .describe(
+      `COMPOSABLE: the parts. Replaces the whole set. No cycles, at most ${MAX_COMPONENT_DEPTH} levels.`,
+    ),
 };
 
 export const ItemCreateInputSchema = z.object({
@@ -72,6 +108,7 @@ export const ItemCreateInputSchema = z.object({
   vatRatePercent: Behaviour.vatRatePercent.nullish(),
   defaultDurationMinutes: Behaviour.defaultDurationMinutes.nullish(),
   setups: Behaviour.setups.optional(),
+  components: Behaviour.components.optional(),
 });
 
 export const ItemUpdateInputSchema = ItemCreateInputSchema.omit({ entityTypeId: true })

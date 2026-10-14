@@ -13,7 +13,8 @@
       "!**/generated",
       "!**/*.generated.*",
       "!packages/i18n/messages/*.json",
-      "!docs/artifacts"
+      "!docs/artifacts",
+      "!.claude"
     ]
   },
   "css": {

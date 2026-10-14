@@ -11,7 +11,7 @@ The REST adapter under `/api/v1`. Thin: no business logic, everything goes throu
 - Declared per feature in `src/features/<entity>/rest.ts` with `restRoute({ operation, method, path, successStatus?, operationId? })`; paths with `{param}`. Register in `src/routes.ts`. A new operation = about 5 lines. `search` is in `src/search-rest.ts`.
 - Input = query + JSON body + path parameters (path wins), validated by core. Query values are type-converted from the operation's input schema (numbers, booleans, arrays).
 - Multiple routes for the same operation (e.g. `/venues/{venueId}/items`) require a unique `operationId`.
-- Configurable domain: `/entity-types`, `/entity-types/{entityTypeId}/fields`, `/field-definitions`, `/vocabularies` (+ `/import-template`, `/{vocabularyId}/values`), `/vocabulary-values/{id}`, `/setups`, `/items`, `/venues/{venueId}/items`. DELETE = archive.
+- Configurable domain: `/entity-types`, `/entity-types/{entityTypeId}/fields`, `/field-definitions`, `/vocabularies` (+ `/import-template`, `/{vocabularyId}/values`), `/vocabulary-values/{id}`, `/setups`, `/configuration/import-template`, `/items`, `/venues/{venueId}/items`. DELETE = archive.
 - Errors: `{ error: { code, message, issues } }`, status via `toHttpStatus`. Unknown route/method → 404.
 - Pagination: `limit` and `cursor` as in core (`nextCursor` in the response).
 - AI data layer: `/conversations` (GET/POST), `/conversations/{id}` (GET/PATCH=rename/DELETE=archive), `/conversations/{conversationId}/messages` (GET/POST), `/skills` (GET/POST), `/skills/import` (POST), `/skills/{id}` (GET/PATCH/DELETE), `/skills/{id}/publish` (POST, 200), `/skills/{id}/share` (POST, 201), `/skills/{id}/export` (GET, JSON `{ markdown, filename }`).

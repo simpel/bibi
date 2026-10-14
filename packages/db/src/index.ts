@@ -23,6 +23,7 @@ export {
   FieldKind,
   type Item,
   ItemBehaviour,
+  type ItemComponent,
   type ItemSetup,
   type Member,
   type Message,

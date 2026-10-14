@@ -48,7 +48,7 @@ export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "checks"> = 
   ],
 };
 
-/** The fleet (`docs/demo-seed.md`, Catalog). Skippers, tours and add-ons are slice 3. */
+/** The fleet (`docs/demo-seed.md`, Catalog). Skippers and tours are in `tours.ts`. */
 export const vingaledenBoats: readonly DemoItem[] = [
   {
     type: "Boat",

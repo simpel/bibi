@@ -201,7 +201,8 @@
     "sections": {
       "price": "Pris",
       "booking": "Bokning",
-      "setups": "Uppställningar"
+      "setups": "Uppställningar",
+      "components": "Delar"
     },
     "setupsHint": "Kapacitet, max antal personer, per uppställning. Lämna tomt för uppställningar som inte används.",
     "noSetups": "Det finns inga uppställningar. Skapa dem under Uppställningar.",
@@ -219,7 +220,19 @@
     },
     "priceValue": "{amount} kr {unit}",
     "durationValue": "{minutes} min",
-    "capacityValue": "{name}: {capacity}"
+    "capacityValue": "{name}: {capacity}",
+    "components": {
+      "hint": "Artiklarna som ingår, med antal och tid räknat från starten.",
+      "none": "Inga delar ännu.",
+      "add": "Lägg till del",
+      "remove": "Ta bort del",
+      "part": "Del",
+      "quantity": "Antal",
+      "offsetMinutes": "Börjar efter (minuter)",
+      "durationMinutes": "Längd (minuter)",
+      "required": "Obligatorisk"
+    },
+    "componentValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (valfri)}}"
   },
   "entityType": {
     "singular": "Typ",
@@ -238,6 +251,9 @@
     "emptyDescription": "Skapa en typ, t.ex. Konferensrum eller Rätt, och lägg till dess fält.",
     "saving": "Sparar typ…",
     "archiving": "Arkiverar typ…",
+    "importTemplate": "Importera mall Konferensgård",
+    "importing": "Importerar mall…",
+    "imported": "{created, plural, one {# typ} other {# typer}} skapades, {skipped} fanns redan.",
     "fieldCount": "{count, plural, one {# fält} other {# fält}}",
     "noBehaviours": "Inga beteenden",
     "behavioursHeading": "Beteenden",
@@ -454,7 +470,8 @@
         "scope": "Omfattning",
         "markdown": "SKILL.md",
         "title": "Titel",
-        "value": "Värde"
+        "value": "Värde",
+        "components": "Delar"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -479,6 +496,7 @@
         "setup_create": "Skapa uppställning",
         "setup_update": "Ändra uppställning",
         "setup_archive": "Arkivera uppställning",
+        "configuration_importTemplate": "Importera konfigurationsmall",
         "skill_create": "Skapa färdighet",
         "skill_update": "Ändra färdighet",
         "skill_publish": "Publicera färdighet",
@@ -533,7 +551,8 @@
           "FLAT": "fast pris"
         },
         "duration": "{minutes} min",
-        "setupsCount": "{count, plural, one {# uppställning} other {# uppställningar}}"
+        "setupsCount": "{count, plural, one {# uppställning} other {# uppställningar}}",
+        "componentsCount": "{count, plural, one {# del} other {# delar}}"
       },
       "entityType": {
         "empty": "Inga typer hittades.",

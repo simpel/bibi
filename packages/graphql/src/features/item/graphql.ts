@@ -3,6 +3,7 @@ import {
   createItem,
   getEntityType,
   getItem,
+  ItemComponentSchema,
   type ItemDto,
   ItemSchema,
   ItemSetupSchema,
@@ -20,6 +21,7 @@ import { SetupRef } from "../setup/graphql";
 import { VenueRef } from "../venue/graphql";
 
 type ItemSetupDto = ItemDto["setups"][number];
+type ItemComponentDto = ItemDto["components"][number];
 
 export const ItemSetupRef = objectFromSchema<ItemSetupDto>({
   name: "ItemSetup",
@@ -27,10 +29,16 @@ export const ItemSetupRef = objectFromSchema<ItemSetupDto>({
   description: "Capacity of an item in one setup.",
 });
 
+export const ItemComponentRef = objectFromSchema<ItemComponentDto>({
+  name: "ItemComponent",
+  schema: ItemComponentSchema,
+  description: "One part of a COMPOSABLE item: quantity, timing and whether it is mandatory.",
+});
+
 export const ItemRef = objectFromSchema<ItemDto>({
   name: "Item",
   schema: ItemSchema,
-  omit: ["organizationId", "setups"],
+  omit: ["organizationId", "setups", "components"],
   description: "Artikel – anything the organization sells or books, as defined by its item type.",
 });
 const ItemPageRef = pageType({ name: "ItemPage", item: ItemRef });
@@ -40,6 +48,26 @@ builder.objectField(ItemRef, "setups", (t) =>
     type: [ItemSetupRef],
     description: "Capacity per setup (SETUPS behaviour), largest first.",
     resolve: (item) => item.setups,
+  }),
+);
+
+builder.objectField(ItemRef, "components", (t) =>
+  t.field({
+    type: [ItemComponentRef],
+    description: "Parts (COMPOSABLE behaviour), by offset.",
+    resolve: (item) => item.components,
+  }),
+);
+
+builder.objectField(ItemComponentRef, "item", (t) =>
+  t.field({
+    type: ItemRef,
+    nullable: true,
+    description: "The part (null if archived).",
+    resolve: (component, _args, ctx) =>
+      runOperation({ operation: getItem, input: { id: component.itemId }, ctx }).catch(
+        () => null,
+      ) as never,
   }),
 );
 

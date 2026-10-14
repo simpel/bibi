@@ -88,7 +88,10 @@ const item: ParityEntity = {
     list: "items",
     createTool: "",
     args: {},
-    nested: { setups: "{ setupId capacity }" },
+    nested: {
+      setups: "{ setupId capacity }",
+      components: "{ itemId quantity offsetMinutes durationMinutes required }",
+    },
   }),
   create: ({ mcp, made }) =>
     tool({

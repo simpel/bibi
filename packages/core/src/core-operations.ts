@@ -1,3 +1,4 @@
+import { configurationOperations } from "./features/configuration/operations";
 import { conversationOperations } from "./features/conversation/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
@@ -23,6 +24,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...fieldDefinitionOperations,
     ...vocabularyOperations,
     ...setupOperations,
+    ...configurationOperations,
     ...itemOperations,
     ...conversationOperations,
     ...messageOperations,

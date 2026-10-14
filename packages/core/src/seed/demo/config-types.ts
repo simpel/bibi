@@ -18,9 +18,18 @@ export type DemoType = {
   fields?: readonly DemoField[];
 };
 
+/** A part of a COMPOSABLE demo item, by the name of an item seeded before it. */
+export type DemoPart = {
+  name: string;
+  quantity?: number;
+  offsetMinutes?: number;
+  durationMinutes?: number;
+  required?: boolean;
+};
+
 /**
  * A demo item. Field values are given by field name; choice values by value or option name.
- * `setups` maps setup name → capacity. Prices are in kronor excl. VAT.
+ * `setups` maps setup name → capacity, `parts` lists earlier items by name. Prices are in kronor excl. VAT.
  */
 export type DemoItem = {
   type: string;
@@ -29,6 +38,7 @@ export type DemoItem = {
   priceKr?: number;
   priceUnit?: (typeof PRICE_UNITS)[number];
   setups?: Readonly<Record<string, number>>;
+  parts?: readonly DemoPart[];
 };
 
 /** Slice 2 of ADR 0025: what the organization configures (`docs/demo-seed.md`). */

@@ -39,6 +39,11 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
       actual: await db.itemSetup.count(),
       expected: sum({ values: config.items.map((item) => Object.keys(item.setups ?? {}).length) }),
     },
+    {
+      what: "parts",
+      actual: await db.itemComponent.count(),
+      expected: sum({ values: config.items.map((item) => item.parts?.length ?? 0) }),
+    },
   ];
 }
 

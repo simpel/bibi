@@ -9,7 +9,7 @@ import { fieldLines } from "./item-facts";
 
 export type ItemCardViewProps = GenerativeProps<"item-card">;
 
-/** One item: name (link), field values, price, default duration and setup capacities. */
+/** One item: name (link), field values, price, default duration, setup capacities and parts. */
 export function ItemCardView({ item }: ItemCardViewProps) {
   const t = useTranslations("assistant.ui.item");
   const format = useFormatter();
@@ -24,6 +24,7 @@ export function ItemCardView({ item }: ItemCardViewProps) {
       ? null
       : t("duration", { minutes: item.defaultDurationMinutes }),
     item.setups.length > 0 ? t("setupsCount", { count: item.setups.length }) : null,
+    item.components.length > 0 ? t("componentsCount", { count: item.components.length }) : null,
   ].filter(Boolean);
   return (
     <Card data-slot="item-card" className="shadow-none">

@@ -57,8 +57,9 @@ The parity core: every capability is defined **once** as an operation and then e
   - behaviours: `entity-type/behaviours.ts`
   - field changes: `field-definition/field-rules.ts`
   - archiving: in the respective operation
-- Behaviour data on the item is checked in `item/item-rules.ts`. `COMPOSABLE`/`CHOICES` have no data until part 3.
+- Behaviour data on the item is checked in `item/item-rules.ts`. `COMPOSABLE` parts (`ItemComponent`) are replaced as a set via `components`; `item/item-components.ts` checks parts and `item/component-graph.ts` rejects cycles and more than 5 levels. `CHOICES` has no data yet.
 - Vocabulary templates are data in `templates/vocabularies/` (`eu-14-allergens`).
+- `configuration.importTemplate` (`configuration:write`) imports a starter pack from `templates/configuration/` (`conference-venue`): lists, setups, and types with behaviours and fields, via the shared insert helpers (`insertVocabulary`, `insertSetup`, `insertEntityType`, `insertField`). Idempotent: names that exist are skipped and left untouched (an existing type keeps its own fields). Audit rows carry the created kind (`withEntityType`).
 - Errors are built with `shared/errors.ts` (`notFound`, `conflict`, `invalid`). Pagination: `shared/page-input.ts`.
 
 ## Demo data
@@ -66,7 +67,7 @@ The parity core: every capability is defined **once** as an operation and then e
 - Parts that are built:
   - roles (`seed-roles.ts`)
   - configuration (`seed-config.ts`)
-  - venue and bookable spaces (`seed-items.ts`)
+  - venue, bookable spaces and the first composed items (`seed-items.ts`)
 - The checks are in `checks.ts` and `config-checks.ts`.
 
 ## Search

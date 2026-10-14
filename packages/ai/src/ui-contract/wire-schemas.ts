@@ -54,6 +54,19 @@ export const RoleImportWireSchema = z.object({
   created: z.array(RoleWireSchema),
   skipped: z.array(z.string()),
 });
+/** `configuration_importTemplate` output: what the import created, and the names it skipped. */
+export const ConfigurationImportWireSchema = z.object({
+  created: z.object({
+    vocabularies: z.array(VocabularyWireSchema),
+    setups: z.array(SetupWireSchema),
+    entityTypes: z.array(EntityTypeWireSchema),
+  }),
+  skipped: z.object({
+    vocabularies: z.array(z.string()),
+    setups: z.array(z.string()),
+    entityTypes: z.array(z.string()),
+  }),
+});
 
 /** Skill row in tables (skill_list, skill_search): no instructions. */
 export const SkillRowSchema = SkillSchema.pick({

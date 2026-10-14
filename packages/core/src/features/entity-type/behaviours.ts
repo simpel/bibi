@@ -41,8 +41,9 @@ const DATA_COUNTS: Record<ItemBehaviour, (input: CountInput) => Promise<number>>
     context.db.item.count({ where: { entityTypeId, defaultDurationMinutes: { not: null } } }),
   SETUPS: ({ context, entityTypeId }) =>
     context.db.itemSetup.count({ where: { item: { entityTypeId, status: "ACTIVE" } } }),
-  // Parts and choice groups arrive with slice 3 (ItemComponent); until then there is no data.
-  COMPOSABLE: async () => 0,
+  COMPOSABLE: ({ context, entityTypeId }) =>
+    context.db.itemComponent.count({ where: { parent: { entityTypeId, status: "ACTIVE" } } }),
+  // Choice groups arrive later; until then there is no data.
   CHOICES: async () => 0,
 };
 

@@ -8,6 +8,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Setup",
   "Item",
   "ItemSetup",
+  "ItemComponent",
   "AuditLog",
   "Embedding",
   "Conversation",

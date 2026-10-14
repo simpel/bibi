@@ -4,6 +4,15 @@ import type { PRICE_UNITS } from "@okazi/core/schemas";
 export type RawFieldValue = string | boolean | string[];
 export type PriceUnitValue = (typeof PRICE_UNITS)[number];
 
+/** One part of a COMPOSABLE item as raw form values. */
+export type ComponentFormValue = {
+  itemId: string;
+  quantity: string;
+  offsetMinutes: string;
+  durationMinutes: string;
+  required: boolean;
+};
+
 /** Raw values of the item form: inputs are strings; kr, not minor units; one entry per field key. */
 export type ItemFormValues = {
   entityTypeId: string;
@@ -17,6 +26,7 @@ export type ItemFormValues = {
   defaultDurationMinutes: string;
   /** Capacity per setup id; "" = the setup is not used. */
   setups: Record<string, string>;
+  components: ComponentFormValue[];
 };
 
 export const NO_VENUE = "none";
@@ -54,5 +64,12 @@ export function itemFormDefaults({ type, item }: ItemDefaultsInput): ItemFormVal
     vatRatePercent: text({ value: item?.vatRatePercent }),
     defaultDurationMinutes: text({ value: item?.defaultDurationMinutes }),
     setups,
+    components: (item?.components ?? []).map((component) => ({
+      itemId: component.itemId,
+      quantity: String(component.quantity),
+      offsetMinutes: String(component.offsetMinutes),
+      durationMinutes: text({ value: component.durationMinutes }),
+      required: component.required,
+    })),
   };
 }

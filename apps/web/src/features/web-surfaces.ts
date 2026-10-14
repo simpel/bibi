@@ -34,6 +34,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "item.archive", route: "/items/[id]" },
   { operation: "entityType.list", route: "/settings/types" },
   { operation: "entityType.create", route: "/settings/types" },
+  { operation: "configuration.importTemplate", route: "/settings/types" },
   { operation: "entityType.get", route: "/settings/types/[id]" },
   { operation: "entityType.update", route: "/settings/types/[id]" },
   { operation: "entityType.archive", route: "/settings/types/[id]" },

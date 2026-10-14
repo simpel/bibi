@@ -1,3 +1,4 @@
+import { configurationRoutes } from "./features/configuration/rest";
 import { conversationRoutes } from "./features/conversation/rest";
 import { entityTypeRoutes } from "./features/entity-type/rest";
 import { fieldDefinitionRoutes } from "./features/field-definition/rest";
@@ -20,6 +21,7 @@ export function listRestRoutes(): RestRoute[] {
     ...fieldDefinitionRoutes,
     ...vocabularyRoutes,
     ...setupRoutes,
+    ...configurationRoutes,
     ...itemRoutes,
     ...conversationRoutes,
     ...messageRoutes,

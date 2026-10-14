@@ -27,6 +27,7 @@ const BEHAVIOUR_KEYS: Record<string, ItemBehaviour> = {
   vatRatePercent: "PRICED",
   defaultDurationMinutes: "BOOKABLE",
   setups: "SETUPS",
+  components: "COMPOSABLE",
 };
 
 export type CheckBehaviourDataInput = {
