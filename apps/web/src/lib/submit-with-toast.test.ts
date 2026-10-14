@@ -17,17 +17,11 @@ function fakeToast(): { api: ToastApi; calls: Call[] } {
 }
 
 const messages = { pending: "Sparar…", success: "Sparat" };
-const translate = ({ key }: { key: string }) => `errors.${key}`;
 
 describe("submitWithToast (CLAUDE.md Formulär)", () => {
   it("replaces the loading toast with success under the same id", async () => {
     const { api, calls } = fakeToast();
-    await submitWithToast({
-      toast: api,
-      run: async () => ({ ok: true, value: 1 }),
-      messages,
-      translate,
-    });
+    await submitWithToast({ toast: api, run: async () => ({ ok: true, value: 1 }), messages });
     expect(calls).toEqual([
       { kind: "loading", message: "Sparar…" },
       { kind: "success", message: "Sparat", options: { id: "toast-1" } },
@@ -36,17 +30,15 @@ describe("submitWithToast (CLAUDE.md Formulär)", () => {
 
   it("turns a failure into a persistent, closable error toast with the same id", async () => {
     const { api, calls } = fakeToast();
-    const error = { code: "UNAVAILABLE" as const, message: "x", issues: [] };
-    const result = await submitWithToast({
+    const outcome = await submitWithToast({
       toast: api,
-      run: async () => ({ ok: false, error }),
+      run: async () => ({ ok: false, message: "Funktionen är inte tillgänglig" }),
       messages,
-      translate,
     });
-    expect(result.ok).toBe(false);
+    expect(outcome.ok).toBe(false);
     expect(calls[1]).toEqual({
       kind: "error",
-      message: "errors.unavailable",
+      message: "Funktionen är inte tillgänglig",
       options: { id: "toast-1", duration: Number.POSITIVE_INFINITY, closeButton: true },
     });
   });
@@ -57,7 +49,6 @@ describe("submitWithToast (CLAUDE.md Formulär)", () => {
       toast: api,
       run: async () => ({ ok: true, value: 3 }),
       messages: { pending: "Importerar…", success: ({ value }) => `${value} skapade` },
-      translate,
     });
     expect(calls.at(-1)).toMatchObject({ kind: "success", message: "3 skapade" });
   });

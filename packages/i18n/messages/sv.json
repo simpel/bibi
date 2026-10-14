@@ -32,7 +32,10 @@
     "archived": "Arkiverad",
     "or": "eller",
     "optional": "valfritt",
-    "skipToContent": "Hoppa till innehållet"
+    "skipToContent": "Hoppa till innehållet",
+    "saving": "Sparar…",
+    "archiving": "Arkiverar…",
+    "sending": "Skickar…"
   },
   "auth": {
     "signIn": "Logga in",
@@ -88,7 +91,22 @@
     "invitationAccepted": "Du har gått med i organisationen.",
     "invitationDeclined": "Inbjudan har avböjts.",
     "signInToAccept": "Logga in eller skapa ett konto med den inbjudna e-postadressen för att svara på inbjudan.",
-    "invitationInvalidTitle": "Ogiltig inbjudan"
+    "invitationInvalidTitle": "Ogiltig inbjudan",
+    "signingIn": "Loggar in…",
+    "signedIn": "Du är inloggad.",
+    "creatingAccount": "Skapar konto…",
+    "accountCreated": "Kontot har skapats.",
+    "linkSent": "Inloggningslänken har skickats.",
+    "verifyingCode": "Kontrollerar koden…",
+    "creatingOrganization": "Skapar organisation…",
+    "switchingOrganization": "Byter organisation…",
+    "organizationSelected": "Du arbetar nu i {organization}.",
+    "acceptingInvitation": "Accepterar inbjudan…",
+    "decliningInvitation": "Avböjer inbjudan…",
+    "consentAllowing": "Ger åtkomst…",
+    "consentAllowed": "Åtkomst har getts.",
+    "consentDenying": "Nekar åtkomst…",
+    "consentDenied": "Åtkomst har nekats."
   },
   "nav": {
     "dashboard": "Översikt",
@@ -266,7 +284,8 @@
       "renameLabel": "Konversationens namn",
       "archive": "Arkivera konversation",
       "archiveConfirm": "Vill du arkivera ”{title}”?",
-      "archived": "Konversationen har arkiverats."
+      "archived": "Konversationen har arkiverats.",
+      "renamed": "Konversationen har bytt namn."
     },
     "tool": {
       "running": "Kör {tool}..."

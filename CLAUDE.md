@@ -70,15 +70,24 @@
 - Verifieras med `pnpm check:structure`. Se `docs/beslut/0009-sprak-i-kod-och-ui.md`.
 
 ## Formulär (gäller all inmatning i UI)
-- Varje formulär är ett shadcn-formulär: `Form`, `FormController` (shadcns `FormField`), `FormItem`, `FormLabel`, `FormControl` och `FormMessage` från `@okazi/ui`, med react-hook-form och `zodResolver(schema, useZodMessages())`. Schemat kommer från core (`@okazi/core/schemas`), aldrig ett handskrivet dubbelschema.
+- Varje formulär är ett shadcn-formulär: `Form`, `FormController` (shadcns `FormField`), `FormItem`, `FormLabel`, `FormControl` och `FormMessage` från `@okazi/ui`, med react-hook-form och `zodResolver` med lokaliserade meddelanden (`useZodMessages`). Schemat kommer från core (`@okazi/core/schemas`, vid behov via `formSchema({ schema, toInput })`), aldrig ett handskrivet dubbelschema.
+- Fält: `TextField` och `CheckField` (`apps/web/src/components/form/`) är shadcn-fält och kräver `<Form {...form}>` runt formuläret. Andra kontroller (select osv.) byggs med `FormController` direkt.
 - Validering visas som shadcn vill: fältfel i `FormMessage` under fältet. Serverns fältfel (`AppError.issues`, `path` = fältnamn) sätts på fälten med `form.setError`.
-- Inskick går **alltid** via en server action (`features/<entitet>/actions.ts` → `runOperation`/`runPlatformOperation` → `toActionResult`). Inga `fetch`-anrop från formulär.
-- Använd `useFormAction({ form, action, messages, onSuccess?, onError? })` (`apps/web/src/lib/use-form-action.ts`). Den äger toastflödet:
-  - Varje process har **ett** toast-id: `toast.loading("Sparar…")` byts mot `toast.success("Sparat", { id })`.
-  - Fel blir en **bestående** toast med stängknapp: `toast.error(text, { id, duration: Infinity, closeButton: true })`.
-  - Både väntande och utfall har alltid en toast. Texterna kommer från i18n (t.ex. `saving`, `saved`).
+- **Formulär som ändrar data** skickas **alltid** via en server action (`features/<entitet>/actions.ts` → `runOperation`/`runPlatformOperation` → `toActionResult`). Inga `fetch`-anrop från formulär.
+- Toastflödet ägs av hjälparna, aldrig av komponenten:
+  - Formulär: `useFormAction({ form, action, messages, onSuccess?, onError? })` (`lib/use-form-action.ts`).
+  - Åtgärder utan fält (arkivera, publicera, dela, …): `useToastAction().run({ action, messages, onSuccess? })` (`lib/use-toast-action.ts`). `ConfirmDialog` har ingen felruta: utfallet är en toast och anroparen stänger dialogen vid lyckat utfall.
+  - Varje process har **ett** toast-id: `toast.loading(pending)` byts mot `toast.success(success, { id })`.
+  - Fel blir en **bestående** toast med stängknapp (`duration: Infinity, closeButton: true`). Nätverksfel blir `errors.network`.
+  - `messages` kommer från i18n: `common.saving`/`archiving`/`sending` för väntande, entitetens egen nyckel för utfallet (t.ex. `venue.created`).
 - Auto-spara (t.ex. en select som sparar vid val) använder samma flöde. Vid fel återställs fältet via `onError`.
-- `ErrorBanner` och `useActionSubmit` är det gamla mönstret. Använd dem inte i nya formulär och byt ut dem när ett formulär ändras.
+- Referenser: `features/venue/ui/venue-form.tsx` (formulär) och `features/venue/ui/archive-venue-dialog.tsx` (åtgärd utan fält).
+- Undantag, med skäl:
+  - **Inloggning och konto** (`features/auth/ui`): shadcn `Form` och samma toastflöde via `useAuthFormAction`, men anropet går via Better Auth-klienten och inte via en server action. Better Auths OAuth-provider-plugin bär den signerade authorize-frågan (`sig`) och gör omdirigeringen till nästa OAuth-steg i webbläsaren, vilket MCP-inloggningen kräver.
+  - **Sök- och filterformulär** (bara navigering via URL:en): shadcn `Form`, men ingen server action och ingen toast.
+  - **Chattens composer** strömmar via `useChat` mot `/api/chat`, vilket en server action inte kan.
+- Laddningsfel (inte utfall av en åtgärd): `ErrorState` i serverkomponenter, `InlineLoadError` i klientöar (t.ex. historiklistan, livesök). Toast vid varje sökning vore brus.
+- `ErrorBanner`, `useActionSubmit` och `useAuthSubmit` är borttagna. Använd inte motsvarande mönster igen.
 
 ## Paketlayout
 - `apps/web`: Next.js-appen (UI, server actions, `/api/chat`).

@@ -1,9 +1,10 @@
 "use client";
 
-import { Button, FormField, Input, Textarea } from "@okazi/ui";
+import { Button } from "@okazi/ui";
 import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { TextField } from "@/components/form/text-field";
 import type { SkillFormValues } from "../skill-form-schema";
 import type { SkillCreateInput } from "../skill-types";
 
@@ -18,16 +19,13 @@ export function SkillResourceRow({ form, index, onRemove }: SkillResourceRowProp
   const t = useTranslations("skills.fields");
   return (
     <div className="grid gap-2 rounded-md border p-3">
-      <FormField id={`resource-name-${index}`} label={t("resourceName")}>
-        <Input id={`resource-name-${index}`} {...form.register(`resources.${index}.name`)} />
-      </FormField>
-      <FormField id={`resource-content-${index}`} label={t("resourceContent")}>
-        <Textarea
-          id={`resource-content-${index}`}
-          rows={3}
-          {...form.register(`resources.${index}.content`)}
-        />
-      </FormField>
+      <TextField form={form} name={`resources.${index}.name`} label={t("resourceName")} />
+      <TextField
+        form={form}
+        name={`resources.${index}.content`}
+        label={t("resourceContent")}
+        multiline
+      />
       <Button
         type="button"
         variant="ghost"

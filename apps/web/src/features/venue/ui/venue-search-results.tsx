@@ -3,7 +3,7 @@
 import { Link } from "@okazi/i18n/navigation";
 import { Badge, Card, Skeleton } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import { ErrorBanner } from "@/components/states/error-banner";
+import { InlineLoadError } from "@/components/states/inline-load-error";
 import type { SearchHitView } from "@/features/search/search-hit-view";
 import type { ErrorKey } from "@/lib/error-key";
 import { venueRoute } from "@/lib/routes";
@@ -17,7 +17,7 @@ export type VenueSearchResultsProps = {
 
 export function VenueSearchResults({ hits, pending, errorKey, query }: VenueSearchResultsProps) {
   const t = useTranslations("search");
-  if (errorKey) return <ErrorBanner errorKey={errorKey} />;
+  if (errorKey) return <InlineLoadError errorKey={errorKey} />;
   if (pending) return <Skeleton className="h-16 w-full" />;
   if (hits === null) return null;
   if (hits.length === 0) {

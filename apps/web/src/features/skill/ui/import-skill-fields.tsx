@@ -1,53 +1,38 @@
 "use client";
 
-import { FormField, Input, Textarea } from "@okazi/ui";
+import { Input, Label } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { type ChangeEvent, useId } from "react";
-import type { SkillScopeChoice } from "../skill-types";
-import { SkillScopeSelect } from "./skill-scope-select";
+import type { UseFormReturn } from "react-hook-form";
+import { TextField } from "@/components/form/text-field";
+import type { SkillImportInput, SkillImportValues } from "../skill-import-schema";
+import { SkillScopeField } from "./skill-scope-field";
 
 export type ImportSkillFieldsProps = {
-  markdown: string;
-  scope: SkillScopeChoice;
-  onMarkdown: (markdown: string) => void;
-  onScope: (scope: SkillScopeChoice) => void;
+  form: UseFormReturn<SkillImportValues, unknown, SkillImportInput>;
 };
 
 /** SKILL.md as a file upload or pasted text, and where the imported draft should live. */
-export function ImportSkillFields({
-  markdown,
-  scope,
-  onMarkdown,
-  onScope,
-}: ImportSkillFieldsProps) {
+export function ImportSkillFields({ form }: ImportSkillFieldsProps) {
   const t = useTranslations("skills");
-  const id = useId();
+  const fileId = useId();
   const onFile = async ({ event }: { event: ChangeEvent<HTMLInputElement> }) => {
     const file = event.target.files?.[0];
-    if (file) onMarkdown(await file.text());
+    if (file) form.setValue("markdown", await file.text(), { shouldValidate: true });
   };
   return (
     <>
-      <FormField id={`${id}-file`} label={t("importFile")}>
+      <div className="grid gap-2">
+        <Label htmlFor={fileId}>{t("importFile")}</Label>
         <Input
-          id={`${id}-file`}
+          id={fileId}
           type="file"
           accept=".md,text/markdown,text/plain"
           onChange={(event) => void onFile({ event })}
         />
-      </FormField>
-      <FormField id={`${id}-markdown`} label={t("importMarkdown")}>
-        <Textarea
-          id={`${id}-markdown`}
-          rows={10}
-          className="font-mono text-xs"
-          value={markdown}
-          onChange={(event) => onMarkdown(event.target.value)}
-        />
-      </FormField>
-      <FormField id={`${id}-scope`} label={t("scope.label")}>
-        <SkillScopeSelect id={`${id}-scope`} value={scope} onChange={onScope} />
-      </FormField>
+      </div>
+      <TextField form={form} name="markdown" label={t("importMarkdown")} multiline rows={10} />
+      <SkillScopeField form={form} disabled={false} hint={false} />
     </>
   );
 }

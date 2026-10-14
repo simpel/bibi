@@ -15,14 +15,16 @@ export type ArchiveRoleDialogProps = {
 export function ArchiveRoleDialog({ role, open, onOpenChange }: ArchiveRoleDialogProps) {
   const t = useTranslations("role");
   const router = useRouter();
-  const { pending, run } = useToastAction({
-    action: () => archiveRoleAction({ id: role.id }),
-    messages: { pending: t("archiving"), success: t("archived") },
-    onSuccess: () => {
-      onOpenChange(false);
-      router.refresh();
-    },
-  });
+  const { pending, run } = useToastAction();
+  const archive = () =>
+    run({
+      action: () => archiveRoleAction({ id: role.id }),
+      messages: { pending: t("archiving"), success: t("archived") },
+      onSuccess: () => {
+        onOpenChange(false);
+        router.refresh();
+      },
+    });
   return (
     <ConfirmDialog
       open={open}
@@ -31,8 +33,7 @@ export function ArchiveRoleDialog({ role, open, onOpenChange }: ArchiveRoleDialo
       description={t("archiveConfirm", { name: role.name })}
       confirmLabel={t("archive")}
       pending={pending}
-      errorKey={null}
-      onConfirm={run}
+      onConfirm={archive}
     />
   );
 }

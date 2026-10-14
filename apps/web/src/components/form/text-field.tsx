@@ -1,6 +1,12 @@
-"use client";
-
-import { FormField, Input, Textarea } from "@okazi/ui";
+import {
+  FormControl,
+  FormController,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Textarea,
+} from "@okazi/ui";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 export type TextFieldProps<V extends FieldValues, O> = {
@@ -12,33 +18,42 @@ export type TextFieldProps<V extends FieldValues, O> = {
   multiline?: boolean;
   required?: boolean;
   step?: string;
+  rows?: number;
 };
 
-/** react-hook-form text/number/textarea input inside the ui FormField (label + error). */
+/**
+ * shadcn form field (label, control, `FormMessage`) for text, number and multi-line input.
+ * Must be rendered inside `<Form {...form}>` (CLAUDE.md "Formulär").
+ */
 export function TextField<V extends FieldValues, O>(props: TextFieldProps<V, O>) {
-  const { form, name, label, type = "text", multiline = false, required, step } = props;
-  const { autoComplete } = props;
-  const error = form.formState.errors[name]?.message;
-  const id = `field-${name}`;
-  const common = { id, "aria-invalid": error ? true : undefined, ...form.register(name) };
+  const { form, name, label, type = "text", multiline = false, required, step, rows = 3 } = props;
   return (
-    <FormField
-      id={id}
-      label={label}
-      required={required}
-      error={typeof error === "string" ? error : undefined}
-    >
-      {multiline ? (
-        <Textarea rows={3} {...common} />
-      ) : (
-        <Input
-          type={type}
-          step={step}
-          autoComplete={autoComplete}
-          inputMode={type === "number" ? "decimal" : undefined}
-          {...common}
-        />
+    <FormController
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>
+            {label}
+            {required ? <span className="ml-0.5 text-destructive">*</span> : null}
+          </FormLabel>
+          <FormControl>
+            {multiline ? (
+              <Textarea rows={rows} {...field} value={field.value ?? ""} />
+            ) : (
+              <Input
+                type={type}
+                step={step}
+                autoComplete={props.autoComplete}
+                inputMode={type === "number" ? "decimal" : undefined}
+                {...field}
+                value={field.value ?? ""}
+              />
+            )}
+          </FormControl>
+          <FormMessage />
+        </FormItem>
       )}
-    </FormField>
+    />
   );
 }

@@ -32,7 +32,10 @@
     "archived": "Archived",
     "or": "or",
     "optional": "optional",
-    "skipToContent": "Skip to content"
+    "skipToContent": "Skip to content",
+    "saving": "Saving…",
+    "archiving": "Archiving…",
+    "sending": "Sending…"
   },
   "auth": {
     "signIn": "Sign in",
@@ -88,7 +91,22 @@
     "invitationAccepted": "You have joined the organization.",
     "invitationDeclined": "The invitation was declined.",
     "signInToAccept": "Sign in or create an account with the invited email address to respond to the invitation.",
-    "invitationInvalidTitle": "Invalid invitation"
+    "invitationInvalidTitle": "Invalid invitation",
+    "signingIn": "Signing in…",
+    "signedIn": "You are signed in.",
+    "creatingAccount": "Creating account…",
+    "accountCreated": "Your account has been created.",
+    "linkSent": "The sign-in link has been sent.",
+    "verifyingCode": "Checking the code…",
+    "creatingOrganization": "Creating organization…",
+    "switchingOrganization": "Switching organization…",
+    "organizationSelected": "You are now working in {organization}.",
+    "acceptingInvitation": "Accepting invitation…",
+    "decliningInvitation": "Declining invitation…",
+    "consentAllowing": "Granting access…",
+    "consentAllowed": "Access has been granted.",
+    "consentDenying": "Denying access…",
+    "consentDenied": "Access has been denied."
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -266,7 +284,8 @@
       "renameLabel": "Conversation name",
       "archive": "Archive conversation",
       "archiveConfirm": "Archive “{title}”?",
-      "archived": "The conversation was archived."
+      "archived": "The conversation was archived.",
+      "renamed": "Conversation renamed."
     },
     "tool": {
       "running": "Running {tool}..."

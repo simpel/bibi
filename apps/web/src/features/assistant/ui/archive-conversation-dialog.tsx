@@ -1,9 +1,8 @@
 "use client";
 
-import { toast } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useToastAction } from "@/lib/use-toast-action";
 import type { ConversationSummary } from "../actions";
 import { useAssistant } from "../state/assistant-context";
 
@@ -19,17 +18,19 @@ export function ArchiveConversationDialog({
   onClose,
 }: ArchiveConversationDialogProps) {
   const t = useTranslations("assistant.history");
+  const common = useTranslations("common");
   const { conversations, session } = useAssistant();
-  const [pending, setPending] = useState(false);
-  const confirm = async () => {
+  const { run, pending } = useToastAction();
+  const archive = () => {
     if (!conversation) return;
-    setPending(true);
-    const archived = await conversations.archive({ id: conversation.id });
-    setPending(false);
-    if (!archived) return;
-    if (conversation.id === session.conversationId) session.startNew();
-    toast.success(t("archived"));
-    onClose();
+    run({
+      action: () => conversations.archive({ id: conversation.id }),
+      messages: { pending: common("archiving"), success: t("archived") },
+      onSuccess: () => {
+        if (conversation.id === session.conversationId) session.startNew();
+        onClose();
+      },
+    });
   };
   return (
     <ConfirmDialog
@@ -39,8 +40,7 @@ export function ArchiveConversationDialog({
       description={t("archiveConfirm", { title: conversation?.title ?? "" })}
       confirmLabel={t("archive")}
       pending={pending}
-      errorKey={conversations.errorKey}
-      onConfirm={() => void confirm()}
+      onConfirm={archive}
     />
   );
 }

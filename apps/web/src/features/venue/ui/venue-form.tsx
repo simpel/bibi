@@ -2,46 +2,51 @@
 
 import type { VenueCreateInput, VenueDto } from "@okazi/core";
 import { useRouter } from "@okazi/i18n/navigation";
-import { Button, DialogFooter, toast } from "@okazi/ui";
+import { Button, DialogFooter, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import { ErrorBanner } from "@/components/states/error-banner";
-import { useActionSubmit } from "@/lib/use-action-submit";
+import { useFormAction } from "@/lib/use-form-action";
 import { createVenueAction, updateVenueAction } from "../actions";
 import { useVenueForm } from "./use-venue-form";
 import { VenueFormFields } from "./venue-form-fields";
 
 export type VenueFormProps = { venue?: VenueDto | undefined; onDone: () => void };
 
-/** Create (no `venue`) or edit form; saves through the venue server actions. */
+const save = ({ venue, values }: { venue: VenueDto | undefined; values: VenueCreateInput }) =>
+  venue
+    ? updateVenueAction({ input: { id: venue.id, ...values } })
+    : createVenueAction({ input: values });
+
+/**
+ * Create (no `venue`) or edit form. Reference for forms (CLAUDE.md "Formulär"): shadcn `Form`,
+ * core schema via the resolver, server action through `useFormAction` with one toast per save.
+ */
 export function VenueForm({ venue, onDone }: VenueFormProps) {
   const t = useTranslations("venue");
   const common = useTranslations("common");
   const router = useRouter();
   const form = useVenueForm({ venue });
-  const { pending, errorKey, run } = useActionSubmit<VenueDto>({
+  const { submit, pending } = useFormAction({
+    form,
+    action: ({ values }) => save({ venue, values }),
+    messages: { pending: common("saving"), success: t(venue ? "updated" : "created") },
     onSuccess: () => {
-      toast.success(t(venue ? "updated" : "created"));
       router.refresh();
       onDone();
     },
   });
-  const save = ({ values }: { values: VenueCreateInput }) =>
-    venue
-      ? updateVenueAction({ input: { id: venue.id, ...values } })
-      : createVenueAction({ input: values });
-  const onSubmit = form.handleSubmit((values) => run({ action: () => save({ values }) }));
   return (
-    <form onSubmit={onSubmit} noValidate className="grid gap-4">
-      <ErrorBanner errorKey={errorKey} />
-      <VenueFormFields form={form} />
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={onDone}>
-          {common("cancel")}
-        </Button>
-        <Button type="submit" disabled={pending}>
-          {common("save")}
-        </Button>
-      </DialogFooter>
-    </form>
+    <Form {...form}>
+      <form onSubmit={submit} noValidate className="grid gap-4">
+        <VenueFormFields form={form} />
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onDone}>
+            {common("cancel")}
+          </Button>
+          <Button type="submit" disabled={pending}>
+            {common("save")}
+          </Button>
+        </DialogFooter>
+      </form>
+    </Form>
   );
 }

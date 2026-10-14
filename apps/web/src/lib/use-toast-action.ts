@@ -1,30 +1,26 @@
-import { toast } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import type { ActionResult } from "./action-result";
-import { type SubmitWithToastInput, submitWithToast } from "./submit-with-toast";
+import { actionWithToast } from "./action-with-toast";
+import type { ToastMessages } from "./submit-with-toast";
 
-export type UseToastActionInput<R> = {
+export type RunToastActionInput<R> = {
   action: () => Promise<ActionResult<R>>;
-  messages: SubmitWithToastInput<R>["messages"];
+  messages: ToastMessages<R>;
   onSuccess?: (input: { value: R }) => void;
 };
 
 /**
- * `useFormAction` for actions without a form (archive confirmations, one-click buttons): the
- * same single toast per run — loading → success, or a persistent error (CLAUDE.md "Formulär").
+ * Server actions without form fields (archive, publish, share, …) in the same one-toast flow as
+ * `useFormAction` (CLAUDE.md "Formulär"). `pending` disables the triggering button.
  */
-export function useToastAction<R>({ action, messages, onSuccess }: UseToastActionInput<R>) {
+export function useToastAction() {
   const t = useTranslations("errors");
   const [pending, startTransition] = useTransition();
-  const run = () => {
+  const run = <R>({ action, messages, onSuccess }: RunToastActionInput<R>) => {
     startTransition(async () => {
-      const result = await submitWithToast({
-        toast,
-        run: action,
-        messages,
-        translate: ({ key }) => t(key),
-      });
+      const translate = ({ key }: { key: Parameters<typeof t>[0] }) => t(key);
+      const result = await actionWithToast({ action, messages, translate });
       if (result.ok) onSuccess?.({ value: result.value });
     });
   };

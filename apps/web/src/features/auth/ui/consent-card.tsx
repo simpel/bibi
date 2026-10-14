@@ -2,11 +2,10 @@
 
 import { Button } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import { ErrorBanner } from "@/components/states/error-banner";
 import { authClient } from "@/lib/auth-client";
 import { AuthCard } from "./auth-card";
 import { ConsentScopes } from "./consent-scopes";
-import { useAuthSubmit } from "./use-auth-submit";
+import { useAuthFormAction } from "./use-auth-form-action";
 import { useOAuthClientName } from "./use-oauth-client-name";
 
 export type ConsentCardProps = { clientId: string | null; scopes: string[] };
@@ -15,15 +14,20 @@ export type ConsentCardProps = { clientId: string | null; scopes: string[] };
 export function ConsentCard({ clientId, scopes }: ConsentCardProps) {
   const t = useTranslations("auth");
   const clientName = useOAuthClientName({ clientId }) ?? t("unknownClient");
-  const { pending, errorKey, run } = useAuthSubmit();
+  const { pending, run } = useAuthFormAction();
   const respond = ({ accept }: { accept: boolean }) =>
-    run({ call: () => authClient.oauth2.consent({ accept }), onSuccess: () => undefined });
+    run({
+      call: () => authClient.oauth2.consent({ accept }),
+      messages: accept
+        ? { pending: t("consentAllowing"), success: t("consentAllowed") }
+        : { pending: t("consentDenying"), success: t("consentDenied") },
+      onSuccess: () => undefined,
+    });
   return (
     <AuthCard
       title={t("consentTitle", { client: clientName })}
       description={t("consentDescription", { client: clientName })}
     >
-      <ErrorBanner errorKey={errorKey} />
       <ConsentScopes scopes={scopes} />
       <div className="flex gap-2">
         <Button

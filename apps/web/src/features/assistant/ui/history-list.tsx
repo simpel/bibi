@@ -21,11 +21,9 @@ export function HistoryList({ editing, onEdit }: HistoryListProps) {
           return (
             <li key={conversation.id}>
               <RenameConversationForm
-                title={conversation.title}
+                conversation={conversation}
                 onCancel={() => onEdit(null)}
-                onSubmit={async ({ title }) => {
-                  if (await conversations.rename({ id: conversation.id, title })) onEdit(null);
-                }}
+                onDone={() => onEdit(null)}
               />
             </li>
           );

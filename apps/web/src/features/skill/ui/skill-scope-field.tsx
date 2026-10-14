@@ -1,36 +1,42 @@
 "use client";
 
-import { FormField } from "@okazi/ui";
+import { FormController, FormDescription, FormItem, FormLabel, FormMessage } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import { useId } from "react";
-import { Controller, type UseFormReturn } from "react-hook-form";
-import type { SkillFormValues } from "../skill-form-schema";
-import type { SkillCreateInput } from "../skill-types";
+import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
+import type { SkillScopeChoice } from "../skill-types";
 import { SkillScopeSelect } from "./skill-scope-select";
 
-export type SkillScopeFieldProps = {
-  form: UseFormReturn<SkillFormValues, unknown, SkillCreateInput>;
+export type SkillScopeFieldProps<V extends FieldValues, O> = {
+  /** A form with a `scope` field. */
+  form: UseFormReturn<V, unknown, O>;
   disabled: boolean;
+  /** Show the explanation under the select. */
+  hint?: boolean;
 };
 
-/** Where the new skill lives: personal (just you) or the organization (needs an admin). */
-export function SkillScopeField({ form, disabled }: SkillScopeFieldProps) {
+/** Where the skill lives: personal (just you) or the organization (needs an admin). */
+export function SkillScopeField<V extends FieldValues, O>({
+  form,
+  disabled,
+  hint = true,
+}: SkillScopeFieldProps<V, O>) {
   const t = useTranslations("skills.scope");
-  const id = useId();
   return (
-    <FormField id={id} label={t("label")} description={t("hint")}>
-      <Controller
-        control={form.control}
-        name="scope"
-        render={({ field }) => (
+    <FormController
+      control={form.control}
+      name={"scope" as Path<V>}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t("label")}</FormLabel>
           <SkillScopeSelect
-            id={id}
-            value={field.value}
+            value={field.value as SkillScopeChoice}
             onChange={field.onChange}
             disabled={disabled}
           />
-        )}
-      />
-    </FormField>
+          {hint ? <FormDescription>{t("hint")}</FormDescription> : null}
+          <FormMessage />
+        </FormItem>
+      )}
+    />
   );
 }

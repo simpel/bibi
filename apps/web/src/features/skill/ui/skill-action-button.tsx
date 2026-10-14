@@ -2,13 +2,12 @@
 
 import type { SkillDto } from "@okazi/core";
 import { useRouter } from "@okazi/i18n/navigation";
-import { Button, toast } from "@okazi/ui";
+import { Button } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { useTransition } from "react";
 import type { ActionResult } from "@/lib/action-result";
-import { errorKeyForCode } from "@/lib/error-key";
 import { skillRoute } from "@/lib/routes";
+import { useToastAction } from "@/lib/use-toast-action";
 
 export type SkillActionButtonProps = {
   icon: ReactNode;
@@ -20,7 +19,7 @@ export type SkillActionButtonProps = {
   openResult?: boolean;
 };
 
-/** A skill lifecycle action (publish, share): runs the server action, toasts, refreshes. */
+/** A skill lifecycle action (publish, share): runs the server action, one toast, refreshes. */
 export function SkillActionButton({
   icon,
   label,
@@ -28,16 +27,17 @@ export function SkillActionButton({
   run,
   openResult = false,
 }: SkillActionButtonProps) {
-  const errors = useTranslations("errors");
+  const common = useTranslations("common");
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const { run: runAction, pending } = useToastAction();
   const onClick = () =>
-    startTransition(async () => {
-      const result = await run();
-      if (!result.ok) return void toast.error(errors(errorKeyForCode({ code: result.error.code })));
-      toast.success(doneMessage);
-      if (openResult) router.push(skillRoute({ id: result.value.id }));
-      else router.refresh();
+    runAction({
+      action: run,
+      messages: { pending: common("sending"), success: doneMessage },
+      onSuccess: ({ value }) => {
+        if (openResult) router.push(skillRoute({ id: value.id }));
+        else router.refresh();
+      },
     });
   return (
     <Button variant="outline" disabled={pending} onClick={onClick}>

@@ -4,7 +4,7 @@ import { Button } from "@okazi/ui";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { ErrorBanner } from "@/components/states/error-banner";
+import { InlineLoadError } from "@/components/states/inline-load-error";
 import { useAssistant } from "../state/assistant-context";
 import { ArchiveConversationDialog } from "./archive-conversation-dialog";
 import { type EditingConversation, HistoryList } from "./history-list";
@@ -27,7 +27,7 @@ export function HistoryView() {
         <PlusIcon />
         {t("new")}
       </Button>
-      <ErrorBanner errorKey={errorKey} />
+      <InlineLoadError errorKey={errorKey} />
       {items.length === 0 && !loading ? (
         <p className="px-2 py-6 text-center text-sm text-muted-foreground">{t("empty")}</p>
       ) : null}

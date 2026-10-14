@@ -11,17 +11,19 @@ import { importRoleTemplateAction } from "../actions";
 export function ImportRoleTemplateButton() {
   const t = useTranslations("role");
   const router = useRouter();
-  const { pending, run } = useToastAction({
-    action: importRoleTemplateAction,
-    messages: {
-      pending: t("importing"),
-      success: ({ value }) =>
-        t("imported", { created: value.created.length, skipped: value.skipped.length }),
-    },
-    onSuccess: () => router.refresh(),
-  });
+  const { pending, run } = useToastAction();
+  const importTemplate = () =>
+    run({
+      action: importRoleTemplateAction,
+      messages: {
+        pending: t("importing"),
+        success: ({ value }) =>
+          t("imported", { created: value.created.length, skipped: value.skipped.length }),
+      },
+      onSuccess: () => router.refresh(),
+    });
   return (
-    <Button variant="outline" disabled={pending} onClick={run}>
+    <Button variant="outline" disabled={pending} onClick={importTemplate}>
       <DownloadIcon />
       {t("importTemplate")}
     </Button>

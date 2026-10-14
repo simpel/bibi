@@ -10,8 +10,6 @@ import {
   DialogTitle,
 } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import type { ErrorKey } from "@/lib/error-key";
-import { ErrorBanner } from "./states/error-banner";
 
 export type ConfirmDialogProps = {
   open: boolean;
@@ -20,11 +18,13 @@ export type ConfirmDialogProps = {
   description: string;
   confirmLabel: string;
   pending: boolean;
-  errorKey: ErrorKey | null;
   onConfirm: () => void;
 };
 
-/** Destructive confirmation (archive). Stays open and shows the error when the action fails. */
+/**
+ * Destructive confirmation (archive). The outcome is a toast (CLAUDE.md "Formulär"); the dialog
+ * stays open while `pending` and the caller closes it on success.
+ */
 export function ConfirmDialog(props: ConfirmDialogProps) {
   const t = useTranslations("common");
   return (
@@ -34,7 +34,6 @@ export function ConfirmDialog(props: ConfirmDialogProps) {
           <DialogTitle>{props.title}</DialogTitle>
           <DialogDescription>{props.description}</DialogDescription>
         </DialogHeader>
-        <ErrorBanner errorKey={props.errorKey} />
         <DialogFooter>
           <Button variant="outline" onClick={() => props.onOpenChange(false)}>
             {t("cancel")}
