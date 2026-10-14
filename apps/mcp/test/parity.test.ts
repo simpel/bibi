@@ -11,12 +11,6 @@ import { seedOrgMember } from "./seed-org-member";
 
 registerOperations({ operations: createCoreOperations({ embed: fakeEmbed }) });
 
-/**
- * TODO(apps/web): when apps/web exists, add one entry per UI surface here and assert that every
- * operation has a page/action. Each entry maps a surface name to the operation names it covers.
- */
-const WEB_SURFACES: Record<string, () => string[]> = {};
-
 type SurfaceCheck = { surface: string; fix: string; exposed: string[] };
 
 const surfaces = (): SurfaceCheck[] => [
@@ -35,11 +29,6 @@ const surfaces = (): SurfaceCheck[] => [
     fix: "add mcpTool({ operation }) in apps/mcp/src/features/<entity>/mcp.ts (or search-mcp.ts)",
     exposed: listMcpOperationNames(),
   },
-  ...Object.entries(WEB_SURFACES).map(([surface, list]) => ({
-    surface: `web:${surface}`,
-    fix: "add the UI action",
-    exposed: list(),
-  })),
 ];
 
 describe("surface parity: every core operation exists everywhere", () => {

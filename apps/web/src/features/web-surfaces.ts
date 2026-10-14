@@ -1,6 +1,6 @@
 /**
- * Which core operations have a UI surface in the web app. The parity test in `apps/mcp`
- * (and `web-surfaces.test.ts` here) read this list: a new operation must either appear in
+ * Which core operations have a UI surface in the web app. The parity test in
+ * `web-surfaces.test.ts` validates this list: a new operation must either appear in
  * `WEB_SURFACES` (with the route or component that exposes it) or be listed in `UI_EXEMPT` with
  * a reason.
  */

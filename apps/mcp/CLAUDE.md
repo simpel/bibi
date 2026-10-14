@@ -51,4 +51,4 @@ The MCP server (ADR 0003, 0007). Thin adapter: all logic and permissions live in
 - The GraphQL handler gets the caller's context via an internal relay header (`graphql/context-relay.ts`), never from the client.
 
 ## Tests
-Vitest against a real Postgres, in-memory client (`InMemoryTransport`). `test/parity.test.ts` is the parity test (REST, GraphQL, MCP, plus entity reads in all three; `WEB_SURFACES` is the hook for the web app). The entities and how they are read per surface are in `test/parity-entities.ts` (message is read via lists/the graph edge). Test resolver for HTTP: header `x-test-org`.
+Vitest against a real Postgres, in-memory client (`InMemoryTransport`). `test/parity.test.ts` is the parity test for REST, GraphQL, MCP and entity reads across all three surfaces. Web parity is tested separately in `apps/web/src/features/web-surfaces.test.ts`. The entities and how they are read per surface are in `test/parity-entities.ts` (message is read via lists/the graph edge). Test resolver for HTTP: header `x-test-org`.
