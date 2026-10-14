@@ -7,7 +7,7 @@
 :root{
   --bg:#f4f6f8; --surface:#ffffff; --fg:#17212b; --muted:#5a6774; --line:#d8dee5;
   --accent:#2a5bd7; --accent-soft:#e3ebfc;
-  --d-sales:#2a5bd7; --d-booking:#7a4cc9; --d-space:#0f8a7e; --d-food:#b86a0c; --d-money:#2f7d32; --d-ops:#5f6b78;
+  --d-sales:#2a5bd7; --d-booking:#7a4cc9; --d-space:#0f8a7e; --d-food:#b86a0c; --d-money:#2f7d32; --d-ops:#5f6b78; --d-config:#c2410c;
   --yes:#2f7d32; --part:#b86a0c; --no:#9aa5b1; --unk:#5a6774;
   --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
   --f-body:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
@@ -16,12 +16,12 @@
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#10161c; --surface:#18212a; --fg:#e6ebf0; --muted:#98a5b2; --line:#2b3642;
   --accent:#7ea2ff; --accent-soft:#1f2c48;
-  --d-sales:#7ea2ff; --d-booking:#b896f0; --d-space:#4fc7b9; --d-food:#e8a54f; --d-money:#7cc77f; --d-ops:#a3afbb;
+  --d-sales:#7ea2ff; --d-booking:#b896f0; --d-space:#4fc7b9; --d-food:#e8a54f; --d-money:#7cc77f; --d-ops:#a3afbb; --d-config:#f08a5d;
   --yes:#7cc77f; --part:#e8a54f; --no:#5c6875; --unk:#98a5b2; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#10161c; --surface:#18212a; --fg:#e6ebf0; --muted:#98a5b2; --line:#2b3642;
   --accent:#7ea2ff; --accent-soft:#1f2c48;
-  --d-sales:#7ea2ff; --d-booking:#b896f0; --d-space:#4fc7b9; --d-food:#e8a54f; --d-money:#7cc77f; --d-ops:#a3afbb;
+  --d-sales:#7ea2ff; --d-booking:#b896f0; --d-space:#4fc7b9; --d-food:#e8a54f; --d-money:#7cc77f; --d-ops:#a3afbb; --d-config:#f08a5d;
   --yes:#7cc77f; --part:#e8a54f; --no:#5c6875; --unk:#98a5b2; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.5}
@@ -106,7 +106,7 @@ tr.you td.p{background:var(--accent-soft)}
 <div class="wrap">
   <div class="eyebrow">Bokningssystem för konferens + mat & dryck</div>
   <h1>Domänmodell och konkurrentkarta</h1>
-  <p class="lede">Entiteterna ett system behöver för venues som World of Volvo: lokaler, möbleringar, paket, menyer med allergier, köksorder till eget kök eller extern restaurangpartner, förskott och faktura. Klicka på en entitet för attribut och relationer.</p>
+  <p class="lede">Entiteterna ett system behöver för venues som World of Volvo. Domänen är konfigurerbar: varje organisation sätter upp egna typer, fält, listor, statusar, blad och roller, och koden äger bara generella beteenden och faser. Artiklar, behov per listvärde, blad till en roll, förskott och faktura. Klicka på en entitet för attribut och relationer.</p>
 
   <nav class="tabs" role="tablist">
     <button role="tab" id="tab-ent" aria-selected="true" aria-controls="p-ent">Entiteter</button>
@@ -140,11 +140,11 @@ tr.you td.p{background:var(--accent-soft)}
 
     <h2>Luckor i marknaden</h2>
     <div class="gaps">
-      <div class="gap"><b>Ingen svensk helhetslösning</b><p>Ingen svensk SaaS kopplar förfrågan, offert, möblering, meny med allergier per deltagare, köksorder och förskott med Swish, Fortnox och Visma.</p></div>
+      <div class="gap"><b>Ingen svensk helhetslösning</b><p>Ingen svensk SaaS kopplar förfrågan, offert, möblering, konfigurerbar domän, behov per listvärde, blad till roll och förskott med Swish, Fortnox och Visma.</p></div>
       <div class="gap"><b>Venues utan hotell är oförsörjda</b><p>Hotellkedjorna är tagna (Event Temple hos Strawberry, Proposales hos Elite, MeetingPackage hos Scandic). Upplevelsecenter, museer, herrgårdar och restauranger har Lega eller generiska slotverktyg.</p></div>
-      <div class="gap"><b>Allergier per deltagare</b><p>Bara Venjue (DK) visar allergener per gäst som slår igenom i köksorder. Lega har specialkost på kökslistor, men inte per deltagare.</p></div>
-      <div class="gap"><b>Köksorder över bolagsgräns</b><p>World of Volvo köper all konferensmat av en extern operatör. Ingen konkurrent marknadsför ett partnerflöde där köket får egna, versionerade order.</p></div>
-      <div class="gap"><b>Direktbokning med betalning</b><p>Lega tar emot förfrågningar, inte bokningar. Små möten med fika borde kunna bokas och betalas direkt, utan säljare.</p></div>
+      <div class="gap"><b>Behov som slår igenom i blad</b><p>Bara Venjue (DK) visar allergener per gäst som slår igenom i köksorder. Lega har specialkost på kökslistor. Okazi tar antal per listvärde, utan personuppgifter, och blockerar bladet vid krock.</p></div>
+      <div class="gap"><b>Konfigurerbar domän</b><p>Varje venue är olika: konferensgård, museum eller båtbolag. Okazi låter varje organisation sätta upp egna typer, fält, listor, statusar och roller, med versionerade blad och export vid överlämning.</p></div>
+      <div class="gap"><b>Snabbokning med betalning</b><p>Lega tar emot förfrågningar, inte bokningar. Små möten med fika ska personalen kunna boka direkt, utan förfrågan och offert. Kunden betalar via Swish- eller kortlänk eller mot faktura.</p></div>
       <div class="gap"><b>Öppna priser</b><p>Ingen av de etablerade publicerar priser. Venjue och Perfect Venue gör det och har gratisnivå, vilket sänker säljtröskeln.</p></div>
     </div>
     <p class="src">Källor: legaonline.com, visbook.com, amadeus-hospitality.com, oracle.com, mews.com, gomomentus.com, caspeco.com, meetingpackage.com, proposales.com, eventtemple.com, tripleseat.com, perfectvenue.com, venjue.com, spiris.se, fortnox.se, businesswith.se, G2, Capterra, HotelTechReport, worldofvolvo.com, kongres-magazine.eu.</p>
@@ -153,76 +153,83 @@ tr.you td.p{background:var(--accent-soft)}
 
 <script>
 const DOMAINS = [
+  {id:"config",  name:"Konfiguration",     color:"--d-config"},
   {id:"sales",   name:"Sälj & kund",       color:"--d-sales"},
   {id:"booking", name:"Bokning & program", color:"--d-booking"},
   {id:"space",   name:"Lokaler & resurser",color:"--d-space"},
-  {id:"food",    name:"Mat & dryck",       color:"--d-food"},
+  {id:"food",    name:"Artiklar & blad",   color:"--d-food"},
   {id:"money",   name:"Ekonomi",           color:"--d-money"},
   {id:"ops",     name:"Drift & system",    color:"--d-ops"}
 ];
 
 const E = [
+  // Konfiguration
+  {id:"etype",d:"config",n:"Typ",p:"MVP",s:"Organisationens egen typ för artikel, kund, kontaktperson, förfrågan, bokning eller behov. Organisationer börjar tomma, mallar är frivillig data.",a:["grundentitet (artikel / kund / kontaktperson / förfrågan / bokning / behov)","namn (t.ex. Konferensrum, Rätt, Båt, Företag, Konferens)","beteenden (endast artikel): PRICED, COMPOSABLE, CHOICES, BOOKABLE, SETUPS"],x:"Inga domänord i koden. Ett beteende kan inte stängas av så länge artiklar har data för det."},
+  {id:"fielddef",d:"config",n:"Fältdefinition",p:"MVP",s:"Ett eget fält på en typ. Värdena lagras som JSON och valideras av ett Zod-schema byggt från definitionerna.",a:["namn","fälttyp (text, tal, ja/nej, datum, val, flerval ur lista, länk till annan typ)","obligatoriskt","lista (för val och flerval)"]},
+  {id:"vocab",d:"config",n:"Lista och listvärden",p:"MVP",s:"Organisationens egna ordlistor, t.ex. Allergener, Kost, Tillgänglighet. EU:s 14 allergener är en importerbar mall.",a:["lista: namn","värde: namn, ordning, arkiverad"]},
+  {id:"setup",d:"config",n:"Uppställning",p:"MVP",s:"Organisationens egna uppställningar, t.ex. Bio, U-bord och Mingel.",a:["namn","ställtid (minuter)"]},
+  {id:"itemsetup",d:"config",n:"Item-uppställning",p:"MVP",s:"Kapacitet per bokningsbar artikel och uppställning. Kräver beteendet SETUPS.",a:["artikel","uppställning","kapacitet"]},
+  {id:"sheetdef",d:"config",n:"Blad-definition",p:"MVP",s:"Hur ett blad ser ut, t.ex. Köksorder eller Bryggorder.",a:["namn","artikeltyper och fält som ingår","listor vars behov tas med","mottagande roll"]},
+  {id:"bstatus",d:"config",n:"Bokningsstatus",p:"MVP",s:"Organisationens egen status med fast fas och egna övergångar. Fasen styr systemets regler.",a:["namn","färg","ordning","fas (TENTATIVE / CONFIRMED / COMPLETED / CANCELLED)","tillåtna övergångar (från → till)","arkiverad (kan inte tas bort när den används)"],x:"Rapporter grupperar på fas, inte på status. Fasreglerna kan inte stängas av."},
+  {id:"role",d:"config",n:"Roll",p:"MVP",s:"Namngiven uppsättning behörigheter per organisation (organizationRole). owner är fast.",a:["namn","behörigheter (resurs:read|write|admin)","system (owner kan inte ändras eller tas bort)"]},
+
   // Sälj & kund
-  {id:"org",d:"sales",n:"Kund (organisation)",p:"MVP",s:"Företaget som köper konferensen.",a:["namn","orgnr","fakturaadress","Peppol-ID / e-fakturaadress","prislista","betalvillkor (dagar)","kreditgräns"]},
-  {id:"contact",d:"sales",n:"Kontaktperson",p:"MVP",s:"Beställare, fakturamottagare eller arrangör.",a:["namn","e-post","telefon","roll (beställare / fakturamottagare)","GDPR-samtycke"]},
-  {id:"lead",d:"sales",n:"Förfrågan",p:"MVP",s:"Inkommande intresse innan något är bokat.",a:["kanal (formulär, mejl, telefon, Venuu)","önskade datum (flera alternativ)","ungefärligt antal","budget","status (ny → kvalificerad → offererad → vunnen / förlorad)","förlustorsak","ansvarig säljare"],x:"Pipeline med förlustorsak saknas hos Lega."},
-  {id:"hold",d:"sales",n:"Option",p:"MVP",s:"Preliminärt hållet rum med förfallodatum.",a:["rum","datum och tid","optionsdatum (förfaller)","ordning (1:a / 2:a option)","påminnelse före förfall"],x:"Kö av första- och andraoptioner på samma rum frigör tid automatiskt."},
-  {id:"quote",d:"sales",n:"Offert",p:"MVP",s:"Versionerat förslag med rader och villkor.",a:["versionsnr","giltig till","status (utkast / skickad / accepterad / avböjd)","rader (kopior av orderrader)","summa exkl. och inkl. moms","villkorstext"],x:"Versioner med ändringsmarkering mot föregående."},
-  {id:"contract",d:"sales",n:"Avtal & signering",p:"MVP",s:"Bindande accept av offerten.",a:["metod (BankID / signeringslänk)","signerad av","tidpunkt","dokument-hash","bifogade villkor"]},
+  {id:"org",d:"sales",n:"Kund (organisation)",p:"MVP",s:"Företaget som köper konferensen. Har en typ med egna fält.",a:["typ och egna fält (t.ex. orgnr, Peppol-ID)","namn","fakturaadress","prislista","betalvillkor (dagar)","kreditgräns"]},
+  {id:"contact",d:"sales",n:"Kontaktperson",p:"MVP",s:"Beställare, fakturamottagare eller arrangör.",a:["typ och egna fält","namn","e-post","telefon","roll (beställare / fakturamottagare)","GDPR-samtycke"]},
+  {id:"lead",d:"sales",n:"Förfrågan",p:"MVP",s:"Inkommande intresse innan något är bokat. Fast statusmaskin.",a:["typ och egna fält","kanal (formulär, mejl, telefon, Venuu)","önskade datum (flera alternativ)","ungefärligt antal","budget","status (NEW → QUALIFIED → QUOTED → WON / LOST)","förlustorsak (krävs vid LOST)","ansvarig säljare (krävs från QUALIFIED)"],x:"Pipeline med förlustorsak saknas hos Lega. Status ändras bara via kommandon."},
+  {id:"hold",d:"sales",n:"Option",p:"MVP",s:"Preliminärt hållen bokningsbar artikel med förfallodatum.",a:["artikel (BOOKABLE)","start – slut","förfaller (datum)","rang (1:a / 2:a option, automatisk)","påminnelse före förfall","status (ACTIVE → CONVERTED / EXPIRED / RELEASED)"],x:"Kö av optioner per artikel och tid. Bakomliggande flyttas upp när en option släpps eller förfaller."},
+  {id:"quote",d:"sales",n:"Offert",p:"MVP",s:"Versionerat förslag med rader och villkor. Fast statusmaskin.",a:["versionsnr","giltig till","status (DRAFT → SENT → ACCEPTED / DECLINED / EXPIRED)","rader (kopior av orderrader)","summa exkl. och inkl. moms","villkorstext","acceptedBy, acceptedAt, acceptanceMethod (MANUAL nu, senare BANKID och LINK)"],x:"Versioner med ändringsmarkering mot föregående."},
+  {id:"contract",d:"sales",n:"Avtal & signering",p:"Fas 2",s:"Bindande accept av offerten. Skjuts upp.",a:["metod (BankID / signeringslänk)","signerad av","tidpunkt","dokument-hash","bifogade villkor"]},
 
   // Bokning & program
-  {id:"booking",d:"booking",n:"Bokning",p:"MVP",s:"Konferensen eller eventet som helhet.",a:["referensnr","status (preliminär / bekräftad / avbokad / genomförd)","start – slut","beräknat antal","garanterat antal (låses X dagar före)","koordinator","avbokningsvillkor"]},
-  {id:"function",d:"booking",n:"Programpunkt",p:"MVP",s:"En rad i dagens körschema: möte, fika, lunch, aktivitet.",a:["typ (möte, fika, lunch, middag, aktivitet, mingel)","start – slut","rum","möblering","antal","ansvarig","intern notering"]},
-  {id:"attendee",d:"booking",n:"Deltagare",p:"MVP",s:"Person som kommer, registrerad via länk eller import.",a:["namn","e-post","organisation","allergier","kostpreferenser","närvarostatus","källa (länk / import / manuellt)"],x:"Deltagarlista med kost per person: bara Venjue (DK) har det bekräftat."},
-  {id:"allergy",d:"booking",n:"Allergi",p:"MVP",s:"Allergi eller överkänslighet hos en deltagare. Säkerhetskritisk.",a:["allergen (obligatorisk)","allvarlighetsgrad (intolerans / allergi / anafylaxi)","anteckning"],x:"Slår igenom i köksordern per namn och per allergen. Matchas mot Artikel.allergener."},
-  {id:"diet",d:"booking",n:"Kostpreferens",p:"MVP",s:"Val av kost som inte är en säkerhetsfråga.",a:["typ (vegetarisk / vegansk / halal / kosher / annat)","fritext (för annat)"],x:"Matchas mot Artikel.kostmärkning. I köksordern som antal och namn."},
+  {id:"booking",d:"booking",n:"Bokning",p:"MVP",s:"Konferensen eller eventet som helhet. Varje tillfälle i en serie är en vanlig bokning.",a:["referensnr","bokningstyp och egna fält","status (organisationens egen, med fast fas)","start – slut","beräknat antal","garanterat antal (låses X dagar före)","säljare (salesOwnerId)","koordinator (krävs från CONFIRMED)","avbokningsvillkor","seriesId och occurrenceIndex"]},
+  {id:"series",d:"booking",n:"Bokningsserie",p:"MVP",s:"Återkommande bokning, t.ex. första tisdagen varje månad.",a:["kund","mall (artiklar, uppställning, tider)","regel (delmängd av RRULE: FREQ, INTERVAL, BYDAY, BYMONTHDAY, COUNT/UNTIL)","prislista"]},
+  {id:"function",d:"booking",n:"Programpunkt",p:"MVP",s:"En rad i dagens körschema: möte, fika, lunch, aktivitet.",a:["namn och typ (organisationens egen)","start – slut","bokningsbar artikel","uppställning","antal","ansvarig (valfri)","intern notering"]},
+  {id:"req",d:"booking",n:"Behov",p:"MVP",s:"Antal per listvärde på en bokning eller programpunkt, t.ex. Gluten × 3. Aldrig kopplat till en person.",a:["bokning eller programpunkt","listvärde","antal","typ och egna fält (t.ex. allvarlighetsgrad)"],x:"Matchas mot artiklar med samma listvärde. Träff på obligatorisk del utan alternativ blockerar bladet."},
   {id:"policy",d:"booking",n:"Avbokningsvillkor",p:"MVP",s:"Regler för avbokning och minskat antal.",a:["tidsgränser (t.ex. 30 / 14 / 7 dagar)","debiteringsgrad per gräns","tillåten minskning av antal (%)","gäller kund eller anläggning"]},
 
   // Lokaler & resurser
-  {id:"venue",d:"space",n:"Anläggning",p:"MVP",s:"Byggnad eller site med rum.",a:["namn","adress","öppettider","standardmoms","kontaktuppgifter"]},
-  {id:"room",d:"space",n:"Rum",p:"MVP",s:"Bokningsbar lokal.",a:["namn","våning","yta (m²)","takhöjd","dagsljus (ja/nej)","max kapacitet","kombinerbar med (andra rum)","pris per timme / halvdag / heldag","bilder"]},
-  {id:"layout",d:"space",n:"Möblering",p:"MVP",s:"Uppställningstyp.",a:["typ (bio, klassrum, U-bord, styrelse, ö-sittning, bankett, mingel)","ställtid (minuter)","standardutrustning"]},
-  {id:"roomlayout",d:"space",n:"Rum × möblering",p:"MVP",s:"Kapacitet per rum och uppställning.",a:["rum","möblering","kapacitet"]},
-  {id:"block",d:"space",n:"Beläggning",p:"MVP",s:"Tidsblock på ett rum. Grunden för krockkontroll.",a:["rum","start – slut","typ (bokning, option, ställtid, underhåll, internt)","källa"],x:"Ställtid mellan grupper räknas in automatiskt."},
-  {id:"equipment",d:"space",n:"Utrustning",p:"Fas 2",s:"AV och lösa resurser.",a:["namn","antal i lager","pris","rumsbunden eller flyttbar"]},
-  {id:"partner",d:"space",n:"Partner",p:"MVP",s:"Extern leverantör: restaurang, aktivitet, AV.",a:["typ (restaurang / catering, aktivitet, AV, transport)","kontaktuppgifter","tar emot köksorder (ja/nej)","avräkning (inköp / provision)"],x:"World of Volvo köper all konferensmat av en extern operatör. Köksordern måste kunna gå över bolagsgräns."},
+  {id:"venue",d:"space",n:"Anläggning",p:"MVP",s:"Byggnad eller site. Bokningsbara artiklar hör till en anläggning.",a:["namn","adress","öppettider","standardmoms","kontaktuppgifter"]},
+  {id:"block",d:"space",n:"Beläggning",p:"MVP",s:"Tidsblock på en bokningsbar artikel. Grunden för krockkontroll.",a:["artikel (BOOKABLE)","start – slut","typ (BOOKING, OPTION, SETUP, MAINTENANCE, INTERNAL)","källa"],x:"Alla typer utom OPTION får inte överlappa. Ställtid räknas in automatiskt."},
 
-  // Mat & dryck
-  {id:"item",d:"food",n:"Artikel",p:"MVP",s:"Allt som kan säljas: rätt, dryck, lokalhyra, aktivitet.",a:["namn","kategori (fika, lunch, middag, dryck, lokal, utrustning, aktivitet)","prisenhet (per person / st / timme)","momssats","kostnadsställe","allergener","kostmärkning (vegetarisk / vegansk / halal / kosher)","leverantör (eget kök / partner)"]},
-  {id:"allergen",d:"food",n:"Allergen",p:"MVP",s:"De 14 allergener som måste anges enligt EU:s förordning 1169/2011. Globalt, skrivskyddat referensdata.",a:["kod","namn","ikon"]},
-  {id:"menu",d:"food",n:"Meny",p:"MVP",s:"Uppsättning rätter med valbara alternativ.",a:["namn","rätter (artiklar)","valbara alternativ","säsong","sista dag för menyval"]},
-  {id:"package",d:"food",n:"Konferenspaket",p:"MVP",s:"Pris per person för rum, fika och mat ihop.",a:["namn","pris per person","ingående artiklar och tider","minsta antal","momsfördelning per ingående del"],x:"World of Volvo säljer paket från 590 till 1 016 kr per person."},
-  {id:"kitchen",d:"food",n:"Köksorder",p:"MVP",s:"Function sheet till kök eller partner.",a:["programpunkt","serveringstid","antal kuvert","menyval","allergier per allergen och per namn","kostpreferenser (antal och namn)","mottagare (eget kök / partner)","version och ändringsmarkering"],x:"Versionerad, med ändringar markerade sedan senaste utskick."},
+  // Artiklar & blad
+  {id:"item",d:"food",n:"Artikel",p:"MVP",s:"Allt som kan säljas eller bokas: rätt, lokal, utrustning, guide, paket (Item). Typen slår på beteenden.",a:["typ och egna fält","namn","PRICED: pris, prisenhet (PER_PERSON, PER_UNIT, PER_HOUR, FLAT), moms","COMPOSABLE: innehåller andra artiklar med antal, offsetMinutes, durationMinutes","CHOICES: valgrupper (kräver COMPOSABLE)","BOOKABLE: beläggning, krockskydd, standardlängd","SETUPS: kapacitet per uppställning (kräver BOOKABLE)","taggar (listvärden)","kund (null = katalogartikel)","anläggning"]},
+  {id:"component",d:"food",n:"Artikeldel",p:"MVP",s:"En del i en sammansatt artikel (ItemComponent). Grafen är acyklisk, max 5 nivåer.",a:["överordnad artikel","artikel (delen)","antal","offsetMinutes","durationMinutes","obligatorisk eller valbar","valgrupp"]},
+  {id:"choice",d:"food",n:"Valgrupp",p:"MVP",s:"Valbara alternativ bland delarna (ItemChoiceGroup).",a:["namn","minPick","maxPick"]},
+  {id:"sheet",d:"food",n:"Blad",p:"MVP",s:"Versionerad sammanställning till en roll, t.ex. köksorder (Sheet).",a:["bokning","blad-definition","artiklar och fält enligt definitionen","behov per listvärde (antal)","blockerad (ja/nej) och träffar","mottagande roll","version och ändringsmarkering"],x:"Versionerat, ändringar markerade sedan senaste utskick. Export (json, pdf, csv) för överlämning."},
 
   // Ekonomi
-  {id:"pricelist",d:"money",n:"Prislista",p:"MVP",s:"Pris per säsong, veckodag eller kund.",a:["namn","giltighet","säsong / veckodag","kundspecifik","rabatt (%)"]},
-  {id:"line",d:"money",n:"Orderrad",p:"MVP",s:"Det som faktiskt debiteras.",a:["artikel","antal","á-pris","rabatt","moms","programpunkt","status (offererad / bekräftad / levererad)","faktureras (ja/nej)"]},
+  {id:"pricelist",d:"money",n:"Prislista",p:"MVP",s:"Pris per säsong, veckodag eller kund.",a:["namn","giltighet","säsong / veckodag","kund (valfri)","generell rabatt (%)"]},
+  {id:"pricerow",d:"money",n:"Prislisterad",p:"MVP",s:"Pris per artikel i en prislista (PriceListItem).",a:["prislista","artikel","pris"]},
+  {id:"line",d:"money",n:"Orderrad",p:"MVP",s:"Det som faktiskt debiteras. Kopierar namn, pris, moms och taggar.",a:["artikel","antal","á-pris","rabatt","moms","programpunkt","status (offererad / bekräftad / levererad)","faktureras (ja/nej)"]},
   {id:"deposit",d:"money",n:"Förskott",p:"MVP",s:"Delbetalning vid bekräftelse.",a:["belopp","förfallodatum","status","kopplat avtal"]},
   {id:"payment",d:"money",n:"Betalning",p:"MVP",s:"Inbetalning via Swish, kort eller faktura.",a:["metod (Swish / kort / faktura)","PSP-referens","belopp","tidpunkt","återbetalning"],x:"Swish och kort direkt i bokningen. Lega visar ingen onlinebetalning."},
-  {id:"invoice",d:"money",n:"Faktura",p:"MVP",s:"Slutfaktura efter genomförande.",a:["fakturanr","förfallodatum","status","avräknat förskott","exportstatus (Fortnox / Visma)","e-faktura"]},
+  {id:"invoice",d:"money",n:"Faktura",p:"MVP",s:"Slutfaktura efter genomförande (fasen COMPLETED).",a:["fakturanr","förfallodatum","status","avräknat förskott","exportstatus (Fortnox / Visma)","e-faktura"]},
 
   // Drift
-  {id:"user",d:"ops",n:"Användare",p:"MVP",s:"Personal med roll och behörighet.",a:["namn","roll (säljare, koordinator, kök, vaktmästare, ekonomi, admin)","behörigheter","anläggningar"]},
+  {id:"user",d:"ops",n:"Användare",p:"MVP",s:"Medlem i organisationen med organisationens egna roller.",a:["namn","roller (ur organisationens roller)","anläggningar"]},
   {id:"task",d:"ops",n:"Uppgift",p:"Fas 2",s:"Ställ rum, AV-test, städ.",a:["kopplad programpunkt","typ","ansvarig","deadline","status"]},
   {id:"message",d:"ops",n:"Kommunikation & logg",p:"Fas 2",s:"Mejl, anteckningar och ändringshistorik.",a:["kanal","riktning (in / ut)","ämne","kopplad förfrågan / bokning","ändringslogg"]},
-  {id:"screen",d:"ops",n:"Rumsskylt",p:"Fas 3",s:"Skärm vid rummet med dagens program.",a:["rum","enhet","visade programpunkter"]},
-  {id:"access",d:"ops",n:"Passerkod",p:"Fas 3",s:"Digitalt lås kopplat till bokad tid.",a:["programpunkt / rum","kod eller mobilnyckel","giltig från – till"]}
+  {id:"screen",d:"ops",n:"Skylt",p:"Fas 3",s:"Skärm vid en bokningsbar artikel med dagens program.",a:["artikel (BOOKABLE)","enhet","visade programpunkter"]},
+  {id:"access",d:"ops",n:"Passerkod",p:"Fas 3",s:"Digitalt lås kopplat till bokad tid.",a:["programpunkt / artikel","kod eller mobilnyckel","giltig från – till"]}
 ];
 
 // [från, till, kardinalitet, verb (från → till)]
 const R = [
-  ["org","contact","1:N","har"],["org","lead","1:N","skickar"],["contact","lead","1:N","är kontakt för"],["org","pricelist","N:1","använder"],
-  ["lead","quote","1:N","besvaras med"],["lead","hold","1:N","kan skapa"],["quote","contract","1:0..1","signeras via"],["quote","booking","1:0..1","blir vid accept"],["quote","line","1:N","innehåller"],
-  ["booking","function","1:N","består av"],["booking","attendee","1:N","har"],["booking","policy","N:1","följer"],["booking","deposit","1:N","kräver"],["booking","invoice","1:N","faktureras via"],["user","booking","1:N","koordinerar"],["org","booking","1:N","beställer"],
-  ["function","room","N:1","hålls i"],["function","layout","N:1","möbleras som"],["function","line","1:N","debiteras via"],["function","kitchen","1:0..1","genererar"],["function","block","1:1","reserverar"],["hold","block","1:1","reserverar"],
-  ["venue","room","1:N","har"],["room","roomlayout","1:N","har"],["layout","roomlayout","1:N","används i"],["room","block","1:N","har"],
-  ["attendee","allergy","1:N","anger"],["allergy","allergen","N:1","avser"],["attendee","diet","1:N","anger"],["item","allergen","N:M","innehåller"],["menu","item","N:M","består av"],["package","item","N:M","innehåller"],["line","item","N:1","avser"],["item","pricelist","N:M","prissätts i"],
-  ["kitchen","menu","N:1","baseras på"],["kitchen","allergy","N:M","sammanställer"],["kitchen","diet","N:M","sammanställer"],["kitchen","partner","N:0..1","skickas till"],["item","partner","N:0..1","levereras av"],["line","equipment","N:0..1","bokar"],
+  ["etype","fielddef","1:N","har"],["etype","item","1:N","klassar"],["fielddef","vocab","N:0..1","väljer ur"],["setup","itemsetup","1:N","används i"],["item","itemsetup","1:N","har"],
+  ["sheetdef","role","N:1","går till"],["sheetdef","sheet","1:N","ger version"],["user","role","N:1","har"],["booking","bstatus","N:1","har status"],
+  ["org","contact","1:N","har"],["org","lead","1:N","skickar"],["contact","lead","1:N","är kontakt för"],["org","pricelist","N:0..1","använder"],
+  ["lead","quote","1:N","besvaras med"],["lead","hold","1:N","kan skapa"],["quote","booking","1:0..1","blir vid accept"],["quote","contract","1:0..1","signeras via"],["quote","line","1:N","innehåller"],
+  ["series","booking","1:N","genererar"],["series","pricelist","N:0..1","följer"],
+  ["booking","function","1:N","består av"],["booking","req","1:N","har"],["function","req","1:N","justerar"],["req","vocab","N:1","avser värde i"],["booking","policy","N:1","följer"],["booking","deposit","1:N","kräver"],["booking","invoice","1:N","faktureras via"],["booking","sheet","1:N","ger"],["user","booking","1:N","koordinerar och säljer"],["org","booking","1:N","beställer"],
+  ["function","item","N:0..1","hålls i"],["function","setup","N:0..1","ställs upp som"],["function","line","1:N","debiteras via"],["function","block","1:1","reserverar"],["hold","block","1:1","reserverar"],
+  ["venue","item","1:N","har"],["item","block","1:N","har"],
+  ["item","component","1:N","innehåller"],["item","choice","1:N","har"],["choice","component","1:N","grupperar"],["item","vocab","N:M","taggas med värde i"],["line","item","N:1","avser"],["pricelist","pricerow","1:N","innehåller"],["pricerow","item","N:1","avser"],
   ["deposit","payment","1:N","betalas med"],["invoice","payment","1:N","regleras med"],["invoice","line","1:N","fakturerar"],["invoice","deposit","1:N","avräknar"],
-  ["user","task","1:N","ansvarar för"],["function","task","1:N","kräver"],["message","booking","N:0..1","gäller"],["message","lead","N:0..1","gäller"],["screen","room","N:1","sitter vid"],["access","function","N:1","öppnar för"]
+  ["user","task","1:N","ansvarar för"],["function","task","1:N","kräver"],["message","booking","N:0..1","gäller"],["message","lead","N:0..1","gäller"],["screen","item","N:1","sitter vid"],["access","function","N:1","öppnar för"]
 ];
 
-const FLOW = [["Förfrågan","sales"],["Option","sales"],["Offert","sales"],["Signering","sales"],["Bokning","booking"],["Programpunkter","booking"],["Deltagare & kost","booking"],["Köksorder","food"],["Genomförande","space"],["Faktura","money"],["Fortnox / Visma","money"]];
+const FLOW = [["Förfrågan","sales"],["Option","sales"],["Offert","sales"],["Signering (senare)","sales"],["Bokning","booking"],["Programpunkter","booking"],["Behov","booking"],["Blad","food"],["Genomförande","space"],["Faktura","money"],["Fortnox / Visma","money"]];
 
 const byId = Object.fromEntries(E.map(e=>[e.id,e]));
 const dom = Object.fromEntries(DOMAINS.map(d=>[d.id,d]));
@@ -281,7 +288,7 @@ function go(id){
 render();
 
 // Konkurrenter: Y ja, P delvis, N nej, U ej bekräftat
-const COLS = ["Förfrågan / CRM","Offert","E-signering","Rum & möblering","Meny","Allergi per deltagare","Köksorder","Direktbokning","Swish","Fortnox / Visma"];
+const COLS = ["Förfrågan / CRM","Offert","E-signering","Rum & möblering","Meny","Allergi per deltagare","Köksorder / blad","Direktbokning","Swish","Fortnox / Visma"];
 const COMP = [
   {g:"Närmaste konkurrenter i Sverige"},
   {n:"Lega Online",o:"Multinet, SE",m:"PPYYPUYPUY",pr:"Ej publicerat",ref:"Ideon, WTC Malmö, Sensus (logotyper)"},
@@ -303,7 +310,7 @@ const COMP = [
   {n:"Agendo",o:"SE",m:"NNYNNNNYYY",pr:"299–899 kr/mån",ref:"Småföretag, lokaluthyrning"},
   {n:"BokaMera",o:"Visma, SE",m:"NNUNNNNYYY",pr:"0–569 kr/mån",ref:"6 000+ kunder (2022)"},
   {g:"Ditt system (målbild)"},
-  {n:"Ditt system",o:"MVP",m:"YYYYYYYYYY",pr:"Publicerade priser",ref:"—",you:true}
+  {n:"Ditt system",o:"MVP",m:"YYYYYNYYYY",pr:"Publicerade priser",ref:"—",you:true}
 ];
 const MK = {Y:['m-y','✓','Ja'],P:['m-p','~','Delvis'],N:['m-n','–','Nej'],U:['m-u','?','Ej bekräftat']};
 const t=document.getElementById("comp");

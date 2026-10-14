@@ -1,7 +1,7 @@
 # 0011 – Allergi och kostpreferens som separata entiteter
 
 - **Datum:** 2026-10-14
-- **Status:** Accepterat
+- **Status:** Ersatt av 0015
 
 ## Kontext
 `Kostavvikelse` blandade allergier (säkerhetskritiskt, knutet till EU:s 14 allergener) med kostval (vegetarisk, halal m.fl.). Det gav en polymorf entitet med nullbar `allergen` som bara gällde för en typ.
