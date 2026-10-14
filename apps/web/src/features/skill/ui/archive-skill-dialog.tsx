@@ -1,12 +1,10 @@
 "use client";
 
-import type { SkillDto } from "@okazi/core";
 import { useRouter } from "@okazi/i18n/navigation";
-import { toast } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ROUTES } from "@/lib/routes";
-import { useActionSubmit } from "@/lib/use-action-submit";
+import { useToastAction } from "@/lib/use-toast-action";
 import { archiveSkillAction } from "../actions";
 
 export type ArchiveSkillDialogProps = {
@@ -19,14 +17,18 @@ export type ArchiveSkillDialogProps = {
 export function ArchiveSkillDialog({ skill, open, onOpenChange }: ArchiveSkillDialogProps) {
   const t = useTranslations("skills");
   const router = useRouter();
-  const { pending, errorKey, run } = useActionSubmit<SkillDto>({
-    onSuccess: () => {
-      toast.success(t("archived"));
-      onOpenChange(false);
-      router.push(ROUTES.skills);
-      router.refresh();
-    },
-  });
+  const common = useTranslations("common");
+  const { run, pending } = useToastAction();
+  const archive = () =>
+    run({
+      action: () => archiveSkillAction({ id: skill.id }),
+      messages: { pending: common("archiving"), success: t("archived") },
+      onSuccess: () => {
+        onOpenChange(false);
+        router.push(ROUTES.skills);
+        router.refresh();
+      },
+    });
   return (
     <ConfirmDialog
       open={open}
@@ -35,8 +37,7 @@ export function ArchiveSkillDialog({ skill, open, onOpenChange }: ArchiveSkillDi
       description={t("archiveConfirm", { name: skill.name })}
       confirmLabel={t("archive")}
       pending={pending}
-      errorKey={errorKey}
-      onConfirm={() => run({ action: () => archiveSkillAction({ id: skill.id }) })}
+      onConfirm={archive}
     />
   );
 }

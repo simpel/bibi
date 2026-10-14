@@ -25,7 +25,9 @@ export const FormItemContext = createContext<FormItemContextValue | null>(null);
 export function FormController<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->(props: ControllerProps<TFieldValues, TName>) {
+  // Output of the resolver (e.g. a zod schema that transforms raw form strings).
+  TTransformedValues = TFieldValues,
+>(props: ControllerProps<TFieldValues, TName, TTransformedValues>) {
   return (
     <FormFieldContext.Provider value={{ name: props.name }}>
       <Controller {...props} />

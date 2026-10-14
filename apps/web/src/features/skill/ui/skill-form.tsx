@@ -2,11 +2,10 @@
 
 import type { SkillDto } from "@okazi/core";
 import { useRouter } from "@okazi/i18n/navigation";
-import { Button, toast } from "@okazi/ui";
+import { Button, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import { ErrorBanner } from "@/components/states/error-banner";
 import { skillRoute } from "@/lib/routes";
-import { useActionSubmit } from "@/lib/use-action-submit";
+import { useFormAction } from "@/lib/use-form-action";
 import { createSkillAction, updateSkillAction } from "../actions";
 import type { SkillCreateInput } from "../skill-types";
 import { SkillFormFields } from "./skill-form-fields";
@@ -20,31 +19,33 @@ export function SkillForm({ skill }: SkillFormProps) {
   const common = useTranslations("common");
   const router = useRouter();
   const form = useSkillForm({ skill });
-  const { pending, errorKey, run } = useActionSubmit<SkillDto>({
-    onSuccess: (saved) => {
-      toast.success(t(skill ? "updated" : "created"));
-      router.push(skillRoute({ id: saved.id }));
-      router.refresh();
-    },
-  });
   const save = ({ values }: { values: SkillCreateInput }) => {
     if (!skill) return createSkillAction({ input: values });
     const { scope: _scope, ...content } = values;
     return updateSkillAction({ input: { id: skill.id, ...content } });
   };
-  const onSubmit = form.handleSubmit((values) => run({ action: () => save({ values }) }));
+  const { submit, pending } = useFormAction({
+    form,
+    action: save,
+    messages: { pending: common("saving"), success: t(skill ? "updated" : "created") },
+    onSuccess: ({ value }) => {
+      router.push(skillRoute({ id: value.id }));
+      router.refresh();
+    },
+  });
   return (
-    <form onSubmit={onSubmit} noValidate className="grid max-w-2xl gap-4">
-      <ErrorBanner errorKey={errorKey} />
-      <SkillFormFields form={form} editing={skill !== undefined} />
-      <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={() => router.back()}>
-          {common("cancel")}
-        </Button>
-        <Button type="submit" disabled={pending}>
-          {common("save")}
-        </Button>
-      </div>
-    </form>
+    <Form {...form}>
+      <form onSubmit={submit} noValidate className="grid max-w-2xl gap-4">
+        <SkillFormFields form={form} editing={skill !== undefined} />
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="outline" onClick={() => router.back()}>
+            {common("cancel")}
+          </Button>
+          <Button type="submit" disabled={pending}>
+            {common("save")}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }

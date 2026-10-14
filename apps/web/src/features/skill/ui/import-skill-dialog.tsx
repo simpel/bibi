@@ -1,6 +1,5 @@
 "use client";
 
-import type { SkillDto } from "@okazi/core";
 import { useRouter } from "@okazi/i18n/navigation";
 import {
   Button,
@@ -10,27 +9,14 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  toast,
+  Form,
 } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { ErrorBanner } from "@/components/states/error-banner";
 import { skillRoute } from "@/lib/routes";
-import { useActionSubmit } from "@/lib/use-action-submit";
+import { useFormAction } from "@/lib/use-form-action";
 import { importSkillAction } from "../actions";
-import type { SkillScopeChoice } from "../skill-types";
 import { ImportSkillFields } from "./import-skill-fields";
-
-type ImportButtonProps = { pending: boolean; markdown: string; onImport: () => void };
-
-function ImportButton({ pending, markdown, onImport }: ImportButtonProps) {
-  const t = useTranslations("skills");
-  return (
-    <Button disabled={pending || !markdown.trim()} onClick={onImport}>
-      {t("import")}
-    </Button>
-  );
-}
+import { useImportSkillForm } from "./use-import-skill-form";
 
 export type ImportSkillDialogProps = { open: boolean; onOpenChange: (open: boolean) => void };
 
@@ -39,16 +25,16 @@ export function ImportSkillDialog({ open, onOpenChange }: ImportSkillDialogProps
   const t = useTranslations("skills");
   const common = useTranslations("common");
   const router = useRouter();
-  const [markdown, setMarkdown] = useState("");
-  const [scope, setScope] = useState<SkillScopeChoice>("PERSONAL");
-  const { pending, errorKey, run } = useActionSubmit<SkillDto>({
-    onSuccess: (skill) => {
-      toast.success(t("imported"));
+  const form = useImportSkillForm();
+  const { submit, pending } = useFormAction({
+    form,
+    action: ({ values }) => importSkillAction(values),
+    messages: { pending: common("sending"), success: t("imported") },
+    onSuccess: ({ value }) => {
       onOpenChange(false);
-      router.push(skillRoute({ id: skill.id }));
+      router.push(skillRoute({ id: value.id }));
     },
   });
-  const submit = () => run({ action: () => importSkillAction({ markdown, scope }) });
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto">
@@ -56,19 +42,19 @@ export function ImportSkillDialog({ open, onOpenChange }: ImportSkillDialogProps
           <DialogTitle>{t("importTitle")}</DialogTitle>
           <DialogDescription>{t("importDescription")}</DialogDescription>
         </DialogHeader>
-        <ErrorBanner errorKey={errorKey} />
-        <ImportSkillFields
-          markdown={markdown}
-          scope={scope}
-          onMarkdown={setMarkdown}
-          onScope={setScope}
-        />
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            {common("cancel")}
-          </Button>
-          <ImportButton pending={pending} markdown={markdown} onImport={submit} />
-        </DialogFooter>
+        <Form {...form}>
+          <form onSubmit={submit} noValidate className="grid gap-4">
+            <ImportSkillFields form={form} />
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+                {common("cancel")}
+              </Button>
+              <Button type="submit" disabled={pending}>
+                {t("import")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

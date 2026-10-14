@@ -1,6 +1,3 @@
-import type { ActionResult } from "./action-result";
-import { type ErrorKey, errorKeyForCode } from "./error-key";
-
 /** The slice of sonner's `toast` the form flow uses (injectable for tests). */
 export type ToastApi = {
   loading: (message: string) => string | number;
@@ -11,31 +8,31 @@ export type ToastApi = {
   ) => unknown;
 };
 
+/** Outcome of one process; `message` is the already localized error text. */
+export type ToastOutcome<R> = { ok: true; value: R } | { ok: false; message: string };
+
 export type SubmitWithToastInput<R> = {
   toast: ToastApi;
-  run: () => Promise<ActionResult<R>>;
+  run: () => Promise<ToastOutcome<R>>;
   messages: { pending: string; success: string };
-  /** `errors.*` key → text. */
-  translate: (input: { key: ErrorKey }) => string;
 };
 
 /**
  * One process, one toast id: loading → success, or a persistent error with a close button
- * (CLAUDE.md "Formulär"). Returns the result so callers can react (field errors, restore).
+ * (CLAUDE.md "Formulär"). Shared by server actions (`useFormAction`, `useToastAction`) and
+ * Better Auth client calls (`useAuthFormAction`), which differ only in how errors are worded.
  */
 export async function submitWithToast<R>({
   toast,
   run,
   messages,
-  translate,
-}: SubmitWithToastInput<R>): Promise<ActionResult<R>> {
+}: SubmitWithToastInput<R>): Promise<ToastOutcome<R>> {
   const id = toast.loading(messages.pending);
-  const result = await run();
-  if (result.ok) {
+  const outcome = await run();
+  if (outcome.ok) {
     toast.success(messages.success, { id });
-    return result;
+    return outcome;
   }
-  const text = translate({ key: errorKeyForCode({ code: result.error.code }) });
-  toast.error(text, { id, duration: Number.POSITIVE_INFINITY, closeButton: true });
-  return result;
+  toast.error(outcome.message, { id, duration: Number.POSITIVE_INFINITY, closeButton: true });
+  return outcome;
 }

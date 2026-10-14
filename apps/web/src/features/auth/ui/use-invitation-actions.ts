@@ -1,24 +1,23 @@
 "use client";
 
 import { useRouter } from "@okazi/i18n/navigation";
-import { toast } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
 import { ROUTES } from "@/lib/routes";
-import { useAuthSubmit } from "./use-auth-submit";
+import { useAuthFormAction } from "./use-auth-form-action";
 
 export type UseInvitationActionsInput = { invitationId: string };
 
-/** Accept / decline calls for one invitation, with toasts and navigation on success. */
+/** Accept / decline calls for one invitation, one toast each, navigation on success. */
 export function useInvitationActions({ invitationId }: UseInvitationActionsInput) {
   const t = useTranslations("auth");
   const router = useRouter();
-  const { pending, errorKey, run } = useAuthSubmit();
+  const { pending, run } = useAuthFormAction();
   const accept = () =>
     run({
       call: () => authClient.organization.acceptInvitation({ invitationId }),
+      messages: { pending: t("acceptingInvitation"), success: t("invitationAccepted") },
       onSuccess: () => {
-        toast.success(t("invitationAccepted"));
         router.replace(ROUTES.venues);
         router.refresh();
       },
@@ -26,10 +25,10 @@ export function useInvitationActions({ invitationId }: UseInvitationActionsInput
   const decline = () =>
     run({
       call: () => authClient.organization.rejectInvitation({ invitationId }),
+      messages: { pending: t("decliningInvitation"), success: t("invitationDeclined") },
       onSuccess: () => {
-        toast.success(t("invitationDeclined"));
         router.replace(ROUTES.venues);
       },
     });
-  return { pending, errorKey, accept, decline };
+  return { pending, accept, decline };
 }

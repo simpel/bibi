@@ -34,7 +34,6 @@ export function ModelSelectForm({ row: { setting, models } }: ModelSelectFormPro
         description={t("reindexDescription")}
         confirmLabel={t("reindexConfirm")}
         pending={pending}
-        errorKey={null}
         onConfirm={confirm}
       />
     </Form>

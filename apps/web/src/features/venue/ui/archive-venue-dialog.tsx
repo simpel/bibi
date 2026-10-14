@@ -2,11 +2,10 @@
 
 import type { VenueDto } from "@okazi/core";
 import { useRouter } from "@okazi/i18n/navigation";
-import { toast } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ROUTES } from "@/lib/routes";
-import { useActionSubmit } from "@/lib/use-action-submit";
+import { useToastAction } from "@/lib/use-toast-action";
 import { archiveVenueAction } from "../actions";
 
 export type ArchiveVenueDialogProps = {
@@ -17,6 +16,7 @@ export type ArchiveVenueDialogProps = {
   redirectToList?: boolean;
 };
 
+/** Reference for actions without fields: confirm → server action → one toast (CLAUDE.md). */
 export function ArchiveVenueDialog({
   venue,
   open,
@@ -24,15 +24,19 @@ export function ArchiveVenueDialog({
   redirectToList = false,
 }: ArchiveVenueDialogProps) {
   const t = useTranslations("venue");
+  const common = useTranslations("common");
   const router = useRouter();
-  const { pending, errorKey, run } = useActionSubmit<VenueDto>({
-    onSuccess: () => {
-      toast.success(t("archived"));
-      onOpenChange(false);
-      if (redirectToList) router.push(ROUTES.venues);
-      else router.refresh();
-    },
-  });
+  const { run, pending } = useToastAction();
+  const archive = () =>
+    run({
+      action: () => archiveVenueAction({ id: venue.id }),
+      messages: { pending: common("archiving"), success: t("archived") },
+      onSuccess: () => {
+        onOpenChange(false);
+        if (redirectToList) router.push(ROUTES.venues);
+        else router.refresh();
+      },
+    });
   return (
     <ConfirmDialog
       open={open}
@@ -41,8 +45,7 @@ export function ArchiveVenueDialog({
       description={t("archiveConfirm", { name: venue.name })}
       confirmLabel={t("archive")}
       pending={pending}
-      errorKey={errorKey}
-      onConfirm={() => run({ action: () => archiveVenueAction({ id: venue.id }) })}
+      onConfirm={archive}
     />
   );
 }

@@ -2,10 +2,9 @@
 
 import type { RoomDto } from "@okazi/core";
 import { useRouter } from "@okazi/i18n/navigation";
-import { toast } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { useActionSubmit } from "@/lib/use-action-submit";
+import { useToastAction } from "@/lib/use-toast-action";
 import { archiveRoomAction } from "../actions";
 
 export type ArchiveRoomDialogProps = {
@@ -17,13 +16,17 @@ export type ArchiveRoomDialogProps = {
 export function ArchiveRoomDialog({ room, open, onOpenChange }: ArchiveRoomDialogProps) {
   const t = useTranslations("room");
   const router = useRouter();
-  const { pending, errorKey, run } = useActionSubmit<RoomDto>({
-    onSuccess: () => {
-      toast.success(t("archived"));
-      onOpenChange(false);
-      router.refresh();
-    },
-  });
+  const common = useTranslations("common");
+  const { run, pending } = useToastAction();
+  const archive = () =>
+    run({
+      action: () => archiveRoomAction({ id: room.id }),
+      messages: { pending: common("archiving"), success: t("archived") },
+      onSuccess: () => {
+        onOpenChange(false);
+        router.refresh();
+      },
+    });
   return (
     <ConfirmDialog
       open={open}
@@ -32,8 +35,7 @@ export function ArchiveRoomDialog({ room, open, onOpenChange }: ArchiveRoomDialo
       description={t("archiveConfirm", { name: room.name })}
       confirmLabel={t("archive")}
       pending={pending}
-      errorKey={errorKey}
-      onConfirm={() => run({ action: () => archiveRoomAction({ id: room.id }) })}
+      onConfirm={archive}
     />
   );
 }
