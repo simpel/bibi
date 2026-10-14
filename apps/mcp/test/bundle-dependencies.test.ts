@@ -20,8 +20,10 @@ function bundledNpmDependencies({ start }: { start: Manifest }): Set<string> {
     const name = queue.shift() as string;
     if (seen.has(name)) continue;
     seen.add(name);
-    const deps = Object.keys(readManifest({ path: `${workspaceDir({ name })}/package.json` }).dependencies ?? {});
-    for (const dep of deps) (dep.startsWith("@okazi/") ? queue.push(dep) : npm.add(dep));
+    const deps = Object.keys(
+      readManifest({ path: `${workspaceDir({ name })}/package.json` }).dependencies ?? {},
+    );
+    for (const dep of deps) dep.startsWith("@okazi/") ? queue.push(dep) : npm.add(dep);
   }
   return npm;
 }

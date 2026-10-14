@@ -1,4 +1,11 @@
-import { RoomSchema, SearchHitSchema, SkillSchema, VenueSchema } from "@okazi/core/schemas";
+import {
+  MemberSchema,
+  RoleSchema,
+  RoomSchema,
+  SearchHitSchema,
+  SkillSchema,
+  VenueSchema,
+} from "@okazi/core/schemas";
 import { z } from "zod";
 
 /**
@@ -13,11 +20,25 @@ export const VenueWireSchema = VenueSchema.extend(isoDates);
 
 export const RoomWireSchema = RoomSchema.extend(isoDates);
 
+export const RoleWireSchema = RoleSchema.extend({
+  createdAt: z.string(),
+  updatedAt: z.string().nullable(),
+});
+export const MemberWireSchema = MemberSchema.extend({ createdAt: z.string() });
+
 const page = <T extends z.ZodType>({ item }: { item: T }) =>
   z.object({ items: z.array(item), nextCursor: z.string().nullable() });
 
 export const VenueListWireSchema = page({ item: VenueWireSchema });
 export const RoomListWireSchema = page({ item: RoomWireSchema });
+
+export const RoleListWireSchema = page({ item: RoleWireSchema });
+export const MemberListWireSchema = page({ item: MemberWireSchema });
+/** `role_importTemplate` output: the roles it created. */
+export const RoleImportWireSchema = z.object({
+  created: z.array(RoleWireSchema),
+  skipped: z.array(z.string()),
+});
 
 /** Skill row in tables (skill_list, skill_search): no instructions. */
 export const SkillRowSchema = SkillSchema.pick({
@@ -59,6 +80,8 @@ export const McpErrorWireSchema = z.object({ code: z.string(), message: z.string
 
 export type VenueWire = z.infer<typeof VenueWireSchema>;
 export type RoomWire = z.infer<typeof RoomWireSchema>;
+export type RoleWire = z.infer<typeof RoleWireSchema>;
+export type MemberWire = z.infer<typeof MemberWireSchema>;
 export type SkillRow = z.infer<typeof SkillRowSchema>;
 export type SkillCardWire = z.infer<typeof SkillCardWireSchema>;
 export type SearchHitWire = z.infer<typeof SearchHitWireSchema>;

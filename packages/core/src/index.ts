@@ -17,8 +17,17 @@ export { canReadAllConversations } from "./features/conversation/access";
 export { conversationEmbeddable } from "./features/conversation/embeddable";
 export * from "./features/conversation/operations";
 export * from "./features/conversation/schema";
+export { splitMemberRoles } from "./features/member/member-roles";
+export * from "./features/member/operations";
+export * from "./features/member/schema";
 export * from "./features/message/operations";
 export * from "./features/message/schema";
+export * from "./features/role/lifecycle-operations";
+export * from "./features/role/operations";
+export * from "./features/role/read-operations";
+export * from "./features/role/schema";
+export { parseRolePermissions } from "./features/role/to-role-dto";
+export * from "./features/role/write-operations";
 export { roomEmbeddable } from "./features/room/embeddable";
 export * from "./features/room/operations";
 export * from "./features/room/schema";
@@ -44,7 +53,7 @@ export {
   type ExecuteInput,
   execute,
 } from "./operations/execute";
-export { hasPermission, type Permission, type PermissionAction } from "./operations/permission";
+export { hasPermission, type Permission } from "./operations/permission";
 export { getOperation, listOperations, registerOperations } from "./operations/registry";
 export { requiresApproval } from "./operations/requires-approval";
 export type {
@@ -58,6 +67,22 @@ export type {
   OperationKind,
   RecordedChange,
 } from "./operations/types";
+export {
+  grantAll,
+  intersectPermissions,
+  isPermissionSubset,
+  normalizePermissions,
+  type PermissionSet,
+  PermissionSetSchema,
+  unionPermissions,
+} from "./permissions/permission-set";
+export {
+  OWNER_ROLE,
+  PERMISSION_ACTIONS,
+  type PermissionAction,
+  RESOURCES,
+  type Resource,
+} from "./permissions/resources";
 export {
   AI_FEATURE_IDS,
   AI_FEATURES,
@@ -100,3 +125,9 @@ export {
 } from "./search/search-schema";
 export { parseSkillMarkdown } from "./skills/markdown/parse-skill-markdown";
 export { renderSkillMarkdown } from "./skills/markdown/render-skill-markdown";
+export type { RoleTemplate } from "./templates/roles/role-template";
+export {
+  getRoleTemplate,
+  ROLE_TEMPLATE_KEYS,
+  type RoleTemplateKey,
+} from "./templates/roles/role-templates";

@@ -1,4 +1,4 @@
-import { createExecuteContext } from "@okazi/core";
+import { createExecuteContext, grantAll } from "@okazi/core";
 import { type CapturedLogs, captureLogs } from "@okazi/logger";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { handler, newOrgId } from "./helpers";
@@ -37,7 +37,12 @@ describe("REST request logging (ADR 0014)", () => {
     const [operation] = logs.events({ event: "operation.completed" });
     expect(operation).toMatchObject({ requestId: "client-req-0001", operation: "venue.create" });
     const actor = { type: "user" as const, userId: `user_${org}` };
-    const { db } = createExecuteContext({ organizationId: org, roles: ["owner"], actor });
+    const { db } = createExecuteContext({
+      organizationId: org,
+      roles: ["owner"],
+      permissions: grantAll({ upTo: "admin" }),
+      actor,
+    });
     const [row] = await db.auditLog.findMany();
     expect(row).toMatchObject({ requestId: "client-req-0001", surface: "rest" });
   });

@@ -1,11 +1,11 @@
 import { toast } from "@okazi/ui";
 import type { ActionResult } from "./action-result";
 import { type ErrorKey, errorKeyForCode } from "./error-key";
-import { submitWithToast } from "./submit-with-toast";
+import { submitWithToast, type ToastMessages } from "./submit-with-toast";
 
 export type ActionWithToastInput<R> = {
   action: () => Promise<ActionResult<R>>;
-  messages: { pending: string; success: string };
+  messages: ToastMessages<R>;
   /** `errors.*` key → localized text. */
   translate: (input: { key: ErrorKey }) => string;
 };

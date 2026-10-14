@@ -21,18 +21,7 @@ export {
   setMailSender,
 } from "./mail";
 export { authHandler, handleAuthRequest } from "./next";
-export {
-  ACTIONS,
-  API_KEY_ROLES,
-  type ApiKeyRole,
-  accessControl,
-  ORG_ROLES,
-  type OrgRole,
-  orgRoles,
-  RESOURCES,
-  type Resource,
-  statementsForRole,
-} from "./permissions";
+export { accessControl, orgRoles, ownerPermissions } from "./permissions";
 export { type IsPlatformAdminInput, isPlatformAdmin } from "./platform/is-platform-admin";
 export {
   type ResolvePlatformContextInput,

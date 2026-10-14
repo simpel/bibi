@@ -42,6 +42,14 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "skill.share", route: "/skills/[id]" },
   { operation: "skill.export", route: "/skills/[id]" },
   { operation: "skill.import", route: "/skills" },
+  { operation: "role.list", route: "/settings/roles" },
+  { operation: "role.get", route: "/settings/roles" },
+  { operation: "role.create", route: "/settings/roles" },
+  { operation: "role.update", route: "/settings/roles" },
+  { operation: "role.archive", route: "/settings/roles" },
+  { operation: "role.importTemplate", route: "/settings/roles" },
+  { operation: "member.list", route: "/settings/members" },
+  { operation: "member.assignRole", route: "/settings/members" },
   // The chat route (`/api/chat`) creates conversations and appends messages as the user; the
   // panel lists, opens, renames and archives them.
   { operation: "conversation.list", ...PANEL },

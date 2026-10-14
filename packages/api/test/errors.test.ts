@@ -39,7 +39,7 @@ describe("error mapping", () => {
       method: "POST",
       path: "/venues",
       org,
-      roles: "nobody",
+      access: "none",
       body: { name: "X" },
     });
     expect(forbidden.status).toBe(403);

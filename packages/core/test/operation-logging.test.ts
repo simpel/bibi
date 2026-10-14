@@ -40,7 +40,7 @@ describe("operation logging (ADR 0014)", () => {
 
   it("logs validation, permission and not-found as rejected", async () => {
     const context = testContext();
-    const member = testContext({ roles: [] });
+    const member = testContext({ permissions: {} });
     await execute({ operation: createVenue, input: { name: "" }, context });
     await execute({ operation: createVenue, input: { name: "X" }, context: member });
     await execute({ operation: updateVenue, input: { id: "missing", name: "X" }, context });

@@ -6,6 +6,8 @@ export const ROUTES = {
   venues: "/venues",
   skills: "/skills",
   skillNew: "/skills/new",
+  settingsRoles: "/settings/roles",
+  settingsMembers: "/settings/members",
   admin: "/admin",
   adminLogs: "/admin/logs",
   adminAiModels: "/admin/ai-models",

@@ -1,17 +1,25 @@
+import { type PermissionSet, splitMemberRoles } from "@okazi/core";
 import { getDb } from "@okazi/db";
-import type { OrgRole } from "../permissions";
-import { parseRoles } from "../roles";
+import { resolveRolePermissions } from "./role-permissions";
 
-export type LoadMemberRolesInput = { userId: string; organizationId: string };
+export type Membership = { roles: string[]; permissions: PermissionSet };
 
-/** The user's roles in the organization (empty = not a member). Read live on every request. */
-export async function loadMemberRoles({
+export type LoadMembershipInput = { userId: string; organizationId: string };
+
+/**
+ * The user's roles in the organization and what they resolve to (ADR 0020), or `null` when the
+ * user is not a member. Read live on every request, so role changes apply immediately.
+ */
+export async function loadMembership({
   userId,
   organizationId,
-}: LoadMemberRolesInput): Promise<OrgRole[]> {
+}: LoadMembershipInput): Promise<Membership | null> {
   const member = await getDb().member.findFirst({
     where: { userId, organizationId },
     select: { role: true },
   });
-  return member ? parseRoles({ role: member.role }) : [];
+  if (!member) return null;
+  const roles = splitMemberRoles({ role: member.role });
+  const permissions = await resolveRolePermissions({ organizationId, roles });
+  return { roles, permissions };
 }

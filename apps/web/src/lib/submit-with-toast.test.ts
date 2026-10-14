@@ -42,4 +42,14 @@ describe("submitWithToast (CLAUDE.md Formulär)", () => {
       options: { id: "toast-1", duration: Number.POSITIVE_INFINITY, closeButton: true },
     });
   });
+
+  it("builds the success text from the result when given a function", async () => {
+    const { api, calls } = fakeToast();
+    await submitWithToast({
+      toast: api,
+      run: async () => ({ ok: true, value: 3 }),
+      messages: { pending: "Importerar…", success: ({ value }) => `${value} skapade` },
+    });
+    expect(calls.at(-1)).toMatchObject({ kind: "success", message: "3 skapade" });
+  });
 });

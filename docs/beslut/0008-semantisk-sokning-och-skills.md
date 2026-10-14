@@ -41,3 +41,6 @@ Användare och assistenten behöver hitta entiteter (anläggningar, rum och sena
 - Verktygen heter `skill_list` och `skill_get` i MCP (operationsnamn med `_`). `list_skill` och `load_skill` i beslutet ovan blir alias eller wrappers i `packages/ai`.
 - Sök filtrerar träffar per användare: personliga skills och konversationer syns bara för ägaren. SYSTEM-skills indexeras en gång globalt och ingår i alla organisationers sök.
 - Konversationer (ADR 0007) är privata för ägaren. Org-admin får läsa, men inte skriva, för tillsyn.
+
+## Tillägg 2026-10-14
+- `Room` ersätts av `Item` med beteendet `BOOKABLE` (ADR 0021). `Venue` och `Item` är först ut som sökbara entiteter.

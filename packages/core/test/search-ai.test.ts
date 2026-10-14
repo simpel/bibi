@@ -28,7 +28,7 @@ async function find({ context, query }: FindInput): Promise<string[]> {
 
 describe("search over skills and conversations", () => {
   it("finds org skills for everyone, personal skills and conversations only for their owner", async () => {
-    const admin = testContext({ roles: ["admin"] });
+    const admin = testContext({ access: "admin" });
     const member = peer({ of: admin });
     const base = { description: "Kalkylerar catering för bröllop", instructions: "Steg" };
     const orgSkill = unwrap({

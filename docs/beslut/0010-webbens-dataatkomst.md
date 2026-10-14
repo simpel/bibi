@@ -22,3 +22,6 @@ ADR 0003 säger "läsningar via GraphQL". Webbappen (`apps/web`) är Next.js med
 - Sökvägsaliaset `@core-schema/*` är borttaget. `@okazi/core/schemas` (`packages/core/src/schemas.ts`) är ett klientsäkert underpaket som bara återexporterar feature-ernas `schema.ts` (Zod, inga Prisma- eller fs-importer). `@okazi/ai/ui` härleder sina wire-scheman ur samma fil, så core-fält följer med utan handkopierade speglingar. Att ingen Prisma hamnar i klientbundeln kontrolleras med `next build` och en sökning i `.next/static`.
 - Assistentens väg är en annan än webbens: `/api/chat` och `/api/assistant/approval` (`@okazi/ai`) ansluter som användaren till `apps/mcp` med förstapartstoken (`getFirstPartyAccessToken`, klient `assistant`) och kör inte `runOperation`. Webben använder fortfarande `runOperation` för konversationshistoriken (lista, öppna, byt namn, arkivera) och för Färdigheter. Efter ett godkänt förslag anropar kortet `router.refresh()` så att serverkomponenterna läser om data.
 - Att `UI_EXEMPT` är tom betyder att alla operationer har en webbyta. Operationer vars UI sitter i skalet (assistentpanelen) listas med `route: "*"` och den komponentfil som ger UI:t.
+
+## Tillägg 2026-10-14 – konfigurerbar domän
+- `Room` och `room.*` ersätts av `Item` och `item.*` (ADR 0021). Exemplet ovan blir `item.list` filtrerat på anläggning.

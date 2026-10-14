@@ -18,7 +18,7 @@ const text = ({ value }: { value: string }) => [{ type: "text", text: value }];
 
 describe("message operations", () => {
   it("appends messages in order with AI SDK parts and paginates them", async () => {
-    const context = testContext({ roles: ["member"] });
+    const context = testContext({ access: "write" });
     const conversation = await start({ context });
     const toolPart = {
       type: "tool-venue_list",
@@ -64,12 +64,12 @@ describe("message operations", () => {
   });
 
   it("lets the assistant append only ASSISTANT/TOOL messages to its own conversation", async () => {
-    const user = testContext({ roles: ["member"] });
+    const user = testContext({ access: "write" });
     const conversation = await start({ context: user });
     const otherConversation = await start({ context: user });
     const ai = testContext({
       organizationId: user.organizationId,
-      roles: ["member"],
+      access: "write",
       actor: { type: "ai", userId: user.actor.userId, conversationId: conversation.id },
     });
     type AppendInput = { role: string; conversationId?: string };
@@ -94,7 +94,7 @@ describe("message operations", () => {
   });
 
   it("hides messages from other users and organizations; admins may read", async () => {
-    const owner = testContext({ roles: ["member"] });
+    const owner = testContext({ access: "write" });
     const conversation = await start({ context: owner });
     const input = {
       conversationId: conversation.id,
@@ -107,12 +107,12 @@ describe("message operations", () => {
     expect(errorCode({ result: await list({ context: peer({ of: owner }) }) })).toBe("NOT_FOUND");
     expect(errorCode({ result: await list({ context: testContext() }) })).toBe("NOT_FOUND");
     expect(
-      errorCode({ result: await list({ context: peer({ of: owner, roles: ["admin"] }) }) }),
+      errorCode({ result: await list({ context: peer({ of: owner, access: "admin" }) }) }),
     ).toBeNull();
     const asAdmin = await execute({
       operation: appendMessage,
       input,
-      context: peer({ of: owner, roles: ["admin"] }),
+      context: peer({ of: owner, access: "admin" }),
     });
     expect(errorCode({ result: asAdmin })).toBe("NOT_FOUND");
   });

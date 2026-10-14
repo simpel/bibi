@@ -2,11 +2,11 @@ import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import type { ActionResult } from "./action-result";
 import { actionWithToast } from "./action-with-toast";
-import type { FormActionMessages } from "./use-form-action";
+import type { ToastMessages } from "./submit-with-toast";
 
 export type RunToastActionInput<R> = {
   action: () => Promise<ActionResult<R>>;
-  messages: FormActionMessages;
+  messages: ToastMessages<R>;
   onSuccess?: (input: { value: R }) => void;
 };
 

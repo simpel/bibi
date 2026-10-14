@@ -19,11 +19,11 @@ export function visibleSkillWhere({ userId }: Viewer): Prisma.SkillWhereInput {
   };
 }
 
-type ContextInput = { context: Pick<OperationContext, "actor" | "roles"> };
+type ContextInput = { context: Pick<OperationContext, "actor" | "permissions"> };
 
 export function isSkillAdmin({ context }: ContextInput): boolean {
   if (context.actor.type === "system") return true;
-  return hasPermission({ roles: context.roles, permission: "skill:admin" });
+  return hasPermission({ permissions: context.permissions, permission: "skill:admin" });
 }
 
 export type FindVisibleSkillInput = { context: Pick<OperationContext, "actor" | "db">; id: string };

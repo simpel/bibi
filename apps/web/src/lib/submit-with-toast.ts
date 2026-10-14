@@ -11,10 +11,16 @@ export type ToastApi = {
 /** Outcome of one process; `message` is the already localized error text. */
 export type ToastOutcome<R> = { ok: true; value: R } | { ok: false; message: string };
 
+/** `success` can be built from the result, e.g. "3 roles created". */
+export type ToastMessages<R> = {
+  pending: string;
+  success: string | ((input: { value: R }) => string);
+};
+
 export type SubmitWithToastInput<R> = {
   toast: ToastApi;
   run: () => Promise<ToastOutcome<R>>;
-  messages: { pending: string; success: string };
+  messages: ToastMessages<R>;
 };
 
 /**
@@ -30,7 +36,9 @@ export async function submitWithToast<R>({
   const id = toast.loading(messages.pending);
   const outcome = await run();
   if (outcome.ok) {
-    toast.success(messages.success, { id });
+    const { success } = messages;
+    const text = typeof success === "string" ? success : success({ value: outcome.value });
+    toast.success(text, { id });
     return outcome;
   }
   toast.error(outcome.message, { id, duration: Number.POSITIVE_INFINITY, closeButton: true });
