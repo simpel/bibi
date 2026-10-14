@@ -57,4 +57,52 @@ describe("cross-organization isolation", () => {
     const archive = await call({ client: b, name: "role_archive", args: { id: role.data.id } });
     expect(archive.data.code).toBe("NOT_FOUND");
   });
+
+  it("hides one organization's configuration and items from another", async () => {
+    const a = await connect({ context: testContext() });
+    const b = await connect({ context: testContext() });
+    const type = await call({
+      client: a,
+      name: "entityType_create",
+      args: { base: "ITEM", name: "Hemligt rum", behaviours: ["BOOKABLE"] },
+    });
+    const list = await call({
+      client: a,
+      name: "vocabulary_create",
+      args: { name: "Hemlig lista", values: ["X"] },
+    });
+    const item = await call({
+      client: a,
+      name: "item_create",
+      args: { entityTypeId: type.data.id, name: "Hemlig" },
+    });
+    for (const name of ["entityType_list", "vocabulary_list", "item_list", "setup_list"]) {
+      expect((await call({ client: b, name })).data.items, name).toEqual([]);
+    }
+    for (const [name, id] of [
+      ["entityType_get", type.data.id],
+      ["vocabulary_get", list.data.id],
+      ["item_get", item.data.id],
+    ]) {
+      expect((await call({ client: b, name, args: { id } })).data.code, name).toBe("NOT_FOUND");
+    }
+    const borrowed = await call({
+      client: b,
+      name: "item_create",
+      args: { entityTypeId: type.data.id, name: "Lånad typ" },
+    });
+    expect(borrowed.data.code).toBe("VALIDATION");
+    const value = await call({
+      client: b,
+      name: "vocabulary_archiveValue",
+      args: { id: list.data.values[0].id },
+    });
+    expect(value.data.code).toBe("NOT_FOUND");
+    const graph = await call({
+      client: b,
+      name: "graphql_query",
+      args: { query: "query { items { items { id } } entityTypes { items { id } } }" },
+    });
+    expect(graph.data.data).toEqual({ items: { items: [] }, entityTypes: { items: [] } });
+  });
 });

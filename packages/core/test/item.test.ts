@@ -104,4 +104,16 @@ describe("items (ADR 0021)", () => {
     });
     expect(errorCode({ result: other })).toBe("NOT_FOUND");
   });
+
+  it("bounds the number of field values at the boundary", async () => {
+    const context = testContext();
+    const room = await createRoomType({ context });
+    const fields = Object.fromEntries(Array.from({ length: 201 }, (_, i) => [`f${i}`, 1]));
+    const result = await execute({
+      operation: createItem,
+      input: { entityTypeId: room.id, name: "Stor", fields },
+      context,
+    });
+    expect(errorCode({ result })).toBe("VALIDATION");
+  });
 });

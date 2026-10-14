@@ -34,7 +34,7 @@ describe("org-specific item tool descriptions", () => {
     const forA = await descriptionOf({ client: a, name: "item_create" });
     const forB = await descriptionOf({ client: b, name: "item_create" });
     expect(forA).toContain("Konferensrum");
-    expect(forA).toContain("vaning (Våning, NUMBER");
+    expect(forA).toContain('vaning ("Våning", NUMBER');
     expect(forA).not.toContain("Båt");
     expect(forB).toContain("Båt");
     expect(forB).not.toContain("Konferensrum");
