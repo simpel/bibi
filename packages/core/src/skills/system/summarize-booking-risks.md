@@ -23,8 +23,9 @@ Goal: a short, prioritised risk list that a coordinator can act on before confir
 2. Missing data: rooms without `maxCapacity` or `areaSqm` cannot be verified – flag them.
 3. Comfort: full-day events in rooms without daylight are a warning.
 4. Access: upper floors without information about lifts are a question for the venue.
-5. Food & beverage: special diets must be listed per participant, mapped to the EU's 14
-   allergens, and confirmed with the kitchen or the external restaurant partner.
+5. Food & beverage: allergies must be listed per participant, mapped to the EU's 14
+   allergens (with severity), and confirmed with the kitchen or the external restaurant partner.
+   Diet preferences (vegetarian, vegan, halal, kosher) are listed separately and are not safety flags.
 6. Contacts: a venue without `contactEmail` or `contactPhone` makes day-of issues harder.
 
 ## Output

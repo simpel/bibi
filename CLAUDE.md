@@ -7,7 +7,7 @@
 
 ## Differentierare (styr prioritering)
 - Direktbokning med betalning (Swish/kort) för mindre möten, inte bara förfrågan.
-- Deltagarlista med kostavvikelser per person kopplade till EU:s 14 allergener, sammanställt i köksorder.
+- Deltagarlista med allergier per person kopplade till EU:s 14 allergener (plus separata kostpreferenser), sammanställt i köksorder.
 - Versionerad köksorder till eget kök eller extern partner.
 - Optioner med kö (1:a/2:a option) och automatiskt förfall.
 - Svenska integrationer: Fortnox, Visma, Swish, BankID, Peppol/e-faktura.
