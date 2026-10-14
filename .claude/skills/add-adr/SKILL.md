@@ -5,7 +5,7 @@ description: Skriv ett nytt beslut (ADR) i `docs/beslut/NNNN-titel.md` på svens
 
 # Ny ADR
 
-1. Nästa nummer: högsta `NNNN` i `docs/beslut/` + 1. Filnamn `NNNN-kort-titel.md` (gemener, bindestreck, utan å/ä/ö).
+1. Nästa nummer: högsta `NNNN` i `docs/beslut/` + 1. Filnamn `NNNN-short-title.md` på engelska (gemener, bindestreck). Innehållet är på svenska.
 2. Struktur (se `0010-webbens-dataatkomst.md`):
    ```
    # NNNN – Titel
