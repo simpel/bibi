@@ -1,5 +1,3 @@
-"use client";
-
 import type { RoleDto } from "@okazi/core";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
 import { useTranslations } from "next-intl";

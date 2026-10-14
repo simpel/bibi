@@ -547,7 +547,8 @@
     "importTemplate": "Import Conference venue template",
     "imported": "{created, plural, one {# role} other {# roles}} created, {skipped} already existed.",
     "fields": {
-      "name": "Name"
+      "name": "Name",
+      "permissions": "Permissions"
     },
     "columns": {
       "name": "Name",
@@ -569,7 +570,10 @@
       "skill": "Skills",
       "role": "Roles",
       "member": "Members"
-    }
+    },
+    "saving": "Saving role…",
+    "archiving": "Archiving role…",
+    "importing": "Importing template…"
   },
   "member": {
     "singular": "Member",
@@ -584,6 +588,7 @@
       "name": "Name",
       "email": "Email",
       "roles": "Roles"
-    }
+    },
+    "saving": "Saving roles…"
   }
 }

@@ -547,7 +547,8 @@
     "importTemplate": "Importera mall Konferensgård",
     "imported": "{created, plural, one {# roll} other {# roller}} skapades, {skipped} fanns redan.",
     "fields": {
-      "name": "Namn"
+      "name": "Namn",
+      "permissions": "Behörigheter"
     },
     "columns": {
       "name": "Namn",
@@ -569,7 +570,10 @@
       "skill": "Färdigheter",
       "role": "Roller",
       "member": "Medlemmar"
-    }
+    },
+    "saving": "Sparar roll…",
+    "archiving": "Arkiverar roll…",
+    "importing": "Importerar mall…"
   },
   "member": {
     "singular": "Medlem",
@@ -584,6 +588,7 @@
       "name": "Namn",
       "email": "E-post",
       "roles": "Roller"
-    }
+    },
+    "saving": "Sparar roller…"
   }
 }

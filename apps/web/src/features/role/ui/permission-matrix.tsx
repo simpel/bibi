@@ -1,5 +1,3 @@
-"use client";
-
 import { Checkbox, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import {
