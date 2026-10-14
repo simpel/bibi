@@ -22,7 +22,7 @@
 - **Coolify-säkerhet (se Kontext):** admin-UI:t exponeras inte publikt. Det nås via VPN (Tailscale/WireGuard) eller SSH-tunnel. Coolify hålls uppdaterad till senaste 4.x-version, få administratörer, och Coolifys egen instansdata ingår i backupen.
 - **Migrationer:** `prisma migrate deploy` körs som ett engångssteg före att nya containrar tar trafik. Migrationer ska vara bakåtkompatibla (expand/contract).
 - **Domäner:** `app.` för webben och `mcp.` för MCP-servern (OAuth kräver stabil publik HTTPS-URL).
-- **Hemligheter:** GitHub environment secrets och Kamal secrets. Aldrig i repot. Alla läses via `@okazi/config`.
+- **Hemligheter:** GitHub environment secrets och Coolifys hemlighetshantering. Aldrig i repot. Alla läses via `@okazi/config`.
 - **Hårdning:** Hetzner Cloud Firewall (80, 443 och SSH), endast SSH-nycklar, unattended-upgrades.
 - **Drift:** hälsoendpoints för web och mcp som deploy-grind, Docker-loggrotation, uptime-övervakning och felspårning.
 
