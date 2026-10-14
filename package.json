@@ -18,8 +18,8 @@
     "gen": "node tools/gen.mjs"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.4",
-    "turbo": "2.5.8",
-    "typescript": "5.9.2"
+    "@biomejs/biome": "2.5.15",
+    "turbo": "2.11.8",
+    "typescript": "7.0.2"
   }
 }

@@ -33,3 +33,4 @@ WEB_OAUTH_CLIENT_ID=
 OKAZI_API_KEY=
 # E2E only: scripted mock chat model. Ignored when NODE_ENV=production.
 E2E_MOCK_MODEL=false
+PW_CHROMIUM_PATH=/Users/joelsanden/Library/Caches/ms-playwright/chromium-1223/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing

@@ -2,7 +2,8 @@
   "extends": "@okazi/config/tsconfig.base.json",
   "compilerOptions": {
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "types": []
   },
   "include": ["src", "messages"]
 }

@@ -29,19 +29,19 @@
     "@pothos/core": "4.15.1",
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
-    "ai": "7.0.138",
+    "ai": "7.0.140",
     "better-auth": "1.7.7",
-    "graphql": "16.14.2",
+    "graphql": "17.0.2",
     "graphql-yoga": "5.24.5",
-    "nodemailer": "10.0.13",
-    "zod": "4.1.8"
+    "nodemailer": "10.1.1",
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@okazi/api": "workspace:*",
-    "@types/node": "22.20.5",
+    "@types/node": "26.6.5",
     "tsup": "8.5.1",
     "tsx": "4.23.15",
-    "typescript": "5.9.2",
-    "vitest": "4.1.11"
+    "typescript": "7.0.2",
+    "vitest": "5.0.4"
   }
 }

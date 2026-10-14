@@ -13,7 +13,7 @@
     "provision:oauth": "tsx scripts/provision-web-oauth-client.ts"
   },
   "dependencies": {
-    "@ai-sdk/react": "4.0.141",
+    "@ai-sdk/react": "4.0.143",
     "@hookform/resolvers": "5.9.1",
     "@okazi/ai": "workspace:*",
     "@okazi/api": "workspace:*",
@@ -24,8 +24,8 @@
     "@okazi/graphql": "workspace:*",
     "@okazi/i18n": "workspace:*",
     "@okazi/ui": "workspace:*",
-    "ai": "7.0.138",
-    "lucide-react": "1.56.0",
+    "ai": "7.0.140",
+    "lucide-react": "1.57.0",
     "next": "16.4.0",
     "next-intl": "4.14.9",
     "next-themes": "0.4.6",
@@ -33,20 +33,20 @@
     "react-dom": "19.3.0",
     "react-hook-form": "7.90.0",
     "server-only": "0.0.1",
-    "zod": "4.1.8"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@next/env": "16.4.0",
     "@paralleldrive/cuid2": "3.3.0",
-    "@playwright/test": "1.56.1",
+    "@playwright/test": "1.64.0",
     "@tailwindcss/postcss": "4.3.3",
-    "@types/node": "22.20.5",
+    "@types/node": "26.6.5",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "postcss": "8.5.30",
     "tailwindcss": "4.3.3",
     "tsx": "4.23.15",
-    "typescript": "5.9.2",
-    "vitest": "4.1.11"
+    "typescript": "7.0.2",
+    "vitest": "5.0.4"
   }
 }

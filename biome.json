@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
   "files": {
     "includes": [
       "**",
@@ -12,8 +12,14 @@
       "!**/storybook-static",
       "!**/generated",
       "!**/*.generated.*",
-      "!packages/i18n/messages/*.json"
+      "!packages/i18n/messages/*.json",
+      "!docs/artefakter"
     ]
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    }
   },
   "formatter": {
     "indentStyle": "space",
@@ -28,7 +34,7 @@
   },
   "linter": {
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "suspicious": {
         "noExplicitAny": "error"
       },
