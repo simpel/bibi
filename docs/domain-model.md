@@ -59,6 +59,8 @@ erDiagram
   SheetDefinition ||--o{ Sheet : "produces version"
   SheetDefinition }o--|| organizationRole : "goes to"
   User }o--|| organizationRole : "has"
+  User ||--o{ Invitation : "invites"
+  Invitation }o--o{ organizationRole : "gives"
   Deposit ||--o{ Payment : "is paid with"
   Invoice ||--o{ Payment : "is settled with"
   Invoice ||--o{ OrderLine : "invoices"
@@ -193,7 +195,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - name
 - permissions (`<resource>:read|write|admin`, a higher action includes the lower)
 - system (`owner` is fixed and cannot be changed or deleted)
-- status (active / archived; can only be archived when no member has the role)
+- status (active / archived; can only be archived when no member or pending invitation has the role)
 
 **Relations**
 - `1:N` User has this
@@ -658,6 +660,25 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 > Core does not look up roles. `packages/auth` resolves the member's roles to permissions once per call. API keys are issued with a role name (never `owner`) and never get more than the member's own permissions. No one can give a role more than they have themselves.
 
+> Members join only by invitation and leave with `member.remove`. The organization always keeps an owner: the last owner cannot be removed, and only an owner removes another owner.
+
+### Invitation
+
+*MVP* · An emailed invitation to join the organization as staff (ADR 0004). Created with `member.invite`, revoked with `member.cancelInvitation`; the invitee accepts through the link (Better Auth) and becomes a member with the invited roles.
+
+**Attributes**
+- email
+- roles (from the organization's roles, never `owner`)
+- status (pending / accepted / rejected / canceled)
+- inviter
+- expires (48 hours after it was sent)
+
+**Relations**
+- `N:1` is sent by → User
+- `N:M` gives → Role
+
+> No one can invite with more access than they have themselves. An email that is already a member or has a pending invitation cannot be invited again.
+
 ### Task
 
 *Phase 2* · Set up room, AV test, cleaning.
@@ -782,5 +803,6 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | CancellationTerms | Avbokningsvillkor |
 | OrderLine | Orderrad |
 | User | Användare |
+| Invitation | Inbjudan |
 | SystemLog | Systemlogg |
 | AiSetting | AI-inställning |

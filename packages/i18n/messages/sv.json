@@ -35,7 +35,8 @@
     "skipToContent": "Hoppa till innehållet",
     "saving": "Sparar…",
     "archiving": "Arkiverar…",
-    "sending": "Skickar…"
+    "sending": "Skickar…",
+    "removing": "Tar bort…"
   },
   "auth": {
     "signIn": "Logga in",
@@ -918,8 +919,28 @@
     "columns": {
       "name": "Namn",
       "email": "E-post",
-      "roles": "Roller"
+      "roles": "Roller",
+      "expires": "Går ut"
     },
-    "saving": "Sparar roller…"
+    "saving": "Sparar roller…",
+    "invite": "Bjud in medlem",
+    "inviteDescription": "Vi mejlar en länk. Personen blir medlem med de valda rollerna när hen accepterar.",
+    "sendInvitation": "Skicka inbjudan",
+    "invited": "Inbjudan har skickats.",
+    "invitations": "Väntande inbjudningar",
+    "noInvitations": "Inga väntande inbjudningar.",
+    "revokeInvitation": "Återkalla",
+    "revokeConfirm": "Återkalla inbjudan till {email}? Länken i mejlet slutar fungera.",
+    "invitationRevoked": "Inbjudan har återkallats.",
+    "expiresAt": "Går ut {date}",
+    "invitationStatus": {
+      "pending": "Väntar",
+      "accepted": "Accepterad",
+      "rejected": "Avböjd",
+      "canceled": "Återkallad"
+    },
+    "remove": "Ta bort",
+    "removeConfirm": "Ta bort {name} från organisationen? Hen förlorar åtkomsten direkt.",
+    "removed": "Medlemmen har tagits bort."
   }
 }

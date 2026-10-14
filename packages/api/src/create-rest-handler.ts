@@ -1,4 +1,10 @@
-import { type AnyOperation, appError, type ExecuteContext, type Result } from "@okazi/core";
+import {
+  type AfterCommitHook,
+  type AnyOperation,
+  appError,
+  type ExecuteContext,
+  type Result,
+} from "@okazi/core";
 import { withRequestLogging } from "@okazi/logger";
 import { compileRoutes } from "./http/compile-routes";
 import { errorResponse } from "./http/error-response";
@@ -14,6 +20,8 @@ export type ResolveContext = (input: ResolveContextInput) => Promise<Result<Exec
 export type CreateRestHandlerInput = {
   operations: readonly AnyOperation[];
   resolveContext: ResolveContext;
+  /** Run once a command committed (e.g. the invitation mail). */
+  afterCommit?: readonly AfterCommitHook[];
   basePath?: string;
 };
 
@@ -28,6 +36,7 @@ function relativePath({ pathname, basePath }: RelativePathInput): string | undef
 export function createRestHandler({
   operations,
   resolveContext,
+  afterCommit = [],
   basePath = "/api/v1",
 }: CreateRestHandlerInput): (request: Request) => Promise<Response> {
   const compiled = compileRoutes({ routes: listRestRoutes(), operations });
@@ -50,7 +59,7 @@ export function createRestHandler({
         return errorResponse({ error });
       }
       const context = await resolveContext({ headers: request.headers });
-      return handleRoute({ ...match, context, url, request });
+      return handleRoute({ ...match, context, url, request, afterCommit });
     },
   });
 }

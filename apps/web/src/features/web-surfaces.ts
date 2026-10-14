@@ -75,6 +75,10 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "role.importTemplate", route: "/settings/roles" },
   { operation: "member.list", route: "/settings/members" },
   { operation: "member.assignRole", route: "/settings/members" },
+  { operation: "member.remove", route: "/settings/members" },
+  { operation: "member.invite", route: "/settings/members" },
+  { operation: "member.listInvitations", route: "/settings/members" },
+  { operation: "member.cancelInvitation", route: "/settings/members" },
   // The chat route (`/api/chat`) creates conversations and appends messages as the user; the
   // panel lists, opens, renames and archives them.
   { operation: "conversation.list", ...PANEL },

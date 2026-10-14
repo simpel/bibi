@@ -1,5 +1,10 @@
 import { useDisableIntrospection } from "@graphql-yoga/plugin-disable-introspection";
-import { createCoreOperations, createIndexingHook, type EmbedFn } from "@okazi/core";
+import {
+  type AfterCommitHook,
+  createCoreOperations,
+  createIndexingHook,
+  type EmbedFn,
+} from "@okazi/core";
 import { withRequestLogging } from "@okazi/logger";
 import { createYoga, type Plugin } from "graphql-yoga";
 import { costLimitRule } from "../limits/cost-limit";
@@ -20,6 +25,8 @@ const limitsPlugin: Plugin = {
 export type CreateGraphqlHandlerInput = {
   resolveContext: ResolveContext;
   embed: EmbedFn;
+  /** Run after search indexing once a mutation committed (e.g. the invitation mail). */
+  afterCommit?: readonly AfterCommitHook[];
   /** Dev mode: GraphiQL, introspection and unmasked errors. Defaults to false (production). */
   development?: boolean;
 };
@@ -28,10 +35,11 @@ export type CreateGraphqlHandlerInput = {
 export function createGraphqlHandler({
   resolveContext,
   embed,
+  afterCommit: extraHooks = [],
   development = false,
 }: CreateGraphqlHandlerInput): (request: Request) => Promise<Response> {
   const operations = createCoreOperations({ embed });
-  const afterCommit = [createIndexingHook({ embed })];
+  const afterCommit = [createIndexingHook({ embed }), ...extraHooks];
   const yoga = createYoga({
     schema,
     graphqlEndpoint: "*",

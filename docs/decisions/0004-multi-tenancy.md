@@ -24,3 +24,10 @@ Each venue customer is its own organization with its own users, venues, bookings
 ## Addendum 2026-10-14
 - Partner access across company boundaries is no longer planned. The partner line in Decision and the last bullet in Consequences no longer apply (ADR 0024). Sheets go to a role in the organization's own staff, and handover to someone outside happens through export.
 - Roles belong to the organization (ADR 0020). `packages/auth` resolves the member's roles to permissions per call. Cross-organization access remains disabled.
+
+## Addendum 2026-10-14 (membership changes)
+- Inviting, revoking an invitation and removing a member are core operations (`member.invite`, `member.cancelInvitation`, `member.listInvitations`, `member.remove`) with parity on every surface, like `member.assignRole`. They write Better Auth's `invitation` and `member` rows through `scopedDb`, so they are authorized, tenant-scoped and audited (`AuditLog` with entity type `invitation` or `member`).
+- Better Auth's own invite, cancel-invitation and remove-member endpoints are closed, even to the owner. Accepting an invitation stays in Better Auth (the invitee is not yet a member, so there is no organization context to run a core operation in).
+- Core cannot send mail, so the invitation mail is an after-commit hook (`invitationMailHook` in `packages/auth`) that every surface passes to `execute`. A failed send is logged and never undoes the invitation.
+- The last owner cannot be removed, only an owner removes another owner, and nobody invites with or removes more access than they have themselves.
+- Invitations name roles like members do: a role rename rewrites pending invitations, and a role cannot be archived while a pending invitation names it.

@@ -35,3 +35,50 @@ export const MemberAssignRoleInputSchema = z.object({
 });
 
 export type MemberDto = z.infer<typeof MemberSchema>;
+
+export const MemberRemoveInputSchema = z.object({
+  id: z.string().min(1).describe("Member id (from member.list)"),
+});
+
+/** Better Auth's invitation states; only `pending` invitations can be accepted or cancelled. */
+export const InvitationStatusSchema = z.enum(["pending", "accepted", "rejected", "canceled"]);
+
+/** An invitation to join the organization as staff, with the roles the invitee will get. */
+export const InvitationSchema = z.object({
+  id: z.string(),
+  organizationId: z.string(),
+  email: z.string(),
+  roles: z.array(z.string()),
+  status: InvitationStatusSchema,
+  inviterId: z.string(),
+  expiresAt: z.date(),
+  createdAt: z.date(),
+});
+
+export const MemberInviteInputSchema = z.object({
+  email: z
+    .email()
+    .max(254)
+    .describe("Email address of the person to invite; they accept with this address"),
+  roles: z
+    .array(RoleNameSchema)
+    .min(1)
+    .max(10)
+    .describe("Role names (see role.list) the invitee gets when they accept"),
+});
+
+export const InvitationIdInputSchema = z.object({
+  id: z.string().min(1).describe("Invitation id (from member.listInvitations)"),
+});
+
+export const InvitationListInputSchema = z.object({
+  limit: z.number().int().min(1).max(100).default(50),
+  cursor: z.string().optional().describe("id of the last item from the previous page"),
+});
+
+export const InvitationListOutputSchema = z.object({
+  items: z.array(InvitationSchema),
+  nextCursor: z.string().nullable(),
+});
+
+export type InvitationDto = z.infer<typeof InvitationSchema>;

@@ -1,3 +1,4 @@
+import { invitationMailHook } from "@okazi/auth";
 import type { EmbedFn } from "@okazi/core";
 import { createGraphqlHandler } from "@okazi/graphql";
 import { resolveRelayedContext } from "./context-relay";
@@ -14,6 +15,7 @@ export function getGraphqlHandler({ embed }: GetHandlerInput): Handler {
   if (!handler) {
     handler = createGraphqlHandler({
       embed,
+      afterCommit: [invitationMailHook],
       development: false,
       resolveContext: resolveRelayedContext,
     });

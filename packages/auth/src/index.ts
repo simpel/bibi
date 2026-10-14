@@ -12,6 +12,7 @@ export {
   getFirstPartyAccessToken,
 } from "./first-party/get-first-party-access-token";
 export { getAuth } from "./get-auth";
+export { invitationMailHook } from "./invitations/invitation-mail-hook";
 export {
   type MailMessage,
   MailMessageSchema,

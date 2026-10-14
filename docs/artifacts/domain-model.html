@@ -208,6 +208,7 @@ const E = [
 
   // Operations
   {id:"user",d:"ops",n:"User",p:"MVP",s:"A member of the organization with the organization's own roles.",a:["name","roles (from the organization's roles)","venues","platform role (user / admin)"]},
+  {id:"invitation",d:"ops",n:"Invitation",p:"MVP",s:"An emailed invitation to join the organization as staff, with the roles the invitee gets on accepting.",a:["email","roles (from the organization's roles)","status (pending / accepted / rejected / canceled)","inviter","expires (48 hours)"]},
   {id:"systemlog",d:"ops",n:"SystemLog",p:"MVP",s:"Platform data: every event in the system, for platform admins (ADR 0014, 0015).",a:["time, level, event","service and surface","request id","organization, user, operation, status, duration, error code","the whole row as JSON (never input or output)"]},
   {id:"aisetting",d:"ops",n:"AiSetting",p:"MVP",s:"Platform data: model per AI function, chosen by a platform admin. No default models.",a:["AI function","model (from Vercel AI Gateway)","changed by, changed"]},
   {id:"task",d:"ops",n:"Task",p:"Phase 2",s:"Set up room, AV test, cleaning.",a:["linked program item","type","responsible","deadline","status"]},
@@ -219,7 +220,7 @@ const E = [
 // [from, to, cardinality, verb (from → to)]
 const R = [
   ["etype","fielddef","1:N","has"],["etype","item","1:N","classifies"],["fielddef","vocab","N:0..1","selects from"],["setup","itemsetup","1:N","is used in"],["item","itemsetup","1:N","has"],
-  ["sheetdef","role","N:1","goes to"],["sheetdef","sheet","1:N","produces version"],["user","role","N:1","has"],["booking","bstatus","N:1","has status"],
+  ["sheetdef","role","N:1","goes to"],["sheetdef","sheet","1:N","produces version"],["user","role","N:1","has"],["invitation","role","N:M","gives"],["user","invitation","1:N","invites"],["booking","bstatus","N:1","has status"],
   ["org","contact","1:N","has"],["org","lead","1:N","sends"],["contact","lead","1:N","is contact for"],["org","pricelist","N:0..1","uses"],
   ["lead","quote","1:N","is answered by"],["lead","hold","1:N","can create"],["quote","booking","1:0..1","becomes on accept"],["quote","contract","1:0..1","is signed via"],["quote","line","1:N","contains"],
   ["series","booking","1:N","generates"],["series","pricelist","N:0..1","follows"],

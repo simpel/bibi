@@ -30,6 +30,7 @@ export * from "./features/item/lifecycle-operations";
 export * from "./features/item/read-operations";
 export * from "./features/item/schema";
 export * from "./features/item/write-operations";
+export * from "./features/member/invitation-operations";
 export { splitMemberRoles } from "./features/member/member-roles";
 export * from "./features/member/operations";
 export * from "./features/member/schema";
@@ -63,12 +64,7 @@ export {
   type ExecuteContext,
 } from "./operations/context";
 export { defineOperation } from "./operations/define-operation";
-export {
-  type AfterCommitHook,
-  type AfterCommitInput,
-  type ExecuteInput,
-  execute,
-} from "./operations/execute";
+export { type AfterCommitHook, type AfterCommitInput, execute } from "./operations/execute";
 export { hasPermission, type Permission } from "./operations/permission";
 export { getOperation, listOperations, registerOperations } from "./operations/registry";
 export { requiresApproval } from "./operations/requires-approval";

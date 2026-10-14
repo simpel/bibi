@@ -35,7 +35,8 @@
     "skipToContent": "Skip to content",
     "saving": "Saving…",
     "archiving": "Archiving…",
-    "sending": "Sending…"
+    "sending": "Sending…",
+    "removing": "Removing…"
   },
   "auth": {
     "signIn": "Sign in",
@@ -918,8 +919,28 @@
     "columns": {
       "name": "Name",
       "email": "Email",
-      "roles": "Roles"
+      "roles": "Roles",
+      "expires": "Expires"
     },
-    "saving": "Saving roles…"
+    "saving": "Saving roles…",
+    "invite": "Invite member",
+    "inviteDescription": "We email a link. The person becomes a member with the chosen roles when they accept.",
+    "sendInvitation": "Send invitation",
+    "invited": "The invitation has been sent.",
+    "invitations": "Pending invitations",
+    "noInvitations": "No pending invitations.",
+    "revokeInvitation": "Revoke",
+    "revokeConfirm": "Revoke the invitation to {email}? The link in the email stops working.",
+    "invitationRevoked": "The invitation has been revoked.",
+    "expiresAt": "Expires {date}",
+    "invitationStatus": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Declined",
+      "canceled": "Revoked"
+    },
+    "remove": "Remove",
+    "removeConfirm": "Remove {name} from the organization? They lose access immediately.",
+    "removed": "The member has been removed."
   }
 }

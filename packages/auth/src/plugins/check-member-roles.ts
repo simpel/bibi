@@ -5,8 +5,8 @@ import { APIError } from "better-auth/api";
 export type AssertKnownRolesInput = { organizationId: string; role: string | readonly string[] };
 
 /**
- * Better Auth's `addMember` does not validate role names and its invitation check counts
- * archived roles. Members may only get `owner` or one of the organization's ACTIVE roles
+ * Better Auth's `addMember` does not validate role names (invitations are created by core
+ * `member.invite`, which does). Members may only get `owner` or one of the organization's ACTIVE roles
  * (ADR 0020), so a dormant name can never start granting access later.
  */
 export async function assertKnownRoles({ organizationId, role }: AssertKnownRolesInput) {

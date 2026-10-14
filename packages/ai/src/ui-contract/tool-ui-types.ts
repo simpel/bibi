@@ -2,6 +2,7 @@ import type { ApprovalRequired } from "../approval/approval-schema";
 import type {
   EntityTypeWire,
   FieldDefinitionWire,
+  InvitationWire,
   ItemWire,
   MemberWire,
   RoleWire,
@@ -34,6 +35,8 @@ export type ToolUiProps = {
   "role-card": { role: RoleWire };
   "member-table": { items: MemberWire[]; nextCursor: string | null };
   "member-card": { member: MemberWire };
+  "invitation-table": { items: InvitationWire[]; nextCursor: string | null };
+  "invitation-card": { invitation: InvitationWire };
   "search-results": { hits: SearchHitWire[] };
   "skill-table": { items: SkillRow[]; nextCursor: string | null };
   "skill-card": { skill: SkillCardWire };
@@ -64,6 +67,8 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "role-card",
   "member-table",
   "member-card",
+  "invitation-table",
+  "invitation-card",
   "search-results",
   "skill-table",
   "skill-card",

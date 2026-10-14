@@ -17,8 +17,8 @@ export const archiveRole = defineOperation({
   name: "role.archive",
   kind: "command",
   description:
-    "Archive a role. Refused while any member still has it: reassign them first " +
-    "(member.assignRole). The owner role cannot be archived.",
+    "Archive a role. Refused while any member or pending invitation still has it: reassign " +
+    "them first (member.assignRole, member.cancelInvitation). The owner role cannot be archived.",
   input: RoleIdInputSchema,
   output: RoleSchema,
   permission: "role:admin",
@@ -26,11 +26,13 @@ export const archiveRole = defineOperation({
     if (id === OWNER_ROLE_ID) return ownerIsFixed();
     const before = await context.db.organizationRole.findFirst({ where: { id } });
     if (!before) return roleNotFound();
-    const holders = await context.db.member.count({
-      where: memberHasRoleWhere({ name: before.role }),
-    });
-    if (holders > 0) {
-      const message = `Role "${before.role}" is still assigned to members`;
+    const holding = memberHasRoleWhere({ name: before.role });
+    const [holders, invited] = await Promise.all([
+      context.db.member.count({ where: holding }),
+      context.db.invitation.count({ where: { ...holding, status: "pending" } }),
+    ]);
+    if (holders + invited > 0) {
+      const message = `Role "${before.role}" is still assigned to members or invitations`;
       return err({ error: new AppError({ code: "CONFLICT", message }) });
     }
     const row = await context.db.organizationRole.update({

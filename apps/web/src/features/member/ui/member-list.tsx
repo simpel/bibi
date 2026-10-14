@@ -9,24 +9,35 @@ import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { InvitationList } from "./invitation-list";
+import { InviteMemberButton } from "./invite-member-button";
 import { MemberTable } from "./member-table";
 
 export type MemberListProps = { locale: Locale; cursor?: string | undefined };
 
 const PAGE_SIZE = 50;
 
-/** Members page body: staff table with role assignment for member admins. */
+/** Role names an admin can assign or invite with (the fixed owner role excluded). */
+async function assignableRoleNames(): Promise<string[]> {
+  const roles = await runOperation({ operation: listRoles, input: { limit: 100 } });
+  return roles.ok ? roles.value.items.filter((role) => !role.system).map((role) => role.name) : [];
+}
+
+/** Members page body: staff table; member admins also assign roles, invite and remove. */
 export async function MemberList({ locale, cursor }: MemberListProps) {
   const t = await getTranslations("member");
   const { memberAdmin } = await getCallerAbilities();
-  const [members, roles] = await Promise.all([
+  const [members, roleNames] = await Promise.all([
     runOperation({
       operation: listMembers,
       input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
     }),
-    runOperation({ operation: listRoles, input: { limit: 100 } }),
+    assignableRoleNames(),
   ]);
-  const header = <PageHeader title={t("plural")} description={t("listDescription")} />;
+  const actions = memberAdmin ? <InviteMemberButton roleNames={roleNames} /> : undefined;
+  const header = (
+    <PageHeader title={t("plural")} description={t("listDescription")} actions={actions} />
+  );
   if (!members.ok) {
     const errorKey = handleLoadError({ error: members.error, locale });
     return (
@@ -36,9 +47,6 @@ export async function MemberList({ locale, cursor }: MemberListProps) {
       </div>
     );
   }
-  const roleNames = roles.ok
-    ? roles.value.items.filter((role) => !role.system).map((role) => role.name)
-    : [];
   return (
     <div className="grid gap-6">
       {header}
@@ -52,6 +60,7 @@ export async function MemberList({ locale, cursor }: MemberListProps) {
         cursor={cursor}
         nextCursor={members.value.nextCursor}
       />
+      {memberAdmin ? <InvitationList locale={locale} /> : null}
     </div>
   );
 }

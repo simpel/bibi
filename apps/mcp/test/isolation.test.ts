@@ -56,6 +56,35 @@ describe("cross-organization isolation", () => {
     expect(assign.data.code).toBe("NOT_FOUND");
     const archive = await call({ client: b, name: "role_archive", args: { id: role.data.id } });
     expect(archive.data.code).toBe("NOT_FOUND");
+    const remove = await call({ client: b, name: "member_remove", args: { id: memberA.id } });
+    expect(remove.data.code).toBe("NOT_FOUND");
+  });
+
+  it("hides one organization's invitations from another", async () => {
+    const contextA = testContext();
+    const contextB = testContext();
+    await seedOrgMember({ context: contextA });
+    await seedOrgMember({ context: contextB });
+    const a = await connect({ context: contextA });
+    const b = await connect({ context: contextB });
+    await call({
+      client: a,
+      name: "role_create",
+      args: { name: "Hemlig", permissions: { venue: ["read"] } },
+    });
+    const invited = await call({
+      client: a,
+      name: "member_invite",
+      args: { email: "secret@x.test", roles: ["Hemlig"] },
+    });
+    expect(invited.data.status).toBe("pending");
+    expect((await call({ client: b, name: "member_listInvitations" })).data.items).toEqual([]);
+    const cancel = await call({
+      client: b,
+      name: "member_cancelInvitation",
+      args: { id: invited.data.id },
+    });
+    expect(cancel.data.code).toBe("NOT_FOUND");
   });
 
   it("hides one organization's configuration and items from another", async () => {

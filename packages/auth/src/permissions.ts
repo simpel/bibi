@@ -24,14 +24,16 @@ export const accessControl = createAccessControl(
 );
 
 /**
- * Better Auth's own statements for `owner`, minus `ac` (role CRUD) and `member:update` (role
- * assignment): those go through core `role.*` and `member.assignRole` so they are authorized
- * and audited there. Better Auth's role endpoints are therefore closed to everyone.
+ * Better Auth's own statements for `owner`, minus `ac` (role CRUD), `member:update`/`delete`
+ * (role assignment, removal) and `invitation` (invite, cancel): those go through core `role.*`
+ * and `member.*` so they are authorized and audited there. Better Auth's endpoints for them are
+ * therefore closed to everyone.
  */
 const ownerAuthStatements = {
   ...ownerAc.statements,
   ac: [],
-  member: ownerAc.statements.member.filter((action) => action !== "update"),
+  invitation: [],
+  member: ownerAc.statements.member.filter((action) => action !== "update" && action !== "delete"),
 };
 
 /**

@@ -1,5 +1,5 @@
 import "server-only";
-import { resolveExecuteContext } from "@okazi/auth";
+import { invitationMailHook, resolveExecuteContext } from "@okazi/auth";
 import {
   createIndexingHook,
   type ExecuteContext,
@@ -19,13 +19,13 @@ export type RunOperationInput<I extends z.ZodType, O extends z.ZodType> = {
   input: z.input<I>;
 };
 
-const afterCommit = [createIndexingHook({ embed })];
+const afterCommit = [createIndexingHook({ embed }), invitationMailHook];
 
 /**
  * THE web data-access layer (ADR 0010). Every server component and server action runs core
  * operations through here: the caller comes from the session cookie via `resolveExecuteContext`
  * (same resolver as GraphQL/REST/MCP), then core `execute` validates, authorizes, audits, logs
- * (ADR 0014) and triggers search indexing. Never import `@okazi/db` or build contexts anywhere
+ * (ADR 0014) and triggers search indexing and the invitation mail. Never import `@okazi/db` or build contexts anywhere
  * else in the app.
  */
 export async function runOperation<I extends z.ZodType, O extends z.ZodType>({

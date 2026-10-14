@@ -1,3 +1,4 @@
+import { invitationMailHook } from "@okazi/auth";
 import { getEnv } from "@okazi/config";
 import { createIndexingHook, type EmbedFn } from "@okazi/core";
 import { createApprovalConfirmTool } from "../tools/approval-confirm-tool";
@@ -16,7 +17,7 @@ export function createTools({ embed }: CreateToolsInput): McpTool[] {
   const cached = cache.get(embed);
   if (cached) return cached;
   const operations = getOperations({ embed });
-  const afterCommit = [createIndexingHook({ embed })];
+  const afterCommit = [createIndexingHook({ embed }), invitationMailHook];
   const secret = getEnv().BETTER_AUTH_SECRET;
   const tools = [
     ...operations.map((operation) =>

@@ -1,6 +1,7 @@
 import {
   EntityTypeSchema,
   FieldDefinitionSchema,
+  InvitationSchema,
   ItemSchema,
   MemberSchema,
   RoleSchema,
@@ -36,6 +37,10 @@ export const RoleWireSchema = RoleSchema.extend({
   updatedAt: z.string().nullable(),
 });
 export const MemberWireSchema = MemberSchema.extend({ createdAt: z.string() });
+export const InvitationWireSchema = InvitationSchema.extend({
+  createdAt: z.string(),
+  expiresAt: z.string(),
+});
 
 const page = <T extends z.ZodType>({ item }: { item: T }) =>
   z.object({ items: z.array(item), nextCursor: z.string().nullable() });
@@ -49,6 +54,7 @@ export const SetupListWireSchema = page({ item: SetupWireSchema });
 
 export const RoleListWireSchema = page({ item: RoleWireSchema });
 export const MemberListWireSchema = page({ item: MemberWireSchema });
+export const InvitationListWireSchema = page({ item: InvitationWireSchema });
 /** `role_importTemplate` output: the roles it created. */
 export const RoleImportWireSchema = z.object({
   created: z.array(RoleWireSchema),
@@ -114,6 +120,7 @@ export type VocabularyWire = z.infer<typeof VocabularyWireSchema>;
 export type SetupWire = z.infer<typeof SetupWireSchema>;
 export type RoleWire = z.infer<typeof RoleWireSchema>;
 export type MemberWire = z.infer<typeof MemberWireSchema>;
+export type InvitationWire = z.infer<typeof InvitationWireSchema>;
 export type SkillRow = z.infer<typeof SkillRowSchema>;
 export type SkillCardWire = z.infer<typeof SkillCardWireSchema>;
 export type SearchHitWire = z.infer<typeof SearchHitWireSchema>;

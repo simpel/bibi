@@ -1,6 +1,6 @@
 import "server-only";
 import { createRestHandler } from "@okazi/api";
-import { resolveExecuteContext } from "@okazi/auth";
+import { invitationMailHook, resolveExecuteContext } from "@okazi/auth";
 import { createGraphqlHandler } from "@okazi/graphql";
 import { embed } from "./embed";
 import { ensureOperations } from "./operations";
@@ -14,7 +14,11 @@ const holder = globalThis as typeof globalThis & {
 
 /** `POST /api/graphql`: the graph for external callers (API key / OAuth / session). */
 export function graphqlHandler(): Handler {
-  holder.__okaziGraphql ??= createGraphqlHandler({ resolveContext: resolveExecuteContext, embed });
+  holder.__okaziGraphql ??= createGraphqlHandler({
+    resolveContext: resolveExecuteContext,
+    embed,
+    afterCommit: [invitationMailHook],
+  });
   return holder.__okaziGraphql;
 }
 
@@ -23,6 +27,7 @@ export function restHandler(): Handler {
   holder.__okaziRest ??= createRestHandler({
     operations: ensureOperations(),
     resolveContext: resolveExecuteContext,
+    afterCommit: [invitationMailHook],
   });
   return holder.__okaziRest;
 }

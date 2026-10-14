@@ -5,7 +5,8 @@
 // Tenancy: `Organization.id` IS the `organizationId` on every business row (Venue, Room, AuditLog,
 // Embedding, ...). There is deliberately no FK from business tables to `organization` (Better Auth
 // owns these tables, ADR 0004); `packages/auth` resolves the org and `scopedDb` pins it.
-// Auth tables are not in ORG_SCOPED_MODELS: they are read/written only by Better Auth and packages/auth.
+// Auth tables are not in ORG_SCOPED_MODELS, except Member, OrganizationRole and Invitation: core
+// `member.*` and `role.*` write those rows the way Better Auth would, so they are authorized and audited.
 
 model User {
   id                 String              @id

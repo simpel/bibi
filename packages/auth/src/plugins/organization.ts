@@ -1,10 +1,12 @@
 import { OWNER_ROLE } from "@okazi/core";
 import { APIError } from "better-auth/api";
 import { organization } from "better-auth/plugins";
-import { sendMail } from "../mail";
 import { accessControl, orgRoles } from "../permissions";
-import { webUrl } from "../urls";
 import { assertKnownRoles } from "./check-member-roles";
+
+const closed = ({ operation }: { operation: string }): never => {
+  throw new APIError("FORBIDDEN", { message: `Not allowed: use ${operation}` });
+};
 
 /**
  * Organization = venue customer (ADR 0004). `Organization.id` is the `organizationId`
@@ -21,15 +23,14 @@ export function organizationPlugin() {
       beforeAddMember: async ({ member }) => {
         await assertKnownRoles({ organizationId: member.organizationId, role: member.role });
       },
-      beforeCreateInvitation: async ({ invitation }) => {
-        const { organizationId, role } = invitation;
-        await assertKnownRoles({ organizationId, role });
-      },
       // Better Auth lets the creator (owner) bypass its own `member:update` check here, so the
       // endpoint is closed outright: roles are assigned via core `member.assignRole` (audited).
-      beforeUpdateMemberRole: async () => {
-        throw new APIError("FORBIDDEN", { message: "Not allowed: use member.assignRole" });
-      },
+      beforeUpdateMemberRole: async () => closed({ operation: "member.assignRole" }),
+      // Invitations and removals go through core `member.*` (authorized and audited there);
+      // the invitation mail is sent by `invitationMailHook`. Accepting stays in Better Auth.
+      beforeCreateInvitation: async () => closed({ operation: "member.invite" }),
+      beforeCancelInvitation: async () => closed({ operation: "member.cancelInvitation" }),
+      beforeRemoveMember: async () => closed({ operation: "member.remove" }),
     },
     schema: {
       organizationRole: {
@@ -38,14 +39,6 @@ export function organizationPlugin() {
           createdBy: { type: "string", required: false, input: false },
         },
       },
-    },
-    sendInvitationEmail: async ({ id, email, organization: org, inviter }) => {
-      const url = webUrl({ path: `/accept-invitation/${id}` });
-      await sendMail({
-        to: email,
-        subject: `Invitation to ${org.name} on Okazi`,
-        text: `${inviter.user.name} has invited you to ${org.name}.\n\nAccept: ${url}`,
-      });
     },
   });
 }

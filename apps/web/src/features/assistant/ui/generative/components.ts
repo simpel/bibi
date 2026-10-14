@@ -7,6 +7,8 @@ import { ErrorView } from "./error-view";
 import { FieldDefinitionCardView } from "./field-definition-card-view";
 import { FieldDefinitionTableView } from "./field-definition-table-view";
 import type { GenerativeProps } from "./generative-props";
+import { InvitationCardView } from "./invitation-card-view";
+import { InvitationTableView } from "./invitation-table-view";
 import { ItemCardView } from "./item-card-view";
 import { ItemTableView } from "./item-table-view";
 import { JsonView } from "./json-view";
@@ -46,6 +48,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "role-card": RoleCardView,
   "member-table": MemberTableView,
   "member-card": MemberCardView,
+  "invitation-table": InvitationTableView,
+  "invitation-card": InvitationCardView,
   "search-results": SearchResultsView,
   "skill-table": SkillTableView,
   "skill-card": SkillCardView,

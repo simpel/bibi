@@ -5,11 +5,14 @@ import { OWNER_ROLE } from "../../permissions/resources";
 import { paginate } from "../../shared/paginate";
 import { checkCanGrant } from "../role/access";
 import { resolveAssignedRoles } from "./assigned-roles";
+import { cancelInvitation, inviteMember, listInvitations } from "./invitation-operations";
 import { joinMemberRoles, memberHasRoleWhere, splitMemberRoles } from "./member-roles";
+import { checkRemovable } from "./removal-guard";
 import {
   MemberAssignRoleInputSchema,
   MemberListInputSchema,
   MemberListOutputSchema,
+  MemberRemoveInputSchema,
   MemberSchema,
 } from "./schema";
 import { MEMBER_SELECT, toMemberDto } from "./to-member-dto";
@@ -74,4 +77,35 @@ export const assignMemberRole = defineOperation({
   },
 });
 
-export const memberOperations = [listMembers, assignMemberRole];
+export const removeMember = defineOperation({
+  name: "member.remove",
+  kind: "command",
+  description:
+    "Remove a member from the organization; they lose access at once. The last owner cannot be " +
+    "removed, only an owner removes an owner, and you cannot remove someone with more access.",
+  input: MemberRemoveInputSchema,
+  output: MemberSchema,
+  permission: "member:admin",
+  handler: async ({ input, context }) => {
+    const row = await context.db.member.findFirst({
+      where: { id: input.id },
+      select: MEMBER_SELECT,
+    });
+    if (!row) return fail({ code: "NOT_FOUND", message: "Member not found" });
+    const member = toMemberDto({ row });
+    const removable = await checkRemovable({ context, roles: member.roles });
+    if (!removable.ok) return removable;
+    await context.db.member.delete({ where: { id: input.id } });
+    context.recordChange({ entityId: member.id, before: member });
+    return ok({ value: member });
+  },
+});
+
+export const memberOperations = [
+  listMembers,
+  assignMemberRole,
+  removeMember,
+  inviteMember,
+  listInvitations,
+  cancelInvitation,
+];

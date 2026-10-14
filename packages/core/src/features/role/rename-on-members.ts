@@ -3,8 +3,32 @@ import { joinMemberRoles, memberHasRoleWhere, splitMemberRoles } from "../member
 
 export type RenameOnMembersInput = { context: OperationContext; from: string; to: string };
 
+const renamed = ({ role, from, to }: { role: string | null; from: string; to: string }) =>
+  joinMemberRoles({
+    roles: splitMemberRoles({ role: role ?? "" }).map((name) => (name === from ? to : name)),
+  });
+
+/** Pending invitations give their roles on accepting, so they follow the rename too. */
+async function renameOnInvitations({ context, from, to }: RenameOnMembersInput): Promise<void> {
+  const invitations = await context.db.invitation.findMany({
+    where: { ...memberHasRoleWhere({ name: from }), status: "pending" },
+    select: { id: true, role: true },
+  });
+  for (const invitation of invitations) {
+    const role = renamed({ role: invitation.role, from, to });
+    await context.db.invitation.update({ where: { id: invitation.id }, data: { role } });
+    context.recordChange({
+      entityType: "invitation",
+      entityId: invitation.id,
+      before: { roles: splitMemberRoles({ role: invitation.role ?? "" }) },
+      after: { roles: splitMemberRoles({ role }) },
+    });
+  }
+}
+
 /** Better Auth keys member roles by name, so a rename rewrites every member holding it. */
 export async function renameOnMembers({ context, from, to }: RenameOnMembersInput): Promise<void> {
+  await renameOnInvitations({ context, from, to });
   const members = await context.db.member.findMany({
     where: memberHasRoleWhere({ name: from }),
     select: { id: true, role: true },

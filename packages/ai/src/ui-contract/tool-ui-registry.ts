@@ -1,12 +1,8 @@
+import { ACCESS_UI_ENTRIES } from "./access-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 import {
-  MemberListWireSchema,
-  MemberWireSchema,
-  RoleImportWireSchema,
-  RoleListWireSchema,
-  RoleWireSchema,
   SearchWireSchema,
   SkillCardWireSchema,
   SkillListWireSchema,
@@ -25,21 +21,6 @@ const venueCard = uiEntry({
   schema: VenueWireSchema,
   toProps: ({ value }) => ({ venue: value }),
 });
-const roleTable = uiEntry({
-  component: "role-table",
-  schema: RoleListWireSchema,
-  toProps: ({ value }) => value,
-});
-const roleCard = uiEntry({
-  component: "role-card",
-  schema: RoleWireSchema,
-  toProps: ({ value }) => ({ role: value }),
-});
-const memberCard = uiEntry({
-  component: "member-card",
-  schema: MemberWireSchema,
-  toProps: ({ value }) => ({ member: value }),
-});
 const skillCard = uiEntry({
   component: "skill-card",
   schema: SkillCardWireSchema,
@@ -57,22 +38,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   venue_update: venueCard,
   venue_archive: venueCard,
   ...CONFIGURATION_UI_ENTRIES,
-  role_list: roleTable,
-  role_get: roleCard,
-  role_create: roleCard,
-  role_update: roleCard,
-  role_archive: roleCard,
-  role_importTemplate: uiEntry({
-    component: "role-table",
-    schema: RoleImportWireSchema,
-    toProps: ({ value }) => ({ items: value.created, nextCursor: null }),
-  }),
-  member_list: uiEntry({
-    component: "member-table",
-    schema: MemberListWireSchema,
-    toProps: ({ value }) => value,
-  }),
-  member_assignRole: memberCard,
+  ...ACCESS_UI_ENTRIES,
   search: uiEntry({
     component: "search-results",
     schema: SearchWireSchema,

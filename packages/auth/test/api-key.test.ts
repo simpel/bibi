@@ -1,4 +1,5 @@
-import { createVenue, execute, getVenue } from "@okazi/core";
+import { createVenue, execute, getVenue, removeMember } from "@okazi/core";
+import { getDb } from "@okazi/db";
 import { describe, expect, it } from "vitest";
 import { createOrgApiKey, getAuth, resolveExecuteContext } from "../src/index";
 import { codeOf, createOrg, signUp } from "./helpers";
@@ -121,10 +122,17 @@ describe("resolveExecuteContext – API keys", () => {
     const context = await resolveKey({ key: readerKey.value.key });
     const write = await execute({ operation: createVenue, input: { name: "no" }, context });
     expect(codeOf({ result: write })).toBe("FORBIDDEN");
-    await getAuth().api.removeMember({
-      headers: owner.headers,
-      body: { memberIdOrEmail: reader.email, organizationId },
+    const member = await getDb().member.findFirstOrThrow({
+      where: { organizationId, userId: reader.userId },
     });
+    const ownerContext = await resolveExecuteContext({ headers: owner.headers });
+    if (!ownerContext.ok) throw ownerContext.error;
+    const removed = await execute({
+      operation: removeMember,
+      input: { id: member.id },
+      context: ownerContext.value,
+    });
+    expect(codeOf({ result: removed })).toBe("OK");
     const after = await resolveExecuteContext({
       headers: keyHeaders({ key: readerKey.value.key }),
     });

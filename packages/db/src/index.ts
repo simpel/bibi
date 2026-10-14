@@ -21,6 +21,7 @@ export {
   type EntityType,
   type FieldDefinition,
   FieldKind,
+  type Invitation,
   type Item,
   ItemBehaviour,
   type ItemComponent,
