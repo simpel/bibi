@@ -4,7 +4,7 @@ import { Button } from "./button";
 const meta = {
   title: "Components/Button",
   component: Button,
-  args: { children: "Boka rum" },
+  args: { children: "Book room" },
   argTypes: {
     variant: {
       control: "select",

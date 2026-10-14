@@ -4,9 +4,9 @@ import { Combobox, type ComboboxProps } from "./combobox";
 
 const options: ComboboxProps["options"] = Array.from({ length: 300 }, (_, index) => ({
   value: `room-${index}`,
-  label: `Rum ${index + 1}`,
-  description: index % 3 === 0 ? "Med projektor" : undefined,
-  group: `Våning ${Math.floor(index / 50) + 1}`,
+  label: `Room ${index + 1}`,
+  description: index % 3 === 0 ? "With projector" : undefined,
+  group: `Floor ${Math.floor(index / 50) + 1}`,
 }));
 
 const meta = { title: "Components/Combobox", component: Combobox } satisfies Meta<typeof Combobox>;
@@ -22,9 +22,9 @@ function Demo() {
         options={options}
         value={value}
         onValueChange={setValue}
-        placeholder="Välj rum"
-        searchPlaceholder="Sök rum"
-        emptyText="Inga rum hittades"
+        placeholder="Select room"
+        searchPlaceholder="Search rooms"
+        emptyText="No rooms found"
       />
     </div>
   );
@@ -34,9 +34,9 @@ export const Default: Story = {
   args: {
     options,
     onValueChange: () => {},
-    placeholder: "Välj rum",
-    searchPlaceholder: "Sök rum",
-    emptyText: "Inga rum hittades",
+    placeholder: "Select room",
+    searchPlaceholder: "Search rooms",
+    emptyText: "No rooms found",
   },
   render: () => <Demo />,
 };

@@ -1,12 +1,12 @@
 # {{Pascal}} – UI
 
-Placeholder skapad av `pnpm gen entity {{Pascal}}`. UI för {{Pascal}} läggs i den här mappen (`apps/web/src/features/{{kebab}}/ui/`).
+Placeholder created by `pnpm gen entity {{Pascal}}`. The UI for {{Pascal}} goes in this folder (`apps/web/src/features/{{kebab}}/ui/`).
 
-- Bygg med `@okazi/ui` (cva och tokens). Inga råa färger och inga egna primitiver i appen.
-- All text går via next-intl (sv och en, båda filerna i `packages/i18n/messages`).
-- Data går via ETT lager: `apps/web/src/server/run-operation.ts` (server components) och server actions i `apps/web/src/features/{{kebab}}/actions.ts` som anropar `runOperation({ operation, input })` och `toActionResult`. Aldrig `@okazi/db` eller egen `ExecuteContext` (ADR 0010).
-- Mönster att kopiera: `features/venue/ui/` (lista med cursor-paginering, formulär med react-hook-form + core-schemat, dialog, arkivera med bekräftelse) och `features/item/ui/` (underlista på detaljsidan).
-- Klientkomponenter får inte importera `@okazi/core` (värden). Schemat nås via `@core-schema/{{kebab}}` (lägg alias i `apps/web/tsconfig.json`, `apps/web/vitest.config.ts`).
-- Registrera operationerna i `apps/web/src/features/web-surfaces.ts` (`WEB_SURFACES`) eller lista dem i `UI_EXEMPT` med skäl. Testet `web-surfaces.test.ts` och paritetstestet i `apps/mcp` kräver det.
-- Lägg en sida under `apps/web/src/app/[locale]/(app)/<route>/page.tsx` och en post i `components/shell/nav-items.ts`.
-- Resultat i assistenten visas med en generative UI-komponent. Registrera resultattypen `{{kebab}}` i `packages/ai` (ADR 0007).
+- Build with `@okazi/ui` (cva and tokens). No raw colors and no custom primitives in the app.
+- All text goes through next-intl (sv and en, both files in `packages/i18n/messages`).
+- Data goes through ONE layer: `apps/web/src/server/run-operation.ts` (server components) and server actions in `apps/web/src/features/{{kebab}}/actions.ts` that call `runOperation({ operation, input })` and `toActionResult`. Never `@okazi/db` or a custom `ExecuteContext` (ADR 0010).
+- Patterns to copy: `features/venue/ui/` (list with cursor pagination, form with react-hook-form + the core schema, dialog, archive with confirmation) and `features/item/ui/` (sub-list on the detail page).
+- Client components must not import `@okazi/core` (values). The schema is reached via `@core-schema/{{kebab}}` (add the alias in `apps/web/tsconfig.json`, `apps/web/vitest.config.ts`).
+- Register the operations in `apps/web/src/features/web-surfaces.ts` (`WEB_SURFACES`) or list them in `UI_EXEMPT` with a reason. The test `web-surfaces.test.ts` and the parity test in `apps/mcp` require it.
+- Add a page under `apps/web/src/app/[locale]/(app)/<route>/page.tsx` and an entry in `components/shell/nav-items.ts`.
+- Results in the assistant are shown with a generative UI component. Register the result type `{{kebab}}` in `packages/ai` (ADR 0007).

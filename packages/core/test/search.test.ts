@@ -32,8 +32,8 @@ async function seed({ context }: SeedInput) {
   const input = {
     entityTypeId: type.id,
     venueId: venue.id,
-    name: "Ljusa salen",
-    description: "Konferensrum med dagsljus",
+    name: "Bright hall",
+    description: "Conference room with daylight",
   };
   const room = unwrap({
     result: await execute({ operation: createItem, input, context, afterCommit }),
@@ -50,7 +50,7 @@ describe("search", () => {
     const result = unwrap({
       result: await execute({
         operation: search,
-        input: { query: "konferensrum dagsljus" },
+        input: { query: "conference daylight" },
         context: orgA,
       }),
     });
@@ -78,7 +78,7 @@ describe("search", () => {
     expect(again).toBe("unchanged");
     await execute({ operation: archiveItem, input: { id: room.id }, context, afterCommit });
     const result = unwrap({
-      result: await execute({ operation: search, input: { query: "dagsljus" }, context }),
+      result: await execute({ operation: search, input: { query: "daylight" }, context }),
     });
     expect(result.hits.map((hit) => hit.entityId)).not.toContain(room.id);
   });

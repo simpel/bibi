@@ -36,10 +36,10 @@ const type = ({ ...over }: Partial<EntityTypeDto>): EntityTypeDto => ({
 const vocabulary: VocabularyDto = {
   id: "v1",
   organizationId: "o",
-  name: "Utsikt",
+  name: "View",
   values: [
-    { id: "val1", vocabularyId: "v1", name: "Älven", position: 0 },
-    { id: "val2", vocabularyId: "v1", name: "Innergården", position: 1 },
+    { id: "val1", vocabularyId: "v1", name: "River", position: 0 },
+    { id: "val2", vocabularyId: "v1", name: "Courtyard", position: 1 },
   ],
   status: "ACTIVE",
   createdAt: now,
@@ -58,17 +58,17 @@ describe("describeOrgFields", () => {
       types: [
         type({
           fields: [
-            field({ key: "vaning", name: "Våning", kind: "NUMBER", required: true }),
-            field({ key: "utsikt", name: "Utsikt", kind: "CHOICE", vocabularyId: "v1" }),
-            field({ key: "typ", name: "Typ", kind: "CHOICE", options: ["A", "B"] }),
+            field({ key: "floor", name: "Floor", kind: "NUMBER", required: true }),
+            field({ key: "view", name: "View", kind: "CHOICE", vocabularyId: "v1" }),
+            field({ key: "kind", name: "Kind", kind: "CHOICE", options: ["A", "B"] }),
           ],
         }),
       ],
     });
     expect(out).toContain('"Konferensrum" (entityTypeId=t1) [BOOKABLE]');
-    expect(out).toContain('vaning ("Våning", NUMBER, required)');
-    expect(out).toContain('utsikt ("Utsikt", CHOICE: "Älven"=val1, "Innergården"=val2)');
-    expect(out).toContain('typ ("Typ", CHOICE: "A", "B")');
+    expect(out).toContain('floor ("Floor", NUMBER, required)');
+    expect(out).toContain('view ("View", CHOICE: "River"=val1, "Courtyard"=val2)');
+    expect(out).toContain('kind ("Kind", CHOICE: "A", "B")');
   });
 
   it("truncates with a pointer to entityType_list", () => {

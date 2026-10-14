@@ -23,7 +23,7 @@ const NameSchema = z
   .trim()
   .min(1)
   .max(100)
-  .describe("Type name as staff see it, e.g. Konferensrum, Rätt, Båt or Företag");
+  .describe("Type name as staff see it, e.g. Conference room, Dish, Boat or Company");
 
 export const EntityTypeCreateInputSchema = z.object({
   base: EntityBaseSchema,

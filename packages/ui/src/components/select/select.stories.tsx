@@ -10,12 +10,12 @@ export const Default: Story = {
   render: () => (
     <Select>
       <SelectTrigger className="w-56">
-        <SelectValue placeholder="Välj uppställning" />
+        <SelectValue placeholder="Select setup" />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="theatre">Teater</SelectItem>
-        <SelectItem value="classroom">Klassrum</SelectItem>
-        <SelectItem value="banquet">Bankett</SelectItem>
+        <SelectItem value="theatre">Theatre</SelectItem>
+        <SelectItem value="classroom">Classroom</SelectItem>
+        <SelectItem value="banquet">Banquet</SelectItem>
       </SelectContent>
     </Select>
   ),

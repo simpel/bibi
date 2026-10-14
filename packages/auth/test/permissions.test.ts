@@ -16,7 +16,7 @@ const system = ({ organizationId }: { organizationId: string }) =>
 const memberSession = async ({ role }: { role: string }) => {
   const owner = await signUp();
   const organizationId = await createOrg({ headers: owner.headers });
-  await addRole({ organizationId, name: "Läs", permissions: READ_ONLY });
+  await addRole({ organizationId, name: "Read", permissions: READ_ONLY });
   const user = await signUp();
   await addMember({ organizationId, userId: user.userId, role });
   const headers = await signIn({ email: user.email });
@@ -33,22 +33,22 @@ describe("role resolution (ADR 0020)", () => {
   });
 
   it("resolves a custom role to its normalized permissions", async () => {
-    const { headers } = await memberSession({ role: "Läs" });
+    const { headers } = await memberSession({ role: "Read" });
     const result = await resolveExecuteContext({ headers });
     if (!result.ok) throw result.error;
-    expect(result.value.roles).toEqual(["Läs"]);
+    expect(result.value.roles).toEqual(["Read"]);
     expect(result.value.permissions).toEqual({ venue: ["read"], item: ["read"] });
   });
 
   it("grants nothing for unknown or archived roles, but the member is still resolved", async () => {
-    const { organizationId, headers } = await memberSession({ role: "Läs" });
+    const { organizationId, headers } = await memberSession({ role: "Read" });
     const roles = await execute({
       operation: listRoles,
       input: {},
       context: system({ organizationId }),
     });
     if (!roles.ok) throw roles.error;
-    const id = roles.value.items.find((role) => role.name === "Läs")?.id ?? "";
+    const id = roles.value.items.find((role) => role.name === "Read")?.id ?? "";
     // Archiving is refused while the member holds it: the role stays in force.
     const refused = await execute({
       operation: archiveRole,
@@ -57,11 +57,11 @@ describe("role resolution (ADR 0020)", () => {
     });
     expect(codeOf({ result: refused })).toBe("CONFLICT");
     // Better Auth refuses unknown role names; a stale name in the row still grants nothing.
-    await expect(memberSession({ role: "Finns inte" })).rejects.toThrow(/Unknown role/);
-    const stale = await memberSession({ role: "Läs" });
+    await expect(memberSession({ role: "Does not exist" })).rejects.toThrow(/Unknown role/);
+    const stale = await memberSession({ role: "Read" });
     await getDb().member.updateMany({
-      where: { organizationId: stale.organizationId, role: "Läs" },
-      data: { role: "Finns inte" },
+      where: { organizationId: stale.organizationId, role: "Read" },
+      data: { role: "Does not exist" },
     });
     const result = await resolveExecuteContext({ headers: stale.headers });
     if (!result.ok) throw result.error;
@@ -75,12 +75,12 @@ describe("role resolution (ADR 0020)", () => {
     const api = getAuth().api;
     const createRole = api.createOrgRole({
       headers: owner.headers,
-      body: { organizationId, role: "Bakväg", permission: { venue: ["admin"] } },
+      body: { organizationId, role: "Backdoor", permission: { venue: ["admin"] } },
     });
     await expect(createRole).rejects.toThrow(/not allowed/i);
-    await addRole({ organizationId, name: "Läs", permissions: READ_ONLY });
+    await addRole({ organizationId, name: "Read", permissions: READ_ONLY });
     const user = await signUp();
-    await addMember({ organizationId, userId: user.userId, role: "Läs" });
+    await addMember({ organizationId, userId: user.userId, role: "Read" });
     const member = await getDb().member.findFirstOrThrow({
       where: { organizationId, userId: user.userId },
     });
@@ -90,6 +90,6 @@ describe("role resolution (ADR 0020)", () => {
     });
     await expect(assign).rejects.toThrow(/not allowed/i);
     const after = await getDb().member.findFirstOrThrow({ where: { id: member.id } });
-    expect(after.role).toBe("Läs");
+    expect(after.role).toBe("Read");
   });
 });

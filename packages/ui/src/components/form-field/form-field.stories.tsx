@@ -5,7 +5,7 @@ import { FormField } from "./form-field";
 const meta = {
   title: "Components/FormField",
   component: FormField,
-  args: { id: "venue-name", label: "Namn", children: null },
+  args: { id: "venue-name", label: "Name", children: null },
 } satisfies Meta<typeof FormField>;
 
 export default meta;
@@ -13,7 +13,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: (args) => (
-    <FormField {...args} description="Visas för gästerna." required>
+    <FormField {...args} description="Shown to guests." required>
       <Input id={args.id} />
     </FormField>
   ),
@@ -21,7 +21,7 @@ export const Default: Story = {
 
 export const WithError: Story = {
   render: (args) => (
-    <FormField {...args} error="Namn krävs">
+    <FormField {...args} error="Name is required">
       <Input id={args.id} aria-invalid />
     </FormField>
   ),

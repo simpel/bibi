@@ -65,7 +65,7 @@ function respond({ prompt }: PromptInput): StreamResult {
   if (create?.[1]) return toolStep({ toolName: "venue_create", input: { name: create[1].trim() } });
   if (/list venues/i.test(text)) return toolStep({ toolName: "venue_list", input: {} });
   if (/list skills/i.test(text)) return toolStep({ toolName: "skill_list", input: {} });
-  return textStep({ text: "Jag är en skriptad testassistent. Prova: create venue Test Hall." });
+  return textStep({ text: "I am a scripted test assistant. Try: create venue Test Hall." });
 }
 
 export function createE2eMockModel(): MockLanguageModelV4 {

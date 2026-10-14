@@ -12,7 +12,7 @@ type SearchValues = { q: string };
 
 /**
  * Free-text search; applied on submit (Enter), not per keystroke. A navigation form
- * (CLAUDE.md "Formulär"): shadcn `Form`, no server action and no toast.
+ * (CLAUDE.md "Forms"): shadcn `Form`, no server action and no toast.
  */
 export function LogSearch({ value, onSearch }: LogSearchProps) {
   const t = useTranslations("admin.logs.filters");

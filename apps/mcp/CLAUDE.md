@@ -1,54 +1,54 @@
-# @okazi/mcp – kontext för Claude
+# @okazi/mcp – context for Claude
 
-MCP-servern (ADR 0003, 0007). Tunn adapter: all logik och behörighet ligger i `@okazi/core`. Webben är MCP-klient mot denna server som inloggad användare, och externa klienter (Claude Desktop, Inspector) använder samma verktyg.
+The MCP server (ADR 0003, 0007). Thin adapter: all logic and permissions live in `@okazi/core`. The web app is an MCP client against this server as the signed-in user, and external clients (Claude Desktop, Inspector) use the same tools.
 
-## Verktyg
-- Genereras ur core-operationerna (`server/create-tools.ts`): ett verktyg per operation, namn = operationsnamn med `.` → `_` (`venue_create`, `item_list`, `search`). Beskrivning, in- och utdata härleds ur operationen (Zod → `z.toJSONSchema`, datum som `date-time`). Resultat i `structuredContent` plus samma JSON som text. Fel via core `toMcpError` (`isError`).
-- MCP-specifik metadata deklareras per feature: `src/features/<entitet>/mcp.ts` med `mcpTool({ operation, destructive?, idempotent?, summary? })` (`search` i `src/search-mcp.ts`). Registreras i `tools/meta-registry.ts`. Ny operation ≈ 5 rader. `listMcpToolNames()` används av paritetstestet.
-- **Dynamisk beskrivning (ADR 0021):** `item_list`, `item_get`, `item_create` och `item_update` får en organisationssektion i `tools/list`. `createTools` är cachad per embed och orgagnostisk, så `ListTools`-hanteraren (`create-mcp-server.ts`) anropar `withOrgDescriptions` (`tools/org-tool-descriptions.ts`) som läser `entityType.list` (base ITEM) och `vocabulary.list` som anroparen via `execute`, och `describeOrgFields` (`tools/describe-org-fields.ts`, ren funktion) bygger en rad per typ: beteenden samt fält (nyckel, namn, sort, required, tillåtna värden som `namn=id` för listor eller råa alternativ). Max ca 4 000 tecken, annars `(truncated, use entityType_list)`. Saknas `configuration:read` används den statiska beskrivningen (debug-logg `mcp.orgDescriptionsSkipped`). Inget särskilt db-spår.
-- Annotationer: `readOnlyHint` för queries, `destructiveHint` för archive, `idempotentHint` där det passar.
-- Kommandon med `approval: false` (`conversation_create`, `conversation_rename`, `message_append`) körs direkt även för AI-aktören och deras `outputSchema` saknar `approval_required`-varianten.
-- AI-verktyg: `conversation_*`, `message_list`/`message_append`, `skill_list`/`skill_get`/`skill_export` (läsning) samt `skill_create|update|publish|archive|share|import` (förslag + godkännande).
-- Generiska: `graphql_schema` (SDL + hint) och `graphql_query({ query, variables?, operationName? })`. Endast läsning: dokumentet parsas och mutation/subscription avvisas innan körning, max 10 000 tecken, svar max 200 000 tecken. Körs via `createGraphqlHandler` (development false: djup-/kostnadsgränser, ingen introspektion) med anroparens kontext.
-- Servern använder lågnivå-`Server` från `@modelcontextprotocol/sdk` 1.32.1 (inte `McpServer.registerTool`): Zod 4.1 stöds inte fullt ut av SDK:ns konvertering (datum, beskrivningar), och indata valideras ändå en gång av core `execute`.
+## Tools
+- Generated from the core operations (`server/create-tools.ts`): one tool per operation, name = operation name with `.` → `_` (`venue_create`, `item_list`, `search`). Description, input and output are derived from the operation (Zod → `z.toJSONSchema`, dates as `date-time`). Result in `structuredContent` plus the same JSON as text. Errors via core `toMcpError` (`isError`).
+- MCP-specific metadata is declared per feature: `src/features/<entity>/mcp.ts` with `mcpTool({ operation, destructive?, idempotent?, summary? })` (`search` in `src/search-mcp.ts`). Registered in `tools/meta-registry.ts`. A new operation is about 5 lines. `listMcpToolNames()` is used by the parity test.
+- **Dynamic description (ADR 0021):** `item_list`, `item_get`, `item_create` and `item_update` get an organization section in `tools/list`. `createTools` is cached per embed and org-agnostic, so the `ListTools` handler (`create-mcp-server.ts`) calls `withOrgDescriptions` (`tools/org-tool-descriptions.ts`), which reads `entityType.list` (base ITEM) and `vocabulary.list` as the caller via `execute`, and `describeOrgFields` (`tools/describe-org-fields.ts`, pure function) builds one line per type: behaviours and fields (key, name, kind, required, allowed values as `name=id` for vocabularies or raw options). Max about 4,000 characters, otherwise `(truncated, use entityType_list)`. If `configuration:read` is missing, the static description is used (debug log `mcp.orgDescriptionsSkipped`). No special db path.
+- Annotations: `readOnlyHint` for queries, `destructiveHint` for archive, `idempotentHint` where it fits.
+- Commands with `approval: false` (`conversation_create`, `conversation_rename`, `message_append`) run directly even for the AI actor, and their `outputSchema` has no `approval_required` variant.
+- AI tools: `conversation_*`, `message_list`/`message_append`, `skill_list`/`skill_get`/`skill_export` (read) and `skill_create|update|publish|archive|share|import` (proposal + approval).
+- Generic: `graphql_schema` (SDL + hint) and `graphql_query({ query, variables?, operationName? })`. Read-only: the document is parsed and mutation/subscription is rejected before execution, max 10,000 characters, response max 200,000 characters. Runs via `createGraphqlHandler` (development false: depth/cost limits, no introspection) with the caller's context.
+- The server uses the low-level `Server` from `@modelcontextprotocol/sdk` 1.32.1 (not `McpServer.registerTool`): Zod 4.1 is not fully supported by the SDK's conversion (dates, descriptions), and input is validated once anyway by core `execute`.
 
-## Godkännandeflöde (human-in-the-loop)
-- När `requiresApproval({ operation, actor })` är sant (AI-aktör + kommando) körs **inget**. Verktyget svarar (`structuredContent`, ingen `isError`):
+## Approval flow (human-in-the-loop)
+- When `requiresApproval({ operation, actor })` is true (AI actor + command), **nothing** runs. The tool responds (`structuredContent`, no `isError`):
   `{ status: "approval_required", operation, input, summary, approvalToken, expiresAt }`.
-  Input och behörighet kontrolleras först, så användaren får aldrig ett förslag som ändå skulle misslyckas.
-- `approvalToken` = `base64url(claims).base64url(HMAC-SHA256)` (`src/approval/`), nyckel `BETTER_AUTH_SECRET`, giltig 10 min, bunden till operation, indata (hash), organisation och användare. Indata ligger i token, så ingen server-state behövs.
-- **Webben anropar `approval_confirm({ approvalToken })` när användaren klickar Godkänn**, med användarens egna uppgifter och **utan** `x-okazi-actor: ai`. Modellen får inte och kan inte anropa det: verktyget är dolt i `tools/list` för AI-aktören och avvisas med FORBIDDEN om anroparen är `ai`.
-- `approval_confirm` verifierar token (signatur, utgång, org + användare), förbrukar den (engångs, per process) och kör operationen som aktör `ai` med token-ets `conversationId`. AuditLog får `actorType=AI`, `actorId=<användaren AI agerade för>`, `approvedBy=<godkännande användare>` (samma person, token är bunden till användaren) och `conversationId`.
-- Avbryt = släpp token (ingen anrop behövs). Utgången token: be modellen föreslå på nytt.
-- Fel vid bekräftelse: `FORBIDDEN` (ogiltig/utgången/fel användare/AI-anropare), `CONFLICT` (redan använd), `NOT_FOUND` (okänd operation) samt operationens egna fel.
+  Input and permissions are checked first, so the user is never shown a proposal that would fail anyway.
+- `approvalToken` = `base64url(claims).base64url(HMAC-SHA256)` (`src/approval/`), key `BETTER_AUTH_SECRET`, valid 10 min, bound to operation, input (hash), organization and user. The input is in the token, so no server state is needed.
+- **The web app calls `approval_confirm({ approvalToken })` when the user clicks Approve**, with the user's own credentials and **without** `x-okazi-actor: ai`. The model must not and cannot call it: the tool is hidden in `tools/list` for the AI actor and rejected with FORBIDDEN if the caller is `ai`.
+- `approval_confirm` verifies the token (signature, expiry, org + user), consumes it (single use, per process) and runs the operation as actor `ai` with the token's `conversationId`. AuditLog gets `actorType=AI`, `actorId=<the user the AI acted for>`, `approvedBy=<approving user>` (the same person, the token is bound to the user) and `conversationId`.
+- Cancel = drop the token (no call needed). Expired token: ask the model to propose again.
+- Errors on confirmation: `FORBIDDEN` (invalid/expired/wrong user/AI caller), `CONFLICT` (already used), `NOT_FOUND` (unknown operation) and the operation's own errors.
 
 ## HTTP
-- `src/http.ts`: `node:http`-server (`PORT`, standard 3001) som översätter till Web Request/Response (`src/http/`). Stateless Streamable HTTP, en server + transport per anrop.
-- `POST /mcp` – autentiserar med `@okazi/auth` `resolveExecuteContext({ headers })` (session, API-nyckel `okz_…`, OAuth-bearer). Saknad/ogiltig inloggning → 401 med `WWW-Authenticate: Bearer resource_metadata="<MCP_URL>/.well-known/oauth-protected-resource"`; FORBIDDEN → 403.
-- `GET /.well-known/oauth-protected-resource` (RFC 9728): `resource` = `<MCP_URL>/mcp`, `authorization_servers` = Better Auth-bas (`BETTER_AUTH_URL` + `/api/auth`).
-- `GET /health`. Övriga metoder på `/mcp` → 405. Webbläsaranrop (header `Origin`) tillåts bara från `WEB_URL`; CORS-preflight stöds.
+- `src/http.ts`: `node:http` server (`PORT`, default 3001) that translates to Web Request/Response (`src/http/`). Stateless Streamable HTTP, one server + transport per call.
+- `POST /mcp` – authenticates with `@okazi/auth` `resolveExecuteContext({ headers })` (session, API key `okz_…`, OAuth bearer). Missing/invalid login → 401 with `WWW-Authenticate: Bearer resource_metadata="<MCP_URL>/.well-known/oauth-protected-resource"`; FORBIDDEN → 403.
+- `GET /.well-known/oauth-protected-resource` (RFC 9728): `resource` = `<MCP_URL>/mcp`, `authorization_servers` = Better Auth base (`BETTER_AUTH_URL` + `/api/auth`).
+- `GET /health`. Other methods on `/mcp` → 405. Browser calls (header `Origin`) are allowed only from `WEB_URL`; CORS preflight is supported.
 
-## Ansluta en klient
-- HTTP (Inspector): `npx @modelcontextprotocol/inspector`, välj Streamable HTTP, URL `http://localhost:3001/mcp`, header `Authorization: Bearer okz_<api-nyckel>` (eller OAuth).
+## Connecting a client
+- HTTP (Inspector): `npx @modelcontextprotocol/inspector`, choose Streamable HTTP, URL `http://localhost:3001/mcp`, header `Authorization: Bearer okz_<api-key>` (or OAuth).
 - stdio (Claude Desktop `claude_desktop_config.json`):
   ```json
   { "mcpServers": { "okazi": {
     "command": "pnpm", "args": ["--filter", "@okazi/mcp", "dev:stdio"],
-    "cwd": "/sökväg/till/okazi",
+    "cwd": "/path/to/okazi",
     "env": { "OKAZI_API_KEY": "okz_…", "DATABASE_URL": "…", "BETTER_AUTH_SECRET": "…", "BETTER_AUTH_URL": "http://localhost:3000" } } } }
   ```
-  `src/stdio.ts` löser nyckeln en gång vid start (stdout är protokollet, loggning till stderr).
+  `src/stdio.ts` resolves the key once at startup (stdout is the protocol, logging goes to stderr).
 
-## Miljövariabler (alla via `@okazi/config`)
-`DATABASE_URL`, `BETTER_AUTH_SECRET` (signerar godkännandetoken), `BETTER_AUTH_URL`, `MCP_URL`, `WEB_URL`, `PORT` (3001), `OKAZI_API_KEY` (endast stdio), `WEB_OAUTH_CLIENT_ID` (AI-aktör).
+## Environment variables (all via `@okazi/config`)
+`DATABASE_URL`, `BETTER_AUTH_SECRET` (signs approval tokens), `BETTER_AUTH_URL`, `MCP_URL`, `WEB_URL`, `PORT` (3001), `OKAZI_API_KEY` (stdio only), `WEB_OAUTH_CLIENT_ID` (AI actor).
 
-## Skript
-`dev` (tsx watch), `dev:stdio`, `build` (tsup → `dist/`, workspace-paket bundlas, npm-paket är externa och listade i package.json), `start` (`node dist/http.js`), `start:stdio`, `typecheck`, `test`.
+## Scripts
+`dev` (tsx watch), `dev:stdio`, `build` (tsup → `dist/`, workspace packages are bundled, npm packages are external and listed in package.json), `start` (`node dist/http.js`), `start:stdio`, `typecheck`, `test`.
 
-## Att veta
-- `embed` (`src/embed.ts`) = `createEmbed()` från `@okazi/ai/embed` (AI Gateway, modellen vald i `/admin/ai-models`). Utan `AI_GATEWAY_API_KEY`: deterministisk platshållare utanför produktion, tydligt fel i produktion.
-- Engångstoken spåras i minnet per process. Flera instanser kräver delat lager för strikt engångsbruk (token är ändå bunden och giltig 10 min).
-- GraphQL-hanteraren får anroparens kontext via en intern relay-header (`graphql/context-relay.ts`), aldrig från klienten.
+## Good to know
+- `embed` (`src/embed.ts`) = `createEmbed()` from `@okazi/ai/embed` (AI Gateway, model chosen in `/admin/ai-models`). Without `AI_GATEWAY_API_KEY`: a deterministic placeholder outside production, a clear error in production.
+- Single-use tokens are tracked in memory per process. Multiple instances need a shared store for strict single use (the token is still bound and valid for 10 min).
+- The GraphQL handler gets the caller's context via an internal relay header (`graphql/context-relay.ts`), never from the client.
 
-## Tester
-Vitest mot riktig Postgres, in-memory-klient (`InMemoryTransport`). `test/parity.test.ts` är paritetstestet (REST, GraphQL, MCP, plus entitetsläsning i alla tre; `WEB_SURFACES` är kroken för webben). Entiteterna och hur de läses per yta står i `test/parity-entities.ts` (message läses via listor/grafkanten). Test-resolver för HTTP: header `x-test-org`.
+## Tests
+Vitest against a real Postgres, in-memory client (`InMemoryTransport`). `test/parity.test.ts` is the parity test (REST, GraphQL, MCP, plus entity reads in all three; `WEB_SURFACES` is the hook for the web app). The entities and how they are read per surface are in `test/parity-entities.ts` (message is read via lists/the graph edge). Test resolver for HTTP: header `x-test-org`.

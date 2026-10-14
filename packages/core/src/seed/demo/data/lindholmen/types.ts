@@ -1,90 +1,94 @@
 import type { DemoType } from "../../config-types";
 
-const languages = ["Svenska", "Engelska", "Tyska"];
-const orgnr = { name: "Orgnr", kind: "TEXT" } as const;
+const languages = ["Swedish", "English", "German"];
+const orgnr = { name: "Org no.", kind: "TEXT" } as const;
 
-/** Lindholmen's own types (`docs/demo-seed.md`: Artikeltyper and Övriga typer). */
+/** Lindholmen's own types (`docs/demo-seed.md`: item types and other types). */
 export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
-    name: "Konferensrum",
+    name: "Conference room",
     behaviours: ["BOOKABLE", "SETUPS", "PRICED"],
     fields: [
-      { name: "Våning", kind: "NUMBER" },
-      { name: "Yta m²", kind: "NUMBER" },
-      { name: "Takhöjd m", kind: "NUMBER" },
-      { name: "Dagsljus", kind: "BOOLEAN" },
-      { name: "Utsikt", kind: "CHOICE", list: "Utsikt" },
+      { name: "Floor", kind: "NUMBER" },
+      { name: "Area m²", kind: "NUMBER" },
+      { name: "Ceiling height m", kind: "NUMBER" },
+      { name: "Daylight", kind: "BOOLEAN" },
+      { name: "View", kind: "CHOICE", list: "View" },
     ],
   },
   {
     base: "ITEM",
-    name: "Rätt",
+    name: "Dish",
     fields: [
-      { name: "Allergener", kind: "MULTI_CHOICE", list: "Allergener" },
-      { name: "Kost", kind: "MULTI_CHOICE", list: "Kost" },
+      { name: "Allergens", kind: "MULTI_CHOICE", list: "Allergens" },
+      { name: "Diet", kind: "MULTI_CHOICE", list: "Diet" },
     ],
   },
   {
     base: "ITEM",
-    name: "Dryck",
+    name: "Drink",
     behaviours: ["PRICED"],
     fields: [
-      { name: "Allergener", kind: "MULTI_CHOICE", list: "Allergener" },
-      { name: "Alkoholhaltig", kind: "BOOLEAN" },
+      { name: "Allergens", kind: "MULTI_CHOICE", list: "Allergens" },
+      { name: "Alcoholic", kind: "BOOLEAN" },
     ],
   },
   {
     base: "ITEM",
-    name: "Måltid",
+    name: "Meal",
     behaviours: ["PRICED", "COMPOSABLE", "CHOICES"],
     fields: [
-      { name: "Serveringsform", kind: "CHOICE", options: ["Buffé", "Serverad", "Plockmat"] },
+      { name: "Service style", kind: "CHOICE", options: ["Buffet", "Plated", "Finger food"] },
     ],
   },
   {
     base: "ITEM",
-    name: "Visning",
+    name: "Tour",
     behaviours: ["PRICED", "COMPOSABLE", "CHOICES", "BOOKABLE"],
-    fields: [{ name: "Språk", kind: "MULTI_CHOICE", options: languages }],
+    fields: [{ name: "Language", kind: "MULTI_CHOICE", options: languages }],
   },
   {
     base: "ITEM",
     name: "Guide",
     behaviours: ["BOOKABLE"],
-    fields: [{ name: "Språk", kind: "MULTI_CHOICE", options: languages }],
+    fields: [{ name: "Language", kind: "MULTI_CHOICE", options: languages }],
   },
   {
     base: "ITEM",
-    name: "Utrustning",
+    name: "Equipment",
     behaviours: ["BOOKABLE", "PRICED"],
-    fields: [{ name: "Inventarienummer", kind: "TEXT" }],
+    fields: [{ name: "Inventory number", kind: "TEXT" }],
   },
   {
     base: "ITEM",
-    name: "Paket",
+    name: "Package",
     behaviours: ["PRICED", "COMPOSABLE", "CHOICES"],
-    fields: [{ name: "Minsta antal", kind: "NUMBER" }],
+    fields: [{ name: "Minimum quantity", kind: "NUMBER" }],
   },
-  { base: "CUSTOMER", name: "Företag", fields: [orgnr, { name: "Ramavtal", kind: "BOOLEAN" }] },
   {
     base: "CUSTOMER",
-    name: "Offentlig",
+    name: "Company",
+    fields: [orgnr, { name: "Framework agreement", kind: "BOOLEAN" }],
+  },
+  {
+    base: "CUSTOMER",
+    name: "Public sector",
     fields: [
       orgnr,
       { name: "Peppol-ID", kind: "TEXT" },
-      { name: "Kräver diarienummer", kind: "BOOLEAN" },
+      { name: "Requires case number", kind: "BOOLEAN" },
     ],
   },
-  { base: "CUSTOMER", name: "Förening", fields: [orgnr] },
-  { base: "BOOKING", name: "Konferens", fields: [{ name: "Syfte", kind: "TEXT" }] },
+  { base: "CUSTOMER", name: "Association", fields: [orgnr] },
+  { base: "BOOKING", name: "Conference", fields: [{ name: "Purpose", kind: "TEXT" }] },
   {
     base: "BOOKING",
     name: "Event",
     fields: [
       { name: "Dresscode", kind: "CHOICE", list: "Dresscode" },
-      { name: "Talare/underhållning", kind: "TEXT" },
+      { name: "Speaker/entertainment", kind: "TEXT" },
     ],
   },
-  { base: "BOOKING", name: "Visning", fields: [{ name: "Skolklass", kind: "BOOLEAN" }] },
+  { base: "BOOKING", name: "Tour", fields: [{ name: "School class", kind: "BOOLEAN" }] },
 ];

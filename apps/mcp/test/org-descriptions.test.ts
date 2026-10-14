@@ -24,19 +24,19 @@ describe("org-specific item tool descriptions", () => {
     await call({
       client: a,
       name: "fieldDefinition_create",
-      args: { entityTypeId: room.data.id, name: "Våning", kind: "NUMBER" },
+      args: { entityTypeId: room.data.id, name: "Floor", kind: "NUMBER" },
     });
     await call({
       client: b,
       name: "entityType_create",
-      args: { base: "ITEM", name: "Båt", behaviours: ["PRICED"] },
+      args: { base: "ITEM", name: "Boat", behaviours: ["PRICED"] },
     });
     const forA = await descriptionOf({ client: a, name: "item_create" });
     const forB = await descriptionOf({ client: b, name: "item_create" });
     expect(forA).toContain("Konferensrum");
-    expect(forA).toContain('vaning ("Våning", NUMBER');
-    expect(forA).not.toContain("Båt");
-    expect(forB).toContain("Båt");
+    expect(forA).toContain('floor ("Floor", NUMBER');
+    expect(forA).not.toContain("Boat");
+    expect(forB).toContain("Boat");
     expect(forB).not.toContain("Konferensrum");
     expect(await descriptionOf({ client: a, name: "item_list" })).toContain("Konferensrum");
     expect(await descriptionOf({ client: a, name: "venue_list" })).not.toContain("Konferensrum");

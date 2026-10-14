@@ -1,4 +1,4 @@
-// Namnhantering för gen-verktyget: PascalCase till camelCase, kebab-case och snake_case.
+// Name handling for the gen tool: PascalCase to camelCase, kebab-case and snake_case.
 export const ENTITY_NAME = /^[A-Z][A-Za-z0-9]*$/;
 
 export function deriveNames({ name }) {
@@ -11,10 +11,10 @@ export function deriveNames({ name }) {
   };
 }
 
-// Ersätter {{nyckel}} i mallen. Okänd nyckel är ett fel i mallen och stoppar generatorn.
+// Replaces {{key}} in the template. An unknown key is a template error and stops the generator.
 export function renderTemplate({ text, names }) {
   return text.replace(/\{\{(\w+)\}\}/g, (_match, key) => {
-    if (!(key in names)) throw new Error(`Okänd mallvariabel i tools/templates: ${key}`);
+    if (!(key in names)) throw new Error(`Unknown template variable in tools/templates: ${key}`);
     return names[key];
   });
 }

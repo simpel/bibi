@@ -11,7 +11,7 @@ import type { ItemFormData } from "./item-form-data";
 
 export type CreateItemButtonProps = { data: ItemFormData; typeId?: string | undefined };
 
-/** Opens the create-item dialog; also opens on `?create=1` (⌘K "Skapa artikel"). */
+/** Opens the create-item dialog; also opens on `?create=1` (⌘K "Create item"). */
 export function CreateItemButton({ data, typeId }: CreateItemButtonProps) {
   const t = useTranslations("item");
   const router = useRouter();

@@ -4,7 +4,7 @@ import { Input } from "./input";
 const meta = {
   title: "Components/Input",
   component: Input,
-  args: { placeholder: "Anläggningens namn" },
+  args: { placeholder: "Venue name" },
 } satisfies Meta<typeof Input>;
 
 export default meta;

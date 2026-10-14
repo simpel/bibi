@@ -10,11 +10,11 @@ const IMPORT =
 describe("graph traversal", () => {
   it("resolves venues { items } and item { venue }, hiding archived items", async () => {
     const gql = createClient({ context: testContext() });
-    const v = await gql({ query: SEED, variables: { v: { name: "Gården" } } });
+    const v = await gql({ query: SEED, variables: { v: { name: "The Farm" } } });
     const venueId = v.body.data.venueCreate.id;
     const entityTypeId = await createItemType({ gql });
     const ids: string[] = [];
-    for (const name of ["Stora salen", "Ateljén", "Köket"]) {
+    for (const name of ["Great hall", "Studio", "Kitchen"]) {
       const r = await gql({ query: SEED_ITEM, variables: { r: { entityTypeId, venueId, name } } });
       ids.push(r.body.data.itemCreate.id);
     }
@@ -26,8 +26,8 @@ describe("graph traversal", () => {
     });
     expect(nested.body.errors).toBeUndefined();
     const [venue] = nested.body.data.venues.items;
-    expect(venue.items.map((r: { name: string }) => r.name)).toEqual(["Ateljén", "Stora salen"]);
-    expect(venue.items[0].venue.name).toBe("Gården");
+    expect(venue.items.map((r: { name: string }) => r.name)).toEqual(["Great hall", "Studio"]);
+    expect(venue.items[0].venue.name).toBe("The Farm");
   });
 
   it("exposes item fields JSON, setups and the entity type with its fields", async () => {
@@ -82,13 +82,13 @@ describe("graph traversal", () => {
     });
     expect(imported.body.errors).toBeUndefined();
     const vocabulary = imported.body.data.vocabularyImportTemplate;
-    expect(vocabulary.name).toBe("Allergener");
+    expect(vocabulary.name).toBe("Allergens");
     expect(vocabulary.values).toHaveLength(14);
     const entityTypeId = await createItemType({ gql });
     await gql({
       query: `mutation($i: FieldDefinitionCreateInput!) { fieldDefinitionCreate(input: $i) { id } }`,
       variables: {
-        i: { entityTypeId, name: "Allergener", kind: "MULTI_CHOICE", vocabularyId: vocabulary.id },
+        i: { entityTypeId, name: "Allergens", kind: "MULTI_CHOICE", vocabularyId: vocabulary.id },
       },
     });
     const res = await gql({

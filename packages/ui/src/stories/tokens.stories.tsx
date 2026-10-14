@@ -65,7 +65,7 @@ function TokensPage() {
       <section className="grid gap-2">
         {FONT_TOKENS.map((name) => (
           <p key={name} className="text-lg" style={{ fontFamily: `var(--font-${name})` }}>
-            --font-{name}: Anläggning och rum
+            --font-{name}: Venues and rooms
           </p>
         ))}
       </section>

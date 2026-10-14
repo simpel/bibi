@@ -22,7 +22,7 @@ export type ConfirmDialogProps = {
 };
 
 /**
- * Destructive confirmation (archive). The outcome is a toast (CLAUDE.md "Formulär"); the dialog
+ * Destructive confirmation (archive). The outcome is a toast (CLAUDE.md "Forms"); the dialog
  * stays open while `pending` and the caller closes it on success.
  */
 export function ConfirmDialog(props: ConfirmDialogProps) {

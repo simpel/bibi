@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useToastAction } from "@/lib/use-toast-action";
 import { importRoleTemplateAction } from "../actions";
 
-/** Imports the "Konferensgård" role template; roles that already exist are skipped. */
+/** Imports the "Conference venue" role template; roles that already exist are skipped. */
 export function ImportRoleTemplateButton() {
   const t = useTranslations("role");
   const router = useRouter();

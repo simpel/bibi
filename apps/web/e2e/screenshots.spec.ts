@@ -24,14 +24,18 @@ async function shot({ page, mode, name }: ShotInput) {
 
 async function seed({ page }: { page: Page }) {
   await page.request.post("/api/v1/venues", {
-    data: { name: "Herrgården Solvik", city: "Göteborg", description: "Konferensgård vid sjön." },
+    data: {
+      name: "Herrgården Solvik",
+      city: "Göteborg",
+      description: "Conference estate by the lake.",
+    },
   });
-  await page.request.post("/api/v1/venues", { data: { name: "Aulan", city: "Lund" } });
+  await page.request.post("/api/v1/venues", { data: { name: "The Hall", city: "Lund" } });
   await page.request.post("/api/v1/skills", {
     data: {
-      name: "Rundtur",
-      description: "När en kund vill se lokalerna",
-      instructions: "## Steg\n\n1. Lista **anläggningar**\n2. Visa rum\n\n> Fråga om datum.",
+      name: "Round trip",
+      description: "When a customer wants to see the premises",
+      instructions: "## Steps\n\n1. List **venues**\n2. Show rooms\n\n> Ask about dates.",
       allowedTools: ["venue_list", "item_list"],
     },
   });
@@ -62,10 +66,10 @@ async function assistantShots({ page, mode }: { page: Page; mode: Mode }) {
 
 async function skillShots({ page, mode }: { page: Page; mode: Mode }) {
   await page.goto("/sv/skills");
-  await expect(page.getByRole("link", { name: "Rundtur" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Round trip" })).toBeVisible();
   await shot({ page, mode, name: "skills-list" });
-  await page.getByRole("link", { name: "Rundtur" }).click();
-  await expect(page.getByRole("heading", { name: "Rundtur", level: 1 })).toBeVisible();
+  await page.getByRole("link", { name: "Round trip" }).click();
+  await expect(page.getByRole("heading", { name: "Round trip", level: 1 })).toBeVisible();
   await shot({ page, mode, name: "skill-detail" });
   await page.goto("/sv/skills/new");
   await shot({ page, mode, name: "skill-form" });
@@ -82,7 +86,7 @@ for (const mode of MODES) {
     await page.goto("/sv/venues");
     await shot({ page, mode, name: "venues" });
     await page.keyboard.press("Control+k");
-    await page.getByPlaceholder("Sök eller skriv ett kommando...").fill("vilka lokaler finns");
+    await page.getByPlaceholder("Sök eller skriv ett kommando...").fill("which rooms are there");
     await shot({ page, mode, name: "command-bar" });
     await page.keyboard.press("Escape");
     await assistantShots({ page, mode });

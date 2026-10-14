@@ -1,19 +1,19 @@
 ---
 name: tenancy-review
-description: Granska en ändring för multi-tenant-läckor, behörighet, audit och AI-godkännande. Använd före merge av ändringar i core, db, auth, MCP eller godkännandeflödet.
+description: Review a change for multi-tenant leaks, permissions, audit and AI approval. Use before merging changes to core, db, auth, MCP or the approval flow.
 ---
 
-# Tenancy- och säkerhetsgranskning
+# Tenancy and security review
 
-Underlag: ADR 0004 (multi-tenancy), 0005 (auth), 0006 (databaskonventioner), 0007 (AI-first).
+Basis: ADR 0004 (multi-tenancy), 0005 (auth), 0006 (database conventions), 0007 (AI-first).
 
-Kontrollera i diffen:
-- **Scoping:** all dataåtkomst går via `context.db` (org-scopad klient). Ingen rå `@okazi/db`-klient i core-handlers, adaptrar eller webben. Nya modeller finns i `ORG_SCOPED_MODELS` och har `organizationId`.
-- **Behörighet:** varje operation har `permission`. Adaptrar kringgår inte `execute`. Inga egna `ExecuteContext`.
-- **Audit:** varje command anropar `context.recordChange`. `actor` (`user`/`ai`), `conversationId` och `approvedBy` sätts rätt.
-- **AI:** mutationer från assistenten returnerar `approval_required`. AI-aktören accepteras bara för assistentens OAuth-klient. Ingen särskild väg in i tjänstelagret.
-- **Läsning:** sök och listor filtrerar `status` (mjuk radering) och synlighet (`filter-visible-hits`). Inga cross-org-id:n via parametrar.
-- **Gränser:** Zod på all input (HTTP, GraphQL-argument, MCP, env, AI-output). Env bara via `@okazi/config`. Inga hemligheter i loggar eller felmeddelanden.
-- **Tester:** isoleringstest (`apps/mcp/test/isolation.test.ts`) täcker ny entitet med två organisationer.
+Check in the diff:
+- **Scoping:** all data access goes through `context.db` (org-scoped client). No raw `@okazi/db` client in core handlers, adapters or the web app. New models are in `ORG_SCOPED_MODELS` and have `organizationId`.
+- **Permissions:** every operation has `permission`. Adapters do not bypass `execute`. No custom `ExecuteContext`.
+- **Audit:** every command calls `context.recordChange`. `actor` (`user`/`ai`), `conversationId` and `approvedBy` are set correctly.
+- **AI:** mutations from the assistant return `approval_required`. The AI actor is accepted only for the assistant's OAuth client. No special path into the service layer.
+- **Reads:** search and lists filter `status` (soft delete) and visibility (`filter-visible-hits`). No cross-org ids via parameters.
+- **Boundaries:** Zod on all input (HTTP, GraphQL arguments, MCP, env, AI output). Env only via `@okazi/config`. No secrets in logs or error messages.
+- **Tests:** the isolation test (`apps/mcp/test/isolation.test.ts`) covers the new entity with two organizations.
 
-Rapportera fynd med fil:rad, scenario och föreslagen åtgärd. Gör ingen ändring utan att fråga.
+Report findings with file:line, scenario and suggested fix. Make no changes without asking.

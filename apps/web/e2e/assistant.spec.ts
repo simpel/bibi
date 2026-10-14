@@ -61,28 +61,28 @@ test("a read tool renders as a venue table with links; history keeps the convers
   page,
 }) => {
   await signUpWithOrganization({ page, name: "Lista AB" });
-  await page.request.post("/api/v1/venues", { data: { name: "Aulan", city: "Göteborg" } });
+  await page.request.post("/api/v1/venues", { data: { name: "The Hall", city: "Göteborg" } });
   await openAssistant({ page });
   await sendChat({ page, text: "list venues" });
   const table = page.locator('[data-slot="venue-table"]');
-  await expect(table.getByRole("link", { name: "Aulan" })).toBeVisible();
+  await expect(table.getByRole("link", { name: "The Hall" })).toBeVisible();
   await expect(page.getByText("Klart. Se resultatet ovan.")).toBeVisible();
-  await table.getByRole("link", { name: "Aulan" }).click();
+  await table.getByRole("link", { name: "The Hall" }).click();
   await expect(page).toHaveURL(/\/sv\/venues\/[^/]+$/);
-  await expect(page.getByRole("heading", { name: "Aulan" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "The Hall" })).toBeVisible();
 
   const panel = page.locator(PANEL);
   await panel.getByRole("button", { name: "Tidigare konversationer" }).click();
   await expect(panel.locator('[data-slot="conversation-row"]')).toHaveCount(1);
   await panel.getByRole("button", { name: "Byt namn" }).click();
-  await panel.getByLabel("Konversationens namn").fill("Mina anläggningar");
+  await panel.getByLabel("Konversationens namn").fill("My venues");
   await panel.getByRole("button", { name: "Spara" }).click();
-  await expect(panel.getByText("Mina anläggningar")).toBeVisible();
+  await expect(panel.getByText("My venues")).toBeVisible();
 
   await panel.getByRole("button", { name: "Ny konversation" }).first().click();
   await expect(page.getByText("Vad kan jag hjälpa dig med?")).toBeVisible();
   await panel.getByRole("button", { name: "Tidigare konversationer" }).click();
-  await panel.getByText("Mina anläggningar").click();
+  await panel.getByText("My venues").click();
   await expect(panel.locator('[data-slot="venue-table"]')).toBeVisible();
 
   await panel.getByRole("button", { name: "Tidigare konversationer" }).click();
@@ -93,7 +93,7 @@ test("a read tool renders as a venue table with links; history keeps the convers
 
 test("⌘K asks the assistant a one-shot question and opens the panel on it", async ({ page }) => {
   await signUpWithOrganization({ page, name: "Kommando AB" });
-  await page.request.post("/api/v1/venues", { data: { name: "Salongen" } });
+  await page.request.post("/api/v1/venues", { data: { name: "The Salon" } });
   await expect(page.locator(PANEL)).toHaveCount(0);
 
   await page.keyboard.press("Control+k");
@@ -109,7 +109,7 @@ test("⌘K asks the assistant a one-shot question and opens the panel on it", as
     page
       .locator(PANEL)
       .locator('[data-slot="venue-table"]')
-      .getByRole("link", { name: "Salongen" }),
+      .getByRole("link", { name: "The Salon" }),
   ).toBeVisible();
 });
 
@@ -127,7 +127,7 @@ test("English strings, shortcut toggle and the mobile sheet", async ({ page }) =
   await page.getByRole("button", { name: "Open the assistant" }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.getByRole("button", { name: "Show all venues" }).click();
-  await expect(page.getByText(/skriptad testassistent/)).toBeVisible();
+  await expect(page.getByText(/scripted test assistant/)).toBeVisible();
 });
 
 test("the approval endpoint refuses an invalid token", async ({ page }) => {

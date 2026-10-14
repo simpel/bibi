@@ -1,16 +1,16 @@
 ---
 name: parity-check
-description: Felsök ett rött paritetstest eller verifiera 1:1-paritet mellan web, GraphQL, REST och MCP. Använd när `pnpm test` fallerar i paritet eller efter att en operation lagts till.
+description: Debug a red parity test or verify 1:1 parity between web, GraphQL, REST and MCP. Use when `pnpm test` fails in parity or after an operation has been added.
 ---
 
-# Paritetskontroll
+# Parity check
 
-1. Kör `pnpm --filter @okazi/mcp test -- parity` (testfilerna: `apps/mcp/test/parity.test.ts`, `parity-graphql.ts`, `parity-rest.ts`, `parity-entities.ts`) och `pnpm --filter @okazi/web test -- web-surfaces`, `pnpm --filter @okazi/api test -- parity`, `pnpm --filter @okazi/ai test -- ui-contract`.
-2. Mappa felet till saknad yta:
-   - Saknas i REST: `packages/api/src/features/<entitet>/rest.ts`.
-   - Saknas i GraphQL: `packages/graphql/src/features/<entitet>/graphql.ts` (`markExposed` anropas av `*FromOperation`).
-   - Saknas i MCP: `apps/mcp/src/features/<entitet>/mcp.ts`.
-   - Saknas i webben: rad i `apps/web/src/features/web-surfaces.ts`, eller `UI_EXEMPT` med skäl.
-   - Saknas generative UI: rad i `packages/ai/src/ui-contract/tool-ui-registry.ts`, eller `GENERIC_UI_TOOLS`.
-3. Åtgärda genom att lägga till ytan. Ta aldrig bort en operation eller lägg undantag bara för att få grönt.
-4. Kör `pnpm check:structure` (kräver `graphql.ts`, `rest.ts`, `mcp.ts` per kärnentitet) och `pnpm test` igen.
+1. Run `pnpm --filter @okazi/mcp test -- parity` (test files: `apps/mcp/test/parity.test.ts`, `parity-graphql.ts`, `parity-rest.ts`, `parity-entities.ts`) and `pnpm --filter @okazi/web test -- web-surfaces`, `pnpm --filter @okazi/api test -- parity`, `pnpm --filter @okazi/ai test -- ui-contract`.
+2. Map the failure to the missing surface:
+   - Missing in REST: `packages/api/src/features/<entity>/rest.ts`.
+   - Missing in GraphQL: `packages/graphql/src/features/<entity>/graphql.ts` (`markExposed` is called by `*FromOperation`).
+   - Missing in MCP: `apps/mcp/src/features/<entity>/mcp.ts`.
+   - Missing in web: a line in `apps/web/src/features/web-surfaces.ts`, or `UI_EXEMPT` with a reason.
+   - Missing generative UI: a line in `packages/ai/src/ui-contract/tool-ui-registry.ts`, or `GENERIC_UI_TOOLS`.
+3. Fix it by adding the surface. Never remove an operation or add exemptions just to get green.
+4. Run `pnpm check:structure` (requires `graphql.ts`, `rest.ts`, `mcp.ts` per core entity) and `pnpm test` again.

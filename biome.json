@@ -13,7 +13,7 @@
       "!**/generated",
       "!**/*.generated.*",
       "!packages/i18n/messages/*.json",
-      "!docs/artefakter"
+      "!docs/artifacts"
     ]
   },
   "css": {

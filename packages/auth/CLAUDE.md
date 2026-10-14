@@ -1,55 +1,55 @@
-# @okazi/auth – kontext för Claude
+# @okazi/auth – context for Claude
 
-Better Auth 1.7.7 (Prisma-adapter) + plugins: e-post/lösenord, magic link, e-post-OTP, organization, API-nyckel (`@better-auth/api-key`), MCP/OAuth 2.1 (`@better-auth/mcp` + `jwt` + `cimd`). Se ADR 0004 och 0005. Säkerhetskritiskt: ändringar granskas på Opus-nivå.
+Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email OTP, organization, API key (`@better-auth/api-key`), MCP/OAuth 2.1 (`@better-auth/mcp` + `jwt` + `cimd`). See ADR 0004 and 0005. Security-critical: changes are reviewed at Opus level.
 
-## Kontraktet
-- `resolveExecuteContext({ headers })` → `Result<ExecuteContext>` är den **enda** uppslagningen av anroparen för webb, GraphQL, REST och MCP. Bygg aldrig `createExecuteContext` själv i en yta.
-  - Ordning: `x-api-key` / `Authorization: Bearer okz_…` (API-nyckel) → `Authorization: Bearer <jwt>` (OAuth-token) → sessionscookie.
-  - Org: session = `session.activeOrganizationId`; API-nyckel = `metadata.organizationId`; OAuth = claim `okazi_org` (aktiv org när användaren godkände klienten).
-  - Roller läses **live** från `member` vid varje anrop och löses till `permissions` (`resolve/role-permissions.ts`): `owner` = allt, övriga = unionen av organisationens aktiva `organizationRole`-rader. Okända/arkiverade roller ger inget (ADR 0020).
-  - API-nyckel: `metadata.role` (ett rollnamn, aldrig `owner`). Effektiva behörigheter = medlemmens ∩ nyckelrollens, båda live.
-  - `UNAUTHENTICATED` = saknad/ogiltig credential. `FORBIDDEN` = ingen org, inte medlem, eller otillåten AI-aktör.
-- `getAuth()` (lazy singleton), `authHandler` (`export const { GET, POST } = authHandler;` i `app/api/auth/[...all]/route.ts`), `requireSession({ headers })`, `createOrgApiKey({ headers, organizationId, name, role })`.
-- Webbklient: `createAuthClient({})` från `@okazi/auth/client` (importerar inget serverkod).
-- `Organization.id` = `organizationId` på alla affärsrader. Ingen FK (Better Auth äger tabellerna).
+## The contract
+- `resolveExecuteContext({ headers })` → `Result<ExecuteContext>` is the **only** caller lookup for web, GraphQL, REST and MCP. Never build `createExecuteContext` yourself in a surface.
+  - Order: `x-api-key` / `Authorization: Bearer okz_…` (API key) → `Authorization: Bearer <jwt>` (OAuth token) → session cookie.
+  - Org: session = `session.activeOrganizationId`; API key = `metadata.organizationId`; OAuth = claim `okazi_org` (the active org when the user approved the client).
+  - Roles are read **live** from `member` on every call and resolved to `permissions` (`resolve/role-permissions.ts`): `owner` = everything, others = the union of the organization's active `organizationRole` rows. Unknown/archived roles give nothing (ADR 0020).
+  - API key: `metadata.role` (a role name, never `owner`). Effective permissions = the member's ∩ the key role's, both live.
+  - `UNAUTHENTICATED` = missing/invalid credential. `FORBIDDEN` = no org, not a member, or a disallowed AI actor.
+- `getAuth()` (lazy singleton), `authHandler` (`export const { GET, POST } = authHandler;` in `app/api/auth/[...all]/route.ts`), `requireSession({ headers })`, `createOrgApiKey({ headers, organizationId, name, role })`.
+- Web client: `createAuthClient({})` from `@okazi/auth/client` (imports no server code).
+- `Organization.id` = `organizationId` on all business rows. No FK (Better Auth owns the tables).
 
-## Plattformsadmin (ADR 0015)
-- Admin-plugin: `user.role` (`user`/`admin`) och ban. **Alla** `/admin/*`-endpoints är avstängda (`DISABLED_ADMIN_PATHS`). Roller sätts med `pnpm --filter @okazi/auth grant-admin <email> [--revoke]` (`setPlatformAdmin`, skriver AuditLog).
-- `resolvePlatformContext({ headers })`: endast sessionscookie, rollen läses live (`isPlatformAdmin`), impersonerade sessioner nekas. API-nycklar och OAuth-token ger `FORBIDDEN`.
-- `auth.prisma`-fälten för pluginet är handlagda: `auth:generate` misslyckas med `withoutDatabase` (minnesadapter).
+## Platform admin (ADR 0015)
+- Admin plugin: `user.role` (`user`/`admin`) and ban. **All** `/admin/*` endpoints are disabled (`DISABLED_ADMIN_PATHS`). Roles are set with `pnpm --filter @okazi/auth grant-admin <email> [--revoke]` (`setPlatformAdmin`, writes AuditLog).
+- `resolvePlatformContext({ headers })`: session cookie only, the role is read live (`isPlatformAdmin`), impersonated sessions are denied. API keys and OAuth tokens give `FORBIDDEN`.
+- The `auth.prisma` fields for the plugin are hand-written: `auth:generate` fails with `withoutDatabase` (memory adapter).
 
-## Förtroendegräns: AI-aktör
-- `x-okazi-actor: ai` + `x-okazi-conversation-id` ger `actor = { type: "ai", userId, conversationId }` (kommandon kräver då godkännande).
-- Accepteras **endast** för OAuth-tokens vars `azp` är en förstapartsklient med `allowsAiActor: true` i `FIRST_PARTY_CLIENTS` (i dag bara `assistant` = `WEB_OAUTH_CLIENT_ID`). Cookie, API-nyckel, okända och övriga OAuth-klienter → `FORBIDDEN`.
-- En AI-begäran som inte kan godtas nedgraderas aldrig tyst till `user` (då skulle godkännandet hoppas över).
+## Trust boundary: AI actor
+- `x-okazi-actor: ai` + `x-okazi-conversation-id` give `actor = { type: "ai", userId, conversationId }` (commands then require approval).
+- Accepted **only** for OAuth tokens whose `azp` is a first-party client with `allowsAiActor: true` in `FIRST_PARTY_CLIENTS` (today only `assistant` = `WEB_OAUTH_CLIENT_ID`). Cookie, API key, unknown and other OAuth clients → `FORBIDDEN`.
+- An AI request that cannot be accepted is never silently downgraded to `user` (the approval would then be skipped).
 
-## Förstapartstoken (`src/first-party/`)
-- `getFirstPartyAccessToken({ client, headers, caller })` → `Result<string>`: MCP-token åt användaren bakom sessionscookien, utfärdad till en av Okazis egna OAuth-klienter. Kör authorization code + PKCE **i processen** genom `getAuth().handler` (authorize med enbart `cookie`-headern, sedan `/oauth2/token`). Ingen egen signering, ingen webbläsarrunda.
-- `client` är en nyckel i `FIRST_PARTY_CLIENTS` (`first-party/clients.ts`, inte exporterad): `clientId` (från config), `scope` (`openid`, ingen refresh-token), `redirectPath` (måste vara registrerad på klienten men följs aldrig: koden läses ur authorize-svaret) och `allowsAiActor`. Ny klient (⌘K, schemalagda skills, integrationer) = en post här + provisionering med `skipConsent`.
-- I dag finns bara `assistant`: `WEB_OAUTH_CLIENT_ID`, redirect `${WEB_URL}/api/assistant/oauth/callback` (`provision:oauth`), `allowsAiActor: true`.
-- Token får `okazi_org` = sessionens aktiva org och `azp` = klientens id. Cache per process, nyckel (klient, användare, org) där användare+org kommer från `resolveExecuteContext`; max 1000 poster, förnyas 2 min före utgång (15 min).
-- Förtroendegräns: den som har sessionscookien kan redan allt token tillåter. `assistant`-token ger bara *dessutom* AI-läget, som är mer begränsat (kommandon blir förslag). `approval_confirm` anropas med samma token men **utan** AI-headrar, och bara när användaren klickat Godkänn.
-- Export: `getFirstPartyAccessToken` + typerna `GetFirstPartyAccessToken`, `GetFirstPartyAccessTokenInput`, `FirstPartyClient`. Serverkod (`node:crypto`, Better Auth-servern): importera aldrig i klientkomponenter.
+## First-party token (`src/first-party/`)
+- `getFirstPartyAccessToken({ client, headers, caller })` → `Result<string>`: an MCP token for the user behind the session cookie, issued to one of Okazi's own OAuth clients. Runs authorization code + PKCE **in-process** through `getAuth().handler` (authorize with only the `cookie` header, then `/oauth2/token`). No custom signing, no browser round trip.
+- `client` is a key in `FIRST_PARTY_CLIENTS` (`first-party/clients.ts`, not exported): `clientId` (from config), `scope` (`openid`, no refresh token), `redirectPath` (must be registered on the client but is never followed: the code is read from the authorize response) and `allowsAiActor`. A new client (⌘K, scheduled skills, integrations) = one entry here + provisioning with `skipConsent`.
+- Today only `assistant` exists: `WEB_OAUTH_CLIENT_ID`, redirect `${WEB_URL}/api/assistant/oauth/callback` (`provision:oauth`), `allowsAiActor: true`.
+- The token gets `okazi_org` = the session's active org and `azp` = the client's id. Cached per process, key (client, user, org) where user+org come from `resolveExecuteContext`; max 1000 entries, renewed 2 min before expiry (15 min).
+- Trust boundary: whoever has the session cookie can already do everything the token allows. The `assistant` token only *additionally* gives the AI mode, which is more limited (commands become proposals). `approval_confirm` is called with the same token but **without** AI headers, and only when the user has clicked Approve.
+- Exports: `getFirstPartyAccessToken` + the types `GetFirstPartyAccessToken`, `GetFirstPartyAccessTokenInput`, `FirstPartyClient`. Server code (`node:crypto`, the Better Auth server): never import in client components.
 
 ## OAuth/MCP
-- Tokens är JWT med `aud` = `${MCP_URL}/mcp`, `iss` = `${BETTER_AUTH_URL}/api/auth`, 15 min livslängd. Endast `authorization_code` + `refresh_token` (ingen `client_credentials`). DPoP-bundna och opaka tokens avvisas.
-- Saknar sessionen aktiv org skickas användaren till `/select-organization` före consent. Webben behöver sidorna `/login`, `/oauth/consent`, `/select-organization`, `/accept-invitation/[id]`.
-- Användare får inte skapa OAuth-klienter via API. Webbklienten provisioneras av drift och dess id sätts i `WEB_OAUTH_CLIENT_ID`.
+- Tokens are JWTs with `aud` = `${MCP_URL}/mcp`, `iss` = `${BETTER_AUTH_URL}/api/auth`, 15 min lifetime. Only `authorization_code` + `refresh_token` (no `client_credentials`). DPoP-bound and opaque tokens are rejected.
+- If the session has no active org, the user is sent to `/select-organization` before consent. The web app needs the pages `/login`, `/oauth/consent`, `/select-organization`, `/accept-invitation/[id]`.
+- Users may not create OAuth clients via the API. The web client is provisioned by ops and its id is set in `WEB_OAUTH_CLIENT_ID`.
 
-## Roller och behörigheter (ADR 0020)
-- Organization-plugin med `dynamicAccessControl`: roller per org i `organizationRole` (`permission` = JSON `PermissionSet`, plus `status`/`createdBy`). Raderna skrivs **bara** av core `role.*`.
-- Enda statiska roll är `owner`. Better Auths `admin`/`member` är överskrivna utan behörigheter.
-- Better Auths egna rollvägar är stängda: `owner` saknar `ac`, och `updateMemberRole` blockeras med `organizationHooks.beforeUpdateMemberRole` (skaparen kringgår annars kontrollen). Roller tilldelas via `member.assignRole`.
-- Okazi och Better Auth delar resursnamnet `member`; satserna slås ihop per resurs i `permissions.ts`, skrivs aldrig över.
+## Roles and permissions (ADR 0020)
+- Organization plugin with `dynamicAccessControl`: roles per org in `organizationRole` (`permission` = JSON `PermissionSet`, plus `status`/`createdBy`). The rows are written **only** by core `role.*`.
+- The only static role is `owner`. Better Auth's `admin`/`member` are overridden without permissions.
+- Better Auth's own role paths are closed: `owner` has no `ac`, and `updateMemberRole` is blocked with `organizationHooks.beforeUpdateMemberRole` (the creator would otherwise bypass the check). Roles are assigned via `member.assignRole`.
+- Okazi and Better Auth share the resource name `member`; the statements are merged per resource in `permissions.ts`, never overwritten.
 
-## Lägga till en behörighet
-1. Lägg resursen i `RESOURCES` i `packages/core/src/permissions/resources.ts`.
-2. Använd `"<resurs>:read|write|admin"` som `permission` i core-operationen.
-3. Lägg till den i rollmallarna (`packages/core/src/templates/roles/`) där den hör hemma. Befintliga org-roller får den inte automatiskt.
+## Adding a permission
+1. Add the resource to `RESOURCES` in `packages/core/src/permissions/resources.ts`.
+2. Use `"<resource>:read|write|admin"` as `permission` in the core operation.
+3. Add it to the role templates (`packages/core/src/templates/roles/`) where it belongs. Existing org roles do not get it automatically.
 
-Resurser i dag: `venue`, `item`, `configuration`, `search`, `conversation`, `skill`, `role`, `member`.
+Resources today: `venue`, `item`, `configuration`, `search`, `conversation`, `skill`, `role`, `member`.
 
-## Schema och tester
-- `auth.prisma` genereras: `pnpm --filter @okazi/auth auth:generate`. Ta bort `generator`/`datasource` ur resultatet och kör sedan `pnpm --filter @okazi/db migrate:dev --name <namn>`.
-- Mail: `sendMail({ to, subject, text })` via `SMTP_URL` (mailpit). Tester byter avsändare med `setMailSender`.
-- Tester körs mot riktig Postgres, inklusive ett fullständigt OAuth-flöde (authorize + PKCE + token) genom `getAuth().handler`.
+## Schema and tests
+- `auth.prisma` is generated: `pnpm --filter @okazi/auth auth:generate`. Remove `generator`/`datasource` from the result, then run `pnpm --filter @okazi/db migrate:dev --name <name>`.
+- Mail: `sendMail({ to, subject, text })` via `SMTP_URL` (mailpit). Tests swap the sender with `setMailSender`.
+- Tests run against a real Postgres, including a full OAuth flow (authorize + PKCE + token) through `getAuth().handler`.

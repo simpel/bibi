@@ -29,9 +29,9 @@ describe("conversations, messages and skills over REST", () => {
       method: "PATCH",
       path: `/conversations/${id}`,
       org,
-      body: { title: "Ny" },
+      body: { title: "New" },
     });
-    expect(renamed.json.title).toBe("Ny");
+    expect(renamed.json.title).toBe("New");
     const list = await call({ path: "/conversations", org });
     expect(list.json.items.map((c: { id: string }) => c.id)).toEqual([id]);
 

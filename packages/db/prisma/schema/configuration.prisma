@@ -30,7 +30,7 @@ enum FieldKind {
   MULTI_CHOICE
 }
 
-/// Typ – an organization's own type for a base entity, e.g. Konferensrum, Rätt or Båt.
+/// Type – an organization's own type for a base entity, e.g. Conference room, Dish or Boat.
 model EntityType {
   id             String           @id @default(cuid(2))
   organizationId String
@@ -48,7 +48,7 @@ model EntityType {
   @@index([organizationId, base, status])
 }
 
-/// Fältdefinition – one field of a type. Values live as JSON on the row, keyed by `key`.
+/// Field definition – one field of a type. Values live as JSON on the row, keyed by `key`.
 model FieldDefinition {
   id             String       @id @default(cuid(2))
   organizationId String
@@ -72,7 +72,7 @@ model FieldDefinition {
   @@index([organizationId, entityTypeId, status])
 }
 
-/// Lista – an organization's own word list, e.g. Allergener, Kost or Hamn.
+/// List – an organization's own word list, e.g. Allergens, Diet or Harbor.
 model Vocabulary {
   id             String            @id @default(cuid(2))
   organizationId String
@@ -88,7 +88,7 @@ model Vocabulary {
   @@index([organizationId, status])
 }
 
-/// Listvärde – one value of a list, e.g. Gluten.
+/// List value – one value of a list, e.g. Gluten.
 model VocabularyValue {
   id             String       @id @default(cuid(2))
   organizationId String
@@ -105,7 +105,7 @@ model VocabularyValue {
   @@index([organizationId, vocabularyId, status])
 }
 
-/// Uppställning – an organization's own setup with changeover time, e.g. Bio or U-bord.
+/// Setup – an organization's own setup with changeover time, e.g. Theatre or U-shape.
 model Setup {
   id                String       @id @default(cuid(2))
   organizationId    String

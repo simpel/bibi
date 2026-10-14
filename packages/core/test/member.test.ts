@@ -6,8 +6,8 @@ import { addTestMember, testOrg } from "./org-helpers";
 const withRoles = async () => {
   const context = await testOrg();
   for (const [name, permissions] of [
-    ["Kök", { venue: ["read"] }],
-    ["Kökschef", { venue: ["write"] }],
+    ["Kitchen", { venue: ["read"] }],
+    ["Head chef", { venue: ["write"] }],
     ["Admin", { role: ["admin"], member: ["admin"], venue: ["admin"] }],
   ] as const) {
     unwrap({
@@ -21,38 +21,38 @@ describe("member operations (ADR 0020)", () => {
   it("lists members with roles and filters on the exact role name", async () => {
     const context = await withRoles();
     await addTestMember({ context, role: "owner", name: "Anna" });
-    await addTestMember({ context, role: "Kökschef", name: "Ali" });
-    await addTestMember({ context, role: "Säljare,Kök", name: "Erik" });
+    await addTestMember({ context, role: "Head chef", name: "Ali" });
+    await addTestMember({ context, role: "Sales,Kitchen", name: "Erik" });
     const all = unwrap({ result: await execute({ operation: listMembers, input: {}, context }) });
     expect(all.items.map((member) => [member.name, member.roles])).toEqual([
       ["Anna", ["owner"]],
-      ["Ali", ["Kökschef"]],
-      ["Erik", ["Säljare", "Kök"]],
+      ["Ali", ["Head chef"]],
+      ["Erik", ["Sales", "Kitchen"]],
     ]);
     const kitchen = unwrap({
-      result: await execute({ operation: listMembers, input: { role: "Kök" }, context }),
+      result: await execute({ operation: listMembers, input: { role: "Kitchen" }, context }),
     });
     expect(kitchen.items.map((member) => member.name)).toEqual(["Erik"]);
   });
 
   it("assigns existing roles and audits the change", async () => {
     const context = await withRoles();
-    const id = await addTestMember({ context, role: "Kök" });
+    const id = await addTestMember({ context, role: "Kitchen" });
     const member = unwrap({
       result: await execute({
         operation: assignMemberRole,
-        input: { id, roles: ["Kökschef"] },
+        input: { id, roles: ["Head chef"] },
         context,
       }),
     });
-    expect(member.roles).toEqual(["Kökschef"]);
+    expect(member.roles).toEqual(["Head chef"]);
     const audit = await context.db.auditLog.findFirst({
       where: { operation: "member.assignRole" },
     });
-    expect(audit?.before).toMatchObject({ roles: ["Kök"] });
+    expect(audit?.before).toMatchObject({ roles: ["Kitchen"] });
     const unknown = await execute({
       operation: assignMemberRole,
-      input: { id, roles: ["Finns inte"] },
+      input: { id, roles: ["Does not exist"] },
       context,
     });
     expect(errorCode({ result: unknown })).toBe("VALIDATION");
@@ -63,11 +63,11 @@ describe("member operations (ADR 0020)", () => {
     const ownerId = await addTestMember({ context, role: "owner" });
     const demote = await execute({
       operation: assignMemberRole,
-      input: { id: ownerId, roles: ["Kök"] },
+      input: { id: ownerId, roles: ["Kitchen"] },
       context,
     });
     expect(errorCode({ result: demote })).toBe("FORBIDDEN");
-    const id = await addTestMember({ context, role: "Kök" });
+    const id = await addTestMember({ context, role: "Kitchen" });
     const promote = await execute({
       operation: assignMemberRole,
       input: { id, roles: ["owner"] },
@@ -88,7 +88,7 @@ describe("member operations (ADR 0020)", () => {
 
   it("never reaches members of another organization", async () => {
     const context = await withRoles();
-    const id = await addTestMember({ context, role: "Kök" });
+    const id = await addTestMember({ context, role: "Kitchen" });
     const other = await withRoles();
     const list = unwrap({
       result: await execute({ operation: listMembers, input: {}, context: other }),
@@ -96,7 +96,7 @@ describe("member operations (ADR 0020)", () => {
     expect(list.items).toEqual([]);
     const assign = await execute({
       operation: assignMemberRole,
-      input: { id, roles: ["Kökschef"] },
+      input: { id, roles: ["Head chef"] },
       context: other,
     });
     expect(errorCode({ result: assign })).toBe("NOT_FOUND");

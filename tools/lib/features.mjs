@@ -1,8 +1,8 @@
-// Feature-mappar: <paket>/src/features/<entitet>/ och krav på filer i dem.
+// Feature folders: <package>/src/features/<entity>/ and the files required in them.
 import { existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
-// Lista över feature-mappar i ett paket, t.ex. packages/core/src/features/venue.
+// List of feature folders in a package, e.g. packages/core/src/features/venue.
 export function listFeatureDirs({ root, pkg }) {
   const featuresDir = join(root, pkg, "src", "features");
   if (!existsSync(featuresDir)) return [];
@@ -11,8 +11,8 @@ export function listFeatureDirs({ root, pkg }) {
     .map((entry) => entry.name);
 }
 
-// requiredFiles: { "<paket>": ["fil.ts", ...] }. Paket som inte finns i kartan kontrolleras inte.
-// corePackage: paketet som definierar entiteterna. Varje entitet där måste finnas i kärnan.
+// requiredFiles: { "<package>": ["file.ts", ...] }. Packages missing from the map are not checked.
+// corePackage: the package that defines the entities. Every entity there must exist in the core.
 export function checkFeatures({ root, requiredFiles, corePackage }) {
   const problems = [];
   const coreEntities = listFeatureDirs({ root, pkg: corePackage });
@@ -29,7 +29,7 @@ export function checkFeatures({ root, requiredFiles, corePackage }) {
         }
       }
     }
-    // Adapter-paket ska ha en fil för varje kärnentitet, så länge paketet har src/features.
+    // Adapter packages must have a file for every core entity, as long as the package has src/features.
     const wanted = pkg === corePackage ? entities : coreEntities;
     for (const entity of hasFeatures ? wanted : []) {
       problems.push(...missingFiles({ root, pkg, entity, files: requiredFiles[pkg] }));

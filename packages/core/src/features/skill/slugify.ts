@@ -1,6 +1,6 @@
 export type SlugifyInput = { text: string };
 
-/** `Skapa anläggning & rum` → `skapa-anlaggning-rum`; max 64 chars, never empty. */
+/** `Create venue & room` → `create-venue-room`; max 64 chars, never empty. */
 export function slugify({ text }: SlugifyInput): string {
   const slug = text
     .normalize("NFKD")

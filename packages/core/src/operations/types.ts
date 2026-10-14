@@ -31,7 +31,7 @@ export type OperationContext = {
   actor: Actor;
   /** Org-scoped Prisma client (inside the command transaction for commands). */
   db: ScopedDbClient;
-  /** Role names of the user in the organization, e.g. `["Säljare"]`. Display and audit only. */
+  /** Role names of the user in the organization, e.g. `["Sales"]`. Display and audit only. */
   roles: readonly string[];
   /** What the caller may do, resolved from `roles` by `packages/auth` (ADR 0020). */
   permissions: PermissionSet;

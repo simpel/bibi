@@ -23,7 +23,7 @@ export type TextFieldProps<V extends FieldValues, O> = {
 
 /**
  * shadcn form field (label, control, `FormMessage`) for text, number and multi-line input.
- * Must be rendered inside `<Form {...form}>` (CLAUDE.md "Formulär").
+ * Must be rendered inside `<Form {...form}>` (CLAUDE.md "Forms").
  */
 export function TextField<V extends FieldValues, O>(props: TextFieldProps<V, O>) {
   const { form, name, label, type = "text", multiline = false, required, step, rows = 3 } = props;

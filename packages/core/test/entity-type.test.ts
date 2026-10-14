@@ -28,7 +28,7 @@ describe("entity types and behaviours (ADR 0021)", () => {
     expect(errorCode({ result: choices })).toBe("VALIDATION");
     const customer = await execute({
       operation: createEntityType,
-      input: { base: "CUSTOMER", name: "Företag", behaviours: ["PRICED"] },
+      input: { base: "CUSTOMER", name: "Company", behaviours: ["PRICED"] },
       context,
     });
     expect(errorCode({ result: customer })).toBe("VALIDATION");
@@ -60,7 +60,7 @@ describe("entity types and behaviours (ADR 0021)", () => {
     const context = testContext();
     const type = await createRoomType({ context });
     const setup = unwrap({
-      result: await execute({ operation: createSetup, input: { name: "Bio" }, context }),
+      result: await execute({ operation: createSetup, input: { name: "Theatre" }, context }),
     });
     const item = await createTestItem({ context, entityTypeId: type.id, name: "Vinga" });
     type Behaviours = ("BOOKABLE" | "SETUPS" | "PRICED")[];

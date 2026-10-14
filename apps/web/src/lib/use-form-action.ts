@@ -43,7 +43,7 @@ function applyIssues<V extends FieldValues, T>({
 }
 
 /**
- * THE way a form talks to a server action (CLAUDE.md "Formulär"): client validation via the
+ * THE way a form talks to a server action (CLAUDE.md "Forms"): client validation via the
  * form's resolver, then one toast per submit (loading → success, or a persistent error with a
  * close button) and server field issues on the fields.
  */

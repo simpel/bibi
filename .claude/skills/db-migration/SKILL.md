@@ -1,17 +1,17 @@
 ---
 name: db-migration
-description: Ändra Prisma-schemat och skapa en migration enligt Okazis databaskonventioner. Använd vid ny modell, kolumn eller index.
+description: Change the Prisma schema and create a migration following Okazi's database conventions. Use for a new model, column or index.
 ---
 
-# Databasmigrering
+# Database migration
 
-Konventioner: `docs/beslut/0006-databaskonventioner.md`.
+Conventions: `docs/decisions/0006-database-conventions.md`.
 
-1. Redigera `packages/db/prisma/schema/*.prisma`. Better Auth-tabeller är genererade: ändra inte för hand, kör `pnpm --filter @okazi/auth auth:generate`.
-2. Varje affärsmodell: cuid2-`id`, `organizationId` (ingen FK till `organization`), `status` för mjuk radering, `createdAt`, `updatedAt`, `createdBy`, index på `organizationId`. Ingen `DELETE` i appkod.
-   Relationer mellan affärsmodeller använder sammansatt FK `[fkId, organizationId]` mot `@@unique([id, organizationId])` (se `Venue`/`Item`) så att rader aldrig korsar organisationer.
-3. Lägg modellen i `ORG_SCOPED_MODELS` om den är org-scopad.
-4. `pnpm db:generate`, sedan `pnpm --filter @okazi/db migrate:dev --name <beskrivning>`. Committa migrationen i `packages/db/prisma/migrations/`. Redigera aldrig en redan körd migration.
-5. pgvector-kolumner och index skrivs som rå SQL i migrationen.
-6. Verifiera mot docker-Postgres: `pnpm db:migrate && pnpm test`. CI kör samma kedja.
-7. Uppdatera `docs/domanmodell.md` och `docs/artefakter/domanmodell.html`.
+1. Edit `packages/db/prisma/schema/*.prisma`. Better Auth tables are generated: do not edit them by hand, run `pnpm --filter @okazi/auth auth:generate`.
+2. Every business model: cuid2 `id`, `organizationId` (no FK to `organization`), `status` for soft delete, `createdAt`, `updatedAt`, `createdBy`, an index on `organizationId`. No `DELETE` in app code.
+   Relations between business models use a composite FK `[fkId, organizationId]` against `@@unique([id, organizationId])` (see `Venue`/`Item`) so rows never cross organizations.
+3. Add the model to `ORG_SCOPED_MODELS` if it is org-scoped.
+4. `pnpm db:generate`, then `pnpm --filter @okazi/db migrate:dev --name <description>`. Commit the migration in `packages/db/prisma/migrations/`. Never edit a migration that has already run.
+5. pgvector columns and indexes are written as raw SQL in the migration.
+6. Verify against the Docker Postgres: `pnpm db:migrate && pnpm test`. CI runs the same chain.
+7. Update `docs/domain-model.md` and `docs/artifacts/domain-model.html`.

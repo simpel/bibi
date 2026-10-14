@@ -25,7 +25,7 @@ export const RoleNameSchema = z
   .max(64)
   .refine((name) => !/[,%_]/.test(name), "Role names cannot contain , % or _")
   .refine((name) => name !== OWNER_ROLE, `"${OWNER_ROLE}" is a reserved system role`)
-  .describe("Role name as staff see it, e.g. Säljare or Kök");
+  .describe("Role name as staff see it, e.g. Sales or Kitchen");
 
 export const RoleCreateInputSchema = z.object({
   name: RoleNameSchema,
@@ -53,7 +53,7 @@ export const RoleListOutputSchema = z.object({
 export const RoleImportTemplateInputSchema = z.object({
   template: z
     .enum(ROLE_TEMPLATE_KEYS)
-    .describe("conference-venue: Admin, Säljare, Koordinator, Kök, Ekonomi, Läsare"),
+    .describe("conference-venue: Admin, Sales, Coordinator, Kitchen, Finance, Reader"),
 });
 
 export const RoleImportTemplateOutputSchema = z.object({

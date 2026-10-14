@@ -21,13 +21,13 @@ export const Default: Story = {
   render: () => (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline">Åtgärder</Button>
+        <Button variant="outline">Actions</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>Rum</DropdownMenuLabel>
-        <DropdownMenuItem>Redigera</DropdownMenuItem>
+        <DropdownMenuLabel>Rooms</DropdownMenuLabel>
+        <DropdownMenuItem>Edit</DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem destructive>Ta bort</DropdownMenuItem>
+        <DropdownMenuItem destructive>Delete</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   ),

@@ -11,17 +11,17 @@ export const Default: Story = {
     <Table className="w-[28rem]">
       <TableHeader>
         <TableRow>
-          <TableHead>Rum</TableHead>
-          <TableHead>Platser</TableHead>
+          <TableHead>Rooms</TableHead>
+          <TableHead>Seats</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         <TableRow>
-          <TableCell>Stora salen</TableCell>
+          <TableCell>Great hall</TableCell>
           <TableCell>120</TableCell>
         </TableRow>
         <TableRow>
-          <TableCell>Biblioteket</TableCell>
+          <TableCell>The library</TableCell>
           <TableCell>16</TableCell>
         </TableRow>
       </TableBody>

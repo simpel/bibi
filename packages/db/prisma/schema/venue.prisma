@@ -1,4 +1,4 @@
-/// Anläggning – a building or site. Bookable items may belong to a venue (ADR 0021).
+/// Venue – a building or site. Bookable items may belong to a venue (ADR 0021).
 model Venue {
   id                    String       @id @default(cuid(2))
   organizationId        String

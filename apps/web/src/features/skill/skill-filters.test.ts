@@ -4,12 +4,12 @@ import { parseSkillFilters, skillFilterQuery } from "./skill-filters";
 describe("skill filters", () => {
   it("parses known values and ignores unknown ones", () => {
     const filters = parseSkillFilters({
-      params: { scope: "PERSONAL", status: "NOPE", q: [" offert ", "x"], semantic: "1" },
+      params: { scope: "PERSONAL", status: "NOPE", q: [" quote ", "x"], semantic: "1" },
     });
     expect(filters).toEqual({
       scope: "PERSONAL",
       status: undefined,
-      q: "offert",
+      q: "quote",
       semantic: true,
       cursor: undefined,
     });

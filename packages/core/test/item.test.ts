@@ -17,7 +17,7 @@ describe("items (ADR 0021)", () => {
     const dish = unwrap({
       result: await execute({
         operation: createEntityType,
-        input: { base: "ITEM", name: "Rätt" },
+        input: { base: "ITEM", name: "Dish" },
         context,
       }),
     });
@@ -38,10 +38,10 @@ describe("items (ADR 0021)", () => {
   it("replaces setup capacities as a set and filters by behaviour", async () => {
     const context = testContext();
     const room = await createRoomType({ context });
-    const bio = unwrap({
+    const theatre = unwrap({
       result: await execute({
         operation: createSetup,
-        input: { name: "Bio", changeoverMinutes: 15 },
+        input: { name: "Theatre", changeoverMinutes: 15 },
         context,
       }),
     });
@@ -57,7 +57,7 @@ describe("items (ADR 0021)", () => {
           priceMinor: 450_000,
           priceUnit: "PER_HOUR",
           setups: [
-            { setupId: bio.id, capacity: 220 },
+            { setupId: theatre.id, capacity: 220 },
             { setupId: mingel.id, capacity: 250 },
           ],
         },
@@ -66,24 +66,24 @@ describe("items (ADR 0021)", () => {
     });
     expect(created.setups).toEqual([
       { setupId: mingel.id, capacity: 250 },
-      { setupId: bio.id, capacity: 220 },
+      { setupId: theatre.id, capacity: 220 },
     ]);
     const updated = unwrap({
       result: await execute({
         operation: updateItem,
-        input: { id: created.id, setups: [{ setupId: bio.id, capacity: 200 }] },
+        input: { id: created.id, setups: [{ setupId: theatre.id, capacity: 200 }] },
         context,
       }),
     });
-    expect(updated.setups).toEqual([{ setupId: bio.id, capacity: 200 }]);
+    expect(updated.setups).toEqual([{ setupId: theatre.id, capacity: 200 }]);
     expect(updated.priceMinor).toBe(450_000);
     const twice = await execute({
       operation: updateItem,
       input: {
         id: created.id,
         setups: [
-          { setupId: bio.id, capacity: 1 },
-          { setupId: bio.id, capacity: 2 },
+          { setupId: theatre.id, capacity: 1 },
+          { setupId: theatre.id, capacity: 2 },
         ],
       },
       context,

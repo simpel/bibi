@@ -14,7 +14,7 @@ export type AssignRolesValues = { roles: string[] };
 
 export type UseAssignRolesFormInput = { member: MemberDto; onDone: () => void };
 
-/** The member's role names as a form; saving replaces them (CLAUDE.md "Formulär"). */
+/** The member's role names as a form; saving replaces them (CLAUDE.md "Forms"). */
 export function useAssignRolesForm({ member, onDone }: UseAssignRolesFormInput) {
   const t = useTranslations("member");
   const router = useRouter();

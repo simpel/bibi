@@ -7,7 +7,7 @@ export type InlineLoadErrorProps = { errorKey: ErrorKey | null };
 
 /**
  * Client-side load failure (history list, live search) in place of the content. Not for form
- * or action outcomes: those are toasts (CLAUDE.md "Formulär").
+ * or action outcomes: those are toasts (CLAUDE.md "Forms").
  */
 export function InlineLoadError({ errorKey }: InlineLoadErrorProps) {
   const t = useTranslations("errors");

@@ -25,7 +25,7 @@ export type SubmitWithToastInput<R> = {
 
 /**
  * One process, one toast id: loading → success, or a persistent error with a close button
- * (CLAUDE.md "Formulär"). Shared by server actions (`useFormAction`, `useToastAction`) and
+ * (CLAUDE.md "Forms"). Shared by server actions (`useFormAction`, `useToastAction`) and
  * Better Auth client calls (`useAuthFormAction`), which differ only in how errors are worded.
  */
 export async function submitWithToast<R>({

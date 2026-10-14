@@ -18,7 +18,7 @@ export async function seedOrgMember({ context }: SeedOrgMemberInput): Promise<{ 
   await db.user.create({ data: { id: userId, name: "Parity Person", email: `${userId}@x.test` } });
   const id = `member_${createId()}`;
   await db.member.create({
-    data: { id, organizationId, userId, role: "Ny", createdAt: new Date() },
+    data: { id, organizationId, userId, role: "New", createdAt: new Date() },
   });
   return { id };
 }

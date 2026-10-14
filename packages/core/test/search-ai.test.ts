@@ -30,11 +30,11 @@ describe("search over skills and conversations", () => {
   it("finds org skills for everyone, personal skills and conversations only for their owner", async () => {
     const admin = testContext({ access: "admin" });
     const member = peer({ of: admin });
-    const base = { description: "Kalkylerar catering för bröllop", instructions: "Steg" };
+    const base = { description: "Calculates catering for weddings", instructions: "Steps" };
     const orgSkill = unwrap({
       result: await execute({
         operation: createSkill,
-        input: { ...base, scope: "ORGANIZATION", name: "Bröllopskalkyl" },
+        input: { ...base, scope: "ORGANIZATION", name: "Wedding estimate" },
         context: admin,
         afterCommit,
       }),
@@ -42,7 +42,7 @@ describe("search over skills and conversations", () => {
     const personal = unwrap({
       result: await execute({
         operation: createSkill,
-        input: { ...base, name: "Min bröllopskalkyl" },
+        input: { ...base, name: "My wedding estimate" },
         context: admin,
         afterCommit,
       }),
@@ -50,12 +50,12 @@ describe("search over skills and conversations", () => {
     const conversation = unwrap({
       result: await execute({
         operation: createConversation,
-        input: { title: "Bröllop i juni" },
+        input: { title: "Wedding in June" },
         context: admin,
         afterCommit,
       }),
     });
-    const adminHits = await find({ context: admin, query: "bröllop" });
+    const adminHits = await find({ context: admin, query: "wedding" });
     expect(adminHits).toEqual(
       expect.arrayContaining([
         `skill:${orgSkill.id}`,
@@ -63,11 +63,11 @@ describe("search over skills and conversations", () => {
         `conversation:${conversation.id}`,
       ]),
     );
-    const memberHits = await find({ context: member, query: "bröllop" });
+    const memberHits = await find({ context: member, query: "wedding" });
     expect(memberHits).toContain(`skill:${orgSkill.id}`);
     expect(memberHits).not.toContain(`skill:${personal.id}`);
     expect(memberHits).not.toContain(`conversation:${conversation.id}`);
-    expect(await find({ context: testContext(), query: "bröllop" })).toEqual([]);
+    expect(await find({ context: testContext(), query: "wedding" })).toEqual([]);
   });
 
   it("finds globally indexed SYSTEM skills from any organization", async () => {

@@ -11,7 +11,7 @@ const ownerWithKey = async ({ role = "Skriv" }: { role?: string } = {}) => {
   const owner = await signUp();
   const organizationId = await createOrg({ headers: owner.headers });
   await addRole({ organizationId, name: "Skriv", permissions: WRITER });
-  await addRole({ organizationId, name: "Läs", permissions: READ_ONLY });
+  await addRole({ organizationId, name: "Read", permissions: READ_ONLY });
   const created = await createOrgApiKey({
     headers: owner.headers,
     organizationId,
@@ -85,7 +85,7 @@ describe("resolveExecuteContext – API keys", () => {
       headers: owner.headers,
       organizationId: foreign.organizationId,
       name: "x",
-      role: "Läs",
+      role: "Read",
     });
     expect(codeOf({ result: viaHelper })).toBe("FORBIDDEN");
     // Even a key forged with foreign metadata (bypassing the helper) is rejected at resolve time.
@@ -103,7 +103,7 @@ describe("resolveExecuteContext – API keys", () => {
   it("caps the key at the member's live access", async () => {
     const { owner, organizationId } = await ownerWithKey();
     const reader = await signUp();
-    await addMember({ organizationId, userId: reader.userId, role: "Läs" });
+    await addMember({ organizationId, userId: reader.userId, role: "Read" });
     const tooHigh = await createOrgApiKey({
       headers: reader.headers,
       organizationId,
@@ -115,7 +115,7 @@ describe("resolveExecuteContext – API keys", () => {
       headers: reader.headers,
       organizationId,
       name: "v",
-      role: "Läs",
+      role: "Read",
     });
     if (!readerKey.ok) throw readerKey.error;
     const context = await resolveKey({ key: readerKey.value.key });

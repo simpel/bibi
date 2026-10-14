@@ -11,12 +11,12 @@ export const Default: Story = {
   render: () => (
     <Card className="w-80">
       <CardHeader>
-        <CardTitle>Stora salen</CardTitle>
-        <CardDescription>Upp till 120 personer, teater- eller bordsuppställning.</CardDescription>
+        <CardTitle>Great hall</CardTitle>
+        <CardDescription>Up to 120 people, theatre or table setup.</CardDescription>
       </CardHeader>
-      <CardContent>Inkluderar projektor, ljud och kaffe.</CardContent>
+      <CardContent>Includes projector, sound and coffee.</CardContent>
       <CardFooter>
-        <Button size="sm">Visa rum</Button>
+        <Button size="sm">Show rooms</Button>
       </CardFooter>
     </Card>
   ),

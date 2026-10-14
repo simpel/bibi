@@ -15,7 +15,7 @@ type FilterValues = { q: string };
 
 /**
  * Filters as URL state: scope, status, text query and the semantic switch (server re-renders).
- * A navigation form (CLAUDE.md "Formulär"): shadcn `Form`, no server action and no toast.
+ * A navigation form (CLAUDE.md "Forms"): shadcn `Form`, no server action and no toast.
  */
 export function SkillFilterBar({ filters }: SkillFilterBarProps) {
   const t = useTranslations("skills.filters");

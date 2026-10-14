@@ -1,6 +1,6 @@
-// Parameterregel: funktioner, metoder och namngivna const-pilfunktioner tar EN typad objektparameter,
-// t.ex. fn({ a, b }: FnInput). React-komponenter (versal namn) får ta ett enda `props`-argument.
-// Inline-callbacks (.map((x) => ...), händelsehanterare) granskas inte.
+// Parameter rule: functions, methods and named const arrow functions take ONE typed object parameter,
+// e.g. fn({ a, b }: FnInput). React components (capitalized name) may take a single `props` argument.
+// Inline callbacks (.map((x) => ...), event handlers) are not checked.
 import { findClose } from "./functions.mjs";
 
 const HEADER = new RegExp(
@@ -11,7 +11,7 @@ const HEADER = new RegExp(
   ].join("|"),
   "gm",
 );
-// Kontrollsatser och nyckelord som ser ut som metodanrop med block.
+// Control statements and keywords that look like method calls with a block.
 const SKIP_NAMES = new Set([
   "if",
   "for",
@@ -47,14 +47,14 @@ export function analyzeParams({ relPath, content }) {
     });
     if (reason) {
       const line = content.slice(0, match.index).split("\n").length;
-      problems.push(`${name} (rad ${line}): ${reason}`);
+      problems.push(`${name} (line ${line}): ${reason}`);
     }
   }
   return problems;
 }
 
-// Undantag: stories, Next route handlers (GET(request, context)), Next onRequestError(error,
-// request, context) i instrumentation.ts och cn(...inputs) i packages/ui.
+// Exceptions: stories, Next route handlers (GET(request, context)), Next onRequestError(error,
+// request, context) in instrumentation.ts and cn(...inputs) in packages/ui.
 function isExempt({ relPath, name }) {
   if (/\.stories\.tsx$/.test(relPath)) return true;
   if (/(^|\/)route\.ts$/.test(relPath) && HTTP_VERBS.has(name)) return true;
@@ -65,15 +65,15 @@ function isExempt({ relPath, name }) {
 export function paramViolation({ name, params }) {
   if (params.length === 0) return null;
   if (params.length > 1) {
-    return `${params.length} parametrar (en enda typad objektparameter krävs)`;
+    return `${params.length} parameters (a single typed object parameter is required)`;
   }
   const [param] = params;
   if (param.startsWith("{")) return null;
   if (/^[A-Z]/.test(name) && /^props\b/.test(param)) return null;
-  return `positionell parameter "${param.slice(0, 40)}" (använd ett objekt: fn({ ... }: Input))`;
+  return `positional parameter "${param.slice(0, 40)}" (use an object: fn({ ... }: Input))`;
 }
 
-// Delar upp parameterlistan på toppnivåkomman. Hoppar över komman inne i <>, (), [] och {}.
+// Splits the parameter list on top-level commas. Skips commas inside <>, (), [] and {}.
 export function splitParams({ text }) {
   const parts = [];
   let depth = 0;

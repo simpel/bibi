@@ -40,6 +40,6 @@ export type DemoConfig = {
   venue: { name: string; streetAddress: string; postalCode: string; city: string };
   /** Seeded in the venue. Slice 2 seeds the bookable spaces; the rest of the catalog is slice 3. */
   items: readonly DemoItem[];
-  /** Org-specific checks (`docs/demo-seed.md`, Kontroller), e.g. check 2. */
+  /** Org-specific checks (`docs/demo-seed.md`, Checks), e.g. check 2. */
   checks: { absentLists?: readonly string[]; listSizes?: Readonly<Record<string, number>> };
 };

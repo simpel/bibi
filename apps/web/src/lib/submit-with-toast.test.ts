@@ -18,7 +18,7 @@ function fakeToast(): { api: ToastApi; calls: Call[] } {
 
 const messages = { pending: "Sparar…", success: "Sparat" };
 
-describe("submitWithToast (CLAUDE.md Formulär)", () => {
+describe("submitWithToast (CLAUDE.md Forms)", () => {
   it("replaces the loading toast with success under the same id", async () => {
     const { api, calls } = fakeToast();
     await submitWithToast({ toast: api, run: async () => ({ ok: true, value: 1 }), messages });
@@ -32,13 +32,13 @@ describe("submitWithToast (CLAUDE.md Formulär)", () => {
     const { api, calls } = fakeToast();
     const outcome = await submitWithToast({
       toast: api,
-      run: async () => ({ ok: false, message: "Funktionen är inte tillgänglig" }),
+      run: async () => ({ ok: false, message: "The feature is not available" }),
       messages,
     });
     expect(outcome.ok).toBe(false);
     expect(calls[1]).toEqual({
       kind: "error",
-      message: "Funktionen är inte tillgänglig",
+      message: "The feature is not available",
       options: { id: "toast-1", duration: Number.POSITIVE_INFINITY, closeButton: true },
     });
   });

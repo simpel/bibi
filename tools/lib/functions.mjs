@@ -1,5 +1,5 @@
-// Funktionslängd: heuristik med klammermatchning. Hittar function-deklarationer,
-// pilfunktioner tilldelade const/let och metoder. React-komponenter räknas som funktioner.
+// Function length: a heuristic using brace matching. Finds function declarations,
+// arrow functions assigned to const/let, and methods. React components count as functions.
 
 export const MAX_FUNCTION_LINES = 40;
 
@@ -11,7 +11,7 @@ const HEADER = new RegExp(
   ].join("|"),
   "gm",
 );
-// Kontrollsatser som ser ut som metoder (t.ex. "if (x) {") ska inte räknas.
+// Control statements that look like methods (e.g. "if (x) {") are not counted.
 const SKIP_WORDS = new Set(["if", "for", "while", "switch", "catch", "with"]);
 
 export function analyzeFunctions({ content }) {
@@ -24,14 +24,14 @@ export function analyzeFunctions({ content }) {
     const length = lineOf({ starts, offset: close }) - firstLine + 1;
     if (length > MAX_FUNCTION_LINES) {
       problems.push(
-        `funktion på rad ${firstLine + 1} är ${length} rader (max ${MAX_FUNCTION_LINES}): ${text}`,
+        `function at line ${firstLine + 1} is ${length} lines (max ${MAX_FUNCTION_LINES}): ${text}`,
       );
     }
   }
   return problems;
 }
 
-// Nyckel: offset för öppnande klammer/parentes. Värde: start-offset och kort rubrik.
+// Key: offset of the opening brace/parenthesis. Value: start offset and a short heading.
 function findHeaders({ content }) {
   const headers = new Map();
   for (const match of content.matchAll(HEADER)) {
@@ -51,7 +51,7 @@ function lineStartOffsets({ content }) {
   return starts;
 }
 
-// Radnummer (0-baserat) för en offset, via binärsökning.
+// Line number (0-based) for an offset, via binary search.
 function lineOf({ starts, offset }) {
   let lo = 0;
   let hi = starts.length - 1;
@@ -63,7 +63,7 @@ function lineOf({ starts, offset }) {
   return lo;
 }
 
-// Offset för matchande stängklammer. Hoppar över strängar, mallar och kommentarer.
+// Offset of the matching closing brace. Skips strings, templates and comments.
 export function findClose({ content, opener }) {
   let depth = 0;
   let i = opener;
@@ -93,7 +93,7 @@ function skipPast({ content, token, from }) {
   return idx < 0 ? content.length : idx + token.length;
 }
 
-// Enkla/dubbla citattecken löper högst till radslut, så ett apostrof i JSX-text stannar lokalt.
+// Single/double quotes run at most to the end of the line, so an apostrophe in JSX text stays local.
 function skipQuoted({ content, from }) {
   const quote = content[from];
   let i = from + 1;

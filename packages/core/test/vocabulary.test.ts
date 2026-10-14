@@ -21,7 +21,7 @@ describe("vocabularies (ADR 0021)", () => {
     const list = unwrap({
       result: await execute({ operation: importVocabularyTemplate, input, context }),
     });
-    expect(list.name).toBe("Allergener");
+    expect(list.name).toBe("Allergens");
     expect(list.values).toHaveLength(14);
     expect(list.values[0]?.name).toBe("Gluten");
     const again = await execute({ operation: importVocabularyTemplate, input, context });
@@ -60,7 +60,7 @@ describe("vocabularies (ADR 0021)", () => {
     const list = unwrap({
       result: await execute({
         operation: createVocabulary,
-        input: { name: "Utsikt", values: ["Älven", "Ingen"] },
+        input: { name: "View", values: ["River", "None"] },
         context,
       }),
     });
@@ -71,17 +71,17 @@ describe("vocabularies (ADR 0021)", () => {
         operation: createFieldDefinition,
         input: {
           entityTypeId: type.id,
-          name: "Utsikt",
+          name: "View",
           kind: "MULTI_CHOICE",
           vocabularyId: list.id,
         },
         context,
       }),
     });
-    const item = await createTestItem({ context, entityTypeId: type.id, name: "Hönö" });
+    const item = await createTestItem({ context, entityTypeId: type.id, name: "Island room" });
     await execute({
       operation: updateItem,
-      input: { id: item.id, fields: { utsikt: [alven.id] } },
+      input: { id: item.id, fields: { view: [alven.id] } },
       context,
     });
     const used = await execute({
@@ -97,15 +97,15 @@ describe("vocabularies (ADR 0021)", () => {
         context,
       }),
     });
-    expect(unused.values.map((value) => value.name)).toEqual(["Älven"]);
+    expect(unused.values.map((value) => value.name)).toEqual(["River"]);
     const renamed = unwrap({
       result: await execute({
         operation: updateVocabularyValue,
-        input: { id: alven.id, name: "Göta älv" },
+        input: { id: alven.id, name: "Main river" },
         context,
       }),
     });
-    expect(renamed.values[0]?.name).toBe("Göta älv");
+    expect(renamed.values[0]?.name).toBe("Main river");
     const archiveList = await execute({
       operation: archiveVocabulary,
       input: { id: list.id },

@@ -71,8 +71,8 @@ describe("venue and item CRUD through GraphQL", () => {
     });
     expect(items.body.data.items.items).toEqual([{ id }]);
     const update = `mutation($input: ItemUpdateInput!) { itemUpdate(input: $input) { name priceMinor } }`;
-    const u = await gql({ query: update, variables: { input: { id, name: "Ljusa salen" } } });
-    expect(u.body.data.itemUpdate).toEqual({ name: "Ljusa salen", priceMinor: 450000 });
+    const u = await gql({ query: update, variables: { input: { id, name: "Bright hall" } } });
+    expect(u.body.data.itemUpdate).toEqual({ name: "Bright hall", priceMinor: 450000 });
     const archive = `mutation($input: ItemArchiveInput!) { itemArchive(input: $input) { status } }`;
     const a = await gql({ query: archive, variables: { input: { id } } });
     expect(a.body.data.itemArchive.status).toBe("ARCHIVED");

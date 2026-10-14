@@ -16,12 +16,12 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => (
     <Command className="w-96 rounded-lg border shadow-md">
-      <CommandInput placeholder="Skriv ett kommando eller sök..." />
+      <CommandInput placeholder="Type a command or search..." />
       <CommandList>
-        <CommandEmpty>Inga träffar.</CommandEmpty>
-        <CommandGroup heading="Förslag">
-          <CommandItem>Skapa anläggning</CommandItem>
-          <CommandItem>Skapa rum</CommandItem>
+        <CommandEmpty>No results.</CommandEmpty>
+        <CommandGroup heading="Suggestions">
+          <CommandItem>Create venue</CommandItem>
+          <CommandItem>Create room</CommandItem>
         </CommandGroup>
       </CommandList>
     </Command>

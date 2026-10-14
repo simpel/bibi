@@ -29,7 +29,7 @@ describe("seed:demo slices 1–2 (ADR 0025)", () => {
     expect(await roles({ organizationId: vinga?.organizationId })).toBe(3);
     expect(await db.member.count({ where: { organizationId: lind?.organizationId } })).toBe(8);
     const vingaKitchen = await db.organizationRole.count({
-      where: { organizationId: vinga?.organizationId, role: "Kök" },
+      where: { organizationId: vinga?.organizationId, role: "Kitchen" },
     });
     expect(vingaKitchen).toBe(0);
     const items = ({ organizationId }: { organizationId?: string }) =>
@@ -37,12 +37,12 @@ describe("seed:demo slices 1–2 (ADR 0025)", () => {
     expect(await items({ organizationId: lind?.organizationId })).toBe(10);
     expect(await items({ organizationId: vinga?.organizationId })).toBe(3);
     const vinga220 = await db.itemSetup.findFirst({
-      where: { organizationId: lind?.organizationId, capacity: 220, setup: { name: "Bio" } },
+      where: { organizationId: lind?.organizationId, capacity: 220, setup: { name: "Theatre" } },
       include: { item: true },
     });
-    expect(vinga220?.item).toMatchObject({ name: "Vinga (aula)", priceMinor: 450_000 });
+    expect(vinga220?.item).toMatchObject({ name: "Vinga (auditorium)", priceMinor: 450_000 });
     const allergens = await db.vocabulary.count({
-      where: { organizationId: vinga?.organizationId, name: "Allergener" },
+      where: { organizationId: vinga?.organizationId, name: "Allergens" },
     });
     expect(allergens).toBe(0);
   });

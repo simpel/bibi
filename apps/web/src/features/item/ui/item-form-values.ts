@@ -4,7 +4,7 @@ import type { PRICE_UNITS } from "@okazi/core/schemas";
 export type RawFieldValue = string | boolean | string[];
 export type PriceUnitValue = (typeof PRICE_UNITS)[number];
 
-/** Raw values of the item form: inputs are strings; kr, not öre; one entry per field key. */
+/** Raw values of the item form: inputs are strings; kr, not minor units; one entry per field key. */
 export type ItemFormValues = {
   entityTypeId: string;
   venueId: string;

@@ -64,12 +64,12 @@ describe("cross-organization isolation", () => {
     const type = await call({
       client: a,
       name: "entityType_create",
-      args: { base: "ITEM", name: "Hemligt rum", behaviours: ["BOOKABLE"] },
+      args: { base: "ITEM", name: "Secret room", behaviours: ["BOOKABLE"] },
     });
     const list = await call({
       client: a,
       name: "vocabulary_create",
-      args: { name: "Hemlig lista", values: ["X"] },
+      args: { name: "Secret list", values: ["X"] },
     });
     const item = await call({
       client: a,
@@ -89,7 +89,7 @@ describe("cross-organization isolation", () => {
     const borrowed = await call({
       client: b,
       name: "item_create",
-      args: { entityTypeId: type.data.id, name: "Lånad typ" },
+      args: { entityTypeId: type.data.id, name: "Borrowed type" },
     });
     expect(borrowed.data.code).toBe("VALIDATION");
     const value = await call({

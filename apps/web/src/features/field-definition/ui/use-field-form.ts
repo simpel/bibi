@@ -36,7 +36,7 @@ const save = ({ field, values }: SaveInput) =>
       })
     : createFieldAction({ input: values });
 
-/** Field form state: core's field schema, one toast per save (CLAUDE.md "Formulär"). */
+/** Field form state: core's field schema, one toast per save (CLAUDE.md "Forms"). */
 export function useFieldForm({ entityTypeId, field, onDone }: UseFieldFormInput) {
   const t = useTranslations("fieldDefinition");
   const router = useRouter();

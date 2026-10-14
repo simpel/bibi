@@ -10,7 +10,7 @@ const vocabularies = [
     id: "v1",
     values: [
       { id: "a", name: "Gluten" },
-      { id: "b", name: "Mjölk" },
+      { id: "b", name: "Milk" },
     ],
   },
 ] as VocabularyDto[];
@@ -19,7 +19,7 @@ describe("displayValue", () => {
   it("shows list value names for list-backed choices", () => {
     const multi = field({ patch: { kind: "MULTI_CHOICE", vocabularyId: "v1" } });
     expect(displayValue({ field: multi, value: ["a", "b"], vocabularies, yesNo })).toBe(
-      "Gluten, Mjölk",
+      "Gluten, Milk",
     );
   });
 

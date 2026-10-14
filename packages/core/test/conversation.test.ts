@@ -21,11 +21,11 @@ describe("conversation operations", () => {
     const renamed = unwrap({
       result: await execute({
         operation: renameConversation,
-        input: { id: created.id, title: "Offert Volvo" },
+        input: { id: created.id, title: "Quote Volvo" },
         context,
       }),
     });
-    expect(renamed.title).toBe("Offert Volvo");
+    expect(renamed.title).toBe("Quote Volvo");
     const list = unwrap({
       result: await execute({ operation: listConversations, input: {}, context }),
     });

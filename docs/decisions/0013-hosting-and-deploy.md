@@ -1,0 +1,41 @@
+# 0013 – Hosting and deploy
+
+- **Date:** 2026-10-14
+- **Status:** Proposed
+
+## Context
+- Requirements: simple, cheap, self-operated, EU region (GDPR, Swedish customers). Hostinger and Railway are ruled out.
+- Email is handled externally (ADR 0012), so no mail server is needed on the hosting.
+- Kamal was considered (stateless, configuration in git, MIT, actively maintained) but Coolify was chosen for its UI, built-in database and backup handling and larger community.
+- Coolify has a heavy security history: several critical CVEs (CVSS up to 10.0) in January 2026 and continued command injection bugs during 2026. Most require an authenticated user. The control plane has root access over SSH to the servers and must therefore be treated as a high-risk component.
+- The project already has a `docker/Dockerfile` and the compose profile `app` (web + mcp).
+
+## Decision
+- **Provider:** Hetzner Cloud, EU region (Falkenstein/Nürnberg or Helsinki).
+- **Start:** one server for web, mcp and Postgres. Scale by changing server size, and move Postgres to its own server when needed.
+- **Database:** self-hosted `pgvector/pgvector` in a container with data on a Hetzner Volume. Hetzner has no managed Postgres.
+- **Backup:** nightly `pg_dump` to Hetzner Object Storage (or Storage Box), plus Hetzner's server backup. Restore is tested before the first customer.
+- **Images:** built in GitHub Actions after CI is green on `main`, published to GHCR and tagged with the git SHA. The same image is used in all environments.
+- **Deploy platform:** Coolify (self-hosted, Apache-2.0) on the same server. Coolify handles proxy with TLS (Let's Encrypt), environment variables, database management and scheduled database backups to S3-compatible storage.
+- **Deploy flow:** GitHub Actions triggers a deploy through Coolify's API/webhook with the new image's SHA tag. Rollback is done by deploying the previous SHA.
+- **Configuration in git:** the applications are deployed from a `docker-compose.prod.yml` in the repo, so the service definition is versioned. UI settings are limited to domains, secrets and backup schedule.
+- **Coolify security (see Context):** the admin UI is not exposed publicly. It is reached through VPN (Tailscale/WireGuard) or an SSH tunnel. Coolify is kept updated to the latest 4.x version, with few administrators, and Coolify's own instance data is included in the backup.
+- **Migrations:** `prisma migrate deploy` runs as a one-off step before new containers take traffic. Migrations must be backward compatible (expand/contract).
+- **Domains:** `app.` for the web app and `mcp.` for the MCP server (OAuth requires a stable public HTTPS URL).
+- **Secrets:** GitHub environment secrets and Coolify's secret management. Never in the repo. All are read through `@okazi/config`.
+- **Hardening:** Hetzner Cloud Firewall (80, 443 and SSH), SSH keys only, unattended-upgrades.
+- **Operations:** health endpoints for web and mcp as a deploy gate, Docker log rotation, uptime monitoring and error tracking.
+
+## Open
+- Control plane on its own small server (blast radius) or on the same server as the app? Starts on the same server with a locked-down UI.
+- Staging: a second, small server, or only production at first?
+- ~~Scheduler for option expiry and kitchen orders~~: decided in ADR 0027 (pg-boss in `apps/worker`, one more container).
+- Arm (CAX) requires multi-arch images. Assume x86 for now.
+- Server size and exact prices must be verified against Hetzner's price list.
+
+## Consequences
+- Low cost (on the order of 5–15 EUR/month). Vendor lock-in is low, because the services are ordinary Docker images and compose files.
+- Coolify is an extra stateful control plane that we must patch quickly. Configuration outside the compose file lives in Coolify's database and is harder to review.
+- We own backup, updates and restore of the database.
+- A single server is a single point of failure until we have staging and a second node. Accepted for the pilot.
+- Replaces "Production environment and hosting not decided" in `CLAUDE.md`.

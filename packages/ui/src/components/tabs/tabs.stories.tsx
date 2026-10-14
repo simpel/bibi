@@ -11,10 +11,10 @@ export const Default: Story = {
     <Tabs defaultValue="info" className="w-96">
       <TabsList>
         <TabsTrigger value="info">Information</TabsTrigger>
-        <TabsTrigger value="rooms">Rum</TabsTrigger>
+        <TabsTrigger value="rooms">Rooms</TabsTrigger>
       </TabsList>
-      <TabsContent value="info">Grunduppgifter om anläggningen.</TabsContent>
-      <TabsContent value="rooms">Lista över rum.</TabsContent>
+      <TabsContent value="info">Basic details about the venue.</TabsContent>
+      <TabsContent value="rooms">List of rooms.</TabsContent>
     </Tabs>
   ),
 };

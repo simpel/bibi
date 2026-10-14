@@ -5,13 +5,13 @@ import { vingaledenBoats, vingaledenConfig } from "./config";
 const base: PermissionSet = { search: ["read"], conversation: ["write"], skill: ["write"] };
 
 /**
- * Vingaleden Skärgårdsturer (`docs/demo-seed.md`): no templates, three roles of its own.
- * Bokning writes customers, inquiries and bookings and Skeppare reads bookings and sheets once
+ * Vingaleden Archipelago Tours (`docs/demo-seed.md`): no templates, three roles of its own.
+ * Booking writes customers, inquiries and bookings and Skipper reads bookings and sheets once
  * those resources exist (slices 4–6); until then both read the fleet (venues, items and configuration).
  */
 export const vingaleden: DemoOrg = {
   slug: "vingaleden-demo",
-  name: "Vingaleden Skärgårdsturer",
+  name: "Vingaleden Archipelago Tours",
   templates: [],
   roles: [
     {
@@ -28,19 +28,19 @@ export const vingaleden: DemoOrg = {
       },
     },
     {
-      name: "Bokning",
+      name: "Booking",
       permissions: { ...base, venue: ["read"], item: ["read"], configuration: ["read"] },
     },
     {
-      name: "Skeppare",
+      name: "Skipper",
       permissions: { ...base, venue: ["read"], item: ["read"], configuration: ["read"] },
     },
   ],
   users: [
     { name: "Per Vinga", role: "owner" },
-    { name: "Stina Holm", role: "Bokning" },
-    { name: "Kalle Ek", role: "Skeppare" },
-    { name: "Jonna Sand", role: "Skeppare" },
+    { name: "Stina Holm", role: "Booking" },
+    { name: "Kalle Ek", role: "Skipper" },
+    { name: "Jonna Sand", role: "Skipper" },
   ],
   config: {
     ...vingaledenConfig,
@@ -52,6 +52,6 @@ export const vingaleden: DemoOrg = {
     },
     items: vingaledenBoats,
     // Check 2: no allergen list at all. Its sheets (slice 6) will not include food either.
-    checks: { absentLists: ["Allergener"] },
+    checks: { absentLists: ["Allergens"] },
   },
 };

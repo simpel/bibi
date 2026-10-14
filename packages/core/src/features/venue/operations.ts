@@ -18,7 +18,7 @@ const notFound = () =>
 export const listVenues = defineOperation({
   name: "venue.list",
   kind: "query",
-  description: "List active venues (anläggningar) of the organization, ordered by name.",
+  description: "List active venues of the organization, ordered by name.",
   input: VenueListInputSchema,
   output: VenueListOutputSchema,
   permission: "venue:read",
