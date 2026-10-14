@@ -30,6 +30,7 @@
 - UI: Tailwind v4 (CSS-first tokens), cva, shadcn-primitiver, Storybook för `packages/ui`.
 - i18n: next-intl, svenska och engelska.
 - Verktyg: Biome (lint + format), Vitest (enhet/tjänstelager mot riktig Postgres), Playwright (e2e).
+- E-post: Resend (ut och in) bakom `MailProvider`, Mailpit i dev. Se `docs/beslut/0012-epostleverantor.md`.
 - Drift: Docker (compose med Postgres och Mailpit, `--profile app` för web + mcp), GitHub Actions för CI.
 - Beslut: `docs/beslut/0002-teknikstack-och-monorepo.md` m.fl.
 
@@ -98,3 +99,4 @@
 - Claude Design-export (tokens) för `packages/ui` ej levererad. Placeholder-tokens används tills dess.
 - Produktionsmiljö och hosting ej beslutad. Självhostad Docker antas.
 - Embedding-modell ej vald.
+- Resends EU-region och DPA (GDPR) ej bekräftade.
