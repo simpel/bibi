@@ -32,6 +32,7 @@
     "AI_EMBEDDING_MODEL",
     "WEB_URL",
     "MCP_URL",
+    "WEB_PORT",
     "WEB_OAUTH_CLIENT_ID",
     "NODE_ENV",
     "E2E_MOCK_MODEL"
