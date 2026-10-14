@@ -4,9 +4,11 @@ Entiteter för ett bokningssystem för konferens + mat & dryck. Fasning: **MVP**
 
 Interaktiv vy: [artefakter/domanmodell.html](artefakter/domanmodell.html).
 
+Modellen är konfigurerbar (se [ADR 0021](beslut/0021-configurable-items.md)). Koden innehåller inga domänord som rätt, allergen, rum eller köksorder. Varje organisation sätter upp sina egna typer, fält, listor, uppställningar, statusar, blad och roller. Koden äger bara generella beteenden och fasta faser. Se avsnittet Konfiguration.
+
 ## Kärnflöde
 
-Förfrågan → Option → Offert → Signering → Bokning → Programpunkter → Deltagare & kost → Köksorder → Genomförande → Faktura → Fortnox / Visma
+Förfrågan → Option → Offert → Signering (senare) → Bokning → Programpunkter → Behov → Blad → Genomförande → Faktura → Fortnox / Visma
 
 ## ER-diagram (MVP)
 
@@ -15,59 +17,190 @@ erDiagram
   Kund ||--o{ Kontaktperson : "har"
   Kund ||--o{ Forfragan : "skickar"
   Kontaktperson ||--o{ Forfragan : "är kontakt för"
-  Kund }o--|| Prislista : "använder"
+  Kund }o--o| Prislista : "använder"
+  Prislista ||--o{ Prislisterad : "innehåller"
+  Prislisterad }o--o| Artikel : "avser"
   Forfragan ||--o{ Offert : "besvaras med"
   Forfragan ||--o{ Option : "kan skapa"
-  Offert ||--o| Avtal : "signeras via"
   Offert ||--o| Bokning : "blir vid accept"
   Offert ||--o{ Orderrad : "innehåller"
+  Bokningsserie ||--o{ Bokning : "genererar"
+  Bokningsserie }o--o| Prislista : "följer"
   Bokning ||--o{ Programpunkt : "består av"
-  Bokning ||--o{ Deltagare : "har"
+  Bokning ||--o{ Behov : "har"
+  Programpunkt ||--o{ Behov : "justerar"
+  Behov }o--|| Listvarde : "avser"
+  Bokning }o--|| Bokningsstatus : "har status"
+  Bokningsstatus ||--o{ Overgang : "från"
+  Bokningsstatus ||--o{ Overgang : "till"
   Bokning }o--|| Avbokningsvillkor : "följer"
   Bokning ||--o{ Forskott : "kräver"
   Bokning ||--o{ Faktura : "faktureras via"
-  Anvandare ||--o{ Bokning : "koordinerar"
+  Bokning ||--o{ Blad : "ger"
+  Anvandare ||--o{ Bokning : "koordinerar / säljer"
   Kund ||--o{ Bokning : "beställer"
-  Programpunkt }o--|| Rum : "hålls i"
-  Programpunkt }o--|| Moblering : "möbleras som"
+  Typ ||--o{ Faltdefinition : "har"
+  Typ ||--o{ Artikel : "klassar"
+  Lista ||--o{ Listvarde : "har"
+  Faltdefinition }o--o| Lista : "väljer ur"
   Programpunkt ||--o{ Orderrad : "debiteras via"
-  Programpunkt ||--o| Koksorder : "genererar"
-  Programpunkt ||--|| Belaggning : "reserverar"
+  Programpunkt ||--o| Belaggning : "reserverar"
   Option ||--|| Belaggning : "reserverar"
-  Anlaggning ||--o{ Rum : "har"
-  Rum ||--o{ RumMoblering : "har"
-  Moblering ||--o{ RumMoblering : "används i"
-  Rum ||--o{ Belaggning : "har"
-  Deltagare ||--o{ Allergi : "anger"
-  Allergi }o--|| Allergen : "avser"
-  Deltagare ||--o{ Kostpreferens : "anger"
-  Artikel }o--o{ Allergen : "innehåller"
-  Meny }o--o{ Artikel : "består av"
-  Konferenspaket }o--o{ Artikel : "innehåller"
+  Anlaggning ||--o{ Artikel : "har"
+  Artikel ||--o{ Artikeldel : "innehåller"
+  Artikel ||--o{ Artikeldel : "ingår i"
+  Artikel ||--o{ Valgrupp : "har"
+  Valgrupp ||--o{ Artikeldel : "grupperar"
+  Artikel ||--o{ Belaggning : "har"
+  Artikel ||--o{ ItemUppstallning : "har"
+  Uppstallning ||--o{ ItemUppstallning : "används i"
+  Artikel }o--o{ Listvarde : "taggas med"
   Orderrad }o--|| Artikel : "avser"
-  Artikel }o--o{ Prislista : "prissätts i"
-  Koksorder }o--|| Meny : "baseras på"
-  Koksorder }o--o{ Allergi : "sammanställer"
-  Koksorder }o--o{ Kostpreferens : "sammanställer"
-  Koksorder }o--o| Partner : "skickas till"
-  Artikel }o--o| Partner : "levereras av"
+  Bladdefinition ||--o{ Blad : "ger version"
+  Bladdefinition }o--|| Roll : "går till"
+  Anvandare }o--|| Roll : "har"
   Forskott ||--o{ Betalning : "betalas med"
   Faktura ||--o{ Betalning : "regleras med"
   Faktura ||--o{ Orderrad : "fakturerar"
   Faktura ||--o{ Forskott : "avräknar"
 ```
 
+## Konfiguration
+
+*MVP* · Det organisationen sätter upp själv. Allt är data per organisation och skapas via vanliga operationer ([ADR 0021](beslut/0021-configurable-items.md)).
+
+En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owner` och en bokningsstatus per fas så att bokningar fungerar direkt. Mallar kan importeras, till exempel listan "EU:s 14 allergener" eller startpaketet "Konferensgård". En mall är bara data och kan ändras fritt efteråt. AI-assistenten kan föreslå en konfiguration, och användaren godkänner.
+
+### Typ (`EntityType`)
+
+*MVP* · Organisationens egen typ för en grundentitet: artikel, kund, kontaktperson, förfrågan, bokning eller behov.
+
+**Attribut**
+- grundentitet (artikel / kund / kontaktperson / förfrågan / bokning / behov)
+- namn (t.ex. Konferensrum, Rätt, Båt, Paket, Företag, Konferens)
+- beteenden (endast för artikel, se Artikel)
+
+**Relationer**
+- `1:N` har → Fältdefinition
+- `1:N` klassar → Artikel (och kund, bokning m.fl.)
+
+> Ett beteende kan inte stängas av på en typ så länge någon artikel av typen har data för det (`CONFLICT`).
+
+### Fältdefinition (`FieldDefinition`)
+
+*MVP* · Ett eget fält på en typ.
+
+**Attribut**
+- namn
+- fälttyp (text, tal, ja/nej, datum, val, flerval ur en lista, länk till annan typ)
+- obligatoriskt
+- lista (för val och flerval)
+
+**Relationer**
+- `N:1` Typ har denna
+- `N:0..1` väljer ur → Lista
+
+> Värdena lagras som JSON på raden. Ett Zod-schema byggs från definitionerna och validerar dem.
+
+### Lista (`Vocabulary`) och listvärde (`VocabularyValue`)
+
+*MVP* · Organisationens egna ordlistor, t.ex. Allergener, Kost, Tillgänglighet eller Dresscode.
+
+**Attribut**
+- lista: namn
+- värde: namn, ordning, arkiverad
+
+**Relationer**
+- `1:N` Lista har → Listvärde
+- `N:M` Artikel taggas med → Listvärde
+- `1:N` Behov avser ← Listvärde
+
+### Uppställning (`Setup`)
+
+*MVP* · Organisationens egna uppställningar, t.ex. Bio, U-bord och Mingel.
+
+**Attribut**
+- namn
+- ställtid (minuter)
+
+**Relationer**
+- `1:N` används i → Item-uppställning
+
+### Item-uppställning (`ItemSetup`)
+
+*MVP* · Kapacitet per bokningsbar artikel och uppställning. Kräver beteendet `SETUPS`.
+
+**Attribut**
+- artikel
+- uppställning
+- kapacitet
+
+**Relationer**
+- `N:1` Artikel har denna
+- `N:1` Uppställning används i denna
+
+### Blad-definition (`SheetDefinition`)
+
+*MVP* · Hur ett blad ser ut, t.ex. "Köksorder" eller "Bryggorder".
+
+**Attribut**
+- namn
+- artikeltyper och fält som ingår
+- listor vars behov tas med
+- mottagande roll
+
+**Relationer**
+- `N:1` går till → Roll
+- `1:N` ger → Blad
+
+### Bokningsstatus (`BookingStatus`) med fas och övergångar
+
+*MVP* · Organisationens egna statusar för bokning. Varje status hör till en fast fas som styr systemets regler ([ADR 0022](beslut/0022-sales-pipeline-and-booking-states.md)).
+
+**Attribut**
+- namn
+- färg
+- ordning
+- fas (`TENTATIVE` / `CONFIRMED` / `COMPLETED` / `CANCELLED`)
+- arkiverad (en status som används kan arkiveras men inte tas bort)
+
+**Relationer**
+- `1:N` Bokning har denna
+- `1:N` är från/till i → Övergång (`BookingStatusTransition`, från → till)
+
+| Fas | Systemets regler |
+|---|---|
+| `TENTATIVE` | Bokningsbara artiklar är belagda. Blad kan inte skickas. |
+| `CONFIRMED` | Kräver koordinator. Blad och förskott kan skickas. |
+| `COMPLETED` | Tillåts först efter bokningens slut. Bokningen kan faktureras. |
+| `CANCELLED` | Kräver orsak. Beläggningen frigörs och avbokningsvillkoren tillämpas. |
+
+> Organisationen definierar tillåtna övergångar. Fasreglerna kan inte stängas av. Rapporter grupperar på fas, inte på status.
+
+### Roll (`organizationRole`)
+
+*MVP* · Namngiven uppsättning behörigheter per organisation ([ADR 0020](beslut/0020-custom-roles-per-organization.md)).
+
+**Attribut**
+- namn
+- behörigheter (`<resurs>:read|write|admin`, högre åtgärd innefattar lägre)
+- system (`owner` är fast och kan inte ändras eller tas bort)
+- status (aktiv / arkiverad; kan bara arkiveras när ingen medlem har rollen)
+
+**Relationer**
+- `1:N` Användare har denna
+- `1:N` Blad-definition går till denna
+
 ## Sälj & kund
 
 ### Kund (organisation)
 
-*MVP* · Företaget som köper konferensen.
+*MVP* · Företaget som köper konferensen. Har en typ med egna fält, t.ex. Företag eller Myndighet.
 
 **Attribut**
+- typ och egna fält (t.ex. orgnr, Peppol-ID, ramavtal)
 - namn
-- orgnr
 - fakturaadress
-- Peppol-ID / e-fakturaadress
 - prislista
 - betalvillkor (dagar)
 - kreditgräns
@@ -75,7 +208,7 @@ erDiagram
 **Relationer**
 - `1:N` har → Kontaktperson
 - `1:N` skickar → Förfrågan
-- `N:1` använder → Prislista
+- `N:0..1` använder → Prislista
 - `1:N` beställer → Bokning
 
 ### Kontaktperson
@@ -83,6 +216,7 @@ erDiagram
 *MVP* · Beställare, fakturamottagare eller arrangör.
 
 **Attribut**
+- typ och egna fält
 - namn
 - e-post
 - telefon
@@ -95,16 +229,18 @@ erDiagram
 
 ### Förfrågan ★
 
-*MVP* · Inkommande intresse innan något är bokat.
+*MVP* · Inkommande intresse innan något är bokat. Fast statusmaskin, egna kommandon per övergång.
 
 **Attribut**
+- typ och egna fält
 - kanal (formulär, mejl, telefon, Venuu)
 - önskade datum (flera alternativ)
 - ungefärligt antal
 - budget
-- status (ny → kvalificerad → offererad → vunnen / förlorad)
-- förlustorsak
-- ansvarig säljare
+- status: `NEW → QUALIFIED → QUOTED → WON`, eller `LOST`
+- förlustorsak (krävs vid `LOST`)
+- ansvarig säljare (`salesOwnerId`, krävs från `QUALIFIED`)
+- statusChangedAt
 
 **Relationer**
 - `N:1` Kund (organisation) skickar denna
@@ -113,48 +249,50 @@ erDiagram
 - `1:N` kan skapa → Option
 - `0..1:N` Kommunikation & logg gäller denna
 
-> ★ Pipeline med förlustorsak saknas hos Lega.
+> ★ Pipeline med förlustorsak saknas hos Lega. Status ändras bara via kommandon (`inquiry.qualify`, `inquiry.markLost`), aldrig via `update`.
 
 ### Option ★
 
-*MVP* · Preliminärt hållet rum med förfallodatum.
+*MVP* · Preliminärt hållen bokningsbar artikel med förfallodatum.
 
 **Attribut**
-- rum
-- datum och tid
-- optionsdatum (förfaller)
-- ordning (1:a / 2:a option)
+- artikel (med beteendet `BOOKABLE`)
+- start – slut
+- förfaller (datum)
+- rang (1:a / 2:a option, sätts automatiskt)
 - påminnelse före förfall
+- status: `ACTIVE → CONVERTED`, `EXPIRED` eller `RELEASED`
 
 **Relationer**
 - `N:1` Förfrågan kan skapa denna
 - `1:1` reserverar → Beläggning
 
-> ★ Kö av första- och andraoptioner på samma rum frigör tid automatiskt.
+> ★ Optioner står i kö per bokningsbar artikel och tid. Rangen är antal aktiva överlappande optioner + 1. När en option släpps eller förfaller flyttas de bakomliggande upp. `option.expireDue` förfaller optioner vars datum passerat.
 
 ### Offert ★
 
-*MVP* · Versionerat förslag med rader och villkor.
+*MVP* · Versionerat förslag med rader och villkor. Fast statusmaskin.
 
 **Attribut**
 - versionsnr
 - giltig till
-- status (utkast / skickad / accepterad / avböjd)
+- status: `DRAFT → SENT → ACCEPTED`, `DECLINED` eller `EXPIRED`
 - rader (kopior av orderrader)
 - summa exkl. och inkl. moms
 - villkorstext
+- säljare (ärvs från förfrågan)
+- acceptedBy, acceptedAt, acceptanceMethod (`MANUAL` nu, senare `BANKID` och `LINK`)
 
 **Relationer**
 - `N:1` Förfrågan besvaras med denna
-- `1:0..1` signeras via → Avtal & signering
 - `1:0..1` blir vid accept → Bokning
 - `1:N` innehåller → Orderrad
 
-> ★ Versioner med ändringsmarkering mot föregående.
+> ★ Versioner med ändringsmarkering mot föregående. `quote.accept` gör förfrågan `WON`, omvandlar optionerna (`CONVERTED`) och skapar bokningen. En offert kan gälla en hel serie. En offert kan också byggas direkt av artiklar, och "Spara som paket" skapar då en kundspecifik artikel.
 
 ### Avtal & signering
 
-*MVP* · Bindande accept av offerten.
+*Fas 2* · Bindande accept av offerten med BankID eller signeringslänk. Signering skjuts upp. Tills dess sparar offerten bara `acceptedBy`, `acceptedAt` och `acceptanceMethod`.
 
 **Attribut**
 - metod (BankID / signeringslänk)
@@ -170,100 +308,92 @@ erDiagram
 
 ### Bokning
 
-*MVP* · Konferensen eller eventet som helhet.
+*MVP* · Konferensen eller eventet som helhet. Varje tillfälle i en serie är en vanlig bokning.
 
 **Attribut**
 - referensnr
-- status (preliminär / bekräftad / avbokad / genomförd)
+- bokningstyp (organisationens egen typ, t.ex. Konferens eller Event) och egna fält
+- status (organisationens egen `BookingStatus`, med fast fas)
 - start – slut
 - beräknat antal
 - garanterat antal (låses X dagar före)
-- koordinator
+- säljare (`salesOwnerId`)
+- koordinator (`coordinatorId`, krävs från fasen `CONFIRMED`)
 - avbokningsvillkor
+- seriesId och occurrenceIndex (om bokningen hör till en serie)
+- statusChangedAt
 
 **Relationer**
 - `0..1:1` Offert blir vid accept denna
+- `N:0..1` Bokningsserie genererar denna
 - `1:N` består av → Programpunkt
-- `1:N` har → Deltagare
+- `1:N` har → Behov
+- `N:1` har status → Bokningsstatus
 - `N:1` följer → Avbokningsvillkor
 - `1:N` kräver → Förskott
 - `1:N` faktureras via → Faktura
-- `N:1` Användare koordinerar denna
+- `1:N` ger → Blad
+- `N:1` Användare koordinerar och säljer denna
 - `N:1` Kund (organisation) beställer denna
 - `0..1:N` Kommunikation & logg gäller denna
 
-### Programpunkt
+> Status ändras bara med `booking.changeStatus`. En snabbokning skapas av personalen i en `TENTATIVE`-status. Kunden betalar via Swish- eller kortlänk (då bekräftas bokningen när betalningen är klar) eller mot faktura. `booking.export` ger bokningen som json, pdf eller csv ([ADR 0024](beslut/0024-booking-export-instead-of-partner.md)).
 
-*MVP* · En rad i dagens körschema: möte, fika, lunch, aktivitet.
+### Bokningsserie
+
+*MVP* · Återkommande bokning, t.ex. ett mötesrum första tisdagen varje månad ([ADR 0023](beslut/0023-recurring-bookings-and-customer-pricing.md)).
 
 **Attribut**
-- typ (möte, fika, lunch, middag, aktivitet, mingel)
+- kund
+- mall (artiklar inkl. bokningsbar artikel, uppställning och tider)
+- regel (delmängd av RFC 5545 RRULE: `FREQ`, `INTERVAL`, `BYDAY`, `BYMONTHDAY`, `COUNT` eller `UNTIL`)
+- prislista
+
+**Relationer**
+- `1:N` genererar → Bokning
+- `N:0..1` följer → Prislista
+
+> Tillfällen skapas när serien skapas, högst 12 månader eller 52 tillfällen fram. Krockande tillfällen markeras och returneras så att användaren kan välja annan artikel eller tid. Ändringar görs för "bara detta tillfälle" eller "detta och följande". Att avboka serien avbokar alla kommande tillfällen.
+
+### Programpunkt
+
+*MVP* · En rad i dagens körschema: möte, fika, lunch, aktivitet. Skapas bland annat när en sammansatt artikel läggs på bokningen.
+
+**Attribut**
+- namn och typ (organisationens egen)
 - start – slut
-- rum
-- möblering
+- bokningsbar artikel (t.ex. lokal)
+- uppställning
 - antal
-- ansvarig
+- ansvarig (`responsibleId`, valfri)
 - intern notering
 
 **Relationer**
 - `N:1` Bokning består av denna
-- `N:1` hålls i → Rum
-- `N:1` möbleras som → Möblering
+- `N:0..1` hålls i → Artikel (bokningsbar)
+- `N:0..1` ställs upp som → Uppställning
+- `1:N` justerar → Behov
 - `1:N` debiteras via → Orderrad
-- `1:0..1` genererar → Köksorder
-- `1:1` reserverar → Beläggning
+- `1:0..1` reserverar → Beläggning
 - `1:N` kräver → Uppgift
 - `1:N` Passerkod öppnar för denna
 
-### Deltagare ★
+### Behov ★ (`Requirement`)
 
-*MVP* · Person som kommer, registrerad via länk eller import.
+*MVP* · Antal per listvärde på en bokning eller en programpunkt, t.ex. Gluten × 3 eller Rullstol × 2. Aldrig kopplat till en person. Det finns inga personuppgifter om enskilda gäster ([ADR 0021](beslut/0021-configurable-items.md)).
 
 **Attribut**
-- namn
-- e-post
-- organisation
-- allergier
-- kostpreferenser
-- närvarostatus
-- källa (länk / import / manuellt)
+- bokning eller programpunkt
+- listvärde
+- antal
+- typ och egna fält (t.ex. allvarlighetsgrad)
 
 **Relationer**
 - `N:1` Bokning har denna
-- `1:N` anger → Allergi
-- `1:N` anger → Kostpreferens
+- `N:0..1` Programpunkt justerar med denna
+- `N:1` avser → Listvärde
 
-> ★ Deltagarlista med kost per person: bara Venjue (DK) har det bekräftat.
-
-### Allergi ★
-
-*MVP* · Allergi eller överkänslighet hos en deltagare. Säkerhetskritisk: en krock med en artikels allergener är en blockerare.
-
-**Attribut**
-- allergen (obligatorisk)
-- allvarlighetsgrad (intolerans / allergi / anafylaxi)
-- anteckning
-
-**Relationer**
-- `N:1` Deltagare anger denna
-- `N:1` avser → Allergen
-- `M:N` Köksorder sammanställer denna
-
-> ★ Slår igenom i köksordern per namn och per allergen. Matchas mot Artikel.allergener.
-
-### Kostpreferens
-
-*MVP* · Val av kost som inte är en säkerhetsfråga.
-
-**Attribut**
-- typ (vegetarisk / vegansk / halal / kosher / annat)
-- fritext (för annat)
-
-**Relationer**
-- `N:1` Deltagare anger denna
-- `M:N` Köksorder sammanställer denna
-
-> Matchas mot Artikel.kostmärkning, inte mot allergener. I köksordern som antal och namn, efter allergierna.
+> ★ En rad på programpunkten ersätter bokningens antal där. Matchning: behovet jämförs med artiklarna på bokningen som är taggade med samma listvärde. En träff på en obligatorisk del utan alternativ flaggas och blockerar bladet. `item.resolve` räknar fram ärvda taggar och är enda platsen för det.
 
 ### Avbokningsvillkor
 
@@ -282,7 +412,7 @@ erDiagram
 
 ### Anläggning
 
-*MVP* · Byggnad eller site med rum.
+*MVP* · Byggnad eller site. Bokningsbara artiklar hör till en anläggning.
 
 **Attribut**
 - namn
@@ -292,213 +422,146 @@ erDiagram
 - kontaktuppgifter
 
 **Relationer**
-- `1:N` har → Rum
-
-### Rum
-
-*MVP* · Bokningsbar lokal.
-
-**Attribut**
-- namn
-- våning
-- yta (m²)
-- takhöjd
-- dagsljus (ja/nej)
-- max kapacitet
-- kombinerbar med (andra rum)
-- pris per timme / halvdag / heldag
-- bilder
-
-**Relationer**
-- `1:N` Programpunkt hålls i denna
-- `N:1` Anläggning har denna
-- `1:N` har → Rum × möblering
-- `1:N` har → Beläggning
-- `1:N` Rumsskylt sitter vid denna
-
-### Möblering
-
-*MVP* · Uppställningstyp.
-
-**Attribut**
-- typ (bio, klassrum, U-bord, styrelse, ö-sittning, bankett, mingel)
-- ställtid (minuter)
-- standardutrustning
-
-**Relationer**
-- `1:N` Programpunkt möbleras som denna
-- `1:N` används i → Rum × möblering
-
-### Rum × möblering
-
-*MVP* · Kapacitet per rum och uppställning.
-
-**Attribut**
-- rum
-- möblering
-- kapacitet
-
-**Relationer**
-- `N:1` Rum har denna
-- `N:1` Möblering används i denna
+- `1:N` har → Artikel
 
 ### Beläggning ★
 
-*MVP* · Tidsblock på ett rum. Grunden för krockkontroll.
+*MVP* · Tidsblock på en bokningsbar artikel. Grunden för krockkontroll.
 
 **Attribut**
-- rum
+- artikel (med beteendet `BOOKABLE`)
 - start – slut
-- typ (bokning, option, ställtid, underhåll, internt)
+- typ (`BOOKING`, `OPTION`, `SETUP`, `MAINTENANCE`, `INTERNAL`)
 - källa
 
 **Relationer**
 - `1:1` Programpunkt reserverar denna
 - `1:1` Option reserverar denna
-- `N:1` Rum har denna
+- `N:1` Artikel har denna
 
-> ★ Ställtid mellan grupper räknas in automatiskt.
+> ★ Alla typer utom `OPTION` får inte överlappa på samma artikel. Det säkras med en exclusion constraint i Postgres. Ställtid läggs in som `SETUP` utifrån uppställningens ställtid.
 
-### Utrustning
+## Artiklar
 
-*Fas 2* · AV och lösa resurser.
+### Artikel (`Item`)
+
+*MVP* · Allt som kan säljas eller bokas: rätt, dryck, lokal, utrustning, guide, paket. Ersätter de gamla Artikel, Meny, Konferenspaket, Rum, Möblering och Utrustning.
 
 **Attribut**
+- typ (organisationens egen) och egna fält
 - namn
-- antal i lager
-- pris
-- rumsbunden eller flyttbar
+- beteenden som typen slår på:
+  - `PRICED`: pris, prisenhet (`PER_PERSON`, `PER_UNIT`, `PER_HOUR`, `FLAT`), moms och orderrader
+  - `COMPOSABLE`: innehåller andra artiklar med antal, `offsetMinutes` och `durationMinutes`
+  - `CHOICES`: valgrupper bland delarna. Kräver `COMPOSABLE`.
+  - `BOOKABLE`: beläggning i tid, krockskydd och standardlängd
+  - `SETUPS`: kapacitet per uppställning och ställtid. Kräver `BOOKABLE`.
+- taggar (listvärden)
+- kundId (`null` = katalogartikel, satt = kundspecifikt paket)
+- anläggning
 
 **Relationer**
-- `0..1:N` Orderrad bokar denna
-
-### Partner ★
-
-*MVP* · Extern leverantör: restaurang, aktivitet, AV.
-
-**Attribut**
-- typ (restaurang / catering, aktivitet, AV, transport)
-- kontaktuppgifter
-- tar emot köksorder (ja/nej)
-- avräkning (inköp / provision)
-
-**Relationer**
-- `0..1:N` Köksorder skickas till denna
-- `0..1:N` Artikel levereras av denna
-
-> ★ World of Volvo köper all konferensmat av en extern operatör. Köksordern måste kunna gå över bolagsgräns.
-
-## Mat & dryck
-
-### Artikel
-
-*MVP* · Allt som kan säljas: rätt, dryck, lokalhyra, aktivitet.
-
-**Attribut**
-- namn
-- kategori (fika, lunch, middag, dryck, lokal, utrustning, aktivitet)
-- prisenhet (per person / st / timme)
-- momssats
-- kostnadsställe
-- allergener
-- kostmärkning (vegetarisk / vegansk / halal / kosher)
-- leverantör (eget kök / partner)
-
-**Relationer**
-- `N:M` innehåller → Allergen
-- `M:N` Meny består av denna
-- `M:N` Konferenspaket innehåller denna
+- `N:1` klassas av → Typ
+- `N:0..1` hör till → Anläggning
+- `1:N` innehåller → Artikeldel
+- `1:N` ingår i → Artikeldel
+- `1:N` har → Valgrupp
+- `1:N` har → Beläggning
+- `1:N` har → Item-uppställning
+- `N:M` taggas med → Listvärde
 - `1:N` Orderrad avser denna
-- `N:M` prissätts i → Prislista
-- `N:0..1` levereras av → Partner
+- `1:N` Prislisterad avser denna
 
-### Allergen
+> Ett rum är en artikel med `BOOKABLE` + `SETUPS`. Ett konferenspaket är en artikel med `COMPOSABLE` + `CHOICES`. Ärvda taggar: obligatoriska delar ger "innehåller", valbara delar ger "kan innehålla" per alternativ. När en artikel läggs på en bokning expanderar core den till programpunkter, beläggning och orderrader. Raderna kopierar namn, pris, moms och taggar (snapshot).
 
-*MVP* · De 14 allergener som måste anges enligt EU:s förordning 1169/2011. Globalt, skrivskyddat referensdata (seedat, inte per organisation).
+### Artikeldel (`ItemComponent`)
 
-**Attribut**
-- kod
-- namn
-- ikon
-
-**Relationer**
-- `1:N` Allergi avser denna
-- `M:N` Artikel innehåller denna
-
-### Meny
-
-*MVP* · Uppsättning rätter med valbara alternativ.
+*MVP* · En del i en sammansatt artikel.
 
 **Attribut**
-- namn
-- rätter (artiklar)
-- valbara alternativ
-- säsong
-- sista dag för menyval
+- överordnad artikel
+- artikel (delen)
+- antal
+- offsetMinutes
+- durationMinutes
+- obligatorisk eller valbar
+- valgrupp
 
 **Relationer**
-- `N:M` består av → Artikel
-- `1:N` Köksorder baseras på denna
+- `N:1` Artikel innehåller denna
+- `N:1` avser → Artikel
+- `N:0..1` ingår i → Valgrupp
 
-### Konferenspaket ★
+> Grafen är acyklisk. Core avvisar cykler och mer än 5 nivåers djup med `VALIDATION`. I ett paket debiteras paketets pris. Momsen fördelas på delarna i proportion till delarnas listpris.
 
-*MVP* · Pris per person för rum, fika och mat ihop.
+### Valgrupp (`ItemChoiceGroup`)
+
+*MVP* · Valbara alternativ bland delarna i en sammansatt artikel.
 
 **Attribut**
 - namn
-- pris per person
-- ingående artiklar och tider
-- minsta antal
-- momsfördelning per ingående del
+- minPick
+- maxPick
 
 **Relationer**
-- `N:M` innehåller → Artikel
+- `N:1` Artikel har denna
+- `1:N` grupperar → Artikeldel
 
-> ★ World of Volvo säljer paket från 590 till 1 016 kr per person.
+### Blad ★ (`Sheet`)
 
-### Köksorder ★
-
-*MVP* · Function sheet till kök eller partner.
+*MVP* · Sammanställning till en roll, t.ex. köksorder, bryggorder eller guidebrief. Skapas utifrån en blad-definition. Ersätter Köksorder.
 
 **Attribut**
-- programpunkt
-- serveringstid
-- antal kuvert
-- menyval
-- allergier per allergen och per namn
-- kostpreferenser (antal och namn)
-- mottagare (eget kök / partner)
+- bokning
+- blad-definition
+- artiklar och fält enligt definitionen
+- behov per listvärde (antal, aldrig namn)
+- blockerad (ja/nej) och träffar
+- mottagande roll
 - version och ändringsmarkering
 
 **Relationer**
-- `0..1:1` Programpunkt genererar denna
-- `N:1` baseras på → Meny
-- `N:M` sammanställer → Allergi
-- `N:M` sammanställer → Kostpreferens
-- `N:0..1` skickas till → Partner
+- `N:1` Bokning ger denna
+- `N:1` Blad-definition ger denna version
 
-> ★ Versionerad, med ändringar markerade sedan senaste utskick.
+> ★ Versionerat, med ändringar markerade sedan senaste utskick. Kan inte skickas i fasen `TENTATIVE`. `sheet.export` ger ett enskilt blad som json, pdf eller csv, alltid med senaste version och versionsnummer. Det är så ett blad lämnas till någon utanför systemet.
 
 ## Ekonomi
 
 ### Prislista
 
-*MVP* · Pris per säsong, veckodag eller kund.
+*MVP* · Pris per säsong, veckodag eller kund ([ADR 0023](beslut/0023-recurring-bookings-and-customer-pricing.md)).
 
 **Attribut**
 - namn
 - giltighet
 - säsong / veckodag
-- kundspecifik
-- rabatt (%)
+- kund (valfri, för kundpris)
+- generell rabatt (%)
 
 **Relationer**
-- `1:N` Kund (organisation) använder denna
-- `M:N` Artikel prissätts i denna
+- `N:0..1` Kund (organisation) använder denna
+- `N:0..1` Bokningsserie följer denna
+- `1:N` innehåller → Prislisterad
+
+### Prislisterad (`PriceListItem`)
+
+*MVP* · Pris per artikel i en prislista.
+
+**Attribut**
+- prislista
+- artikel
+- pris
+
+**Relationer**
+- `N:1` Prislista innehåller denna
+- `N:1` avser → Artikel
+
+> Orderrader kopierar priset när de skapas. En ändrad prislista påverkar bara nya rader.
 
 ### Orderrad
 
-*MVP* · Det som faktiskt debiteras.
+*MVP* · Det som faktiskt debiteras. Kopior (snapshot) av artikelns namn, pris, moms och taggar.
 
 **Attribut**
 - artikel
@@ -514,12 +577,11 @@ erDiagram
 - `N:1` Offert innehåller denna
 - `N:1` Programpunkt debiteras via denna
 - `N:1` avser → Artikel
-- `N:0..1` bokar → Utrustning
 - `N:1` Faktura fakturerar denna
 
 ### Förskott
 
-*MVP* · Delbetalning vid bekräftelse.
+*MVP* · Delbetalning vid bekräftelse. Kan skickas först i fasen `CONFIRMED`.
 
 **Attribut**
 - belopp
@@ -551,7 +613,7 @@ erDiagram
 
 ### Faktura
 
-*MVP* · Slutfaktura efter genomförande.
+*MVP* · Slutfaktura efter genomförande. Bokningen kan faktureras först i fasen `COMPLETED`.
 
 **Attribut**
 - fakturanr
@@ -571,18 +633,20 @@ erDiagram
 
 ### Användare
 
-*MVP* · Personal med roll och behörighet.
+*MVP* · Medlem i organisationen. Rollerna är organisationens egna (ADR 0020).
 
 **Attribut**
 - namn
-- roll (säljare, koordinator, kök, vaktmästare, ekonomi, admin)
-- behörigheter
+- roller (ur organisationens roller)
 - anläggningar
 - plattformsroll (`user` / `admin`): bara Okazis egen personal, ger `/admin` ([ADR 0015](beslut/0015-platform-admin.md))
 
 **Relationer**
-- `1:N` koordinerar → Bokning
+- `N:1` har → Roll
+- `1:N` koordinerar och säljer → Bokning
 - `1:N` ansvarar för → Uppgift
+
+> Core slår inte upp roller. `packages/auth` löser medlemmens roller till behörigheter en gång per anrop. API-nycklar utfärdas med ett rollnamn (aldrig `owner`) och får aldrig mer än medlemmens egna behörigheter. Ingen kan ge en roll mer än hen själv har.
 
 ### Uppgift
 
@@ -601,7 +665,7 @@ erDiagram
 
 ### Kommunikation & logg
 
-*Fas 2* · Mejl, anteckningar och ändringshistorik.
+*Fas 2* · Mejl, anteckningar och ändringshistorik. Statushistorik kommer från `AuditLog`.
 
 **Attribut**
 - kanal
@@ -641,24 +705,24 @@ erDiagram
 **Relationer**
 - `N:1` ändrad av → Användare
 
-### Rumsskylt
+### Skylt
 
-*Fas 3* · Skärm vid rummet med dagens program.
+*Fas 3* · Skärm vid en bokningsbar artikel (t.ex. ett rum) med dagens program.
 
 **Attribut**
-- rum
+- artikel (med beteendet `BOOKABLE`)
 - enhet
 - visade programpunkter
 
 **Relationer**
-- `N:1` sitter vid → Rum
+- `N:1` sitter vid → Artikel
 
 ### Passerkod
 
 *Fas 3* · Digitalt lås kopplat till bokad tid.
 
 **Attribut**
-- programpunkt / rum
+- programpunkt / artikel
 - kod eller mobilnyckel
 - giltig från – till
 
@@ -672,7 +736,15 @@ Svenska termer används i dokumentation och UI. Engelska namn används i kod, AP
 | Svenska | Engelska (kod) |
 |---|---|
 | Anläggning | Venue |
-| Rum | Room |
+| Typ | EntityType |
+| Fältdefinition | FieldDefinition |
+| Lista | Vocabulary |
+| Listvärde | VocabularyValue |
+| Uppställning | Setup |
+| Item-uppställning | ItemSetup |
+| Artikel | Item |
+| Artikeldel | ItemComponent |
+| Valgrupp | ItemChoiceGroup |
 | Kund | Customer |
 | Kontaktperson | Contact |
 | Förfrågan | Inquiry |
@@ -680,22 +752,21 @@ Svenska termer används i dokumentation och UI. Engelska namn används i kod, AP
 | Offert | Quote |
 | Avtal | Agreement |
 | Bokning | Booking |
-| Programpunkt | AgendaItem |
-| Deltagare | Attendee |
-| Allergi | Allergy |
-| Kostpreferens | DietaryPreference |
-| Allergen | Allergen |
-| Köksorder | KitchenOrder |
+| Bokningsstatus | BookingStatus |
+| Övergång | BookingStatusTransition |
+| Bokningsserie | BookingSeries |
+| Programpunkt | ProgramItem |
+| Behov | Requirement |
+| Blad | Sheet |
+| Blad-definition | SheetDefinition |
+| Beläggning | Occupancy |
+| Skylt | Sign |
+| Roll | organizationRole |
 | Faktura | Invoice |
 | Förskott | Deposit |
 | Betalning | Payment |
 | Prislista | PriceList |
-| Artikel | Article |
-| Meny | Menu |
-| Konferenspaket | ConferencePackage |
-| Möblering | Layout |
-| Beläggning | Occupancy |
-| Partner | Partner |
+| Prislisterad | PriceListItem |
 | Avbokningsvillkor | CancellationTerms |
 | Orderrad | OrderLine |
 | Användare | User |

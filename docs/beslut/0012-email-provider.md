@@ -4,7 +4,7 @@
 - **Status:** Accepterat
 
 ## Kontext
-- Okazi behöver skicka (bekräftelser, optioner, köksorder) och ta emot (svar kopplade till bokning) e-post.
+- Okazi behöver skicka (bekräftelser, optioner, blad) och ta emot (svar kopplade till bokning) e-post.
 - Egen mailserver förkastades: port 25 är blockerad hos många VPS-leverantörer och IP-rykte/leveransbarhet mot Gmail och Microsoft är en risk för produkten.
 - Hosting är en eller flera egna VPS:er (se kommande hosting-ADR). Mailservern ska inte vara en del av den.
 

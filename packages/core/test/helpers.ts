@@ -1,15 +1,29 @@
 import { createId } from "@paralleldrive/cuid2";
-import { type Actor, createExecuteContext, type ExecuteContext } from "../src/index";
+import {
+  type Actor,
+  createExecuteContext,
+  type ExecuteContext,
+  grantAll,
+  type PermissionAction,
+  type PermissionSet,
+} from "../src/index";
 
-export type TestContextInput = { organizationId?: string; roles?: string[]; actor?: Actor };
+export type TestContextInput = {
+  organizationId?: string;
+  /** Every resource up to this action (default `admin`), or explicit `permissions`. */
+  access?: PermissionAction;
+  permissions?: PermissionSet;
+  actor?: Actor;
+};
 
 /** Fresh org per call: tests never share rows, so no cleanup is needed. */
 export function testContext({
   organizationId = `org_${createId()}`,
-  roles = ["owner"],
+  access = "admin",
+  permissions = grantAll({ upTo: access }),
   actor = { type: "user", userId: `user_${createId()}` },
 }: TestContextInput = {}): ExecuteContext {
-  return createExecuteContext({ organizationId, roles, actor });
+  return createExecuteContext({ organizationId, roles: [access], permissions, actor });
 }
 
 export type UnwrapInput<T> = { result: { ok: true; value: T } | { ok: false; error: Error } };
@@ -26,9 +40,9 @@ export function errorCode({ result }: ErrorCodeInput): string | null {
   return result.ok ? null : result.error.code;
 }
 
-export type PeerInput = { of: ExecuteContext; roles?: string[] };
+export type PeerInput = { of: ExecuteContext; access?: PermissionAction };
 
-/** Another user in the same organization (member by default). */
-export function peer({ of, roles = ["member"] }: PeerInput): ExecuteContext {
-  return testContext({ organizationId: of.organizationId, roles });
+/** Another user in the same organization (read + write by default). */
+export function peer({ of, access = "write" }: PeerInput): ExecuteContext {
+  return testContext({ organizationId: of.organizationId, access });
 }

@@ -1,5 +1,7 @@
 import { conversationOperations } from "./features/conversation/operations";
+import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
+import { roleOperations } from "./features/role/operations";
 import { roomOperations } from "./features/room/operations";
 import { skillOperations } from "./features/skill/operations";
 import { venueOperations } from "./features/venue/operations";
@@ -17,6 +19,8 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...conversationOperations,
     ...messageOperations,
     ...skillOperations,
+    ...roleOperations,
+    ...memberOperations,
     createSearchOperation({ embed }),
   ];
 }

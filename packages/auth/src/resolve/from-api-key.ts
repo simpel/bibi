@@ -1,18 +1,22 @@
-import { ok, type Result } from "@okazi/core";
+import { intersectPermissions, ok, type Result } from "@okazi/core";
 import { z } from "zod";
 import { getAuth } from "../get-auth";
-import { capRole, highestRole, roleForKeyPermissions } from "../roles";
 import { forbidden, unauthenticated } from "./errors";
-import { loadMemberRoles } from "./membership";
+import { loadMembership } from "./membership";
 import type { Principal } from "./principal";
+import { resolveRolePermissions } from "./role-permissions";
 
-const KeyMetadataSchema = z.object({ organizationId: z.string().min(1) });
+const KeyMetadataSchema = z.object({
+  organizationId: z.string().min(1),
+  role: z.string().min(1).optional(),
+});
 
 export type FromApiKeyInput = { key: string };
 
 /**
- * API key → owner (`referenceId`) + `metadata.organizationId`. Effective role is the owner's
- * live membership role capped by the key's permissions, so a key never outranks its owner.
+ * API key → owner (`referenceId`) + `metadata.organizationId`. Effective permissions are the
+ * owner's live membership permissions ∩ the key role's live permissions, so a key never
+ * outranks its owner nor its role. A key without a role grants nothing.
  */
 export async function principalFromApiKey({ key }: FromApiKeyInput): Promise<Result<Principal>> {
   const result = await getAuth().api.verifyApiKey({ body: { key } });
@@ -20,9 +24,12 @@ export async function principalFromApiKey({ key }: FromApiKeyInput): Promise<Res
   const metadata = KeyMetadataSchema.safeParse(result.key.metadata);
   if (!metadata.success) return forbidden({ message: "API key is not bound to an organization" });
   const userId = result.key.referenceId;
-  const { organizationId } = metadata.data;
-  const memberRole = highestRole({ roles: await loadMemberRoles({ userId, organizationId }) });
-  const keyRole = roleForKeyPermissions({ permissions: result.key.permissions });
-  const roles = memberRole && keyRole ? [capRole({ role: memberRole, cap: keyRole })] : [];
-  return ok({ value: { userId, organizationId, roles, aiAllowed: false } });
+  const { organizationId, role } = metadata.data;
+  const membership = await loadMembership({ userId, organizationId });
+  const keyPermissions = role
+    ? await resolveRolePermissions({ organizationId, roles: [role] })
+    : {};
+  const permissions = intersectPermissions({ a: membership?.permissions ?? {}, b: keyPermissions });
+  const roles = membership && role ? [role] : null;
+  return ok({ value: { userId, organizationId, roles, permissions, aiAllowed: false } });
 }

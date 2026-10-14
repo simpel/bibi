@@ -1,4 +1,4 @@
-import { createExecuteContext, createVenue } from "@okazi/core";
+import { createExecuteContext, createVenue, grantAll } from "@okazi/core";
 import { EMBEDDING_DIMENSIONS, getDb, scopedDb } from "@okazi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { MockEmbeddingModelV4 } from "ai/test";
@@ -23,6 +23,7 @@ describe("reindexAll", () => {
     const context = createExecuteContext({
       organizationId,
       roles: ["owner"],
+      permissions: grantAll({ upTo: "admin" }),
       actor: { type: "user", userId: `user_${createId()}` },
     });
     const placeholder = createEmbed({ apiKey: null, nodeEnv: "test" });

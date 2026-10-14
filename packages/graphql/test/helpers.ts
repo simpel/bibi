@@ -5,7 +5,10 @@ import {
   createExecuteContext,
   type ExecuteContext,
   err,
+  grantAll,
   ok,
+  type PermissionAction,
+  type PermissionSet,
   registerOperations,
 } from "@okazi/core";
 import { createId } from "@paralleldrive/cuid2";
@@ -14,14 +17,21 @@ import { fakeEmbed } from "./fake-embed";
 
 registerOperations({ operations: createCoreOperations({ embed: fakeEmbed }) });
 
-export type TestContextInput = { organizationId?: string; roles?: string[]; actor?: Actor };
+export type TestContextInput = {
+  organizationId?: string;
+  /** Every resource up to this action (default `admin`), or explicit `permissions`. */
+  access?: PermissionAction;
+  permissions?: PermissionSet;
+  actor?: Actor;
+};
 
 export function testContext({
   organizationId = `org_${createId()}`,
-  roles = ["owner"],
+  access = "admin",
+  permissions = grantAll({ upTo: access }),
   actor = { type: "user", userId: `user_${createId()}` },
 }: TestContextInput = {}): ExecuteContext {
-  return createExecuteContext({ organizationId, roles, actor });
+  return createExecuteContext({ organizationId, roles: [access], permissions, actor });
 }
 
 export type GqlResponse = {

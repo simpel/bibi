@@ -13,7 +13,7 @@ Goal: a short, prioritised risk list that a coordinator can act on before confir
 ## Gather facts
 
 - From the user: date and time, participant count, rooms or venue, layout, catering
-  (meals, special diets and allergies), technical needs and any external partners.
+  (meals, special diets and allergies), technical needs and anyone outside the venue who needs a handoff.
 - From Okazi: use `room_get` / `room_list` and `venue_get` for capacity, area, daylight, floor,
   address and contact details. Use `search` if the user names a room or venue loosely.
 
@@ -23,9 +23,9 @@ Goal: a short, prioritised risk list that a coordinator can act on before confir
 2. Missing data: rooms without `maxCapacity` or `areaSqm` cannot be verified – flag them.
 3. Comfort: full-day events in rooms without daylight are a warning.
 4. Access: upper floors without information about lifts are a question for the venue.
-5. Food & beverage: allergies must be listed per participant, mapped to the EU's 14
-   allergens (with severity), and confirmed with the kitchen or the external restaurant partner.
-   Diet preferences (vegetarian, vegan, halal, kosher) are listed separately and are not safety flags.
+5. Requirements: dietary needs and allergies are counts per booking, never tied to a person
+   (e.g. "gluten × 3, nuts (anaphylaxis) × 1"). Match them against the venue's own lists and
+   flag any hit on a mandatory dish without an alternative as a blocker.
 6. Contacts: a venue without `contactEmail` or `contactPhone` makes day-of issues harder.
 
 ## Output

@@ -1,19 +1,20 @@
-export type PermissionAction = "read" | "write" | "admin";
+import type { PermissionSet } from "../permissions/permission-set";
+import type { PermissionAction } from "../permissions/resources";
+
+export type { PermissionAction } from "../permissions/resources";
 
 /** `<resource>:<action>`, e.g. `venue:write`. */
 export type Permission = `${string}:${PermissionAction}`;
 
-/** Org roles (Better Auth organization plugin) → allowed actions on any resource. */
-const ROLE_ACTIONS: Record<string, readonly PermissionAction[]> = {
-  owner: ["read", "write", "admin"],
-  admin: ["read", "write", "admin"],
-  member: ["read", "write"],
-  viewer: ["read"],
-};
+export type HasPermissionInput = { permissions: PermissionSet; permission: Permission };
 
-export type HasPermissionInput = { roles: readonly string[]; permission: Permission };
-
-export function hasPermission({ roles, permission }: HasPermissionInput): boolean {
-  const action = permission.slice(permission.lastIndexOf(":") + 1) as PermissionAction;
-  return roles.some((role) => ROLE_ACTIONS[role]?.includes(action) ?? false);
+/**
+ * Checks the caller's resolved permissions (ADR 0020). `packages/auth` resolves the member's
+ * roles to a normalized `PermissionSet` once per request, so this is an exact lookup.
+ */
+export function hasPermission({ permissions, permission }: HasPermissionInput): boolean {
+  const split = permission.lastIndexOf(":");
+  const resource = permission.slice(0, split);
+  const action = permission.slice(split + 1) as PermissionAction;
+  return permissions[resource]?.includes(action) ?? false;
 }

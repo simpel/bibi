@@ -1,5 +1,7 @@
 import { conversationRoutes } from "./features/conversation/rest";
+import { memberRoutes } from "./features/member/rest";
 import { messageRoutes } from "./features/message/rest";
+import { roleRoutes } from "./features/role/rest";
 import { roomRoutes } from "./features/room/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { venueRoutes } from "./features/venue/rest";
@@ -14,6 +16,8 @@ export function listRestRoutes(): RestRoute[] {
     ...conversationRoutes,
     ...messageRoutes,
     ...skillRoutes,
+    ...roleRoutes,
+    ...memberRoutes,
     ...searchRoutes,
   ];
 }

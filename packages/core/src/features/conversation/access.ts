@@ -2,7 +2,7 @@ import type { Conversation } from "@okazi/db";
 import { hasPermission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 
-export type ConversationAccessInput = { context: Pick<OperationContext, "actor" | "roles"> };
+export type ConversationAccessInput = { context: Pick<OperationContext, "actor" | "permissions"> };
 
 /**
  * Conversations are private to their owner. Org admins/owners (`conversation:admin`) and system
@@ -11,14 +11,14 @@ export type ConversationAccessInput = { context: Pick<OperationContext, "actor" 
  */
 export function canReadAllConversations({ context }: ConversationAccessInput): boolean {
   if (context.actor.type === "system") return true;
-  return hasPermission({ roles: context.roles, permission: "conversation:admin" });
+  return hasPermission({ permissions: context.permissions, permission: "conversation:admin" });
 }
 
 /** `read`/`manage`: owner, admin or system. `own`: owner (or system) only. */
 export type ConversationAccess = "read" | "manage" | "own";
 
 export type FindConversationInput = {
-  context: Pick<OperationContext, "actor" | "roles" | "db">;
+  context: Pick<OperationContext, "actor" | "permissions" | "db">;
   id: string;
   access: ConversationAccess;
 };

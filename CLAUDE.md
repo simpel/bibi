@@ -2,16 +2,17 @@
 
 ## Produkt
 - SaaS-bokningssystem för konferens + mat & dryck hos venues utan hotell-PMS: upplevelsecenter, museer, konferensgårdar, herrgårdar, restauranger med privata rum.
-- Referenskund i åtanke: World of Volvo (Göteborg). Maten levereras av extern restaurangoperatör → köksorder måste kunna gå till partner över bolagsgräns.
+- Referenskund i åtanke: World of Volvo (Göteborg).
 - Huvudkonkurrent: Lega Online (Multinet Interactive AB). Se `docs/marknad/`.
 
 ## Differentierare (styr prioritering)
-- Direktbokning med betalning (Swish/kort) för mindre möten, inte bara förfrågan.
-- Deltagarlista med allergier per person kopplade till EU:s 14 allergener (plus separata kostpreferenser), sammanställt i köksorder.
-- Versionerad köksorder till eget kök eller extern partner.
+- Snabbokning för mindre möten: personalen bokar direkt utan förfrågan och offert, och kunden betalar via Swish- eller kortlänk eller mot faktura. Okazi är ett internt verktyg för personalen. Gäster och kunder använder aldrig appen, de ser bara betalsidan.
+- Behov som antal mot organisationens egna listor (t.ex. EU:s 14 allergener som importerbar mall), matchade mot artiklar och sammanställda i blad. Inga personuppgifter om gäster.
+- Versionerade blad (t.ex. köksorder) till en roll, plus export (json, pdf, csv) för överlämning utanför systemet.
+- Konfigurerbar domän: varje organisation sätter upp egna typer, fält, listor, statusar och roller (ADR 0020, 0021).
 - Optioner med kö (1:a/2:a option) och automatiskt förfall.
 - Svenska integrationer: Fortnox, Visma, Swish, BankID, Peppol/e-faktura.
-- Publicerade priser och självregistrering.
+- Okazis egna priser är publicerade och anläggningar kan registrera sig utan säljkontakt.
 
 ## Domänmodell
 - Källa: `docs/domanmodell.md`. Uppdatera den och `docs/artefakter/domanmodell.html` tillsammans.
@@ -47,6 +48,7 @@
   - Sökbara entiteter implementerar `Embeddable`.
   - Återanvändbart AI-beteende lever som skills (System / Organisation / Personlig), inte som ad hoc-prompter.
   - Se `docs/beslut/0007-ai-first-ux.md` och `docs/beslut/0008-semantisk-sokning-och-skills.md`.
+- **Konfigurerbar domän.** Inga domänord i koden. Organisationen definierar typer, fält, listor, bokningsstatusar och roller som data. Koden äger bara generella beteenden (`PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS`) och fasta faser. Mallar är frivillig data. Se `docs/beslut/0021-configurable-items.md`.
 - **Multi-tenant.** Allt är scopat på `organizationId`. Varje mutation loggas i `AuditLog`. Se `docs/beslut/0004-multi-tenancy.md` och `docs/beslut/0006-databaskonventioner.md`.
 - **Allt loggas.** Core `execute` skriver en systemloggrad per operation (lyckad, avvisad eller fel). Varje ingång öppnar en request-kontext med `requestId` och `surface`, som också hamnar på `AuditLog`. Se `docs/beslut/0014-system-logging.md`.
 
@@ -109,6 +111,7 @@
 - `pnpm install`: installerar beroenden.
 - `pnpm db:migrate`: kör databasmigrationer.
 - `pnpm --filter @okazi/core seed:skills`: seedar system-skills.
+- `pnpm --filter @okazi/core seed:demo`: skapar två demoorganisationer via core-operationer (spec: `docs/demo-seed.md`, byggs i delar enligt ADR 0025).
 - `pnpm --filter @okazi/web provision:oauth`: skapar assistentens OAuth-klient och skriver ut `WEB_OAUTH_CLIENT_ID=...` (lägg i `.env`, läses av webb och MCP).
 - `pnpm dev`: startar webben (:3000) och MCP-servern (:3001) via Turborepo.
 - `pnpm lint`: Biome-kontroll.

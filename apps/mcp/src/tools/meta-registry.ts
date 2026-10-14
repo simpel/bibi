@@ -1,5 +1,7 @@
 import { conversationMcpTools } from "../features/conversation/mcp";
+import { memberMcpTools } from "../features/member/mcp";
 import { messageMcpTools } from "../features/message/mcp";
+import { roleMcpTools } from "../features/role/mcp";
 import { roomMcpTools } from "../features/room/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
@@ -14,6 +16,8 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...conversationMcpTools,
     ...messageMcpTools,
     ...skillMcpTools,
+    ...roleMcpTools,
+    ...memberMcpTools,
     ...searchMcpTools,
   ];
 }

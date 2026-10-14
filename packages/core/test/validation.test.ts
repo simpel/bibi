@@ -24,7 +24,7 @@ describe("validation and authorization", () => {
   });
 
   it("returns FORBIDDEN when the role lacks the permission", async () => {
-    const context = testContext({ roles: ["viewer"] });
+    const context = testContext({ access: "read" });
     const write = await execute({ operation: createVenue, input: { name: "X" }, context });
     expect(write.ok ? null : write.error.code).toBe("FORBIDDEN");
     const read = await execute({ operation: listVenues, input: {}, context });

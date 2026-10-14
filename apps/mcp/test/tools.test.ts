@@ -62,7 +62,7 @@ describe("MCP tools", () => {
     expect(invalid).toMatchObject({ isError: true, data: { code: "VALIDATION" } });
     const missing = await call({ client: owner, name: "venue_get", args: { id: "nope" } });
     expect(missing.data.code).toBe("NOT_FOUND");
-    const viewer = await connect({ context: testContext({ roles: ["viewer"] }) });
+    const viewer = await connect({ context: testContext({ access: "read" }) });
     const denied = await call({ client: viewer, name: "venue_create", args: { name: "X" } });
     expect(denied.data.code).toBe("FORBIDDEN");
   });

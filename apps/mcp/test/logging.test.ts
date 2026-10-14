@@ -1,5 +1,5 @@
 import type { AddressInfo } from "node:net";
-import { createExecuteContext, ok } from "@okazi/core";
+import { createExecuteContext, grantAll, ok } from "@okazi/core";
 import { type CapturedLogs, captureLogs } from "@okazi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
@@ -10,7 +10,14 @@ const organizationId = `org_${createId()}`;
 
 async function resolveContext() {
   const actor = { type: "user" as const, userId: `user_${organizationId}` };
-  return ok({ value: createExecuteContext({ organizationId, roles: ["owner"], actor }) });
+  return ok({
+    value: createExecuteContext({
+      organizationId,
+      roles: ["owner"],
+      permissions: grantAll({ upTo: "admin" }),
+      actor,
+    }),
+  });
 }
 
 const server = createHttpServer({

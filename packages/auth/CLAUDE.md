@@ -6,7 +6,8 @@ Better Auth 1.7.7 (Prisma-adapter) + plugins: e-post/lösenord, magic link, e-po
 - `resolveExecuteContext({ headers })` → `Result<ExecuteContext>` är den **enda** uppslagningen av anroparen för webb, GraphQL, REST och MCP. Bygg aldrig `createExecuteContext` själv i en yta.
   - Ordning: `x-api-key` / `Authorization: Bearer okz_…` (API-nyckel) → `Authorization: Bearer <jwt>` (OAuth-token) → sessionscookie.
   - Org: session = `session.activeOrganizationId`; API-nyckel = `metadata.organizationId`; OAuth = claim `okazi_org` (aktiv org när användaren godkände klienten).
-  - Roller läses **live** från `member` vid varje anrop. API-nyckelns roll begränsas av ägarens roll.
+  - Roller läses **live** från `member` vid varje anrop och löses till `permissions` (`resolve/role-permissions.ts`): `owner` = allt, övriga = unionen av organisationens aktiva `organizationRole`-rader. Okända/arkiverade roller ger inget (ADR 0020).
+  - API-nyckel: `metadata.role` (ett rollnamn, aldrig `owner`). Effektiva behörigheter = medlemmens ∩ nyckelrollens, båda live.
   - `UNAUTHENTICATED` = saknad/ogiltig credential. `FORBIDDEN` = ingen org, inte medlem, eller otillåten AI-aktör.
 - `getAuth()` (lazy singleton), `authHandler` (`export const { GET, POST } = authHandler;` i `app/api/auth/[...all]/route.ts`), `requireSession({ headers })`, `createOrgApiKey({ headers, organizationId, name, role })`.
 - Webbklient: `createAuthClient({})` från `@okazi/auth/client` (importerar inget serverkod).
@@ -35,12 +36,18 @@ Better Auth 1.7.7 (Prisma-adapter) + plugins: e-post/lösenord, magic link, e-po
 - Saknar sessionen aktiv org skickas användaren till `/select-organization` före consent. Webben behöver sidorna `/login`, `/oauth/consent`, `/select-organization`, `/accept-invitation/[id]`.
 - Användare får inte skapa OAuth-klienter via API. Webbklienten provisioneras av drift och dess id sätts i `WEB_OAUTH_CLIENT_ID`.
 
-## Lägga till en behörighet
-1. Lägg resursen i `RESOURCES` i `src/permissions.ts` (enda mappningen). Roll → åtgärder kommer från core:s `hasPermission`.
-2. Använd `"<resurs>:read|write|admin"` som `permission` i core-operationen.
-3. Befintliga API-nycklar saknar den nya resursen och tappar därmed sin roll. Utfärda nya nycklar.
+## Roller och behörigheter (ADR 0020)
+- Organization-plugin med `dynamicAccessControl`: roller per org i `organizationRole` (`permission` = JSON `PermissionSet`, plus `status`/`createdBy`). Raderna skrivs **bara** av core `role.*`.
+- Enda statiska roll är `owner`. Better Auths `admin`/`member` är överskrivna utan behörigheter.
+- Better Auths egna rollvägar är stängda: `owner` saknar `ac`, och `updateMemberRole` blockeras med `organizationHooks.beforeUpdateMemberRole` (skaparen kringgår annars kontrollen). Roller tilldelas via `member.assignRole`.
+- Okazi och Better Auth delar resursnamnet `member`; satserna slås ihop per resurs i `permissions.ts`, skrivs aldrig över.
 
-Resurser i dag: `venue`, `room`, `search`, `conversation`, `skill`. `conversation` och `skill` lades till 2026-10-13: nycklar utfärdade dessförinnan måste utfärdas på nytt.
+## Lägga till en behörighet
+1. Lägg resursen i `RESOURCES` i `packages/core/src/permissions/resources.ts`.
+2. Använd `"<resurs>:read|write|admin"` som `permission` i core-operationen.
+3. Lägg till den i rollmallarna (`packages/core/src/templates/roles/`) där den hör hemma. Befintliga org-roller får den inte automatiskt.
+
+Resurser i dag: `venue`, `room`, `search`, `conversation`, `skill`, `role`, `member`.
 
 ## Schema och tester
 - `auth.prisma` genereras: `pnpm --filter @okazi/auth auth:generate`. Ta bort `generator`/`datasource` ur resultatet och kör sedan `pnpm --filter @okazi/db migrate:dev --name <namn>`.

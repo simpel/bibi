@@ -4,7 +4,7 @@
 - **Status:** Accepterat
 
 ## Kontext
-Användarna i venues (säljare, koordinatorer, kök) arbetar i många steg mellan förfrågan, offert, bokning och köksorder. Ett AI-stöd som bara svarar på frågor räcker inte. Assistenten ska kunna utföra handlingar, men aldrig utan att användaren godkänner, och den ska följa samma behörigheter som användaren.
+Användarna i venues (säljare, koordinatorer, kök) arbetar i många steg mellan förfrågan, offert, bokning och blad. Ett AI-stöd som bara svarar på frågor räcker inte. Assistenten ska kunna utföra handlingar, men aldrig utan att användaren godkänner, och den ska följa samma behörigheter som användaren.
 
 ## Beslut
 - Vercel AI SDK är UI-drivare för chatt och verktygsanrop. Modeller nås via Vercel AI Gateway. Leverantören är utbytbar, och modell väljs per funktion i konfigurationen. Claude är standard.

@@ -98,7 +98,9 @@
     "skills": "Skills",
     "settings": "Settings",
     "openMenu": "Open menu",
-    "commandBar": "Command bar"
+    "commandBar": "Command bar",
+    "roles": "Roles",
+    "members": "Members"
   },
   "venue": {
     "singular": "Venue",
@@ -524,6 +526,64 @@
       "warn": "Warning",
       "error": "Error",
       "fatal": "Fatal"
+    }
+  },
+  "role": {
+    "singular": "Role",
+    "plural": "Roles",
+    "listDescription": "What staff may do in the organization. The owner role is fixed.",
+    "create": "Create role",
+    "edit": "Edit role",
+    "createDescription": "Name the role and choose what it may do.",
+    "editDescription": "Change the name and permissions. A rename also applies to members.",
+    "archive": "Archive role",
+    "archiveConfirm": "Do you want to archive the role {name}? This fails while members hold it.",
+    "archived": "The role has been archived.",
+    "created": "The role has been created.",
+    "updated": "The role has been updated.",
+    "empty": "No roles.",
+    "system": "System role",
+    "allPermissions": "Everything",
+    "importTemplate": "Import Conference venue template",
+    "imported": "{created, plural, one {# role} other {# roles}} created, {skipped} already existed.",
+    "fields": {
+      "name": "Name"
+    },
+    "columns": {
+      "name": "Name",
+      "permissions": "Permissions"
+    },
+    "matrix": {
+      "resource": "Resource"
+    },
+    "actions": {
+      "read": "Read",
+      "write": "Write",
+      "admin": "Administer"
+    },
+    "resources": {
+      "venue": "Venues",
+      "room": "Rooms",
+      "search": "Search",
+      "conversation": "Conversations",
+      "skill": "Skills",
+      "role": "Roles",
+      "member": "Members"
+    }
+  },
+  "member": {
+    "singular": "Member",
+    "plural": "Members",
+    "listDescription": "Staff in the organization and their roles. Owners cannot be changed.",
+    "empty": "No members.",
+    "assignRoles": "Assign roles",
+    "assignDescription": "Choose roles for {name}. They replace the current roles.",
+    "noRoles": "There are no roles to assign. Create roles first.",
+    "updated": "The roles have been updated.",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "roles": "Roles"
     }
   }
 }

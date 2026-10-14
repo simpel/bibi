@@ -74,7 +74,7 @@ describe("SKILL.md import/export", () => {
   });
 
   it("imports as a DRAFT and exports the same SKILL.md content", async () => {
-    const context = testContext({ roles: ["member"] });
+    const context = testContext({ access: "write" });
     const skill = unwrap({
       result: await execute({ operation: importSkill, input: { markdown: SKILL_MD }, context }),
     });

@@ -15,5 +15,5 @@ Primär målgrupp är företag som säljer konferens med fika, mat och rum, t.ex
 
 ## Konsekvenser
 - Kommunsegmentet prioriteras bort tills vidare.
-- Domänmodellen byggs kring offert, programpunkt, deltagare/kost, köksorder och partner.
+- Domänmodellen byggs kring offert, programpunkt, behov, blad och konfigurerbara artiklar (ADR 0021).
 - Hotell-PMS-integration (Mews, Opera) är inte MVP.
