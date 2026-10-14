@@ -1,11 +1,8 @@
-"use client";
-
 import type { RoleDto } from "@okazi/core";
 import { useRouter } from "@okazi/i18n/navigation";
-import { toast } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { useActionSubmit } from "@/lib/use-action-submit";
+import { useToastAction } from "@/lib/use-toast-action";
 import { archiveRoleAction } from "../actions";
 
 export type ArchiveRoleDialogProps = {
@@ -14,13 +11,14 @@ export type ArchiveRoleDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-/** Archive confirmation; a role still held by members fails with the conflict error. */
+/** Archive confirmation; a role still held by members fails with the conflict error toast. */
 export function ArchiveRoleDialog({ role, open, onOpenChange }: ArchiveRoleDialogProps) {
   const t = useTranslations("role");
   const router = useRouter();
-  const { pending, errorKey, run } = useActionSubmit<RoleDto>({
+  const { pending, run } = useToastAction({
+    action: () => archiveRoleAction({ id: role.id }),
+    messages: { pending: t("archiving"), success: t("archived") },
     onSuccess: () => {
-      toast.success(t("archived"));
       onOpenChange(false);
       router.refresh();
     },
@@ -33,8 +31,8 @@ export function ArchiveRoleDialog({ role, open, onOpenChange }: ArchiveRoleDialo
       description={t("archiveConfirm", { name: role.name })}
       confirmLabel={t("archive")}
       pending={pending}
-      errorKey={errorKey}
-      onConfirm={() => run({ action: () => archiveRoleAction({ id: role.id }) })}
+      errorKey={null}
+      onConfirm={run}
     />
   );
 }

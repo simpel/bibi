@@ -14,7 +14,8 @@ export type ToastApi = {
 export type SubmitWithToastInput<R> = {
   toast: ToastApi;
   run: () => Promise<ActionResult<R>>;
-  messages: { pending: string; success: string };
+  /** `success` can be built from the result, e.g. "3 roles created". */
+  messages: { pending: string; success: string | ((input: { value: R }) => string) };
   /** `errors.*` key → text. */
   translate: (input: { key: ErrorKey }) => string;
 };
@@ -32,7 +33,9 @@ export async function submitWithToast<R>({
   const id = toast.loading(messages.pending);
   const result = await run();
   if (result.ok) {
-    toast.success(messages.success, { id });
+    const { success } = messages;
+    const text = typeof success === "string" ? success : success({ value: result.value });
+    toast.success(text, { id });
     return result;
   }
   const text = translate({ key: errorKeyForCode({ code: result.error.code }) });
