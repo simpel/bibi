@@ -76,6 +76,7 @@ export {
   type UiComponent,
 } from "./ui-contract/tool-ui-types";
 export type {
+  AuditLogWire,
   ContactWire,
   CustomerWire,
   EntityTypeWire,

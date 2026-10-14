@@ -1,3 +1,4 @@
+import { auditLogMcpTools } from "../features/audit-log/mcp";
 import { bookingStatusMcpTools } from "../features/booking-status/mcp";
 import { configurationMcpTools } from "../features/configuration/mcp";
 import { contactMcpTools } from "../features/contact/mcp";
@@ -38,6 +39,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...skillMcpTools,
     ...roleMcpTools,
     ...memberMcpTools,
+    ...auditLogMcpTools,
     ...searchMcpTools,
   ];
 }

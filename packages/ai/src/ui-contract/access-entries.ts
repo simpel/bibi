@@ -1,6 +1,8 @@
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 import {
+  AuditLogListWireSchema,
+  AuditLogWireSchema,
   InvitationListWireSchema,
   InvitationWireSchema,
   MemberListWireSchema,
@@ -31,7 +33,7 @@ const invitationCard = uiEntry({
   toProps: ({ value }) => ({ invitation: value }),
 });
 
-/** Roles, members and invitations (ADR 0004, 0020): tool name → generative-UI component. */
+/** Roles, members, invitations and the audit log (ADR 0004, 0006, 0020): tool name → generative-UI component. */
 export const ACCESS_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   role_list: roleTable,
   role_get: roleCard,
@@ -57,4 +59,14 @@ export const ACCESS_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   }),
   member_invite: invitationCard,
   member_cancelInvitation: invitationCard,
+  auditLog_list: uiEntry({
+    component: "audit-log-table",
+    schema: AuditLogListWireSchema,
+    toProps: ({ value }) => value,
+  }),
+  auditLog_get: uiEntry({
+    component: "audit-log-card",
+    schema: AuditLogWireSchema,
+    toProps: ({ value }) => ({ entry: value }),
+  }),
 };

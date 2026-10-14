@@ -719,6 +719,22 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `N:0..1` concerns → Booking
 - `N:0..1` concerns → Inquiry
 
+### AuditLog
+
+*MVP* · Organization data. One row per change made by a command, written by core in the same transaction ([ADR 0006](decisions/0006-database-conventions.md), [ADR 0014](decisions/0014-system-logging.md)). Read with `auditLog.list|get` (permission `audit:read`) on every surface and shown as the history tab on detail pages. Changes to private entities (conversations, messages, skills) are only visible to the user who made them; `conversation:admin` also sees conversation changes.
+
+**Attributes**
+- actor (user / AI / system) and, for AI proposals, who approved
+- assistant conversation the change was proposed in
+- operation, entity type and entity id
+- before and after image
+- request id and surface (links to the system log)
+- time
+
+**Relations**
+- `N:0..1` made by → User
+- shares request id with the system log (`SystemLog`)
+
 ### SystemLog
 
 *MVP* · Platform data, not customer data. Every event in the system (operation, request, login, email, error), stored for platform admins ([ADR 0014](decisions/0014-system-logging.md), [ADR 0015](decisions/0015-platform-admin.md)).

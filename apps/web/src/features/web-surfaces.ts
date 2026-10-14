@@ -107,6 +107,8 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "member.invite", route: "/settings/members" },
   { operation: "member.listInvitations", route: "/settings/members" },
   { operation: "member.cancelInvitation", route: "/settings/members" },
+  // The history tab on venue and item detail pages (and later every entity's detail page).
+  { operation: "auditLog.list", route: "/items/[id]" },
   // The chat route (`/api/chat`) creates conversations and appends messages as the user; the
   // panel lists, opens, renames and archives them.
   { operation: "conversation.list", ...PANEL },
@@ -129,5 +131,9 @@ export const UI_EXEMPT: readonly UiExempt[] = [
     operation: "contact.get",
     reason:
       "Contact persons have no page of their own: the customer page lists them with contact.list and edits them inline.",
+  },
+  {
+    operation: "auditLog.get",
+    reason: "The history tab shows every entry in full from auditLog.list; one entry has no page",
   },
 ];

@@ -16,6 +16,7 @@ import "../features/message/graphql";
 import "../features/skill/graphql";
 import "../features/role/graphql";
 import "../features/member/graphql";
+import "../features/audit-log/graphql";
 import "./scalars";
 import "./search";
 import { builder } from "./builder";

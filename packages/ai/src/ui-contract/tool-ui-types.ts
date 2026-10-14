@@ -2,6 +2,7 @@ import type { ApprovalRequired } from "../approval/approval-schema";
 import type { BookingStatusWire } from "./booking-status-entries";
 import type { SheetDefinitionWire } from "./sheet-definition-entries";
 import type {
+  AuditLogWire,
   ContactWire,
   CustomerWire,
   EntityTypeWire,
@@ -52,6 +53,8 @@ export type ToolUiProps = {
   "member-card": { member: MemberWire };
   "invitation-table": { items: InvitationWire[]; nextCursor: string | null };
   "invitation-card": { invitation: InvitationWire };
+  "audit-log-table": { items: AuditLogWire[]; nextCursor: string | null };
+  "audit-log-card": { entry: AuditLogWire };
   "search-results": { hits: SearchHitWire[] };
   "skill-table": { items: SkillRow[]; nextCursor: string | null };
   "skill-card": { skill: SkillCardWire };
@@ -94,6 +97,8 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "member-card",
   "invitation-table",
   "invitation-card",
+  "audit-log-table",
+  "audit-log-card",
   "search-results",
   "skill-table",
   "skill-card",

@@ -1,3 +1,4 @@
+import { auditLogOperations } from "./features/audit-log/operations";
 import { bookingStatusOperations } from "./features/booking-status/operations";
 import { configurationOperations } from "./features/configuration/operations";
 import { contactOperations } from "./features/contact/operations";
@@ -41,6 +42,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...skillOperations,
     ...roleOperations,
     ...memberOperations,
+    ...auditLogOperations,
     createSearchOperation({ embed }),
   ];
 }

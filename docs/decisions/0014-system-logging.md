@@ -30,10 +30,12 @@
 ## Addendum 2026-10-14
 - The system log is also stored in Postgres (`SystemLog`) for the platform admin's view, with retention through `SYSTEM_LOG_RETENTION_DAYS`. See ADR 0015.
 
+## Addendum 2026-10-15
+- `AuditLog` is read through the core operations `auditLog.list|get` (permission `audit:read`), exposed on GraphQL, REST, MCP and as the history tab on venue and item pages. Filters: entity, actor, conversation, `requestId` and time range.
+
 ## Consequences
 - A new entry point must use `withRequestLogging` (HTTP) or `runWithLogContext`. Otherwise `surface` becomes `system` and `requestId` is missing. The tests in each adapter catch this.
 - Queries are logged at info level. Volume is controlled with `LOG_LEVEL` and retention in the operations log layer.
 - `AuditLog` and the system log are linked with `requestId`.
 - **Open:**
   - Log destination in operations (Loki, Better Stack, Axiom) and retention. Decided together with ADR 0013.
-  - `AuditLog` has no read operations in graph, REST and MCP (parity).

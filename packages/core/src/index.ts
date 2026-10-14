@@ -13,6 +13,8 @@ export { type Err, err, type Ok, ok, type Result } from "./errors/result";
 export { type GraphqlErrorExtensions, toGraphqlExtensions } from "./errors/to-graphql-extensions";
 export { toHttpStatus } from "./errors/to-http-status";
 export { type McpErrorResult, toMcpError } from "./errors/to-mcp-error";
+export * from "./features/audit-log/operations";
+export * from "./features/audit-log/schema";
 export * from "./features/booking-status/import-template-operation";
 export * from "./features/booking-status/order-operations";
 export * from "./features/booking-status/read-operations";
