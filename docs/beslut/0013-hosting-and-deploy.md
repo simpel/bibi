@@ -29,7 +29,7 @@
 ## Öppet
 - Kontrollplan på egen liten server (blast radius) eller på samma server som appen? Startar på samma server med låst UI.
 - Staging: en andra, liten server, eller bara produktion i början?
-- Schemaläggare för optionsförfall och köksordrar (cron-container eller jobbkö i Postgres), vilket påverkar antalet containrar.
+- ~~Schemaläggare för optionsförfall och köksordrar~~: beslutat i ADR 0027 (pg-boss i `apps/worker`, en container till).
 - Arm (CAX) kräver multi-arch-bilder. Utgå från x86 tills vidare.
 - Serverstorlek och exakta priser ska verifieras mot Hetzners prislista.
 

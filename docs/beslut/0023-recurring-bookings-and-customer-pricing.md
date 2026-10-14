@@ -19,4 +19,4 @@
 ## Konsekvenser
 - Nya entiteter: `BookingSeries`, `PriceList` och `PriceListItem`.
 - Kalendervyer måste visa vilka bokningar som hör till en serie.
-- Generering längre fram än 12 månader kräver schemaläggaren. Den frågan är fortfarande öppen.
+- Generering längre fram än 12 månader görs av schemaläggaren i ett nattligt jobb (ADR 0027).

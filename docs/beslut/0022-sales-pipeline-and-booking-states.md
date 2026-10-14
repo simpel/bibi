@@ -48,7 +48,7 @@
   - `ProgramItem.responsibleId` är valfri.
   - Byte av ansvarig görs med `*.assign` och loggas.
 - Optioner står i kö per bokningsbar artikel och tid. Rangen sätts automatiskt (antal aktiva överlappande optioner + 1). När en option släpps eller förfaller flyttas de bakomliggande upp.
-- Förfall: kommandot `option.expireDue` förfaller alla optioner vars datum passerat. Det körs manuellt eller av en schemaläggare. Valet av schemaläggare är fortfarande öppet (CLAUDE.md).
+- Förfall: kommandot `option.expireDue` förfaller alla optioner vars datum passerat. Det körs manuellt eller av schemaläggaren var 15:e minut (ADR 0027).
 - Beläggning (`Occupancy`) är en tabell med typerna `BOOKING`, `OPTION`, `SETUP`, `MAINTENANCE`, `INTERNAL`. Alla utom `OPTION` får inte överlappa på samma bokningsbara artikel (`BOOKABLE`, ADR 0021), vilket säkras med en exclusion constraint i Postgres (`btree_gist`). Ställtid läggs in som `SETUP` utifrån uppställningens ställtid (`Setup`, ADR 0021).
 - Signering skjuts upp. `quote.accept` sparar `acceptedBy`, `acceptedAt` och `acceptanceMethod` (`MANUAL` nu, senare `BANKID` och `LINK`).
 - Statushistorik kommer från `AuditLog`. Entiteterna har dessutom `statusChangedAt` för listor och sortering.

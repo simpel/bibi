@@ -33,6 +33,7 @@
 - i18n: next-intl, svenska och engelska.
 - Verktyg: Biome (lint + format), Vitest (enhet/tjänstelager mot riktig Postgres), Playwright (e2e).
 - E-post: Resend (ut och in) bakom `MailProvider`, Mailpit i dev. Se `docs/beslut/0012-email-provider.md`.
+- Jobb: pg-boss i `apps/worker` (kö och cron i Postgres). Jobb anropar core-operationer som SYSTEM. Se `docs/beslut/0027-job-scheduler.md`.
 - Loggning: pino via `@okazi/logger`, JSON till stdout och tabellen `SystemLog`, request-kontext med `AsyncLocalStorage`. Se `docs/beslut/0014-system-logging.md`.
 - Drift: Docker (compose med Postgres och Mailpit, `--profile app` för web + mcp), GitHub Actions för CI.
 - Beslut: `docs/beslut/0002-teknikstack-och-monorepo.md` m.fl.
@@ -115,6 +116,14 @@
 - Starta parallella subagenter per oberoende paket.
 - Huvudagenten äger integrationen och paritetstestet. Subagenter får inte ändra varandras paket utan att huvudagenten har integrerat.
 
+## Ärenden och projekttavla
+- Allt arbete spåras på https://github.com/users/simpel/projects/8 (kanban). Inte projekt 7.
+- Issues, milestones och labels skrivs helt på engelska (titel och brödtext), även om docs är på svenska.
+- Varje arbete ska ha ett issue på tavlan. Finns inget: skapa det (`gh issue create`, sedan `gh project item-add 8 --owner simpel --url <issue>`) och sätt Status, Priority (P0–P2) och Size (XS–XL).
+- Flytta kortet när arbetet ändrar läge: `Backlog` → `Todo` → `In progress` när arbetet startar → `Done` när det är mergat. Uppdatera med `gh project item-edit` (fält-id via `gh project field-list 8 --owner simpel`).
+- PR:er länkar issuet med `Closes #NN`. Kommentera issuet med vad som gjorts om arbetet delas upp eller avbryts.
+- `gh` behöver scopet `project` (`gh auth refresh -s project`).
+
 ## Kommandon
 - `docker compose up -d`: startar Postgres och Mailpit (mejl på http://localhost:8025).
 - `pnpm install`: installerar beroenden.
@@ -132,6 +141,6 @@
 ## Öppna frågor
 - Prismodell (per venue, per rum, per bokning) ej beslutad.
 - Claude Design-export (tokens) för `packages/ui` ej levererad. Placeholder-tokens används tills dess.
-- Staging och jobbschemaläggare ej beslutade. Hosting enligt `docs/beslut/0013-hosting-and-deploy.md` (Hetzner + Coolify, föreslaget).
+- Staging ej beslutad. Hosting enligt `docs/beslut/0013-hosting-and-deploy.md` (Hetzner + Coolify, föreslaget).
 - Embedding-modell ej vald.
 - Resends EU-region och DPA (GDPR) ej bekräftade.
