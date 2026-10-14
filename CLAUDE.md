@@ -96,5 +96,5 @@
 ## Öppna frågor
 - Prismodell (per venue, per rum, per bokning) ej beslutad.
 - Claude Design-export (tokens) för `packages/ui` ej levererad. Placeholder-tokens används tills dess.
-- Staging och jobbschemaläggare ej beslutade. Hosting enligt `docs/beslut/0013-hosting-and-deploy.md` (Hetzner + Kamal, föreslaget).
+- Staging och jobbschemaläggare ej beslutade. Hosting enligt `docs/beslut/0013-hosting-and-deploy.md` (Hetzner + Coolify, föreslaget).
 - Embedding-modell ej vald.
