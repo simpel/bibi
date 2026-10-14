@@ -5,7 +5,7 @@ The GraphQL adapter (Pothos + GraphQL Yoga). Thin: all logic and permissions liv
 ## The parity mechanism
 - Mutations and primary reads are created with `mutationFromOperation({ operation, type, name? })` / `fieldFromOperation(...)`. They derive arguments/input and description from the operation's Zod schema and always run `execute` with the request's `ExecuteContext` (`schema/run-operation.ts`). A new operation ≈ 1 line.
 - Object types are derived with `objectFromSchema({ name, schema, omit })`. Lists use `pageType` (`{ items, nextCursor }` = core `paginate`).
-- Graph edges (`Venue.items`, `Item.venue`, `Item.entityType`, `ItemSetup.setup`, `FieldDefinition.vocabulary`, `SearchHit.entity`) read via `ctx.core.db` (org-scoped) after `requirePermission`. Raw `getDb()` is never used.
+- Graph edges (`Venue.items`, `Item.venue`, `Item.entityType`, `ItemSetup.setup`, `FieldDefinition.vocabulary`, `SearchHit.entity` for venues) read via the per-request dataloaders in `ctx.loaders` (`schema/loaders.ts`, `schema/batch-loader.ts`), built on the org-scoped `ctx.core.db`, after `requirePermission`. Raw `getDb()` is never used. A new edge to an org-level entity gets a loader there; test with `test/dataloader.test.ts`.
 - Entities with per-user visibility (Conversation, Message, Skill) are read **only via operations**: `Conversation.messages` runs `message.list`, and `SearchEntity` loads conversations/skills via `conversation.get`/`skill.get` (error → null). Never go directly against `ctx.core.db` for them.
 - `Message.parts`/`metadata`, `Skill.resources` and `Item.fields` are `JSON`. Nested lists that must be selectable get their own types and edges that lift the DTO's array: `EntityType.fields`, `Vocabulary.values`, `Item.setups`. `Skill.organizationId` is exposed (null = SYSTEM).
 - `listGraphqlOperationNames()` gives the operations that are exposed (the parity test compares against `listOperations()`). `printSchemaSdl()` and `schema` are for MCP.
@@ -20,7 +20,7 @@ The GraphQL adapter (Pothos + GraphQL Yoga). Thin: all logic and permissions liv
 ## Pitfalls
 - `graphql` exists as both CJS and ESM; mixed copies break `instanceof GraphQLError`. Vitest therefore inlines graphql/pothos/envelop (`vitest.config.ts`). Do the same in other test environments.
 - The Pothos prisma plugin is not used: the client is an `$extends` client (`scopedDb`) and Prisma 7-generated. The types are hand-written/Zod-derived.
-- Relation reads have no dataloader yet (N+1 per parent, bounded by depth/cost).
+- `Venue.items`, `Item.components[].item` and item search hits still run one operation per parent (items are not loader-backed); bounded by depth/cost.
 
 ## New entity
 `pnpm gen entity` creates `src/features/<entity>/graphql.ts`; import the file in `schema/schema.ts`.

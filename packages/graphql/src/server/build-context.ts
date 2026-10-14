@@ -1,5 +1,6 @@
 import type { AfterCommitHook, AnyOperation, ExecuteContext, Result } from "@okazi/core";
 import type { GraphqlContext } from "../schema/context";
+import { createLoaders } from "../schema/loaders";
 import { toGraphqlError } from "../schema/to-graphql-error";
 
 export type ResolveContextInput = { headers: Headers };
@@ -27,5 +28,6 @@ export async function buildContext({
     core: resolved.value,
     afterCommit,
     operations: new Map(operations.map((operation) => [operation.name, operation])),
+    loaders: createLoaders({ db: resolved.value.db }),
   };
 }

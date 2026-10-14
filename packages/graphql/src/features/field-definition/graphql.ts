@@ -4,7 +4,6 @@ import {
   type FieldDefinitionDto,
   FieldDefinitionSchema,
   getFieldDefinition,
-  getVocabulary,
   listFieldDefinitions,
   updateFieldDefinition,
 } from "@okazi/core";
@@ -12,7 +11,7 @@ import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
-import { runOperation } from "../../schema/run-operation";
+import { requirePermission } from "../../schema/require-permission";
 import { VocabularyRef } from "../vocabulary/graphql";
 
 export const FieldDefinitionRef = objectFromSchema<FieldDefinitionDto>({
@@ -37,19 +36,17 @@ mutationFromOperation({ operation: createFieldDefinition, type: FieldDefinitionR
 mutationFromOperation({ operation: updateFieldDefinition, type: FieldDefinitionRef });
 mutationFromOperation({ operation: archiveFieldDefinition, type: FieldDefinitionRef });
 
-// Loaded through the `get` operation so core applies permission (configuration:read) and DTO shape.
+// Loaded through the per-request loader after the same permission check core applies.
 builder.objectField(FieldDefinitionRef, "vocabulary", (t) =>
   t.field({
     type: VocabularyRef,
     nullable: true,
     description: "The list the field's choices come from, if any.",
-    resolve: (field, _args, ctx) =>
-      field.vocabularyId
-        ? (runOperation({
-            operation: getVocabulary,
-            input: { id: field.vocabularyId },
-            ctx,
-          }) as never)
-        : null,
+    resolve: (field, _args, ctx) => {
+      requirePermission({ ctx, permission: "configuration:read" });
+      return field.vocabularyId
+        ? (ctx.loaders.vocabulary.load({ id: field.vocabularyId }) as never)
+        : null;
+    },
   }),
 );

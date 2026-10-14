@@ -44,8 +44,7 @@ async function viaGet<T extends Entity>({
 
 /** Entity types that search can return. Add a line here when a new entity becomes embeddable. */
 const LOADERS: Record<EntityType, (args: LoadInput) => Promise<Entity | null>> = {
-  venue: async ({ id, ctx }) =>
-    tag({ row: await ctx.core.db.venue.findFirst({ where: { id } }), ref: VenueRef }),
+  venue: async ({ id, ctx }) => tag({ row: await ctx.loaders.venue.load({ id }), ref: VenueRef }),
   item: async ({ id, ctx }) =>
     tag({ row: await viaGet<ItemDto>({ operation: getItem, id, ctx }), ref: ItemRef }),
   conversation: async ({ id, ctx }) =>

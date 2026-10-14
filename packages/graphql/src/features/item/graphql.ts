@@ -1,7 +1,6 @@
 import {
   archiveItem,
   createItem,
-  getEntityType,
   getItem,
   ItemComponentSchema,
   type ItemDto,
@@ -77,7 +76,7 @@ mutationFromOperation({ operation: createItem, type: ItemRef });
 mutationFromOperation({ operation: updateItem, type: ItemRef });
 mutationFromOperation({ operation: archiveItem, type: ItemRef });
 
-// Graph edges. Reads go through core operations or the org-scoped `ctx.core.db`.
+// Graph edges. Reads go through core operations or the per-request loaders (org-scoped).
 // They live here so that venue/graphql.ts does not need to import this file.
 builder.objectField(VenueRef, "items", (t) =>
   t.field({
@@ -102,7 +101,7 @@ builder.objectField(ItemRef, "venue", (t) =>
     description: "The venue the item belongs to (null if none or archived).",
     resolve: (item, _args, ctx) => {
       requirePermission({ ctx, permission: "venue:read" });
-      return item.venueId ? ctx.core.db.venue.findFirst({ where: { id: item.venueId } }) : null;
+      return item.venueId ? ctx.loaders.venue.load({ id: item.venueId }) : null;
     },
   }),
 );
@@ -111,8 +110,10 @@ builder.objectField(ItemRef, "entityType", (t) =>
   t.field({
     type: EntityTypeRef,
     description: "The item type, with its fields.",
-    resolve: (item, _args, ctx) =>
-      runOperation({ operation: getEntityType, input: { id: item.entityTypeId }, ctx }) as never,
+    resolve: (item, _args, ctx) => {
+      requirePermission({ ctx, permission: "configuration:read" });
+      return ctx.loaders.entityType.load({ id: item.entityTypeId }) as never;
+    },
   }),
 );
 
@@ -123,7 +124,7 @@ builder.objectField(ItemSetupRef, "setup", (t) =>
     description: "The setup (null if archived).",
     resolve: (itemSetup, _args, ctx) => {
       requirePermission({ ctx, permission: "configuration:read" });
-      return ctx.core.db.setup.findFirst({ where: { id: itemSetup.setupId } });
+      return ctx.loaders.setup.load({ id: itemSetup.setupId });
     },
   }),
 );
