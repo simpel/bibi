@@ -578,6 +578,7 @@ erDiagram
 - roll (säljare, koordinator, kök, vaktmästare, ekonomi, admin)
 - behörigheter
 - anläggningar
+- plattformsroll (`user` / `admin`): bara Okazis egen personal, ger `/admin` ([ADR 0015](beslut/0015-platform-admin.md))
 
 **Relationer**
 - `1:N` koordinerar → Bokning
@@ -612,6 +613,33 @@ erDiagram
 **Relationer**
 - `N:0..1` gäller → Bokning
 - `N:0..1` gäller → Förfrågan
+
+### Systemlogg
+
+*MVP* · Plattformsdata, inte kunddata. Varje händelse i systemet (operation, anrop, inloggning, mejl, fel), sparad för plattformsadmins ([ADR 0014](beslut/0014-system-logging.md), [ADR 0015](beslut/0015-platform-admin.md)).
+
+**Attribut**
+- tid, nivå, händelse (`event`)
+- tjänst och yta (webb, REST, GraphQL, MCP, AI, auth)
+- request-id (kopplar ihop rader och granskningslogg)
+- organisation, användare, operation, status, varaktighet, felkod
+- hela raden som JSON (aldrig in- eller utdata)
+
+**Relationer**
+- `N:0..1` gäller → Användare
+- delar request-id med granskningsloggen (`AuditLog`)
+
+### AI-inställning
+
+*MVP* · Plattformsdata. Vilken modell varje AI-funktion använder, vald av en plattformsadmin. Inga standardmodeller: utan val fungerar funktionen inte.
+
+**Attribut**
+- AI-funktion (`assistant.chat`, `search.embedding`)
+- modell (från Vercel AI Gateway, måste vara möjlig för funktionen)
+- ändrad av, ändrad
+
+**Relationer**
+- `N:1` ändrad av → Användare
 
 ### Rumsskylt
 
@@ -671,3 +699,5 @@ Svenska termer används i dokumentation och UI. Engelska namn används i kod, AP
 | Avbokningsvillkor | CancellationTerms |
 | Orderrad | OrderLine |
 | Användare | User |
+| Systemlogg | SystemLog |
+| AI-inställning | AiSetting |
