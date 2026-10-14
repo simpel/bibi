@@ -23,7 +23,7 @@ describe("SYSTEM skills", () => {
     expect(again.updated).toEqual([]);
     expect(again.unchanged).toEqual(
       expect.arrayContaining([
-        "create-venue-with-rooms",
+        "create-venue-with-items",
         "find-available-space",
         "summarize-booking-risks",
       ]),
@@ -65,16 +65,16 @@ describe("SYSTEM skills", () => {
           context,
         }),
       }).items.map((item) => item.slug);
-    expect(await listed({ context: orgA })).toContain("create-venue-with-rooms");
-    expect(await listed({ context: orgB })).toContain("create-venue-with-rooms");
+    expect(await listed({ context: orgA })).toContain("create-venue-with-items");
+    expect(await listed({ context: orgB })).toContain("create-venue-with-items");
     const page = unwrap({
       result: await execute({
         operation: listSkills,
-        input: { q: "create-venue-with-rooms" },
+        input: { q: "create-venue-with-items" },
         context: orgA,
       }),
     });
-    const system = page.items.find((item) => item.slug === "create-venue-with-rooms");
+    const system = page.items.find((item) => item.slug === "create-venue-with-items");
     expect(system?.allowedTools).toContain("venue_create");
     const id = system?.id ?? "";
     expect(

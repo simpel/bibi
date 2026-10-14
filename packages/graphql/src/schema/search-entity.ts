@@ -1,21 +1,22 @@
 import {
   type ConversationDto,
   getConversation,
+  getItem,
   getSkill,
-  type RoomDto,
+  type ItemDto,
   type SkillDto,
   type VenueDto,
 } from "@okazi/core";
 import { ConversationRef } from "../features/conversation/graphql";
-import { RoomRef } from "../features/room/graphql";
+import { ItemRef } from "../features/item/graphql";
 import { SkillRef } from "../features/skill/graphql";
 import { VenueRef } from "../features/venue/graphql";
 import { builder, type ObjectRefOf } from "./builder";
 import type { GraphqlContext } from "./context";
 import { runOperation } from "./run-operation";
 
-type Entity = VenueDto | RoomDto | ConversationDto | SkillDto;
-type EntityType = "venue" | "room" | "conversation" | "skill";
+type Entity = VenueDto | ItemDto | ConversationDto | SkillDto;
+type EntityType = "venue" | "item" | "conversation" | "skill";
 
 const refByEntity = new WeakMap<object, ObjectRefOf<never>>();
 
@@ -31,7 +32,9 @@ async function viaGet<T extends Entity>({
   operation,
   id,
   ctx,
-}: LoadInput & { operation: typeof getConversation | typeof getSkill }): Promise<T | null> {
+}: LoadInput & {
+  operation: typeof getConversation | typeof getSkill | typeof getItem;
+}): Promise<T | null> {
   try {
     return (await runOperation({ operation, input: { id }, ctx })) as T;
   } catch {
@@ -43,8 +46,8 @@ async function viaGet<T extends Entity>({
 const LOADERS: Record<EntityType, (args: LoadInput) => Promise<Entity | null>> = {
   venue: async ({ id, ctx }) =>
     tag({ row: await ctx.core.db.venue.findFirst({ where: { id } }), ref: VenueRef }),
-  room: async ({ id, ctx }) =>
-    tag({ row: await ctx.core.db.room.findFirst({ where: { id } }), ref: RoomRef }),
+  item: async ({ id, ctx }) =>
+    tag({ row: await viaGet<ItemDto>({ operation: getItem, id, ctx }), ref: ItemRef }),
   conversation: async ({ id, ctx }) =>
     tag({
       row: await viaGet<ConversationDto>({ operation: getConversation, id, ctx }),
@@ -56,7 +59,7 @@ const LOADERS: Record<EntityType, (args: LoadInput) => Promise<Entity | null>> =
 
 export const SearchEntityRef = builder.unionType("SearchEntity", {
   description: "The entity behind a search hit.",
-  types: [VenueRef, RoomRef, ConversationRef, SkillRef],
+  types: [VenueRef, ItemRef, ConversationRef, SkillRef],
   resolveType: (entity) => refByEntity.get(entity) as ObjectRefOf<never>,
 });
 

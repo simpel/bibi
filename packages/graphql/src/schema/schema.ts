@@ -1,6 +1,10 @@
 import { lexicographicSortSchema, printSchema } from "graphql";
 import "../features/venue/graphql";
-import "../features/room/graphql";
+import "../features/entity-type/graphql";
+import "../features/field-definition/graphql";
+import "../features/vocabulary/graphql";
+import "../features/setup/graphql";
+import "../features/item/graphql";
 import "../features/conversation/graphql";
 import "../features/message/graphql";
 import "../features/skill/graphql";

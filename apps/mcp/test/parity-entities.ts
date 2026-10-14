@@ -2,6 +2,7 @@ import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { ExecuteContext } from "@okazi/core";
 import { call, type Json } from "./helpers";
 import { accessEntities } from "./parity-entities-access";
+import { configurationEntities } from "./parity-entities-config";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
@@ -28,13 +29,22 @@ type ByIdInput = {
   list: string;
   createTool: string;
   args: CreateInput["made"];
+  /** GraphQL sub-selection per key for nested objects, e.g. `{ values: "{ id name }" }`. */
+  nested?: Record<string, string>;
 };
 
 export const tool = async ({ mcp, name, args }: { mcp: Client; name: string; args: Json }) =>
   (await call({ client: mcp, name, args })).data;
 
 /** Entities with `<entity>_get`, `GET /<list>/{id}` and `<field>(id:)`. */
-export function byId({ name, field, list, createTool, args }: ByIdInput): ParityEntity {
+export function byId({
+  name,
+  field,
+  list,
+  createTool,
+  args,
+  nested = {},
+}: ByIdInput): ParityEntity {
   return {
     name,
     create: ({ mcp, made }) => tool({ mcp, name: createTool, args: { ...args, ...made } }),
@@ -42,7 +52,8 @@ export function byId({ name, field, list, createTool, args }: ByIdInput): Parity
     viaRest: ({ context, created }) =>
       createRestClient({ context }).get({ path: `/${list}/${created.id}` }),
     viaGraph: async ({ context, created, keys }) => {
-      const query = `query($id: String!) { ${field}(id: $id) { ${keys.join(" ")} } }`;
+      const selection = keys.map((key) => `${key} ${nested[key] ?? ""}`.trim()).join(" ");
+      const query = `query($id: String!) { ${field}(id: $id) { ${selection} } }`;
       return (await gqlQuery({ context, query, variables: { id: created.id } }))[field];
     },
   };
@@ -85,15 +96,7 @@ export const ENTITIES: ParityEntity[] = [
     createTool: "venue_create",
     args: { name: "Parity Hall" },
   }),
-  {
-    ...byId({ name: "room", field: "room", list: "rooms", createTool: "room_create", args: {} }),
-    create: ({ mcp, made }) =>
-      tool({
-        mcp,
-        name: "room_create",
-        args: { name: "Parity Room", maxCapacity: 12, venueId: made.venue.id },
-      }),
-  },
+  ...configurationEntities(),
   byId({
     name: "conversation",
     field: "conversation",

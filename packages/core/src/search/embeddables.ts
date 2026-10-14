@@ -1,5 +1,5 @@
 import { conversationEmbeddable } from "../features/conversation/embeddable";
-import { roomEmbeddable } from "../features/room/embeddable";
+import { itemEmbeddable } from "../features/item/embeddable";
 import { skillEmbeddable } from "../features/skill/embeddable";
 import { venueEmbeddable } from "../features/venue/embeddable";
 import type { Embeddable } from "./embeddable";
@@ -10,7 +10,7 @@ import type { Embeddable } from "./embeddable";
  */
 export const SEARCHABLE_ENTITIES: readonly Embeddable[] = [
   venueEmbeddable,
-  roomEmbeddable,
+  itemEmbeddable,
   conversationEmbeddable,
   skillEmbeddable,
 ];

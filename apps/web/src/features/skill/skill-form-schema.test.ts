@@ -6,7 +6,7 @@ const values: SkillFormValues = {
   name: " Offert ",
   description: "När en offert ska sammanställas",
   instructions: "1. Hämta rum\n2. Räkna",
-  allowedTools: "room_list, venue_list\nsearch",
+  allowedTools: "item_list, venue_list\nsearch",
   resources: [
     { name: "mall.md", content: "# Mall" },
     { name: "", content: "" },
@@ -21,7 +21,7 @@ describe("skill form schema", () => {
     expect(parsed.data).toMatchObject({
       scope: "PERSONAL",
       name: "Offert",
-      allowedTools: ["room_list", "venue_list", "search"],
+      allowedTools: ["item_list", "venue_list", "search"],
       resources: [{ name: "mall.md", content: "# Mall" }],
     });
     expect(parsed.data.slug).toBeUndefined();

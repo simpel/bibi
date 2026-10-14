@@ -47,8 +47,27 @@ Paritetskärnan: varje förmåga definieras **en gång** som en operation och ex
 - Mallar är data i `templates/roles/` (`conference-venue` = "Konferensgård") och växer med varje del av ADR 0025.
 - Tester som skapar roller/medlemmar behöver en riktig `organization`-rad: `testOrg()` i `test/org-helpers.ts`.
 
+## Konfigurerbar domän (ADR 0021, 0026)
+- `entityType.*`, `fieldDefinition.*`, `vocabulary.*` (plus `addValue|updateValue|archiveValue|importTemplate`) och `setup.*` kräver `configuration:read|write`. `item.*` kräver `item:read|write`.
+- Inga domänord i koden:
+  - Grundentiteter och beteenden: `features/entity-type/behaviour-kinds.ts`.
+  - Fälttyper: `features/field-definition/field-kinds.ts`.
+- Fältvärden ligger i `Item.fields` (JSON) under fältets `key`. `buildFieldsSchema({ specs })` (klientsäker) validerar dem, och `loadFieldSpecs` hämtar specs med listvärdenas id.
+- Regeln "data finns → CONFLICT" finns på tre ställen:
+  - beteenden: `entity-type/behaviours.ts`
+  - fältändringar: `field-definition/field-rules.ts`
+  - arkivering: i respektive operation
+- Beteendedata på artikeln kontrolleras i `item/item-rules.ts`. `COMPOSABLE`/`CHOICES` har ingen data förrän del 3.
+- Listmallar är data i `templates/vocabularies/` (`eu-14-allergens`).
+- Fel byggs med `shared/errors.ts` (`notFound`, `conflict`, `invalid`). Paginering: `shared/page-input.ts`.
+
 ## Demodata
-- `seedDemo()` i `src/seed/demo/` (`@okazi/core/seed/demo`, CLI `seed:demo`). Specen är `docs/demo-seed.md`; `data/*.ts` följer den. Allt via `execute` som SYSTEM utom Better Auth-raderna i `users.ts`.
+- `seedDemo()` i `src/seed/demo/` (`@okazi/core/seed/demo`, CLI `seed:demo`). Specen är `docs/demo-seed.md`, och `data/<org>/*.ts` följer den. Allt går via `execute` som SYSTEM, utom Better Auth-raderna i `users.ts`.
+- Delar som är byggda:
+  - roller (`seed-roles.ts`)
+  - konfiguration (`seed-config.ts`)
+  - anläggning och bokningsbara lokaler (`seed-items.ts`)
+- Kontrollerna finns i `checks.ts` och `config-checks.ts`.
 
 ## Sök
 - Sökbar entitet implementerar `Embeddable` (`entityType`, `toText({ entity })`, `load({ ids, db })`) och sätts som `embeddable` på sina kommandon.

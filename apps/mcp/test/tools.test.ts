@@ -12,7 +12,7 @@ describe("MCP tools", () => {
       expect.arrayContaining([
         "venue_create",
         "venue_list",
-        "room_archive",
+        "item_archive",
         "search",
         "graphql_schema",
         "graphql_query",

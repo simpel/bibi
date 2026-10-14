@@ -1,0 +1,122 @@
+// The configurable domain (ADR 0021): every organization defines its own types, fields, lists
+// and setups as data. Code only knows the base entities, behaviours and field kinds below.
+
+/// The base entity an organization's own type classifies.
+enum EntityBase {
+  ITEM
+  CUSTOMER
+  CONTACT
+  INQUIRY
+  BOOKING
+  REQUIREMENT
+}
+
+/// Generic behaviours an item type switches on (ADR 0021). No domain words.
+enum ItemBehaviour {
+  PRICED
+  COMPOSABLE
+  CHOICES
+  BOOKABLE
+  SETUPS
+}
+
+/// The kind of value a field definition holds.
+enum FieldKind {
+  TEXT
+  NUMBER
+  BOOLEAN
+  DATE
+  CHOICE
+  MULTI_CHOICE
+}
+
+/// Typ – an organization's own type for a base entity, e.g. Konferensrum, Rätt or Båt.
+model EntityType {
+  id             String           @id @default(cuid(2))
+  organizationId String
+  base           EntityBase
+  name           String
+  behaviours     ItemBehaviour[]
+  status         RecordStatus     @default(ACTIVE)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  createdBy      String?
+  fields         FieldDefinition[]
+  items          Item[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, base, status])
+}
+
+/// Fältdefinition – one field of a type. Values live as JSON on the row, keyed by `key`.
+model FieldDefinition {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  entityTypeId   String
+  key            String
+  name           String
+  kind           FieldKind
+  required       Boolean      @default(false)
+  vocabularyId   String?
+  options        String[]
+  position       Int          @default(0)
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  vocabulary     Vocabulary?  @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([entityTypeId, key])
+  @@index([organizationId, entityTypeId, status])
+}
+
+/// Lista – an organization's own word list, e.g. Allergener, Kost or Hamn.
+model Vocabulary {
+  id             String            @id @default(cuid(2))
+  organizationId String
+  name           String
+  status         RecordStatus      @default(ACTIVE)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  createdBy      String?
+  values         VocabularyValue[]
+  fields         FieldDefinition[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+}
+
+/// Listvärde – one value of a list, e.g. Gluten.
+model VocabularyValue {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  vocabularyId   String
+  name           String
+  position       Int          @default(0)
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  vocabulary     Vocabulary   @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, vocabularyId, status])
+}
+
+/// Uppställning – an organization's own setup with changeover time, e.g. Bio or U-bord.
+model Setup {
+  id                String       @id @default(cuid(2))
+  organizationId    String
+  name              String
+  changeoverMinutes Int          @default(0)
+  status            RecordStatus @default(ACTIVE)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  createdBy         String?
+  items             ItemSetup[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+}

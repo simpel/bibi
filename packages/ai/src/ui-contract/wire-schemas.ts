@@ -1,10 +1,14 @@
 import {
+  EntityTypeSchema,
+  FieldDefinitionSchema,
+  ItemSchema,
   MemberSchema,
   RoleSchema,
-  RoomSchema,
   SearchHitSchema,
+  SetupSchema,
   SkillSchema,
   VenueSchema,
+  VocabularySchema,
 } from "@okazi/core/schemas";
 import { z } from "zod";
 
@@ -18,7 +22,14 @@ const isoDates = { createdAt: z.string(), updatedAt: z.string() };
 
 export const VenueWireSchema = VenueSchema.extend(isoDates);
 
-export const RoomWireSchema = RoomSchema.extend(isoDates);
+export const ItemWireSchema = ItemSchema.extend(isoDates);
+export const FieldDefinitionWireSchema = FieldDefinitionSchema.extend(isoDates);
+export const EntityTypeWireSchema = EntityTypeSchema.extend({
+  ...isoDates,
+  fields: z.array(FieldDefinitionWireSchema),
+});
+export const VocabularyWireSchema = VocabularySchema.extend(isoDates);
+export const SetupWireSchema = SetupSchema.extend(isoDates);
 
 export const RoleWireSchema = RoleSchema.extend({
   createdAt: z.string(),
@@ -30,7 +41,11 @@ const page = <T extends z.ZodType>({ item }: { item: T }) =>
   z.object({ items: z.array(item), nextCursor: z.string().nullable() });
 
 export const VenueListWireSchema = page({ item: VenueWireSchema });
-export const RoomListWireSchema = page({ item: RoomWireSchema });
+export const ItemListWireSchema = page({ item: ItemWireSchema });
+export const FieldDefinitionListWireSchema = page({ item: FieldDefinitionWireSchema });
+export const EntityTypeListWireSchema = page({ item: EntityTypeWireSchema });
+export const VocabularyListWireSchema = page({ item: VocabularyWireSchema });
+export const SetupListWireSchema = page({ item: SetupWireSchema });
 
 export const RoleListWireSchema = page({ item: RoleWireSchema });
 export const MemberListWireSchema = page({ item: MemberWireSchema });
@@ -79,7 +94,11 @@ export const SearchWireSchema = z.object({ hits: z.array(SearchHitWireSchema) })
 export const McpErrorWireSchema = z.object({ code: z.string(), message: z.string() });
 
 export type VenueWire = z.infer<typeof VenueWireSchema>;
-export type RoomWire = z.infer<typeof RoomWireSchema>;
+export type ItemWire = z.infer<typeof ItemWireSchema>;
+export type FieldDefinitionWire = z.infer<typeof FieldDefinitionWireSchema>;
+export type EntityTypeWire = z.infer<typeof EntityTypeWireSchema>;
+export type VocabularyWire = z.infer<typeof VocabularyWireSchema>;
+export type SetupWire = z.infer<typeof SetupWireSchema>;
 export type RoleWire = z.infer<typeof RoleWireSchema>;
 export type MemberWire = z.infer<typeof MemberWireSchema>;
 export type SkillRow = z.infer<typeof SkillRowSchema>;

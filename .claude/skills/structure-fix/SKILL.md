@@ -9,7 +9,7 @@ Regler: `docs/beslut/0009-sprak-i-kod-och-ui.md`. Kontroll: `tools/check-structu
 
 1. Kör `pnpm check:structure` och läs utdatan per fil.
 2. Åtgärda per regel:
-   - **Fil > 150 rader:** dela efter idé (en idé per fil), t.ex. schema, formulärhook, tabell, dialog som egna filer. Se `apps/web/src/features/room/ui/` som mönster.
+   - **Fil > 150 rader:** dela efter idé (en idé per fil), t.ex. schema, formulärhook, tabell, dialog som egna filer. Se `apps/web/src/features/role/` som mönster.
    - **Funktion > 40 rader:** extrahera hjälpfunktioner i samma eller en ny fil. Extrahera gemensam kod vid andra dubbletten.
    - **Default export:** byt till named. Tillåtet endast för Next `page`/`layout`/`route`, `*.config.ts` och `*.stories.tsx`.
    - **Barrel-fil:** ta bort. Endast `packages/*/src/index.ts` är tillåten.

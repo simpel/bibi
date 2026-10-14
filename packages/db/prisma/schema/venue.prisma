@@ -1,4 +1,4 @@
-/// Anläggning – a building or site containing bookable rooms.
+/// Anläggning – a building or site. Bookable items may belong to a venue (ADR 0021).
 model Venue {
   id                    String       @id @default(cuid(2))
   organizationId        String
@@ -16,30 +16,8 @@ model Venue {
   createdAt             DateTime     @default(now())
   updatedAt             DateTime     @updatedAt
   createdBy             String?
-  rooms                 Room[]
+  items                 Item[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])
-}
-
-/// Rum – a bookable room inside a venue. Composite FK keeps room and venue in the same org.
-model Room {
-  id             String       @id @default(cuid(2))
-  organizationId String
-  venueId        String
-  name           String
-  description    String?
-  floor          String?
-  areaSqm        Float?
-  ceilingHeightM Float?
-  hasDaylight    Boolean      @default(false)
-  maxCapacity    Int?
-  status         RecordStatus @default(ACTIVE)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  createdBy      String?
-  venue          Venue        @relation(fields: [venueId, organizationId], references: [id, organizationId])
-
-  @@index([organizationId, status])
-  @@index([organizationId, venueId])
 }

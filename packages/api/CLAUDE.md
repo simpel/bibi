@@ -10,7 +10,8 @@ REST-adaptern under `/api/v1`. Tunn: ingen affärslogik, allt går via core-oper
 ## Rutter
 - Deklareras per feature i `src/features/<entitet>/rest.ts` med `restRoute({ operation, method, path, successStatus?, operationId? })`; sökvägar med `{param}`. Registrera i `src/routes.ts`. Ny operation = ca 5 rader. `search` ligger i `src/search-rest.ts`.
 - Indata = query + JSON-body + path-parametrar (path vinner), valideras av core. Query-värden typkonverteras utifrån operationens input-schema (siffror, booleans, arrayer).
-- Flera rutter för samma operation (t.ex. `/venues/{venueId}/rooms`) kräver unikt `operationId`.
+- Flera rutter för samma operation (t.ex. `/venues/{venueId}/items`) kräver unikt `operationId`.
+- Konfigurerbar domän: `/entity-types`, `/entity-types/{entityTypeId}/fields`, `/field-definitions`, `/vocabularies` (+ `/import-template`, `/{vocabularyId}/values`), `/vocabulary-values/{id}`, `/setups`, `/items`, `/venues/{venueId}/items`. DELETE = arkivera.
 - Fel: `{ error: { code, message, issues } }`, status via `toHttpStatus`. Okänd rutt/metod → 404.
 - Paginering: `limit` och `cursor` som i core (`nextCursor` i svaret).
 - AI-datalager: `/conversations` (GET/POST), `/conversations/{id}` (GET/PATCH=rename/DELETE=archive), `/conversations/{conversationId}/messages` (GET/POST), `/skills` (GET/POST), `/skills/import` (POST), `/skills/{id}` (GET/PATCH/DELETE), `/skills/{id}/publish` (POST, 200), `/skills/{id}/share` (POST, 201), `/skills/{id}/export` (GET, JSON `{ markdown, filename }`).

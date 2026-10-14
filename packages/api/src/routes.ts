@@ -1,10 +1,14 @@
 import { conversationRoutes } from "./features/conversation/rest";
+import { entityTypeRoutes } from "./features/entity-type/rest";
+import { fieldDefinitionRoutes } from "./features/field-definition/rest";
+import { itemRoutes } from "./features/item/rest";
 import { memberRoutes } from "./features/member/rest";
 import { messageRoutes } from "./features/message/rest";
 import { roleRoutes } from "./features/role/rest";
-import { roomRoutes } from "./features/room/rest";
+import { setupRoutes } from "./features/setup/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { venueRoutes } from "./features/venue/rest";
+import { vocabularyRoutes } from "./features/vocabulary/rest";
 import type { RestRoute } from "./rest-route";
 import { searchRoutes } from "./search-rest";
 
@@ -12,7 +16,11 @@ import { searchRoutes } from "./search-rest";
 export function listRestRoutes(): RestRoute[] {
   return [
     ...venueRoutes,
-    ...roomRoutes,
+    ...entityTypeRoutes,
+    ...fieldDefinitionRoutes,
+    ...vocabularyRoutes,
+    ...setupRoutes,
+    ...itemRoutes,
     ...conversationRoutes,
     ...messageRoutes,
     ...skillRoutes,

@@ -76,15 +76,15 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 *MVP* · Organisationens egen typ för en grundentitet: artikel, kund, kontaktperson, förfrågan, bokning eller behov.
 
 **Attribut**
-- grundentitet (artikel / kund / kontaktperson / förfrågan / bokning / behov)
-- namn (t.ex. Konferensrum, Rätt, Båt, Paket, Företag, Konferens)
-- beteenden (endast för artikel, se Artikel)
+- grundentitet (`ITEM | CUSTOMER | CONTACT | INQUIRY | BOOKING | REQUIREMENT`)
+- namn (t.ex. Konferensrum, Rätt, Båt, Paket, Företag, Konferens) — unik per grundentitet
+- beteenden (endast för `ITEM`): `PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS` — `CHOICES` kräver `COMPOSABLE`, `SETUPS` kräver `BOOKABLE` (annars `VALIDATION`)
 
 **Relationer**
 - `1:N` har → Fältdefinition
 - `1:N` klassar → Artikel (och kund, bokning m.fl.)
 
-> Ett beteende kan inte stängas av på en typ så länge någon artikel av typen har data för det (`CONFLICT`).
+> Arkivering nekas (`CONFLICT`) så länge aktiva artiklar av typen finns. Ett beteende kan inte stängas av så länge någon aktiv artikel av typen har data för det (`CONFLICT`).
 
 ### Fältdefinition (`FieldDefinition`)
 
@@ -92,43 +92,49 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 
 **Attribut**
 - namn
-- fälttyp (text, tal, ja/nej, datum, val, flerval ur en lista, länk till annan typ)
+- nyckel (`key`) — genererad från namn (t.ex. "Yta m²" → `yta_m2`), ändras aldrig, unik per typ även bland arkiverade
+- fälttyp (`TEXT | NUMBER | BOOLEAN | DATE | CHOICE | MULTI_CHOICE`)
 - obligatoriskt
-- lista (för val och flerval)
+- lista ELLER egna alternativ (`options`) för val/flerval — exakt en källa
+- ordning (`position`)
 
 **Relationer**
 - `N:1` Typ har denna
 - `N:0..1` väljer ur → Lista
 
-> Värdena lagras som JSON på raden. Ett Zod-schema byggs från definitionerna och validerar dem.
+> Värdena lagras som JSON på raden. Regler (`CONFLICT` när data finns): fälttyp eller lista kan inte bytas, använda alternativ kan inte tas bort, fältet kan inte bli obligatoriskt så länge artiklar saknar värde, fältet kan inte arkiveras så länge artiklar har ett värde.
 
 ### Lista (`Vocabulary`) och listvärde (`VocabularyValue`)
 
-*MVP* · Organisationens egna ordlistor, t.ex. Allergener, Kost, Tillgänglighet eller Dresscode.
+*MVP* · Organisationens egna ordlistor, t.ex. Allergener, Kost, Tillgänglighet eller Dresscode. Mallen "EU:s 14 allergener" kan importeras via `vocabulary.importTemplate`.
 
 **Attribut**
-- lista: namn
+- lista: namn — unik
 - värde: namn, ordning, arkiverad
 
 **Relationer**
 - `1:N` Lista har → Listvärde
-- `N:M` Artikel taggas med → Listvärde
+- `N:M` Artikel taggas med → Listvärde (via fält som väljer ur listan)
 - `1:N` Behov avser ← Listvärde
+
+> Taggar = värden i fält som väljer ur en lista (inga separata taggrader). Ett listvärde kan inte arkiveras så länge en artikel bär det. En lista kan inte arkiveras så länge ett fält använder den.
 
 ### Uppställning (`Setup`)
 
 *MVP* · Organisationens egna uppställningar, t.ex. Bio, U-bord och Mingel.
 
 **Attribut**
-- namn
-- ställtid (minuter)
+- namn — unik
+- ställtid (`changeoverMinutes`)
 
 **Relationer**
 - `1:N` används i → Item-uppställning
 
+> Kan inte arkiveras så länge en aktiv artikel har kapacitet för den.
+
 ### Item-uppställning (`ItemSetup`)
 
-*MVP* · Kapacitet per bokningsbar artikel och uppställning. Kräver beteendet `SETUPS`.
+*MVP* · Kapacitet per bokningsbar artikel och uppställning, unik per par.
 
 **Attribut**
 - artikel
@@ -138,6 +144,8 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 **Relationer**
 - `N:1` Artikel har denna
 - `N:1` Uppställning används i denna
+
+> Ersätts som en mängd av `item.create/update` (`setups`).
 
 ### Blad-definition (`SheetDefinition`)
 
@@ -179,7 +187,7 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 
 ### Roll (`organizationRole`)
 
-*MVP* · Namngiven uppsättning behörigheter per organisation ([ADR 0020](beslut/0020-custom-roles-per-organization.md)).
+*MVP* · Namngiven uppsättning behörigheter per organisation ([ADR 0020](beslut/0020-custom-roles-per-organization.md)). Resurser: `configuration` (typer, fält, listor, uppställningar) och `item` (artiklar).
 
 **Attribut**
 - namn
@@ -424,6 +432,8 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 **Relationer**
 - `1:N` har → Artikel
 
+> Arkivering av en anläggning arkiverar dess artiklar.
+
 ### Beläggning ★
 
 *MVP* · Tidsblock på en bokningsbar artikel. Grunden för krockkontroll.
@@ -448,17 +458,17 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 *MVP* · Allt som kan säljas eller bokas: rätt, dryck, lokal, utrustning, guide, paket. Ersätter de gamla Artikel, Meny, Konferenspaket, Rum, Möblering och Utrustning.
 
 **Attribut**
-- typ (organisationens egen) och egna fält
+- typ (organisationens egen) och egna fält (`fields` som JSON)
 - namn
-- beteenden som typen slår på:
-  - `PRICED`: pris, prisenhet (`PER_PERSON`, `PER_UNIT`, `PER_HOUR`, `FLAT`), moms och orderrader
-  - `COMPOSABLE`: innehåller andra artiklar med antal, `offsetMinutes` och `durationMinutes`
-  - `CHOICES`: valgrupper bland delarna. Kräver `COMPOSABLE`.
-  - `BOOKABLE`: beläggning i tid, krockskydd och standardlängd
-  - `SETUPS`: kapacitet per uppställning och ställtid. Kräver `BOOKABLE`.
-- taggar (listvärden)
-- kundId (`null` = katalogartikel, satt = kundspecifikt paket)
-- anläggning
+- beskrivning
+- beteendekolumner (bara värden om typen har beteendet, annars `VALIDATION`):
+  - `PRICED`: `priceMinor` (öre), `priceUnit` (`PER_PERSON`, `PER_UNIT`, `PER_HOUR`, `FLAT`), `vatRatePercent` (null = anläggningens standard)
+  - `COMPOSABLE`: innehåller andra artiklar med antal, `offsetMinutes`, `durationMinutes`
+  - `CHOICES`: valgrupper bland delarna (kräver `COMPOSABLE`)
+  - `BOOKABLE`: beläggning i tid, krockskydd, `defaultDurationMinutes`
+  - `SETUPS`: kapacitet per uppställning (kräver `BOOKABLE`)
+- anläggning (valfri)
+- kundId (`null` = katalogartikel)
 
 **Relationer**
 - `N:1` klassas av → Typ
@@ -468,11 +478,11 @@ En ny organisation börjar tom. Inget är förinstallerat, förutom rollen `owne
 - `1:N` har → Valgrupp
 - `1:N` har → Beläggning
 - `1:N` har → Item-uppställning
-- `N:M` taggas med → Listvärde
+- Taggas via fält som väljer ur lista
 - `1:N` Orderrad avser denna
 - `1:N` Prislisterad avser denna
 
-> Ett rum är en artikel med `BOOKABLE` + `SETUPS`. Ett konferenspaket är en artikel med `COMPOSABLE` + `CHOICES`. Ärvda taggar: obligatoriska delar ger "innehåller", valbara delar ger "kan innehålla" per alternativ. När en artikel läggs på en bokning expanderar core den till programpunkter, beläggning och orderrader. Raderna kopierar namn, pris, moms och taggar (snapshot).
+> Rum = artikel med `BOOKABLE` + `SETUPS` (ofta även `PRICED`). Ett beteende kan inte stängas av på typen så länge någon aktiv artikel av typen har data för det (`CONFLICT`). Ärvda taggar: obligatoriska delar ger "innehåller", valbara delar ger "kan innehålla" per alternativ. Vid expansion på bokning: core skapar programpunkter, beläggning och orderrader, som kopierar namn, pris, moms och taggar (snapshot).
 
 ### Artikeldel (`ItemComponent`)
 

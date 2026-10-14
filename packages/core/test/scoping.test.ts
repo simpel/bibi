@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { createRoom, createVenue, execute, getVenue, listVenues, updateVenue } from "../src/index";
+import { createItem, createVenue, execute, getVenue, listVenues, updateVenue } from "../src/index";
 import { testContext, unwrap } from "./helpers";
+import { createRoomType } from "./item-helpers";
 
 describe("organization scoping", () => {
   const orgA = testContext();
@@ -23,12 +24,20 @@ describe("organization scoping", () => {
       context: orgB,
     });
     expect(updB.ok ? null : updB.error.code).toBe("NOT_FOUND");
-    const roomB = await execute({
-      operation: createRoom,
-      input: { venueId: venue.id, name: "Sneaky" },
+    const typeA = await createRoomType({ context: orgA });
+    const crossType = await execute({
+      operation: createItem,
+      input: { entityTypeId: typeA.id, name: "Sneaky" },
       context: orgB,
     });
-    expect(roomB.ok ? null : roomB.error.code).toBe("VALIDATION");
+    expect(crossType.ok ? null : crossType.error.code).toBe("VALIDATION");
+    const typeB = await createRoomType({ context: orgB });
+    const crossVenue = await execute({
+      operation: createItem,
+      input: { entityTypeId: typeB.id, venueId: venue.id, name: "Sneaky" },
+      context: orgB,
+    });
+    expect(crossVenue.ok ? null : crossVenue.error.code).toBe("VALIDATION");
   });
 
   it("forces organizationId in the scoped client even when callers pass another", async () => {
@@ -47,10 +56,20 @@ describe("organization scoping", () => {
     expect(deleted.count).toBe(0);
   });
 
-  it("rejects a room pointing at another org's venue at the database level", async () => {
+  it("rejects an item pointing at another org's venue or type at the database level", async () => {
     const venue = await orgA.db.venue.create({ data: { name: "A", organizationId: "" } });
+    const typeA = await orgA.db.entityType.create({
+      data: { base: "ITEM", name: "T", organizationId: "" },
+    });
+    const typeB = await orgB.db.entityType.create({
+      data: { base: "ITEM", name: "T", organizationId: "" },
+    });
+    const item = { name: "R", organizationId: "" };
     await expect(
-      orgB.db.room.create({ data: { name: "R", venueId: venue.id, organizationId: "" } }),
+      orgB.db.item.create({ data: { ...item, entityTypeId: typeB.id, venueId: venue.id } }),
+    ).rejects.toThrow();
+    await expect(
+      orgB.db.item.create({ data: { ...item, entityTypeId: typeA.id } }),
     ).rejects.toThrow();
   });
 

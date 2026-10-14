@@ -20,7 +20,7 @@ const create = ({
 }) =>
   execute({
     operation: createRole,
-    input: { name, permissions: { venue: ["admin"], room: ["read"] } },
+    input: { name, permissions: { venue: ["admin"], item: ["read"] } },
     context,
   });
 
@@ -28,7 +28,7 @@ describe("role operations (ADR 0020)", () => {
   it("creates normalized roles and lists them after the fixed owner role", async () => {
     const context = await testOrg();
     const role = unwrap({ result: await create({ context, name: "Säljare" }) });
-    expect(role.permissions).toEqual({ venue: ["read", "write", "admin"], room: ["read"] });
+    expect(role.permissions).toEqual({ venue: ["read", "write", "admin"], item: ["read"] });
     const list = unwrap({ result: await execute({ operation: listRoles, input: {}, context }) });
     expect(list.items.map((item) => [item.name, item.system])).toEqual([
       ["owner", true],

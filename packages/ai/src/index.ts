@@ -74,11 +74,15 @@ export {
   type UiComponent,
 } from "./ui-contract/tool-ui-types";
 export type {
+  EntityTypeWire,
+  FieldDefinitionWire,
+  ItemWire,
   MemberWire,
   RoleWire,
-  RoomWire,
   SearchHitWire,
+  SetupWire,
   SkillCardWire,
   SkillRow,
   VenueWire,
+  VocabularyWire,
 } from "./ui-contract/wire-schemas";

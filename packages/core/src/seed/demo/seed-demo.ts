@@ -4,10 +4,12 @@ import { err, ok, type Result } from "../../errors/result";
 import { createExecuteContext } from "../../operations/context";
 import { grantAll } from "../../permissions/permission-set";
 import { checkDemoOrg } from "./checks";
-import { lindholmen } from "./data/lindholmen";
-import { vingaleden } from "./data/vingaleden";
+import { lindholmen } from "./data/lindholmen/lindholmen";
+import { vingaleden } from "./data/vingaleden/vingaleden";
 import { refuseProduction } from "./guard";
 import { resetDemoOrg } from "./reset";
+import { seedDemoConfig } from "./seed-config";
+import { seedDemoItems } from "./seed-items";
 import { seedDemoRoles } from "./seed-roles";
 import type { DemoOrg } from "./types";
 import { bootstrapDemoOrg } from "./users";
@@ -33,6 +35,10 @@ async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
   });
   const roles = await seedDemoRoles({ context, org, members });
   if (!roles.ok) return roles;
+  const refs = await seedDemoConfig({ context, config: org.config });
+  if (!refs.ok) return refs;
+  const items = await seedDemoItems({ context, config: org.config, refs: refs.value });
+  if (!items.ok) return items;
   const failures = await checkDemoOrg({ context, org });
   if (failures.length > 0) {
     const message = `Demo checks failed:\n${failures.join("\n")}`;
