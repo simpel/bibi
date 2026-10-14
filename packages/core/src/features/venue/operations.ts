@@ -48,7 +48,8 @@ export const getVenue = defineOperation({
 export const createVenue = defineOperation({
   name: "venue.create",
   kind: "command",
-  description: "Create a venue (a building or site that contains bookable rooms).",
+  description:
+    "Create a venue (a building or site that bookable items, such as rooms, can belong to).",
   input: VenueCreateInputSchema,
   output: VenueSchema,
   permission: "venue:write",
@@ -82,7 +83,8 @@ export const updateVenue = defineOperation({
 export const archiveVenue = defineOperation({
   name: "venue.archive",
   kind: "command",
-  description: "Archive (soft-delete) a venue and all its rooms. Archived items are hidden.",
+  description:
+    "Archive (soft-delete) a venue and every item that belongs to it. Archived rows are hidden.",
   input: VenueIdInputSchema,
   output: VenueSchema,
   permission: "venue:write",
@@ -91,18 +93,18 @@ export const archiveVenue = defineOperation({
     const before = await context.db.venue.findFirst({ where: { id } });
     if (!before) return notFound();
     const venue = await context.db.venue.update({ where: { id }, data: { status: "ARCHIVED" } });
-    const rooms = await context.db.room.findMany({ where: { venueId: id }, select: { id: true } });
-    const roomIds = rooms.map((room) => room.id);
-    await context.db.room.updateMany({
-      where: { id: { in: roomIds } },
+    const items = await context.db.item.findMany({ where: { venueId: id }, select: { id: true } });
+    const itemIds = items.map((item) => item.id);
+    await context.db.item.updateMany({
+      where: { id: { in: itemIds } },
       data: { status: "ARCHIVED" },
     });
     await context.db.embedding.deleteMany({
-      where: { entityType: "room", entityId: { in: roomIds } },
+      where: { entityType: "item", entityId: { in: itemIds } },
     });
     context.recordChange({ entityId: id, before, after: venue });
-    for (const entityId of roomIds) {
-      context.recordChange({ entityType: "room", entityId, after: { status: "ARCHIVED" } });
+    for (const entityId of itemIds) {
+      context.recordChange({ entityType: "item", entityId, after: { status: "ARCHIVED" } });
     }
     return ok({ value: venue });
   },

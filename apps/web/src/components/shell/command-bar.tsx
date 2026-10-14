@@ -11,7 +11,7 @@ import { useCommandShortcut } from "./use-command-shortcut";
 import { useVenueShortcuts } from "./use-venue-shortcuts";
 
 /**
- * ⌘K command bar: navigation and venue/room quick actions plus "Ask assistant" for natural
+ * ⌘K command bar: navigation and venue and item quick actions plus "Ask assistant" for natural
  * language (ADR 0007). Free text + Enter hands a one-shot question to the assistant panel.
  */
 export function CommandBar() {

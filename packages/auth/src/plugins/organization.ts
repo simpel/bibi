@@ -8,7 +8,7 @@ import { assertKnownRoles } from "./check-member-roles";
 
 /**
  * Organization = venue customer (ADR 0004). `Organization.id` is the `organizationId`
- * stored on every business row (Venue, Room, ...) and pinned by `scopedDb`.
+ * stored on every business row (Venue, Item, ...) and pinned by `scopedDb`.
  */
 export function organizationPlugin() {
   return organization({

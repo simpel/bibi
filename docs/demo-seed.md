@@ -19,13 +19,20 @@ Skriptet avslutas med kontroller som får CI att fallera om demot inte visar det
 6. I serien S1 är tillfälle 4 flaggat för krock och flyttat till ett annat rum.
 7. Varje skrivning har en rad i `AuditLog` med aktör `SYSTEM`.
 
-Del 1 (roller) kontrollerar i dag: roller och medlemmar per organisation, att varje användare har sin roll enligt tabellerna, och punkt 7.
+Kontrollerna som körs i dag:
+- **Del 1 (roller):** roller och medlemmar per organisation, och att varje användare har sin roll enligt tabellerna.
+- **Del 2 (konfiguration):**
+  - Antal rader per organisation stämmer för anläggning, listor, listvärden, uppställningar, typer, fält, artiklar och kapaciteter (punkt 1 för det som finns).
+  - Vingaleden har ingen lista "Allergener" (första halvan av punkt 2).
+  - Lindholmens importerade lista "Allergener" har 14 värden.
+- **Båda delarna:** punkt 7.
 
 ## Undantag och inloggning
 
 - Organisationen, användarna och medlemskapen är Better Auths tabeller. De skrivs direkt (`seed/demo/users.ts`), på samma sätt som registrering och `addMember` gör. Allt annat går via `execute` som `SYSTEM`. Ägaren får `owner` direkt, övriga får sin roll via `member.assignRole`.
 - Användarnas e-post är `förnamn.efternamn@<slug>.okazi.test`, t.ex. `anna.berg@lindholmen-demo.okazi.test`. Logga in med magisk länk eller engångskod; mejlet hamnar i Mailpit.
-- Roller som ska skriva kunder, bokningar eller blad får de behörigheterna när resurserna finns (del 2–6). Tills dess läser de anläggningar och rum.
+- Roller som ska skriva kunder, bokningar eller blad får de behörigheterna när resurserna finns (del 4–6). Tills dess läser de anläggningar, artiklar (`item`) och konfigurationen (`configuration`). Admin har `admin` på båda.
+- Del 2 seedar konfigurationen och de bokningsbara lokalerna: Lindholmens 10 konferensrum och Vingaledens 3 båtar, var och en i organisationens anläggning. Resten av katalogen (rätter, drycker, måltider, guider, visningar, utrustning, paket, skeppare, turer och tillägg) kommer i del 3. Behov-typerna under "Övriga typer" kommer i del 5, eftersom de pekar på listor via `requirement.*`.
 
 ---
 
@@ -303,7 +310,9 @@ Kunder: Hisingen Energi AB (Företag, samma namn som hos Lindholmen men en helt 
 
 ## Uppbyggnad i koden
 
-- `packages/core/src/seed/demo/` med en mapp per organisation (`lindholmen/`, `vingaleden/`). Filerna är rena data, uppdelade så att ingen fil går över 150 rader: `config.ts`, `rooms.ts`, `dishes.ts`, `meals.ts`, `packages.ts`, `customers.ts`, `pipeline.ts` och `bookings.ts`.
-- `run-demo-seed.ts` läser datat och kör allt via `execute` med core-operationer. Referenser mellan raderna görs med nycklar (`ref: "room.vinga"`), som löses till id under körningen.
-- `check-demo-seed.ts` innehåller kontrollerna ovan.
+- `packages/core/src/seed/demo/data/` har en mapp per organisation (`lindholmen/`, `vingaleden/`). Filerna är rena data, uppdelade så att ingen fil går över 150 rader, t.ex. `lindholmen.ts` (roller och användare), `config.ts`, `types.ts` och `rooms.ts`. Senare delar lägger till `dishes.ts`, `meals.ts`, `packages.ts`, `customers.ts`, `pipeline.ts` och `bookings.ts`.
+- `seed-demo.ts` kör delarna i ordning via `execute` med core-operationer: `seed-roles.ts`, `seed-config.ts` och `seed-items.ts`.
+  - Datat refererar till rader med namn: lista, uppställning, typ, fält och värde, t.ex. `Utsikt: "Älven"`.
+  - Namnen löses till id och fältnycklar under körningen (`demo-refs.ts`).
+- `checks.ts` och `config-checks.ts` innehåller kontrollerna ovan.
 - Seeden byggs ut i samma takt som delarna i ADR 0025. En del som saknar operationer hoppas över med en tydlig logg, så att demot alltid går att köra.

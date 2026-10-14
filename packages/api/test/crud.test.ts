@@ -1,19 +1,26 @@
 import { describe, expect, it } from "vitest";
 import { call, newOrgId } from "./helpers";
 
-describe("venue + room CRUD over HTTP", () => {
-  it("creates, reads, updates, lists and archives venue and rooms", async () => {
+describe("venue + item CRUD over HTTP", () => {
+  it("creates, reads, updates, lists and archives venue and items", async () => {
     const org = newOrgId();
     const created = await call({ method: "POST", path: "/venues", org, body: { name: "Volvo" } });
     expect(created.status).toBe(201);
     const venueId = created.json.id as string;
     expect(created.json.organizationId).toBe(org);
 
+    const type = await call({
+      method: "POST",
+      path: "/entity-types",
+      org,
+      body: { base: "ITEM", name: "Konferensrum", behaviours: ["BOOKABLE", "SETUPS", "PRICED"] },
+    });
+    expect(type.status).toBe(201);
     const room = await call({
       method: "POST",
-      path: `/venues/${venueId}/rooms`,
+      path: `/venues/${venueId}/items`,
       org,
-      body: { name: "Hall A", maxCapacity: 40 },
+      body: { entityTypeId: type.json.id, name: "Hall A", priceMinor: 500000 },
     });
     expect(room.status).toBe(201);
     expect(room.json.venueId).toBe(venueId);
@@ -29,22 +36,22 @@ describe("venue + room CRUD over HTTP", () => {
     expect(patched.status).toBe(200);
     expect(patched.json).toMatchObject({ name: "Volvo", city: "Göteborg" });
 
-    const nested = await call({ path: `/venues/${venueId}/rooms`, org });
+    const nested = await call({ path: `/venues/${venueId}/items`, org });
     expect(nested.json.items).toHaveLength(1);
-    const flat = await call({ path: `/rooms?venueId=${venueId}`, org });
+    const flat = await call({ path: `/items?venueId=${venueId}`, org });
     expect(flat.json.items[0].id).toBe(room.json.id);
     const roomPatch = await call({
       method: "PATCH",
-      path: `/rooms/${room.json.id}`,
+      path: `/items/${room.json.id}`,
       org,
-      body: { hasDaylight: true },
+      body: { priceMinor: 600000 },
     });
-    expect(roomPatch.json.hasDaylight).toBe(true);
+    expect(roomPatch.json.priceMinor).toBe(600000);
 
     const archived = await call({ method: "DELETE", path: `/venues/${venueId}`, org });
     expect(archived.status).toBe(200);
     expect(archived.json.status).toBe("ARCHIVED");
-    const hidden = await call({ path: `/rooms/${room.json.id}`, org });
+    const hidden = await call({ path: `/items/${room.json.id}`, org });
     expect(hidden.status).toBe(404);
   });
 

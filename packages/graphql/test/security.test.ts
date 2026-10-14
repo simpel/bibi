@@ -1,10 +1,10 @@
 import { grantAll } from "@okazi/core";
 import { describe, expect, it } from "vitest";
-import { createClient, testContext } from "./helpers";
+import { createClient, createItemType, testContext } from "./helpers";
 
 const CREATE = `mutation($i: VenueCreateInput!) { venueCreate(input: $i) { id } }`;
 const DEEP =
-  "{ venues { items { rooms { venue { rooms { venue { rooms { venue { rooms { venue { rooms { venue { rooms { id } } } } } } } } } } } } } }";
+  "{ venues { items { items { venue { items { venue { items { venue { items { venue { items { venue { items { id } } } } } } } } } } } } } }";
 
 describe("scoping, errors and limits", () => {
   it("isolates organizations through queries, graph and mutations", async () => {
@@ -22,8 +22,12 @@ describe("scoping, errors and limits", () => {
     const update = `mutation($i: VenueUpdateInput!) { venueUpdate(input: $i) { id } }`;
     const hijack = await b({ query: update, variables: { i: { id, name: "Mitt" } } });
     expect(hijack.body.errors?.[0]?.extensions.code).toBe("NOT_FOUND");
-    const room = `mutation($i: RoomCreateInput!) { roomCreate(input: $i) { id } }`;
-    const cross = await b({ query: room, variables: { i: { venueId: id, name: "X" } } });
+    const item = `mutation($i: ItemCreateInput!) { itemCreate(input: $i) { id } }`;
+    const entityTypeId = await createItemType({ gql: b });
+    const cross = await b({
+      query: item,
+      variables: { i: { entityTypeId, venueId: id, name: "X" } },
+    });
     expect(cross.body.errors?.[0]?.extensions.code).toBe("VALIDATION");
   });
 
@@ -72,7 +76,7 @@ describe("scoping, errors and limits", () => {
   it("rejects queries whose estimated cost is too high", async () => {
     const gql = createClient({ context: testContext() });
     const query =
-      "{ venues(limit: 100) { items { rooms(limit: 100) { venue { rooms(limit: 100) { name } } } } } }";
+      "{ venues(limit: 100) { items { items(limit: 100) { venue { items(limit: 100) { name } } } } } }";
     const res = await gql({ query });
     expect(res.body.errors?.[0]?.message).toMatch(/cost/i);
   });

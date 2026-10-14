@@ -1,7 +1,13 @@
 /** Models that carry `organizationId` and may be accessed through `scopedDb`. */
 export const ORG_SCOPED_MODELS = new Set<string>([
   "Venue",
-  "Room",
+  "EntityType",
+  "FieldDefinition",
+  "Vocabulary",
+  "VocabularyValue",
+  "Setup",
+  "Item",
+  "ItemSetup",
   "AuditLog",
   "Embedding",
   "Conversation",
@@ -17,7 +23,12 @@ export const ORG_SCOPED_MODELS = new Set<string>([
  */
 export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string, unknown>([
   ["Venue", "ACTIVE"],
-  ["Room", "ACTIVE"],
+  ["EntityType", "ACTIVE"],
+  ["FieldDefinition", "ACTIVE"],
+  ["Vocabulary", "ACTIVE"],
+  ["VocabularyValue", "ACTIVE"],
+  ["Setup", "ACTIVE"],
+  ["Item", "ACTIVE"],
   ["Conversation", "ACTIVE"],
   ["Skill", { not: "ARCHIVED" }],
   ["OrganizationRole", "ACTIVE"],

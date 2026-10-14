@@ -1,0 +1,45 @@
+import { ok } from "../../errors/result";
+import { defineOperation } from "../../operations/define-operation";
+import { notFound } from "../../shared/errors";
+import { pageArgs } from "../../shared/page-input";
+import { paginate } from "../../shared/paginate";
+import { ItemIdInputSchema, ItemListInputSchema, ItemListOutputSchema, ItemSchema } from "./schema";
+import { loadItem, toItemDtos } from "./to-item-dto";
+
+export const listItems = defineOperation({
+  name: "item.list",
+  kind: "query",
+  description:
+    "List the organization's items (artiklar): everything it sells or books, e.g. rooms, " +
+    "dishes or boats. Filter by type, venue or behaviour (BOOKABLE for bookable resources).",
+  input: ItemListInputSchema,
+  output: ItemListOutputSchema,
+  permission: "item:read",
+  handler: async ({ input, context }) => {
+    const rows = await context.db.item.findMany({
+      where: {
+        ...(input.entityTypeId ? { entityTypeId: input.entityTypeId } : {}),
+        ...(input.venueId ? { venueId: input.venueId } : {}),
+        ...(input.behaviour ? { entityType: { behaviours: { has: input.behaviour } } } : {}),
+      },
+      orderBy: [{ name: "asc" }, { id: "asc" }],
+      ...pageArgs(input),
+    });
+    const page = paginate({ rows, limit: input.limit });
+    const items = await toItemDtos({ context, rows: page.items });
+    return ok({ value: { items, nextCursor: page.nextCursor } });
+  },
+});
+
+export const getItem = defineOperation({
+  name: "item.get",
+  kind: "query",
+  description: "Get one item by id, with its field values and setup capacities.",
+  input: ItemIdInputSchema,
+  output: ItemSchema,
+  permission: "item:read",
+  handler: async ({ input, context }) => {
+    const item = await loadItem({ context, id: input.id });
+    return item ? ok({ value: item }) : notFound({ entity: "Item" });
+  },
+});

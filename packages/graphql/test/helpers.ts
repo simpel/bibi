@@ -68,3 +68,16 @@ export function createClient({ context, development }: TestClientInput = {}) {
     return { status: response.status, body: await response.json() };
   };
 }
+
+export type CreateItemTypeInput = { gql: ReturnType<typeof createClient>; name?: string };
+
+const CREATE_TYPE = `mutation($i: EntityTypeCreateInput!) { entityTypeCreate(input: $i) { id } }`;
+
+/** Creates a bookable, priced ITEM type with setups and returns its id. */
+export async function createItemType({ gql, name = "Konferensrum" }: CreateItemTypeInput) {
+  const res = await gql({
+    query: CREATE_TYPE,
+    variables: { i: { base: "ITEM", name, behaviours: ["BOOKABLE", "SETUPS", "PRICED"] } },
+  });
+  return res.body.data.entityTypeCreate.id as string;
+}

@@ -29,5 +29,5 @@ export async function addMember({ organizationId, userId, role }: AddMemberInput
   await getAuth().api.addMember({ body });
 }
 
-export const READ_ONLY: PermissionSet = { venue: ["read"], room: ["read"] };
-export const WRITER: PermissionSet = { venue: ["write"], room: ["write"] };
+export const READ_ONLY: PermissionSet = { venue: ["read"], item: ["read"] };
+export const WRITER: PermissionSet = { venue: ["write"], item: ["write"] };

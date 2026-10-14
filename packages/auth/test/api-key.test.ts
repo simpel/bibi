@@ -42,7 +42,7 @@ describe("resolveExecuteContext – API keys", () => {
       expect(result.value.roles).toEqual(["Skriv"]);
       expect(result.value.permissions).toEqual({
         venue: ["read", "write"],
-        room: ["read", "write"],
+        item: ["read", "write"],
       });
       expect(result.value.actor).toEqual({ type: "user", userId: owner.userId });
     }

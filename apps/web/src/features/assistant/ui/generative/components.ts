@@ -1,20 +1,28 @@
 import type { UiComponent } from "@okazi/ai";
 import type { ComponentType } from "react";
 import { ApprovalCardView } from "./approval-card-view";
+import { EntityTypeCardView } from "./entity-type-card-view";
+import { EntityTypeTableView } from "./entity-type-table-view";
 import { ErrorView } from "./error-view";
+import { FieldDefinitionCardView } from "./field-definition-card-view";
+import { FieldDefinitionTableView } from "./field-definition-table-view";
 import type { GenerativeProps } from "./generative-props";
+import { ItemCardView } from "./item-card-view";
+import { ItemTableView } from "./item-table-view";
 import { JsonView } from "./json-view";
 import { MemberCardView } from "./member-card-view";
 import { MemberTableView } from "./member-table-view";
 import { RoleCardView } from "./role-card-view";
 import { RoleTableView } from "./role-table-view";
-import { RoomCardView } from "./room-card-view";
-import { RoomTableView } from "./room-table-view";
 import { SearchResultsView } from "./search-results-view";
+import { SetupCardView } from "./setup-card-view";
+import { SetupTableView } from "./setup-table-view";
 import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
 import { VenueCardView } from "./venue-card-view";
 import { VenueTableView } from "./venue-table-view";
+import { VocabularyCardView } from "./vocabulary-card-view";
+import { VocabularyTableView } from "./vocabulary-table-view";
 
 /**
  * One React component per generative-UI key of `@okazi/ai/ui` (`UI_COMPONENTS`). The mapped type
@@ -24,8 +32,16 @@ import { VenueTableView } from "./venue-table-view";
 export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<GenerativeProps<K>> } = {
   "venue-table": VenueTableView,
   "venue-card": VenueCardView,
-  "room-table": RoomTableView,
-  "room-card": RoomCardView,
+  "item-table": ItemTableView,
+  "item-card": ItemCardView,
+  "entity-type-table": EntityTypeTableView,
+  "entity-type-card": EntityTypeCardView,
+  "field-definition-table": FieldDefinitionTableView,
+  "field-definition-card": FieldDefinitionCardView,
+  "vocabulary-table": VocabularyTableView,
+  "vocabulary-card": VocabularyCardView,
+  "setup-table": SetupTableView,
+  "setup-card": SetupCardView,
   "role-table": RoleTableView,
   "role-card": RoleCardView,
   "member-table": MemberTableView,

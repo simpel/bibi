@@ -19,6 +19,6 @@ export const venueMcpTools = [
     operation: "venue.archive",
     destructive: true,
     idempotent: true,
-    summary: ({ input }) => `Archive venue ${text({ value: input.id })} and all its rooms`,
+    summary: ({ input }) => `Archive venue ${text({ value: input.id })} and all its items`,
   }),
 ];

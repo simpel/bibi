@@ -65,10 +65,17 @@ describe("surface parity: every core operation exists everywhere", () => {
   });
 });
 
-/** GraphQL deliberately hides `organizationId` (the graph is org-scoped); compare without it. */
+/**
+ * GraphQL deliberately hides `organizationId` (the graph is org-scoped); compare without it,
+ * also in nested objects such as a type's fields.
+ */
 function withoutOrg({ value }: { value: Json }): Json {
+  if (Array.isArray(value)) return value.map((entry) => withoutOrg({ value: entry }));
+  if (value === null || typeof value !== "object") return value;
   const { organizationId: _organizationId, ...rest } = value;
-  return rest;
+  return Object.fromEntries(
+    Object.entries(rest).map(([key, entry]) => [key, withoutOrg({ value: entry as Json })]),
+  );
 }
 
 function coreEntityTypes(): string[] {

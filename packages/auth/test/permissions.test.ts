@@ -37,7 +37,7 @@ describe("role resolution (ADR 0020)", () => {
     const result = await resolveExecuteContext({ headers });
     if (!result.ok) throw result.error;
     expect(result.value.roles).toEqual(["Läs"]);
-    expect(result.value.permissions).toEqual({ venue: ["read"], room: ["read"] });
+    expect(result.value.permissions).toEqual({ venue: ["read"], item: ["read"] });
   });
 
   it("grants nothing for unknown or archived roles, but the member is still resolved", async () => {

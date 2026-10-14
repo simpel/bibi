@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 
 export type SuggestedPromptsProps = { onPick: (input: { text: string }) => void };
 
-const KEYS = ["listVenues", "createVenue", "findRooms", "listSkills"] as const;
+const KEYS = ["listVenues", "createVenue", "findItems", "listSkills"] as const;
 
 /** Empty state: what the assistant can do, as one-click prompts (sv/en). */
 export function SuggestedPrompts({ onPick }: SuggestedPromptsProps) {

@@ -1,3 +1,4 @@
+import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 import {
@@ -6,8 +7,6 @@ import {
   RoleImportWireSchema,
   RoleListWireSchema,
   RoleWireSchema,
-  RoomListWireSchema,
-  RoomWireSchema,
   SearchWireSchema,
   SkillCardWireSchema,
   SkillListWireSchema,
@@ -25,16 +24,6 @@ const venueCard = uiEntry({
   component: "venue-card",
   schema: VenueWireSchema,
   toProps: ({ value }) => ({ venue: value }),
-});
-const roomTable = uiEntry({
-  component: "room-table",
-  schema: RoomListWireSchema,
-  toProps: ({ value }) => value,
-});
-const roomCard = uiEntry({
-  component: "room-card",
-  schema: RoomWireSchema,
-  toProps: ({ value }) => ({ room: value }),
 });
 const roleTable = uiEntry({
   component: "role-table",
@@ -67,11 +56,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   venue_create: venueCard,
   venue_update: venueCard,
   venue_archive: venueCard,
-  room_list: roomTable,
-  room_get: roomCard,
-  room_create: roomCard,
-  room_update: roomCard,
-  room_archive: roomCard,
+  ...CONFIGURATION_UI_ENTRIES,
   role_list: roleTable,
   role_get: roleCard,
   role_create: roleCard,

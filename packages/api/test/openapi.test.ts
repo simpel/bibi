@@ -28,8 +28,10 @@ describe("OpenAPI document", () => {
       expect.arrayContaining([
         "/venues",
         "/venues/{id}",
-        "/venues/{venueId}/rooms",
-        "/rooms/{id}",
+        "/venues/{venueId}/items",
+        "/items/{id}",
+        "/entity-types/{entityTypeId}/fields",
+        "/vocabularies/import-template",
         "/search",
       ]),
     );

@@ -1,12 +1,16 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
 import type {
+  EntityTypeWire,
+  FieldDefinitionWire,
+  ItemWire,
   MemberWire,
   RoleWire,
-  RoomWire,
   SearchHitWire,
+  SetupWire,
   SkillCardWire,
   SkillRow,
   VenueWire,
+  VocabularyWire,
 } from "./wire-schemas";
 
 /**
@@ -16,8 +20,16 @@ import type {
 export type ToolUiProps = {
   "venue-table": { items: VenueWire[]; nextCursor: string | null };
   "venue-card": { venue: VenueWire };
-  "room-table": { items: RoomWire[]; nextCursor: string | null };
-  "room-card": { room: RoomWire };
+  "item-table": { items: ItemWire[]; nextCursor: string | null };
+  "item-card": { item: ItemWire };
+  "entity-type-table": { items: EntityTypeWire[]; nextCursor: string | null };
+  "entity-type-card": { entityType: EntityTypeWire };
+  "field-definition-table": { items: FieldDefinitionWire[]; nextCursor: string | null };
+  "field-definition-card": { field: FieldDefinitionWire };
+  "vocabulary-table": { items: VocabularyWire[]; nextCursor: string | null };
+  "vocabulary-card": { vocabulary: VocabularyWire };
+  "setup-table": { items: SetupWire[]; nextCursor: string | null };
+  "setup-card": { setup: SetupWire };
   "role-table": { items: RoleWire[]; nextCursor: string | null };
   "role-card": { role: RoleWire };
   "member-table": { items: MemberWire[]; nextCursor: string | null };
@@ -38,8 +50,16 @@ export type UiComponent = keyof ToolUiProps;
 export const UI_COMPONENTS: readonly UiComponent[] = [
   "venue-table",
   "venue-card",
-  "room-table",
-  "room-card",
+  "item-table",
+  "item-card",
+  "entity-type-table",
+  "entity-type-card",
+  "field-definition-table",
+  "field-definition-card",
+  "vocabulary-table",
+  "vocabulary-card",
+  "setup-table",
+  "setup-card",
   "role-table",
   "role-card",
   "member-table",

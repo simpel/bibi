@@ -13,15 +13,20 @@ describe("graphql tools", () => {
   it("graphql_query reads through the graph with the caller's org", async () => {
     const client = await connect({ context: testContext() });
     const venue = await call({ client, name: "venue_create", args: { name: "Graph Hall" } });
+    const type = await call({
+      client,
+      name: "entityType_create",
+      args: { base: "ITEM", name: "Konferensrum", behaviours: ["BOOKABLE"] },
+    });
     await call({
       client,
-      name: "room_create",
-      args: { venueId: venue.data.id, name: "Room A", maxCapacity: 10 },
+      name: "item_create",
+      args: { entityTypeId: type.data.id, venueId: venue.data.id, name: "Room A" },
     });
     const result = await call({
       client,
       name: "graphql_query",
-      args: { query: "query { venues { items { name rooms { name } } } }" },
+      args: { query: "query { venues { items { name items { name } } } }" },
     });
     expect(result.isError).toBe(false);
     expect(result.data.errors).toBeUndefined();

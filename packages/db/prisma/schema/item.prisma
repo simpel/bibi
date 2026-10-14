@@ -1,0 +1,55 @@
+/// How a `PRICED` item's price is applied.
+enum PriceUnit {
+  PER_PERSON
+  PER_UNIT
+  PER_HOUR
+  FLAT
+}
+
+/// Artikel – anything that can be sold or booked (ADR 0021). Its type decides the behaviours;
+/// the behaviour columns are null unless the type has the behaviour.
+model Item {
+  id                     String       @id @default(cuid(2))
+  organizationId         String
+  entityTypeId           String
+  venueId                String?
+  name                   String
+  description            String?
+  /// Values of the type's own fields, keyed by `FieldDefinition.key`.
+  fields                 Json         @default("{}")
+  /// PRICED: price in minor units (öre), unit and VAT (null = the venue's default).
+  priceMinor             Int?
+  priceUnit              PriceUnit?
+  vatRatePercent         Int?
+  /// BOOKABLE: default length of a booking.
+  defaultDurationMinutes Int?
+  status                 RecordStatus @default(ACTIVE)
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  createdBy              String?
+  entityType             EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  venue                  Venue?       @relation(fields: [venueId, organizationId], references: [id, organizationId])
+  setups                 ItemSetup[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, entityTypeId])
+  @@index([organizationId, venueId])
+}
+
+/// Item-uppställning – capacity of a `SETUPS` item in one setup. Replaced as a set by `item.*`.
+model ItemSetup {
+  id             String   @id @default(cuid(2))
+  organizationId String
+  itemId         String
+  setupId        String
+  capacity       Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  createdBy      String?
+  item           Item     @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  setup          Setup    @relation(fields: [setupId, organizationId], references: [id, organizationId])
+
+  @@unique([itemId, setupId])
+  @@index([organizationId, itemId])
+}

@@ -13,12 +13,12 @@ export const SkillSlugSchema = z
   .min(1)
   .max(64)
   .regex(SKILL_SLUG_PATTERN)
-  .describe("Lowercase-hyphenated id, e.g. create-venue-with-rooms");
+  .describe("Lowercase-hyphenated id, e.g. create-venue-with-items");
 
 export const ToolNameSchema = z
   .string()
-  .regex(/^[a-z][a-z0-9_]{0,99}$/)
-  .describe("MCP tool name, e.g. venue_create");
+  .regex(/^[a-z][A-Za-z0-9_]{0,99}$/)
+  .describe("MCP tool name, e.g. venue_create or entityType_list");
 
 export const SkillResourceSchema = z.object({
   name: z
@@ -133,7 +133,7 @@ export const SkillImportInputSchema = z.object({
 
 export const SkillExportOutputSchema = z.object({
   markdown: z.string().describe("SKILL.md content"),
-  filename: z.string().describe("Suggested path, e.g. create-venue-with-rooms/SKILL.md"),
+  filename: z.string().describe("Suggested path, e.g. create-venue-with-items/SKILL.md"),
 });
 
 export type SkillDto = z.infer<typeof SkillSchema>;

@@ -21,7 +21,7 @@ export type SkillFormInput = { values: SkillFormValues };
 
 const TOOL_SEPARATOR = /[\s,]+/;
 
-/** "venue_list, room_list\nsearch" → ["venue_list", "room_list", "search"]. */
+/** "venue_list, item_list\nsearch" → ["venue_list", "item_list", "search"]. */
 export function parseToolList({ text }: { text: string }): string[] {
   return text.split(TOOL_SEPARATOR).filter(Boolean);
 }
