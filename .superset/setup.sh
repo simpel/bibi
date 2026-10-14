@@ -10,7 +10,8 @@ if [ ! -f .env ]; then
   if ! is_main_checkout && [ -f "$MAIN_ROOT/.env" ]; then
     cp "$MAIN_ROOT/.env" .env
   elif [ -f .exampleenv ]; then
-    cp .exampleenv .env
+    # Empty optional keys (OKAZI_API_KEY=) fail the Zod env schema; leave them unset instead.
+    { grep -vE '^[A-Z_]+=$' .exampleenv || true; } > .env
   fi
 fi
 
@@ -44,7 +45,7 @@ if ! psql_admin -tAc "SELECT 1 FROM pg_database WHERE datname = '$DB'" | grep -q
   psql_admin -c "CREATE DATABASE \"$DB\""
 fi
 
-set -a; source ./.env; set +a
+load_env
 pnpm db:migrate
 pnpm --filter @okazi/core seed:skills
 CLIENT_LINE="$(pnpm --filter @okazi/web provision:oauth | grep '^WEB_OAUTH_CLIENT_ID=' | tail -1)"

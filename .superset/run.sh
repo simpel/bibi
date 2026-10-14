@@ -5,7 +5,7 @@ cd "$(dirname "$0")/.."
 ./.superset/require-docker.sh
 source ./.superset/lib.sh
 
-set -a; source ./.env; set +a
+load_env
 
 compose up -d --wait postgres mailpit
 pnpm db:migrate

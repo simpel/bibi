@@ -1,9 +1,10 @@
 import { resolve } from "node:path";
-import { loadEnvConfig } from "@next/env";
+import nextEnv from "@next/env";
 import { defineConfig } from "@playwright/test";
 
 // Same root `.env` as next.config.ts, so a worktree's own ports and database apply here too.
-loadEnvConfig(resolve(process.cwd(), "../.."));
+// Default import: Playwright loads this file as native ESM, where @next/env (CJS) has no named exports.
+nextEnv.loadEnvConfig(resolve(process.cwd(), "../.."));
 
 const WEB_URL = process.env.WEB_URL ?? "http://localhost:3000";
 const MCP_URL = process.env.MCP_URL ?? "http://localhost:3001";
@@ -30,7 +31,10 @@ export default defineConfig({
     baseURL: WEB_URL,
     locale: "sv-SE",
     trace: "retain-on-failure",
-    launchOptions: { executablePath: "/opt/pw-browsers/chromium", args: ["--no-sandbox"] },
+    launchOptions: {
+      executablePath: process.env.PW_CHROMIUM_PATH ?? "/opt/pw-browsers/chromium",
+      args: ["--no-sandbox"],
+    },
   },
   webServer: [
     {

@@ -34,4 +34,13 @@ set_env() {
   mv "$ROOT/.env.tmp" "$ROOT/.env"
 }
 
+# Export every KEY=VALUE line of $ROOT/.env. Not `source`: values such as `Okazi <a@b>` break bash.
+load_env() {
+  local line
+  while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in '' | '#'*) continue ;; esac
+    export "${line%%=*}=${line#*=}"
+  done < "$ROOT/.env"
+}
+
 psql_admin() { compose exec -T postgres psql -U okazi -d postgres -v ON_ERROR_STOP=1 "$@"; }
