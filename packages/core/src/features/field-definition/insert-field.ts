@@ -50,7 +50,6 @@ export async function insertField({
       ...{ entityTypeId, name, kind, vocabularyId, options, position, key: key.value },
       required: input.required ?? false,
       organizationId: context.organizationId,
-      createdBy: context.actor.userId,
     },
   });
   context.recordChange({ entityId: field.id, after: field });

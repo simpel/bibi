@@ -38,7 +38,6 @@ export const createItem = defineOperation({
         entityTypeId,
         fields: toJson({ value: checked.value ?? {} }) ?? {},
         organizationId: context.organizationId,
-        createdBy: context.actor.userId,
       },
     });
     if (setups) await replaceSetups({ context, itemId: row.id, setups });

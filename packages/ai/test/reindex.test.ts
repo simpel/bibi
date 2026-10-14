@@ -34,7 +34,7 @@ describe("reindexAll", () => {
       embed: placeholder,
     });
     if (!indexed.ok) throw indexed.error;
-    const missing = await scopedDb({ organizationId }).venue.create({
+    const missing = await scopedDb({ organizationId, actorId: "user_test" }).venue.create({
       data: { organizationId, name: "Saknar index" },
     });
     const embeddings = () =>

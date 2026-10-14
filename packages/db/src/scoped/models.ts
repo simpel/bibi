@@ -20,6 +20,33 @@ export const ORG_SCOPED_MODELS = new Set<string>([
 ]);
 
 /**
+ * Global tables (ADR 0006): Better Auth's identity, session, API key and OAuth tables. They are
+ * shared across organizations, owned by Better Auth (`auth.prisma`) and refused by `scopedDb`.
+ */
+export const GLOBAL_MODELS = new Set<string>([
+  "User",
+  "Session",
+  "Account",
+  "Verification",
+  "Organization",
+  "Apikey",
+  "Jwks",
+  "OauthClient",
+  "OauthResource",
+  "OauthClientResource",
+  "OauthRefreshToken",
+  "OauthAccessToken",
+  "OauthConsent",
+  "OauthClientAssertion",
+]);
+
+/** Platform tables (ADR 0015): written only by platform code with `getDb()`, refused by `scopedDb`. */
+export const PLATFORM_MODELS = new Set<string>(["SystemLog", "AiSetting"]);
+
+/** Every model that is deliberately not org-scoped. Each Prisma model is here or org-scoped. */
+export const UNSCOPED_MODELS = new Set<string>([...GLOBAL_MODELS, ...PLATFORM_MODELS]);
+
+/**
  * Soft-deleted models and the `status` filter reads/updates get unless the caller filters
  * `status` itself. Skill uses DRAFT/PUBLISHED/ARCHIVED, the others RecordStatus.
  */

@@ -16,9 +16,8 @@ export async function insertVocabulary({
   if (await findVocabularyByName({ context, name })) {
     return conflict({ message: `A list named "${name}" exists` });
   }
-  const createdBy = context.actor.userId;
   const row = await context.db.vocabulary.create({
-    data: { name, organizationId: context.organizationId, createdBy },
+    data: { name, organizationId: context.organizationId },
   });
   await context.db.vocabularyValue.createMany({
     data: values.map((value, position) => ({
@@ -26,7 +25,6 @@ export async function insertVocabulary({
       name: value,
       position,
       organizationId: context.organizationId,
-      createdBy,
     })),
   });
   const vocabulary = await toVocabularyDto({ context, row });

@@ -1,5 +1,5 @@
 {
   "extends": "@okazi/config/tsconfig.base.json",
   "compilerOptions": { "types": ["node"] },
-  "include": ["src", "prisma.config.ts"]
+  "include": ["src", "test", "prisma.config.ts", "vitest.config.ts"]
 }

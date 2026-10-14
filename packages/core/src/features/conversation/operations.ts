@@ -71,7 +71,7 @@ export const createConversation = defineOperation({
       return err({ error: new AppError({ code: "VALIDATION", message }) });
     }
     const conversation = await context.db.conversation.create({
-      data: { title: input.title, ownerUserId: userId, organizationId: "", createdBy: userId },
+      data: { title: input.title, ownerUserId: userId, organizationId: "" },
     });
     context.recordChange({ entityId: conversation.id, after: conversation });
     return ok({ value: conversation });

@@ -29,7 +29,6 @@ export async function insertEntityType({
     data: {
       ...{ base, name, behaviours: [...behaviours] },
       organizationId: context.organizationId,
-      createdBy: context.actor.userId,
     },
   });
   const type = await toEntityTypeDto({ context, row });

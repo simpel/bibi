@@ -31,7 +31,6 @@ export async function replaceSetups({ context, itemId, setups }: ReplaceSetupsIn
       ...setup,
       itemId,
       organizationId: context.organizationId,
-      createdBy: context.actor.userId,
     })),
   });
 }

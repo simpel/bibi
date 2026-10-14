@@ -56,7 +56,7 @@ export const createVenue = defineOperation({
   embeddable: venueEmbeddable,
   handler: async ({ input, context }) => {
     const venue = await context.db.venue.create({
-      data: { ...input, organizationId: context.organizationId, createdBy: context.actor.userId },
+      data: { ...input, organizationId: context.organizationId },
     });
     context.recordChange({ entityId: venue.id, after: venue });
     return ok({ value: venue });

@@ -25,7 +25,6 @@ export function insertSkill({ context, scope, content, source }: InsertSkillInpu
       contentHash: skillContentHash({ content }),
       source,
       status: "DRAFT",
-      createdBy: userId,
     },
   });
 }

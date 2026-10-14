@@ -33,7 +33,6 @@ export const addVocabularyValue = defineOperation({
         name,
         position: position ?? last + 1,
         organizationId: context.organizationId,
-        createdBy: context.actor.userId,
       },
     });
     context.recordChange({ entityId: row.id, after: row });

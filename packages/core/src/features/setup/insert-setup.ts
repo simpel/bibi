@@ -14,7 +14,7 @@ export async function insertSetup({
     return conflict({ message: `A setup named "${input.name}" exists` });
   }
   const setup = await context.db.setup.create({
-    data: { ...input, organizationId: context.organizationId, createdBy: context.actor.userId },
+    data: { ...input, organizationId: context.organizationId },
   });
   context.recordChange({ entityId: setup.id, after: setup });
   return ok({ value: setup });

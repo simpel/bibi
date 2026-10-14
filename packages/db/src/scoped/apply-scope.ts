@@ -1,3 +1,4 @@
+import { CREATED_BY_MODELS } from "./conventions";
 import {
   APPEND_ONLY_MODELS,
   CREATE_OPERATIONS,
@@ -16,26 +17,39 @@ export type ApplyScopeInput = {
   operation: string;
   args: unknown;
   organizationId: string;
+  /** Written to `createdBy` on create for models that have the column (ADR 0006). */
+  actorId: string;
 };
 
-type DataInput = { data: unknown; organizationId: string };
+type DataInput = { model: string; data: unknown; organizationId: string; actorId: string };
 
-function scopeCreateData({ data, organizationId }: DataInput): unknown {
+/** Forces `organizationId`, and `createdBy` where the model has it, on every created row. */
+function scopeCreateData({ model, data, organizationId, actorId }: DataInput): unknown {
+  const forced: Args = CREATED_BY_MODELS.has(model)
+    ? { organizationId, createdBy: actorId }
+    : { organizationId };
   if (Array.isArray(data)) {
-    return data.map((row: Args) => ({ ...row, organizationId }));
+    return data.map((row: Args) => ({ ...row, ...forced }));
   }
-  return { ...(data as Args), organizationId };
+  return { ...(data as Args), ...forced };
 }
 
 type StripInput = { data: unknown };
 
-function stripOrganizationId({ data }: StripInput): Args {
-  const { organizationId: _ignored, ...rest } = (data as Args | undefined) ?? {};
+/** Ownership columns are immutable: updates may not move a row or rewrite its author. */
+function stripOwnership({ data }: StripInput): Args {
+  const { organizationId: _org, createdBy: _author, ...rest } = (data as Args | undefined) ?? {};
   return rest;
 }
 
 /** Rewrites Prisma args so every query is pinned to one organization. Fails closed. */
-export function applyScope({ model, operation, args, organizationId }: ApplyScopeInput): Args {
+export function applyScope({
+  model,
+  operation,
+  args,
+  organizationId,
+  actorId,
+}: ApplyScopeInput): Args {
   const input: Args = { ...((args as Args | undefined) ?? {}) };
   if (!ORG_SCOPED_MODELS.has(model)) {
     throw new ScopeViolationError({ model, operation, reason: "model is not org-scoped" });
@@ -45,16 +59,17 @@ export function applyScope({ model, operation, args, organizationId }: ApplyScop
     throw new ScopeViolationError({ model, operation, reason: "model is append-only" });
   }
   if (CREATE_OPERATIONS.has(operation)) {
-    return { ...input, data: scopeCreateData({ data: input.data, organizationId }) };
+    const data = scopeCreateData({ model, data: input.data, organizationId, actorId });
+    return { ...input, data };
   }
   const softDelete = READ_OPERATIONS.has(operation) || UPDATE_OPERATIONS.has(operation);
   const where = scopeWhere({ model, operation, where: input.where, organizationId, softDelete });
   if (operation === "upsert") {
-    const create = scopeCreateData({ data: input.create, organizationId });
-    return { ...input, where, create, update: stripOrganizationId({ data: input.update }) };
+    const create = scopeCreateData({ model, data: input.create, organizationId, actorId });
+    return { ...input, where, create, update: stripOwnership({ data: input.update }) };
   }
   if (UPDATE_OPERATIONS.has(operation)) {
-    return { ...input, where, data: stripOrganizationId({ data: input.data }) };
+    return { ...input, where, data: stripOwnership({ data: input.data }) };
   }
   if (READ_OPERATIONS.has(operation) || DELETE_OPERATIONS.has(operation)) {
     return { ...input, where };

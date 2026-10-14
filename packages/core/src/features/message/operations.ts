@@ -78,7 +78,6 @@ export const appendMessage = defineOperation({
         parts: toJson({ value: input.parts }) ?? [],
         metadata: toJson({ value: input.metadata }) ?? {},
         actorType: ACTOR_TYPE[actor.type],
-        createdBy: actor.userId,
       },
     });
     const after = { conversationId, role, sequence: message.sequence };

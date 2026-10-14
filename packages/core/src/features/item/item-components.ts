@@ -86,7 +86,6 @@ export async function replaceComponents({ context, itemId, components }: Replace
       partId,
       parentId: itemId,
       organizationId: context.organizationId,
-      createdBy: context.actor.userId,
     })),
   });
 }

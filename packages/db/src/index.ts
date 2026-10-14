@@ -48,6 +48,7 @@ export {
   ORG_SCOPED_MODELS,
   SOFT_DELETE_DEFAULTS,
   SOFT_DELETE_MODELS,
+  UNSCOPED_MODELS,
 } from "./scoped/models";
 export { PLATFORM_SCOPE } from "./scoped/platform-scope";
 export { ScopeViolationError } from "./scoped/scope-violation";
@@ -57,6 +58,7 @@ export {
   type ScopedDbInput,
   scopedDb,
 } from "./scoped/scoped-db";
+export { SYSTEM_ACTOR_ID } from "./scoped/system-actor";
 export {
   type CreateSystemLogSinkInput,
   createSystemLogSink,

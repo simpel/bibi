@@ -39,7 +39,6 @@ export async function insertRole({
       role: name,
       permission: JSON.stringify(normalized),
       status: "ACTIVE",
-      createdBy: context.actor.userId,
     },
   });
   const role = toRoleDto({ row });
