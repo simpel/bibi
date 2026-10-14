@@ -15,6 +15,7 @@ describe("registry and approval", () => {
     registerOperations({ operations: createCoreOperations({ embed: fakeEmbed }) });
     registerOperations({ operations: [createVenue] });
     expect(listOperations().map((op) => op.name)).toEqual([
+      "configuration.importTemplate",
       "conversation.archive",
       "conversation.create",
       "conversation.get",

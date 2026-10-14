@@ -35,7 +35,15 @@ describe("seed:demo slices 1–2 (ADR 0025)", () => {
     const items = ({ organizationId }: { organizationId?: string }) =>
       db.item.count({ where: { organizationId, status: "ACTIVE" } });
     expect(await items({ organizationId: lind?.organizationId })).toBe(10);
-    expect(await items({ organizationId: vinga?.organizationId })).toBe(3);
+    expect(await items({ organizationId: vinga?.organizationId })).toBe(6);
+    const tour = await db.item.findFirst({
+      where: { organizationId: vinga?.organizationId, name: "Lighthouse tour to Vinga" },
+      include: { components: { include: { part: true }, orderBy: { createdAt: "asc" } } },
+    });
+    expect(tour?.components.map((component) => component.part.name).sort()).toEqual([
+      "Jonna Sand",
+      "RIB Snabben",
+    ]);
     const vinga220 = await db.itemSetup.findFirst({
       where: { organizationId: lind?.organizationId, capacity: 220, setup: { name: "Theatre" } },
       include: { item: true },
