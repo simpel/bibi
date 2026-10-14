@@ -2,7 +2,7 @@
 
 import { useRouter } from "@okazi/i18n/navigation";
 import { CommandGroup, CommandItem } from "@okazi/ui";
-import { BuildingIcon, PlusIcon } from "lucide-react";
+import { BoxIcon, BuildingIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { VenueShortcut } from "@/features/venue/actions";
 import { ROUTES } from "@/lib/routes";
@@ -10,7 +10,7 @@ import { VenueCommandGroup } from "./venue-command-group";
 
 export type CommandGroupsProps = { venues: VenueShortcut[]; onDone: () => void };
 
-/** Navigation and venue/room quick actions, all plain router pushes (no LLM). */
+/** Navigation and venue and item quick actions, all plain router pushes (no LLM). */
 export function CommandGroups({ venues, onDone }: CommandGroupsProps) {
   const t = useTranslations("commandBar");
   const router = useRouter();
@@ -25,11 +25,19 @@ export function CommandGroups({ venues, onDone }: CommandGroupsProps) {
           <BuildingIcon />
           {t("goToVenues")}
         </CommandItem>
+        <CommandItem onSelect={() => go({ href: ROUTES.items })}>
+          <BoxIcon />
+          {t("goToItems")}
+        </CommandItem>
       </CommandGroup>
       <CommandGroup heading={t("actions")}>
         <CommandItem onSelect={() => go({ href: `${ROUTES.venues}?create=1` })}>
           <PlusIcon />
           {t("createVenue")}
+        </CommandItem>
+        <CommandItem onSelect={() => go({ href: `${ROUTES.items}?create=1` })}>
+          <PlusIcon />
+          {t("createItem")}
         </CommandItem>
       </CommandGroup>
       <VenueCommandGroup venues={venues} onGo={go} />

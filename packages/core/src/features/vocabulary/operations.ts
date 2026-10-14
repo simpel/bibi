@@ -1,4 +1,4 @@
-import { listVocabularies, getVocabulary } from "./read-operations";
+import { getVocabulary, listVocabularies } from "./read-operations";
 import {
   addVocabularyValue,
   archiveVocabularyValue,

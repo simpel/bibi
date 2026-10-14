@@ -1,6 +1,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { EmbedFn, ExecuteContext } from "@okazi/core";
+import { withOrgDescriptions } from "../tools/org-tool-descriptions";
 import type { McpTool, ToolResult } from "../tools/types";
 import { callTool } from "./call-tool";
 import { createTools } from "./create-tools";
@@ -25,7 +26,9 @@ export function createMcpServer({ context, embed }: CreateMcpServerInput): Serve
   const tools = visibleTools({ tools: createTools({ embed }), context });
   const server = new Server(SERVER_INFO, { capabilities: { tools: {} } });
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: tools.map(({ run: _run, humanOnly: _humanOnly, ...descriptor }) => descriptor),
+    tools: (await withOrgDescriptions({ tools, context })).map(
+      ({ run: _run, humanOnly: _humanOnly, ...descriptor }) => descriptor,
+    ),
   }));
   server.setRequestHandler(
     CallToolRequestSchema,

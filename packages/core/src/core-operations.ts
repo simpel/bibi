@@ -1,12 +1,12 @@
+import { conversationOperations } from "./features/conversation/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
 import { itemOperations } from "./features/item/operations";
-import { conversationOperations } from "./features/conversation/operations";
 import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
 import { roleOperations } from "./features/role/operations";
-import { skillOperations } from "./features/skill/operations";
 import { setupOperations } from "./features/setup/operations";
+import { skillOperations } from "./features/skill/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
 import type { AnyOperation } from "./operations/types";

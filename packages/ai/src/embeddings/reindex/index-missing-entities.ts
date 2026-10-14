@@ -10,7 +10,7 @@ type ListIds = (input: { db: ScopedDbClient }) => Promise<IdRow[]>;
  */
 const ID_LISTERS: Readonly<Record<string, ListIds>> = {
   venue: ({ db }) => db.venue.findMany({ select: { id: true } }),
-  room: ({ db }) => db.room.findMany({ select: { id: true } }),
+  item: ({ db }) => db.item.findMany({ select: { id: true } }),
   conversation: ({ db }) => db.conversation.findMany({ select: { id: true } }),
   skill: ({ db }) =>
     db.skill.findMany({ where: { scope: { not: "SYSTEM" } }, select: { id: true } }),

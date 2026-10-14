@@ -15,7 +15,11 @@ describe("items (ADR 0021)", () => {
   it("stores behaviour data only when the type has the behaviour", async () => {
     const context = testContext();
     const dish = unwrap({
-      result: await execute({ operation: createEntityType, input: { base: "ITEM", name: "Rätt" }, context }),
+      result: await execute({
+        operation: createEntityType,
+        input: { base: "ITEM", name: "Rätt" },
+        context,
+      }),
     });
     const priced = await execute({
       operation: createItem,
@@ -35,7 +39,11 @@ describe("items (ADR 0021)", () => {
     const context = testContext();
     const room = await createRoomType({ context });
     const bio = unwrap({
-      result: await execute({ operation: createSetup, input: { name: "Bio", changeoverMinutes: 15 }, context }),
+      result: await execute({
+        operation: createSetup,
+        input: { name: "Bio", changeoverMinutes: 15 },
+        context,
+      }),
     });
     const mingel = unwrap({
       result: await execute({ operation: createSetup, input: { name: "Mingel" }, context }),
@@ -71,7 +79,13 @@ describe("items (ADR 0021)", () => {
     expect(updated.priceMinor).toBe(450_000);
     const twice = await execute({
       operation: updateItem,
-      input: { id: created.id, setups: [{ setupId: bio.id, capacity: 1 }, { setupId: bio.id, capacity: 2 }] },
+      input: {
+        id: created.id,
+        setups: [
+          { setupId: bio.id, capacity: 1 },
+          { setupId: bio.id, capacity: 2 },
+        ],
+      },
       context,
     });
     expect(errorCode({ result: twice })).toBe("VALIDATION");
@@ -83,7 +97,11 @@ describe("items (ADR 0021)", () => {
       result: await execute({ operation: listItems, input: { behaviour: "COMPOSABLE" }, context }),
     });
     expect(composable.items).toHaveLength(0);
-    const other = await execute({ operation: getItem, input: { id: created.id }, context: testContext() });
+    const other = await execute({
+      operation: getItem,
+      input: { id: created.id },
+      context: testContext(),
+    });
     expect(errorCode({ result: other })).toBe("NOT_FOUND");
   });
 });

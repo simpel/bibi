@@ -19,22 +19,22 @@ describe("permission model", () => {
 
   it("unchecking read clears the resource", () => {
     const next = toggleAction({
-      permissions: { room: ["read", "write"] },
-      resource: "room",
+      permissions: { item: ["read", "write"] },
+      resource: "item",
       action: "read",
       checked: false,
     });
-    expect(next.room).toBeUndefined();
+    expect(next.item).toBeUndefined();
   });
 
   it("unchecking write keeps read", () => {
     const next = toggleAction({
-      permissions: { room: ["read", "write", "admin"] },
-      resource: "room",
+      permissions: { item: ["read", "write", "admin"] },
+      resource: "item",
       action: "write",
       checked: false,
     });
-    expect(hasAction({ permissions: next, resource: "room", action: "read" })).toBe(true);
-    expect(hasAction({ permissions: next, resource: "room", action: "write" })).toBe(false);
+    expect(hasAction({ permissions: next, resource: "item", action: "read" })).toBe(true);
+    expect(hasAction({ permissions: next, resource: "item", action: "write" })).toBe(false);
   });
 });

@@ -111,7 +111,10 @@
   "nav": {
     "dashboard": "Dashboard",
     "venues": "Venues",
-    "rooms": "Rooms",
+    "items": "Items",
+    "types": "Types",
+    "lists": "Lists",
+    "setups": "Setups",
     "bookings": "Bookings",
     "skills": "Skills",
     "settings": "Settings",
@@ -144,14 +147,13 @@
       "openingHours": "Opening hours",
       "defaultVatRatePercent": "VAT (%)"
     },
-    "roomCount": "{count, plural, one {# room} other {# rooms}}",
-    "listDescription": "Buildings and sites with bookable rooms.",
+    "listDescription": "Buildings and sites with items to book.",
     "emptyDescription": "Create your first venue to get started.",
     "archive": "Archive venue",
-    "archiveConfirm": "Do you want to archive {name}? All rooms in the venue are archived too.",
+    "archiveConfirm": "Do you want to archive {name}?",
     "archived": "The venue has been archived.",
     "notFound": "The venue does not exist or is archived.",
-    "createDescription": "Enter details about the venue. You can add rooms afterwards.",
+    "createDescription": "Enter details about the venue. You can add items afterwards.",
     "editDescription": "Change the venue details.",
     "columns": {
       "name": "Name",
@@ -159,46 +161,241 @@
       "contact": "Contact",
       "status": "Status"
     },
-    "roomsHeading": "Rooms"
+    "itemsEmpty": "No items at this venue yet."
   },
-  "room": {
-    "singular": "Room",
-    "plural": "Rooms",
-    "create": "Create room",
-    "edit": "Edit room",
-    "delete": "Delete room",
-    "deleteConfirm": "Do you want to delete the room {name}?",
-    "empty": "No rooms yet.",
-    "created": "The room has been created.",
-    "updated": "The room has been updated.",
+  "item": {
+    "singular": "Item",
+    "plural": "Items",
+    "listDescription": "What you sell and book, e.g. rooms, dishes and equipment. The type decides which fields an item has.",
+    "create": "Create item",
+    "edit": "Edit item",
+    "createDescription": "Pick a type and fill in the details.",
+    "editDescription": "Change the item details.",
+    "archive": "Archive item",
+    "archiveConfirm": "Do you want to archive the item {name}?",
+    "archived": "The item has been archived.",
+    "created": "The item has been created.",
+    "updated": "The item has been updated.",
+    "empty": "No items yet.",
+    "emptyDescription": "Create an item type under Types, then add items.",
+    "noTypes": "There are no item types yet. Create a type first.",
+    "goToTypes": "Go to types",
+    "filterLabel": "Filter by type",
+    "allTypes": "All types",
+    "saving": "Saving item…",
+    "archiving": "Archiving item…",
+    "select": "Select…",
+    "search": "Search…",
+    "noOptions": "No options.",
     "fields": {
+      "type": "Type",
       "name": "Name",
       "description": "Description",
       "venue": "Venue",
-      "capacity": "Capacity",
-      "areaSquareMeters": "Area (sq m)",
-      "floor": "Floor",
-      "ceilingHeightM": "Ceiling height (m)",
-      "hasDaylight": "The room has daylight",
-      "maxCapacity": "Max number of people"
+      "noVenue": "No venue",
+      "price": "Price (SEK)",
+      "priceUnit": "Price unit",
+      "vatRatePercent": "VAT (%)",
+      "defaultDurationMinutes": "Default length (minutes)"
     },
-    "capacityValue": "{count, plural, one {# seat} other {# seats}}",
-    "emptyDescription": "Add rooms that guests can book in this venue.",
-    "archive": "Archive room",
-    "archiveConfirm": "Do you want to archive the room {name}?",
-    "archived": "The room has been archived.",
-    "createDescription": "Describe the room in {venue}.",
-    "editDescription": "Change the room details.",
+    "sections": {
+      "price": "Price",
+      "booking": "Booking",
+      "setups": "Setups"
+    },
+    "setupsHint": "Capacity, max number of people, per setup. Leave empty for setups that are not used.",
+    "noSetups": "There are no setups. Create them under Setups.",
+    "priceUnits": {
+      "PER_PERSON": "per person",
+      "PER_UNIT": "per unit",
+      "PER_HOUR": "per hour",
+      "FLAT": "flat"
+    },
     "columns": {
       "name": "Name",
-      "floor": "Floor",
-      "capacity": "Seats",
-      "area": "Area",
-      "daylight": "Daylight"
+      "type": "Type",
+      "venue": "Venue",
+      "price": "Price"
     },
-    "areaValue": "{value} sqm",
-    "daylightYes": "Yes",
-    "daylightNo": "No"
+    "priceValue": "{amount} SEK {unit}",
+    "durationValue": "{minutes} min",
+    "capacityValue": "{name}: {capacity}"
+  },
+  "entityType": {
+    "singular": "Type",
+    "plural": "Types",
+    "listDescription": "Types decide which fields and behaviours items, customers and bookings have in your organization.",
+    "create": "Create type",
+    "edit": "Edit type",
+    "createDescription": "Choose what the type is for and name it.",
+    "editDescription": "Change the name and behaviours.",
+    "archive": "Archive type",
+    "archiveConfirm": "Do you want to archive the type {name}? This is refused while it is in use.",
+    "archived": "The type has been archived.",
+    "created": "The type has been created.",
+    "updated": "The type has been updated.",
+    "empty": "No types yet.",
+    "emptyDescription": "Create a type, e.g. Conference room or Dish, and add its fields.",
+    "saving": "Saving type…",
+    "archiving": "Archiving type…",
+    "fieldCount": "{count, plural, one {# field} other {# fields}}",
+    "noBehaviours": "No behaviours",
+    "behavioursHeading": "Behaviours",
+    "behavioursHint": "Behaviours switch on general features for items of the type. A behaviour cannot be switched off while items have data for it.",
+    "requires": "Requires {behaviour}.",
+    "fieldsHeading": "Fields",
+    "fields": {
+      "base": "Applies to",
+      "name": "Name",
+      "behaviours": "Behaviours"
+    },
+    "columns": {
+      "name": "Name",
+      "behaviours": "Behaviours",
+      "fields": "Fields"
+    },
+    "bases": {
+      "ITEM": "Items",
+      "CUSTOMER": "Customers",
+      "CONTACT": "Contacts",
+      "INQUIRY": "Inquiries",
+      "BOOKING": "Bookings",
+      "REQUIREMENT": "Requirements"
+    },
+    "behaviours": {
+      "PRICED": "Priced",
+      "COMPOSABLE": "Composable",
+      "CHOICES": "Choice groups",
+      "BOOKABLE": "Bookable",
+      "SETUPS": "Setups"
+    },
+    "behaviourHints": {
+      "PRICED": "Price, price unit and VAT.",
+      "COMPOSABLE": "Contains other items.",
+      "CHOICES": "Choice groups among the parts.",
+      "BOOKABLE": "Occupies time and has a default length.",
+      "SETUPS": "Capacity per setup."
+    }
+  },
+  "fieldDefinition": {
+    "singular": "Field",
+    "plural": "Fields",
+    "create": "Add field",
+    "edit": "Edit field",
+    "createDescription": "The field appears on every record of the type.",
+    "editDescription": "Change the field. The value type cannot change once there are values.",
+    "archive": "Archive field",
+    "archiveConfirm": "Do you want to archive the field {name}?",
+    "archived": "The field has been archived.",
+    "created": "The field has been added.",
+    "updated": "The field has been updated.",
+    "empty": "No fields yet.",
+    "saving": "Saving field…",
+    "archiving": "Archiving field…",
+    "reordering": "Moving field…",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "selectList": "Select a list",
+    "noLists": "There are no lists. Create one under Lists.",
+    "listSource": "List: {name}",
+    "optionsSource": "{count, plural, one {# option} other {# options}}",
+    "fields": {
+      "name": "Name",
+      "kind": "Value type",
+      "required": "Required",
+      "source": "Options come from",
+      "vocabulary": "List",
+      "options": "Options (one per line)"
+    },
+    "sources": {
+      "list": "A list",
+      "options": "Own options"
+    },
+    "columns": {
+      "name": "Name",
+      "kind": "Value type",
+      "required": "Required",
+      "source": "Options"
+    },
+    "kinds": {
+      "TEXT": "Text",
+      "NUMBER": "Number",
+      "BOOLEAN": "Yes/no",
+      "DATE": "Date",
+      "CHOICE": "Choice",
+      "MULTI_CHOICE": "Multiple choice"
+    }
+  },
+  "vocabulary": {
+    "singular": "List",
+    "plural": "Lists",
+    "listDescription": "Your own word lists, e.g. allergens or dress code, that fields and requirements point to.",
+    "create": "Create list",
+    "edit": "Rename",
+    "createDescription": "Name the list and optionally add the first values.",
+    "editDescription": "Change the name of the list.",
+    "archive": "Archive list",
+    "archiveConfirm": "Do you want to archive the list {name}? This is refused while a field uses it.",
+    "archived": "The list has been archived.",
+    "created": "The list has been created.",
+    "updated": "The list has been updated.",
+    "empty": "No lists yet.",
+    "emptyDescription": "Create a list or import the EU's 14 allergens.",
+    "saving": "Saving list…",
+    "archiving": "Archiving list…",
+    "importTemplate": "Import the EU's 14 allergens",
+    "importing": "Importing list…",
+    "imported": "The list {name} has been created.",
+    "valueCount": "{count, plural, one {# value} other {# values}}",
+    "fields": {
+      "name": "Name",
+      "values": "Values (one per line)"
+    },
+    "columns": {
+      "name": "Name",
+      "values": "Values"
+    },
+    "value": {
+      "heading": "List values",
+      "add": "Add value",
+      "edit": "Rename value",
+      "archive": "Archive value",
+      "archiveConfirm": "Do you want to archive the value {name}?",
+      "archived": "The value has been archived.",
+      "created": "The value has been added.",
+      "updated": "The value has been updated.",
+      "empty": "No values yet.",
+      "name": "Value",
+      "saving": "Saving value…",
+      "archiving": "Archiving value…"
+    }
+  },
+  "setup": {
+    "singular": "Setup",
+    "plural": "Setups",
+    "listDescription": "How a space can be set up, e.g. Cinema, U-shape or Mingle, and how long the changeover takes.",
+    "create": "Create setup",
+    "edit": "Edit setup",
+    "createDescription": "Name the setup and enter the changeover time.",
+    "editDescription": "Change the name and changeover time.",
+    "archive": "Archive setup",
+    "archiveConfirm": "Do you want to archive the setup {name}?",
+    "archived": "The setup has been archived.",
+    "created": "The setup has been created.",
+    "updated": "The setup has been updated.",
+    "empty": "No setups yet.",
+    "emptyDescription": "Create setups such as Cinema, U-shape and Mingle.",
+    "saving": "Saving setup…",
+    "archiving": "Archiving setup…",
+    "changeoverValue": "{minutes} min",
+    "fields": {
+      "name": "Name",
+      "changeoverMinutes": "Changeover time (minutes)"
+    },
+    "columns": {
+      "name": "Name",
+      "changeover": "Changeover"
+    }
   },
   "assistant": {
     "title": "Assistant",
@@ -232,11 +429,24 @@
         "openingHours": "Opening hours",
         "defaultVatRatePercent": "VAT (%)",
         "venueId": "Venue (id)",
-        "floor": "Floor",
-        "areaSqm": "Area (sqm)",
-        "ceilingHeightM": "Ceiling height (m)",
-        "hasDaylight": "Daylight",
-        "maxCapacity": "Max people",
+        "entityTypeId": "Type (id)",
+        "base": "Base",
+        "behaviours": "Behaviours",
+        "fields": "Fields",
+        "priceMinor": "Price (minor units)",
+        "priceUnit": "Price unit",
+        "vatRatePercent": "VAT (%)",
+        "defaultDurationMinutes": "Default duration (min)",
+        "setups": "Setups",
+        "changeoverMinutes": "Changeover (min)",
+        "key": "Key",
+        "kind": "Field kind",
+        "required": "Required",
+        "vocabularyId": "List (id)",
+        "options": "Options",
+        "position": "Position",
+        "values": "List values",
+        "template": "Template",
         "slug": "Slug",
         "instructions": "Instructions",
         "allowedTools": "Allowed tools",
@@ -250,9 +460,25 @@
         "venue_create": "Create venue",
         "venue_update": "Update venue",
         "venue_archive": "Archive venue",
-        "room_create": "Create room",
-        "room_update": "Update room",
-        "room_archive": "Archive room",
+        "item_create": "Create item",
+        "item_update": "Update item",
+        "item_archive": "Archive item",
+        "entityType_create": "Create type",
+        "entityType_update": "Update type",
+        "entityType_archive": "Archive type",
+        "fieldDefinition_create": "Create field",
+        "fieldDefinition_update": "Update field",
+        "fieldDefinition_archive": "Archive field",
+        "vocabulary_create": "Create list",
+        "vocabulary_update": "Update list",
+        "vocabulary_archive": "Archive list",
+        "vocabulary_importTemplate": "Import list template",
+        "vocabulary_addValue": "Add list value",
+        "vocabulary_updateValue": "Update list value",
+        "vocabulary_archiveValue": "Archive list value",
+        "setup_create": "Create setup",
+        "setup_update": "Update setup",
+        "setup_archive": "Archive setup",
         "skill_create": "Create skill",
         "skill_update": "Update skill",
         "skill_publish": "Publish skill",
@@ -262,7 +488,7 @@
         "conversation_archive": "Archive conversation"
       }
     },
-    "description": "Chat with the assistant about venues, rooms and skills.",
+    "description": "Chat with the assistant about venues, items and skills.",
     "stop": "Stop",
     "backToChat": "Back to the chat",
     "emptyTitle": "What can I help you with?",
@@ -273,7 +499,7 @@
     "suggestions": {
       "listVenues": "Show all venues",
       "createVenue": "Create a venue called Test Hall",
-      "findRooms": "Find rooms that fit 50 people",
+      "findItems": "Find bookable items that fit 50 people",
       "listSkills": "Which skills are available?"
     },
     "history": {
@@ -294,7 +520,72 @@
       "open": "Open",
       "openVenue": "Open the venue",
       "more": "There are more results. Ask the assistant to show more.",
-      "noHits": "No results."
+      "noHits": "No results.",
+      "item": {
+        "singular": "Item",
+        "empty": "No items found.",
+        "open": "Open the item",
+        "columns": { "name": "Name", "price": "Price", "setups": "Setups" },
+        "priceUnit": {
+          "PER_PERSON": "per person",
+          "PER_UNIT": "per unit",
+          "PER_HOUR": "per hour",
+          "FLAT": "flat rate"
+        },
+        "duration": "{minutes} min",
+        "setupsCount": "{count, plural, one {# setup} other {# setups}}"
+      },
+      "entityType": {
+        "empty": "No types found.",
+        "open": "Open the type",
+        "noFields": "The type has no fields.",
+        "columns": { "name": "Name", "base": "Base", "behaviours": "Behaviours", "fields": "Fields" },
+        "base": {
+          "ITEM": "Item",
+          "CUSTOMER": "Customer",
+          "CONTACT": "Contact",
+          "INQUIRY": "Inquiry",
+          "BOOKING": "Booking",
+          "REQUIREMENT": "Requirement"
+        },
+        "behaviour": {
+          "PRICED": "Priced",
+          "COMPOSABLE": "Composable",
+          "CHOICES": "Choices",
+          "BOOKABLE": "Bookable",
+          "SETUPS": "Setups"
+        }
+      },
+      "field": {
+        "empty": "No fields found.",
+        "required": "Required",
+        "yes": "Yes",
+        "key": "Key: {key}",
+        "openList": "Open the list",
+        "openType": "Open the type",
+        "columns": { "name": "Name", "kind": "Field kind", "required": "Required" },
+        "kind": {
+          "TEXT": "Text",
+          "NUMBER": "Number",
+          "BOOLEAN": "Yes/no",
+          "DATE": "Date",
+          "CHOICE": "Choice",
+          "MULTI_CHOICE": "Multiple choice"
+        }
+      },
+      "vocabulary": {
+        "empty": "No lists found.",
+        "open": "Open the list",
+        "valuesCount": "{count, plural, one {# value} other {# values}}",
+        "columns": { "name": "Name", "values": "List values" }
+      },
+      "setup": {
+        "singular": "Setup",
+        "empty": "No setups found.",
+        "open": "Open setups",
+        "changeover": "Changeover {minutes} min",
+        "columns": { "name": "Name", "changeover": "Changeover" }
+      }
     }
   },
   "skills": {
@@ -374,7 +665,7 @@
     }
   },
   "search": {
-    "placeholder": "Search venues, rooms and more...",
+    "placeholder": "Search venues, items and more...",
     "noResults": "No results for \"{query}\".",
     "results": "{count, plural, one {# result} other {# results}}",
     "searching": "Searching...",
@@ -383,7 +674,7 @@
     "clear": "Clear search",
     "entity": {
       "venue": "Venue",
-      "room": "Room"
+      "item": "Item"
     },
     "error": "The search failed."
   },
@@ -440,7 +731,8 @@
     "goToVenues": "Go to venues",
     "createVenue": "Create venue",
     "openVenue": "Open {name}",
-    "addRoomTo": "Add a room to {name}",
+    "goToItems": "Go to items",
+    "createItem": "Create item",
     "assistant": "Assistant",
     "askAssistant": "Ask the assistant: “{query}”",
     "openAssistant": "Open the assistant"
@@ -517,7 +809,7 @@
         },
         "searchEmbedding": {
           "name": "Semantic search",
-          "description": "The embedding model that indexes and searches venues, rooms, conversations and skills."
+          "description": "The embedding model that indexes and searches venues, items, conversations and skills."
         }
       },
       "notInCatalog": "The chosen model is no longer possible for this feature. Choose a new one.",
@@ -583,7 +875,8 @@
     },
     "resources": {
       "venue": "Venues",
-      "room": "Rooms",
+      "item": "Items",
+      "configuration": "Configuration (types, fields, lists, setups)",
       "search": "Search",
       "conversation": "Conversations",
       "skill": "Skills",

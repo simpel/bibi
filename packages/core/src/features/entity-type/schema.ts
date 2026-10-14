@@ -2,11 +2,7 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldDefinitionSchema } from "../field-definition/schema";
-import {
-  EntityBaseSchema,
-  ItemBehaviourSchema,
-  ItemBehavioursSchema,
-} from "./behaviour-kinds";
+import { EntityBaseSchema, ItemBehaviourSchema, ItemBehavioursSchema } from "./behaviour-kinds";
 
 export const EntityTypeSchema = z.object({
   id: z.string(),

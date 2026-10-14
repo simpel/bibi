@@ -1,8 +1,8 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { conflict, notFound } from "../../shared/errors";
-import { countItemsWithValue } from "./field-usage";
 import { checkChoiceSource, checkFieldChange } from "./field-rules";
+import { countItemsWithValue } from "./field-usage";
 import { insertField } from "./insert-field";
 import {
   FieldDefinitionCreateInputSchema,
@@ -44,7 +44,8 @@ export const updateFieldDefinition = defineOperation({
     const named = data.name
       ? await context.db.fieldDefinition.findFirst({ where: { entityTypeId, name: data.name } })
       : null;
-    if (named && named.id !== id) return conflict({ message: `The type has a field "${data.name}"` });
+    if (named && named.id !== id)
+      return conflict({ message: `The type has a field "${data.name}"` });
     const field = await context.db.fieldDefinition.update({ where: { id }, data });
     context.recordChange({ entityId: id, before, after: field });
     return ok({ value: field });

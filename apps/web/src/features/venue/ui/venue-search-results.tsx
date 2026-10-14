@@ -4,9 +4,8 @@ import { Link } from "@okazi/i18n/navigation";
 import { Badge, Card, Skeleton } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { InlineLoadError } from "@/components/states/inline-load-error";
-import type { SearchHitView } from "@/features/search/search-hit-view";
+import { hitRoute, type SearchHitView } from "@/features/search/search-hit-view";
 import type { ErrorKey } from "@/lib/error-key";
-import { venueRoute } from "@/lib/routes";
 
 export type VenueSearchResultsProps = {
   hits: SearchHitView[] | null;
@@ -31,7 +30,7 @@ export function VenueSearchResults({ hits, pending, errorKey, query }: VenueSear
       {hits.map((hit) => (
         <Link
           key={`${hit.entityType}-${hit.entityId}`}
-          href={venueRoute({ id: hit.venueId })}
+          href={hitRoute(hit)}
           className="flex items-center justify-between gap-4 px-4 py-3 hover:bg-accent"
         >
           <span className="grid">

@@ -1,17 +1,39 @@
 import { expect, test } from "@playwright/test";
-import { addRoom, createOrganization, createVenue, signUp, uniqueCredentials } from "./steps";
+import {
+  addItem,
+  createItemType,
+  createOrganization,
+  createVenue,
+  signUp,
+  uniqueCredentials,
+} from "./steps";
 
 const VENUE = "Herrgården Solvik";
 
-test("sign up, create org, venue and room, search, switch locale, archive", async ({ page }) => {
+test("sign up, create org, venue, type and item, search, switch locale, archive", async ({
+  page,
+}) => {
   await signUp({ page, credentials: uniqueCredentials() });
   await createOrganization({ page, name: "E2E Konferens AB" });
 
   await createVenue({ page, name: VENUE, city: "Göteborg" });
   await page.getByRole("link", { name: VENUE }).click();
   await expect(page.getByRole("heading", { name: VENUE })).toBeVisible();
-  await expect(page.getByText("Inga rum ännu.")).toBeVisible();
-  await addRoom({ page, name: "Stora salongen", capacity: "40" });
+  await expect(page.getByText("Inga artiklar på den här anläggningen ännu.")).toBeVisible();
+
+  await createItemType({ page, name: "Konferensrum", numberField: "Max antal personer" });
+  const item = "Stora salongen";
+  await addItem({
+    page,
+    type: "Konferensrum",
+    name: item,
+    numberField: "Max antal personer",
+    value: "40",
+    venue: VENUE,
+  });
+  await page.goto("/sv/venues");
+  await page.getByRole("link", { name: VENUE }).click();
+  await expect(page.getByRole("link", { name: item })).toBeVisible();
 
   await page.getByRole("link", { name: "Tillbaka" }).click();
   await page.getByRole("searchbox", { name: "Semantisk sökning" }).fill("Solvik");

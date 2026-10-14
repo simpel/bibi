@@ -24,7 +24,12 @@ export const createItem = defineOperation({
   handler: async ({ input: { entityTypeId, fields, setups, ...data }, context }) => {
     const type = await loadItemType({ context, entityTypeId });
     if (!type.ok) return type;
-    const checked = await checkItem({ context, type: type.value, data: { ...data, setups }, fields: fields ?? {} });
+    const checked = await checkItem({
+      context,
+      type: type.value,
+      data: { ...data, setups },
+      fields: fields ?? {},
+    });
     if (!checked.ok) return checked;
     const row = await context.db.item.create({
       data: {
@@ -59,10 +64,18 @@ export const updateItem = defineOperation({
     const type = await loadItemType({ context, entityTypeId: before.entityTypeId });
     if (!type.ok) return type;
     const fields = patch ? mergeFields({ before: before.fields, patch }) : undefined;
-    const checked = await checkItem({ context, type: type.value, data: { ...data, setups }, fields });
+    const checked = await checkItem({
+      context,
+      type: type.value,
+      data: { ...data, setups },
+      fields,
+    });
     if (!checked.ok) return checked;
     const json = checked.value ? toJson({ value: checked.value }) : undefined;
-    await context.db.item.update({ where: { id }, data: { ...data, ...(json ? { fields: json } : {}) } });
+    await context.db.item.update({
+      where: { id },
+      data: { ...data, ...(json ? { fields: json } : {}) },
+    });
     if (setups) await replaceSetups({ context, itemId: id, setups });
     const item = await loadItem({ context, id });
     if (!item) return notFound({ entity: "Item" });

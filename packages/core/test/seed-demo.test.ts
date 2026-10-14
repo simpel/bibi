@@ -1,8 +1,8 @@
 import { getDb } from "@okazi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
-import { lindholmen } from "../src/seed/demo/data/lindholmen";
-import { vingaleden } from "../src/seed/demo/data/vingaleden";
+import { lindholmen } from "../src/seed/demo/data/lindholmen/lindholmen";
+import { vingaleden } from "../src/seed/demo/data/vingaleden/vingaleden";
 import { seedDemo } from "../src/seed/demo/seed-demo";
 
 /** Same data as the real demo, under unique slugs so parallel runs and dev data never clash. */
@@ -11,7 +11,7 @@ const testOrgs = () => {
   return [lindholmen, vingaleden].map((org) => ({ ...org, slug: `${org.slug}-${suffix}` }));
 };
 
-describe("seed:demo slice 1 (ADR 0025)", () => {
+describe("seed:demo slices 1–2 (ADR 0025)", () => {
   it("creates both orgs with roles and members, passes its checks and is idempotent", async () => {
     const orgs = testOrgs();
     const first = await seedDemo({ orgs });
@@ -32,5 +32,18 @@ describe("seed:demo slice 1 (ADR 0025)", () => {
       where: { organizationId: vinga?.organizationId, role: "Kök" },
     });
     expect(vingaKitchen).toBe(0);
+    const items = ({ organizationId }: { organizationId?: string }) =>
+      db.item.count({ where: { organizationId, status: "ACTIVE" } });
+    expect(await items({ organizationId: lind?.organizationId })).toBe(10);
+    expect(await items({ organizationId: vinga?.organizationId })).toBe(3);
+    const vinga220 = await db.itemSetup.findFirst({
+      where: { organizationId: lind?.organizationId, capacity: 220, setup: { name: "Bio" } },
+      include: { item: true },
+    });
+    expect(vinga220?.item).toMatchObject({ name: "Vinga (aula)", priceMinor: 450_000 });
+    const allergens = await db.vocabulary.count({
+      where: { organizationId: vinga?.organizationId, name: "Allergener" },
+    });
+    expect(allergens).toBe(0);
   });
 });

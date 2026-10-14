@@ -41,6 +41,8 @@ export const getEntityType = defineOperation({
   permission: "configuration:read",
   handler: async ({ input, context }) => {
     const row = await context.db.entityType.findFirst({ where: { id: input.id } });
-    return row ? ok({ value: await toEntityTypeDto({ context, row }) }) : notFound({ entity: "Type" });
+    return row
+      ? ok({ value: await toEntityTypeDto({ context, row }) })
+      : notFound({ entity: "Type" });
   },
 });

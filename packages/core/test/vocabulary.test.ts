@@ -18,7 +18,9 @@ describe("vocabularies (ADR 0021)", () => {
   it("imports EU's 14 allergens as an ordinary list, once", async () => {
     const context = testContext();
     const input = { template: "eu-14-allergens" as const };
-    const list = unwrap({ result: await execute({ operation: importVocabularyTemplate, input, context }) });
+    const list = unwrap({
+      result: await execute({ operation: importVocabularyTemplate, input, context }),
+    });
     expect(list.name).toBe("Allergener");
     expect(list.values).toHaveLength(14);
     expect(list.values[0]?.name).toBe("Gluten");
@@ -40,9 +42,15 @@ describe("vocabularies (ADR 0021)", () => {
     unwrap({
       result: await execute({ operation: createVocabulary, input: { name: "Kost" }, context }),
     });
-    const listed = unwrap({ result: await execute({ operation: listVocabularies, input: {}, context: reader }) });
+    const listed = unwrap({
+      result: await execute({ operation: listVocabularies, input: {}, context: reader }),
+    });
     expect(listed.items.map((item) => item.name)).toEqual(["Kost"]);
-    const denied = await execute({ operation: createVocabulary, input: { name: "X" }, context: reader });
+    const denied = await execute({
+      operation: createVocabulary,
+      input: { name: "X" },
+      context: reader,
+    });
     expect(errorCode({ result: denied })).toBe("FORBIDDEN");
   });
 
@@ -61,23 +69,48 @@ describe("vocabularies (ADR 0021)", () => {
     unwrap({
       result: await execute({
         operation: createFieldDefinition,
-        input: { entityTypeId: type.id, name: "Utsikt", kind: "MULTI_CHOICE", vocabularyId: list.id },
+        input: {
+          entityTypeId: type.id,
+          name: "Utsikt",
+          kind: "MULTI_CHOICE",
+          vocabularyId: list.id,
+        },
         context,
       }),
     });
     const item = await createTestItem({ context, entityTypeId: type.id, name: "Hönö" });
-    await execute({ operation: updateItem, input: { id: item.id, fields: { utsikt: [alven.id] } }, context });
-    const used = await execute({ operation: archiveVocabularyValue, input: { id: alven.id }, context });
+    await execute({
+      operation: updateItem,
+      input: { id: item.id, fields: { utsikt: [alven.id] } },
+      context,
+    });
+    const used = await execute({
+      operation: archiveVocabularyValue,
+      input: { id: alven.id },
+      context,
+    });
     expect(errorCode({ result: used })).toBe("CONFLICT");
     const unused = unwrap({
-      result: await execute({ operation: archiveVocabularyValue, input: { id: ingen.id }, context }),
+      result: await execute({
+        operation: archiveVocabularyValue,
+        input: { id: ingen.id },
+        context,
+      }),
     });
     expect(unused.values.map((value) => value.name)).toEqual(["Älven"]);
     const renamed = unwrap({
-      result: await execute({ operation: updateVocabularyValue, input: { id: alven.id, name: "Göta älv" }, context }),
+      result: await execute({
+        operation: updateVocabularyValue,
+        input: { id: alven.id, name: "Göta älv" },
+        context,
+      }),
     });
     expect(renamed.values[0]?.name).toBe("Göta älv");
-    const archiveList = await execute({ operation: archiveVocabulary, input: { id: list.id }, context });
+    const archiveList = await execute({
+      operation: archiveVocabulary,
+      input: { id: list.id },
+      context,
+    });
     expect(errorCode({ result: archiveList })).toBe("CONFLICT");
   });
 });

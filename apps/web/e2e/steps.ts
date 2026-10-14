@@ -40,16 +40,46 @@ export async function createVenue({
   await expect(page.getByRole("link", { name })).toBeVisible();
 }
 
-export async function addRoom({
+/** Creates an item type with the "Bokningsbar" behaviour and one number field on its page. */
+export async function createItemType({
   page,
   name,
-  capacity,
-}: PageInput & { name: string; capacity: string }) {
-  await page.getByRole("button", { name: "Skapa rum" }).first().click();
+  numberField,
+}: PageInput & { name: string; numberField: string }) {
+  await page.goto("/sv/settings/types");
+  await page.getByRole("button", { name: "Skapa typ" }).first().click();
   await page.getByLabel("Namn").fill(name);
-  await page.getByLabel("Max antal personer").fill(capacity);
+  await page.getByRole("checkbox", { name: "Bokningsbar" }).click();
   await page.getByRole("button", { name: "Spara" }).click();
-  await expect(page.getByRole("cell", { name })).toBeVisible();
+  await page.getByRole("link", { name }).click();
+  await page.getByRole("button", { name: "Lägg till fält" }).click();
+  await page.getByRole("dialog").getByLabel("Namn").fill(numberField);
+  await page.getByRole("dialog").getByLabel("Värdetyp").click();
+  await page.getByRole("option", { name: "Tal" }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Spara" }).click();
+  await expect(page.getByRole("cell", { name: numberField })).toBeVisible();
+}
+
+/** Creates an item of a type (with its number field) at a venue, from the catalog. */
+export async function addItem({
+  page,
+  type,
+  name,
+  numberField,
+  value,
+  venue,
+}: PageInput & { type: string; name: string; numberField: string; value: string; venue: string }) {
+  await page.goto("/sv/items");
+  await page.getByRole("button", { name: "Skapa artikel" }).first().click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByLabel("Typ", { exact: true }).click();
+  await page.getByRole("option", { name: type }).click();
+  await dialog.getByLabel("Namn").fill(name);
+  await dialog.getByLabel(numberField).fill(value);
+  await dialog.getByLabel("Anläggning").click();
+  await page.getByRole("option", { name: venue }).click();
+  await dialog.getByRole("button", { name: "Spara" }).click();
+  await expect(page.getByRole("link", { name })).toBeVisible();
 }
 
 export const PANEL = '[data-slot="assistant-panel"]';

@@ -8,7 +8,7 @@ const REQUIRED_NAMESPACES = [
   "auth",
   "nav",
   "venue",
-  "room",
+  "item",
   "assistant",
   "skills",
   "search",

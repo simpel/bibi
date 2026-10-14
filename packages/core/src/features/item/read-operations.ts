@@ -3,12 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import {
-  ItemIdInputSchema,
-  ItemListInputSchema,
-  ItemListOutputSchema,
-  ItemSchema,
-} from "./schema";
+import { ItemIdInputSchema, ItemListInputSchema, ItemListOutputSchema, ItemSchema } from "./schema";
 import { loadItem, toItemDtos } from "./to-item-dto";
 
 export const listItems = defineOperation({

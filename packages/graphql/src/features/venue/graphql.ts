@@ -15,7 +15,7 @@ export const VenueRef = objectFromSchema<VenueDto>({
   name: "Venue",
   schema: VenueSchema,
   omit: ["organizationId"],
-  description: "Anläggning – a building or site containing bookable rooms.",
+  description: "Anläggning – a building or site containing bookable items.",
 });
 const VenuePageRef = pageType({ name: "VenuePage", item: VenueRef });
 

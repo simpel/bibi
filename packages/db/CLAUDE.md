@@ -17,7 +17,7 @@ Prisma 7 (`prisma-client`-generatorn, driver adapter `@prisma/adapter-pg`) mot P
   - `GLOBAL_READ_MODELS` (Skill): läsningar ser org-rader **plus** globala rader (`organizationId` null = SYSTEM-skills) via ett `AND: [{ OR: [{ organizationId }, { organizationId: null }] }]` ovanpå anroparens `where`. Skrivningar är fortsatt låsta till org, så SYSTEM-rader kan aldrig skapas/ändras/raderas via `scopedDb` (bara via den dedikerade seedern i core med `getDb()`).
   - Per-användarregler (privata konversationer, personliga skills) ligger i core, inte i klienten: `scopedDb` känner bara till organisationen.
   - `AuditLog` och `Message` är append-only. `$queryRaw`/`$executeRaw` är dolda; sök/index går via `$searchEmbeddings`, `$upsertEmbedding`, `$deleteEmbedding`.
-  - Relationer inom org säkras även i databasen med sammansatt FK (`Room(venueId, organizationId) → Venue(id, organizationId)`). Gör likadant för nya relationer.
+  - Relationer inom org säkras även i databasen med sammansatt FK (`Item(venueId, organizationId) → Venue(id, organizationId)`). Gör likadant för nya relationer.
   - Skrivningar: använd skalära FK-fält (`venueId`), inte `connect`, eftersom `organizationId` sätts som skalärt fält.
   - Nästlade `include` filtrerar inte bort arkiverade barn – filtrera explicit.
 - Undantag från `scopedDb`: plattformskod (core `platform/`, ADR 0015) och dess tabeller `SystemLog` och `AiSetting` (`platform.prisma`). De är inte org-scopade och `scopedDb` vägrar dem. `PLATFORM_SCOPE` (`__platform__`) är `AuditLog.organizationId` för plattformskommandon och reserverat i `scopedDb`.

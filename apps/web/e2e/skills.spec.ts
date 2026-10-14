@@ -17,7 +17,7 @@ test("create a personal skill, export it and import it back", async ({ page }) =
   await page
     .getByLabel(/^Instruktioner \(markdown\)/)
     .fill("## Steg\n\n1. Lista **anläggningar**\n2. Visa rum");
-  await page.getByLabel("Tillåtna verktyg").fill("venue_list room_list");
+  await page.getByLabel("Tillåtna verktyg").fill("venue_list item_list");
   await page.getByRole("button", { name: "Lägg till resurs" }).click();
   await page.getByLabel("Resursens namn").fill("checklista.md");
   await page.getByLabel("Innehåll").fill("- nycklar");
@@ -78,7 +78,7 @@ test("edit, publish, filter and archive a skill; English strings", async ({ page
   await page.getByRole("button", { name: "Search", exact: true }).click();
   await expect(page).toHaveURL(/q=Greeting/);
   await expect(page.getByRole("link", { name: "Greeting" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Create venue with rooms" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Create venue with items" })).toHaveCount(0);
 
   await page.getByRole("link", { name: "Greeting" }).click();
   await page.getByRole("button", { name: "Archive skill" }).click();

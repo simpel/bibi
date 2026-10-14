@@ -111,7 +111,10 @@
   "nav": {
     "dashboard": "Översikt",
     "venues": "Anläggningar",
-    "rooms": "Rum",
+    "items": "Artiklar",
+    "types": "Typer",
+    "lists": "Listor",
+    "setups": "Uppställningar",
     "bookings": "Bokningar",
     "skills": "Färdigheter",
     "settings": "Inställningar",
@@ -144,14 +147,13 @@
       "openingHours": "Öppettider",
       "defaultVatRatePercent": "Moms (%)"
     },
-    "roomCount": "{count, plural, one {# rum} other {# rum}}",
-    "listDescription": "Byggnader och platser med bokningsbara rum.",
+    "listDescription": "Byggnader och platser med artiklar att boka.",
     "emptyDescription": "Skapa din första anläggning för att komma igång.",
     "archive": "Arkivera anläggning",
-    "archiveConfirm": "Vill du arkivera {name}? Alla rum i anläggningen arkiveras också.",
+    "archiveConfirm": "Vill du arkivera {name}?",
     "archived": "Anläggningen har arkiverats.",
     "notFound": "Anläggningen finns inte eller är arkiverad.",
-    "createDescription": "Fyll i uppgifter om anläggningen. Du kan lägga till rum efteråt.",
+    "createDescription": "Fyll i uppgifter om anläggningen. Du kan lägga till artiklar efteråt.",
     "editDescription": "Ändra uppgifterna för anläggningen.",
     "columns": {
       "name": "Namn",
@@ -159,46 +161,241 @@
       "contact": "Kontakt",
       "status": "Status"
     },
-    "roomsHeading": "Rum"
+    "itemsEmpty": "Inga artiklar på den här anläggningen ännu."
   },
-  "room": {
-    "singular": "Rum",
-    "plural": "Rum",
-    "create": "Skapa rum",
-    "edit": "Redigera rum",
-    "delete": "Ta bort rum",
-    "deleteConfirm": "Vill du ta bort rummet {name}?",
-    "empty": "Inga rum ännu.",
-    "created": "Rummet har skapats.",
-    "updated": "Rummet har uppdaterats.",
+  "item": {
+    "singular": "Artikel",
+    "plural": "Artiklar",
+    "listDescription": "Det ni säljer och bokar, t.ex. rum, rätter och utrustning. Typen bestämmer vilka fält en artikel har.",
+    "create": "Skapa artikel",
+    "edit": "Redigera artikel",
+    "createDescription": "Välj typ och fyll i uppgifterna.",
+    "editDescription": "Ändra uppgifterna för artikeln.",
+    "archive": "Arkivera artikel",
+    "archiveConfirm": "Vill du arkivera artikeln {name}?",
+    "archived": "Artikeln har arkiverats.",
+    "created": "Artikeln har skapats.",
+    "updated": "Artikeln har uppdaterats.",
+    "empty": "Inga artiklar ännu.",
+    "emptyDescription": "Skapa en artikeltyp under Typer och lägg sedan till artiklar.",
+    "noTypes": "Det finns inga artikeltyper ännu. Skapa en typ först.",
+    "goToTypes": "Gå till typer",
+    "filterLabel": "Filtrera på typ",
+    "allTypes": "Alla typer",
+    "saving": "Sparar artikel…",
+    "archiving": "Arkiverar artikel…",
+    "select": "Välj…",
+    "search": "Sök…",
+    "noOptions": "Inga alternativ.",
     "fields": {
+      "type": "Typ",
       "name": "Namn",
       "description": "Beskrivning",
       "venue": "Anläggning",
-      "capacity": "Antal platser",
-      "areaSquareMeters": "Yta (kvm)",
-      "floor": "Våning",
-      "ceilingHeightM": "Takhöjd (m)",
-      "hasDaylight": "Rummet har dagsljus",
-      "maxCapacity": "Max antal personer"
+      "noVenue": "Ingen anläggning",
+      "price": "Pris (kr)",
+      "priceUnit": "Prisenhet",
+      "vatRatePercent": "Moms (%)",
+      "defaultDurationMinutes": "Standardlängd (minuter)"
     },
-    "capacityValue": "{count, plural, one {# plats} other {# platser}}",
-    "emptyDescription": "Lägg till rum som gäster kan boka i den här anläggningen.",
-    "archive": "Arkivera rum",
-    "archiveConfirm": "Vill du arkivera rummet {name}?",
-    "archived": "Rummet har arkiverats.",
-    "createDescription": "Beskriv rummet i {venue}.",
-    "editDescription": "Ändra uppgifterna för rummet.",
+    "sections": {
+      "price": "Pris",
+      "booking": "Bokning",
+      "setups": "Uppställningar"
+    },
+    "setupsHint": "Kapacitet, max antal personer, per uppställning. Lämna tomt för uppställningar som inte används.",
+    "noSetups": "Det finns inga uppställningar. Skapa dem under Uppställningar.",
+    "priceUnits": {
+      "PER_PERSON": "per person",
+      "PER_UNIT": "per enhet",
+      "PER_HOUR": "per timme",
+      "FLAT": "fast pris"
+    },
     "columns": {
       "name": "Namn",
-      "floor": "Våning",
-      "capacity": "Platser",
-      "area": "Yta",
-      "daylight": "Dagsljus"
+      "type": "Typ",
+      "venue": "Anläggning",
+      "price": "Pris"
     },
-    "areaValue": "{value} kvm",
-    "daylightYes": "Ja",
-    "daylightNo": "Nej"
+    "priceValue": "{amount} kr {unit}",
+    "durationValue": "{minutes} min",
+    "capacityValue": "{name}: {capacity}"
+  },
+  "entityType": {
+    "singular": "Typ",
+    "plural": "Typer",
+    "listDescription": "Typerna bestämmer vilka fält och beteenden artiklar, kunder och bokningar har i er organisation.",
+    "create": "Skapa typ",
+    "edit": "Redigera typ",
+    "createDescription": "Välj vad typen gäller och namnge den.",
+    "editDescription": "Ändra namn och beteenden.",
+    "archive": "Arkivera typ",
+    "archiveConfirm": "Vill du arkivera typen {name}? Det går inte så länge den används.",
+    "archived": "Typen har arkiverats.",
+    "created": "Typen har skapats.",
+    "updated": "Typen har uppdaterats.",
+    "empty": "Inga typer ännu.",
+    "emptyDescription": "Skapa en typ, t.ex. Konferensrum eller Rätt, och lägg till dess fält.",
+    "saving": "Sparar typ…",
+    "archiving": "Arkiverar typ…",
+    "fieldCount": "{count, plural, one {# fält} other {# fält}}",
+    "noBehaviours": "Inga beteenden",
+    "behavioursHeading": "Beteenden",
+    "behavioursHint": "Beteenden slår på generella funktioner för artiklar av typen. Ett beteende kan inte stängas av så länge artiklar har data för det.",
+    "requires": "Kräver {behaviour}.",
+    "fieldsHeading": "Fält",
+    "fields": {
+      "base": "Gäller",
+      "name": "Namn",
+      "behaviours": "Beteenden"
+    },
+    "columns": {
+      "name": "Namn",
+      "behaviours": "Beteenden",
+      "fields": "Fält"
+    },
+    "bases": {
+      "ITEM": "Artiklar",
+      "CUSTOMER": "Kunder",
+      "CONTACT": "Kontaktpersoner",
+      "INQUIRY": "Förfrågningar",
+      "BOOKING": "Bokningar",
+      "REQUIREMENT": "Behov"
+    },
+    "behaviours": {
+      "PRICED": "Prissatt",
+      "COMPOSABLE": "Sammansatt",
+      "CHOICES": "Valgrupper",
+      "BOOKABLE": "Bokningsbar",
+      "SETUPS": "Uppställningar"
+    },
+    "behaviourHints": {
+      "PRICED": "Pris, prisenhet och moms.",
+      "COMPOSABLE": "Innehåller andra artiklar.",
+      "CHOICES": "Valgrupper bland delarna.",
+      "BOOKABLE": "Upptar tid och har standardlängd.",
+      "SETUPS": "Kapacitet per uppställning."
+    }
+  },
+  "fieldDefinition": {
+    "singular": "Fält",
+    "plural": "Fält",
+    "create": "Lägg till fält",
+    "edit": "Redigera fält",
+    "createDescription": "Fältet visas på alla poster av typen.",
+    "editDescription": "Ändra fältet. Värdetyp kan inte ändras när det finns värden.",
+    "archive": "Arkivera fält",
+    "archiveConfirm": "Vill du arkivera fältet {name}?",
+    "archived": "Fältet har arkiverats.",
+    "created": "Fältet har lagts till.",
+    "updated": "Fältet har uppdaterats.",
+    "empty": "Inga fält ännu.",
+    "saving": "Sparar fält…",
+    "archiving": "Arkiverar fält…",
+    "reordering": "Flyttar fält…",
+    "moveUp": "Flytta upp",
+    "moveDown": "Flytta ned",
+    "selectList": "Välj lista",
+    "noLists": "Det finns inga listor. Skapa en under Listor.",
+    "listSource": "Lista: {name}",
+    "optionsSource": "{count, plural, one {# alternativ} other {# alternativ}}",
+    "fields": {
+      "name": "Namn",
+      "kind": "Värdetyp",
+      "required": "Obligatoriskt",
+      "source": "Alternativen kommer från",
+      "vocabulary": "Lista",
+      "options": "Alternativ (ett per rad)"
+    },
+    "sources": {
+      "list": "En lista",
+      "options": "Egna alternativ"
+    },
+    "columns": {
+      "name": "Namn",
+      "kind": "Värdetyp",
+      "required": "Obligatoriskt",
+      "source": "Alternativ"
+    },
+    "kinds": {
+      "TEXT": "Text",
+      "NUMBER": "Tal",
+      "BOOLEAN": "Ja/nej",
+      "DATE": "Datum",
+      "CHOICE": "Val",
+      "MULTI_CHOICE": "Flerval"
+    }
+  },
+  "vocabulary": {
+    "singular": "Lista",
+    "plural": "Listor",
+    "listDescription": "Egna ordlistor, t.ex. allergener eller dresscode, som fält och behov pekar på.",
+    "create": "Skapa lista",
+    "edit": "Byt namn",
+    "createDescription": "Namnge listan och lägg gärna till de första värdena.",
+    "editDescription": "Ändra namnet på listan.",
+    "archive": "Arkivera lista",
+    "archiveConfirm": "Vill du arkivera listan {name}? Det går inte så länge ett fält använder den.",
+    "archived": "Listan har arkiverats.",
+    "created": "Listan har skapats.",
+    "updated": "Listan har uppdaterats.",
+    "empty": "Inga listor ännu.",
+    "emptyDescription": "Skapa en lista eller importera EU:s 14 allergener.",
+    "saving": "Sparar lista…",
+    "archiving": "Arkiverar lista…",
+    "importTemplate": "Importera EU:s 14 allergener",
+    "importing": "Importerar lista…",
+    "imported": "Listan {name} har skapats.",
+    "valueCount": "{count, plural, one {# värde} other {# värden}}",
+    "fields": {
+      "name": "Namn",
+      "values": "Värden (ett per rad)"
+    },
+    "columns": {
+      "name": "Namn",
+      "values": "Värden"
+    },
+    "value": {
+      "heading": "Listvärden",
+      "add": "Lägg till värde",
+      "edit": "Byt namn på värde",
+      "archive": "Arkivera värde",
+      "archiveConfirm": "Vill du arkivera värdet {name}?",
+      "archived": "Värdet har arkiverats.",
+      "created": "Värdet har lagts till.",
+      "updated": "Värdet har uppdaterats.",
+      "empty": "Inga värden ännu.",
+      "name": "Värde",
+      "saving": "Sparar värde…",
+      "archiving": "Arkiverar värde…"
+    }
+  },
+  "setup": {
+    "singular": "Uppställning",
+    "plural": "Uppställningar",
+    "listDescription": "Hur ett rum kan ställas upp, t.ex. Bio, U-bord eller Mingel, och hur lång ställtid det kräver.",
+    "create": "Skapa uppställning",
+    "edit": "Redigera uppställning",
+    "createDescription": "Namnge uppställningen och ange ställtid.",
+    "editDescription": "Ändra namn och ställtid.",
+    "archive": "Arkivera uppställning",
+    "archiveConfirm": "Vill du arkivera uppställningen {name}?",
+    "archived": "Uppställningen har arkiverats.",
+    "created": "Uppställningen har skapats.",
+    "updated": "Uppställningen har uppdaterats.",
+    "empty": "Inga uppställningar ännu.",
+    "emptyDescription": "Skapa uppställningar som Bio, U-bord och Mingel.",
+    "saving": "Sparar uppställning…",
+    "archiving": "Arkiverar uppställning…",
+    "changeoverValue": "{minutes} min",
+    "fields": {
+      "name": "Namn",
+      "changeoverMinutes": "Ställtid (minuter)"
+    },
+    "columns": {
+      "name": "Namn",
+      "changeover": "Ställtid"
+    }
   },
   "assistant": {
     "title": "Assistent",
@@ -232,11 +429,24 @@
         "openingHours": "Öppettider",
         "defaultVatRatePercent": "Moms (%)",
         "venueId": "Anläggning (id)",
-        "floor": "Våning",
-        "areaSqm": "Yta (kvm)",
-        "ceilingHeightM": "Takhöjd (m)",
-        "hasDaylight": "Dagsljus",
-        "maxCapacity": "Max antal personer",
+        "entityTypeId": "Typ (id)",
+        "base": "Bas",
+        "behaviours": "Beteenden",
+        "fields": "Fält",
+        "priceMinor": "Pris (öre)",
+        "priceUnit": "Prisenhet",
+        "vatRatePercent": "Moms (%)",
+        "defaultDurationMinutes": "Standardlängd (min)",
+        "setups": "Uppställningar",
+        "changeoverMinutes": "Ställtid (min)",
+        "key": "Nyckel",
+        "kind": "Fälttyp",
+        "required": "Obligatoriskt",
+        "vocabularyId": "Lista (id)",
+        "options": "Alternativ",
+        "position": "Position",
+        "values": "Listvärden",
+        "template": "Mall",
         "slug": "Id-namn",
         "instructions": "Instruktioner",
         "allowedTools": "Tillåtna verktyg",
@@ -250,9 +460,25 @@
         "venue_create": "Skapa anläggning",
         "venue_update": "Ändra anläggning",
         "venue_archive": "Arkivera anläggning",
-        "room_create": "Skapa rum",
-        "room_update": "Ändra rum",
-        "room_archive": "Arkivera rum",
+        "item_create": "Skapa artikel",
+        "item_update": "Ändra artikel",
+        "item_archive": "Arkivera artikel",
+        "entityType_create": "Skapa typ",
+        "entityType_update": "Ändra typ",
+        "entityType_archive": "Arkivera typ",
+        "fieldDefinition_create": "Skapa fält",
+        "fieldDefinition_update": "Ändra fält",
+        "fieldDefinition_archive": "Arkivera fält",
+        "vocabulary_create": "Skapa lista",
+        "vocabulary_update": "Ändra lista",
+        "vocabulary_archive": "Arkivera lista",
+        "vocabulary_importTemplate": "Importera listmall",
+        "vocabulary_addValue": "Lägg till listvärde",
+        "vocabulary_updateValue": "Ändra listvärde",
+        "vocabulary_archiveValue": "Arkivera listvärde",
+        "setup_create": "Skapa uppställning",
+        "setup_update": "Ändra uppställning",
+        "setup_archive": "Arkivera uppställning",
         "skill_create": "Skapa färdighet",
         "skill_update": "Ändra färdighet",
         "skill_publish": "Publicera färdighet",
@@ -262,7 +488,7 @@
         "conversation_archive": "Arkivera konversation"
       }
     },
-    "description": "Chatta med assistenten om anläggningar, rum och färdigheter.",
+    "description": "Chatta med assistenten om anläggningar, artiklar och färdigheter.",
     "stop": "Stoppa",
     "backToChat": "Tillbaka till chatten",
     "emptyTitle": "Vad kan jag hjälpa dig med?",
@@ -273,7 +499,7 @@
     "suggestions": {
       "listVenues": "Visa alla anläggningar",
       "createVenue": "Skapa en anläggning som heter Testsalen",
-      "findRooms": "Sök efter rum med plats för 50 personer",
+      "findItems": "Sök efter bokningsbara artiklar med plats för 50 personer",
       "listSkills": "Vilka färdigheter finns?"
     },
     "history": {
@@ -294,7 +520,72 @@
       "open": "Öppna",
       "openVenue": "Öppna anläggningen",
       "more": "Det finns fler resultat. Be assistenten visa fler.",
-      "noHits": "Inga träffar."
+      "noHits": "Inga träffar.",
+      "item": {
+        "singular": "Artikel",
+        "empty": "Inga artiklar hittades.",
+        "open": "Öppna artikeln",
+        "columns": { "name": "Namn", "price": "Pris", "setups": "Uppställningar" },
+        "priceUnit": {
+          "PER_PERSON": "per person",
+          "PER_UNIT": "per enhet",
+          "PER_HOUR": "per timme",
+          "FLAT": "fast pris"
+        },
+        "duration": "{minutes} min",
+        "setupsCount": "{count, plural, one {# uppställning} other {# uppställningar}}"
+      },
+      "entityType": {
+        "empty": "Inga typer hittades.",
+        "open": "Öppna typen",
+        "noFields": "Typen har inga fält.",
+        "columns": { "name": "Namn", "base": "Bas", "behaviours": "Beteenden", "fields": "Fält" },
+        "base": {
+          "ITEM": "Artikel",
+          "CUSTOMER": "Kund",
+          "CONTACT": "Kontakt",
+          "INQUIRY": "Förfrågan",
+          "BOOKING": "Bokning",
+          "REQUIREMENT": "Behov"
+        },
+        "behaviour": {
+          "PRICED": "Prissatt",
+          "COMPOSABLE": "Sammansatt",
+          "CHOICES": "Val",
+          "BOOKABLE": "Bokningsbar",
+          "SETUPS": "Uppställningar"
+        }
+      },
+      "field": {
+        "empty": "Inga fält hittades.",
+        "required": "Obligatoriskt",
+        "yes": "Ja",
+        "key": "Nyckel: {key}",
+        "openList": "Öppna listan",
+        "openType": "Öppna typen",
+        "columns": { "name": "Namn", "kind": "Fälttyp", "required": "Obligatoriskt" },
+        "kind": {
+          "TEXT": "Text",
+          "NUMBER": "Tal",
+          "BOOLEAN": "Ja/nej",
+          "DATE": "Datum",
+          "CHOICE": "Val",
+          "MULTI_CHOICE": "Flerval"
+        }
+      },
+      "vocabulary": {
+        "empty": "Inga listor hittades.",
+        "open": "Öppna listan",
+        "valuesCount": "{count, plural, one {# värde} other {# värden}}",
+        "columns": { "name": "Namn", "values": "Listvärden" }
+      },
+      "setup": {
+        "singular": "Uppställning",
+        "empty": "Inga uppställningar hittades.",
+        "open": "Öppna uppställningar",
+        "changeover": "Ställtid {minutes} min",
+        "columns": { "name": "Namn", "changeover": "Ställtid" }
+      }
     }
   },
   "skills": {
@@ -374,7 +665,7 @@
     }
   },
   "search": {
-    "placeholder": "Sök anläggningar, rum och mer...",
+    "placeholder": "Sök anläggningar, artiklar och mer...",
     "noResults": "Inga träffar för \"{query}\".",
     "results": "{count, plural, one {# träff} other {# träffar}}",
     "searching": "Söker...",
@@ -383,7 +674,7 @@
     "clear": "Rensa sökningen",
     "entity": {
       "venue": "Anläggning",
-      "room": "Rum"
+      "item": "Artikel"
     },
     "error": "Sökningen misslyckades."
   },
@@ -440,7 +731,8 @@
     "goToVenues": "Gå till anläggningar",
     "createVenue": "Skapa anläggning",
     "openVenue": "Öppna {name}",
-    "addRoomTo": "Lägg till rum i {name}",
+    "goToItems": "Gå till artiklar",
+    "createItem": "Skapa artikel",
     "assistant": "Assistent",
     "askAssistant": "Fråga assistenten: ”{query}”",
     "openAssistant": "Öppna assistenten"
@@ -517,7 +809,7 @@
         },
         "searchEmbedding": {
           "name": "Semantisk sökning",
-          "description": "Embedding-modellen som indexerar och söker bland lokaler, rum, konversationer och färdigheter."
+          "description": "Embedding-modellen som indexerar och söker bland anläggningar, artiklar, konversationer och färdigheter."
         }
       },
       "notInCatalog": "Den valda modellen är inte längre möjlig för funktionen. Välj en ny.",
@@ -583,7 +875,8 @@
     },
     "resources": {
       "venue": "Anläggningar",
-      "room": "Rum",
+      "item": "Artiklar",
+      "configuration": "Konfiguration (typer, fält, listor, uppställningar)",
       "search": "Sök",
       "conversation": "Konversationer",
       "skill": "Färdigheter",

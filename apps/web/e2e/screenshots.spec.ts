@@ -32,7 +32,7 @@ async function seed({ page }: { page: Page }) {
       name: "Rundtur",
       description: "När en kund vill se lokalerna",
       instructions: "## Steg\n\n1. Lista **anläggningar**\n2. Visa rum\n\n> Fråga om datum.",
-      allowedTools: ["venue_list", "room_list"],
+      allowedTools: ["venue_list", "item_list"],
     },
   });
 }

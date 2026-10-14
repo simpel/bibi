@@ -1,7 +1,7 @@
 import { listOperations } from "@okazi/core";
 import { describe, expect, it } from "vitest";
 import { listGraphqlOperationNames, printSchemaSdl } from "../src/index";
-import { createClient, testContext } from "./helpers";
+import { createClient, createItemType, testContext } from "./helpers";
 
 describe("search and parity", () => {
   it("returns hits with resolvable entities (union)", async () => {
@@ -11,11 +11,13 @@ describe("search and parity", () => {
       query: v,
       variables: { i: { name: "Lindholmen konferens", description: "Havsutsikt" } },
     });
-    const room = `mutation($i: RoomCreateInput!) { roomCreate(input: $i) { id } }`;
+    const item = `mutation($i: ItemCreateInput!) { itemCreate(input: $i) { id } }`;
+    const entityTypeId = await createItemType({ gql });
     await gql({
-      query: room,
+      query: item,
       variables: {
         i: {
+          entityTypeId,
           venueId: venue.body.data.venueCreate.id,
           name: "Ljusa salen",
           description: "Konferensrum med dagsljus",
@@ -23,18 +25,18 @@ describe("search and parity", () => {
       },
     });
     const query = `query($q: String!) { search(query: $q) { hits {
-      entityType entityId score entity { __typename ... on Venue { name } ... on Room { name venue { name } } }
+      entityType entityId score entity { __typename ... on Venue { name } ... on Item { name venue { name } } }
     } } }`;
     const res = await gql({ query, variables: { q: "dagsljus konferensrum" } });
     expect(res.body.errors).toBeUndefined();
     const hits = res.body.data.search.hits;
-    const roomHit = hits.find((h: { entityType: string }) => h.entityType === "room");
-    expect(roomHit.entity).toEqual({
-      __typename: "Room",
+    const itemHit = hits.find((h: { entityType: string }) => h.entityType === "item");
+    expect(itemHit.entity).toEqual({
+      __typename: "Item",
       name: "Ljusa salen",
       venue: { name: "Lindholmen konferens" },
     });
-    expect(typeof roomHit.score).toBe("number");
+    expect(typeof itemHit.score).toBe("number");
   });
 
   it("exposes every core operation exactly once", () => {
@@ -46,6 +48,6 @@ describe("search and parity", () => {
     const sdl = printSchemaSdl();
     expect(sdl).toContain("type Venue");
     expect(sdl).toContain("limit: Int = 50");
-    expect(sdl).toContain("union SearchEntity = Conversation | Room | Skill | Venue");
+    expect(sdl).toContain("union SearchEntity = Conversation | Item | Skill | Venue");
   });
 });

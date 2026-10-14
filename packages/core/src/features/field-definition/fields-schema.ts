@@ -33,7 +33,10 @@ function valueSchema({ spec }: ValueSchemaInput): z.ZodType {
     case "CHOICE":
       return oneOf;
     case "MULTI_CHOICE":
-      return z.array(oneOf).max(100).refine((v) => new Set(v).size === v.length, "Duplicates");
+      return z
+        .array(oneOf)
+        .max(100)
+        .refine((v) => new Set(v).size === v.length, "Duplicates");
   }
 }
 

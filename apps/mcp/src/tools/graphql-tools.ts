@@ -24,7 +24,7 @@ export function createGraphqlSchemaTool(): McpTool {
     name: "graphql_schema",
     description:
       "Returns the GraphQL schema (SDL) of the Okazi graph. Read it once, then use graphql_query " +
-      "to read related data (e.g. venues with their rooms) in a single call.",
+      "to read related data (e.g. venues with their items) in a single call.",
     inputSchema: { type: "object", properties: {} },
     outputSchema: {
       type: "object",

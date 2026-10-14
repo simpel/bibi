@@ -7,7 +7,7 @@ export type CursorPaginationProps = {
   /** Cursor of the current page; undefined on the first page. */
   cursor?: string | undefined;
   nextCursor: string | null;
-  /** Query-string name of the cursor, e.g. `cursor` or `roomCursor`. */
+  /** Query-string name of the cursor, e.g. `cursor` or `itemCursor`. */
   param?: string;
   /** Other query parameters (filters) kept on every link. */
   query?: Record<string, string>;

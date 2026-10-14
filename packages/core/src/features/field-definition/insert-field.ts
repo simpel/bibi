@@ -29,7 +29,10 @@ export async function insertField({
   const { entityTypeId, name, kind, vocabularyId = null, options = [] } = input;
   const type = await context.db.entityType.findFirst({ where: { id: entityTypeId } });
   if (!type) {
-    return invalid({ message: "Unknown type", issues: [{ path: "entityTypeId", message: "Unknown type" }] });
+    return invalid({
+      message: "Unknown type",
+      issues: [{ path: "entityTypeId", message: "Unknown type" }],
+    });
   }
   if (await context.db.fieldDefinition.findFirst({ where: { entityTypeId, name } })) {
     return conflict({ message: `The type already has a field "${name}"` });
@@ -40,7 +43,8 @@ export async function insertField({
   if (!key.ok) return key;
   const items = await context.db.item.count({ where: { entityTypeId } });
   if (input.required && items > 0) return conflict({ message: `${items} items lack ${name}` });
-  const position = input.position ?? (await context.db.fieldDefinition.count({ where: { entityTypeId } }));
+  const position =
+    input.position ?? (await context.db.fieldDefinition.count({ where: { entityTypeId } }));
   const field = await context.db.fieldDefinition.create({
     data: {
       ...{ entityTypeId, name, kind, vocabularyId, options, position, key: key.value },

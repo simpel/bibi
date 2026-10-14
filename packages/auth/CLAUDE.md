@@ -47,7 +47,7 @@ Better Auth 1.7.7 (Prisma-adapter) + plugins: e-post/lösenord, magic link, e-po
 2. Använd `"<resurs>:read|write|admin"` som `permission` i core-operationen.
 3. Lägg till den i rollmallarna (`packages/core/src/templates/roles/`) där den hör hemma. Befintliga org-roller får den inte automatiskt.
 
-Resurser i dag: `venue`, `room`, `search`, `conversation`, `skill`, `role`, `member`.
+Resurser i dag: `venue`, `item`, `configuration`, `search`, `conversation`, `skill`, `role`, `member`.
 
 ## Schema och tester
 - `auth.prisma` genereras: `pnpm --filter @okazi/auth auth:generate`. Ta bort `generator`/`datasource` ur resultatet och kör sedan `pnpm --filter @okazi/db migrate:dev --name <namn>`.

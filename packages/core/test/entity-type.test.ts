@@ -63,10 +63,11 @@ describe("entity types and behaviours (ADR 0021)", () => {
       result: await execute({ operation: createSetup, input: { name: "Bio" }, context }),
     });
     const item = await createTestItem({ context, entityTypeId: type.id, name: "Vinga" });
-    const off = (behaviours: ("BOOKABLE" | "SETUPS" | "PRICED")[]) =>
+    type Behaviours = ("BOOKABLE" | "SETUPS" | "PRICED")[];
+    const off = ({ behaviours }: { behaviours: Behaviours }) =>
       execute({ operation: updateEntityType, input: { id: type.id, behaviours }, context });
-    expect(errorCode({ result: await off(["BOOKABLE", "SETUPS"]) })).toBeNull();
-    const priced = await off(["BOOKABLE", "SETUPS", "PRICED"]);
+    expect(errorCode({ result: await off({ behaviours: ["BOOKABLE", "SETUPS"] }) })).toBeNull();
+    const priced = await off({ behaviours: ["BOOKABLE", "SETUPS", "PRICED"] });
     expect(errorCode({ result: priced })).toBeNull();
     unwrap({
       result: await execute({
@@ -75,16 +76,26 @@ describe("entity types and behaviours (ADR 0021)", () => {
         context,
       }),
     });
-    expect(errorCode({ result: await off(["BOOKABLE", "SETUPS"]) })).toBe("CONFLICT");
-    expect(errorCode({ result: await off(["BOOKABLE", "PRICED"]) })).toBe("CONFLICT");
-    expect(errorCode({ result: await off(["SETUPS", "PRICED"]) })).toBe("VALIDATION");
+    expect(errorCode({ result: await off({ behaviours: ["BOOKABLE", "SETUPS"] }) })).toBe(
+      "CONFLICT",
+    );
+    expect(errorCode({ result: await off({ behaviours: ["BOOKABLE", "PRICED"] }) })).toBe(
+      "CONFLICT",
+    );
+    expect(errorCode({ result: await off({ behaviours: ["SETUPS", "PRICED"] }) })).toBe(
+      "VALIDATION",
+    );
   });
 
   it("refuses to archive a type with active items", async () => {
     const context = testContext();
     const type = await createRoomType({ context });
     await createTestItem({ context, entityTypeId: type.id, name: "Vinga" });
-    const archived = await execute({ operation: archiveEntityType, input: { id: type.id }, context });
+    const archived = await execute({
+      operation: archiveEntityType,
+      input: { id: type.id },
+      context,
+    });
     expect(errorCode({ result: archived })).toBe("CONFLICT");
   });
 });

@@ -5,11 +5,11 @@ description: Lägg till eller ändra en core-operation (query/command) och expon
 
 # Ny core-operation
 
-Mall: `packages/core/src/features/room/operations.ts`.
+Mall: `packages/core/src/features/setup/operations.ts` (enkel) eller `features/item/` (uppdelad i read/write/lifecycle).
 
 1. **Schema** i `features/<entitet>/schema.ts`: Zod för in- och utdata. Gör input till ett objekt, inga positionsargument.
 2. **Operation** med `defineOperation({ name, kind, description, input, output, permission, handler })`.
-   - `name`: `<entitet>.<verb>` (t.ex. `room.archive`).
+   - `name`: `<entitet>.<verb>` (t.ex. `item.archive`).
    - `permission`: `<resurs>:read|write|admin`.
    - `kind: "command"` kräver godkännande som standard (AI föreslår, människa bekräftar). Sätt `approval` bara om ett undantag är motiverat.
    - Handlern använder `context.db` (org-scopad), skriver aldrig `organizationId` själv i `where`, sätter `organizationId` och `createdBy` vid create, och anropar `context.recordChange({ entityId, before?, after })` för audit.

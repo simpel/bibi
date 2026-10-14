@@ -24,7 +24,8 @@ async function nameTaken({ context, base, name, id }: NameTakenInput) {
   return found !== null && found.id !== id;
 }
 
-const taken = ({ name }: { name: string }) => conflict({ message: `A type named "${name}" exists` });
+const taken = ({ name }: { name: string }) =>
+  conflict({ message: `A type named "${name}" exists` });
 
 export const createEntityType = defineOperation({
   name: "entityType.create",

@@ -3,7 +3,7 @@ import { fieldKey, operationKey } from "./approval-labels";
 
 describe("approval labels", () => {
   it("finds known fields and operations", () => {
-    expect(fieldKey({ key: "maxCapacity" })).toBe("maxCapacity");
+    expect(fieldKey({ key: "priceMinor" })).toBe("priceMinor");
     expect(operationKey({ operation: "venue.create" })).toBe("venue_create");
   });
 

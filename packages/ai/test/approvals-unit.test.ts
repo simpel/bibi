@@ -4,9 +4,9 @@ import { createToolRestriction } from "../src/skills/tool-restriction";
 
 const proposal = {
   status: "approval_required",
-  operation: "room.create",
+  operation: "item.create",
   input: { venueId: "v1", name: "Rum 1" },
-  summary: 'Create room "Rum 1"',
+  summary: 'Create item "Rum 1"',
   approvalToken: "token-1",
   expiresAt: "2026-10-13T10:10:00.000Z",
 };
@@ -17,14 +17,14 @@ describe("extractPendingApprovals", () => {
       { type: "text", text: "Jag föreslår:" },
       {
         type: "dynamic-tool",
-        toolName: "room_create",
+        toolName: "item_create",
         toolCallId: "c1",
         state: "output-available",
         input: {},
         output: { content: [], structuredContent: proposal },
       },
       {
-        type: "tool-room_create",
+        type: "tool-item_create",
         toolCallId: "c2",
         state: "output-available",
         input: {},
@@ -40,7 +40,7 @@ describe("extractPendingApprovals", () => {
       },
       {
         type: "dynamic-tool",
-        toolName: "room_create",
+        toolName: "item_create",
         toolCallId: "c4",
         state: "input-available",
         input: {},
@@ -48,13 +48,13 @@ describe("extractPendingApprovals", () => {
     ];
     const approvals = extractPendingApprovals({ message: { parts } });
     expect(approvals.map((approval) => [approval.toolCallId, approval.toolName])).toEqual([
-      ["c1", "room_create"],
-      ["c2", "room_create"],
+      ["c1", "item_create"],
+      ["c2", "item_create"],
     ]);
     expect(approvals[0]).toMatchObject({
-      operation: "room.create",
+      operation: "item.create",
       approvalToken: "token-1",
-      summary: 'Create room "Rum 1"',
+      summary: 'Create item "Rum 1"',
     });
   });
 

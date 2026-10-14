@@ -30,7 +30,11 @@ const DATA_COUNTS: Record<ItemBehaviour, (input: CountInput) => Promise<number>>
     context.db.item.count({
       where: {
         entityTypeId,
-        OR: [{ priceMinor: { not: null } }, { priceUnit: { not: null } }, { vatRatePercent: { not: null } }],
+        OR: [
+          { priceMinor: { not: null } },
+          { priceUnit: { not: null } },
+          { vatRatePercent: { not: null } },
+        ],
       },
     }),
   BOOKABLE: ({ context, entityTypeId }) =>

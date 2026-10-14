@@ -10,7 +10,7 @@ export const LOAD_SKILL_TOOL = "load_skill";
 export const LoadSkillInputSchema = z
   .object({
     id: z.string().min(1).max(200).optional().describe("Skill id"),
-    slug: z.string().min(1).max(64).optional().describe("Skill slug, e.g. create-venue-with-rooms"),
+    slug: z.string().min(1).max(64).optional().describe("Skill slug, e.g. create-venue-with-items"),
   })
   .refine((value) => value.id !== undefined || value.slug !== undefined, "Give id or slug");
 

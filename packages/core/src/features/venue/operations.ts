@@ -48,7 +48,8 @@ export const getVenue = defineOperation({
 export const createVenue = defineOperation({
   name: "venue.create",
   kind: "command",
-  description: "Create a venue (a building or site that bookable items, such as rooms, can belong to).",
+  description:
+    "Create a venue (a building or site that bookable items, such as rooms, can belong to).",
   input: VenueCreateInputSchema,
   output: VenueSchema,
   permission: "venue:write",
@@ -82,7 +83,8 @@ export const updateVenue = defineOperation({
 export const archiveVenue = defineOperation({
   name: "venue.archive",
   kind: "command",
-  description: "Archive (soft-delete) a venue and every item that belongs to it. Archived rows are hidden.",
+  description:
+    "Archive (soft-delete) a venue and every item that belongs to it. Archived rows are hidden.",
   input: VenueIdInputSchema,
   output: VenueSchema,
   permission: "venue:write",

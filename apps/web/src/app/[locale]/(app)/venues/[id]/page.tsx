@@ -5,13 +5,13 @@ import { readCursor } from "@/lib/page-cursor";
 
 type VenuePageProps = {
   params: Promise<{ locale: string; id: string }>;
-  searchParams: Promise<{ roomCursor?: string | string[] }>;
+  searchParams: Promise<{ itemCursor?: string | string[] }>;
 };
 
 export default async function VenuePage({ params, searchParams }: VenuePageProps) {
   const { locale: rawLocale, id } = await params;
   const locale = resolveLocale({ value: rawLocale });
-  const { roomCursor } = await searchParams;
+  const { itemCursor } = await searchParams;
   setRequestLocale(locale);
-  return <VenueDetail locale={locale} id={id} roomCursor={readCursor({ value: roomCursor })} />;
+  return <VenueDetail locale={locale} id={id} itemCursor={readCursor({ value: itemCursor })} />;
 }

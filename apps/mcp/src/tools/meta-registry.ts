@@ -1,10 +1,14 @@
 import { conversationMcpTools } from "../features/conversation/mcp";
+import { entityTypeMcpTools } from "../features/entity-type/mcp";
+import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
+import { itemMcpTools } from "../features/item/mcp";
 import { memberMcpTools } from "../features/member/mcp";
 import { messageMcpTools } from "../features/message/mcp";
 import { roleMcpTools } from "../features/role/mcp";
-import { roomMcpTools } from "../features/room/mcp";
+import { setupMcpTools } from "../features/setup/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
+import { vocabularyMcpTools } from "../features/vocabulary/mcp";
 import { searchMcpTools } from "../search-mcp";
 import type { McpToolMeta } from "./meta";
 
@@ -12,7 +16,11 @@ import type { McpToolMeta } from "./meta";
 export function listMcpToolMetas(): McpToolMeta[] {
   return [
     ...venueMcpTools,
-    ...roomMcpTools,
+    ...entityTypeMcpTools,
+    ...fieldDefinitionMcpTools,
+    ...vocabularyMcpTools,
+    ...setupMcpTools,
+    ...itemMcpTools,
     ...conversationMcpTools,
     ...messageMcpTools,
     ...skillMcpTools,

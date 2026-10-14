@@ -4,6 +4,7 @@ import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { OWNER_ROLE } from "../../permissions/resources";
 import { getRoleTemplate } from "../../templates/roles/role-templates";
+import { checkDemoConfig } from "./config-checks";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg };
@@ -18,8 +19,9 @@ const sameSet = ({ a, b }: { a: readonly string[]; b: readonly string[] }) =>
   a.length === b.length && [...a].sort().every((value, i) => value === [...b].sort()[i]);
 
 /**
- * The checks in `docs/demo-seed.md` that slice 1 can verify: role and member counts, everyone
- * has their documented role, and every write was audited as SYSTEM. Returns failure messages.
+ * The checks in `docs/demo-seed.md` that slices 1–2 can verify: role and member counts, everyone
+ * has their documented role, the configuration and items (`checkDemoConfig`), and every write
+ * was audited as SYSTEM. Returns failure messages.
  */
 export async function checkDemoOrg({ context, org }: CheckDemoOrgInput): Promise<string[]> {
   const failures: string[] = [];
@@ -41,6 +43,7 @@ export async function checkDemoOrg({ context, org }: CheckDemoOrgInput): Promise
       failures.push(`${org.slug}: ${user.name} has ${member?.roles.join(", ") ?? "no member"}`);
     }
   }
+  failures.push(...(await checkDemoConfig({ context, org })));
   const notSystem = await context.db.auditLog.count({ where: { actorType: { not: "SYSTEM" } } });
   if (notSystem > 0) failures.push(`${org.slug}: ${notSystem} audit rows not by SYSTEM`);
   return failures;

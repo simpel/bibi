@@ -35,7 +35,7 @@ export function accessEntities(): ParityEntity[] {
       field: "role",
       list: "roles",
       createTool: "role_create",
-      args: { name: "Parity role", permissions: { venue: ["write"], room: ["read"] } },
+      args: { name: "Parity role", permissions: { venue: ["write"], item: ["read"] } },
     }),
     member,
   ];

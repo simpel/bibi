@@ -4,8 +4,8 @@ import { buildSystemPrompt } from "../src/prompt/build-system-prompt";
 
 const skill = {
   id: "s1",
-  slug: "create-venue-with-rooms",
-  name: "Create venue with rooms",
+  slug: "create-venue-with-items",
+  name: "Create venue with items",
   description: "Set up a venue",
   scope: "SYSTEM" as const,
 };
@@ -26,7 +26,7 @@ describe("buildSystemPrompt", () => {
     expect(prompt).toContain("Answer in Swedish");
     expect(prompt).toContain('"org_1"');
     expect(prompt).toContain('{"type":"venue","id":"v1"}');
-    expect(prompt).toContain("create-venue-with-rooms");
+    expect(prompt).toContain("create-venue-with-items");
     expect(prompt).toContain("2026-10-13T12:00:00.000Z");
     expect(prompt).toContain("`search`");
   });

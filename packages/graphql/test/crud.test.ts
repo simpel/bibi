@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { createClient, testContext } from "./helpers";
+import { createClient, createItemType, testContext } from "./helpers";
 
 const CREATE_VENUE =
   "mutation($input: VenueCreateInput!) { venueCreate(input: $input) { id name city country status defaultVatRatePercent } }";
-const CREATE_ROOM =
-  "mutation($input: RoomCreateInput!) { roomCreate(input: $input) { id name venueId maxCapacity hasDaylight } }";
+const CREATE_ITEM =
+  "mutation($input: ItemCreateInput!) { itemCreate(input: $input) { id name venueId entityTypeId priceMinor } }";
 
-describe("venue and room CRUD through GraphQL", () => {
+describe("venue and item CRUD through GraphQL", () => {
   it("creates, lists, gets, updates and archives a venue", async () => {
     const gql = createClient({ context: testContext() });
     const created = await gql({
@@ -45,38 +45,39 @@ describe("venue and room CRUD through GraphQL", () => {
     expect(after.body.data.venues.items).toEqual([]);
   });
 
-  it("creates, updates and archives a room", async () => {
+  it("creates, updates and archives an item", async () => {
     const gql = createClient({ context: testContext() });
     const v = await gql({ query: CREATE_VENUE, variables: { input: { name: "Hus" } } });
     const venueId = v.body.data.venueCreate.id;
+    const entityTypeId = await createItemType({ gql });
     const r = await gql({
-      query: CREATE_ROOM,
-      variables: { input: { venueId, name: "Salen", maxCapacity: 40 } },
+      query: CREATE_ITEM,
+      variables: {
+        input: { entityTypeId, venueId, name: "Salen", priceMinor: 450000, priceUnit: "FLAT" },
+      },
     });
-    expect(r.body.data.roomCreate).toMatchObject({
+    expect(r.body.errors).toBeUndefined();
+    expect(r.body.data.itemCreate).toMatchObject({
       name: "Salen",
       venueId,
-      maxCapacity: 40,
-      hasDaylight: false,
+      entityTypeId,
+      priceMinor: 450000,
     });
-    const id = r.body.data.roomCreate.id;
+    const id = r.body.data.itemCreate.id;
 
-    const rooms = await gql({
-      query: "query($venueId: String) { rooms(venueId: $venueId) { items { id } } }",
+    const items = await gql({
+      query: "query($venueId: String) { items(venueId: $venueId) { items { id } } }",
       variables: { venueId },
     });
-    expect(rooms.body.data.rooms.items).toEqual([{ id }]);
-    const update = `mutation($input: RoomUpdateInput!) { roomUpdate(input: $input) { name hasDaylight } }`;
-    const u = await gql({
-      query: update,
-      variables: { input: { id, name: "Ljusa salen", hasDaylight: true } },
-    });
-    expect(u.body.data.roomUpdate).toEqual({ name: "Ljusa salen", hasDaylight: true });
-    const archive = `mutation($input: RoomArchiveInput!) { roomArchive(input: $input) { status } }`;
+    expect(items.body.data.items.items).toEqual([{ id }]);
+    const update = `mutation($input: ItemUpdateInput!) { itemUpdate(input: $input) { name priceMinor } }`;
+    const u = await gql({ query: update, variables: { input: { id, name: "Ljusa salen" } } });
+    expect(u.body.data.itemUpdate).toEqual({ name: "Ljusa salen", priceMinor: 450000 });
+    const archive = `mutation($input: ItemArchiveInput!) { itemArchive(input: $input) { status } }`;
     const a = await gql({ query: archive, variables: { input: { id } } });
-    expect(a.body.data.roomArchive.status).toBe("ARCHIVED");
+    expect(a.body.data.itemArchive.status).toBe("ARCHIVED");
     const gone = await gql({
-      query: "query($id: String!) { room(id: $id) { id } }",
+      query: "query($id: String!) { item(id: $id) { id } }",
       variables: { id },
     });
     expect(gone.body.errors?.[0]?.extensions.code).toBe("NOT_FOUND");

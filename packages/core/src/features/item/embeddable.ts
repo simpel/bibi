@@ -15,7 +15,13 @@ type FieldLineInput = { field: FieldInfo; value: unknown; names: ReadonlyMap<str
 
 function fieldLine({ field, value, names }: FieldLineInput): string | null {
   const values = (Array.isArray(value) ? value : [value]).map((v) =>
-    typeof v === "string" ? (names.get(v) ?? v) : typeof v === "boolean" ? (v ? "ja" : "nej") : String(v),
+    typeof v === "string"
+      ? (names.get(v) ?? v)
+      : typeof v === "boolean"
+        ? v
+          ? "ja"
+          : "nej"
+        : String(v),
   );
   return value === undefined ? null : `${field.name}: ${values.join(", ")}`;
 }
@@ -41,13 +47,18 @@ export const itemEmbeddable: Embeddable<IndexedItem> = {
       where: { id: { in: [...ids] } },
       include: {
         entityType: {
-          select: { name: true, fields: { where: { status: "ACTIVE" }, select: { key: true, name: true } } },
+          select: {
+            name: true,
+            fields: { where: { status: "ACTIVE" }, select: { key: true, name: true } },
+          },
         },
         venue: { select: { name: true, city: true } },
       },
     });
     const valueIds = items.flatMap((item) =>
-      Object.values(asFieldValues({ value: item.fields })).flat().filter((v) => typeof v === "string"),
+      Object.values(asFieldValues({ value: item.fields }))
+        .flat()
+        .filter((v) => typeof v === "string"),
     );
     const values = await db.vocabularyValue.findMany({
       where: { id: { in: valueIds }, status: { in: ["ACTIVE", "ARCHIVED"] } },
