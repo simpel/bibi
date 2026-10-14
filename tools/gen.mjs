@@ -19,6 +19,8 @@ export const TARGETS = [
   { template: "graphql.ts.tpl", target: "packages/graphql/src/features/{kebab}/graphql.ts" },
   { template: "rest.ts.tpl", target: "packages/api/src/features/{kebab}/rest.ts" },
   { template: "mcp.ts.tpl", target: "apps/mcp/src/features/{kebab}/mcp.ts" },
+  { template: "model.prisma.tpl", target: "packages/db/prisma/schema/{kebab}.prisma" },
+  { template: "actions.ts.tpl", target: "apps/web/src/features/{kebab}/actions.ts" },
   { template: "ui-note.md.tpl", target: "apps/web/src/features/{kebab}/ui/README.md" },
 ];
 
@@ -59,17 +61,24 @@ function main({ argv }) {
   return 0;
 }
 
-function nextSteps({ names, plan }) {
+export function nextSteps({ names, plan }) {
+  const { Pascal, kebab, camel } = names;
   return [
-    `Created ${plan.length} files for ${names.Pascal}:`,
+    `Created ${plan.length} files for ${Pascal}:`,
     ...plan.map((f) => `  ${f.relPath}`),
     "",
-    "Next steps:",
-    `  1. Complete the fields in schema.ts and add ${names.Pascal} to the glossary (docs/domain-model.md).`,
-    "  2. Export from packages/core/src/index.ts and register the operations.",
-    "  3. Add the Prisma model in packages/db/prisma, run pnpm db:generate and pnpm db:migrate.",
-    "  4. Wire up routes (packages/api), the GraphQL type (packages/graphql) and MCP tools (apps/mcp).",
-    "  5. Replace every TODO, then run pnpm check:structure, pnpm typecheck and pnpm test (the parity test).",
+    "Checklist of files to change by hand (all required for parity, structure and type checks):",
+    `  [ ] packages/db/prisma/schema/${kebab}.prisma: add domain fields, then pnpm db:generate and pnpm --filter @okazi/db migrate:dev.`,
+    `  [ ] packages/db/src/scoped/models.ts: add "${Pascal}" to ORG_SCOPED_MODELS and to SOFT_DELETE_DEFAULTS (["${Pascal}", "ACTIVE"]).`,
+    `  [ ] packages/core/src/index.ts, core-operations.ts and schemas.ts: export ${camel}Schema, the types and the operations; register the operations.`,
+    `  [ ] packages/graphql/src/schema/schema.ts: add import "../features/${kebab}/graphql";`,
+    "  [ ] packages/api and apps/mcp: register the REST routes and MCP tools from rest.ts and mcp.ts.",
+    `  [ ] apps/web/src/features/web-surfaces.ts: add each ${kebab}.* operation to WEB_SURFACES (or UI_EXEMPT with a reason).`,
+    `  [ ] apps/mcp/test/parity-entities.ts: add a ${kebab} entry to ENTITIES.`,
+    `  [ ] packages/i18n/messages/sv.json and en.json: add the "${camel}" keys (skill i18n-strings).`,
+    `  [ ] docs/domain-model.md and docs/artifacts/domain-model.html: add ${Pascal} together.`,
+    `  [ ] Replace every TODO in the generated files (apps/web/src/features/${kebab}/ui/README.md lists the UI work).`,
+    "  [ ] Verify: pnpm lint && pnpm check:structure && pnpm typecheck && pnpm test",
   ].join("\n");
 }
 
