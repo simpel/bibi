@@ -26,8 +26,7 @@ export async function parseChatInput({
   if (!body.ok) return body;
   const { conversationId, messages, pageContext } = body.value;
   const last = messages.at(-1);
-  if (!last || last.role !== "user")
-    return invalid({ message: "The last message must be the user's" });
+  if (last?.role !== "user") return invalid({ message: "The last message must be the user's" });
   const text = userText({ message: last });
   if (text === "") return invalid({ message: "The user message has no text" });
   if (text.length > ASSISTANT_LIMITS.maxUserTextChars)
