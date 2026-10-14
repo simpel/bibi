@@ -18,6 +18,7 @@
 
 ## Konventioner
 - Dokumentation på svenska.
+- Filnamn är alltid på engelska (även ADR:er och docs). Innehållet kan vara svenskt.
 - Beslut loggas som ADR i `docs/beslut/NNNN-titel.md`.
 
 ## Teknikstack
@@ -30,7 +31,7 @@
 - UI: Tailwind v4 (CSS-first tokens), cva, shadcn-primitiver, Storybook för `packages/ui`.
 - i18n: next-intl, svenska och engelska.
 - Verktyg: Biome (lint + format), Vitest (enhet/tjänstelager mot riktig Postgres), Playwright (e2e).
-- E-post: Resend (ut och in) bakom `MailProvider`, Mailpit i dev. Se `docs/beslut/0012-epostleverantor.md`.
+- E-post: Resend (ut och in) bakom `MailProvider`, Mailpit i dev. Se `docs/beslut/0012-email-provider.md`.
 - Drift: Docker (compose med Postgres och Mailpit, `--profile app` för web + mcp), GitHub Actions för CI.
 - Beslut: `docs/beslut/0002-teknikstack-och-monorepo.md` m.fl.
 
