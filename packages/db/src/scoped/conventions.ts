@@ -44,6 +44,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Booking",
   "BookingSeries",
   "ProgramItem",
+  "Inquiry",
   "InboundEmail",
   "PaymentAccount",
   "Payment",

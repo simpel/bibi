@@ -35,6 +35,10 @@ const bookingsWrite: PermissionSet = {
 /** Requesting payments from customers (ADR 0028); the payout account stays with `payment:admin`. */
 const paymentsWrite: PermissionSet = { payment: ["write"] };
 
+/** Inquiries in the sales pipeline (ADR 0022); the salesperson is a member. */
+const inquiriesRead: PermissionSet = { inquiry: ["read"], member: ["read"] };
+const inquiriesWrite: PermissionSet = { inquiry: ["write"], member: ["read"] };
+
 /** Blocking bookable items for maintenance or internal use (ADR 0022). */
 const occupancyWrite: PermissionSet = { occupancy: ["write"] };
 
@@ -43,6 +47,7 @@ const readAll: PermissionSet = {
   ...catalog,
   ...customersRead,
   ...bookingsRead,
+  ...inquiriesRead,
   role: ["read"],
   member: ["read"],
   audit: ["read"],
@@ -70,6 +75,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         bookingStatus: ["admin"],
         booking: ["admin"],
         programItem: ["admin"],
+        inquiry: ["admin"],
         search: ["admin"],
         conversation: ["admin"],
         skill: ["admin"],
@@ -88,6 +94,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         ...occupancyWrite,
         ...bookingsWrite,
         ...paymentsWrite,
+        ...inquiriesWrite,
       },
     },
     {
@@ -99,6 +106,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         ...occupancyWrite,
         ...bookingsWrite,
         ...paymentsWrite,
+        ...inquiriesRead,
       },
     },
     { name: "Kitchen", permissions: { ...everyone, ...catalog, ...bookingsRead } },

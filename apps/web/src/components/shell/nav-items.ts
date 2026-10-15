@@ -7,6 +7,7 @@ import {
   ClipboardListIcon,
   ContactIcon,
   CreditCardIcon,
+  InboxIcon,
   LayoutGridIcon,
   ListIcon,
   type LucideIcon,
@@ -23,6 +24,7 @@ export type NavItem = {
     | "venues"
     | "items"
     | "customers"
+    | "inquiries"
     | "bookings"
     | "bookingSeries"
     | "skills"
@@ -42,6 +44,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: ROUTES.venues, labelKey: "venues", icon: BuildingIcon },
   { href: ROUTES.items, labelKey: "items", icon: BoxIcon },
   { href: ROUTES.customers, labelKey: "customers", icon: ContactIcon },
+  { href: ROUTES.inquiries, labelKey: "inquiries", icon: InboxIcon },
   { href: ROUTES.bookings, labelKey: "bookings", icon: CalendarIcon },
   { href: ROUTES.bookingSeries, labelKey: "bookingSeries", icon: Repeat2Icon },
   { href: ROUTES.skills, labelKey: "skills", icon: BookOpenIcon },

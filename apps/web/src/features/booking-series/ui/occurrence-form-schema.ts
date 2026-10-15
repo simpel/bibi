@@ -1,8 +1,8 @@
 import type { BookingSeriesUpdateOccurrencesInput, SeriesOccurrenceDto } from "@okazi/core";
 import { BookingSeriesUpdateOccurrencesInputSchema } from "@okazi/core/schemas";
+import { NONE } from "@/components/form/option-select-field";
 import { numberOrUndefined } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
-import { NONE } from "../../booking/ui/option-select-field";
 import { fromLocalInputValue, toLocalInputValue } from "../../occupancy/ui/local-date-time";
 
 /** Raw values of the occurrence form; `patch` mirrors core's input so issues land on fields. */

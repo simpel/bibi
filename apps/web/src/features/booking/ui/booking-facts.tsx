@@ -1,8 +1,9 @@
 import type { BookingDto } from "@okazi/core";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { nameOf } from "@/components/form/named-option";
 import { FactList } from "@/components/typed-fields/fact-list";
 import { ownFieldFacts } from "@/components/typed-fields/own-field-facts";
-import { type BookingFormData, nameOf } from "./booking-form-data";
+import type { BookingFormData } from "./booking-form-data";
 
 export type BookingFactsProps = { booking: BookingDto; data: BookingFormData };
 

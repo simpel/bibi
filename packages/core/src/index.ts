@@ -46,6 +46,11 @@ export * from "./features/inbound-email/address";
 export * from "./features/inbound-email/deliver-inbound-email";
 export * from "./features/inbound-email/operations";
 export { receiveInboundEmail } from "./features/inbound-email/receive-operation";
+export * from "./features/inquiry/assign-operation";
+export * from "./features/inquiry/lifecycle-operations";
+export * from "./features/inquiry/operations";
+export * from "./features/inquiry/transitions";
+export * from "./features/inquiry/write-operations";
 export { itemEmbeddable } from "./features/item/embeddable";
 export * from "./features/item/lifecycle-operations";
 export * from "./features/item/package-operations";
@@ -84,11 +89,7 @@ export * from "./features/venue/operations";
 export * from "./features/vocabulary/read-operations";
 export * from "./features/vocabulary/value-operations";
 export * from "./features/vocabulary/write-operations";
-export {
-  type CreateExecuteContextInput,
-  createExecuteContext,
-  type ExecuteContext,
-} from "./operations/context";
+export * from "./operations/context";
 export { defineOperation } from "./operations/define-operation";
 export { type AfterCommitHook, type AfterCommitInput, execute } from "./operations/execute";
 export { hasPermission, type Permission } from "./operations/permission";

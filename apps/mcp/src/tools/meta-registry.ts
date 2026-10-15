@@ -9,6 +9,7 @@ import { customerMcpTools } from "../features/customer/mcp";
 import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { inboundEmailMcpTools } from "../features/inbound-email/mcp";
+import { inquiryMcpTools } from "../features/inquiry/mcp";
 import { itemMcpTools } from "../features/item/mcp";
 import { memberMcpTools } from "../features/member/mcp";
 import { messageMcpTools } from "../features/message/mcp";
@@ -43,6 +44,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...bookingMcpTools,
     ...bookingSeriesMcpTools,
     ...programItemMcpTools,
+    ...inquiryMcpTools,
     ...inboundEmailMcpTools,
     ...paymentAccountMcpTools,
     ...paymentMcpTools,

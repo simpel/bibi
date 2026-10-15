@@ -16,6 +16,7 @@ export const RESOURCES = [
   "bookingStatus",
   "booking",
   "programItem",
+  "inquiry",
   "search",
   "conversation",
   "skill",

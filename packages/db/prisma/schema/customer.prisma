@@ -28,6 +28,7 @@ model Customer {
   bookingSeries        BookingSeries[]
   /// Customer-specific packages (`Item.customerId`, ADR 0021).
   items                Item[]
+  inquiries            Inquiry[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])
@@ -52,6 +53,7 @@ model Contact {
   createdBy      String?
   entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   customer       Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  inquiries      Inquiry[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

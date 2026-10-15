@@ -2,8 +2,9 @@ import type { BookingDto } from "@okazi/core";
 import { Link } from "@okazi/i18n/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { nameOf } from "@/components/form/named-option";
 import { bookingRoute } from "@/lib/routes";
-import { type BookingFormData, nameOf } from "./booking-form-data";
+import type { BookingFormData } from "./booking-form-data";
 import { BookingStatusLabel } from "./booking-status-label";
 
 const PERIOD = { dateStyle: "medium", timeStyle: "short" } as const;

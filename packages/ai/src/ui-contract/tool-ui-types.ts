@@ -3,6 +3,7 @@ import type { BookingWire } from "./booking-entries";
 import type { BookingSeriesWire } from "./booking-series-entries";
 import type { BookingStatusWire } from "./booking-status-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
+import type { InquiryWire } from "./inquiry-entries";
 import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire } from "./payment-entries";
 import type { ProgramItemWire } from "./program-item-entries";
@@ -49,6 +50,8 @@ export type ToolUiProps = {
   "booking-series-card": { series: BookingSeriesWire };
   "program-item-table": { items: ProgramItemWire[]; nextCursor: string | null };
   "program-item-card": { programItem: ProgramItemWire };
+  "inquiry-table": { items: InquiryWire[]; nextCursor: string | null };
+  "inquiry-card": { inquiry: InquiryWire };
   "inbound-email-table": { items: InboundEmailWire[]; nextCursor: string | null };
   "inbound-email-card": { email: InboundEmailWire };
   "payment-account-card": { account: PaymentAccountWire };
@@ -84,56 +87,6 @@ export type ToolUiProps = {
 };
 
 export type UiComponent = keyof ToolUiProps;
-
-export const UI_COMPONENTS: readonly UiComponent[] = [
-  "venue-table",
-  "venue-card",
-  "item-table",
-  "item-card",
-  "customer-table",
-  "customer-card",
-  "contact-table",
-  "contact-card",
-  "occupancy-table",
-  "occupancy-card",
-  "booking-status-table",
-  "booking-status-card",
-  "booking-table",
-  "booking-card",
-  "booking-series-table",
-  "booking-series-card",
-  "program-item-table",
-  "program-item-card",
-  "inbound-email-table",
-  "inbound-email-card",
-  "payment-account-card",
-  "payment-table",
-  "payment-card",
-  "entity-type-table",
-  "entity-type-card",
-  "field-definition-table",
-  "field-definition-card",
-  "vocabulary-table",
-  "vocabulary-card",
-  "setup-table",
-  "setup-card",
-  "sheet-definition-table",
-  "sheet-definition-card",
-  "role-table",
-  "role-card",
-  "member-table",
-  "member-card",
-  "invitation-table",
-  "invitation-card",
-  "audit-log-table",
-  "audit-log-card",
-  "search-results",
-  "skill-table",
-  "skill-card",
-  "approval-card",
-  "error",
-  "json",
-];
 
 /** Discriminated union: `switch (ui.component)` narrows `ui.props`. */
 export type ToolUi = { [K in UiComponent]: { component: K; props: ToolUiProps[K] } }[UiComponent];

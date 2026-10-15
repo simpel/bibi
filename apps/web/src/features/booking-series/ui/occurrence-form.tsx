@@ -2,9 +2,9 @@ import type { SeriesOccurrenceDto } from "@okazi/core";
 import { Button, DialogFooter, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import type { NamedOption } from "@/components/form/named-option";
+import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
-import type { NamedOption } from "../../booking/ui/booking-form-data";
-import { OptionSelectField } from "../../booking/ui/option-select-field";
 import type { OccurrenceFormOutput, OccurrenceFormValues } from "./occurrence-form-schema";
 import { useOccurrenceForm } from "./use-occurrence-form";
 

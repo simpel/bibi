@@ -1,0 +1,46 @@
+/// Fixed sales status of an inquiry (ADR 0022). Changed only by the inquiry's own commands.
+enum InquiryStatus {
+  NEW
+  QUALIFIED
+  QUOTED
+  WON
+  LOST
+}
+
+/// Inquiry – the first step of the sales pipeline (ADR 0022). Its type (base `INQUIRY`) decides
+/// its own fields. `inquiryStatus` follows a fixed state machine (`NEW → QUALIFIED → QUOTED → WON`
+/// or `LOST`) and is never set by `inquiry.update`. `status` is the soft-delete flag (ADR 0006).
+model Inquiry {
+  id              String        @id @default(cuid(2))
+  organizationId  String
+  entityTypeId    String
+  customerId      String
+  /// A contact person at the customer (optional).
+  contactId       String?
+  desiredStartsAt DateTime?
+  desiredEndsAt   DateTime?
+  /// The requested quantity, e.g. the number of guests.
+  quantity        Int?
+  /// Budget in minor units (1/100 kr).
+  budgetMinor     Int?
+  inquiryStatus   InquiryStatus @default(NEW)
+  /// Required when the inquiry is `LOST`.
+  lossReason      String?
+  /// User id of the salesperson (a member of the organization); required from `QUALIFIED`.
+  salesOwnerId    String?
+  statusChangedAt DateTime      @default(now())
+  /// Values of the type's own fields, keyed by `FieldDefinition.key`.
+  fields          Json          @default("{}")
+  status          RecordStatus  @default(ACTIVE)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  createdBy       String?
+  entityType      EntityType    @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  customer        Customer      @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  contact         Contact?      @relation(fields: [contactId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status, inquiryStatus])
+  @@index([organizationId, customerId])
+  @@index([organizationId, salesOwnerId])
+}

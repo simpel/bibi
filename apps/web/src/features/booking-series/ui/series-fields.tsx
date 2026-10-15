@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
-import { OptionSelectField } from "../../booking/ui/option-select-field";
 import type { SeriesFormData } from "./series-form-data";
 import type { SeriesFormOutput, SeriesFormValues } from "./series-form-schema";
 

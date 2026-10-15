@@ -10,8 +10,8 @@ import {
   Form,
 } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import type { NamedOption } from "../../booking/ui/booking-form-data";
-import { OptionSelectField } from "../../booking/ui/option-select-field";
+import type { NamedOption } from "@/components/form/named-option";
+import { OptionSelectField } from "@/components/form/option-select-field";
 import { useAssignResponsibleForm } from "./use-assign-responsible-form";
 
 export type AssignResponsibleDialogProps = {

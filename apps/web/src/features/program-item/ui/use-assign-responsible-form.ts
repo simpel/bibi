@@ -3,9 +3,9 @@ import type { ProgramItemDto } from "@okazi/core";
 import { useRouter } from "@okazi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+import { NONE } from "@/components/form/option-select-field";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
-import { NONE } from "../../booking/ui/option-select-field";
 import { assignProgramItemAction } from "../actions";
 import {
   type AssignResponsibleFormOutput,

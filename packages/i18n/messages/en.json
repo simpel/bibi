@@ -117,6 +117,7 @@
     "venues": "Venues",
     "items": "Items",
     "customers": "Customers",
+    "inquiries": "Inquiries",
     "types": "Types",
     "lists": "Lists",
     "setups": "Setups",
@@ -421,6 +422,61 @@
       "customer": "Customer",
       "type": "Type",
       "when": "When",
+      "status": "Status",
+      "salesOwner": "Salesperson"
+    }
+  },
+  "inquiry": {
+    "singular": "Inquiry",
+    "plural": "Inquiries",
+    "listDescription": "Requests from customers on their way to a quote and a booking. Each inquiry moves NEW → QUALIFIED → QUOTED → WON, or is marked lost with a reason.",
+    "title": "Inquiry from {customer}",
+    "create": "Register inquiry",
+    "edit": "Edit inquiry",
+    "createDescription": "Pick a type and the customer. The inquiry starts as new.",
+    "editDescription": "Change customer, contact, dates, quantity, budget and the type's fields. The status and the salesperson are changed separately.",
+    "created": "The inquiry has been registered.",
+    "updated": "The inquiry has been updated.",
+    "assign": "Change salesperson",
+    "assignDescription": "Pick the salesperson among the members.",
+    "assigned": "The salesperson has been updated.",
+    "noOwner": "No one",
+    "ownerRequired": "A qualified inquiry needs a salesperson.",
+    "qualify": "Qualify",
+    "qualifyDescription": "A qualified inquiry needs a salesperson. Pick one among the members.",
+    "qualified": "The inquiry has been qualified.",
+    "markLost": "Mark as lost",
+    "markLostDescription": "Say why the inquiry was lost. A lost inquiry cannot be reopened.",
+    "markedLost": "The inquiry has been marked as lost.",
+    "empty": "No inquiries yet.",
+    "emptyDescription": "Register your first inquiry.",
+    "noTypes": "There are no inquiry types yet. Create a type first.",
+    "goToTypes": "Go to types",
+    "statuses": {
+      "NEW": "New",
+      "QUALIFIED": "Qualified",
+      "QUOTED": "Quoted",
+      "WON": "Won",
+      "LOST": "Lost"
+    },
+    "fields": {
+      "type": "Type",
+      "customer": "Customer",
+      "contact": "Contact person",
+      "noContact": "No contact person",
+      "desiredStartsAt": "Desired start",
+      "desiredEndsAt": "Desired end",
+      "when": "Desired dates",
+      "quantity": "Quantity",
+      "budget": "Budget (SEK)",
+      "salesOwner": "Salesperson",
+      "lossReason": "Loss reason"
+    },
+    "columns": {
+      "customer": "Customer",
+      "type": "Type",
+      "when": "Desired dates",
+      "quantity": "Quantity",
       "status": "Status",
       "salesOwner": "Salesperson"
     }
@@ -982,6 +1038,21 @@
         "columns": { "rule": "Recurrence", "occurrences": "Occurrences", "clashes": "Clashes" },
         "cancelled": "Cancelled"
       },
+      "inquiry": {
+        "title": "Inquiry of {date}",
+        "empty": "No inquiries found.",
+        "open": "Open the inquiry",
+        "quantity": "Quantity: {count}",
+        "hasOwner": "Salesperson assigned",
+        "noOwner": "No salesperson yet",
+        "lossReason": "Lost: {reason}",
+        "columns": {
+          "created": "Registered",
+          "when": "Desired dates",
+          "quantity": "Quantity",
+          "status": "Status"
+        }
+      },
       "occupancy": {
         "singular": "Occupancy",
         "released": "Released",
@@ -1371,6 +1442,7 @@
       "bookingStatus": "Booking statuses and transitions",
       "booking": "Bookings and their owners",
       "programItem": "Program items (the booking's run schedule)",
+      "inquiry": "Inquiries and their salesperson",
       "search": "Search",
       "conversation": "Conversations",
       "skill": "Skills",

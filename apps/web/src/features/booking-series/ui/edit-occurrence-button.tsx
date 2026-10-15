@@ -12,7 +12,7 @@ import {
 import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { NamedOption } from "../../booking/ui/booking-form-data";
+import type { NamedOption } from "@/components/form/named-option";
 import { OccurrenceForm } from "./occurrence-form";
 
 export type EditOccurrenceButtonProps = {

@@ -87,6 +87,23 @@ const programItem = (): ParityEntity => ({
   },
 });
 
+/** An inquiry (ADR 0022) from the customer created earlier; it starts in status NEW. */
+const inquiry = (): ParityEntity => ({
+  ...byId({ name: "inquiry", field: "inquiry", list: "inquiries", createTool: "", args: {} }),
+  create: async ({ mcp, made }) => {
+    const type = await tool({
+      mcp,
+      name: "entityType_create",
+      args: { base: "INQUIRY", name: "Parity inquiry" },
+    });
+    return tool({
+      mcp,
+      name: "inquiry_create",
+      args: { entityTypeId: type.id, customerId: made.customer.id, quantity: 30 },
+    });
+  },
+});
+
 const domain = "in.parity.test";
 
 /**
@@ -123,7 +140,7 @@ const inboundEmail = (): ParityEntity => ({
   },
 });
 
-/** Bookings; a function so the import cycle with `parity-entities.ts` resolves first. */
+/** Bookings and inquiries; a function so the import cycle with `parity-entities.ts` resolves first. */
 export function bookingEntities(): ParityEntity[] {
-  return [booking(), bookingSeries(), programItem(), inboundEmail()];
+  return [booking(), bookingSeries(), programItem(), inboundEmail(), inquiry()];
 }

@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
-import { OptionSelectField } from "../../booking/ui/option-select-field";
+import { OptionSelectField } from "@/components/form/option-select-field";
 import type { ProgramFormData } from "./program-form-data";
 import type { ProgramItemFormOutput } from "./program-item-form-schema";
 import type { ProgramItemFormValues } from "./program-item-form-values";

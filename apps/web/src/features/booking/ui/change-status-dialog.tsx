@@ -10,9 +10,9 @@ import {
   Form,
 } from "@okazi/ui";
 import { useTranslations } from "next-intl";
+import type { NamedOption } from "@/components/form/named-option";
+import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
-import type { NamedOption } from "./booking-form-data";
-import { OptionSelectField } from "./option-select-field";
 import { useChangeStatusForm } from "./use-change-status-form";
 
 export type ChangeStatusDialogProps = {

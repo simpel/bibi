@@ -1,7 +1,7 @@
 import type { BookingSeriesDto } from "@okazi/core";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { nameOf } from "@/components/form/named-option";
 import { FactList } from "@/components/typed-fields/fact-list";
-import { nameOf } from "../../booking/ui/booking-form-data";
 import type { SeriesFormData } from "./series-form-data";
 
 export type SeriesFactsProps = { series: BookingSeriesDto; data: SeriesFormData };

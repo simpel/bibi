@@ -51,6 +51,7 @@ model EntityType {
   bookings       Booking[]
   bookingSeries  BookingSeries[]
   programItems   ProgramItem[]
+  inquiries      Inquiry[]
 
   @@unique([id, organizationId])
   @@index([organizationId, base, status])
