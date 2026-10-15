@@ -11,6 +11,7 @@ export const OPERATION_NAME_PATTERN = /^[a-z][a-zA-Z0-9]*(\.[a-z][a-zA-Z0-9]*)*$
 export function defineOperation<I extends z.ZodType, O extends z.ZodType>({
   approval,
   entityType,
+  untrustedOutput,
   ...definition
 }: OperationDefinition<I, O>): Operation<I, O> {
   if (!OPERATION_NAME_PATTERN.test(definition.name)) {
@@ -20,6 +21,7 @@ export function defineOperation<I extends z.ZodType, O extends z.ZodType>({
   return Object.freeze({
     ...definition,
     approval: approval ?? definition.kind === "command",
+    untrustedOutput: untrustedOutput ?? false,
     entityType: entityType ?? definition.name.split(".")[0] ?? definition.name,
   });
 }

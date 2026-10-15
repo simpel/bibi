@@ -35,6 +35,14 @@ describe("MCP tools", () => {
     expect(byName.get("venue_get")?.inputSchema.required).toContain("id");
   });
 
+  it("flags untrusted-output tools in _meta", async () => {
+    const client = await connect({ context: testContext() });
+    const { tools } = await client.listTools();
+    const byName = new Map(tools.map((tool) => [tool.name, tool]));
+    expect(byName.get("inboundEmail_get")?._meta?.["okazi/untrustedOutput"]).toBe(true);
+    expect(byName.get("venue_list")?._meta).toBeUndefined();
+  });
+
   it("hides approval_confirm from the AI actor", async () => {
     const actor = { type: "ai" as const, userId: "user_1", conversationId: "conv_1" };
     const client = await connect({ context: testContext({ actor }) });

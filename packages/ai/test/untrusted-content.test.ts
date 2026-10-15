@@ -13,10 +13,11 @@ describe("untrusted inbound mail", () => {
     expect(wrapped.endsWith("</untrusted_external_content>")).toBe(true);
   });
 
-  it("gives the model only wrapped output for inboundEmail tools, leaving other tools alone", async () => {
+  it("gives the model only wrapped output for tools flagged in _meta, leaving other tools alone", async () => {
     const output_ = { content: [{ type: "text", text: JSON.stringify({ text: injection }) }] };
     const other = { toModelOutput: () => ({ type: "text", value: "plain" }) };
     const mcpLike = {
+      _meta: { "okazi/untrustedOutput": true },
       toModelOutput: ({ output }: { output: typeof output_ }) => ({
         type: "content",
         value: output.content,

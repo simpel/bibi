@@ -27,6 +27,8 @@ export type McpTool = {
   inputSchema: JsonObject;
   outputSchema: JsonObject;
   annotations: ToolAnnotations;
+  /** Extra tool metadata, e.g. the untrusted-output flag (`UNTRUSTED_OUTPUT_META_KEY`). */
+  _meta?: Record<string, unknown>;
   /** Hidden from `tools/list` (and refused) when the caller is the AI actor. */
   humanOnly?: boolean;
   run(input: RunToolInput): Promise<ToolResult>;

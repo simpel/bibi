@@ -1,9 +1,13 @@
+import { UNTRUSTED_OUTPUT_META_KEY } from "@okazi/core";
 import type { ToolSet } from "ai";
 
 type ModelOutputOptions = { toolCallId: string; input: unknown; output: unknown };
 
-/** Tools whose results carry text written by external parties (mail senders). */
-export const UNTRUSTED_CONTENT_TOOLS: readonly string[] = ["inboundEmail_list", "inboundEmail_get"];
+type MaybeMeta = { _meta?: Record<string, unknown> };
+
+/** Tools flagged by their operation (`untrustedOutput`) via the MCP tool `_meta`. */
+const isUntrusted = ({ tool }: { tool: MaybeMeta }): boolean =>
+  tool._meta?.[UNTRUSTED_OUTPUT_META_KEY] === true;
 
 const OPEN_TAG = "<untrusted_external_content";
 const CLOSE_TAG = "</untrusted_external_content>";
@@ -29,9 +33,8 @@ export type MarkUntrustedToolsInput<T extends ToolSet> = { tools: T };
  */
 export function markUntrustedTools<T extends ToolSet>({ tools }: MarkUntrustedToolsInput<T>): T {
   const marked: ToolSet = { ...tools };
-  for (const name of UNTRUSTED_CONTENT_TOOLS) {
-    const original = marked[name];
-    if (!original) continue;
+  for (const [name, original] of Object.entries(tools)) {
+    if (!isUntrusted({ tool: original as MaybeMeta })) continue;
     marked[name] = {
       ...original,
       toModelOutput: async (options: ModelOutputOptions) => {

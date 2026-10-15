@@ -21,6 +21,7 @@ export const listInboundEmails = defineOperation({
   input: InboundEmailListInputSchema,
   output: InboundEmailListOutputSchema,
   permission: "booking:read",
+  untrustedOutput: true,
   handler: async ({ input: { bookingId, limit, cursor }, context }) => {
     const rows = await context.db.inboundEmail.findMany({
       where: { bookingId },
@@ -42,6 +43,7 @@ export const getInboundEmail = defineOperation({
   input: InboundEmailIdInputSchema,
   output: InboundEmailSchema,
   permission: "booking:read",
+  untrustedOutput: true,
   handler: async ({ input, context }) => {
     const row = await context.db.inboundEmail.findFirst({ where: { id: input.id } });
     return row ? ok({ value: toInboundEmailDto({ row }) }) : notFound({ entity: "Inbound email" });

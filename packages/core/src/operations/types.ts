@@ -60,11 +60,16 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
   embeddable?: Embeddable;
   /** Entity type for audit rows; defaults to the name prefix. */
   entityType?: string;
+  /**
+   * The output carries text written by external parties (e.g. inbound mail). Surfaced in the MCP
+   * tool `_meta` so the assistant wraps results as untrusted data. Defaults to false.
+   */
+  untrustedOutput?: boolean;
 };
 
 export type Operation<I extends z.ZodType = z.ZodType, O extends z.ZodType = z.ZodType> = Readonly<
-  Required<Pick<OperationDefinition<I, O>, "approval" | "entityType">> &
-    Omit<OperationDefinition<I, O>, "approval" | "entityType">
+  Required<Pick<OperationDefinition<I, O>, "approval" | "entityType" | "untrustedOutput">> &
+    Omit<OperationDefinition<I, O>, "approval" | "entityType" | "untrustedOutput">
 >;
 
 /** Erased operation type for registries and adapters. */

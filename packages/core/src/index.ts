@@ -83,6 +83,7 @@ export { hasPermission, type Permission } from "./operations/permission";
 export { getOperation, listOperations, registerOperations } from "./operations/registry";
 export { requiresApproval } from "./operations/requires-approval";
 export type * from "./operations/types";
+export { UNTRUSTED_OUTPUT_META_KEY } from "./operations/untrusted-output";
 export { type ProvisionOrganizationInput, provisionOrganization } from "./organization/provision";
 export {
   grantAll,
