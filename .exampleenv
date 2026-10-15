@@ -45,6 +45,8 @@ LOG_LEVEL=
 LOG_FORMAT=
 # Days the SystemLog table (admin view) keeps rows. Default 30.
 SYSTEM_LOG_RETENTION_DAYS=
+# Days before personal values in AuditLog before/after are redacted by the worker (ADR 0032). Default 365.
+AUDIT_LOG_PSEUDONYMISE_AFTER_DAYS=
 PW_CHROMIUM_PATH=/Users/joelsanden/Library/Caches/ms-playwright/chromium-1223/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
 
 # Stripe Connect (ADR 0028): platform secret key and the platform account id. Payment operations

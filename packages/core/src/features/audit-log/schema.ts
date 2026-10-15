@@ -25,6 +25,8 @@ export const AuditLogSchema = z.object({
   requestId: z.string().nullable(),
   surface: z.string().nullable(),
   createdAt: z.date(),
+  /** When personal values in `before`/`after` were redacted (ADR 0032); null = not yet. */
+  pseudonymisedAt: z.date().nullable(),
 });
 
 const optionalId = z.string().trim().min(1).max(200).optional();

@@ -50,7 +50,7 @@ Every org-scoped model is soft-deleted (`SOFT_DELETE_MODELS`), append-only (`APP
 
 ## Consequences
 - Soft delete means all lists and searches must filter on `status`. This is handled in core and in the org-scoped client, not in each query.
-- `AuditLog` grows quickly. Retention and archiving need to be decided later.
+- `AuditLog` grows quickly. Retention and pseudonymisation: see 0032.
 - cuid2 is a string format, so indexes are larger than for integers. We accept that so IDs stay opaque.
 - Whoever writes a new mutation cannot forget audit, because the audit hook lives in core.
 - Whoever writes a new handler cannot forget `createdBy`, because `scopedDb` sets it.

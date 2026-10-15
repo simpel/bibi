@@ -777,7 +777,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 ### AuditLog
 
-*MVP* · Organization data. One row per change made by a command, written by core in the same transaction ([ADR 0006](decisions/0006-database-conventions.md), [ADR 0014](decisions/0014-system-logging.md)). Read with `auditLog.list|get` (permission `audit:read`) on every surface and shown as the history tab on detail pages. Changes to private entities (conversations, messages, skills) are only visible to the user who made them; `conversation:admin` also sees conversation changes.
+*MVP* · Organization data. One row per change made by a command, written by core in the same transaction ([ADR 0006](decisions/0006-database-conventions.md), [ADR 0014](decisions/0014-system-logging.md)). Read with `auditLog.list|get` (permission `audit:read`) on every surface and shown as the history tab on detail pages. Changes to private entities (conversations, messages, skills) are only visible to the user who made them; `conversation:admin` also sees conversation changes. After `AUDIT_LOG_PSEUDONYMISE_AFTER_DAYS` (default 365) a nightly worker job replaces personal values in the before and after images with `[redacted]`; rows are kept ([ADR 0032](decisions/0032-audit-log-retention.md)).
 
 **Attributes**
 - actor (user / AI / system) and, for AI proposals, who approved
@@ -786,6 +786,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - before and after image
 - request id and surface (links to the system log)
 - time
+- pseudonymised at (when personal values in the images were redacted, ADR 0032)
 
 **Relations**
 - `N:0..1` made by → User

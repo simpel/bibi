@@ -6,25 +6,28 @@ enum ActorType {
 
 /// Append-only log of every command executed through @okazi/core.
 model AuditLog {
-  id             String    @id @default(cuid(2))
-  organizationId String
-  actorType      ActorType
-  actorId        String?
-  conversationId String?
+  id              String    @id @default(cuid(2))
+  organizationId  String
+  actorType       ActorType
+  actorId         String?
+  conversationId  String?
   /// User who approved an AI-proposed command (human-in-the-loop); null otherwise.
-  approvedBy     String?
-  operation      String
-  entityType     String?
-  entityId       String?
-  before         Json?
-  after          Json?
+  approvedBy      String?
+  operation       String
+  entityType      String?
+  entityId        String?
+  before          Json?
+  after           Json?
   /// Correlates with the system log (`requestId` on every log line, ADR 0014).
-  requestId      String?
+  requestId       String?
   /// Entry point: web, graphql, rest, mcp, ai, auth, cli or system.
-  surface        String?
-  createdAt      DateTime  @default(now())
+  surface         String?
+  createdAt       DateTime  @default(now())
+  /// Set when `before`/`after` had their personal fields redacted by the retention job (ADR 0032).
+  pseudonymisedAt DateTime?
 
   @@index([organizationId, createdAt])
   @@index([organizationId, entityType, entityId])
   @@index([organizationId, requestId])
+  @@index([pseudonymisedAt, createdAt])
 }

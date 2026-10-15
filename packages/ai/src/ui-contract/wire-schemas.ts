@@ -26,7 +26,6 @@ import { z } from "zod";
 const isoDates = { createdAt: z.string(), updatedAt: z.string() };
 
 export const VenueWireSchema = VenueSchema.extend(isoDates);
-
 export const ItemWireSchema = ItemSchema.extend(isoDates);
 export const CustomerWireSchema = CustomerSchema.extend(isoDates);
 export const ContactWireSchema = ContactSchema.extend(isoDates);
@@ -42,7 +41,6 @@ export const EntityTypeWireSchema = EntityTypeSchema.extend({
 });
 export const VocabularyWireSchema = VocabularySchema.extend(isoDates);
 export const SetupWireSchema = SetupSchema.extend(isoDates);
-
 export const RoleWireSchema = RoleSchema.extend({
   createdAt: z.string(),
   updatedAt: z.string().nullable(),
@@ -53,8 +51,11 @@ export const InvitationWireSchema = InvitationSchema.extend({
   expiresAt: z.string(),
 });
 
-/** Audit log entries carry only `createdAt`; before/after stay free-form JSON. */
-export const AuditLogWireSchema = AuditLogSchema.extend({ createdAt: z.string() });
+/** Audit log entries carry dates as ISO strings; before/after stay free-form JSON. */
+export const AuditLogWireSchema = AuditLogSchema.extend({
+  createdAt: z.string(),
+  pseudonymisedAt: z.string().nullable(),
+});
 
 const page = <T extends z.ZodType>({ item }: { item: T }) =>
   z.object({ items: z.array(item), nextCursor: z.string().nullable() });

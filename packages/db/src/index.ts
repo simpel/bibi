@@ -1,3 +1,9 @@
+export {
+  type PseudonymiseAuditLogInput,
+  type PseudonymiseAuditLogOutput,
+  pseudonymiseAuditLog,
+} from "./audit-log/pseudonymise-audit-log";
+export { REDACTED, redactAuditImage } from "./audit-log/redact-audit-image";
 export { type CreateDbInput, createDb, type Db } from "./client";
 export { deleteEmbedding } from "./embeddings/delete-embedding";
 export { searchEmbeddings } from "./embeddings/search-embeddings";

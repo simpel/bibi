@@ -58,6 +58,11 @@ const envSchema = z
     BETTER_STACK_SOURCE_TOKEN: z.string().min(1).optional(),
     /** Days the `SystemLog` table keeps rows for the admin view (ADR 0015). */
     SYSTEM_LOG_RETENTION_DAYS: z.coerce.number().int().min(1).max(365).default(30),
+    /**
+     * Days before personal values in `AuditLog.before`/`after` are redacted by the worker's
+     * pseudonymisation job (ADR 0032). Rows themselves are kept 7 years.
+     */
+    AUDIT_LOG_PSEUDONYMISE_AFTER_DAYS: z.coerce.number().int().min(1).max(2555).default(365),
   })
   .refine((env) => Boolean(env.BETTER_STACK_HOST) === Boolean(env.BETTER_STACK_SOURCE_TOKEN), {
     message: "BETTER_STACK_HOST and BETTER_STACK_SOURCE_TOKEN must be set together",

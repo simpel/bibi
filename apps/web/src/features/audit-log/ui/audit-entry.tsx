@@ -6,7 +6,10 @@ import { auditDiff } from "../audit-diff";
 import { AuditChanges } from "./audit-changes";
 
 /** An audit entry as the server (Date) or a tool result (ISO string) carries it. */
-export type AuditEntryValue = Omit<AuditLogDto, "createdAt"> & { createdAt: Date | string };
+export type AuditEntryValue = Omit<AuditLogDto, "createdAt" | "pseudonymisedAt"> & {
+  createdAt: Date | string;
+  pseudonymisedAt: Date | string | null;
+};
 
 export type AuditEntryProps = { entry: AuditEntryValue };
 
