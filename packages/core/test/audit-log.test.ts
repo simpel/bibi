@@ -10,6 +10,7 @@ import {
   updateVenue,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
+import { invite, withInviter } from "./invitation-helpers";
 import { addTestMember, testOrg } from "./org-helpers";
 
 type MakeVenueInput = { context: ExecuteContext; name: string };
@@ -118,6 +119,25 @@ describe("auditLog.list / auditLog.get", () => {
     const filter = { entityType: "conversation" };
     expect((await list({ context: peer, input: filter })).items).toEqual([]);
     expect((await list({ context: owner, input: filter })).items).toHaveLength(1);
+    expect((await list({ context: admin, input: filter })).items).toHaveLength(1);
+  });
+
+  it("hides pending invitations' audit rows unless member:admin", async () => {
+    const inviter = await withInviter();
+    unwrap({
+      result: await invite({ context: inviter, email: "secret@example.test", roles: ["Kitchen"] }),
+    });
+    const peer = testContext({
+      organizationId: inviter.organizationId,
+      permissions: { audit: ["read"], member: ["read"] },
+    });
+    const admin = testContext({
+      organizationId: inviter.organizationId,
+      permissions: { audit: ["read"], member: ["admin"] },
+    });
+    const filter = { entityType: "invitation" };
+    expect((await list({ context: peer, input: filter })).items).toEqual([]);
+    expect((await list({ context: inviter, input: filter })).items).toHaveLength(1);
     expect((await list({ context: admin, input: filter })).items).toHaveLength(1);
   });
 });
