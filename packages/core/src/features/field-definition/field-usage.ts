@@ -7,6 +7,7 @@ export type FieldValuesOfTypeInput = { context: Db; entityTypeId: string };
 /**
  * The `fields` JSON of every active record of a type: items, customers, contacts or bookings (a
  * type has one base, so only one table has rows). Used by the "data present → CONFLICT" rules (ADR 0021).
+ * Archived rows are not counted: the org-scoped client hides `status = ARCHIVED` rows (ADR 0026).
  * Record counts per type are small (hundreds of rows), so the check runs in memory.
  */
 export async function fieldValuesOfType({

@@ -43,7 +43,7 @@ const DATA_COUNTS: Record<ItemBehaviour, (input: CountInput) => Promise<number>>
     context.db.itemSetup.count({ where: { item: { entityTypeId, status: "ACTIVE" } } }),
   COMPOSABLE: ({ context, entityTypeId }) =>
     context.db.itemComponent.count({ where: { parent: { entityTypeId, status: "ACTIVE" } } }),
-  // Choice groups arrive later; until then there is no data.
+  // There is no choice-group model yet; when one exists, count its rows here (ADR 0026).
   CHOICES: async () => 0,
 };
 
