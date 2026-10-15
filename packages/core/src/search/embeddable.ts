@@ -1,4 +1,5 @@
 import type { ScopedDbClient } from "@okazi/db";
+import type { Permission } from "../operations/permission";
 
 export type ToTextInput<E> = { entity: E };
 
@@ -22,6 +23,8 @@ export type LoadInput = {
 export interface Embeddable<E extends { id: string } = { id: string }> {
   /** Stored in `Embedding.entityType`; matches the operation/entity prefix, e.g. `venue`. */
   readonly entityType: string;
+  /** When set, `search` drops hits of this type for callers without the permission. */
+  readonly readPermission?: Permission;
   /** Text that is embedded and full-text indexed. Keep it human-readable. */
   toText(input: ToTextInput<E>): string;
   /** Loads active entities by id through the org-scoped db (missing = not indexable/visible). */

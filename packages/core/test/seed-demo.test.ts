@@ -11,7 +11,7 @@ const testOrgs = () => {
   return [lindholmen, vingaleden].map((org) => ({ ...org, slug: `${org.slug}-${suffix}` }));
 };
 
-describe("seed:demo slices 1–2 (ADR 0025)", () => {
+describe("seed:demo slices 1–4 (ADR 0025)", () => {
   it("creates both orgs with roles and members, passes its checks and is idempotent", async () => {
     const orgs = testOrgs();
     const first = await seedDemo({ orgs });
@@ -53,5 +53,17 @@ describe("seed:demo slices 1–2 (ADR 0025)", () => {
       where: { organizationId: vinga?.organizationId, name: "Allergens" },
     });
     expect(allergens).toBe(0);
+    const customers = ({ organizationId }: { organizationId?: string }) =>
+      db.customer.count({ where: { organizationId } });
+    expect(await customers({ organizationId: lind?.organizationId })).toBe(7);
+    expect(await customers({ organizationId: vinga?.organizationId })).toBe(3);
+    const nordkust = await db.customer.findFirst({
+      where: { organizationId: lind?.organizationId, name: "Nordkust Logistik AB" },
+      include: { contacts: { orderBy: { name: "asc" } } },
+    });
+    expect(nordkust?.contacts.map((contact) => contact.name)).toEqual([
+      "Fakturor Nordkust",
+      "Karin Wallin",
+    ]);
   });
 });

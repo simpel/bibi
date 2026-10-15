@@ -5,7 +5,7 @@ import type { ChoiceControlProps } from "./control-props";
 /** MULTI_CHOICE field: a checkbox per allowed value. */
 export function MultiChoiceControl(props: ChoiceControlProps<string[]>) {
   const { value, onChange, choices, id, ...aria } = props;
-  const t = useTranslations("item");
+  const t = useTranslations("common");
   const toggle = ({ choice, checked }: { choice: string; checked: boolean }) =>
     onChange(checked ? [...value, choice] : value.filter((item) => item !== choice));
   if (choices.length === 0)

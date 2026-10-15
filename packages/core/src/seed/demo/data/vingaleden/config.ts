@@ -43,6 +43,7 @@ export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "checks"> = 
     { base: "ITEM", name: "Add-on", behaviours: ["PRICED"] },
     { base: "CUSTOMER", name: "Company", fields: [{ name: "Org no.", kind: "TEXT" }] },
     { base: "CUSTOMER", name: "Private" },
+    { base: "CONTACT", name: "Contact person" },
     { base: "BOOKING", name: "Charter" },
     { base: "BOOKING", name: "Round trip" },
   ],

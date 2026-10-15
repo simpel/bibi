@@ -1,8 +1,8 @@
 import type { EntityType } from "@okazi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { validateFields } from "../field-definition/field-values";
 import { checkComponents } from "./item-components";
-import { validateFields } from "./item-fields";
 import { checkBehaviourData, checkVenue } from "./item-rules";
 import { checkSetups } from "./item-setups";
 import type { ItemUpdateInput } from "./schema";

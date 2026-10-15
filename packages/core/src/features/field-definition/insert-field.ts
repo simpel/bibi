@@ -3,6 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
 import { freeFieldKey, toFieldKey } from "./field-key";
 import { checkChoiceSource } from "./field-rules";
+import { countRecordsOfType } from "./field-usage";
 import type { FieldDefinitionCreateInput, FieldDefinitionDto } from "./schema";
 
 export type InsertFieldInput = { context: OperationContext; input: FieldDefinitionCreateInput };
@@ -41,8 +42,8 @@ export async function insertField({
   if (!source.ok) return source;
   const key = await resolveKey({ context, input });
   if (!key.ok) return key;
-  const items = await context.db.item.count({ where: { entityTypeId } });
-  if (input.required && items > 0) return conflict({ message: `${items} items lack ${name}` });
+  const used = await countRecordsOfType({ context, entityTypeId });
+  if (input.required && used > 0) return conflict({ message: `${used} records lack ${name}` });
   const position =
     input.position ?? (await context.db.fieldDefinition.count({ where: { entityTypeId } }));
   const field = await context.db.fieldDefinition.create({

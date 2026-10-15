@@ -43,6 +43,8 @@ model EntityType {
   createdBy      String?
   fields         FieldDefinition[]
   items          Item[]
+  customers      Customer[]
+  contacts       Contact[]
 
   @@unique([id, organizationId])
   @@index([organizationId, base, status])

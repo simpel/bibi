@@ -36,7 +36,9 @@
     "saving": "Sparar…",
     "archiving": "Arkiverar…",
     "sending": "Skickar…",
-    "removing": "Tar bort…"
+    "removing": "Tar bort…",
+    "select": "Välj…",
+    "noOptions": "Inga alternativ."
   },
   "auth": {
     "signIn": "Logga in",
@@ -113,6 +115,7 @@
     "dashboard": "Översikt",
     "venues": "Anläggningar",
     "items": "Artiklar",
+    "customers": "Kunder",
     "types": "Typer",
     "lists": "Listor",
     "setups": "Uppställningar",
@@ -234,6 +237,74 @@
       "required": "Obligatorisk"
     },
     "componentValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (valfri)}}"
+  },
+  "customer": {
+    "singular": "Kund",
+    "plural": "Kunder",
+    "listDescription": "Företag, myndigheter, föreningar och privatpersoner som köper av er. Typen bestämmer vilka fält en kund har.",
+    "create": "Skapa kund",
+    "edit": "Redigera kund",
+    "createDescription": "Välj typ och fyll i uppgifterna.",
+    "editDescription": "Ändra uppgifterna för kunden.",
+    "archive": "Arkivera kund",
+    "archiveConfirm": "Vill du arkivera kunden {name}? Arkivera kontaktpersonerna först.",
+    "archived": "Kunden har arkiverats.",
+    "created": "Kunden har skapats.",
+    "updated": "Kunden har uppdaterats.",
+    "empty": "Inga kunder ännu.",
+    "emptyDescription": "Skapa er första kund.",
+    "noTypes": "Det finns inga kundtyper ännu. Skapa en typ först.",
+    "goToTypes": "Gå till typer",
+    "saving": "Sparar kund…",
+    "archiving": "Arkiverar kund…",
+    "invoiceAddress": "Fakturaadress",
+    "fields": {
+      "type": "Typ",
+      "name": "Namn",
+      "email": "E-post",
+      "phone": "Telefon",
+      "invoiceStreetAddress": "Fakturaadress (gata)",
+      "invoicePostalCode": "Postnummer",
+      "invoiceCity": "Ort",
+      "invoiceCountry": "Land",
+      "paymentTermsDays": "Betalningsvillkor (dagar)",
+      "creditLimit": "Kreditgräns (kr)"
+    },
+    "columns": {
+      "name": "Namn",
+      "type": "Typ",
+      "city": "Ort",
+      "email": "E-post"
+    }
+  },
+  "contact": {
+    "singular": "Kontaktperson",
+    "plural": "Kontaktpersoner",
+    "create": "Lägg till kontaktperson",
+    "edit": "Redigera kontaktperson",
+    "createDescription": "Välj typ och fyll i uppgifterna.",
+    "editDescription": "Ändra uppgifterna för kontaktpersonen.",
+    "archive": "Arkivera kontaktperson",
+    "archiveConfirm": "Vill du arkivera kontaktpersonen {name}?",
+    "archived": "Kontaktpersonen har arkiverats.",
+    "created": "Kontaktpersonen har lagts till.",
+    "updated": "Kontaktpersonen har uppdaterats.",
+    "empty": "Inga kontaktpersoner ännu.",
+    "noTypes": "Det finns inga kontakttyper ännu. Skapa en under Typer först.",
+    "saving": "Sparar kontaktperson…",
+    "archiving": "Arkiverar kontaktperson…",
+    "fields": {
+      "type": "Typ",
+      "name": "Namn",
+      "email": "E-post",
+      "phone": "Telefon"
+    },
+    "columns": {
+      "name": "Namn",
+      "type": "Typ",
+      "email": "E-post",
+      "phone": "Telefon"
+    }
   },
   "entityType": {
     "singular": "Typ",
@@ -472,7 +543,16 @@
         "markdown": "SKILL.md",
         "title": "Titel",
         "value": "Värde",
-        "components": "Delar"
+        "components": "Delar",
+        "customerId": "Kund (id)",
+        "email": "E-post",
+        "phone": "Telefon",
+        "invoiceStreetAddress": "Fakturaadress (gata)",
+        "invoicePostalCode": "Fakturapostnummer",
+        "invoiceCity": "Fakturaort",
+        "invoiceCountry": "Fakturaland",
+        "paymentTermsDays": "Betalningsvillkor (dagar)",
+        "creditLimitMinor": "Kreditgräns (ören)"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -481,6 +561,12 @@
         "item_create": "Skapa artikel",
         "item_update": "Ändra artikel",
         "item_archive": "Arkivera artikel",
+        "customer_create": "Skapa kund",
+        "customer_update": "Uppdatera kund",
+        "customer_archive": "Arkivera kund",
+        "contact_create": "Lägg till kontaktperson",
+        "contact_update": "Uppdatera kontaktperson",
+        "contact_archive": "Arkivera kontaktperson",
         "entityType_create": "Skapa typ",
         "entityType_update": "Ändra typ",
         "entityType_archive": "Arkivera typ",
@@ -554,6 +640,19 @@
         "duration": "{minutes} min",
         "setupsCount": "{count, plural, one {# uppställning} other {# uppställningar}}",
         "componentsCount": "{count, plural, one {# del} other {# delar}}"
+      },
+      "customer": {
+        "singular": "Kund",
+        "empty": "Inga kunder hittades.",
+        "open": "Öppna kunden",
+        "columns": { "name": "Namn", "city": "Ort", "email": "E-post" },
+        "terms": "Betalningsvillkor {days} dagar"
+      },
+      "contact": {
+        "singular": "Kontaktperson",
+        "empty": "Inga kontaktpersoner hittades.",
+        "openCustomer": "Öppna kunden",
+        "columns": { "name": "Namn", "email": "E-post", "phone": "Telefon" }
       },
       "entityType": {
         "empty": "Inga typer hittades.",
@@ -694,7 +793,9 @@
     "clear": "Rensa sökningen",
     "entity": {
       "venue": "Anläggning",
-      "item": "Artikel"
+      "item": "Artikel",
+      "customer": "Kund",
+      "contact": "Kontaktperson"
     },
     "error": "Sökningen misslyckades."
   },
@@ -896,6 +997,8 @@
     "resources": {
       "venue": "Anläggningar",
       "item": "Artiklar",
+      "customer": "Kunder",
+      "contact": "Kontaktpersoner",
       "configuration": "Konfiguration (typer, fält, listor, uppställningar)",
       "search": "Sök",
       "conversation": "Konversationer",

@@ -48,6 +48,8 @@ describe("search and parity", () => {
     const sdl = printSchemaSdl();
     expect(sdl).toContain("type Venue");
     expect(sdl).toContain("limit: Int = 50");
-    expect(sdl).toContain("union SearchEntity = Conversation | Item | Skill | Venue");
+    expect(sdl).toContain(
+      "union SearchEntity = Contact | Conversation | Customer | Item | Skill | Venue",
+    );
   });
 });

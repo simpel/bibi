@@ -8,7 +8,7 @@ import {
   VocabularySchema,
   VocabularyUpdateValueInputSchema,
 } from "./schema";
-import { countItemsUsingValue } from "./usage";
+import { countRecordsUsingValue } from "./usage";
 
 const VALUE = "vocabularyValue";
 
@@ -70,8 +70,8 @@ export const archiveVocabularyValue = defineOperation({
     const before = await context.db.vocabularyValue.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "List value" });
     const vocabularyId = before.vocabularyId;
-    const used = await countItemsUsingValue({ context, vocabularyId, valueId: id });
-    if (used > 0) return conflict({ message: `${used} items carry "${before.name}"` });
+    const used = await countRecordsUsingValue({ context, vocabularyId, valueId: id });
+    if (used > 0) return conflict({ message: `${used} records carry "${before.name}"` });
     const row = await context.db.vocabularyValue.update({
       where: { id },
       data: { status: "ARCHIVED" },

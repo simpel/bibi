@@ -1,4 +1,9 @@
-import type { EntityTypeDto, VocabularyDto } from "@okazi/core";
+import {
+  type CustomerDto,
+  type EntityTypeDto,
+  toCustomerDto,
+  type VocabularyDto,
+} from "@okazi/core";
 import type { ScopedDb } from "@okazi/db";
 import { type BatchLoader, createBatchLoader } from "./batch-loader";
 
@@ -9,6 +14,7 @@ type SetupRow = NonNullable<Awaited<ReturnType<ScopedDb["setup"]["findFirst"]>>>
 export type Loaders = {
   venue: BatchLoader<VenueRow>;
   setup: BatchLoader<SetupRow>;
+  customer: BatchLoader<CustomerDto>;
   entityType: BatchLoader<EntityTypeDto>;
   vocabulary: BatchLoader<VocabularyDto>;
 };
@@ -56,6 +62,12 @@ export function createLoaders({ db }: DbInput): Loaders {
     setup: createBatchLoader({
       batch: async (ids) =>
         byId({ rows: await db.setup.findMany({ where: { id: { in: [...ids] } } }) }),
+    }),
+    customer: createBatchLoader({
+      batch: async (ids) => {
+        const rows = await db.customer.findMany({ where: { id: { in: [...ids] } } });
+        return byId({ rows: rows.map((row) => toCustomerDto({ row })) });
+      },
     }),
     entityType: createBatchLoader({ batch: (ids) => loadEntityTypes({ db, ids }) }),
     vocabulary: createBatchLoader({ batch: (ids) => loadVocabularies({ db, ids }) }),

@@ -27,13 +27,14 @@ The checks that run today:
   - Lindholmen's imported vocabulary "Allergens" has 14 values.
   - The number of item parts (`ItemComponent`) per organization matches the data files.
 - **Part 3 (catalog), started:** Vingaleden's skippers and the Lighthouse tour to Vinga, a tour whose mandatory parts are RIB Snabben and skipper Jonna Sand (1.5 h each). Parts refer to items seeded earlier by name. The rest of the catalog follows when choice groups exist.
+- **Part 4 (customers), started:** the number of customers and contact persons per organization matches the data files. Price lists and the sales pipeline follow when those operations exist.
 - **All parts:** point 7.
 
 ## Exceptions and sign-in
 
 - The organization, the users and the memberships are Better Auth tables. They are written directly (`seed/demo/users.ts`), the same way sign-up and `addMember` do. Everything else goes through `execute` as `SYSTEM`. The owner gets `owner` directly, the others get their role via `member.assignRole`.
 - The users' email is `firstname.lastname@<slug>.okazi.test`, e.g. `anna.berg@lindholmen-demo.okazi.test`. Sign in with a magic link or a one-time code; the email ends up in Mailpit.
-- Roles that are to write customers, bookings or sheets get those permissions when the resources exist (parts 4–6). Until then they read venues, items (`item`) and the configuration (`configuration`). Admin has `admin` on both.
+- Roles that are to write bookings or sheets get those permissions when the resources exist (parts 5–6). Until then they read venues, items (`item`) and the configuration (`configuration`). Sales and Coordinator (template) and Vingaleden's Booking write customers and contact persons (`customer`, `contact`). Admin has `admin` on all of them.
 - Part 2 seeds the configuration and the bookable spaces: Lindholmen's 10 conference rooms and Vingaleden's 3 boats, each in the organization's venue. The rest of the catalog (dishes, drinks, meals, guides, tours, equipment, packages, skippers, trips and add-ons) comes in part 3; Vingaleden's skippers and the Lighthouse tour are seeded already. The requirement types under "Other types" come in part 5, because they point to vocabularies via `requirement.*`.
 
 ---
@@ -87,6 +88,7 @@ Theatre (15 min), Classroom (30), U-shape (30), Boardroom (20), Cabaret (40), Ba
 | Base entity | Types and fields |
 |---|---|
 | Customer | Company (Org no., Framework agreement yes/no) · Public sector (Org no., Peppol-ID, Requires case number yes/no) · Association (Org no.) |
+| Contact | Contact person (Role: choice Orderer, Invoice recipient, Organizer) |
 | Booking | Conference (Purpose) · Event (Dresscode: choice Dresscode, Speaker/entertainment) · Tour (School class yes/no) |
 | Requirement | Dietary requirement (vocabulary Allergens or Diet, field Severity) · Accessibility (vocabulary Accessibility) |
 
@@ -195,6 +197,8 @@ Projector (SEK 450), Mobile sound system (SEK 900), Extra whiteboard (SEK 150), 
 
 ## Customers
 
+Contact persons have the type Contact person; the role in parentheses is its Role field. Contacts without a role in the table are Orderer, except Eva Sund (Organizer), Ekonomienheten (Invoice recipient) and Ulla Berg (Organizer).
+
 | Customer | Type | Contacts | Price list |
 |---|---|---|---|
 | Nordkust Logistik AB | Company (framework agreement) | Karin Wallin (orderer), Fakturor Nordkust (invoice recipient) | Nordkust framework agreement: −15% on everything |
@@ -279,6 +283,7 @@ Seated (10 min), Standing (5 min), Deck reception (20 min).
 
 ### Other types, statuses and sheets
 - Customer: Company (Org no.) · Private (no fields).
+- Contact: Contact person (no fields).
 - Booking: Charter · Round trip.
 - Requirement: Accessibility (vocabulary Accessibility) · Life jacket (vocabulary Life jacket).
 - Statuses: Inquiry (`TENTATIVE`), Weather hold (`TENTATIVE`), Confirmed (`CONFIRMED`), Weather OK (`CONFIRMED`), Completed (`COMPLETED`), Called off – weather (`CANCELLED`), Cancelled (`CANCELLED`).
@@ -298,7 +303,7 @@ Seated (10 min), Standing (5 min), Deck reception (20 min).
 | Coffee on board | Add-on | Shows that food can exist without allergen vocabularies | SEK 35/pp |
 
 ## Customers and bookings
-Customers: Hisingen Energi AB (Company, the same name as at Lindholmen but a completely separate row in another organization), Familjen Rask (Private), Kvarnby Design AB (Company).
+Customers: Hisingen Energi AB (Company, the same name as at Lindholmen but a completely separate row in another organization; contact Mats Olsson), Familjen Rask (Private; contact Johan Rask), Kvarnby Design AB (Company; contact Linnea Kvist).
 
 | # | Customer · type | When | Count | Contents | Status | Shows |
 |---|---|---|---|---|---|---|
@@ -313,7 +318,7 @@ Customers: Hisingen Energi AB (Company, the same name as at Lindholmen but a com
 ## Structure in the code
 
 - `packages/core/src/seed/demo/data/` has one folder per organization (`lindholmen/`, `vingaleden/`). The files are pure data, split so that no file goes over 150 lines, e.g. `lindholmen.ts` (roles and users), `config.ts`, `types.ts` and `rooms.ts`. Later parts add `dishes.ts`, `meals.ts`, `packages.ts`, `customers.ts`, `pipeline.ts` and `bookings.ts`.
-- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts` and `seed-items.ts`. Items with `parts` come after the items they contain.
+- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-items.ts` and `seed-customers.ts`. Items with `parts` come after the items they contain; contact persons are created right after their customer.
   - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`.
   - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
 - `checks.ts` and `config-checks.ts` contain the checks above.

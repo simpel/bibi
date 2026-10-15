@@ -1,13 +1,19 @@
 import {
+  type ContactDto,
   type ConversationDto,
+  type CustomerDto,
+  getContact,
   getConversation,
+  getCustomer,
   getItem,
   getSkill,
   type ItemDto,
   type SkillDto,
   type VenueDto,
 } from "@okazi/core";
+import { ContactRef } from "../features/contact/graphql";
 import { ConversationRef } from "../features/conversation/graphql";
+import { CustomerRef } from "../features/customer/graphql";
 import { ItemRef } from "../features/item/graphql";
 import { SkillRef } from "../features/skill/graphql";
 import { VenueRef } from "../features/venue/graphql";
@@ -15,8 +21,8 @@ import { builder, type ObjectRefOf } from "./builder";
 import type { GraphqlContext } from "./context";
 import { runOperation } from "./run-operation";
 
-type Entity = VenueDto | ItemDto | ConversationDto | SkillDto;
-type EntityType = "venue" | "item" | "conversation" | "skill";
+type Entity = VenueDto | ItemDto | CustomerDto | ContactDto | ConversationDto | SkillDto;
+type EntityType = "venue" | "item" | "customer" | "contact" | "conversation" | "skill";
 
 const refByEntity = new WeakMap<object, ObjectRefOf<never>>();
 
@@ -33,7 +39,12 @@ async function viaGet<T extends Entity>({
   id,
   ctx,
 }: LoadInput & {
-  operation: typeof getConversation | typeof getSkill | typeof getItem;
+  operation:
+    | typeof getConversation
+    | typeof getSkill
+    | typeof getItem
+    | typeof getCustomer
+    | typeof getContact;
 }): Promise<T | null> {
   try {
     return (await runOperation({ operation, input: { id }, ctx })) as T;
@@ -47,6 +58,13 @@ const LOADERS: Record<EntityType, (args: LoadInput) => Promise<Entity | null>> =
   venue: async ({ id, ctx }) => tag({ row: await ctx.loaders.venue.load({ id }), ref: VenueRef }),
   item: async ({ id, ctx }) =>
     tag({ row: await viaGet<ItemDto>({ operation: getItem, id, ctx }), ref: ItemRef }),
+  customer: async ({ id, ctx }) =>
+    tag({
+      row: await viaGet<CustomerDto>({ operation: getCustomer, id, ctx }),
+      ref: CustomerRef,
+    }),
+  contact: async ({ id, ctx }) =>
+    tag({ row: await viaGet<ContactDto>({ operation: getContact, id, ctx }), ref: ContactRef }),
   conversation: async ({ id, ctx }) =>
     tag({
       row: await viaGet<ConversationDto>({ operation: getConversation, id, ctx }),
@@ -58,7 +76,7 @@ const LOADERS: Record<EntityType, (args: LoadInput) => Promise<Entity | null>> =
 
 export const SearchEntityRef = builder.unionType("SearchEntity", {
   description: "The entity behind a search hit.",
-  types: [VenueRef, ItemRef, ConversationRef, SkillRef],
+  types: [VenueRef, ItemRef, CustomerRef, ContactRef, ConversationRef, SkillRef],
   resolveType: (entity) => refByEntity.get(entity) as ObjectRefOf<never>,
 });
 

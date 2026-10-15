@@ -6,6 +6,8 @@ import "../features/vocabulary/graphql";
 import "../features/setup/graphql";
 import "../features/configuration/graphql";
 import "../features/item/graphql";
+import "../features/customer/graphql";
+import "../features/contact/graphql";
 import "../features/conversation/graphql";
 import "../features/message/graphql";
 import "../features/skill/graphql";

@@ -1,42 +1,15 @@
 import type { EntityTypeDto, VocabularyDto } from "@okazi/core";
 import { buildFieldsSchema, type FieldSpec, ItemCreateInputSchema } from "@okazi/core/schemas";
 import type { z } from "zod";
+import { specsOf } from "@/components/typed-fields/field-specs";
+import { fieldsToInput } from "@/components/typed-fields/raw-fields";
 import { blankToNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
-import { specsOf } from "./field-specs";
 import { hasBehaviour } from "./has-behaviour";
-import {
-  type ComponentFormValue,
-  type ItemFormValues,
-  NO_VENUE,
-  type RawFieldValue,
-} from "./item-form-values";
+import { type ComponentFormValue, type ItemFormValues, NO_VENUE } from "./item-form-values";
 
 /** What the resolver outputs: core's create input. */
 export type ItemFormOutput = z.infer<typeof ItemCreateInputSchema>;
-
-type FieldInput = { spec: FieldSpec; raw: RawFieldValue | undefined };
-
-/** One raw control value → the typed value of its kind; `undefined` = empty, left out. */
-function fieldValue({ spec, raw }: FieldInput): unknown {
-  if (spec.kind === "BOOLEAN") return raw === true;
-  if (spec.kind === "MULTI_CHOICE") return Array.isArray(raw) && raw.length > 0 ? raw : undefined;
-  const value = typeof raw === "string" ? raw.trim() : "";
-  if (value === "") return undefined;
-  return spec.kind === "NUMBER" ? Number(value.replace(",", ".")) : value;
-}
-
-export type FieldsInput = { values: ItemFormValues; specs: readonly FieldSpec[] };
-
-/** Typed `fields` JSON by key; empty values are left out. */
-export function fieldsToInput({ values, specs }: FieldsInput): Record<string, unknown> {
-  const fields: Record<string, unknown> = {};
-  for (const spec of specs) {
-    const value = fieldValue({ spec, raw: values.fields[spec.key] });
-    if (value !== undefined) fields[spec.key] = value;
-  }
-  return fields;
-}
 
 export type ItemInputArgs = {
   values: ItemFormValues;

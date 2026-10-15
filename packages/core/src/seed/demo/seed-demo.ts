@@ -9,6 +9,7 @@ import { vingaleden } from "./data/vingaleden/vingaleden";
 import { refuseProduction } from "./guard";
 import { resetDemoOrg } from "./reset";
 import { seedDemoConfig } from "./seed-config";
+import { seedDemoCustomers } from "./seed-customers";
 import { seedDemoItems } from "./seed-items";
 import { seedDemoRoles } from "./seed-roles";
 import type { DemoOrg } from "./types";
@@ -39,6 +40,12 @@ async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
   if (!refs.ok) return refs;
   const items = await seedDemoItems({ context, config: org.config, refs: refs.value });
   if (!items.ok) return items;
+  const customers = await seedDemoCustomers({
+    context,
+    customers: org.customers,
+    refs: refs.value,
+  });
+  if (!customers.ok) return customers;
   const failures = await checkDemoOrg({ context, org });
   if (failures.length > 0) {
     const message = `Demo checks failed:\n${failures.join("\n")}`;

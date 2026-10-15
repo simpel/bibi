@@ -27,6 +27,11 @@ export type DemoPart = {
   required?: boolean;
 };
 
+/** Field values by field name; choice values by value or option name. */
+export type DemoFieldValues = Readonly<
+  Record<string, string | number | boolean | readonly string[]>
+>;
+
 /**
  * A demo item. Field values are given by field name; choice values by value or option name.
  * `setups` maps setup name → capacity, `parts` lists earlier items by name. Prices are in kronor excl. VAT.
@@ -34,7 +39,7 @@ export type DemoPart = {
 export type DemoItem = {
   type: string;
   name: string;
-  fields?: Readonly<Record<string, string | number | boolean | readonly string[]>>;
+  fields?: DemoFieldValues;
   priceKr?: number;
   priceUnit?: (typeof PRICE_UNITS)[number];
   setups?: Readonly<Record<string, number>>;

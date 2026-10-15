@@ -1,5 +1,7 @@
 import { configurationMcpTools } from "../features/configuration/mcp";
+import { contactMcpTools } from "../features/contact/mcp";
 import { conversationMcpTools } from "../features/conversation/mcp";
+import { customerMcpTools } from "../features/customer/mcp";
 import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { itemMcpTools } from "../features/item/mcp";
@@ -23,6 +25,8 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...setupMcpTools,
     ...configurationMcpTools,
     ...itemMcpTools,
+    ...customerMcpTools,
+    ...contactMcpTools,
     ...conversationMcpTools,
     ...messageMcpTools,
     ...skillMcpTools,

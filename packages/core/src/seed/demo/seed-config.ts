@@ -79,6 +79,8 @@ export async function seedDemoConfig({
     lists: new Map(lists.value.map((list) => [list.name, list])),
     setups: new Map(),
     itemTypes: new Map(),
+    customerTypes: new Map(),
+    contactTypes: new Map(),
   };
   for (const setup of config.setups) {
     const result = await execute({ operation: createSetup, input: setup, context });
@@ -88,7 +90,12 @@ export async function seedDemoConfig({
   for (const type of config.types) {
     const result = await seedType({ context, refs, type });
     if (!result.ok) return result;
-    if (type.base === "ITEM") refs.itemTypes.set(type.name, result.value);
+    const byBase = {
+      ITEM: refs.itemTypes,
+      CUSTOMER: refs.customerTypes,
+      CONTACT: refs.contactTypes,
+    };
+    byBase[type.base as keyof typeof byBase]?.set(type.name, result.value);
   }
   return ok({ value: refs });
 }

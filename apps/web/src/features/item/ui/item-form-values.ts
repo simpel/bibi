@@ -1,7 +1,7 @@
 import type { EntityTypeDto, ItemDto } from "@okazi/core";
 import type { PRICE_UNITS } from "@okazi/core/schemas";
+import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 
-export type RawFieldValue = string | boolean | string[];
 export type PriceUnitValue = (typeof PRICE_UNITS)[number];
 
 /** One part of a COMPOSABLE item as raw form values. */
@@ -33,20 +33,6 @@ export const NO_VENUE = "none";
 
 const text = ({ value }: { value: number | string | null | undefined }) =>
   value === null || value === undefined ? "" : String(value);
-
-type RawInput = { type: EntityTypeDto | undefined; stored: Record<string, unknown> };
-
-/** Raw field values for a type: stored values of an item where present, else empty. */
-export function rawFields({ type, stored }: RawInput): Record<string, RawFieldValue> {
-  const raw: Record<string, RawFieldValue> = {};
-  for (const { key, kind } of type?.fields ?? []) {
-    const value = stored[key];
-    if (kind === "BOOLEAN") raw[key] = value === true;
-    else if (kind === "MULTI_CHOICE") raw[key] = Array.isArray(value) ? value.map(String) : [];
-    else raw[key] = text({ value: value as number | string | null | undefined });
-  }
-  return raw;
-}
 
 export type ItemDefaultsInput = { type: EntityTypeDto | undefined; item?: ItemDto | undefined };
 

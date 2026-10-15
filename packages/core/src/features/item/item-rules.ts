@@ -1,8 +1,8 @@
-import type { EntityType } from "@okazi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import type { ItemBehaviour } from "../entity-type/behaviour-kinds";
+import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 
 type Db = Pick<OperationContext, "db">;
 
@@ -12,13 +12,8 @@ const issue = ({ path, message }: { path: string; message: string }) =>
 export type LoadItemTypeInput = { context: Db; entityTypeId: string };
 
 /** The active item type an item is created with. */
-export async function loadItemType({
-  context,
-  entityTypeId,
-}: LoadItemTypeInput): Promise<Result<EntityType>> {
-  const type = await context.db.entityType.findFirst({ where: { id: entityTypeId, base: "ITEM" } });
-  return type ? ok({ value: type }) : issue({ path: "entityTypeId", message: "Unknown item type" });
-}
+export const loadItemType = ({ context, entityTypeId }: LoadItemTypeInput) =>
+  loadTypeOfBase({ context, entityTypeId, base: "ITEM" });
 
 /** Which input keys carry data for which behaviour. */
 const BEHAVIOUR_KEYS: Record<string, ItemBehaviour> = {

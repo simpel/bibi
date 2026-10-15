@@ -6,6 +6,19 @@ export type CheckDemoConfigInput = { context: ExecuteContext; org: DemoOrg };
 
 type Count = { what: string; actual: number; expected: number };
 
+/** Slice 4: customers and their contact persons. */
+async function customerCounts({ context, org }: CheckDemoConfigInput): Promise<Count[]> {
+  const contacts = org.customers.reduce((sum, customer) => sum + customer.contacts.length, 0);
+  return [
+    {
+      what: "customers",
+      actual: await context.db.customer.count(),
+      expected: org.customers.length,
+    },
+    { what: "contacts", actual: await context.db.contact.count(), expected: contacts },
+  ];
+}
+
 /** What the data files say slice 2 creates, per entity (check 1 in `docs/demo-seed.md`). */
 async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> {
   const { config } = org;
@@ -52,7 +65,8 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
  * not (check 2: Vingaleden has no "Allergens"), and imported lists have their values.
  */
 export async function checkDemoConfig({ context, org }: CheckDemoConfigInput): Promise<string[]> {
-  const failures = (await counts({ context, org }))
+  const all = [...(await counts({ context, org })), ...(await customerCounts({ context, org }))];
+  const failures = all
     .filter((count) => count.actual !== count.expected)
     .map((count) => `${org.slug}: ${count.actual} ${count.what}, expected ${count.expected}`);
   for (const name of org.config.checks.absentLists ?? []) {

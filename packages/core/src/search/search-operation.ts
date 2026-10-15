@@ -25,7 +25,8 @@ export function createSearchOperation({
     name: "search",
     kind: "query",
     description:
-      "Search venues, items (rooms, dishes, …), skills and your conversations in the current organization by " +
+      "Search venues, items (rooms, dishes, …), customers, contact persons, skills and your " +
+      "conversations in the current organization by " +
       "meaning and keywords. Returns entity type, id, score and the indexed text.",
     input: SearchInputSchema,
     output: SearchOutputSchema,
@@ -43,7 +44,8 @@ export function createSearchOperation({
         ...(input.entityTypes ? { entityTypes: input.entityTypes } : {}),
       });
       const viewer = { userId: context.actor.userId };
-      const visible = await filterVisibleHits({ hits, embeddables, db: context.db, viewer });
+      const { permissions, db } = context;
+      const visible = await filterVisibleHits({ hits, embeddables, db, viewer, permissions });
       return ok({ value: { hits: visible.slice(0, input.limit) } });
     },
   });

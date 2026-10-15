@@ -9,7 +9,7 @@ import { type SearchHitView, splitContent } from "./search-hit-view";
 
 export type SearchActionInput = { query: string };
 
-const SEARCHABLE = ["venue", "item"] as const;
+const SEARCHABLE = ["venue", "item", "customer"] as const;
 
 const toView = ({ hit }: { hit: SearchHit }): SearchHitView | null => {
   const entityType = SEARCHABLE.find((type) => type === hit.entityType);
@@ -23,7 +23,7 @@ const toViews = ({ hits }: { hits: SearchHit[] }): Result<SearchHitView[]> => ({
   value: hits.map((hit) => toView({ hit })).filter((view): view is SearchHitView => view !== null),
 });
 
-/** Semantic search over venues and items (core `search` operation), hits shaped for the UI. */
+/** Semantic search over venues, items and customers (core `search` operation), hits shaped for the UI. */
 export async function searchAction({
   query,
 }: SearchActionInput): Promise<ActionResult<SearchHitView[]>> {

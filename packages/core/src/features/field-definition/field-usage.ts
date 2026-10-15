@@ -5,18 +5,34 @@ type Db = Pick<OperationContext, "db">;
 export type FieldValuesOfTypeInput = { context: Db; entityTypeId: string };
 
 /**
- * The `fields` JSON of every active item of a type. Used by the "data present → CONFLICT" rules
- * (ADR 0021). Catalogs are small (hundreds of rows), so the check runs in memory.
+ * The `fields` JSON of every active record of a type: items, customers or contacts (a type has
+ * one base, so only one table has rows). Used by the "data present → CONFLICT" rules (ADR 0021).
+ * Record counts per type are small (hundreds of rows), so the check runs in memory.
  */
 export async function fieldValuesOfType({
   context,
   entityTypeId,
 }: FieldValuesOfTypeInput): Promise<Record<string, unknown>[]> {
-  const rows = await context.db.item.findMany({
-    where: { entityTypeId },
-    select: { fields: true },
-  });
+  const query = { where: { entityTypeId }, select: { fields: true } };
+  const rows = [
+    ...(await context.db.item.findMany(query)),
+    ...(await context.db.customer.findMany(query)),
+    ...(await context.db.contact.findMany(query)),
+  ];
   return rows.map((row) => asFieldValues({ value: row.fields }));
+}
+
+/** Active records (items, customers, contacts) that have the type. */
+export async function countRecordsOfType({
+  context,
+  entityTypeId,
+}: FieldValuesOfTypeInput): Promise<number> {
+  const where = { entityTypeId };
+  return (
+    (await context.db.item.count({ where })) +
+    (await context.db.customer.count({ where })) +
+    (await context.db.contact.count({ where }))
+  );
 }
 
 export type AsFieldValuesInput = { value: unknown };
@@ -33,8 +49,8 @@ export type CountWithValueInput = FieldValuesOfTypeInput & {
   matches?: (value: unknown) => boolean;
 };
 
-/** Active items of the type that have a value for `key` (optionally a matching one). */
-export async function countItemsWithValue({
+/** Active records of the type that have a value for `key` (optionally a matching one). */
+export async function countRecordsWithValue({
   context,
   entityTypeId,
   key,

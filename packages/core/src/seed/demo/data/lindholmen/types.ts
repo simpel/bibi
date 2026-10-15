@@ -81,6 +81,13 @@ export const lindholmenTypes: readonly DemoType[] = [
     ],
   },
   { base: "CUSTOMER", name: "Association", fields: [orgnr] },
+  {
+    base: "CONTACT",
+    name: "Contact person",
+    fields: [
+      { name: "Role", kind: "CHOICE", options: ["Orderer", "Invoice recipient", "Organizer"] },
+    ],
+  },
   { base: "BOOKING", name: "Conference", fields: [{ name: "Purpose", kind: "TEXT" }] },
   {
     base: "BOOKING",

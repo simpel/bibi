@@ -1,5 +1,6 @@
 import type { DemoOrg } from "../../types";
 import { lindholmenLists } from "./config";
+import { lindholmenCustomers } from "./customers";
 import { lindholmenRooms } from "./rooms";
 import { lindholmenTypes } from "./types";
 
@@ -46,4 +47,5 @@ export const lindholmen: DemoOrg = {
     items: lindholmenRooms,
     checks: { listSizes: { Allergens: 14 } },
   },
+  customers: lindholmenCustomers,
 };

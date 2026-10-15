@@ -41,8 +41,8 @@ export type CheckFieldChangeInput = {
 
 /**
  * "Data present → CONFLICT" for a field (ADR 0021): the kind or list cannot change and inline
- * options cannot be removed while items use them, and a field cannot become required while
- * items lack a value.
+ * options cannot be removed while records use them, and a field cannot become required while
+ * records lack a value.
  */
 export async function checkFieldChange({
   context,
@@ -54,7 +54,7 @@ export async function checkFieldChange({
   const present = values.filter((value) => value !== undefined);
   const reshaped = next.kind !== before.kind || next.vocabularyId !== before.vocabularyId;
   if (reshaped && present.length > 0) {
-    return conflict({ message: `${present.length} items have a value for ${before.name}` });
+    return conflict({ message: `${present.length} records have a value for ${before.name}` });
   }
   const removed = before.options.filter((option) => !next.options.includes(option));
   const stillUsed = removed.filter((choice) =>
@@ -64,7 +64,7 @@ export async function checkFieldChange({
     return conflict({ message: `Options still in use: ${stillUsed.join(", ")}` });
   }
   if (next.required && !before.required && present.length < values.length) {
-    return conflict({ message: `${values.length - present.length} items lack ${before.name}` });
+    return conflict({ message: `${values.length - present.length} records lack ${before.name}` });
   }
   return ok({ value: true });
 }

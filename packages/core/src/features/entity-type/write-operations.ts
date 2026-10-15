@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
+import { countRecordsOfType } from "../field-definition/field-usage";
 import type { EntityBase } from "./behaviour-kinds";
 import { checkBehaviours, checkBehavioursRemovable } from "./behaviours";
 import { insertEntityType } from "./insert-entity-type";
@@ -72,15 +73,16 @@ export const updateEntityType = defineOperation({
 export const archiveEntityType = defineOperation({
   name: "entityType.archive",
   kind: "command",
-  description: "Archive a type. Refused while active items still have the type.",
+  description:
+    "Archive a type. Refused while active records (items, customers, contacts) still have the type.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,
   permission: "configuration:write",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.entityType.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Type" });
-    const items = await context.db.item.count({ where: { entityTypeId: id } });
-    if (items > 0) return conflict({ message: `${items} items have the type ${before.name}` });
+    const used = await countRecordsOfType({ context, entityTypeId: id });
+    if (used > 0) return conflict({ message: `${used} records have the type ${before.name}` });
     const row = await context.db.entityType.update({ where: { id }, data: { status: "ARCHIVED" } });
     const type = await toEntityTypeDto({ context, row });
     context.recordChange({ entityId: id, before, after: type });

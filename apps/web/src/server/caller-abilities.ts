@@ -9,6 +9,8 @@ export type CallerAbilities = {
   memberAdmin: boolean;
   configurationWrite: boolean;
   itemWrite: boolean;
+  customerWrite: boolean;
+  contactWrite: boolean;
 };
 
 const NONE: CallerAbilities = {
@@ -17,6 +19,8 @@ const NONE: CallerAbilities = {
   memberAdmin: false,
   configurationWrite: false,
   itemWrite: false,
+  customerWrite: false,
+  contactWrite: false,
 };
 
 /**
@@ -33,5 +37,7 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     memberAdmin: hasPermission({ permissions, permission: "member:admin" }),
     configurationWrite: hasPermission({ permissions, permission: "configuration:write" }),
     itemWrite: hasPermission({ permissions, permission: "item:write" }),
+    customerWrite: hasPermission({ permissions, permission: "customer:write" }),
+    contactWrite: hasPermission({ permissions, permission: "contact:write" }),
   };
 }

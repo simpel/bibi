@@ -1,12 +1,12 @@
 import type { ItemDto } from "@okazi/core";
 import { Button, DialogFooter, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
+import { rawFields } from "@/components/typed-fields/raw-fields";
+import { TypeFields } from "@/components/typed-fields/type-fields";
+import { TypeSelectField } from "@/components/typed-fields/type-select-field";
 import { BehaviourSections } from "./behaviour-sections";
 import { ItemCoreFields } from "./item-core-fields";
 import type { ItemFormData } from "./item-form-data";
-import { rawFields } from "./item-form-values";
-import { ItemTypeField } from "./item-type-field";
-import { ItemTypeFields } from "./item-type-fields";
 import { useItemForm } from "./use-item-form";
 
 export type ItemFormProps = {
@@ -19,15 +19,17 @@ export type ItemFormProps = {
 /** Create (type picker first) or edit an item: core fields, the type's own fields, behaviours. */
 export function ItemForm({ data, item, typeId, onDone }: ItemFormProps) {
   const common = useTranslations("common");
+  const t = useTranslations("item.fields");
   const { form, submit, pending, typeOf } = useItemForm({ data, item, typeId, onDone });
   const type = typeOf({ id: form.watch("entityTypeId") });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
         {item ? null : (
-          <ItemTypeField
+          <TypeSelectField
             control={form.control}
             types={data.types}
+            label={t("type")}
             onTypeChange={(id) =>
               form.setValue("fields", rawFields({ type: typeOf({ id }), stored: {} }))
             }
@@ -36,7 +38,7 @@ export function ItemForm({ data, item, typeId, onDone }: ItemFormProps) {
         {type ? (
           <>
             <ItemCoreFields form={form} venues={data.venues} />
-            <ItemTypeFields control={form.control} type={type} vocabularies={data.vocabularies} />
+            <TypeFields control={form.control} type={type} vocabularies={data.vocabularies} />
             <BehaviourSections form={form} type={type} data={data} itemId={item?.id} />
           </>
         ) : null}

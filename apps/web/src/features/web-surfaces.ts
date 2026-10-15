@@ -32,6 +32,16 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "item.create", route: "/items" },
   { operation: "item.update", route: "/items/[id]" },
   { operation: "item.archive", route: "/items/[id]" },
+  { operation: "customer.list", route: "/customers" },
+  { operation: "customer.get", route: "/customers/[id]" },
+  { operation: "customer.create", route: "/customers" },
+  { operation: "customer.update", route: "/customers/[id]" },
+  { operation: "customer.archive", route: "/customers/[id]" },
+  // Contact persons are listed and edited on their customer's page.
+  { operation: "contact.list", route: "/customers/[id]" },
+  { operation: "contact.create", route: "/customers/[id]" },
+  { operation: "contact.update", route: "/customers/[id]" },
+  { operation: "contact.archive", route: "/customers/[id]" },
   { operation: "entityType.list", route: "/settings/types" },
   { operation: "entityType.create", route: "/settings/types" },
   { operation: "configuration.importTemplate", route: "/settings/types" },
@@ -91,4 +101,10 @@ export const WEB_SURFACES: readonly WebSurface[] = [
 ];
 
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
-export const UI_EXEMPT: readonly UiExempt[] = [];
+export const UI_EXEMPT: readonly UiExempt[] = [
+  {
+    operation: "contact.get",
+    reason:
+      "Contact persons have no page of their own: the customer page lists them with contact.list and edits them inline.",
+  },
+];

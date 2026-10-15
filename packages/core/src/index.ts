@@ -15,10 +15,17 @@ export { toHttpStatus } from "./errors/to-http-status";
 export { type McpErrorResult, toMcpError } from "./errors/to-mcp-error";
 export * from "./features/configuration/operations";
 export * from "./features/configuration/schema";
+export * from "./features/contact/operations";
+export * from "./features/contact/schema";
+export * from "./features/contact/write-operations";
 export { canReadAllConversations } from "./features/conversation/access";
 export { conversationEmbeddable } from "./features/conversation/embeddable";
 export * from "./features/conversation/operations";
 export * from "./features/conversation/schema";
+export * from "./features/customer/operations";
+export * from "./features/customer/schema";
+export { toCustomerDto } from "./features/customer/to-customer-dto";
+export * from "./features/customer/write-operations";
 export * from "./features/entity-type/read-operations";
 export * from "./features/entity-type/schema";
 export * from "./features/entity-type/write-operations";
@@ -128,13 +135,7 @@ export { SEARCHABLE_ENTITIES } from "./search/embeddables";
 export { type IndexEntityInput, type IndexEntityOutcome, indexEntity } from "./search/index-entity";
 export { createIndexingHook } from "./search/indexing-hook";
 export { type CreateSearchOperationInput, createSearchOperation } from "./search/search-operation";
-export {
-  type SearchHit,
-  SearchHitSchema,
-  type SearchInput,
-  SearchInputSchema,
-  SearchOutputSchema,
-} from "./search/search-schema";
+export * from "./search/search-schema";
 export { parseSkillMarkdown } from "./skills/markdown/parse-skill-markdown";
 export { renderSkillMarkdown } from "./skills/markdown/render-skill-markdown";
 export type { RoleTemplate } from "./templates/roles/role-template";

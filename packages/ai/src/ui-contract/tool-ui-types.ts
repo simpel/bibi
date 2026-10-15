@@ -1,5 +1,7 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
 import type {
+  ContactWire,
+  CustomerWire,
   EntityTypeWire,
   FieldDefinitionWire,
   InvitationWire,
@@ -23,6 +25,10 @@ export type ToolUiProps = {
   "venue-card": { venue: VenueWire };
   "item-table": { items: ItemWire[]; nextCursor: string | null };
   "item-card": { item: ItemWire };
+  "customer-table": { items: CustomerWire[]; nextCursor: string | null };
+  "customer-card": { customer: CustomerWire };
+  "contact-table": { items: ContactWire[]; nextCursor: string | null };
+  "contact-card": { contact: ContactWire };
   "entity-type-table": { items: EntityTypeWire[]; nextCursor: string | null };
   "entity-type-card": { entityType: EntityTypeWire };
   "field-definition-table": { items: FieldDefinitionWire[]; nextCursor: string | null };
@@ -55,6 +61,10 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "venue-card",
   "item-table",
   "item-card",
+  "customer-table",
+  "customer-card",
+  "contact-table",
+  "contact-card",
   "entity-type-table",
   "entity-type-card",
   "field-definition-table",

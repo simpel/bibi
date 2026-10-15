@@ -2,6 +2,7 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { ItemBehaviourSchema } from "../entity-type/behaviour-kinds";
+import { FieldValuesSchema } from "../field-definition/field-values-schema";
 
 export const PRICE_UNITS = ["PER_PERSON", "PER_UNIT", "PER_HOUR", "FLAT"] as const;
 export const PriceUnitSchema = z.enum(PRICE_UNITS);
@@ -32,16 +33,6 @@ export const ItemComponentSchema = z.object({
 
 /** Max levels in a composition, the top item included (ADR 0021). */
 export const MAX_COMPONENT_DEPTH = 5;
-
-/** Max keys in `fields`: well above any type's field count, low enough to bound the input. */
-export const MAX_FIELD_VALUES = 200;
-
-/** Field values as stored: keys are the type's field keys. */
-export const FieldValuesSchema = z
-  .record(z.string().max(40), z.unknown())
-  .refine((values) => Object.keys(values).length <= MAX_FIELD_VALUES, {
-    message: `At most ${MAX_FIELD_VALUES} field values`,
-  });
 
 export const ItemSchema = z.object({
   id: z.string(),

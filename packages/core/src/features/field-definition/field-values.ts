@@ -1,14 +1,14 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
-import { loadFieldSpecs } from "../field-definition/field-specs";
-import { buildFieldsSchema } from "../field-definition/fields-schema";
+import { loadFieldSpecs } from "./field-specs";
+import { buildFieldsSchema } from "./fields-schema";
 
 type FieldValues = Record<string, unknown>;
 
 export type MergeFieldsInput = { before: FieldValues; patch: FieldValues };
 
-/** `item.update` semantics: changed keys replace, `null` removes, the rest is kept. */
+/** `*.update` semantics for `fields`: changed keys replace, `null` removes, the rest is kept. */
 export function mergeFields({ before, patch }: MergeFieldsInput): FieldValues {
   const merged: FieldValues = { ...before, ...patch };
   for (const [key, value] of Object.entries(patch)) if (value === null) delete merged[key];

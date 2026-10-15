@@ -1,5 +1,5 @@
 import type { OperationContext } from "../../operations/types";
-import { containsChoice, countItemsWithValue } from "../field-definition/field-usage";
+import { containsChoice, countRecordsWithValue } from "../field-definition/field-usage";
 
 type Db = Pick<OperationContext, "db">;
 
@@ -14,15 +14,15 @@ export const listFieldsUsing = ({ context, vocabularyId }: ListFieldsUsingInput)
 
 export type ValueInUseInput = ListFieldsUsingInput & { valueId: string };
 
-/** Number of active items that carry the list value in any field. */
-export async function countItemsUsingValue({
+/** Number of active records (items, customers, contacts) that carry the list value in any field. */
+export async function countRecordsUsingValue({
   context,
   vocabularyId,
   valueId,
 }: ValueInUseInput): Promise<number> {
   let total = 0;
   for (const field of await listFieldsUsing({ context, vocabularyId })) {
-    total += await countItemsWithValue({
+    total += await countRecordsWithValue({
       context,
       entityTypeId: field.entityTypeId,
       key: field.key,

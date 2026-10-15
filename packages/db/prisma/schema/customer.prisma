@@ -1,0 +1,56 @@
+/// Customer – the organization (company, agency, association, private person) that buys
+/// (ADR 0022). Its type (base `CUSTOMER`) decides its own fields, e.g. org number or Peppol ID.
+model Customer {
+  id                   String       @id @default(cuid(2))
+  organizationId       String
+  entityTypeId         String
+  name                 String
+  email                String?
+  phone                String?
+  /// Invoice address.
+  invoiceStreetAddress String?
+  invoicePostalCode    String?
+  invoiceCity          String?
+  invoiceCountry       String       @default("SE")
+  /// Days until an invoice is due; null = the organization's default.
+  paymentTermsDays     Int?
+  /// Credit limit in minor units (1/100 kr); null = no limit set.
+  creditLimitMinor     Int?
+  /// Values of the type's own fields, keyed by `FieldDefinition.key`.
+  fields               Json         @default("{}")
+  status               RecordStatus @default(ACTIVE)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  createdBy            String?
+  entityType           EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  contacts             Contact[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, entityTypeId])
+}
+
+/// Contact – a person at a customer: orderer, invoice recipient or organizer (ADR 0022). Its
+/// type (base `CONTACT`) decides its own fields, e.g. the person's role at the customer.
+model Contact {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  entityTypeId   String
+  customerId     String
+  name           String
+  email          String?
+  phone          String?
+  /// Values of the type's own fields, keyed by `FieldDefinition.key`.
+  fields         Json         @default("{}")
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  customer       Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, customerId])
+  @@index([organizationId, entityTypeId])
+}

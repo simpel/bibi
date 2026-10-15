@@ -1,4 +1,5 @@
 import type { EntityTypeDto, ItemDto, ItemUpdateInput } from "@okazi/core";
+import { fieldsPatch } from "@/components/typed-fields/raw-fields";
 import type { ItemFormOutput } from "./item-form-schema";
 
 export type UpdateInputArgs = {
@@ -7,15 +8,8 @@ export type UpdateInputArgs = {
   type: EntityTypeDto | undefined;
 };
 
-/**
- * Create-shaped values → `item.update` input. Core merges `fields` per key, so a field that was
- * set and is now empty is sent as `null` to clear it.
- */
+/** Create-shaped values → `item.update` input; emptied fields are cleared with `null`. */
 export function toUpdateInput({ item, values, type }: UpdateInputArgs): ItemUpdateInput {
   const { entityTypeId: _type, fields, ...rest } = values;
-  const cleared: Record<string, null> = {};
-  for (const { key } of type?.fields ?? []) {
-    if (item.fields[key] !== undefined && fields?.[key] === undefined) cleared[key] = null;
-  }
-  return { id: item.id, ...rest, fields: { ...fields, ...cleared } };
+  return { id: item.id, ...rest, fields: fieldsPatch({ type, stored: item.fields, fields }) };
 }

@@ -1,4 +1,6 @@
 import {
+  ContactSchema,
+  CustomerSchema,
   EntityTypeSchema,
   FieldDefinitionSchema,
   InvitationSchema,
@@ -24,6 +26,8 @@ const isoDates = { createdAt: z.string(), updatedAt: z.string() };
 export const VenueWireSchema = VenueSchema.extend(isoDates);
 
 export const ItemWireSchema = ItemSchema.extend(isoDates);
+export const CustomerWireSchema = CustomerSchema.extend(isoDates);
+export const ContactWireSchema = ContactSchema.extend(isoDates);
 export const FieldDefinitionWireSchema = FieldDefinitionSchema.extend(isoDates);
 export const EntityTypeWireSchema = EntityTypeSchema.extend({
   ...isoDates,
@@ -47,6 +51,8 @@ const page = <T extends z.ZodType>({ item }: { item: T }) =>
 
 export const VenueListWireSchema = page({ item: VenueWireSchema });
 export const ItemListWireSchema = page({ item: ItemWireSchema });
+export const CustomerListWireSchema = page({ item: CustomerWireSchema });
+export const ContactListWireSchema = page({ item: ContactWireSchema });
 export const FieldDefinitionListWireSchema = page({ item: FieldDefinitionWireSchema });
 export const EntityTypeListWireSchema = page({ item: EntityTypeWireSchema });
 export const VocabularyListWireSchema = page({ item: VocabularyWireSchema });
@@ -114,6 +120,8 @@ export const McpErrorWireSchema = z.object({ code: z.string(), message: z.string
 
 export type VenueWire = z.infer<typeof VenueWireSchema>;
 export type ItemWire = z.infer<typeof ItemWireSchema>;
+export type CustomerWire = z.infer<typeof CustomerWireSchema>;
+export type ContactWire = z.infer<typeof ContactWireSchema>;
 export type FieldDefinitionWire = z.infer<typeof FieldDefinitionWireSchema>;
 export type EntityTypeWire = z.infer<typeof EntityTypeWireSchema>;
 export type VocabularyWire = z.infer<typeof VocabularyWireSchema>;

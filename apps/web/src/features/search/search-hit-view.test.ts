@@ -18,5 +18,6 @@ describe("hitRoute", () => {
   it("links venues to their page and items to /items/[id]", () => {
     expect(hitRoute({ entityType: "venue", entityId: "v1" })).toBe("/venues/v1");
     expect(hitRoute({ entityType: "item", entityId: "i 1" })).toBe("/items/i%201");
+    expect(hitRoute({ entityType: "customer", entityId: "c1" })).toBe("/customers/c1");
   });
 });

@@ -1,10 +1,9 @@
 import type { EntityTypeDto, ItemDto } from "@okazi/core";
-import { displayValue } from "./field-display";
+import type { Fact } from "@/components/typed-fields/fact-list";
+import { ownFieldFacts } from "@/components/typed-fields/own-field-facts";
 import { formatKr } from "./format-price";
 import type { ItemFormData } from "./item-form-data";
 import type { ItemTranslator } from "./item-translator";
-
-export type Fact = { label: string; value: string };
 
 export type ItemFactsInput = {
   item: ItemDto;
@@ -54,15 +53,7 @@ function behaviourFacts({ item, data, locale, t }: ItemFactsInput): Fact[] {
 /** Everything shown on an item's page: type, venue, the type's own fields and behaviours. */
 export function itemFacts({ item, type, data, locale, t, yesNo }: ItemFactsInput): Fact[] {
   const venue = data.venues.find(({ id }) => id === item.venueId)?.name ?? "–";
-  const own = (type?.fields ?? []).map((field) => ({
-    label: field.name,
-    value: displayValue({
-      field,
-      value: item.fields[field.key],
-      vocabularies: data.vocabularies,
-      yesNo,
-    }),
-  }));
+  const own = ownFieldFacts({ type, stored: item.fields, vocabularies: data.vocabularies, yesNo });
   return [
     { label: t("fields.type"), value: type?.name ?? "–" },
     { label: t("fields.venue"), value: venue },

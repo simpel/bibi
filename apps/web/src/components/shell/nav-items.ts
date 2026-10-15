@@ -2,6 +2,7 @@ import {
   BookOpenIcon,
   BoxIcon,
   BuildingIcon,
+  ContactIcon,
   LayoutGridIcon,
   ListIcon,
   type LucideIcon,
@@ -13,7 +14,16 @@ import { ROUTES } from "@/lib/routes";
 
 export type NavItem = {
   href: string;
-  labelKey: "venues" | "items" | "skills" | "types" | "lists" | "setups" | "roles" | "members";
+  labelKey:
+    | "venues"
+    | "items"
+    | "customers"
+    | "skills"
+    | "types"
+    | "lists"
+    | "setups"
+    | "roles"
+    | "members";
   icon: LucideIcon;
 };
 
@@ -21,6 +31,7 @@ export type NavItem = {
 export const NAV_ITEMS: readonly NavItem[] = [
   { href: ROUTES.venues, labelKey: "venues", icon: BuildingIcon },
   { href: ROUTES.items, labelKey: "items", icon: BoxIcon },
+  { href: ROUTES.customers, labelKey: "customers", icon: ContactIcon },
   { href: ROUTES.skills, labelKey: "skills", icon: BookOpenIcon },
   { href: ROUTES.settingsTypes, labelKey: "types", icon: ShapesIcon },
   { href: ROUTES.settingsLists, labelKey: "lists", icon: ListIcon },

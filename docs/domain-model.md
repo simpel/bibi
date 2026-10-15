@@ -104,7 +104,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `N:1` EntityType has this
 - `N:0..1` selects from → Vocabulary
 
-> Values are stored as JSON on the row. Rules (`CONFLICT` when data exists): the field type or vocabulary cannot be changed, options in use cannot be removed, the field cannot become required as long as items lack a value, the field cannot be archived as long as items have a value.
+> Values are stored as JSON on the row. Rules (`CONFLICT` when data exists): the field type or vocabulary cannot be changed, options in use cannot be removed, the field cannot become required as long as records (items, customers, contacts) lack a value, the field cannot be archived as long as records have a value. The same holds for list values in use and for archiving the type.
 
 ### Vocabulary (`Vocabulary`) and VocabularyValue (`VocabularyValue`)
 
@@ -203,17 +203,18 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 ## Sales & customer
 
-### Customer (organization)
+### Customer (`Customer`)
 
-*MVP* · The company that buys the conference. Has a type with custom fields, e.g. Company or Government agency.
+*MVP* · The company, agency, association or private person that buys. Has a type (base `CUSTOMER`) with custom fields, e.g. Company or Government agency.
 
 **Attributes**
-- type and custom fields (e.g. org number, Peppol ID, framework agreement)
+- type and custom fields (`fields` as JSON, e.g. org number, Peppol ID, framework agreement)
 - name
-- invoice address
-- price list
-- payment terms (days)
-- credit limit
+- email, phone
+- invoice address (`invoiceStreetAddress`, `invoicePostalCode`, `invoiceCity`, `invoiceCountry`, default `SE`)
+- price list (not built yet)
+- payment terms in days (`paymentTermsDays`, null = the organization's default)
+- credit limit (`creditLimitMinor` in minor units, null = no limit set)
 
 **Relations**
 - `1:N` has → Contact
@@ -221,21 +222,22 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `N:0..1` uses → PriceList
 - `1:N` orders → Booking
 
-### Contact
+### Contact (`Contact`)
 
-*MVP* · Orderer, invoice recipient or organizer.
+*MVP* · Orderer, invoice recipient or organizer at a customer.
 
 **Attributes**
-- type and custom fields
+- type (base `CONTACT`) and custom fields (`fields` as JSON), e.g. the person's role (orderer / invoice recipient) as a choice field
 - name
 - email
 - phone
-- role (orderer / invoice recipient)
-- GDPR consent
+- GDPR consent (not built yet)
 
 **Relations**
 - `N:1` Customer (organization) has this
 - `1:N` is contact for → Inquiry
+
+> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts (`CONFLICT`), and a contact can only be created at an active customer.
 
 ### Inquiry ★
 

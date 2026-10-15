@@ -1,8 +1,8 @@
 import { itemRoute } from "@/lib/configuration-routes";
-import { venueRoute } from "@/lib/routes";
+import { customerRoute, venueRoute } from "@/lib/routes";
 
 export type SearchHitView = {
-  entityType: "venue" | "item";
+  entityType: "venue" | "item" | "customer";
   entityId: string;
   title: string;
   snippet: string;
@@ -19,7 +19,9 @@ export function splitContent({ content }: SplitContentInput): { title: string; s
 
 export type HitRouteInput = Pick<SearchHitView, "entityType" | "entityId">;
 
-/** The page a hit opens: a venue's page, or an item's page (`/items/[id]`). */
+/** The page a hit opens: the venue's, the item's (`/items/[id]`) or the customer's page. */
 export function hitRoute({ entityType, entityId }: HitRouteInput): string {
-  return entityType === "venue" ? venueRoute({ id: entityId }) : itemRoute({ id: entityId });
+  if (entityType === "venue") return venueRoute({ id: entityId });
+  if (entityType === "customer") return customerRoute({ id: entityId });
+  return itemRoute({ id: entityId });
 }

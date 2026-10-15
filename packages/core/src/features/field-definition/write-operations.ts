@@ -2,7 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { conflict, notFound } from "../../shared/errors";
 import { checkChoiceSource, checkFieldChange } from "./field-rules";
-import { countItemsWithValue } from "./field-usage";
+import { countRecordsWithValue } from "./field-usage";
 import { insertField } from "./insert-field";
 import {
   FieldDefinitionCreateInputSchema,
@@ -55,7 +55,7 @@ export const updateFieldDefinition = defineOperation({
 export const archiveFieldDefinition = defineOperation({
   name: "fieldDefinition.archive",
   kind: "command",
-  description: "Archive a field. Refused while an item has a value for it: clear those first.",
+  description: "Archive a field. Refused while a record has a value for it: clear those first.",
   input: FieldDefinitionIdInputSchema,
   output: FieldDefinitionSchema,
   permission: "configuration:write",
@@ -63,8 +63,8 @@ export const archiveFieldDefinition = defineOperation({
     const before = await context.db.fieldDefinition.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Field" });
     const { entityTypeId, key } = before;
-    const used = await countItemsWithValue({ context, entityTypeId, key });
-    if (used > 0) return conflict({ message: `${used} items have a value for ${before.name}` });
+    const used = await countRecordsWithValue({ context, entityTypeId, key });
+    if (used > 0) return conflict({ message: `${used} records have a value for ${before.name}` });
     const field = await context.db.fieldDefinition.update({
       where: { id },
       data: { status: "ARCHIVED" },

@@ -3,6 +3,7 @@ import type { ExecuteContext } from "@okazi/core";
 import { call, type Json } from "./helpers";
 import { accessEntities } from "./parity-entities-access";
 import { configurationEntities } from "./parity-entities-config";
+import { customerEntities } from "./parity-entities-customer";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
@@ -97,6 +98,7 @@ export const ENTITIES: ParityEntity[] = [
     args: { name: "Parity Hall" },
   }),
   ...configurationEntities(),
+  ...customerEntities(),
   byId({
     name: "conversation",
     field: "conversation",

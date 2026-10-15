@@ -4,7 +4,7 @@ import type { ChoiceControlProps } from "./control-props";
 
 /** CHOICE field: one value from a list or own options. */
 export function ChoiceControl({ value, onChange, choices, ...aria }: ChoiceControlProps<string>) {
-  const t = useTranslations("item");
+  const t = useTranslations("common");
   return (
     <Select value={value === "" ? undefined : value} onValueChange={onChange}>
       <SelectTrigger {...aria}>

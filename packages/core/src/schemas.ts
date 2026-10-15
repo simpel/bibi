@@ -4,10 +4,13 @@
  * without pulling the server into the browser bundle. Add each new feature's `schema.ts` here.
  */
 export * from "./features/configuration/schema";
+export * from "./features/contact/schema";
 export * from "./features/conversation/schema";
+export * from "./features/customer/schema";
 export * from "./features/entity-type/behaviour-kinds";
 export * from "./features/entity-type/schema";
 export * from "./features/field-definition/field-kinds";
+export * from "./features/field-definition/field-values-schema";
 export * from "./features/field-definition/fields-schema";
 export * from "./features/field-definition/schema";
 export * from "./features/item/schema";

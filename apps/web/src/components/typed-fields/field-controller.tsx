@@ -1,29 +1,32 @@
 import type { FieldDefinitionDto } from "@okazi/core";
 import { FormControl, FormController, FormItem, FormLabel, FormMessage } from "@okazi/ui";
-import type { Control } from "react-hook-form";
-import type { FieldChoice } from "../field-specs";
-import type { ItemFormOutput } from "../item-form-schema";
-import type { ItemFormValues } from "../item-form-values";
-import { BooleanControl } from "./boolean-control";
-import { ChoiceControl } from "./choice-control";
-import { DateControl } from "./date-control";
-import { MultiChoiceControl } from "./multi-choice-control";
-import { NumberControl } from "./number-control";
-import { TextControl } from "./text-control";
+import type { Control, Path } from "react-hook-form";
+import { BooleanControl } from "./controls/boolean-control";
+import { ChoiceControl } from "./controls/choice-control";
+import { DateControl } from "./controls/date-control";
+import { MultiChoiceControl } from "./controls/multi-choice-control";
+import { NumberControl } from "./controls/number-control";
+import { TextControl } from "./controls/text-control";
+import type { FieldChoice } from "./field-specs";
+import type { WithRawFields } from "./raw-fields";
 
-export type FieldControllerProps = {
-  control: Control<ItemFormValues, unknown, ItemFormOutput>;
+export type FieldControllerProps<V extends WithRawFields, O> = {
+  control: Control<V, unknown, O>;
   field: FieldDefinitionDto;
   choices: FieldChoice[];
 };
 
 /** One of the type's own fields, rendered by its kind (name `fields.<key>`, so server issues land here). */
-export function FieldController({ control, field, choices }: FieldControllerProps) {
+export function FieldController<V extends WithRawFields, O>({
+  control,
+  field,
+  choices,
+}: FieldControllerProps<V, O>) {
   const { key, kind, name, required } = field;
   return (
     <FormController
       control={control}
-      name={`fields.${key}`}
+      name={`fields.${key}` as Path<V>}
       render={({ field: controlled }) => (
         <FormItem>
           <FormLabel>

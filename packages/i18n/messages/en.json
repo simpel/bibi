@@ -36,7 +36,9 @@
     "saving": "Saving…",
     "archiving": "Archiving…",
     "sending": "Sending…",
-    "removing": "Removing…"
+    "removing": "Removing…",
+    "select": "Select…",
+    "noOptions": "No options."
   },
   "auth": {
     "signIn": "Sign in",
@@ -113,6 +115,7 @@
     "dashboard": "Dashboard",
     "venues": "Venues",
     "items": "Items",
+    "customers": "Customers",
     "types": "Types",
     "lists": "Lists",
     "setups": "Setups",
@@ -234,6 +237,74 @@
       "required": "Mandatory"
     },
     "componentValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (optional)}}"
+  },
+  "customer": {
+    "singular": "Customer",
+    "plural": "Customers",
+    "listDescription": "The companies, agencies, associations and people that buy from you. The type decides which fields a customer has.",
+    "create": "Create customer",
+    "edit": "Edit customer",
+    "createDescription": "Pick a type and fill in the details.",
+    "editDescription": "Change the customer details.",
+    "archive": "Archive customer",
+    "archiveConfirm": "Do you want to archive the customer {name}? Archive its contact persons first.",
+    "archived": "The customer has been archived.",
+    "created": "The customer has been created.",
+    "updated": "The customer has been updated.",
+    "empty": "No customers yet.",
+    "emptyDescription": "Create your first customer.",
+    "noTypes": "There are no customer types yet. Create a type first.",
+    "goToTypes": "Go to types",
+    "saving": "Saving customer…",
+    "archiving": "Archiving customer…",
+    "invoiceAddress": "Invoice address",
+    "fields": {
+      "type": "Type",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "invoiceStreetAddress": "Invoice street address",
+      "invoicePostalCode": "Postal code",
+      "invoiceCity": "City",
+      "invoiceCountry": "Country",
+      "paymentTermsDays": "Payment terms (days)",
+      "creditLimit": "Credit limit (SEK)"
+    },
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "city": "City",
+      "email": "Email"
+    }
+  },
+  "contact": {
+    "singular": "Contact person",
+    "plural": "Contact persons",
+    "create": "Add contact person",
+    "edit": "Edit contact person",
+    "createDescription": "Pick a type and fill in the details.",
+    "editDescription": "Change the contact person's details.",
+    "archive": "Archive contact person",
+    "archiveConfirm": "Do you want to archive the contact person {name}?",
+    "archived": "The contact person has been archived.",
+    "created": "The contact person has been added.",
+    "updated": "The contact person has been updated.",
+    "empty": "No contact persons yet.",
+    "noTypes": "There are no contact types yet. Create one under Types first.",
+    "saving": "Saving contact person…",
+    "archiving": "Archiving contact person…",
+    "fields": {
+      "type": "Type",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone"
+    },
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "email": "Email",
+      "phone": "Phone"
+    }
   },
   "entityType": {
     "singular": "Type",
@@ -472,7 +543,16 @@
         "markdown": "SKILL.md",
         "title": "Title",
         "value": "Value",
-        "components": "Parts"
+        "components": "Parts",
+        "customerId": "Customer (id)",
+        "email": "Email",
+        "phone": "Phone",
+        "invoiceStreetAddress": "Invoice street address",
+        "invoicePostalCode": "Invoice postal code",
+        "invoiceCity": "Invoice city",
+        "invoiceCountry": "Invoice country",
+        "paymentTermsDays": "Payment terms (days)",
+        "creditLimitMinor": "Credit limit (minor units)"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -481,6 +561,12 @@
         "item_create": "Create item",
         "item_update": "Update item",
         "item_archive": "Archive item",
+        "customer_create": "Create customer",
+        "customer_update": "Update customer",
+        "customer_archive": "Archive customer",
+        "contact_create": "Add contact person",
+        "contact_update": "Update contact person",
+        "contact_archive": "Archive contact person",
         "entityType_create": "Create type",
         "entityType_update": "Update type",
         "entityType_archive": "Archive type",
@@ -554,6 +640,19 @@
         "duration": "{minutes} min",
         "setupsCount": "{count, plural, one {# setup} other {# setups}}",
         "componentsCount": "{count, plural, one {# part} other {# parts}}"
+      },
+      "customer": {
+        "singular": "Customer",
+        "empty": "No customers found.",
+        "open": "Open the customer",
+        "columns": { "name": "Name", "city": "City", "email": "Email" },
+        "terms": "Payment terms {days} days"
+      },
+      "contact": {
+        "singular": "Contact person",
+        "empty": "No contact persons found.",
+        "openCustomer": "Open the customer",
+        "columns": { "name": "Name", "email": "Email", "phone": "Phone" }
       },
       "entityType": {
         "empty": "No types found.",
@@ -694,7 +793,9 @@
     "clear": "Clear search",
     "entity": {
       "venue": "Venue",
-      "item": "Item"
+      "item": "Item",
+      "customer": "Customer",
+      "contact": "Contact person"
     },
     "error": "The search failed."
   },
@@ -896,6 +997,8 @@
     "resources": {
       "venue": "Venues",
       "item": "Items",
+      "customer": "Customers",
+      "contact": "Contact persons",
       "configuration": "Configuration (types, fields, lists, setups)",
       "search": "Search",
       "conversation": "Conversations",

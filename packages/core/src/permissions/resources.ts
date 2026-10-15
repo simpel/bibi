@@ -9,6 +9,8 @@ export type PermissionAction = (typeof PERMISSION_ACTIONS)[number];
 export const RESOURCES = [
   "venue",
   "item",
+  "customer",
+  "contact",
   "configuration",
   "search",
   "conversation",
