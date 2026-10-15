@@ -61,6 +61,14 @@ describe("booking.assign (ADR 0022)", () => {
       context,
     });
     expect(assign.ok ? null : assign.error.issues[0]?.path).toBe("salesOwnerId");
+    const assignCoordinator = await execute({
+      operation: assignBooking,
+      input: { id: booking.id, coordinatorId: elsewhere },
+      context,
+    });
+    expect(assignCoordinator.ok ? null : assignCoordinator.error.issues[0]?.path).toBe(
+      "coordinatorId",
+    );
     const create = await execute({
       operation: createBooking,
       input: {
