@@ -3,14 +3,15 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { archiveCustomer } from "./archive-operation";
 import {
   CustomerIdInputSchema,
   CustomerListInputSchema,
   CustomerListOutputSchema,
   CustomerSchema,
 } from "./schema";
-import { loadCustomer, toCustomerDto } from "./to-customer-dto";
-import { archiveCustomer, createCustomer, updateCustomer } from "./write-operations";
+import { CUSTOMER_INCLUDE, loadCustomer, toCustomerDto } from "./to-customer-dto";
+import { createCustomer, updateCustomer } from "./write-operations";
 
 export const listCustomers = defineOperation({
   name: "customer.list",
@@ -28,6 +29,7 @@ export const listCustomers = defineOperation({
         ...(input.query ? { name: { contains: input.query, mode: "insensitive" as const } } : {}),
       },
       orderBy: [{ name: "asc" }, { id: "asc" }],
+      include: CUSTOMER_INCLUDE,
       ...pageArgs(input),
     });
     const page = paginate({ rows, limit: input.limit });

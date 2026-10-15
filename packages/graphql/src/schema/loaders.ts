@@ -1,5 +1,6 @@
 import {
   type BookingStatusDto,
+  CUSTOMER_INCLUDE,
   type CustomerDto,
   type EntityTypeDto,
   toBookingStatusDto,
@@ -78,7 +79,8 @@ export function createLoaders({ db }: DbInput): Loaders {
     }),
     customer: createBatchLoader({
       batch: async (ids) => {
-        const rows = await db.customer.findMany({ where: { id: { in: [...ids] } } });
+        const where = { id: { in: [...ids] } };
+        const rows = await db.customer.findMany({ where, include: CUSTOMER_INCLUDE });
         return byId({ rows: rows.map((row) => toCustomerDto({ row })) });
       },
     }),

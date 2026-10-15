@@ -58,7 +58,7 @@ export function createOperationTool({
     ...(operation.untrustedOutput && { _meta: { [UNTRUSTED_OUTPUT_META_KEY]: true } }),
     async run({ args, context }: RunToolInput) {
       if (requiresApproval({ operation, actor: context.actor })) {
-        const proposal = proposeApproval({ operation, meta, args, context, secret });
+        const proposal = await proposeApproval({ operation, meta, args, context, secret });
         logProposal({ operation, proposal });
         return proposal.ok
           ? successResult({ value: proposal.value })

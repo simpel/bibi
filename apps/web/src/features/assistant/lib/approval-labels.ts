@@ -43,6 +43,7 @@ export const FIELD_KEYS = [
   "markdown",
   "title",
   "value",
+  "archiveBookings",
 ] as const;
 
 /** Operations with a localized label in `assistant.approval.operations` (`.` → `_`). */

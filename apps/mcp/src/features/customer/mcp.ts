@@ -1,4 +1,5 @@
 import { mcpTool, text } from "../../tools/meta";
+import { archiveCustomerSummary } from "./archive-summary";
 
 export const customerMcpTools = [
   mcpTool({ operation: "customer.list" }),
@@ -20,6 +21,6 @@ export const customerMcpTools = [
     operation: "customer.archive",
     destructive: true,
     idempotent: true,
-    summary: ({ input }) => `Archive customer ${text({ value: input.id })}`,
+    summary: archiveCustomerSummary,
   }),
 ];

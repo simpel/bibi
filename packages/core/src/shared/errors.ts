@@ -7,11 +7,11 @@ export type NotFoundInput = { entity: string };
 export const notFound = ({ entity }: NotFoundInput) =>
   err({ error: new AppError({ code: "NOT_FOUND", message: `${entity} not found` }) });
 
-export type ConflictInput = { message: string };
+export type ConflictInput = { message: string; issues?: readonly AppErrorIssue[] };
 
 /** `CONFLICT`: the change is valid in itself but clashes with existing data. */
-export const conflict = ({ message }: ConflictInput) =>
-  err({ error: new AppError({ code: "CONFLICT", message }) });
+export const conflict = ({ message, issues = [] }: ConflictInput) =>
+  err({ error: new AppError({ code: "CONFLICT", message, issues }) });
 
 export type InvalidInput = { message: string; issues?: readonly AppErrorIssue[] };
 

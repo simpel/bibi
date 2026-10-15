@@ -1,17 +1,12 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { conflict, notFound } from "../../shared/errors";
+import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { mergeFields, validateFields } from "../field-definition/field-values";
 import { customerEmbeddable } from "./embeddable";
-import {
-  CustomerCreateInputSchema,
-  CustomerIdInputSchema,
-  CustomerSchema,
-  CustomerUpdateInputSchema,
-} from "./schema";
-import { loadCustomer, toCustomerDto } from "./to-customer-dto";
+import { CustomerCreateInputSchema, CustomerSchema, CustomerUpdateInputSchema } from "./schema";
+import { CUSTOMER_INCLUDE, loadCustomer, toCustomerDto } from "./to-customer-dto";
 
 export const createCustomer = defineOperation({
   name: "customer.create",
@@ -35,6 +30,7 @@ export const createCustomer = defineOperation({
         fields: toJson({ value: checked.value }) ?? {},
         organizationId: context.organizationId,
       },
+      include: CUSTOMER_INCLUDE,
     });
     const customer = toCustomerDto({ row });
     context.recordChange({ entityId: row.id, after: customer });
@@ -66,33 +62,8 @@ export const updateCustomer = defineOperation({
     const row = await context.db.customer.update({
       where: { id },
       data: { ...data, ...(json ? { fields: json } : {}) },
+      include: CUSTOMER_INCLUDE,
     });
-    const customer = toCustomerDto({ row });
-    context.recordChange({ entityId: id, before, after: customer });
-    return ok({ value: customer });
-  },
-});
-
-export const archiveCustomer = defineOperation({
-  name: "customer.archive",
-  kind: "command",
-  description:
-    "Archive (soft-delete) a customer. Refused while the customer has active contacts or active bookings: " +
-    "archive those first.",
-  input: CustomerIdInputSchema,
-  output: CustomerSchema,
-  permission: "customer:write",
-  embeddable: customerEmbeddable,
-  handler: async ({ input: { id }, context }) => {
-    const before = await loadCustomer({ context, id });
-    if (!before) return notFound({ entity: "Customer" });
-    const contacts = await context.db.contact.count({ where: { customerId: id } });
-    if (contacts > 0)
-      return conflict({ message: `${before.name} has ${contacts} active contacts` });
-    const bookings = await context.db.booking.count({ where: { customerId: id } });
-    if (bookings > 0)
-      return conflict({ message: `${before.name} has ${bookings} active bookings` });
-    const row = await context.db.customer.update({ where: { id }, data: { status: "ARCHIVED" } });
     const customer = toCustomerDto({ row });
     context.recordChange({ entityId: id, before, after: customer });
     return ok({ value: customer });

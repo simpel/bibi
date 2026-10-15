@@ -17,6 +17,10 @@ export const CustomerSchema = z.object({
   paymentTermsDays: z.number().int().nullable(),
   creditLimitMinor: z.number().int().nullable(),
   fields: FieldValuesSchema,
+  bookingCount: z
+    .number()
+    .int()
+    .describe("Number of the customer's bookings that are not archived; each blocks archiving it"),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -63,6 +67,17 @@ export const CustomerUpdateInputSchema = CustomerCreateInputSchema.omit({ entity
 
 export const CustomerIdInputSchema = z.object({ id: z.string().min(1) });
 
+export const CustomerArchiveInputSchema = z.object({
+  id: z.string().min(1),
+  archiveBookings: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Also archive all of the customer's bookings that are not archived, in every status. " +
+        "Without it, any such booking blocks archiving the customer.",
+    ),
+});
+
 export const CustomerListInputSchema = z.object({
   entityTypeId: z.string().optional().describe("Only customers of this type"),
   query: z.string().trim().max(200).optional().describe("Only customers whose name contains this"),
@@ -77,3 +92,4 @@ export const CustomerListOutputSchema = z.object({
 export type CustomerDto = z.infer<typeof CustomerSchema>;
 export type CustomerCreateInput = z.infer<typeof CustomerCreateInputSchema>;
 export type CustomerUpdateInput = z.infer<typeof CustomerUpdateInputSchema>;
+export type CustomerArchiveInput = z.input<typeof CustomerArchiveInputSchema>;

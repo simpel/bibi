@@ -1,10 +1,7 @@
 import type { CustomerDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import { ConfirmDialog } from "@/components/confirm-dialog";
-import { ROUTES } from "@/lib/routes";
-import { useToastAction } from "@/lib/use-toast-action";
-import { archiveCustomerAction } from "../actions";
+import { ArchiveCustomerForm } from "./archive-customer-form";
 
 export type ArchiveCustomerDialogProps = {
   customer: CustomerDto;
@@ -12,33 +9,22 @@ export type ArchiveCustomerDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-/** Archive confirmation; the detail page is gone afterwards, so go back to the list. */
+/** Archive confirmation; with bookings, the form below asks to archive them too (#134). */
 export function ArchiveCustomerDialog({
   customer,
   open,
   onOpenChange,
 }: ArchiveCustomerDialogProps) {
   const t = useTranslations("customer");
-  const router = useRouter();
-  const { pending, run } = useToastAction();
-  const archive = () =>
-    run({
-      action: () => archiveCustomerAction({ id: customer.id }),
-      messages: { pending: t("archiving"), success: t("archived") },
-      onSuccess: () => {
-        onOpenChange(false);
-        router.replace(ROUTES.customers);
-      },
-    });
   return (
-    <ConfirmDialog
-      open={open}
-      onOpenChange={onOpenChange}
-      title={t("archive")}
-      description={t("archiveConfirm", { name: customer.name })}
-      confirmLabel={t("archive")}
-      pending={pending}
-      onConfirm={archive}
-    />
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t("archive")}</DialogTitle>
+          <DialogDescription>{t("archiveConfirm", { name: customer.name })}</DialogDescription>
+        </DialogHeader>
+        <ArchiveCustomerForm customer={customer} onClose={() => onOpenChange(false)} />
+      </DialogContent>
+    </Dialog>
   );
 }

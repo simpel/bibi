@@ -2,6 +2,7 @@
 
 import {
   archiveCustomer,
+  type CustomerArchiveInput,
   type CustomerCreateInput,
   type CustomerDto,
   type CustomerUpdateInput,
@@ -14,7 +15,7 @@ import { toActionResult } from "@/server/to-action-result";
 
 export type CreateCustomerActionInput = { input: CustomerCreateInput };
 export type UpdateCustomerActionInput = { input: CustomerUpdateInput };
-export type ArchiveCustomerActionInput = { id: string };
+export type ArchiveCustomerActionInput = { values: CustomerArchiveInput };
 
 export async function createCustomerAction({
   input,
@@ -29,9 +30,9 @@ export async function updateCustomerAction({
 }
 
 export async function archiveCustomerAction({
-  id,
+  values,
 }: ArchiveCustomerActionInput): Promise<ActionResult<CustomerDto>> {
   return toActionResult({
-    result: await runOperation({ operation: archiveCustomer, input: { id } }),
+    result: await runOperation({ operation: archiveCustomer, input: values }),
   });
 }

@@ -222,6 +222,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - price list (not built yet)
 - payment terms in days (`paymentTermsDays`, null = the organization's default)
 - credit limit (`creditLimitMinor` in minor units, null = no limit set)
+- booking count (`bookingCount`, derived: the customer's bookings that are not archived)
 
 **Relations**
 - `1:N` has → Contact
@@ -244,7 +245,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `N:1` Customer (organization) has this
 - `1:N` is contact for → Inquiry
 
-> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts (`CONFLICT`), and a contact can only be created at an active customer.
+> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts (`CONFLICT`), and a contact can only be created at an active customer. Every booking of the customer that is not archived also blocks archiving it, whatever its status phase, terminal and cancelled included (`CONFLICT` naming the number of bookings, issue path `archiveBookings`). With `archiveBookings: true` (needs `booking:write` as well) `customer.archive` archives those bookings and the customer in one transaction, with one audit row per booking plus the customer; the assistant's approval text names the number of bookings.
 
 ### Inquiry ★
 

@@ -1,9 +1,11 @@
+import type { ExecuteContext } from "@okazi/core";
 import { toToolName } from "./tool-name";
 
-export type SummaryInput = { input: Record<string, unknown> };
+/** `context` is the proposing caller's, for summaries that must read data (e.g. counts). */
+export type SummaryInput = { input: Record<string, unknown>; context: ExecuteContext };
 
 /** One-line, human-readable proposal text shown on the approval card. */
-export type SummaryFn = (args: SummaryInput) => string;
+export type SummaryFn = (args: SummaryInput) => string | Promise<string>;
 
 export type McpToolMetaInput = {
   /** Core operation name, e.g. `venue.create`. */

@@ -25,10 +25,11 @@ type SummaryInput = {
   meta: McpToolMeta | undefined;
   operation: AnyOperation;
   input: Record<string, unknown>;
+  context: ExecuteContext;
 };
 
-function summarize({ meta, operation, input }: SummaryInput): string {
-  if (meta?.summary) return meta.summary({ input });
+async function summarize({ meta, operation, input, context }: SummaryInput): Promise<string> {
+  if (meta?.summary) return meta.summary({ input, context });
   return `${operation.name} ${JSON.stringify(input)}`;
 }
 
@@ -36,13 +37,13 @@ function summarize({ meta, operation, input }: SummaryInput): string {
  * Turns an AI-proposed command into an `approval_required` result without executing it. Input
  * and permission are checked first so the user is never asked to approve something that fails.
  */
-export function proposeApproval({
+export async function proposeApproval({
   operation,
   meta,
   args,
   context,
   secret,
-}: ProposeInput): Result<ApprovalRequired> {
+}: ProposeInput): Promise<Result<ApprovalRequired>> {
   const userId = context.actor.userId;
   if (!userId)
     return err({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
@@ -62,12 +63,13 @@ export function proposeApproval({
     conversationId: context.actor.conversationId,
     secret,
   });
+  const summary = await summarize({ meta, operation, input, context });
   return ok({
     value: {
       status: "approval_required",
       operation: operation.name,
       input,
-      summary: summarize({ meta, operation, input }),
+      summary,
       approvalToken: token,
       expiresAt: new Date(claims.exp * 1000).toISOString(),
     },
