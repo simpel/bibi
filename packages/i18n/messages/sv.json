@@ -1168,11 +1168,26 @@
       "conversation": "Konversationer",
       "skill": "Färdigheter",
       "role": "Roller",
-      "member": "Medlemmar"
+      "member": "Medlemmar",
+      "audit": "Ändringshistorik (granskningslogg)"
     },
     "saving": "Sparar roll…",
     "archiving": "Arkiverar roll…",
     "importing": "Importerar mall…"
+  },
+  "auditLog": {
+    "details": "Detaljer",
+    "history": "Historik",
+    "empty": "Inga ändringar registrerade ännu.",
+    "noChanges": "Inga fältändringar.",
+    "aiProposed": "Assistenten",
+    "approvedBy": "Föreslogs av assistenten, godkändes av {name}",
+    "unknownActor": "en okänd användare",
+    "actor": {
+      "USER": "Okänd användare",
+      "AI": "Assistenten",
+      "SYSTEM": "Systemet"
+    }
   },
   "member": {
     "singular": "Medlem",

@@ -1168,11 +1168,26 @@
       "conversation": "Conversations",
       "skill": "Skills",
       "role": "Roles",
-      "member": "Members"
+      "member": "Members",
+      "audit": "Change history (audit log)"
     },
     "saving": "Saving role…",
     "archiving": "Archiving role…",
     "importing": "Importing template…"
+  },
+  "auditLog": {
+    "details": "Details",
+    "history": "History",
+    "empty": "No changes recorded yet.",
+    "noChanges": "No field changes.",
+    "aiProposed": "Assistant",
+    "approvedBy": "Proposed by the assistant, approved by {name}",
+    "unknownActor": "an unknown user",
+    "actor": {
+      "USER": "Unknown user",
+      "AI": "Assistant",
+      "SYSTEM": "System"
+    }
   },
   "member": {
     "singular": "Member",

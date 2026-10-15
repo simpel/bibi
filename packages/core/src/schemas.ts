@@ -3,6 +3,7 @@
  * No Prisma, fs or operation imports, so client components and `@okazi/ai/ui` can use them
  * without pulling the server into the browser bundle. Add each new feature's `schema.ts` here.
  */
+export * from "./features/audit-log/schema";
 export * from "./features/booking-status/schema";
 export * from "./features/configuration/schema";
 export * from "./features/contact/schema";

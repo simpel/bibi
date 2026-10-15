@@ -209,6 +209,7 @@ const E = [
   // Operations
   {id:"user",d:"ops",n:"User",p:"MVP",s:"A member of the organization with the organization's own roles.",a:["name","roles (from the organization's roles)","venues","platform role (user / admin)"]},
   {id:"invitation",d:"ops",n:"Invitation",p:"MVP",s:"An emailed invitation to join the organization as staff, with the roles the invitee gets on accepting.",a:["email","roles (from the organization's roles)","status (pending / accepted / rejected / canceled)","inviter","expires (48 hours)"]},
+  {id:"auditlog",d:"ops",n:"AuditLog",p:"MVP",s:"Organization data: one row per change, read as an entity's history (permission audit:read, ADR 0006, 0014).",a:["actor (user / AI / system), approved by","assistant conversation","operation, entity type and id","before and after image","request id and surface","time"]},
   {id:"systemlog",d:"ops",n:"SystemLog",p:"MVP",s:"Platform data: every event in the system, for platform admins (ADR 0014, 0015).",a:["time, level, event","service and surface","request id","organization, user, operation, status, duration, error code","the whole row as JSON (never input or output)"]},
   {id:"aisetting",d:"ops",n:"AiSetting",p:"MVP",s:"Platform data: model per AI function, chosen by a platform admin. No default models.",a:["AI function","model (from Vercel AI Gateway)","changed by, changed"]},
   {id:"task",d:"ops",n:"Task",p:"Phase 2",s:"Set up room, AV test, cleaning.",a:["linked program item","type","responsible","deadline","status"]},
@@ -229,7 +230,7 @@ const R = [
   ["venue","item","1:N","has"],["item","block","1:N","has"],
   ["item","component","1:N","contains"],["item","choice","1:N","has"],["choice","component","1:N","groups"],["item","vocab","N:M","is tagged with value in"],["line","item","N:1","refers to"],["pricelist","pricerow","1:N","contains"],["pricerow","item","N:1","refers to"],
   ["deposit","payment","1:N","is paid with"],["invoice","payment","1:N","is settled with"],["invoice","line","1:N","invoices"],["invoice","deposit","1:N","offsets"],
-  ["user","task","1:N","is responsible for"],["function","task","1:N","requires"],["message","booking","N:0..1","concerns"],["message","lead","N:0..1","concerns"],["screen","item","N:1","is placed at"],["access","function","N:1","opens for"]
+  ["user","auditlog","1:N","makes changes in"],["user","task","1:N","is responsible for"],["function","task","1:N","requires"],["message","booking","N:0..1","concerns"],["message","lead","N:0..1","concerns"],["screen","item","N:1","is placed at"],["access","function","N:1","opens for"]
 ];
 
 const FLOW = [["Inquiry","sales"],["Option","sales"],["Quote","sales"],["Signing (later)","sales"],["Booking","booking"],["Program items","booking"],["Requirements","booking"],["Sheets","food"],["Delivery","space"],["Invoice","money"],["Fortnox / Visma","money"]];

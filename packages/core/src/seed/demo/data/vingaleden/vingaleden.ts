@@ -29,6 +29,7 @@ export const vingaleden: DemoOrg = {
         skill: ["admin"],
         role: ["admin"],
         member: ["admin"],
+        audit: ["admin"],
       },
     },
     {

@@ -27,10 +27,24 @@ const invitation: ParityEntity = {
   },
 };
 
+/** Audit rows are written by commands; the venue's creation row is read back by id. */
+const auditLog: ParityEntity = {
+  ...byId({ name: "auditLog", field: "auditLog", list: "audit-logs", createTool: "", args: {} }),
+  create: async ({ mcp, made }) =>
+    (
+      await tool({
+        mcp,
+        name: "auditLog_list",
+        args: { entityType: "venue", entityId: made.venue.id, limit: 1 },
+      })
+    ).items[0],
+};
+
 /**
  * Roles and members (ADR 0020). There is no `member.create`: the parity test seeds one member
  * row (`made.memberSeed`) and the entity is "created" by assigning it the role made before.
- * Invitations come last: they invite with that role.
+ * Invitations come next: they invite with that role. The audit log comes last: it reads the
+ * history the creates above wrote.
  */
 export function accessEntities(): ParityEntity[] {
   const member: ParityEntity = {
@@ -65,5 +79,6 @@ export function accessEntities(): ParityEntity[] {
     }),
     member,
     invitation,
+    auditLog,
   ];
 }

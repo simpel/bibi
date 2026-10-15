@@ -33,6 +33,7 @@ const readAll: PermissionSet = {
   ...customersRead,
   role: ["read"],
   member: ["read"],
+  audit: ["read"],
 };
 
 /**
@@ -59,6 +60,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         skill: ["admin"],
         role: ["admin"],
         member: ["admin"],
+        audit: ["admin"],
       },
     },
     {

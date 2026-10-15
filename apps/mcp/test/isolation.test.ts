@@ -25,6 +25,12 @@ describe("cross-organization isolation", () => {
     expect(graph.data.data.venues.items).toEqual([]);
     const own = await call({ client: a, name: "venue_get", args: { id: venue.data.id } });
     expect(own.data.name).toBe("Secret");
+    const history = { entityType: "venue", entityId: venue.data.id };
+    expect((await call({ client: b, name: "auditLog_list", args: history })).data.items).toEqual(
+      [],
+    );
+    const audit = (await call({ client: a, name: "auditLog_list", args: history })).data.items;
+    expect(audit.map((row: { operation: string }) => row.operation)).toEqual(["venue.create"]);
   });
 
   it("hides roles and members of one organization from another", async () => {
