@@ -119,6 +119,7 @@
     "types": "Types",
     "lists": "Lists",
     "setups": "Setups",
+    "sheets": "Sheets",
     "bookings": "Bookings",
     "skills": "Skills",
     "settings": "Settings",
@@ -520,6 +521,48 @@
       "changeover": "Changeover"
     }
   },
+  "sheetDefinition": {
+    "singular": "Sheet",
+    "plural": "Sheets",
+    "listDescription": "Your own sheets, e.g. Kitchen order or Brewing order: which item types, fields and lists' requirements each includes, and which role it goes to.",
+    "create": "Create sheet",
+    "edit": "Edit sheet",
+    "createDescription": "Name the sheet, choose what it includes and who receives it.",
+    "editDescription": "Change the name, what the sheet includes or who receives it.",
+    "archive": "Archive sheet",
+    "archiveConfirm": "Do you want to archive the sheet {name}?",
+    "archived": "The sheet has been archived.",
+    "created": "The sheet has been created.",
+    "updated": "The sheet has been updated.",
+    "empty": "No sheets yet.",
+    "emptyDescription": "Create sheets such as Kitchen order or Brewing order.",
+    "saving": "Saving sheet…",
+    "archiving": "Archiving sheet…",
+    "selectRole": "Choose a role",
+    "fields": {
+      "name": "Name",
+      "entityTypeIds": "Item types",
+      "fieldIds": "Fields",
+      "vocabularyIds": "Lists",
+      "roleId": "Receiving role"
+    },
+    "hints": {
+      "entityTypeIds": "Items of these types appear on the sheet.",
+      "fieldIds": "Fields shown for each item.",
+      "vocabularyIds": "Requirements from these lists are counted on the sheet."
+    },
+    "none": {
+      "entityTypeIds": "There are no item types. Create them under Types.",
+      "fieldIds": "Choose item types with fields first.",
+      "vocabularyIds": "There are no lists. Create them under Lists."
+    },
+    "columns": {
+      "name": "Name",
+      "types": "Item types",
+      "lists": "Lists",
+      "role": "Receiving role"
+    }
+  },
   "bookingStatus": {
     "singular": "Booking status",
     "plural": "Booking statuses",
@@ -611,6 +654,10 @@
         "defaultDurationMinutes": "Default duration (min)",
         "setups": "Setups",
         "changeoverMinutes": "Changeover (min)",
+        "entityTypeIds": "Item types (ids)",
+        "fieldIds": "Fields (ids)",
+        "vocabularyIds": "Lists (ids)",
+        "roleId": "Receiving role (id)",
         "key": "Key",
         "kind": "Field kind",
         "required": "Required",
@@ -667,6 +714,9 @@
         "setup_create": "Create setup",
         "setup_update": "Update setup",
         "setup_archive": "Archive setup",
+        "sheetDefinition_create": "Create sheet",
+        "sheetDefinition_update": "Update sheet",
+        "sheetDefinition_archive": "Archive sheet",
         "configuration_importTemplate": "Import configuration template",
         "skill_create": "Create skill",
         "skill_update": "Update skill",
@@ -796,6 +846,14 @@
         "open": "Open setups",
         "changeover": "Changeover {minutes} min",
         "columns": { "name": "Name", "changeover": "Changeover" }
+      },
+      "sheetDefinition": {
+        "singular": "Sheet",
+        "archived": "Archived",
+        "empty": "No sheets found.",
+        "open": "Open sheets",
+        "contents": "{types, plural, one {# item type} other {# item types}}, {fields, plural, one {# field} other {# fields}}, {lists, plural, one {# list} other {# lists}}",
+        "columns": { "name": "Name", "contents": "Includes" }
       },
       "bookingStatus": {
         "singular": "Booking status",

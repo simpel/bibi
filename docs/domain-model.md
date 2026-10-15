@@ -154,14 +154,18 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 *MVP* · What a sheet looks like, e.g. "Kitchen order" or "Brewing order".
 
 **Attributes**
-- name
-- item types and fields that are included
-- vocabularies whose requirements are included
-- receiving role
+- name (unique)
+- item types (`entityTypeIds`, types of base `ITEM`) and fields of those types (`fieldIds`) that are included
+- vocabularies whose requirements are included (`vocabularyIds`)
+- receiving role (`roleId`, an organizationRole id or `owner`)
+- status (active / archived)
 
 **Relations**
 - `N:1` goes to → organizationRole
+- `N:M` includes → EntityType, FieldDefinition, Vocabulary
 - `1:N` produces → Sheet
+
+> Operations: `sheetDefinition.*` under the resource `configuration`. Core checks that every id is an active row of the organization (`VALIDATION`). Archiving a type, field, vocabulary or role that an active sheet definition uses is refused with `CONFLICT` (ADR 0026).
 
 ### BookingStatus (`BookingStatus`) with phase and transitions
 

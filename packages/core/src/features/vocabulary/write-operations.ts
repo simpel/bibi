@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { conflict, notFound } from "../../shared/errors";
 import { getVocabularyTemplate } from "../../templates/vocabularies/vocabulary-templates";
+import { checkNotOnSheets } from "../sheet-definition/usage";
 import { insertVocabulary } from "./insert-vocabulary";
 import { findVocabularyByName, toVocabularyDto } from "./load-vocabulary";
 import {
@@ -45,7 +46,9 @@ export const updateVocabulary = defineOperation({
 export const archiveVocabulary = defineOperation({
   name: "vocabulary.archive",
   kind: "command",
-  description: "Archive a list. Refused while a field still picks values from it.",
+  description:
+    "Archive a list. Refused while a field still picks values from it or a sheet definition " +
+    "counts its requirements.",
   input: VocabularyIdInputSchema,
   output: VocabularySchema,
   permission: "configuration:write",
@@ -57,6 +60,9 @@ export const archiveVocabulary = defineOperation({
       const names = fields.map((field) => field.name).join(", ");
       return conflict({ message: `The list is used by the fields ${names}` });
     }
+    const what = `The list ${before.name}`;
+    const onSheets = await checkNotOnSheets({ context, reference: { vocabularyId: id }, what });
+    if (!onSheets.ok) return onSheets;
     const row = await context.db.vocabulary.update({ where: { id }, data: { status: "ARCHIVED" } });
     const vocabulary = await toVocabularyDto({ context, row });
     context.recordChange({ entityId: id, before, after: vocabulary });

@@ -1,4 +1,5 @@
 import { byId, type ParityEntity, tool } from "./parity-entities";
+import { sheetDefinition } from "./parity-entities-sheet";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
@@ -126,7 +127,19 @@ const occupancy: ParityEntity = {
     }),
 };
 
-/** The configurable domain (ADR 0021): types, fields, lists, setups, items and their occupancy. */
+/**
+ * The configurable domain (ADR 0021): types, fields, lists, setups, sheet definitions, items and
+ * their occupancy.
+ */
 export function configurationEntities(): ParityEntity[] {
-  return [entityType, fieldDefinition, vocabulary, vocabularyValue, setup, item, occupancy];
+  return [
+    entityType,
+    fieldDefinition,
+    vocabulary,
+    vocabularyValue,
+    setup,
+    sheetDefinition,
+    item,
+    occupancy,
+  ];
 }

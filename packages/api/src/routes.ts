@@ -11,6 +11,7 @@ import { messageRoutes } from "./features/message/rest";
 import { occupancyRoutes } from "./features/occupancy/rest";
 import { roleRoutes } from "./features/role/rest";
 import { setupRoutes } from "./features/setup/rest";
+import { sheetDefinitionRoutes } from "./features/sheet-definition/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { venueRoutes } from "./features/venue/rest";
 import { vocabularyRoutes } from "./features/vocabulary/rest";
@@ -25,6 +26,7 @@ export function listRestRoutes(): RestRoute[] {
     ...fieldDefinitionRoutes,
     ...vocabularyRoutes,
     ...setupRoutes,
+    ...sheetDefinitionRoutes,
     ...configurationRoutes,
     ...itemRoutes,
     ...customerRoutes,

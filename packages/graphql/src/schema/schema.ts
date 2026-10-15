@@ -4,6 +4,7 @@ import "../features/entity-type/graphql";
 import "../features/field-definition/graphql";
 import "../features/vocabulary/graphql";
 import "../features/setup/graphql";
+import "../features/sheet-definition/graphql";
 import "../features/configuration/graphql";
 import "../features/item/graphql";
 import "../features/customer/graphql";

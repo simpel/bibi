@@ -119,6 +119,7 @@
     "types": "Typer",
     "lists": "Listor",
     "setups": "Uppställningar",
+    "sheets": "Blad",
     "bookings": "Bokningar",
     "skills": "Färdigheter",
     "settings": "Inställningar",
@@ -520,6 +521,48 @@
       "changeover": "Ställtid"
     }
   },
+  "sheetDefinition": {
+    "singular": "Blad",
+    "plural": "Blad",
+    "listDescription": "Era egna blad, t.ex. Köksorder eller Bryggorder: vilka artikeltyper, fält och listors behov varje blad tar med och vilken roll det går till.",
+    "create": "Skapa blad",
+    "edit": "Redigera blad",
+    "createDescription": "Namnge bladet, välj vad det tar med och vem som tar emot det.",
+    "editDescription": "Ändra namnet, vad bladet tar med eller vem som tar emot det.",
+    "archive": "Arkivera blad",
+    "archiveConfirm": "Vill du arkivera bladet {name}?",
+    "archived": "Bladet har arkiverats.",
+    "created": "Bladet har skapats.",
+    "updated": "Bladet har uppdaterats.",
+    "empty": "Inga blad ännu.",
+    "emptyDescription": "Skapa blad som Köksorder eller Bryggorder.",
+    "saving": "Sparar blad…",
+    "archiving": "Arkiverar blad…",
+    "selectRole": "Välj en roll",
+    "fields": {
+      "name": "Namn",
+      "entityTypeIds": "Artikeltyper",
+      "fieldIds": "Fält",
+      "vocabularyIds": "Listor",
+      "roleId": "Mottagande roll"
+    },
+    "hints": {
+      "entityTypeIds": "Artiklar av dessa typer kommer med på bladet.",
+      "fieldIds": "Fält som visas för varje artikel.",
+      "vocabularyIds": "Behov från dessa listor räknas ihop på bladet."
+    },
+    "none": {
+      "entityTypeIds": "Det finns inga artikeltyper. Skapa dem under Typer.",
+      "fieldIds": "Välj först artikeltyper som har fält.",
+      "vocabularyIds": "Det finns inga listor. Skapa dem under Listor."
+    },
+    "columns": {
+      "name": "Namn",
+      "types": "Artikeltyper",
+      "lists": "Listor",
+      "role": "Mottagande roll"
+    }
+  },
   "bookingStatus": {
     "singular": "Bokningsstatus",
     "plural": "Bokningsstatusar",
@@ -611,6 +654,10 @@
         "defaultDurationMinutes": "Standardlängd (min)",
         "setups": "Uppställningar",
         "changeoverMinutes": "Ställtid (min)",
+        "entityTypeIds": "Artikeltyper (id)",
+        "fieldIds": "Fält (id)",
+        "vocabularyIds": "Listor (id)",
+        "roleId": "Mottagande roll (id)",
         "key": "Nyckel",
         "kind": "Fälttyp",
         "required": "Obligatoriskt",
@@ -667,6 +714,9 @@
         "setup_create": "Skapa uppställning",
         "setup_update": "Ändra uppställning",
         "setup_archive": "Arkivera uppställning",
+        "sheetDefinition_create": "Skapa blad",
+        "sheetDefinition_update": "Uppdatera blad",
+        "sheetDefinition_archive": "Arkivera blad",
         "configuration_importTemplate": "Importera konfigurationsmall",
         "skill_create": "Skapa färdighet",
         "skill_update": "Ändra färdighet",
@@ -796,6 +846,14 @@
         "open": "Öppna uppställningar",
         "changeover": "Ställtid {minutes} min",
         "columns": { "name": "Namn", "changeover": "Ställtid" }
+      },
+      "sheetDefinition": {
+        "singular": "Blad",
+        "archived": "Arkiverat",
+        "empty": "Inga blad hittades.",
+        "open": "Öppna blad",
+        "contents": "{types, plural, one {# artikeltyp} other {# artikeltyper}}, {fields, plural, one {# fält} other {# fält}}, {lists, plural, one {# lista} other {# listor}}",
+        "columns": { "name": "Namn", "contents": "Tar med" }
       },
       "bookingStatus": {
         "singular": "Bokningsstatus",

@@ -1,5 +1,6 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
 import type { BookingStatusWire } from "./booking-status-entries";
+import type { SheetDefinitionWire } from "./sheet-definition-entries";
 import type {
   ContactWire,
   CustomerWire,
@@ -43,6 +44,8 @@ export type ToolUiProps = {
   "vocabulary-card": { vocabulary: VocabularyWire };
   "setup-table": { items: SetupWire[]; nextCursor: string | null };
   "setup-card": { setup: SetupWire };
+  "sheet-definition-table": { items: SheetDefinitionWire[]; nextCursor: string | null };
+  "sheet-definition-card": { sheet: SheetDefinitionWire };
   "role-table": { items: RoleWire[]; nextCursor: string | null };
   "role-card": { role: RoleWire };
   "member-table": { items: MemberWire[]; nextCursor: string | null };
@@ -83,6 +86,8 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "vocabulary-card",
   "setup-table",
   "setup-card",
+  "sheet-definition-table",
+  "sheet-definition-card",
   "role-table",
   "role-card",
   "member-table",

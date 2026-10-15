@@ -27,6 +27,8 @@ import { RoleTableView } from "./role-table-view";
 import { SearchResultsView } from "./search-results-view";
 import { SetupCardView } from "./setup-card-view";
 import { SetupTableView } from "./setup-table-view";
+import { SheetDefinitionCardView } from "./sheet-definition-card-view";
+import { SheetDefinitionTableView } from "./sheet-definition-table-view";
 import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
 import { VenueCardView } from "./venue-card-view";
@@ -60,6 +62,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "vocabulary-card": VocabularyCardView,
   "setup-table": SetupTableView,
   "setup-card": SetupCardView,
+  "sheet-definition-table": SheetDefinitionTableView,
+  "sheet-definition-card": SheetDefinitionCardView,
   "role-table": RoleTableView,
   "role-card": RoleCardView,
   "member-table": MemberTableView,

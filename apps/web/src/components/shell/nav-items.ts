@@ -3,6 +3,7 @@ import {
   BoxIcon,
   BuildingIcon,
   CircleDotIcon,
+  ClipboardListIcon,
   ContactIcon,
   LayoutGridIcon,
   ListIcon,
@@ -23,6 +24,7 @@ export type NavItem = {
     | "types"
     | "lists"
     | "setups"
+    | "sheets"
     | "bookingStatuses"
     | "roles"
     | "members";
@@ -38,6 +40,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: ROUTES.settingsTypes, labelKey: "types", icon: ShapesIcon },
   { href: ROUTES.settingsLists, labelKey: "lists", icon: ListIcon },
   { href: ROUTES.settingsSetups, labelKey: "setups", icon: LayoutGridIcon },
+  { href: ROUTES.settingsSheets, labelKey: "sheets", icon: ClipboardListIcon },
   { href: ROUTES.settingsBookingStatuses, labelKey: "bookingStatuses", icon: CircleDotIcon },
   { href: ROUTES.settingsRoles, labelKey: "roles", icon: ShieldIcon },
   { href: ROUTES.settingsMembers, labelKey: "members", icon: UsersIcon },

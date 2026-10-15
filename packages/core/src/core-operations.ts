@@ -11,6 +11,7 @@ import { messageOperations } from "./features/message/operations";
 import { occupancyOperations } from "./features/occupancy/operations";
 import { roleOperations } from "./features/role/operations";
 import { setupOperations } from "./features/setup/operations";
+import { sheetDefinitionOperations } from "./features/sheet-definition/operations";
 import { skillOperations } from "./features/skill/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
@@ -28,6 +29,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...fieldDefinitionOperations,
     ...vocabularyOperations,
     ...setupOperations,
+    ...sheetDefinitionOperations,
     ...configurationOperations,
     ...itemOperations,
     ...customerOperations,

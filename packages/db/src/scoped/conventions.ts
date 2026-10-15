@@ -30,6 +30,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Vocabulary",
   "VocabularyValue",
   "Setup",
+  "SheetDefinition",
   "Item",
   "ItemSetup",
   "ItemComponent",

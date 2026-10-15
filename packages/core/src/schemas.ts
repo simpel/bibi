@@ -20,6 +20,7 @@ export * from "./features/message/schema";
 export * from "./features/occupancy/schema";
 export * from "./features/role/schema";
 export * from "./features/setup/schema";
+export * from "./features/sheet-definition/schema";
 export * from "./features/skill/schema";
 export * from "./features/venue/schema";
 export * from "./features/vocabulary/schema";

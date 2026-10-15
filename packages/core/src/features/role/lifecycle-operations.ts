@@ -3,6 +3,7 @@ import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { getRoleTemplate } from "../../templates/roles/role-templates";
 import { memberHasRoleWhere } from "../member/member-roles";
+import { checkNotOnSheets } from "../sheet-definition/usage";
 import { ownerIsFixed, roleNotFound } from "./access";
 import { findActiveRoleByName, insertRole } from "./insert-role";
 import {
@@ -18,7 +19,8 @@ export const archiveRole = defineOperation({
   kind: "command",
   description:
     "Archive a role. Refused while any member or pending invitation still has it: reassign " +
-    "them first (member.assignRole, member.cancelInvitation). The owner role cannot be archived.",
+    "them first (member.assignRole, member.cancelInvitation), and while a sheet definition " +
+    "goes to it. The owner role cannot be archived.",
   input: RoleIdInputSchema,
   output: RoleSchema,
   permission: "role:admin",
@@ -35,6 +37,9 @@ export const archiveRole = defineOperation({
       const message = `Role "${before.role}" is still assigned to members or invitations`;
       return err({ error: new AppError({ code: "CONFLICT", message }) });
     }
+    const what = `Role "${before.role}"`;
+    const onSheets = await checkNotOnSheets({ context, reference: { roleId: id }, what });
+    if (!onSheets.ok) return onSheets;
     const row = await context.db.organizationRole.update({
       where: { id },
       data: { status: "ARCHIVED" },

@@ -22,6 +22,11 @@ export function setupsRoute(): string {
   return ROUTES.settingsSetups;
 }
 
+/** `/settings/sheets`: the organization's sheet definitions (no detail page). */
+export function sheetDefinitionsRoute(): string {
+  return ROUTES.settingsSheets;
+}
+
 /** `/settings/booking-statuses`: the organization's booking statuses (no detail page). */
 export function bookingStatusesRoute(): string {
   return ROUTES.settingsBookingStatuses;

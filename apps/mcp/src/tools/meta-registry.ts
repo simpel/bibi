@@ -11,6 +11,7 @@ import { messageMcpTools } from "../features/message/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
 import { roleMcpTools } from "../features/role/mcp";
 import { setupMcpTools } from "../features/setup/mcp";
+import { sheetDefinitionMcpTools } from "../features/sheet-definition/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
 import { vocabularyMcpTools } from "../features/vocabulary/mcp";
@@ -25,6 +26,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...fieldDefinitionMcpTools,
     ...vocabularyMcpTools,
     ...setupMcpTools,
+    ...sheetDefinitionMcpTools,
     ...configurationMcpTools,
     ...itemMcpTools,
     ...customerMcpTools,

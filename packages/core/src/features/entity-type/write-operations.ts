@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { countRecordsOfType } from "../field-definition/field-usage";
+import { checkNotOnSheets } from "../sheet-definition/usage";
 import type { EntityBase } from "./behaviour-kinds";
 import { checkBehaviours, checkBehavioursRemovable } from "./behaviours";
 import { insertEntityType } from "./insert-entity-type";
@@ -74,7 +75,8 @@ export const archiveEntityType = defineOperation({
   name: "entityType.archive",
   kind: "command",
   description:
-    "Archive a type. Refused while active records (items, customers, contacts) still have the type.",
+    "Archive a type. Refused while active records (items, customers, contacts) still have the " +
+    "type, or a sheet definition includes it.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,
   permission: "configuration:write",
@@ -83,6 +85,9 @@ export const archiveEntityType = defineOperation({
     if (!before) return notFound({ entity: "Type" });
     const used = await countRecordsOfType({ context, entityTypeId: id });
     if (used > 0) return conflict({ message: `${used} records have the type ${before.name}` });
+    const what = `The type ${before.name}`;
+    const onSheets = await checkNotOnSheets({ context, reference: { entityTypeId: id }, what });
+    if (!onSheets.ok) return onSheets;
     const row = await context.db.entityType.update({ where: { id }, data: { status: "ARCHIVED" } });
     const type = await toEntityTypeDto({ context, row });
     context.recordChange({ entityId: id, before, after: type });
