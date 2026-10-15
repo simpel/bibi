@@ -25,9 +25,30 @@ describe("SYSTEM skills", () => {
       expect.arrayContaining([
         "create-venue-with-items",
         "find-available-space",
+        "propose-configuration",
         "summarize-booking-risks",
       ]),
     );
+  });
+
+  it("limits propose-configuration to configuration tools", async () => {
+    unwrap({ result: await seedSystemSkills() });
+    const page = unwrap({
+      result: await execute({
+        operation: listSkills,
+        input: { q: "propose-configuration" },
+        context: testContext(),
+      }),
+    });
+    const skill = page.items.find((item) => item.slug === "propose-configuration");
+    expect(skill?.allowedTools).toEqual(
+      expect.arrayContaining(["configuration_importTemplate", "entityType_create"]),
+    );
+    const writes = (skill?.allowedTools ?? []).filter((tool) => /_(create|import)/.test(tool));
+    expect(writes.length).toBeGreaterThan(0);
+    for (const tool of skill?.allowedTools ?? []) {
+      expect(tool).toMatch(/^(entityType|fieldDefinition|vocabulary|setup|configuration)_/);
+    }
   });
 
   it("bumps the version only when the content changes", async () => {
