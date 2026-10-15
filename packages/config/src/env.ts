@@ -13,6 +13,14 @@ const envSchema = z
     RESEND_API_KEY: z.string().optional(),
     /** Signing secret (`whsec_...`) of the Resend inbound webhook; inbound mail is refused without it. */
     RESEND_WEBHOOK_SECRET: z.string().optional(),
+    /**
+     * Inbound subdomain for booking reply addresses (`booking-<id>@<domain>`, ADR 0012), e.g.
+     * `in.okazi.se`. Unset: no reply address is shown and the inbound webhook answers 503.
+     */
+    MAIL_INBOUND_DOMAIN: z
+      .string()
+      .regex(/^[a-z0-9.-]+\.[a-z]{2,}$/i)
+      .optional(),
     AI_GATEWAY_API_KEY: z.string().optional(),
     WEB_URL: z.string().url().default("http://localhost:3000"),
     MCP_URL: z.string().url().default("http://localhost:3001"),

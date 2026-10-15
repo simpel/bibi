@@ -32,3 +32,11 @@
 
 ## Addendum 2026-10-15
 - Resend operates an EU region, and we accept it for production. Use the EU region and sign Resend's data processing agreement before the first production send. The open GDPR item above is closed.
+
+## Addendum 2026-10-15: inbound mail implemented (#71)
+- **Address scheme:** `booking-<bookingId>@<MAIL_INBOUND_DOMAIN>`. Booking ids are random cuid2 strings, so one booking's address does not reveal another's, and the id alone resolves the organization. The local part is matched case-insensitively; unknown or archived bookings are dropped and logged (`mail.unmatched`) with HTTP 200, so the provider does not retry.
+- **Flow:** `POST /api/webhooks/resend` (surface `webhook`, wrapped in `withRequestLogging`) → `parseInbound` verifies the Svix signature (401 otherwise) → `fetchInbound` loads body, recipients and attachment metadata from `GET /emails/receiving/{id}` (503 on provider trouble so Resend retries) → core `deliverInboundEmail` resolves the booking (the one cross-organization lookup: it reads only the id pair) and runs `inboundEmail.receive` as SYSTEM in that organization. Logs `mail.received` with the sender masked, never the body.
+- **Entity `InboundEmail`:** append-only, org-scoped, linked to the booking; unique per `(organizationId, providerEmailId)` so a redelivered webhook is stored once. Attachments are stored as metadata (`id`, `filename`, `contentType`, `size`); the bytes stay at Resend. Read with `inboundEmail.list` (per booking) and `inboundEmail.get` (permission `booking:read`) on web, GraphQL (`Booking.inboundEmails`), REST and MCP.
+- **Parity exception (ADR 0003):** `inboundEmail.receive` is a SYSTEM-only command and is not registered in `createCoreOperations`, so it has no web, GraphQL, REST or MCP surface. No user or AI may fabricate a received mail; the handler also refuses any non-SYSTEM actor.
+- **HTML bodies** are stored but never rendered in the web app (untrusted markup); the plain-text body is shown.
+- DNS for the inbound subdomain: `docs/runbooks/inbound-email.md`.

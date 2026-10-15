@@ -213,6 +213,7 @@ const E = [
   {id:"systemlog",d:"ops",n:"SystemLog",p:"MVP",s:"Platform data: every event in the system, for platform admins (ADR 0014, 0015).",a:["time, level, event","service and surface","request id","organization, user, operation, status, duration, error code","the whole row as JSON (never input or output)"]},
   {id:"aisetting",d:"ops",n:"AiSetting",p:"MVP",s:"Platform data: model per AI function, chosen by a platform admin. No default models.",a:["AI function","model (from Vercel AI Gateway)","changed by, changed"]},
   {id:"task",d:"ops",n:"Task",p:"Phase 2",s:"Set up room, AV test, cleaning.",a:["linked program item","type","responsible","deadline","status"]},
+  {id:"inboundemail",d:"ops",n:"InboundEmail",p:"MVP",s:"A mail received on a booking's own inbound address (a customer reply, ADR 0012). Append-only, stored by the inbound webhook as SYSTEM.",a:["sender, recipients, subject","text and HTML body","attachment metadata (bytes stay at Resend)","provider email id (stored once)","received at"],x:"inboundEmail.list (per booking) / inboundEmail.get, permission booking:read. Address: booking-<id>@MAIL_INBOUND_DOMAIN. inboundEmail.receive is SYSTEM only and has no user surface."},
   {id:"message",d:"ops",n:"Communication & log",p:"Phase 2",s:"Email, notes and change history.",a:["channel","direction (in / out)","subject","linked inquiry / booking","change log"]},
   {id:"screen",d:"ops",n:"Sign",p:"Phase 3",s:"A screen at a bookable item showing the day's program.",a:["item (BOOKABLE)","device","displayed program items"]},
   {id:"access",d:"ops",n:"AccessCode",p:"Phase 3",s:"A digital lock tied to the booked time.",a:["program item / item","code or mobile key","valid from – to"]}
@@ -230,7 +231,7 @@ const R = [
   ["venue","item","1:N","has"],["item","block","1:N","has"],
   ["item","component","1:N","contains"],["item","choice","1:N","has"],["choice","component","1:N","groups"],["item","vocab","N:M","is tagged with value in"],["line","item","N:1","refers to"],["pricelist","pricerow","1:N","contains"],["pricerow","item","N:1","refers to"],
   ["deposit","payment","1:N","is paid with"],["invoice","payment","1:N","is settled with"],["invoice","line","1:N","invoices"],["invoice","deposit","1:N","offsets"],
-  ["user","auditlog","1:N","makes changes in"],["user","task","1:N","is responsible for"],["function","task","1:N","requires"],["message","booking","N:0..1","concerns"],["message","lead","N:0..1","concerns"],["screen","item","N:1","is placed at"],["access","function","N:1","opens for"]
+  ["user","auditlog","1:N","makes changes in"],["user","task","1:N","is responsible for"],["function","task","1:N","requires"],["inboundemail","booking","N:1","is a reply on"],["message","booking","N:0..1","concerns"],["message","lead","N:0..1","concerns"],["screen","item","N:1","is placed at"],["access","function","N:1","opens for"]
 ];
 
 const FLOW = [["Inquiry","sales"],["Option","sales"],["Quote","sales"],["Signing (later)","sales"],["Booking","booking"],["Program items","booking"],["Requirements","booking"],["Sheets","food"],["Delivery","space"],["Invoice","money"],["Fortnox / Visma","money"]];

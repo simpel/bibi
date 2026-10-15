@@ -15,6 +15,8 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   ["AuditLog", ["updatedAt", "createdBy"]],
   // Append-only: rows never change; `createdBy` is set.
   ["Message", ["updatedAt"]],
+  // Append-only: a received mail never changes; written by the inbound webhook (SYSTEM).
+  ["InboundEmail", ["updatedAt"]],
   // Derived search index, rebuilt from its entity; not authored by anyone.
   ["Embedding", ["createdBy"]],
   // Better Auth tables (shape owned by Better Auth); `inviterId` records the inviter.
@@ -40,6 +42,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "BookingStatus",
   "BookingStatusTransition",
   "Booking",
+  "InboundEmail",
   "Conversation",
   "Message",
   "Skill",

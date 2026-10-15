@@ -41,5 +41,27 @@ export const InboundMailSchema = z.object({
 
 export type InboundMail = z.infer<typeof InboundMailSchema>;
 
+/** Metadata of a received attachment; the bytes stay with the provider. */
+export const InboundAttachmentMetaSchema = z.object({
+  id: z.string().min(1),
+  filename: z.string().nullable(),
+  contentType: z.string().nullable(),
+  size: z.number().int().min(0).nullable(),
+});
+
+export type InboundAttachmentMeta = z.infer<typeof InboundAttachmentMetaSchema>;
+
+/** A received mail with its body, fetched from the provider by `providerEmailId` (ADR 0012). */
+export const InboundMailContentSchema = InboundMailSchema.extend({
+  cc: z.array(z.string().min(1)),
+  /** Addresses the provider received the mail for (covers Bcc and forwarding). */
+  receivedFor: z.array(z.string().min(1)),
+  text: z.string().nullable(),
+  html: z.string().nullable(),
+  attachments: z.array(InboundAttachmentMetaSchema),
+});
+
+export type InboundMailContent = z.infer<typeof InboundMailContentSchema>;
+
 /** A raw webhook request as the HTTP entry point received it (body unparsed for signatures). */
 export type InboundRequest = { headers: Headers; body: string };

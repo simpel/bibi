@@ -52,6 +52,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "booking.get", route: "/bookings/[id]" },
   { operation: "booking.update", route: "/bookings/[id]" },
   { operation: "booking.assign", route: "/bookings/[id]" },
+  { operation: "inboundEmail.list", route: "/bookings/[id]" },
   { operation: "entityType.list", route: "/settings/types" },
   { operation: "entityType.create", route: "/settings/types" },
   { operation: "configuration.importTemplate", route: "/settings/types" },
@@ -136,6 +137,10 @@ export const UI_EXEMPT: readonly UiExempt[] = [
     operation: "contact.get",
     reason:
       "Contact persons have no page of their own: the customer page lists them with contact.list and edits them inline.",
+  },
+  {
+    operation: "inboundEmail.get",
+    reason: "The booking page shows each received mail in full from inboundEmail.list",
   },
   {
     operation: "auditLog.get",

@@ -39,6 +39,7 @@ erDiagram
   Booking ||--o{ Sheet : "produces"
   User ||--o{ Booking : "coordinates / sells"
   Customer ||--o{ Booking : "orders"
+  Booking ||--o{ InboundEmail : "receives replies as"
   EntityType ||--o{ FieldDefinition : "has"
   EntityType ||--o{ Item : "classifies"
   Vocabulary ||--o{ VocabularyValue : "has"
@@ -265,6 +266,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `N:1` Contact is contact for this
 - `1:N` is answered by → Quote
 - `1:N` can create → Option
+- `1:N` InboundEmail is a reply on this
 - `0..1:N` Communication & log concerns this
 
 > ★ Pipeline with loss reason is missing at Lega. Status changes only through commands (`inquiry.qualify`, `inquiry.markLost`), never through `update`.
@@ -705,6 +707,23 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 **Relations**
 - `N:1` User is responsible for this
 - `N:1` ProgramItem requires this
+
+### InboundEmail (`InboundEmail`)
+
+*MVP* · A mail received on a booking's own inbound address, `booking-<bookingId>@<MAIL_INBOUND_DOMAIN>` (a customer reply, [ADR 0012](decisions/0012-email-provider.md)). Append-only. Stored only by the inbound webhook, as SYSTEM, in the booking's organization.
+
+**Attributes**
+- provider email id (unique per organization: a redelivered webhook is stored once)
+- Message-ID
+- sender, recipients
+- subject, text body, HTML body (stored, never rendered in the web app)
+- attachments as metadata (id, file name, content type, size); the bytes stay at the provider
+- received at
+
+**Relations**
+- `N:1` is a reply on → Booking
+
+> Operations: `inboundEmail.list` (per booking, newest first) and `inboundEmail.get`, permission `booking:read`, on every surface (GraphQL also as `Booking.inboundEmails`). `inboundEmail.receive` is SYSTEM only and deliberately has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received mail.
 
 ### Communication & log
 

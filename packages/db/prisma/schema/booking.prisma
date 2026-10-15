@@ -29,6 +29,7 @@ model Booking {
   entityType          EntityType    @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   customer            Customer      @relation(fields: [customerId, organizationId], references: [id, organizationId])
   bookingStatus       BookingStatus @relation(fields: [bookingStatusId, organizationId], references: [id, organizationId])
+  inboundEmails       InboundEmail[]
 
   @@unique([id, organizationId])
   @@unique([organizationId, reference])

@@ -7,6 +7,7 @@ import { conversationMcpTools } from "../features/conversation/mcp";
 import { customerMcpTools } from "../features/customer/mcp";
 import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
+import { inboundEmailMcpTools } from "../features/inbound-email/mcp";
 import { itemMcpTools } from "../features/item/mcp";
 import { memberMcpTools } from "../features/member/mcp";
 import { messageMcpTools } from "../features/message/mcp";
@@ -36,6 +37,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...occupancyMcpTools,
     ...bookingStatusMcpTools,
     ...bookingMcpTools,
+    ...inboundEmailMcpTools,
     ...conversationMcpTools,
     ...messageMcpTools,
     ...skillMcpTools,

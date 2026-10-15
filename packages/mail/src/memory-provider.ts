@@ -1,4 +1,5 @@
-import { appError, err, ok } from "@okazi/core";
+import { ok } from "@okazi/core";
+import { inboundUnsupported } from "./inbound-unsupported";
 import type { MailProvider } from "./mail-provider";
 import type { MailMessage } from "./schema";
 
@@ -14,8 +15,10 @@ export function createMemoryMailProvider(): MemoryMailProvider {
       return ok({ value: { providerMessageId: `memory-${outbox.length}` } });
     },
     async parseInbound() {
-      const message = "Inbound mail is not supported by the memory provider";
-      return err({ error: appError({ code: "UNAVAILABLE", message }) });
+      return inboundUnsupported({ provider: "memory" });
+    },
+    async fetchInbound() {
+      return inboundUnsupported({ provider: "memory" });
     },
   };
   return { provider, outbox };

@@ -5,7 +5,12 @@ export {
   type SetMailProviderInput,
   setMailProvider,
 } from "./get-mail-provider";
+export {
+  type CreateInboundWebhookHandlerInput,
+  createInboundWebhookHandler,
+} from "./inbound/create-inbound-webhook-handler";
 export type {
+  FetchInboundInput,
   MailProvider,
   MailProviderName,
   ParseInboundInput,
@@ -15,10 +20,12 @@ export { createMemoryMailProvider, type MemoryMailProvider } from "./memory-prov
 export {
   type CreateResendProviderInput,
   createResendProvider,
+} from "./resend/create-resend-provider";
+export {
   RESEND_API_URL,
   type ResendRequest,
   type ResendTransport,
-} from "./resend/create-resend-provider";
+} from "./resend/resend-transport";
 export {
   type SignSvixPayloadInput,
   signSvixPayload,
@@ -26,7 +33,11 @@ export {
   verifySvixSignature,
 } from "./resend/verify-svix-signature";
 export {
+  type InboundAttachmentMeta,
+  InboundAttachmentMetaSchema,
   type InboundMail,
+  type InboundMailContent,
+  InboundMailContentSchema,
   InboundMailSchema,
   type InboundRequest,
   type MailAttachment,

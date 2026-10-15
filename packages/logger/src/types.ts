@@ -1,5 +1,18 @@
-/** Where a request entered the system (ADR 0014). `system` = no request (jobs, startup). */
-export const SURFACES = ["web", "graphql", "rest", "mcp", "ai", "auth", "cli", "system"] as const;
+/**
+ * Where a request entered the system (ADR 0014). `system` = no request (jobs, startup);
+ * `webhook` = a provider calling us (e.g. Resend's inbound mail webhook).
+ */
+export const SURFACES = [
+  "web",
+  "graphql",
+  "rest",
+  "mcp",
+  "ai",
+  "auth",
+  "cli",
+  "system",
+  "webhook",
+] as const;
 
 export type Surface = (typeof SURFACES)[number];
 

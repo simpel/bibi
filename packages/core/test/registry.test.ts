@@ -56,6 +56,8 @@ describe("registry and approval", () => {
       "fieldDefinition.get",
       "fieldDefinition.list",
       "fieldDefinition.update",
+      "inboundEmail.get",
+      "inboundEmail.list",
       "item.archive",
       "item.create",
       "item.get",

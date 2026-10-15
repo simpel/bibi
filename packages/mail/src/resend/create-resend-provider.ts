@@ -2,9 +2,9 @@ import { appError, err, ok, type Result } from "@okazi/core";
 import { z } from "zod";
 import type { MailProvider } from "../mail-provider";
 import type { MailMessage, SentMail } from "../schema";
+import { fetchResendInbound } from "./fetch-resend-inbound";
 import { parseResendInbound } from "./parse-resend-inbound";
-
-export const RESEND_API_URL = "https://api.resend.com";
+import { fetchTransport, RESEND_API_URL, type ResendTransport } from "./resend-transport";
 
 export type CreateResendProviderInput = {
   apiKey: string;
@@ -13,13 +13,6 @@ export type CreateResendProviderInput = {
   /** Injected in tests; defaults to the global `fetch`. */
   transport?: ResendTransport;
 };
-
-export type ResendRequest = { url: string; init: RequestInit };
-
-/** Performs one HTTP request against the Resend API. */
-export type ResendTransport = (request: ResendRequest) => Promise<Response>;
-
-const fetchTransport: ResendTransport = ({ url, init }) => fetch(url, init);
 
 const SendResponseSchema = z.object({ id: z.string().min(1) });
 
@@ -75,5 +68,7 @@ export function createResendProvider({
     name: "resend",
     send: async ({ message }) => postEmail({ message, input }),
     parseInbound: async ({ request }) => parseResendInbound({ request, webhookSecret }),
+    fetchInbound: async ({ providerEmailId }) =>
+      fetchResendInbound({ providerEmailId, apiKey, transport: transport ?? fetchTransport }),
   };
 }

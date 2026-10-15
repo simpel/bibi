@@ -17,6 +17,8 @@ MAIL_PROVIDER=smtp
 RESEND_API_KEY=
 # Signing secret (whsec_...) of the Resend email.received webhook.
 RESEND_WEBHOOK_SECRET=
+# Inbound subdomain for booking reply addresses, e.g. in.okazi.se (docs/runbooks/inbound-email.md).
+MAIL_INBOUND_DOMAIN=
 
 # --- App URLs / ports ---
 WEB_URL=http://localhost:3000

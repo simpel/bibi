@@ -1,5 +1,6 @@
 import { appError, err, ok } from "@okazi/core";
 import { createTransport, type Transporter } from "nodemailer";
+import { inboundUnsupported } from "../inbound-unsupported";
 import type { MailProvider } from "../mail-provider";
 import type { MailMessage } from "../schema";
 
@@ -39,8 +40,10 @@ export function createSmtpProvider({ url, from }: CreateSmtpProviderInput): Mail
       }
     },
     async parseInbound() {
-      const message = "Inbound mail is not supported by the SMTP provider";
-      return err({ error: appError({ code: "UNAVAILABLE", message }) });
+      return inboundUnsupported({ provider: "SMTP" });
+    },
+    async fetchInbound() {
+      return inboundUnsupported({ provider: "SMTP" });
     },
   };
 }

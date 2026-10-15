@@ -7,6 +7,7 @@ import { conversationOperations } from "./features/conversation/operations";
 import { customerOperations } from "./features/customer/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
+import { inboundEmailOperations } from "./features/inbound-email/operations";
 import { itemOperations } from "./features/item/operations";
 import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
@@ -39,6 +40,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...occupancyOperations,
     ...bookingStatusOperations,
     ...bookingOperations,
+    ...inboundEmailOperations,
     ...conversationOperations,
     ...messageOperations,
     ...skillOperations,

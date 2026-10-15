@@ -7,6 +7,7 @@ import { conversationRoutes } from "./features/conversation/rest";
 import { customerRoutes } from "./features/customer/rest";
 import { entityTypeRoutes } from "./features/entity-type/rest";
 import { fieldDefinitionRoutes } from "./features/field-definition/rest";
+import { inboundEmailRoutes } from "./features/inbound-email/rest";
 import { itemRoutes } from "./features/item/rest";
 import { memberRoutes } from "./features/member/rest";
 import { messageRoutes } from "./features/message/rest";
@@ -36,6 +37,7 @@ export function listRestRoutes(): RestRoute[] {
     ...occupancyRoutes,
     ...bookingStatusRoutes,
     ...bookingRoutes,
+    ...inboundEmailRoutes,
     ...conversationRoutes,
     ...messageRoutes,
     ...skillRoutes,

@@ -12,6 +12,7 @@ import "../features/contact/graphql";
 import "../features/occupancy/graphql";
 import "../features/booking-status/graphql";
 import "../features/booking/graphql";
+import "../features/inbound-email/graphql";
 import "../features/conversation/graphql";
 import "../features/message/graphql";
 import "../features/skill/graphql";

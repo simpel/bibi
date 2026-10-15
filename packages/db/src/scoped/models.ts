@@ -16,6 +16,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "BookingStatus",
   "BookingStatusTransition",
   "Booking",
+  "InboundEmail",
   "AuditLog",
   "Embedding",
   "Conversation",
@@ -80,7 +81,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
 export const SOFT_DELETE_MODELS = new Set<string>(SOFT_DELETE_DEFAULTS.keys());
 
 /** Append-only models: no update/delete/upsert through `scopedDb`. */
-export const APPEND_ONLY_MODELS = new Set<string>(["AuditLog", "Message"]);
+export const APPEND_ONLY_MODELS = new Set<string>(["AuditLog", "Message", "InboundEmail"]);
 
 /**
  * Models with global rows (`organizationId` null, e.g. SYSTEM skills). Reads through `scopedDb`

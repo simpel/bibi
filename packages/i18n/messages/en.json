@@ -1245,6 +1245,16 @@
       "SYSTEM": "System"
     }
   },
+  "inboundEmail": {
+    "title": "Received email",
+    "address": "Customers reply to <code>{address}</code> and their mail shows up here.",
+    "noAddress": "No inbound address is configured, so replies cannot reach this booking yet.",
+    "empty": "No email received yet.",
+    "noSubject": "(no subject)",
+    "noBody": "(no text)",
+    "htmlOnly": "This email has only an HTML version, which is not shown.",
+    "unnamedAttachment": "Unnamed attachment"
+  },
   "member": {
     "singular": "Member",
     "plural": "Members",

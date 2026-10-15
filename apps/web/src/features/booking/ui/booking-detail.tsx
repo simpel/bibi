@@ -1,3 +1,4 @@
+import { getEnv } from "@okazi/config";
 import { getBooking } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { Link } from "@okazi/i18n/navigation";
@@ -5,6 +6,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { BookingInbox } from "@/features/inbound-email/ui/booking-inbox";
 import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -15,7 +17,7 @@ import { BookingFacts } from "./booking-facts";
 
 export type BookingDetailProps = { locale: Locale; id: string };
 
-/** Booking detail page body: facts with edit and change owners. */
+/** Booking detail page body: facts with edit and change owners, then the received mails. */
 export async function BookingDetail({ locale, id }: BookingDetailProps) {
   const common = await getTranslations("common");
   const t = await getTranslations("booking");
@@ -45,6 +47,7 @@ export async function BookingDetail({ locale, id }: BookingDetailProps) {
         actions={actions}
       />
       <BookingFacts booking={booking.value} data={data.value} />
+      <BookingInbox locale={locale} bookingId={id} domain={getEnv().MAIL_INBOUND_DOMAIN} />
     </div>
   );
 }

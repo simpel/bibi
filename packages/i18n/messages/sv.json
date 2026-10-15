@@ -1245,6 +1245,16 @@
       "SYSTEM": "Systemet"
     }
   },
+  "inboundEmail": {
+    "title": "Mottagen e-post",
+    "address": "Kunder svarar till <code>{address}</code> och deras e-post visas här.",
+    "noAddress": "Ingen inkommande adress är konfigurerad, så svar kan inte nå bokningen än.",
+    "empty": "Ingen e-post har tagits emot än.",
+    "noSubject": "(inget ämne)",
+    "noBody": "(ingen text)",
+    "htmlOnly": "Det här mejlet har bara en HTML-version, som inte visas.",
+    "unnamedAttachment": "Namnlös bilaga"
+  },
   "member": {
     "singular": "Medlem",
     "plural": "Medlemmar",
