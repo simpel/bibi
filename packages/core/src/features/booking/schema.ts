@@ -20,6 +20,16 @@ export const BookingSchema = z.object({
   coordinatorId: z.string().nullable(),
   statusChangedAt: z.date(),
   fields: FieldValuesSchema,
+  /**
+   * Derived, not stored (ADR 0012): `booking-<id>@<MAIL_INBOUND_DOMAIN>`, the reply-to of booking
+   * mail. Null when inbound mail is not configured.
+   */
+  inboundAddress: z
+    .email()
+    .nullable()
+    .describe(
+      "Address the customer replies to so the mail lands on this booking; null when inbound mail is not configured",
+    ),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),

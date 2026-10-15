@@ -1,5 +1,13 @@
+import { getEnv } from "@okazi/config";
 import { describe, expect, it } from "vitest";
-import { createBooking, execute, getBooking, listBookings, updateBooking } from "../src/index";
+import {
+  bookingReplyAddress,
+  createBooking,
+  execute,
+  getBooking,
+  listBookings,
+  updateBooking,
+} from "../src/index";
 import { bookingSetup, createTestBooking } from "./booking-helpers";
 import { statuses } from "./booking-status-helpers";
 import { createTestCustomer } from "./customer-helpers";
@@ -44,6 +52,8 @@ describe("bookings (ADR 0022)", () => {
       result: await execute({ operation: getBooking, input: { id: created.id }, context }),
     });
     expect(fetched.id).toBe(created.id);
+    const domain = getEnv().MAIL_INBOUND_DOMAIN;
+    expect(fetched.inboundAddress).toBe(bookingReplyAddress({ bookingId: created.id, domain }));
   });
 
   it("updates time, headcount and fields but refuses an end before the start", async () => {

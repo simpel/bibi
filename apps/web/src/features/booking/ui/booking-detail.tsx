@@ -1,4 +1,3 @@
-import { getEnv } from "@okazi/config";
 import { getBooking } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { Link } from "@okazi/i18n/navigation";
@@ -47,7 +46,7 @@ export async function BookingDetail({ locale, id }: BookingDetailProps) {
         actions={actions}
       />
       <BookingFacts booking={booking.value} data={data.value} />
-      <BookingInbox locale={locale} bookingId={id} domain={getEnv().MAIL_INBOUND_DOMAIN} />
+      <BookingInbox locale={locale} bookingId={id} address={booking.value.inboundAddress} />
     </div>
   );
 }

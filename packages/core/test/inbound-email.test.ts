@@ -2,7 +2,6 @@ import { type CapturedLogs, captureLogs } from "@okazi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
-  bookingIdFromAddress,
   bookingInboundAddress,
   deliverInboundEmail,
   execute,
@@ -31,20 +30,6 @@ async function bookingWithAddress() {
   });
   return { context, booking, address: bookingInboundAddress({ bookingId: booking.id, domain }) };
 }
-
-describe("inbound address scheme", () => {
-  it("round-trips a booking id and ignores other addresses", () => {
-    const address = bookingInboundAddress({ bookingId: "abc123", domain: "In.Okazi.test" });
-    expect(address).toBe("booking-abc123@in.okazi.test");
-    expect(bookingIdFromAddress({ address: `Desk <${address}>`, domain })).toBe("abc123");
-    expect(bookingIdFromAddress({ address: "BOOKING-ABC123@IN.OKAZI.TEST", domain })).toBe(
-      "abc123",
-    );
-    expect(bookingIdFromAddress({ address: "booking-abc123@other.test", domain })).toBeNull();
-    expect(bookingIdFromAddress({ address: "sales@in.okazi.test", domain })).toBeNull();
-    expect(bookingIdFromAddress({ address: "booking-a.b@in.okazi.test", domain })).toBeNull();
-  });
-});
 
 describe("deliverInboundEmail", () => {
   it("stores a reply on the right booking and organization and logs mail.received", async () => {

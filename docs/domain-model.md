@@ -342,6 +342,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - cancellation terms (not built yet)
 - seriesId and occurrenceIndex (if the booking belongs to a series; not built yet)
 - statusChangedAt
+- inbound address (`inboundAddress`, derived and not stored: `booking-<id>@<MAIL_INBOUND_DOMAIN>`, null when inbound mail is not configured; the reply-to of booking mail)
 
 **Relations**
 - `0..1:1` Quote becomes this on accept

@@ -15,6 +15,19 @@ export function bookingInboundAddress({ bookingId, domain }: BookingInboundAddre
   return `${PREFIX}${bookingId}@${domain.toLowerCase()}`;
 }
 
+export type BookingReplyAddressInput = { bookingId: string; domain: string | undefined };
+
+/**
+ * The booking's reply address, or null when no inbound domain is configured (`MAIL_INBOUND_DOMAIN`
+ * unset): carried as `Booking.inboundAddress` and used as reply-to on booking mail.
+ */
+export function bookingReplyAddress({
+  bookingId,
+  domain,
+}: BookingReplyAddressInput): string | null {
+  return domain ? bookingInboundAddress({ bookingId, domain }) : null;
+}
+
 /** `Name <a@b>` → `a@b`; a bare address is returned trimmed. */
 export function bareAddress({ address }: { address: string }): string {
   const angled = /<([^<>]+)>/.exec(address);

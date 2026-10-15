@@ -1,4 +1,4 @@
-import { bookingInboundAddress, listInboundEmails } from "@okazi/core";
+import { listInboundEmails } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
@@ -6,12 +6,17 @@ import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { InboundEmailList } from "./inbound-email-list";
 
-export type BookingInboxProps = { locale: Locale; bookingId: string; domain: string | undefined };
+export type BookingInboxProps = {
+  locale: Locale;
+  bookingId: string;
+  /** `Booking.inboundAddress`; null when inbound mail is not configured. */
+  address: string | null;
+};
 
 const LIMIT = 50;
 
 /** The booking's reply address and the mails received on it (`inboundEmail.list`, ADR 0012). */
-export async function BookingInbox({ locale, bookingId, domain }: BookingInboxProps) {
+export async function BookingInbox({ locale, bookingId, address }: BookingInboxProps) {
   const t = await getTranslations("inboundEmail");
   const result = await runOperation({
     operation: listInboundEmails,
@@ -22,9 +27,9 @@ export async function BookingInbox({ locale, bookingId, domain }: BookingInboxPr
     <section data-slot="booking-inbox" className="grid gap-3">
       <h2 className="text-lg font-semibold">{t("title")}</h2>
       <p className="text-sm text-muted-foreground">
-        {domain
+        {address
           ? t.rich("address", {
-              address: bookingInboundAddress({ bookingId, domain }),
+              address,
               code: (chunks) => <code className="text-foreground">{chunks}</code>,
             })
           : t("noAddress")}
