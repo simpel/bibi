@@ -40,8 +40,7 @@ const CHECKS = 'pnpm db:migrate, pnpm lint, pnpm typecheck, pnpm check:structure
 function pickModel(t) {
   const L = new Set(t.labels)
   const has = (x) => L.has(x)
-  if (has('type:docs') || has('area:i18n')) return 'haiku'
-  if (has('size:S') && (has('type:tech-debt') || has('type:infra'))) return 'haiku'
+  // No Haiku for implementation: measured ~93 turns per ticket against Sonnet's ~19, so it cost more in total.
   if (has('size:L') || has('area:auth') || has('area:db')) return 'opus'
   if (has('area:core') && has('type:feature')) return 'opus'
   return 'sonnet'
@@ -159,28 +158,30 @@ const PARK = {
 // ---- Prompts ---------------------------------------------------------------
 const FOLLOW_UP_RULE = `If you notice a real problem outside this ticket's scope (a bug, security or tenancy gap, missing test, stale doc, tech debt), do NOT fix it here. Report it in followUps with where = file:line, so it becomes its own ticket. Only concrete, verifiable problems; no style nits, no wishes, nothing this ticket already covers.`
 
+// Every turn re-reads the whole context, so file dumps cost on every later turn too.
+const READING_RULES = `Keep your context small: find code with grep -n or rg, then read only the lines you need (sed -n 'A,Bp' or Read with offset/limit). Never cat whole files you only need part of. Look up library APIs with context7, never by reading node_modules.`
+
 const inWorktree = (dir) => `Your checkout is the git worktree ${dir}: its own branch, its own Postgres database and its own .env (loaded automatically by Vitest, Prisma and the dev servers). Run every command with cwd ${dir} and edit only files under it. Never touch the main checkout ${REPO}.`
 
-const selectPrompt = (exclude) => `You read the board for autonomous ticket work on simpel/okazi. Do not change anything.
-1. In ${REPO}: git fetch origin. On failure return ok=false with the reason.
-2. List board items ONCE: gh project item-list 8 --owner simpel --format json -L 300. Keep open issues from simpel/okazi with status ${STATUSES.map((x) => `"${x}"`).join(' or ')}.${ONLY ? ` Only consider issues ${JSON.stringify(ONLY)}.` : ''}${exclude.length ? ` Skip issues ${JSON.stringify(exclude)}.` : ''}
-3. For each, read the issue (gh issue view N -R simpel/okazi --json title,labels,body). openBlockers = issue numbers under "Depends on" in the body, plus native blocked-by (gh api repos/simpel/okazi/issues/N/dependencies/blocked_by), that are still OPEN.
-4. itemId = the board item's id (the \"id\" field of that item in the item-list output; PVTI_...). priority = the board Priority value (P0/P1/P2, "" if unset). status = the board Status. labels = label names.
-Return ok=true and every matching ticket, including blocked ones.`
+// Selection and worktree setup are deterministic scripts; the agent only runs them and relays the JSON.
+const selectPrompt = (exclude) => {
+  const flags = [`--statuses ${STATUSES.join(',')}`, ONLY ? `--only ${ONLY.join(',')}` : '', exclude.length ? `--exclude ${exclude.join(',')}` : '']
+  return `Run exactly this one command from ${REPO} and nothing else: node tools/backlog/select.mjs ${flags.filter(Boolean).join(' ')}
+It prints one JSON object { ok, problem?, tickets }. Return it unchanged. If the command prints no JSON, return ok=false with the last 20 lines as problem.`
+}
 
-const prepPrompt = (t) => `Create an isolated worktree for issue #${t.number} in ${REPO}.
-1. git fetch origin.
-2. If ${REPO}/../okazi-worktrees/${wtName(t)} exists (leftover from an earlier run): if \`git status --porcelain\` there is empty and \`git log origin/main..HEAD\` there is empty, run \`pnpm wt:rm ${wtName(t)} --force --delete-branch\` from ${REPO}; otherwise return ok=false, problem "leftover worktree with work".
-3. If branch ticket/${t.number} exists without a worktree: delete it (git branch -D) only if \`git log origin/main..ticket/${t.number}\` is empty; otherwise return ok=false, problem "leftover branch with work".
-4. From ${REPO}: pnpm wt:new ${wtName(t)} --branch ticket/${t.number} --base origin/main. It prints WORKTREE_DIR=<path> when ready. On failure return ok=false with the last 30 lines.
-5. ${moveCard(t, 'In progress')}
-Return ok and dir (absolute path).`
+const prepPrompt = (t) => `Run exactly these commands and nothing else.
+1. From ${REPO}: tools/backlog/prep.sh ${t.number}
+   It prints WORKTREE_DIR=<path> on success. Otherwise it prints PROBLEM=<reason> (plus log lines): return ok=false with that output as problem and stop.
+2. ${moveCard(t, 'In progress')}
+Return ok=true and dir = the WORKTREE_DIR path.`
 
 const implPrompt = (t, dir) => `Implement GitHub issue #${t.number} ("${t.title}").
 ${inWorktree(dir)}
 - Read the issue: gh issue view ${t.number} -R simpel/okazi. Its "To do" and "Done when" sections are the spec. Read the linked ADR in docs/decisions/.
 - Use the matching repo skill (new-entity, new-core-operation, db-migration, i18n-strings, new-ui-component, structure-fix) where it fits. Migrations are fine: your database is yours alone.
-- Run any checks you like in your worktree, including pnpm test for the packages you touch.
+- Run any checks you like in your worktree, including pnpm test for the packages you touch. Pipe long output through tail or grep; the verify step runs the full suite.
+- ${READING_RULES}
 - Do NOT run git add/commit/push/rebase/stash/checkout/reset. The landing step commits.
 - If the spec needs a human decision or is blocked by missing work, stop and return status=blocked with the reason in notes.
 - ${FOLLOW_UP_RULE}
@@ -196,7 +197,7 @@ const fixPrompt = (t, dir, failures) => `Checks failed after work on issue #${t.
 ${inWorktree(dir)}
 Failures:
 ${failures.map((f) => `### ${f.check}\n${f.output}`).join('\n\n')}
-Fix the cause. No git commands that change state. ${FOLLOW_UP_RULE} Return the full list of files this ticket has touched so far (including earlier ones).`
+Fix the cause. ${READING_RULES} No git commands that change state. ${FOLLOW_UP_RULE} Return the full list of files this ticket has touched so far (including earlier ones).`
 
 const reviewPrompt = (t, dir) => `Use the tenancy-review skill on the uncommitted changes for issue #${t.number} (git diff plus untracked files in the worktree).
 ${inWorktree(dir)}
@@ -262,7 +263,7 @@ async function verifyAndFix(t, dir, state, collect) {
 }
 
 async function runTicket(t) {
-  const prep = await agent(prepPrompt(t), { label: `wt #${t.number}`, phase: 'Prepare', schema: PREP, model: 'haiku' })
+  const prep = await agent(prepPrompt(t), { label: `wt #${t.number}`, phase: 'Prepare', schema: PREP, model: 'haiku', effort: 'low' })
   if (!prep || !prep.ok || !prep.dir) return { t, outcome: 'failed', reason: prep ? prep.problem : 'prepare agent failed' }
   const dir = prep.dir
 
