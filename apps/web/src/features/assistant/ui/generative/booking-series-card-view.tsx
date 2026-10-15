@@ -23,7 +23,7 @@ export function BookingSeriesCardView({ series }: BookingSeriesCardViewProps) {
             {series.rule}
           </Link>
         </CardTitle>
-        <Badge variant="secondary">{t("singular")}</Badge>
+        <Badge variant="secondary">{series.cancelledAt ? t("cancelled") : t("singular")}</Badge>
       </CardHeader>
       <CardContent className="grid gap-1 p-4 pt-0 text-sm text-muted-foreground">
         <p>{t("occurrences", { count: total })}</p>

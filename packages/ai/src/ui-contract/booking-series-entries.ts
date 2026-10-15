@@ -12,6 +12,7 @@ const SeriesOccurrenceWireSchema = SeriesOccurrenceSchema.extend({
 /** JSON form of a booking series (ADR 0023) as tool results carry it. */
 export const BookingSeriesWireSchema = BookingSeriesSchema.extend({
   startsAt: z.string(),
+  cancelledAt: z.string().nullable(),
   occurrences: z.array(SeriesOccurrenceWireSchema),
   clashes: z.array(SeriesOccurrenceWireSchema),
   createdAt: z.string(),
@@ -39,4 +40,6 @@ export const BOOKING_SERIES_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = 
   }),
   bookingSeries_get: seriesCard,
   bookingSeries_create: seriesCard,
+  bookingSeries_updateOccurrences: seriesCard,
+  bookingSeries_cancel: seriesCard,
 };

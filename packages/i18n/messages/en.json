@@ -347,7 +347,11 @@
       "noRoom": "No room",
       "setup": "Setup",
       "noSetup": "No setup",
-      "estimatedHeadcount": "Estimated headcount"
+      "estimatedHeadcount": "Estimated headcount",
+      "scope": "Applies to",
+      "occurrenceStartsAt": "Starts",
+      "keepRoom": "Keep the current room",
+      "cancelReason": "Reason"
     },
     "columns": {
       "rule": "Recurrence",
@@ -359,8 +363,19 @@
       "booking": "Booking",
       "when": "When",
       "status": "Status",
-      "clash": "Clash"
-    }
+      "clash": "Clash",
+      "actions": "Actions"
+    },
+    "occurrencesUpdated": "The occurrences have been changed.",
+    "itemsTaken": "The room is already taken at that time. Pick another room or time.",
+    "scope": { "this": "Only this occurrence", "following": "This and following occurrences" },
+    "editOccurrence": "Change occurrence {index}/{total}",
+    "editOccurrenceLabel": "Change occurrence {index}/{total}",
+    "editOccurrenceDescription": "Move the occurrence to another time or room. \"This and following\" moves every later occurrence by the same amount and changes the series going forward.",
+    "cancelSeries": "Cancel series",
+    "cancelSeriesDescription": "Every upcoming occurrence is cancelled with the reason and its room is released. Occurrences that have already started or ended are not changed.",
+    "cancelled": "The series has been cancelled.",
+    "cancelledNotice": "The series is cancelled: {reason}"
   },
   "booking": {
     "singular": "Booking",
@@ -923,7 +938,8 @@
         "noClashes": "No clashes",
         "clash": "Clash",
         "occurrence": "Occurrence {index}/{total}",
-        "columns": { "rule": "Recurrence", "occurrences": "Occurrences", "clashes": "Clashes" }
+        "columns": { "rule": "Recurrence", "occurrences": "Occurrences", "clashes": "Clashes" },
+        "cancelled": "Cancelled"
       },
       "occupancy": {
         "singular": "Occupancy",

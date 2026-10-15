@@ -5,6 +5,7 @@
  */
 export * from "./features/audit-log/schema";
 export * from "./features/booking/schema";
+export * from "./features/booking-series/occurrence-schema";
 export * from "./features/booking-series/schema";
 export * from "./features/booking-status/schema";
 export * from "./features/configuration/schema";

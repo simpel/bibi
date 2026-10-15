@@ -23,10 +23,15 @@ export type CancellationHook = (input: CancellationInput) => Promise<Result<true
 
 export const CANCELLATION_HOOKS: CancellationHook[] = [];
 
+export type ReleaseBookingOccupancyInput = { context: OperationContext; bookingId: string };
+
 /** Releases every active occupancy the booking holds, so the items can be booked again. */
-async function releaseOccupancy({ context, booking }: CancellationInput): Promise<Result<true>> {
+export async function releaseBookingOccupancy({
+  context,
+  bookingId,
+}: ReleaseBookingOccupancyInput): Promise<Result<true>> {
   const rows = await context.db.occupancy.findMany({
-    where: { sourceType: BOOKING_OCCUPANCY_SOURCE, sourceId: booking.id },
+    where: { sourceType: BOOKING_OCCUPANCY_SOURCE, sourceId: bookingId },
   });
   for (const row of rows) {
     const released = await context.db.occupancy.update({
@@ -49,8 +54,10 @@ export async function applyCancellation({
   booking,
   reason,
 }: CancellationInput): Promise<Result<true>> {
-  for (const step of [releaseOccupancy, ...CANCELLATION_HOOKS]) {
-    const result = await step({ context, booking, reason });
+  const released = await releaseBookingOccupancy({ context, bookingId: booking.id });
+  if (!released.ok) return released;
+  for (const hook of CANCELLATION_HOOKS) {
+    const result = await hook({ context, booking, reason });
     if (!result.ok) return result;
   }
   return ok({ value: true });

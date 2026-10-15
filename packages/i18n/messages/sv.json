@@ -347,7 +347,11 @@
       "noRoom": "Inget rum",
       "setup": "Uppställning",
       "noSetup": "Ingen uppställning",
-      "estimatedHeadcount": "Beräknat antal"
+      "estimatedHeadcount": "Beräknat antal",
+      "scope": "Gäller",
+      "occurrenceStartsAt": "Börjar",
+      "keepRoom": "Behåll nuvarande rum",
+      "cancelReason": "Orsak"
     },
     "columns": {
       "rule": "Upprepning",
@@ -359,8 +363,19 @@
       "booking": "Bokning",
       "when": "När",
       "status": "Status",
-      "clash": "Krock"
-    }
+      "clash": "Krock",
+      "actions": "Åtgärder"
+    },
+    "occurrencesUpdated": "Tillfällena har ändrats.",
+    "itemsTaken": "Rummet är redan upptaget vid den tiden. Välj ett annat rum eller en annan tid.",
+    "scope": { "this": "Bara det här tillfället", "following": "Det här och följande tillfällen" },
+    "editOccurrence": "Ändra tillfälle {index}/{total}",
+    "editOccurrenceLabel": "Ändra tillfälle {index}/{total}",
+    "editOccurrenceDescription": "Flytta tillfället till en annan tid eller ett annat rum. \"Det här och följande\" flyttar alla senare tillfällen lika mycket och ändrar serien framåt.",
+    "cancelSeries": "Avboka serien",
+    "cancelSeriesDescription": "Alla kommande tillfällen avbokas med orsaken och deras rum frigörs. Tillfällen som redan har börjat eller är slut ändras inte.",
+    "cancelled": "Serien har avbokats.",
+    "cancelledNotice": "Serien är avbokad: {reason}"
   },
   "booking": {
     "singular": "Bokning",
@@ -923,7 +938,8 @@
         "noClashes": "Inga krockar",
         "clash": "Krock",
         "occurrence": "Tillfälle {index}/{total}",
-        "columns": { "rule": "Upprepning", "occurrences": "Tillfällen", "clashes": "Krockar" }
+        "columns": { "rule": "Upprepning", "occurrences": "Tillfällen", "clashes": "Krockar" },
+        "cancelled": "Avbokad"
       },
       "occupancy": {
         "singular": "Beläggning",

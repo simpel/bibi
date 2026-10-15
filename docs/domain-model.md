@@ -381,6 +381,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - rule (subset of RFC 5545 RRULE: `FREQ`, `INTERVAL`, `BYDAY`, `BYMONTHDAY`, `COUNT` or `UNTIL`)
 - first start, length in minutes and time zone (every occurrence keeps the wall time)
 - truncated (the rule continues past the generated horizon)
+- cancelledAt and cancellationReason (set by `bookingSeries.cancel`)
 - price list (not built yet)
 
 **Relations**
@@ -390,6 +391,8 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 > Occurrences are created when the series is created, at most 12 months or 52 occurrences ahead. Conflicting occurrences are flagged and returned so the user can pick another item or time. Changes apply to "this occurrence only" or "this and following". Cancelling the series cancels all upcoming occurrences.
 
 > Operations (resource `booking`): `bookingSeries.list|get|create`. `create({ entityTypeId, customerId, rule, startsAt, durationMinutes, timeZone?, itemIds, setupId?, … })` takes the rule as an RRULE string and, in one transaction, creates every occurrence as an ordinary `TENTATIVE` booking with `seriesId` and `occurrenceIndex` and consecutive reference numbers. Each occurrence occupies the template's items (`BOOKING`, plus the setup's changeover as `SETUP`). When another booking, setup time or block already holds an item, the occurrence is still created but without occupancy, flagged `clash` and listed in `clashes`; the series is never aborted. `get` and `list` return the series with its occurrences. The series and every occurrence are audited.
+
+> `updateOccurrences({ seriesId, fromIndex, scope: "THIS" | "FOLLOWING", patch })` changes the occurrence at `fromIndex` alone (`THIS`) or it and every later one (`FOLLOWING`). The patch can set `startsAt` (with `FOLLOWING` every later occurrence moves by the same offset), `durationMinutes`, `itemIds`, `setupId`, `estimatedHeadcount` and `fields` (merged by key). A moved occurrence releases its occupancy and occupies the items again; with `THIS` taken items give `CONFLICT`, with `FOLLOWING` the occurrence is flagged `clash` as on create. `FOLLOWING` also updates the template, the length and (by the offset) the anchor `startsAt` going forward. Cancelled and completed occurrences are never changed. `cancel({ id, reason, statusId? })` moves every upcoming occurrence (not started, not cancelled or completed) to a `CANCELLED`-phase status (default the phase's first) through the organization's transitions, which releases its occupancy; past occurrences are untouched and the series gets `cancelledAt`. A cancelled series refuses further changes. Every affected booking is audited.
 
 ### ProgramItem
 

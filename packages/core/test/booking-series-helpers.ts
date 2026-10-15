@@ -1,9 +1,11 @@
 import {
+  type BookingSeriesUpdateOccurrencesInput,
   createBookingSeries,
   createOccupancy,
   type ExecuteContext,
   execute,
   expandOccurrences,
+  updateBookingSeriesOccurrences,
 } from "../src/index";
 import { bookingSetup } from "./booking-helpers";
 import { unwrap } from "./helpers";
@@ -56,3 +58,20 @@ export const createS1 = ({ context, ...input }: CreateS1Input) =>
     input: { ...input, rule: S1_RULE, startsAt: S1_START, durationMinutes: S1_MINUTES },
     context,
   });
+
+export type UpdateS1Input = {
+  context: ExecuteContext;
+  seriesId: string;
+  fromIndex: number;
+  scope: "THIS" | "FOLLOWING";
+  patch: BookingSeriesUpdateOccurrencesInput["patch"];
+};
+
+export const updateOccurrences = ({ context, ...input }: UpdateS1Input) =>
+  execute({ operation: updateBookingSeriesOccurrences, input, context });
+
+/** The ids of the active `BOOKING` occupancies on the item, by the booking that holds them. */
+export async function bookingsOn({ context, itemId }: { context: ExecuteContext; itemId: string }) {
+  const rows = await context.db.occupancy.findMany({ where: { itemId, type: "BOOKING" } });
+  return rows.map((row) => row.sourceId);
+}

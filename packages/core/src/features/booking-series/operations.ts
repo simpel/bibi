@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { cancelBookingSeries } from "./cancel-operation";
 import {
   BookingSeriesIdInputSchema,
   BookingSeriesListInputSchema,
@@ -10,6 +11,7 @@ import {
   BookingSeriesSchema,
 } from "./schema";
 import { loadBookingSeries, toBookingSeriesDto, WITH_OCCURRENCES } from "./to-booking-series-dto";
+import { updateBookingSeriesOccurrences } from "./update-occurrences-operation";
 import { createBookingSeries } from "./write-operations";
 
 export const listBookingSeries = defineOperation({
@@ -49,4 +51,12 @@ export const getBookingSeries = defineOperation({
   },
 });
 
-export const bookingSeriesOperations = [listBookingSeries, getBookingSeries, createBookingSeries];
+export const bookingSeriesOperations = [
+  listBookingSeries,
+  getBookingSeries,
+  createBookingSeries,
+  updateBookingSeriesOccurrences,
+  cancelBookingSeries,
+];
+
+export { cancelBookingSeries, updateBookingSeriesOccurrences };

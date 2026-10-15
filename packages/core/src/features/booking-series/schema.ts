@@ -42,6 +42,9 @@ export const BookingSeriesSchema = z.object({
   template: BookingSeriesTemplateSchema,
   /** The rule continues past the generated 12 months / 52 occurrences. */
   truncated: z.boolean(),
+  /** When `bookingSeries.cancel` cancelled the upcoming occurrences; null while running. */
+  cancelledAt: z.date().nullable(),
+  cancellationReason: z.string().nullable(),
   occurrences: z.array(SeriesOccurrenceSchema),
   /** The occurrences with `clash`, so the user can choose another item or time for them. */
   clashes: z.array(SeriesOccurrenceSchema),
@@ -51,8 +54,8 @@ export const BookingSeriesSchema = z.object({
   createdBy: z.string().nullable(),
 });
 
-const HeadcountSchema = z.number().int().min(0).max(100_000);
-const IdSchema = z.string().min(1);
+export const HeadcountSchema = z.number().int().min(0).max(100_000);
+export const IdSchema = z.string().min(1);
 
 export const BookingSeriesCreateInputSchema = z.object({
   entityTypeId: IdSchema.describe("Id of the booking type (entityType.list base BOOKING)"),

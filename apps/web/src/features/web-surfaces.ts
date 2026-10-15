@@ -56,6 +56,8 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "bookingSeries.list", route: "/booking-series" },
   { operation: "bookingSeries.create", route: "/booking-series" },
   { operation: "bookingSeries.get", route: "/booking-series/[id]" },
+  { operation: "bookingSeries.updateOccurrences", route: "/booking-series/[id]" },
+  { operation: "bookingSeries.cancel", route: "/booking-series/[id]" },
   { operation: "entityType.list", route: "/settings/types" },
   { operation: "entityType.create", route: "/settings/types" },
   { operation: "configuration.importTemplate", route: "/settings/types" },

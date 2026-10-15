@@ -2,12 +2,14 @@ import {
   type BookingDto,
   type BookingSeriesDto,
   BookingSeriesSchema,
+  cancelBookingSeries,
   createBookingSeries,
   getBooking,
   getBookingSeries,
   listBookingSeries,
   type SeriesOccurrenceDto,
   SeriesOccurrenceSchema,
+  updateBookingSeriesOccurrences,
 } from "@okazi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
@@ -41,6 +43,8 @@ fieldFromOperation({
 });
 fieldFromOperation({ operation: getBookingSeries, type: BookingSeriesRef, name: "bookingSeries" });
 mutationFromOperation({ operation: createBookingSeries, type: BookingSeriesRef });
+mutationFromOperation({ operation: updateBookingSeriesOccurrences, type: BookingSeriesRef });
+mutationFromOperation({ operation: cancelBookingSeries, type: BookingSeriesRef });
 
 builder.objectFields(BookingSeriesRef, (t) => ({
   occurrences: t.field({
