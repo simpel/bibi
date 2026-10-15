@@ -27,6 +27,7 @@ const config: NextConfig = {
     "@okazi/graphql",
     "@okazi/i18n",
     "@okazi/logger",
+    "@okazi/mail",
     "@okazi/ui",
   ],
   serverExternalPackages: ["pg", "nodemailer", "pino", "pino-pretty"],

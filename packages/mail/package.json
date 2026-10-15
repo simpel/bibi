@@ -1,0 +1,25 @@
+{
+  "name": "@okazi/mail",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@okazi/config": "workspace:*",
+    "@okazi/core": "workspace:*",
+    "@okazi/logger": "workspace:*",
+    "nodemailer": "10.1.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "typescript": "7.0.2",
+    "vitest": "5.0.4"
+  }
+}

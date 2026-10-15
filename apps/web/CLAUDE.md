@@ -34,7 +34,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - Typed keys: `sv.json` is the source of truth. Dynamic keys must be unions (see `ErrorKey`).
 
 ## Environment variables
-Read only via `@okazi/config`: `DATABASE_URL`, `BETTER_AUTH_SECRET` (>= 32 characters), `BETTER_AUTH_URL`, `WEB_URL`, `MCP_URL`, `SMTP_URL`, `MAIL_FROM`, `AI_GATEWAY_API_KEY` (optional; without it the assistant cannot answer; models are chosen in `/admin/ai-models`), `WEB_OAUTH_CLIENT_ID` (after provisioning; the same value in `.env` for web and MCP), `E2E_MOCK_MODEL` (E2E only, ignored in production), `NODE_ENV`. `next.config.ts` and the scripts read the repo root `.env` via `@next/env`. (The only exception: `NEXT_RUNTIME` in `instrumentation.ts`, Next's own flag.)
+Read only via `@okazi/config`: `DATABASE_URL`, `BETTER_AUTH_SECRET` (>= 32 characters), `BETTER_AUTH_URL`, `WEB_URL`, `MCP_URL`, `SMTP_URL`, `MAIL_FROM`, `MAIL_PROVIDER` (`smtp` or `resend`), `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET`, `AI_GATEWAY_API_KEY` (optional; without it the assistant cannot answer; models are chosen in `/admin/ai-models`), `WEB_OAUTH_CLIENT_ID` (after provisioning; the same value in `.env` for web and MCP), `E2E_MOCK_MODEL` (E2E only, ignored in production), `NODE_ENV`. `next.config.ts` and the scripts read the repo root `.env` via `@next/env`. (The only exception: `NEXT_RUNTIME` in `instrumentation.ts`, Next's own flag.)
 
 ## Commands
 - `pnpm --filter @okazi/web dev | build | start | typecheck | test`

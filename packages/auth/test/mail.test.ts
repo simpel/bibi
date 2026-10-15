@@ -1,10 +1,10 @@
 import { afterAll, describe, expect, it } from "vitest";
-import { getAuth, resolveExecuteContext, setMailSender } from "../src/index";
-import { installFakeMail } from "./fake-mail";
+import { getAuth, resolveExecuteContext } from "../src/index";
+import { installFakeMail, uninstallFakeMail } from "./fake-mail";
 import { codeOf, cookieHeaders, createOrg, signUp } from "./helpers";
 
 const outbox = installFakeMail();
-afterAll(() => setMailSender({ sender: undefined }));
+afterAll(() => uninstallFakeMail());
 
 const lastMailTo = ({ email }: { email: string }) => outbox.filter((m) => m.to === email).at(-1);
 

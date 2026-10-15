@@ -8,12 +8,12 @@ import {
 } from "@okazi/core";
 import { getDb } from "@okazi/db";
 import { afterEach, describe, expect, it } from "vitest";
-import { getAuth, invitationMailHook, setMailSender } from "../src/index";
-import { installFakeMail } from "./fake-mail";
+import { getAuth, invitationMailHook } from "../src/index";
+import { installFakeMail, uninstallFakeMail } from "./fake-mail";
 import { createOrg, signUp, type TestUser } from "./helpers";
 import { addMember, addRole, READ_ONLY } from "./roles";
 
-afterEach(() => setMailSender({ sender: undefined }));
+afterEach(() => uninstallFakeMail());
 
 const ownerContext = ({ organizationId, owner }: { organizationId: string; owner: TestUser }) =>
   createExecuteContext({

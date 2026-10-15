@@ -37,7 +37,7 @@
 - UI: Tailwind v4 (CSS-first tokens), cva, shadcn primitives, Storybook for `packages/ui`.
 - i18n: next-intl, Swedish and English.
 - Tooling: Biome (lint + format), Vitest (unit/service layer against real Postgres), Playwright (e2e).
-- Email: Resend (outbound and inbound) behind `MailProvider`, Mailpit in dev. See `docs/decisions/0012-email-provider.md`.
+- Email: `@okazi/mail` with a `MailProvider` interface (`send`, `parseInbound`). Adapters: Resend (production, outbound and inbound) and SMTP (Mailpit in dev), selected by `MAIL_PROVIDER` (`smtp` default, `resend` needs `RESEND_API_KEY`; inbound needs `RESEND_WEBHOOK_SECRET`). See `docs/decisions/0012-email-provider.md`.
 - Jobs: pg-boss in `apps/worker` (queue and cron in Postgres). Jobs call core operations as SYSTEM. See `docs/decisions/0027-job-scheduler.md`.
 - Logging: pino via `@okazi/logger`, JSON to stdout and the `SystemLog` table, request context with `AsyncLocalStorage`. See `docs/decisions/0014-system-logging.md`.
 - Ops: Docker (compose with Postgres and Mailpit, `--profile app` for web + mcp), GitHub Actions for CI.
@@ -107,6 +107,7 @@
 - `packages/i18n`: messages, sv and en.
 - `packages/ai`: AI SDK setup, MCP client, the generative UI registry and system skills.
 - `packages/config`: environment variables (typed and validated) plus shared tsconfig and Biome config.
+- `packages/mail`: `MailProvider` with SMTP and Resend adapters, `sendMail` (logs `mail.sent`/`mail.failed`) and `createMemoryMailProvider` for tests.
 - `packages/logger`: the system log (pino), request context, `withRequestLogging` and the test helper `captureLogs`.
 
 ## Platform admin

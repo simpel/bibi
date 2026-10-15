@@ -1,6 +1,6 @@
 import { type AfterCommitHook, InvitationSchema, inviteMember } from "@okazi/core";
 import { getDb } from "@okazi/db";
-import { sendMail } from "../mail";
+import { sendAuthMail } from "../mail";
 import { webUrl } from "../urls";
 
 /**
@@ -20,7 +20,7 @@ export const invitationMailHook: AfterCommitHook = async ({ operation, output })
     getDb().user.findUniqueOrThrow({ where: { id: invitation.inviterId } }),
   ]);
   const url = webUrl({ path: `/accept-invitation/${invitation.id}` });
-  await sendMail({
+  await sendAuthMail({
     to: invitation.email,
     subject: `Invitation to ${organization.name} on Okazi`,
     text: `${inviter.name} has invited you to ${organization.name}.\n\nAccept: ${url}`,

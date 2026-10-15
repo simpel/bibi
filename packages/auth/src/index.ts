@@ -13,14 +13,6 @@ export {
 } from "./first-party/get-first-party-access-token";
 export { getAuth } from "./get-auth";
 export { invitationMailHook } from "./invitations/invitation-mail-hook";
-export {
-  type MailMessage,
-  MailMessageSchema,
-  type MailSender,
-  type SetMailSenderInput,
-  sendMail,
-  setMailSender,
-} from "./mail";
 export { authHandler, handleAuthRequest } from "./next";
 export { accessControl, orgRoles, ownerPermissions } from "./permissions";
 export { type IsPlatformAdminInput, isPlatformAdmin } from "./platform/is-platform-admin";

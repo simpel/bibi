@@ -51,5 +51,5 @@ Resources today: `venue`, `item`, `configuration`, `search`, `conversation`, `sk
 
 ## Schema and tests
 - `auth.prisma` is generated: `pnpm --filter @okazi/auth auth:generate`. Remove `generator`/`datasource` from the result, then run `pnpm --filter @okazi/db migrate:dev --name <name>`.
-- Mail: `sendMail({ to, subject, text })` via `SMTP_URL` (mailpit). Tests swap the sender with `setMailSender`.
+- Mail: `sendAuthMail({ to, subject, text })` (`src/mail.ts`) sends through `@okazi/mail` and rethrows a failed send as `AppError` (Better Auth callbacks report failure by throwing). Tests install `createMemoryMailProvider` via `setMailProvider` (`test/fake-mail.ts`).
 - Tests run against a real Postgres, including a full OAuth flow (authorize + PKCE + token) through `getAuth().handler`.

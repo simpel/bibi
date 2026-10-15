@@ -1,34 +1,45 @@
 import { z } from "zod";
 
-const envSchema = z.object({
-  DATABASE_URL: z.string().url(),
-  BETTER_AUTH_SECRET: z.string().min(32),
-  BETTER_AUTH_URL: z.string().url(),
-  SMTP_URL: z.string().default("smtp://localhost:1025"),
-  MAIL_FROM: z.string().default("Okazi <no-reply@okazi.local>"),
-  AI_GATEWAY_API_KEY: z.string().optional(),
-  WEB_URL: z.string().url().default("http://localhost:3000"),
-  MCP_URL: z.string().url().default("http://localhost:3001"),
-  /** Listen port of `apps/mcp` (Streamable HTTP). */
-  PORT: z.coerce.number().int().min(1).max(65535).default(3001),
-  /** API key used by the stdio MCP server (`apps/mcp`), resolved once at startup. */
-  OKAZI_API_KEY: z.string().min(1).optional(),
-  /** OAuth client id of the web app (first-party); only it may act as `ai` actor. */
-  WEB_OAUTH_CLIENT_ID: z.string().min(1).optional(),
-  /** Runtime mode; `production` disables dev-only fallbacks (e.g. the placeholder embedder). */
-  NODE_ENV: z.string().default("development"),
-  /**
-   * E2E ONLY: makes the web chat route use a scripted mock language model
-   * (`apps/web/src/server/e2e-mock-model.ts`). Off by default; ignored when NODE_ENV=production.
-   */
-  E2E_MOCK_MODEL: z.stringbool().default(false),
-  /** Minimum log level (ADR 0014). Default: `silent` when NODE_ENV=test, else `info`. */
-  LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]).optional(),
-  /** `json` (one event per line) or `pretty`. Default: `json` in production, else `pretty`. */
-  LOG_FORMAT: z.enum(["json", "pretty"]).optional(),
-  /** Days the `SystemLog` table keeps rows for the admin view (ADR 0015). */
-  SYSTEM_LOG_RETENTION_DAYS: z.coerce.number().int().min(1).max(365).default(30),
-});
+const envSchema = z
+  .object({
+    DATABASE_URL: z.string().url(),
+    BETTER_AUTH_SECRET: z.string().min(32),
+    BETTER_AUTH_URL: z.string().url(),
+    SMTP_URL: z.string().default("smtp://localhost:1025"),
+    MAIL_FROM: z.string().default("Okazi <no-reply@okazi.local>"),
+    /** Mail adapter (ADR 0012): `smtp` (Mailpit in dev, uses SMTP_URL) or `resend` (production). */
+    MAIL_PROVIDER: z.enum(["smtp", "resend"]).default("smtp"),
+    /** Resend API key; required when MAIL_PROVIDER=resend. Empty counts as unset. */
+    RESEND_API_KEY: z.string().optional(),
+    /** Signing secret (`whsec_...`) of the Resend inbound webhook; inbound mail is refused without it. */
+    RESEND_WEBHOOK_SECRET: z.string().optional(),
+    AI_GATEWAY_API_KEY: z.string().optional(),
+    WEB_URL: z.string().url().default("http://localhost:3000"),
+    MCP_URL: z.string().url().default("http://localhost:3001"),
+    /** Listen port of `apps/mcp` (Streamable HTTP). */
+    PORT: z.coerce.number().int().min(1).max(65535).default(3001),
+    /** API key used by the stdio MCP server (`apps/mcp`), resolved once at startup. */
+    OKAZI_API_KEY: z.string().min(1).optional(),
+    /** OAuth client id of the web app (first-party); only it may act as `ai` actor. */
+    WEB_OAUTH_CLIENT_ID: z.string().min(1).optional(),
+    /** Runtime mode; `production` disables dev-only fallbacks (e.g. the placeholder embedder). */
+    NODE_ENV: z.string().default("development"),
+    /**
+     * E2E ONLY: makes the web chat route use a scripted mock language model
+     * (`apps/web/src/server/e2e-mock-model.ts`). Off by default; ignored when NODE_ENV=production.
+     */
+    E2E_MOCK_MODEL: z.stringbool().default(false),
+    /** Minimum log level (ADR 0014). Default: `silent` when NODE_ENV=test, else `info`. */
+    LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]).optional(),
+    /** `json` (one event per line) or `pretty`. Default: `json` in production, else `pretty`. */
+    LOG_FORMAT: z.enum(["json", "pretty"]).optional(),
+    /** Days the `SystemLog` table keeps rows for the admin view (ADR 0015). */
+    SYSTEM_LOG_RETENTION_DAYS: z.coerce.number().int().min(1).max(365).default(30),
+  })
+  .refine((env) => env.MAIL_PROVIDER !== "resend" || env.RESEND_API_KEY, {
+    message: "RESEND_API_KEY is required when MAIL_PROVIDER=resend",
+    path: ["RESEND_API_KEY"],
+  });
 
 export type Env = z.infer<typeof envSchema>;
 

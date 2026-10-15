@@ -49,8 +49,11 @@ Create `.env` in the repo root (there is no `.env.example` yet). The web app, th
 | `DATABASE_URL` | Postgres connection, e.g. `postgresql://okazi:okazi@localhost:5432/okazi` |
 | `BETTER_AUTH_SECRET` | Secret for sessions and approval tokens (at least 32 characters) |
 | `BETTER_AUTH_URL` | Public base URL for authentication, e.g. `http://localhost:3000` |
-| `SMTP_URL` | SMTP connection for email, locally Mailpit at `smtp://localhost:1025` |
+| `SMTP_URL` | SMTP connection for email (`MAIL_PROVIDER=smtp`), locally Mailpit at `smtp://localhost:1025` |
 | `MAIL_FROM` | Sender address for system email |
+| `MAIL_PROVIDER` | Mail adapter (ADR 0012): `smtp` (default, Mailpit in dev via `SMTP_URL`) or `resend` (production) |
+| `RESEND_API_KEY` | Resend API key, required when `MAIL_PROVIDER=resend` |
+| `RESEND_WEBHOOK_SECRET` | Signing secret (`whsec_...`) of Resend's `email.received` webhook; inbound mail is refused without it |
 | `AI_GATEWAY_API_KEY` | Key for Vercel AI Gateway (assistant and embeddings) |
 | `WEB_URL` | Base URL of the web app, e.g. `http://localhost:3000` |
 | `MCP_URL` | Base URL of the MCP server, e.g. `http://localhost:3001` |

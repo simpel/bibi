@@ -68,6 +68,9 @@ importers:
       '@okazi/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@okazi/mail':
+        specifier: workspace:*
+        version: link:../../packages/mail
       '@paralleldrive/cuid2':
         specifier: 3.3.0
         version: 3.3.0
@@ -162,6 +165,9 @@ importers:
       '@okazi/logger':
         specifier: workspace:*
         version: link:../../packages/logger
+      '@okazi/mail':
+        specifier: workspace:*
+        version: link:../../packages/mail
       '@okazi/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -379,6 +385,9 @@ importers:
       '@okazi/logger':
         specifier: workspace:*
         version: link:../logger
+      '@okazi/mail':
+        specifier: workspace:*
+        version: link:../mail
       '@paralleldrive/cuid2':
         specifier: 3.3.0
         version: 3.3.0
@@ -388,9 +397,6 @@ importers:
       better-call:
         specifier: 1.4.0
         version: 1.4.0(zod@4.6.7)
-      nodemailer:
-        specifier: 10.1.1
-        version: 10.1.1
       zod:
         specifier: 4.6.7
         version: 4.6.7
@@ -574,6 +580,34 @@ importers:
       pino-pretty:
         specifier: 13.2.0
         version: 13.2.0
+    devDependencies:
+      '@types/node':
+        specifier: 26.6.5
+        version: 26.6.5
+      typescript:
+        specifier: 7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: 5.0.4
+        version: 5.0.4(@opentelemetry/api@1.9.1)(@types/node@26.6.5)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.15))
+
+  packages/mail:
+    dependencies:
+      '@okazi/config':
+        specifier: workspace:*
+        version: link:../config
+      '@okazi/core':
+        specifier: workspace:*
+        version: link:../core
+      '@okazi/logger':
+        specifier: workspace:*
+        version: link:../logger
+      nodemailer:
+        specifier: 10.1.1
+        version: 10.1.1
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@types/node':
         specifier: 26.6.5

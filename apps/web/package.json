@@ -24,6 +24,7 @@
     "@okazi/graphql": "workspace:*",
     "@okazi/i18n": "workspace:*",
     "@okazi/logger": "workspace:*",
+    "@okazi/mail": "workspace:*",
     "@okazi/ui": "workspace:*",
     "ai": "7.0.140",
     "lucide-react": "1.57.0",
