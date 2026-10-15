@@ -39,14 +39,16 @@ export type SeedDemoOutput = { organizations: { slug: string; organizationId: st
 
 type SeedOneInput = { db: Db; org: DemoOrg };
 
-type PostSeedInput = { context: ReturnType<typeof createExecuteContext>; org: DemoOrg };
+type PostSeedInput = {
+  context: ReturnType<typeof createExecuteContext>;
+  org: DemoOrg;
+  ranParts: ReadonlySet<number>;
+};
 
-async function postSeedLogging({ context, org }: PostSeedInput): Promise<Result<null>> {
+async function postSeedLogging({ context, org, ranParts }: PostSeedInput): Promise<Result<null>> {
   const log = getLogger();
   for (const { part, name } of DEMO_SEED_PARTS) {
-    if (part >= 6) {
-      log.info({ event: "seed.sliceSkipped", part, name });
-    }
+    if (!ranParts.has(part)) log.info({ event: "seed.sliceSkipped", part, name });
   }
   const auditRowCount = await context.db.auditLog.count({
     where: { organizationId: context.organizationId, actorType: "SYSTEM" },
@@ -58,6 +60,48 @@ async function postSeedLogging({ context, org }: PostSeedInput): Promise<Result<
     return err({ error: new AppError({ code: "INTERNAL", message }) });
   }
   return ok({ value: null });
+}
+
+type SeedSlicesInput = {
+  context: ReturnType<typeof createExecuteContext>;
+  org: DemoOrg;
+  members: Awaited<ReturnType<typeof bootstrapDemoOrg>>["members"];
+  userIds: Awaited<ReturnType<typeof bootstrapDemoOrg>>["userIds"];
+};
+
+/** Runs the slices in order. Each reports its part number once it has run. */
+async function seedSlices({
+  context,
+  org,
+  members,
+  userIds,
+}: SeedSlicesInput): Promise<Result<ReadonlySet<number>>> {
+  const ranParts = new Set<number>();
+  const roles = await seedDemoRoles({ context, org, members });
+  if (!roles.ok) return roles;
+  ranParts.add(1);
+  const refs = await seedDemoConfig({ context, config: org.config });
+  if (!refs.ok) return refs;
+  ranParts.add(2);
+  const items = await seedDemoItems({ context, config: org.config, refs: refs.value });
+  if (!items.ok) return items;
+  ranParts.add(3);
+  const customers = await seedDemoCustomers({
+    context,
+    customers: org.customers,
+    refs: refs.value,
+  });
+  if (!customers.ok) return customers;
+  ranParts.add(4);
+  const bookings = await seedDemoBookings({
+    context,
+    bookings: org.bookings,
+    refs: refs.value,
+    userIds,
+  });
+  if (!bookings.ok) return bookings;
+  ranParts.add(5);
+  return ok({ value: ranParts });
 }
 
 async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
@@ -73,26 +117,9 @@ async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
     actor: { type: "system", userId: null },
     db,
   });
-  const roles = await seedDemoRoles({ context, org, members });
-  if (!roles.ok) return roles;
-  const refs = await seedDemoConfig({ context, config: org.config });
-  if (!refs.ok) return refs;
-  const items = await seedDemoItems({ context, config: org.config, refs: refs.value });
-  if (!items.ok) return items;
-  const customers = await seedDemoCustomers({
-    context,
-    customers: org.customers,
-    refs: refs.value,
-  });
-  if (!customers.ok) return customers;
-  const bookings = await seedDemoBookings({
-    context,
-    bookings: org.bookings,
-    refs: refs.value,
-    userIds,
-  });
-  if (!bookings.ok) return bookings;
-  const postSeed = await postSeedLogging({ context, org });
+  const slices = await seedSlices({ context, org, members, userIds });
+  if (!slices.ok) return slices;
+  const postSeed = await postSeedLogging({ context, org, ranParts: slices.value });
   if (!postSeed.ok) return postSeed;
   return ok({ value: organizationId });
 }
