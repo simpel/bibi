@@ -1,4 +1,5 @@
 import { SALES_SURFACES } from "./sales-surfaces";
+import { SETTINGS_SURFACES } from "./settings-surfaces";
 
 /**
  * Which core operations have a UI surface in the web app. The parity test in
@@ -69,6 +70,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "programItem.assign", route: "/bookings/[id]" },
   { operation: "programItem.archive", route: "/bookings/[id]" },
   ...SALES_SURFACES,
+  ...SETTINGS_SURFACES,
   { operation: "entityType.list", route: "/settings/types" },
   { operation: "entityType.create", route: "/settings/types" },
   { operation: "configuration.importTemplate", route: "/settings/types" },
@@ -117,21 +119,6 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "skill.share", route: "/skills/[id]" },
   { operation: "skill.export", route: "/skills/[id]" },
   { operation: "skill.import", route: "/skills" },
-  { operation: "role.list", route: "/settings/roles" },
-  { operation: "role.get", route: "/settings/roles" },
-  { operation: "role.create", route: "/settings/roles" },
-  { operation: "role.update", route: "/settings/roles" },
-  { operation: "role.archive", route: "/settings/roles" },
-  { operation: "role.importTemplate", route: "/settings/roles" },
-  { operation: "member.list", route: "/settings/members" },
-  { operation: "member.assignRole", route: "/settings/members" },
-  { operation: "member.remove", route: "/settings/members" },
-  { operation: "member.invite", route: "/settings/members" },
-  { operation: "member.listInvitations", route: "/settings/members" },
-  { operation: "member.cancelInvitation", route: "/settings/members" },
-  { operation: "paymentAccount.get", route: "/settings/payments" },
-  { operation: "paymentAccount.startOnboarding", route: "/settings/payments" },
-  { operation: "paymentAccount.sync", route: "/settings/payments" },
   // The history tab on venue and item detail pages (and later every entity's detail page).
   { operation: "auditLog.list", route: "/items/[id]" },
   // `/api/chat` creates chats and appends messages as the user; the panel lists, opens, renames.

@@ -131,7 +131,8 @@
     "roles": "Roller",
     "members": "Medlemmar",
     "payments": "Betalningar",
-    "bookingStatuses": "Bokningsstatusar"
+    "bookingStatuses": "Bokningsstatusar",
+    "priceLists": "Prislistor"
   },
   "venue": {
     "singular": "Anläggning",
@@ -752,6 +753,58 @@
       "changeover": "Ställtid"
     }
   },
+  "priceList": {
+    "singular": "Prislista",
+    "plural": "Prislistor",
+    "listDescription": "Kundpriser: en generell rabatt eller avtalade priser per artikel, eventuellt för en kund och en period.",
+    "create": "Skapa prislista",
+    "edit": "Redigera prislista",
+    "createDescription": "Namnge prislistan, välj kund och ange antingen en generell rabatt eller, efteråt, artikelpriser.",
+    "editDescription": "Ändra namn, kund, giltighet eller generell rabatt.",
+    "archive": "Arkivera prislista",
+    "archiveConfirm": "Vill du arkivera prislistan {name}? Nya orderrader använder då inte längre dess priser.",
+    "archived": "Prislistan har arkiverats.",
+    "created": "Prislistan har skapats.",
+    "updated": "Prislistan har uppdaterats.",
+    "empty": "Inga prislistor ännu.",
+    "emptyDescription": "Skapa en prislista för ett ramavtal, t.ex. 15 % rabatt för en kund.",
+    "noCustomer": "Alla kunder (generell)",
+    "discountHint": "En prislista har antingen en generell rabatt eller artikelpriser, aldrig båda. Lämna rabatten tom för att ange artikelpriser.",
+    "fields": {
+      "name": "Namn",
+      "customer": "Kund",
+      "validFrom": "Giltig från",
+      "validTo": "Giltig till",
+      "discountPercent": "Generell rabatt (%)"
+    },
+    "columns": {
+      "name": "Namn",
+      "customer": "Kund",
+      "validity": "Giltighet",
+      "pricing": "Prissättning"
+    },
+    "validity": {
+      "always": "Gäller alltid",
+      "from": "Från {from}",
+      "to": "Till och med {to}",
+      "range": "{from} – {to}"
+    },
+    "pricing": {
+      "discount": "{percent} % rabatt",
+      "items": "{count, plural, =0 {Inga artikelpriser} one {# artikelpris} other {# artikelpriser}}"
+    },
+    "items": {
+      "edit": "Artikelpriser",
+      "title": "Artikelpriser – {name}",
+      "description": "Avtalade priser per artikel. När du sparar ersätts hela uppsättningen.",
+      "none": "Inga artikelpriser ännu.",
+      "item": "Artikel",
+      "price": "Pris (kr)",
+      "add": "Lägg till artikel",
+      "remove": "Ta bort artikel",
+      "saved": "Artikelpriserna har sparats."
+    }
+  },
   "sheetDefinition": {
     "singular": "Blad",
     "plural": "Blad",
@@ -1144,6 +1197,13 @@
         "changeover": "Ställtid {minutes} min",
         "columns": { "name": "Namn", "changeover": "Ställtid" }
       },
+      "priceList": {
+        "singular": "Prislista",
+        "archived": "Arkiverad",
+        "empty": "Inga prislistor hittades.",
+        "open": "Öppna prislistor",
+        "columns": { "name": "Namn", "validity": "Giltighet", "pricing": "Prissättning" }
+      },
       "sheetDefinition": {
         "singular": "Blad",
         "archived": "Arkiverat",
@@ -1458,6 +1518,7 @@
       "item": "Artiklar",
       "customer": "Kunder",
       "contact": "Kontaktpersoner",
+      "priceList": "Prislistor (kundpriser)",
       "occupancy": "Beläggning (blockera bokningsbara artiklar)",
       "configuration": "Konfiguration (typer, fält, listor, uppställningar)",
       "bookingStatus": "Bokningsstatusar och övergångar",

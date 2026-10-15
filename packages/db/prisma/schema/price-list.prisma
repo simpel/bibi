@@ -1,0 +1,43 @@
+/// Price list – customer pricing (ADR 0023). Either a general discount (`discountPercent`) or a
+/// price per item (`PriceListItem`), never both. `customerId` null = a general price list.
+/// Validity is inclusive dates; null = open-ended. Order lines copy the price when created.
+model PriceList {
+  id              String          @id @default(cuid(2))
+  organizationId  String
+  customerId      String?
+  name            String
+  validFrom       DateTime?       @db.Date
+  validTo         DateTime?       @db.Date
+  /// General discount in percent off the item price, e.g. 15.00.
+  discountPercent Decimal?        @db.Decimal(5, 2)
+  status          RecordStatus    @default(ACTIVE)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  createdBy       String?
+  customer        Customer?       @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  items           PriceListItem[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, customerId])
+}
+
+/// Price list item – the agreed price of one item on a price list. Replaced as a set by
+/// `priceList.setItems`; history lives in the price list's audit rows.
+model PriceListItem {
+  id             String    @id @default(cuid(2))
+  organizationId String
+  priceListId    String
+  itemId         String
+  /// Price in minor units (1/100 kr), in the item's own price unit.
+  priceMinor     Int
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  createdBy      String?
+  priceList      PriceList @relation(fields: [priceListId, organizationId], references: [id, organizationId])
+  item           Item      @relation(fields: [itemId, organizationId], references: [id, organizationId])
+
+  @@unique([priceListId, itemId])
+  @@index([organizationId, priceListId])
+  @@index([organizationId, itemId])
+}

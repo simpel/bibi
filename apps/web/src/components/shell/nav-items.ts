@@ -14,6 +14,7 @@ import {
   Repeat2Icon,
   ShapesIcon,
   ShieldIcon,
+  TagIcon,
   UsersIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
@@ -32,6 +33,7 @@ export type NavItem = {
     | "lists"
     | "setups"
     | "sheets"
+    | "priceLists"
     | "bookingStatuses"
     | "roles"
     | "members"
@@ -52,6 +54,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: ROUTES.settingsLists, labelKey: "lists", icon: ListIcon },
   { href: ROUTES.settingsSetups, labelKey: "setups", icon: LayoutGridIcon },
   { href: ROUTES.settingsSheets, labelKey: "sheets", icon: ClipboardListIcon },
+  { href: ROUTES.settingsPriceLists, labelKey: "priceLists", icon: TagIcon },
   { href: ROUTES.settingsBookingStatuses, labelKey: "bookingStatuses", icon: CircleDotIcon },
   { href: ROUTES.settingsRoles, labelKey: "roles", icon: ShieldIcon },
   { href: ROUTES.settingsMembers, labelKey: "members", icon: UsersIcon },

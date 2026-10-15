@@ -11,6 +11,7 @@ export const RESOURCES = [
   "item",
   "customer",
   "contact",
+  "priceList",
   "occupancy",
   "configuration",
   "bookingStatus",

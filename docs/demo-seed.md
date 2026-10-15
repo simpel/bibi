@@ -27,7 +27,7 @@ The checks that run today:
   - Lindholmen's imported vocabulary "Allergens" has 14 values.
   - The number of item parts (`ItemComponent`) per organization matches the data files.
 - **Part 3 (catalog), started:** Vingaleden's skippers and the Lighthouse tour to Vinga, a tour whose mandatory parts are RIB Snabben and skipper Jonna Sand (1.5 h each). Parts refer to items seeded earlier by name. The rest of the catalog follows when choice groups exist.
-- **Part 4 (customers), started:** the number of customers and contact persons per organization matches the data files. Price lists and the sales pipeline follow when those operations exist.
+- **Part 4 (customers), started:** the number of customers and contact persons per organization matches the data files, and Nordkust Logistik has its price list with a general discount of 15 %. The sales pipeline follows when those operations exist.
 - **Part 5 (bookings), started:** the number of bookings per organization matches the data files, each with its customer, type, time, headcount, own fields and owners (salesperson and coordinator by name). Every booking has the default `TENTATIVE` status until `booking.changeStatus` exists; the statuses in the tables, program items and requirements follow.
 - **All parts:** point 7.
 

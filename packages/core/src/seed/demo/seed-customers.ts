@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import { createContact } from "../../features/contact/write-operations";
 import { createCustomer } from "../../features/customer/write-operations";
+import { createPriceList } from "../../features/price-list/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoContact, DemoCustomer } from "./customer-types";
@@ -35,12 +36,17 @@ async function seedCustomer({ context, refs, customer }: CustomerInput): Promise
   if (!type) return missing({ what: `customer type ${customer.type}` });
   const fields = resolveFields({ fields: customer.fields, type });
   if (!fields.ok) return fields;
-  const { type: _type, fields: _fields, contacts, ...data } = customer;
+  const { type: _type, fields: _fields, contacts, priceList, ...data } = customer;
   const input = { ...data, entityTypeId: type.id, fields: fields.value };
   const created = await execute({ operation: createCustomer, input, context });
   if (!created.ok) return created;
   for (const contact of contacts) {
     const result = await seedContact({ context, refs, customerId: created.value.id, contact });
+    if (!result.ok) return result;
+  }
+  if (priceList) {
+    const input = { ...priceList, customerId: created.value.id };
+    const result = await execute({ operation: createPriceList, input, context });
     if (!result.ok) return result;
   }
   return ok({ value: true });

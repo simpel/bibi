@@ -12,6 +12,7 @@ export type CallerAbilities = {
   itemWrite: boolean;
   customerWrite: boolean;
   contactWrite: boolean;
+  priceListWrite: boolean;
   occupancyWrite: boolean;
   bookingWrite: boolean;
   programItemWrite: boolean;
@@ -31,6 +32,7 @@ const NONE: CallerAbilities = {
   itemWrite: false,
   customerWrite: false,
   contactWrite: false,
+  priceListWrite: false,
   occupancyWrite: false,
   bookingWrite: false,
   programItemWrite: false,
@@ -58,6 +60,7 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     itemWrite: hasPermission({ permissions, permission: "item:write" }),
     customerWrite: hasPermission({ permissions, permission: "customer:write" }),
     contactWrite: hasPermission({ permissions, permission: "contact:write" }),
+    priceListWrite: hasPermission({ permissions, permission: "priceList:write" }),
     occupancyWrite: hasPermission({ permissions, permission: "occupancy:write" }),
     bookingWrite: hasPermission({ permissions, permission: "booking:write" }),
     programItemWrite: hasPermission({ permissions, permission: "programItem:write" }),

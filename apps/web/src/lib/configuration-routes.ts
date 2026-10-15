@@ -27,6 +27,11 @@ export function sheetDefinitionsRoute(): string {
   return ROUTES.settingsSheets;
 }
 
+/** `/settings/price-lists`: the organization's price lists (no detail page). */
+export function priceListsRoute(): string {
+  return ROUTES.settingsPriceLists;
+}
+
 /** `/settings/booking-statuses`: the organization's booking statuses (no detail page). */
 export function bookingStatusesRoute(): string {
   return ROUTES.settingsBookingStatuses;

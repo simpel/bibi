@@ -53,6 +53,8 @@ export {
   type PaymentAccount,
   PaymentMethod,
   PaymentStatus,
+  type PriceList,
+  type PriceListItem,
   PriceUnit,
   Prisma,
   type ProgramItem,

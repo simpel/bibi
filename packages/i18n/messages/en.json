@@ -131,7 +131,8 @@
     "roles": "Roles",
     "members": "Members",
     "bookingStatuses": "Booking statuses",
-    "payments": "Payments"
+    "payments": "Payments",
+    "priceLists": "Price lists"
   },
   "venue": {
     "singular": "Venue",
@@ -752,6 +753,58 @@
       "changeover": "Changeover"
     }
   },
+  "priceList": {
+    "singular": "Price list",
+    "plural": "Price lists",
+    "listDescription": "Customer prices: a general discount or agreed prices per item, optionally for one customer and a period.",
+    "create": "Create price list",
+    "edit": "Edit price list",
+    "createDescription": "Name the price list, pick the customer and set either a general discount or, afterwards, item prices.",
+    "editDescription": "Change the name, customer, validity or general discount.",
+    "archive": "Archive price list",
+    "archiveConfirm": "Do you want to archive the price list {name}? New order lines will no longer use its prices.",
+    "archived": "The price list has been archived.",
+    "created": "The price list has been created.",
+    "updated": "The price list has been updated.",
+    "empty": "No price lists yet.",
+    "emptyDescription": "Create a price list for a framework agreement, e.g. 15 % off for a customer.",
+    "noCustomer": "All customers (general)",
+    "discountHint": "A price list has either a general discount or item prices, never both. Leave the discount empty to set item prices.",
+    "fields": {
+      "name": "Name",
+      "customer": "Customer",
+      "validFrom": "Valid from",
+      "validTo": "Valid to",
+      "discountPercent": "General discount (%)"
+    },
+    "columns": {
+      "name": "Name",
+      "customer": "Customer",
+      "validity": "Validity",
+      "pricing": "Pricing"
+    },
+    "validity": {
+      "always": "Always valid",
+      "from": "From {from}",
+      "to": "Until {to}",
+      "range": "{from} – {to}"
+    },
+    "pricing": {
+      "discount": "{percent} % discount",
+      "items": "{count, plural, =0 {No item prices} one {# item price} other {# item prices}}"
+    },
+    "items": {
+      "edit": "Item prices",
+      "title": "Item prices – {name}",
+      "description": "Agreed prices per item. Saving replaces the whole set.",
+      "none": "No item prices yet.",
+      "item": "Item",
+      "price": "Price (kr)",
+      "add": "Add item",
+      "remove": "Remove item",
+      "saved": "The item prices have been saved."
+    }
+  },
   "sheetDefinition": {
     "singular": "Sheet",
     "plural": "Sheets",
@@ -1144,6 +1197,13 @@
         "changeover": "Changeover {minutes} min",
         "columns": { "name": "Name", "changeover": "Changeover" }
       },
+      "priceList": {
+        "singular": "Price list",
+        "archived": "Archived",
+        "empty": "No price lists found.",
+        "open": "Open price lists",
+        "columns": { "name": "Name", "validity": "Validity", "pricing": "Pricing" }
+      },
       "sheetDefinition": {
         "singular": "Sheet",
         "archived": "Archived",
@@ -1458,6 +1518,7 @@
       "item": "Items",
       "customer": "Customers",
       "contact": "Contact persons",
+      "priceList": "Price lists (customer prices)",
       "occupancy": "Occupancy (blocking bookable items)",
       "configuration": "Configuration (types, fields, lists, setups)",
       "bookingStatus": "Booking statuses and transitions",

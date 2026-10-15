@@ -9,6 +9,7 @@ import "../features/configuration/graphql";
 import "../features/item/graphql";
 import "../features/customer/graphql";
 import "../features/contact/graphql";
+import "../features/price-list/graphql";
 import "../features/occupancy/graphql";
 import "../features/booking-status/graphql";
 import "../features/booking/graphql";

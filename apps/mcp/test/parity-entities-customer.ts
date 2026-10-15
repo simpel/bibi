@@ -44,7 +44,34 @@ const contact: ParityEntity = {
     }),
 };
 
-/** Customers and their contact persons (ADR 0022). */
+const priceList: ParityEntity = byId({
+  name: "priceList",
+  field: "priceList",
+  list: "price-lists",
+  createTool: "priceList_create",
+  args: {},
+  nested: { items: "{ itemId priceMinor }" },
+});
+
+/** Customers, their contact persons (ADR 0022) and their price lists (ADR 0023). */
 export function customerEntities(): ParityEntity[] {
-  return [customer, contact];
+  return [
+    customer,
+    contact,
+    {
+      ...priceList,
+      create: ({ mcp, made }) =>
+        tool({
+          mcp,
+          name: "priceList_create",
+          args: {
+            name: "Nordkust framework agreement −15 %",
+            customerId: made.customer.id,
+            validFrom: "2026-01-01",
+            validTo: "2026-12-31",
+            discountPercent: 15,
+          },
+        }),
+    },
+  ];
 }

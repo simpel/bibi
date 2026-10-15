@@ -71,6 +71,7 @@ export type { InboundEmailWire } from "./ui-contract/inbound-email-entries";
 export type { InquiryWire } from "./ui-contract/inquiry-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire } from "./ui-contract/payment-entries";
+export type { PriceListWire } from "./ui-contract/price-list-entries";
 export type { ProgramItemWire } from "./ui-contract/program-item-entries";
 export { type ResolveToolUiInput, resolveToolUi } from "./ui-contract/resolve-tool-ui";
 export type { SheetDefinitionWire } from "./ui-contract/sheet-definition-entries";

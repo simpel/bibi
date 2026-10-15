@@ -224,7 +224,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - name
 - email, phone
 - invoice address (`invoiceStreetAddress`, `invoicePostalCode`, `invoiceCity`, `invoiceCountry`, default `SE`)
-- price list (not built yet)
+- price lists (`PriceList.customerId`; archiving the customer is denied while it has an active price list)
 - payment terms in days (`paymentTermsDays`, null = the organization's default)
 - credit limit (`creditLimitMinor` in minor units, null = no limit set)
 - booking count (`bookingCount`, derived: the customer's bookings that are not archived)
@@ -251,7 +251,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `N:1` Customer (organization) has this
 - `1:N` is contact for → Inquiry
 
-> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts (`CONFLICT`), and a contact can only be created at an active customer. Every booking of the customer that is not archived also blocks archiving it, whatever its status phase, terminal and cancelled included (`CONFLICT` naming the number of bookings, issue path `archiveBookings`). With `archiveBookings: true` (needs `booking:write` as well) `customer.archive` archives those bookings and the customer in one transaction, with one audit row per booking plus the customer; the assistant's approval text names the number of bookings.
+> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts or active price lists (`CONFLICT`; archive the price lists first), and a contact can only be created at an active customer. Every booking of the customer that is not archived also blocks archiving it, whatever its status phase, terminal and cancelled included (`CONFLICT` naming the number of bookings, issue path `archiveBookings`). With `archiveBookings: true` (needs `booking:write` as well) `customer.archive` archives those bookings and the customer in one transaction, with one audit row per booking plus the customer; the assistant's approval text names the number of bookings.
 
 ### Inquiry ★
 
@@ -583,14 +583,14 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 ### PriceList
 
-*MVP* · Price per season, weekday or customer ([ADR 0023](decisions/0023-recurring-bookings-and-customer-pricing.md)).
+*MVP* · Customer prices ([ADR 0023](decisions/0023-recurring-bookings-and-customer-pricing.md)). Built: `priceList.list/get/create/update/setItems/archive` (resource `priceList`; the "Conference venue" role template gives Finance `admin` and Sales `read`).
 
 **Attributes**
 - name
-- validity
-- season / weekday
-- customer (optional, for customer pricing)
-- general discount (%)
+- customer (optional, `customerId`; null = a general price list)
+- validity (`validFrom`, `validTo`: inclusive dates, null = open-ended; `validTo` before `validFrom` is VALIDATION)
+- general discount in percent (`discountPercent`, up to two decimals) **or** item prices, never both (VALIDATION)
+- season / weekday (not built yet)
 
 **Relations**
 - `N:0..1` Customer (organization) uses this
@@ -603,8 +603,10 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 **Attributes**
 - price list
-- item
-- price
+- item (active, with the `PRICED` behaviour; at most once per list)
+- price (`priceMinor`, minor units, in the item's own price unit)
+
+Replaced as a set by `priceList.setItems`; refused while the list has a general discount.
 
 **Relations**
 - `N:1` PriceList contains this

@@ -24,6 +24,10 @@ const catalog: PermissionSet = {
 const customersRead: PermissionSet = { customer: ["read"], contact: ["read"] };
 const customersWrite: PermissionSet = { customer: ["write"], contact: ["write"] };
 
+/** Customer prices (ADR 0023): Finance owns the price lists, Sales quotes from them. */
+const priceListsRead: PermissionSet = { priceList: ["read"] };
+const priceListsAdmin: PermissionSet = { priceList: ["admin"] };
+
 /** Bookings, their program items and owners (ADR 0022); owners are members, shown and picked by name. */
 const bookingsRead: PermissionSet = { booking: ["read"], programItem: ["read"], member: ["read"] };
 const bookingsWrite: PermissionSet = {
@@ -70,6 +74,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         item: ["admin"],
         customer: ["admin"],
         contact: ["admin"],
+        priceList: ["admin"],
         occupancy: ["admin"],
         configuration: ["admin"],
         bookingStatus: ["admin"],
@@ -91,6 +96,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         ...everyone,
         ...catalog,
         ...customersWrite,
+        ...priceListsRead,
         ...occupancyWrite,
         ...bookingsWrite,
         ...paymentsWrite,
@@ -110,7 +116,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
       },
     },
     { name: "Kitchen", permissions: { ...everyone, ...catalog, ...bookingsRead } },
-    { name: "Finance", permissions: readAll },
+    { name: "Finance", permissions: { ...readAll, ...priceListsAdmin } },
     { name: "Reader", permissions: readAll },
   ],
 };
