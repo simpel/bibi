@@ -3,6 +3,7 @@ import type { ToolSet } from "ai";
 import { createSkillTools, LOCAL_SKILL_TOOLS } from "../skills/create-skill-tools";
 import { guardTools } from "../skills/guard-tools";
 import { listPublishedSkills, rankSkills } from "../skills/list-prompt-skills";
+import { markUntrustedTools } from "../skills/mark-untrusted-tools";
 import type { PromptSkill } from "../skills/skill-wire";
 import { createToolRestriction, type ToolRestriction } from "../skills/tool-restriction";
 import { ASSISTANT_LIMITS } from "./assistant-limits";
@@ -45,6 +46,7 @@ export async function prepareTools({
     alwaysAllowed: LOCAL_SKILL_TOOLS,
   });
   const skillTools = createSkillTools({ client, published, restriction });
-  const tools = guardTools({ tools: { ...mcpTools, ...skillTools }, restriction });
+  const guarded = guardTools({ tools: { ...mcpTools, ...skillTools }, restriction });
+  const tools = markUntrustedTools({ tools: guarded });
   return { tools, restriction, promptSkills };
 }
