@@ -8,6 +8,7 @@ export type FieldDialogProps = {
   entityTypeId: string;
   field?: FieldDefinitionDto | undefined;
   vocabularies: VocabularyChoice[];
+  linkTypes: VocabularyChoice[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };

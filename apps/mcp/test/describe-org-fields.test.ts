@@ -13,6 +13,7 @@ const field = ({ ...over }: Partial<FieldDefinitionDto>): FieldDefinitionDto => 
   required: false,
   vocabularyId: null,
   options: [],
+  linkTypeId: null,
   position: 0,
   status: "ACTIVE",
   createdAt: now,
@@ -69,6 +70,12 @@ describe("describeOrgFields", () => {
     expect(out).toContain('floor ("Floor", NUMBER, required)');
     expect(out).toContain('view ("View", CHOICE: "River"=val1, "Courtyard"=val2)');
     expect(out).toContain('kind ("Kind", CHOICE: "A", "B")');
+  });
+
+  it("describes a LINK field's target type", () => {
+    const link = field({ key: "part", name: "Part of", kind: "LINK", linkTypeId: "t1" });
+    const out = describeOrgFields({ types: [type({ fields: [link] })], vocabularies: [] });
+    expect(out).toContain('part ("Part of", LINK: id of a "Konferensrum" record (linkTypeId=t1))');
   });
 
   it("truncates with a pointer to entityType_list", () => {

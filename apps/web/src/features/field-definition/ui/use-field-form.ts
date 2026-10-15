@@ -32,6 +32,7 @@ const save = ({ field, values }: SaveInput) =>
           required: values.required ?? false,
           vocabularyId: values.vocabularyId ?? null,
           options: values.options ?? [],
+          linkTypeId: values.linkTypeId ?? null,
         },
       })
     : createFieldAction({ input: values });

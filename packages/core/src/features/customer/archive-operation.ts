@@ -5,6 +5,7 @@ import { hasPermission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { toBookingDto } from "../booking/to-booking-dto";
+import { checkNotLinked } from "../field-definition/link-usage";
 import { customerEmbeddable } from "./embeddable";
 import { CustomerArchiveInputSchema, type CustomerDto, CustomerSchema } from "./schema";
 import { CUSTOMER_INCLUDE, loadCustomer, toCustomerDto } from "./to-customer-dto";
@@ -36,6 +37,20 @@ async function archiveBookings({ context, customer }: CascadeInput): Promise<Res
   return ok({ value: rows.length });
 }
 
+type NotLinkedInput = CascadeInput & { cascade: boolean | undefined };
+
+/** The customer, and the bookings archived with it, must not be LINK targets (ADR 0026). */
+async function checkCustomerNotLinked({ context, customer, cascade }: NotLinkedInput) {
+  const bookings = cascade
+    ? await context.db.booking.findMany({
+        where: { customerId: customer.id },
+        select: { id: true, entityTypeId: true },
+      })
+    : [];
+  const records = [{ id: customer.id, entityTypeId: customer.entityTypeId }, ...bookings];
+  return checkNotLinked({ context, records, what: customer.name });
+}
+
 type BlockedInput = { customer: CustomerDto };
 
 /** Every booking that is not archived blocks, whatever its status phase (#134). */
@@ -56,7 +71,8 @@ export const archiveCustomer = defineOperation({
   description:
     "Archive (soft-delete) a customer. Refused while the customer has active contacts. Every " +
     "booking that is not archived, in any status, also blocks it, unless `archiveBookings` is " +
-    "true: then those bookings are archived with the customer (needs booking:write).",
+    "true: then those bookings are archived with the customer (needs booking:write). Refused " +
+    "while a LINK field points to the customer or to one of those bookings.",
   input: CustomerArchiveInputSchema,
   output: CustomerSchema,
   permission: "customer:write",
@@ -67,6 +83,8 @@ export const archiveCustomer = defineOperation({
     const contacts = await context.db.contact.count({ where: { customerId: id } });
     if (contacts > 0)
       return conflict({ message: `${before.name} has ${contacts} active contacts` });
+    const linked = await checkCustomerNotLinked({ context, customer: before, cascade });
+    if (!linked.ok) return linked;
     if (before.bookingCount > 0) {
       if (!cascade) return bookingsBlock({ customer: before });
       const archived = await archiveBookings({ context, customer: before });

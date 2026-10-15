@@ -36,11 +36,11 @@ export async function checkChoiceSource({
 export type CheckFieldChangeInput = {
   context: Db;
   before: FieldDefinition;
-  next: ChoiceSource & { required: boolean };
+  next: ChoiceSource & { required: boolean; linkTypeId: string | null };
 };
 
 /**
- * "Data present → CONFLICT" for a field (ADR 0021): the kind or list cannot change and inline
+ * "Data present → CONFLICT" for a field (ADR 0021): the kind, list or link target cannot change and inline
  * options cannot be removed while records use them, and a field cannot become required while
  * records lack a value.
  */
@@ -52,7 +52,10 @@ export async function checkFieldChange({
   const all = await fieldValuesOfType({ context, entityTypeId: before.entityTypeId });
   const values = all.map((fields) => fields[before.key]);
   const present = values.filter((value) => value !== undefined);
-  const reshaped = next.kind !== before.kind || next.vocabularyId !== before.vocabularyId;
+  const reshaped =
+    next.kind !== before.kind ||
+    next.vocabularyId !== before.vocabularyId ||
+    next.linkTypeId !== before.linkTypeId;
   if (reshaped && present.length > 0) {
     return conflict({ message: `${present.length} records have a value for ${before.name}` });
   }

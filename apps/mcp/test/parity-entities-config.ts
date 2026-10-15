@@ -4,7 +4,7 @@ import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
 const FIELD =
-  "{ id entityTypeId key name kind required vocabularyId options position status createdAt updatedAt createdBy }";
+  "{ id entityTypeId key name kind required vocabularyId options linkTypeId position status createdAt updatedAt createdBy }";
 const VALUE = "{ id vocabularyId name position }";
 
 type Value = { id: string; vocabularyId: string };

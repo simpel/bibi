@@ -11,9 +11,12 @@ export type FieldSpec = {
   kind: FieldKind;
   required: boolean;
   choices: readonly string[] | null;
+  /** Target type of a LINK field. The server checks that a value is a record of it. */
+  linkTypeId?: string | null;
 };
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
+const RECORD_ID = /^[A-Za-z0-9_-]{1,64}$/;
 
 type ValueSchemaInput = { spec: FieldSpec };
 
@@ -37,6 +40,8 @@ function valueSchema({ spec }: ValueSchemaInput): z.ZodType {
         .array(oneOf)
         .max(100)
         .refine((v) => new Set(v).size === v.length, "Duplicates");
+    case "LINK":
+      return z.string().regex(RECORD_ID, "Not a record id");
   }
 }
 

@@ -15,7 +15,8 @@ export type ItemFactsInput = {
 /** Facts of an item's page: type, venue and the type's own fields (behaviours: `ItemBehaviours`). */
 export function itemFacts({ item, type, data, t, yesNo }: ItemFactsInput): Fact[] {
   const venue = data.venues.find(({ id }) => id === item.venueId)?.name ?? "–";
-  const own = ownFieldFacts({ type, stored: item.fields, vocabularies: data.vocabularies, yesNo });
+  const { vocabularies, links } = data;
+  const own = ownFieldFacts({ type, stored: item.fields, vocabularies, links, yesNo });
   return [
     { label: t("fields.type"), value: type?.name ?? "–" },
     { label: t("fields.venue"), value: venue },

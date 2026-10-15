@@ -64,6 +64,7 @@ export * from "./components/field-controls/boolean-control";
 export * from "./components/field-controls/choice-control";
 export * from "./components/field-controls/control-props";
 export * from "./components/field-controls/date-control";
+export * from "./components/field-controls/link-control";
 export * from "./components/field-controls/multi-choice-control";
 export * from "./components/field-controls/number-control";
 export * from "./components/field-controls/text-control";

@@ -35,6 +35,7 @@ export async function BookingFacts({ booking, data }: BookingFactsProps) {
       type,
       stored: booking.fields,
       vocabularies: data.vocabularies,
+      links: data.links,
       yesNo: { yes: common("yes"), no: common("no") },
     }),
   ];

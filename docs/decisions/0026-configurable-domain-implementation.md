@@ -18,7 +18,7 @@
 - `buildFieldsSchema({ specs })` (core, client-safe) builds a strict Zod schema from the type's fields. The web app validates with the same schema as the server.
 - A choice from a vocabulary is stored as the vocabulary value's ID, so a rename of the value breaks nothing.
 - `item.update` merges `fields` per key, and `null` removes a value.
-- The field type "link to another type" is built when customers and bookings exist.
+- The field type "link to another type" is `LINK` (#38): the definition names a target type (`linkTypeId`, an item, customer, contact or booking type) and the value is the id of one record of it. `buildFieldsSchema` checks the id format; the server checks that the id is an active record of the target type in the same organization.
 
 ### Choice and multi-choice
 - A choice or multi-choice field has **either** a vocabulary (`vocabularyId`) **or** its own options (`options`), never both.
@@ -31,6 +31,8 @@ The principle in 0021 applies to anything that would make existing values invali
 - changing field type or vocabulary
 - removing an option that is in use
 - making a field required when items lack a value
+- changing a LINK field's target type while records have a value
+- archiving a record a LINK field points to (item, contact, customer, or the items and bookings archived with a venue or customer), or a type a LINK field targets
 - archiving a field that has values, a vocabulary value that an item carries, a vocabulary that a field uses, a setup with capacity or a type with active items
 
 The check is computed in memory per type. The catalogs have hundreds of rows, so that is enough for now.

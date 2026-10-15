@@ -28,6 +28,7 @@ enum FieldKind {
   DATE
   CHOICE
   MULTI_CHOICE
+  LINK
 }
 
 /// Type – an organization's own type for a base entity, e.g. Conference room, Dish or Boat.
@@ -42,6 +43,7 @@ model EntityType {
   updatedAt      DateTime          @updatedAt
   createdBy      String?
   fields         FieldDefinition[]
+  linkedBy       FieldDefinition[] @relation("FieldLinkType")
   items          Item[]
   customers      Customer[]
   contacts       Contact[]
@@ -52,6 +54,7 @@ model EntityType {
 }
 
 /// Field definition – one field of a type. Values live as JSON on the row, keyed by `key`.
+/// A LINK field holds the id of one record of `linkTypeId` (an item, customer, contact or booking type).
 model FieldDefinition {
   id             String       @id @default(cuid(2))
   organizationId String
@@ -62,12 +65,14 @@ model FieldDefinition {
   required       Boolean      @default(false)
   vocabularyId   String?
   options        String[]
+  linkTypeId     String?
   position       Int          @default(0)
   status         RecordStatus @default(ACTIVE)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   createdBy      String?
   entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  linkType       EntityType?  @relation("FieldLinkType", fields: [linkTypeId, organizationId], references: [id, organizationId])
   vocabulary     Vocabulary?  @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])

@@ -41,7 +41,7 @@ export function ContactForm({ customerId, data, contact, onDone }: ContactFormPr
               <TextField form={form} name="email" label={t("email")} type="email" />
               <TextField form={form} name="phone" label={t("phone")} type="tel" />
             </div>
-            <TypeFields control={form.control} type={type} vocabularies={data.vocabularies} />
+            <TypeFields control={form.control} type={type} data={data} />
           </>
         ) : null}
         <DialogFooter>

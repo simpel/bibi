@@ -38,7 +38,8 @@
     "sending": "Skickar…",
     "removing": "Tar bort…",
     "select": "Välj…",
-    "noOptions": "Inga alternativ."
+    "noOptions": "Inga alternativ.",
+    "noMatches": "Inga träffar."
   },
   "auth": {
     "signIn": "Logga in",
@@ -472,7 +473,9 @@
     "moveDown": "Flytta ned",
     "selectList": "Välj lista",
     "noLists": "Det finns inga listor. Skapa en under Listor.",
+    "selectLinkType": "Välj en typ",
     "listSource": "Lista: {name}",
+    "linkSource": "Länkar till: {name}",
     "optionsSource": "{count, plural, one {# alternativ} other {# alternativ}}",
     "fields": {
       "name": "Namn",
@@ -480,7 +483,8 @@
       "required": "Obligatoriskt",
       "source": "Alternativen kommer från",
       "vocabulary": "Lista",
-      "options": "Alternativ (ett per rad)"
+      "options": "Alternativ (ett per rad)",
+      "linkType": "Länkar till"
     },
     "sources": {
       "list": "En lista",
@@ -498,7 +502,8 @@
       "BOOLEAN": "Ja/nej",
       "DATE": "Datum",
       "CHOICE": "Val",
-      "MULTI_CHOICE": "Flerval"
+      "MULTI_CHOICE": "Flerval",
+      "LINK": "Länk till en post"
     }
   },
   "vocabulary": {
@@ -897,7 +902,8 @@
           "BOOLEAN": "Ja/nej",
           "DATE": "Datum",
           "CHOICE": "Val",
-          "MULTI_CHOICE": "Flerval"
+          "MULTI_CHOICE": "Flerval",
+          "LINK": "Länk till en post"
         }
       },
       "vocabulary": {

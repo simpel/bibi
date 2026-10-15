@@ -36,7 +36,7 @@ export function CustomerForm({ data, customer, onDone }: CustomerFormProps) {
         {type ? (
           <>
             <CustomerCoreFields form={form} />
-            <TypeFields control={form.control} type={type} vocabularies={data.vocabularies} />
+            <TypeFields control={form.control} type={type} data={data} />
           </>
         ) : null}
         <DialogFooter>

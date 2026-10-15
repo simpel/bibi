@@ -3,6 +3,7 @@ import { useState } from "react";
 import { BooleanControl } from "./boolean-control";
 import { ChoiceControl } from "./choice-control";
 import { DateControl } from "./date-control";
+import { LinkControl } from "./link-control";
 import { MultiChoiceControl } from "./multi-choice-control";
 import { NumberControl } from "./number-control";
 import { TextControl } from "./text-control";
@@ -72,4 +73,20 @@ export const MultiChoiceEmpty: Story = {
       emptyLabel="No options."
     />
   ),
+};
+
+export const Link: Story = {
+  render: () => {
+    const [value, setValue] = useState("");
+    return (
+      <LinkControl
+        value={value}
+        onChange={setValue}
+        choices={choices}
+        placeholder="Select…"
+        searchPlaceholder="Search…"
+        emptyText="No matches."
+      />
+    );
+  },
 };

@@ -7,22 +7,26 @@ import type { VocabularyChoice } from "./field-source-fields";
 export type FieldTableProps = {
   fields: FieldDefinitionDto[];
   vocabularies: VocabularyChoice[];
+  linkTypes: VocabularyChoice[];
   canWrite: boolean;
 };
 
 type FieldRowProps = FieldTableProps & { index: number };
 
 /** One field: name, kind, required, where its alternatives come from, and the row actions. */
-async function FieldRow({ fields, vocabularies, canWrite, index }: FieldRowProps) {
+async function FieldRow({ fields, vocabularies, linkTypes, canWrite, index }: FieldRowProps) {
   const t = await getTranslations("fieldDefinition");
   const common = await getTranslations("common");
   const field = fields[index] as FieldDefinitionDto;
   const list = vocabularies.find(({ id }) => id === field.vocabularyId);
+  const target = linkTypes.find(({ id }) => id === field.linkTypeId);
   const source = list
     ? t("listSource", { name: list.name })
-    : field.options.length > 0
-      ? t("optionsSource", { count: field.options.length })
-      : "–";
+    : target
+      ? t("linkSource", { name: target.name })
+      : field.options.length > 0
+        ? t("optionsSource", { count: field.options.length })
+        : "–";
   return (
     <TableRow>
       <TableCell className="font-medium">{field.name}</TableCell>
@@ -36,6 +40,7 @@ async function FieldRow({ fields, vocabularies, canWrite, index }: FieldRowProps
             previous={fields[index - 1]}
             next={fields[index + 1]}
             vocabularies={vocabularies}
+            linkTypes={linkTypes}
           />
         ) : null}
       </TableCell>

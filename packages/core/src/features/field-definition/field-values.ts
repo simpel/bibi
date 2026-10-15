@@ -3,6 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import { loadFieldSpecs } from "./field-specs";
 import { buildFieldsSchema } from "./fields-schema";
+import { checkLinkValues } from "./link-rules";
 
 type FieldValues = Record<string, unknown>;
 
@@ -22,8 +23,9 @@ export type ValidateFieldsInput = {
 };
 
 /**
- * Validates `fields` against the Zod schema built from the type's field definitions. Issues
- * get `fields.<key>` paths so forms can show them next to the right field.
+ * Validates `fields` against the Zod schema built from the type's field definitions, then that
+ * LINK values are active records of the target type in the organization. Issues get
+ * `fields.<key>` paths so forms can show them next to the right field.
  */
 export async function validateFields({
   context,
@@ -32,7 +34,10 @@ export async function validateFields({
 }: ValidateFieldsInput): Promise<Result<FieldValues>> {
   const specs = await loadFieldSpecs({ context, entityTypeId });
   const parsed = buildFieldsSchema({ specs }).safeParse(values);
-  if (parsed.success) return ok({ value: parsed.data });
+  if (parsed.success) {
+    const links = await checkLinkValues({ context, specs, values: parsed.data });
+    return links.ok ? ok({ value: parsed.data }) : links;
+  }
   const issues = parsed.error.issues.flatMap((issue) => {
     const keys = issue.code === "unrecognized_keys" ? issue.keys : [issue.path.join(".")];
     return keys.map((key) => ({ path: `fields.${key}`, message: issue.message }));

@@ -4,6 +4,7 @@ import { conflict, invalid } from "../../shared/errors";
 import { freeFieldKey, toFieldKey } from "./field-key";
 import { checkChoiceSource } from "./field-rules";
 import { countRecordsOfType } from "./field-usage";
+import { checkLinkTarget } from "./link-rules";
 import type { FieldDefinitionCreateInput, FieldDefinitionDto } from "./schema";
 
 export type InsertFieldInput = { context: OperationContext; input: FieldDefinitionCreateInput };
@@ -22,12 +23,12 @@ async function resolveKey({ context, input }: ResolveKeyInput): Promise<Result<s
   return taken ? conflict({ message: `The key "${input.key}" is used` }) : ok({ value: input.key });
 }
 
-/** `fieldDefinition.create`: checks the type, name, key and choice source, then inserts. */
+/** `fieldDefinition.create`: checks the type, name, key, choice source and link target, then inserts. */
 export async function insertField({
   context,
   input,
 }: InsertFieldInput): Promise<Result<FieldDefinitionDto>> {
-  const { entityTypeId, name, kind, vocabularyId = null, options = [] } = input;
+  const { entityTypeId, name, kind, vocabularyId = null, options = [], linkTypeId = null } = input;
   const type = await context.db.entityType.findFirst({ where: { id: entityTypeId } });
   if (!type) {
     return invalid({
@@ -40,6 +41,8 @@ export async function insertField({
   }
   const source = await checkChoiceSource({ context, source: { kind, vocabularyId, options } });
   if (!source.ok) return source;
+  const link = await checkLinkTarget({ context, source: { kind, linkTypeId } });
+  if (!link.ok) return link;
   const key = await resolveKey({ context, input });
   if (!key.ok) return key;
   const used = await countRecordsOfType({ context, entityTypeId });
@@ -48,7 +51,7 @@ export async function insertField({
     input.position ?? (await context.db.fieldDefinition.count({ where: { entityTypeId } }));
   const field = await context.db.fieldDefinition.create({
     data: {
-      ...{ entityTypeId, name, kind, vocabularyId, options, position, key: key.value },
+      ...{ entityTypeId, name, kind, vocabularyId, options, linkTypeId, position, key: key.value },
       required: input.required ?? false,
       organizationId: context.organizationId,
     },

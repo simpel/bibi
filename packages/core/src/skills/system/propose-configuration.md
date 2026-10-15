@@ -24,8 +24,10 @@ words: use the user's own vocabulary for every name.
    - Setups (ways a space can be arranged) with `changeoverMinutes`.
    - Types with a `base` and, for ITEM types, the behaviours that fit: PRICED, COMPOSABLE,
      CHOICES (needs COMPOSABLE), BOOKABLE, SETUPS (needs BOOKABLE).
-   - Fields per type with a kind: TEXT, NUMBER, BOOLEAN, DATE, CHOICE, MULTI_CHOICE. Choice
-     fields use a list (`vocabularyId`) or inline `options`.
+   - Fields per type with a kind: TEXT, NUMBER, BOOLEAN, DATE, CHOICE, MULTI_CHOICE, LINK. Choice
+     fields use a list (`vocabularyId`) or inline `options`. A LINK field points to records of
+     another type (`linkTypeId`: an item, customer, contact or booking type), so create the
+     target type first.
 4. Prefer templates when they fit instead of creating item by item:
    - `configuration_importTemplate` with `conference-venue` for lists, setups and types of a
      conference venue.

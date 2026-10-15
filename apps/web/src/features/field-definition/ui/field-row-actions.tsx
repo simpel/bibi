@@ -21,10 +21,12 @@ export type FieldRowActionsProps = {
   previous?: FieldDefinitionDto | undefined;
   next?: FieldDefinitionDto | undefined;
   vocabularies: VocabularyChoice[];
+  linkTypes: VocabularyChoice[];
 };
 
 /** Reorder buttons plus an edit / archive menu for one field. */
-export function FieldRowActions({ field, previous, next, vocabularies }: FieldRowActionsProps) {
+export function FieldRowActions(props: FieldRowActionsProps) {
+  const { field, previous, next, vocabularies, linkTypes } = props;
   const t = useTranslations("fieldDefinition");
   const common = useTranslations("common");
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
@@ -48,6 +50,7 @@ export function FieldRowActions({ field, previous, next, vocabularies }: FieldRo
         entityTypeId={field.entityTypeId}
         field={field}
         vocabularies={vocabularies}
+        linkTypes={linkTypes}
         open={dialog === "edit"}
         onOpenChange={(open) => !open && setDialog(null)}
       />

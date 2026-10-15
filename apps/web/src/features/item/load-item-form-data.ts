@@ -1,6 +1,7 @@
 import "server-only";
 import type { Result } from "@okazi/core";
 import { listEntityTypes, listItems, listSetups, listVenues, listVocabularies } from "@okazi/core";
+import { loadLinkTargets } from "@/server/load-link-targets";
 import { runOperation } from "@/server/run-operation";
 import type { ItemFormData } from "./ui/item-form-data";
 
@@ -30,11 +31,13 @@ export async function loadItemFormData({
   if (!setups.ok) return setups;
   if (!venues.ok) return venues;
   if (!parts.ok) return parts;
+  const links = await loadLinkTargets({ types: types.value.items });
   return {
     ok: true,
     value: {
       types: types.value.items,
       vocabularies: vocabularies.value.items,
+      links,
       setups: setups.value.items,
       venues: venues.value.items.map(({ id, name }) => ({ id, name })),
       parts: parts.value.items.map(({ id, name }) => ({ id, name })),

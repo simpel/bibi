@@ -10,7 +10,10 @@ import { formSchema } from "@/lib/form-schema";
 
 export type FieldSource = "list" | "options";
 
-/** Raw values of the field form: choice fields take a list OR inline options (one per line). */
+/**
+ * Raw values of the field form: choice fields take a list OR inline options (one per line),
+ * LINK fields a target type.
+ */
 export type FieldFormValues = {
   entityTypeId: string;
   name: string;
@@ -19,6 +22,7 @@ export type FieldFormValues = {
   source: FieldSource;
   vocabularyId: string;
   options: string;
+  linkTypeId: string;
 };
 
 /** What the resolver outputs: core's create input. */
@@ -45,6 +49,7 @@ export function fieldFormToInput({ values }: FieldFormInput) {
         ? blankToUndefined({ value: values.vocabularyId })
         : undefined,
     options: choice && values.source === "options" ? options : undefined,
+    linkTypeId: values.kind === "LINK" ? blankToUndefined({ value: values.linkTypeId }) : undefined,
   };
 }
 
@@ -64,5 +69,6 @@ export function fieldFormDefaults({ entityTypeId, field }: FieldDefaultsInput): 
     source: field && field.options.length > 0 ? "options" : "list",
     vocabularyId: field?.vocabularyId ?? "",
     options: field?.options.join("\n") ?? "",
+    linkTypeId: field?.linkTypeId ?? "",
   };
 }

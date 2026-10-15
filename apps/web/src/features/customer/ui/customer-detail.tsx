@@ -47,6 +47,7 @@ export async function CustomerDetail({ locale, id }: CustomerDetailProps) {
         customer={customer.value}
         type={type}
         vocabularies={data.value.vocabularies}
+        links={data.value.links}
         locale={locale}
       />
       <ContactSection locale={locale} customerId={customer.value.id} />

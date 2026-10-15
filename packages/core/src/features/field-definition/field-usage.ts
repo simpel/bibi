@@ -24,12 +24,15 @@ export async function fieldValuesOfType({
   return rows.map((row) => asFieldValues({ value: row.fields }));
 }
 
-/** Active records (items, customers, contacts, bookings) that have the type. */
+export type CountRecordsOfTypeInput = FieldValuesOfTypeInput & { id?: string };
+
+/** Active records (items, customers, contacts, bookings) that have the type, optionally one id. */
 export async function countRecordsOfType({
   context,
   entityTypeId,
-}: FieldValuesOfTypeInput): Promise<number> {
-  const where = { entityTypeId };
+  id,
+}: CountRecordsOfTypeInput): Promise<number> {
+  const where = { entityTypeId, ...(id ? { id } : {}) };
   return (
     (await context.db.item.count({ where })) +
     (await context.db.customer.count({ where })) +

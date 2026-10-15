@@ -8,6 +8,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  LinkControl,
   MultiChoiceControl,
   NumberControl,
   TextControl,
@@ -31,7 +32,12 @@ export function FieldController<V extends WithRawFields, O>({
 }: FieldControllerProps<V, O>) {
   const { key, kind, name, required } = field;
   const t = useTranslations("common");
-  const labels = { placeholder: t("select"), emptyLabel: t("noOptions") };
+  const labels = {
+    placeholder: t("select"),
+    emptyLabel: t("noOptions"),
+    search: t("search"),
+    noMatches: t("noMatches"),
+  };
   return (
     <FormController
       control={control}
@@ -61,10 +67,26 @@ export function FieldController<V extends WithRawFields, O>({
 type RenderInput = {
   kind: FieldDefinitionDto["kind"];
   choices: FieldChoice[];
-  labels: { placeholder: string; emptyLabel: string };
+  labels: { placeholder: string; emptyLabel: string; search: string; noMatches: string };
   value: unknown;
   onChange: (value: unknown) => void;
 };
+
+type RenderLinkInput = Omit<RenderInput, "kind">;
+
+/** LINK: a searchable pick of one record of the target type. */
+function renderLink({ choices, labels, value, onChange }: RenderLinkInput) {
+  return (
+    <LinkControl
+      value={String(value ?? "")}
+      choices={choices}
+      placeholder={labels.placeholder}
+      searchPlaceholder={labels.search}
+      emptyText={labels.noMatches}
+      onChange={onChange}
+    />
+  );
+}
 
 /** The UI control of a field kind, bound to the form through `value` and `onChange`. */
 function renderControl({ kind, choices, labels, value, onChange }: RenderInput) {
@@ -87,6 +109,8 @@ function renderControl({ kind, choices, labels, value, onChange }: RenderInput) 
           {...common}
         />
       );
+    case "LINK":
+      return renderLink({ choices, labels, value, onChange });
     case "MULTI_CHOICE":
       return (
         <MultiChoiceControl

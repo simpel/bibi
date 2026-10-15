@@ -41,7 +41,7 @@ export function ItemForm(props: ItemFormProps) {
         {type ? (
           <>
             <ItemCoreFields form={form} venues={data.venues} />
-            <TypeFields control={form.control} type={type} vocabularies={data.vocabularies} />
+            <TypeFields control={form.control} type={type} data={data} />
             <BehaviourSections form={form} type={type} data={data} itemId={item?.id} />
           </>
         ) : null}

@@ -36,7 +36,7 @@ export function BookingForm({ data, booking, onDone }: BookingFormProps) {
         {type ? (
           <>
             <BookingCoreFields form={form} customers={data.customers} />
-            <TypeFields control={form.control} type={type} vocabularies={data.vocabularies} />
+            <TypeFields control={form.control} type={type} data={data} />
           </>
         ) : null}
         <DialogFooter>

@@ -6,6 +6,7 @@ import { CheckField } from "@/components/form/check-field";
 import { TextField } from "@/components/form/text-field";
 import { FieldKindField } from "./field-kind-field";
 import { FieldSourceFields, type VocabularyChoice } from "./field-source-fields";
+import { LinkTypeField } from "./link-type-field";
 import { useFieldForm } from "./use-field-form";
 
 export type FieldFormProps = {
@@ -13,11 +14,13 @@ export type FieldFormProps = {
   /** Present = edit mode, absent = create mode. */
   field?: FieldDefinitionDto | undefined;
   vocabularies: VocabularyChoice[];
+  /** Types a LINK field can point to (item, customer, contact and booking types). */
+  linkTypes: VocabularyChoice[];
   onDone: () => void;
 };
 
-/** Create or edit one field of a type; the kind decides whether a list or options are asked for. */
-export function FieldForm({ vocabularies, onDone, ...rest }: FieldFormProps) {
+/** Create or edit one field of a type; the kind decides whether a source or target is asked for. */
+export function FieldForm({ vocabularies, linkTypes, onDone, ...rest }: FieldFormProps) {
   const t = useTranslations("fieldDefinition");
   const common = useTranslations("common");
   const { form, submit, pending } = useFieldForm({ onDone, ...rest });
@@ -28,6 +31,9 @@ export function FieldForm({ vocabularies, onDone, ...rest }: FieldFormProps) {
         <FieldKindField control={form.control} />
         {isChoiceKind({ kind: form.watch("kind") }) ? (
           <FieldSourceFields form={form} vocabularies={vocabularies} />
+        ) : null}
+        {form.watch("kind") === "LINK" ? (
+          <LinkTypeField control={form.control} linkTypes={linkTypes} />
         ) : null}
         <CheckField form={form} name="required" label={t("fields.required")} />
         <DialogFooter>

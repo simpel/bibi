@@ -9,6 +9,7 @@ const base = {
   source: "list",
   vocabularyId: "",
   options: "",
+  linkTypeId: "",
 } as const;
 
 describe("field form schema", () => {
@@ -23,6 +24,12 @@ describe("field form schema", () => {
     expect(fieldFormToInput({ values: list })).toMatchObject({ vocabularyId: "v1" });
     const own = { ...base, kind: "MULTI_CHOICE", source: "options", options: "A\n\n B " } as const;
     expect(fieldFormToInput({ values: own }).options).toEqual(["A", "B"]);
+  });
+
+  it("sends the target type only for LINK fields", () => {
+    expect(fieldFormToInput({ values: { ...base, linkTypeId: "t2" } }).linkTypeId).toBeUndefined();
+    const link = { ...base, kind: "LINK", linkTypeId: "t2" } as const;
+    expect(fieldFormToInput({ values: link }).linkTypeId).toBe("t2");
   });
 
   it("validates with core's field schema", () => {

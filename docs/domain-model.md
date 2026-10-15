@@ -45,6 +45,7 @@ erDiagram
   EntityType ||--o{ Item : "classifies"
   Vocabulary ||--o{ VocabularyValue : "has"
   FieldDefinition }o--o| Vocabulary : "selects from"
+  FieldDefinition }o--o| EntityType : "links to records of"
   ProgramItem ||--o{ OrderLine : "is charged via"
   ProgramItem ||--o| Occupancy : "reserves"
   Option ||--|| Occupancy : "reserves"
@@ -97,16 +98,18 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 **Attributes**
 - name
 - key (`key`) — generated from the name (e.g. "Area m²" → `area_m2`), never changes, unique per type even among archived
-- field type (`TEXT | NUMBER | BOOLEAN | DATE | CHOICE | MULTI_CHOICE`)
+- field type (`TEXT | NUMBER | BOOLEAN | DATE | CHOICE | MULTI_CHOICE | LINK`)
 - required
 - vocabulary OR own options (`options`) for choice/multi-choice — exactly one source
+- target type (`linkTypeId`) for LINK — an item, customer, contact or booking type; the value is the id of an active record of that type in the same organization
 - order (`position`)
 
 **Relations**
 - `N:1` EntityType has this
 - `N:0..1` selects from → Vocabulary
+- `N:0..1` links to records of → EntityType (LINK fields)
 
-> Values are stored as JSON on the row. Rules (`CONFLICT` when data exists): the field type or vocabulary cannot be changed, options in use cannot be removed, the field cannot become required as long as records (items, customers, contacts) lack a value, the field cannot be archived as long as records have a value. The same holds for list values in use and for archiving the type.
+> Values are stored as JSON on the row. Rules (`CONFLICT` when data exists): the field type or vocabulary cannot be changed, options in use cannot be removed, the field cannot become required as long as records (items, customers, contacts) lack a value, the field cannot be archived as long as records have a value. The same holds for list values in use and for archiving the type. A LINK field's target type cannot change while records have a value, and a linked record (or a type a LINK field targets) cannot be archived while a LINK points to it.
 
 ### Vocabulary (`Vocabulary`) and VocabularyValue (`VocabularyValue`)
 

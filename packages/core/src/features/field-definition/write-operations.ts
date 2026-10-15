@@ -5,6 +5,7 @@ import { checkNotOnSheets } from "../sheet-definition/usage";
 import { checkChoiceSource, checkFieldChange } from "./field-rules";
 import { countRecordsWithValue } from "./field-usage";
 import { insertField } from "./insert-field";
+import { checkLinkTarget } from "./link-rules";
 import {
   FieldDefinitionCreateInputSchema,
   FieldDefinitionIdInputSchema,
@@ -17,7 +18,8 @@ export const createFieldDefinition = defineOperation({
   kind: "command",
   description:
     "Add a field to one of the organization's types, e.g. Area m² (NUMBER) on Conference room or " +
-    "Allergens (MULTI_CHOICE from the list Allergens) on Dish.",
+    "Allergens (MULTI_CHOICE from the list Allergens) on Dish, or Account manager (LINK to a " +
+    "contact type) on Customer.",
   input: FieldDefinitionCreateInputSchema,
   output: FieldDefinitionSchema,
   permission: "configuration:write",
@@ -28,8 +30,8 @@ export const updateFieldDefinition = defineOperation({
   name: "fieldDefinition.update",
   kind: "command",
   description:
-    "Change a field. The key never changes. Changing kind or list, removing used options or " +
-    "making it required while items lack a value is refused (CONFLICT).",
+    "Change a field. The key never changes. Changing kind, list or link target, removing used " +
+    "options or making it required while records lack a value is refused (CONFLICT).",
   input: FieldDefinitionUpdateInputSchema,
   output: FieldDefinitionSchema,
   permission: "configuration:write",
@@ -40,6 +42,8 @@ export const updateFieldDefinition = defineOperation({
     const next = { ...before, ...data };
     const source = await checkChoiceSource({ context, source: next });
     if (!source.ok) return source;
+    const link = await checkLinkTarget({ context, source: next });
+    if (!link.ok) return link;
     const change = await checkFieldChange({ context, before, next });
     if (!change.ok) return change;
     const named = data.name

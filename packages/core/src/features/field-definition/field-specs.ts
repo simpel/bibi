@@ -13,6 +13,7 @@ export const toFieldSpec = ({ field, valueIds }: ToFieldSpecInput): FieldSpec =>
   kind: field.kind,
   required: field.required,
   choices: field.vocabularyId ? valueIds : field.options.length > 0 ? field.options : null,
+  linkTypeId: field.linkTypeId,
 });
 
 /** The value specs of a type's active fields, with list values resolved. */

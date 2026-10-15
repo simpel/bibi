@@ -76,7 +76,7 @@ export const archiveEntityType = defineOperation({
   kind: "command",
   description:
     "Archive a type. Refused while active records (items, customers, contacts, bookings) still have the " +
-    "type, or a sheet definition includes it.",
+    "type, a LINK field points to it, or a sheet definition includes it.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,
   permission: "configuration:write",
@@ -85,6 +85,9 @@ export const archiveEntityType = defineOperation({
     if (!before) return notFound({ entity: "Type" });
     const used = await countRecordsOfType({ context, entityTypeId: id });
     if (used > 0) return conflict({ message: `${used} records have the type ${before.name}` });
+    const linking = await context.db.fieldDefinition.count({ where: { linkTypeId: id } });
+    if (linking > 0)
+      return conflict({ message: `${linking} LINK fields point to the type ${before.name}` });
     const what = `The type ${before.name}`;
     const onSheets = await checkNotOnSheets({ context, reference: { entityTypeId: id }, what });
     if (!onSheets.ok) return onSheets;

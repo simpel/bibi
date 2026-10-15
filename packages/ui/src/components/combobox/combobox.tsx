@@ -18,13 +18,25 @@ export type ComboboxProps = {
   emptyText: string;
   disabled?: boolean;
   className?: string;
+  /** Set by `FormControl` so the label and messages point at the trigger. */
+  id?: string;
+  "aria-invalid"?: boolean;
+  "aria-describedby"?: string;
 };
+
+type AriaOfInput = { props: ComboboxProps };
+
+/** The form wiring (`FormControl`) that belongs on the trigger button. */
+const ariaOf = ({ props }: AriaOfInput) => ({
+  id: props.id,
+  "aria-invalid": props["aria-invalid"],
+  "aria-describedby": props["aria-describedby"],
+});
 
 export function Combobox(props: ComboboxProps) {
   const { options, value, onValueChange, placeholder, disabled, className } = props;
   const [open, setOpen] = useState(false);
   const selected = options.find((option) => option.value === value);
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -34,6 +46,7 @@ export function Combobox(props: ComboboxProps) {
           role="combobox"
           aria-expanded={open}
           disabled={disabled}
+          {...ariaOf({ props })}
           data-slot="combobox"
           className={cn("w-full justify-between font-normal", className)}
         >

@@ -4,6 +4,7 @@ import { invalid, notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { mergeFields, validateFields } from "../field-definition/field-values";
+import { checkNotLinked } from "../field-definition/link-usage";
 import { contactEmbeddable } from "./embeddable";
 import {
   ContactCreateInputSchema,
@@ -86,7 +87,9 @@ export const updateContact = defineOperation({
 export const archiveContact = defineOperation({
   name: "contact.archive",
   kind: "command",
-  description: "Archive (soft-delete) a contact person. Archived contacts are hidden from lists.",
+  description:
+    "Archive (soft-delete) a contact person. Archived contacts are hidden from lists. Refused " +
+    "while another record's LINK field points to it.",
   input: ContactIdInputSchema,
   output: ContactSchema,
   permission: "contact:write",
@@ -94,6 +97,9 @@ export const archiveContact = defineOperation({
   handler: async ({ input: { id }, context }) => {
     const before = await loadContact({ context, id });
     if (!before) return notFound({ entity: "Contact" });
+    const records = [{ id, entityTypeId: before.entityTypeId }];
+    const linked = await checkNotLinked({ context, records, what: before.name });
+    if (!linked.ok) return linked;
     const row = await context.db.contact.update({ where: { id }, data: { status: "ARCHIVED" } });
     const contact = toContactDto({ row });
     context.recordChange({ entityId: id, before, after: contact });

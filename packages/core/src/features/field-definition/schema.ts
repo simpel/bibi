@@ -13,6 +13,7 @@ export const FieldDefinitionSchema = z.object({
   required: z.boolean(),
   vocabularyId: z.string().nullable(),
   options: z.array(z.string()),
+  linkTypeId: z.string().nullable(),
   position: z.number().int(),
   status: RecordStatusSchema,
   createdAt: z.date(),
@@ -31,6 +32,14 @@ const OptionsSchema = z
   .refine((options) => new Set(options).size === options.length, "Options must be unique")
   .describe("Inline values of a CHOICE/MULTI_CHOICE field, when it does not use a list");
 
+const LinkTypeIdSchema = z
+  .string()
+  .min(1)
+  .describe(
+    "Type a LINK field points to: an item, customer, contact or booking type. Values are ids " +
+      "of active records of that type in the organization",
+  );
+
 export const FieldDefinitionCreateInputSchema = z.object({
   entityTypeId: z.string().min(1).describe("Id of the type the field belongs to"),
   name: z.string().trim().min(1).max(100).describe("Field name as staff see it, e.g. Yta m²"),
@@ -39,6 +48,7 @@ export const FieldDefinitionCreateInputSchema = z.object({
   required: z.boolean().optional(),
   vocabularyId: z.string().min(1).optional().describe("List the choice values come from"),
   options: OptionsSchema.optional(),
+  linkTypeId: LinkTypeIdSchema.optional(),
   position: z.number().int().min(0).optional().describe("Order on the type; defaults to last"),
 });
 
@@ -49,6 +59,9 @@ export const FieldDefinitionUpdateInputSchema = z.object({
   required: z.boolean().optional(),
   vocabularyId: z.string().min(1).nullable().optional(),
   options: OptionsSchema.optional(),
+  linkTypeId: LinkTypeIdSchema.nullable()
+    .optional()
+    .describe("Refused while records have a value for the field"),
   position: z.number().int().min(0).optional(),
 });
 
