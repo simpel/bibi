@@ -29,6 +29,6 @@
 
 ## Consequences
 - The change touches core, auth and tenancy. It must be built and reviewed at Opus level (CLAUDE.md) and go through `tenancy-review`.
-- `ORG_ROLES` and `ROLE_ACTIONS` disappear as hardcoded lists. Existing organizations get the "Conference estate" template imported and the members are migrated: `member` → Coordinator, `viewer` → Viewer.
+- `ORG_ROLES` and `ROLE_ACTIONS` disappear as hardcoded lists. There is no production data, so no migration is done. New organizations are seeded with the "default" template (one status per booking phase, one `owner` role) or can import templates (e.g. "Conference estate") on first use.
 - The parity test needs test cases per role template, so that for example Kitchen may read but not write a booking.
 - The AI assistant acts as the user (ADR 0007). It can never get more permissions than the user, and role and member changes require approval.

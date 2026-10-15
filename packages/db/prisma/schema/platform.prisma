@@ -27,7 +27,7 @@ model SystemLog {
 }
 
 /// Model chosen by a platform admin for one AI feature (e.g. `assistant.chat`). A missing row
-/// means the env default (`AI_DEFAULT_MODEL`, `AI_EMBEDDING_MODEL`) applies.
+/// means the feature is unavailable (ADR 0015). There are no env defaults.
 model AiSetting {
   feature   String   @id
   modelId   String

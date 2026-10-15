@@ -8,7 +8,7 @@ Okazi has several kinds of clients: staff in the web UI, REST integrations from 
 
 ## Decision
 - Better Auth is the authentication solution.
-- Web (staff and customers): email and password, plus magic link or one-time code (OTP).
+- Web (staff only): email and password, plus magic link or one-time code (OTP). Guests and customers see only the payment page, never the booking system UI.
 - REST: API keys (Better Auth API key plugin). The key is bound to a user and an organization.
 - MCP: OAuth through the Better Auth OAuth plugin. The client gets a token that represents the signed-in user. No separate service-account path.
 - The AI assistant in the web app uses the same MCP surface with the user's token. It gets no higher permissions than the user.

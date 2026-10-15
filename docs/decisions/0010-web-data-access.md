@@ -25,3 +25,6 @@ ADR 0003 says "reads via GraphQL". The web app (`apps/web`) is Next.js with serv
 
 ## Addendum 2026-10-14 – configurable domain
 - `Room` and `room.*` are replaced by `Item` and `item.*` (ADR 0021). The example above becomes `item.list` filtered by venue.
+
+## Addendum 2026-10-15 – system log sink exception
+- **Exception:** `apps/web/src/instrumentation-node.ts` imports `createSystemLogSink` from `@okazi/db` at server startup to initialize logging with a Postgres sink. This is necessary to write the system log to the database for the platform admin view (ADR 0014, 0015). The sink is registered once at process startup and writes non-request data (process logs), not operation results. This import sits outside the request context and does not affect request data access.

@@ -32,7 +32,7 @@
 - Web: Next.js (App Router), React.
 - Data: Prisma on Postgres with pgvector (Docker image `pgvector/pgvector`).
 - Auth: Better Auth with the organization plugin (multi-tenancy), API key plugin (REST) and OAuth plugin (MCP).
-- APIs: GraphQL via Pothos (Prisma plugin), REST `/api/v1` with OpenAPI generated from operations, MCP server (`apps/mcp`).
+- APIs: GraphQL via Pothos (Zod-derived types, no Prisma plugin), REST `/api/v1` with OpenAPI generated from operations, MCP server (`apps/mcp`).
 - AI: Vercel AI SDK via AI Gateway, provider-agnostic, Claude by default.
 - UI: Tailwind v4 (CSS-first tokens), cva, shadcn primitives, Storybook for `packages/ui`.
 - i18n: next-intl, Swedish and English.
@@ -111,7 +111,7 @@
 
 ## Platform admin
 - `/admin` in the web app: system log and AI model per feature. Only for `user.role = admin`, granted with `pnpm --filter @okazi/auth grant-admin <email>`. See `docs/decisions/0015-platform-admin.md`.
-- AI models are controlled **only** in `/admin/ai-models`, never via env. No model selected = the feature returns `UNAVAILABLE` and logs an error.
+- AI models (chat and embedding) are controlled **only** in `/admin/ai-models`, never via env. No model selected = the feature returns `UNAVAILABLE` and logs an error.
 - New AI feature: an entry in `AI_FEATURES` (core), `resolveAiModel({ feature })` where it runs, and texts in `admin.aiModels.features`.
 
 ## Working with subagents
@@ -149,5 +149,4 @@
 - Pricing model (per venue, per room, per booking) not decided.
 - Claude Design export (tokens) for `packages/ui` not delivered. Placeholder tokens are used until then.
 - Staging not decided. Hosting per `docs/decisions/0013-hosting-and-deploy.md` (Hetzner + Coolify, accepted; runbook `docs/runbooks/deploy.md`).
-- Embedding model not chosen.
 - Resend's EU region and DPA (GDPR) not confirmed.

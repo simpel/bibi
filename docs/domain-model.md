@@ -195,7 +195,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 ### Role (`organizationRole`)
 
-*MVP* · A named set of permissions per organization ([ADR 0020](decisions/0020-custom-roles-per-organization.md)). Resources: `configuration` (types, fields, vocabularies, setups) and `item` (items).
+*MVP* · A named set of permissions per organization ([ADR 0020](decisions/0020-custom-roles-per-organization.md)). Resources per member role: `venue`, `item`, `customer`, `contact`, `occupancy`, `configuration`, `bookingStatus`, `search`, `conversation`, `skill`, `role`, `member`.
 
 **Attributes**
 - name

@@ -10,7 +10,7 @@ Okazi must be usable through the web UI, GraphQL, REST and MCP. Without a common
 - Core operations in `packages/core` are the single source of truth. Each operation has a Zod schema for input and output, a permission check and a handler. Operations are defined with `defineOperation`.
 - Every command exists on all surfaces: web, GraphQL, REST and MCP.
 - Reads via GraphQL. The schema is generated from the entities and gives full graph access in the org-scoped context.
-- REST under `/api/v1` with OpenAPI, derived from the same operations. `POST /graphql` is also available.
+- REST under `/api/v1` with OpenAPI, derived from the same operations. `POST /api/graphql` is also available.
 - MCP in `apps/mcp` exposes two kinds of tools:
   - curated tools, one per command and per common read, with good descriptions and Zod schemas.
   - generic `graphql_schema` and `graphql_query` for free-form reads. Read only, with depth and cost limits.

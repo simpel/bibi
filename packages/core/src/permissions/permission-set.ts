@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { PERMISSION_ACTIONS, type PermissionAction, RESOURCES } from "./resources";
 
-/** What a role or caller may do: `{ venue: ["read", "write"], room: ["read"] }`. */
+/** What a role or caller may do: `{ venue: ["read", "write"], item: ["read"] }`. */
 export type PermissionSet = Partial<Record<string, readonly PermissionAction[]>>;
 
 export const PermissionSetSchema = z
