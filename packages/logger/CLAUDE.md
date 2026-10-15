@@ -18,6 +18,7 @@ The system log (ADR 0014). pino, one JSON line per event to stdout (stderr for s
 
 ## Environment
 `LOG_LEVEL` (default `info`, `silent` when `NODE_ENV=test`), `LOG_FORMAT` (`json` in production, otherwise `pretty`).
+`BETTER_STACK_HOST` + `BETTER_STACK_SOURCE_TOKEN` (both or neither): also ship every line at info and above to Better Stack over HTTP (`better-stack-sink.ts`, ADR 0031, runbook `docs/runbooks/deploy.md`).
 
 ## Tests
 `captureLogs()` routes the process logger to memory: `logs.events({ event })`, `logs.restore()`. `createMemoryLogger()` for a standalone logger.

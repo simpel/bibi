@@ -25,3 +25,11 @@ Run the **Rollback** workflow (Actions > Rollback > Run workflow) with the full 
 - Hetzner Cloud Firewall: allow only 80, 443 and SSH (SSH restricted to known IPs or the VPN). Port 8000 (Coolify) stays closed.
 - SSH keys only, password login off, `unattended-upgrades` enabled.
 - Docker log rotation configured; uptime monitoring on the two health endpoints.
+
+## Monitoring with Better Stack (ADR 0031)
+Account and dashboard steps are manual. The code side is done: the logger ships to Better Stack when both variables are set.
+
+1. **Log shipping.** Create a Better Stack source (platform: HTTP, EU region, 30 days retention). Set `BETTER_STACK_HOST` (ingesting host of the source) and `BETTER_STACK_SOURCE_TOKEN` on the web, mcp and worker apps in Coolify. Lines are the same pino JSON as stdout (`service`, `event`, `requestId`, ...) with `dt` added. Delivery is batched and best effort: stdout stays the source of truth. Unset = no shipping.
+2. **Uptime checks.** Create two monitors: `${WEB_URL}/api/health` and `${MCP_URL}/health` (expect 200, 1 minute interval, alert to the on-call email).
+3. **Error tracking.** Create a log alert on the source for `level` `error` or `fatal` (for example `process.unhandledRejection`, `process.uncaughtException`, `http.unhandledError`, `operation.failed`), grouped by `event`, sent to the same on-call email.
+4. Verify: deploy, open Live tail and check that `http.request` lines from `web` arrive, then stop a container and check the uptime alert fires.

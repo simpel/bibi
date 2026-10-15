@@ -1,4 +1,9 @@
 export {
+  type BetterStackSink,
+  type BetterStackSinkInput,
+  createBetterStackSink,
+} from "./better-stack-sink";
+export {
   type CapturedLogs,
   captureLogs,
   createMemoryLogger,

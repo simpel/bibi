@@ -1,6 +1,7 @@
 import { getEnv } from "@okazi/config";
 import { type DestinationStream, pino } from "pino";
 import { PinoPretty } from "pino-pretty";
+import { createBetterStackSink } from "./better-stack-sink";
 import { createLogger } from "./create-logger";
 import type { Logger, LogLevel } from "./types";
 
@@ -36,8 +37,13 @@ function consoleStream(): DestinationStream {
   return PinoPretty({ destination: fd, sync: true, translateTime: "SYS:HH:MM:ss.l" });
 }
 
+function betterStackSinks(): DestinationStream[] {
+  const { BETTER_STACK_HOST: host, BETTER_STACK_SOURCE_TOKEN: token } = getEnv();
+  return host && token ? [createBetterStackSink({ host, token })] : [];
+}
+
 function destination({ level }: { level: LogLevel }): DestinationStream {
-  const sinks = state.settings.sinks ?? [];
+  const sinks = [...(state.settings.sinks ?? []), ...betterStackSinks()];
   if (sinks.length === 0 || level === "silent") return consoleStream();
   return pino.multistream([
     { level, stream: consoleStream() },

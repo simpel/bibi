@@ -53,8 +53,15 @@ const envSchema = z
     LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal", "silent"]).optional(),
     /** `json` (one event per line) or `pretty`. Default: `json` in production, else `pretty`. */
     LOG_FORMAT: z.enum(["json", "pretty"]).optional(),
+    /** Better Stack log source (ADR 0031): ingesting host and source token. Both set = logs are shipped. */
+    BETTER_STACK_HOST: z.string().min(1).optional(),
+    BETTER_STACK_SOURCE_TOKEN: z.string().min(1).optional(),
     /** Days the `SystemLog` table keeps rows for the admin view (ADR 0015). */
     SYSTEM_LOG_RETENTION_DAYS: z.coerce.number().int().min(1).max(365).default(30),
+  })
+  .refine((env) => Boolean(env.BETTER_STACK_HOST) === Boolean(env.BETTER_STACK_SOURCE_TOKEN), {
+    message: "BETTER_STACK_HOST and BETTER_STACK_SOURCE_TOKEN must be set together",
+    path: ["BETTER_STACK_SOURCE_TOKEN"],
   })
   .refine((env) => env.MAIL_PROVIDER !== "resend" || env.RESEND_API_KEY, {
     message: "RESEND_API_KEY is required when MAIL_PROVIDER=resend",
