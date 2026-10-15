@@ -29,3 +29,6 @@
 - SPF, DKIM and DMARC are set up on our own domain following Resend's guide.
 - **Open, must be resolved before production:** Resend's EU region and data processing agreement (GDPR) are not confirmed.
 - Changing provider means writing an adapter, not a rewrite.
+
+## Addendum 2026-10-15
+- Resend operates an EU region, and we accept it for production. Use the EU region and sign Resend's data processing agreement before the first production send. The open GDPR item above is closed.

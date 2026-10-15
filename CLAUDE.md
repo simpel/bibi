@@ -11,7 +11,7 @@
 - Versioned sheets (e.g. kitchen order) sent to a role, plus export (json, pdf, csv) for handover outside the system.
 - Configurable domain: each organization sets up its own types, fields, lists, statuses and roles (ADR 0020, 0021).
 - Options with a queue (1st/2nd option) and automatic expiry.
-- Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing.
+- Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Fortnox, Visma and Peppol deferred, ADR 0028 and 0029).
 - Okazi's own prices are published and venues can sign up without talking to sales.
 
 ## Domain model
@@ -149,4 +149,4 @@
 - Pricing model (per venue, per room, per booking) not decided.
 - Claude Design export (tokens) for `packages/ui` not delivered. Placeholder tokens are used until then.
 - Staging not decided. Hosting per `docs/decisions/0013-hosting-and-deploy.md` (Hetzner + Coolify, accepted; runbook `docs/runbooks/deploy.md`).
-- Resend's EU region and DPA (GDPR) not confirmed.
+- Payments (Stripe) and invoicing (Stripe) decided in `docs/decisions/0028-payments-with-stripe.md` and `0029-invoicing-via-stripe.md`. Swish, Fortnox, Visma and Peppol are deferred.
