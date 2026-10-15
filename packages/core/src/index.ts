@@ -131,6 +131,7 @@ export type {
   PlatformContext,
   PlatformOperation,
 } from "./platform/types";
+export * from "./recurrence/expand-occurrences";
 export type { EmbedFn, EmbedInput, EmbedOutput } from "./search/embed";
 export type { Embeddable, LoadInput, SearchViewer, ToTextInput } from "./search/embeddable";
 export { SEARCHABLE_ENTITIES } from "./search/embeddables";

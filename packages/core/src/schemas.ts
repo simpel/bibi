@@ -34,4 +34,7 @@ export {
 export * from "./platform/ai-settings/ai-features";
 export * from "./platform/ai-settings/schema";
 export * from "./platform/system-log/schema";
+export * from "./recurrence/expand-occurrences-schema";
+export * from "./recurrence/recurrence-rule-schema";
+export * from "./recurrence/rrule-string-schema";
 export * from "./search/search-schema";
