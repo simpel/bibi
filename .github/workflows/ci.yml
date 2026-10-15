@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        app: [web, mcp]
+        app: [web, mcp, worker]
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3

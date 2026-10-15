@@ -52,5 +52,20 @@ services:
     depends_on:
       postgres: { condition: service_healthy }
 
+  worker:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args: { APP: worker }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://okazi:okazi@postgres:5432/okazi
+    stop_grace_period: 30s
+    healthcheck:
+      disable: true
+    depends_on:
+      postgres: { condition: service_healthy }
+
 volumes:
   postgres-data:

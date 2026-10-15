@@ -9,6 +9,8 @@ Implements the backup part of [ADR 0013](../decisions/0013-hosting-and-deploy.md
 | Whole server | Hetzner server backup (enabled in the Hetzner console) | Hetzner | Hetzner's rotation (7 slots) |
 | Coolify instance data | Coolify's own backup (see below) | Same bucket, prefix `coolify/` | Same as above |
 
+The dump covers the whole `okazi` database, including the `pgboss` schema (the worker's queue, schedules and job history, ADR 0027). pg-boss lives outside Prisma, so the Prisma migration check does not see it; keep `pg_dump` unfiltered (no `--schema` or `--exclude-schema`). On restore, the worker recreates or migrates the schema on its next start.
+
 Dumps are named `okazi-<UTC timestamp>.dump`. The service writes `backup.done`, `backup.pruned` and `backup.failed` lines to the container log (`docker logs <project>-backup-1`).
 
 ## Configuration

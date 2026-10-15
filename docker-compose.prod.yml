@@ -84,6 +84,20 @@ services:
       start_period: 30s
     logging: *logging
 
+  # Job scheduler and queue (pg-boss, ADR 0027). No HTTP port. pg-boss migrates its own `pgboss`
+  # schema on start. Graceful stop: SIGTERM runs `boss.stop()`, so give running jobs time to finish.
+  worker:
+    image: ${IMAGE_REPO:-ghcr.io/simpel/okazi}-worker:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
+    restart: unless-stopped
+    environment: *app-env
+    stop_grace_period: 30s
+    depends_on:
+      postgres: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    healthcheck:
+      disable: true
+    logging: *logging
+
   # Nightly pg_dump to S3-compatible storage (Hetzner Object Storage) with retention.
   # See docs/operations/backup-and-restore.md. Built from the repo (docker/backup/Dockerfile).
   backup:

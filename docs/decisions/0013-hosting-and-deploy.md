@@ -14,7 +14,7 @@
 - **Provider:** Hetzner Cloud, EU region (Falkenstein/Nürnberg or Helsinki).
 - **Start:** one server for web, mcp and Postgres. Scale by changing server size, and move Postgres to its own server when needed.
 - **Database:** self-hosted `pgvector/pgvector` in a container with data on a Hetzner Volume. Hetzner has no managed Postgres.
-- **Backup:** nightly `pg_dump` to Hetzner Object Storage (or Storage Box), plus Hetzner's server backup. Restore is tested before the first customer.
+- **Backup:** nightly `pg_dump` (the whole database, including the worker's `pgboss` schema, ADR 0027) to Hetzner Object Storage (or Storage Box), plus Hetzner's server backup. Restore is tested before the first customer.
 - **Images:** built in GitHub Actions after CI is green on `main`, published to GHCR and tagged with the git SHA. The same image is used in all environments.
 - **Deploy platform:** Coolify (self-hosted, Apache-2.0) on the same server. Coolify handles proxy with TLS (Let's Encrypt), environment variables, database management and scheduled database backups to S3-compatible storage.
 - **Deploy flow:** GitHub Actions triggers a deploy through Coolify's API/webhook with the new image's SHA tag. Rollback is done by deploying the previous SHA. Implemented as `.github/workflows/deploy.yml` (reusable, called from CI after `publish-images`, with a health gate on `/api/health` and `/health`) and the manual `rollback.yml`. See `docs/runbooks/deploy.md`.

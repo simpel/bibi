@@ -97,6 +97,7 @@
 ## Package layout
 - `apps/web`: the Next.js app (UI, server actions, `/api/chat`).
 - `apps/mcp`: MCP server, stdio and streamable HTTP.
+- `apps/worker`: pg-boss job scheduler and queue worker (ADR 0027). Jobs run core operations as SYSTEM.
 - `packages/core`: operations, Zod schemas, permissions and `AppError`/`Result`. The single source of truth for logic.
 - `packages/db`: Prisma schema, migrations and org-scoped client.
 - `packages/auth`: Better Auth configuration and shared session and permission resolution.
