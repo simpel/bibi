@@ -41,6 +41,7 @@ erDiagram
   Customer ||--o{ Booking : "orders"
   Customer ||--o{ Item : "owns packages"
   Booking ||--o{ InboundEmail : "receives replies as"
+  Booking ||--o{ Payment : "is paid with"
   EntityType ||--o{ FieldDefinition : "has"
   EntityType ||--o{ Item : "classifies"
   Vocabulary ||--o{ VocabularyValue : "has"
@@ -638,20 +639,26 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `1:N` is paid with → Payment
 - `N:1` Invoice offsets this
 
-### Payment ★
+### Payment ★ (`Payment`)
 
-*MVP* · Incoming payment via Swish, card or invoice.
+*MVP* · A payment requested from the booking's customer: a card checkout or a Stripe invoice ([ADR 0028](decisions/0028-payments-with-stripe.md), [ADR 0029](decisions/0029-invoicing-via-stripe.md)). Every payment is a direct charge on the organization's connected account (`PaymentAccount`), so the venue is the merchant and Okazi never holds its funds.
 
 **Attributes**
-- method (Swish / card / invoice)
-- PSP reference
-- amount
-- time
-- refund
+- method: `CARD` (hosted checkout link) or `INVOICE` (Stripe invoice emailed to the customer); Swish comes later through Stripe
+- status: `PENDING`, `SUCCEEDED`, `FAILED`, `CANCELLED` or `REFUNDED`
+- amount and currency (`amountMinor` in minor units, ISO 4217)
+- application fee (`applicationFeeMinor`, null = none; from `STRIPE_APPLICATION_FEE_BPS`)
+- PSP reference (`providerReference`: the Checkout Session or Invoice id, unique)
+- payment link (`paymentUrl`) and, for a checkout, when it expires
+- paid at
+- refunded so far (`refundedMinor`)
 
 **Relations**
-- `N:1` Deposit is paid with this
-- `N:1` Invoice is settled with this
+- `N:1` Booking is paid with this
+- `N:1` Deposit is paid with this (not built yet)
+- `N:1` Invoice is settled with this (not built yet)
+
+> Operations: `payment.list` (per booking, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ bookingId, method, amountMinor, currency?, description? })` (`payment:write`), on every surface (GraphQL also as `Booking.payments`; web on the booking page). `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), a booking that is not cancelled, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The status is updated by the Stripe webhook (issue #119).
 
 > ★ Swish and card directly in the booking. Lega shows no online payment.
 

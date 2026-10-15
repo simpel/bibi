@@ -13,6 +13,7 @@ import { itemOperations } from "./features/item/operations";
 import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
 import { occupancyOperations } from "./features/occupancy/operations";
+import { paymentOperations } from "./features/payment/operations";
 import { paymentAccountOperations } from "./features/payment-account/operations";
 import { roleOperations } from "./features/role/operations";
 import { setupOperations } from "./features/setup/operations";
@@ -45,6 +46,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...bookingSeriesOperations,
     ...inboundEmailOperations,
     ...paymentAccountOperations,
+    ...paymentOperations,
     ...conversationOperations,
     ...messageOperations,
     ...skillOperations,

@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { BookingInbox } from "@/features/inbound-email/ui/booking-inbox";
+import { BookingPayments } from "@/features/payment/ui/booking-payments";
 import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -16,11 +17,11 @@ import { BookingFacts } from "./booking-facts";
 
 export type BookingDetailProps = { locale: Locale; id: string };
 
-/** Booking detail page body: facts with edit and change owners, then the received mails. */
+/** Booking detail page body: facts with edit and change owners, payments, then the received mails. */
 export async function BookingDetail({ locale, id }: BookingDetailProps) {
   const common = await getTranslations("common");
   const t = await getTranslations("booking");
-  const { bookingWrite } = await getCallerAbilities();
+  const { bookingWrite, paymentRead, paymentWrite } = await getCallerAbilities();
   const [booking, data] = await Promise.all([
     runOperation({ operation: getBooking, input: { id } }),
     loadBookingData(),
@@ -46,6 +47,9 @@ export async function BookingDetail({ locale, id }: BookingDetailProps) {
         actions={actions}
       />
       <BookingFacts booking={booking.value} data={data.value} />
+      {paymentRead ? (
+        <BookingPayments locale={locale} bookingId={id} canRequest={paymentWrite} />
+      ) : null}
       <BookingInbox locale={locale} bookingId={id} address={booking.value.inboundAddress} />
     </div>
   );

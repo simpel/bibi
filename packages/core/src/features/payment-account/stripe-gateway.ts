@@ -1,7 +1,7 @@
 import { getEnv } from "@okazi/config";
 import { z } from "zod";
-import { AppError } from "../../errors/app-error";
-import { err, ok } from "../../errors/result";
+import { ok } from "../../errors/result";
+import { stripeBadResponse as badResponse } from "../payment/stripe-bad-response";
 import type { StripeConnectGateway } from "./gateway";
 import { stripeRequest } from "./stripe-request";
 
@@ -21,12 +21,6 @@ const AccountSchema = z.object({
 });
 
 const AccountLinkSchema = z.object({ url: z.string(), expires_at: z.string() });
-
-type BadResponseInput = { what: string };
-const badResponse = ({ what }: BadResponseInput) =>
-  err({
-    error: new AppError({ code: "INTERNAL", message: `Unexpected Stripe ${what} response.` }),
-  });
 
 function capabilityToStatus({ status }: { status: string | undefined }) {
   if (status === "active") return "ACTIVE" as const;

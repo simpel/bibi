@@ -1344,6 +1344,31 @@
       "SYSTEM": "Systemet"
     }
   },
+  "payment": {
+    "singular": "Betalning",
+    "plural": "Betalningar",
+    "empty": "Inga betalningar begärda ännu.",
+    "request": "Begär betalning",
+    "requestDescription": "Debiteras direkt på ert Stripe-konto. Kortbetalning ger en länk att skicka till kunden; en faktura mejlas till kundens e-postadress.",
+    "created": "Betalningen har begärts.",
+    "openLink": "Öppna betalningslänken",
+    "fields": {
+      "method": "Betalsätt",
+      "amount": "Belopp (kr)",
+      "description": "Text till kunden"
+    },
+    "method": {
+      "CARD": "Kort",
+      "INVOICE": "Faktura"
+    },
+    "status": {
+      "PENDING": "Väntar",
+      "SUCCEEDED": "Betald",
+      "FAILED": "Misslyckad",
+      "CANCELLED": "Avbruten",
+      "REFUNDED": "Återbetald"
+    }
+  },
   "paymentAccount": {
     "title": "Betalningar",
     "description": "Koppla organisationen till Stripe så att kunderna betalar er direkt. Okazi håller aldrig era pengar.",

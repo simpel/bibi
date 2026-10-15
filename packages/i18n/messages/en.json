@@ -1344,6 +1344,31 @@
       "SYSTEM": "System"
     }
   },
+  "payment": {
+    "singular": "Payment",
+    "plural": "Payments",
+    "empty": "No payments requested yet.",
+    "request": "Request payment",
+    "requestDescription": "Charged directly on your Stripe account. A card payment gives a link to send to the customer; an invoice is emailed to the customer's email address.",
+    "created": "The payment has been requested.",
+    "openLink": "Open payment link",
+    "fields": {
+      "method": "Method",
+      "amount": "Amount (SEK)",
+      "description": "Text for the customer"
+    },
+    "method": {
+      "CARD": "Card",
+      "INVOICE": "Invoice"
+    },
+    "status": {
+      "PENDING": "Pending",
+      "SUCCEEDED": "Paid",
+      "FAILED": "Failed",
+      "CANCELLED": "Cancelled",
+      "REFUNDED": "Refunded"
+    }
+  },
   "paymentAccount": {
     "title": "Payments",
     "description": "Connect your organization to Stripe so customers pay you directly. Okazi never holds your funds.",

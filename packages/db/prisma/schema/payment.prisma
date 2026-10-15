@@ -1,0 +1,57 @@
+/// A payment requested from the customer for a booking (ADR 0028, 0029): a card checkout or a
+/// Stripe invoice, charged directly on the organization's connected account (direct charge, the
+/// venue is the merchant). Created by `payment.create`; the status follows the provider (webhook).
+/// Never deleted: `status` is its lifecycle. Deposit and Invoice link here once they exist.
+model Payment {
+  id                  String        @id @default(cuid(2))
+  organizationId      String
+  bookingId           String
+  method              PaymentMethod
+  status              PaymentStatus @default(PENDING)
+  /// Amount in minor units (öre for SEK).
+  amountMinor         Int
+  /// ISO 4217, upper case.
+  currency            String        @default("SEK")
+  /// Okazi's application fee on the charge in minor units; null = no fee.
+  applicationFeeMinor Int?
+  /// Connected account the charge was made on (`acct_...`).
+  providerAccountId   String
+  /// PSP reference: the Stripe Checkout Session (`cs_...`) or Invoice (`in_...`) id.
+  providerReference   String
+  /// Where the customer pays: the hosted checkout page or the hosted invoice page.
+  paymentUrl          String?
+  /// When the hosted checkout stops accepting payment; null for invoices.
+  expiresAt           DateTime?
+  /// Set when the provider reports the payment as completed.
+  paidAt              DateTime?
+  /// Refunded so far, in minor units.
+  refundedMinor       Int           @default(0)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  createdBy           String?
+  booking             Booking       @relation(fields: [bookingId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([providerReference])
+  @@index([organizationId, bookingId])
+}
+
+enum PaymentMethod {
+  /// Card (and later Stripe's other wallet methods) through a hosted checkout.
+  CARD
+  /// A Stripe invoice sent to the customer, paid by bank transfer or card.
+  INVOICE
+}
+
+enum PaymentStatus {
+  /// Requested, not paid yet.
+  PENDING
+  /// Paid in full.
+  SUCCEEDED
+  /// The provider reported the payment as failed.
+  FAILED
+  /// The checkout expired or the invoice was voided before payment.
+  CANCELLED
+  /// Paid and then refunded in full.
+  REFUNDED
+}

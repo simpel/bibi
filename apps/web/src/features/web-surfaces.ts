@@ -53,6 +53,8 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "booking.assign", route: "/bookings/[id]" },
   { operation: "booking.changeStatus", route: "/bookings/[id]" },
   { operation: "inboundEmail.list", route: "/bookings/[id]" },
+  { operation: "payment.list", route: "/bookings/[id]" },
+  { operation: "payment.create", route: "/bookings/[id]" },
   { operation: "bookingSeries.list", route: "/booking-series" },
   { operation: "bookingSeries.create", route: "/booking-series" },
   { operation: "bookingSeries.get", route: "/booking-series/[id]" },

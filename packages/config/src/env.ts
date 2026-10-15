@@ -28,6 +28,11 @@ const envSchema = z
       .string()
       .regex(/^acct_[A-Za-z0-9]+$/)
       .optional(),
+    /**
+     * Okazi's application fee on every payment, in basis points of the amount (250 = 2.5 %).
+     * Unset or 0: no fee (ADR 0028; the pricing model is not decided yet).
+     */
+    STRIPE_APPLICATION_FEE_BPS: z.coerce.number().int().min(0).max(10_000).optional(),
     AI_GATEWAY_API_KEY: z.string().optional(),
     WEB_URL: z.string().url().default("http://localhost:3000"),
     MCP_URL: z.string().url().default("http://localhost:3001"),

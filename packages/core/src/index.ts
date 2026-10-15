@@ -57,6 +57,9 @@ export * from "./features/member/operations";
 export * from "./features/message/operations";
 export * from "./features/occupancy/operations";
 export * from "./features/occupancy/write-operations";
+export * from "./features/payment/memory-provider";
+export * from "./features/payment/operations";
+export * from "./features/payment/provider-registry";
 export * from "./features/payment-account/gateway-registry";
 export * from "./features/payment-account/operations";
 export * from "./features/role/lifecycle-operations";
@@ -122,11 +125,7 @@ export * from "./platform/ai-settings/schema";
 export { type CreatePlatformContextInput, createPlatformContext } from "./platform/context";
 export { definePlatformOperation } from "./platform/define-platform-operation";
 export { type ExecutePlatformInput, executePlatform } from "./platform/execute-platform";
-export {
-  type CreatePlatformOperationsInput,
-  createPlatformOperations,
-  type PlatformOperations,
-} from "./platform/platform-operations";
+export * from "./platform/platform-operations";
 export * from "./platform/system-log/schema";
 export type {
   AnyPlatformOperation,

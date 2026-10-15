@@ -51,3 +51,5 @@ PW_CHROMIUM_PATH=/Users/joelsanden/Library/Caches/ms-playwright/chromium-1223/ch
 # answer UNAVAILABLE until both are set.
 STRIPE_SECRET_KEY=
 STRIPE_PLATFORM_ACCOUNT_ID=
+# Okazi's application fee in basis points of each payment (250 = 2.5 %); empty = no fee.
+STRIPE_APPLICATION_FEE_BPS=

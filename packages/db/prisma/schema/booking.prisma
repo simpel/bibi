@@ -39,6 +39,7 @@ model Booking {
   bookingStatus       BookingStatus @relation(fields: [bookingStatusId, organizationId], references: [id, organizationId])
   series              BookingSeries? @relation(fields: [seriesId, organizationId], references: [id, organizationId])
   inboundEmails       InboundEmail[]
+  payments            Payment[]
 
   @@unique([id, organizationId])
   @@unique([organizationId, reference])

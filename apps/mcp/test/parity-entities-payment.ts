@@ -1,15 +1,20 @@
-import { ok, setStripeConnectGateway } from "@okazi/core";
+import {
+  createMemoryPaymentProvider,
+  ok,
+  setPaymentProvider,
+  setStripeConnectGateway,
+} from "@okazi/core";
 import { createId } from "@paralleldrive/cuid2";
-import { type ParityEntity, tool } from "./parity-entities";
+import { byId, type ParityEntity, tool } from "./parity-entities";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
 /** Stripe stand-in: the account is created through the real operation, only Stripe is faked. */
-function installFakeStripe(): void {
+function installFakeStripe({ status = "ONBOARDING" }: { status?: "ONBOARDING" | "ACTIVE" } = {}) {
   setStripeConnectGateway({
     gateway: {
       createAccount: async () => ok({ value: { stripeAccountId: `acct_${createId()}` } }),
-      getAccountStatus: async () => ok({ value: { status: "ONBOARDING" } }),
+      getAccountStatus: async () => ok({ value: { status } }),
       createOnboardingLink: async ({ stripeAccountId }) =>
         ok({
           value: {
@@ -36,3 +41,24 @@ export const paymentAccountEntity: ParityEntity = {
     return (await gqlQuery({ context, query, variables: {} })).paymentAccount;
   },
 };
+
+/** A card payment on the booking: the account is synced to ACTIVE and the PSP kept in memory. */
+export function paymentEntity(): ParityEntity {
+  const reads = byId({
+    name: "payment",
+    field: "payment",
+    list: "payments",
+    createTool: "payment_create",
+    args: {},
+  });
+  return {
+    ...reads,
+    create: async ({ mcp, made }) => {
+      installFakeStripe({ status: "ACTIVE" });
+      setPaymentProvider({ provider: createMemoryPaymentProvider() });
+      await tool({ mcp, name: "paymentAccount_sync", args: {} });
+      const args = { bookingId: made.booking.id, method: "CARD", amountMinor: 50_000 };
+      return tool({ mcp, name: "payment_create", args });
+    },
+  };
+}

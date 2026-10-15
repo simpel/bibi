@@ -31,6 +31,8 @@ import { MemberTableView } from "./member-table-view";
 import { OccupancyCardView } from "./occupancy-card-view";
 import { OccupancyTableView } from "./occupancy-table-view";
 import { PaymentAccountCardView } from "./payment-account-card-view";
+import { PaymentCardView } from "./payment-card-view";
+import { PaymentTableView } from "./payment-table-view";
 import { RoleCardView } from "./role-card-view";
 import { RoleTableView } from "./role-table-view";
 import { SearchResultsView } from "./search-results-view";
@@ -70,6 +72,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "inbound-email-table": InboundEmailTableView,
   "inbound-email-card": InboundEmailCardView,
   "payment-account-card": PaymentAccountCardView,
+  "payment-table": PaymentTableView,
+  "payment-card": PaymentCardView,
   "entity-type-table": EntityTypeTableView,
   "entity-type-card": EntityTypeCardView,
   "field-definition-table": FieldDefinitionTableView,

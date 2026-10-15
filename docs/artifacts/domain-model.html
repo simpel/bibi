@@ -203,7 +203,7 @@ const E = [
   {id:"pricerow",d:"money",n:"PriceListItem",p:"MVP",s:"Price per item in a price list.",a:["price list","item","price"]},
   {id:"line",d:"money",n:"OrderLine",p:"MVP",s:"What is actually charged. Copies name, price, VAT and tags.",a:["item","count","unit price","discount","VAT","program item","status (quoted / confirmed / delivered)","invoiced (yes/no)"]},
   {id:"deposit",d:"money",n:"Deposit",p:"MVP",s:"A partial payment at confirmation.",a:["amount","due date","status","linked agreement"]},
-  {id:"payment",d:"money",n:"Payment",p:"MVP",s:"Incoming payment via Swish, card or invoice.",a:["method (Swish / card / invoice)","PSP reference","amount","time","refund"],x:"Swish and card directly in the booking. Lega shows no online payment."},
+  {id:"payment",d:"money",n:"Payment",p:"MVP",s:"A payment requested from the booking's customer: a card checkout or a Stripe invoice, charged directly on the organization's connected account (ADR 0028, 0029).",a:["booking","method (CARD / INVOICE; Swish later through Stripe)","status (PENDING, SUCCEEDED, FAILED, CANCELLED, REFUNDED)","amount and currency (amountMinor, minor units)","application fee (applicationFeeMinor, null = none; STRIPE_APPLICATION_FEE_BPS)","PSP reference (Checkout Session or Invoice id, unique)","payment link and its expiry","paid at","refunded so far (refundedMinor)"],x:"payment.list (per booking) / payment.get (payment:read), payment.create (payment:write) through the PaymentProvider interface (Stripe adapter; direct charges with Stripe-Account). Needs an ACTIVE payment account; INVOICE needs a customer email. Swish and card directly in the booking. Lega shows no online payment."},
   {id:"invoice",d:"money",n:"Invoice",p:"MVP",s:"The final invoice after delivery (COMPLETED phase).",a:["invoice number","due date","status","offset deposit","export status (Fortnox / Visma)","e-invoice"]},
 
   // Operations
@@ -232,7 +232,7 @@ const R = [
   ["venue","item","1:N","has"],["item","block","1:N","has"],
   ["item","component","1:N","contains"],["item","choice","1:N","has"],["choice","component","1:N","groups"],["item","vocab","N:M","is tagged with value in"],["line","item","N:1","refers to"],["pricelist","pricerow","1:N","contains"],["pricerow","item","N:1","refers to"],
   ["deposit","payment","1:N","is paid with"],["invoice","payment","1:N","is settled with"],["invoice","line","1:N","invoices"],["invoice","deposit","1:N","offsets"],
-  ["user","auditlog","1:N","makes changes in"],["user","task","1:N","is responsible for"],["function","task","1:N","requires"],["inboundemail","booking","N:1","is a reply on"],["message","booking","N:0..1","concerns"],["message","lead","N:0..1","concerns"],["screen","item","N:1","is placed at"],["access","function","N:1","opens for"]
+  ["user","auditlog","1:N","makes changes in"],["user","task","1:N","is responsible for"],["function","task","1:N","requires"],["inboundemail","booking","N:1","is a reply on"],["payment","booking","N:1","is paid for"],["message","booking","N:0..1","concerns"],["message","lead","N:0..1","concerns"],["screen","item","N:1","is placed at"],["access","function","N:1","opens for"]
 ];
 
 const FLOW = [["Inquiry","sales"],["Option","sales"],["Quote","sales"],["Signing (later)","sales"],["Booking","booking"],["Program items","booking"],["Requirements","booking"],["Sheets","food"],["Delivery","space"],["Invoice","money"],["Fortnox / Visma","money"]];
