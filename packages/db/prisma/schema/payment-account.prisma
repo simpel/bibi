@@ -1,0 +1,26 @@
+/// Where the organization gets paid: its Stripe connected account (Accounts v2, ADR 0028). One per
+/// organization, created by `paymentAccount.startOnboarding`. Okazi never holds venue funds.
+/// `status` mirrors the account's card payments capability and is refreshed by
+/// `paymentAccount.sync`; no row at all means "not connected".
+model PaymentAccount {
+  id              String               @id @default(cuid(2))
+  organizationId  String
+  stripeAccountId String
+  status          PaymentAccountStatus @default(ONBOARDING)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  createdBy       String?
+
+  @@unique([id, organizationId])
+  @@unique([organizationId])
+  @@unique([stripeAccountId])
+}
+
+enum PaymentAccountStatus {
+  /// Created, onboarding not finished (card payments not active yet).
+  ONBOARDING
+  /// Card payments are active; the venue can be paid.
+  ACTIVE
+  /// Stripe restricted card payments (e.g. missing or failed verification).
+  RESTRICTED
+}

@@ -6,6 +6,7 @@ import {
   CircleDotIcon,
   ClipboardListIcon,
   ContactIcon,
+  CreditCardIcon,
   LayoutGridIcon,
   ListIcon,
   type LucideIcon,
@@ -31,7 +32,8 @@ export type NavItem = {
     | "sheets"
     | "bookingStatuses"
     | "roles"
-    | "members";
+    | "members"
+    | "payments";
   icon: LucideIcon;
 };
 
@@ -50,4 +52,5 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: ROUTES.settingsBookingStatuses, labelKey: "bookingStatuses", icon: CircleDotIcon },
   { href: ROUTES.settingsRoles, labelKey: "roles", icon: ShieldIcon },
   { href: ROUTES.settingsMembers, labelKey: "members", icon: UsersIcon },
+  { href: ROUTES.settingsPayments, labelKey: "payments", icon: CreditCardIcon },
 ];

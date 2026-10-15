@@ -23,6 +23,7 @@ export * from "./features/item/schema";
 export * from "./features/member/schema";
 export * from "./features/message/schema";
 export * from "./features/occupancy/schema";
+export * from "./features/payment-account/schema";
 export * from "./features/role/schema";
 export * from "./features/setup/schema";
 export * from "./features/sheet-definition/schema";

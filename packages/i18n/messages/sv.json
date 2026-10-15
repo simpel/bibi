@@ -129,6 +129,7 @@
     "commandBar": "Kommandofält",
     "roles": "Roller",
     "members": "Medlemmar",
+    "payments": "Betalningar",
     "bookingStatuses": "Bokningsstatusar"
   },
   "venue": {
@@ -909,6 +910,11 @@
           "headcount": "Antal"
         }
       },
+      "paymentAccount": {
+        "singular": "Utbetalningskonto",
+        "onboardingLink": "Fortsätt hos Stripe",
+        "open": "Öppna betalningsinställningar"
+      },
       "bookingSeries": {
         "singular": "Bokningsserie",
         "empty": "Inga bokningsserier hittades.",
@@ -1301,7 +1307,8 @@
       "skill": "Färdigheter",
       "role": "Roller",
       "member": "Medlemmar",
-      "audit": "Ändringshistorik (granskningslogg)"
+      "audit": "Ändringshistorik (granskningslogg)",
+      "payment": "Betalningar (Stripe-utbetalningskonto)"
     },
     "saving": "Sparar roll…",
     "archiving": "Arkiverar roll…",
@@ -1320,6 +1327,30 @@
       "AI": "Assistenten",
       "SYSTEM": "Systemet"
     }
+  },
+  "paymentAccount": {
+    "title": "Betalningar",
+    "description": "Koppla organisationen till Stripe så att kunderna betalar er direkt. Okazi håller aldrig era pengar.",
+    "stripe": "Stripe-utbetalningskonto",
+    "status": {
+      "NOT_CONNECTED": "Inte kopplat",
+      "ONBOARDING": "Registrering pågår",
+      "ACTIVE": "Aktivt",
+      "RESTRICTED": "Begränsat"
+    },
+    "hint": {
+      "NOT_CONNECTED": "Koppla till Stripe för att ta emot betalningar. Du skickas till Stripe för att verifiera ert företag.",
+      "ONBOARDING": "Registreringen hos Stripe är inte klar. Fortsätt där du slutade och uppdatera sedan statusen.",
+      "ACTIVE": "Ert konto kan ta emot kortbetalningar.",
+      "RESTRICTED": "Stripe har begränsat kortbetalningar på kontot. Fortsätt registreringen och lämna de uppgifter Stripe ber om."
+    },
+    "connect": "Koppla till Stripe",
+    "continueOnboarding": "Fortsätt registreringen",
+    "refresh": "Uppdatera status",
+    "starting": "Förbereder registrering hos Stripe…",
+    "redirecting": "Öppnar Stripe…",
+    "refreshing": "Uppdaterar status…",
+    "refreshed": "Betalningsstatusen har uppdaterats."
   },
   "inboundEmail": {
     "title": "Mottagen e-post",

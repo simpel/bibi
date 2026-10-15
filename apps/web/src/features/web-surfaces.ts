@@ -116,6 +116,9 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "member.invite", route: "/settings/members" },
   { operation: "member.listInvitations", route: "/settings/members" },
   { operation: "member.cancelInvitation", route: "/settings/members" },
+  { operation: "paymentAccount.get", route: "/settings/payments" },
+  { operation: "paymentAccount.startOnboarding", route: "/settings/payments" },
+  { operation: "paymentAccount.sync", route: "/settings/payments" },
   // The history tab on venue and item detail pages (and later every entity's detail page).
   { operation: "auditLog.list", route: "/items/[id]" },
   // `/api/chat` creates chats and appends messages as the user; the panel lists, opens, renames.

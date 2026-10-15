@@ -5,6 +5,7 @@ import { markExposed } from "./exposed-operations";
 import { inputFromSchema } from "./input-from-schema";
 import { runOperation } from "./run-operation";
 import { stripNulls } from "./strip-nulls";
+import { objectShapes } from "./zod-shape";
 
 /** Erased on purpose: the operation output is validated by core, not by the TS ref pairing. */
 type OutputRef = ObjectRefOf<unknown>;
@@ -43,6 +44,18 @@ export function fieldFromOperation({ operation, type, name }: FromOperationInput
 export function mutationFromOperation({ operation, type, name }: FromOperationInput): void {
   markExposed({ name: operation.name });
   const fieldName = name ?? fieldNameOf({ operation });
+  if (objectShapes({ schema: operation.input }).length === 0) {
+    // An empty GraphQL input object is invalid, so an operation without input takes no argument.
+    builder.mutationField(fieldName, (t) =>
+      t.field({
+        type,
+        description: operation.description,
+        resolve: async (_parent, _args, ctx) =>
+          (await runOperation({ operation, input: {}, ctx })) as never,
+      }),
+    );
+    return;
+  }
   const inputName = `${fieldName.charAt(0).toUpperCase()}${fieldName.slice(1)}Input`;
   const inputType = inputFromSchema({ name: inputName, schema: operation.input });
   builder.mutationField(fieldName, (t) =>

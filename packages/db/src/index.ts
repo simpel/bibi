@@ -40,6 +40,7 @@ export {
   type Occupancy,
   OccupancyType,
   type OrganizationRole,
+  type PaymentAccount,
   PriceUnit,
   Prisma,
   RecordStatus,

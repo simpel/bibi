@@ -740,6 +740,16 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 > Operations: `inboundEmail.list` (per booking, newest first) and `inboundEmail.get`, permission `booking:read`, on every surface (GraphQL also as `Booking.inboundEmails`). `inboundEmail.receive` is SYSTEM only and deliberately has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received mail.
 
+### PaymentAccount (`PaymentAccount`)
+
+*MVP* · The organization's Stripe Connect payout account ([ADR 0028](decisions/0028-payments-with-stripe.md)): one connected account per organization, created with Stripe's Accounts v2 API, so venues are paid directly and Okazi never holds their funds. No row means "not connected". Created by `paymentAccount.startOnboarding`, which also returns a short-lived Stripe onboarding link.
+
+**Attributes**
+- Stripe account id (unique)
+- status: onboarding, active or restricted (mirrors the card payments capability; shown as not connected when there is no row)
+
+> Operations: `paymentAccount.get` (permission `payment:read`), `paymentAccount.startOnboarding` (`payment:admin`) and `paymentAccount.sync` (`payment:write`, refreshes the status from Stripe), on every surface. The web app offers them under Settings, Payments. The platform account id and secret key come from `@okazi/config` (`STRIPE_PLATFORM_ACCOUNT_ID`, `STRIPE_SECRET_KEY`).
+
 ### Communication & log
 
 *Phase 2* · Email, notes and change history. Status history comes from `AuditLog`.

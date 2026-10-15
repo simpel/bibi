@@ -46,3 +46,8 @@ LOG_FORMAT=
 # Days the SystemLog table (admin view) keeps rows. Default 30.
 SYSTEM_LOG_RETENTION_DAYS=
 PW_CHROMIUM_PATH=/Users/joelsanden/Library/Caches/ms-playwright/chromium-1223/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing
+
+# Stripe Connect (ADR 0028): platform secret key and the platform account id. Payment operations
+# answer UNAVAILABLE until both are set.
+STRIPE_SECRET_KEY=
+STRIPE_PLATFORM_ACCOUNT_ID=

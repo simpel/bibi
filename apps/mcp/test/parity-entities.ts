@@ -5,6 +5,7 @@ import { accessEntities } from "./parity-entities-access";
 import { bookingEntities } from "./parity-entities-booking";
 import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
+import { paymentAccountEntity } from "./parity-entities-payment";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
@@ -130,4 +131,5 @@ export const ENTITIES: ParityEntity[] = [
     },
   }),
   ...accessEntities(),
+  paymentAccountEntity,
 ];

@@ -129,7 +129,8 @@
     "commandBar": "Command bar",
     "roles": "Roles",
     "members": "Members",
-    "bookingStatuses": "Booking statuses"
+    "bookingStatuses": "Booking statuses",
+    "payments": "Payments"
   },
   "venue": {
     "singular": "Venue",
@@ -909,6 +910,11 @@
           "headcount": "Headcount"
         }
       },
+      "paymentAccount": {
+        "singular": "Payout account",
+        "onboardingLink": "Continue on Stripe",
+        "open": "Open payment settings"
+      },
       "bookingSeries": {
         "singular": "Booking series",
         "empty": "No booking series found.",
@@ -1301,7 +1307,8 @@
       "skill": "Skills",
       "role": "Roles",
       "member": "Members",
-      "audit": "Change history (audit log)"
+      "audit": "Change history (audit log)",
+      "payment": "Payments (Stripe payout account)"
     },
     "saving": "Saving role…",
     "archiving": "Archiving role…",
@@ -1320,6 +1327,30 @@
       "AI": "Assistant",
       "SYSTEM": "System"
     }
+  },
+  "paymentAccount": {
+    "title": "Payments",
+    "description": "Connect your organization to Stripe so customers pay you directly. Okazi never holds your funds.",
+    "stripe": "Stripe payout account",
+    "status": {
+      "NOT_CONNECTED": "Not connected",
+      "ONBOARDING": "Onboarding",
+      "ACTIVE": "Active",
+      "RESTRICTED": "Restricted"
+    },
+    "hint": {
+      "NOT_CONNECTED": "Connect to Stripe to start taking payments. You will be sent to Stripe to verify your business.",
+      "ONBOARDING": "Onboarding with Stripe is not finished yet. Continue where you left off, then refresh the status.",
+      "ACTIVE": "Your account can take card payments.",
+      "RESTRICTED": "Stripe has restricted card payments on this account. Continue onboarding to provide what Stripe asks for."
+    },
+    "connect": "Connect to Stripe",
+    "continueOnboarding": "Continue onboarding",
+    "refresh": "Refresh status",
+    "starting": "Preparing Stripe onboarding…",
+    "redirecting": "Opening Stripe…",
+    "refreshing": "Refreshing status…",
+    "refreshed": "The payment status has been refreshed."
   },
   "inboundEmail": {
     "title": "Received email",

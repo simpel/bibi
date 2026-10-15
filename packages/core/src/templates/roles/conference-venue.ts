@@ -67,6 +67,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         role: ["admin"],
         member: ["admin"],
         audit: ["admin"],
+        payment: ["admin"],
       },
     },
     {

@@ -30,6 +30,7 @@ import { MemberCardView } from "./member-card-view";
 import { MemberTableView } from "./member-table-view";
 import { OccupancyCardView } from "./occupancy-card-view";
 import { OccupancyTableView } from "./occupancy-table-view";
+import { PaymentAccountCardView } from "./payment-account-card-view";
 import { RoleCardView } from "./role-card-view";
 import { RoleTableView } from "./role-table-view";
 import { SearchResultsView } from "./search-results-view";
@@ -68,6 +69,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "booking-series-card": BookingSeriesCardView,
   "inbound-email-table": InboundEmailTableView,
   "inbound-email-card": InboundEmailCardView,
+  "payment-account-card": PaymentAccountCardView,
   "entity-type-table": EntityTypeTableView,
   "entity-type-card": EntityTypeCardView,
   "field-definition-table": FieldDefinitionTableView,

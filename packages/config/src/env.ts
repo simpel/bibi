@@ -21,6 +21,13 @@ const envSchema = z
       .string()
       .regex(/^[a-z0-9.-]+\.[a-z]{2,}$/i)
       .optional(),
+    /** Platform Stripe secret key (`sk_...`) for Connect (ADR 0028); payment operations are UNAVAILABLE without it. */
+    STRIPE_SECRET_KEY: z.string().min(1).optional(),
+    /** Id of Okazi's own Stripe platform account (`acct_...`), recorded on every connected account. */
+    STRIPE_PLATFORM_ACCOUNT_ID: z
+      .string()
+      .regex(/^acct_[A-Za-z0-9]+$/)
+      .optional(),
     AI_GATEWAY_API_KEY: z.string().optional(),
     WEB_URL: z.string().url().default("http://localhost:3000"),
     MCP_URL: z.string().url().default("http://localhost:3001"),

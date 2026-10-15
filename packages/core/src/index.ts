@@ -57,6 +57,8 @@ export * from "./features/member/operations";
 export * from "./features/message/operations";
 export * from "./features/occupancy/operations";
 export * from "./features/occupancy/write-operations";
+export * from "./features/payment-account/gateway-registry";
+export * from "./features/payment-account/operations";
 export * from "./features/role/lifecycle-operations";
 export * from "./features/role/operations";
 export * from "./features/role/read-operations";
