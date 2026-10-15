@@ -1,4 +1,5 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
+import type { BookingStatusWire } from "./booking-status-entries";
 import type {
   ContactWire,
   CustomerWire,
@@ -32,6 +33,8 @@ export type ToolUiProps = {
   "contact-card": { contact: ContactWire };
   "occupancy-table": { items: OccupancyWire[]; nextCursor: string | null };
   "occupancy-card": { occupancy: OccupancyWire };
+  "booking-status-table": { items: BookingStatusWire[]; nextCursor: string | null };
+  "booking-status-card": { status: BookingStatusWire };
   "entity-type-table": { items: EntityTypeWire[]; nextCursor: string | null };
   "entity-type-card": { entityType: EntityTypeWire };
   "field-definition-table": { items: FieldDefinitionWire[]; nextCursor: string | null };
@@ -70,6 +73,8 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "contact-card",
   "occupancy-table",
   "occupancy-card",
+  "booking-status-table",
+  "booking-status-card",
   "entity-type-table",
   "entity-type-card",
   "field-definition-table",

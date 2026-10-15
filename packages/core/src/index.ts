@@ -13,6 +13,11 @@ export { type Err, err, type Ok, ok, type Result } from "./errors/result";
 export { type GraphqlErrorExtensions, toGraphqlExtensions } from "./errors/to-graphql-extensions";
 export { toHttpStatus } from "./errors/to-http-status";
 export { type McpErrorResult, toMcpError } from "./errors/to-mcp-error";
+export * from "./features/booking-status/import-template-operation";
+export * from "./features/booking-status/order-operations";
+export * from "./features/booking-status/read-operations";
+export * from "./features/booking-status/schema";
+export * from "./features/booking-status/write-operations";
 export * from "./features/configuration/operations";
 export * from "./features/configuration/schema";
 export * from "./features/contact/operations";
@@ -78,17 +83,8 @@ export { type AfterCommitHook, type AfterCommitInput, execute } from "./operatio
 export { hasPermission, type Permission } from "./operations/permission";
 export { getOperation, listOperations, registerOperations } from "./operations/registry";
 export { requiresApproval } from "./operations/requires-approval";
-export type {
-  Actor,
-  ActorKind,
-  AnyOperation,
-  HandlerInput,
-  Operation,
-  OperationContext,
-  OperationDefinition,
-  OperationKind,
-  RecordedChange,
-} from "./operations/types";
+export type * from "./operations/types";
+export { type ProvisionOrganizationInput, provisionOrganization } from "./organization/provision";
 export {
   grantAll,
   intersectPermissions,

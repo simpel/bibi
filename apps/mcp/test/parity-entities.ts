@@ -100,6 +100,13 @@ export const ENTITIES: ParityEntity[] = [
   ...configurationEntities(),
   ...customerEntities(),
   byId({
+    name: "bookingStatus",
+    field: "bookingStatus",
+    list: "booking-statuses",
+    createTool: "bookingStatus_create",
+    args: { name: "Parity status", color: "#22c55e", phase: "TENTATIVE" },
+  }),
+  byId({
     name: "conversation",
     field: "conversation",
     list: "conversations",

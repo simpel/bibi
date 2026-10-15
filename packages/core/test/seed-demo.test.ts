@@ -65,5 +65,9 @@ describe("seed:demo slices 1–4 (ADR 0025)", () => {
       "Fakturor Nordkust",
       "Karin Wallin",
     ]);
+    const statuses = await db.bookingStatus.count({
+      where: { organizationId: lind?.organizationId },
+    });
+    expect(statuses).toBe(4);
   });
 });

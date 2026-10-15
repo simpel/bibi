@@ -11,6 +11,11 @@ export {
   CardTitle,
 } from "./components/card/card";
 export { Checkbox, type CheckboxProps } from "./components/checkbox/checkbox";
+export {
+  ColorSwatch,
+  type ColorSwatchProps,
+  colorSwatchVariants,
+} from "./components/color-swatch/color-swatch";
 export { Combobox, type ComboboxProps } from "./components/combobox/combobox";
 export type { ComboboxOption } from "./components/combobox/combobox-groups";
 export {

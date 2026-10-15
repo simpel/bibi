@@ -11,12 +11,13 @@ const everyone: PermissionSet = {
   skill: ["write"],
 };
 
-/** Everyone reads the catalog and the configuration it is described by (ADR 0021). */
+/** Everyone reads the catalog, the configuration it is described by and the booking statuses. */
 const catalog: PermissionSet = {
   venue: ["read"],
   item: ["read"],
   occupancy: ["read"],
   configuration: ["read"],
+  bookingStatus: ["read"],
 };
 
 /** Customers and their contact persons (ADR 0022). */
@@ -52,6 +53,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         contact: ["admin"],
         occupancy: ["admin"],
         configuration: ["admin"],
+        bookingStatus: ["admin"],
         search: ["admin"],
         conversation: ["admin"],
         skill: ["admin"],

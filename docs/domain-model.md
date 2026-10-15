@@ -168,11 +168,11 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 *MVP* · The organization's own statuses for bookings. Each status belongs to a fixed phase that controls the system's rules ([ADR 0022](decisions/0022-sales-pipeline-and-booking-states.md)).
 
 **Attributes**
-- name
-- color
-- order
-- phase (`TENTATIVE` / `CONFIRMED` / `COMPLETED` / `CANCELLED`)
-- archived (a status in use can be archived but not deleted)
+- name (unique among the organization's active statuses)
+- color (hex, e.g. `#22c55e`)
+- order (`position`; phases stay in lifecycle order, and the first status of a phase is its default)
+- phase (`TENTATIVE` / `CONFIRMED` / `COMPLETED` / `CANCELLED`; fixed once created)
+- archived (a status in use can be archived but not deleted; the last status of a phase cannot be archived)
 
 **Relations**
 - `1:N` Booking has this
@@ -186,6 +186,8 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 | `CANCELLED` | Requires a reason. The occupancy is released and the cancellation terms apply. |
 
 > The organization defines the allowed transitions. The phase rules cannot be turned off. Reports group by phase, not by status.
+
+> Operations (`bookingStatus:admin` to change, `bookingStatus:read` to read): `bookingStatus.list|get|create|update|archive|reorder`, `bookingStatus.setTransitions` (replaces the targets of one status as a set) and `bookingStatus.importTemplate` (`default`: one status per phase; `conference-venue`: Tentative, Confirmed, Final count locked, Completed, Cancelled with every transition forward and to Cancelled until completed; existing names are skipped). Every new organization gets the `default` template from `provisionOrganization` as SYSTEM, run by Better Auth's `afterCreateOrganization` hook and by the demo seed.
 
 ### Role (`organizationRole`)
 

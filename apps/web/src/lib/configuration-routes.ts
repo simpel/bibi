@@ -21,3 +21,8 @@ export function vocabularyRoute({ id }: IdRouteInput): string {
 export function setupsRoute(): string {
   return ROUTES.settingsSetups;
 }
+
+/** `/settings/booking-statuses`: the organization's booking statuses (no detail page). */
+export function bookingStatusesRoute(): string {
+  return ROUTES.settingsBookingStatuses;
+}

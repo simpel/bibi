@@ -1,3 +1,4 @@
+import { bookingStatusOperations } from "./features/booking-status/operations";
 import { configurationOperations } from "./features/configuration/operations";
 import { contactOperations } from "./features/contact/operations";
 import { conversationOperations } from "./features/conversation/operations";
@@ -32,6 +33,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...customerOperations,
     ...contactOperations,
     ...occupancyOperations,
+    ...bookingStatusOperations,
     ...conversationOperations,
     ...messageOperations,
     ...skillOperations,

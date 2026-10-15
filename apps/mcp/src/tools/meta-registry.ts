@@ -1,3 +1,4 @@
+import { bookingStatusMcpTools } from "../features/booking-status/mcp";
 import { configurationMcpTools } from "../features/configuration/mcp";
 import { contactMcpTools } from "../features/contact/mcp";
 import { conversationMcpTools } from "../features/conversation/mcp";
@@ -29,6 +30,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...customerMcpTools,
     ...contactMcpTools,
     ...occupancyMcpTools,
+    ...bookingStatusMcpTools,
     ...conversationMcpTools,
     ...messageMcpTools,
     ...skillMcpTools,

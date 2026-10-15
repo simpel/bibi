@@ -15,6 +15,14 @@ describe("registry and approval", () => {
     registerOperations({ operations: createCoreOperations({ embed: fakeEmbed }) });
     registerOperations({ operations: [createVenue] });
     expect(listOperations().map((op) => op.name)).toEqual([
+      "bookingStatus.archive",
+      "bookingStatus.create",
+      "bookingStatus.get",
+      "bookingStatus.importTemplate",
+      "bookingStatus.list",
+      "bookingStatus.reorder",
+      "bookingStatus.setTransitions",
+      "bookingStatus.update",
       "configuration.importTemplate",
       "contact.archive",
       "contact.create",

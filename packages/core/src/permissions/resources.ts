@@ -13,6 +13,7 @@ export const RESOURCES = [
   "contact",
   "occupancy",
   "configuration",
+  "bookingStatus",
   "search",
   "conversation",
   "skill",

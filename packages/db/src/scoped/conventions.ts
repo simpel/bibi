@@ -36,6 +36,8 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Customer",
   "Contact",
   "Occupancy",
+  "BookingStatus",
+  "BookingStatusTransition",
   "Conversation",
   "Message",
   "Skill",
@@ -55,13 +57,15 @@ export const APP_ID_MODELS = new Set<string>([
 
 /**
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:
- * replacement sets owned by a parent (ItemSetup, ItemComponent; audited on the item), the derived
+ * replacement sets owned by a parent (ItemSetup, ItemComponent; audited on the item;
+ * BookingStatusTransition, audited on its from-status), the derived
  * search index (Embedding) and Better Auth membership rows (Member is deleted on removal,
  * Invitation has its own `status` lifecycle; core audits both).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
   "ItemSetup",
   "ItemComponent",
+  "BookingStatusTransition",
   "Embedding",
   "Member",
   "Invitation",

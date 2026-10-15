@@ -2,6 +2,7 @@ import { type Db, getDb } from "@okazi/db";
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import { createExecuteContext } from "../../operations/context";
+import { provisionOrganization } from "../../organization/provision";
 import { grantAll } from "../../permissions/permission-set";
 import { checkDemoOrg } from "./checks";
 import { lindholmen } from "./data/lindholmen/lindholmen";
@@ -27,6 +28,9 @@ type SeedOneInput = { db: Db; org: DemoOrg };
 async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
   await resetDemoOrg({ db, org });
   const { organizationId, members } = await bootstrapDemoOrg({ db, org });
+  // What Better Auth's afterCreateOrganization hook does for a real signup.
+  const provisioned = await provisionOrganization({ organizationId, db });
+  if (!provisioned.ok) return provisioned;
   const context = createExecuteContext({
     organizationId,
     roles: [],

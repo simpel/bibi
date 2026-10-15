@@ -3,6 +3,7 @@ import { APIError } from "better-auth/api";
 import { organization } from "better-auth/plugins";
 import { accessControl, orgRoles } from "../permissions";
 import { assertKnownRoles } from "./check-member-roles";
+import { provisionOrganizationHook } from "./provision-organization-hook";
 
 const closed = ({ operation }: { operation: string }): never => {
   throw new APIError("FORBIDDEN", { message: `Not allowed: use ${operation}` });
@@ -20,6 +21,8 @@ export function organizationPlugin() {
     // Custom roles per organization (ADR 0020). Rows are written by core `role.*` only.
     dynamicAccessControl: { enabled: true },
     organizationHooks: {
+      // Default booking statuses etc. are created by core as SYSTEM (ADR 0022).
+      afterCreateOrganization: provisionOrganizationHook,
       beforeAddMember: async ({ member }) => {
         await assertKnownRoles({ organizationId: member.organizationId, role: member.role });
       },

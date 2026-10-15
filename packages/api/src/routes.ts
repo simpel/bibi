@@ -1,3 +1,4 @@
+import { bookingStatusRoutes } from "./features/booking-status/rest";
 import { configurationRoutes } from "./features/configuration/rest";
 import { contactRoutes } from "./features/contact/rest";
 import { conversationRoutes } from "./features/conversation/rest";
@@ -29,6 +30,7 @@ export function listRestRoutes(): RestRoute[] {
     ...customerRoutes,
     ...contactRoutes,
     ...occupancyRoutes,
+    ...bookingStatusRoutes,
     ...conversationRoutes,
     ...messageRoutes,
     ...skillRoutes,

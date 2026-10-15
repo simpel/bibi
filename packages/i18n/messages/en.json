@@ -125,7 +125,8 @@
     "openMenu": "Open menu",
     "commandBar": "Command bar",
     "roles": "Roles",
-    "members": "Members"
+    "members": "Members",
+    "bookingStatuses": "Booking statuses"
   },
   "venue": {
     "singular": "Venue",
@@ -519,6 +520,55 @@
       "changeover": "Changeover"
     }
   },
+  "bookingStatus": {
+    "singular": "Booking status",
+    "plural": "Booking statuses",
+    "listDescription": "Your own statuses for bookings. Each belongs to a fixed phase that decides what the system allows; the first status of a phase is its default.",
+    "create": "Create status",
+    "edit": "Edit status",
+    "createDescription": "Name the status, pick a color and the phase it belongs to.",
+    "editDescription": "Change the name and color. The phase cannot be changed.",
+    "archive": "Archive status",
+    "archiveConfirm": "Do you want to archive the status {name}? Its transitions are removed.",
+    "archived": "The status has been archived.",
+    "created": "The status has been created.",
+    "updated": "The status has been updated.",
+    "empty": "No booking statuses yet.",
+    "emptyDescription": "Import the template to get started.",
+    "saving": "Saving status…",
+    "archiving": "Archiving status…",
+    "importTemplate": "Import conference venue template",
+    "importing": "Importing statuses…",
+    "imported": "{created} statuses created, {skipped} already existed.",
+    "editTransitions": "Edit transitions",
+    "transitionsDescription": "Choose which statuses a booking with the status {name} may move to.",
+    "transitionsSaved": "The transitions have been saved.",
+    "noTransitions": "None",
+    "noTargets": "There are no other statuses to move to.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "reordering": "Saving order…",
+    "reordered": "The order has been saved.",
+    "default": "Default",
+    "fields": {
+      "name": "Name",
+      "color": "Color",
+      "phase": "Phase",
+      "transitions": "May move to"
+    },
+    "columns": {
+      "name": "Name",
+      "phase": "Phase",
+      "transitions": "May move to",
+      "order": "Order"
+    },
+    "phases": {
+      "TENTATIVE": "Tentative",
+      "CONFIRMED": "Confirmed",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    }
+  },
   "assistant": {
     "title": "Assistant",
     "open": "Open the assistant",
@@ -745,6 +795,18 @@
         "open": "Open setups",
         "changeover": "Changeover {minutes} min",
         "columns": { "name": "Name", "changeover": "Changeover" }
+      },
+      "bookingStatus": {
+        "singular": "Booking status",
+        "empty": "No booking statuses found.",
+        "open": "Open booking statuses",
+        "archived": "Archived",
+        "transitions": "{count, plural, =0 {No transitions} one {# transition} other {# transitions}}",
+        "columns": {
+          "name": "Name",
+          "phase": "Phase",
+          "transitions": "Transitions"
+        }
       }
     }
   },
@@ -1042,6 +1104,7 @@
       "contact": "Contact persons",
       "occupancy": "Occupancy (blocking bookable items)",
       "configuration": "Configuration (types, fields, lists, setups)",
+      "bookingStatus": "Booking statuses and transitions",
       "search": "Search",
       "conversation": "Conversations",
       "skill": "Skills",

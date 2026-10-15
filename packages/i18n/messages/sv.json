@@ -125,7 +125,8 @@
     "openMenu": "Öppna meny",
     "commandBar": "Kommandofält",
     "roles": "Roller",
-    "members": "Medlemmar"
+    "members": "Medlemmar",
+    "bookingStatuses": "Bokningsstatusar"
   },
   "venue": {
     "singular": "Anläggning",
@@ -519,6 +520,55 @@
       "changeover": "Ställtid"
     }
   },
+  "bookingStatus": {
+    "singular": "Bokningsstatus",
+    "plural": "Bokningsstatusar",
+    "listDescription": "Era egna statusar för bokningar. Varje status hör till en fast fas som styr vad systemet tillåter; den första statusen i en fas är dess standard.",
+    "create": "Skapa status",
+    "edit": "Redigera status",
+    "createDescription": "Namnge statusen, välj en färg och vilken fas den hör till.",
+    "editDescription": "Ändra namn och färg. Fasen kan inte ändras.",
+    "archive": "Arkivera status",
+    "archiveConfirm": "Vill du arkivera statusen {name}? Dess övergångar tas bort.",
+    "archived": "Statusen har arkiverats.",
+    "created": "Statusen har skapats.",
+    "updated": "Statusen har uppdaterats.",
+    "empty": "Inga bokningsstatusar ännu.",
+    "emptyDescription": "Importera mallen för att komma igång.",
+    "saving": "Sparar status…",
+    "archiving": "Arkiverar status…",
+    "importTemplate": "Importera mallen Konferensgård",
+    "importing": "Importerar statusar…",
+    "imported": "{created} statusar skapades, {skipped} fanns redan.",
+    "editTransitions": "Redigera övergångar",
+    "transitionsDescription": "Välj vilka statusar en bokning med statusen {name} får gå till.",
+    "transitionsSaved": "Övergångarna har sparats.",
+    "noTransitions": "Inga",
+    "noTargets": "Det finns inga andra statusar att gå till.",
+    "moveUp": "Flytta upp",
+    "moveDown": "Flytta ned",
+    "reordering": "Sparar ordning…",
+    "reordered": "Ordningen har sparats.",
+    "default": "Standard",
+    "fields": {
+      "name": "Namn",
+      "color": "Färg",
+      "phase": "Fas",
+      "transitions": "Får gå till"
+    },
+    "columns": {
+      "name": "Namn",
+      "phase": "Fas",
+      "transitions": "Får gå till",
+      "order": "Ordning"
+    },
+    "phases": {
+      "TENTATIVE": "Preliminär",
+      "CONFIRMED": "Bekräftad",
+      "COMPLETED": "Genomförd",
+      "CANCELLED": "Avbokad"
+    }
+  },
   "assistant": {
     "title": "Assistent",
     "open": "Öppna assistenten",
@@ -745,6 +795,18 @@
         "open": "Öppna uppställningar",
         "changeover": "Ställtid {minutes} min",
         "columns": { "name": "Namn", "changeover": "Ställtid" }
+      },
+      "bookingStatus": {
+        "singular": "Bokningsstatus",
+        "empty": "Inga bokningsstatusar hittades.",
+        "open": "Öppna bokningsstatusar",
+        "archived": "Arkiverad",
+        "transitions": "{count, plural, =0 {Inga övergångar} one {# övergång} other {# övergångar}}",
+        "columns": {
+          "name": "Namn",
+          "phase": "Fas",
+          "transitions": "Övergångar"
+        }
       }
     }
   },
@@ -1042,6 +1104,7 @@
       "contact": "Kontaktpersoner",
       "occupancy": "Beläggning (blockera bokningsbara artiklar)",
       "configuration": "Konfiguration (typer, fält, listor, uppställningar)",
+      "bookingStatus": "Bokningsstatusar och övergångar",
       "search": "Sök",
       "conversation": "Konversationer",
       "skill": "Färdigheter",
