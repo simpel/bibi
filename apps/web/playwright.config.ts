@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import nextEnv from "@next/env";
 import { defineConfig } from "@playwright/test";
@@ -10,6 +11,10 @@ const WEB_URL = process.env.WEB_URL ?? "http://localhost:3000";
 const MCP_URL = process.env.MCP_URL ?? "http://localhost:3001";
 const WEB_PORT = new URL(WEB_URL).port || "3000";
 const MCP_PORT = new URL(MCP_URL).port || "3001";
+
+// Preinstalled Chromium (sandbox) when present; otherwise Playwright's own browser (CI installs it).
+const PREINSTALLED_CHROMIUM = process.env.PW_CHROMIUM_PATH ?? "/opt/pw-browsers/chromium";
+const chromiumPath = existsSync(PREINSTALLED_CHROMIUM) ? PREINSTALLED_CHROMIUM : undefined;
 
 /**
  * E2E against a production build: `pnpm build` first (web and mcp), with DATABASE_URL,
@@ -26,13 +31,15 @@ export default defineConfig({
   timeout: 60_000,
   fullyParallel: false,
   workers: 1,
-  reporter: [["list"]],
+  reporter: process.env.CI
+    ? [["list"], ["html", { open: "never", outputFolder: "playwright-report" }]]
+    : [["list"]],
   use: {
     baseURL: WEB_URL,
     locale: "sv-SE",
     trace: "retain-on-failure",
     launchOptions: {
-      executablePath: process.env.PW_CHROMIUM_PATH ?? "/opt/pw-browsers/chromium",
+      executablePath: chromiumPath,
       args: ["--no-sandbox"],
     },
   },

@@ -38,9 +38,82 @@ jobs:
       - run: pnpm test
       - run: pnpm build
 
+  storybook:
+    # A broken story fails the build (ADR 0002).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @okazi/ui build-storybook
+
+  e2e:
+    # Playwright against a production build with the scripted model (ADR 0002, 0007).
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env:
+          POSTGRES_USER: okazi
+          POSTGRES_PASSWORD: okazi
+          POSTGRES_DB: okazi
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U okazi" --health-interval 5s
+          --health-timeout 3s --health-retries 10
+    env:
+      DATABASE_URL: postgresql://okazi:okazi@localhost:5432/okazi
+      BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-123
+      BETTER_AUTH_URL: http://localhost:3000
+      WEB_URL: http://localhost:3000
+      MCP_URL: http://localhost:3001
+      E2E_MOCK_MODEL: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm db:generate
+      - run: pnpm db:migrate
+      - run: pnpm --filter @okazi/core seed:skills
+      - name: Provision the assistant's OAuth client
+        run: |
+          pnpm --filter @okazi/web provision:oauth | tee provision.log
+          grep -E '^WEB_OAUTH_CLIENT_ID=' provision.log >> "$GITHUB_ENV"
+      - run: pnpm --filter @okazi/mcp build
+      - run: pnpm --filter @okazi/web build
+      - name: Get Playwright version
+        id: pw
+        run: echo "version=$(pnpm --filter @okazi/web exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: pw-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
+      - if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: pnpm --filter @okazi/web exec playwright install --with-deps chromium
+      - if: steps.pw-cache.outputs.cache-hit == 'true'
+        run: pnpm --filter @okazi/web exec playwright install-deps chromium
+      - run: pnpm --filter @okazi/web test:e2e
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: |
+            apps/web/playwright-report
+            apps/web/test-results
+          retention-days: 14
+
   publish-images:
     # Only after a green check on main (ADR 0013). One image per app, tagged with the git SHA.
-    needs: check
+    needs: [check, storybook, e2e]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
