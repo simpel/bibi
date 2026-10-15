@@ -77,8 +77,8 @@ export const archiveCustomer = defineOperation({
   name: "customer.archive",
   kind: "command",
   description:
-    "Archive (soft-delete) a customer. Refused while the customer has active contacts: archive " +
-    "those first.",
+    "Archive (soft-delete) a customer. Refused while the customer has active contacts or active bookings: " +
+    "archive those first.",
   input: CustomerIdInputSchema,
   output: CustomerSchema,
   permission: "customer:write",
@@ -89,6 +89,9 @@ export const archiveCustomer = defineOperation({
     const contacts = await context.db.contact.count({ where: { customerId: id } });
     if (contacts > 0)
       return conflict({ message: `${before.name} has ${contacts} active contacts` });
+    const bookings = await context.db.booking.count({ where: { customerId: id } });
+    if (bookings > 0)
+      return conflict({ message: `${before.name} has ${bookings} active bookings` });
     const row = await context.db.customer.update({ where: { id }, data: { status: "ARCHIVED" } });
     const customer = toCustomerDto({ row });
     context.recordChange({ entityId: id, before, after: customer });

@@ -9,6 +9,7 @@ import {
   getCustomer,
   listCustomers,
 } from "../src/index";
+import { bookingSetup, createTestBooking } from "./booking-helpers";
 import { createTypeWithField } from "./customer-helpers";
 import { errorCode, testContext, unwrap } from "./helpers";
 
@@ -35,6 +36,17 @@ describe("customer archiving and type usage (ADR 0021, 0022)", () => {
     const refused = await execute({
       operation: archiveCustomer,
       input: { id: kvarnby.id },
+      context,
+    });
+    expect(errorCode({ result: refused })).toBe("CONFLICT");
+  });
+
+  it("refuses archiving a customer with active bookings", async () => {
+    const { context, type, customer } = await bookingSetup();
+    await createTestBooking({ context, entityTypeId: type.id, customerId: customer.id });
+    const refused = await execute({
+      operation: archiveCustomer,
+      input: { id: customer.id },
       context,
     });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
