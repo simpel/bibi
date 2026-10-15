@@ -16,26 +16,24 @@ const ID_LISTERS: Readonly<Record<string, ListIds>> = {
     db.skill.findMany({ where: { scope: { not: "SYSTEM" } }, select: { id: true } }),
 };
 
-export type IndexMissingEntitiesInput = { db: Db; embed: EmbedFn; organizationId: string };
+export type IndexStaleEntitiesInput = { db: Db; embed: EmbedFn; organizationId: string };
 
-/** Indexes searchable entities of one org that have no index row yet (e.g. after an outage). */
-export async function indexMissingEntities({
+/**
+ * Indexes searchable entities of one org whose index row is missing or whose text changed since
+ * it was embedded (e.g. the after-commit hook logged `search.index_failed`, ADR 0030).
+ * `indexEntity` compares content hashes, so only out-of-date entities call the embedder.
+ */
+export async function indexStaleEntities({
   db,
   embed,
   organizationId,
-}: IndexMissingEntitiesInput): Promise<number> {
+}: IndexStaleEntitiesInput): Promise<number> {
   const scoped = scopedDb({ organizationId, actorId: SYSTEM_ACTOR_ID, db });
   let count = 0;
   for (const embeddable of SEARCHABLE_ENTITIES) {
     const listIds = ID_LISTERS[embeddable.entityType];
     if (!listIds) continue;
-    const ids = (await listIds({ db: scoped })).map((row) => row.id);
-    const indexed = await scoped.embedding.findMany({
-      where: { entityType: embeddable.entityType, entityId: { in: ids } },
-      select: { entityId: true },
-    });
-    const present = new Set(indexed.map((row) => row.entityId));
-    for (const entityId of ids.filter((id) => !present.has(id))) {
+    for (const { id: entityId } of await listIds({ db: scoped })) {
       const outcome = await indexEntity({ embeddable, entityId, db: scoped, embed });
       if (outcome === "indexed") count++;
     }

@@ -3,7 +3,7 @@ import { createEmbed } from "./create-embed";
 import { reindexAll } from "./reindex/reindex-all";
 
 // `pnpm --filter @okazi/ai reindex [--org <organizationId>]` – re-embeds index rows written by
-// another embedding model and indexes missing entities. Not exported from the package index.
+// another embedding model and indexes missing or stale entities. Not exported from the package index.
 type OrgArgInput = { args: readonly string[] };
 
 const orgArg = ({ args }: OrgArgInput): string | undefined => {

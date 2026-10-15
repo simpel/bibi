@@ -21,7 +21,7 @@
   - `operation.completed` (info): success.
   - `operation.rejected` (warn): validation, permission, not found, conflict.
   - `operation.failed` (error): internal error, with cause and stack.
-  - `operation.afterCommitFailed` (error): for example search indexing.
+  - `operation.afterCommitFailed` (error): an after-commit hook threw. Search indexing catches its own errors and logs `search.index_failed` instead (ADR 0030).
   - Fields: operation, kind, entityType, outcome, error code, `durationMs` and actor.
 - **No payload in the log.** Input and output are never logged. That belongs in `AuditLog`, which is org-scoped and permission-controlled. As an extra safeguard, known secret fields (password, token, cookie, API key) are redacted. Email addresses are logged only as the domain.
 - **Level and format via `@okazi/config`.** `LOG_LEVEL` (default `info`, `silent` in test). `LOG_FORMAT` `json` or `pretty` (default `pretty` in development).

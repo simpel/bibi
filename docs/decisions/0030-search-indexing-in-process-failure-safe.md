@@ -17,4 +17,4 @@
 ## Consequences
 - ADR 0008 is updated: "asynchronous" means after commit and non-blocking for the outcome, not a queue.
 - The upgrade path is a pg-boss job calling the same indexing function. No contract changes.
-- Implementation stays in #11.
+- Implemented in #11: `createIndexingHook` catches indexing errors and logs `search.index_failed`. Reindex (`reindexAll`) indexes entities whose row is missing or whose content hash is out of date, so a failed update is repaired too, not only a failed create.

@@ -1,6 +1,6 @@
 import type { EmbedFn } from "@okazi/core";
 import { type Db, getDb } from "@okazi/db";
-import { indexMissingEntities } from "./index-missing-entities";
+import { indexStaleEntities } from "./index-stale-entities";
 import { reembedStaleRows } from "./reembed-stale-rows";
 
 export type ReindexAllInput = {
@@ -17,7 +17,7 @@ export type ReindexReport = {
   model: string;
   /** Rows re-embedded because they were written by another model. */
   reembedded: number;
-  /** Entities that had no index row and were indexed. */
+  /** Entities whose index row was missing or out of date and were (re)indexed. */
   indexed: number;
   organizations: number;
 };
@@ -34,7 +34,8 @@ const listOrganizationIds = async ({ db, organizationId }: ListOrgsInput): Promi
 
 /**
  * Brings the search index in line with the current embedding model: re-embeds every row whose
- * `model` differs (e.g. placeholder → Gateway model) and indexes entities missing a row.
+ * `model` differs (e.g. placeholder → Gateway model) and indexes entities whose row is missing or
+ * stale (e.g. after `search.index_failed`).
  * Idempotent; safe to re-run. CLI: `pnpm --filter @okazi/ai reindex [--org <id>]`.
  */
 export async function reindexAll({
@@ -59,7 +60,7 @@ export async function reindexAll({
   });
   let indexed = 0;
   for (const id of organizations) {
-    indexed += await indexMissingEntities({ db, embed, organizationId: id });
+    indexed += await indexStaleEntities({ db, embed, organizationId: id });
   }
   return { model, reembedded, indexed, organizations: organizations.length };
 }

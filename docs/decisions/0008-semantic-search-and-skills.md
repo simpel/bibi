@@ -47,3 +47,5 @@ Users and the assistant need to find entities (venues, rooms and later bookings)
 
 ## Addendum 2026-10-15
 - "Asynchronous" means after commit and non-blocking for the command's outcome, not a queue. See 0030.
+- Actual behaviour: `createIndexingHook` runs in-process as an `afterCommit` hook of `execute`. An indexing error (for example the embedding provider is down) never changes the command's result: the hook catches it and logs `search.index_failed` (error, with operation, organization, entity type and id).
+- After a failure the entity has no index row (create) or an out-of-date row (update). `pnpm --filter @okazi/ai reindex [--org <id>]` repairs both: it runs `indexEntity` for every active searchable entity, and the content hash makes it embed only rows that are missing or stale. The run is idempotent.

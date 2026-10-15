@@ -10,7 +10,7 @@ The system log (ADR 0014). pino, one JSON line per event to stdout (stderr for s
 - `maskEmail({ email })` → `***@domain.se`.
 
 ## Events today
-`http.request`, `http.unhandledError`, `operation.completed|rejected|failed|afterCommitFailed`, `auth.resolveFailed|sessionCreated|library`, `mcp.toolCalled`, `approval.proposed|proposalRejected|decided|failed`, `ai.runCompleted|runFinishFailed|chatFailed|streamFailed|modelNotConfigured|modelCatalogFailed|placeholderEmbedder`, `auth.platformDenied`, `platformAdmin.granted|revoked`, `mail.sent|failed`, `process.started|startFailed|unhandledRejection|uncaughtException`, `config.ignored`.
+`http.request`, `http.unhandledError`, `operation.completed|rejected|failed|afterCommitFailed`, `auth.resolveFailed|sessionCreated|library`, `mcp.toolCalled`, `approval.proposed|proposalRejected|decided|failed`, `ai.runCompleted|runFinishFailed|chatFailed|streamFailed|modelNotConfigured|modelCatalogFailed|placeholderEmbedder`, `auth.platformDenied`, `platformAdmin.granted|revoked`, `mail.sent|failed`, `search.index_failed`, `process.started|startFailed|unhandledRejection|uncaughtException`, `config.ignored`.
 
 ## Rules
 - Never log input or output. `AuditLog` has the before/after image. Known secret field names are redacted anyway (`redact-paths.ts`).
