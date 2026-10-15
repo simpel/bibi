@@ -24,6 +24,10 @@ const catalog: PermissionSet = {
 const customersRead: PermissionSet = { customer: ["read"], contact: ["read"] };
 const customersWrite: PermissionSet = { customer: ["write"], contact: ["write"] };
 
+/** Bookings and their owners (ADR 0022); owners are members, shown and picked by name. */
+const bookingsRead: PermissionSet = { booking: ["read"], member: ["read"] };
+const bookingsWrite: PermissionSet = { booking: ["write"], member: ["read"] };
+
 /** Blocking bookable items for maintenance or internal use (ADR 0022). */
 const occupancyWrite: PermissionSet = { occupancy: ["write"] };
 
@@ -31,6 +35,7 @@ const readAll: PermissionSet = {
   ...everyone,
   ...catalog,
   ...customersRead,
+  ...bookingsRead,
   role: ["read"],
   member: ["read"],
   audit: ["read"],
@@ -55,6 +60,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         occupancy: ["admin"],
         configuration: ["admin"],
         bookingStatus: ["admin"],
+        booking: ["admin"],
         search: ["admin"],
         conversation: ["admin"],
         skill: ["admin"],
@@ -65,13 +71,25 @@ export const conferenceVenueTemplate: RoleTemplate = {
     },
     {
       name: "Sales",
-      permissions: { ...everyone, ...catalog, ...customersWrite, ...occupancyWrite },
+      permissions: {
+        ...everyone,
+        ...catalog,
+        ...customersWrite,
+        ...occupancyWrite,
+        ...bookingsWrite,
+      },
     },
     {
       name: "Coordinator",
-      permissions: { ...everyone, ...catalog, ...customersWrite, ...occupancyWrite },
+      permissions: {
+        ...everyone,
+        ...catalog,
+        ...customersWrite,
+        ...occupancyWrite,
+        ...bookingsWrite,
+      },
     },
-    { name: "Kitchen", permissions: { ...everyone, ...catalog } },
+    { name: "Kitchen", permissions: { ...everyone, ...catalog, ...bookingsRead } },
     { name: "Finance", permissions: readAll },
     { name: "Reader", permissions: readAll },
   ],

@@ -308,6 +308,47 @@
       "phone": "Phone"
     }
   },
+  "booking": {
+    "singular": "Booking",
+    "plural": "Bookings",
+    "listDescription": "Conferences and events with customer, time, headcount, status and owners. The type decides which fields a booking has.",
+    "reference": "Booking {reference}",
+    "create": "Create booking",
+    "edit": "Edit booking",
+    "createDescription": "Pick a type, the customer and the time. The booking starts in the default tentative status.",
+    "editDescription": "Change customer, time, headcount and the type's fields. The status and the owners are changed separately.",
+    "created": "The booking has been created.",
+    "updated": "The booking has been updated.",
+    "assign": "Change owners",
+    "assignDescription": "Pick the salesperson and the coordinator among the members.",
+    "assigned": "The owners have been updated.",
+    "noOwner": "No one",
+    "coordinatorRequired": "A confirmed booking needs a coordinator.",
+    "empty": "No bookings yet.",
+    "emptyDescription": "Create your first booking.",
+    "noTypes": "There are no booking types yet. Create a type first.",
+    "goToTypes": "Go to types",
+    "fields": {
+      "type": "Type",
+      "customer": "Customer",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "when": "When",
+      "status": "Status",
+      "estimatedHeadcount": "Estimated headcount",
+      "guaranteedHeadcount": "Guaranteed headcount",
+      "salesOwner": "Salesperson",
+      "coordinator": "Coordinator"
+    },
+    "columns": {
+      "reference": "Reference",
+      "customer": "Customer",
+      "type": "Type",
+      "when": "When",
+      "status": "Status",
+      "salesOwner": "Salesperson"
+    }
+  },
   "occupancy": {
     "singular": "Occupancy",
     "plural": "Occupancy",
@@ -789,6 +830,20 @@
         "openCustomer": "Open the customer",
         "columns": { "name": "Name", "email": "Email", "phone": "Phone" }
       },
+      "booking": {
+        "singular": "Booking",
+        "empty": "No bookings found.",
+        "open": "Open the booking",
+        "reference": "Booking {reference}",
+        "headcount": "{count, plural, one {# guest} other {# guests}}",
+        "hasCoordinator": "Coordinator assigned",
+        "noCoordinator": "No coordinator yet",
+        "columns": {
+          "reference": "Reference",
+          "when": "When",
+          "headcount": "Headcount"
+        }
+      },
       "occupancy": {
         "singular": "Occupancy",
         "released": "Released",
@@ -1164,6 +1219,7 @@
       "occupancy": "Occupancy (blocking bookable items)",
       "configuration": "Configuration (types, fields, lists, setups)",
       "bookingStatus": "Booking statuses and transitions",
+      "booking": "Bookings and their owners",
       "search": "Search",
       "conversation": "Conversations",
       "skill": "Skills",

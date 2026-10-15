@@ -3,8 +3,10 @@ import type { ComponentType } from "react";
 import { ApprovalCardView } from "./approval-card-view";
 import { AuditLogCardView } from "./audit-log-card-view";
 import { AuditLogTableView } from "./audit-log-table-view";
+import { BookingCardView } from "./booking-card-view";
 import { BookingStatusCardView } from "./booking-status-card-view";
 import { BookingStatusTableView } from "./booking-status-table-view";
+import { BookingTableView } from "./booking-table-view";
 import { ContactCardView } from "./contact-card-view";
 import { ContactTableView } from "./contact-table-view";
 import { CustomerCardView } from "./customer-card-view";
@@ -56,6 +58,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "occupancy-card": OccupancyCardView,
   "booking-status-table": BookingStatusTableView,
   "booking-status-card": BookingStatusCardView,
+  "booking-table": BookingTableView,
+  "booking-card": BookingCardView,
   "entity-type-table": EntityTypeTableView,
   "entity-type-card": EntityTypeCardView,
   "field-definition-table": FieldDefinitionTableView,

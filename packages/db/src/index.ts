@@ -15,6 +15,7 @@ export {
   ActorType,
   type AiSetting,
   type AuditLog,
+  type Booking,
   BookingPhase,
   type BookingStatus,
   type BookingStatusTransition,

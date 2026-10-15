@@ -14,6 +14,7 @@ export const RESOURCES = [
   "occupancy",
   "configuration",
   "bookingStatus",
+  "booking",
   "search",
   "conversation",
   "skill",

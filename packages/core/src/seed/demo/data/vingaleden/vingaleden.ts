@@ -1,5 +1,6 @@
 import type { PermissionSet } from "../../../../permissions/permission-set";
 import type { DemoOrg } from "../../types";
+import { vingaledenBookings } from "./bookings";
 import { vingaledenBoats, vingaledenConfig } from "./config";
 import { vingaledenCustomers } from "./customers";
 import { vingaledenTours } from "./tours";
@@ -8,8 +9,8 @@ const base: PermissionSet = { search: ["read"], conversation: ["write"], skill: 
 
 /**
  * Vingaleden Archipelago Tours (`docs/demo-seed.md`): no templates, three roles of its own.
- * Both read the fleet (venues, items and configuration). Booking also writes customers and
- * contact persons; inquiries and bookings (Booking) and sheets (Skipper) follow in slices 4–6.
+ * Both read the fleet (venues, items and configuration). Booking also writes customers,
+ * contact persons and bookings, Skipper reads bookings; inquiries and sheets follow in slices 4–6.
  */
 export const vingaleden: DemoOrg = {
   slug: "vingaleden-demo",
@@ -23,6 +24,7 @@ export const vingaleden: DemoOrg = {
         item: ["admin"],
         customer: ["admin"],
         contact: ["admin"],
+        booking: ["admin"],
         configuration: ["admin"],
         search: ["admin"],
         conversation: ["admin"],
@@ -37,12 +39,21 @@ export const vingaleden: DemoOrg = {
       permissions: {
         ...base,
         ...{ venue: ["read"], item: ["read"], configuration: ["read"] },
-        ...{ customer: ["write"], contact: ["write"] },
+        ...{ customer: ["write"], contact: ["write"], booking: ["write"], member: ["read"] },
       },
     },
     {
       name: "Skipper",
-      permissions: { ...base, venue: ["read"], item: ["read"], configuration: ["read"] },
+      permissions: {
+        ...base,
+        ...{
+          venue: ["read"],
+          item: ["read"],
+          configuration: ["read"],
+          booking: ["read"],
+          member: ["read"],
+        },
+      },
     },
   ],
   users: [
@@ -64,4 +75,5 @@ export const vingaleden: DemoOrg = {
     checks: { absentLists: ["Allergens"] },
   },
   customers: vingaledenCustomers,
+  bookings: vingaledenBookings,
 };

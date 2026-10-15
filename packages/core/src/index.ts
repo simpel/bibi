@@ -14,7 +14,15 @@ export { type GraphqlErrorExtensions, toGraphqlExtensions } from "./errors/to-gr
 export { toHttpStatus } from "./errors/to-http-status";
 export { type McpErrorResult, toMcpError } from "./errors/to-mcp-error";
 export * from "./features/audit-log/operations";
+export * from "./features/booking/assign-operation";
+export * from "./features/booking/operations";
+export { toBookingDto } from "./features/booking/to-booking-dto";
+export * from "./features/booking/write-operations";
 export * from "./features/booking-status/import-template-operation";
+export {
+  toBookingStatusDto,
+  WITH_TRANSITIONS,
+} from "./features/booking-status/load-booking-status";
 export * from "./features/booking-status/order-operations";
 export * from "./features/booking-status/read-operations";
 export * from "./features/booking-status/write-operations";

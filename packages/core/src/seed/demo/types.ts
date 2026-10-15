@@ -1,5 +1,6 @@
 import type { PermissionSet } from "../../permissions/permission-set";
 import type { RoleTemplateKey } from "../../templates/roles/role-templates";
+import type { DemoBooking } from "./booking-types";
 import type { DemoConfig } from "./config-types";
 import type { DemoCustomer } from "./customer-types";
 
@@ -17,4 +18,6 @@ export type DemoOrg = {
   config: DemoConfig;
   /** Slice 4: customers with their contact persons. */
   customers: readonly DemoCustomer[];
+  /** Slice 5: bookings with their owners. */
+  bookings: readonly DemoBooking[];
 };

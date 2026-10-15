@@ -81,6 +81,7 @@ export async function seedDemoConfig({
     itemTypes: new Map(),
     customerTypes: new Map(),
     contactTypes: new Map(),
+    bookingTypes: new Map(),
   };
   for (const setup of config.setups) {
     const result = await execute({ operation: createSetup, input: setup, context });
@@ -94,6 +95,7 @@ export async function seedDemoConfig({
       ITEM: refs.itemTypes,
       CUSTOMER: refs.customerTypes,
       CONTACT: refs.contactTypes,
+      BOOKING: refs.bookingTypes,
     };
     byBase[type.base as keyof typeof byBase]?.set(type.name, result.value);
   }

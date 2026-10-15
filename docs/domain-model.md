@@ -195,7 +195,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 ### Role (`organizationRole`)
 
-*MVP* · A named set of permissions per organization ([ADR 0020](decisions/0020-custom-roles-per-organization.md)). Resources per member role: `venue`, `item`, `customer`, `contact`, `occupancy`, `configuration`, `bookingStatus`, `search`, `conversation`, `skill`, `role`, `member`.
+*MVP* · A named set of permissions per organization ([ADR 0020](decisions/0020-custom-roles-per-organization.md)). Resources per member role: `venue`, `item`, `customer`, `contact`, `occupancy`, `configuration`, `bookingStatus`, `booking`, `search`, `conversation`, `skill`, `role`, `member`.
 
 **Attributes**
 - name
@@ -329,16 +329,16 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 *MVP* · The conference or event as a whole. Each occurrence in a series is a regular booking.
 
 **Attributes**
-- reference number
+- reference number (`reference`, sequential per organization)
 - booking type (the organization's own type, e.g. Conference or Event) and custom fields
 - status (the organization's own `BookingStatus`, with a fixed phase)
 - start – end
 - estimated headcount
 - guaranteed headcount (locked X days before)
-- salesperson (`salesOwnerId`)
-- coordinator (`coordinatorId`, required from the `CONFIRMED` phase)
-- cancellation terms
-- seriesId and occurrenceIndex (if the booking belongs to a series)
+- salesperson (`salesOwnerId`, the user id of a member)
+- coordinator (`coordinatorId`, the user id of a member, required from the `CONFIRMED` phase)
+- cancellation terms (not built yet)
+- seriesId and occurrenceIndex (if the booking belongs to a series; not built yet)
 - statusChangedAt
 
 **Relations**
@@ -354,6 +354,8 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `N:1` User coordinates and sells this
 - `N:1` Customer (organization) orders this
 - `0..1:N` Communication & log concerns this
+
+> Operations (resource `booking`): `booking.list|get|create|update` and `booking.assign`. `create` gives the next reference number and the organization's default `TENTATIVE` status; the customer must be active. `update` changes customer, time, headcount and own fields, never type, status or owners. `booking.assign` changes the salesperson and/or coordinator: both must be members (`VALIDATION`), and the coordinator cannot be removed from the `CONFIRMED` phase on (`CONFLICT`). Every change is audited.
 
 > Status changes only with `booking.changeStatus`. A quick booking is created by staff in a `TENTATIVE` status. The customer pays through a Swish or card link (the booking is then confirmed when the payment completes) or against invoice. `booking.export` gives the booking as json, pdf or csv ([ADR 0024](decisions/0024-booking-export-instead-of-partner.md)).
 

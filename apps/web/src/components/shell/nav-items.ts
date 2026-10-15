@@ -2,6 +2,7 @@ import {
   BookOpenIcon,
   BoxIcon,
   BuildingIcon,
+  CalendarIcon,
   CircleDotIcon,
   ClipboardListIcon,
   ContactIcon,
@@ -20,6 +21,7 @@ export type NavItem = {
     | "venues"
     | "items"
     | "customers"
+    | "bookings"
     | "skills"
     | "types"
     | "lists"
@@ -36,6 +38,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: ROUTES.venues, labelKey: "venues", icon: BuildingIcon },
   { href: ROUTES.items, labelKey: "items", icon: BoxIcon },
   { href: ROUTES.customers, labelKey: "customers", icon: ContactIcon },
+  { href: ROUTES.bookings, labelKey: "bookings", icon: CalendarIcon },
   { href: ROUTES.skills, labelKey: "skills", icon: BookOpenIcon },
   { href: ROUTES.settingsTypes, labelKey: "types", icon: ShapesIcon },
   { href: ROUTES.settingsLists, labelKey: "lists", icon: ListIcon },

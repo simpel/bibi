@@ -24,6 +24,7 @@ model BookingStatus {
   createdBy       String?
   transitionsFrom BookingStatusTransition[] @relation("TransitionFrom")
   transitionsTo   BookingStatusTransition[] @relation("TransitionTo")
+  bookings        Booking[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status, position])

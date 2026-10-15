@@ -1,5 +1,5 @@
 import { getEnv } from "@okazi/config";
-import { createVenue, execute } from "@okazi/core";
+import { createVenue, execute, ok } from "@okazi/core";
 import { getDb } from "@okazi/db";
 import { type CapturedLogs, captureLogs } from "@okazi/logger";
 import { createId } from "@paralleldrive/cuid2";
@@ -38,8 +38,11 @@ const createVenueJob: JobDefinition = {
   handler: async ({ db: client }) => {
     await forEachOrganization({
       db: client,
-      run: ({ context }) =>
-        execute({ operation: createVenue, input: { name: "Job venue" }, context }),
+      // Only this test's orgs: other test files' orgs (e.g. the demo seed) share the database.
+      run: async ({ context }) =>
+        orgIds.includes(context.organizationId)
+          ? execute({ operation: createVenue, input: { name: "Job venue" }, context })
+          : ok({ value: null }),
     });
   },
 };

@@ -24,6 +24,7 @@ model Customer {
   createdBy            String?
   entityType           EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   contacts             Contact[]
+  bookings             Booking[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

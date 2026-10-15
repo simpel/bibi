@@ -19,6 +19,7 @@ export async function resetDemoOrg({ db, org }: ResetDemoOrgInput): Promise<void
       db.itemComponent.deleteMany({ where }),
       db.itemSetup.deleteMany({ where }),
       db.item.deleteMany({ where }),
+      db.booking.deleteMany({ where }),
       db.bookingStatusTransition.deleteMany({ where }),
       db.bookingStatus.deleteMany({ where }),
       db.contact.deleteMany({ where }),

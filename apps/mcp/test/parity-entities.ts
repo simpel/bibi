@@ -2,6 +2,7 @@ import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { ExecuteContext } from "@okazi/core";
 import { call, type Json } from "./helpers";
 import { accessEntities } from "./parity-entities-access";
+import { bookingEntities } from "./parity-entities-booking";
 import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
 import { gqlQuery } from "./parity-graphql";
@@ -106,6 +107,7 @@ export const ENTITIES: ParityEntity[] = [
     createTool: "bookingStatus_create",
     args: { name: "Parity status", color: "#22c55e", phase: "TENTATIVE" },
   }),
+  ...bookingEntities(),
   byId({
     name: "conversation",
     field: "conversation",

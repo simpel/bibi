@@ -1,8 +1,11 @@
 import {
+  type BookingStatusDto,
   type CustomerDto,
   type EntityTypeDto,
+  toBookingStatusDto,
   toCustomerDto,
   type VocabularyDto,
+  WITH_TRANSITIONS,
 } from "@okazi/core";
 import type { ScopedDb } from "@okazi/db";
 import { type BatchLoader, createBatchLoader } from "./batch-loader";
@@ -15,6 +18,7 @@ export type Loaders = {
   venue: BatchLoader<VenueRow>;
   setup: BatchLoader<SetupRow>;
   customer: BatchLoader<CustomerDto>;
+  bookingStatus: BatchLoader<BookingStatusDto>;
   entityType: BatchLoader<EntityTypeDto>;
   vocabulary: BatchLoader<VocabularyDto>;
 };
@@ -52,6 +56,15 @@ async function loadVocabularies({ db, ids }: DbInput & Ids) {
   return byId({ rows: dtos });
 }
 
+/** Statuses by id, archived ones included: a booking keeps a status that has been archived. */
+async function loadBookingStatuses({ db, ids }: DbInput & Ids) {
+  const rows = await db.bookingStatus.findMany({
+    where: { id: { in: [...ids] }, status: { in: ["ACTIVE", "ARCHIVED"] } },
+    include: WITH_TRANSITIONS,
+  });
+  return byId({ rows: rows.map((row) => toBookingStatusDto({ row })) });
+}
+
 /** One set per request. Entities with per-user visibility are not here: they use operations. */
 export function createLoaders({ db }: DbInput): Loaders {
   return {
@@ -69,6 +82,7 @@ export function createLoaders({ db }: DbInput): Loaders {
         return byId({ rows: rows.map((row) => toCustomerDto({ row })) });
       },
     }),
+    bookingStatus: createBatchLoader({ batch: (ids) => loadBookingStatuses({ db, ids }) }),
     entityType: createBatchLoader({ batch: (ids) => loadEntityTypes({ db, ids }) }),
     vocabulary: createBatchLoader({ batch: (ids) => loadVocabularies({ db, ids }) }),
   };

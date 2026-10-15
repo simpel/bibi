@@ -308,6 +308,47 @@
       "phone": "Telefon"
     }
   },
+  "booking": {
+    "singular": "Bokning",
+    "plural": "Bokningar",
+    "listDescription": "Konferenser och evenemang med kund, tid, antal, status och ansvariga. Typen avgör vilka fält en bokning har.",
+    "reference": "Bokning {reference}",
+    "create": "Skapa bokning",
+    "edit": "Redigera bokning",
+    "createDescription": "Välj typ, kund och tid. Bokningen startar i standardstatusen för preliminära bokningar.",
+    "editDescription": "Ändra kund, tid, antal och typens fält. Status och ansvariga ändras separat.",
+    "created": "Bokningen har skapats.",
+    "updated": "Bokningen har uppdaterats.",
+    "assign": "Byt ansvariga",
+    "assignDescription": "Välj säljare och koordinator bland medlemmarna.",
+    "assigned": "De ansvariga har uppdaterats.",
+    "noOwner": "Ingen",
+    "coordinatorRequired": "En bekräftad bokning måste ha en koordinator.",
+    "empty": "Inga bokningar ännu.",
+    "emptyDescription": "Skapa din första bokning.",
+    "noTypes": "Det finns inga bokningstyper ännu. Skapa en typ först.",
+    "goToTypes": "Gå till typer",
+    "fields": {
+      "type": "Typ",
+      "customer": "Kund",
+      "startsAt": "Börjar",
+      "endsAt": "Slutar",
+      "when": "När",
+      "status": "Status",
+      "estimatedHeadcount": "Beräknat antal",
+      "guaranteedHeadcount": "Garanterat antal",
+      "salesOwner": "Säljare",
+      "coordinator": "Koordinator"
+    },
+    "columns": {
+      "reference": "Nummer",
+      "customer": "Kund",
+      "type": "Typ",
+      "when": "När",
+      "status": "Status",
+      "salesOwner": "Säljare"
+    }
+  },
   "occupancy": {
     "singular": "Beläggning",
     "plural": "Beläggning",
@@ -789,6 +830,20 @@
         "openCustomer": "Öppna kunden",
         "columns": { "name": "Namn", "email": "E-post", "phone": "Telefon" }
       },
+      "booking": {
+        "singular": "Bokning",
+        "empty": "Inga bokningar hittades.",
+        "open": "Öppna bokningen",
+        "reference": "Bokning {reference}",
+        "headcount": "{count, plural, one {# gäst} other {# gäster}}",
+        "hasCoordinator": "Koordinator utsedd",
+        "noCoordinator": "Ingen koordinator ännu",
+        "columns": {
+          "reference": "Nummer",
+          "when": "När",
+          "headcount": "Antal"
+        }
+      },
       "occupancy": {
         "singular": "Beläggning",
         "released": "Släppt",
@@ -1164,6 +1219,7 @@
       "occupancy": "Beläggning (blockera bokningsbara artiklar)",
       "configuration": "Konfiguration (typer, fält, listor, uppställningar)",
       "bookingStatus": "Bokningsstatusar och övergångar",
+      "booking": "Bokningar och deras ansvariga",
       "search": "Sök",
       "conversation": "Konversationer",
       "skill": "Färdigheter",

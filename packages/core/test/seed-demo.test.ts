@@ -11,7 +11,7 @@ const testOrgs = () => {
   return [lindholmen, vingaleden].map((org) => ({ ...org, slug: `${org.slug}-${suffix}` }));
 };
 
-describe("seed:demo slices 1–4 (ADR 0025)", () => {
+describe("seed:demo slices 1–5 (ADR 0025)", () => {
   it("creates both orgs with roles and members, passes its checks and is idempotent", async () => {
     const orgs = testOrgs();
     const first = await seedDemo({ orgs });
@@ -69,5 +69,15 @@ describe("seed:demo slices 1–4 (ADR 0025)", () => {
       where: { organizationId: lind?.organizationId },
     });
     expect(statuses).toBe(4);
+    const bookings = await db.booking.findMany({
+      where: { organizationId: lind?.organizationId },
+      orderBy: { reference: "asc" },
+    });
+    expect(bookings).toHaveLength(10);
+    const erik = await db.member.findFirst({
+      where: { organizationId: lind?.organizationId, user: { name: "Erik Lund" } },
+    });
+    expect(bookings[0]).toMatchObject({ reference: 1, estimatedHeadcount: 40 });
+    expect(bookings[0]?.salesOwnerId).toBe(erik?.userId);
   });
 });

@@ -10,6 +10,7 @@ import { lindholmen } from "./data/lindholmen/lindholmen";
 import { vingaleden } from "./data/vingaleden/vingaleden";
 import { refuseProduction } from "./guard";
 import { resetDemoOrg } from "./reset";
+import { seedDemoBookings } from "./seed-bookings";
 import { seedDemoConfig } from "./seed-config";
 import { seedDemoCustomers } from "./seed-customers";
 import { seedDemoItems } from "./seed-items";
@@ -43,7 +44,7 @@ type PostSeedInput = { context: ReturnType<typeof createExecuteContext>; org: De
 async function postSeedLogging({ context, org }: PostSeedInput): Promise<Result<null>> {
   const log = getLogger();
   for (const { part, name } of DEMO_SEED_PARTS) {
-    if (part >= 5) {
+    if (part >= 6) {
       log.info({ event: "seed.sliceSkipped", part, name });
     }
   }
@@ -61,7 +62,7 @@ async function postSeedLogging({ context, org }: PostSeedInput): Promise<Result<
 
 async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
   await resetDemoOrg({ db, org });
-  const { organizationId, members } = await bootstrapDemoOrg({ db, org });
+  const { organizationId, members, userIds } = await bootstrapDemoOrg({ db, org });
   // What Better Auth's afterCreateOrganization hook does for a real signup.
   const provisioned = await provisionOrganization({ organizationId, db });
   if (!provisioned.ok) return provisioned;
@@ -84,6 +85,13 @@ async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
     refs: refs.value,
   });
   if (!customers.ok) return customers;
+  const bookings = await seedDemoBookings({
+    context,
+    bookings: org.bookings,
+    refs: refs.value,
+    userIds,
+  });
+  if (!bookings.ok) return bookings;
   const postSeed = await postSeedLogging({ context, org });
   if (!postSeed.ok) return postSeed;
   return ok({ value: organizationId });

@@ -32,19 +32,20 @@ enum FieldKind {
 
 /// Type – an organization's own type for a base entity, e.g. Conference room, Dish or Boat.
 model EntityType {
-  id             String           @id @default(cuid(2))
+  id             String            @id @default(cuid(2))
   organizationId String
   base           EntityBase
   name           String
   behaviours     ItemBehaviour[]
-  status         RecordStatus     @default(ACTIVE)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  status         RecordStatus      @default(ACTIVE)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
   createdBy      String?
   fields         FieldDefinition[]
   items          Item[]
   customers      Customer[]
   contacts       Contact[]
+  bookings       Booking[]
 
   @@unique([id, organizationId])
   @@index([organizationId, base, status])

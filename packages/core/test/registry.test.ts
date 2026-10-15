@@ -17,6 +17,11 @@ describe("registry and approval", () => {
     expect(listOperations().map((op) => op.name)).toEqual([
       "auditLog.get",
       "auditLog.list",
+      "booking.assign",
+      "booking.create",
+      "booking.get",
+      "booking.list",
+      "booking.update",
       "bookingStatus.archive",
       "bookingStatus.create",
       "bookingStatus.get",

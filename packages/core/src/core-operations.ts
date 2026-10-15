@@ -1,4 +1,5 @@
 import { auditLogOperations } from "./features/audit-log/operations";
+import { bookingOperations } from "./features/booking/operations";
 import { bookingStatusOperations } from "./features/booking-status/operations";
 import { configurationOperations } from "./features/configuration/operations";
 import { contactOperations } from "./features/contact/operations";
@@ -37,6 +38,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...contactOperations,
     ...occupancyOperations,
     ...bookingStatusOperations,
+    ...bookingOperations,
     ...conversationOperations,
     ...messageOperations,
     ...skillOperations,

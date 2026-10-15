@@ -28,13 +28,14 @@ The checks that run today:
   - The number of item parts (`ItemComponent`) per organization matches the data files.
 - **Part 3 (catalog), started:** Vingaleden's skippers and the Lighthouse tour to Vinga, a tour whose mandatory parts are RIB Snabben and skipper Jonna Sand (1.5 h each). Parts refer to items seeded earlier by name. The rest of the catalog follows when choice groups exist.
 - **Part 4 (customers), started:** the number of customers and contact persons per organization matches the data files. Price lists and the sales pipeline follow when those operations exist.
+- **Part 5 (bookings), started:** the number of bookings per organization matches the data files, each with its customer, type, time, headcount, own fields and owners (salesperson and coordinator by name). Every booking has the default `TENTATIVE` status until `booking.changeStatus` exists; the statuses in the tables, program items and requirements follow.
 - **All parts:** point 7.
 
 ## Exceptions and sign-in
 
 - The organization, the users and the memberships are Better Auth tables. They are written directly (`seed/demo/users.ts`), the same way sign-up and `addMember` do. Everything else goes through `execute` as `SYSTEM`. The owner gets `owner` directly, the others get their role via `member.assignRole`. Right after, `provisionOrganization` gives each organization its defaults (one booking status per phase, ADR 0022) as SYSTEM, the same way Better Auth's `afterCreateOrganization` hook does for a real sign-up.
 - The users' email is `firstname.lastname@<slug>.okazi.test`, e.g. `anna.berg@lindholmen-demo.okazi.test`. Sign in with a magic link or a one-time code; the email ends up in Mailpit.
-- Roles that are to write bookings or sheets get those permissions when the resources exist (parts 5–6). Until then they read venues, items (`item`) and the configuration (`configuration`). Sales and Coordinator (template) and Vingaleden's Booking write customers and contact persons (`customer`, `contact`). Admin has `admin` on all of them.
+- Every role reads venues, items (`item`) and the configuration (`configuration`). Sales and Coordinator (template) and Vingaleden's Booking write customers and contact persons (`customer`, `contact`) and bookings (`booking`); the other template roles and Vingaleden's Skipper read bookings. Everyone with bookings also reads members (`member`), because owners are shown and picked by name. Sheets follow in part 6. Admin has `admin` on all of them.
 - Part 2 seeds the configuration and the bookable spaces: Lindholmen's 10 conference rooms and Vingaleden's 3 boats, each in the organization's venue. The rest of the catalog (dishes, drinks, meals, guides, tours, equipment, packages, skippers, trips and add-ons) comes in part 3; Vingaleden's skippers and the Lighthouse tour are seeded already. The requirement types under "Other types" come in part 5, because they point to vocabularies via `requirement.*`.
 
 ---
@@ -318,7 +319,7 @@ Customers: Hisingen Energi AB (Company, the same name as at Lindholmen but a com
 ## Structure in the code
 
 - `packages/core/src/seed/demo/data/` has one folder per organization (`lindholmen/`, `vingaleden/`). The files are pure data, split so that no file goes over 150 lines, e.g. `lindholmen.ts` (roles and users), `config.ts`, `types.ts` and `rooms.ts`. Later parts add `dishes.ts`, `meals.ts`, `packages.ts`, `customers.ts`, `pipeline.ts` and `bookings.ts`.
-- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-items.ts` and `seed-customers.ts`. Items with `parts` come after the items they contain; contact persons are created right after their customer.
+- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-items.ts`, `seed-customers.ts` and `seed-bookings.ts`. Items with `parts` come after the items they contain; contact persons are created right after their customer.
   - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`.
   - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
 - `checks.ts` and `config-checks.ts` contain the checks above.

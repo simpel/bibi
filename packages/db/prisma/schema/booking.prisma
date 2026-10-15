@@ -1,0 +1,40 @@
+/// Booking – the conference or event as a whole (ADR 0022). Its type (base `BOOKING`) decides its
+/// own fields. `bookingStatusId` is the organization's own status (with a fixed phase); it is set
+/// to the default `TENTATIVE` status on create and changed only by `booking.changeStatus`.
+/// `status` is the soft-delete flag (ADR 0006), not the booking status.
+model Booking {
+  id                  String        @id @default(cuid(2))
+  organizationId      String
+  /// Reference number, sequential per organization (1, 2, 3, …).
+  reference           Int
+  entityTypeId        String
+  customerId          String
+  bookingStatusId     String
+  startsAt            DateTime
+  endsAt              DateTime
+  estimatedHeadcount  Int?
+  /// Locked some days before the booking.
+  guaranteedHeadcount Int?
+  /// User id of the salesperson (a member of the organization).
+  salesOwnerId        String?
+  /// User id of the coordinator (a member); required from the `CONFIRMED` phase.
+  coordinatorId       String?
+  statusChangedAt     DateTime      @default(now())
+  /// Values of the type's own fields, keyed by `FieldDefinition.key`.
+  fields              Json          @default("{}")
+  status              RecordStatus  @default(ACTIVE)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  createdBy           String?
+  entityType          EntityType    @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  customer            Customer      @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  bookingStatus       BookingStatus @relation(fields: [bookingStatusId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, reference])
+  @@index([organizationId, status, startsAt])
+  @@index([organizationId, customerId])
+  @@index([organizationId, bookingStatusId])
+  @@index([organizationId, salesOwnerId])
+  @@index([organizationId, coordinatorId])
+}

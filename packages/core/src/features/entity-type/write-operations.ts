@@ -75,7 +75,7 @@ export const archiveEntityType = defineOperation({
   name: "entityType.archive",
   kind: "command",
   description:
-    "Archive a type. Refused while active records (items, customers, contacts) still have the " +
+    "Archive a type. Refused while active records (items, customers, contacts, bookings) still have the " +
     "type, or a sheet definition includes it.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,

@@ -39,6 +39,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Occupancy",
   "BookingStatus",
   "BookingStatusTransition",
+  "Booking",
   "Conversation",
   "Message",
   "Skill",
