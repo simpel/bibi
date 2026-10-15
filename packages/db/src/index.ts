@@ -38,6 +38,7 @@ export {
   type Invitation,
   type Item,
   ItemBehaviour,
+  type ItemChoiceGroup,
   type ItemComponent,
   type ItemSetup,
   type Member,

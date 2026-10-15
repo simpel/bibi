@@ -43,8 +43,8 @@ const DATA_COUNTS: Record<ItemBehaviour, (input: CountInput) => Promise<number>>
     context.db.itemSetup.count({ where: { item: { entityTypeId, status: "ACTIVE" } } }),
   COMPOSABLE: ({ context, entityTypeId }) =>
     context.db.itemComponent.count({ where: { parent: { entityTypeId, status: "ACTIVE" } } }),
-  // There is no choice-group model yet; when one exists, count its rows here (ADR 0026).
-  CHOICES: async () => 0,
+  CHOICES: ({ context, entityTypeId }) =>
+    context.db.itemChoiceGroup.count({ where: { item: { entityTypeId, status: "ACTIVE" } } }),
 };
 
 export type CheckRemovableInput = CountInput & { removed: readonly ItemBehaviour[] };

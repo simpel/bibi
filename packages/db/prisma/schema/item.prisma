@@ -37,6 +37,8 @@ model Item {
   components             ItemComponent[] @relation("ItemComponentParent")
   /// The composed items this item is a part of.
   partOf                 ItemComponent[] @relation("ItemComponentPart")
+  /// CHOICES: choice groups among the parts.
+  choiceGroups           ItemChoiceGroup[]
   /// BOOKABLE: the periods the item is held (ADR 0022).
   occupancies            Occupancy[]
 
@@ -78,13 +80,40 @@ model ItemComponent {
   durationMinutes Int?
   /// Mandatory part (true) or optional part (false).
   required        Boolean  @default(true)
+  /// CHOICES: the choice group this part is an option in; null = not an option.
+  choiceGroupId   String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   createdBy       String?
   parent          Item     @relation("ItemComponentParent", fields: [parentId, organizationId], references: [id, organizationId])
   part            Item     @relation("ItemComponentPart", fields: [partId, organizationId], references: [id, organizationId])
+  choiceGroup     ItemChoiceGroup? @relation(fields: [choiceGroupId, organizationId], references: [id, organizationId])
 
   @@unique([parentId, partId])
   @@index([organizationId, parentId])
   @@index([organizationId, partId])
+  @@index([organizationId, choiceGroupId])
+}
+
+/// Item choice group – pick between `minPick` and `maxPick` of the parts linked to it (CHOICES,
+/// ADR 0021). Replaced as a set by `item.*` together with the parts; core enforces
+/// `0 <= minPick <= maxPick <= number of options`.
+model ItemChoiceGroup {
+  id             String          @id @default(cuid(2))
+  organizationId String
+  itemId         String
+  name           String
+  minPick        Int
+  maxPick        Int
+  /// Order of the groups on the item, from 0.
+  position       Int
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  createdBy      String?
+  item           Item            @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  options        ItemComponent[]
+
+  @@unique([id, organizationId])
+  @@unique([itemId, name])
+  @@index([organizationId, itemId])
 }

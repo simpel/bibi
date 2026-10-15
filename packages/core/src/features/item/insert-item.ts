@@ -3,7 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { checkItem } from "./check-item";
-import { replaceComponents } from "./item-components";
+import { planComposition, writeComposition } from "./item-composition";
 import { loadItemType } from "./item-rules";
 import { replaceSetups } from "./item-setups";
 import type { ItemCreateInput, ItemDto } from "./schema";
@@ -16,19 +16,21 @@ export type InsertItemInput = {
   customerId: string | null;
 };
 
-/** Checks and creates an item with its setups and parts, and records it for audit. */
+/** Checks and creates an item with its setups, parts and choice groups, and records it for audit. */
 export async function insertItem({
   context,
-  input: { entityTypeId, fields, setups, components, ...data },
+  input: { entityTypeId, fields, setups, components, choiceGroups, ...data },
   customerId,
 }: InsertItemInput): Promise<Result<ItemDto>> {
   const type = await loadItemType({ context, entityTypeId });
   if (!type.ok) return type;
+  const composition = planComposition({ components, choiceGroups });
   const checked = await checkItem({
     context,
     type: type.value,
     customerId,
-    data: { ...data, setups, components },
+    data: { ...data, setups, components, choiceGroups },
+    composition,
     fields: fields ?? {},
   });
   if (!checked.ok) return checked;
@@ -42,7 +44,7 @@ export async function insertItem({
     },
   });
   if (setups) await replaceSetups({ context, itemId: row.id, setups });
-  if (components) await replaceComponents({ context, itemId: row.id, components });
+  await writeComposition({ context, itemId: row.id, partsChanged: true, composition });
   const item = await loadItem({ context, id: row.id });
   if (!item) return notFound({ entity: "Item" });
   context.recordChange({ entityId: row.id, after: item });

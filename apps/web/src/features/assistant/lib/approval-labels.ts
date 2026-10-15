@@ -22,6 +22,7 @@ export const FIELD_KEYS = [
   "defaultDurationMinutes",
   "setups",
   "components",
+  "choiceGroups",
   "changeoverMinutes",
   "entityTypeIds",
   "fieldIds",

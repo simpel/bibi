@@ -2,6 +2,7 @@ import {
   archiveItem,
   createItem,
   getItem,
+  ItemChoiceGroupSchema,
   ItemComponentSchema,
   type ItemDto,
   ItemSchema,
@@ -22,6 +23,7 @@ import { VenueRef } from "../venue/graphql";
 
 type ItemSetupDto = ItemDto["setups"][number];
 type ItemComponentDto = ItemDto["components"][number];
+type ItemChoiceGroupDto = ItemDto["choiceGroups"][number];
 
 export const ItemSetupRef = objectFromSchema<ItemSetupDto>({
   name: "ItemSetup",
@@ -35,10 +37,16 @@ export const ItemComponentRef = objectFromSchema<ItemComponentDto>({
   description: "One part of a COMPOSABLE item: quantity, timing and whether it is mandatory.",
 });
 
+export const ItemChoiceGroupRef = objectFromSchema<ItemChoiceGroupDto>({
+  name: "ItemChoiceGroup",
+  schema: ItemChoiceGroupSchema,
+  description: "Choice group of a CHOICES item: pick between minPick and maxPick of the options.",
+});
+
 export const ItemRef = objectFromSchema<ItemDto>({
   name: "Item",
   schema: ItemSchema,
-  omit: ["organizationId", "setups", "components"],
+  omit: ["organizationId", "setups", "components", "choiceGroups"],
   description: "Artikel – anything the organization sells or books, as defined by its item type.",
 });
 const ItemPageRef = pageType({ name: "ItemPage", item: ItemRef });
@@ -56,6 +64,14 @@ builder.objectField(ItemRef, "components", (t) =>
     type: [ItemComponentRef],
     description: "Parts (COMPOSABLE behaviour), by offset.",
     resolve: (item) => item.components,
+  }),
+);
+
+builder.objectField(ItemRef, "choiceGroups", (t) =>
+  t.field({
+    type: [ItemChoiceGroupRef],
+    description: "Choice groups among the parts (CHOICES behaviour), in order.",
+    resolve: (item) => item.choiceGroups,
   }),
 );
 

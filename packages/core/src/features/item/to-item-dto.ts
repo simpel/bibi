@@ -1,13 +1,29 @@
-import type { Item } from "@okazi/db";
+import type { Item, ItemChoiceGroup, ItemComponent } from "@okazi/db";
 import type { OperationContext } from "../../operations/types";
 import { asFieldValues } from "../field-definition/field-usage";
 import type { ItemDto } from "./schema";
 
 type Db = Pick<OperationContext, "db">;
 
+type ChoiceGroupsOfInput = {
+  groups: readonly ItemChoiceGroup[];
+  components: readonly ItemComponent[];
+};
+
+/** An item's choice groups in order, each with its options in the order of the parts. */
+const choiceGroupsOf = ({ groups, components }: ChoiceGroupsOfInput) =>
+  groups.map(({ id, name, minPick, maxPick }) => ({
+    name,
+    minPick,
+    maxPick,
+    itemIds: components
+      .filter((component) => component.choiceGroupId === id)
+      .map((component) => component.partId),
+  }));
+
 export type ToItemDtosInput = { context: Db; rows: readonly Item[] };
 
-/** Items with their setup capacities (largest first) and parts (by offset). One query each. */
+/** Items with setup capacities (largest first), parts (by offset) and choice groups. */
 export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<ItemDto[]> {
   const ids = rows.map((row) => row.id);
   const setups = await context.db.itemSetup.findMany({
@@ -18,6 +34,10 @@ export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<It
   const components = await context.db.itemComponent.findMany({
     where: { parentId: { in: ids } },
     orderBy: [{ offsetMinutes: "asc" }, { createdAt: "asc" }, { id: "asc" }],
+  });
+  const groups = await context.db.itemChoiceGroup.findMany({
+    where: { itemId: { in: ids } },
+    orderBy: [{ position: "asc" }],
   });
   return rows.map((row) => ({
     ...row,
@@ -34,6 +54,10 @@ export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<It
         durationMinutes,
         required,
       })),
+    choiceGroups: choiceGroupsOf({
+      groups: groups.filter((group) => group.itemId === row.id),
+      components: components.filter((component) => component.parentId === row.id),
+    }),
   }));
 }
 
