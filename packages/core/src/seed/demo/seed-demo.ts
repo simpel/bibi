@@ -1,4 +1,5 @@
 import { type Db, getDb } from "@okazi/db";
+import { getLogger } from "@okazi/logger";
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import { createExecuteContext } from "../../operations/context";
@@ -19,11 +20,44 @@ import { bootstrapDemoOrg } from "./users";
 /** The demo organizations, in seed order (`docs/demo-seed.md`). */
 export const DEMO_ORGS: readonly DemoOrg[] = [lindholmen, vingaleden];
 
+/** Parts of the demo seed (ADR 0025). Each part is seeded when the corresponding operations exist. */
+export const DEMO_SEED_PARTS = [
+  { part: 1, name: "Custom roles" },
+  { part: 2, name: "Configurable domain (types, fields, vocabularies, setups, behaviors)" },
+  { part: 3, name: "Items and composition" },
+  { part: 4, name: "Customers, price lists and sales pipeline" },
+  { part: 5, name: "Bookings, custom statuses, program and requirements" },
+  { part: 6, name: "Sheets with matching and blocking" },
+  { part: 7, name: "Series" },
+  { part: 8, name: "Export" },
+] as const;
+
 export type SeedDemoInput = { db?: Db; orgs?: readonly DemoOrg[] };
 
 export type SeedDemoOutput = { organizations: { slug: string; organizationId: string }[] };
 
 type SeedOneInput = { db: Db; org: DemoOrg };
+
+type PostSeedInput = { context: ReturnType<typeof createExecuteContext>; org: DemoOrg };
+
+async function postSeedLogging({ context, org }: PostSeedInput): Promise<Result<null>> {
+  const log = getLogger();
+  for (const { part, name } of DEMO_SEED_PARTS) {
+    if (part >= 5) {
+      log.info({ event: "seed.sliceSkipped", part, name });
+    }
+  }
+  const auditRowCount = await context.db.auditLog.count({
+    where: { organizationId: context.organizationId, actorType: "SYSTEM" },
+  });
+  log.info({ event: "seed.auditCount", organizationId: context.organizationId, auditRowCount });
+  const failures = await checkDemoOrg({ context, org });
+  if (failures.length > 0) {
+    const message = `Demo checks failed:\n${failures.join("\n")}`;
+    return err({ error: new AppError({ code: "INTERNAL", message }) });
+  }
+  return ok({ value: null });
+}
 
 async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
   await resetDemoOrg({ db, org });
@@ -50,11 +84,8 @@ async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
     refs: refs.value,
   });
   if (!customers.ok) return customers;
-  const failures = await checkDemoOrg({ context, org });
-  if (failures.length > 0) {
-    const message = `Demo checks failed:\n${failures.join("\n")}`;
-    return err({ error: new AppError({ code: "INTERNAL", message }) });
-  }
+  const postSeed = await postSeedLogging({ context, org });
+  if (!postSeed.ok) return postSeed;
   return ok({ value: organizationId });
 }
 

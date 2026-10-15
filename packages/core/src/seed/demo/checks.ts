@@ -44,7 +44,12 @@ export async function checkDemoOrg({ context, org }: CheckDemoOrgInput): Promise
     }
   }
   failures.push(...(await checkDemoConfig({ context, org })));
-  const notSystem = await context.db.auditLog.count({ where: { actorType: { not: "SYSTEM" } } });
+
+  // Check 7 (ADR 0025): every write (organization-scoped) must have an audit row as SYSTEM.
+  const notSystem = await context.db.auditLog.count({
+    where: { organizationId: context.organizationId, actorType: { not: "SYSTEM" } },
+  });
   if (notSystem > 0) failures.push(`${org.slug}: ${notSystem} audit rows not by SYSTEM`);
+
   return failures;
 }

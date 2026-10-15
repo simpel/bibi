@@ -2,7 +2,7 @@
 // (then delete the generator/datasource blocks it emits; they live in base.prisma).
 // Do not hand-edit models; change the Better Auth config in packages/auth and regenerate.
 //
-// Tenancy: `Organization.id` IS the `organizationId` on every business row (Venue, Room, AuditLog,
+// Tenancy: `Organization.id` IS the `organizationId` on every business row (Venue, AuditLog,
 // Embedding, ...). There is deliberately no FK from business tables to `organization` (Better Auth
 // owns these tables, ADR 0004); `packages/auth` resolves the org and `scopedDb` pins it.
 // Auth tables are not in ORG_SCOPED_MODELS, except Member, OrganizationRole and Invitation: core
