@@ -4,6 +4,7 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { assignBooking } from "./assign-operation";
+import { changeBookingStatus } from "./change-status-operation";
 import { bookingListWhere } from "./list-where";
 import {
   BookingIdInputSchema,
@@ -56,4 +57,5 @@ export const bookingOperations = [
   createBooking,
   updateBooking,
   assignBooking,
+  changeBookingStatus,
 ];

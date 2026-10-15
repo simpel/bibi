@@ -37,4 +37,11 @@ export const bookingMcpTools = [
         .filter(Boolean)
         .join(" "),
   }),
+  mcpTool({
+    operation: "booking.changeStatus",
+    summary: ({ input }) =>
+      `Move booking ${text({ value: input.bookingId })} to status ${text({
+        value: input.statusId,
+      })}${input.reason === undefined ? "" : ` (reason: ${text({ value: input.reason })})`}`,
+  }),
 ];

@@ -7,7 +7,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - `src/app/[locale]/(app)/skills` (`page`, `new`, `[id]`, `[id]/edit`) – the Skills section.
 - `src/app/[locale]/(app)/settings/roles` and `settings/members` – roles (permission matrix resource × read/write/admin, import the Conference estate template, archive) and members (assign roles). `owner` is shown read-only. Buttons are controlled by `roleAdmin`/`memberAdmin` in `caller-abilities.ts` (ADR 0020).
 - `src/app/api/auth/[...all]` (Better Auth), `api/graphql`, `api/v1/[...path]` (REST + OpenAPI), `api/chat` (the assistant's turn, `createChatHandler`), `api/assistant/approval` (the approval card's POST, `createApprovalHandler`), `.well-known/oauth-authorization-server` and `oauth-protected-resource` (discovery for MCP/OAuth, forwarded to Better Auth). The chat and approval routes have `runtime = "nodejs"`, `dynamic = "force-dynamic"` and `maxDuration`.
-- `src/features/<entity>/ui/` – components per entity (fixed names `venue`, `item`, `skill`; `auth/ui` for sign-in; `assistant/` see below). `actions.ts` next to `ui/` = server actions. `web-surfaces.ts` = which operations have UI (`route` or `route: "*"` + `component` for UI in the shell, e.g. the assistant panel; `UI_EXEMPT` is empty).
+- `src/features/<entity>/ui/` – components per entity (fixed names `venue`, `item`, `skill`; `auth/ui` for sign-in; `assistant/` see below). `actions.ts` next to `ui/` = server actions. `web-surfaces.ts` = which operations have UI (`route` or `route: "*"` + `component` for UI in the shell, e.g. the assistant panel; `UI_EXEMPT` in `ui-exempt.ts` lists operations deliberately without UI).
 - `src/components/` – app level: `shell/` (sidebar, org switcher, language, theme, user menu, ⌘K incl. "Ask the assistant"), `form/`, `states/`, `confirm-dialog`, `markdown-view` (safe markdown without raw HTML, parser in `lib/markdown/`).
 - `src/server/` – server code only: `run-operation.ts`, `operations.ts` (registration), `embed.ts` (`createEmbed` from `@okazi/ai/embed`), `handlers.ts` (GraphQL/REST), `assistant-handlers.ts` (chat + approval), `e2e-mock-model.ts` (E2E only, see below), `caller-abilities.ts`, `session.ts`, `guard.ts`, `auth-pages.ts`, `load-error.ts`, `to-action-result.ts`.
 - `src/lib/` – pure helper functions (error mapping, form helpers, routes). Tested with Vitest.
@@ -25,7 +25,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 1. Core operation first (`packages/core`), then GraphQL/REST/MCP.
 2. `src/features/<entity>/actions.ts` (server actions) and `ui/` (list = server component, form/dialog = client). Copy `venue/ui` and `item/ui`.
 3. Page: `src/app/[locale]/(app)/<route>/page.tsx` (thin), nav in `components/shell/nav-items.ts`.
-4. Add the operations to `WEB_SURFACES` (or `UI_EXEMPT` with a reason) in `features/web-surfaces.ts`.
+4. Add the operations to `WEB_SURFACES` in `features/web-surfaces.ts` (or to `UI_EXEMPT` in `features/ui-exempt.ts` with a reason).
 5. Text in `packages/i18n/messages/sv.json` and `en.json` (key parity is tested).
 
 ## i18n

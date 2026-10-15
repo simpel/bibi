@@ -335,6 +335,11 @@
     "assigned": "The owners have been updated.",
     "noOwner": "No one",
     "coordinatorRequired": "A confirmed booking needs a coordinator.",
+    "changeStatus": "Change status",
+    "changeStatusDescription": "Move the booking to one of the statuses the organization allows from its current status. A cancellation needs a reason and releases the booking's rooms and resources.",
+    "statusChanged": "The status has been changed.",
+    "phaseRuleRefused": "The change breaks a booking rule: confirmed and completed bookings need a coordinator, and a booking can be completed only after it has ended.",
+    "reasonRequired": "Give a reason for the cancellation.",
     "empty": "No bookings yet.",
     "emptyDescription": "Create your first booking.",
     "noTypes": "There are no booking types yet. Create a type first.",
@@ -349,7 +354,9 @@
       "estimatedHeadcount": "Estimated headcount",
       "guaranteedHeadcount": "Guaranteed headcount",
       "salesOwner": "Salesperson",
-      "coordinator": "Coordinator"
+      "coordinator": "Coordinator",
+      "newStatus": "New status",
+      "statusReason": "Reason"
     },
     "columns": {
       "reference": "Reference",

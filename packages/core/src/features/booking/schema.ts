@@ -19,6 +19,8 @@ export const BookingSchema = z.object({
   salesOwnerId: z.string().nullable(),
   coordinatorId: z.string().nullable(),
   statusChangedAt: z.date(),
+  /** The reason given with the last status change; always set in the `CANCELLED` phase. */
+  statusReason: z.string().nullable(),
   fields: FieldValuesSchema,
   /**
    * Derived, not stored (ADR 0012): `booking-<id>@<MAIL_INBOUND_DOMAIN>`, the reply-to of booking
@@ -83,6 +85,23 @@ export const BookingAssignInputSchema = z.object({
     .describe("User id of the new coordinator (a member); null removes; omitted = unchanged"),
 });
 
+export const BookingChangeStatusInputSchema = z.object({
+  bookingId: z.string().min(1).describe("Id of the booking"),
+  statusId: z
+    .string()
+    .min(1)
+    .describe(
+      "Id of the new status; must be an allowed transition (bookingStatus.list transitionsTo)",
+    ),
+  reason: z
+    .string()
+    .trim()
+    .min(1)
+    .max(1000)
+    .optional()
+    .describe("Why the status changes; required when the new status is in the CANCELLED phase"),
+});
+
 export const BookingIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const BookingListInputSchema = z.object({
@@ -105,3 +124,4 @@ export type BookingDto = z.infer<typeof BookingSchema>;
 export type BookingCreateInput = z.infer<typeof BookingCreateInputSchema>;
 export type BookingUpdateInput = z.infer<typeof BookingUpdateInputSchema>;
 export type BookingAssignInput = z.infer<typeof BookingAssignInputSchema>;
+export type BookingChangeStatusInput = z.infer<typeof BookingChangeStatusInputSchema>;

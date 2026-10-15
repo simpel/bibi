@@ -335,6 +335,11 @@
     "assigned": "De ansvariga har uppdaterats.",
     "noOwner": "Ingen",
     "coordinatorRequired": "En bekräftad bokning måste ha en koordinator.",
+    "changeStatus": "Byt status",
+    "changeStatusDescription": "Flytta bokningen till en av de statusar som organisationen tillåter från nuvarande status. En avbokning kräver en anledning och frigör bokningens rum och resurser.",
+    "statusChanged": "Statusen har ändrats.",
+    "phaseRuleRefused": "Ändringen bryter mot en bokningsregel: bekräftade och genomförda bokningar måste ha en koordinator, och en bokning kan markeras som genomförd först när den har tagit slut.",
+    "reasonRequired": "Ange en anledning till avbokningen.",
     "empty": "Inga bokningar ännu.",
     "emptyDescription": "Skapa din första bokning.",
     "noTypes": "Det finns inga bokningstyper ännu. Skapa en typ först.",
@@ -349,7 +354,9 @@
       "estimatedHeadcount": "Beräknat antal",
       "guaranteedHeadcount": "Garanterat antal",
       "salesOwner": "Säljare",
-      "coordinator": "Koordinator"
+      "coordinator": "Koordinator",
+      "newStatus": "Ny status",
+      "statusReason": "Anledning"
     },
     "columns": {
       "reference": "Nummer",

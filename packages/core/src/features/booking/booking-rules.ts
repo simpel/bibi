@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
+import { COORDINATED_PHASES } from "./phase-rules";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -50,7 +51,7 @@ export async function checkCoordinatorKept({
     where: { id: bookingStatusId, status: { in: ["ACTIVE", "ARCHIVED"] } },
     select: { phase: true, name: true },
   });
-  if (!status || (status.phase !== "CONFIRMED" && status.phase !== "COMPLETED")) {
+  if (!status || !COORDINATED_PHASES.includes(status.phase)) {
     return ok({ value: true });
   }
   return conflict({ message: `A booking in "${status.name}" requires a coordinator` });

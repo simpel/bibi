@@ -2,7 +2,8 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { createCoreOperations } from "@okazi/core";
 import { describe, expect, it } from "vitest";
-import { UI_EXEMPT, WEB_SURFACES } from "./web-surfaces";
+import { UI_EXEMPT } from "./ui-exempt";
+import { WEB_SURFACES } from "./web-surfaces";
 
 const stubEmbed = async () => ({ model: "stub", embeddings: [] });
 const operationNames = createCoreOperations({ embed: stubEmbed }).map(({ name }) => name);

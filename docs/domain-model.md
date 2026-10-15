@@ -348,6 +348,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - cancellation terms (not built yet)
 - seriesId and occurrenceIndex (if the booking belongs to a series; not built yet)
 - statusChangedAt
+- status reason (`statusReason`, the reason given with the last status change; always set in the `CANCELLED` phase)
 - inbound address (`inboundAddress`, derived and not stored: `booking-<id>@<MAIL_INBOUND_DOMAIN>`, null when inbound mail is not configured; the reply-to of booking mail)
 
 **Relations**
@@ -364,7 +365,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `N:1` Customer (organization) orders this
 - `0..1:N` Communication & log concerns this
 
-> Operations (resource `booking`): `booking.list|get|create|update` and `booking.assign`. `create` gives the next reference number and the organization's default `TENTATIVE` status; the customer must be active. `update` changes customer, time, headcount and own fields, never type, status or owners. `booking.assign` changes the salesperson and/or coordinator: both must be members (`VALIDATION`), and the coordinator cannot be removed from the `CONFIRMED` phase on (`CONFLICT`). Every change is audited.
+> Operations (resource `booking`): `booking.list|get|create|update`, `booking.assign` and `booking.changeStatus`. `create` gives the next reference number and the organization's default `TENTATIVE` status; the customer must be active. `update` changes customer, time, headcount and own fields, never type, status or owners. `booking.assign` changes the salesperson and/or coordinator: both must be members (`VALIDATION`), and the coordinator cannot be removed from the `CONFIRMED` phase on (`CONFLICT`). `booking.changeStatus({ bookingId, statusId, reason? })` follows only the organization's transitions (`CONFLICT` otherwise), and the phase rules apply to every transition: `CONFIRMED` and `COMPLETED` need a coordinator and `COMPLETED` an ended booking (`CONFLICT`), `CANCELLED` needs a reason (`VALIDATION`), archives the booking's occupancy (`sourceType` `booking`) and runs the cancellation-terms hook. Every change is audited.
 
 > Status changes only with `booking.changeStatus`. A quick booking is created by staff in a `TENTATIVE` status. The customer pays through a Swish or card link (the booking is then confirmed when the payment completes) or against invoice. `booking.export` gives the booking as json, pdf or csv ([ADR 0024](decisions/0024-booking-export-instead-of-partner.md)).
 

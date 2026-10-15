@@ -18,6 +18,7 @@ describe("registry and approval", () => {
       "auditLog.get",
       "auditLog.list",
       "booking.assign",
+      "booking.changeStatus",
       "booking.create",
       "booking.get",
       "booking.list",

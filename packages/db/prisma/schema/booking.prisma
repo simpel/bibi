@@ -20,6 +20,8 @@ model Booking {
   /// User id of the coordinator (a member); required from the `CONFIRMED` phase.
   coordinatorId       String?
   statusChangedAt     DateTime      @default(now())
+  /// Why the status last changed (`booking.changeStatus` reason); required for the `CANCELLED` phase.
+  statusReason        String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
   fields              Json          @default("{}")
   status              RecordStatus  @default(ACTIVE)

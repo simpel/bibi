@@ -15,8 +15,8 @@ export { toHttpStatus } from "./errors/to-http-status";
 export { type McpErrorResult, toMcpError } from "./errors/to-mcp-error";
 export * from "./features/audit-log/operations";
 export * from "./features/booking/assign-operation";
+export * from "./features/booking/change-status-operation";
 export * from "./features/booking/operations";
-export { toBookingDto } from "./features/booking/to-booking-dto";
 export * from "./features/booking/write-operations";
 export * from "./features/booking-status/import-template-operation";
 export {

@@ -8,10 +8,11 @@ import { useState } from "react";
 import { AssignDialog } from "./assign-dialog";
 import { BookingDialog } from "./booking-dialog";
 import type { BookingFormData } from "./booking-form-data";
+import { ChangeStatusButton } from "./change-status-button";
 
 export type BookingActionsProps = { booking: BookingDto; data: BookingFormData };
 
-/** Edit and change-owners buttons of the booking detail page. */
+/** Edit, change-status and change-owners buttons of the booking detail page. */
 export function BookingActions({ booking, data }: BookingActionsProps) {
   const t = useTranslations("booking");
   const [dialog, setDialog] = useState<"edit" | "assign" | null>(null);
@@ -21,6 +22,7 @@ export function BookingActions({ booking, data }: BookingActionsProps) {
         <PencilIcon />
         {t("edit")}
       </Button>
+      <ChangeStatusButton booking={booking} statuses={data.statuses} />
       {data.members.length > 0 ? (
         <Button variant="outline" onClick={() => setDialog("assign")}>
           <UserCogIcon />

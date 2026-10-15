@@ -24,6 +24,7 @@ export async function BookingFacts({ booking, data }: BookingFactsProps) {
     { label: t("customer"), value: nameOf({ options: data.customers, id: booking.customerId }) },
     { label: t("when"), value: when },
     { label: t("status"), value: status?.name ?? "–" },
+    ...(booking.statusReason ? [{ label: t("statusReason"), value: booking.statusReason }] : []),
     { label: t("estimatedHeadcount"), value: count({ value: booking.estimatedHeadcount }) },
     { label: t("guaranteedHeadcount"), value: count({ value: booking.guaranteedHeadcount }) },
     { label: t("salesOwner"), value: nameOf({ options: data.members, id: booking.salesOwnerId }) },

@@ -1,8 +1,7 @@
-import { getDb } from "@okazi/db";
 import { describe, expect, it } from "vitest";
-import { assignBooking, createBooking, execute } from "../src/index";
+import { assignBooking, changeBookingStatus, createBooking, execute } from "../src/index";
 import { bookingSetup, createTestBooking, memberUser } from "./booking-helpers";
-import { statuses } from "./booking-status-helpers";
+import { statusByName } from "./booking-status-helpers";
 import { errorCode, unwrap } from "./helpers";
 import { testOrg } from "./org-helpers";
 
@@ -94,11 +93,13 @@ describe("booking.assign (ADR 0022)", () => {
       customerId: customer.id,
       coordinatorId: johan,
     });
-    const confirmed = (await statuses({ context })).find((s) => s.phase === "CONFIRMED");
-    // booking.changeStatus does not exist yet (#48), so the status is moved directly.
-    await getDb().booking.update({
-      where: { id: booking.id },
-      data: { bookingStatusId: confirmed?.id ?? "" },
+    const confirmed = await statusByName({ context, name: "Confirmed" });
+    unwrap({
+      result: await execute({
+        operation: changeBookingStatus,
+        input: { bookingId: booking.id, statusId: confirmed.id },
+        context,
+      }),
     });
     const removed = await execute({
       operation: assignBooking,

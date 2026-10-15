@@ -2,6 +2,7 @@ import {
   assignBooking,
   type BookingDto,
   BookingSchema,
+  changeBookingStatus,
   createBooking,
   getBooking,
   listBookings,
@@ -32,6 +33,7 @@ fieldFromOperation({ operation: getBooking, type: BookingRef, name: "booking" })
 mutationFromOperation({ operation: createBooking, type: BookingRef });
 mutationFromOperation({ operation: updateBooking, type: BookingRef });
 mutationFromOperation({ operation: assignBooking, type: BookingRef });
+mutationFromOperation({ operation: changeBookingStatus, type: BookingRef });
 
 builder.objectField(BookingRef, "entityType", (t) =>
   t.field({

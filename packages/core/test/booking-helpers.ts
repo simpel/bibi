@@ -28,9 +28,11 @@ export type CreateTestBookingInput = {
   customerId: string;
   salesOwnerId?: string;
   coordinatorId?: string;
+  startsAt?: Date;
+  endsAt?: Date;
 };
 
-/** A booking tomorrow 09–12. */
+/** A booking tomorrow, three hours long, unless a period is given. */
 export async function createTestBooking({ context, ...input }: CreateTestBookingInput) {
   const startsAt = new Date(Date.now() + 86_400_000);
   const endsAt = new Date(startsAt.getTime() + 3 * 3_600_000);

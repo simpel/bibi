@@ -1,8 +1,8 @@
 /**
  * Which core operations have a UI surface in the web app. The parity test in
  * `web-surfaces.test.ts` validates this list: a new operation must either appear in
- * `WEB_SURFACES` (with the route or component that exposes it) or be listed in `UI_EXEMPT` with
- * a reason.
+ * `WEB_SURFACES` (with the route or component that exposes it) or be listed in `UI_EXEMPT`
+ * (`ui-exempt.ts`) with a reason.
  */
 export type WebSurface = {
   /** Core operation name, e.g. `venue.create`. */
@@ -15,8 +15,6 @@ export type WebSurface = {
   /** With `route: "*"`: the component file below `src/` that provides the UI. */
   component?: string;
 };
-
-export type UiExempt = { operation: string; reason: string };
 
 /** The assistant panel (conversation history, rename, archive, chat) is mounted on every page. */
 const PANEL = { route: "*", component: "features/assistant/ui/assistant-panel.tsx" } as const;
@@ -53,6 +51,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "booking.get", route: "/bookings/[id]" },
   { operation: "booking.update", route: "/bookings/[id]" },
   { operation: "booking.assign", route: "/bookings/[id]" },
+  { operation: "booking.changeStatus", route: "/bookings/[id]" },
   { operation: "inboundEmail.list", route: "/bookings/[id]" },
   { operation: "entityType.list", route: "/settings/types" },
   { operation: "entityType.create", route: "/settings/types" },
@@ -124,26 +123,4 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "conversation.archive", ...PANEL },
   { operation: "message.list", ...PANEL },
   { operation: "message.append", ...PANEL },
-];
-
-/** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
-export const UI_EXEMPT: readonly UiExempt[] = [
-  {
-    operation: "occupancy.get",
-    reason:
-      "An occupancy has no page of its own: the item page lists them with occupancy.list and edits blocks inline.",
-  },
-  {
-    operation: "contact.get",
-    reason:
-      "Contact persons have no page of their own: the customer page lists them with contact.list and edits them inline.",
-  },
-  {
-    operation: "inboundEmail.get",
-    reason: "The booking page shows each received mail in full from inboundEmail.list",
-  },
-  {
-    operation: "auditLog.get",
-    reason: "The history tab shows every entry in full from auditLog.list; one entry has no page",
-  },
 ];
