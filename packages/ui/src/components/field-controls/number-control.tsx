@@ -1,8 +1,10 @@
-import { Input } from "@okazi/ui";
+import { Input } from "../input/input";
 import type { ControlProps } from "./control-props";
 
+export type NumberControlProps = ControlProps<string>;
+
 /** NUMBER field: a decimal input; the string is parsed by the form schema. */
-export function NumberControl({ value, onChange, ...aria }: ControlProps<string>) {
+export function NumberControl({ value, onChange, ...aria }: NumberControlProps) {
   return (
     <Input
       type="number"

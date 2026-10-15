@@ -1,12 +1,19 @@
 import type { FieldDefinitionDto } from "@okazi/core";
-import { FormControl, FormController, FormItem, FormLabel, FormMessage } from "@okazi/ui";
+import {
+  BooleanControl,
+  ChoiceControl,
+  DateControl,
+  FormControl,
+  FormController,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  MultiChoiceControl,
+  NumberControl,
+  TextControl,
+} from "@okazi/ui";
+import { useTranslations } from "next-intl";
 import type { Control, Path } from "react-hook-form";
-import { BooleanControl } from "./controls/boolean-control";
-import { ChoiceControl } from "./controls/choice-control";
-import { DateControl } from "./controls/date-control";
-import { MultiChoiceControl } from "./controls/multi-choice-control";
-import { NumberControl } from "./controls/number-control";
-import { TextControl } from "./controls/text-control";
 import type { FieldChoice } from "./field-specs";
 import type { WithRawFields } from "./raw-fields";
 
@@ -23,6 +30,8 @@ export function FieldController<V extends WithRawFields, O>({
   choices,
 }: FieldControllerProps<V, O>) {
   const { key, kind, name, required } = field;
+  const t = useTranslations("common");
+  const labels = { placeholder: t("select"), emptyLabel: t("noOptions") };
   return (
     <FormController
       control={control}
@@ -37,6 +46,7 @@ export function FieldController<V extends WithRawFields, O>({
             {renderControl({
               kind,
               choices,
+              labels,
               value: controlled.value,
               onChange: controlled.onChange,
             })}
@@ -51,11 +61,13 @@ export function FieldController<V extends WithRawFields, O>({
 type RenderInput = {
   kind: FieldDefinitionDto["kind"];
   choices: FieldChoice[];
+  labels: { placeholder: string; emptyLabel: string };
   value: unknown;
   onChange: (value: unknown) => void;
 };
 
-function renderControl({ kind, choices, value, onChange }: RenderInput) {
+/** The UI control of a field kind, bound to the form through `value` and `onChange`. */
+function renderControl({ kind, choices, labels, value, onChange }: RenderInput) {
   const common = { onChange };
   switch (kind) {
     case "TEXT":
@@ -67,12 +79,20 @@ function renderControl({ kind, choices, value, onChange }: RenderInput) {
     case "BOOLEAN":
       return <BooleanControl value={value === true} {...common} />;
     case "CHOICE":
-      return <ChoiceControl value={String(value ?? "")} choices={choices} {...common} />;
+      return (
+        <ChoiceControl
+          value={String(value ?? "")}
+          choices={choices}
+          placeholder={labels.placeholder}
+          {...common}
+        />
+      );
     case "MULTI_CHOICE":
       return (
         <MultiChoiceControl
           value={Array.isArray(value) ? (value as string[]) : []}
           choices={choices}
+          emptyLabel={labels.emptyLabel}
           {...common}
         />
       );

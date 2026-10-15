@@ -723,7 +723,8 @@
         },
         "duration": "{minutes} min",
         "setupsCount": "{count, plural, one {# setup} other {# setups}}",
-        "componentsCount": "{count, plural, one {# part} other {# parts}}"
+        "componentsCount": "{count, plural, one {# part} other {# parts}}",
+        "sections": { "price": "Price", "booking": "Booking", "setups": "Setups", "components": "Parts" }
       },
       "customer": {
         "singular": "Customer",

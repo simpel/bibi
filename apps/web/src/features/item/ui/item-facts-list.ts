@@ -1,7 +1,6 @@
 import type { EntityTypeDto, ItemDto } from "@okazi/core";
 import type { Fact } from "@/components/typed-fields/fact-list";
 import { ownFieldFacts } from "@/components/typed-fields/own-field-facts";
-import { formatKr } from "./format-price";
 import type { ItemFormData } from "./item-form-data";
 import type { ItemTranslator } from "./item-translator";
 
@@ -9,56 +8,17 @@ export type ItemFactsInput = {
   item: ItemDto;
   type: EntityTypeDto | undefined;
   data: ItemFormData;
-  locale: string;
   t: ItemTranslator;
   yesNo: { yes: string; no: string };
 };
 
-/** One fact per part of a COMPOSABLE item. */
-function componentFacts({ item, data, t }: ItemFactsInput): Fact[] {
-  return item.components.map(({ itemId, quantity, offsetMinutes, required }) => {
-    const name = data.parts.find(({ id }) => id === itemId)?.name ?? "–";
-    const value = t("componentValue", {
-      quantity,
-      name,
-      offset: offsetMinutes,
-      required: String(required),
-    });
-    return { label: t("sections.components"), value };
-  });
-}
-
-/** Behaviour facts: price, default length and one capacity per setup. */
-function behaviourFacts({ item, data, locale, t }: ItemFactsInput): Fact[] {
-  const facts: Fact[] = [];
-  if (item.priceMinor !== null && item.priceUnit !== null) {
-    const amount = formatKr({ minor: item.priceMinor, locale });
-    const unit = t(`priceUnits.${item.priceUnit}`);
-    facts.push({ label: t("sections.price"), value: t("priceValue", { amount, unit }) });
-  }
-  if (item.defaultDurationMinutes !== null) {
-    const minutes = item.defaultDurationMinutes;
-    facts.push({
-      label: t("fields.defaultDurationMinutes"),
-      value: t("durationValue", { minutes }),
-    });
-  }
-  for (const { setupId, capacity } of item.setups) {
-    const name = data.setups.find(({ id }) => id === setupId)?.name ?? "–";
-    facts.push({ label: t("sections.setups"), value: t("capacityValue", { name, capacity }) });
-  }
-  return facts;
-}
-
-/** Everything shown on an item's page: type, venue, the type's own fields and behaviours. */
-export function itemFacts({ item, type, data, locale, t, yesNo }: ItemFactsInput): Fact[] {
+/** Facts of an item's page: type, venue and the type's own fields (behaviours: `ItemBehaviours`). */
+export function itemFacts({ item, type, data, t, yesNo }: ItemFactsInput): Fact[] {
   const venue = data.venues.find(({ id }) => id === item.venueId)?.name ?? "–";
   const own = ownFieldFacts({ type, stored: item.fields, vocabularies: data.vocabularies, yesNo });
   return [
     { label: t("fields.type"), value: type?.name ?? "–" },
     { label: t("fields.venue"), value: venue },
     ...own,
-    ...behaviourFacts({ item, type, data, locale, t, yesNo }),
-    ...componentFacts({ item, type, data, locale, t, yesNo }),
   ];
 }

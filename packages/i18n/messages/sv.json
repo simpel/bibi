@@ -723,7 +723,8 @@
         },
         "duration": "{minutes} min",
         "setupsCount": "{count, plural, one {# uppställning} other {# uppställningar}}",
-        "componentsCount": "{count, plural, one {# del} other {# delar}}"
+        "componentsCount": "{count, plural, one {# del} other {# delar}}",
+        "sections": { "price": "Pris", "booking": "Bokning", "setups": "Uppställningar", "components": "Delar" }
       },
       "customer": {
         "singular": "Kund",

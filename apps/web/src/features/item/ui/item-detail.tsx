@@ -12,6 +12,7 @@ import { runOperation } from "@/server/run-operation";
 import { OccupancySection } from "../../occupancy/ui/occupancy-section";
 import { loadItemFormData } from "../load-item-form-data";
 import { ItemActions } from "./item-actions";
+import { ItemBehaviours } from "./item-behaviours";
 import { ItemFacts } from "./item-facts";
 
 export type ItemDetailProps = { locale: Locale; id: string };
@@ -42,7 +43,8 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         description={item.value.description ?? undefined}
         actions={actions}
       />
-      <ItemFacts item={item.value} type={type} data={data.value} locale={locale} />
+      <ItemFacts item={item.value} type={type} data={data.value} />
+      <ItemBehaviours item={item.value} data={data.value} locale={locale} />
       {type?.behaviours.includes("BOOKABLE") ? (
         <OccupancySection locale={locale} itemId={item.value.id} />
       ) : null}
