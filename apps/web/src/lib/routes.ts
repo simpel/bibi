@@ -9,6 +9,7 @@ export const ROUTES = {
   items: "/items",
   customers: "/customers",
   bookings: "/bookings",
+  bookingSeries: "/booking-series",
   settingsTypes: "/settings/types",
   settingsLists: "/settings/lists",
   settingsSetups: "/settings/setups",
@@ -37,6 +38,12 @@ export type BookingRouteInput = { id: string };
 
 export function bookingRoute({ id }: BookingRouteInput): string {
   return `${ROUTES.bookings}/${encodeURIComponent(id)}`;
+}
+
+export type BookingSeriesRouteInput = { id: string };
+
+export function bookingSeriesRoute({ id }: BookingSeriesRouteInput): string {
+  return `${ROUTES.bookingSeries}/${encodeURIComponent(id)}`;
 }
 
 export type SkillRouteInput = { id: string };

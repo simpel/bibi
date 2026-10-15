@@ -2,10 +2,10 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
-import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { mergeFields, validateFields } from "../field-definition/field-values";
 import { defaultTentativeStatusId, nextReference } from "./booking-defaults";
-import { checkCustomer, checkOwners, checkPeriod } from "./booking-rules";
+import { checkCustomer, checkPeriod } from "./booking-rules";
+import { checkNewBooking } from "./check-new-booking";
 import { BookingCreateInputSchema, BookingSchema, BookingUpdateInputSchema } from "./schema";
 import { loadBooking, toBookingDto } from "./to-booking-dto";
 
@@ -20,16 +20,9 @@ export const createBooking = defineOperation({
   output: BookingSchema,
   permission: "booking:write",
   handler: async ({ input: { entityTypeId, fields, ...data }, context }) => {
-    const type = await loadTypeOfBase({ context, entityTypeId, base: "BOOKING" });
-    if (!type.ok) return type;
-    for (const check of [
-      checkPeriod(data),
-      await checkCustomer({ context, customerId: data.customerId }),
-      await checkOwners({ context, ...data }),
-    ]) {
-      if (!check.ok) return check;
-    }
-    const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
+    const period = checkPeriod(data);
+    if (!period.ok) return period;
+    const checked = await checkNewBooking({ context, entityTypeId, fields, ...data });
     if (!checked.ok) return checked;
     const bookingStatusId = await defaultTentativeStatusId({ context });
     if (!bookingStatusId.ok) return bookingStatusId;

@@ -9,6 +9,7 @@ import {
   LayoutGridIcon,
   ListIcon,
   type LucideIcon,
+  Repeat2Icon,
   ShapesIcon,
   ShieldIcon,
   UsersIcon,
@@ -22,6 +23,7 @@ export type NavItem = {
     | "items"
     | "customers"
     | "bookings"
+    | "bookingSeries"
     | "skills"
     | "types"
     | "lists"
@@ -39,6 +41,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: ROUTES.items, labelKey: "items", icon: BoxIcon },
   { href: ROUTES.customers, labelKey: "customers", icon: ContactIcon },
   { href: ROUTES.bookings, labelKey: "bookings", icon: CalendarIcon },
+  { href: ROUTES.bookingSeries, labelKey: "bookingSeries", icon: Repeat2Icon },
   { href: ROUTES.skills, labelKey: "skills", icon: BookOpenIcon },
   { href: ROUTES.settingsTypes, labelKey: "types", icon: ShapesIcon },
   { href: ROUTES.settingsLists, labelKey: "lists", icon: ListIcon },

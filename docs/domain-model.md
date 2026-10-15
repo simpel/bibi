@@ -346,7 +346,8 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - salesperson (`salesOwnerId`, the user id of a member)
 - coordinator (`coordinatorId`, the user id of a member, required from the `CONFIRMED` phase)
 - cancellation terms (not built yet)
-- seriesId and occurrenceIndex (if the booking belongs to a series; not built yet)
+- seriesId and occurrenceIndex (if the booking belongs to a series)
+- clash (set when the series could not occupy its items for this occurrence; the user picks another item or time)
 - statusChangedAt
 - status reason (`statusReason`, the reason given with the last status change; always set in the `CANCELLED` phase)
 - inbound address (`inboundAddress`, derived and not stored: `booking-<id>@<MAIL_INBOUND_DOMAIN>`, null when inbound mail is not configured; the reply-to of booking mail)
@@ -374,16 +375,21 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 *MVP* · A recurring booking, e.g. a meeting room on the first Tuesday of every month ([ADR 0023](decisions/0023-recurring-bookings-and-customer-pricing.md)).
 
 **Attributes**
+- booking type (base `BOOKING`, every occurrence gets it)
 - customer
-- template (items incl. bookable item, setup and times)
+- template (bookable items, setup, estimated headcount, owners and own field values)
 - rule (subset of RFC 5545 RRULE: `FREQ`, `INTERVAL`, `BYDAY`, `BYMONTHDAY`, `COUNT` or `UNTIL`)
-- price list
+- first start, length in minutes and time zone (every occurrence keeps the wall time)
+- truncated (the rule continues past the generated horizon)
+- price list (not built yet)
 
 **Relations**
 - `1:N` generates → Booking
 - `N:0..1` follows → PriceList
 
 > Occurrences are created when the series is created, at most 12 months or 52 occurrences ahead. Conflicting occurrences are flagged and returned so the user can pick another item or time. Changes apply to "this occurrence only" or "this and following". Cancelling the series cancels all upcoming occurrences.
+
+> Operations (resource `booking`): `bookingSeries.list|get|create`. `create({ entityTypeId, customerId, rule, startsAt, durationMinutes, timeZone?, itemIds, setupId?, … })` takes the rule as an RRULE string and, in one transaction, creates every occurrence as an ordinary `TENTATIVE` booking with `seriesId` and `occurrenceIndex` and consecutive reference numbers. Each occurrence occupies the template's items (`BOOKING`, plus the setup's changeover as `SETUP`). When another booking, setup time or block already holds an item, the occurrence is still created but without occupancy, flagged `clash` and listed in `clashes`; the series is never aborted. `get` and `list` return the series with its occurrences. The series and every occurrence are audited.
 
 ### ProgramItem
 

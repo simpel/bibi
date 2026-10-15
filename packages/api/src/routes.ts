@@ -1,5 +1,6 @@
 import { auditLogRoutes } from "./features/audit-log/rest";
 import { bookingRoutes } from "./features/booking/rest";
+import { bookingSeriesRoutes } from "./features/booking-series/rest";
 import { bookingStatusRoutes } from "./features/booking-status/rest";
 import { configurationRoutes } from "./features/configuration/rest";
 import { contactRoutes } from "./features/contact/rest";
@@ -37,6 +38,7 @@ export function listRestRoutes(): RestRoute[] {
     ...occupancyRoutes,
     ...bookingStatusRoutes,
     ...bookingRoutes,
+    ...bookingSeriesRoutes,
     ...inboundEmailRoutes,
     ...conversationRoutes,
     ...messageRoutes,

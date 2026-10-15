@@ -48,6 +48,7 @@ model EntityType {
   customers      Customer[]
   contacts       Contact[]
   bookings       Booking[]
+  bookingSeries  BookingSeries[]
 
   @@unique([id, organizationId])
   @@index([organizationId, base, status])

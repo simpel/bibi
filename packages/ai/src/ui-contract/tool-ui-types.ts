@@ -1,5 +1,6 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
 import type { BookingWire } from "./booking-entries";
+import type { BookingSeriesWire } from "./booking-series-entries";
 import type { BookingStatusWire } from "./booking-status-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
 import type { SheetDefinitionWire } from "./sheet-definition-entries";
@@ -41,6 +42,8 @@ export type ToolUiProps = {
   "booking-status-card": { status: BookingStatusWire };
   "booking-table": { items: BookingWire[]; nextCursor: string | null };
   "booking-card": { booking: BookingWire };
+  "booking-series-table": { items: BookingSeriesWire[]; nextCursor: string | null };
+  "booking-series-card": { series: BookingSeriesWire };
   "inbound-email-table": { items: InboundEmailWire[]; nextCursor: string | null };
   "inbound-email-card": { email: InboundEmailWire };
   "entity-type-table": { items: EntityTypeWire[]; nextCursor: string | null };
@@ -89,6 +92,8 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "booking-status-card",
   "booking-table",
   "booking-card",
+  "booking-series-table",
+  "booking-series-card",
   "inbound-email-table",
   "inbound-email-card",
   "entity-type-table",

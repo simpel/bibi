@@ -4,6 +4,8 @@ import { ApprovalCardView } from "./approval-card-view";
 import { AuditLogCardView } from "./audit-log-card-view";
 import { AuditLogTableView } from "./audit-log-table-view";
 import { BookingCardView } from "./booking-card-view";
+import { BookingSeriesCardView } from "./booking-series-card-view";
+import { BookingSeriesTableView } from "./booking-series-table-view";
 import { BookingStatusCardView } from "./booking-status-card-view";
 import { BookingStatusTableView } from "./booking-status-table-view";
 import { BookingTableView } from "./booking-table-view";
@@ -62,6 +64,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "booking-status-card": BookingStatusCardView,
   "booking-table": BookingTableView,
   "booking-card": BookingCardView,
+  "booking-series-table": BookingSeriesTableView,
+  "booking-series-card": BookingSeriesCardView,
   "inbound-email-table": InboundEmailTableView,
   "inbound-email-card": InboundEmailCardView,
   "entity-type-table": EntityTypeTableView,

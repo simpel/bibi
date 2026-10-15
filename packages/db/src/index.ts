@@ -17,6 +17,7 @@ export {
   type AuditLog,
   type Booking,
   BookingPhase,
+  type BookingSeries,
   type BookingStatus,
   type BookingStatusTransition,
   type Contact,

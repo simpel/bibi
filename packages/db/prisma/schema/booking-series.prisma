@@ -1,0 +1,30 @@
+/// BookingSeries – a recurring booking (ADR 0023). `rule` is the structured RRULE subset
+/// (`RecurrenceRule`), `template` what every occurrence gets (`BookingSeriesTemplate`: bookable
+/// items, setup, headcount, owners and own fields). Each occurrence is an ordinary `Booking` with
+/// `seriesId` and `occurrenceIndex`, created with the series at most 12 months or 52 ahead.
+model BookingSeries {
+  id              String       @id @default(cuid(2))
+  organizationId  String
+  /// The booking type every occurrence gets (base `BOOKING`).
+  entityTypeId    String
+  customerId      String
+  rule            Json
+  /// Start of the first occurrence; every occurrence keeps its wall time in `timeZone`.
+  startsAt        DateTime
+  durationMinutes Int
+  timeZone        String
+  template        Json         @default("{}")
+  /// True when the rule continues past the generated horizon (12 months / 52 occurrences).
+  truncated       Boolean      @default(false)
+  status          RecordStatus @default(ACTIVE)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  createdBy       String?
+  entityType      EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  customer        Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  bookings        Booking[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status, startsAt])
+  @@index([organizationId, customerId])
+}

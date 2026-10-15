@@ -122,6 +122,7 @@
     "setups": "Uppställningar",
     "sheets": "Blad",
     "bookings": "Bokningar",
+    "bookingSeries": "Bokningsserier",
     "skills": "Färdigheter",
     "settings": "Inställningar",
     "openMenu": "Öppna meny",
@@ -317,6 +318,47 @@
       "type": "Typ",
       "email": "E-post",
       "phone": "Telefon"
+    }
+  },
+  "bookingSeries": {
+    "singular": "Bokningsserie",
+    "plural": "Bokningsserier",
+    "listDescription": "Återkommande bokningar, t.ex. ett mötesrum första tisdagen varje månad. Varje tillfälle är en vanlig bokning.",
+    "create": "Skapa serie",
+    "createDescription": "Välj typ, kund, upprepning och rum. Tillfällen skapas upp till 12 månader eller 52 gånger framåt, var och en i standardstatusen för preliminära bokningar.",
+    "created": "Serien har skapats.",
+    "empty": "Inga bokningsserier ännu.",
+    "emptyDescription": "Skapa en serie för en kund som bokar samma sak regelbundet.",
+    "occurrence": "{index}/{total}",
+    "clash": "Krock",
+    "clashCount": "{count, plural, one {# krock} other {# krockar}}",
+    "clashNotice": "{count, plural, one {# tillfälle krockar} other {# tillfällen krockar}} med en annan bokning eller en spärrad tid. Det skapas utan rummet; välj ett annat rum eller en annan tid för det.",
+    "truncated": "Regeln fortsätter efter det sista tillfället som visas; senare tillfällen skapas längre fram.",
+    "fields": {
+      "type": "Typ",
+      "customer": "Kund",
+      "rule": "Upprepning",
+      "ruleHint": "RRULE, t.ex. FREQ=MONTHLY;BYDAY=1TU;COUNT=10 (första tisdagen i månaden, 10 gånger) eller FREQ=WEEKLY;BYDAY=TH;UNTIL=20270630.",
+      "startsAt": "Första tillfället börjar",
+      "durationMinutes": "Längd (minuter)",
+      "timeZone": "Tidszon",
+      "room": "Rum",
+      "noRoom": "Inget rum",
+      "setup": "Uppställning",
+      "noSetup": "Ingen uppställning",
+      "estimatedHeadcount": "Beräknat antal"
+    },
+    "columns": {
+      "rule": "Upprepning",
+      "customer": "Kund",
+      "startsAt": "Börjar",
+      "occurrences": "Tillfällen",
+      "clashes": "Krockar",
+      "occurrence": "Tillfälle",
+      "booking": "Bokning",
+      "when": "När",
+      "status": "Status",
+      "clash": "Krock"
     }
   },
   "booking": {
@@ -866,6 +908,16 @@
           "when": "När",
           "headcount": "Antal"
         }
+      },
+      "bookingSeries": {
+        "singular": "Bokningsserie",
+        "empty": "Inga bokningsserier hittades.",
+        "open": "Öppna serien",
+        "occurrences": "{count, plural, one {# tillfälle} other {# tillfällen}}",
+        "noClashes": "Inga krockar",
+        "clash": "Krock",
+        "occurrence": "Tillfälle {index}/{total}",
+        "columns": { "rule": "Upprepning", "occurrences": "Tillfällen", "clashes": "Krockar" }
       },
       "occupancy": {
         "singular": "Beläggning",

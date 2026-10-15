@@ -122,6 +122,7 @@
     "setups": "Setups",
     "sheets": "Sheets",
     "bookings": "Bookings",
+    "bookingSeries": "Booking series",
     "skills": "Skills",
     "settings": "Settings",
     "openMenu": "Open menu",
@@ -317,6 +318,47 @@
       "type": "Type",
       "email": "Email",
       "phone": "Phone"
+    }
+  },
+  "bookingSeries": {
+    "singular": "Booking series",
+    "plural": "Booking series",
+    "listDescription": "Recurring bookings, e.g. a meeting room on the first Tuesday of every month. Every occurrence is an ordinary booking.",
+    "create": "Create series",
+    "createDescription": "Pick a type, the customer, the recurrence and the room. Occurrences are created up to 12 months or 52 times ahead, each in the default tentative status.",
+    "created": "The series has been created.",
+    "empty": "No booking series yet.",
+    "emptyDescription": "Create a series for a customer who books the same thing regularly.",
+    "occurrence": "{index}/{total}",
+    "clash": "Clash",
+    "clashCount": "{count, plural, one {# clash} other {# clashes}}",
+    "clashNotice": "{count, plural, one {# occurrence clashes} other {# occurrences clash}} with another booking or a blocked time. It is created without the room; pick another room or time for it.",
+    "truncated": "The rule continues after the last occurrence shown; later occurrences are created further on.",
+    "fields": {
+      "type": "Type",
+      "customer": "Customer",
+      "rule": "Recurrence",
+      "ruleHint": "RRULE, e.g. FREQ=MONTHLY;BYDAY=1TU;COUNT=10 (first Tuesday of the month, 10 times) or FREQ=WEEKLY;BYDAY=TH;UNTIL=20270630.",
+      "startsAt": "First occurrence starts",
+      "durationMinutes": "Length (minutes)",
+      "timeZone": "Time zone",
+      "room": "Room",
+      "noRoom": "No room",
+      "setup": "Setup",
+      "noSetup": "No setup",
+      "estimatedHeadcount": "Estimated headcount"
+    },
+    "columns": {
+      "rule": "Recurrence",
+      "customer": "Customer",
+      "startsAt": "Starts",
+      "occurrences": "Occurrences",
+      "clashes": "Clashes",
+      "occurrence": "Occurrence",
+      "booking": "Booking",
+      "when": "When",
+      "status": "Status",
+      "clash": "Clash"
     }
   },
   "booking": {
@@ -866,6 +908,16 @@
           "when": "When",
           "headcount": "Headcount"
         }
+      },
+      "bookingSeries": {
+        "singular": "Booking series",
+        "empty": "No booking series found.",
+        "open": "Open the series",
+        "occurrences": "{count, plural, one {# occurrence} other {# occurrences}}",
+        "noClashes": "No clashes",
+        "clash": "Clash",
+        "occurrence": "Occurrence {index}/{total}",
+        "columns": { "rule": "Recurrence", "occurrences": "Occurrences", "clashes": "Clashes" }
       },
       "occupancy": {
         "singular": "Occupancy",

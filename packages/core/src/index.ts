@@ -18,6 +18,8 @@ export * from "./features/booking/assign-operation";
 export * from "./features/booking/change-status-operation";
 export * from "./features/booking/operations";
 export * from "./features/booking/write-operations";
+export * from "./features/booking-series/operations";
+export * from "./features/booking-series/write-operations";
 export * from "./features/booking-status/import-template-operation";
 export {
   toBookingStatusDto,
@@ -142,8 +144,4 @@ export * from "./search/search-schema";
 export { parseSkillMarkdown } from "./skills/markdown/parse-skill-markdown";
 export { renderSkillMarkdown } from "./skills/markdown/render-skill-markdown";
 export type { RoleTemplate } from "./templates/roles/role-template";
-export {
-  getRoleTemplate,
-  ROLE_TEMPLATE_KEYS,
-  type RoleTemplateKey,
-} from "./templates/roles/role-templates";
+export * from "./templates/roles/role-templates";

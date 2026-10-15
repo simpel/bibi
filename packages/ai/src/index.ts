@@ -65,6 +65,7 @@ export type { ResolveContext } from "./server/resolve-user";
 export type { AssistantServerOptions } from "./server/server-options";
 export { LOCAL_SKILL_TOOLS } from "./skills/create-skill-tools";
 export type { BookingWire } from "./ui-contract/booking-entries";
+export type { BookingSeriesWire } from "./ui-contract/booking-series-entries";
 export type { BookingStatusWire } from "./ui-contract/booking-status-entries";
 export type { InboundEmailWire } from "./ui-contract/inbound-email-entries";
 export { type ResolveToolUiInput, resolveToolUi } from "./ui-contract/resolve-tool-ui";
