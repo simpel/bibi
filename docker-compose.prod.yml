@@ -1,0 +1,88 @@
+# Production service definition (ADR 0013). Deployed by Coolify or run directly:
+#   IMAGE_TAG=<git sha> docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
+# Images are built in GitHub Actions and published to GHCR tagged with the git SHA.
+# Secrets come from the environment (Coolify / --env-file), never from the repo.
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-app-env: &app-env
+  NODE_ENV: production
+  DATABASE_URL: postgresql://okazi:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/okazi
+  BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET}
+  BETTER_AUTH_URL: ${BETTER_AUTH_URL:?set BETTER_AUTH_URL}
+  WEB_URL: ${WEB_URL:?set WEB_URL}
+  MCP_URL: ${MCP_URL:?set MCP_URL}
+  SMTP_URL: ${SMTP_URL:-}
+  MAIL_FROM: ${MAIL_FROM:-}
+  AI_GATEWAY_API_KEY: ${AI_GATEWAY_API_KEY:-}
+  WEB_OAUTH_CLIENT_ID: ${WEB_OAUTH_CLIENT_ID:-}
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: okazi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: okazi
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U okazi -d okazi"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    logging: *logging
+
+  # One-off step: applies pending migrations and exits. web and mcp wait for it.
+  # Migrations must be backward compatible (expand/contract), see docs/decisions/0013-hosting-and-deploy.md.
+  migrate:
+    image: ${IMAGE_REPO:-ghcr.io/simpel/okazi}-web:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
+    restart: "no"
+    command: ["pnpm", "--filter", "@okazi/db", "migrate"]
+    environment:
+      DATABASE_URL: postgresql://okazi:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/okazi
+    depends_on:
+      postgres: { condition: service_healthy }
+    logging: *logging
+
+  web:
+    image: ${IMAGE_REPO:-ghcr.io/simpel/okazi}-web:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
+    restart: unless-stopped
+    environment: *app-env
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      postgres: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3000/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    logging: *logging
+
+  mcp:
+    image: ${IMAGE_REPO:-ghcr.io/simpel/okazi}-mcp:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
+    restart: unless-stopped
+    environment: *app-env
+    ports:
+      - "${MCP_PORT:-3001}:3001"
+    depends_on:
+      postgres: { condition: service_healthy }
+      migrate: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:3001/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+    logging: *logging
+
+volumes:
+  postgres-data:

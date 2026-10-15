@@ -14,6 +14,7 @@ Requires Node 22+, pnpm 10 and Docker. Running locally from scratch:
 
 ```bash
 docker compose up -d                          # Postgres (pgvector) and Mailpit
+# Production: IMAGE_TAG=<sha> docker compose -f docker-compose.prod.yml up (see docker-compose.prod.yml header)
 pnpm install
 touch .env                                    # create .env in the repo root, see the table below
 pnpm db:migrate                               # database migrations
