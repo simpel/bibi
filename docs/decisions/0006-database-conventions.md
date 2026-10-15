@@ -55,3 +55,6 @@ Every org-scoped model is soft-deleted (`SOFT_DELETE_MODELS`), append-only (`APP
 - Whoever writes a new mutation cannot forget audit, because the audit hook lives in core.
 - Whoever writes a new handler cannot forget `createdBy`, because `scopedDb` sets it.
 - A new model must be classified (org-scoped or a listed exception) before the test suite passes.
+
+## Addendum 2026-10-15
+- AuditLog retention and pseudonymisation: see 0032.

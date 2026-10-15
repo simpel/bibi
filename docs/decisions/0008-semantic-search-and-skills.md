@@ -44,3 +44,6 @@ Users and the assistant need to find entities (venues, rooms and later bookings)
 
 ## Addendum 2026-10-14
 - `Room` is replaced by `Item` with the behavior `BOOKABLE` (ADR 0021). `Venue` and `Item` come first as searchable entities.
+
+## Addendum 2026-10-15
+- "Asynchronous" means after commit and non-blocking for the command's outcome, not a queue. See 0030.
