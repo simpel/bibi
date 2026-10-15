@@ -147,6 +147,6 @@
 ## Open questions
 - Pricing model (per venue, per room, per booking) not decided.
 - Claude Design export (tokens) for `packages/ui` not delivered. Placeholder tokens are used until then.
-- Staging not decided. Hosting per `docs/decisions/0013-hosting-and-deploy.md` (Hetzner + Coolify, proposed).
+- Staging not decided. Hosting per `docs/decisions/0013-hosting-and-deploy.md` (Hetzner + Coolify, accepted; runbook `docs/runbooks/deploy.md`).
 - Embedding model not chosen.
 - Resend's EU region and DPA (GDPR) not confirmed.

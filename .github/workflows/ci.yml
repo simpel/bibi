@@ -75,3 +75,15 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+
+  deploy:
+    # Rolls out the SHA that publish-images just pushed (ADR 0013). Rollback: rollback.yml.
+    needs: publish-images
+    permissions:
+      contents: read
+      packages: read
+    uses: ./.github/workflows/deploy.yml
+    with:
+      sha: ${{ github.sha }}
+      environment: production
+    secrets: inherit

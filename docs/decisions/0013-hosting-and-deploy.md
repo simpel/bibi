@@ -1,7 +1,7 @@
 # 0013 – Hosting and deploy
 
 - **Date:** 2026-10-14
-- **Status:** Proposed
+- **Status:** Accepted
 
 ## Context
 - Requirements: simple, cheap, self-operated, EU region (GDPR, Swedish customers). Hostinger and Railway are ruled out.
@@ -17,7 +17,7 @@
 - **Backup:** nightly `pg_dump` to Hetzner Object Storage (or Storage Box), plus Hetzner's server backup. Restore is tested before the first customer.
 - **Images:** built in GitHub Actions after CI is green on `main`, published to GHCR and tagged with the git SHA. The same image is used in all environments.
 - **Deploy platform:** Coolify (self-hosted, Apache-2.0) on the same server. Coolify handles proxy with TLS (Let's Encrypt), environment variables, database management and scheduled database backups to S3-compatible storage.
-- **Deploy flow:** GitHub Actions triggers a deploy through Coolify's API/webhook with the new image's SHA tag. Rollback is done by deploying the previous SHA.
+- **Deploy flow:** GitHub Actions triggers a deploy through Coolify's API/webhook with the new image's SHA tag. Rollback is done by deploying the previous SHA. Implemented as `.github/workflows/deploy.yml` (reusable, called from CI after `publish-images`, with a health gate on `/api/health` and `/health`) and the manual `rollback.yml`. See `docs/runbooks/deploy.md`.
 - **Configuration in git:** the applications are deployed from a `docker-compose.prod.yml` in the repo, so the service definition is versioned. UI settings are limited to domains, secrets and backup schedule.
 - **Coolify security (see Context):** the admin UI is not exposed publicly. It is reached through VPN (Tailscale/WireGuard) or an SSH tunnel. Coolify is kept updated to the latest 4.x version, with few administrators, and Coolify's own instance data is included in the backup.
 - **Migrations:** `prisma migrate deploy` runs as a one-off step before new containers take traffic. Migrations must be backward compatible (expand/contract).

@@ -1,0 +1,32 @@
+name: Rollback
+# Manual redeploy of an earlier image SHA (ADR 0013). Find SHAs in the Deploy runs or in GHCR.
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: Full 40-character git SHA to redeploy
+        required: true
+        type: string
+      environment:
+        description: GitHub environment
+        required: true
+        default: production
+        type: choice
+        options: [production]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate SHA
+        env:
+          SHA: ${{ inputs.sha }}
+        run: |
+          [[ "$SHA" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::Expected a full 40-character lowercase SHA"; exit 1; }
+  redeploy:
+    needs: validate
+    uses: ./.github/workflows/deploy.yml
+    with:
+      sha: ${{ inputs.sha }}
+      environment: ${{ inputs.environment }}
+    secrets: inherit

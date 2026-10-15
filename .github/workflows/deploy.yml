@@ -1,0 +1,55 @@
+name: Deploy
+# Reusable deploy of one image SHA to a Coolify environment (ADR 0013).
+# Called by CI after publish-images (deploy) and by rollback.yml (redeploy of an earlier SHA).
+on:
+  workflow_call:
+    inputs:
+      sha:
+        description: Full git SHA whose images are already in GHCR
+        required: true
+        type: string
+      environment:
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    # One deploy at a time per environment; never cancel one that is rolling out.
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    env:
+      COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
+      COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+      SHA: ${{ inputs.sha }}
+    steps:
+      - name: Check that the images exist
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          for app in web mcp; do
+            docker manifest inspect "ghcr.io/${GITHUB_REPOSITORY}-${app}:${SHA}" > /dev/null
+          done
+      - name: Set image tag and trigger rollout in Coolify
+        run: |
+          for uuid in "${{ secrets.COOLIFY_WEB_UUID }}" "${{ secrets.COOLIFY_MCP_UUID }}"; do
+            curl -fsS -X PATCH "$COOLIFY_URL/api/v1/applications/$uuid" \
+              -H "Authorization: Bearer $COOLIFY_TOKEN" -H "Content-Type: application/json" \
+              -d "{\"docker_registry_image_tag\": \"${SHA}\"}"
+            curl -fsS "$COOLIFY_URL/api/v1/deploy?uuid=$uuid&force=false" \
+              -H "Authorization: Bearer $COOLIFY_TOKEN"
+          done
+      - name: Health gate
+        run: |
+          for url in "${{ vars.WEB_URL }}/api/health" "${{ vars.MCP_URL }}/health"; do
+            ok=false
+            for i in $(seq 1 30); do
+              if curl -fsS --max-time 5 "$url" > /dev/null; then ok=true; break; fi
+              sleep 10
+            done
+            if [ "$ok" != "true" ]; then
+              echo "::error::Health gate failed for $url after rollout of $SHA. Run the Rollback workflow with the previous SHA."
+              exit 1
+            fi
+          done
