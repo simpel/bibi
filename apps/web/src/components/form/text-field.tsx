@@ -13,7 +13,7 @@ export type TextFieldProps<V extends FieldValues, O> = {
   form: UseFormReturn<V, unknown, O>;
   name: Path<V>;
   label: string;
-  type?: "text" | "email" | "tel" | "number" | "password";
+  type?: "text" | "email" | "tel" | "number" | "password" | "datetime-local";
   autoComplete?: string;
   multiline?: boolean;
   required?: boolean;

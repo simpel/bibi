@@ -7,6 +7,7 @@ import { fieldDefinitionRoutes } from "./features/field-definition/rest";
 import { itemRoutes } from "./features/item/rest";
 import { memberRoutes } from "./features/member/rest";
 import { messageRoutes } from "./features/message/rest";
+import { occupancyRoutes } from "./features/occupancy/rest";
 import { roleRoutes } from "./features/role/rest";
 import { setupRoutes } from "./features/setup/rest";
 import { skillRoutes } from "./features/skill/rest";
@@ -27,6 +28,7 @@ export function listRestRoutes(): RestRoute[] {
     ...itemRoutes,
     ...customerRoutes,
     ...contactRoutes,
+    ...occupancyRoutes,
     ...conversationRoutes,
     ...messageRoutes,
     ...skillRoutes,

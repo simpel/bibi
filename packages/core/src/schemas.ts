@@ -16,6 +16,7 @@ export * from "./features/field-definition/schema";
 export * from "./features/item/schema";
 export * from "./features/member/schema";
 export * from "./features/message/schema";
+export * from "./features/occupancy/schema";
 export * from "./features/role/schema";
 export * from "./features/setup/schema";
 export * from "./features/skill/schema";

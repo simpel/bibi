@@ -80,6 +80,7 @@ export type {
   FieldDefinitionWire,
   ItemWire,
   MemberWire,
+  OccupancyWire,
   RoleWire,
   SearchHitWire,
   SetupWire,

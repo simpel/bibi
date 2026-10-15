@@ -31,6 +31,8 @@ export {
   type Member,
   type Message,
   MessageRole,
+  type Occupancy,
+  OccupancyType,
   type OrganizationRole,
   PriceUnit,
   Prisma,

@@ -109,7 +109,24 @@ const item: ParityEntity = {
     }),
 };
 
-/** The configurable domain (ADR 0021): types, fields, lists, setups and items. */
+/** A maintenance block on the (bookable) item (ADR 0022). */
+const occupancy: ParityEntity = {
+  ...byId({ name: "occupancy", field: "occupancy", list: "occupancies", createTool: "", args: {} }),
+  create: ({ mcp, made }) =>
+    tool({
+      mcp,
+      name: "occupancy_create",
+      args: {
+        itemId: made.item.id,
+        type: "MAINTENANCE",
+        startsAt: "2026-11-02T07:00:00.000Z",
+        endsAt: "2026-11-02T09:00:00.000Z",
+        note: "Projector service",
+      },
+    }),
+};
+
+/** The configurable domain (ADR 0021): types, fields, lists, setups, items and their occupancy. */
 export function configurationEntities(): ParityEntity[] {
-  return [entityType, fieldDefinition, vocabulary, vocabularyValue, setup, item];
+  return [entityType, fieldDefinition, vocabulary, vocabularyValue, setup, item, occupancy];
 }

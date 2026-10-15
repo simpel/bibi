@@ -12,11 +12,19 @@ const everyone: PermissionSet = {
 };
 
 /** Everyone reads the catalog and the configuration it is described by (ADR 0021). */
-const catalog: PermissionSet = { venue: ["read"], item: ["read"], configuration: ["read"] };
+const catalog: PermissionSet = {
+  venue: ["read"],
+  item: ["read"],
+  occupancy: ["read"],
+  configuration: ["read"],
+};
 
 /** Customers and their contact persons (ADR 0022). */
 const customersRead: PermissionSet = { customer: ["read"], contact: ["read"] };
 const customersWrite: PermissionSet = { customer: ["write"], contact: ["write"] };
+
+/** Blocking bookable items for maintenance or internal use (ADR 0022). */
+const occupancyWrite: PermissionSet = { occupancy: ["write"] };
 
 const readAll: PermissionSet = {
   ...everyone,
@@ -42,6 +50,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         item: ["admin"],
         customer: ["admin"],
         contact: ["admin"],
+        occupancy: ["admin"],
         configuration: ["admin"],
         search: ["admin"],
         conversation: ["admin"],
@@ -50,8 +59,14 @@ export const conferenceVenueTemplate: RoleTemplate = {
         member: ["admin"],
       },
     },
-    { name: "Sales", permissions: { ...everyone, ...catalog, ...customersWrite } },
-    { name: "Coordinator", permissions: { ...everyone, ...catalog, ...customersWrite } },
+    {
+      name: "Sales",
+      permissions: { ...everyone, ...catalog, ...customersWrite, ...occupancyWrite },
+    },
+    {
+      name: "Coordinator",
+      permissions: { ...everyone, ...catalog, ...customersWrite, ...occupancyWrite },
+    },
     { name: "Kitchen", permissions: { ...everyone, ...catalog } },
     { name: "Finance", permissions: readAll },
     { name: "Reader", permissions: readAll },

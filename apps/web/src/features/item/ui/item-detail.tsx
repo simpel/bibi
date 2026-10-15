@@ -9,13 +9,14 @@ import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { OccupancySection } from "../../occupancy/ui/occupancy-section";
 import { loadItemFormData } from "../load-item-form-data";
 import { ItemActions } from "./item-actions";
 import { ItemFacts } from "./item-facts";
 
 export type ItemDetailProps = { locale: Locale; id: string };
 
-/** Item detail page body: facts of the item with edit and archive. */
+/** Item detail page body: facts of the item with edit and archive; occupancy if bookable. */
 export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const common = await getTranslations("common");
   const { itemWrite } = await getCallerAbilities();
@@ -42,6 +43,9 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         actions={actions}
       />
       <ItemFacts item={item.value} type={type} data={data.value} locale={locale} />
+      {type?.behaviours.includes("BOOKABLE") ? (
+        <OccupancySection locale={locale} itemId={item.value.id} />
+      ) : null}
     </div>
   );
 }

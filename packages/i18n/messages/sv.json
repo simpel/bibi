@@ -306,6 +306,40 @@
       "phone": "Telefon"
     }
   },
+  "occupancy": {
+    "singular": "Beläggning",
+    "plural": "Beläggning",
+    "create": "Blockera artikel",
+    "edit": "Redigera blockering",
+    "formDescription": "Blockera artikeln för underhåll eller internt bruk. Bokningar och ställtid kan inte överlappa en blockering.",
+    "archive": "Släpp blockering",
+    "archiveConfirm": "Vill du släppa blockeringen så att artikeln kan bokas igen?",
+    "archived": "Blockeringen har släppts.",
+    "created": "Artikeln har blockerats.",
+    "updated": "Blockeringen har uppdaterats.",
+    "empty": "Artikeln är inte belagd framöver.",
+    "overlap": "Artikeln är redan belagd under den här perioden.",
+    "releasing": "Släpper blockering…",
+    "types": {
+      "BOOKING": "Bokning",
+      "OPTION": "Option",
+      "SETUP": "Ställtid",
+      "MAINTENANCE": "Underhåll",
+      "INTERNAL": "Internt bruk"
+    },
+    "fields": {
+      "type": "Anledning",
+      "startsAt": "Börjar",
+      "endsAt": "Slutar",
+      "note": "Anteckning"
+    },
+    "columns": {
+      "type": "Typ",
+      "startsAt": "Börjar",
+      "endsAt": "Slutar",
+      "note": "Anteckning"
+    }
+  },
   "entityType": {
     "singular": "Typ",
     "plural": "Typer",
@@ -654,6 +688,13 @@
         "openCustomer": "Öppna kunden",
         "columns": { "name": "Namn", "email": "E-post", "phone": "Telefon" }
       },
+      "occupancy": {
+        "singular": "Beläggning",
+        "released": "Släppt",
+        "empty": "Ingen beläggning hittades.",
+        "openItem": "Öppna artikeln",
+        "columns": { "type": "Typ", "period": "Period", "note": "Anteckning" }
+      },
       "entityType": {
         "empty": "Inga typer hittades.",
         "open": "Öppna typen",
@@ -999,6 +1040,7 @@
       "item": "Artiklar",
       "customer": "Kunder",
       "contact": "Kontaktpersoner",
+      "occupancy": "Beläggning (blockera bokningsbara artiklar)",
       "configuration": "Konfiguration (typer, fält, listor, uppställningar)",
       "search": "Sök",
       "conversation": "Konversationer",

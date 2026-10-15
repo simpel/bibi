@@ -444,16 +444,18 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 **Attributes**
 - item (with the `BOOKABLE` behavior)
-- start – end
+- start – end (`startsAt`, `endsAt`; the period is `[start, end)`, so back-to-back blocks do not overlap)
 - type (`BOOKING`, `OPTION`, `SETUP`, `MAINTENANCE`, `INTERNAL`)
-- source
+- source (`sourceType`, `sourceId`: the record that caused it; null for manual blocks)
+- note
+- status (active / archived = released; released rows no longer block)
 
 **Relations**
 - `1:1` ProgramItem reserves this
 - `1:1` Option reserves this
 - `N:1` Item has this
 
-> ★ All types except `OPTION` may not overlap on the same item. This is enforced with an exclusion constraint in Postgres. Changeover time is added as `SETUP` based on the setup's changeover time.
+> ★ Active rows of all types except `OPTION` may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`; the other types follow their source. Changeover time is added as `SETUP` right before the start, based on the setup's changeover time (`changeoverMinutes`).
 
 ## Items
 

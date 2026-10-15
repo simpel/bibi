@@ -7,6 +7,7 @@ import type {
   InvitationWire,
   ItemWire,
   MemberWire,
+  OccupancyWire,
   RoleWire,
   SearchHitWire,
   SetupWire,
@@ -29,6 +30,8 @@ export type ToolUiProps = {
   "customer-card": { customer: CustomerWire };
   "contact-table": { items: ContactWire[]; nextCursor: string | null };
   "contact-card": { contact: ContactWire };
+  "occupancy-table": { items: OccupancyWire[]; nextCursor: string | null };
+  "occupancy-card": { occupancy: OccupancyWire };
   "entity-type-table": { items: EntityTypeWire[]; nextCursor: string | null };
   "entity-type-card": { entityType: EntityTypeWire };
   "field-definition-table": { items: FieldDefinitionWire[]; nextCursor: string | null };
@@ -65,6 +68,8 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "customer-card",
   "contact-table",
   "contact-card",
+  "occupancy-table",
+  "occupancy-card",
   "entity-type-table",
   "entity-type-card",
   "field-definition-table",

@@ -306,6 +306,40 @@
       "phone": "Phone"
     }
   },
+  "occupancy": {
+    "singular": "Occupancy",
+    "plural": "Occupancy",
+    "create": "Block item",
+    "edit": "Edit block",
+    "formDescription": "Block the item for maintenance or internal use. Bookings and setup time cannot overlap a block.",
+    "archive": "Release block",
+    "archiveConfirm": "Do you want to release the block so the item can be booked again?",
+    "archived": "The block has been released.",
+    "created": "The item has been blocked.",
+    "updated": "The block has been updated.",
+    "empty": "The item is not occupied from now on.",
+    "overlap": "The item is already occupied during this period.",
+    "releasing": "Releasing block…",
+    "types": {
+      "BOOKING": "Booking",
+      "OPTION": "Option",
+      "SETUP": "Setup time",
+      "MAINTENANCE": "Maintenance",
+      "INTERNAL": "Internal use"
+    },
+    "fields": {
+      "type": "Reason",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "note": "Note"
+    },
+    "columns": {
+      "type": "Type",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "note": "Note"
+    }
+  },
   "entityType": {
     "singular": "Type",
     "plural": "Types",
@@ -654,6 +688,13 @@
         "openCustomer": "Open the customer",
         "columns": { "name": "Name", "email": "Email", "phone": "Phone" }
       },
+      "occupancy": {
+        "singular": "Occupancy",
+        "released": "Released",
+        "empty": "No occupancy found.",
+        "openItem": "Open the item",
+        "columns": { "type": "Type", "period": "Period", "note": "Note" }
+      },
       "entityType": {
         "empty": "No types found.",
         "open": "Open the type",
@@ -999,6 +1040,7 @@
       "item": "Items",
       "customer": "Customers",
       "contact": "Contact persons",
+      "occupancy": "Occupancy (blocking bookable items)",
       "configuration": "Configuration (types, fields, lists, setups)",
       "search": "Search",
       "conversation": "Conversations",

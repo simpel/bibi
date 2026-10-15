@@ -32,6 +32,11 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "item.create", route: "/items" },
   { operation: "item.update", route: "/items/[id]" },
   { operation: "item.archive", route: "/items/[id]" },
+  // A bookable item's occupancy is listed and its manual blocks edited on the item page.
+  { operation: "occupancy.list", route: "/items/[id]" },
+  { operation: "occupancy.create", route: "/items/[id]" },
+  { operation: "occupancy.update", route: "/items/[id]" },
+  { operation: "occupancy.archive", route: "/items/[id]" },
   { operation: "customer.list", route: "/customers" },
   { operation: "customer.get", route: "/customers/[id]" },
   { operation: "customer.create", route: "/customers" },
@@ -102,6 +107,11 @@ export const WEB_SURFACES: readonly WebSurface[] = [
 
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
+  {
+    operation: "occupancy.get",
+    reason:
+      "An occupancy has no page of its own: the item page lists them with occupancy.list and edits blocks inline.",
+  },
   {
     operation: "contact.get",
     reason:

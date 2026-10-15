@@ -7,6 +7,7 @@ import { fieldDefinitionOperations } from "./features/field-definition/operation
 import { itemOperations } from "./features/item/operations";
 import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
+import { occupancyOperations } from "./features/occupancy/operations";
 import { roleOperations } from "./features/role/operations";
 import { setupOperations } from "./features/setup/operations";
 import { skillOperations } from "./features/skill/operations";
@@ -30,6 +31,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...itemOperations,
     ...customerOperations,
     ...contactOperations,
+    ...occupancyOperations,
     ...conversationOperations,
     ...messageOperations,
     ...skillOperations,

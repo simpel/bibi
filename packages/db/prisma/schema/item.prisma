@@ -34,6 +34,8 @@ model Item {
   components             ItemComponent[] @relation("ItemComponentParent")
   /// The composed items this item is a part of.
   partOf                 ItemComponent[] @relation("ItemComponentPart")
+  /// BOOKABLE: the periods the item is held (ADR 0022).
+  occupancies            Occupancy[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

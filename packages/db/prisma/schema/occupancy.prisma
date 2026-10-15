@@ -1,0 +1,32 @@
+/// Why a bookable item is occupied (ADR 0022). Every type except `OPTION` is collision-free per
+/// item: an exclusion constraint (`btree_gist`) rejects overlapping active rows.
+enum OccupancyType {
+  BOOKING
+  OPTION
+  SETUP
+  MAINTENANCE
+  INTERNAL
+}
+
+/// Occupancy – a `BOOKABLE` item is taken for `[startsAt, endsAt)`. Released rows are `ARCHIVED`
+/// and no longer block. `sourceType`/`sourceId` name the row that caused it.
+model Occupancy {
+  id             String        @id @default(cuid(2))
+  organizationId String
+  itemId         String
+  type           OccupancyType
+  startsAt       DateTime
+  endsAt         DateTime
+  sourceType     String?
+  sourceId       String?
+  note           String?
+  status         RecordStatus  @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  createdBy      String?
+  item           Item          @relation(fields: [itemId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, itemId, startsAt])
+  @@index([organizationId, sourceType, sourceId])
+}

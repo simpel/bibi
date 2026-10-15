@@ -11,6 +11,7 @@ export type CallerAbilities = {
   itemWrite: boolean;
   customerWrite: boolean;
   contactWrite: boolean;
+  occupancyWrite: boolean;
 };
 
 const NONE: CallerAbilities = {
@@ -21,6 +22,7 @@ const NONE: CallerAbilities = {
   itemWrite: false,
   customerWrite: false,
   contactWrite: false,
+  occupancyWrite: false,
 };
 
 /**
@@ -39,5 +41,6 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     itemWrite: hasPermission({ permissions, permission: "item:write" }),
     customerWrite: hasPermission({ permissions, permission: "customer:write" }),
     contactWrite: hasPermission({ permissions, permission: "contact:write" }),
+    occupancyWrite: hasPermission({ permissions, permission: "occupancy:write" }),
   };
 }

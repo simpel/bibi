@@ -1,6 +1,7 @@
 import { ACCESS_UI_ENTRIES } from "./access-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
+import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 import {
@@ -40,6 +41,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   venue_archive: venueCard,
   ...CONFIGURATION_UI_ENTRIES,
   ...CUSTOMER_UI_ENTRIES,
+  ...OCCUPANCY_UI_ENTRIES,
   ...ACCESS_UI_ENTRIES,
   search: uiEntry({
     component: "search-results",
