@@ -5,6 +5,7 @@ import type { BookingStatusWire } from "./booking-status-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
 import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire } from "./payment-entries";
+import type { ProgramItemWire } from "./program-item-entries";
 import type { SheetDefinitionWire } from "./sheet-definition-entries";
 import type {
   AuditLogWire,
@@ -46,6 +47,8 @@ export type ToolUiProps = {
   "booking-card": { booking: BookingWire };
   "booking-series-table": { items: BookingSeriesWire[]; nextCursor: string | null };
   "booking-series-card": { series: BookingSeriesWire };
+  "program-item-table": { items: ProgramItemWire[]; nextCursor: string | null };
+  "program-item-card": { programItem: ProgramItemWire };
   "inbound-email-table": { items: InboundEmailWire[]; nextCursor: string | null };
   "inbound-email-card": { email: InboundEmailWire };
   "payment-account-card": { account: PaymentAccountWire };
@@ -99,6 +102,8 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "booking-card",
   "booking-series-table",
   "booking-series-card",
+  "program-item-table",
+  "program-item-card",
   "inbound-email-table",
   "inbound-email-card",
   "payment-account-card",

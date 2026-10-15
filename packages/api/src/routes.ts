@@ -15,6 +15,7 @@ import { messageRoutes } from "./features/message/rest";
 import { occupancyRoutes } from "./features/occupancy/rest";
 import { paymentRoutes } from "./features/payment/rest";
 import { paymentAccountRoutes } from "./features/payment-account/rest";
+import { programItemRoutes } from "./features/program-item/rest";
 import { roleRoutes } from "./features/role/rest";
 import { setupRoutes } from "./features/setup/rest";
 import { sheetDefinitionRoutes } from "./features/sheet-definition/rest";
@@ -41,6 +42,7 @@ export function listRestRoutes(): RestRoute[] {
     ...bookingStatusRoutes,
     ...bookingRoutes,
     ...bookingSeriesRoutes,
+    ...programItemRoutes,
     ...inboundEmailRoutes,
     ...paymentAccountRoutes,
     ...paymentRoutes,

@@ -73,7 +73,7 @@ export function nextSteps({ names, plan }) {
     `  [ ] packages/core/src/index.ts, core-operations.ts and schemas.ts: export ${camel}Schema, the types and the operations; register the operations.`,
     `  [ ] packages/graphql/src/schema/schema.ts: add import "../features/${kebab}/graphql";`,
     "  [ ] packages/api and apps/mcp: register the REST routes and MCP tools from rest.ts and mcp.ts.",
-    `  [ ] apps/web/src/features/web-surfaces.ts: add each ${kebab}.* operation to WEB_SURFACES (or UI_EXEMPT with a reason).`,
+    `  [ ] apps/web/src/features/web-surfaces.ts: add each ${kebab}.* operation to WEB_SURFACES (or UI_EXEMPT in ui-exempt.ts with a reason).`,
     `  [ ] apps/mcp/test/parity-entities.ts: add a ${kebab} entry to ENTITIES.`,
     `  [ ] packages/i18n/messages/sv.json and en.json: add the "${camel}" keys (skill i18n-strings).`,
     `  [ ] docs/domain-model.md and docs/artifacts/domain-model.html: add ${Pascal} together.`,

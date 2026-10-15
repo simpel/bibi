@@ -79,10 +79,10 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 ### EntityType (`EntityType`)
 
-*MVP* · The organization's own type for a base entity: item, customer, contact, inquiry, booking or requirement.
+*MVP* · The organization's own type for a base entity: item, customer, contact, inquiry, booking, requirement or program item.
 
 **Attributes**
-- base entity (`ITEM | CUSTOMER | CONTACT | INQUIRY | BOOKING | REQUIREMENT`)
+- base entity (`ITEM | CUSTOMER | CONTACT | INQUIRY | BOOKING | REQUIREMENT | PROGRAM_ITEM`)
 - name (e.g. Conference room, Dish, Boat, Package, Company, Conference) — unique per base entity
 - behaviors (`ITEM` only): `PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS` — `CHOICES` requires `COMPOSABLE`, `SETUPS` requires `BOOKABLE` (otherwise `VALIDATION`)
 
@@ -400,12 +400,12 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 *MVP* · A row in the day's run sheet: meeting, coffee break, lunch, activity. Created, among other cases, when a composite item is added to the booking.
 
 **Attributes**
-- name and type (the organization's own)
-- start – end
-- bookable item (e.g. a venue space)
-- setup
-- headcount
-- responsible (`responsibleId`, optional)
+- name and type (the organization's own, base `PROGRAM_ITEM`) and custom fields
+- start – end (`startsAt`, `endsAt`; `[start, end)`)
+- bookable item (`itemId`, optional; an item whose type is `BOOKABLE`, e.g. a venue space)
+- setup (`setupId`, optional; one of the item's setups, requires the item)
+- quantity (`quantity`, e.g. the headcount)
+- responsible (`responsibleId`, optional; the user id of a member)
 - internal note
 
 **Relations**
@@ -417,6 +417,8 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `1:0..1` reserves → Occupancy
 - `1:N` requires → Task
 - `1:N` AccessCode opens for this
+
+> Operations (resource `programItem`): `programItem.list|get|create|update|archive` and `programItem.assign` ([ADR 0022](decisions/0022-sales-pipeline-and-booking-states.md)). With a bookable item the program item holds a `BOOKING` occupancy for its period, and with a setup also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = programItem`). An overlap is refused (`CONFLICT`) and nothing is saved. `update` moves the occupancy when item, setup or time change; `archive` releases it. `programItem.assign` sets, changes or removes the responsible person, who must be a member (`VALIDATION`). Every change is audited.
 
 ### Requirement ★ (`Requirement`)
 

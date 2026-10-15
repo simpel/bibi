@@ -5,7 +5,7 @@ type Db = Pick<OperationContext, "db">;
 export type FieldValuesOfTypeInput = { context: Db; entityTypeId: string };
 
 /**
- * The `fields` JSON of every active record of a type: items, customers, contacts or bookings (a
+ * The `fields` JSON of every active record of a type: items, customers, contacts, bookings or program items (a
  * type has one base, so only one table has rows). Used by the "data present → CONFLICT" rules (ADR 0021).
  * Archived rows are not counted: the org-scoped client hides `status = ARCHIVED` rows (ADR 0026).
  * Record counts per type are small (hundreds of rows), so the check runs in memory.
@@ -20,13 +20,14 @@ export async function fieldValuesOfType({
     ...(await context.db.customer.findMany(query)),
     ...(await context.db.contact.findMany(query)),
     ...(await context.db.booking.findMany(query)),
+    ...(await context.db.programItem.findMany(query)),
   ];
   return rows.map((row) => asFieldValues({ value: row.fields }));
 }
 
 export type CountRecordsOfTypeInput = FieldValuesOfTypeInput & { id?: string };
 
-/** Active records (items, customers, contacts, bookings) that have the type, optionally one id. */
+/** Active records (items, customers, contacts, bookings, program items) that have the type, optionally one id. */
 export async function countRecordsOfType({
   context,
   entityTypeId,
@@ -37,7 +38,8 @@ export async function countRecordsOfType({
     (await context.db.item.count({ where })) +
     (await context.db.customer.count({ where })) +
     (await context.db.contact.count({ where })) +
-    (await context.db.booking.count({ where }))
+    (await context.db.booking.count({ where })) +
+    (await context.db.programItem.count({ where }))
   );
 }
 

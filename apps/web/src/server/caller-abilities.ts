@@ -14,6 +14,7 @@ export type CallerAbilities = {
   contactWrite: boolean;
   occupancyWrite: boolean;
   bookingWrite: boolean;
+  programItemWrite: boolean;
   auditRead: boolean;
   paymentAdmin: boolean;
   paymentRead: boolean;
@@ -31,6 +32,7 @@ const NONE: CallerAbilities = {
   contactWrite: false,
   occupancyWrite: false,
   bookingWrite: false,
+  programItemWrite: false,
   auditRead: false,
   paymentAdmin: false,
   paymentRead: false,
@@ -56,6 +58,7 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     contactWrite: hasPermission({ permissions, permission: "contact:write" }),
     occupancyWrite: hasPermission({ permissions, permission: "occupancy:write" }),
     bookingWrite: hasPermission({ permissions, permission: "booking:write" }),
+    programItemWrite: hasPermission({ permissions, permission: "programItem:write" }),
     auditRead: hasPermission({ permissions, permission: "audit:read" }),
     paymentAdmin: hasPermission({ permissions, permission: "payment:admin" }),
     paymentRead: hasPermission({ permissions, permission: "payment:read" }),
