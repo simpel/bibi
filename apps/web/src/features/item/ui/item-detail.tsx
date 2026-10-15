@@ -15,6 +15,7 @@ import { loadItemFormData } from "../load-item-form-data";
 import { ItemActions } from "./item-actions";
 import { ItemBehaviours } from "./item-behaviours";
 import { ItemFacts } from "./item-facts";
+import { PackageOwner } from "./package-owner";
 
 export type ItemDetailProps = { locale: Locale; id: string };
 
@@ -22,11 +23,9 @@ export type ItemDetailProps = { locale: Locale; id: string };
 export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const common = await getTranslations("common");
   const { itemWrite } = await getCallerAbilities();
-  const [item, data] = await Promise.all([
-    runOperation({ operation: getItem, input: { id } }),
-    loadItemFormData(),
-  ]);
+  const item = await runOperation({ operation: getItem, input: { id } });
   if (!item.ok) return <ErrorState errorKey={handleLoadError({ error: item.error, locale })} />;
+  const data = await loadItemFormData({ customerId: item.value.customerId });
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const type = data.value.types.find((candidate) => candidate.id === item.value.entityTypeId);
   const actions = itemWrite ? <ItemActions item={item.value} data={data.value} /> : undefined;
@@ -44,6 +43,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         description={item.value.description ?? undefined}
         actions={actions}
       />
+      {item.value.customerId ? <PackageOwner customerId={item.value.customerId} /> : null}
       <WithHistory locale={locale} entityType="item" entityId={item.value.id}>
         <ItemFacts item={item.value} type={type} data={data.value} />
         <ItemBehaviours item={item.value} data={data.value} locale={locale} />

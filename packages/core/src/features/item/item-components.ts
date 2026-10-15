@@ -44,13 +44,19 @@ async function walk({ context, from, direction }: WalkInput): Promise<Edges> {
 export type CheckComponentsInput = {
   context: Db;
   parentId: string | undefined;
+  /** The customer owning the parent; null = a catalog item, whose parts are catalog items. */
+  customerId: string | null;
   components: Components;
 };
 
-/** Parts are active items, each listed once, with no cycle and at most 5 levels (ADR 0021). */
+/**
+ * Parts are active items, each listed once, with no cycle and at most 5 levels (ADR 0021). A
+ * part is a catalog item or a package of the parent's own customer, never another customer's.
+ */
 export async function checkComponents({
   context,
   parentId,
+  customerId,
   components,
 }: CheckComponentsInput): Promise<Result<true>> {
   const ids = components.map((component) => component.itemId);
@@ -58,8 +64,9 @@ export async function checkComponents({
   if (parentId && ids.includes(parentId)) {
     return problem({ message: "An item cannot contain itself" });
   }
-  if ((await context.db.item.count({ where: { id: { in: ids } } })) !== ids.length) {
-    return problem({ message: "Unknown part" });
+  const owners = [{ customerId: null }, ...(customerId ? [{ customerId }] : [])];
+  if ((await context.db.item.count({ where: { id: { in: ids }, OR: owners } })) !== ids.length) {
+    return problem({ message: "Unknown part, or a part that belongs to another customer" });
   }
   const down = await walk({ context, from: ids, direction: "down" });
   const up = parentId ? await walk({ context, from: [parentId], direction: "up" }) : new Map();

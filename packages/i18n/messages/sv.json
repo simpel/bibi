@@ -193,6 +193,13 @@
     "select": "Välj…",
     "search": "Sök…",
     "noOptions": "Inga alternativ.",
+    "savePackage": "Spara som paket",
+    "savePackageDescription": "Välj pakettyp och delar. Paketet visas bara för den här kunden; katalogen påverkas inte.",
+    "packageSaved": "Paketet har sparats.",
+    "packages": "Paket",
+    "packagesEmpty": "Kunden har inga paket ännu.",
+    "packagesNoTypes": "Det finns ingen artikeltyp med delar (COMPOSABLE) ännu. Skapa en under Typer först.",
+    "packageFor": "Paket för {customer}",
     "fields": {
       "type": "Typ",
       "name": "Namn",

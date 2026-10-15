@@ -39,6 +39,7 @@ erDiagram
   Booking ||--o{ Sheet : "produces"
   User ||--o{ Booking : "coordinates / sells"
   Customer ||--o{ Booking : "orders"
+  Customer ||--o{ Item : "owns packages"
   Booking ||--o{ InboundEmail : "receives replies as"
   EntityType ||--o{ FieldDefinition : "has"
   EntityType ||--o{ Item : "classifies"
@@ -229,6 +230,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `1:N` sends → Inquiry
 - `N:0..1` uses → PriceList
 - `1:N` orders → Booking
+- `1:N` owns packages → Item (customer-specific items, "Save as package")
 
 ### Contact (`Contact`)
 
@@ -486,11 +488,12 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
   - `BOOKABLE`: occupancy in time, conflict protection, `defaultDurationMinutes`
   - `SETUPS`: capacity per setup (requires `BOOKABLE`)
 - venue (optional)
-- customerId (`null` = catalog item)
+- customerId (`null` = catalog item; set = a customer-specific package, created by `item.saveAsPackage` and listed by `item.list` only together with its customer)
 
 **Relations**
 - `N:1` is classified by → EntityType
 - `N:0..1` belongs to → Venue
+- `N:0..1` is a package of → Customer (a package's parts are catalog items or the same customer's packages)
 - `1:N` contains → ItemComponent
 - `1:N` is part of → ItemComponent
 - `1:N` has → ItemChoiceGroup

@@ -17,6 +17,7 @@ export * from "./features/field-definition/field-values-schema";
 export * from "./features/field-definition/fields-schema";
 export * from "./features/field-definition/schema";
 export * from "./features/inbound-email/schema";
+export * from "./features/item/package-schema";
 export * from "./features/item/schema";
 export * from "./features/member/schema";
 export * from "./features/message/schema";

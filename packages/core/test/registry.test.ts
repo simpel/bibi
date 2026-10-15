@@ -62,6 +62,7 @@ describe("registry and approval", () => {
       "item.create",
       "item.get",
       "item.list",
+      "item.saveAsPackage",
       "item.update",
       "member.assignRole",
       "member.cancelInvitation",

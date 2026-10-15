@@ -39,6 +39,10 @@ export const ItemSchema = z.object({
   organizationId: z.string(),
   entityTypeId: z.string(),
   venueId: z.string().nullable(),
+  customerId: z
+    .string()
+    .nullable()
+    .describe("null = catalog item; set = a package specific to this customer"),
   name: z.string(),
   description: z.string().nullable(),
   fields: FieldValuesSchema,
@@ -117,6 +121,14 @@ export const ItemListInputSchema = z.object({
   entityTypeId: z.string().optional().describe("Only items of this type"),
   venueId: z.string().optional().describe("Only items in this venue"),
   behaviour: ItemBehaviourSchema.optional().describe("Only items whose type has this behaviour"),
+  customerId: z
+    .string()
+    .optional()
+    .describe("Also list this customer's own packages. Without it, only the catalog is listed."),
+  onlyCustomer: z
+    .boolean()
+    .optional()
+    .describe("With customerId: only that customer's packages, without the catalog"),
   ...PageInputShape,
 });
 

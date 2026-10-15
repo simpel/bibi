@@ -12,6 +12,8 @@ export type CheckItemInput = {
   type: EntityType;
   /** The item being updated; undefined on create. */
   itemId?: string | undefined;
+  /** The customer owning the item; null = a catalog item. */
+  customerId: string | null;
   data: Omit<ItemUpdateInput, "id" | "fields">;
   /** Full field values after the change, or undefined when fields are not touched. */
   fields: Record<string, unknown> | undefined;
@@ -26,6 +28,7 @@ export async function checkItem({
   context,
   type,
   itemId,
+  customerId,
   data,
   fields,
 }: CheckItemInput): Promise<Result<Record<string, unknown> | undefined>> {
@@ -38,7 +41,12 @@ export async function checkItem({
     if (!setups.ok) return setups;
   }
   if (data.components) {
-    const parts = await checkComponents({ context, parentId: itemId, components: data.components });
+    const parts = await checkComponents({
+      context,
+      parentId: itemId,
+      customerId,
+      components: data.components,
+    });
     if (!parts.ok) return parts;
   }
   if (fields === undefined) return ok({ value: undefined });

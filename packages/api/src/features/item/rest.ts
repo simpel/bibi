@@ -18,4 +18,9 @@ export const itemRoutes = [
   }),
   restRoute({ operation: "item.update", method: "PATCH", path: "/items/{id}" }),
   restRoute({ operation: "item.archive", method: "DELETE", path: "/items/{id}" }),
+  restRoute({
+    operation: "item.saveAsPackage",
+    method: "POST",
+    path: "/customers/{customerId}/packages",
+  }),
 ];

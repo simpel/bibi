@@ -46,6 +46,7 @@ export * from "./features/inbound-email/operations";
 export { receiveInboundEmail } from "./features/inbound-email/receive-operation";
 export { itemEmbeddable } from "./features/item/embeddable";
 export * from "./features/item/lifecycle-operations";
+export * from "./features/item/package-operations";
 export * from "./features/item/read-operations";
 export * from "./features/item/write-operations";
 export * from "./features/member/invitation-operations";

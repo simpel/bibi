@@ -9,20 +9,21 @@ export type ItemDialogProps = {
   /** Present = edit mode, absent = create mode. */
   item?: ItemDto | undefined;
   typeId?: string | undefined;
+  /** Create mode: save as this customer's package. */
+  customerId?: string | undefined;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
 export function ItemDialog({ open, onOpenChange, item, ...rest }: ItemDialogProps) {
   const t = useTranslations("item");
+  const mode = item ? "edit" : rest.customerId ? "savePackage" : "create";
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{item ? t("edit") : t("create")}</DialogTitle>
-          <DialogDescription>
-            {item ? t("editDescription") : t("createDescription")}
-          </DialogDescription>
+          <DialogTitle>{t(mode)}</DialogTitle>
+          <DialogDescription>{t(`${mode}Description`)}</DialogDescription>
         </DialogHeader>
         <ItemForm item={item} onDone={() => onOpenChange(false)} {...rest} />
       </DialogContent>

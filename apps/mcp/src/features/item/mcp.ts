@@ -22,4 +22,9 @@ export const itemMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Archive item ${text({ value: input.id })}`,
   }),
+  mcpTool({
+    operation: "item.saveAsPackage",
+    summary: ({ input }) =>
+      `Save package "${text({ value: input.name })}" for customer ${text({ value: input.customerId })}`,
+  }),
 ];

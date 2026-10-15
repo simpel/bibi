@@ -13,14 +13,17 @@ export type ItemFormProps = {
   data: ItemFormData;
   item?: ItemDto | undefined;
   typeId?: string | undefined;
+  /** Create mode: save as this customer's package. */
+  customerId?: string | undefined;
   onDone: () => void;
 };
 
 /** Create (type picker first) or edit an item: core fields, the type's own fields, behaviours. */
-export function ItemForm({ data, item, typeId, onDone }: ItemFormProps) {
+export function ItemForm(props: ItemFormProps) {
+  const { data, item, onDone } = props;
   const common = useTranslations("common");
   const t = useTranslations("item.fields");
-  const { form, submit, pending, typeOf } = useItemForm({ data, item, typeId, onDone });
+  const { form, submit, pending, typeOf } = useItemForm(props);
   const type = typeOf({ id: form.watch("entityTypeId") });
   return (
     <Form {...form}>

@@ -193,6 +193,13 @@
     "select": "Select…",
     "search": "Search…",
     "noOptions": "No options.",
+    "savePackage": "Save as package",
+    "savePackageDescription": "Pick a package type and its parts. The package is shown only for this customer; the catalog is unchanged.",
+    "packageSaved": "The package has been saved.",
+    "packages": "Packages",
+    "packagesEmpty": "No packages for this customer yet.",
+    "packagesNoTypes": "There is no item type with parts (COMPOSABLE) yet. Create one under Types first.",
+    "packageFor": "Package for {customer}",
     "fields": {
       "type": "Type",
       "name": "Name",

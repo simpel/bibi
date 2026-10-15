@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { type Resolver, useForm } from "react-hook-form";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
-import { createItemAction, updateItemAction } from "../actions";
+import { createItemAction, saveItemAsPackageAction, updateItemAction } from "../actions";
 import type { ItemFormData } from "./item-form-data";
 import { type ItemFormOutput, itemFormSchema } from "./item-form-schema";
 import { type ItemFormValues, itemFormDefaults } from "./item-form-values";
@@ -21,14 +21,31 @@ export type UseItemFormInput = {
   item?: ItemDto | undefined;
   /** Create mode: the type to start with, e.g. the one chosen in the list filter. */
   typeId?: string | undefined;
+  /** Create mode: save the item as this customer's package ("Save as package", ADR 0021). */
+  customerId?: string | undefined;
   onDone: () => void;
 };
+
+type SuccessKeyInput = { item: ItemDto | undefined; customerId: string | undefined };
+
+const successKey = ({ item, customerId }: SuccessKeyInput) =>
+  item ? "updated" : customerId ? "packageSaved" : "created";
+
+type CreateActionInput = { values: ItemFormOutput; customerId: string | undefined };
+
+/** A catalog item, or a customer's package when a customer is given. */
+const createAction = ({ values, customerId }: CreateActionInput) =>
+  customerId
+    ? saveItemAsPackageAction({
+        input: { ...values, customerId, components: values.components ?? [] },
+      })
+    : createItemAction({ input: values });
 
 /**
  * Item form state. The resolver is built per selected type, so the type's own fields are
  * validated with `buildFieldsSchema`; server field issues (`fields.<key>`) land on the controls.
  */
-export function useItemForm({ data, item, typeId, onDone }: UseItemFormInput) {
+export function useItemForm({ data, item, typeId, customerId, onDone }: UseItemFormInput) {
   const t = useTranslations("item");
   const router = useRouter();
   const messages = useZodMessages();
@@ -51,8 +68,8 @@ export function useItemForm({ data, item, typeId, onDone }: UseItemFormInput) {
         ? updateItemAction({
             input: toUpdateInput({ item, values, type: typeOf({ id: item.entityTypeId }) }),
           })
-        : createItemAction({ input: values }),
-    messages: { pending: t("saving"), success: t(item ? "updated" : "created") },
+        : createAction({ values, customerId }),
+    messages: { pending: t("saving"), success: t(successKey({ item, customerId })) },
     onSuccess: () => {
       router.refresh();
       onDone();

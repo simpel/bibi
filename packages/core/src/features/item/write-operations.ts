@@ -5,6 +5,7 @@ import { toJson } from "../../shared/to-json";
 import { mergeFields } from "../field-definition/field-values";
 import { checkItem } from "./check-item";
 import { itemEmbeddable } from "./embeddable";
+import { insertItem } from "./insert-item";
 import { replaceComponents } from "./item-components";
 import { loadItemType } from "./item-rules";
 import { replaceSetups } from "./item-setups";
@@ -17,36 +18,13 @@ export const createItem = defineOperation({
   description:
     "Create an item of one of the organization's item types. Behaviour data (price, default " +
     "length, setup capacities, parts) is only accepted if the type has that behaviour; `fields` " +
-    "must match the type's own fields.",
+    "must match the type's own fields. The item joins the catalog; use item.saveAsPackage " +
+    "for a customer-specific package.",
   input: ItemCreateInputSchema,
   output: ItemSchema,
   permission: "item:write",
   embeddable: itemEmbeddable,
-  handler: async ({ input: { entityTypeId, fields, setups, components, ...data }, context }) => {
-    const type = await loadItemType({ context, entityTypeId });
-    if (!type.ok) return type;
-    const checked = await checkItem({
-      context,
-      type: type.value,
-      data: { ...data, setups, components },
-      fields: fields ?? {},
-    });
-    if (!checked.ok) return checked;
-    const row = await context.db.item.create({
-      data: {
-        ...data,
-        entityTypeId,
-        fields: toJson({ value: checked.value ?? {} }) ?? {},
-        organizationId: context.organizationId,
-      },
-    });
-    if (setups) await replaceSetups({ context, itemId: row.id, setups });
-    if (components) await replaceComponents({ context, itemId: row.id, components });
-    const item = await loadItem({ context, id: row.id });
-    if (!item) return notFound({ entity: "Item" });
-    context.recordChange({ entityId: row.id, after: item });
-    return ok({ value: item });
-  },
+  handler: ({ input, context }) => insertItem({ context, input, customerId: null }),
 });
 
 export const updateItem = defineOperation({
@@ -69,6 +47,7 @@ export const updateItem = defineOperation({
       context,
       type: type.value,
       itemId: id,
+      customerId: before.customerId,
       data: { ...data, setups, components },
       fields,
     });

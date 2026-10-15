@@ -6,14 +6,24 @@ import type { ItemFormData } from "./ui/item-form-data";
 
 const LIMIT = 100;
 
+export type LoadItemFormDataInput = {
+  /** A customer's package: its own packages can be parts too, next to the catalog. */
+  customerId?: string | null | undefined;
+};
+
 /** Everything the item form needs to render a type's fields and behaviours (one page each). */
-export async function loadItemFormData(): Promise<Result<ItemFormData>> {
+export async function loadItemFormData({
+  customerId,
+}: LoadItemFormDataInput = {}): Promise<Result<ItemFormData>> {
   const [types, vocabularies, setups, venues, parts] = await Promise.all([
     runOperation({ operation: listEntityTypes, input: { base: "ITEM", limit: LIMIT } }),
     runOperation({ operation: listVocabularies, input: { limit: LIMIT } }),
     runOperation({ operation: listSetups, input: { limit: LIMIT } }),
     runOperation({ operation: listVenues, input: { limit: LIMIT } }),
-    runOperation({ operation: listItems, input: { limit: LIMIT } }),
+    runOperation({
+      operation: listItems,
+      input: { limit: LIMIT, ...(customerId ? { customerId } : {}) },
+    }),
   ]);
   if (!types.ok) return types;
   if (!vocabularies.ok) return vocabularies;

@@ -13,6 +13,8 @@ model Item {
   organizationId         String
   entityTypeId           String
   venueId                String?
+  /// null = a catalog item; set = a customer-specific package, listed only with its customer.
+  customerId             String?
   name                   String
   description            String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
@@ -29,6 +31,7 @@ model Item {
   createdBy              String?
   entityType             EntityType      @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   venue                  Venue?          @relation(fields: [venueId, organizationId], references: [id, organizationId])
+  customer               Customer?       @relation(fields: [customerId, organizationId], references: [id, organizationId])
   setups                 ItemSetup[]
   /// COMPOSABLE: the parts this item contains.
   components             ItemComponent[] @relation("ItemComponentParent")
@@ -41,6 +44,7 @@ model Item {
   @@index([organizationId, status])
   @@index([organizationId, entityTypeId])
   @@index([organizationId, venueId])
+  @@index([organizationId, customerId])
 }
 
 /// Item setup – capacity of a `SETUPS` item in one setup. Replaced as a set by `item.*`.

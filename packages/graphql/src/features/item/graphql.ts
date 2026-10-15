@@ -7,6 +7,7 @@ import {
   ItemSchema,
   ItemSetupSchema,
   listItems,
+  saveItemAsPackage,
   updateItem,
 } from "@okazi/core";
 import { builder } from "../../schema/builder";
@@ -75,6 +76,7 @@ fieldFromOperation({ operation: getItem, type: ItemRef, name: "item" });
 mutationFromOperation({ operation: createItem, type: ItemRef });
 mutationFromOperation({ operation: updateItem, type: ItemRef });
 mutationFromOperation({ operation: archiveItem, type: ItemRef });
+mutationFromOperation({ operation: saveItemAsPackage, type: ItemRef });
 
 // Graph edges. Reads go through core operations or the per-request loaders (org-scoped).
 // They live here so that venue/graphql.ts does not need to import this file.
