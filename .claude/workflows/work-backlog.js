@@ -23,7 +23,15 @@ const STATUSES = args && args.includeBacklog ? ['Todo', 'Backlog'] : ['Todo']
 const ONLY = (args && args.only) || null
 const MAX_FIX_ROUNDS = 2
 const TIERS = ['haiku', 'sonnet', 'opus'] // fable is never used
-const BOARD = `Project board 8 (owner simpel): project id PVT_kwHOAAOKWM4BnFHj, Status field PVTSSF_lAHOAAOKWM4BnFHjzhlrXtM, options Backlog=f75ad846 Todo=61e4505c Parked=a84a90a0 "In progress"=47fc9ee4 Done=98236657. Item id: gh project item-list 8 --owner simpel --format json -L 300 and match content.number.`
+// Board ids are fixed: agents never run gh project field-list / item-list to find them (GraphQL rate limit).
+const PROJECT_ID = 'PVT_kwHOAAOKWM4BnFHj'
+const STATUS_FIELD = 'PVTSSF_lAHOAAOKWM4BnFHjzhlrXtM'
+const STATUS_OPTION = { Backlog: 'f75ad846', Todo: '61e4505c', Parked: 'a84a90a0', 'In progress': '47fc9ee4', Done: '98236657' }
+const SIZE_FIELD = 'PVTSSF_lAHOAAOKWM4BnFHjzhlrX6s'
+const SIZE_OPTION = { XS: '6c6483d2', S: 'f784b110', M: '7515a9f1', L: '817d0097', XL: 'db339eb2' }
+const EDIT = (itemId, field, option) => `gh project item-edit --id ${itemId} --project-id ${PROJECT_ID} --field-id ${field} --single-select-option-id ${option}`
+// One GraphQL call per move. The item id comes from the select step, so no lookup is needed.
+const moveCard = (t, status) => `Move the issue's board card to "${status}" with exactly this one command (no item-list, no field-list): ${EDIT(t.itemId, STATUS_FIELD, STATUS_OPTION[status])}`
 const CO_AUTHOR = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
 const wtName = (t) => `t-${t.number}`
 const CHECKS = 'pnpm db:migrate, pnpm lint, pnpm typecheck, pnpm check:structure, pnpm test'
@@ -78,11 +86,12 @@ const TICKETS = {
           number: { type: 'number' },
           title: { type: 'string' },
           labels: { type: 'array', items: { type: 'string' } },
+          itemId: { type: 'string' },
           priority: { type: 'string' },
           status: { type: 'string' },
           openBlockers: { type: 'array', items: { type: 'number' } },
         },
-        required: ['number', 'title', 'labels', 'priority', 'openBlockers'],
+        required: ['number', 'title', 'labels', 'itemId', 'priority', 'openBlockers'],
       },
     },
   },
@@ -154,9 +163,9 @@ const inWorktree = (dir) => `Your checkout is the git worktree ${dir}: its own b
 
 const selectPrompt = (exclude) => `You read the board for autonomous ticket work on simpel/okazi. Do not change anything.
 1. In ${REPO}: git fetch origin. On failure return ok=false with the reason.
-2. List board items: gh project item-list 8 --owner simpel --format json -L 300. Keep open issues from simpel/okazi with status ${STATUSES.map((x) => `"${x}"`).join(' or ')}.${ONLY ? ` Only consider issues ${JSON.stringify(ONLY)}.` : ''}${exclude.length ? ` Skip issues ${JSON.stringify(exclude)}.` : ''}
+2. List board items ONCE: gh project item-list 8 --owner simpel --format json -L 300. Keep open issues from simpel/okazi with status ${STATUSES.map((x) => `"${x}"`).join(' or ')}.${ONLY ? ` Only consider issues ${JSON.stringify(ONLY)}.` : ''}${exclude.length ? ` Skip issues ${JSON.stringify(exclude)}.` : ''}
 3. For each, read the issue (gh issue view N -R simpel/okazi --json title,labels,body). openBlockers = issue numbers under "Depends on" in the body, plus native blocked-by (gh api repos/simpel/okazi/issues/N/dependencies/blocked_by), that are still OPEN.
-4. priority = the board Priority value (P0/P1/P2, "" if unset). status = the board Status. labels = label names.
+4. itemId = the board item's id (the \"id\" field of that item in the item-list output; PVTI_...). priority = the board Priority value (P0/P1/P2, "" if unset). status = the board Status. labels = label names.
 Return ok=true and every matching ticket, including blocked ones.`
 
 const prepPrompt = (t) => `Create an isolated worktree for issue #${t.number} in ${REPO}.
@@ -164,7 +173,7 @@ const prepPrompt = (t) => `Create an isolated worktree for issue #${t.number} in
 2. If ${REPO}/../okazi-worktrees/${wtName(t)} exists (leftover from an earlier run): if \`git status --porcelain\` there is empty and \`git log origin/main..HEAD\` there is empty, run \`pnpm wt:rm ${wtName(t)} --force --delete-branch\` from ${REPO}; otherwise return ok=false, problem "leftover worktree with work".
 3. If branch ticket/${t.number} exists without a worktree: delete it (git branch -D) only if \`git log origin/main..ticket/${t.number}\` is empty; otherwise return ok=false, problem "leftover branch with work".
 4. From ${REPO}: pnpm wt:new ${wtName(t)} --branch ticket/${t.number} --base origin/main. It prints WORKTREE_DIR=<path> when ready. On failure return ok=false with the last 30 lines.
-5. Move the issue's board card to "In progress". ${BOARD}
+5. ${moveCard(t, 'In progress')}
 Return ok and dir (absolute path).`
 
 const implPrompt = (t, dir) => `Implement GitHub issue #${t.number} ("${t.title}").
@@ -200,7 +209,7 @@ ${CO_AUTHOR}
 2. git fetch origin, note \`git merge-base HEAD origin/main\`, then git rebase origin/main. On a conflict: git rebase --abort and return landed=false, reason "rebase conflict: <files>".
 3. If origin/main had moved (merge-base changed), re-run ${CHECKS}. On any failure return landed=false, reason "red after rebase" plus a short excerpt.
 4. git push origin HEAD:main. Never force-push. If rejected because origin moved, go back to step 2 (at most 3 tries in total).
-5. Set the issue's board card to Done. ${BOARD}
+5. ${moveCard(t, 'Done')}
 6. From ${REPO}: pnpm wt:rm ${wtName(t)} --delete-branch.
 Return landed=true and the pushed SHA.`
 
@@ -212,7 +221,7 @@ Reason: ${reason}
 ${CO_AUTHOR}
 3. If the branch has no commits beyond origin/main (git log origin/main..HEAD is empty), skip to step 5 and return branch "".
 4. git branch -m parked/${t.number} (append -2, -3, … if taken), then git push -u origin <branch>. Never force-push.
-5. gh issue comment ${t.number} -R simpel/okazi with a short English note: the work-backlog run parked it, the branch link (https://github.com/simpel/okazi/tree/<branch>) if any, and the reason (max 30 lines). Then move its board card to "Parked". ${BOARD}
+5. gh issue comment ${t.number} -R simpel/okazi with a short English note: the work-backlog run parked it, the branch link (https://github.com/simpel/okazi/tree/<branch>) if any, and the reason (max 30 lines). Then: ${moveCard(t, 'Parked')}
 6. From ${REPO}: pnpm wt:rm ${wtName(t)} --force (keeps the branch; drops the worktree database).
 Return ok and the branch name.`
 
@@ -222,7 +231,7 @@ Findings (JSON): ${JSON.stringify(items)}
 2. Drop a finding if an open issue already covers it: search with gh issue list -R simpel/okazi --state open --search "<keywords>" (try 2-3 keyword sets). Add its number to duplicates as "#N: <title>".
 3. Verify each remaining finding by reading the code at "where". Drop it if it is not real.
 4. Create each one with gh issue create -R simpel/okazi, in English, labels "source:agent" plus a matching type label (type:tech-debt, type:feature, type:docs; bug and security use the "bug" label) and area:* label(s) from the path. Body sections, as in other issues: "### Background" (start with "Found by an agent while working on #<from>."), "### Current state" (with file:line), "### To do" (checkboxes), "### Done when".
-5. Add each to the board and set Status "Backlog" (never Todo: a human triages agent findings). gh project item-add 8 --owner simpel --url <issue>, then gh project item-edit 8 --owner simpel --url <issue> --field Status --value Backlog. Also set Size (XS-XL) by your estimate; leave Priority unset.
+5. Add each to the board and set Status "Backlog" (never Todo: a human triages agent findings). Never run item-list or field-list; all ids are given here. gh project item-add 8 --owner simpel --url <issue> --format json prints the item id (.id). Then run ${EDIT('<itemId>', STATUS_FIELD, STATUS_OPTION.Backlog)}. Also set Size by your estimate with ${EDIT('<itemId>', SIZE_FIELD, '<option>')}, option ids ${JSON.stringify(SIZE_OPTION)}; leave Priority unset.
 Return the created issue numbers.`
 
 // ---- Ticket pipeline ---------------------------------------------------------
