@@ -303,6 +303,9 @@ importers:
         specifier: 4.6.7
         version: 4.6.7
     devDependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: 1.32.1
+        version: 1.32.1(zod@4.6.7)
       '@paralleldrive/cuid2':
         specifier: 3.3.0
         version: 3.3.0
