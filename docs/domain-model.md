@@ -535,7 +535,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - offsetMinutes from the parent's start (default 0)
 - durationMinutes (null = the parent's length)
 - required (default) or optional
-- choice group (with `CHOICES`, not built yet)
+- choice group (`choiceGroupId`, with `CHOICES`; null = not an option)
 
 **Relations**
 - `N:1` Item contains this
@@ -549,13 +549,16 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 *MVP* · Selectable alternatives among the components of a composite item.
 
 **Attributes**
-- name
+- name, unique per item
 - minPick
 - maxPick
+- position (order on the item)
 
 **Relations**
 - `N:1` Item has this
 - `1:N` groups → ItemComponent
+
+> Replaced as a set by `item.create`/`item.update` (`choiceGroups`: name, `minPick`, `maxPick`, `itemIds`), only for types with `CHOICES` (otherwise `VALIDATION`). `0 ≤ minPick ≤ maxPick ≤ number of options`; every option is a component of the item and in at most one group (`VALIDATION`). When only `components` change, the groups are kept and checked again. `CHOICES` cannot be turned off while an active item of the type has groups (`CONFLICT`).
 
 ### Sheet ★ (`Sheet`)
 

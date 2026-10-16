@@ -219,7 +219,8 @@
       "price": "Pris",
       "booking": "Bokning",
       "setups": "Uppställningar",
-      "components": "Delar"
+      "components": "Delar",
+      "choices": "Valgrupper"
     },
     "setupsHint": "Kapacitet, max antal personer, per uppställning. Lämna tomt för uppställningar som inte används.",
     "noSetups": "Det finns inga uppställningar. Skapa dem under Uppställningar.",
@@ -249,7 +250,19 @@
       "durationMinutes": "Längd (minuter)",
       "required": "Obligatorisk"
     },
-    "componentValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (valfri)}}"
+    "componentValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (valfri)}}",
+    "choiceGroups": {
+      "hint": "Grupper av delar att välja mellan, med hur många som ska väljas.",
+      "none": "Inga valgrupper ännu.",
+      "add": "Lägg till valgrupp",
+      "remove": "Ta bort valgrupp",
+      "name": "Namn",
+      "minPick": "Välj minst",
+      "maxPick": "Välj högst",
+      "options": "Alternativ",
+      "noOptions": "Lägg till delar först; alternativen väljs bland dem."
+    },
+    "choiceGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}"
   },
   "customer": {
     "singular": "Kund",
@@ -893,6 +906,7 @@
         "title": "Titel",
         "value": "Värde",
         "components": "Delar",
+        "choiceGroups": "Valgrupper",
         "customerId": "Kund (id)",
         "email": "E-post",
         "phone": "Telefon",
@@ -993,7 +1007,14 @@
         "duration": "{minutes} min",
         "setupsCount": "{count, plural, one {# uppställning} other {# uppställningar}}",
         "componentsCount": "{count, plural, one {# del} other {# delar}}",
-        "sections": { "price": "Pris", "booking": "Bokning", "setups": "Uppställningar", "components": "Delar" }
+        "choiceGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
+        "sections": {
+          "price": "Pris",
+          "booking": "Bokning",
+          "setups": "Uppställningar",
+          "components": "Delar",
+          "choices": "Valgrupper"
+        }
       },
       "customer": {
         "singular": "Kund",

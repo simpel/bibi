@@ -92,6 +92,7 @@ const item: ParityEntity = {
     nested: {
       setups: "{ setupId capacity }",
       components: "{ itemId quantity offsetMinutes durationMinutes required }",
+      choiceGroups: "{ name minPick maxPick itemIds }",
     },
   }),
   create: ({ mcp, made }) =>
