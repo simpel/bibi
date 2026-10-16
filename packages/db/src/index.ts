@@ -63,6 +63,7 @@ export {
   type Skill,
   SkillScope,
   SkillStatus,
+  type StripeWebhookEvent,
   type SystemLog,
   type Venue,
   type Vocabulary,

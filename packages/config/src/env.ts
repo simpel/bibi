@@ -28,6 +28,8 @@ const envSchema = z
       .string()
       .regex(/^acct_[A-Za-z0-9]+$/)
       .optional(),
+    /** Signing secret (`whsec_...`) of the Stripe webhook endpoint (ADR 0028); the endpoint answers 503 without it. */
+    STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
     /**
      * Okazi's application fee on every payment, in basis points of the amount (250 = 2.5 %).
      * Unset or 0: no fee (ADR 0028; the pricing model is not decided yet).

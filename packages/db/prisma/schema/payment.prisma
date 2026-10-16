@@ -55,3 +55,14 @@ enum PaymentStatus {
   /// Paid and then refunded in full.
   REFUNDED
 }
+
+/// A Stripe webhook event that has been handled (ADR 0028). The event id is the dedupe key: a
+/// redelivered event finds its row and changes nothing. Platform table (an event is resolved to an
+/// organization through its Payment or PaymentAccount), written only with `getDb()`.
+model StripeWebhookEvent {
+  id         String   @id @default(cuid(2))
+  /// Stripe's event id (`evt_...`).
+  eventId    String   @unique
+  type       String
+  receivedAt DateTime @default(now())
+}
