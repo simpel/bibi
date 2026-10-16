@@ -31,6 +31,10 @@ export async function checkInquiryDetails({
     if (!customer.ok) return customer;
   }
   const contactId = pick({ given: change.contactId, stored: before.contactId });
+  // An unchanged reference stays valid even if the contact was archived since.
+  if (contactId === before.contactId && customerId === before.customerId) {
+    return ok({ value: true });
+  }
   const contact = await checkContact({ context, contactId, customerId });
   return contact.ok ? ok({ value: true }) : contact;
 }
