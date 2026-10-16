@@ -24,7 +24,7 @@ export function checkFeatures({ root, requiredFiles, corePackage }) {
         if (!coreEntities.includes(entity)) {
           problems.push({
             file: `${pkg}/src/features/${entity}`,
-            message: `saknas i ${corePackage}/src/features`,
+            message: `missing in ${corePackage}/src/features`,
           });
         }
       }
@@ -42,5 +42,5 @@ function missingFiles({ root, pkg, entity, files }) {
   const dir = `${pkg}/src/features/${entity}`;
   return files
     .filter((file) => !existsSync(join(root, dir, file)))
-    .map((file) => ({ file: dir, message: `saknar ${file}` }));
+    .map((file) => ({ file: dir, message: `missing ${file}` }));
 }
