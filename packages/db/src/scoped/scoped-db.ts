@@ -72,6 +72,7 @@ export type ScopedDbClient = Omit<ScopedDb, "$transaction">;
  * soft-deleted rows are hidden unless `status` is filtered explicitly, and models without
  * `organizationId` are rejected. Global-read models (Skill) also return global rows on reads.
  * Creates get `createdBy = actorId` on models with that column; updates cannot change it.
+ * Nested relation writes are rejected (only `connect`/`disconnect`/`set` may be nested).
  */
 export function scopedDb({ organizationId, actorId, db }: ScopedDbInput): ScopedDb {
   const reserved = organizationId === GLOBAL_EMBEDDING_SCOPE || organizationId === PLATFORM_SCOPE;

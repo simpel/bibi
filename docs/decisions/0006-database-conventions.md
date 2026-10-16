@@ -13,6 +13,7 @@ Okazi has many entities that link to each other across organization and company 
 - The `AuditLog` table logs every mutation: who (`actor` = `user` or `ai`), what (operation), which entity, before and after images, and the conversation ID when the mutation comes from the assistant.
 - Every row has `organizationId`. Exceptions are global system tables, for example users and system skills, which are listed explicitly.
 - `createdBy` is set by the org-scoped client, not by handlers: `scopedDb({ organizationId, actorId })` requires an actor and forces `createdBy = actorId` on every create (`create`, `createMany`, `createManyAndReturn`, `upsert`) of a model that has the column, and strips it from updates. Core passes the actor's user id, or `SYSTEM_ACTOR_ID` (`system`) for system work. Rows that Better Auth writes itself (outside `scopedDb`) have `createdBy` null.
+- `scopedDb` rejects nested relation writes (`create`, `createMany`, `connectOrCreate`, `upsert`, `update`, `updateMany`, `delete`, `deleteMany` inside `data`, an upsert's `create` or `update`) with `ScopeViolationError`, because the forced `organizationId`/`createdBy` and the soft-delete and append-only rules apply only to the top-level model. Only `connect`, `disconnect` and `set` may be nested. Write related rows with their own call.
 - Tables and columns follow the Prisma schema in `packages/db`. Migrations run with `pnpm db:migrate`.
 
 ## Exceptions
