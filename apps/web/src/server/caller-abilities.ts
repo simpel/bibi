@@ -20,6 +20,7 @@ export type CallerAbilities = {
   requirementWrite: boolean;
   inquiryWrite: boolean;
   optionWrite: boolean;
+  quoteWrite: boolean;
   paymentAdmin: boolean;
   sheetWrite: boolean;
   paymentWrite: boolean;
@@ -41,6 +42,7 @@ const NONE: CallerAbilities = {
   requirementWrite: false,
   inquiryWrite: false,
   optionWrite: false,
+  quoteWrite: false,
   paymentAdmin: false,
   sheetWrite: false,
   paymentWrite: false,
@@ -71,6 +73,7 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     requirementWrite: hasPermission({ permissions, permission: "requirement:write" }),
     inquiryWrite: hasPermission({ permissions, permission: "inquiry:write" }),
     optionWrite: hasPermission({ permissions, permission: "option:write" }),
+    quoteWrite: hasPermission({ permissions, permission: "quote:write" }),
     paymentAdmin: hasPermission({ permissions, permission: "payment:admin" }),
     sheetWrite: hasPermission({ permissions, permission: "sheet:write" }),
     paymentWrite: hasPermission({ permissions, permission: "payment:write" }),

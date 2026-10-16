@@ -23,6 +23,7 @@ erDiagram
   Inquiry ||--o{ Quote : "is answered by"
   Inquiry ||--o{ Option : "can create"
   Quote ||--o| Booking : "becomes on accept"
+  Quote |o--o{ Quote : "is revised as"
   Quote ||--o{ OrderLine : "contains"
   BookingSeries ||--o{ Booking : "generates"
   BookingSeries }o--o| PriceList : "follows"
@@ -305,7 +306,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `0..1:N` Communication & log concerns this
 - `1:N` is answered for by → Assignment
 
-> ★ Pipeline with loss reason is missing at Lega. Status changes only through commands (`inquiry.qualify`, `inquiry.markLost`, later `quote.send` and `quote.accept`), never through `update`. The transition table lives in `features/inquiry/transitions.ts`; a disallowed move is `CONFLICT`.
+> ★ Pipeline with loss reason is missing at Lega. Status changes only through commands (`inquiry.qualify`, `inquiry.markLost`, `quote.send`, later `quote.accept`), never through `update`. The transition table lives in `features/inquiry/transitions.ts`; a disallowed move is `CONFLICT`.
 
 > Operations (`inquiry:write` to change, `inquiry:read` to read): `inquiry.list|get|create|update`, `inquiry.qualify` (needs a main assignee, given or already set) and `inquiry.markLost` (needs a reason). The assignee is changed with `assignment.assign` and cannot be removed from `QUALIFIED` on (`CONFLICT`). Status history comes from `AuditLog`.
 
@@ -337,21 +338,25 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 *MVP* · A versioned proposal with lines and terms. Fixed state machine.
 
 **Attributes**
-- version number
-- valid until
-- status: `DRAFT → SENT → ACCEPTED`, `DECLINED` or `EXPIRED`
-- lines (copies of order lines)
-- total excl. and incl. VAT
+- version number (`version`, 1 for the inquiry's first quote, then +1) and the version it was made from (`previousId`)
+- valid until (`validUntil`, required to send)
+- status (`quoteStatus`): `DRAFT → SENT → ACCEPTED`, `DECLINED` or `EXPIRED`; only a `DRAFT` can be edited
+- lines (order lines, snapshots)
+- total excl. and incl. VAT (`totalExclVatMinor`, `totalInclVatMinor`, the sums of the lines)
 - terms text
 - assignment (the inquiry's; the quote has none of its own)
-- acceptedBy, acceptedAt, acceptanceMethod (`MANUAL` now, later `BANKID` and `LINK`)
+- statusChangedAt
+- acceptedBy, acceptedAt, acceptanceMethod (`MANUAL` now, later `BANKID` and `LINK`) – *with `quote.accept`*
 
 **Relations**
 - `N:1` Inquiry is answered by this
+- `N:0..1` is a new version of → Quote
 - `1:0..1` becomes on accept → Booking
 - `1:N` contains → OrderLine
 
-> ★ Versions with change markers against the previous one. `quote.accept` sets the inquiry to `WON`, converts the options (`CONVERTED`) and creates the booking. A quote can cover a whole series. A quote can also be built directly from items, and "Save as package" then creates a customer-specific item.
+> ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by item in order, and the lines the version dropped are listed as removed. `quote.accept` sets the inquiry to `WON`, converts the options (`CONVERTED`) and creates the booking. A quote can cover a whole series. A quote can also be built directly from items, and "Save as package" then creates a customer-specific item.
+
+> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open inquiry that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the inquiry moves `QUALIFIED → QUOTED` and older `SENT` versions expire), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`.
 
 ### Agreement & signing
 
@@ -659,19 +664,25 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Attributes**
 - item
-- count
-- unit price
-- discount
-- VAT
-- program item
-- status (quoted / confirmed / delivered)
-- invoiced (yes/no)
+- position
+- name (copied)
+- count (`quantity`)
+- unit price (`unitPriceMinor`, the item's price unless given) and price unit (copied)
+- discount (`discountPercent`)
+- VAT (`vatRatePercent`, the item's rate, else its venue's default)
+- tags (the list values the item contains per `item.resolve`, copied)
+- total excl. VAT and VAT (`totalExclVatMinor`, `vatMinor`)
+- program item – *later*
+- status (quoted / confirmed / delivered) – *later*
+- invoiced (yes/no) – *later*
 
 **Relations**
 - `N:1` Quote contains this
 - `N:1` ProgramItem is charged via this
 - `N:1` refers to → Item
 - `N:1` Invoice invoices this
+
+> Lines of a `DRAFT` quote are replaced as a set and audited on the quote. A later change to the item never touches an existing line.
 
 ### Deposit
 

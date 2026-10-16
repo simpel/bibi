@@ -26,6 +26,8 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Requirement",
   "Sheet",
   "Inquiry",
+  "Quote",
+  "OrderLine",
   "InboundEmail",
   "PaymentAccount",
   "Payment",
@@ -90,6 +92,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["ProgramItem", "ACTIVE"],
   ["Requirement", "ACTIVE"],
   ["Inquiry", "ACTIVE"],
+  ["Quote", "ACTIVE"],
   ["Conversation", "ACTIVE"],
   ["Skill", { not: "ARCHIVED" }],
 ]);

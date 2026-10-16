@@ -21,6 +21,7 @@ import "../features/requirement/graphql";
 import "../features/sheet/graphql";
 import "../features/inquiry/graphql";
 import "../features/option/graphql";
+import "../features/quote/graphql";
 import "../features/inbound-email/graphql";
 import "../features/payment/graphql";
 import "../features/payment-account/graphql";

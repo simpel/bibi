@@ -19,6 +19,7 @@ import { paymentRoutes } from "./features/payment/rest";
 import { paymentAccountRoutes } from "./features/payment-account/rest";
 import { priceListRoutes } from "./features/price-list/rest";
 import { programItemRoutes } from "./features/program-item/rest";
+import { quoteRoutes } from "./features/quote/rest";
 import { requirementRoutes } from "./features/requirement/rest";
 import { responsibilityRoutes } from "./features/responsibility/rest";
 import { setupRoutes } from "./features/setup/rest";
@@ -54,6 +55,7 @@ export function listRestRoutes(): RestRoute[] {
     ...sheetRoutes,
     ...inquiryRoutes,
     ...optionRoutes,
+    ...quoteRoutes,
     ...inboundEmailRoutes,
     ...paymentAccountRoutes,
     ...paymentRoutes,

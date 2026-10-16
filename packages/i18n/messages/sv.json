@@ -563,6 +563,72 @@
       "salesOwner": "Säljare"
     }
   },
+  "quote": {
+    "singular": "Offert",
+    "plural": "Offerter",
+    "title": "Offert, version {version}",
+    "versionLabel": "Version {version}",
+    "backToInquiry": "Tillbaka till förfrågan",
+    "empty": "Ingen offert ännu.",
+    "create": "Skapa offert",
+    "edit": "Redigera offert",
+    "formDescription": "Ange giltighet, villkor och orderrader. Varje rad kopierar artikelns namn, pris, moms och allergener när den läggs till.",
+    "created": "Offerten har skapats.",
+    "saved": "Offerten har sparats.",
+    "amount": "{amount} kr",
+    "send": "Markera som skickad",
+    "sent": "Offerten har markerats som skickad.",
+    "decline": "Avböjd",
+    "declined": "Offerten har markerats som avböjd.",
+    "expire": "Låt gå ut",
+    "expired": "Offerten har gått ut.",
+    "revise": "Ny version",
+    "revised": "En ny version har skapats.",
+    "confirm": {
+      "send": "Markera version {version} som skickad till kunden? Den kan inte längre redigeras, förfrågan blir offererad och äldre skickade versioner går ut.",
+      "decline": "Registrera att kunden avböjde version {version}?",
+      "expire": "Låta version {version} gå ut? Kunden kan inte längre acceptera den."
+    },
+    "statuses": {
+      "DRAFT": "Utkast",
+      "SENT": "Skickad",
+      "ACCEPTED": "Accepterad",
+      "DECLINED": "Avböjd",
+      "EXPIRED": "Utgången"
+    },
+    "changes": {
+      "ADDED": "Ny",
+      "CHANGED": "Ändrad",
+      "UNCHANGED": "Oförändrad",
+      "REMOVED": "Borttagen"
+    },
+    "fields": {
+      "version": "Version",
+      "status": "Status",
+      "validUntil": "Giltig till",
+      "terms": "Villkor",
+      "salesOwner": "Säljare (från förfrågan)"
+    },
+    "totals": {
+      "exclVat": "Summa exkl. moms",
+      "vat": "Moms",
+      "inclVat": "Summa inkl. moms"
+    },
+    "lines": {
+      "title": "Orderrader",
+      "none": "Inga orderrader ännu.",
+      "add": "Lägg till rad",
+      "remove": "Ta bort rad",
+      "item": "Artikel",
+      "quantity": "Antal",
+      "unitPrice": "À-pris (kr)",
+      "discount": "Rabatt %",
+      "vat": "Moms",
+      "total": "Summa exkl. moms",
+      "change": "Ändring",
+      "priceHint": "Lämna à-priset tomt för att använda artikelns pris."
+    }
+  },
   "occupancy": {
     "singular": "Beläggning",
     "plural": "Beläggning",
@@ -1356,6 +1422,20 @@
           "status": "Status"
         }
       },
+      "quote": {
+        "title": "Offert, version {version}",
+        "empty": "Inga offerter hittades.",
+        "open": "Öppna offerten",
+        "validUntil": "Giltig till {date}",
+        "noValidity": "Inget giltighetsdatum ännu",
+        "amount": "{amount} kr",
+        "columns": {
+          "version": "Offert",
+          "validUntil": "Giltig till",
+          "total": "Summa inkl. moms",
+          "status": "Status"
+        }
+      },
       "occupancy": {
         "singular": "Beläggning",
         "released": "Släppt",
@@ -1814,7 +1894,7 @@
     "unknown": "Ingen åtkomst",
     "descriptions": {
       "viewer": "Läser allt, ändrar inget.",
-      "member": "Bokar också och hanterar kunder, förfrågningar, bokningar, betalningar och blad.",
+      "member": "Bokar också och hanterar kunder, förfrågningar, offerter, bokningar, betalningar och blad.",
       "admin": "Sätter också upp typer, listor, statusar, blad, prislistor, medlemmar och API-nycklar.",
       "owner": "Allt, även andra ägare och själva organisationen."
     }

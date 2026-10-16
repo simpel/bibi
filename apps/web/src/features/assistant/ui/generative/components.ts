@@ -42,6 +42,8 @@ import { PriceListCardView } from "./price-list-card-view";
 import { PriceListTableView } from "./price-list-table-view";
 import { ProgramItemCardView } from "./program-item-card-view";
 import { ProgramItemTableView } from "./program-item-table-view";
+import { QuoteCardView } from "./quote-card-view";
+import { QuoteTableView } from "./quote-table-view";
 import { RequirementCardView } from "./requirement-card-view";
 import { RequirementTableView } from "./requirement-table-view";
 import { ResponsibilityCardView } from "./responsibility-card-view";
@@ -91,8 +93,10 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "requirement-card": RequirementCardView,
   "inquiry-table": InquiryTableView,
   "inquiry-card": InquiryCardView,
-  "option-queue": OptionQueueView,
   "option-card": OptionCardView,
+  "option-queue": OptionQueueView,
+  "quote-card": QuoteCardView,
+  "quote-table": QuoteTableView,
   "inbound-email-table": InboundEmailTableView,
   "inbound-email-card": InboundEmailCardView,
   "payment-account-card": PaymentAccountCardView,

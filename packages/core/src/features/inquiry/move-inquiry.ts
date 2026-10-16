@@ -15,7 +15,8 @@ export type MoveInquiryInput = {
 
 /**
  * The one place an inquiry's status changes: checks the state machine (`CONFLICT` otherwise),
- * stamps `statusChangedAt` and records the change in the audit log.
+ * stamps `statusChangedAt` and records the change in the audit log (also when another entity's
+ * command moves it, e.g. `quote.send`).
  */
 export async function moveInquiry({
   context,
@@ -30,6 +31,6 @@ export async function moveInquiry({
     data: { ...data, inquiryStatus: to, statusChangedAt: new Date() },
   });
   const inquiry = toInquiryDto({ row });
-  context.recordChange({ entityId: before.id, before, after: inquiry });
+  context.recordChange({ entityType: "inquiry", entityId: before.id, before, after: inquiry });
   return ok({ value: inquiry });
 }

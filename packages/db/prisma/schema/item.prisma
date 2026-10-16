@@ -47,6 +47,8 @@ model Item {
   programItems           ProgramItem[]
   /// Agreed prices on price lists (ADR 0023).
   priceListItems         PriceListItem[]
+  /// Order lines that copied this item (snapshot).
+  orderLines             OrderLine[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

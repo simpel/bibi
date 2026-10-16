@@ -33,6 +33,8 @@ export * from "./features/payment/schema";
 export * from "./features/payment-account/schema";
 export * from "./features/price-list/schema";
 export * from "./features/program-item/schema";
+export * from "./features/quote/order-line-schema";
+export * from "./features/quote/schema";
 export * from "./features/requirement/schema";
 export * from "./features/responsibility/schema";
 export * from "./features/setup/schema";

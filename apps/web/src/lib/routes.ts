@@ -13,6 +13,7 @@ export const ROUTES = {
   calendar: "/calendar",
   bookingSeries: "/booking-series",
   inquiries: "/inquiries",
+  quotes: "/quotes",
   settings: "/settings",
   settingsTypes: "/settings/types",
   settingsLists: "/settings/lists",
@@ -56,6 +57,12 @@ export type InquiryRouteInput = { id: string };
 
 export function inquiryRoute({ id }: InquiryRouteInput): string {
   return `${ROUTES.inquiries}/${encodeURIComponent(id)}`;
+}
+
+export type QuoteRouteInput = { id: string };
+
+export function quoteRoute({ id }: QuoteRouteInput): string {
+  return `${ROUTES.quotes}/${encodeURIComponent(id)}`;
 }
 
 export type SkillRouteInput = { id: string };

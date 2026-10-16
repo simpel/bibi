@@ -563,6 +563,72 @@
       "salesOwner": "Salesperson"
     }
   },
+  "quote": {
+    "singular": "Quote",
+    "plural": "Quotes",
+    "title": "Quote, version {version}",
+    "versionLabel": "Version {version}",
+    "backToInquiry": "Back to the inquiry",
+    "empty": "No quote yet.",
+    "create": "Create quote",
+    "edit": "Edit quote",
+    "formDescription": "Set the validity, the terms and the order lines. Each line copies the item's name, price, VAT and allergens when it is added.",
+    "created": "The quote has been created.",
+    "saved": "The quote has been saved.",
+    "amount": "{amount} kr",
+    "send": "Mark as sent",
+    "sent": "The quote has been marked as sent.",
+    "decline": "Declined",
+    "declined": "The quote has been marked as declined.",
+    "expire": "Expire",
+    "expired": "The quote has expired.",
+    "revise": "New version",
+    "revised": "A new version has been created.",
+    "confirm": {
+      "send": "Mark version {version} as sent to the customer? It can no longer be edited, the inquiry becomes quoted and older sent versions expire.",
+      "decline": "Record that the customer declined version {version}?",
+      "expire": "Expire version {version}? The customer can no longer accept it."
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "SENT": "Sent",
+      "ACCEPTED": "Accepted",
+      "DECLINED": "Declined",
+      "EXPIRED": "Expired"
+    },
+    "changes": {
+      "ADDED": "New",
+      "CHANGED": "Changed",
+      "UNCHANGED": "Unchanged",
+      "REMOVED": "Removed"
+    },
+    "fields": {
+      "version": "Version",
+      "status": "Status",
+      "validUntil": "Valid until",
+      "terms": "Terms",
+      "salesOwner": "Salesperson (from the inquiry)"
+    },
+    "totals": {
+      "exclVat": "Total excl. VAT",
+      "vat": "VAT",
+      "inclVat": "Total incl. VAT"
+    },
+    "lines": {
+      "title": "Order lines",
+      "none": "No order lines yet.",
+      "add": "Add line",
+      "remove": "Remove line",
+      "item": "Item",
+      "quantity": "Quantity",
+      "unitPrice": "Unit price (SEK)",
+      "discount": "Discount %",
+      "vat": "VAT",
+      "total": "Total excl. VAT",
+      "change": "Change",
+      "priceHint": "Leave the unit price empty to use the item's price."
+    }
+  },
   "occupancy": {
     "singular": "Occupancy",
     "plural": "Occupancy",
@@ -1356,6 +1422,20 @@
           "status": "Status"
         }
       },
+      "quote": {
+        "title": "Quote, version {version}",
+        "empty": "No quotes found.",
+        "open": "Open the quote",
+        "validUntil": "Valid until {date}",
+        "noValidity": "No validity date yet",
+        "amount": "{amount} kr",
+        "columns": {
+          "version": "Quote",
+          "validUntil": "Valid until",
+          "total": "Total incl. VAT",
+          "status": "Status"
+        }
+      },
       "occupancy": {
         "singular": "Occupancy",
         "released": "Released",
@@ -1814,7 +1894,7 @@
     "unknown": "No access",
     "descriptions": {
       "viewer": "Reads everything, changes nothing.",
-      "member": "Also books and handles customers, inquiries, bookings, payments and sheets.",
+      "member": "Also books and handles customers, inquiries, quotes, bookings, payments and sheets.",
       "admin": "Also sets up types, lists, statuses, sheets, price lists, members and API keys.",
       "owner": "Everything, including other owners and the organization itself."
     }

@@ -19,6 +19,7 @@ import { paymentMcpTools } from "../features/payment/mcp";
 import { paymentAccountMcpTools } from "../features/payment-account/mcp";
 import { priceListMcpTools } from "../features/price-list/mcp";
 import { programItemMcpTools } from "../features/program-item/mcp";
+import { quoteMcpTools } from "../features/quote/mcp";
 import { requirementMcpTools } from "../features/requirement/mcp";
 import { responsibilityMcpTools } from "../features/responsibility/mcp";
 import { setupMcpTools } from "../features/setup/mcp";
@@ -54,6 +55,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...sheetMcpTools,
     ...inquiryMcpTools,
     ...optionMcpTools,
+    ...quoteMcpTools,
     ...inboundEmailMcpTools,
     ...paymentAccountMcpTools,
     ...paymentMcpTools,

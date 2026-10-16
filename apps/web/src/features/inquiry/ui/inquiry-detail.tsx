@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { InquiryQuotes } from "@/features/quote/ui/inquiry-quotes";
 import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -17,7 +18,7 @@ import { InquiryStatusBadge } from "./inquiry-status-badge";
 
 export type InquiryDetailProps = { locale: Locale; id: string };
 
-/** Inquiry detail page body: status, facts, and edit, owner and status commands. */
+/** Inquiry detail page body: status, facts, quotes, and edit, owner and status commands. */
 export async function InquiryDetail({ locale, id }: InquiryDetailProps) {
   const common = await getTranslations("common");
   const t = await getTranslations("inquiry");
@@ -53,6 +54,7 @@ export async function InquiryDetail({ locale, id }: InquiryDetailProps) {
         <InquiryStatusBadge status={inquiry.value.inquiryStatus} />
       </div>
       <InquiryFacts inquiry={inquiry.value} data={data.value} />
+      <InquiryQuotes locale={locale} inquiry={inquiry.value} />
     </div>
   );
 }

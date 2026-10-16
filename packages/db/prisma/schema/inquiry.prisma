@@ -39,6 +39,7 @@ model Inquiry {
   customer        Customer      @relation(fields: [customerId, organizationId], references: [id, organizationId])
   contact         Contact?      @relation(fields: [contactId, organizationId], references: [id, organizationId])
   options         Option[]
+  quotes          Quote[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status, inquiryStatus])
