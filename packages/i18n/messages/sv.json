@@ -1573,6 +1573,22 @@
     "requestDescription": "Debiteras direkt på ert Stripe-konto. Kortbetalning ger en länk att skicka till kunden; en faktura mejlas till kundens e-postadress.",
     "created": "Betalningen har begärts.",
     "openLink": "Öppna betalningslänken",
+    "public": {
+      "title": "Betalning till {organization}",
+      "description": "Bokning #{reference}",
+      "amount": "Belopp",
+      "pay": "Betala nu",
+      "processingTitle": "Betalningen behandlas",
+      "processingDescription": "Tack. Vi väntar på att betalningen ska bekräftas. Sidan uppdateras av sig själv.",
+      "paidTitle": "Betalningen är mottagen",
+      "paidDescription": "Tack. Betalningen till {organization} är genomförd.",
+      "expiredTitle": "Betalningslänken har gått ut",
+      "expiredDescription": "Kontakta {organization} för att få en ny länk.",
+      "unavailableTitle": "Betalningen kan inte längre göras",
+      "unavailableDescription": "Kontakta {organization} om du tror att det är fel.",
+      "invoiceDescription": "En faktura har skickats till dig. Använd länken i den för att betala.",
+      "secured": "Betalningen hanteras av Stripe."
+    },
     "fields": {
       "method": "Betalsätt",
       "amount": "Belopp (kr)",

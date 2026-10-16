@@ -66,7 +66,6 @@ export * from "./features/payment/create-stripe-webhook-handler";
 export * from "./features/payment/memory-provider";
 export * from "./features/payment/operations";
 export * from "./features/payment/provider-registry";
-export { applyPaymentAccountSignal } from "./features/payment-account/apply-signal-operation";
 export * from "./features/payment-account/gateway-registry";
 export * from "./features/payment-account/operations";
 export * from "./features/price-list/operations";

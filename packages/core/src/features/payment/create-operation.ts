@@ -2,6 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { loadChargeTarget } from "./payment-preconditions";
+import { newPublicToken } from "./public-token";
 import { applicationFee, requestCharge } from "./request-charge";
 import { PaymentCreateInputSchema, PaymentSchema } from "./schema";
 import { toPaymentDto } from "./to-payment-dto";
@@ -21,9 +22,11 @@ export const createPayment = defineOperation({
     const target = await loadChargeTarget({ input, context });
     if (!target.ok) return err({ error: target.error });
     const paymentId = createId();
+    const publicToken = newPublicToken();
     const applicationFeeMinor = applicationFee({ amountMinor: input.amountMinor });
     const charge = await requestCharge({
       paymentId,
+      publicToken,
       organizationId: context.organizationId,
       input,
       target: target.value,
@@ -33,6 +36,7 @@ export const createPayment = defineOperation({
     const row = await context.db.payment.create({
       data: {
         id: paymentId,
+        publicToken,
         organizationId: context.organizationId,
         bookingId: input.bookingId,
         method: input.method,

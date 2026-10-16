@@ -1,3 +1,4 @@
+import { getDb } from "@okazi/db";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   createPayment,
@@ -47,7 +48,16 @@ describe("payment", () => {
       idempotencyKey: `okazi-payment-${payment.id}`,
       metadata: { paymentId: payment.id, bookingId },
     });
-    expect(provider.charges[0]).toHaveProperty("successUrl", expect.stringContaining(payment.id));
+    const { publicToken } = await getDb().payment.findUniqueOrThrow({ where: { id: payment.id } });
+    expect(provider.charges[0]).toHaveProperty(
+      "successUrl",
+      expect.stringContaining(`/pay/${publicToken}?checkout=success`),
+    );
+    expect(provider.charges[0]).toHaveProperty(
+      "cancelUrl",
+      expect.stringMatching(new RegExp(`/pay/${publicToken}$`)),
+    );
+    expect(JSON.stringify(payment)).not.toContain(publicToken);
   });
 
   it("lists and gets payments of a booking", async () => {

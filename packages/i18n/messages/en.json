@@ -1573,6 +1573,22 @@
     "requestDescription": "Charged directly on your Stripe account. A card payment gives a link to send to the customer; an invoice is emailed to the customer's email address.",
     "created": "The payment has been requested.",
     "openLink": "Open payment link",
+    "public": {
+      "title": "Payment to {organization}",
+      "description": "Booking #{reference}",
+      "amount": "Amount",
+      "pay": "Pay now",
+      "processingTitle": "Processing your payment",
+      "processingDescription": "Thank you. We are waiting for the payment to be confirmed. This page updates by itself.",
+      "paidTitle": "Payment received",
+      "paidDescription": "Thank you. The payment to {organization} is complete.",
+      "expiredTitle": "This payment link has expired",
+      "expiredDescription": "Contact {organization} to get a new link.",
+      "unavailableTitle": "This payment can no longer be made",
+      "unavailableDescription": "Contact {organization} if you think this is wrong.",
+      "invoiceDescription": "An invoice has been sent to you. Use the link in it to pay.",
+      "secured": "Payment is handled by Stripe."
+    },
     "fields": {
       "method": "Method",
       "amount": "Amount (SEK)",
