@@ -4,11 +4,10 @@ export const meta = {
   whenToUse: 'Run to let agents implement ready tickets from the okazi board until none are left. Args: { batchSize?: 3, maxBatches?: unlimited (safety cap 50), includeBacklog?: false, only?: [issueNumbers] }',
   phases: [
     { title: 'Select', detail: 'read board + blockers, pick a batch' },
-    { title: 'Prepare', detail: 'pnpm wt:new per ticket: own branch, database, ports and .env' },
-    { title: 'Implement', detail: 'one agent per ticket in its worktree, model by complexity' },
-    { title: 'Verify', detail: 'full checks per worktree, fix loop with escalation' },
+    { title: 'Implement', detail: 'one agent per ticket: creates its worktree, implements, runs the full checks' },
+    { title: 'Verify', detail: 'fix loop with escalation when the implementer reports red checks' },
     { title: 'Review', detail: 'tenancy review on Opus for core/db/auth/mcp changes' },
-    { title: 'Land', detail: 'one at a time: commit, rebase on origin/main, re-verify, push, board to Done' },
+    { title: 'Land', detail: 'one at a time: commit, rebase (resolving conflicts), full checks, push, board to Done' },
     { title: 'Park', detail: 'push a failed ticket to parked/<N>, comment, card to Parked' },
     { title: 'Follow-ups', detail: 'file out-of-scope findings as source:agent issues in Backlog' },
   ],
@@ -34,6 +33,7 @@ const EDIT = (itemId, field, option) => `gh project item-edit --id ${itemId} --p
 const moveCard = (t, status) => `Move the issue's board card to "${status}" with exactly this one command (no item-list, no field-list): ${EDIT(t.itemId, STATUS_FIELD, STATUS_OPTION[status])}`
 const CO_AUTHOR = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
 const wtName = (t) => `t-${t.number}`
+const wtDir = (t) => `${REPO}-worktrees/${wtName(t)}` // where pnpm wt:new puts it
 const CHECKS = 'pnpm db:migrate, pnpm lint, pnpm typecheck, pnpm check:structure, pnpm test'
 
 // ---- Model choice (deterministic, from labels) ----------------------------
@@ -41,8 +41,9 @@ function pickModel(t) {
   const L = new Set(t.labels)
   const has = (x) => L.has(x)
   // No Haiku for implementation: measured ~93 turns per ticket against Sonnet's ~19, so it cost more in total.
+  // Opus only where a mistake is expensive. Core features go to Sonnet: the Opus tenancy review and the
+  // fix-loop escalation catch what it misses (area:core + type:feature on Opus was ~every ticket).
   if (has('size:L') || has('area:auth') || has('area:db')) return 'opus'
-  if (has('area:core') && has('type:feature')) return 'opus'
   return 'sonnet'
 }
 function escalate(m) {
@@ -96,22 +97,6 @@ const TICKETS = {
   },
   required: ['ok', 'tickets'],
 }
-const PREP = {
-  type: 'object',
-  properties: { ok: { type: 'boolean' }, dir: { type: 'string' }, problem: { type: 'string' } },
-  required: ['ok'],
-}
-const IMPL = {
-  type: 'object',
-  properties: {
-    status: { type: 'string', enum: ['done', 'blocked'] },
-    summary: { type: 'string' },
-    files: { type: 'array', items: { type: 'string' } },
-    notes: { type: 'string' },
-    followUps: FOLLOW_UPS,
-  },
-  required: ['status', 'summary', 'files'],
-}
 const VERIFY = {
   type: 'object',
   properties: {
@@ -126,6 +111,20 @@ const VERIFY = {
     },
   },
   required: ['green', 'failures'],
+}
+// The implementer (and each fix round) runs the full checks itself and reports them; the land step re-runs
+// them independently before pushing, so a false green never reaches main.
+const IMPL = {
+  type: 'object',
+  properties: {
+    status: { type: 'string', enum: ['done', 'blocked', 'prep_failed'] },
+    summary: { type: 'string' },
+    files: { type: 'array', items: { type: 'string' } },
+    checks: VERIFY,
+    notes: { type: 'string' },
+    followUps: FOLLOW_UPS,
+  },
+  required: ['status', 'summary', 'files', 'checks'],
 }
 const REVIEW = {
   type: 'object',
@@ -170,34 +169,34 @@ const selectPrompt = (exclude) => {
 It prints one JSON object { ok, problem?, tickets }. Return it unchanged. If the command prints no JSON, return ok=false with the last 20 lines as problem.`
 }
 
-const prepPrompt = (t) => `Run exactly these commands and nothing else.
-1. From ${REPO}: tools/backlog/prep.sh ${t.number}
-   It prints WORKTREE_DIR=<path> on success. Otherwise it prints PROBLEM=<reason> (plus log lines): return ok=false with that output as problem and stop.
-2. ${moveCard(t, 'In progress')}
-Return ok=true and dir = the WORKTREE_DIR path.`
+// The final checks run inside the implementing agent: a separate verify agent re-paid the whole base context
+// just to run commands, and the land step re-runs them anyway.
+const RUN_CHECKS = `Run the full checks: first docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres, then in order ${CHECKS}, piping long output through tail or grep. Report them in checks: green=true only if every command passed; for each failure keep a short excerpt (<60 lines).`
 
 const implPrompt = (t, dir) => `Implement GitHub issue #${t.number} ("${t.title}").
+Setup (run exactly these two commands first):
+1. From ${REPO}: tools/backlog/prep.sh ${t.number}
+   It prints WORKTREE_DIR=<path> on success (expected: ${dir}). If it prints PROBLEM=<reason> instead, stop and return status=prep_failed with that output in notes, files=[], checks={green:false,failures:[]}.
+2. ${moveCard(t, 'In progress')}
+Then work only in the worktree:
 ${inWorktree(dir)}
 - Read the issue: gh issue view ${t.number} -R simpel/okazi. Its "To do" and "Done when" sections are the spec. Read the linked ADR in docs/decisions/.
 - Use the matching repo skill (new-entity, new-core-operation, db-migration, i18n-strings, new-ui-component, structure-fix) where it fits. Migrations are fine: your database is yours alone.
-- Run any checks you like in your worktree, including pnpm test for the packages you touch. Pipe long output through tail or grep; the verify step runs the full suite.
+- While working, run targeted checks (pnpm test for the packages you touch). Pipe long output through tail or grep.
 - ${READING_RULES}
 - Do NOT run git add/commit/push/rebase/stash/checkout/reset. The landing step commits.
 - If the spec needs a human decision or is blocked by missing work, stop and return status=blocked with the reason in notes.
 - ${FOLLOW_UP_RULE}
+- When done: ${RUN_CHECKS} If something fails and the fix is obvious, fix it and run the checks again; otherwise report it.
 Return files = every path you created, changed or deleted (relative to the worktree).`
-
-const verifyPrompt = (t, dir) => `Verify the work on issue #${t.number}. Do not edit files and do not run git commands that change state.
-${inWorktree(dir)}
-1. Ensure Postgres is up: docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres.
-2. Run, in order, and collect output: ${CHECKS}.
-green=true only if every command passed. For each failure keep a short excerpt (<60 lines).`
 
 const fixPrompt = (t, dir, failures) => `Checks failed after work on issue #${t.number} ("${t.title}").
 ${inWorktree(dir)}
 Failures:
 ${failures.map((f) => `### ${f.check}\n${f.output}`).join('\n\n')}
-Fix the cause. ${READING_RULES} No git commands that change state. ${FOLLOW_UP_RULE} Return the full list of files this ticket has touched so far (including earlier ones).`
+Fix the cause. ${READING_RULES} No git commands that change state. ${FOLLOW_UP_RULE}
+Then ${RUN_CHECKS}
+Return the full list of files this ticket has touched so far (including earlier ones).`
 
 const reviewPrompt = (t, dir) => `Use the tenancy-review skill on the uncommitted changes for issue #${t.number} (git diff plus untracked files in the worktree).
 ${inWorktree(dir)}
@@ -207,8 +206,11 @@ const landPrompt = (t, dir, summary) => `Land issue #${t.number} on main. Other 
 ${inWorktree(dir)}
 1. If there are uncommitted changes: git add -A, then git commit with subject "${t.title}", a blank line, "Closes #${t.number}", a blank line, a 1-3 line summary (${summary}), a blank line, and:
 ${CO_AUTHOR}
-2. git fetch origin, note \`git merge-base HEAD origin/main\`, then git rebase origin/main. On a conflict: git rebase --abort and return landed=false, reason "rebase conflict: <files>".
-3. If origin/main had moved (merge-base changed), re-run ${CHECKS}. On any failure return landed=false, reason "red after rebase" plus a short excerpt.
+2. git fetch origin, then git rebase origin/main. On a conflict, resolve it rather than giving up: tickets in a batch often touch the same registries, index files, i18n messages or role templates.
+   - For each conflicted file, read both sides (git diff, git log -p origin/main -3 -- <file>) and keep the intent of BOTH: main's change and this ticket's. Never drop main's lines to make the conflict go away.
+   - git add the file, then git rebase --continue (GIT_EDITOR=true). Repeat for every conflicting commit.
+   - Only if a conflict is a real semantic clash you cannot reconcile with confidence: git rebase --abort and return landed=false, reason "rebase conflict: <files>: <why it could not be resolved>".
+3. Ensure Postgres is up (docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres), then always run ${CHECKS}. This is the independent check before main. If a failure comes from a conflict you resolved, fix it, fold it into the ticket's commit (git add -A, git commit --amend --no-edit) and re-run (at most 2 tries). On any remaining failure return landed=false, reason "red before push" plus a short excerpt.
 4. git push origin HEAD:main. Never force-push. If rejected because origin moved, go back to step 2 (at most 3 tries in total).
 5. ${moveCard(t, 'Done')}
 6. From ${REPO}: pnpm wt:rm ${wtName(t)} --delete-branch.
@@ -250,35 +252,34 @@ async function park(t, dir, reason) {
   return { t, outcome: 'parked', branch: p ? p.branch : null, reason: reason.split('\n')[0] }
 }
 
-async function verifyAndFix(t, dir, state, collect) {
-  let v = await agent(verifyPrompt(t, dir), { label: `verify #${t.number}`, phase: 'Verify', schema: VERIFY, model: 'sonnet' })
+// Each fix round reports its own checks, so no separate verify agent is needed between rounds.
+async function fixLoop(t, dir, state, collect, checks) {
+  let v = checks
   for (let round = 1; v && !v.green && round <= MAX_FIX_ROUNDS; round++) {
     if (round === MAX_FIX_ROUNDS) state.model = assertModel(escalate(state.model))
     const r = await agent(fixPrompt(t, dir, v.failures), { label: `fix #${t.number} r${round} ${state.model}`, phase: 'Verify', schema: IMPL, model: state.model })
     collect(r)
     if (r && r.files.length) state.files = [...new Set([...state.files, ...r.files])]
-    v = await agent(verifyPrompt(t, dir), { label: `verify #${t.number}.${round}`, phase: 'Verify', schema: VERIFY, model: 'sonnet' })
+    v = r ? r.checks : null
   }
   return v
 }
 
 async function runTicket(t) {
-  const prep = await agent(prepPrompt(t), { label: `wt #${t.number}`, phase: 'Prepare', schema: PREP, model: 'haiku', effort: 'low' })
-  if (!prep || !prep.ok || !prep.dir) return { t, outcome: 'failed', reason: prep ? prep.problem : 'prepare agent failed' }
-  const dir = prep.dir
-
+  const dir = wtDir(t)
   const state = { model: assertModel(pickModel(t)), files: [] }
   const collect = (r) => r && r.followUps && r.followUps.forEach((f) => followUps.push({ ...f, from: t.number }))
   const impl = await agent(implPrompt(t, dir), { label: `#${t.number} ${state.model}`, phase: 'Implement', schema: IMPL, model: state.model })
   if (!impl) return park(t, dir, 'implement agent failed')
+  if (impl.status === 'prep_failed') return { t, outcome: 'failed', reason: `worktree setup failed: ${impl.notes || impl.summary}` }
   collect(impl)
   if (impl.status === 'blocked') return park(t, dir, `blocked: ${impl.notes || impl.summary}`)
   if (!impl.files.length) return park(t, dir, 'implement agent reported no changes')
   state.files = impl.files
 
-  const v = await verifyAndFix(t, dir, state, collect)
+  const v = await fixLoop(t, dir, state, collect, impl.checks)
   if (!v || !v.green) {
-    const why = v ? v.failures.map((f) => `${f.check}:\n${f.output}`).join('\n\n') : 'verify agent failed'
+    const why = v ? v.failures.map((f) => `${f.check}:\n${f.output}`).join('\n\n') : 'fix agent failed'
     return park(t, dir, `checks still red after ${MAX_FIX_ROUNDS} fix rounds\n${why}`)
   }
 
@@ -298,14 +299,25 @@ async function runTicket(t) {
 }
 
 // ---- Main loop -------------------------------------------------------------
+// Tickets under the same ADR tend to edit the same files and collide on rebase, so a batch takes at most
+// one per ADR. The others stay unselected and come up in a later batch.
+const adrs = (t) => t.labels.filter((l) => l.startsWith('adr:'))
 function packBatch(tickets) {
-  return tickets
+  const ready = tickets
     .filter((t) => t.openBlockers.length === 0)
     .filter((t) => !t.labels.includes('type:decision'))
     // Agent findings wait in Backlog until a human moves them to Todo; otherwise a run could feed itself.
     .filter((t) => !(t.labels.includes('source:agent') && t.status === 'Backlog'))
     .sort((a, b) => (a.priority || 'P9').localeCompare(b.priority || 'P9') || a.number - b.number)
-    .slice(0, BATCH_SIZE)
+  const batch = []
+  const taken = new Set()
+  for (const t of ready) {
+    if (batch.length === BATCH_SIZE) break
+    if (adrs(t).some((a) => taken.has(a))) continue
+    adrs(t).forEach((a) => taken.add(a))
+    batch.push(t)
+  }
+  return batch
 }
 
 const results = []
