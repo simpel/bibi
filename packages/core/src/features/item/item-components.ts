@@ -88,9 +88,10 @@ export type ReplaceComponentsInput = {
 export async function replaceComponents({ context, itemId, components }: ReplaceComponentsInput) {
   await context.db.itemComponent.deleteMany({ where: { parentId: itemId } });
   await context.db.itemComponent.createMany({
-    data: components.map(({ itemId: partId, ...component }) => ({
+    data: components.map(({ itemId: partId, ...component }, position) => ({
       ...component,
       partId,
+      position,
       parentId: itemId,
       organizationId: context.organizationId,
     })),

@@ -538,6 +538,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - durationMinutes (null = the parent's length)
 - required (default) or optional
 - choice group (`choiceGroupId`, with `CHOICES`; null = not an option)
+- position (order on the item, from the input order; sorts parts with the same offset)
 
 **Relations**
 - `N:1` Item contains this

@@ -86,6 +86,8 @@ model ItemComponent {
   required        Boolean  @default(true)
   /// CHOICES: the choice group this part is an option in; null = not an option.
   choiceGroupId   String?
+  /// Order of the parts on the item, from 0. Breaks ties between parts with the same offset.
+  position        Int
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   createdBy       String?
