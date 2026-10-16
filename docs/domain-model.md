@@ -522,7 +522,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `1:N` OrderLine refers to this
 - `1:N` PriceListItem refers to this
 
-> Room = item with `BOOKABLE` + `SETUPS` (often also `PRICED`). A behavior cannot be turned off on the type as long as any active item of the type has data for it (`CONFLICT`). Inherited tags: required components give "contains", optional components give "may contain" per alternative. On expansion onto a booking: core creates program items, occupancy and order lines, which copy name, price, VAT and tags (snapshot).
+> Room = item with `BOOKABLE` + `SETUPS` (often also `PRICED`). A behavior cannot be turned off on the type as long as any active item of the type has data for it (`CONFLICT`). Inherited tags (`item.resolve`, the only place they are computed): the item and required components at every level give "contains"; optional components and choice-group options give "may contain" per alternative. An option in a group that must pick all of its options has no alternative and counts as required. On expansion onto a booking: core creates program items, occupancy and order lines, which copy name, price, VAT and tags (snapshot).
 
 ### ItemComponent (`ItemComponent`)
 

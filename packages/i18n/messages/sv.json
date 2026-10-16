@@ -263,7 +263,18 @@
       "options": "Alternativ",
       "noOptions": "Lägg till delar först; alternativen väljs bland dem."
     },
-    "choiceGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}"
+    "choiceGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
+    "resolution": {
+      "title": "Innehåll",
+      "contains": "Innehåller",
+      "mayContain": "Kan innehålla",
+      "none": "Inget",
+      "via": "{name} (via {items})",
+      "parts": "Delar",
+      "part": "{quantity} × {name}",
+      "optional": "valfri",
+      "option": "alternativ i {group}"
+    }
   },
   "customer": {
     "singular": "Kund",

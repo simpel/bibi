@@ -15,11 +15,12 @@ import { loadItemFormData } from "../load-item-form-data";
 import { ItemActions } from "./item-actions";
 import { ItemBehaviours } from "./item-behaviours";
 import { ItemFacts } from "./item-facts";
+import { ItemResolutionSection } from "./item-resolution-section";
 import { PackageOwner } from "./package-owner";
 
 export type ItemDetailProps = { locale: Locale; id: string };
 
-/** Item detail page body: facts of the item with edit and archive, occupancy and history. */
+/** Item detail page body: facts with edit and archive, contents, occupancy and history. */
 export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const common = await getTranslations("common");
   const { itemWrite } = await getCallerAbilities();
@@ -47,6 +48,9 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
       <WithHistory locale={locale} entityType="item" entityId={item.value.id}>
         <ItemFacts item={item.value} type={type} data={data.value} />
         <ItemBehaviours item={item.value} data={data.value} locale={locale} />
+        {type?.behaviours.includes("COMPOSABLE") ? (
+          <ItemResolutionSection locale={locale} itemId={item.value.id} />
+        ) : null}
         {type?.behaviours.includes("BOOKABLE") ? (
           <OccupancySection locale={locale} itemId={item.value.id} />
         ) : null}

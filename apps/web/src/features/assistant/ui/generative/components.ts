@@ -26,6 +26,7 @@ import { InquiryTableView } from "./inquiry-table-view";
 import { InvitationCardView } from "./invitation-card-view";
 import { InvitationTableView } from "./invitation-table-view";
 import { ItemCardView } from "./item-card-view";
+import { ItemResolutionCardView } from "./item-resolution-card-view";
 import { ItemTableView } from "./item-table-view";
 import { JsonView } from "./json-view";
 import { MemberCardView } from "./member-card-view";
@@ -63,6 +64,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "venue-card": VenueCardView,
   "item-table": ItemTableView,
   "item-card": ItemCardView,
+  "item-resolution-card": ItemResolutionCardView,
   "customer-table": CustomerTableView,
   "customer-card": CustomerCardView,
   "contact-table": ContactTableView,

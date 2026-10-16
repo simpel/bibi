@@ -6,6 +6,7 @@ import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
 import { INBOUND_EMAIL_UI_ENTRIES } from "./inbound-email-entries";
 import { INQUIRY_UI_ENTRIES } from "./inquiry-entries";
+import { ITEM_RESOLUTION_UI_ENTRIES } from "./item-resolution-entries";
 import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
 import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
@@ -50,6 +51,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   venue_update: venueCard,
   venue_archive: venueCard,
   ...CONFIGURATION_UI_ENTRIES,
+  ...ITEM_RESOLUTION_UI_ENTRIES,
   ...CUSTOMER_UI_ENTRIES,
   ...OCCUPANCY_UI_ENTRIES,
   ...PRICE_LIST_UI_ENTRIES,

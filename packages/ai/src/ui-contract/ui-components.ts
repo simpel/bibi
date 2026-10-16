@@ -6,6 +6,7 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "venue-card",
   "item-table",
   "item-card",
+  "item-resolution-card",
   "customer-table",
   "customer-card",
   "contact-table",

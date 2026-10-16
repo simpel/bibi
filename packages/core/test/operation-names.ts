@@ -61,6 +61,7 @@ export const OPERATION_NAMES = [
   "item.create",
   "item.get",
   "item.list",
+  "item.resolve",
   "item.saveAsPackage",
   "item.update",
   "member.assignRole",

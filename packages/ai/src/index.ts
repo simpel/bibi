@@ -69,6 +69,7 @@ export type { BookingSeriesWire } from "./ui-contract/booking-series-entries";
 export type { BookingStatusWire } from "./ui-contract/booking-status-entries";
 export type { InboundEmailWire } from "./ui-contract/inbound-email-entries";
 export type { InquiryWire } from "./ui-contract/inquiry-entries";
+export type { ItemResolutionWire } from "./ui-contract/item-resolution-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire } from "./ui-contract/payment-entries";
 export type { PriceListWire } from "./ui-contract/price-list-entries";

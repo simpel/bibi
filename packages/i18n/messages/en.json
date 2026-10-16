@@ -263,7 +263,18 @@
       "options": "Options",
       "noOptions": "Add parts first; the options are chosen among them."
     },
-    "choiceGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}"
+    "choiceGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
+    "resolution": {
+      "title": "Contents",
+      "contains": "Contains",
+      "mayContain": "May contain",
+      "none": "Nothing",
+      "via": "{name} (via {items})",
+      "parts": "Parts",
+      "part": "{quantity} × {name}",
+      "optional": "optional",
+      "option": "option in {group}"
+    }
   },
   "customer": {
     "singular": "Customer",

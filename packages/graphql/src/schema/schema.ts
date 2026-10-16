@@ -7,6 +7,7 @@ import "../features/setup/graphql";
 import "../features/sheet-definition/graphql";
 import "../features/configuration/graphql";
 import "../features/item/graphql";
+import "../features/item/resolve-graphql";
 import "../features/customer/graphql";
 import "../features/contact/graphql";
 import "../features/price-list/graphql";

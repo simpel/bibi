@@ -54,6 +54,7 @@ export { itemEmbeddable } from "./features/item/embeddable";
 export * from "./features/item/lifecycle-operations";
 export * from "./features/item/package-operations";
 export * from "./features/item/read-operations";
+export * from "./features/item/resolve-operation";
 export * from "./features/item/write-operations";
 export * from "./features/member/invitation-operations";
 export { splitMemberRoles } from "./features/member/member-roles";

@@ -4,6 +4,7 @@ import type { BookingSeriesWire } from "./booking-series-entries";
 import type { BookingStatusWire } from "./booking-status-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
 import type { InquiryWire } from "./inquiry-entries";
+import type { ItemResolutionWire } from "./item-resolution-entries";
 import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire } from "./payment-entries";
 import type { PriceListWire } from "./price-list-entries";
@@ -37,6 +38,7 @@ export type ToolUiProps = {
   "venue-card": { venue: VenueWire };
   "item-table": { items: ItemWire[]; nextCursor: string | null };
   "item-card": { item: ItemWire };
+  "item-resolution-card": { resolution: ItemResolutionWire };
   "customer-table": { items: CustomerWire[]; nextCursor: string | null };
   "customer-card": { customer: CustomerWire };
   "contact-table": { items: ContactWire[]; nextCursor: string | null };

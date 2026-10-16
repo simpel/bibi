@@ -23,6 +23,7 @@ export * from "./features/inbound-email/schema";
 export * from "./features/inquiry/schema";
 export * from "./features/item/choice-group-schema";
 export * from "./features/item/package-schema";
+export * from "./features/item/resolve-schema";
 export * from "./features/item/schema";
 export * from "./features/member/schema";
 export * from "./features/message/schema";
