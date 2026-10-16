@@ -1,12 +1,19 @@
 import type { ItemDto } from "@okazi/core";
-import { BookableDisplay, ComposableDisplay, PricedDisplay, SetupsDisplay } from "@okazi/ui";
+import {
+  BookableDisplay,
+  ChoicesDisplay,
+  ComposableDisplay,
+  PricedDisplay,
+  SetupsDisplay,
+} from "@okazi/ui";
 import { getTranslations } from "next-intl/server";
+import { choiceGroupLines } from "./choice-group-lines";
 import { formatKr } from "./format-price";
 import type { ItemFormData } from "./item-form-data";
 
 export type ItemBehavioursProps = { item: ItemDto; data: ItemFormData; locale: string };
 
-/** The behaviour values of an item (price, length, setups, parts), shown with `@okazi/ui` displays. */
+/** The behaviour values of an item (price, length, setups, parts, choices), shown with `@okazi/ui` displays. */
 export async function ItemBehaviours({ item, data, locale }: ItemBehavioursProps) {
   const t = await getTranslations("item");
   const price =
@@ -32,12 +39,17 @@ export async function ItemBehaviours({ item, data, locale }: ItemBehavioursProps
       required: String(required),
     }),
   );
+  const groups = choiceGroupLines({
+    groups: item.choiceGroups,
+    format: (values) => t("choiceGroupValue", values),
+  });
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <PricedDisplay title={t("sections.price")} price={price} />
       <BookableDisplay title={t("sections.booking")} duration={duration} />
       <SetupsDisplay title={t("sections.setups")} setups={setups} />
       <ComposableDisplay title={t("sections.components")} parts={parts} />
+      <ChoicesDisplay title={t("sections.choices")} groups={groups} />
     </div>
   );
 }

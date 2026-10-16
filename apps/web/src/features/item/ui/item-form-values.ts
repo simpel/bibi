@@ -13,6 +13,14 @@ export type ComponentFormValue = {
   required: boolean;
 };
 
+/** One choice group of a CHOICES item as raw form values; `itemIds` are parts of the item. */
+export type ChoiceGroupFormValue = {
+  name: string;
+  minPick: string;
+  maxPick: string;
+  itemIds: string[];
+};
+
 /** Raw values of the item form: inputs are strings; kr, not minor units; one entry per field key. */
 export type ItemFormValues = {
   entityTypeId: string;
@@ -27,6 +35,7 @@ export type ItemFormValues = {
   /** Capacity per setup id; "" = the setup is not used. */
   setups: Record<string, string>;
   components: ComponentFormValue[];
+  choiceGroups: ChoiceGroupFormValue[];
 };
 
 export const NO_VENUE = "none";
@@ -56,6 +65,12 @@ export function itemFormDefaults({ type, item }: ItemDefaultsInput): ItemFormVal
       offsetMinutes: String(component.offsetMinutes),
       durationMinutes: text({ value: component.durationMinutes }),
       required: component.required,
+    })),
+    choiceGroups: (item?.choiceGroups ?? []).map((group) => ({
+      name: group.name,
+      minPick: String(group.minPick),
+      maxPick: String(group.maxPick),
+      itemIds: group.itemIds,
     })),
   };
 }

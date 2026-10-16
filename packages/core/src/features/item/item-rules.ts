@@ -23,6 +23,7 @@ const BEHAVIOUR_KEYS: Record<string, ItemBehaviour> = {
   defaultDurationMinutes: "BOOKABLE",
   setups: "SETUPS",
   components: "COMPOSABLE",
+  choiceGroups: "CHOICES",
 };
 
 export type CheckBehaviourDataInput = {

@@ -3,6 +3,7 @@ import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { ItemBehaviourSchema } from "../entity-type/behaviour-kinds";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
+import { ChoiceGroupsInputSchema, ItemChoiceGroupSchema } from "./choice-group-schema";
 
 export const PRICE_UNITS = ["PER_PERSON", "PER_UNIT", "PER_HOUR", "FLAT"] as const;
 export const PriceUnitSchema = z.enum(PRICE_UNITS);
@@ -52,6 +53,7 @@ export const ItemSchema = z.object({
   defaultDurationMinutes: z.number().int().nullable(),
   setups: z.array(ItemSetupSchema),
   components: z.array(ItemComponentSchema),
+  choiceGroups: z.array(ItemChoiceGroupSchema),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -104,6 +106,7 @@ export const ItemCreateInputSchema = z.object({
   defaultDurationMinutes: Behaviour.defaultDurationMinutes.nullish(),
   setups: Behaviour.setups.optional(),
   components: Behaviour.components.optional(),
+  choiceGroups: ChoiceGroupsInputSchema.optional(),
 });
 
 export const ItemUpdateInputSchema = ItemCreateInputSchema.omit({ entityTypeId: true })

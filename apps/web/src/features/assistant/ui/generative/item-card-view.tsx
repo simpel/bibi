@@ -9,10 +9,12 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  ChoicesDisplay,
   ComposableDisplay,
   PricedDisplay,
 } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
+import { choiceGroupLines } from "@/features/item/ui/choice-group-lines";
 import { itemRoute } from "@/lib/configuration-routes";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";
@@ -37,6 +39,10 @@ function Behaviours({ item }: BehavioursProps) {
   const setups = item.setups.length > 0 ? [t("setupsCount", { count: item.setups.length })] : [];
   const parts =
     item.components.length > 0 ? [t("componentsCount", { count: item.components.length })] : [];
+  const groups = choiceGroupLines({
+    groups: item.choiceGroups,
+    format: (values) => t("choiceGroupValue", values),
+  });
   return (
     <>
       <PricedDisplay title={t("sections.price")} price={price} />
@@ -47,11 +53,12 @@ function Behaviours({ item }: BehavioursProps) {
         rows={setups.map((value) => ({ value }))}
       />
       <ComposableDisplay title={t("sections.components")} parts={parts} />
+      <ChoicesDisplay title={t("sections.choices")} groups={groups} />
     </>
   );
 }
 
-/** One item: name (link), field values and its behaviours (price, length, setups, parts). */
+/** One item: name (link), field values and behaviours (price, length, setups, parts, choices). */
 export function ItemCardView({ item }: ItemCardViewProps) {
   const t = useTranslations("assistant.ui.item");
   const lines = fieldLines({ fields: item.fields });

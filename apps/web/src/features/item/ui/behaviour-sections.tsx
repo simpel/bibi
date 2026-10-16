@@ -1,6 +1,7 @@
 import type { EntityTypeDto } from "@okazi/core";
 import type { UseFormReturn } from "react-hook-form";
 import { BookingSection } from "./booking-section";
+import { ChoiceGroupsSection } from "./choice-groups-section";
 import { ComponentsSection } from "./components-section";
 import { hasBehaviour } from "./has-behaviour";
 import type { ItemFormData } from "./item-form-data";
@@ -19,6 +20,7 @@ export type BehaviourSectionsProps = {
 
 /** One form section per behaviour the item's type has. */
 export function BehaviourSections({ form, type, data, itemId }: BehaviourSectionsProps) {
+  const parts = data.parts.filter(({ id }) => id !== itemId);
   return (
     <>
       {hasBehaviour({ type, behaviour: "PRICED" }) ? <PriceSection form={form} /> : null}
@@ -27,7 +29,10 @@ export function BehaviourSections({ form, type, data, itemId }: BehaviourSection
         <SetupsSection form={form} setups={data.setups} />
       ) : null}
       {hasBehaviour({ type, behaviour: "COMPOSABLE" }) ? (
-        <ComponentsSection form={form} parts={data.parts.filter(({ id }) => id !== itemId)} />
+        <ComponentsSection form={form} parts={parts} />
+      ) : null}
+      {hasBehaviour({ type, behaviour: "CHOICES" }) ? (
+        <ChoiceGroupsSection form={form} parts={parts} />
       ) : null}
     </>
   );

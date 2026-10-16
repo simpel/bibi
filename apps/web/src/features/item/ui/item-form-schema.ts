@@ -6,7 +6,12 @@ import { fieldsToInput } from "@/components/typed-fields/raw-fields";
 import { blankToNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 import { hasBehaviour } from "./has-behaviour";
-import { type ComponentFormValue, type ItemFormValues, NO_VENUE } from "./item-form-values";
+import {
+  type ChoiceGroupFormValue,
+  type ComponentFormValue,
+  type ItemFormValues,
+  NO_VENUE,
+} from "./item-form-values";
 
 /** What the resolver outputs: core's create input. */
 export type ItemFormOutput = z.infer<typeof ItemCreateInputSchema>;
@@ -32,6 +37,19 @@ function componentsToInput({ components }: ComponentsInput) {
     }));
 }
 
+type ChoiceGroupsInput = { choiceGroups: ChoiceGroupFormValue[]; components: ComponentFormValue[] };
+
+/** Raw groups → core's `choiceGroups`; options of parts that were removed are dropped. */
+function choiceGroupsToInput({ choiceGroups, components }: ChoiceGroupsInput) {
+  const partIds = components.map((component) => component.itemId).filter((id) => id !== "");
+  return choiceGroups.map((group) => ({
+    name: group.name.trim(),
+    minPick: numberOrNull({ value: group.minPick }) ?? 0,
+    maxPick: numberOrNull({ value: group.maxPick }) ?? 1,
+    itemIds: group.itemIds.filter((id) => partIds.includes(id)),
+  }));
+}
+
 /** Fields of the behaviours the type has; sections of other behaviours are left out. */
 function behaviourInput({ values, type }: Omit<ItemInputArgs, "specs">) {
   const kr = numberOrNull({ value: values.price });
@@ -55,6 +73,9 @@ function behaviourInput({ values, type }: Omit<ItemInputArgs, "specs">) {
       : {}),
     ...(hasBehaviour({ type, behaviour: "COMPOSABLE" })
       ? { components: componentsToInput({ components: values.components }) }
+      : {}),
+    ...(hasBehaviour({ type, behaviour: "CHOICES" })
+      ? { choiceGroups: choiceGroupsToInput(values) }
       : {}),
   };
 }

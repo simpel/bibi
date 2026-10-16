@@ -218,7 +218,8 @@
       "price": "Price",
       "booking": "Booking",
       "setups": "Setups",
-      "components": "Parts"
+      "components": "Parts",
+      "choices": "Choices"
     },
     "setupsHint": "Capacity, max number of people, per setup. Leave empty for setups that are not used.",
     "noSetups": "There are no setups. Create them under Setups.",
@@ -248,7 +249,19 @@
       "durationMinutes": "Length (minutes)",
       "required": "Mandatory"
     },
-    "componentValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (optional)}}"
+    "componentValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (optional)}}",
+    "choiceGroups": {
+      "hint": "Groups of parts to choose between, with how many to pick.",
+      "none": "No choice groups yet.",
+      "add": "Add choice group",
+      "remove": "Remove choice group",
+      "name": "Name",
+      "minPick": "Choose at least",
+      "maxPick": "Choose at most",
+      "options": "Options",
+      "noOptions": "Add parts first; the options are chosen among them."
+    },
+    "choiceGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}"
   },
   "customer": {
     "singular": "Customer",
@@ -837,6 +850,7 @@
         "title": "Title",
         "value": "Value",
         "components": "Parts",
+        "choiceGroups": "Choice groups",
         "customerId": "Customer (id)",
         "email": "Email",
         "phone": "Phone",
@@ -937,7 +951,14 @@
         "duration": "{minutes} min",
         "setupsCount": "{count, plural, one {# setup} other {# setups}}",
         "componentsCount": "{count, plural, one {# part} other {# parts}}",
-        "sections": { "price": "Price", "booking": "Booking", "setups": "Setups", "components": "Parts" }
+        "choiceGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
+        "sections": {
+          "price": "Price",
+          "booking": "Booking",
+          "setups": "Setups",
+          "components": "Parts",
+          "choices": "Choices"
+        }
       },
       "customer": {
         "singular": "Customer",
