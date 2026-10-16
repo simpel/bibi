@@ -1,0 +1,39 @@
+/// Fixed status of an option (ADR 0022). Changed only by the option's own commands.
+enum OptionStatus {
+  ACTIVE
+  CONVERTED
+  EXPIRED
+  RELEASED
+}
+
+/// Option – a preliminary hold on a `BOOKABLE` item for `[startsAt, endsAt)` until `expiresAt`
+/// (ADR 0022). Options queue per item and time: `rank` is the number of active overlapping options
+/// placed before it + 1, kept in step by core when one leaves the queue, and null once the option
+/// is no longer `ACTIVE`. `sequence` is the order options were placed in and breaks ties.
+/// Each option holds one `OPTION` occupancy (`sourceType = "option"`).
+model Option {
+  id              String        @id @default(cuid(2))
+  organizationId  String
+  itemId          String
+  /// The inquiry the option was placed for (optional).
+  inquiryId       String?
+  startsAt        DateTime
+  endsAt          DateTime
+  expiresAt       DateTime
+  rank            Int?
+  sequence        Int           @default(autoincrement())
+  optionStatus    OptionStatus  @default(ACTIVE)
+  statusChangedAt DateTime      @default(now())
+  note            String?
+  status          RecordStatus  @default(ACTIVE)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  createdBy       String?
+  item            Item          @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  inquiry         Inquiry?      @relation(fields: [inquiryId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, itemId, optionStatus, startsAt])
+  @@index([organizationId, optionStatus, expiresAt])
+  @@index([organizationId, inquiryId])
+}

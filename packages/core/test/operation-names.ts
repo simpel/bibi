@@ -1,5 +1,6 @@
-/** Every core operation name, sorted. Add new operations here (registry test). */
-export const OPERATION_NAMES = [
+import { OPTION_NAMES } from "./operation-names-option";
+
+const NAMES = [
   "auditLog.get",
   "auditLog.list",
   "booking.assign",
@@ -143,4 +144,6 @@ export const OPERATION_NAMES = [
   "vocabulary.list",
   "vocabulary.update",
   "vocabulary.updateValue",
-] as const;
+];
+/** Every core operation name, sorted. Add new operations here (registry test). */
+export const OPERATION_NAMES: readonly string[] = [...NAMES, ...OPTION_NAMES].sort();

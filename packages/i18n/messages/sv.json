@@ -597,6 +597,41 @@
       "note": "Anteckning"
     }
   },
+  "option": {
+    "singular": "Option",
+    "plural": "Optioner",
+    "create": "Lägg option",
+    "formDescription": "Håll artikeln för en period fram till förfallodatumet. Platsen i kön sätts automatiskt.",
+    "empty": "Inga aktiva optioner på artikeln.",
+    "created": "Optionen har lagts.",
+    "release": "Släpp option",
+    "releaseConfirm": "Vill du släppa optionen? Optionerna bakom flyttas upp.",
+    "releasing": "Släpper option…",
+    "released": "Optionen har släppts.",
+    "expireDue": "Avsluta förfallna",
+    "expireDueConfirm": "Vill du avsluta alla aktiva optioner vars förfallodatum har passerat? Det sker också automatiskt var 15:e minut.",
+    "expired": "Förfallna optioner har avslutats.",
+    "rank": "{rank, selectordinal, one {#:a} other {#:e}} option",
+    "statuses": {
+      "ACTIVE": "Aktiv",
+      "CONVERTED": "Konverterad",
+      "EXPIRED": "Förfallen",
+      "RELEASED": "Släppt"
+    },
+    "fields": {
+      "startsAt": "Börjar",
+      "endsAt": "Slutar",
+      "expiresAt": "Förfaller",
+      "note": "Anteckning"
+    },
+    "columns": {
+      "rank": "Plats",
+      "startsAt": "Börjar",
+      "endsAt": "Slutar",
+      "expiresAt": "Förfaller",
+      "note": "Anteckning"
+    }
+  },
   "programItem": {
     "singular": "Programpunkt",
     "plural": "Program",
@@ -1331,6 +1366,12 @@
           "period": "Period",
           "note": "Anteckning"
         }
+      },
+      "option": {
+        "empty": "Inga optioner hittades.",
+        "expires": "Förfaller {date}",
+        "openItem": "Öppna artikeln",
+        "columns": { "rank": "Plats", "period": "Period", "expiresAt": "Förfaller" }
       },
       "programItem": {
         "singular": "Programpunkt",

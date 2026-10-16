@@ -5,6 +5,7 @@ import { accessEntities } from "./parity-entities-access";
 import { bookingEntities } from "./parity-entities-booking";
 import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
+import { optionEntities } from "./parity-entities-option";
 import { paymentAccountEntity, paymentEntity } from "./parity-entities-payment";
 import { sheet } from "./parity-entities-sheet";
 import { gqlQuery } from "./parity-graphql";
@@ -111,6 +112,7 @@ export const ENTITIES: ParityEntity[] = [
   }),
   ...bookingEntities(),
   sheet(),
+  ...optionEntities(),
   byId({
     name: "conversation",
     field: "conversation",

@@ -50,6 +50,7 @@
   - Changing owner is done with `*.assign` and is logged.
 - Options are queued per bookable item and time. The rank is set automatically (number of active overlapping options + 1). When an option is released or expires, those behind it move up.
 - Expiry: the command `option.expireDue` expires all options whose date has passed. It runs manually or by the scheduler every 15 minutes (ADR 0027).
+- No reminder before expiry for now (decided with issue #43): the queue shows each option's expiry date, and a reminder needs notifications to staff, which do not exist yet. It becomes its own change when they do.
 - Occupancy (`Occupancy`) is a table with the types `BOOKING`, `OPTION`, `SETUP`, `MAINTENANCE`, `INTERNAL`. All except `OPTION` must not overlap on the same bookable item (`BOOKABLE`, ADR 0021), which is enforced with an exclusion constraint in Postgres (`btree_gist`). Setup time is added as `SETUP` based on the setup's setup time (`Setup`, ADR 0021).
 - Signing is postponed. `quote.accept` stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` (`MANUAL` now, later `BANKID` and `LINK`).
 - Status history comes from `AuditLog`. The entities also have `statusChangedAt` for lists and sorting.

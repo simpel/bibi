@@ -597,6 +597,41 @@
       "note": "Note"
     }
   },
+  "option": {
+    "singular": "Option",
+    "plural": "Options",
+    "create": "Place option",
+    "formDescription": "Hold the item for a period until the expiry date. The rank in the queue is set automatically.",
+    "empty": "No active options on the item.",
+    "created": "The option has been placed.",
+    "release": "Release option",
+    "releaseConfirm": "Do you want to release the option? The options behind it move up.",
+    "releasing": "Releasing option…",
+    "released": "The option has been released.",
+    "expireDue": "Expire overdue",
+    "expireDueConfirm": "Expire every active option whose expiry date has passed? This also runs automatically every 15 minutes.",
+    "expired": "Overdue options have expired.",
+    "rank": "{rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} option",
+    "statuses": {
+      "ACTIVE": "Active",
+      "CONVERTED": "Converted",
+      "EXPIRED": "Expired",
+      "RELEASED": "Released"
+    },
+    "fields": {
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "expiresAt": "Expires",
+      "note": "Note"
+    },
+    "columns": {
+      "rank": "Rank",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "expiresAt": "Expires",
+      "note": "Note"
+    }
+  },
   "programItem": {
     "singular": "Program item",
     "plural": "Program",
@@ -1331,6 +1366,12 @@
           "period": "Period",
           "note": "Note"
         }
+      },
+      "option": {
+        "empty": "No options found.",
+        "expires": "Expires {date}",
+        "openItem": "Open the item",
+        "columns": { "rank": "Rank", "period": "Period", "expiresAt": "Expires" }
       },
       "programItem": {
         "singular": "Program item",

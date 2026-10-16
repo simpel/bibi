@@ -314,18 +314,23 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 *MVP* · A preliminary hold on a bookable item with an expiry date.
 
 **Attributes**
-- item (with the `BOOKABLE` behavior)
-- start – end
-- expires (date)
-- rank (1st / 2nd option, set automatically)
-- reminder before expiry
-- status: `ACTIVE → CONVERTED`, `EXPIRED` or `RELEASED`
+- item (`itemId`, with the `BOOKABLE` behavior)
+- start – end (`startsAt`, `endsAt`; the period is `[start, end)`)
+- expires (`expiresAt`, in the future when the option is placed)
+- rank (`rank`, 1st / 2nd option, set automatically; null once the option is no longer active)
+- inquiry (`inquiryId`, optional)
+- note
+- status (`optionStatus`): `ACTIVE → CONVERTED`, `EXPIRED` or `RELEASED`; the three are final
+- statusChangedAt
+- reminder before expiry – *later* (not part of ADR 0022; see the decision below)
 
 **Relations**
 - `N:1` Inquiry can create this
-- `1:1` reserves → Occupancy
+- `1:1` reserves → Occupancy (type `OPTION`, `sourceType = "option"`)
 
-> ★ Options are queued per bookable item and time. The rank is the number of active overlapping options + 1. When an option is released or expires, those behind it move up. `option.expireDue` expires options whose date has passed.
+> ★ Options are queued per bookable item and time. The rank is the number of active overlapping options placed before it + 1, counted under a row lock on the item so concurrent options never share a rank. When an option is released or expires, its `OPTION` occupancy is released and the active options that overlapped it are recounted, so those behind it move up. The transition table lives in `features/option/transitions.ts`; a disallowed move is `CONFLICT`.
+
+> Operations (`option:write` to change, `option:read` to read): `option.list|get|create`, `option.release` and `option.expireDue`, which expires every active option whose `expiresAt` has passed and is audited per option. The worker runs `option.expireDue` for every organization as SYSTEM every 15 minutes (ADR 0027). `CONVERTED` is set by `quote.accept` when quotes exist. A reminder before expiry is not built: staff see the expiry date in the queue; it becomes its own ticket once notifications exist.
 
 ### Quote ★
 

@@ -14,6 +14,7 @@ import { itemMcpTools } from "../features/item/mcp";
 import { memberMcpTools } from "../features/member/mcp";
 import { messageMcpTools } from "../features/message/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
+import { optionMcpTools } from "../features/option/mcp";
 import { paymentMcpTools } from "../features/payment/mcp";
 import { paymentAccountMcpTools } from "../features/payment-account/mcp";
 import { priceListMcpTools } from "../features/price-list/mcp";
@@ -52,6 +53,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...requirementMcpTools,
     ...sheetMcpTools,
     ...inquiryMcpTools,
+    ...optionMcpTools,
     ...inboundEmailMcpTools,
     ...paymentAccountMcpTools,
     ...paymentMcpTools,

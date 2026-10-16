@@ -20,6 +20,7 @@ export const RESOURCES = [
   "requirement",
   "sheet",
   "inquiry",
+  "option",
   "search",
   "conversation",
   "skill",

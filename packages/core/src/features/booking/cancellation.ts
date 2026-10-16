@@ -1,6 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { toOccupancyDto } from "../occupancy/to-occupancy-dto";
+import { releaseOccupancyBySource } from "../occupancy/release-by-source";
 import { releaseProgramItemsOfBooking } from "../program-item/release-for-booking";
 import type { BookingDto } from "./schema";
 
@@ -27,27 +27,11 @@ export const CANCELLATION_HOOKS: CancellationHook[] = [];
 export type ReleaseBookingOccupancyInput = { context: OperationContext; bookingId: string };
 
 /** Releases every active occupancy the booking holds, so the items can be booked again. */
-export async function releaseBookingOccupancy({
+export const releaseBookingOccupancy = ({
   context,
   bookingId,
-}: ReleaseBookingOccupancyInput): Promise<Result<true>> {
-  const rows = await context.db.occupancy.findMany({
-    where: { sourceType: BOOKING_OCCUPANCY_SOURCE, sourceId: bookingId },
-  });
-  for (const row of rows) {
-    const released = await context.db.occupancy.update({
-      where: { id: row.id },
-      data: { status: "ARCHIVED" },
-    });
-    context.recordChange({
-      entityType: "occupancy",
-      entityId: row.id,
-      before: toOccupancyDto({ row }),
-      after: toOccupancyDto({ row: released }),
-    });
-  }
-  return ok({ value: true });
-}
+}: ReleaseBookingOccupancyInput): Promise<Result<true>> =>
+  releaseOccupancyBySource({ context, sourceType: BOOKING_OCCUPANCY_SOURCE, sourceId: bookingId });
 
 /** Everything the `CANCELLED` phase does beyond the status change itself. */
 export async function applyCancellation({

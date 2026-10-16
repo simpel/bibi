@@ -11,6 +11,7 @@ import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { OccupancySection } from "../../occupancy/ui/occupancy-section";
+import { OptionSection } from "../../option/ui/option-section";
 import { loadItemFormData } from "../load-item-form-data";
 import { ItemActions } from "./item-actions";
 import { ItemBehaviours } from "./item-behaviours";
@@ -20,7 +21,7 @@ import { PackageOwner } from "./package-owner";
 
 export type ItemDetailProps = { locale: Locale; id: string };
 
-/** Item detail page body: facts with edit and archive, contents, occupancy and history. */
+/** Item detail page body: facts with edit and archive, contents, options, occupancy and history. */
 export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const common = await getTranslations("common");
   const { itemWrite } = await getCallerAbilities();
@@ -52,7 +53,10 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
           <ItemResolutionSection locale={locale} itemId={item.value.id} />
         ) : null}
         {type?.behaviours.includes("BOOKABLE") ? (
-          <OccupancySection locale={locale} itemId={item.value.id} />
+          <>
+            <OptionSection locale={locale} itemId={item.value.id} />
+            <OccupancySection locale={locale} itemId={item.value.id} />
+          </>
         ) : null}
       </WithHistory>
     </div>

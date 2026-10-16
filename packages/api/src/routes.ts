@@ -14,6 +14,7 @@ import { itemRoutes } from "./features/item/rest";
 import { memberRoutes } from "./features/member/rest";
 import { messageRoutes } from "./features/message/rest";
 import { occupancyRoutes } from "./features/occupancy/rest";
+import { optionRoutes } from "./features/option/rest";
 import { paymentRoutes } from "./features/payment/rest";
 import { paymentAccountRoutes } from "./features/payment-account/rest";
 import { priceListRoutes } from "./features/price-list/rest";
@@ -52,6 +53,7 @@ export function listRestRoutes(): RestRoute[] {
     ...requirementRoutes,
     ...sheetRoutes,
     ...inquiryRoutes,
+    ...optionRoutes,
     ...inboundEmailRoutes,
     ...paymentAccountRoutes,
     ...paymentRoutes,

@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { addChangeover } from "../occupancy/add-changeover";
+import { releaseOccupancyBySource } from "../occupancy/release-by-source";
 import { toOccupancyDto } from "../occupancy/to-occupancy-dto";
 import { PROGRAM_ITEM_SOURCE, type ProgramItemDto } from "./schema";
 
@@ -38,15 +39,5 @@ export async function reserveProgramItem({ context, programItem }: ReserveInput)
 export type ReleaseInput = { context: OperationContext; id: string };
 
 /** Releases (archives) every occupancy the program item holds. */
-export async function releaseProgramItem({ context, id }: ReleaseInput): Promise<Result<true>> {
-  const rows = await context.db.occupancy.updateManyAndReturn({
-    where: { sourceType: PROGRAM_ITEM_SOURCE, sourceId: id },
-    data: { status: "ARCHIVED" },
-  });
-  for (const row of rows) {
-    const after = toOccupancyDto({ row });
-    const before = { ...after, status: "ACTIVE" };
-    context.recordChange({ entityType: "occupancy", entityId: row.id, before, after });
-  }
-  return ok({ value: true });
-}
+export const releaseProgramItem = ({ context, id }: ReleaseInput): Promise<Result<true>> =>
+  releaseOccupancyBySource({ context, sourceType: PROGRAM_ITEM_SOURCE, sourceId: id });

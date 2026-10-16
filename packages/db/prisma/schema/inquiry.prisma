@@ -38,6 +38,7 @@ model Inquiry {
   entityType      EntityType    @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   customer        Customer      @relation(fields: [customerId, organizationId], references: [id, organizationId])
   contact         Contact?      @relation(fields: [contactId, organizationId], references: [id, organizationId])
+  options         Option[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status, inquiryStatus])

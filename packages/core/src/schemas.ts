@@ -28,6 +28,7 @@ export * from "./features/item/schema";
 export * from "./features/member/schema";
 export * from "./features/message/schema";
 export * from "./features/occupancy/schema";
+export * from "./features/option/schema";
 export * from "./features/payment/schema";
 export * from "./features/payment-account/schema";
 export * from "./features/price-list/schema";

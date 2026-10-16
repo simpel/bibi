@@ -43,6 +43,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "PriceList",
   "PriceListItem",
   "Occupancy",
+  "Option",
   "BookingStatus",
   "BookingStatusTransition",
   "Booking",

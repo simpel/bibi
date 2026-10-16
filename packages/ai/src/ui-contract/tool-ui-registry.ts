@@ -8,6 +8,7 @@ import { INBOUND_EMAIL_UI_ENTRIES } from "./inbound-email-entries";
 import { INQUIRY_UI_ENTRIES } from "./inquiry-entries";
 import { ITEM_RESOLUTION_UI_ENTRIES } from "./item-resolution-entries";
 import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
+import { OPTION_UI_ENTRIES } from "./option-entries";
 import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
 import { PRICE_LIST_UI_ENTRIES } from "./price-list-entries";
@@ -64,6 +65,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...PROGRAM_ITEM_UI_ENTRIES,
   ...REQUIREMENT_UI_ENTRIES,
   ...INQUIRY_UI_ENTRIES,
+  ...OPTION_UI_ENTRIES,
   ...INBOUND_EMAIL_UI_ENTRIES,
   ...PAYMENT_ACCOUNT_UI_ENTRIES,
   ...PAYMENT_UI_ENTRIES,

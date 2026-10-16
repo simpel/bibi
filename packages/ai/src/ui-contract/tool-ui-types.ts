@@ -5,6 +5,7 @@ import type { BookingStatusWire } from "./booking-status-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
 import type { InquiryWire } from "./inquiry-entries";
 import type { ItemResolutionWire } from "./item-resolution-entries";
+import type { OptionWire } from "./option-entries";
 import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire } from "./payment-entries";
 import type { PriceListWire } from "./price-list-entries";
@@ -61,6 +62,8 @@ export type ToolUiProps = {
   "requirement-card": { requirement: RequirementWire };
   "inquiry-table": { items: InquiryWire[]; nextCursor: string | null };
   "inquiry-card": { inquiry: InquiryWire };
+  "option-queue": { items: OptionWire[]; nextCursor: string | null };
+  "option-card": { option: OptionWire };
   "inbound-email-table": { items: InboundEmailWire[]; nextCursor: string | null };
   "inbound-email-card": { email: InboundEmailWire };
   "payment-account-card": { account: PaymentAccountWire };

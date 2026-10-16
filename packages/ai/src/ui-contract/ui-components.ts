@@ -27,6 +27,8 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "requirement-card",
   "inquiry-table",
   "inquiry-card",
+  "option-queue",
+  "option-card",
   "inbound-email-table",
   "inbound-email-card",
   "payment-account-card",
