@@ -18,6 +18,12 @@ describe("paymentOutcome", () => {
   it("offers a pay button for an open card checkout", () => {
     expect(paymentOutcome({ payment: base })).toBe("pay");
   });
+  it("shows processing, not the pay button, when the customer just came back from Stripe", () => {
+    expect(paymentOutcome({ payment: base, returning: true })).toBe("processing");
+    expect(paymentOutcome({ payment: { ...base, status: "SUCCEEDED" }, returning: true })).toBe(
+      "paid",
+    );
+  });
   it("points an invoice payer to the invoice instead", () => {
     expect(paymentOutcome({ payment: { ...base, method: "INVOICE" } })).toBe("invoice");
   });

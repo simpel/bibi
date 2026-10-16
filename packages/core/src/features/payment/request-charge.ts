@@ -50,7 +50,9 @@ export async function requestCharge({
   if (input.method === "CARD") {
     // The public payment page (ADR 0028) lives at /pay/<publicToken>; Stripe returns there.
     const pageUrl = `${getEnv().WEB_URL}/pay/${publicToken}`;
-    return provider.createCheckout({ ...base, successUrl: pageUrl, cancelUrl: pageUrl });
+    // `checkout=success` lets the page show "processing" until the webhook marks it paid.
+    const successUrl = `${pageUrl}?checkout=success`;
+    return provider.createCheckout({ ...base, successUrl, cancelUrl: pageUrl });
   }
   const { name, email, paymentTermsDays } = target.customer;
   const invoice = await provider.createInvoice({

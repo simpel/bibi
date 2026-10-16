@@ -1578,6 +1578,8 @@
       "description": "Bokning #{reference}",
       "amount": "Belopp",
       "pay": "Betala nu",
+      "processingTitle": "Betalningen behandlas",
+      "processingDescription": "Tack. Vi väntar på att betalningen ska bekräftas. Sidan uppdateras av sig själv.",
       "paidTitle": "Betalningen är mottagen",
       "paidDescription": "Tack. Betalningen till {organization} är genomförd.",
       "expiredTitle": "Betalningslänken har gått ut",

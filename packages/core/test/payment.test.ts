@@ -49,7 +49,14 @@ describe("payment", () => {
       metadata: { paymentId: payment.id, bookingId },
     });
     const { publicToken } = await getDb().payment.findUniqueOrThrow({ where: { id: payment.id } });
-    expect(provider.charges[0]).toHaveProperty("successUrl", expect.stringContaining(publicToken));
+    expect(provider.charges[0]).toHaveProperty(
+      "successUrl",
+      expect.stringContaining(`/pay/${publicToken}?checkout=success`),
+    );
+    expect(provider.charges[0]).toHaveProperty(
+      "cancelUrl",
+      expect.stringMatching(new RegExp(`/pay/${publicToken}$`)),
+    );
     expect(JSON.stringify(payment)).not.toContain(publicToken);
   });
 

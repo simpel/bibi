@@ -1578,6 +1578,8 @@
       "description": "Booking #{reference}",
       "amount": "Amount",
       "pay": "Pay now",
+      "processingTitle": "Processing your payment",
+      "processingDescription": "Thank you. We are waiting for the payment to be confirmed. This page updates by itself.",
       "paidTitle": "Payment received",
       "paidDescription": "Thank you. The payment to {organization} is complete.",
       "expiredTitle": "This payment link has expired",

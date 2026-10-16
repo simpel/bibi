@@ -1,12 +1,14 @@
 import type { PublicPaymentDto } from "@okazi/core/schemas";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
+import { AutoRefresh } from "./auto-refresh";
 import { type PaymentOutcome, paymentOutcome } from "./payment-outcome";
 
-export type PaymentPageCardProps = { payment: PublicPaymentDto };
+export type PaymentPageCardProps = { payment: PublicPaymentDto; returning?: boolean };
 
 const TITLE_KEY = {
   pay: "title",
+  processing: "processingTitle",
   invoice: "title",
   paid: "paidTitle",
   expired: "expiredTitle",
@@ -15,6 +17,7 @@ const TITLE_KEY = {
 
 const DESCRIPTION_KEY = {
   pay: "description",
+  processing: "processingDescription",
   invoice: "invoiceDescription",
   paid: "paidDescription",
   expired: "expiredDescription",
@@ -22,16 +25,16 @@ const DESCRIPTION_KEY = {
 } as const satisfies Record<PaymentOutcome, string>;
 
 /** What the customer sees at `/pay/<token>`: the amount and a way to pay, or why not. */
-export function PaymentPageCard({ payment }: PaymentPageCardProps) {
+export function PaymentPageCard({ payment, returning = false }: PaymentPageCardProps) {
   const t = useTranslations("payment.public");
   const format = useFormatter();
-  const outcome = paymentOutcome({ payment });
+  const outcome = paymentOutcome({ payment, returning });
   const values = { organization: payment.organizationName, reference: payment.bookingReference };
   const amount = format.number(payment.amountMinor / 100, {
     style: "currency",
     currency: payment.currency,
   });
-  const showAmount = outcome === "pay" || outcome === "invoice" || outcome === "paid";
+  const showAmount = outcome !== "expired" && outcome !== "unavailable";
   return (
     <Card className="w-full max-w-md">
       <CardHeader>
@@ -45,6 +48,7 @@ export function PaymentPageCard({ payment }: PaymentPageCardProps) {
             <span className="text-2xl font-semibold">{amount}</span>
           </div>
         ) : null}
+        {outcome === "processing" ? <AutoRefresh /> : null}
         {outcome === "pay" && payment.paymentUrl ? (
           <>
             <Button asChild size="lg">
