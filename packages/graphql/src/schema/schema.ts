@@ -17,6 +17,7 @@ import "../features/booking/graphql";
 import "../features/booking-series/graphql";
 import "../features/program-item/graphql";
 import "../features/requirement/graphql";
+import "../features/sheet/graphql";
 import "../features/inquiry/graphql";
 import "../features/inbound-email/graphql";
 import "../features/payment/graphql";

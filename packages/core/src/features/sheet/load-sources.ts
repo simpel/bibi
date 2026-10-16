@@ -1,0 +1,32 @@
+import type { Booking } from "@okazi/db";
+import { ok, type Result } from "../../errors/result";
+import type { OperationContext } from "../../operations/types";
+import { invalid, notFound } from "../../shared/errors";
+import { roleExists } from "../sheet-definition/check-contents";
+import type { SheetDefinitionDto } from "../sheet-definition/schema";
+
+export type Sources = { booking: Booking; definition: SheetDefinitionDto };
+export type LoadSourcesInput = {
+  context: Pick<OperationContext, "db">;
+  bookingId: string;
+  sheetDefinitionId: string;
+};
+
+/** The booking and the active definition, or `NOT_FOUND`; the receiving role must still exist. */
+export async function loadSources({
+  context,
+  bookingId,
+  sheetDefinitionId,
+}: LoadSourcesInput): Promise<Result<Sources>> {
+  const booking = await context.db.booking.findFirst({ where: { id: bookingId } });
+  if (!booking) return notFound({ entity: "Booking" });
+  const definition = await context.db.sheetDefinition.findFirst({
+    where: { id: sheetDefinitionId },
+  });
+  if (!definition) return notFound({ entity: "Sheet definition" });
+  if (!(await roleExists({ context, roleId: definition.roleId }))) {
+    const message = `The sheet goes to a role that no longer exists (${definition.roleId})`;
+    return invalid({ message, issues: [{ path: "sheetDefinitionId", message }] });
+  }
+  return ok({ value: { booking, definition } });
+}

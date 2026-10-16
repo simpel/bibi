@@ -18,6 +18,8 @@ model SheetDefinition {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   createdBy      String?
+  /// The versions generated from this definition.
+  sheets         Sheet[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

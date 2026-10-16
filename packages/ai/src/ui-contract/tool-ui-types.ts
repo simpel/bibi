@@ -11,6 +11,7 @@ import type { PriceListWire } from "./price-list-entries";
 import type { ProgramItemWire } from "./program-item-entries";
 import type { RequirementWire } from "./requirement-entries";
 import type { SheetDefinitionWire } from "./sheet-definition-entries";
+import type { SheetWire } from "./sheet-entries";
 import type {
   AuditLogWire,
   ContactWire,
@@ -75,6 +76,8 @@ export type ToolUiProps = {
   "setup-card": { setup: SetupWire };
   "sheet-definition-table": { items: SheetDefinitionWire[]; nextCursor: string | null };
   "sheet-definition-card": { sheet: SheetDefinitionWire };
+  "sheet-table": { items: SheetWire[]; nextCursor: string | null };
+  "sheet-card": { sheet: SheetWire };
   "role-table": { items: RoleWire[]; nextCursor: string | null };
   "role-card": { role: RoleWire };
   "member-table": { items: MemberWire[]; nextCursor: string | null };

@@ -569,15 +569,18 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 **Attributes**
 - booking
 - sheet definition
-- items and fields according to the definition
-- requirements per vocabulary value (count, never names)
-- blocked (yes/no) and hits
-- receiving role
-- version and change markers
+- version (1, 2, 3, … per booking and sheet definition)
+- content: a snapshot of the booking's rows (`BOOKING`, `ITEM`, `REQUIREMENT`) as the definition includes them: the booking itself, the program items that use an item of an included type with the included fields, and the counts of the included lists (never names)
+- changes (★): the rows added, changed or removed since the last sent version (`baseVersion`)
+- receiving role (a copy of the definition's role at generation)
+- sent (`sentAt`, `sentBy`)
+- *Later (ADR 0021, matching):* blocked (yes/no) and hits
 
 **Relations**
 - `N:1` Booking produces this
 - `N:1` SheetDefinition produces this version
+
+> Operations (resource `sheet`): `sheet.list|get|generate|send`. `sheet.generate` snapshots the booking for a definition; a changed booking gives the next version with the changed rows marked ★ against the last *sent* version, an unchanged booking returns the latest version. `sheet.send` marks a version as sent: only from the `CONFIRMED` phase (`CONFLICT` otherwise), only the latest version, and a version once. A version is never edited or removed. The core function `diffContent` is the only place the markers are computed.
 
 > ★ Versioned, with changes marked since the last dispatch. Cannot be sent in the `TENTATIVE` phase. `sheet.export` gives a single sheet as json, pdf or csv, always with the latest version and the version number. This is how a sheet is handed to someone outside the system.
 

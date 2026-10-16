@@ -21,6 +21,7 @@ import { programItemMcpTools } from "../features/program-item/mcp";
 import { requirementMcpTools } from "../features/requirement/mcp";
 import { roleMcpTools } from "../features/role/mcp";
 import { setupMcpTools } from "../features/setup/mcp";
+import { sheetMcpTools } from "../features/sheet/mcp";
 import { sheetDefinitionMcpTools } from "../features/sheet-definition/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
@@ -48,6 +49,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...bookingSeriesMcpTools,
     ...programItemMcpTools,
     ...requirementMcpTools,
+    ...sheetMcpTools,
     ...inquiryMcpTools,
     ...inboundEmailMcpTools,
     ...paymentAccountMcpTools,

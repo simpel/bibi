@@ -623,6 +623,31 @@
       "type": "Type"
     }
   },
+  "sheet": {
+    "singular": "Sheet",
+    "plural": "Sheets",
+    "empty": "No sheets are defined yet. Define them under Settings.",
+    "noVersion": "No version has been generated yet.",
+    "nothingIncluded": "The booking has nothing that this sheet includes yet.",
+    "generate": "Generate version",
+    "generating": "Generating sheet…",
+    "generated": "Sheet version {version} is ready.",
+    "send": "Send",
+    "sent": "The sheet has been sent.",
+    "version": "Version {version}",
+    "notSent": "Not sent",
+    "sentAt": "Sent {when}",
+    "changes": "{count, plural, =0 {No changes} one {# change} other {# changes}} since version {version}",
+    "booking": "Booking {reference}",
+    "headcount": "{count, plural, one {# guest} other {# guests}}",
+    "onBooking": "Whole booking",
+    "onProgramItem": "One program item",
+    "change": {
+      "ADDED": "Added since the last sent version",
+      "CHANGED": "Changed since the last sent version",
+      "REMOVED": "Removed since the last sent version"
+    }
+  },
   "entityType": {
     "singular": "Type",
     "plural": "Types",
@@ -1212,6 +1237,18 @@
           "where": "Applies to"
         }
       },
+      "sheet": {
+        "singular": "Sheet",
+        "empty": "No sheets found.",
+        "version": "Version {version}",
+        "notSent": "Not sent",
+        "openBooking": "Open the booking",
+        "columns": {
+          "version": "Version",
+          "changes": "Changes",
+          "sent": "Sent"
+        }
+      },
       "entityType": {
         "empty": "No types found.",
         "open": "Open the type",
@@ -1593,6 +1630,7 @@
       "booking": "Bookings and their owners",
       "programItem": "Program items (the booking's run schedule)",
       "requirement": "Requirements (counts against list values on bookings)",
+      "sheet": "Sheets (versioned compilations for a role)",
       "inquiry": "Inquiries and their salesperson",
       "search": "Search",
       "conversation": "Conversations",

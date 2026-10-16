@@ -38,7 +38,8 @@ const dedupe = ({ contents }: { contents: SheetDefinitionContents }) => ({
   vocabularyIds: [...new Set(contents.vocabularyIds)],
 });
 
-async function roleExists({ context, roleId }: { context: Db; roleId: string }) {
+/** True for the fixed `owner` role and for an active role of the organization. */
+export async function roleExists({ context, roleId }: { context: Db; roleId: string }) {
   if (roleId === OWNER_ROLE_ID) return true;
   return (await context.db.organizationRole.findFirst({ where: { id: roleId } })) !== null;
 }

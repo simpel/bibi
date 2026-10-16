@@ -6,6 +6,7 @@ import { bookingEntities } from "./parity-entities-booking";
 import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
 import { paymentAccountEntity, paymentEntity } from "./parity-entities-payment";
+import { sheet } from "./parity-entities-sheet";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
@@ -109,6 +110,7 @@ export const ENTITIES: ParityEntity[] = [
     args: { name: "Parity status", color: "#22c55e", phase: "TENTATIVE" },
   }),
   ...bookingEntities(),
+  sheet(),
   byId({
     name: "conversation",
     field: "conversation",
