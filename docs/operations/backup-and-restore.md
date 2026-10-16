@@ -16,6 +16,16 @@ Dumps are named `okazi-<UTC timestamp>.dump`. The service writes `backup.done`, 
 ## Configuration
 Set in Coolify (secrets) or `.env.prod`: `BACKUP_S3_BUCKET`, `BACKUP_S3_ENDPOINT` (for example `https://fsn1.your-objectstorage.com`), `BACKUP_S3_ACCESS_KEY`, `BACKUP_S3_SECRET_KEY`, optional `BACKUP_S3_REGION`, `BACKUP_RETENTION_DAYS`, `BACKUP_HOUR_UTC`. Use a bucket-scoped key. Enable bucket versioning or object lock if ransomware protection is wanted.
 
+## Alerting
+Without alerting a failed backup is only visible in the container log. Two optional variables make the `backup` service call an uptime monitor (healthchecks.io, Uptime Kuma push monitor or similar):
+
+| Variable | When it is called |
+| --- | --- |
+| `BACKUP_HEARTBEAT_URL` | After each successful backup. Configure the monitor with a 25 hour period, so a missing or failed backup raises an alert when pings stop. |
+| `BACKUP_FAILURE_URL` | After a failed backup (for healthchecks.io: the heartbeat URL with `/fail` appended). Optional, gives an immediate alert. |
+
+Both are plain GET requests with a 10 second timeout and 3 retries. A failing ping is logged as `backup.ping_failed` and never stops the loop. Set them in Coolify or `.env.prod`. Note that a backup container that is down altogether sends no failure ping, which is what the heartbeat covers.
+
 Run a backup on demand: `docker compose -f docker-compose.prod.yml exec backup backup.sh`.
 
 ## Coolify instance data
@@ -35,7 +45,9 @@ tools/backup/restore-test.sh --latest
 tools/backup/restore-test.sh ./okazi-20261015T023000Z.dump
 ```
 
-Repeat the test after changing the backup setup, after a Postgres major upgrade, and at least quarterly.
+CI runs this automatically (`.github/workflows/backup-restore.yml`): it builds the backup image, dumps a migrated database with `backup.sh` in local mode and runs the restore test on the dump. It runs on changes to `docker/backup/`, `tools/backup/` and the workflow itself, and weekly (Monday 05:00 UTC), so a Postgres or pgvector image upgrade that breaks dump or restore fails CI. When you change the Postgres image tag, update it in `docker/backup/Dockerfile`, `tools/backup/restore-test.sh` and the workflow together.
+
+Repeat the test against production dumps after changing the backup setup, after a Postgres major upgrade, and at least quarterly.
 
 ## Restoring production
 1. Stop `web`, `mcp` (and the worker) so nothing writes during the restore.
