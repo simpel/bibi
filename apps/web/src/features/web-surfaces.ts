@@ -1,3 +1,5 @@
+import { SALES_SURFACES } from "./sales-surfaces";
+
 /**
  * Which core operations have a UI surface in the web app. The parity test in
  * `web-surfaces.test.ts` validates this list: a new operation must either appear in
@@ -66,6 +68,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "programItem.update", route: "/bookings/[id]" },
   { operation: "programItem.assign", route: "/bookings/[id]" },
   { operation: "programItem.archive", route: "/bookings/[id]" },
+  ...SALES_SURFACES,
   { operation: "entityType.list", route: "/settings/types" },
   { operation: "entityType.create", route: "/settings/types" },
   { operation: "configuration.importTemplate", route: "/settings/types" },

@@ -1,7 +1,7 @@
 import { BookingAssignInputSchema } from "@okazi/core/schemas";
 import type { z } from "zod";
+import { NONE } from "@/components/form/option-select-field";
 import { formSchema } from "@/lib/form-schema";
-import { NONE } from "./option-select-field";
 
 /** Raw values of the owners form: user ids, or `NONE` for no one. */
 export type AssignFormValues = { salesOwnerId: string; coordinatorId: string };

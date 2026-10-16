@@ -75,6 +75,10 @@ test("edit, publish, filter and archive a skill; English strings", async ({ page
   await page.getByRole("button", { name: "Publish" }).click();
   await expect(page.getByText("Published", { exact: true }).first()).toBeVisible();
 
+  // The save, update and publish toasts sit at top-center and cover the Back link until they
+  // expire. Sonner pauses expiry while the pointer is over them, so move the pointer away first.
+  await page.mouse.move(0, 0);
+  await expect(page.locator("[data-sonner-toast]")).toHaveCount(0, { timeout: 15_000 });
   await page.getByRole("link", { name: "Back" }).click();
   await page.getByRole("searchbox", { name: "Search query" }).fill("Greeting");
   await page.getByRole("button", { name: "Search", exact: true }).click();

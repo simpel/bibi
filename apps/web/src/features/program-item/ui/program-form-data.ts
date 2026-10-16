@@ -1,5 +1,5 @@
+import type { NamedOption } from "@/components/form/named-option";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
-import type { NamedOption } from "../../booking/ui/booking-form-data";
 
 /** A bookable item a program item can be held in, with the ids of its setups. */
 export type BookableOption = NamedOption & { setupIds: string[] };

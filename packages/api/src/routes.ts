@@ -9,6 +9,7 @@ import { customerRoutes } from "./features/customer/rest";
 import { entityTypeRoutes } from "./features/entity-type/rest";
 import { fieldDefinitionRoutes } from "./features/field-definition/rest";
 import { inboundEmailRoutes } from "./features/inbound-email/rest";
+import { inquiryRoutes } from "./features/inquiry/rest";
 import { itemRoutes } from "./features/item/rest";
 import { memberRoutes } from "./features/member/rest";
 import { messageRoutes } from "./features/message/rest";
@@ -43,6 +44,7 @@ export function listRestRoutes(): RestRoute[] {
     ...bookingRoutes,
     ...bookingSeriesRoutes,
     ...programItemRoutes,
+    ...inquiryRoutes,
     ...inboundEmailRoutes,
     ...paymentAccountRoutes,
     ...paymentRoutes,

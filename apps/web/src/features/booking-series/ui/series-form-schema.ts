@@ -1,10 +1,10 @@
 import type { BookingSeriesCreateInput, EntityTypeDto, VocabularyDto } from "@okazi/core";
 import { BookingSeriesCreateInputSchema, buildFieldsSchema } from "@okazi/core/schemas";
+import { NONE } from "@/components/form/option-select-field";
 import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsToInput, type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 import { numberOrNull, numberOrUndefined } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
-import { NONE } from "../../booking/ui/option-select-field";
 import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 
 /** Raw values of the series form: inputs are strings, the start a `datetime-local` value. */

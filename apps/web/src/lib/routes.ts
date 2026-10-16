@@ -10,6 +10,7 @@ export const ROUTES = {
   customers: "/customers",
   bookings: "/bookings",
   bookingSeries: "/booking-series",
+  inquiries: "/inquiries",
   settingsTypes: "/settings/types",
   settingsLists: "/settings/lists",
   settingsSetups: "/settings/setups",
@@ -45,6 +46,12 @@ export type BookingSeriesRouteInput = { id: string };
 
 export function bookingSeriesRoute({ id }: BookingSeriesRouteInput): string {
   return `${ROUTES.bookingSeries}/${encodeURIComponent(id)}`;
+}
+
+export type InquiryRouteInput = { id: string };
+
+export function inquiryRoute({ id }: InquiryRouteInput): string {
+  return `${ROUTES.inquiries}/${encodeURIComponent(id)}`;
 }
 
 export type SkillRouteInput = { id: string };

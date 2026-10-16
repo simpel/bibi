@@ -1,7 +1,7 @@
 import type { ProgramItemDto } from "@okazi/core";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
 import { getFormatter, getTranslations } from "next-intl/server";
-import { nameOf } from "../../booking/ui/booking-form-data";
+import { nameOf } from "@/components/form/named-option";
 import type { ProgramFormData } from "./program-form-data";
 import { ProgramRowActions } from "./program-row-actions";
 

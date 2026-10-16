@@ -1,6 +1,6 @@
 import type { EntityTypeDto, ProgramItemDto } from "@okazi/core";
+import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
-import { NONE } from "../../booking/ui/option-select-field";
 import { toLocalInputValue } from "../../occupancy/ui/local-date-time";
 
 /** Raw values of the program item form: inputs are strings, `NONE` = no item/setup/person. */

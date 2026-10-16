@@ -21,6 +21,8 @@ import { FieldDefinitionTableView } from "./field-definition-table-view";
 import type { GenerativeProps } from "./generative-props";
 import { InboundEmailCardView } from "./inbound-email-card-view";
 import { InboundEmailTableView } from "./inbound-email-table-view";
+import { InquiryCardView } from "./inquiry-card-view";
+import { InquiryTableView } from "./inquiry-table-view";
 import { InvitationCardView } from "./invitation-card-view";
 import { InvitationTableView } from "./invitation-table-view";
 import { ItemCardView } from "./item-card-view";
@@ -73,6 +75,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "booking-series-card": BookingSeriesCardView,
   "program-item-table": ProgramItemTableView,
   "program-item-card": ProgramItemCardView,
+  "inquiry-table": InquiryTableView,
+  "inquiry-card": InquiryCardView,
   "inbound-email-table": InboundEmailTableView,
   "inbound-email-card": InboundEmailCardView,
   "payment-account-card": PaymentAccountCardView,

@@ -2,8 +2,8 @@ import type { BookingSeriesDto } from "@okazi/core";
 import { Link } from "@okazi/i18n/navigation";
 import { Badge, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
 import { getFormatter, getTranslations } from "next-intl/server";
+import { nameOf } from "@/components/form/named-option";
 import { bookingSeriesRoute } from "@/lib/routes";
-import { nameOf } from "../../booking/ui/booking-form-data";
 import type { SeriesFormData } from "./series-form-data";
 
 export type BookingSeriesTableProps = { series: BookingSeriesDto[]; data: SeriesFormData };

@@ -1,10 +1,10 @@
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import type { NamedOption } from "@/components/form/named-option";
+import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
-import type { NamedOption } from "./booking-form-data";
 import type { BookingFormOutput } from "./booking-form-schema";
 import type { BookingFormValues } from "./booking-form-values";
-import { OptionSelectField } from "./option-select-field";
 
 export type BookingCoreFieldsProps = {
   form: UseFormReturn<BookingFormValues, unknown, BookingFormOutput>;

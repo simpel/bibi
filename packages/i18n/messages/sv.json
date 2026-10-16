@@ -117,6 +117,7 @@
     "venues": "Anläggningar",
     "items": "Artiklar",
     "customers": "Kunder",
+    "inquiries": "Förfrågningar",
     "types": "Typer",
     "lists": "Listor",
     "setups": "Uppställningar",
@@ -434,6 +435,61 @@
       "customer": "Kund",
       "type": "Typ",
       "when": "När",
+      "status": "Status",
+      "salesOwner": "Säljare"
+    }
+  },
+  "inquiry": {
+    "singular": "Förfrågan",
+    "plural": "Förfrågningar",
+    "listDescription": "Förfrågningar från kunder på väg mot offert och bokning. Varje förfrågan går NY → KVALIFICERAD → OFFERERAD → VUNNEN, eller markeras som förlorad med en orsak.",
+    "title": "Förfrågan från {customer}",
+    "create": "Registrera förfrågan",
+    "edit": "Redigera förfrågan",
+    "createDescription": "Välj en typ och kunden. Förfrågan börjar som ny.",
+    "editDescription": "Ändra kund, kontaktperson, datum, antal, budget och typens fält. Status och säljare ändras separat.",
+    "created": "Förfrågan har registrerats.",
+    "updated": "Förfrågan har uppdaterats.",
+    "assign": "Byt säljare",
+    "assignDescription": "Välj säljare bland medlemmarna.",
+    "assigned": "Säljaren har uppdaterats.",
+    "noOwner": "Ingen",
+    "ownerRequired": "En kvalificerad förfrågan behöver en säljare.",
+    "qualify": "Kvalificera",
+    "qualifyDescription": "En kvalificerad förfrågan behöver en säljare. Välj en bland medlemmarna.",
+    "qualified": "Förfrågan har kvalificerats.",
+    "markLost": "Markera som förlorad",
+    "markLostDescription": "Ange varför förfrågan förlorades. En förlorad förfrågan kan inte öppnas igen.",
+    "markedLost": "Förfrågan har markerats som förlorad.",
+    "empty": "Inga förfrågningar än.",
+    "emptyDescription": "Registrera din första förfrågan.",
+    "noTypes": "Det finns inga förfrågningstyper än. Skapa en typ först.",
+    "goToTypes": "Gå till typer",
+    "statuses": {
+      "NEW": "Ny",
+      "QUALIFIED": "Kvalificerad",
+      "QUOTED": "Offererad",
+      "WON": "Vunnen",
+      "LOST": "Förlorad"
+    },
+    "fields": {
+      "type": "Typ",
+      "customer": "Kund",
+      "contact": "Kontaktperson",
+      "noContact": "Ingen kontaktperson",
+      "desiredStartsAt": "Önskad start",
+      "desiredEndsAt": "Önskat slut",
+      "when": "Önskade datum",
+      "quantity": "Antal",
+      "budget": "Budget (kr)",
+      "salesOwner": "Säljare",
+      "lossReason": "Orsak till förlust"
+    },
+    "columns": {
+      "customer": "Kund",
+      "type": "Typ",
+      "when": "Önskade datum",
+      "quantity": "Antal",
       "status": "Status",
       "salesOwner": "Säljare"
     }
@@ -1003,6 +1059,21 @@
         "columns": { "rule": "Upprepning", "occurrences": "Tillfällen", "clashes": "Krockar" },
         "cancelled": "Avbokad"
       },
+      "inquiry": {
+        "title": "Förfrågan {date}",
+        "empty": "Inga förfrågningar hittades.",
+        "open": "Öppna förfrågan",
+        "quantity": "Antal: {count}",
+        "hasOwner": "Säljare tilldelad",
+        "noOwner": "Ingen säljare än",
+        "lossReason": "Förlorad: {reason}",
+        "columns": {
+          "created": "Registrerad",
+          "when": "Önskade datum",
+          "quantity": "Antal",
+          "status": "Status"
+        }
+      },
       "occupancy": {
         "singular": "Beläggning",
         "released": "Släppt",
@@ -1392,6 +1463,7 @@
       "bookingStatus": "Bokningsstatusar och övergångar",
       "booking": "Bokningar och deras ansvariga",
       "programItem": "Programpunkter (bokningens körschema)",
+      "inquiry": "Förfrågningar och deras säljare",
       "search": "Sök",
       "conversation": "Konversationer",
       "skill": "Färdigheter",

@@ -6,11 +6,11 @@ import type {
 } from "@okazi/core";
 import { buildFieldsSchema, ProgramItemCreateInputSchema } from "@okazi/core/schemas";
 import type { z } from "zod";
+import { NONE } from "@/components/form/option-select-field";
 import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsPatch, fieldsToInput } from "@/components/typed-fields/raw-fields";
 import { blankToNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
-import { NONE } from "../../booking/ui/option-select-field";
 import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 import type { ProgramItemFormValues } from "./program-item-form-values";
 

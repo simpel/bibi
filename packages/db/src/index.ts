@@ -35,6 +35,8 @@ export {
   type FieldDefinition,
   FieldKind,
   type InboundEmail,
+  type Inquiry,
+  InquiryStatus,
   type Invitation,
   type Item,
   ItemBehaviour,

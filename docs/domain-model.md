@@ -201,7 +201,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 ### Role (`organizationRole`)
 
-*MVP* · A named set of permissions per organization ([ADR 0020](decisions/0020-custom-roles-per-organization.md)). Resources per member role: `venue`, `item`, `customer`, `contact`, `occupancy`, `configuration`, `bookingStatus`, `booking`, `search`, `conversation`, `skill`, `role`, `member`.
+*MVP* · A named set of permissions per organization ([ADR 0020](decisions/0020-custom-roles-per-organization.md)). Resources per member role: `venue`, `item`, `customer`, `contact`, `occupancy`, `configuration`, `bookingStatus`, `booking`, `inquiry`, `search`, `conversation`, `skill`, `role`, `member`.
 
 **Attributes**
 - name
@@ -258,15 +258,16 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 *MVP* · Incoming interest before anything is booked. Fixed state machine, separate commands per transition.
 
 **Attributes**
-- type and custom fields
-- channel (form, email, phone, Venuu)
-- desired dates (several alternatives)
-- approximate headcount
-- budget
-- status: `NEW → QUALIFIED → QUOTED → WON`, or `LOST`
-- loss reason (required for `LOST`)
-- responsible salesperson (`salesOwnerId`, required from `QUALIFIED`)
+- type (base `INQUIRY`) and custom fields
+- customer and contact person (optional; must work at the customer)
+- desired dates (`desiredStartsAt`, `desiredEndsAt`, optional; several alternatives later)
+- quantity (`quantity`, e.g. the number of guests)
+- budget (`budgetMinor`, minor units)
+- status (`inquiryStatus`): `NEW → QUALIFIED → QUOTED → WON`, or `LOST` from any open status; `WON` and `LOST` are final
+- loss reason (`lossReason`, required for `LOST`)
+- responsible salesperson (`salesOwnerId`, a member, required from `QUALIFIED`)
 - statusChangedAt
+- channel (form, email, phone, Venuu) – *later*
 
 **Relations**
 - `N:1` Customer (organization) sends this
@@ -276,7 +277,9 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `1:N` InboundEmail is a reply on this
 - `0..1:N` Communication & log concerns this
 
-> ★ Pipeline with loss reason is missing at Lega. Status changes only through commands (`inquiry.qualify`, `inquiry.markLost`), never through `update`.
+> ★ Pipeline with loss reason is missing at Lega. Status changes only through commands (`inquiry.qualify`, `inquiry.markLost`, later `quote.send` and `quote.accept`), never through `update`. The transition table lives in `features/inquiry/transitions.ts`; a disallowed move is `CONFLICT`.
+
+> Operations (`inquiry:write` to change, `inquiry:read` to read): `inquiry.list|get|create|update`, `inquiry.qualify` (needs a salesperson, given or already set), `inquiry.markLost` (needs a reason) and `inquiry.assign` (removing the salesperson is `CONFLICT` from `QUALIFIED`). Status history comes from `AuditLog`.
 
 ### Option ★
 

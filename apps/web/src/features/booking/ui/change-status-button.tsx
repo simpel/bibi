@@ -3,7 +3,7 @@ import { Button } from "@okazi/ui";
 import { ArrowRightLeftIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { NamedOption } from "./booking-form-data";
+import type { NamedOption } from "@/components/form/named-option";
 import { ChangeStatusDialog } from "./change-status-dialog";
 
 export type ChangeStatusButtonProps = {
