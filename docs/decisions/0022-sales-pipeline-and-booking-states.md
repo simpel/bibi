@@ -29,6 +29,7 @@
   | `COMPLETED` | Allowed only after the booking has ended. The booking can be invoiced. |
   | `CANCELLED` | Requires a reason. Occupancy is released and the cancellation terms apply. |
 
+- `CANCELLED` is terminal. No transition leaves a status in that phase: `bookingStatus.setTransitions` refuses targets for it and `booking.changeStatus` returns `CONFLICT` for a booking in it. Cancellation releases the occupancy, so reopening could never be guaranteed to succeed; to restore a cancelled booking, create a new one.
 - Allowed transitions are defined by the organization (`BookingStatusTransition`, from → to). The phase rules cannot be turned off.
 - A single command changes status: `booking.changeStatus({ bookingId, statusId, reason? })`. Statuses are managed with `bookingStatus.list|create|update|archive|reorder` (`bookingStatus:admin`). A status that is in use can be archived but not deleted.
 - A new organization gets one status per phase so that bookings work immediately. More statuses and transitions can be added or imported as a template. Example, the "Conference estate" template:

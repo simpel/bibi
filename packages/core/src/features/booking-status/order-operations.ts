@@ -62,7 +62,8 @@ export const setBookingStatusTransitions = defineOperation({
   kind: "command",
   description:
     "Replace the statuses a booking may move to from one status (from → to). Pass the full " +
-    "set; an empty list makes the status a dead end. The phase rules (ADR 0022) still apply " +
+    "set; an empty list makes the status a dead end. A CANCELLED-phase status is always a dead " +
+    "end (ADR 0022). The phase rules (ADR 0022) still apply " +
     "to every allowed transition.",
   input: BookingStatusSetTransitionsInputSchema,
   output: BookingStatusSchema,
@@ -71,6 +72,11 @@ export const setBookingStatusTransitions = defineOperation({
     const before = await loadBookingStatus({ context, id });
     if (!before) return notFound({ entity: "Booking status" });
     const targets = [...new Set(toStatusIds)];
+    if (before.phase === "CANCELLED" && targets.length > 0) {
+      return problem({
+        message: "A status in the CANCELLED phase is terminal: no transitions out",
+      });
+    }
     if (targets.includes(id)) return problem({ message: "A status cannot move to itself" });
     const found = await context.db.bookingStatus.count({ where: { id: { in: targets } } });
     if (found !== targets.length) return problem({ message: "Unknown or archived target status" });
