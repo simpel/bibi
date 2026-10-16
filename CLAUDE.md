@@ -38,6 +38,7 @@
 - i18n: next-intl, Swedish and English.
 - Tooling: Biome (lint + format), Vitest (unit/service layer against real Postgres), Playwright (e2e).
 - Email: `@okazi/mail` with a `MailProvider` interface (`send`, `parseInbound`, `fetchInbound`). Adapters: Resend (production, outbound and inbound) and SMTP (Mailpit in dev), selected by `MAIL_PROVIDER` (`smtp` default, `resend` needs `RESEND_API_KEY`; inbound needs `RESEND_WEBHOOK_SECRET` and `MAIL_INBOUND_DOMAIN`). Inbound replies arrive at `POST /api/webhooks/resend` and are stored as `InboundEmail` on the booking whose address (`booking-<id>@<domain>`) they were sent to. See `docs/decisions/0012-email-provider.md`.
+- Stripe webhook: `POST /api/webhooks/stripe`, signed with `STRIPE_WEBHOOK_SECRET`, runs SYSTEM-only `payment.applySignal` and `paymentAccount.applySignal`. See `docs/decisions/0028-payments-with-stripe.md`.
 - Jobs: pg-boss in `apps/worker` (queue and cron in Postgres). Jobs call core operations as SYSTEM. See `docs/decisions/0027-job-scheduler.md`.
 - Logging: pino via `@okazi/logger`, JSON to stdout and the `SystemLog` table, request context with `AsyncLocalStorage`. See `docs/decisions/0014-system-logging.md`.
 - Ops: Docker (compose with Postgres and Mailpit, `--profile app` for web + mcp), GitHub Actions for CI.
