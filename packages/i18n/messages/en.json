@@ -358,6 +358,8 @@
     "empty": "No booking series yet.",
     "emptyDescription": "Create a series for a customer who books the same thing regularly.",
     "occurrence": "{index}/{total}",
+    "marker": "Series {index}/{total}",
+    "markerNoTotal": "Series {index}",
     "clash": "Clash",
     "clashCount": "{count, plural, one {# clash} other {# clashes}}",
     "clashNotice": "{count, plural, one {# occurrence clashes} other {# occurrences clash}} with another booking or a blocked time. It is created without the room; pick another room or time for it.",

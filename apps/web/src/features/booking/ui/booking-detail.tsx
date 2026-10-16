@@ -14,11 +14,22 @@ import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { BookingSeriesMarker } from "../../booking-series/ui/series-marker";
 import { loadBookingData } from "../load-booking-data";
 import { BookingActions } from "./booking-actions";
 import { BookingFacts } from "./booking-facts";
 
 export type BookingDetailProps = { locale: Locale; id: string };
+
+const BackLink = ({ label }: { label: string }) => (
+  <Link
+    href={ROUTES.bookings}
+    className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+  >
+    <ArrowLeftIcon className="size-4" />
+    {label}
+  </Link>
+);
 
 export async function BookingDetail({ locale, id }: BookingDetailProps) {
   const common = await getTranslations("common");
@@ -37,16 +48,14 @@ export async function BookingDetail({ locale, id }: BookingDetailProps) {
   ) : undefined;
   return (
     <div className="grid gap-6">
-      <Link
-        href={ROUTES.bookings}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
-        {common("back")}
-      </Link>
+      <BackLink label={common("back")} />
       <PageHeader
         title={t("reference", { reference: booking.value.reference })}
         actions={actions}
+      />
+      <BookingSeriesMarker
+        seriesId={booking.value.seriesId}
+        index={booking.value.occurrenceIndex}
       />
       <BookingFacts booking={booking.value} data={data.value} />
       {paymentRead ? (

@@ -358,6 +358,8 @@
     "empty": "Inga bokningsserier ännu.",
     "emptyDescription": "Skapa en serie för en kund som bokar samma sak regelbundet.",
     "occurrence": "{index}/{total}",
+    "marker": "Serie {index}/{total}",
+    "markerNoTotal": "Serie {index}",
     "clash": "Krock",
     "clashCount": "{count, plural, one {# krock} other {# krockar}}",
     "clashNotice": "{count, plural, one {# tillfälle krockar} other {# tillfällen krockar}} med en annan bokning eller en spärrad tid. Det skapas utan rummet; välj ett annat rum eller en annan tid för det.",
