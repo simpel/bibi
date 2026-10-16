@@ -1,17 +1,35 @@
-export type ToLocalInputValueInput = { date: Date };
+import { fromZonedParts, toZonedParts } from "@okazi/core/schemas";
+import { DEFAULT_TIME_ZONE } from "@okazi/i18n";
+
+export type ToLocalInputValueInput = { date: Date; timeZone?: string };
 
 const pad = ({ value }: { value: number }) => String(value).padStart(2, "0");
 
-/** A `datetime-local` input value (`YYYY-MM-DDTHH:mm`) in the browser's time zone. */
-export function toLocalInputValue({ date }: ToLocalInputValueInput): string {
-  const day = [date.getFullYear(), date.getMonth() + 1, date.getDate()];
-  const [year, month, dayOfMonth] = day.map((value) => pad({ value }));
-  return `${year}-${month}-${dayOfMonth}T${pad({ value: date.getHours() })}:${pad({ value: date.getMinutes() })}`;
+/** A `datetime-local` input value (`YYYY-MM-DDTHH:mm`) as the wall time in the app's time zone. */
+export function toLocalInputValue({
+  date,
+  timeZone = DEFAULT_TIME_ZONE,
+}: ToLocalInputValueInput): string {
+  const { date: day, time } = toZonedParts({ instant: date, timeZone });
+  const [year, month, dayOfMonth] = [day.year, day.month, day.day].map((value) => pad({ value }));
+  return `${year}-${month}-${dayOfMonth}T${pad({ value: time.hour })}:${pad({ value: time.minute })}`;
 }
 
-export type FromLocalInputValueInput = { value: string };
+export type FromLocalInputValueInput = { value: string; timeZone?: string };
 
-/** A `datetime-local` value as a Date in the browser's time zone; empty → undefined. */
-export function fromLocalInputValue({ value }: FromLocalInputValueInput): Date | undefined {
-  return value.trim() === "" ? undefined : new Date(value);
+const LOCAL_VALUE = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/;
+
+/** A `datetime-local` value read as a wall time in the app's time zone; empty or invalid → undefined. */
+export function fromLocalInputValue({
+  value,
+  timeZone = DEFAULT_TIME_ZONE,
+}: FromLocalInputValueInput): Date | undefined {
+  const match = LOCAL_VALUE.exec(value.trim());
+  if (!match) return undefined;
+  const [year, month, day, hour, minute, second] = match.slice(1).map((part) => Number(part ?? 0));
+  return fromZonedParts({
+    date: { year: year ?? 0, month: month ?? 1, day: day ?? 1 },
+    time: { hour: hour ?? 0, minute: minute ?? 0, second: second ?? 0 },
+    timeZone,
+  });
 }

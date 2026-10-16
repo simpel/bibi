@@ -53,4 +53,5 @@ export * from "./platform/system-log/schema";
 export * from "./recurrence/expand-occurrences-schema";
 export * from "./recurrence/recurrence-rule-schema";
 export * from "./recurrence/rrule-string-schema";
+export * from "./recurrence/zoned-time";
 export * from "./search/search-schema";
