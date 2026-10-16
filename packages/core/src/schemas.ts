@@ -4,6 +4,7 @@
  * without pulling the server into the browser bundle. Add each new feature's `schema.ts` here.
  */
 export * from "./features/audit-log/schema";
+export * from "./features/booking/quick-schema";
 export * from "./features/booking/schema";
 export * from "./features/booking-series/occurrence-schema";
 export * from "./features/booking-series/schema";

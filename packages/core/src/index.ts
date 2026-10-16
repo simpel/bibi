@@ -118,11 +118,7 @@ export {
   type AiFeatureId,
   aiFeature,
 } from "./platform/ai-settings/ai-features";
-export {
-  clearAiModelCache,
-  type ResolveAiModelInput,
-  resolveAiModel,
-} from "./platform/ai-settings/resolve-ai-model";
+export * from "./platform/ai-settings/resolve-ai-model";
 export * from "./platform/ai-settings/schema";
 export { type CreatePlatformContextInput, createPlatformContext } from "./platform/context";
 export { definePlatformOperation } from "./platform/define-platform-operation";

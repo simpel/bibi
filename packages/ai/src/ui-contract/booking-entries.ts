@@ -34,6 +34,7 @@ export const BOOKING_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   booking_list: bookingTable,
   booking_get: bookingCard,
   booking_create: bookingCard,
+  booking_createQuick: bookingCard,
   booking_update: bookingCard,
   booking_assign: bookingCard,
   booking_changeStatus: bookingCard,

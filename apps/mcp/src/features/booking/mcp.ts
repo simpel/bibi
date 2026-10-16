@@ -14,6 +14,15 @@ export const bookingMcpTools = [
       })} to ${text({ value: input.endsAt })}`,
   }),
   mcpTool({
+    operation: "booking.createQuick",
+    summary: ({ input }) =>
+      `Quick-book item ${text({ value: input.itemId })} for customer ${text({
+        value: input.customerId,
+      })} from ${text({ value: input.startsAt })} to ${text({ value: input.endsAt })}, ${text({
+        value: input.paymentMethod,
+      })}`,
+  }),
+  mcpTool({
     operation: "booking.update",
     idempotent: true,
     summary: ({ input }) =>

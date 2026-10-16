@@ -51,6 +51,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "contact.archive", route: "/customers/[id]" },
   { operation: "booking.list", route: "/bookings" },
   { operation: "booking.create", route: "/bookings" },
+  { operation: "booking.createQuick", route: "/bookings" },
   { operation: "booking.get", route: "/bookings/[id]" },
   { operation: "booking.update", route: "/bookings/[id]" },
   { operation: "booking.assign", route: "/bookings/[id]" },

@@ -6,6 +6,7 @@ import { paginate } from "../../shared/paginate";
 import { assignBooking } from "./assign-operation";
 import { changeBookingStatus } from "./change-status-operation";
 import { bookingListWhere } from "./list-where";
+import { createQuickBookingOperation } from "./quick-operation";
 import {
   BookingIdInputSchema,
   BookingListInputSchema,
@@ -55,7 +56,10 @@ export const bookingOperations = [
   listBookings,
   getBooking,
   createBooking,
+  createQuickBookingOperation,
   updateBooking,
   assignBooking,
   changeBookingStatus,
 ];
+
+export { createQuickBookingOperation };

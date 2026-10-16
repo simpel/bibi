@@ -5,6 +5,7 @@ export const OPERATION_NAMES = [
   "booking.assign",
   "booking.changeStatus",
   "booking.create",
+  "booking.createQuick",
   "booking.get",
   "booking.list",
   "booking.update",

@@ -1,12 +1,11 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { checkMembers } from "../../shared/check-members";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
-import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { mergeFields, validateFields } from "../field-definition/field-values";
 import { checkPeriod } from "../occupancy/occupancy-rules";
-import { checkBooking, checkPlace, placeChanged } from "./program-item-rules";
+import { insertProgramItem } from "./insert-program-item";
+import { checkPlace, placeChanged } from "./program-item-rules";
 import { releaseProgramItem, reserveProgramItem } from "./reserve";
 import {
   ProgramItemCreateInputSchema,
@@ -29,33 +28,7 @@ export const createProgramItem = defineOperation({
   input: ProgramItemCreateInputSchema,
   output: ProgramItemSchema,
   permission: "programItem:write",
-  handler: async ({ input: { entityTypeId, fields, ...data }, context }) => {
-    const itemId = data.itemId ?? null;
-    const setupId = data.setupId ?? null;
-    for (const check of [
-      await loadTypeOfBase({ context, entityTypeId, base: "PROGRAM_ITEM" }),
-      await checkBooking({ context, bookingId: data.bookingId }),
-      checkPeriod(data),
-      await checkPlace({ context, itemId, setupId }),
-      await checkMembers({ context, userIds: { responsibleId: data.responsibleId } }),
-    ]) {
-      if (!check.ok) return check;
-    }
-    const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
-    if (!checked.ok) return checked;
-    const row = await context.db.programItem.create({
-      data: {
-        ...data,
-        entityTypeId,
-        fields: toJson({ value: checked.value }) ?? {},
-        organizationId: context.organizationId,
-      },
-    });
-    const programItem = toProgramItemDto({ row });
-    context.recordChange({ entityId: row.id, after: programItem });
-    const reserved = await reserveProgramItem({ context, programItem });
-    return reserved.ok ? ok({ value: programItem }) : reserved;
-  },
+  handler: async ({ input, context }) => insertProgramItem({ context, input }),
 });
 
 export const updateProgramItem = defineOperation({

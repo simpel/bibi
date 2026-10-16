@@ -4,6 +4,7 @@ import {
   BookingSchema,
   changeBookingStatus,
   createBooking,
+  createQuickBookingOperation,
   getBooking,
   listBookings,
   updateBooking,
@@ -31,6 +32,7 @@ const BookingPageRef = pageType({ name: "BookingPage", item: BookingRef });
 fieldFromOperation({ operation: listBookings, type: BookingPageRef, name: "bookings" });
 fieldFromOperation({ operation: getBooking, type: BookingRef, name: "booking" });
 mutationFromOperation({ operation: createBooking, type: BookingRef });
+mutationFromOperation({ operation: createQuickBookingOperation, type: BookingRef });
 mutationFromOperation({ operation: updateBooking, type: BookingRef });
 mutationFromOperation({ operation: assignBooking, type: BookingRef });
 mutationFromOperation({ operation: changeBookingStatus, type: BookingRef });

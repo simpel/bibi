@@ -12,8 +12,11 @@ import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadBookingData } from "../load-booking-data";
+import { loadQuickBookingData } from "../load-quick-booking-data";
+import type { BookingFormData } from "./booking-form-data";
 import { BookingTable } from "./booking-table";
 import { CreateBookingButton } from "./create-booking-button";
+import { QuickBookingButton } from "./quick-booking-button";
 
 export type BookingListProps = { locale: Locale; cursor?: string | undefined };
 
@@ -24,6 +27,17 @@ const GoToTypes = ({ label }: { label: string }) => (
     <Link href={ROUTES.settingsTypes}>{label}</Link>
   </Button>
 );
+
+/** Quick booking and create buttons; the quick form's data is read only for staff who book. */
+async function BookingActions({ data }: { data: BookingFormData }) {
+  const quick = await loadQuickBookingData();
+  return (
+    <div className="flex gap-2">
+      {quick.ok ? <QuickBookingButton data={quick.value} /> : null}
+      <CreateBookingButton data={data} />
+    </div>
+  );
+}
 
 /** Bookings page body: header with create, the table (or an empty state) and pagination. */
 export async function BookingList({ locale, cursor }: BookingListProps) {
@@ -39,7 +53,7 @@ export async function BookingList({ locale, cursor }: BookingListProps) {
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const noTypes = data.value.types.length === 0;
-  const create = bookingWrite && !noTypes ? <CreateBookingButton data={data.value} /> : undefined;
+  const create = bookingWrite && !noTypes ? <BookingActions data={data.value} /> : undefined;
   const page: { items: BookingDto[]; nextCursor: string | null } = result.value;
   return (
     <div className="grid gap-6">

@@ -3,9 +3,8 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
-import { defaultTentativeStatusId, nextReference } from "./booking-defaults";
 import { checkCustomer, checkPeriod } from "./booking-rules";
-import { checkNewBooking } from "./check-new-booking";
+import { insertBooking } from "./insert-booking";
 import { BookingCreateInputSchema, BookingSchema, BookingUpdateInputSchema } from "./schema";
 import { loadBooking, toBookingDto } from "./to-booking-dto";
 
@@ -19,27 +18,7 @@ export const createBooking = defineOperation({
   input: BookingCreateInputSchema,
   output: BookingSchema,
   permission: "booking:write",
-  handler: async ({ input: { entityTypeId, fields, ...data }, context }) => {
-    const period = checkPeriod(data);
-    if (!period.ok) return period;
-    const checked = await checkNewBooking({ context, entityTypeId, fields, ...data });
-    if (!checked.ok) return checked;
-    const bookingStatusId = await defaultTentativeStatusId({ context });
-    if (!bookingStatusId.ok) return bookingStatusId;
-    const row = await context.db.booking.create({
-      data: {
-        ...data,
-        entityTypeId,
-        bookingStatusId: bookingStatusId.value,
-        reference: await nextReference({ context }),
-        fields: toJson({ value: checked.value }) ?? {},
-        organizationId: context.organizationId,
-      },
-    });
-    const booking = toBookingDto({ row });
-    context.recordChange({ entityId: row.id, after: booking });
-    return ok({ value: booking });
-  },
+  handler: async ({ input, context }) => insertBooking({ context, input }),
 });
 
 export const updateBooking = defineOperation({
