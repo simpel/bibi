@@ -25,7 +25,12 @@ export const createBookingSeries = defineOperation({
     const checked = await checkNewBooking({ context, ...input });
     if (!checked.ok) return checked;
     const setupId = input.setupId ?? null;
-    const changeover = await checkSeriesItems({ context, itemIds: input.itemIds, setupId });
+    const changeover = await checkSeriesItems({
+      context,
+      itemIds: input.itemIds,
+      setupId,
+      customerId,
+    });
     if (!changeover.ok) return changeover;
     const rule = parseRecurrenceRule({ rrule });
     if (!rule.ok) return rule;
