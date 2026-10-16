@@ -1,5 +1,5 @@
 import type { Sheet } from "@okazi/db";
-import type { SheetChange, SheetContent, SheetDto } from "./schema";
+import type { SheetChange, SheetContent, SheetDto, SheetMatch } from "./schema";
 
 export type ToSheetDtoInput = { row: Sheet };
 
@@ -8,4 +8,5 @@ export const toSheetDto = ({ row }: ToSheetDtoInput): SheetDto => ({
   ...row,
   content: row.content as SheetContent,
   changes: row.changes as SheetChange[],
+  matches: row.matches as SheetMatch[],
 });

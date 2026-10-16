@@ -574,13 +574,14 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - changes (★): the rows added, changed or removed since the last sent version (`baseVersion`)
 - receiving role (a copy of the definition's role at generation)
 - sent (`sentAt`, `sentBy`)
-- *Later (ADR 0021, matching):* blocked (yes/no) and hits
+- matches: the counts that hit the booking's items (program items whose item is of an included type): the count, the list value, the program item, the carrying items and `CONTAINS` (carried by the item or a mandatory part) or `MAY_CONTAIN` (only optional parts or choice options)
+- blocked (yes/no): true when a match is `CONTAINS`
 
 **Relations**
 - `N:1` Booking produces this
 - `N:1` SheetDefinition produces this version
 
-> Operations (resource `sheet`): `sheet.list|get|generate|send`. `sheet.generate` snapshots the booking for a definition; a changed booking gives the next version with the changed rows marked ★ against the last *sent* version, an unchanged booking returns the latest version. `sheet.send` marks a version as sent: only from the `CONFIRMED` phase (`CONFLICT` otherwise), only the latest version, and a version once. A version is never edited or removed. The core function `diffContent` is the only place the markers are computed.
+> Operations (resource `sheet`): `sheet.list|get|generate|send`. `sheet.generate` snapshots the booking for a definition; a changed booking gives the next version with the changed rows marked ★ against the last *sent* version, an unchanged booking returns the latest version. `sheet.send` marks a version as sent: only from the `CONFIRMED` phase (`CONFLICT` otherwise), only the latest version, and a version once. A `blocked` sheet is refused with `CONFLICT`. A version is never edited or removed. The core function `diffContent` is the only place the markers are computed; `matchRequirements` (over `item.resolve`) is the only place matches are computed. A change in matches gives a new version.
 
 > ★ Versioned, with changes marked since the last dispatch. Cannot be sent in the `TENTATIVE` phase. `sheet.export` gives a single sheet as json, pdf or csv, always with the latest version and the version number. This is how a sheet is handed to someone outside the system.
 

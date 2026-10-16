@@ -2,6 +2,7 @@ import type { SheetDto } from "@okazi/core";
 import { getTranslations } from "next-intl/server";
 import { GenerateSheetButton } from "./generate-sheet-button";
 import { SendSheetButton } from "./send-sheet-button";
+import { SheetMatches } from "./sheet-matches";
 import { SheetRowsView } from "./sheet-rows-view";
 import { SheetStatus } from "./sheet-status";
 
@@ -23,13 +24,14 @@ export async function SheetPanel({ bookingId, definition, sheet, canWrite }: She
         {canWrite ? (
           <div className="flex gap-2">
             <GenerateSheetButton bookingId={bookingId} sheetDefinitionId={definition.id} />
-            {sheet && !sheet.sentAt ? <SendSheetButton id={sheet.id} /> : null}
+            {sheet && !sheet.sentAt && !sheet.blocked ? <SendSheetButton id={sheet.id} /> : null}
           </div>
         ) : null}
       </div>
       {sheet ? (
         <>
           <SheetStatus sheet={sheet} />
+          <SheetMatches matches={sheet.matches} />
           <SheetRowsView content={sheet.content} changes={sheet.changes} />
         </>
       ) : (

@@ -4,7 +4,9 @@ import { conflict, notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { buildSheetContent } from "./build-content";
+import { checkNotBlocked } from "./check-blocked";
 import { checkPhase } from "./check-phase";
+import { loadMatches } from "./load-matches";
 import { loadSources } from "./load-sources";
 import {
   SheetGenerateInputSchema,
@@ -72,10 +74,19 @@ export const generateSheet = defineOperation({
     const { booking, definition } = sources.value;
     const { latest, sent } = await findVersions({ context, bookingId, sheetDefinitionId });
     const content = await buildSheetContent({ context, booking, definition });
-    if (latest && sameAsLatest({ latest, content, definition })) {
+    const matches = await loadMatches({ context, bookingId, definition });
+    if (latest && sameAsLatest({ latest, content, matches, definition })) {
       return ok({ value: toSheetDto({ row: latest }) });
     }
-    const row = await createVersion({ context, booking, definition, content, latest, sent });
+    const row = await createVersion({
+      context,
+      booking,
+      definition,
+      content,
+      matches,
+      latest,
+      sent,
+    });
     const sheet = toSheetDto({ row });
     context.recordChange({ entityId: row.id, after: sheet });
     return ok({ value: sheet });
@@ -88,7 +99,8 @@ export const sendSheet = defineOperation({
   description:
     "Send a sheet version to its receiving role: marks the version as sent, which is the " +
     "baseline the next version's ★ changes are measured against. Only from the CONFIRMED " +
-    "phase (TENTATIVE gives CONFLICT), only the latest version, and a version once.",
+    "phase (TENTATIVE gives CONFLICT), only the latest version, and a version once. A blocked " +
+    "sheet (`blocked`: a count matches an item that contains it, see `matches`) gives CONFLICT.",
   input: SheetIdInputSchema,
   output: SheetSchema,
   permission: "sheet:write",
@@ -101,6 +113,8 @@ export const sendSheet = defineOperation({
       where: { bookingId, sheetDefinitionId, version: { gt: version } },
     });
     if (newer > 0) return conflict({ message: "A newer version exists; send that one instead" });
+    const unblocked = checkNotBlocked({ sheet: toSheetDto({ row: before }) });
+    if (!unblocked.ok) return unblocked;
     const phase = await checkPhase({ context, bookingId });
     if (!phase.ok) return phase;
     const row = await context.db.sheet.update({

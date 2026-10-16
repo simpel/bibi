@@ -4,7 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { toJson } from "../../shared/to-json";
 import type { SheetDefinitionDto } from "../sheet-definition/schema";
 import { diffContent } from "./diff-content";
-import type { SheetContent } from "./schema";
+import type { SheetContent, SheetMatch } from "./schema";
 import { toSheetDto } from "./to-sheet-dto";
 
 type Db = { context: Pick<OperationContext, "db" | "organizationId"> };
@@ -26,18 +26,21 @@ export async function findVersions({ context, bookingId, sheetDefinitionId }: Db
 export type SameAsLatestInput = {
   latest: Sheet;
   content: SheetContent;
+  matches: SheetMatch[];
   definition: SheetDefinitionDto;
 };
 
-/** An unchanged booking and role gives no new version. */
-export const sameAsLatest = ({ latest, content, definition }: SameAsLatestInput) =>
+/** An unchanged booking, matches and role gives no new version. */
+export const sameAsLatest = ({ latest, content, matches, definition }: SameAsLatestInput) =>
   latest.roleId === definition.roleId &&
-  isDeepStrictEqual(latest.content, toJson({ value: content }));
+  isDeepStrictEqual(latest.content, toJson({ value: content })) &&
+  isDeepStrictEqual(latest.matches, toJson({ value: matches }));
 
 export type CreateVersionInput = Db & {
   booking: Booking;
   definition: SheetDefinitionDto;
   content: SheetContent;
+  matches: SheetMatch[];
   latest: Sheet | null;
   sent: Sheet | null;
 };
@@ -48,6 +51,7 @@ export function createVersion({
   booking,
   definition,
   content,
+  matches,
   latest,
   sent,
 }: CreateVersionInput) {
@@ -61,6 +65,8 @@ export function createVersion({
       roleId: definition.roleId,
       content: toJson({ value: content }) ?? {},
       changes: toJson({ value: diffContent({ before, after: content }) }) ?? [],
+      matches: toJson({ value: matches }) ?? [],
+      blocked: matches.some((match) => match.blocking),
       baseVersion: sent?.version ?? null,
     },
   });

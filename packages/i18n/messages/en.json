@@ -648,6 +648,12 @@
       "ADDED": "Added since the last sent version",
       "CHANGED": "Changed since the last sent version",
       "REMOVED": "Removed since the last sent version"
+    },
+    "blocked": "Blocked: cannot be sent",
+    "matches": {
+      "CONTAINS": "Contains",
+      "MAY_CONTAIN": "May contain",
+      "line": "{count, plural, one {# guest} other {# guests}}: {name} in {item} ({carriers})"
     }
   },
   "entityType": {

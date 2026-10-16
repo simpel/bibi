@@ -648,6 +648,12 @@
       "ADDED": "Tillagd sedan senast skickade version",
       "CHANGED": "Ändrad sedan senast skickade version",
       "REMOVED": "Borttagen sedan senast skickade version"
+    },
+    "blocked": "Blockerad: kan inte skickas",
+    "matches": {
+      "CONTAINS": "Innehåller",
+      "MAY_CONTAIN": "Kan innehålla",
+      "line": "{count, plural, one {# gäst} other {# gäster}}: {name} i {item} ({carriers})"
     }
   },
   "entityType": {

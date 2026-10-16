@@ -1,11 +1,8 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
-import { inheritTags } from "./inherit-tags";
-import { loadTagCatalog, ownTags } from "./item-tags";
-import { loadItemGraph } from "./resolve-graph";
+import { resolveItemTags } from "./resolve-item";
 import { ItemResolutionSchema, ItemResolveInputSchema } from "./resolve-schema";
-import { buildTree } from "./resolve-tree";
 
 export const resolveItem = defineOperation({
   name: "item.resolve",
@@ -19,17 +16,7 @@ export const resolveItem = defineOperation({
   output: ItemResolutionSchema,
   permission: "item:read",
   handler: async ({ input, context }) => {
-    const graph = await loadItemGraph({ context, rootId: input.id });
-    const root = graph.items.get(input.id);
-    if (!root) return notFound({ entity: "Item" });
-    const entityTypeIds = [...new Set([...graph.items.values()].map((item) => item.entityTypeId))];
-    const catalog = await loadTagCatalog({ context, entityTypeIds });
-    const nodes = buildTree({
-      graph,
-      rootId: root.id,
-      tagsOf: ({ item }) => ownTags({ catalog, item }),
-    });
-    const tags = inheritTags({ nodes, values: catalog.values });
-    return ok({ value: { itemId: root.id, name: root.name, nodes, ...tags } });
+    const resolution = await resolveItemTags({ context, id: input.id });
+    return resolution ? ok({ value: resolution }) : notFound({ entity: "Item" });
   },
 });

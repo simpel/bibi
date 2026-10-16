@@ -40,6 +40,26 @@ export const SheetChangeSchema = z.object({
   changed: z.array(z.string()).describe("CHANGED: which attributes or field keys differ"),
 });
 
+export const SHEET_MATCH_KINDS = ["CONTAINS", "MAY_CONTAIN"] as const;
+
+/**
+ * A count compared with an item on the booking that carries the same list value (ADR 0021).
+ * `CONTAINS` (carried by the item or a mandatory part, no alternative) blocks the sheet;
+ * `MAY_CONTAIN` (only optional parts or choice options) is flagged but does not block.
+ */
+export const SheetMatchSchema = z.object({
+  programItemKey: z.string().describe("The program item's row key in `content`"),
+  programItemName: z.string(),
+  itemId: z.string().describe("The item the program item uses"),
+  itemName: z.string(),
+  vocabularyValueId: z.string().describe("The counted list value"),
+  name: z.string().describe("Name of the list value"),
+  quantity: z.number().int().describe("The effective count for the program item"),
+  kind: z.enum(SHEET_MATCH_KINDS),
+  blocking: z.boolean().describe("true for CONTAINS: the sheet cannot be sent"),
+  carriers: z.array(z.string()).describe("Names of the items or parts that carry the value"),
+});
+
 export const SheetSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
@@ -49,6 +69,10 @@ export const SheetSchema = z.object({
   roleId: z.string().describe("The receiving role at generation (role id, or owner)"),
   content: SheetContentSchema,
   changes: z.array(SheetChangeSchema).describe("Rows marked ★ since `baseVersion`"),
+  blocked: z.boolean().describe("A count matches an item that contains it: sheet.send is refused"),
+  matches: z
+    .array(SheetMatchSchema)
+    .describe("Counts that hit the booking's items, blocking first"),
   baseVersion: z
     .number()
     .int()
@@ -85,5 +109,6 @@ export const SheetListOutputSchema = z.object({
 export type SheetRow = z.infer<typeof SheetRowSchema>;
 export type SheetContent = z.infer<typeof SheetContentSchema>;
 export type SheetChange = z.infer<typeof SheetChangeSchema>;
+export type SheetMatch = z.infer<typeof SheetMatchSchema>;
 export type SheetDto = z.infer<typeof SheetSchema>;
 export type SheetGenerateInput = z.infer<typeof SheetGenerateInputSchema>;

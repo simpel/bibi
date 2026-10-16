@@ -3,7 +3,7 @@ import { Badge } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 
 /** A sheet as the server (Date) or a tool result (ISO string) carries it. */
-export type SheetStatusValue = Pick<SheetDto, "version" | "baseVersion" | "changes"> & {
+export type SheetStatusValue = Pick<SheetDto, "version" | "baseVersion" | "changes" | "blocked"> & {
   sentAt: Date | string | null;
 };
 
@@ -24,6 +24,7 @@ export function SheetStatus({ sheet }: SheetStatusProps) {
             })
           : t("notSent")}
       </Badge>
+      {sheet.blocked ? <Badge variant="destructive">{t("blocked")}</Badge> : null}
       {sheet.baseVersion !== null ? (
         <span className="text-muted-foreground">
           {t("changes", { count: sheet.changes.length, version: sheet.baseVersion })}

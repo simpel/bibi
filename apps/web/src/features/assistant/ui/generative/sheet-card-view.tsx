@@ -3,6 +3,7 @@
 import { Link } from "@okazi/i18n/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
 import { useTranslations } from "next-intl";
+import { SheetMatches } from "@/features/sheet/ui/sheet-matches";
 import { SheetRowsView } from "@/features/sheet/ui/sheet-rows-view";
 import { SheetStatus } from "@/features/sheet/ui/sheet-status";
 import { bookingRoute } from "@/lib/routes";
@@ -20,6 +21,7 @@ export function SheetCardView({ sheet }: SheetCardViewProps) {
         <SheetStatus sheet={sheet} />
       </CardHeader>
       <CardContent className="grid gap-2 p-4 pt-0">
+        <SheetMatches matches={sheet.matches} />
         <SheetRowsView content={sheet.content} changes={sheet.changes} />
         <Link
           href={bookingRoute({ id: sheet.bookingId })}

@@ -16,6 +16,10 @@ model Sheet {
   content           Json
   /// Rows added, changed or removed since `baseVersion` (see core `SheetChange`).
   changes           Json            @default("[]")
+  /// Counts that hit the booking's items at generation (core `SheetMatch`), blocking ones first.
+  matches           Json            @default("[]")
+  /// True when a match is blocking (an item contains a counted value): `sheet.send` is refused.
+  blocked           Boolean         @default(false)
   /// The last sent version the changes are measured against; null when none was sent before.
   baseVersion       Int?
   sentAt            DateTime?
