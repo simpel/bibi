@@ -40,18 +40,19 @@ const bookingsWrite: PermissionSet = {
 const paymentsWrite: PermissionSet = { payment: ["write"] };
 
 /** Inquiries in the sales pipeline (ADR 0022); the salesperson is a member. */
-const inquiriesRead: PermissionSet = { inquiry: ["read"], member: ["read"] };
 const inquiriesWrite: PermissionSet = { inquiry: ["write"], member: ["read"] };
 
 /** Blocking bookable items for maintenance or internal use (ADR 0022). */
 const occupancyWrite: PermissionSet = { occupancy: ["write"] };
 
+/** Reads every resource the template knows (Finance and Reader, ADR 0020). */
 const readAll: PermissionSet = {
   ...everyone,
   ...catalog,
   ...customersRead,
+  ...priceListsRead,
   ...bookingsRead,
-  ...inquiriesRead,
+  inquiry: ["read"],
   role: ["read"],
   member: ["read"],
   audit: ["read"],
@@ -60,8 +61,9 @@ const readAll: PermissionSet = {
 
 /**
  * "Conference venue" (ADR 0020). Optional data an organization imports and then edits freely.
- * Grows with each slice of ADR 0025: quotes, bookings, sheets, invoices etc. are
- * added to the roles below when those resources exist.
+ * Follows the ADR's role table for the resources that exist; options, quotes, requirements and
+ * invoices are added to the roles below when those resources exist. Sheets are read through
+ * `configuration:read`, which every role has.
  */
 export const conferenceVenueTemplate: RoleTemplate = {
   key: "conference-venue",
@@ -91,13 +93,14 @@ export const conferenceVenueTemplate: RoleTemplate = {
       },
     },
     {
+      // The ADR's "booking" covers what a quick booking creates in one step (ADR 0022, 0028):
+      // its program item and the payment link the customer pays through.
       name: "Sales",
       permissions: {
         ...everyone,
         ...catalog,
         ...customersWrite,
         ...priceListsRead,
-        ...occupancyWrite,
         ...bookingsWrite,
         ...paymentsWrite,
         ...inquiriesWrite,
@@ -108,15 +111,13 @@ export const conferenceVenueTemplate: RoleTemplate = {
       permissions: {
         ...everyone,
         ...catalog,
-        ...customersWrite,
+        ...customersRead,
         ...occupancyWrite,
         ...bookingsWrite,
-        ...paymentsWrite,
-        ...inquiriesRead,
       },
     },
     { name: "Kitchen", permissions: { ...everyone, ...catalog, ...bookingsRead } },
-    { name: "Finance", permissions: { ...readAll, ...priceListsAdmin } },
+    { name: "Finance", permissions: { ...readAll, ...priceListsAdmin, ...paymentsWrite } },
     { name: "Reader", permissions: readAll },
   ],
 };
