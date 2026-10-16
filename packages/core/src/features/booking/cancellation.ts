@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { toOccupancyDto } from "../occupancy/to-occupancy-dto";
+import { releaseProgramItemsOfBooking } from "../program-item/release-for-booking";
 import type { BookingDto } from "./schema";
 
 /** `Occupancy.sourceType` of the rows a booking holds; `sourceId` is the booking id. */
@@ -56,6 +57,8 @@ export async function applyCancellation({
 }: CancellationInput): Promise<Result<true>> {
   const released = await releaseBookingOccupancy({ context, bookingId: booking.id });
   if (!released.ok) return released;
+  const program = await releaseProgramItemsOfBooking({ context, bookingId: booking.id });
+  if (!program.ok) return program;
   for (const hook of CANCELLATION_HOOKS) {
     const result = await hook({ context, booking, reason });
     if (!result.ok) return result;
