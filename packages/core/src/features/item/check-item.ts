@@ -10,7 +10,7 @@ import { checkSetups } from "./item-setups";
 import type { ItemUpdateInput } from "./schema";
 
 export type CheckItemInput = {
-  context: Pick<OperationContext, "db">;
+  context: Pick<OperationContext, "db" | "permissions">;
   type: EntityType;
   /** The item being updated; undefined on create. */
   itemId?: string | undefined;

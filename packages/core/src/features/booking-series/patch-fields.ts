@@ -5,7 +5,7 @@ import { mergeFields, validateFields } from "../field-definition/field-values";
 type FieldValues = Record<string, unknown>;
 
 export type PatchFieldsInput = {
-  context: Pick<OperationContext, "db">;
+  context: Pick<OperationContext, "db" | "permissions">;
   entityTypeId: string;
   before: FieldValues;
   patch: FieldValues | undefined;
