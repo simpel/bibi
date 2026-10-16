@@ -26,7 +26,7 @@ The checks that run today:
   - Vingaleden has no vocabulary "Allergens" (the first half of point 2).
   - Lindholmen's imported vocabulary "Allergens" has 14 values.
   - The number of item parts (`ItemComponent`) per organization matches the data files.
-- **Part 3 (catalog), started:** Vingaleden's skippers and the Lighthouse tour to Vinga, a tour whose mandatory parts are RIB Snabben and skipper Jonna Sand (1.5 h each). Parts refer to items seeded earlier by name. The rest of the catalog follows when choice groups exist.
+- **Part 3 (catalog):** the whole catalog of both organizations is seeded via `item.create` as SYSTEM, parts after the items they contain, and Nordkust management team via `item.saveAsPackage` right after its customer. The checks compare with the data files per organization: the number of items (Lindholmen 61, Vingaleden 9), customer-specific packages (Lindholmen 1), item parts (`ItemComponent`, choice options included) and choice groups (`ItemChoiceGroup`). The test also verifies that the Three-course dinner has the groups Starter, Main course and Dessert over 8 parts, and that Nordkust management team belongs to Nordkust Logistik. Every choice group in the tables is "choose 1" (`minPick` = `maxPick` = 1).
 - **Part 4 (customers), started:** the number of customers and contact persons per organization matches the data files, and Nordkust Logistik has its price list with a general discount of 15 %. The sales pipeline follows when those operations exist.
 - **Part 5 (bookings), started:** the number of bookings per organization matches the data files, each with its customer, type, time, headcount, own fields and owners (salesperson and coordinator by name). Every booking has the default `TENTATIVE` status until `booking.changeStatus` exists; the statuses in the tables, program items and requirements follow.
 - **All parts:** point 7.
@@ -36,7 +36,7 @@ The checks that run today:
 - The organization, the users and the memberships are Better Auth tables. They are written directly (`seed/demo/users.ts`), the same way sign-up and `addMember` do. Everything else goes through `execute` as `SYSTEM`. The owner gets `owner` directly, the others get their role via `member.assignRole`. Right after, `provisionOrganization` gives each organization its defaults (one booking status per phase, ADR 0022) as SYSTEM, the same way Better Auth's `afterCreateOrganization` hook does for a real sign-up.
 - The users' email is `firstname.lastname@<slug>.okazi.test`, e.g. `anna.berg@lindholmen-demo.okazi.test`. Sign in with a magic link or a one-time code; the email ends up in Mailpit.
 - Every role reads venues, items (`item`) and the configuration (`configuration`). Sales (template) and Vingaleden's Booking write customers and contact persons (`customer`, `contact`) and bookings (`booking`); Coordinator (template) reads customers and writes bookings, program items and occupancy; the other template roles and Vingaleden's Skipper read bookings. Everyone with bookings also reads members (`member`), because owners are shown and picked by name. Sheets follow in part 6. Admin has `admin` on all of them.
-- Part 2 seeds the configuration and the bookable spaces: Lindholmen's 10 conference rooms and Vingaleden's 3 boats, each in the organization's venue. The rest of the catalog (dishes, drinks, meals, guides, tours, equipment, packages, skippers, trips and add-ons) comes in part 3; Vingaleden's skippers and the Lighthouse tour are seeded already. The requirement types under "Other types" come in part 5, because they point to vocabularies via `requirement.*`.
+- Part 2 seeds the configuration and the bookable spaces: Lindholmen's 10 conference rooms and Vingaleden's 3 boats, each in the organization's venue. Part 3 seeds the rest of the catalog (dishes, drinks, meals, guides, tours, equipment, packages, skippers, trips and add-ons) in the same venue. A part has no setup of its own, so "Knippla in the Cabaret setup" and "The View, Banquet" are seeded as the room only; the setup is chosen on the booking. Tour group sizes ("max 25 people") are not seeded, since Tour has no `SETUPS`. The requirement types under "Other types" come in part 5, because they point to vocabularies via `requirement.*`.
 
 ---
 
@@ -63,7 +63,7 @@ Imported from the "Conference venue" template (ADR 0020), plus a custom role Car
 ### Vocabularies
 | Vocabulary | Values |
 |---|---|
-| Allergens | Imported template "EU 14 allergens": Gluten, Crustaceans, Eggs, Fish, Peanuts, Soy, Milk, Nuts, Celery, Mustard, Sesame, Sulphur dioxide/sulphites, Lupin, Molluscs |
+| Allergens | Imported template "EU 14 allergens": Gluten, Crustaceans, Eggs, Fish, Peanuts, Soy, Milk, Tree nuts, Celery, Mustard, Sesame, Sulphur dioxide/sulphites, Lupin, Molluscs |
 | Diet | Vegetarian, Vegan, Halal, Pork-free |
 | Severity | Intolerance, Allergy, Anaphylaxis |
 | Accessibility | Wheelchair, Hearing loop, Guide dog |
@@ -132,11 +132,11 @@ Price per hour excl. VAT. Capacity per setup.
 | Dish | Allergens | Diet |
 |---|---|---|
 | Sourdough bread with butter | Gluten, Milk | Vegetarian |
-| Yoghurt with granola | Milk, Gluten, Nuts | Vegetarian |
+| Yoghurt with granola | Milk, Gluten, Tree nuts | Vegetarian |
 | Scrambled eggs | Eggs, Milk | Vegetarian |
 | Fresh fruit | – | Vegan |
 | Cinnamon bun | Gluten, Milk, Eggs | Vegetarian |
-| Carrot cake | Gluten, Eggs, Milk, Nuts | Vegetarian |
+| Carrot cake | Gluten, Eggs, Milk, Tree nuts | Vegetarian |
 | Oat ball | Gluten | Vegan |
 | Oven-baked cod loin, browned butter | Fish, Milk | Pork-free |
 | Veal roast with red wine sauce | Milk, Celery, Sulphur dioxide/sulphites | Pork-free |
@@ -144,17 +144,17 @@ Price per hour excl. VAT. Capacity per setup.
 | Lentil stew with coconut rice | Celery | Vegan |
 | Green salad and bread | Gluten | Vegan |
 | Skagen shrimp salad on rye bread | Crustaceans, Eggs, Gluten, Mustard | – |
-| Beetroot carpaccio with chèvre | Milk, Nuts | Vegetarian |
+| Beetroot carpaccio with chèvre | Milk, Tree nuts | Vegetarian |
 | Venison fillet, celeriac purée | Milk, Celery, Sulphur dioxide/sulphites | Pork-free |
 | Pan-fried pike-perch, mussel sauce | Fish, Molluscs, Milk, Sulphur dioxide/sulphites | Pork-free |
 | Celeriac steak, mustard vinaigrette | Celery, Mustard | Vegan |
-| Chocolate fondant with hazelnut | Nuts, Eggs, Milk, Gluten | Vegetarian |
+| Chocolate fondant with hazelnut | Tree nuts, Eggs, Milk, Gluten | Vegetarian |
 | Cloudberry parfait | Eggs, Milk | Vegetarian |
 | Lemon sorbet | – | Vegan |
 | Toast Skagen | Crustaceans, Gluten, Eggs | – |
 | Charcuterie and cheese | Milk, Mustard, Sulphur dioxide/sulphites | – |
 | Hummus with vegetable sticks | Sesame | Vegan |
-| Spiced nuts | Nuts, Peanuts | Vegan |
+| Spiced nuts | Tree nuts, Peanuts | Vegan |
 
 ### Drinks (6)
 | Drink | Price | Allergens | Alcohol |
@@ -229,7 +229,7 @@ Salesperson (S) and coordinator (C) are given by first name.
 |---|---|---|---|---|---|---|---|
 | L1 | Hisingen Energi · Conference | D−21 | 40 | Full-day conference in Hönö (U-shape) | Completed | Erik / Johan | history |
 | L2 | Kvarnby Design · Event | D−10 | 80 | Evening event | Completed | Sara / Maria | history |
-| L3 | Västra Sjukvårdsregionen · Conference | D+3 | 60 | Day + evening in Hönö (Theatre) + Projector. In the evening the Reception buffet is replaced by the Three-course dinner. | Final count locked | Erik / Johan | **Requirements:** Gluten × 4 (Allergy), Nuts × 1 (Anaphylaxis), Vegetarian × 8, Wheelchair × 1. The nuts give "may contain" without blocking. See note below. |
+| L3 | Västra Sjukvårdsregionen · Conference | D+3 | 60 | Day + evening in Hönö (Theatre) + Projector. In the evening the Reception buffet is replaced by the Three-course dinner. | Final count locked | Erik / Johan | **Requirements:** Gluten × 4 (Allergy), Tree nuts × 1 (Anaphylaxis), Vegetarian × 8, Wheelchair × 1. The nuts give "may contain" without blocking. See note below. |
 | L4 | Göta Advokatbyrå · Conference | D+5 | 12 | Half-day conference, Styrsö (Boardroom) | Confirmed | Sara / Maria | simple booking |
 | L5 | Älvstrand Tech · Event | D+14 | 120 | Vinga (Reception) + Reception buffet + Wine package | Awaiting deposit | Erik / Maria | **Blocked kitchen order:** Crustaceans × 2 (Anaphylaxis) against Toast Skagen, which is mandatory |
 | L6 | Hisingen Energi · Conference | D+30 | 25 | Full-day conference | Cancelled, reason "Budget" | Erik / – | cancellation |
@@ -318,8 +318,8 @@ Customers: Hisingen Energi AB (Company, the same name as at Lindholmen but a com
 
 ## Structure in the code
 
-- `packages/core/src/seed/demo/data/` has one folder per organization (`lindholmen/`, `vingaleden/`). The files are pure data, split so that no file goes over 150 lines, e.g. `lindholmen.ts` (roles and users), `config.ts`, `types.ts` and `rooms.ts`. Later parts add `dishes.ts`, `meals.ts`, `packages.ts`, `customers.ts`, `pipeline.ts` and `bookings.ts`.
-- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-items.ts`, `seed-customers.ts` and `seed-bookings.ts`. Items with `parts` come after the items they contain; contact persons are created right after their customer.
+- `packages/core/src/seed/demo/data/` has one folder per organization (`lindholmen/`, `vingaleden/`). The files are pure data, split so that no file goes over 150 lines, e.g. `lindholmen.ts` (roles and users), `config.ts`, `types.ts`, `rooms.ts`, `dishes.ts`, `drinks.ts`, `meals.ts`, `activities.ts` (guides, tours, equipment), `packages.ts`, `customers.ts` and `bookings.ts`; Vingaleden's skippers, trips and add-ons are in `tours.ts`. Later parts add `pipeline.ts`.
+- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-items.ts`, `seed-customers.ts` and `seed-bookings.ts`. Items with `parts` or `choices` come after the items they contain (`seed-item-input.ts` resolves them); a choice group's options become parts too. Contact persons, the price list and customer-specific packages are created right after their customer.
   - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`.
   - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
 - `checks.ts` and `config-checks.ts` contain the checks above.

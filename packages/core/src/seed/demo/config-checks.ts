@@ -1,4 +1,5 @@
 import type { ExecuteContext } from "../../operations/context";
+import type { DemoItem } from "./config-types";
 import { getTemplateListSize } from "./template-size";
 import type { DemoOrg } from "./types";
 
@@ -20,11 +21,42 @@ async function customerCounts({ context, org }: CheckDemoConfigInput): Promise<C
   ];
 }
 
+const partCount = ({ item }: { item: DemoItem }) =>
+  (item.parts?.length ?? 0) +
+  (item.choices ?? []).reduce((sum, group) => sum + group.options.length, 0);
+
+/** Slice 3: catalog and customer-specific items, their parts and choice groups. */
+async function catalogCounts({ context, org }: CheckDemoConfigInput): Promise<Count[]> {
+  const own = org.customers.flatMap((customer) => customer.packages ?? []);
+  const items = [...org.config.items, ...own];
+  const { db } = context;
+  const sum = ({ values }: { values: number[] }) => values.reduce((a, b) => a + b, 0);
+  return [
+    { what: "items", actual: await db.item.count(), expected: items.length },
+    {
+      what: "customer packages",
+      actual: await db.item.count({ where: { customerId: { not: null } } }),
+      expected: own.length,
+    },
+    {
+      what: "parts",
+      actual: await db.itemComponent.count(),
+      expected: sum({ values: items.map((item) => partCount({ item })) }),
+    },
+    {
+      what: "choice groups",
+      actual: await db.itemChoiceGroup.count(),
+      expected: sum({ values: items.map((item) => item.choices?.length ?? 0) }),
+    },
+  ];
+}
+
 /** What the data files say slice 2 creates, per entity (check 1 in `docs/demo-seed.md`). */
 async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> {
   const { config } = org;
   const { db } = context;
   const sum = ({ values }: { values: number[] }) => values.reduce((a, b) => a + b, 0);
+  const setups = config.items.map((item) => Object.keys(item.setups ?? {}).length);
   const templateValues = sum({
     values: config.listTemplates.map((key) => getTemplateListSize({ key })),
   });
@@ -47,26 +79,20 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
       actual: await db.fieldDefinition.count(),
       expected: sum({ values: config.types.map((type) => type.fields?.length ?? 0) }),
     },
-    { what: "items", actual: await db.item.count(), expected: config.items.length },
-    {
-      what: "capacities",
-      actual: await db.itemSetup.count(),
-      expected: sum({ values: config.items.map((item) => Object.keys(item.setups ?? {}).length) }),
-    },
-    {
-      what: "parts",
-      actual: await db.itemComponent.count(),
-      expected: sum({ values: config.items.map((item) => item.parts?.length ?? 0) }),
-    },
+    { what: "capacities", actual: await db.itemSetup.count(), expected: sum({ values: setups }) },
   ];
 }
 
 /**
- * Slice 2 checks: row counts per entity match the data files, lists that must not exist do
+ * Slices 2–5 checks: row counts per entity match the data files, lists that must not exist do
  * not (check 2: Vingaleden has no "Allergens"), and imported lists have their values.
  */
 export async function checkDemoConfig({ context, org }: CheckDemoConfigInput): Promise<string[]> {
-  const all = [...(await counts({ context, org })), ...(await customerCounts({ context, org }))];
+  const all = [
+    ...(await counts({ context, org })),
+    ...(await catalogCounts({ context, org })),
+    ...(await customerCounts({ context, org })),
+  ];
   const failures = all
     .filter((count) => count.actual !== count.expected)
     .map((count) => `${org.slug}: ${count.actual} ${count.what}, expected ${count.expected}`);

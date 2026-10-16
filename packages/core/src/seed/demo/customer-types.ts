@@ -1,4 +1,4 @@
-import type { DemoFieldValues } from "./config-types";
+import type { DemoFieldValues, DemoItem } from "./config-types";
 
 /** A contact person at a demo customer; `type` is the name of one of the org's contact types. */
 export type DemoContact = {
@@ -19,4 +19,6 @@ export type DemoCustomer = {
   contacts: readonly DemoContact[];
   /** The customer's price list (ADR 0023); a general discount in percent. */
   priceList?: { name: string; discountPercent: number };
+  /** Customer-specific packages (`item.saveAsPackage`), built from catalog items by name. */
+  packages?: readonly DemoItem[];
 };

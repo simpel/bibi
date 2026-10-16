@@ -90,6 +90,7 @@ async function seedSlices({
     context,
     customers: org.customers,
     refs: refs.value,
+    catalog: items.value,
   });
   if (!customers.ok) return customers;
   ranParts.add(4);

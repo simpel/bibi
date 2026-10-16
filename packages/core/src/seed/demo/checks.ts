@@ -19,7 +19,7 @@ const sameSet = ({ a, b }: { a: readonly string[]; b: readonly string[] }) =>
   a.length === b.length && [...a].sort().every((value, i) => value === [...b].sort()[i]);
 
 /**
- * The checks in `docs/demo-seed.md` that slices 1–2 can verify: role and member counts, everyone
+ * The checks in `docs/demo-seed.md` that slices 1–5 can verify: role and member counts, everyone
  * has their documented role, the configuration and items (`checkDemoConfig`), and every write
  * was audited as SYSTEM. Returns failure messages.
  */

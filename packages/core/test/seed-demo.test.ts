@@ -34,8 +34,23 @@ describe("seed:demo slices 1–5 (ADR 0025)", () => {
     expect(vingaKitchen).toBe(0);
     const items = ({ organizationId }: { organizationId?: string }) =>
       db.item.count({ where: { organizationId, status: "ACTIVE" } });
-    expect(await items({ organizationId: lind?.organizationId })).toBe(10);
-    expect(await items({ organizationId: vinga?.organizationId })).toBe(6);
+    expect(await items({ organizationId: lind?.organizationId })).toBe(61);
+    expect(await items({ organizationId: vinga?.organizationId })).toBe(9);
+    const dinner = await db.item.findFirst({
+      where: { organizationId: lind?.organizationId, name: "Three-course dinner" },
+      include: { choiceGroups: { orderBy: { position: "asc" } }, components: true },
+    });
+    expect(dinner?.choiceGroups.map((group) => group.name)).toEqual([
+      "Starter",
+      "Main course",
+      "Dessert",
+    ]);
+    expect(dinner?.components).toHaveLength(8);
+    const ownPackage = await db.item.findFirst({
+      where: { organizationId: lind?.organizationId, name: "Nordkust management team" },
+      include: { customer: true },
+    });
+    expect(ownPackage?.customer?.name).toBe("Nordkust Logistik AB");
     const tour = await db.item.findFirst({
       where: { organizationId: vinga?.organizationId, name: "Lighthouse tour to Vinga" },
       include: { components: { include: { part: true }, orderBy: { createdAt: "asc" } } },

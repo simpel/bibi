@@ -1,7 +1,12 @@
 import type { DemoOrg } from "../../types";
+import { lindholmenActivities } from "./activities";
 import { lindholmenBookings } from "./bookings";
 import { lindholmenLists } from "./config";
 import { lindholmenCustomers } from "./customers";
+import { lindholmenDishes } from "./dishes";
+import { lindholmenDrinks } from "./drinks";
+import { lindholmenMeals } from "./meals";
+import { lindholmenPackages } from "./packages";
 import { lindholmenRooms } from "./rooms";
 import { lindholmenTypes } from "./types";
 
@@ -45,7 +50,15 @@ export const lindholmen: DemoOrg = {
       postalCode: "417 56",
       city: "Göteborg",
     },
-    items: lindholmenRooms,
+    // Parts come after the items they contain.
+    items: [
+      ...lindholmenRooms,
+      ...lindholmenDishes,
+      ...lindholmenDrinks,
+      ...lindholmenMeals,
+      ...lindholmenActivities,
+      ...lindholmenPackages,
+    ],
     checks: { listSizes: { Allergens: 14 } },
   },
   customers: lindholmenCustomers,
