@@ -1,14 +1,20 @@
-import { ok } from "../../errors/result";
+import { type Db, getDb } from "@okazi/db";
+import { ok, type Result } from "../../errors/result";
+import { createExecuteContext } from "../../operations/context";
 import { defineOperation } from "../../operations/define-operation";
+import { execute } from "../../operations/execute";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { createPayment } from "./create-operation";
+import { getPublicPaymentOperation } from "./public-operation";
+import { PublicTokenSchema } from "./public-token";
 import {
   PaymentIdInputSchema,
   PaymentListInputSchema,
   PaymentListOutputSchema,
   PaymentSchema,
+  type PublicPaymentDto,
 } from "./schema";
 import { toPaymentDto } from "./to-payment-dto";
 
@@ -48,6 +54,33 @@ export const getPayment = defineOperation({
 });
 
 export { createPayment };
+
+export type GetPublicPaymentInput = { token: string; db?: Db };
+
+/**
+ * The one cross-organization lookup of the public payment page (ADR 0004): which organization
+ * owns the payment behind a token. It only reads that id, which then pins the SYSTEM context the
+ * read runs in. A malformed, unknown or foreign token is the same `NOT_FOUND`.
+ */
+export async function getPublicPayment({
+  token,
+  db = getDb(),
+}: GetPublicPaymentInput): Promise<Result<PublicPaymentDto>> {
+  if (!PublicTokenSchema.safeParse(token).success) return notFound({ entity: "Payment" });
+  const row = await db.payment.findUnique({
+    where: { publicToken: token },
+    select: { organizationId: true },
+  });
+  if (!row) return notFound({ entity: "Payment" });
+  const context = createExecuteContext({
+    organizationId: row.organizationId,
+    roles: [],
+    permissions: { payment: ["read"] },
+    actor: { type: "system", userId: null },
+    db,
+  });
+  return execute({ operation: getPublicPaymentOperation, input: { token }, context });
+}
 
 /** Payments requested from customers, charged on the venue's connected account (ADR 0028, 0029). */
 export const paymentOperations = [listPayments, getPayment, createPayment];

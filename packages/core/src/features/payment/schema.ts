@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
+import { PublicTokenSchema } from "./public-token";
 
 export const PaymentMethodSchema = z.enum(["CARD", "INVOICE"]);
 export const PaymentStatusSchema = z.enum([
@@ -78,3 +79,23 @@ export type PaymentStatus = z.infer<typeof PaymentStatusSchema>;
 export type PaymentDto = z.infer<typeof PaymentSchema>;
 export type PaymentPage = z.infer<typeof PaymentListOutputSchema>;
 export type PaymentCreateInput = z.infer<typeof PaymentCreateInputSchema>;
+
+export const PublicPaymentInputSchema = z.object({
+  token: PublicTokenSchema.describe("Token from the public payment page URL"),
+});
+
+/** What the customer sees on the public page: no customer or booking details (ADR 0028). */
+export const PublicPaymentSchema = z.object({
+  organizationName: z.string(),
+  bookingReference: z.number().int(),
+  method: PaymentMethodSchema,
+  /** `EXPIRED` is derived: still `PENDING` but past `expiresAt`. */
+  status: z.enum([...PaymentStatusSchema.options, "EXPIRED"]),
+  amountMinor: z.number().int(),
+  currency: z.string(),
+  paymentUrl: z.string().nullable(),
+  expiresAt: z.date().nullable(),
+  paidAt: z.date().nullable(),
+});
+
+export type PublicPaymentDto = z.infer<typeof PublicPaymentSchema>;

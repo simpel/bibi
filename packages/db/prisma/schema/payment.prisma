@@ -20,6 +20,8 @@ model Payment {
   providerReference   String
   /// Where the customer pays: the hosted checkout page or the hosted invoice page.
   paymentUrl          String?
+  /// Unguessable token in the public payment page URL `/pay/<token>` (ADR 0028). Never in the DTO.
+  publicToken         String        @unique
   /// When the hosted checkout stops accepting payment; null for invoices.
   expiresAt           DateTime?
   /// Set when the provider reports the payment as completed.
