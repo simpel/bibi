@@ -79,8 +79,19 @@ export type Env = z.infer<typeof envSchema>;
 
 let cached: Env | undefined;
 
+type ParseEnvInput = { source: Record<string, string | undefined> };
+
+/**
+ * Validates an environment. Empty strings count as unset, so `${VAR:-}` in compose files falls back
+ * to the schema default (or to "optional") instead of passing `""` through.
+ */
+export function parseEnv({ source }: ParseEnvInput): Env {
+  const present = Object.entries(source).filter(([, value]) => value !== "");
+  return envSchema.parse(Object.fromEntries(present));
+}
+
 /** The only place in the codebase allowed to read `process.env`. */
 export function getEnv(): Env {
-  cached ??= envSchema.parse(process.env);
+  cached ??= parseEnv({ source: process.env });
   return cached;
 }
