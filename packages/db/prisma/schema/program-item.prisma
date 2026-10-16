@@ -1,0 +1,38 @@
+/// Program item – a row in a booking's run schedule (ADR 0022), e.g. a meeting, a break or lunch.
+/// Its type (base `PROGRAM_ITEM`) decides its own fields. With a bookable item it holds a
+/// `BOOKING` occupancy for `[startsAt, endsAt)`, and with a setup also a `SETUP` occupancy for the
+/// changeover right before; both have `sourceType = "programItem"` and follow the row.
+model ProgramItem {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  bookingId      String
+  entityTypeId   String
+  name           String
+  startsAt       DateTime
+  endsAt         DateTime
+  /// The bookable item (`BOOKABLE`) the program item is held in, if any.
+  itemId         String?
+  /// How the item is set up; one of the item's setups. Requires `itemId`.
+  setupId        String?
+  /// How many take part, e.g. the headcount.
+  quantity       Int?
+  /// User id of the responsible person (a member of the organization); optional.
+  responsibleId  String?
+  /// Internal note.
+  note           String?
+  /// Values of the type's own fields, keyed by `FieldDefinition.key`.
+  fields         Json         @default("{}")
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  booking        Booking      @relation(fields: [bookingId, organizationId], references: [id, organizationId])
+  entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  item           Item?        @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  setup          Setup?       @relation(fields: [setupId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, bookingId, startsAt])
+  @@index([organizationId, entityTypeId])
+  @@index([organizationId, responsibleId])
+}

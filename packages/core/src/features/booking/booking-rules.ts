@@ -1,5 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { checkMembers } from "../../shared/check-members";
 import { conflict, invalid } from "../../shared/errors";
 import { COORDINATED_PHASES } from "./phase-rules";
 
@@ -27,17 +28,8 @@ export async function checkCustomer({ context, customerId }: CheckCustomerInput)
 export type Owners = { salesOwnerId?: string | null; coordinatorId?: string | null };
 
 /** Every given owner must be a member of the organization (ADR 0022). */
-export async function checkOwners({ context, ...owners }: Db & Owners): Promise<Result<true>> {
-  const issues = [];
-  for (const path of ["salesOwnerId", "coordinatorId"] as const) {
-    const userId = owners[path];
-    if (!userId) continue;
-    const member = await context.db.member.count({ where: { userId } });
-    if (member === 0) issues.push({ path, message: "Not a member of the organization" });
-  }
-  if (issues.length === 0) return ok({ value: true });
-  return invalid({ message: "Owners must be members of the organization", issues });
-}
+export const checkOwners = ({ context, salesOwnerId, coordinatorId }: Db & Owners) =>
+  checkMembers({ context, userIds: { salesOwnerId, coordinatorId } });
 
 export type CheckCoordinatorKeptInput = Db & { bookingStatusId: string };
 

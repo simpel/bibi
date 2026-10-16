@@ -33,6 +33,8 @@ import { OccupancyTableView } from "./occupancy-table-view";
 import { PaymentAccountCardView } from "./payment-account-card-view";
 import { PaymentCardView } from "./payment-card-view";
 import { PaymentTableView } from "./payment-table-view";
+import { ProgramItemCardView } from "./program-item-card-view";
+import { ProgramItemTableView } from "./program-item-table-view";
 import { RoleCardView } from "./role-card-view";
 import { RoleTableView } from "./role-table-view";
 import { SearchResultsView } from "./search-results-view";
@@ -69,6 +71,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "booking-card": BookingCardView,
   "booking-series-table": BookingSeriesTableView,
   "booking-series-card": BookingSeriesCardView,
+  "program-item-table": ProgramItemTableView,
+  "program-item-card": ProgramItemCardView,
   "inbound-email-table": InboundEmailTableView,
   "inbound-email-card": InboundEmailCardView,
   "payment-account-card": PaymentAccountCardView,

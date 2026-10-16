@@ -1,3 +1,4 @@
+/** An operation deliberately without UI, and why. */
 export type UiExempt = { operation: string; reason: string };
 
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
@@ -6,6 +7,11 @@ export const UI_EXEMPT: readonly UiExempt[] = [
     operation: "occupancy.get",
     reason:
       "An occupancy has no page of its own: the item page lists them with occupancy.list and edits blocks inline.",
+  },
+  {
+    operation: "programItem.get",
+    reason:
+      "A program item has no page of its own: the booking page lists the run schedule with programItem.list and edits it inline.",
   },
   {
     operation: "contact.get",

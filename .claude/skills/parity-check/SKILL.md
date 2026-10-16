@@ -15,7 +15,7 @@ To fix a failure, map it to the missing surface:
 - Missing in REST: add a `restRoute` in `packages/api/src/features/<entity>/rest.ts`.
 - Missing in GraphQL: add `fieldFromOperation` or `mutationFromOperation` in `packages/graphql/src/features/<entity>/graphql.ts` (they call `markExposed`).
 - Missing in MCP: add `mcpTool({ operation })` in `apps/mcp/src/features/<entity>/mcp.ts` (or `search-mcp.ts`).
-- Missing in web: add a line in `apps/web/src/features/web-surfaces.ts` (with `route` and `component`), or add to `UI_EXEMPT` with a reason.
+- Missing in web: add a line in `apps/web/src/features/web-surfaces.ts` (with `route` and `component`), or add to `UI_EXEMPT` (`apps/web/src/features/ui-exempt.ts`) with a reason.
 - Missing generative UI: add a line in `packages/ai/src/ui-contract/tool-ui-registry.ts`, or list in `GENERIC_UI_TOOLS`.
 
 Never remove an operation or add exemptions just to get green. Run `pnpm check:structure` and `pnpm test` to verify.

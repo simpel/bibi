@@ -52,6 +52,7 @@ export {
   PaymentStatus,
   PriceUnit,
   Prisma,
+  type ProgramItem,
   RecordStatus,
   type Setup,
   type Skill,

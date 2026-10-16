@@ -39,6 +39,8 @@ model Item {
   partOf                 ItemComponent[] @relation("ItemComponentPart")
   /// BOOKABLE: the periods the item is held (ADR 0022).
   occupancies            Occupancy[]
+  /// BOOKABLE: the program items held in this item.
+  programItems           ProgramItem[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

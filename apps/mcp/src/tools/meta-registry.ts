@@ -15,6 +15,7 @@ import { messageMcpTools } from "../features/message/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
 import { paymentMcpTools } from "../features/payment/mcp";
 import { paymentAccountMcpTools } from "../features/payment-account/mcp";
+import { programItemMcpTools } from "../features/program-item/mcp";
 import { roleMcpTools } from "../features/role/mcp";
 import { setupMcpTools } from "../features/setup/mcp";
 import { sheetDefinitionMcpTools } from "../features/sheet-definition/mcp";
@@ -41,6 +42,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...bookingStatusMcpTools,
     ...bookingMcpTools,
     ...bookingSeriesMcpTools,
+    ...programItemMcpTools,
     ...inboundEmailMcpTools,
     ...paymentAccountMcpTools,
     ...paymentMcpTools,
