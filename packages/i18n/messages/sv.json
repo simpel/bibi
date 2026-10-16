@@ -1446,7 +1446,7 @@
     "forbidden": "Du har inte behörighet att göra detta.",
     "validation": "Kontrollera de markerade fälten.",
     "required": "Fältet är obligatoriskt.",
-    "conflict": "Informationen har ändrats av någon annan.",
+    "conflict": "Detta krockar med befintlig information.",
     "network": "Det gick inte att nå servern.",
     "invalidCredentials": "Fel e-postadress eller lösenord.",
     "emailTaken": "Det finns redan ett konto med den e-postadressen.",

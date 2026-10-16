@@ -1446,7 +1446,7 @@
     "forbidden": "You do not have permission to do this.",
     "validation": "Please check the highlighted fields.",
     "required": "This field is required.",
-    "conflict": "The information was changed by someone else.",
+    "conflict": "This clashes with existing information.",
     "network": "The server could not be reached.",
     "invalidCredentials": "Wrong email or password.",
     "emailTaken": "An account with that email address already exists.",
