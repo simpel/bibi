@@ -32,7 +32,7 @@ async function resolveContext({ headers }: ResolveInput): Promise<Result<Execute
   });
 }
 
-export const handler = createRestHandler({ operations, resolveContext });
+export const handler = createRestHandler({ operations, resolveContext, embed: fakeEmbed });
 
 export function newOrgId(): string {
   return `org_${createId()}`;

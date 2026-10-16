@@ -2,6 +2,8 @@ import {
   type AfterCommitHook,
   type AnyOperation,
   appError,
+  createIndexingHook,
+  type EmbedFn,
   type ExecuteContext,
   type Result,
 } from "@okazi/core";
@@ -20,7 +22,9 @@ export type ResolveContext = (input: ResolveContextInput) => Promise<Result<Exec
 export type CreateRestHandlerInput = {
   operations: readonly AnyOperation[];
   resolveContext: ResolveContext;
-  /** Run once a command committed (e.g. the invitation mail). */
+  /** Embedder for search indexing: every committed command re-indexes its entity. */
+  embed: EmbedFn;
+  /** Run after search indexing once a command committed (e.g. the invitation mail). */
   afterCommit?: readonly AfterCommitHook[];
   basePath?: string;
 };
@@ -36,9 +40,11 @@ function relativePath({ pathname, basePath }: RelativePathInput): string | undef
 export function createRestHandler({
   operations,
   resolveContext,
-  afterCommit = [],
+  embed,
+  afterCommit: extraHooks = [],
   basePath = "/api/v1",
 }: CreateRestHandlerInput): (request: Request) => Promise<Response> {
+  const afterCommit = [createIndexingHook({ embed }), ...extraHooks];
   const compiled = compileRoutes({ routes: listRestRoutes(), operations });
   const document = buildOpenApiDocument({ compiled, basePath });
   const docs = docsHtml({ specUrl: `${basePath}/openapi.json` });

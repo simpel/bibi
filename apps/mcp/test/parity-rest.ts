@@ -11,6 +11,7 @@ export type RestClientInput = { context: ExecuteContext };
 export function createRestClient({ context }: RestClientInput) {
   const handler = createRestHandler({
     operations: createCoreOperations({ embed: fakeEmbed }),
+    embed: fakeEmbed,
     resolveContext: async () => ok({ value: context }),
   });
   return {

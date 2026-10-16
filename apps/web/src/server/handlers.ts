@@ -27,6 +27,7 @@ export function restHandler(): Handler {
   holder.__okaziRest ??= createRestHandler({
     operations: ensureOperations(),
     resolveContext: resolveExecuteContext,
+    embed,
     afterCommit: [invitationMailHook],
   });
   return holder.__okaziRest;
