@@ -17,7 +17,7 @@ test("cross-organization isolation: cannot access another org's venue from URL",
   const venueId = venueUrl.split("/").pop();
 
   // Log out and sign up user B in org B
-  await page.getByRole("button", { name: "Användarmenu" }).click();
+  await page.getByRole("button", { name: "Användarmeny" }).click();
   await page.getByRole("menuitem", { name: "Logga ut" }).click();
   await expect(page).toHaveURL(/\/sv\/login/);
 
@@ -42,7 +42,7 @@ test("org switcher displays the current organization", async ({ page }) => {
   await createOrganization({ page, name: "Test Organization" });
 
   // The org switcher should be visible and show the current org
-  const orgSwitcher = page.locator('[aria-label="Byta organisation"]');
+  const orgSwitcher = page.locator('[aria-label="Byt organisation"]');
   await expect(orgSwitcher).toBeVisible();
   await expect(orgSwitcher).toContainText("Test Organization");
 
