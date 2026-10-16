@@ -1,50 +1,87 @@
-import { defineOperation } from "@okazi/core"; // TODO: confirm the export name and signature in packages/core
+import { AppError } from "../../errors/app-error";
+import { err } from "../../errors/result";
+import { defineOperation } from "../../operations/define-operation";
+import { {{camel}}Embeddable } from "./embeddable";
 import {
-  create{{Pascal}}InputSchema,
-  get{{Pascal}}InputSchema,
-  list{{Pascal}}InputSchema,
-  {{camel}}Schema,
+  {{Pascal}}CreateInputSchema,
+  {{Pascal}}IdInputSchema,
+  {{Pascal}}ListInputSchema,
+  {{Pascal}}ListOutputSchema,
+  {{Pascal}}Schema,
+  {{Pascal}}UpdateInputSchema,
 } from "./schema";
 
 // Core operations for {{Pascal}}. The single source of truth: web, GraphQL, REST and MCP call these (ADR 0003).
-// TODO: kind, permission and ctx fields (organizationId, actorId) per the core API.
-// Mutations are written to AuditLog by the core hook (ADR 0006).
+// Handlers receive `{ input, context }`. Read and write through `context.db` (org-scoped) and return a `Result`
+// (`ok({ value })`, or `notFound`/`conflict` from ../../shared/errors). Never throw.
+// Commands record their change with `context.recordChange({ entityId, before, after })` (AuditLog, ADR 0006).
+// Model: copy features/setup/operations.ts. Add the "{{camel}}" resource to RESOURCES in permissions/resources.ts.
 
-export const create{{Pascal}} = defineOperation({
-  name: "{{kebab}}.create",
-  description: "TODO: description for the AI assistant and the API documentation.",
-  kind: "mutation",
-  input: create{{Pascal}}InputSchema,
-  output: {{camel}}Schema,
-  permission: "{{kebab}}:create",
-  async handler({ input, ctx }) {
-    // TODO: create the row via ctx.db (org-scoped) and return a Result with an ok value.
-    throw new Error(`TODO: implement {{kebab}}.create (${input.name}, org ${ctx.organizationId})`);
-  },
+const todo = async ({ operation }: { operation: string }) =>
+  err({ error: new AppError({ code: "INTERNAL", message: `TODO: implement ${operation}` }) });
+
+export const list{{Pascal}}s = defineOperation({
+  name: "{{camel}}.list",
+  kind: "query",
+  description: "TODO: list the organization's {{Pascal}} rows, ordered by name.",
+  input: {{Pascal}}ListInputSchema,
+  output: {{Pascal}}ListOutputSchema,
+  permission: "{{camel}}:read",
+  // TODO: context.db.{{camel}}.findMany({ orderBy, ...pageArgs(input) }) and paginate({ rows, limit }).
+  handler: () => todo({ operation: "{{camel}}.list" }),
 });
 
 export const get{{Pascal}} = defineOperation({
-  name: "{{kebab}}.get",
-  description: "TODO: fetch a {{Pascal}} by id in the active organization.",
+  name: "{{camel}}.get",
   kind: "query",
-  input: get{{Pascal}}InputSchema,
-  output: {{camel}}Schema.nullable(),
-  permission: "{{kebab}}:read",
-  async handler({ input, ctx }) {
-    // TODO: read the row via ctx.db (org-scoped, status != ARCHIVED) and return a Result.
-    throw new Error(`TODO: implement {{kebab}}.get (${input.id}, org ${ctx.organizationId})`);
-  },
+  description: "TODO: get one {{Pascal}} by id.",
+  input: {{Pascal}}IdInputSchema,
+  output: {{Pascal}}Schema,
+  permission: "{{camel}}:read",
+  // TODO: context.db.{{camel}}.findFirst({ where: { id } }), notFound({ entity: "{{Pascal}}" }) when missing.
+  handler: () => todo({ operation: "{{camel}}.get" }),
 });
 
-export const list{{Pascal}} = defineOperation({
-  name: "{{kebab}}.list",
-  description: "TODO: list {{Pascal}} in the active organization.",
-  kind: "query",
-  input: list{{Pascal}}InputSchema,
-  output: {{camel}}Schema.array(),
-  permission: "{{kebab}}:read",
-  async handler({ input, ctx }) {
-    // TODO: read rows via ctx.db with input.limit and return a Result.
-    throw new Error(`TODO: implement {{kebab}}.list (${input.limit}, org ${ctx.organizationId})`);
-  },
+export const create{{Pascal}} = defineOperation({
+  name: "{{camel}}.create",
+  kind: "command",
+  description: "TODO: create a {{Pascal}}.",
+  input: {{Pascal}}CreateInputSchema,
+  output: {{Pascal}}Schema,
+  permission: "{{camel}}:write",
+  embeddable: {{camel}}Embeddable,
+  // TODO: context.db.{{camel}}.create({ data: { ...input, organizationId: context.organizationId } }) and recordChange.
+  handler: () => todo({ operation: "{{camel}}.create" }),
 });
+
+export const update{{Pascal}} = defineOperation({
+  name: "{{camel}}.update",
+  kind: "command",
+  description: "TODO: update fields of a {{Pascal}}. Omitted fields are unchanged.",
+  input: {{Pascal}}UpdateInputSchema,
+  output: {{Pascal}}Schema,
+  permission: "{{camel}}:write",
+  embeddable: {{camel}}Embeddable,
+  // TODO: load `before`, update, context.recordChange({ entityId, before, after }).
+  handler: () => todo({ operation: "{{camel}}.update" }),
+});
+
+export const archive{{Pascal}} = defineOperation({
+  name: "{{camel}}.archive",
+  kind: "command",
+  description: "TODO: archive (soft-delete) a {{Pascal}}.",
+  input: {{Pascal}}IdInputSchema,
+  output: {{Pascal}}Schema,
+  permission: "{{camel}}:write",
+  embeddable: {{camel}}Embeddable,
+  // TODO: set status ARCHIVED, context.recordChange({ entityId, before, after }).
+  handler: () => todo({ operation: "{{camel}}.archive" }),
+});
+
+export const {{camel}}Operations = [
+  list{{Pascal}}s,
+  get{{Pascal}},
+  create{{Pascal}},
+  update{{Pascal}},
+  archive{{Pascal}},
+];
