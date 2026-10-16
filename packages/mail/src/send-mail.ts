@@ -3,25 +3,30 @@ import { elapsedMs, getLogger, maskEmail } from "@okazi/logger";
 import { getMailProvider } from "./get-mail-provider";
 import { type MailMessage, MailMessageSchema, type SentMail } from "./schema";
 
+/** What `sendMail` takes: the message plus an optional stable kind used for logging. */
+export type SendMailInput = MailMessage & { kind?: string };
+
 /**
  * Sends a mail through the configured `MailProvider`. Logs `mail.sent`/`mail.failed` with the
- * recipient masked; never logs the body.
+ * recipient masked and the stable `kind`; never logs the subject or body (they may carry codes
+ * or tokens).
  */
 export async function sendMail({
+  kind,
   to,
   subject,
   text,
   html,
   replyTo,
   attachments,
-}: MailMessage): Promise<Result<SentMail>> {
+}: SendMailInput): Promise<Result<SentMail>> {
   const parsed = MailMessageSchema.safeParse({ to, subject, text, html, replyTo, attachments });
   if (!parsed.success) return err({ error: fromZodError({ error: parsed.error }) });
   const provider = getMailProvider();
   const fields = {
     provider: provider.name,
     recipient: maskEmail({ email: parsed.data.to }),
-    subject: parsed.data.subject,
+    ...(kind ? { kind } : {}),
   };
   const since = performance.now();
   const result = await provider

@@ -21,6 +21,7 @@ export const invitationMailHook: AfterCommitHook = async ({ operation, output })
   ]);
   const url = webUrl({ path: `/accept-invitation/${invitation.id}` });
   await sendAuthMail({
+    kind: "auth.invitation",
     to: invitation.email,
     subject: `Invitation to ${organization.name} on Okazi`,
     text: `${inviter.name} has invited you to ${organization.name}.\n\nAccept: ${url}`,

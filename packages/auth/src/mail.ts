@@ -1,4 +1,4 @@
-import { type MailMessage, sendMail } from "@okazi/mail";
+import { type SendMailInput, sendMail } from "@okazi/mail";
 
 /**
  * Sends an auth mail through `@okazi/mail`. Better Auth callbacks and after-commit hooks report
@@ -6,13 +6,30 @@ import { type MailMessage, sendMail } from "@okazi/mail";
  * `mail.failed`).
  */
 export async function sendAuthMail({
+  kind,
   to,
   subject,
   text,
   html,
   replyTo,
   attachments,
-}: MailMessage): Promise<void> {
-  const result = await sendMail({ to, subject, text, html, replyTo, attachments });
+}: SendMailInput): Promise<void> {
+  const result = await sendMail({ kind, to, subject, text, html, replyTo, attachments });
   if (!result.ok) throw result.error;
+}
+
+/** Sends the password reset link. */
+export async function sendPasswordResetMail({
+  to,
+  url,
+}: {
+  to: string;
+  url: string;
+}): Promise<void> {
+  await sendAuthMail({
+    kind: "auth.password-reset",
+    to,
+    subject: "Reset your password",
+    text: url,
+  });
 }

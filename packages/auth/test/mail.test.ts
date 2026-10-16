@@ -26,6 +26,9 @@ describe("passwordless sign-in mails", () => {
   it("mails a one-time code", async () => {
     const user = await signUp();
     await getAuth().api.sendVerificationOTP({ body: { email: user.email, type: "sign-in" } });
-    expect(lastMailTo({ email: user.email })?.text).toMatch(/\d{6}/);
+    const mail = lastMailTo({ email: user.email });
+    const code = mail?.text.match(/\d{6}/)?.[0];
+    expect(code).toBeDefined();
+    expect(mail?.subject).not.toContain(code ?? "");
   });
 });
