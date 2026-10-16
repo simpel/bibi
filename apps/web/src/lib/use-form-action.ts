@@ -3,6 +3,7 @@ import { useTransition } from "react";
 import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 import type { ActionError, ActionResult } from "./action-result";
 import { actionWithToast } from "./action-with-toast";
+import { isFormPath } from "./issue-form-path";
 
 export type FormActionMessages = {
   /** Shown while the server action runs, e.g. "Sparar…". */
@@ -30,15 +31,17 @@ type ApplyIssuesInput<V extends FieldValues, T> = {
   message: string;
 };
 
-/** Server-side field issues (`path` = field name) end up on the fields as `FormMessage`s. */
+/** Server-side field issues (`path` = field name or `fields.<key>`) end up on the fields as `FormMessage`s. */
 function applyIssues<V extends FieldValues, T>({
   form,
   error,
   message,
 }: ApplyIssuesInput<V, T>): void {
-  const fields = Object.keys(form.getValues());
+  const values = form.getValues();
   for (const issue of error.issues) {
-    if (fields.includes(issue.path)) form.setError(issue.path as FieldPath<V>, { message });
+    if (isFormPath({ path: issue.path, values })) {
+      form.setError(issue.path as FieldPath<V>, { message });
+    }
   }
 }
 
