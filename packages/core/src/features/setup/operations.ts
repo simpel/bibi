@@ -87,7 +87,8 @@ export const updateSetup = defineOperation({
 export const archiveSetup = defineOperation({
   name: "setup.archive",
   kind: "command",
-  description: "Archive a setup. Refused while an active item has a capacity for it.",
+  description:
+    "Archive a setup. Refused while an active item has a capacity for it or an active program item uses it.",
   input: SetupIdInputSchema,
   output: SetupSchema,
   permission: "configuration:write",
@@ -98,6 +99,10 @@ export const archiveSetup = defineOperation({
       where: { setupId: id, item: { status: "ACTIVE" } },
     });
     if (used > 0) return conflict({ message: `${used} items have a capacity for this setup` });
+    const scheduled = await context.db.programItem.count({ where: { setupId: id } });
+    if (scheduled > 0) {
+      return conflict({ message: `${scheduled} active program items use this setup` });
+    }
     const setup = await context.db.setup.update({ where: { id }, data: { status: "ARCHIVED" } });
     context.recordChange({ entityId: id, before, after: setup });
     return ok({ value: setup });

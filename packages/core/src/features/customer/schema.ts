@@ -76,6 +76,13 @@ export const CustomerArchiveInputSchema = z.object({
       "Also archive all of the customer's bookings that are not archived, in every status. " +
         "Without it, any such booking blocks archiving the customer.",
     ),
+  archiveInquiries: z
+    .boolean()
+    .default(false)
+    .describe(
+      "Also archive all of the customer's active inquiries. " +
+        "Without it, any such inquiry blocks archiving the customer.",
+    ),
 });
 
 export const CustomerListInputSchema = z.object({

@@ -289,6 +289,7 @@
     "archived": "The customer has been archived.",
     "archiveBlocked": "This customer has {count, plural, one {# booking} other {# bookings}} that {count, plural, one {is} other {are}} not archived. The customer cannot be archived while {count, plural, one {it remains} other {they remain}}.",
     "archiveBookings": "Also archive {count, plural, one {the booking} other {all # bookings}} for this customer",
+    "archiveInquiries": "Also archive the customer's active inquiries, if any",
     "archivedWithBookings": "The customer and {count, plural, one {# booking} other {# bookings}} have been archived.",
     "created": "The customer has been created.",
     "updated": "The customer has been updated.",
@@ -1022,7 +1023,8 @@
         "invoiceCountry": "Invoice country",
         "paymentTermsDays": "Payment terms (days)",
         "creditLimitMinor": "Credit limit (minor units)",
-        "archiveBookings": "Also archive bookings"
+        "archiveBookings": "Also archive bookings",
+        "archiveInquiries": "Also archive inquiries"
       },
       "operations": {
         "venue_create": "Create venue",

@@ -45,6 +45,7 @@ export const FIELD_KEYS = [
   "title",
   "value",
   "archiveBookings",
+  "archiveInquiries",
 ] as const;
 
 /** Operations with a localized label in `assistant.approval.operations` (`.` → `_`). */

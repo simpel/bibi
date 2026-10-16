@@ -289,6 +289,7 @@
     "archived": "Kunden har arkiverats.",
     "archiveBlocked": "Kunden har {count, plural, one {# bokning} other {# bokningar}} som inte är {count, plural, one {arkiverad} other {arkiverade}}. Kunden kan inte arkiveras så länge {count, plural, one {den finns} other {de finns}} kvar.",
     "archiveBookings": "Arkivera även {count, plural, one {kundens bokning} other {kundens alla # bokningar}}",
+    "archiveInquiries": "Arkivera även kundens aktiva förfrågningar, om det finns några",
     "archivedWithBookings": "Kunden och {count, plural, one {# bokning} other {# bokningar}} har arkiverats.",
     "created": "Kunden har skapats.",
     "updated": "Kunden har uppdaterats.",
@@ -1022,7 +1023,8 @@
         "invoiceCountry": "Fakturaland",
         "paymentTermsDays": "Betalningsvillkor (dagar)",
         "creditLimitMinor": "Kreditgräns (ören)",
-        "archiveBookings": "Arkivera även bokningar"
+        "archiveBookings": "Arkivera även bokningar",
+        "archiveInquiries": "Arkivera även förfrågningar"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
