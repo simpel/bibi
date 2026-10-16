@@ -9,6 +9,7 @@ import { INQUIRY_UI_ENTRIES } from "./inquiry-entries";
 import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
 import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
+import { PRICE_LIST_UI_ENTRIES } from "./price-list-entries";
 import { PROGRAM_ITEM_UI_ENTRIES } from "./program-item-entries";
 import { SHEET_DEFINITION_UI_ENTRIES } from "./sheet-definition-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
@@ -51,6 +52,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...CONFIGURATION_UI_ENTRIES,
   ...CUSTOMER_UI_ENTRIES,
   ...OCCUPANCY_UI_ENTRIES,
+  ...PRICE_LIST_UI_ENTRIES,
   ...BOOKING_STATUS_UI_ENTRIES,
   ...BOOKING_UI_ENTRIES,
   ...BOOKING_SERIES_UI_ENTRIES,

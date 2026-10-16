@@ -16,6 +16,7 @@ export const lindholmenCustomers: readonly DemoCustomer[] = [
     type: "Company",
     fields: { "Org no.": "556712-3401", "Framework agreement": true },
     ...{ invoiceCity: "Göteborg", paymentTermsDays: 30 },
+    priceList: { name: "Nordkust framework agreement", discountPercent: 15 },
     contacts: [
       person({ name: "Karin Wallin", role: "Orderer", email: "karin.wallin@nordkust.test" }),
       person({

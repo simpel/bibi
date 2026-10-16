@@ -6,6 +6,7 @@ import type { InboundEmailWire } from "./inbound-email-entries";
 import type { InquiryWire } from "./inquiry-entries";
 import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire } from "./payment-entries";
+import type { PriceListWire } from "./price-list-entries";
 import type { ProgramItemWire } from "./program-item-entries";
 import type { SheetDefinitionWire } from "./sheet-definition-entries";
 import type {
@@ -42,6 +43,8 @@ export type ToolUiProps = {
   "contact-card": { contact: ContactWire };
   "occupancy-table": { items: OccupancyWire[]; nextCursor: string | null };
   "occupancy-card": { occupancy: OccupancyWire };
+  "price-list-table": { items: PriceListWire[]; nextCursor: string | null };
+  "price-list-card": { priceList: PriceListWire };
   "booking-status-table": { items: BookingStatusWire[]; nextCursor: string | null };
   "booking-status-card": { status: BookingStatusWire };
   "booking-table": { items: BookingWire[]; nextCursor: string | null };

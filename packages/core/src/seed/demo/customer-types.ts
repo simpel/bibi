@@ -17,4 +17,6 @@ export type DemoCustomer = {
   invoiceCity?: string;
   paymentTermsDays?: number;
   contacts: readonly DemoContact[];
+  /** The customer's price list (ADR 0023); a general discount in percent. */
+  priceList?: { name: string; discountPercent: number };
 };

@@ -69,7 +69,8 @@ export const archiveCustomer = defineOperation({
   name: "customer.archive",
   kind: "command",
   description:
-    "Archive (soft-delete) a customer. Refused while the customer has active contacts. Every " +
+    "Archive (soft-delete) a customer. Refused while the customer has active contacts or " +
+    "active price lists (archive those first). Every " +
     "booking that is not archived, in any status, also blocks it, unless `archiveBookings` is " +
     "true: then those bookings are archived with the customer (needs booking:write). Refused " +
     "while a LINK field points to the customer or to one of those bookings.",
@@ -83,6 +84,9 @@ export const archiveCustomer = defineOperation({
     const contacts = await context.db.contact.count({ where: { customerId: id } });
     if (contacts > 0)
       return conflict({ message: `${before.name} has ${contacts} active contacts` });
+    const priceLists = await context.db.priceList.count({ where: { customerId: id } });
+    if (priceLists > 0)
+      return conflict({ message: `${before.name} has ${priceLists} active price lists` });
     const linked = await checkCustomerNotLinked({ context, customer: before, cascade });
     if (!linked.ok) return linked;
     if (before.bookingCount > 0) {

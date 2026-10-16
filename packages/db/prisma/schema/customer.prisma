@@ -29,6 +29,8 @@ model Customer {
   /// Customer-specific packages (`Item.customerId`, ADR 0021).
   items                Item[]
   inquiries            Inquiry[]
+  /// Customer prices (ADR 0023).
+  priceLists           PriceList[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

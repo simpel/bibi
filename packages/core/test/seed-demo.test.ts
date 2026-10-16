@@ -59,12 +59,13 @@ describe("seed:demo slices 1–5 (ADR 0025)", () => {
     expect(await customers({ organizationId: vinga?.organizationId })).toBe(3);
     const nordkust = await db.customer.findFirst({
       where: { organizationId: lind?.organizationId, name: "Nordkust Logistik AB" },
-      include: { contacts: { orderBy: { name: "asc" } } },
+      include: { contacts: { orderBy: { name: "asc" } }, priceLists: true },
     });
     expect(nordkust?.contacts.map((contact) => contact.name)).toEqual([
       "Fakturor Nordkust",
       "Karin Wallin",
     ]);
+    expect(nordkust?.priceLists.map((list) => Number(list.discountPercent))).toEqual([15]);
     const statuses = await db.bookingStatus.count({
       where: { organizationId: lind?.organizationId },
     });
