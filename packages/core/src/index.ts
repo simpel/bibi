@@ -62,6 +62,9 @@ export * from "./features/payment/operations";
 export * from "./features/payment/provider-registry";
 export * from "./features/payment-account/gateway-registry";
 export * from "./features/payment-account/operations";
+export * from "./features/program-item/assign-operation";
+export * from "./features/program-item/operations";
+export * from "./features/program-item/write-operations";
 export * from "./features/role/lifecycle-operations";
 export * from "./features/role/operations";
 export * from "./features/role/read-operations";
@@ -103,13 +106,7 @@ export {
   PermissionSetSchema,
   unionPermissions,
 } from "./permissions/permission-set";
-export {
-  OWNER_ROLE,
-  PERMISSION_ACTIONS,
-  type PermissionAction,
-  RESOURCES,
-  type Resource,
-} from "./permissions/resources";
+export * from "./permissions/resources";
 export {
   AI_FEATURE_IDS,
   AI_FEATURES,

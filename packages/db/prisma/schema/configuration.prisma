@@ -9,6 +9,7 @@ enum EntityBase {
   INQUIRY
   BOOKING
   REQUIREMENT
+  PROGRAM_ITEM
 }
 
 /// Generic behaviours an item type switches on (ADR 0021). No domain words.
@@ -49,6 +50,7 @@ model EntityType {
   contacts       Contact[]
   bookings       Booking[]
   bookingSeries  BookingSeries[]
+  programItems   ProgramItem[]
 
   @@unique([id, organizationId])
   @@index([organizationId, base, status])
@@ -125,6 +127,7 @@ model Setup {
   updatedAt         DateTime     @updatedAt
   createdBy         String?
   items             ItemSetup[]
+  programItems      ProgramItem[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

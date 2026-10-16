@@ -60,6 +60,12 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "bookingSeries.get", route: "/booking-series/[id]" },
   { operation: "bookingSeries.updateOccurrences", route: "/booking-series/[id]" },
   { operation: "bookingSeries.cancel", route: "/booking-series/[id]" },
+  // The run schedule (program items) is listed and edited on the booking page.
+  { operation: "programItem.list", route: "/bookings/[id]" },
+  { operation: "programItem.create", route: "/bookings/[id]" },
+  { operation: "programItem.update", route: "/bookings/[id]" },
+  { operation: "programItem.assign", route: "/bookings/[id]" },
+  { operation: "programItem.archive", route: "/bookings/[id]" },
   { operation: "entityType.list", route: "/settings/types" },
   { operation: "entityType.create", route: "/settings/types" },
   { operation: "configuration.importTemplate", route: "/settings/types" },

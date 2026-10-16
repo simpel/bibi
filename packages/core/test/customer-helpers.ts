@@ -9,7 +9,7 @@ import { unwrap } from "./helpers";
 
 export type TypedBaseInput = {
   context: ExecuteContext;
-  base: "CUSTOMER" | "CONTACT" | "BOOKING";
+  base: "CUSTOMER" | "CONTACT" | "BOOKING" | "PROGRAM_ITEM";
   name: string;
 };
 

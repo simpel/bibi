@@ -54,6 +54,39 @@ const bookingSeries = (): ParityEntity => ({
     }),
 });
 
+/** A program item (ADR 0022) on the booking, held in the bookable item with its setup. */
+const programItem = (): ParityEntity => ({
+  ...byId({
+    name: "programItem",
+    field: "programItem",
+    list: "program-items",
+    createTool: "",
+    args: {},
+  }),
+  create: async ({ mcp, made }) => {
+    const type = await tool({
+      mcp,
+      name: "entityType_create",
+      args: { base: "PROGRAM_ITEM", name: "Parity session" },
+    });
+    return tool({
+      mcp,
+      name: "programItem_create",
+      args: {
+        bookingId: made.booking.id,
+        entityTypeId: type.id,
+        name: "Morning session",
+        startsAt: "2026-11-03T09:00:00.000Z",
+        endsAt: "2026-11-03T11:00:00.000Z",
+        itemId: made.item.id,
+        setupId: made.setup.id,
+        quantity: 40,
+        note: "Projector",
+      },
+    });
+  },
+});
+
 const domain = "in.parity.test";
 
 /**
@@ -92,5 +125,5 @@ const inboundEmail = (): ParityEntity => ({
 
 /** Bookings; a function so the import cycle with `parity-entities.ts` resolves first. */
 export function bookingEntities(): ParityEntity[] {
-  return [booking(), bookingSeries(), inboundEmail()];
+  return [booking(), bookingSeries(), programItem(), inboundEmail()];
 }

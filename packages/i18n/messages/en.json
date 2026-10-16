@@ -472,6 +472,46 @@
       "note": "Note"
     }
   },
+  "programItem": {
+    "singular": "Program item",
+    "plural": "Program",
+    "create": "Add program item",
+    "edit": "Edit program item",
+    "createDescription": "Add a row to the booking's run schedule. With a room it is occupied for the period, plus the setup's changeover time.",
+    "editDescription": "Change time, place, quantity or note. Moving it moves the occupancy.",
+    "archive": "Remove program item",
+    "archiveConfirm": "Do you want to remove \"{name}\" from the program? The room is released.",
+    "archived": "The program item has been removed.",
+    "created": "The program item has been added.",
+    "updated": "The program item has been updated.",
+    "assign": "Change responsible",
+    "assignDescription": "The responsible person must be a member of the organization.",
+    "assigned": "The responsible person has been changed.",
+    "empty": "The booking has no program items yet.",
+    "occupied": "The room is already occupied during this period or its changeover time.",
+    "noItem": "No room",
+    "noSetup": "No setup",
+    "noResponsible": "No one",
+    "fields": {
+      "type": "Type",
+      "name": "Name",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "item": "Room or bookable item",
+      "setup": "Setup",
+      "quantity": "Quantity",
+      "responsible": "Responsible",
+      "note": "Internal note"
+    },
+    "columns": {
+      "time": "Time",
+      "name": "Name",
+      "type": "Type",
+      "where": "Where",
+      "quantity": "Quantity",
+      "responsible": "Responsible"
+    }
+  },
   "entityType": {
     "singular": "Type",
     "plural": "Types",
@@ -514,7 +554,8 @@
       "CONTACT": "Contacts",
       "INQUIRY": "Inquiries",
       "BOOKING": "Bookings",
-      "REQUIREMENT": "Requirements"
+      "REQUIREMENT": "Requirements",
+      "PROGRAM_ITEM": "Program items"
     },
     "behaviours": {
       "PRICED": "Priced",
@@ -969,6 +1010,16 @@
         "openItem": "Open the item",
         "columns": { "type": "Type", "period": "Period", "note": "Note" }
       },
+      "programItem": {
+        "singular": "Program item",
+        "empty": "No program items found.",
+        "quantity": "{count} taking part",
+        "hasResponsible": "Has a responsible person",
+        "noResponsible": "No responsible person",
+        "archived": "Removed from the program",
+        "openBooking": "Open the booking",
+        "columns": { "name": "Name", "when": "When", "quantity": "Quantity" }
+      },
       "entityType": {
         "empty": "No types found.",
         "open": "Open the type",
@@ -980,7 +1031,8 @@
           "CONTACT": "Contact",
           "INQUIRY": "Inquiry",
           "BOOKING": "Booking",
-          "REQUIREMENT": "Requirement"
+          "REQUIREMENT": "Requirement",
+          "PROGRAM_ITEM": "Program item"
         },
         "behaviour": {
           "PRICED": "Priced",
@@ -1339,6 +1391,7 @@
       "configuration": "Configuration (types, fields, lists, setups)",
       "bookingStatus": "Booking statuses and transitions",
       "booking": "Bookings and their owners",
+      "programItem": "Program items (the booking's run schedule)",
       "search": "Search",
       "conversation": "Conversations",
       "skill": "Skills",

@@ -13,6 +13,7 @@ import "../features/occupancy/graphql";
 import "../features/booking-status/graphql";
 import "../features/booking/graphql";
 import "../features/booking-series/graphql";
+import "../features/program-item/graphql";
 import "../features/inbound-email/graphql";
 import "../features/payment/graphql";
 import "../features/payment-account/graphql";

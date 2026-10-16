@@ -16,7 +16,7 @@ Template: `packages/core/src/features/setup/operations.ts` (simple) or `features
    - Errors: `err({ error: new AppError({ code, message }) })`. Never `throw`.
    - If it changes searchable fields: set `embeddable`.
 3. Add the operation to the entity's list and to `core-operations.ts`. Call it through `execute`, never `handler` directly.
-4. **Adapters in the same change:** `rest.ts` (`restRoute`), `graphql.ts` (`*FromOperation`), `mcp.ts`, `apps/web/src/features/web-surfaces.ts` (or `UI_EXEMPT` with a reason) and `tool-ui-registry.ts`.
+4. **Adapters in the same change:** `rest.ts` (`restRoute`), `graphql.ts` (`*FromOperation`), `mcp.ts`, `apps/web/src/features/web-surfaces.ts` (or `UI_EXEMPT` in `ui-exempt.ts` with a reason) and `tool-ui-registry.ts`.
 5. Tests against a real Postgres in `packages/core`. Run `pnpm test`.
 
 Should the state be changeable by AI? See `docs/decisions/0007-ai-first-ux.md`.

@@ -472,6 +472,46 @@
       "note": "Anteckning"
     }
   },
+  "programItem": {
+    "singular": "Programpunkt",
+    "plural": "Program",
+    "create": "Lägg till programpunkt",
+    "edit": "Redigera programpunkt",
+    "createDescription": "Lägg till en rad i bokningens körschema. Med en lokal beläggs den under perioden, plus uppställningens ställtid.",
+    "editDescription": "Ändra tid, plats, antal eller anteckning. Flyttas den flyttas också beläggningen.",
+    "archive": "Ta bort programpunkt",
+    "archiveConfirm": "Vill du ta bort \"{name}\" från programmet? Lokalen släpps.",
+    "archived": "Programpunkten har tagits bort.",
+    "created": "Programpunkten har lagts till.",
+    "updated": "Programpunkten har uppdaterats.",
+    "assign": "Byt ansvarig",
+    "assignDescription": "Den ansvariga måste vara medlem i organisationen.",
+    "assigned": "Ansvarig har bytts.",
+    "empty": "Bokningen har inga programpunkter än.",
+    "occupied": "Lokalen är redan belagd under perioden eller ställtiden.",
+    "noItem": "Ingen lokal",
+    "noSetup": "Ingen uppställning",
+    "noResponsible": "Ingen",
+    "fields": {
+      "type": "Typ",
+      "name": "Namn",
+      "startsAt": "Börjar",
+      "endsAt": "Slutar",
+      "item": "Lokal eller bokningsbar artikel",
+      "setup": "Uppställning",
+      "quantity": "Antal",
+      "responsible": "Ansvarig",
+      "note": "Intern anteckning"
+    },
+    "columns": {
+      "time": "Tid",
+      "name": "Namn",
+      "type": "Typ",
+      "where": "Var",
+      "quantity": "Antal",
+      "responsible": "Ansvarig"
+    }
+  },
   "entityType": {
     "singular": "Typ",
     "plural": "Typer",
@@ -514,7 +554,8 @@
       "CONTACT": "Kontaktpersoner",
       "INQUIRY": "Förfrågningar",
       "BOOKING": "Bokningar",
-      "REQUIREMENT": "Behov"
+      "REQUIREMENT": "Behov",
+      "PROGRAM_ITEM": "Programpunkter"
     },
     "behaviours": {
       "PRICED": "Prissatt",
@@ -969,6 +1010,16 @@
         "openItem": "Öppna artikeln",
         "columns": { "type": "Typ", "period": "Period", "note": "Anteckning" }
       },
+      "programItem": {
+        "singular": "Programpunkt",
+        "empty": "Inga programpunkter hittades.",
+        "quantity": "{count} deltar",
+        "hasResponsible": "Har en ansvarig",
+        "noResponsible": "Ingen ansvarig",
+        "archived": "Borttagen från programmet",
+        "openBooking": "Öppna bokningen",
+        "columns": { "name": "Namn", "when": "När", "quantity": "Antal" }
+      },
       "entityType": {
         "empty": "Inga typer hittades.",
         "open": "Öppna typen",
@@ -980,7 +1031,8 @@
           "CONTACT": "Kontakt",
           "INQUIRY": "Förfrågan",
           "BOOKING": "Bokning",
-          "REQUIREMENT": "Behov"
+          "REQUIREMENT": "Behov",
+          "PROGRAM_ITEM": "Programpunkt"
         },
         "behaviour": {
           "PRICED": "Prissatt",
@@ -1339,6 +1391,7 @@
       "configuration": "Konfiguration (typer, fält, listor, uppställningar)",
       "bookingStatus": "Bokningsstatusar och övergångar",
       "booking": "Bokningar och deras ansvariga",
+      "programItem": "Programpunkter (bokningens körschema)",
       "search": "Sök",
       "conversation": "Konversationer",
       "skill": "Färdigheter",

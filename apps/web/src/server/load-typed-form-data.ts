@@ -6,7 +6,7 @@ import { runOperation } from "./run-operation";
 
 const LIMIT = 100;
 
-export type LoadTypedFormDataInput = { base: "CUSTOMER" | "CONTACT" | "BOOKING" };
+export type LoadTypedFormDataInput = { base: "CUSTOMER" | "CONTACT" | "BOOKING" | "PROGRAM_ITEM" };
 
 /** The base's types (with their fields), the lists their choice fields use and link targets. */
 export async function loadTypedFormData({

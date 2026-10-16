@@ -8,6 +8,7 @@ export const ENTITY_BASES = [
   "INQUIRY",
   "BOOKING",
   "REQUIREMENT",
+  "PROGRAM_ITEM",
 ] as const;
 export type EntityBase = (typeof ENTITY_BASES)[number];
 

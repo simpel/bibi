@@ -27,7 +27,7 @@ test("create a personal skill, export it and import it back", async ({ page }) =
 
   await expect(page).toHaveURL(/\/sv\/skills\/[^/]+$/);
   await expect(page.getByRole("heading", { name: "Round trip", level: 1 })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Steg" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Steps" })).toBeVisible();
   await expect(page.getByText("venues", { exact: true })).toBeVisible();
   await expect(page.getByText("venue_list")).toBeVisible();
   await expect(page.getByText("checklist.md")).toBeVisible();

@@ -24,9 +24,13 @@ const catalog: PermissionSet = {
 const customersRead: PermissionSet = { customer: ["read"], contact: ["read"] };
 const customersWrite: PermissionSet = { customer: ["write"], contact: ["write"] };
 
-/** Bookings and their owners (ADR 0022); owners are members, shown and picked by name. */
-const bookingsRead: PermissionSet = { booking: ["read"], member: ["read"] };
-const bookingsWrite: PermissionSet = { booking: ["write"], member: ["read"] };
+/** Bookings, their program items and owners (ADR 0022); owners are members, shown and picked by name. */
+const bookingsRead: PermissionSet = { booking: ["read"], programItem: ["read"], member: ["read"] };
+const bookingsWrite: PermissionSet = {
+  booking: ["write"],
+  programItem: ["write"],
+  member: ["read"],
+};
 
 /** Requesting payments from customers (ADR 0028); the payout account stays with `payment:admin`. */
 const paymentsWrite: PermissionSet = { payment: ["write"] };
@@ -65,6 +69,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         configuration: ["admin"],
         bookingStatus: ["admin"],
         booking: ["admin"],
+        programItem: ["admin"],
         search: ["admin"],
         conversation: ["admin"],
         skill: ["admin"],
