@@ -1412,6 +1412,13 @@
     "approvalExpired": "Förslaget har gått ut eller kan inte godkännas. Be assistenten föreslå på nytt.",
     "unavailable": "Funktionen är inte tillgänglig just nu. En administratör behöver konfigurera den."
   },
+  "dev": {
+    "services": "Tjänster",
+    "devUsers": "Dev-användare",
+    "switchUser": "Byt dev-användare",
+    "switching": "Byter användare…",
+    "switched": "Inloggad som {name}."
+  },
   "shell": {
     "mainNavigation": "Huvudnavigering",
     "userMenu": "Användarmeny",

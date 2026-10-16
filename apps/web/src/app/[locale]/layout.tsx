@@ -5,6 +5,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
+import { DevUserSwitcherSlot } from "@/features/dev/ui/dev-user-switcher-slot";
 import "../globals.css";
 
 type LocaleLayoutProps = { children: ReactNode; params: Promise<{ locale: string }> };
@@ -31,6 +32,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <body>
         <NextIntlClientProvider>
           <Providers>{children}</Providers>
+          <DevUserSwitcherSlot />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -1,6 +1,9 @@
+import { isDevEnvironment } from "@okazi/auth";
 import { getEnv } from "@okazi/config";
 import { createSystemLogSink } from "@okazi/db";
 import { getLogger, initLogger, installProcessHandlers } from "@okazi/logger";
+import { formatDevBanner } from "@/lib/dev-banner";
+import { devServices } from "@/lib/dev-services";
 import { ensureOperations } from "@/server/operations";
 
 /** Registers core operations on server startup (Node runtime only). */
@@ -15,6 +18,14 @@ export function registerLogging(): void {
   initLogger({ service: "web", sinks: [createSystemLogSink({ retentionDays })] });
   installProcessHandlers({ exitOnUncaught: false });
   getLogger().info({ event: "process.started", msg: "@okazi/web started" });
+}
+
+/** `pnpm dev` only: prints the local services to the terminal. */
+export function registerDevBanner(): void {
+  if (!isDevEnvironment()) return;
+  const { WEB_URL, MCP_URL } = getEnv();
+  const services = devServices({ webUrl: WEB_URL, mcpUrl: MCP_URL });
+  process.stdout.write(formatDevBanner({ services }));
 }
 
 export type LogRequestErrorInput = {
