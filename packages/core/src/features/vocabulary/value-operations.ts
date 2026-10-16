@@ -61,7 +61,8 @@ export const updateVocabularyValue = defineOperation({
 export const archiveVocabularyValue = defineOperation({
   name: "vocabulary.archiveValue",
   kind: "command",
-  description: "Archive a list value. Refused while an item still carries it.",
+  description:
+    "Archive a list value. Refused while a record still carries it or a requirement counts it.",
   input: VocabularyArchiveValueInputSchema,
   output: VocabularySchema,
   permission: "configuration:write",

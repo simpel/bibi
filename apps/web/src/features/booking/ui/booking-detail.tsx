@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/states/page-header";
 import { BookingInbox } from "@/features/inbound-email/ui/booking-inbox";
 import { BookingPayments } from "@/features/payment/ui/booking-payments";
 import { ProgramSection } from "@/features/program-item/ui/program-section";
+import { RequirementSection } from "@/features/requirement/ui/requirement-section";
 import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -51,6 +52,7 @@ export async function BookingDetail({ locale, id }: BookingDetailProps) {
         <BookingPayments locale={locale} bookingId={id} canRequest={paymentWrite} />
       ) : null}
       <ProgramSection locale={locale} booking={booking.value} />
+      <RequirementSection locale={locale} booking={booking.value} />
       <BookingInbox locale={locale} bookingId={id} address={booking.value.inboundAddress} />
     </div>
   );

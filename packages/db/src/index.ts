@@ -59,6 +59,7 @@ export {
   Prisma,
   type ProgramItem,
   RecordStatus,
+  type Requirement,
   type Setup,
   type Skill,
   SkillScope,

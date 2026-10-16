@@ -42,7 +42,7 @@ export const updateFieldDefinition = defineOperation({
     const next = { ...before, ...data };
     const source = await checkChoiceSource({ context, source: next });
     if (!source.ok) return source;
-    const link = await checkLinkTarget({ context, source: next });
+    const link = await checkLinkTarget({ context, entityTypeId, source: next });
     if (!link.ok) return link;
     const change = await checkFieldChange({ context, before, next });
     if (!change.ok) return change;

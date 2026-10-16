@@ -594,6 +594,34 @@
       "responsible": "Ansvarig"
     }
   },
+  "requirement": {
+    "singular": "Behov",
+    "plural": "Behov",
+    "create": "Lägg till behov",
+    "edit": "Redigera behov",
+    "createDescription": "Räkna hur många som behöver ett värde från en av era listor, t.ex. Gluten × 3. På en programpunkt ersätter antalet bokningens för det värdet. Bara antal, aldrig namn.",
+    "editDescription": "Ändra antalet eller typens fält.",
+    "archive": "Ta bort behov",
+    "archiveConfirm": "Vill du ta bort antalet för \"{name}\"?",
+    "archived": "Behovet har tagits bort.",
+    "created": "Behovet har lagts till.",
+    "updated": "Behovet har uppdaterats.",
+    "taken": "Det finns redan ett antal för det här värdet här. Redigera det i stället.",
+    "empty": "Bokningen har inga behov än.",
+    "wholeBooking": "Hela bokningen",
+    "fields": {
+      "type": "Typ",
+      "programItem": "Gäller",
+      "value": "Listvärde",
+      "quantity": "Antal"
+    },
+    "columns": {
+      "value": "Listvärde",
+      "where": "Gäller",
+      "quantity": "Antal",
+      "type": "Typ"
+    }
+  },
   "entityType": {
     "singular": "Typ",
     "plural": "Typer",
@@ -1169,6 +1197,19 @@
         "openBooking": "Öppna bokningen",
         "columns": { "name": "Namn", "when": "När", "quantity": "Antal" }
       },
+      "requirement": {
+        "singular": "Behov",
+        "empty": "Inga behov hittades.",
+        "quantity": "Antal: {count}",
+        "onBooking": "Gäller hela bokningen",
+        "onProgramItem": "Gäller en programpunkt",
+        "archived": "Borttaget",
+        "openBooking": "Öppna bokningen",
+        "columns": {
+          "quantity": "Antal",
+          "where": "Gäller"
+        }
+      },
       "entityType": {
         "empty": "Inga typer hittades.",
         "open": "Öppna typen",
@@ -1549,6 +1590,7 @@
       "bookingStatus": "Bokningsstatusar och övergångar",
       "booking": "Bokningar och deras ansvariga",
       "programItem": "Programpunkter (bokningens körschema)",
+      "requirement": "Behov (antal mot listvärden på bokningar)",
       "inquiry": "Förfrågningar och deras säljare",
       "search": "Sök",
       "conversation": "Konversationer",

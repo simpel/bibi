@@ -41,7 +41,7 @@ export async function insertField({
   }
   const source = await checkChoiceSource({ context, source: { kind, vocabularyId, options } });
   if (!source.ok) return source;
-  const link = await checkLinkTarget({ context, source: { kind, linkTypeId } });
+  const link = await checkLinkTarget({ context, entityTypeId, source: { kind, linkTypeId } });
   if (!link.ok) return link;
   const key = await resolveKey({ context, input });
   if (!key.ok) return key;

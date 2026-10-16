@@ -30,6 +30,7 @@ model ProgramItem {
   entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   item           Item?        @relation(fields: [itemId, organizationId], references: [id, organizationId])
   setup          Setup?       @relation(fields: [setupId, organizationId], references: [id, organizationId])
+  requirements   Requirement[]
 
   @@unique([id, organizationId])
   @@index([organizationId, bookingId, startsAt])

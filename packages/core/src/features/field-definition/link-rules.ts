@@ -9,15 +9,31 @@ type Db = Pick<OperationContext, "db">;
 
 export type CheckLinkTargetInput = {
   context: Db;
+  /** The type the field belongs to. */
+  entityTypeId: string;
   source: { kind: FieldKind; linkTypeId: string | null };
 };
 
+/** Bases whose records are, or may be, people (a contact person, a private customer). */
+const PERSON_BASES: readonly string[] = ["CONTACT", "CUSTOMER"];
+
+type PersonLinkInput = { context: Db; entityTypeId: string; targetBase: string };
+
+/** A requirement is never linked to a person (ADR 0021): no LINK to a contact or customer. */
+async function linksRequirementToPerson({ context, entityTypeId, targetBase }: PersonLinkInput) {
+  if (!PERSON_BASES.includes(targetBase)) return false;
+  const owner = await context.db.entityType.findFirst({ where: { id: entityTypeId } });
+  return owner?.base === "REQUIREMENT";
+}
+
 /**
  * A LINK field needs a target type (`linkTypeId`) whose records can be linked: an active item,
- * customer, contact or booking type of the organization. Other kinds take no target.
+ * customer, contact or booking type of the organization. A requirement type's fields cannot link
+ * to people. Other kinds take no target.
  */
 export async function checkLinkTarget({
   context,
+  entityTypeId,
   source: { kind, linkTypeId },
 }: CheckLinkTargetInput): Promise<Result<true>> {
   const fail = ({ message }: { message: string }) =>
@@ -31,6 +47,8 @@ export async function checkLinkTarget({
   if (!type) return fail({ message: "Unknown type" });
   if (!isLinkableBase({ base: type.base }))
     return fail({ message: `${type.base} records cannot be linked` });
+  if (await linksRequirementToPerson({ context, entityTypeId, targetBase: type.base }))
+    return fail({ message: "A requirement is never linked to a person" });
   return ok({ value: true });
 }
 

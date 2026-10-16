@@ -7,7 +7,7 @@ import { runOperation } from "./run-operation";
 const LIMIT = 100;
 
 export type LoadTypedFormDataInput = {
-  base: "CUSTOMER" | "CONTACT" | "BOOKING" | "PROGRAM_ITEM" | "INQUIRY";
+  base: "CUSTOMER" | "CONTACT" | "BOOKING" | "PROGRAM_ITEM" | "INQUIRY" | "REQUIREMENT";
 };
 
 /** The base's types (with their fields), the lists their choice fields use and link targets. */

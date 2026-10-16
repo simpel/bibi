@@ -1,6 +1,7 @@
 import { bookingInboundAddress, deliverInboundEmail } from "@okazi/core";
 import type { Json } from "./helpers";
 import { byId, type ParityEntity, tool } from "./parity-entities";
+import { requirement } from "./parity-entities-requirement";
 
 /**
  * A booking (ADR 0022) for the customer created earlier. It gets the default TENTATIVE status,
@@ -142,5 +143,5 @@ const inboundEmail = (): ParityEntity => ({
 
 /** Bookings and inquiries; a function so the import cycle with `parity-entities.ts` resolves first. */
 export function bookingEntities(): ParityEntity[] {
-  return [booking(), bookingSeries(), programItem(), inboundEmail(), inquiry()];
+  return [booking(), bookingSeries(), programItem(), requirement(), inboundEmail(), inquiry()];
 }

@@ -14,6 +14,11 @@ export const UI_EXEMPT: readonly UiExempt[] = [
       "A program item has no page of its own: the booking page lists the run schedule with programItem.list and edits it inline.",
   },
   {
+    operation: "requirement.get",
+    reason:
+      "A requirement has no page of its own: the booking page lists its counts with requirement.list and edits them inline.",
+  },
+  {
     operation: "contact.get",
     reason:
       "Contact persons have no page of their own: the customer page lists them with contact.list and edits them inline.",

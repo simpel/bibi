@@ -14,13 +14,16 @@ export const listFieldsUsing = ({ context, vocabularyId }: ListFieldsUsingInput)
 
 export type ValueInUseInput = ListFieldsUsingInput & { valueId: string };
 
-/** Number of active records (items, customers, contacts) that carry the list value in any field. */
+/**
+ * Number of active records that carry the list value: in any field (items, customers, contacts …)
+ * or as the value a requirement counts (ADR 0021).
+ */
 export async function countRecordsUsingValue({
   context,
   vocabularyId,
   valueId,
 }: ValueInUseInput): Promise<number> {
-  let total = 0;
+  let total = await context.db.requirement.count({ where: { vocabularyValueId: valueId } });
   for (const field of await listFieldsUsing({ context, vocabularyId })) {
     total += await countRecordsWithValue({
       context,

@@ -74,6 +74,7 @@ export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire } from "./ui-contract/payment-entries";
 export type { PriceListWire } from "./ui-contract/price-list-entries";
 export type { ProgramItemWire } from "./ui-contract/program-item-entries";
+export type { RequirementWire } from "./ui-contract/requirement-entries";
 export { type ResolveToolUiInput, resolveToolUi } from "./ui-contract/resolve-tool-ui";
 export type { SheetDefinitionWire } from "./ui-contract/sheet-definition-entries";
 export { GENERIC_UI_TOOLS, TOOL_UI_REGISTRY } from "./ui-contract/tool-ui-registry";

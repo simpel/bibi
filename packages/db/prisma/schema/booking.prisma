@@ -41,6 +41,7 @@ model Booking {
   inboundEmails       InboundEmail[]
   payments            Payment[]
   programItems        ProgramItem[]
+  requirements        Requirement[]
 
   @@unique([id, organizationId])
   @@unique([organizationId, reference])

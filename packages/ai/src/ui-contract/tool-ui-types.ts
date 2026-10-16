@@ -9,6 +9,7 @@ import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire } from "./payment-entries";
 import type { PriceListWire } from "./price-list-entries";
 import type { ProgramItemWire } from "./program-item-entries";
+import type { RequirementWire } from "./requirement-entries";
 import type { SheetDefinitionWire } from "./sheet-definition-entries";
 import type {
   AuditLogWire,
@@ -55,6 +56,8 @@ export type ToolUiProps = {
   "booking-series-card": { series: BookingSeriesWire };
   "program-item-table": { items: ProgramItemWire[]; nextCursor: string | null };
   "program-item-card": { programItem: ProgramItemWire };
+  "requirement-table": { items: RequirementWire[]; nextCursor: string | null };
+  "requirement-card": { requirement: RequirementWire };
   "inquiry-table": { items: InquiryWire[]; nextCursor: string | null };
   "inquiry-card": { inquiry: InquiryWire };
   "inbound-email-table": { items: InboundEmailWire[]; nextCursor: string | null };

@@ -6,6 +6,7 @@ import {
   toBookingStatusDto,
   toCustomerDto,
   type VocabularyDto,
+  type VocabularyValueDto,
   WITH_TRANSITIONS,
 } from "@okazi/core";
 import type { ScopedDb } from "@okazi/db";
@@ -22,6 +23,7 @@ export type Loaders = {
   bookingStatus: BatchLoader<BookingStatusDto>;
   entityType: BatchLoader<EntityTypeDto>;
   vocabulary: BatchLoader<VocabularyDto>;
+  vocabularyValue: BatchLoader<VocabularyValueDto>;
 };
 
 const byId = <T extends { id: string }>({ rows }: { rows: readonly T[] }): Map<string, T> =>
@@ -87,5 +89,13 @@ export function createLoaders({ db }: DbInput): Loaders {
     bookingStatus: createBatchLoader({ batch: (ids) => loadBookingStatuses({ db, ids }) }),
     entityType: createBatchLoader({ batch: (ids) => loadEntityTypes({ db, ids }) }),
     vocabulary: createBatchLoader({ batch: (ids) => loadVocabularies({ db, ids }) }),
+    vocabularyValue: createBatchLoader({
+      batch: async (ids) => {
+        const select = { id: true, vocabularyId: true, name: true, position: true };
+        return byId({
+          rows: await db.vocabularyValue.findMany({ where: { id: { in: [...ids] } }, select }),
+        });
+      },
+    }),
   };
 }

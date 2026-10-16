@@ -51,6 +51,7 @@ model EntityType {
   bookings       Booking[]
   bookingSeries  BookingSeries[]
   programItems   ProgramItem[]
+  requirements   Requirement[]
   inquiries      Inquiry[]
 
   @@unique([id, organizationId])
@@ -112,6 +113,7 @@ model VocabularyValue {
   updatedAt      DateTime     @updatedAt
   createdBy      String?
   vocabulary     Vocabulary   @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
+  requirements   Requirement[]
 
   @@unique([id, organizationId])
   @@index([organizationId, vocabularyId, status])

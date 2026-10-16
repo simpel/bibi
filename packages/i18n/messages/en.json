@@ -594,6 +594,34 @@
       "responsible": "Responsible"
     }
   },
+  "requirement": {
+    "singular": "Requirement",
+    "plural": "Requirements",
+    "create": "Add requirement",
+    "edit": "Edit requirement",
+    "createDescription": "Count how many need a value from one of your lists, e.g. Gluten × 3. On a program item the count replaces the booking's for that value. Counts only, never names.",
+    "editDescription": "Change the count or the type's fields.",
+    "archive": "Remove requirement",
+    "archiveConfirm": "Do you want to remove the count for \"{name}\"?",
+    "archived": "The requirement has been removed.",
+    "created": "The requirement has been added.",
+    "updated": "The requirement has been updated.",
+    "taken": "There is already a count for this value here. Edit it instead.",
+    "empty": "The booking has no requirements yet.",
+    "wholeBooking": "Whole booking",
+    "fields": {
+      "type": "Type",
+      "programItem": "Applies to",
+      "value": "List value",
+      "quantity": "Quantity"
+    },
+    "columns": {
+      "value": "List value",
+      "where": "Applies to",
+      "quantity": "Quantity",
+      "type": "Type"
+    }
+  },
   "entityType": {
     "singular": "Type",
     "plural": "Types",
@@ -1169,6 +1197,19 @@
         "openBooking": "Open the booking",
         "columns": { "name": "Name", "when": "When", "quantity": "Quantity" }
       },
+      "requirement": {
+        "singular": "Requirement",
+        "empty": "No requirements found.",
+        "quantity": "Count: {count}",
+        "onBooking": "Applies to the whole booking",
+        "onProgramItem": "Applies to one program item",
+        "archived": "Removed",
+        "openBooking": "Open the booking",
+        "columns": {
+          "quantity": "Count",
+          "where": "Applies to"
+        }
+      },
       "entityType": {
         "empty": "No types found.",
         "open": "Open the type",
@@ -1549,6 +1590,7 @@
       "bookingStatus": "Booking statuses and transitions",
       "booking": "Bookings and their owners",
       "programItem": "Program items (the booking's run schedule)",
+      "requirement": "Requirements (counts against list values on bookings)",
       "inquiry": "Inquiries and their salesperson",
       "search": "Search",
       "conversation": "Conversations",

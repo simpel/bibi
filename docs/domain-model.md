@@ -125,7 +125,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `N:M` Item is tagged with → VocabularyValue (via fields that select from the vocabulary)
 - `1:N` Requirement refers to ← VocabularyValue
 
-> Tags = values in fields that select from a vocabulary (no separate tag rows). A value cannot be archived as long as an item carries it. A vocabulary cannot be archived as long as a field uses it.
+> Tags = values in fields that select from a vocabulary (no separate tag rows). A value cannot be archived as long as an item carries it or a requirement counts it. A vocabulary cannot be archived as long as a field uses it or a requirement counts one of its values.
 
 ### Setup (`Setup`)
 
@@ -428,17 +428,19 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 *MVP* · A count per vocabulary value on a booking or a program item, e.g. Gluten × 3 or Wheelchair × 2. Never tied to a person. There is no personal data about individual guests ([ADR 0021](decisions/0021-configurable-items.md)).
 
 **Attributes**
-- booking or program item
-- vocabulary value
-- count
-- type and custom fields (e.g. severity)
+- booking (`bookingId`) and optionally one of its program items (`programItemId`; null = the whole booking)
+- vocabulary value (`vocabularyValueId`; an active value of an active list in the organization)
+- count (`quantity`, 0 or more; 0 on a program item means "none here")
+- type (the organization's own, base `REQUIREMENT`) and custom fields (e.g. severity); a requirement type's LINK fields never point to a customer or contact type
 
 **Relations**
 - `N:1` Booking has this
 - `N:0..1` ProgramItem adjusts with this
 - `N:1` refers to → VocabularyValue
 
-> ★ A row on the program item replaces the booking's count there. Matching: the requirement is compared with the items on the booking that are tagged with the same vocabulary value. A hit on a required component without an alternative is flagged and blocks the sheet. `item.resolve` computes inherited tags and is the only place for that.
+> Operations (resource `requirement`): `requirement.list|get|create|update|archive` ([ADR 0021](decisions/0021-configurable-items.md)). One active count per vocabulary value and level (the booking, or one program item); a second is refused (`CONFLICT`). `update` changes only the count and fields. The program item must belong to the booking (`VALIDATION`). A vocabulary value, or a whole vocabulary, cannot be archived while a requirement counts it (`CONFLICT`). Every change is audited.
+
+> ★ A row on the program item replaces the booking's count there, value by value; the core helper `effectiveRequirements` (`resolveEffective`) computes the effective count per program item. Matching: the requirement is compared with the items on the booking that are tagged with the same vocabulary value. A hit on a required component without an alternative is flagged and blocks the sheet. `item.resolve` computes inherited tags and is the only place for that.
 
 ### CancellationTerms
 

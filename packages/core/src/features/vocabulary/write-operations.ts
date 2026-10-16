@@ -47,8 +47,8 @@ export const archiveVocabulary = defineOperation({
   name: "vocabulary.archive",
   kind: "command",
   description:
-    "Archive a list. Refused while a field still picks values from it or a sheet definition " +
-    "counts its requirements.",
+    "Archive a list. Refused while a field still picks values from it, a requirement counts " +
+    "one of its values or a sheet definition counts its requirements.",
   input: VocabularyIdInputSchema,
   output: VocabularySchema,
   permission: "configuration:write",
@@ -60,6 +60,10 @@ export const archiveVocabulary = defineOperation({
       const names = fields.map((field) => field.name).join(", ");
       return conflict({ message: `The list is used by the fields ${names}` });
     }
+    const counted = await context.db.requirement.count({
+      where: { vocabularyValue: { vocabularyId: id } },
+    });
+    if (counted > 0) return conflict({ message: `${counted} requirements count its values` });
     const what = `The list ${before.name}`;
     const onSheets = await checkNotOnSheets({ context, reference: { vocabularyId: id }, what });
     if (!onSheets.ok) return onSheets;
