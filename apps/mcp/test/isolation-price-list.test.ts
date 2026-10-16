@@ -36,6 +36,14 @@ describe("cross-organization isolation: price lists", () => {
       args: { id: list.data.id, items: [] },
     });
     expect(setItems.data.code).toBe("NOT_FOUND");
+    const ownList = await call({ client: b, name: "priceList_create", args: { name: "Own" } });
+    const borrowed = await call({
+      client: b,
+      name: "priceList_setItems",
+      args: { id: ownList.data.id, items: [{ itemId: item.data.id, priceMinor: 1_000 }] },
+    });
+    expect(borrowed.isError).toBe(true);
+    expect(["NOT_FOUND", "VALIDATION"]).toContain(borrowed.data.code);
     const archive = await call({
       client: b,
       name: "priceList_archive",
@@ -47,7 +55,7 @@ describe("cross-organization isolation: price lists", () => {
       name: "graphql_query",
       args: { query: "query { priceLists { items { id } } }" },
     });
-    expect(graph.data.data.priceLists.items).toEqual([]);
+    expect(graph.data.data.priceLists.items).toEqual([{ id: ownList.data.id }]);
 
     const own = await call({ client: a, name: "priceList_get", args: { id: list.data.id } });
     expect(own.data.items).toHaveLength(1);
