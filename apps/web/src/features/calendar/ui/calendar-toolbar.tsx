@@ -9,7 +9,8 @@ import {
   calendarQuery,
   shiftCalendar,
 } from "../calendar-params";
-import { VenueFilter } from "./venue-filter";
+import type { TypeOption } from "../calendar-types";
+import { CalendarFilters } from "./calendar-filters";
 
 export type CalendarToolbarProps = {
   params: CalendarParams;
@@ -18,6 +19,8 @@ export type CalendarToolbarProps = {
   /** The shown period, e.g. "Mon 12 Oct – Sun 18 Oct". */
   period: string;
   venues: { id: string; name: string }[];
+  types: TypeOption[];
+  typeId: string | undefined;
 };
 
 const href = ({ params }: { params: CalendarParams }) => ({
@@ -49,10 +52,16 @@ async function ViewSwitch({ params, label }: ViewSwitchProps) {
   );
 }
 
-/** Previous / today / next, the shown period, day or week, and the venue filter. All links. */
-export async function CalendarToolbar({ params, today, period, venues }: CalendarToolbarProps) {
+/** Previous / today / next, the shown period, day or week, and the type and venue filters. */
+export async function CalendarToolbar({
+  params,
+  today,
+  period,
+  venues,
+  types,
+  typeId,
+}: CalendarToolbarProps) {
   const t = await getTranslations("calendar");
-  const { venueId: _venue, ...withoutVenue } = params;
   return (
     <div className="flex flex-wrap items-center gap-2">
       <Button asChild variant="outline" size="icon">
@@ -73,13 +82,7 @@ export async function CalendarToolbar({ params, today, period, venues }: Calenda
       </Button>
       <h2 className="min-w-0 flex-1 text-base font-medium">{period}</h2>
       <ViewSwitch params={params} label={t("view")} />
-      {venues.length > 1 ? (
-        <VenueFilter
-          venues={venues}
-          venueId={params.venueId}
-          query={calendarQuery({ params: withoutVenue })}
-        />
-      ) : null}
+      <CalendarFilters params={params} venues={venues} types={types} typeId={typeId} />
     </div>
   );
 }

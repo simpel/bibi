@@ -493,6 +493,8 @@
     "today": "Today",
     "venue": "Venue",
     "allVenues": "All venues",
+    "type": "Type",
+    "allTypes": "All types",
     "spaces": "Spaces",
     "gridLabel": "Occupancy per space",
     "option": "{position, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} option",

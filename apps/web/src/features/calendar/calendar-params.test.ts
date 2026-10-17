@@ -16,13 +16,14 @@ describe("calendar params", () => {
       view: "day",
       date: { year: 2026, month: 10, day: 15 },
       venueId: undefined,
+      typeId: undefined,
     });
     const invalid = readCalendarParams({ raw: { date: "2026-02-31" }, now, timeZone: TZ });
     expect(invalid.date).toEqual({ year: 2026, month: 10, day: 15 });
   });
 
   it("round-trips the query", () => {
-    const raw = { view: "week", date: "2026-10-14", venue: "v1" };
+    const raw = { view: "week", date: "2026-10-14", venue: "v1", type: "t1" };
     const params = readCalendarParams({ raw, now, timeZone: TZ });
     expect(calendarQuery({ params })).toEqual(raw);
   });

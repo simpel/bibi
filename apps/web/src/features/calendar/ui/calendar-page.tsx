@@ -43,7 +43,7 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
   const today = readCalendarParams({ raw: {}, now, timeZone: TIME_ZONE }).date;
   const range = calendarRange({ params, timeZone: TIME_ZONE });
   const [result, { bookingWrite }] = await Promise.all([
-    loadCalendar({ ...range, venueId: params.venueId }),
+    loadCalendar({ ...range, venueId: params.venueId, typeId: params.typeId }),
     getCallerAbilities(),
   ]);
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
@@ -57,7 +57,14 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
   return (
     <div className="grid gap-6">
       {header}
-      <CalendarToolbar params={params} today={today} period={period} venues={result.value.venues} />
+      <CalendarToolbar
+        params={params}
+        today={today}
+        period={period}
+        venues={result.value.venues}
+        types={result.value.types}
+        typeId={result.value.typeId}
+      />
       <CalendarBody
         params={params}
         data={result.value}

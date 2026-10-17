@@ -11,8 +11,13 @@ import {
 export const CALENDAR_VIEWS = ["day", "week"] as const;
 export type CalendarView = (typeof CALENDAR_VIEWS)[number];
 
-/** The calendar's URL state: `?view=day|week&date=YYYY-MM-DD&venue=<id>`, shareable as a link. */
-export type CalendarParams = { view: CalendarView; date: PlainDate; venueId?: string | undefined };
+/** The calendar's URL state: `?view=day|week&date=YYYY-MM-DD&venue=<id>&type=<id>|all`, shareable. */
+export type CalendarParams = {
+  view: CalendarView;
+  date: PlainDate;
+  venueId?: string | undefined;
+  typeId?: string | undefined;
+};
 
 export type RawCalendarParams = Record<string, string | string[] | undefined>;
 
@@ -40,7 +45,7 @@ export function readCalendarParams({
   const view = first({ value: raw.view }) === "week" ? "week" : "day";
   const value = first({ value: raw.date });
   const date = readDate({ now, timeZone, ...(value ? { value } : {}) });
-  return { view, date, venueId: first({ value: raw.venue }) };
+  return { view, date, venueId: first({ value: raw.venue }), typeId: first({ value: raw.type }) };
 }
 
 /** The query string values for `params` (the inverse of `readCalendarParams`). */
@@ -49,7 +54,9 @@ export function calendarQuery({ params }: { params: CalendarParams }): Record<st
     view: params.view,
     date: toIsoDate({ date: params.date }),
   };
-  return params.venueId ? { ...query, venue: params.venueId } : query;
+  if (params.venueId) query.venue = params.venueId;
+  if (params.typeId) query.type = params.typeId;
+  return query;
 }
 
 /** The days shown: the date itself, or Monday to Sunday of its week. */

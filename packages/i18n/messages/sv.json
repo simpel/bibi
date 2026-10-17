@@ -493,6 +493,8 @@
     "today": "Idag",
     "venue": "Anläggning",
     "allVenues": "Alla anläggningar",
+    "type": "Typ",
+    "allTypes": "Alla typer",
     "spaces": "Lokaler",
     "gridLabel": "Beläggning per lokal",
     "option": "{position, selectordinal, one {#:a} other {#:e}} option",
