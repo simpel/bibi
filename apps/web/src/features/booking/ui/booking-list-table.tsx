@@ -14,7 +14,6 @@ export function BookingListTable({ bookings, data, seriesTotals }: BookingListTa
     <BookingTable
       bookings={bookings}
       customers={data.customers}
-      members={data.members}
       types={data.types.map(({ id, name }) => ({ id, name }))}
       statuses={data.statuses}
       seriesTotals={Object.fromEntries(seriesTotals)}

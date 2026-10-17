@@ -10,7 +10,6 @@ export function InquiryListTable({ inquiries, data }: InquiryListTableProps) {
     <InquiryTable
       inquiries={inquiries}
       customers={data.customers}
-      members={data.members}
       types={data.types.map(({ id, name }) => ({ id, name }))}
     />
   );

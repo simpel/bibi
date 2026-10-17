@@ -13,7 +13,6 @@ type Column = ColumnDef<InquiryDto>;
 
 export type InquiryLookups = {
   customers: NamedOption[];
-  members: NamedOption[];
   types: NamedOption[];
 };
 
@@ -31,22 +30,12 @@ const customerColumn = ({ t, customers }: { t: Translate; customers: NamedOption
   ),
 });
 
-const namedColumns = ({
-  t,
-  members,
-  types,
-}: Omit<InquiryLookups, "customers"> & { t: Translate }) => [
+const namedColumns = ({ t, types }: Omit<InquiryLookups, "customers"> & { t: Translate }) => [
   namedOptionColumn({
     id: "type",
     header: t("columns.type"),
     options: types,
     pick: (inquiry: InquiryDto) => inquiry.entityTypeId,
-  }),
-  namedOptionColumn({
-    id: "salesOwner",
-    header: t("columns.salesOwner"),
-    options: members,
-    pick: (inquiry: InquiryDto) => inquiry.salesOwnerId,
   }),
 ];
 
@@ -72,17 +61,17 @@ const detailColumns = ({ t, statuses, format }: DetailInput): Column[] => [
   { id: "quantity", header: t("columns.quantity"), accessorFn: (i) => i.quantity },
 ];
 
-/** Customer (link), type, salesperson, status, desired dates and quantity of an inquiry. */
-export function useInquiryColumns({ customers, members, types }: InquiryLookups): Column[] {
+/** Customer (link), type, status, desired dates and quantity of an inquiry. */
+export function useInquiryColumns({ customers, types }: InquiryLookups): Column[] {
   const t = useTranslations("inquiry");
   const statuses = useTranslations("inquiry.statuses");
   const format = useFormatter();
   return useMemo<Column[]>(
     () => [
       customerColumn({ t, customers }),
-      ...namedColumns({ t, members, types }),
+      ...namedColumns({ t, types }),
       ...detailColumns({ t, statuses, format }),
     ],
-    [t, statuses, format, customers, members, types],
+    [t, statuses, format, customers, types],
   );
 }

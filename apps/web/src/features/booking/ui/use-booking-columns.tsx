@@ -16,7 +16,6 @@ type Format = ReturnType<typeof useFormatter>;
 
 export type BookingLookups = {
   customers: NamedOption[];
-  members: NamedOption[];
   types: NamedOption[];
   statuses: BookingStatusDto[];
   seriesTotals: Record<string, number>;
@@ -51,9 +50,9 @@ const whenColumn = ({ t, format }: { t: Translate; format: Format }): Column => 
   cell: ({ row: { original: b } }) => format.dateTimeRange(b.startsAt, b.endsAt, PERIOD),
 });
 
-type NamedInput = Pick<BookingLookups, "customers" | "members" | "types"> & { t: Translate };
+type NamedInput = Pick<BookingLookups, "customers" | "types"> & { t: Translate };
 
-const namedColumns = ({ t, customers, members, types }: NamedInput): Column[] => [
+const namedColumns = ({ t, customers, types }: NamedInput): Column[] => [
   namedOptionColumn({
     id: "customer",
     header: t("columns.customer"),
@@ -66,20 +65,13 @@ const namedColumns = ({ t, customers, members, types }: NamedInput): Column[] =>
     options: types,
     pick: (booking: BookingDto) => booking.entityTypeId,
   }),
-  namedOptionColumn({
-    id: "salesOwner",
-    header: t("columns.salesOwner"),
-    options: members,
-    pick: (booking: BookingDto) => booking.salesOwnerId,
-  }),
 ];
 
-/** Reference (link), customer, type, salesperson, status and time of a booking. */
+/** Reference (link), customer, type, status and time of a booking. */
 export function useBookingColumns({
   seriesTotals,
   statuses,
   customers,
-  members,
   types,
 }: BookingLookups): Column[] {
   const t = useTranslations("booking");
@@ -87,10 +79,10 @@ export function useBookingColumns({
   return useMemo<Column[]>(
     () => [
       referenceColumn({ t, seriesTotals }),
-      ...namedColumns({ t, customers, members, types }),
+      ...namedColumns({ t, customers, types }),
       statusColumn({ t, statuses }),
       whenColumn({ t, format }),
     ],
-    [t, format, customers, members, types, statuses, seriesTotals],
+    [t, format, customers, types, statuses, seriesTotals],
   );
 }

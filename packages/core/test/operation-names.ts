@@ -128,8 +128,6 @@ const NAMES = [
   "skill.publish",
   "skill.share",
   "skill.update",
-  "userPreference.list",
-  "userPreference.set",
   "venue.archive",
   "venue.create",
   "venue.get",
@@ -146,5 +144,6 @@ const NAMES = [
   "vocabulary.updateValue",
 ];
 /** Every core operation name, sorted. Add new operations here (registry test). */
-const EXTRA = [...EXTRA_NAMES, ...ASSIGNMENT_NAMES];
+const PREFERENCE_NAMES = ["userPreference.list", "userPreference.set"];
+const EXTRA = [...EXTRA_NAMES, ...ASSIGNMENT_NAMES, ...PREFERENCE_NAMES];
 export const OPERATION_NAMES: readonly string[] = [...NAMES, ...EXTRA].sort();
