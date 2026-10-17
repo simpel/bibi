@@ -1,7 +1,7 @@
 import type { NavLabelKey } from "./nav-items";
 import type { SettingsKey } from "./settings-items";
 
-export type CrumbLabelKey = NavLabelKey | SettingsKey | "new" | "edit" | "detail";
+export type CrumbLabelKey = NavLabelKey | SettingsKey | "profile" | "quotes" | "new" | "edit" | "detail";
 
 const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   calendar: "calendar",
@@ -19,7 +19,10 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   sheets: "sheets",
   "price-lists": "priceLists",
   "booking-statuses": "bookingStatuses",
-  roles: "roles",
+  responsibilities: "responsibilities",
+  integrations: "integrations",
+  profile: "profile",
+  quotes: "quotes",
   members: "members",
   payments: "payments",
   new: "new",
