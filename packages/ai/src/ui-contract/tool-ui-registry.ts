@@ -1,4 +1,5 @@
 import { ACCESS_UI_ENTRIES } from "./access-entries";
+import { ASSIGNMENT_UI_ENTRIES } from "./assignment-entries";
 import { BOOKING_UI_ENTRIES } from "./booking-entries";
 import { BOOKING_SERIES_UI_ENTRIES } from "./booking-series-entries";
 import { BOOKING_STATUS_UI_ENTRIES } from "./booking-status-entries";
@@ -64,6 +65,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...BOOKING_UI_ENTRIES,
   ...BOOKING_SERIES_UI_ENTRIES,
   ...PROGRAM_ITEM_UI_ENTRIES,
+  ...ASSIGNMENT_UI_ENTRIES,
   ...REQUIREMENT_UI_ENTRIES,
   ...INQUIRY_UI_ENTRIES,
   ...OPTION_UI_ENTRIES,

@@ -1,4 +1,5 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
+import type { AssignmentWire } from "./assignment-entries";
 import type { BookingWire } from "./booking-entries";
 import type { BookingSeriesWire } from "./booking-series-entries";
 import type { BookingStatusWire } from "./booking-status-entries";
@@ -82,6 +83,8 @@ export type ToolUiProps = {
   "setup-card": { setup: SetupWire };
   "responsibility-table": { items: ResponsibilityWire[]; nextCursor: string | null };
   "responsibility-card": { responsibility: ResponsibilityWire };
+  "assignment-table": { items: AssignmentWire[]; nextCursor: string | null };
+  "assignment-card": { assignment: AssignmentWire };
   "sheet-definition-table": { items: SheetDefinitionWire[]; nextCursor: string | null };
   "sheet-definition-card": { sheet: SheetDefinitionWire };
   "sheet-table": { items: SheetWire[]; nextCursor: string | null };

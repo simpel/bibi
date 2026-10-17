@@ -5,7 +5,7 @@ import { createClient, testContext } from "./helpers";
 const TYPE = `mutation($i: EntityTypeCreateInput!) { entityTypeCreate(input: $i) { id } }`;
 const CUSTOMER = `mutation($i: CustomerCreateInput!) { customerCreate(input: $i) { id } }`;
 const BOOKING = `mutation($i: BookingCreateInput!) { bookingCreate(input: $i) { id reference } }`;
-const ASSIGN = `mutation($i: BookingAssignInput!) { bookingAssign(input: $i) { id } }`;
+const ASSIGN = `mutation($i: AssignmentAssignInput!) { assignmentAssign(input: $i) { id } }`;
 
 describe("booking graph (ADR 0022)", () => {
   it("resolves booking { customer bookingStatus entityType } and customer { bookings }", async () => {
@@ -48,7 +48,16 @@ describe("booking graph (ADR 0022)", () => {
       bookingStatus: { phase: "TENTATIVE" },
       customer: { name: "Kvarnby AB", bookings: [{ id }] },
     });
-    const stranger = await gql({ query: ASSIGN, variables: { i: { id, salesOwnerId: "nobody" } } });
+    const subject = { subjectType: "BOOKING", subjectId: id };
+    const stranger = await gql({
+      query: ASSIGN,
+      variables: { i: { ...subject, assigneeId: "x" } },
+    });
     expect(stranger.body.errors?.[0]?.extensions?.code).toBe("VALIDATION");
+    const unassigned = await gql({
+      query: `query($id: String!) { booking(id: $id) { assignments { assigneeId } } }`,
+      variables: { id },
+    });
+    expect(unassigned.body.data.booking.assignments).toEqual([]);
   });
 });

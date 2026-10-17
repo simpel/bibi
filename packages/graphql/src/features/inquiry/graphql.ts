@@ -1,5 +1,4 @@
 import {
-  assignInquiry,
   createInquiry,
   getInquiry,
   type InquiryDto,
@@ -25,19 +24,13 @@ export const InquiryRef = objectFromSchema<InquiryDto>({
   description:
     "Inquiry – the first step of the sales pipeline: type and fields, customer, contact, " +
     "desired dates, quantity, budget, the fixed status (NEW → QUALIFIED → QUOTED → WON or " +
-    "LOST with a reason) and the salesperson.",
+    "LOST with a reason) and who answers for it (assignments).",
 });
 const InquiryPageRef = pageType({ name: "InquiryPage", item: InquiryRef });
 
 fieldFromOperation({ operation: listInquiries, type: InquiryPageRef, name: "inquiries" });
 fieldFromOperation({ operation: getInquiry, type: InquiryRef, name: "inquiry" });
-for (const operation of [
-  createInquiry,
-  updateInquiry,
-  qualifyInquiry,
-  markInquiryLost,
-  assignInquiry,
-]) {
+for (const operation of [createInquiry, updateInquiry, qualifyInquiry, markInquiryLost]) {
   mutationFromOperation({ operation, type: InquiryRef });
 }
 

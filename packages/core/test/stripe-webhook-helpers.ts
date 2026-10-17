@@ -83,7 +83,7 @@ export async function pendingPayment({ coordinated }: SetupInput) {
             await context.db.booking.findUniqueOrThrow({ where: { id: setup.bookingId } })
           ).entityTypeId,
           customerId: setup.customerId,
-          coordinatorId: await memberUser({ context, name: "Coordinator" }),
+          assigneeId: await memberUser({ context, name: "Coordinator" }),
         })
       ).id
     : setup.bookingId;

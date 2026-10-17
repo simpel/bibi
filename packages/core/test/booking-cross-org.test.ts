@@ -35,14 +35,10 @@ describe("booking cross-organization ids (ADR 0004)", () => {
         : await execute({ operation: createBooking, input: { ...base, ...input }, context });
       return result.ok ? null : { code: result.error.code, path: result.error.issues[0]?.path };
     };
-    const cases = [
-      { customerId: foreignCustomer.id },
-      { salesOwnerId: foreignUser },
-      { coordinatorId: foreignUser },
-    ];
+    const cases = [{ customerId: foreignCustomer.id }, { assigneeId: foreignUser }];
     for (const input of cases) {
       const path = Object.keys(input)[0];
-      // booking.update does not check owners (reported as a follow-up), so only create does.
+      // booking.update has no assignee (assignment.assign checks it), so only create does.
       const modes = path === "customerId" ? [false, true] : [false];
       for (const update of modes) {
         expect(await paths({ input, update })).toMatchObject({ code: "VALIDATION", path });

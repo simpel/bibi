@@ -35,5 +35,4 @@ export const PROGRAM_ITEM_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   programItem_create: programItemCard,
   programItem_update: programItemCard,
   programItem_archive: programItemCard,
-  programItem_assign: programItemCard,
 };

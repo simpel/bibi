@@ -43,7 +43,7 @@ export type CreateTestInquiryInput = {
   context: ExecuteContext;
   entityTypeId: string;
   customerId: string;
-  salesOwnerId?: string;
+  assigneeId?: string;
 };
 
 /** A NEW inquiry for 20 people. */

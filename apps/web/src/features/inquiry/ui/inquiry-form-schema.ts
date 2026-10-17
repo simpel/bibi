@@ -9,7 +9,7 @@ import { formSchema } from "@/lib/form-schema";
 import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 import type { InquiryFormValues } from "./inquiry-form-values";
 
-/** What the resolver outputs: core's create input (the owner is set with `inquiry.assign`). */
+/** What the resolver outputs: core's create input (the assignee is set with `assignment.assign`). */
 export type InquiryFormOutput = z.infer<typeof InquiryCreateInputSchema>;
 
 export type InquirySchemaInput = {
@@ -48,7 +48,7 @@ export type InquiryUpdateArgs = {
 
 /** Create-shaped values → `inquiry.update` input; emptied fields are cleared with `null`. */
 export function toInquiryUpdate({ inquiry, values, type }: InquiryUpdateArgs): InquiryUpdateInput {
-  const { entityTypeId: _type, salesOwnerId: _owner, fields, ...rest } = values;
+  const { entityTypeId: _type, assigneeId: _assignee, fields, ...rest } = values;
   return {
     id: inquiry.id,
     ...rest,

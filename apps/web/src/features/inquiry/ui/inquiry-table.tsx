@@ -24,7 +24,6 @@ export async function InquiryTable({ inquiries, data }: InquiryTableProps) {
           <TableHead>{t("columns.when")}</TableHead>
           <TableHead>{t("columns.quantity")}</TableHead>
           <TableHead>{t("columns.status")}</TableHead>
-          <TableHead>{t("columns.salesOwner")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -41,7 +40,6 @@ export async function InquiryTable({ inquiries, data }: InquiryTableProps) {
             <TableCell>
               <InquiryStatusBadge status={inquiry.inquiryStatus} />
             </TableCell>
-            <TableCell>{nameOf({ options: data.members, id: inquiry.salesOwnerId })}</TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -51,8 +51,7 @@ export async function createQuickBooking({
       startsAt,
       endsAt,
       estimatedHeadcount: quantity,
-      salesOwnerId: input.salesOwnerId ?? null,
-      coordinatorId: input.coordinatorId ?? context.actor.userId,
+      assigneeId: input.assigneeId ?? context.actor.userId,
     },
   });
   if (!booking.ok) return booking;

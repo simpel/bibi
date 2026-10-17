@@ -23,11 +23,4 @@ export const programItemMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Remove program item ${text({ value: input.id })} from the schedule`,
   }),
-  mcpTool({
-    operation: "programItem.assign",
-    idempotent: true,
-    summary: ({ input }) =>
-      `Make ${input.responsibleId === null ? "nobody" : text({ value: input.responsibleId })} ` +
-      `responsible for program item ${text({ value: input.id })}`,
-  }),
 ];

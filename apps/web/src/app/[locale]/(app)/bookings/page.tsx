@@ -1,16 +1,23 @@
 import { resolveLocale } from "@okazi/i18n";
 import { setRequestLocale } from "next-intl/server";
+import { readMine } from "@/features/assignment/ui/mine-filter";
 import { BookingList } from "@/features/booking/ui/booking-list";
 import { readCursor } from "@/lib/page-cursor";
 
 type BookingsPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ cursor?: string | string[] }>;
+  searchParams: Promise<{ cursor?: string | string[]; mine?: string | string[] }>;
 };
 
 export default async function BookingsPage({ params, searchParams }: BookingsPageProps) {
   const locale = resolveLocale({ value: (await params).locale });
-  const { cursor } = await searchParams;
+  const { cursor, mine } = await searchParams;
   setRequestLocale(locale);
-  return <BookingList locale={locale} cursor={readCursor({ value: cursor })} />;
+  return (
+    <BookingList
+      locale={locale}
+      cursor={readCursor({ value: cursor })}
+      mine={readMine({ value: mine })}
+    />
+  );
 }

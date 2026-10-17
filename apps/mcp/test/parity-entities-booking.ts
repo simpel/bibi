@@ -1,6 +1,7 @@
 import { bookingInboundAddress, deliverInboundEmail } from "@okazi/core";
 import type { Json } from "./helpers";
 import { byId, type ParityEntity, tool } from "./parity-entities";
+import { assignment } from "./parity-entities-assignment";
 import { requirement } from "./parity-entities-requirement";
 
 /**
@@ -141,7 +142,8 @@ const inboundEmail = (): ParityEntity => ({
   },
 });
 
-/** Bookings and inquiries; a function so the import cycle with `parity-entities.ts` resolves first. */
+/** Bookings, inquiries and assignments; a function so the parity-entities import cycle resolves. */
 export function bookingEntities(): ParityEntity[] {
-  return [booking(), bookingSeries(), programItem(), requirement(), inboundEmail(), inquiry()];
+  const sales = [inboundEmail(), inquiry(), assignment()];
+  return [booking(), bookingSeries(), programItem(), requirement(), ...sales];
 }

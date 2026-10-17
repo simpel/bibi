@@ -1,4 +1,3 @@
-import type { BookingDto } from "@okazi/core";
 import {
   Button,
   Dialog,
@@ -12,10 +11,12 @@ import {
 import { useTranslations } from "next-intl";
 import type { NamedOption } from "@/components/form/named-option";
 import { OptionSelectField } from "@/components/form/option-select-field";
+import type { AssignSubject } from "./assign-form-schema";
 import { useAssignForm } from "./use-assign-form";
 
 export type AssignDialogProps = {
-  booking: BookingDto;
+  subject: AssignSubject;
+  assigneeId: string | null;
   members: readonly NamedOption[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -23,16 +24,20 @@ export type AssignDialogProps = {
 
 type AssignFormProps = Omit<AssignDialogProps, "open" | "onOpenChange"> & { onDone: () => void };
 
-function AssignForm({ booking, members, onDone }: AssignFormProps) {
+function AssignForm({ subject, assigneeId, members, onDone }: AssignFormProps) {
   const common = useTranslations("common");
-  const t = useTranslations("booking");
-  const { form, submit, pending } = useAssignForm({ booking, onDone });
-  const select = { control: form.control, options: members, noneLabel: t("noOwner") };
+  const t = useTranslations("assignment");
+  const { form, submit, pending } = useAssignForm({ subject, assigneeId, onDone });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
-        <OptionSelectField {...select} name="salesOwnerId" label={t("fields.salesOwner")} />
-        <OptionSelectField {...select} name="coordinatorId" label={t("fields.coordinator")} />
+        <OptionSelectField
+          control={form.control}
+          name="assigneeId"
+          label={t("assignee")}
+          options={members}
+          noneLabel={t("nobody")}
+        />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>
             {common("cancel")}
@@ -46,9 +51,9 @@ function AssignForm({ booking, members, onDone }: AssignFormProps) {
   );
 }
 
-/** Change the salesperson and coordinator (`booking.assign`); both must be members. */
-export function AssignDialog({ booking, members, open, onOpenChange }: AssignDialogProps) {
-  const t = useTranslations("booking");
+/** Change who answers for an inquiry or a booking (`assignment.assign`, ADR 0034). */
+export function AssignDialog({ open, onOpenChange, ...props }: AssignDialogProps) {
+  const t = useTranslations("assignment");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
@@ -56,7 +61,7 @@ export function AssignDialog({ booking, members, open, onOpenChange }: AssignDia
           <DialogTitle>{t("assign")}</DialogTitle>
           <DialogDescription>{t("assignDescription")}</DialogDescription>
         </DialogHeader>
-        <AssignForm booking={booking} members={members} onDone={() => onOpenChange(false)} />
+        <AssignForm {...props} onDone={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );

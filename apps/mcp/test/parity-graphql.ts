@@ -3,6 +3,9 @@ import { createGraphqlHandler } from "@okazi/graphql";
 import { fakeEmbed } from "./fake-embed";
 import type { Json } from "./helpers";
 
+/** The `assignments` query field with its subject variables `$t` and `$id`. */
+export const ASSIGNMENTS_FIELD = "assignments(subjectType: $t, subjectId: $id)";
+
 export type GqlQueryInput = { context: ExecuteContext; query: string; variables?: Json };
 
 export type GqlBody = { data?: Json; errors?: { extensions?: { code?: string } }[] };

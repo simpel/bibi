@@ -8,14 +8,14 @@ import { programSetup } from "./program-item-helpers";
 async function quickSetup() {
   const setup = await programSetup();
   const { context, booking, type, room } = setup;
-  const coordinatorId = await memberUser({ context, name: "Johan Ek" });
+  const assigneeId = await memberUser({ context, name: "Johan Ek" });
   const input = {
     entityTypeId: booking.entityTypeId,
     programItemTypeId: type.id,
     customerId: booking.customerId,
     itemId: room.id,
     quantity: 8,
-    coordinatorId,
+    assigneeId,
     ...hours({ from: 9, to: 11 }),
   };
   return { ...setup, input };
@@ -35,7 +35,9 @@ describe("booking.createQuick (ADR 0022)", () => {
       where: { id: booking.bookingStatusId },
     });
     expect(status.phase).toBe("CONFIRMED");
-    expect(booking).toMatchObject({ estimatedHeadcount: 8, coordinatorId: input.coordinatorId });
+    expect(booking).toMatchObject({ estimatedHeadcount: 8 });
+    const assigned = await context.db.assignment.findFirst({ where: { subjectId: booking.id } });
+    expect(assigned?.assigneeId).toBe(input.assigneeId);
     const items = await context.db.programItem.findMany({ where: { bookingId: booking.id } });
     expect(items).toHaveLength(1);
     expect(items[0]).toMatchObject({ itemId: room.id, quantity: 8 });

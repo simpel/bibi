@@ -9,7 +9,7 @@ export type MoveInquiryInput = {
   context: Pick<OperationContext, "db" | "recordChange">;
   before: InquiryDto;
   to: InquiryStatus;
-  /** Other columns the move sets, e.g. the loss reason or the owner. */
+  /** Other columns the move sets, e.g. the loss reason. */
   data?: Prisma.InquiryUncheckedUpdateInput;
 };
 

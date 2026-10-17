@@ -37,7 +37,6 @@ describe("inquiry.create|update|list|get (ADR 0022)", () => {
       contactId: contact.id,
       quantity: 40,
       budgetMinor: 5_000_000,
-      salesOwnerId: null,
       lossReason: null,
       fields: { [key]: "Kick-off" },
     });
@@ -81,7 +80,7 @@ describe("inquiry.create|update|list|get (ADR 0022)", () => {
       id: inquiry.id,
       quantity: 25,
       inquiryStatus: "WON",
-      salesOwnerId: "user_x",
+      assigneeId: "user_x",
       lossReason: "nope",
     } as InquiryUpdateInput;
     const updated = unwrap({
@@ -90,7 +89,6 @@ describe("inquiry.create|update|list|get (ADR 0022)", () => {
     expect(updated).toMatchObject({
       quantity: 25,
       inquiryStatus: "NEW",
-      salesOwnerId: null,
       lossReason: null,
     });
   });

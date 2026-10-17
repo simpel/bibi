@@ -6,11 +6,9 @@ export type BookableOption = NamedOption & { setupIds: string[] };
 
 /**
  * What the run schedule reads besides the program items: program item types and lists (own
- * fields), the bookable items and setups to pick from and the members who can be responsible
- * (`id` = user id).
+ * fields) and the bookable items and setups to pick from.
  */
 export type ProgramFormData = TypedFormData & {
   items: BookableOption[];
   setups: NamedOption[];
-  members: NamedOption[];
 };

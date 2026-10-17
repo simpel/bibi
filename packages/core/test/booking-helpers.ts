@@ -6,7 +6,7 @@ import { addTestMember, testOrg } from "./org-helpers";
 
 export type MemberUserInput = { context: ExecuteContext; name: string };
 
-/** A member of the organization; returns its user id (what booking owners refer to). */
+/** A member of the organization; returns its user id (what assignments refer to). */
 export async function memberUser({ context, name }: MemberUserInput): Promise<string> {
   const memberId = await addTestMember({ context, role: "Sales", name });
   const member = await getDb().member.findUniqueOrThrow({ where: { id: memberId } });
@@ -26,8 +26,7 @@ export type CreateTestBookingInput = {
   context: ExecuteContext;
   entityTypeId: string;
   customerId: string;
-  salesOwnerId?: string;
-  coordinatorId?: string;
+  assigneeId?: string;
   startsAt?: Date;
   endsAt?: Date;
 };

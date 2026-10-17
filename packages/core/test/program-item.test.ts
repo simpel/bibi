@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  assignProgramItem,
   createEntityType,
   createSetup,
   execute,
@@ -8,7 +7,6 @@ import {
   listProgramItems,
   updateProgramItem,
 } from "../src/index";
-import { memberUser } from "./booking-helpers";
 import { createTypeWithField } from "./customer-helpers";
 import { errorCode, unwrap } from "./helpers";
 import { createTestItem } from "./item-helpers";
@@ -36,7 +34,7 @@ describe("programItem (ADR 0022)", () => {
         context,
       }),
     });
-    expect(first).toMatchObject({ quantity: 40, fields: { [key]: "A-12" }, responsibleId: null });
+    expect(first).toMatchObject({ quantity: 40, fields: { [key]: "A-12" } });
     const input = { bookingId: booking.id };
     const list = unwrap({ result: await execute({ operation: listProgramItems, input, context }) });
     expect(list.items.map((item) => item.id)[0]).toBe(first.id);
@@ -72,30 +70,6 @@ describe("programItem (ADR 0022)", () => {
     expect(errorCode({ result: await addProgramItem({ ...base, from: 10, to: 9 }) })).toBe(
       "VALIDATION",
     );
-  });
-
-  it("sets, changes and removes the responsible person, audited", async () => {
-    const { context, booking, type } = await programSetup();
-    const anna = await memberUser({ context, name: "Anna Berg" });
-    const johan = await memberUser({ context, name: "Johan Ek" });
-    const outsider = await memberUser({ context: await testOrg(), name: "Outsider" });
-    const base = { context, bookingId: booking.id, entityTypeId: type.id, from: 9, to: 10 };
-    const outside = await addProgramItem({ ...base, responsibleId: outsider });
-    expect(issueOf({ result: outside })).toEqual({ code: "VALIDATION", path: "responsibleId" });
-    const item = unwrap({ result: await addProgramItem({ ...base, responsibleId: anna }) });
-    expect(item.responsibleId).toBe(anna);
-    const assign = ({ responsibleId }: { responsibleId: string | null }) =>
-      execute({ operation: assignProgramItem, input: { id: item.id, responsibleId }, context });
-    expect(unwrap({ result: await assign({ responsibleId: johan }) }).responsibleId).toBe(johan);
-    expect(issueOf({ result: await assign({ responsibleId: outsider }) })).toEqual({
-      code: "VALIDATION",
-      path: "responsibleId",
-    });
-    expect(unwrap({ result: await assign({ responsibleId: null }) }).responsibleId).toBeNull();
-    const rows = await context.db.auditLog.findMany({
-      where: { entityId: item.id, operation: "programItem.assign" },
-    });
-    expect(rows).toHaveLength(2);
   });
 
   it("hides program items from another organization", async () => {

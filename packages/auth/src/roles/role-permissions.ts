@@ -15,6 +15,7 @@ const OPERATIONAL: readonly Resource[] = [
   "quote",
   "booking",
   "programItem",
+  "assignment",
   "occupancy",
   "requirement",
   "payment",

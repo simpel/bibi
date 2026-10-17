@@ -1,6 +1,8 @@
 import type { UiComponent } from "@okazi/ai";
 import type { ComponentType } from "react";
 import { ApprovalCardView } from "./approval-card-view";
+import { AssignmentCardView } from "./assignment-card-view";
+import { AssignmentTableView } from "./assignment-table-view";
 import { AuditLogCardView } from "./audit-log-card-view";
 import { AuditLogTableView } from "./audit-log-table-view";
 import { BookingCardView } from "./booking-card-view";
@@ -112,6 +114,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "setup-card": SetupCardView,
   "responsibility-table": ResponsibilityTableView,
   "responsibility-card": ResponsibilityCardView,
+  "assignment-table": AssignmentTableView,
+  "assignment-card": AssignmentCardView,
   "sheet-definition-table": SheetDefinitionTableView,
   "sheet-definition-card": SheetDefinitionCardView,
   "sheet-table": SheetTableView,

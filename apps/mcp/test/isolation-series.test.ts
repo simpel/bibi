@@ -64,7 +64,6 @@ describe("cross-organization isolation: booking series and program items", () =>
     for (const [name, args] of [
       ["programItem_get", { id }],
       ["programItem_update", { id, name: "Hacked" }],
-      ["programItem_assign", { id, responsibleId: null }],
       ["programItem_archive", { id }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");

@@ -3,7 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import { assignInquiry } from "./assign-operation";
+import { subjectIdFilter } from "../assignment/subject-filter";
 import { markInquiryLost, qualifyInquiry } from "./lifecycle-operations";
 import {
   InquiryIdInputSchema,
@@ -19,18 +19,19 @@ export const listInquiries = defineOperation({
   kind: "query",
   description:
     "List the organization's inquiries, newest first. Filter by customer, type, status " +
-    "(NEW, QUALIFIED, QUOTED, WON, LOST) or salesperson.",
+    "(NEW, QUALIFIED, QUOTED, WON, LOST), assignee or follower (assignment.list).",
   input: InquiryListInputSchema,
   output: InquiryListOutputSchema,
   permission: "inquiry:read",
   handler: async ({ input, context }) => {
-    const { customerId, entityTypeId, inquiryStatus, salesOwnerId } = input;
+    const { customerId, entityTypeId, inquiryStatus, assigneeId, followerId } = input;
+    const ids = await subjectIdFilter({ context, subjectType: "INQUIRY", assigneeId, followerId });
     const rows = await context.db.inquiry.findMany({
       where: {
         ...(customerId ? { customerId } : {}),
         ...(entityTypeId ? { entityTypeId } : {}),
         ...(inquiryStatus ? { inquiryStatus } : {}),
-        ...(salesOwnerId ? { salesOwnerId } : {}),
+        ...ids,
       },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       ...pageArgs(input),
@@ -46,7 +47,7 @@ export const getInquiry = defineOperation({
   kind: "query",
   description:
     "Get one inquiry by id: type and its field values, customer, contact, desired dates, " +
-    "quantity, budget, status (with loss reason) and salesperson.",
+    "quantity, budget and status (with loss reason). Who answers for it: assignment.list.",
   input: InquiryIdInputSchema,
   output: InquirySchema,
   permission: "inquiry:read",
@@ -63,5 +64,4 @@ export const inquiryOperations = [
   updateInquiry,
   qualifyInquiry,
   markInquiryLost,
-  assignInquiry,
 ];

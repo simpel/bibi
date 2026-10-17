@@ -1,3 +1,4 @@
+import { assignmentOperations } from "./features/assignment/operations";
 import { auditLogOperations } from "./features/audit-log/operations";
 import { bookingOperations } from "./features/booking/operations";
 import { bookingSeriesOperations } from "./features/booking-series/operations";
@@ -54,6 +55,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...bookingOperations,
     ...bookingSeriesOperations,
     ...programItemOperations,
+    ...assignmentOperations,
     ...requirementOperations,
     ...sheetOperations,
     ...inquiryOperations,

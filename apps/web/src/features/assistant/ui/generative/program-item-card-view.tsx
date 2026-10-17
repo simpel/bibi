@@ -10,7 +10,7 @@ import { occupancyPeriod } from "./occupancy-period";
 
 export type ProgramItemCardViewProps = GenerativeProps<"program-item-card">;
 
-/** One program item: name, time, quantity, whether someone is responsible and own fields. */
+/** One program item: name, time, quantity and own fields. */
 export function ProgramItemCardView({ programItem }: ProgramItemCardViewProps) {
   const t = useTranslations("assistant.ui.programItem");
   const format = useFormatter();
@@ -25,7 +25,6 @@ export function ProgramItemCardView({ programItem }: ProgramItemCardViewProps) {
       <CardContent className="grid gap-1 p-4 pt-0 text-sm text-muted-foreground">
         <p>{occupancyPeriod({ format, ...programItem })}</p>
         {quantity === null ? null : <p>{t("quantity", { count: quantity })}</p>}
-        <p>{programItem.responsibleId ? t("hasResponsible") : t("noResponsible")}</p>
         {programItem.status === "ARCHIVED" ? <p>{t("archived")}</p> : null}
         {fieldLines({ fields: programItem.fields }).map((line) => (
           <p key={line}>{line}</p>

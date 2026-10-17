@@ -14,7 +14,7 @@ import { createTestQuote, quoteSetup } from "./quote-helpers";
 
 describe("quote.create (ADR 0022)", () => {
   it("snapshots the items into lines, sums the totals and inherits the salesperson", async () => {
-    const { context, inquiry, lunch, coffee, gluten, erik } = await quoteSetup();
+    const { context, inquiry, lunch, coffee, gluten } = await quoteSetup();
     const lines = [
       { itemId: lunch.id, quantity: 20 },
       { itemId: coffee.id, quantity: 20, unitPriceMinor: 3_500, discountPercent: 10 },

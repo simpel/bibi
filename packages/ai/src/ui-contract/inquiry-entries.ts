@@ -37,5 +37,4 @@ export const INQUIRY_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   inquiry_update: inquiryCard,
   inquiry_qualify: inquiryCard,
   inquiry_markLost: inquiryCard,
-  inquiry_assign: inquiryCard,
 };

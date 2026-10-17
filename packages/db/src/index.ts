@@ -20,6 +20,9 @@ export { upsertEmbedding } from "./embeddings/upsert-embedding";
 export {
   ActorType,
   type AiSetting,
+  type Assignment,
+  type AssignmentFollower,
+  AssignmentSubjectType,
   type AuditLog,
   type Booking,
   BookingPhase,

@@ -19,23 +19,15 @@ export const inquiryMcpTools = [
   mcpTool({
     operation: "inquiry.qualify",
     summary: ({ input }) =>
-      input.salesOwnerId === undefined
+      input.assigneeId === undefined
         ? `Qualify inquiry ${text({ value: input.id })}`
-        : `Qualify inquiry ${text({ value: input.id })} with salesperson ${text({
-            value: input.salesOwnerId,
+        : `Qualify inquiry ${text({ value: input.id })} assigned to ${text({
+            value: input.assigneeId,
           })}`,
   }),
   mcpTool({
     operation: "inquiry.markLost",
     summary: ({ input }) =>
       `Mark inquiry ${text({ value: input.id })} as lost: ${text({ value: input.lossReason })}`,
-  }),
-  mcpTool({
-    operation: "inquiry.assign",
-    idempotent: true,
-    summary: ({ input }) =>
-      `Assign inquiry ${text({ value: input.id })} to ${
-        input.salesOwnerId === null ? "nobody" : text({ value: input.salesOwnerId })
-      }`,
   }),
 ];

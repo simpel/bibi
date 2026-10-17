@@ -75,7 +75,7 @@ export async function quoteSetup() {
   const inquiry = unwrap({
     result: await execute({
       operation: qualifyInquiry,
-      input: { id: created.id, salesOwnerId: erik },
+      input: { id: created.id, assigneeId: erik },
       context,
     }),
   });

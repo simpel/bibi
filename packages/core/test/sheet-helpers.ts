@@ -1,5 +1,5 @@
 import {
-  assignBooking,
+  assignAssignment,
   changeBookingStatus,
   createEntityType,
   createFieldDefinition,
@@ -91,13 +91,13 @@ export type SetupResult = Awaited<ReturnType<typeof sheetSetup>>;
 
 export type ConfirmInput = { context: ExecuteContext; bookingId: string };
 
-/** Gives the booking a coordinator and moves it to the CONFIRMED phase. */
+/** Gives the booking a main assignee and moves it to the CONFIRMED phase. */
 export async function confirmBooking({ context, bookingId }: ConfirmInput) {
-  const coordinatorId = await memberUser({ context, name: "Johan Ek" });
+  const assigneeId = await memberUser({ context, name: "Johan Ek" });
   unwrap({
     result: await execute({
-      operation: assignBooking,
-      input: { id: bookingId, coordinatorId },
+      operation: assignAssignment,
+      input: { subjectType: "BOOKING", subjectId: bookingId, assigneeId },
       context,
     }),
   });

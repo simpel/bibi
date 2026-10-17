@@ -9,7 +9,7 @@ import type { InquiryFormData } from "./inquiry-form-data";
 
 export type InquiryFactsProps = { inquiry: InquiryDto; data: InquiryFormData };
 
-/** Description list of an inquiry: customer, contact, dates, quantity, budget, owner, fields. */
+/** Description list of an inquiry: customer, contact, dates, quantity, budget, fields. */
 export async function InquiryFacts({ inquiry, data }: InquiryFactsProps) {
   const t = await getTranslations("inquiry.fields");
   const common = await getTranslations("common");
@@ -24,7 +24,6 @@ export async function InquiryFacts({ inquiry, data }: InquiryFactsProps) {
     { label: t("when"), value: desiredPeriod({ inquiry, format }) },
     { label: t("quantity"), value: inquiry.quantity === null ? "–" : String(inquiry.quantity) },
     { label: t("budget"), value: budget === null ? "–" : formatKr({ minor: budget, locale }) },
-    { label: t("salesOwner"), value: nameOf({ options: data.members, id: inquiry.salesOwnerId }) },
     ...(inquiry.lossReason ? [{ label: t("lossReason"), value: inquiry.lossReason }] : []),
     ...ownFieldFacts({
       type,

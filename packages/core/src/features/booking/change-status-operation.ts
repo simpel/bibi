@@ -10,7 +10,7 @@ export const changeBookingStatus = defineOperation({
   description:
     "Move a booking to another of the organization's statuses (ADR 0022). Only transitions the " +
     "organization allows (bookingStatus.list transitionsTo); others give CONFLICT. The phase " +
-    "rules always apply: CONFIRMED and COMPLETED need a coordinator (booking.assign), COMPLETED " +
+    "rules always apply: CONFIRMED and COMPLETED need a main assignee (assignment.assign), COMPLETED " +
     "only after the booking has ended, CANCELLED needs a reason and releases the booking's " +
     "occupancy.",
   input: BookingChangeStatusInputSchema,

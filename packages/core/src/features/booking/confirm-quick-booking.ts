@@ -8,7 +8,7 @@ export type ConfirmQuickBookingInput = { context: OperationContext; booking: Boo
 
 /**
  * Moves the booking to the default status of the `CONFIRMED` phase through the organization's own
- * transition and the fixed phase rules (a coordinator is required).
+ * transition and the fixed phase rules (a main assignee is required).
  */
 export async function confirmQuickBooking({
   context,

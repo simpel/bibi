@@ -13,8 +13,8 @@ export const createBooking = defineOperation({
   kind: "command",
   description:
     "Create a booking of one of the organization's booking types for a customer. It gets the " +
-    "next reference number and the default status of the TENTATIVE phase. Owners must be " +
-    "members. `fields` must match the type's own fields.",
+    "next reference number and the default status of the TENTATIVE phase. `assigneeId` (a " +
+    "member) becomes the main assignee. `fields` must match the type's own fields.",
   input: BookingCreateInputSchema,
   output: BookingSchema,
   permission: "booking:write",
@@ -27,7 +27,7 @@ export const updateBooking = defineOperation({
   description:
     "Update a booking's customer, time, headcount or own fields. Omitted properties are " +
     "unchanged; `fields` is merged by key (null clears a value). The type cannot be changed, " +
-    "the status changes only with booking.changeStatus and the owners with booking.assign.",
+    "the status changes only with booking.changeStatus and the assignee with assignment.assign.",
   input: BookingUpdateInputSchema,
   output: BookingSchema,
   permission: "booking:write",

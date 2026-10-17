@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
+import { mainAssigneeId } from "../assignment/load-assignment";
 import type { BookingPhase } from "../booking-status/schema";
 import { applyCancellation } from "./cancellation";
 import { checkPhaseRules } from "./phase-rules";
@@ -51,7 +52,12 @@ export async function transitionBooking({
   const allowed = await checkTransition({ context, fromStatusId, toStatusId: status.id });
   if (!allowed.ok) return allowed;
   const { phase, name: statusName } = status;
-  const rules = checkPhaseRules({ booking: before, phase, statusName, reason, now });
+  const assigneeId = await mainAssigneeId({
+    context,
+    subjectType: "BOOKING",
+    subjectId: before.id,
+  });
+  const rules = checkPhaseRules({ booking: before, assigneeId, phase, statusName, reason, now });
   if (!rules.ok) return rules;
   if (phase === "CANCELLED" && reason) {
     const cancelled = await applyCancellation({ context, booking: before, reason });

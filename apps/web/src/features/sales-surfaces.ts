@@ -6,7 +6,6 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "booking.create", route: "/bookings" },
   { operation: "booking.get", route: "/bookings/[id]" },
   { operation: "booking.update", route: "/bookings/[id]" },
-  { operation: "booking.assign", route: "/bookings/[id]" },
   { operation: "inboundEmail.list", route: "/bookings/[id]" },
   { operation: "inquiry.list", route: "/inquiries" },
   { operation: "inquiry.create", route: "/inquiries" },
@@ -14,7 +13,6 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "inquiry.update", route: "/inquiries/[id]" },
   { operation: "inquiry.qualify", route: "/inquiries/[id]" },
   { operation: "inquiry.markLost", route: "/inquiries/[id]" },
-  { operation: "inquiry.assign", route: "/inquiries/[id]" },
   // A bookable item's option queue is listed, placed, released and expired on the item page.
   { operation: "option.list", route: "/items/[id]" },
   { operation: "option.create", route: "/items/[id]" },
@@ -28,4 +26,10 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "quote.send", route: "/quotes/[id]" },
   { operation: "quote.decline", route: "/quotes/[id]" },
   { operation: "quote.expire", route: "/quotes/[id]" },
+  // Assignments (ADR 0034): shown and changed on the inquiry and booking pages; the lists filter
+  // by "Assigned to me" and "Following".
+  { operation: "assignment.list", route: "/bookings/[id]" },
+  { operation: "assignment.assign", route: "/bookings/[id]" },
+  { operation: "assignment.follow", route: "/bookings/[id]" },
+  { operation: "assignment.unfollow", route: "/bookings/[id]" },
 ];

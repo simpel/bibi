@@ -11,8 +11,8 @@ export const BookingSeriesTemplateSchema = z.object({
   itemIds: z.array(z.string()),
   setupId: z.string().nullable(),
   estimatedHeadcount: z.number().int().nullable(),
-  salesOwnerId: z.string().nullable(),
-  coordinatorId: z.string().nullable(),
+  /** User id of the main assignee of every occurrence (ADR 0034). */
+  assigneeId: z.string().nullable(),
   fields: FieldValuesSchema,
 });
 
@@ -80,8 +80,9 @@ export const BookingSeriesCreateInputSchema = z.object({
     .describe("Bookable items every occurrence occupies, e.g. a room (item.list BOOKABLE)"),
   setupId: IdSchema.nullish().describe("Setup of the items; its changeover time is occupied too"),
   estimatedHeadcount: HeadcountSchema.nullish().describe("Estimated number of guests"),
-  salesOwnerId: IdSchema.nullish().describe("User id of the salesperson (member.list userId)"),
-  coordinatorId: IdSchema.nullish().describe("User id of the coordinator (member.list userId)"),
+  assigneeId: IdSchema.nullish().describe(
+    "User id of the main assignee of every occurrence (member.list userId)",
+  ),
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
 });
 

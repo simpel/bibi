@@ -422,12 +422,12 @@
   "booking": {
     "singular": "Booking",
     "plural": "Bookings",
-    "listDescription": "Conferences and events with customer, time, headcount, status and owners. The type decides which fields a booking has.",
+    "listDescription": "Conferences and events with customer, time, headcount and status. The type decides which fields a booking has.",
     "reference": "Booking {reference}",
     "create": "Create booking",
     "edit": "Edit booking",
     "createDescription": "Pick a type, the customer and the time. The booking starts in the default tentative status.",
-    "editDescription": "Change customer, time, headcount and the type's fields. The status and the owners are changed separately.",
+    "editDescription": "Change customer, time, headcount and the type's fields. The status and the assignee are changed separately.",
     "created": "The booking has been created.",
     "createQuick": "Quick booking",
     "quickDescription": "Book a small meeting in one step: customer, room, time and quantity. No inquiry or quote needed.",
@@ -444,15 +444,10 @@
       "paymentLink": "Payment link (confirm when paid)"
     },
     "updated": "The booking has been updated.",
-    "assign": "Change owners",
-    "assignDescription": "Pick the salesperson and the coordinator among the members.",
-    "assigned": "The owners have been updated.",
-    "noOwner": "No one",
-    "coordinatorRequired": "A confirmed booking needs a coordinator.",
     "changeStatus": "Change status",
     "changeStatusDescription": "Move the booking to one of the statuses the organization allows from its current status. A cancellation needs a reason and releases the booking's rooms and resources.",
     "statusChanged": "The status has been changed.",
-    "phaseRuleRefused": "The change breaks a booking rule: confirmed and completed bookings need a coordinator, and a booking can be completed only after it has ended.",
+    "phaseRuleRefused": "The change breaks a booking rule: confirmed and completed bookings need an assignee, and a booking can be completed only after it has ended.",
     "reasonRequired": "Give a reason for the cancellation.",
     "empty": "No bookings yet.",
     "emptyDescription": "Create your first booking.",
@@ -467,8 +462,6 @@
       "status": "Status",
       "estimatedHeadcount": "Estimated headcount",
       "guaranteedHeadcount": "Guaranteed headcount",
-      "salesOwner": "Salesperson",
-      "coordinator": "Coordinator",
       "newStatus": "New status",
       "statusReason": "Reason"
     },
@@ -477,8 +470,7 @@
       "customer": "Customer",
       "type": "Type",
       "when": "When",
-      "status": "Status",
-      "salesOwner": "Salesperson"
+      "status": "Status"
     }
   },
   "calendar": {
@@ -516,16 +508,11 @@
     "create": "Register inquiry",
     "edit": "Edit inquiry",
     "createDescription": "Pick a type and the customer. The inquiry starts as new.",
-    "editDescription": "Change customer, contact, dates, quantity, budget and the type's fields. The status and the salesperson are changed separately.",
+    "editDescription": "Change customer, contact, dates, quantity, budget and the type's fields. The status and the assignee are changed separately.",
     "created": "The inquiry has been registered.",
     "updated": "The inquiry has been updated.",
-    "assign": "Change salesperson",
-    "assignDescription": "Pick the salesperson among the members.",
-    "assigned": "The salesperson has been updated.",
-    "noOwner": "No one",
-    "ownerRequired": "A qualified inquiry needs a salesperson.",
     "qualify": "Qualify",
-    "qualifyDescription": "A qualified inquiry needs a salesperson. Pick one among the members.",
+    "qualifyDescription": "A qualified inquiry needs an assignee. Pick one among the members, or keep the current one.",
     "qualified": "The inquiry has been qualified.",
     "markLost": "Mark as lost",
     "markLostDescription": "Say why the inquiry was lost. A lost inquiry cannot be reopened.",
@@ -551,17 +538,17 @@
       "when": "Desired dates",
       "quantity": "Quantity",
       "budget": "Budget (SEK)",
-      "salesOwner": "Salesperson",
-      "lossReason": "Loss reason"
+      "lossReason": "Loss reason",
+      "assignee": "Assignee"
     },
     "columns": {
       "customer": "Customer",
       "type": "Type",
       "when": "Desired dates",
       "quantity": "Quantity",
-      "status": "Status",
-      "salesOwner": "Salesperson"
-    }
+      "status": "Status"
+    },
+    "keepAssignee": "Keep the current assignee"
   },
   "quote": {
     "singular": "Quote",
@@ -710,14 +697,10 @@
     "archived": "The program item has been removed.",
     "created": "The program item has been added.",
     "updated": "The program item has been updated.",
-    "assign": "Change responsible",
-    "assignDescription": "The responsible person must be a member of the organization.",
-    "assigned": "The responsible person has been changed.",
     "empty": "The booking has no program items yet.",
     "occupied": "The room is already occupied during this period or its changeover time.",
     "noItem": "No room",
     "noSetup": "No setup",
-    "noResponsible": "No one",
     "fields": {
       "type": "Type",
       "name": "Name",
@@ -726,7 +709,6 @@
       "item": "Room or bookable item",
       "setup": "Setup",
       "quantity": "Quantity",
-      "responsible": "Responsible",
       "note": "Internal note"
     },
     "columns": {
@@ -734,8 +716,7 @@
       "name": "Name",
       "type": "Type",
       "where": "Where",
-      "quantity": "Quantity",
-      "responsible": "Responsible"
+      "quantity": "Quantity"
     }
   },
   "requirement": {
@@ -1255,7 +1236,6 @@
         "booking_create": "Create booking",
         "booking_createQuick": "Create quick booking",
         "booking_update": "Update booking",
-        "booking_assign": "Assign booking",
         "booking_changeStatus": "Change booking status",
         "bookingSeries_create": "Create booking series",
         "bookingSeries_updateOccurrences": "Update series occurrences",
@@ -1289,7 +1269,10 @@
         "skill_archive": "Archive skill",
         "skill_share": "Share skill",
         "skill_import": "Import skill",
-        "conversation_archive": "Archive conversation"
+        "conversation_archive": "Archive conversation",
+        "assignment_assign": "Change assignee",
+        "assignment_follow": "Follow",
+        "assignment_unfollow": "Unfollow"
       }
     },
     "description": "Chat with the assistant about venues, items and skills.",
@@ -1379,8 +1362,6 @@
         "open": "Open the booking",
         "reference": "Booking {reference}",
         "headcount": "{count, plural, one {# guest} other {# guests}}",
-        "hasCoordinator": "Coordinator assigned",
-        "noCoordinator": "No coordinator yet",
         "columns": {
           "reference": "Reference",
           "when": "When",
@@ -1412,8 +1393,6 @@
         "empty": "No inquiries found.",
         "open": "Open the inquiry",
         "quantity": "Quantity: {count}",
-        "hasOwner": "Salesperson assigned",
-        "noOwner": "No salesperson yet",
         "lossReason": "Lost: {reason}",
         "columns": {
           "created": "Registered",
@@ -1457,8 +1436,6 @@
         "singular": "Program item",
         "empty": "No program items found.",
         "quantity": "{count} taking part",
-        "hasResponsible": "Has a responsible person",
-        "noResponsible": "No responsible person",
         "archived": "Removed from the program",
         "openBooking": "Open the booking",
         "columns": {
@@ -1603,6 +1580,24 @@
           "name": "Name",
           "phase": "Phase",
           "transitions": "Transitions"
+        }
+      },
+      "assignment": {
+        "subject": {
+          "INQUIRY": "Inquiry",
+          "BOOKING": "Booking",
+          "ITEM": "Item"
+        },
+        "main": "Main",
+        "responsibility": "Responsibility",
+        "assigned": "Someone is assigned",
+        "unassigned": "No one assigned yet",
+        "followers": "{count, plural, =0 {No followers} one {# follower} other {# followers}}",
+        "empty": "No assignments.",
+        "columns": {
+          "subject": "Subject",
+          "assignee": "Assignee",
+          "followers": "Followers"
         }
       }
     }
@@ -2100,12 +2095,12 @@
         "inquiries": {
           "title": "Inquiries",
           "lead": "An inquiry is interest from a customer before anything is booked. Use it to keep track of who asked for what, and who is handling it.",
-          "body": "# When to use an inquiry\n\nUse an inquiry when a customer asks for something that needs follow-up before you can book it. For a small meeting that you can book straight away, skip the inquiry and make a quick booking instead. See [Bookings](/docs/guide/bookings).\n\n# Register an inquiry\n\n1. Open **Inquiries** in the left menu and choose **Register inquiry**.\n2. Pick the inquiry type. Types are set up by your administrators. If none exist yet, choose **Go to types** and create one first.\n3. Pick the customer, and optionally a contact person who works at that customer.\n4. Fill in the desired dates, the quantity (for example the number of guests), the budget and any fields your organization has added to the type.\n5. Save. The inquiry starts with the status **New**.\n\nIf the customer does not exist yet, create it first under **Customers**. A customer can have several contact persons, and each contact has a name, email and phone number.\n\n# Move it forward\n\nAn inquiry follows a fixed path. You cannot set the status by editing the inquiry. You use a button on the inquiry page.\n\n- **Qualify** moves it from **New** to **Qualified**. A qualified inquiry needs a salesperson, so pick one among your members when you qualify it.\n- **Mark as lost** closes it. You must give a reason, which makes it possible to see later why deals fall through. A lost inquiry cannot be reopened.\n\nThe statuses **Quoted** and **Won** exist in the list of statuses, but quotes are not available yet. Coming later: sending a quote, having the customer accept it, and turning the accepted inquiry into a booking automatically.\n\nUntil then, when an inquiry becomes a real order, create the booking yourself from **Bookings** and add the same customer and dates.\n\n# Keep track of your own work\n\n- The list shows each inquiry's customer, type, desired dates, quantity, status and salesperson.\n- You can change the salesperson with **Change salesperson**.\n- Every change is recorded under **History** on the inquiry page, including who made it.\n- Customers can reply to booking emails, and replies are collected on the booking. See [Bookings](/docs/guide/bookings).\n\n# Tips\n\n- Put the same fields on the inquiry type that you want on the booking, so the information is easy to copy across.\n- Ask the assistant for an overview, for example \"Which inquiries have no salesperson?\"."
+          "body": "# When to use an inquiry\n\nUse an inquiry when a customer asks for something that needs follow-up before you can book it. For a small meeting that you can book straight away, skip the inquiry and make a quick booking instead. See [Bookings](/docs/guide/bookings).\n\n# Register an inquiry\n\n1. Open **Inquiries** in the left menu and choose **Register inquiry**.\n2. Pick the inquiry type. Types are set up by your administrators. If none exist yet, choose **Go to types** and create one first.\n3. Pick the customer, and optionally a contact person who works at that customer.\n4. Fill in the desired dates, the quantity (for example the number of guests), the budget and any fields your organization has added to the type.\n5. Save. The inquiry starts with the status **New**.\n\nIf the customer does not exist yet, create it first under **Customers**. A customer can have several contact persons, and each contact has a name, email and phone number.\n\n# Move it forward\n\nAn inquiry follows a fixed path. You cannot set the status by editing the inquiry. You use a button on the inquiry page.\n\n- **Qualify** moves it from **New** to **Qualified**. A qualified inquiry needs an assignee, so pick one among your members when you qualify it.\n- **Mark as lost** closes it. You must give a reason, which makes it possible to see later why deals fall through. A lost inquiry cannot be reopened.\n\nThe statuses **Quoted** and **Won** exist in the list of statuses, but quotes are not available yet. Coming later: sending a quote, having the customer accept it, and turning the accepted inquiry into a booking automatically.\n\nUntil then, when an inquiry becomes a real order, create the booking yourself from **Bookings** and add the same customer and dates.\n\n# Keep track of your own work\n\n- The list shows each inquiry's customer, type, desired dates, quantity and status. Choose **Assigned to me** or **Following** to see only your own.\n- You can change the assignee with **Change assignee**, and choose **Follow** to stay informed.\n- Every change is recorded under **History** on the inquiry page, including who made it.\n- Customers can reply to booking emails, and replies are collected on the booking. See [Bookings](/docs/guide/bookings).\n\n# Tips\n\n- Put the same fields on the inquiry type that you want on the booking, so the information is easy to copy across.\n- Ask the assistant for an overview, for example \"Which inquiries have no assignee?\"."
         },
         "bookings": {
           "title": "Bookings",
           "lead": "A booking is the whole event: who, when, where and what. This page shows how to create one, run it through its statuses and cancel it.",
-          "body": "# Quick booking for a small meeting\n\nA quick booking is the fastest way to book. There is no inquiry and no quote.\n\n1. Open **Bookings** and choose **Quick booking**.\n2. Pick the **Booking type**, the **Program item type**, and the **Customer**.\n3. Pick the **Room or item**, the time and the **Quantity**.\n4. Under **Payment**, choose **Invoice (confirm now)** or **Payment link (confirm when paid)**.\n5. Save.\n\nIf the room or its changeover time is already taken, you get a message and can pick another time. With the invoice option the booking is confirmed straight away. With the payment link option it stays tentative until the customer pays. See [Payments](/docs/guide/payments).\n\n# Create a regular booking\n\n1. Choose **Create booking**.\n2. Pick a type, the customer and the time. The booking starts in your default tentative status and gets the next reference number.\n3. Add program items, needs and payments from the booking page.\n\n# The booking page\n\n- **Program**: the day's rows. Choose **Add program item** and give a name, time, room, setup and quantity. A room is held for that time, and the setup's changeover time is blocked right before it. You cannot book a room that is already occupied.\n- **Requirements**: counts per list value. See [Needs and sheets](/docs/guide/needs-and-sheets).\n- **Sheets**: versions you can generate and send.\n- **Payments**: payment requests for this booking.\n- **Received email**: replies from the customer, when your organization has inbound email set up.\n- **History**: every change, with who made it.\n\n# Change the status\n\nChoose **Change status** and pick one of the statuses your administrators have set up. Each status belongs to one of four phases, and the phase decides the rules.\n\n- **Tentative**: the rooms are held. Sheets cannot be sent.\n- **Confirmed**: the booking needs a coordinator. Sheets can be sent.\n- **Completed**: needs a coordinator, and is allowed only after the booking has ended.\n- **Cancelled**: you must give a reason. The rooms are released. A cancelled booking cannot be reopened, so create a new one instead.\n\nWhich moves are allowed from each status is also set by your administrators. Use **Change owners** to set the salesperson and coordinator.\n\n# Recurring bookings\n\nFor a customer who books the same room regularly, use **Booking series**. Create a series with a repeat rule, and Okazi creates every occurrence as a normal booking. If an occurrence clashes with another booking it is marked **Clash**, and you pick another room or time. You can change **Only this occurrence** or **This and following occurrences**, or choose **Cancel series**.\n\n# Coming later\n\nQuotes, signing by BankID and invoices created in Okazi are decided but not built yet."
+          "body": "# Quick booking for a small meeting\n\nA quick booking is the fastest way to book. There is no inquiry and no quote.\n\n1. Open **Bookings** and choose **Quick booking**.\n2. Pick the **Booking type**, the **Program item type**, and the **Customer**.\n3. Pick the **Room or item**, the time and the **Quantity**.\n4. Under **Payment**, choose **Invoice (confirm now)** or **Payment link (confirm when paid)**.\n5. Save.\n\nIf the room or its changeover time is already taken, you get a message and can pick another time. With the invoice option the booking is confirmed straight away. With the payment link option it stays tentative until the customer pays. See [Payments](/docs/guide/payments).\n\n# Create a regular booking\n\n1. Choose **Create booking**.\n2. Pick a type, the customer and the time. The booking starts in your default tentative status and gets the next reference number.\n3. Add program items, needs and payments from the booking page.\n\n# The booking page\n\n- **Program**: the day's rows. Choose **Add program item** and give a name, time, room, setup and quantity. A room is held for that time, and the setup's changeover time is blocked right before it. You cannot book a room that is already occupied.\n- **Requirements**: counts per list value. See [Needs and sheets](/docs/guide/needs-and-sheets).\n- **Sheets**: versions you can generate and send.\n- **Payments**: payment requests for this booking.\n- **Received email**: replies from the customer, when your organization has inbound email set up.\n- **History**: every change, with who made it.\n\n# Change the status\n\nChoose **Change status** and pick one of the statuses your administrators have set up. Each status belongs to one of four phases, and the phase decides the rules.\n\n- **Tentative**: the rooms are held. Sheets cannot be sent.\n- **Confirmed**: the booking needs an assignee. Sheets can be sent.\n- **Completed**: needs an assignee, and is allowed only after the booking has ended.\n- **Cancelled**: you must give a reason. The rooms are released. A cancelled booking cannot be reopened, so create a new one instead.\n\nWhich moves are allowed from each status is also set by your administrators. Use **Change assignee** on the booking page to set who answers for it, and **Follow** to stay informed. A quick booking is assigned to you.\n\n# Recurring bookings\n\nFor a customer who books the same room regularly, use **Booking series**. Create a series with a repeat rule, and Okazi creates every occurrence as a normal booking. If an occurrence clashes with another booking it is marked **Clash**, and you pick another room or time. You can change **Only this occurrence** or **This and following occurrences**, or choose **Cancel series**.\n\n# Coming later\n\nQuotes, signing by BankID and invoices created in Okazi are decided but not built yet."
         },
         "items-and-venues": {
           "title": "Items and venues",
@@ -2120,7 +2115,7 @@
         "payments": {
           "title": "Payments",
           "lead": "Ask a customer to pay by card link or by invoice. The money goes straight to your own Stripe account, and Okazi never holds it.",
-          "body": "# Connect Stripe first\n\nBefore you can request a payment, an administrator must connect your organization to Stripe.\n\n1. Open **Settings** and choose **Payments**.\n2. Choose **Connect to Stripe**. You are sent to Stripe to verify your business.\n3. When you come back, choose **Refresh status**. If onboarding is not finished, choose **Continue onboarding**.\n\nThe status shows **Not connected**, **Onboarding**, **Active** or **Restricted**. Payments work when it is **Active**. If it is **Restricted**, Stripe needs more information from you, so continue onboarding.\n\nPayments are charged on your own connected account, so you are the merchant and the payout goes to you.\n\n# Request a payment\n\n1. Open the booking and find **Payments**.\n2. Choose **Request payment**.\n3. Pick the method and the amount.\n4. Save.\n\nThere are two methods.\n\n- **Card**: Okazi creates a payment link. Choose **Open payment link** to copy or open it, and send it to the customer.\n- **Invoice**: Stripe emails an invoice to the customer. The customer needs an email address on the customer record. The due date follows the customer's payment terms, 30 days if none is set.\n\nYou can request a payment only for a booking that is not cancelled.\n\n# What the customer sees\n\nThe customer opens the link and lands on a simple page with your organization name, the booking reference, the amount and a **Pay now** button. Stripe handles the card details. The customer does not need an account and never sees Okazi's app.\n\nIf the link has expired, the page says so and asks the customer to contact you. You can then request a new payment.\n\n# Payment status\n\nEach payment has a status: **Pending**, **Paid**, **Failed**, **Cancelled** or **Refunded**. The status updates by itself when Stripe reports back. You do not need to mark anything as paid.\n\n# Paid means confirmed\n\nWhen a payment is paid, Okazi tries to move a tentative booking to your default confirmed status. This follows the same rules as a manual change, for example that a confirmed booking needs a coordinator. If the move is refused, the payment is still recorded as paid and you confirm the booking by hand.\n\nWith a quick booking you can instead choose **Invoice (confirm now)**, which confirms the booking at once.\n\n# Coming later\n\nSwish for customers, price lists applied to invoices, and invoices sent to Fortnox, Visma or Peppol are decided but not available yet."
+          "body": "# Connect Stripe first\n\nBefore you can request a payment, an administrator must connect your organization to Stripe.\n\n1. Open **Settings** and choose **Payments**.\n2. Choose **Connect to Stripe**. You are sent to Stripe to verify your business.\n3. When you come back, choose **Refresh status**. If onboarding is not finished, choose **Continue onboarding**.\n\nThe status shows **Not connected**, **Onboarding**, **Active** or **Restricted**. Payments work when it is **Active**. If it is **Restricted**, Stripe needs more information from you, so continue onboarding.\n\nPayments are charged on your own connected account, so you are the merchant and the payout goes to you.\n\n# Request a payment\n\n1. Open the booking and find **Payments**.\n2. Choose **Request payment**.\n3. Pick the method and the amount.\n4. Save.\n\nThere are two methods.\n\n- **Card**: Okazi creates a payment link. Choose **Open payment link** to copy or open it, and send it to the customer.\n- **Invoice**: Stripe emails an invoice to the customer. The customer needs an email address on the customer record. The due date follows the customer's payment terms, 30 days if none is set.\n\nYou can request a payment only for a booking that is not cancelled.\n\n# What the customer sees\n\nThe customer opens the link and lands on a simple page with your organization name, the booking reference, the amount and a **Pay now** button. Stripe handles the card details. The customer does not need an account and never sees Okazi's app.\n\nIf the link has expired, the page says so and asks the customer to contact you. You can then request a new payment.\n\n# Payment status\n\nEach payment has a status: **Pending**, **Paid**, **Failed**, **Cancelled** or **Refunded**. The status updates by itself when Stripe reports back. You do not need to mark anything as paid.\n\n# Paid means confirmed\n\nWhen a payment is paid, Okazi tries to move a tentative booking to your default confirmed status. This follows the same rules as a manual change, for example that a confirmed booking needs an assignee. If the move is refused, the payment is still recorded as paid and you confirm the booking by hand.\n\nWith a quick booking you can instead choose **Invoice (confirm now)**, which confirms the booking at once.\n\n# Coming later\n\nSwish for customers, price lists applied to invoices, and invoices sent to Fortnox, Visma or Peppol are decided but not available yet."
         },
         "configuration": {
           "title": "Configuration",
@@ -2130,7 +2125,7 @@
         "members-and-roles": {
           "title": "Members and roles",
           "lead": "Invite colleagues, give them the right access level and remove them when they leave.",
-          "body": "# Access levels\n\nEvery member has one access role. The roles are fixed and go from least to most access.\n\n- **Viewer**: can read everything, and changes nothing.\n- **Member**: can also work with day-to-day data such as customers, inquiries, bookings, program items, needs, payments and sheets.\n- **Admin**: everything a member can do, plus configuration (types, lists, statuses, sheets, price lists), members and API keys.\n- **Owner**: everything, including other owners and the organization itself. An organization always keeps at least one owner.\n\nOnly owners and admins see **Settings**. The pages check your access themselves, so hiding the menu is only a convenience.\n\n# Invite a colleague\n\n1. Open **Settings** and choose **Members**.\n2. Choose **Invite member** and enter the email address and role.\n3. Choose **Send invitation**.\n\nOkazi emails a link. The person signs in or creates an account with that same email address and chooses **Accept invitation**. They then join with the invited role. An invitation expires after 48 hours.\n\nUnder **Pending invitations** you can see who has not answered yet. Choose **Revoke** to cancel an invitation, and the link stops working. You cannot give someone more access than you have yourself, and an email address that is already a member cannot be invited again.\n\n# Change a role or remove someone\n\nOn the members page you can change a member's role. Owners can only be changed by another owner. To remove someone, choose **Remove**. They lose access immediately, and what they created stays in the history.\n\n# Who does what on a booking\n\nAccess roles decide what you may do in the app. A separate idea decides who answers for a booking.\n\n- An inquiry has a salesperson, and a booking has a salesperson and a coordinator. They must be members.\n- An inquiry needs a salesperson before it can be qualified. A confirmed booking needs a coordinator.\n- Change them with **Change salesperson** or **Change owners**.\n\nComing later: responsibilities that you define yourself, such as \"Head of kitchen\". A responsibility covers certain item types, has a default person and followers, and receives the matching sheets automatically. When it arrives, the salesperson and coordinator will become part of the same idea.\n\n# The assistant and API access\n\nThe assistant acts with your role, so it can never do more than you can. If you connect other tools, they use a role that is never above yours. See [Authentication](/docs/developers/authentication)."
+          "body": "# Access levels\n\nEvery member has one access role. The roles are fixed and go from least to most access.\n\n- **Viewer**: can read everything, and changes nothing.\n- **Member**: can also work with day-to-day data such as customers, inquiries, bookings, program items, needs, payments and sheets.\n- **Admin**: everything a member can do, plus configuration (types, lists, statuses, sheets, price lists), members and API keys.\n- **Owner**: everything, including other owners and the organization itself. An organization always keeps at least one owner.\n\nOnly owners and admins see **Settings**. The pages check your access themselves, so hiding the menu is only a convenience.\n\n# Invite a colleague\n\n1. Open **Settings** and choose **Members**.\n2. Choose **Invite member** and enter the email address and role.\n3. Choose **Send invitation**.\n\nOkazi emails a link. The person signs in or creates an account with that same email address and chooses **Accept invitation**. They then join with the invited role. An invitation expires after 48 hours.\n\nUnder **Pending invitations** you can see who has not answered yet. Choose **Revoke** to cancel an invitation, and the link stops working. You cannot give someone more access than you have yourself, and an email address that is already a member cannot be invited again.\n\n# Change a role or remove someone\n\nOn the members page you can change a member's role. Owners can only be changed by another owner. To remove someone, choose **Remove**. They lose access immediately, and what they created stays in the history.\n\n# Who does what on a booking\n\nAccess roles decide what you may do in the app. A separate idea decides who answers for a booking.\n\n- Every inquiry and booking has one assignee, who must be a member. Other members can follow it to stay informed.\n- An inquiry needs an assignee before it can be qualified, and a confirmed booking needs an assignee.\n- Change the assignee with **Change assignee**, and choose **Follow** or **Unfollow** for yourself. The inquiry and booking lists can show only what is **Assigned to me** or what you are **Following**.\n\nAdministrators define responsibilities such as \"Head of kitchen\" under **Settings, Responsibilities**. A responsibility covers certain item types and has a default person and followers. Coming later: a booking gets an assignee per responsibility automatically from its items, and the matching sheets go to that person and the followers.\n\n# The assistant and API access\n\nThe assistant acts with your role, so it can never do more than you can. If you connect other tools, they use a role that is never above yours. See [Authentication](/docs/developers/authentication)."
         }
       },
       "developers": {
@@ -2193,5 +2188,25 @@
     "signOutOthers": "Sign out of other sessions",
     "signingOutOthers": "Signing out…",
     "signedOutOthers": "You have been signed out of your other sessions."
+  },
+  "assignment": {
+    "title": "Assignee and followers",
+    "assignee": "Assignee",
+    "followers": "Followers",
+    "nobody": "No one",
+    "assign": "Change assignee",
+    "assignDescription": "Pick the member who answers for this. Followers stay informed.",
+    "assigned": "The assignee has been updated.",
+    "required": "In its current status this needs an assignee.",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "followed": "You now follow this.",
+    "unfollowed": "You no longer follow this.",
+    "filter": {
+      "label": "Show",
+      "all": "All",
+      "assigned": "Assigned to me",
+      "following": "Following"
+    }
   }
 }

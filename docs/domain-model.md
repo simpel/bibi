@@ -225,12 +225,12 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 ### Assignment (`Assignment`)
 
-*MVP* · Decided in [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md), not built yet. Says who answers for a subject. Replaces `salesOwnerId`, `coordinatorId` and `responsibleId` ([ADR 0022](decisions/0022-sales-pipeline-and-booking-states.md) addendum).
+*MVP* · [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md). Says who answers for a subject: one assignee plus followers. Replaces `salesOwnerId`, `coordinatorId` and `responsibleId` ([ADR 0022](decisions/0022-sales-pipeline-and-booking-states.md) addendum).
 
 **Attributes**
 - subject (`subjectType` `INQUIRY` / `BOOKING` / `ITEM` and `subjectId`, the same pattern as `Occupancy.sourceType` / `sourceId`; core checks that the subject belongs to the organization)
 - responsibility (`responsibilityId`, optional; none = the subject's main assignment)
-- assignee (`assigneeId`, one member)
+- assignee (`assigneeId`, one member; null while the subject only has followers)
 - followers (`AssignmentFollower`, any number of members; need-to-know: they see the subject under "Following" and are included where the assignee is, e.g. sheets)
 
 **Relations**
@@ -239,7 +239,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `N:1` User is the assignee
 - `1:N` has → AssignmentFollower
 
-> Unique on (subject, responsibility). A booking gets one assignment per responsibility derived from its lines' item entity types, with the default assignee and followers; an existing assignment is never overwritten, and it is archived when no line of the covered types remains. Operations, all audited and on every surface: `assignment.assign`, `assignment.follow`, `assignment.unfollow`, `assignment.list` and `assignment.listMine`. Assignee and followers must be members (`VALIDATION`).
+> Unique on (subject, responsibility); a partial index keeps the main assignment unique per subject. Planned (#250): a booking gets one assignment per responsibility derived from its lines' item entity types, with the default assignee and followers; an existing assignment is never overwritten, and it is archived when no line of the covered types remains. Operations (resource `assignment`, written by `member` and up), all audited, AI needs approval, on every surface: `assignment.assign` (null removes the assignee, refused for the main assignee from a booking's `CONFIRMED` phase and an inquiry's `QUALIFIED`), `assignment.follow`, `assignment.unfollow`, `assignment.list({ subjectType, subjectId })` and `assignment.listMine({ kind: ASSIGNED | FOLLOWING })`. Assignee and followers must be members (`VALIDATION`); a subject of another organization is `NOT_FOUND`. `inquiry.list` and `booking.list` filter by `assigneeId` and `followerId`; the web lists show All, Assigned to me and Following. `inquiry.create`, `booking.create` and `bookingSeries.create` take an optional `assigneeId`; `booking.createQuick` defaults it to the member who books.
 
 ## Sales & customer
 

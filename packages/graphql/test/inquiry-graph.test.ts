@@ -36,7 +36,7 @@ describe("inquiry graph (ADR 0022)", () => {
       lossReason: "Too far away",
       customer: { inquiries: [{ id }] },
     });
-    const again = await gql({ query: QUALIFY, variables: { i: { id, salesOwnerId: "x" } } });
+    const again = await gql({ query: QUALIFY, variables: { i: { id, assigneeId: "x" } } });
     expect(again.body.errors?.[0]?.extensions?.code).toBe("CONFLICT");
   });
 });

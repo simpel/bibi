@@ -15,10 +15,6 @@ model Booking {
   estimatedHeadcount  Int?
   /// Locked some days before the booking.
   guaranteedHeadcount Int?
-  /// User id of the salesperson (a member of the organization).
-  salesOwnerId        String?
-  /// User id of the coordinator (a member); required from the `CONFIRMED` phase.
-  coordinatorId       String?
   statusChangedAt     DateTime      @default(now())
   /// Why the status last changed (`booking.changeStatus` reason); required for the `CANCELLED` phase.
   statusReason        String?
@@ -50,6 +46,4 @@ model Booking {
   @@index([organizationId, status, startsAt])
   @@index([organizationId, customerId])
   @@index([organizationId, bookingStatusId])
-  @@index([organizationId, salesOwnerId])
-  @@index([organizationId, coordinatorId])
 }

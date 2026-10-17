@@ -24,7 +24,7 @@ export const createProgramItem = defineOperation({
   kind: "command",
   description:
     "Add a program item (a row in the booking's run schedule) of one of the organization's " +
-    `program item types. ${OCCUPY_NOTE} The responsible person is optional and must be a member.`,
+    `program item types. ${OCCUPY_NOTE}`,
   input: ProgramItemCreateInputSchema,
   output: ProgramItemSchema,
   permission: "programItem:write",
@@ -37,7 +37,7 @@ export const updateProgramItem = defineOperation({
   description:
     "Change a program item: name, time, item, setup, quantity or note. Omitted properties are " +
     "unchanged; `fields` is merged by key (null clears a value). Moving it moves its " +
-    `occupancy. ${OCCUPY_NOTE} The responsible person changes with programItem.assign.`,
+    `occupancy. ${OCCUPY_NOTE}`,
   input: ProgramItemUpdateInputSchema,
   output: ProgramItemSchema,
   permission: "programItem:write",

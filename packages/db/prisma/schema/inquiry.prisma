@@ -26,8 +26,6 @@ model Inquiry {
   inquiryStatus   InquiryStatus @default(NEW)
   /// Required when the inquiry is `LOST`.
   lossReason      String?
-  /// User id of the salesperson (a member of the organization); required from `QUALIFIED`.
-  salesOwnerId    String?
   statusChangedAt DateTime      @default(now())
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
   fields          Json          @default("{}")
@@ -44,5 +42,4 @@ model Inquiry {
   @@unique([id, organizationId])
   @@index([organizationId, status, inquiryStatus])
   @@index([organizationId, customerId])
-  @@index([organizationId, salesOwnerId])
 }

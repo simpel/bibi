@@ -1,6 +1,8 @@
 import { defineOperation } from "../../operations/define-operation";
 import { invalid, notFound } from "../../shared/errors";
-import { checkOwners } from "../booking/booking-rules";
+import { checkNewAssignee } from "../assignment/assign-on-create";
+import { mainAssigneeId } from "../assignment/load-assignment";
+import { saveAssignee } from "../assignment/write-assignment";
 import { moveInquiry } from "./move-inquiry";
 import { InquiryMarkLostInputSchema, InquiryQualifyInputSchema, InquirySchema } from "./schema";
 import { loadInquiry } from "./to-inquiry-dto";
@@ -10,25 +12,29 @@ export const qualifyInquiry = defineOperation({
   name: "inquiry.qualify",
   kind: "command",
   description:
-    "Move an inquiry from NEW to QUALIFIED (ADR 0022). A qualified inquiry needs a salesperson: " +
-    "give `salesOwnerId` (a member, member.list userId) unless the inquiry already has one. " +
+    "Move an inquiry from NEW to QUALIFIED (ADR 0022). A qualified inquiry needs a main " +
+    "assignee (ADR 0034): give `assigneeId` (a member, member.list userId) unless it has one. " +
     "Any other starting status is a CONFLICT.",
   input: InquiryQualifyInputSchema,
   output: InquirySchema,
   permission: "inquiry:write",
-  handler: async ({ input: { id, salesOwnerId }, context }) => {
+  handler: async ({ input: { id, assigneeId }, context }) => {
     const before = await loadInquiry({ context, id });
     if (!before) return notFound({ entity: "Inquiry" });
     const allowed = checkTransition({ from: before.inquiryStatus, to: "QUALIFIED" });
     if (!allowed.ok) return allowed;
-    const owner = salesOwnerId ?? before.salesOwnerId;
-    if (!owner) {
-      const message = "A qualified inquiry needs a salesperson";
-      return invalid({ message, issues: [{ path: "salesOwnerId", message }] });
+    const subject = { subjectType: "INQUIRY", subjectId: id } as const;
+    const current = await mainAssigneeId({ context, ...subject });
+    if (!assigneeId && !current) {
+      const message = "A qualified inquiry needs an assignee";
+      return invalid({ message, issues: [{ path: "assigneeId", message }] });
     }
-    const member = await checkOwners({ context, salesOwnerId: owner });
-    if (!member.ok) return member;
-    return moveInquiry({ context, before, to: "QUALIFIED", data: { salesOwnerId: owner } });
+    if (assigneeId && assigneeId !== current) {
+      const member = await checkNewAssignee({ context, assigneeId });
+      if (!member.ok) return member;
+      await saveAssignee({ context, ...subject, assigneeId });
+    }
+    return moveInquiry({ context, before, to: "QUALIFIED" });
   },
 });
 

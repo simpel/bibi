@@ -2,7 +2,7 @@
 
 import type { InquiryDto } from "@okazi/core";
 import { Button } from "@okazi/ui";
-import { BadgeCheckIcon, PencilIcon, UserCogIcon, XCircleIcon } from "lucide-react";
+import { BadgeCheckIcon, PencilIcon, XCircleIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { type InquiryActionDialog, InquiryActionDialogs } from "./inquiry-action-dialogs";
@@ -15,7 +15,7 @@ export type InquiryActionsProps = {
   can: { qualify: boolean; markLost: boolean };
 };
 
-/** Qualify, edit, change-owner and mark-lost buttons of the inquiry detail page. */
+/** Qualify, edit and mark-lost buttons of the inquiry detail page. */
 export function InquiryActions({ inquiry, data, can }: InquiryActionsProps) {
   const t = useTranslations("inquiry");
   const [dialog, setDialog] = useState<InquiryActionDialog>(null);
@@ -32,12 +32,6 @@ export function InquiryActions({ inquiry, data, can }: InquiryActionsProps) {
         <PencilIcon />
         {t("edit")}
       </Button>
-      {hasMembers ? (
-        <Button variant="outline" onClick={() => setDialog("assign")}>
-          <UserCogIcon />
-          {t("assign")}
-        </Button>
-      ) : null}
       {can.markLost ? (
         <Button variant="outline" onClick={() => setDialog("lost")}>
           <XCircleIcon />

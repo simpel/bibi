@@ -16,8 +16,6 @@ model ProgramItem {
   setupId        String?
   /// How many take part, e.g. the headcount.
   quantity       Int?
-  /// User id of the responsible person (a member of the organization); optional.
-  responsibleId  String?
   /// Internal note.
   note           String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
@@ -35,5 +33,4 @@ model ProgramItem {
   @@unique([id, organizationId])
   @@index([organizationId, bookingId, startsAt])
   @@index([organizationId, entityTypeId])
-  @@index([organizationId, responsibleId])
 }

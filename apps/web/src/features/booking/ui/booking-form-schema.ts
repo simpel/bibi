@@ -8,7 +8,7 @@ import { formSchema } from "@/lib/form-schema";
 import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 import type { BookingFormValues } from "./booking-form-values";
 
-/** What the resolver outputs: core's create input (owners are set with `booking.assign`). */
+/** What the resolver outputs: core's create input (the assignee is set with `assignment.assign`). */
 export type BookingFormOutput = z.infer<typeof BookingCreateInputSchema>;
 
 export type BookingSchemaInput = {
@@ -41,7 +41,7 @@ export type BookingUpdateArgs = {
 
 /** Create-shaped values → `booking.update` input; emptied fields are cleared with `null`. */
 export function toBookingUpdate({ booking, values, type }: BookingUpdateArgs): BookingUpdateInput {
-  const { entityTypeId: _type, salesOwnerId: _s, coordinatorId: _c, fields, ...rest } = values;
+  const { entityTypeId: _type, assigneeId: _assignee, fields, ...rest } = values;
   return {
     id: booking.id,
     ...rest,

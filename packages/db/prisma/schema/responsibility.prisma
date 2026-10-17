@@ -16,6 +16,7 @@ model Responsibility {
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
   createdBy          String?
+  assignments        Assignment[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

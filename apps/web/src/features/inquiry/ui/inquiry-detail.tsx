@@ -1,13 +1,11 @@
 import { canTransition, getInquiry } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
-import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { AssignmentSection } from "@/features/assignment/ui/assignment-section";
 import { InquiryQuotes } from "@/features/quote/ui/inquiry-quotes";
-import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -18,9 +16,8 @@ import { InquiryStatusBadge } from "./inquiry-status-badge";
 
 export type InquiryDetailProps = { locale: Locale; id: string };
 
-/** Inquiry detail page body: status, facts, quotes, and edit, owner and status commands. */
+/** Inquiry detail page body: status, facts, quotes, assignments, and edit and status commands. */
 export async function InquiryDetail({ locale, id }: InquiryDetailProps) {
-  const common = await getTranslations("common");
   const t = await getTranslations("inquiry");
   const { inquiryWrite } = await getCallerAbilities();
   const [inquiry, data] = await Promise.all([
@@ -42,19 +39,17 @@ export async function InquiryDetail({ locale, id }: InquiryDetailProps) {
   const customer = nameOf({ options: data.value.customers, id: inquiry.value.customerId });
   return (
     <div className="grid gap-6">
-      <Link
-        href={ROUTES.inquiries}
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeftIcon className="size-4" />
-        {common("back")}
-      </Link>
       <PageHeader title={t("title", { customer })} actions={actions} />
       <div>
         <InquiryStatusBadge status={inquiry.value.inquiryStatus} />
       </div>
       <InquiryFacts inquiry={inquiry.value} data={data.value} />
       <InquiryQuotes locale={locale} inquiry={inquiry.value} />
+      <AssignmentSection
+        locale={locale}
+        subject={{ subjectType: "INQUIRY", subjectId: id }}
+        members={data.value.members}
+      />
     </div>
   );
 }

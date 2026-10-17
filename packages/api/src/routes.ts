@@ -1,3 +1,4 @@
+import { assignmentRoutes } from "./features/assignment/rest";
 import { auditLogRoutes } from "./features/audit-log/rest";
 import { bookingRoutes } from "./features/booking/rest";
 import { bookingSeriesRoutes } from "./features/booking-series/rest";
@@ -40,6 +41,7 @@ export function listRestRoutes(): RestRoute[] {
     ...vocabularyRoutes,
     ...setupRoutes,
     ...responsibilityRoutes,
+    ...assignmentRoutes,
     ...sheetDefinitionRoutes,
     ...configurationRoutes,
     ...itemRoutes,

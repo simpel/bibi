@@ -4,6 +4,11 @@ export type UiExempt = { operation: string; reason: string };
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
   {
+    operation: "assignment.listMine",
+    reason:
+      "The My work page (#253) shows it; until then the inquiry and booking lists filter by Assigned to me and Following with their own list operations.",
+  },
+  {
     operation: "occupancy.get",
     reason:
       "An occupancy has no page of its own: the item page lists them with occupancy.list and edits blocks inline.",

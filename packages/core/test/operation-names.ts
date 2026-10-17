@@ -1,9 +1,9 @@
+import { ASSIGNMENT_NAMES } from "./operation-names-assignment";
 import { SALES_NAMES } from "./operation-names-sales";
 
 const NAMES = [
   "auditLog.get",
   "auditLog.list",
-  "booking.assign",
   "booking.changeStatus",
   "booking.create",
   "booking.createQuick",
@@ -51,7 +51,6 @@ const NAMES = [
   "fieldDefinition.update",
   "inboundEmail.get",
   "inboundEmail.list",
-  "inquiry.assign",
   "inquiry.create",
   "inquiry.get",
   "inquiry.list",
@@ -91,7 +90,6 @@ const NAMES = [
   "priceList.setItems",
   "priceList.update",
   "programItem.archive",
-  "programItem.assign",
   "programItem.create",
   "programItem.get",
   "programItem.list",
@@ -146,4 +144,5 @@ const NAMES = [
   "vocabulary.updateValue",
 ];
 /** Every core operation name, sorted. Add new operations here (registry test). */
-export const OPERATION_NAMES: readonly string[] = [...NAMES, ...SALES_NAMES].sort();
+const EXTRA = [...SALES_NAMES, ...ASSIGNMENT_NAMES];
+export const OPERATION_NAMES: readonly string[] = [...NAMES, ...EXTRA].sort();

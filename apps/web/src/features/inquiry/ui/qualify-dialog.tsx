@@ -1,4 +1,4 @@
-import type { ProgramItemDto } from "@okazi/core";
+import type { InquiryDto } from "@okazi/core";
 import {
   Button,
   Dialog,
@@ -12,39 +12,39 @@ import {
 import { useTranslations } from "next-intl";
 import type { NamedOption } from "@/components/form/named-option";
 import { OptionSelectField } from "@/components/form/option-select-field";
-import { useAssignResponsibleForm } from "./use-assign-responsible-form";
+import { useQualifyForm } from "./use-qualify-form";
 
-export type AssignResponsibleDialogProps = {
-  programItem: ProgramItemDto;
+export type QualifyDialogProps = {
+  inquiry: InquiryDto;
   members: readonly NamedOption[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-type FormProps = Omit<AssignResponsibleDialogProps, "open" | "onOpenChange"> & {
+type QualifyFormProps = Omit<QualifyDialogProps, "open" | "onOpenChange"> & {
   onDone: () => void;
 };
 
-function AssignResponsibleForm({ programItem, members, onDone }: FormProps) {
+function QualifyForm({ inquiry, members, onDone }: QualifyFormProps) {
   const common = useTranslations("common");
-  const t = useTranslations("programItem");
-  const { form, submit, pending } = useAssignResponsibleForm({ programItem, onDone });
+  const t = useTranslations("inquiry");
+  const { form, submit, pending } = useQualifyForm({ inquiry, onDone });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
         <OptionSelectField
           control={form.control}
-          name="responsibleId"
-          label={t("fields.responsible")}
+          name="assigneeId"
+          label={t("fields.assignee")}
           options={members}
-          noneLabel={t("noResponsible")}
+          noneLabel={t("keepAssignee")}
         />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>
             {common("cancel")}
           </Button>
           <Button type="submit" disabled={pending}>
-            {common("save")}
+            {t("qualify")}
           </Button>
         </DialogFooter>
       </form>
@@ -52,21 +52,17 @@ function AssignResponsibleForm({ programItem, members, onDone }: FormProps) {
   );
 }
 
-/** Set or change who is responsible for a program item (`programItem.assign`). */
-export function AssignResponsibleDialog({
-  open,
-  onOpenChange,
-  ...props
-}: AssignResponsibleDialogProps) {
-  const t = useTranslations("programItem");
+/** Qualify the inquiry (ADR 0022); it needs a main assignee (ADR 0034). */
+export function QualifyDialog({ open, onOpenChange, ...props }: QualifyDialogProps) {
+  const t = useTranslations("inquiry");
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>{t("assign")}</DialogTitle>
-          <DialogDescription>{t("assignDescription")}</DialogDescription>
+          <DialogTitle>{t("qualify")}</DialogTitle>
+          <DialogDescription>{t("qualifyDescription")}</DialogDescription>
         </DialogHeader>
-        <AssignResponsibleForm {...props} onDone={() => onOpenChange(false)} />
+        <QualifyForm {...props} onDone={() => onOpenChange(false)} />
       </DialogContent>
     </Dialog>
   );

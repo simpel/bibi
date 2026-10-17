@@ -14,8 +14,8 @@ export const INQUIRY_TRANSITIONS: Readonly<Record<InquiryStatus, readonly Inquir
   LOST: [],
 };
 
-/** Statuses from which the inquiry must have a salesperson (ADR 0022). */
-export const OWNER_REQUIRED_STATUSES: readonly InquiryStatus[] = ["QUALIFIED", "QUOTED", "WON"];
+/** Statuses in which the inquiry must have a main assignee (ADR 0034). */
+export const ASSIGNEE_REQUIRED_STATUSES: readonly InquiryStatus[] = ["QUALIFIED", "QUOTED", "WON"];
 
 export type InquiryTransition = { from: InquiryStatus; to: InquiryStatus };
 

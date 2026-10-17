@@ -41,7 +41,6 @@ export function programItemFormSchema({ bookingId, type, vocabularies }: Program
         itemId,
         setupId: itemId ? picked({ value: values.setupId }) : null,
         quantity: numberOrNull({ value: values.quantity }),
-        responsibleId: picked({ value: values.responsibleId }),
         note: blankToNull({ value: values.note }),
         fields: fieldsToInput({ values, specs }),
       };
@@ -55,13 +54,13 @@ export type ProgramItemUpdateArgs = {
   type: EntityTypeDto | undefined;
 };
 
-/** Create-shaped values → `programItem.update` input (the responsible person is assigned). */
+/** Create-shaped values → `programItem.update` input (booking and type are fixed). */
 export function toProgramItemUpdate({
   programItem,
   values,
   type,
 }: ProgramItemUpdateArgs): ProgramItemUpdateInput {
-  const { bookingId: _b, entityTypeId: _t, responsibleId: _r, fields, ...rest } = values;
+  const { bookingId: _b, entityTypeId: _t, fields, ...rest } = values;
   return {
     id: programItem.id,
     ...rest,

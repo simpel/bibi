@@ -5,6 +5,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { AssignmentSection } from "@/features/assignment/ui/assignment-section";
 import { BookingInbox } from "@/features/inbound-email/ui/booking-inbox";
 import { BookingPayments } from "@/features/payment/ui/booking-payments";
 import { ProgramSection } from "@/features/program-item/ui/program-section";
@@ -58,6 +59,11 @@ export async function BookingDetail({ locale, id }: BookingDetailProps) {
         index={booking.value.occurrenceIndex}
       />
       <BookingFacts booking={booking.value} data={data.value} />
+      <AssignmentSection
+        locale={locale}
+        subject={{ subjectType: "BOOKING", subjectId: id }}
+        members={data.value.members}
+      />
       <BookingPayments locale={locale} bookingId={id} canRequest={paymentWrite} />
       <ProgramSection locale={locale} booking={booking.value} />
       <RequirementSection locale={locale} booking={booking.value} />

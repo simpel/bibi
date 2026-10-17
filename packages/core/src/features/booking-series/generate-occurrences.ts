@@ -3,6 +3,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import type { Occurrence } from "../../recurrence/expand-occurrences-schema";
 import { toJson } from "../../shared/to-json";
+import { assignOnCreate } from "../assignment/assign-on-create";
 import { defaultTentativeStatusId, nextReference } from "../booking/booking-defaults";
 import { toBookingDto } from "../booking/to-booking-dto";
 import { hasClash, occupyOccurrence } from "./occupy-occurrence";
@@ -24,7 +25,7 @@ export type GenerateOccurrencesInput = {
 export async function generateOccurrences({
   context,
   series,
-  template: { itemIds, setupId, fields, ...owners },
+  template: { itemIds, setupId, fields, assigneeId, ...details },
   occurrences,
   changeoverMinutes,
 }: GenerateOccurrencesInput): Promise<Result<Booking[]>> {
@@ -38,7 +39,7 @@ export async function generateOccurrences({
     bookingStatusId: bookingStatusId.value,
     seriesId: series.id,
     fields: toJson({ value: fields }) ?? {},
-    ...owners,
+    ...details,
   };
   const bookings: Booking[] = [];
   for (const [position, { index, start: startsAt, end: endsAt }] of occurrences.entries()) {
@@ -49,6 +50,7 @@ export async function generateOccurrences({
       data: { ...shared, reference, occurrenceIndex: index, clash, ...period },
     });
     context.recordChange({ entityType: "booking", entityId: row.id, after: toBookingDto({ row }) });
+    await assignOnCreate({ context, subjectType: "BOOKING", subjectId: row.id, assigneeId });
     const place = { context, bookingId: row.id, itemIds, setupId, ...period };
     const occupied = clash ? ok({ value: true }) : await occupyOccurrence(place);
     if (!occupied.ok) return occupied;

@@ -40,7 +40,7 @@ export const getBookingSeries = defineOperation({
   name: "bookingSeries.get",
   kind: "query",
   description:
-    "Get one recurring booking by id: customer, rule, template (items, setup, owners), every " +
+    "Get one recurring booking by id: customer, rule, template (items, setup, assignee), every " +
     "occurrence with its booking and the occurrences flagged as `clashes`.",
   input: BookingSeriesIdInputSchema,
   output: BookingSeriesSchema,

@@ -11,7 +11,7 @@ export type ProgramTableProps = {
   canWrite: boolean;
 };
 
-const COLUMNS = ["time", "name", "type", "where", "quantity", "responsible"] as const;
+const COLUMNS = ["time", "name", "type", "where", "quantity"] as const;
 
 type PlaceOfInput = { programItem: ProgramItemDto; data: ProgramFormData };
 
@@ -24,7 +24,7 @@ const placeOf = ({ programItem: { itemId, setupId }, data }: PlaceOfInput) =>
     .filter(Boolean)
     .join(" · ");
 
-/** The run schedule: time, what, type, where (item and setup), quantity and who is responsible. */
+/** The run schedule: time, what, type, where (item and setup), and quantity. */
 export async function ProgramTable({ programItems, data, canWrite }: ProgramTableProps) {
   const t = await getTranslations("programItem");
   const common = await getTranslations("common");
@@ -51,7 +51,6 @@ export async function ProgramTable({ programItems, data, canWrite }: ProgramTabl
             <TableCell>{nameOf({ options: data.types, id: item.entityTypeId })}</TableCell>
             <TableCell>{placeOf({ programItem: item, data })}</TableCell>
             <TableCell>{item.quantity ?? "–"}</TableCell>
-            <TableCell>{nameOf({ options: data.members, id: item.responsibleId })}</TableCell>
             <TableCell>
               {canWrite ? <ProgramRowActions programItem={item} data={data} /> : null}
             </TableCell>

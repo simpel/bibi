@@ -3,7 +3,6 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import { assignProgramItem } from "./assign-operation";
 import {
   ProgramItemIdInputSchema,
   ProgramItemListInputSchema,
@@ -18,7 +17,7 @@ export const listProgramItems = defineOperation({
   kind: "query",
   description:
     "List program items (the run schedule: sessions, breaks, meals, activities), earliest " +
-    "first. Filter by booking, bookable item, responsible person and a time window (from/to).",
+    "first. Filter by booking, bookable item and a time window (from/to).",
   input: ProgramItemListInputSchema,
   output: ProgramItemListOutputSchema,
   permission: "programItem:read",
@@ -27,7 +26,6 @@ export const listProgramItems = defineOperation({
       where: {
         ...(input.bookingId ? { bookingId: input.bookingId } : {}),
         ...(input.itemId ? { itemId: input.itemId } : {}),
-        ...(input.responsibleId ? { responsibleId: input.responsibleId } : {}),
         ...(input.from ? { endsAt: { gt: input.from } } : {}),
         ...(input.to ? { startsAt: { lt: input.to } } : {}),
       },
@@ -59,5 +57,4 @@ export const programItemOperations = [
   createProgramItem,
   updateProgramItem,
   archiveProgramItem,
-  assignProgramItem,
 ];

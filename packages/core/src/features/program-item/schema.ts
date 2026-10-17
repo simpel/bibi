@@ -17,7 +17,6 @@ export const ProgramItemSchema = z.object({
   itemId: z.string().nullable(),
   setupId: z.string().nullable(),
   quantity: z.number().int().nullable(),
-  responsibleId: z.string().nullable(),
   note: z.string().nullable(),
   fields: FieldValuesSchema,
   status: RecordStatusSchema,
@@ -51,11 +50,6 @@ export const ProgramItemCreateInputSchema = z.object({
     .min(1)
     .describe("Id of the program item type (entityType.list base PROGRAM_ITEM)"),
   ...ProgramItemDetailsShape,
-  responsibleId: z
-    .string()
-    .min(1)
-    .nullish()
-    .describe("User id of the responsible person; must be a member (member.list userId)"),
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
 });
 
@@ -69,21 +63,11 @@ export const ProgramItemUpdateInputSchema = z
     ),
   });
 
-export const ProgramItemAssignInputSchema = z.object({
-  id: z.string().min(1),
-  responsibleId: z
-    .string()
-    .min(1)
-    .nullable()
-    .describe("User id of the new responsible person (a member); null removes"),
-});
-
 export const ProgramItemIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const ProgramItemListInputSchema = z.object({
   bookingId: z.string().optional().describe("Only the program of this booking"),
   itemId: z.string().optional().describe("Only program items held in this item"),
-  responsibleId: z.string().optional().describe("Only program items this user is responsible for"),
   from: z.coerce.date().optional().describe("Only program items that end after this time"),
   to: z.coerce.date().optional().describe("Only program items that start before this time"),
   ...PageInputShape,
@@ -97,4 +81,3 @@ export const ProgramItemListOutputSchema = z.object({
 export type ProgramItemDto = z.infer<typeof ProgramItemSchema>;
 export type ProgramItemCreateInput = z.infer<typeof ProgramItemCreateInputSchema>;
 export type ProgramItemUpdateInput = z.infer<typeof ProgramItemUpdateInputSchema>;
-export type ProgramItemAssignInput = z.infer<typeof ProgramItemAssignInputSchema>;

@@ -16,8 +16,6 @@ export const BookingSchema = z.object({
   endsAt: z.date(),
   estimatedHeadcount: z.number().int().nullable(),
   guaranteedHeadcount: z.number().int().nullable(),
-  salesOwnerId: z.string().nullable(),
-  coordinatorId: z.string().nullable(),
   statusChangedAt: z.date(),
   /** The reason given with the last status change; always set in the `CANCELLED` phase. */
   statusReason: z.string().nullable(),
@@ -45,8 +43,6 @@ export const BookingSchema = z.object({
 
 const HeadcountSchema = z.number().int().min(0).max(100_000);
 
-const OwnerIdSchema = z.string().min(1);
-
 const BookingDetailsShape = {
   customerId: z.string().min(1).describe("Id of the customer who orders (customer.list)"),
   startsAt: z.coerce.date().describe("Start of the booking, ISO 8601"),
@@ -60,12 +56,11 @@ const BookingDetailsShape = {
 export const BookingCreateInputSchema = z.object({
   entityTypeId: z.string().min(1).describe("Id of the booking type (entityType.list base BOOKING)"),
   ...BookingDetailsShape,
-  salesOwnerId: OwnerIdSchema.nullish().describe(
-    "User id of the salesperson; must be a member (member.list userId)",
-  ),
-  coordinatorId: OwnerIdSchema.nullish().describe(
-    "User id of the coordinator; must be a member (member.list userId)",
-  ),
+  assigneeId: z
+    .string()
+    .min(1)
+    .nullish()
+    .describe("User id of the main assignee; must be a member (member.list userId)"),
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
 });
 
@@ -78,17 +73,6 @@ export const BookingUpdateInputSchema = z
       "Changed field values by key; other fields are kept. null clears a value.",
     ),
   });
-
-/** At least one of the owners must be given; the handler refuses an empty change. */
-export const BookingAssignInputSchema = z.object({
-  id: z.string().min(1),
-  salesOwnerId: OwnerIdSchema.nullable()
-    .optional()
-    .describe("User id of the new salesperson (a member); null removes; omitted = unchanged"),
-  coordinatorId: OwnerIdSchema.nullable()
-    .optional()
-    .describe("User id of the new coordinator (a member); null removes; omitted = unchanged"),
-});
 
 export const BookingChangeStatusInputSchema = z.object({
   bookingId: z.string().min(1).describe("Id of the booking"),
@@ -113,8 +97,8 @@ export const BookingListInputSchema = z.object({
   customerId: z.string().optional().describe("Only bookings of this customer"),
   entityTypeId: z.string().optional().describe("Only bookings of this type"),
   bookingStatusId: z.string().optional().describe("Only bookings with this status"),
-  salesOwnerId: z.string().optional().describe("Only bookings sold by this user"),
-  coordinatorId: z.string().optional().describe("Only bookings coordinated by this user"),
+  assigneeId: z.string().optional().describe("Only bookings this user is assigned to"),
+  followerId: z.string().optional().describe("Only bookings this user follows"),
   from: z.coerce.date().optional().describe("Only bookings that end after this time"),
   to: z.coerce.date().optional().describe("Only bookings that start before this time"),
   ...PageInputShape,
@@ -128,5 +112,4 @@ export const BookingListOutputSchema = z.object({
 export type BookingDto = z.infer<typeof BookingSchema>;
 export type BookingCreateInput = z.infer<typeof BookingCreateInputSchema>;
 export type BookingUpdateInput = z.infer<typeof BookingUpdateInputSchema>;
-export type BookingAssignInput = z.infer<typeof BookingAssignInputSchema>;
 export type BookingChangeStatusInput = z.infer<typeof BookingChangeStatusInputSchema>;

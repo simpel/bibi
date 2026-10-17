@@ -1,8 +1,5 @@
 import { mcpTool, text } from "../../tools/meta";
 
-const owner = ({ value }: { value: unknown }): string =>
-  value === null ? "nobody" : text({ value });
-
 export const bookingMcpTools = [
   mcpTool({ operation: "booking.list" }),
   mcpTool({ operation: "booking.get" }),
@@ -29,22 +26,6 @@ export const bookingMcpTools = [
       `Update booking ${text({ value: input.id })}: ${Object.keys(input)
         .filter((key) => key !== "id")
         .join(", ")}`,
-  }),
-  mcpTool({
-    operation: "booking.assign",
-    idempotent: true,
-    summary: ({ input }) =>
-      [
-        `Assign booking ${text({ value: input.id })}:`,
-        input.salesOwnerId === undefined
-          ? null
-          : `salesperson ${owner({ value: input.salesOwnerId })}`,
-        input.coordinatorId === undefined
-          ? null
-          : `coordinator ${owner({ value: input.coordinatorId })}`,
-      ]
-        .filter(Boolean)
-        .join(" "),
   }),
   mcpTool({
     operation: "booking.changeStatus",

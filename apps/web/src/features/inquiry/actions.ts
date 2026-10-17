@@ -1,9 +1,7 @@
 "use server";
 
 import {
-  assignInquiry,
   createInquiry,
-  type InquiryAssignInput,
   type InquiryCreateInput,
   type InquiryDto,
   type InquiryMarkLostInput,
@@ -47,12 +45,4 @@ export async function markInquiryLostAction({
   input: InquiryMarkLostInput;
 }): Promise<ActionResult<InquiryDto>> {
   return toActionResult({ result: await runOperation({ operation: markInquiryLost, input }) });
-}
-
-export async function assignInquiryAction({
-  input,
-}: {
-  input: InquiryAssignInput;
-}): Promise<ActionResult<InquiryDto>> {
-  return toActionResult({ result: await runOperation({ operation: assignInquiry, input }) });
 }

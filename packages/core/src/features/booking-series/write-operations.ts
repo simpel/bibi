@@ -45,8 +45,7 @@ export const createBookingSeries = defineOperation({
       itemIds: input.itemIds,
       setupId,
       estimatedHeadcount: input.estimatedHeadcount ?? null,
-      salesOwnerId: input.salesOwnerId ?? null,
-      coordinatorId: input.coordinatorId ?? null,
+      assigneeId: input.assigneeId ?? null,
       fields: checked.value,
     };
     const series = await context.db.bookingSeries.create({

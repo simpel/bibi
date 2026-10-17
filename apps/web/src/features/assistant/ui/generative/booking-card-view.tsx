@@ -10,7 +10,7 @@ import { occupancyPeriod } from "./occupancy-period";
 
 export type BookingCardViewProps = GenerativeProps<"booking-card">;
 
-/** One booking: reference (link), time, headcount, whether owners are set and own fields. */
+/** One booking: reference (link), time, headcount and own fields. */
 export function BookingCardView({ booking }: BookingCardViewProps) {
   const t = useTranslations("assistant.ui.booking");
   const format = useFormatter();
@@ -29,7 +29,6 @@ export function BookingCardView({ booking }: BookingCardViewProps) {
       <CardContent className="grid gap-1 p-4 pt-0 text-sm text-muted-foreground">
         <p>{occupancyPeriod({ format, startsAt: booking.startsAt, endsAt: booking.endsAt })}</p>
         {headcount === null ? null : <p>{t("headcount", { count: headcount })}</p>}
-        <p>{booking.coordinatorId ? t("hasCoordinator") : t("noCoordinator")}</p>
         {fieldLines({ fields: booking.fields }).map((line) => (
           <p key={line}>{line}</p>
         ))}

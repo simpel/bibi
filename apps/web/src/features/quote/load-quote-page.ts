@@ -1,7 +1,7 @@
 import "server-only";
 import {
-  getInquiry,
   getQuote,
+  listAssignments,
   listMembers,
   listQuotes,
   type QuoteDto,
@@ -30,22 +30,28 @@ export async function loadQuotePage({ id }: { id: string }): Promise<Result<Quot
   const loaded = await runOperation({ operation: getQuote, input: { id } });
   if (!loaded.ok) return loaded;
   const quote = loaded.value;
-  const [versions, inquiry, members, items, { quoteWrite }] = await Promise.all([
+  const [versions, assignments, members, items, { quoteWrite }] = await Promise.all([
     runOperation({ operation: listQuotes, input: { inquiryId: quote.inquiryId, limit: 100 } }),
-    runOperation({ operation: getInquiry, input: { id: quote.inquiryId } }),
+    runOperation({
+      operation: listAssignments,
+      input: { subjectType: "INQUIRY", subjectId: quote.inquiryId },
+    }),
     runOperation({ operation: listMembers, input: { limit: 100 } }),
     loadQuoteItems(),
     getCallerAbilities(),
   ]);
   const siblings = versions.ok ? versions.value.items : [quote];
   const latestVersion = Math.max(...siblings.map((version) => version.version));
+  const main = assignments.ok
+    ? assignments.value.items.find((assignment) => assignment.responsibilityId === null)
+    : undefined;
   const people = members.ok ? members.value.items : [];
   return {
     ok: true,
     value: {
       quote,
       versions: siblings,
-      ownerId: inquiry.ok ? inquiry.value.salesOwnerId : null,
+      ownerId: main?.assigneeId ?? null,
       members: people.map(({ userId, name }) => ({ id: userId, name })),
       items,
       can: quoteAbilities({ quote, latestVersion, canWrite: quoteWrite }),

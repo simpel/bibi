@@ -3,7 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import { assignBooking } from "./assign-operation";
+import { subjectIdFilter } from "../assignment/subject-filter";
 import { changeBookingStatus } from "./change-status-operation";
 import { bookingListWhere } from "./list-where";
 import { createQuickBookingOperation } from "./quick-operation";
@@ -21,13 +21,15 @@ export const listBookings = defineOperation({
   kind: "query",
   description:
     "List the organization's bookings in start order. Filter by customer, type, status, " +
-    "salesperson, coordinator or a time window (`from`/`to`).",
+    "assignee, follower (assignment.list) or a time window (`from`/`to`).",
   input: BookingListInputSchema,
   output: BookingListOutputSchema,
   permission: "booking:read",
   handler: async ({ input, context }) => {
+    const { assigneeId, followerId } = input;
+    const ids = await subjectIdFilter({ context, subjectType: "BOOKING", assigneeId, followerId });
     const rows = await context.db.booking.findMany({
-      where: bookingListWhere({ input }),
+      where: { ...bookingListWhere({ input }), ...ids },
       orderBy: [{ startsAt: "asc" }, { id: "asc" }],
       ...pageArgs(input),
     });
@@ -42,7 +44,7 @@ export const getBooking = defineOperation({
   kind: "query",
   description:
     "Get one booking by id: reference number, type and its field values, customer, time, " +
-    "headcount, status and owners.",
+    "headcount and status. Who answers for it: assignment.list.",
   input: BookingIdInputSchema,
   output: BookingSchema,
   permission: "booking:read",
@@ -58,7 +60,6 @@ export const bookingOperations = [
   createBooking,
   createQuickBookingOperation,
   updateBooking,
-  assignBooking,
   changeBookingStatus,
 ];
 

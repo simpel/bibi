@@ -93,11 +93,16 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       orderBy: { reference: "asc" },
     });
     expect(bookings).toHaveLength(10);
-    const erik = await db.member.findFirst({
-      where: { organizationId: lind?.organizationId, user: { name: "Erik Lund" } },
+    const johan = await db.member.findFirst({
+      where: { organizationId: lind?.organizationId, user: { name: "Johan Ek" } },
     });
     expect(bookings[0]).toMatchObject({ reference: 1, estimatedHeadcount: 40 });
-    expect(bookings[0]?.salesOwnerId).toBe(erik?.userId);
+    const main = await db.assignment.findFirst({
+      where: { subjectId: bookings[0]?.id, responsibilityId: null },
+      include: { followers: true },
+    });
+    expect(main?.assigneeId).toBe(johan?.userId);
+    expect(main?.followers).toHaveLength(1);
   });
 
   it("re-seeds an organization that has occupancy rows", async () => {

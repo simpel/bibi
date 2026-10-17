@@ -4,15 +4,16 @@ import type { BookingListInputSchema } from "./schema";
 
 export type BookingListWhereInput = { input: z.infer<typeof BookingListInputSchema> };
 
-/** Prisma filter of `booking.list`: every given filter must match; the window overlaps. */
+/**
+ * Prisma filter of `booking.list` on the booking's own columns: every given filter must match; the
+ * window overlaps. Assignee and follower filters are added by `subjectIdFilter`.
+ */
 export function bookingListWhere({ input }: BookingListWhereInput): Prisma.BookingWhereInput {
-  const { customerId, entityTypeId, bookingStatusId, salesOwnerId, coordinatorId } = input;
+  const { customerId, entityTypeId, bookingStatusId } = input;
   return {
     ...(customerId ? { customerId } : {}),
     ...(entityTypeId ? { entityTypeId } : {}),
     ...(bookingStatusId ? { bookingStatusId } : {}),
-    ...(salesOwnerId ? { salesOwnerId } : {}),
-    ...(coordinatorId ? { coordinatorId } : {}),
     ...(input.from ? { endsAt: { gt: input.from } } : {}),
     ...(input.to ? { startsAt: { lt: input.to } } : {}),
   };

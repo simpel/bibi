@@ -20,7 +20,6 @@ export const InquirySchema = z.object({
   /** Changed only by the inquiry's own commands (`inquiry.qualify`, `inquiry.markLost`, …). */
   inquiryStatus: InquiryStatusSchema,
   lossReason: z.string().nullable(),
-  salesOwnerId: z.string().nullable(),
   statusChangedAt: z.date(),
   fields: FieldValuesSchema,
   status: RecordStatusSchema,
@@ -29,7 +28,7 @@ export const InquirySchema = z.object({
   createdBy: z.string().nullable(),
 });
 
-const OwnerIdSchema = z.string().min(1);
+const AssigneeIdSchema = z.string().min(1);
 
 const InquiryDetailsShape = {
   customerId: z.string().min(1).describe("Id of the customer who asks (customer.list)"),
@@ -58,13 +57,13 @@ const InquiryDetailsShape = {
 export const InquiryCreateInputSchema = z.object({
   entityTypeId: z.string().min(1).describe("Id of the inquiry type (entityType.list base INQUIRY)"),
   ...InquiryDetailsShape,
-  salesOwnerId: OwnerIdSchema.nullish().describe(
-    "User id of the salesperson; must be a member (member.list userId)",
+  assigneeId: AssigneeIdSchema.nullish().describe(
+    "User id of the main assignee; must be a member (member.list userId)",
   ),
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
 });
 
-/** Status and owner are not here: they change only through the inquiry's own commands. */
+/** Status and assignee are not here: they change only through the inquiry's own commands. */
 export const InquiryUpdateInputSchema = z
   .object(InquiryDetailsShape)
   .partial()
@@ -77,8 +76,8 @@ export const InquiryUpdateInputSchema = z
 
 export const InquiryQualifyInputSchema = z.object({
   id: z.string().min(1),
-  salesOwnerId: OwnerIdSchema.optional().describe(
-    "User id of the salesperson (a member); required unless the inquiry already has one",
+  assigneeId: AssigneeIdSchema.optional().describe(
+    "User id of the main assignee (a member); required unless the inquiry already has one",
   ),
 });
 
@@ -87,20 +86,14 @@ export const InquiryMarkLostInputSchema = z.object({
   lossReason: z.string().trim().min(1).max(1000).describe("Why the inquiry was lost"),
 });
 
-export const InquiryAssignInputSchema = z.object({
-  id: z.string().min(1),
-  salesOwnerId: OwnerIdSchema.nullable().describe(
-    "User id of the new salesperson (a member); null removes the owner (only while NEW)",
-  ),
-});
-
 export const InquiryIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const InquiryListInputSchema = z.object({
   customerId: z.string().optional().describe("Only inquiries from this customer"),
   entityTypeId: z.string().optional().describe("Only inquiries of this type"),
   inquiryStatus: InquiryStatusSchema.optional().describe("Only inquiries with this status"),
-  salesOwnerId: z.string().optional().describe("Only inquiries owned by this user"),
+  assigneeId: z.string().optional().describe("Only inquiries this user is assigned to"),
+  followerId: z.string().optional().describe("Only inquiries this user follows"),
   ...PageInputShape,
 });
 
@@ -115,4 +108,3 @@ export type InquiryCreateInput = z.infer<typeof InquiryCreateInputSchema>;
 export type InquiryUpdateInput = z.infer<typeof InquiryUpdateInputSchema>;
 export type InquiryQualifyInput = z.infer<typeof InquiryQualifyInputSchema>;
 export type InquiryMarkLostInput = z.infer<typeof InquiryMarkLostInputSchema>;
-export type InquiryAssignInput = z.infer<typeof InquiryAssignInputSchema>;

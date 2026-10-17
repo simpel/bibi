@@ -46,6 +46,8 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "setup-card",
   "responsibility-table",
   "responsibility-card",
+  "assignment-table",
+  "assignment-card",
   "sheet-definition-table",
   "sheet-definition-card",
   "sheet-table",

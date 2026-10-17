@@ -1,6 +1,5 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { checkMembers } from "../../shared/check-members";
 import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
@@ -30,7 +29,6 @@ export async function insertProgramItem({
     await checkBooking({ context, bookingId: data.bookingId }),
     checkPeriod(data),
     await checkPlace({ context, bookingId: data.bookingId, itemId, setupId }),
-    await checkMembers({ context, userIds: { responsibleId: data.responsibleId } }),
   ]) {
     if (!check.ok) return check;
   }

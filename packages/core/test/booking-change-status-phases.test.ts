@@ -64,6 +64,6 @@ async function bookingFor({ setup, past, coordinated }: BookingForInput) {
     customerId: customer.id,
     startsAt,
     endsAt: new Date(startsAt.getTime() + 2 * HOUR),
-    ...(coordinated ? { coordinatorId: await memberUser({ context, name: "Johan Ek" }) } : {}),
+    ...(coordinated ? { assigneeId: await memberUser({ context, name: "Johan Ek" }) } : {}),
   });
 }

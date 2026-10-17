@@ -3,7 +3,7 @@ import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 import { toLocalInputValue } from "../../occupancy/ui/local-date-time";
 
-/** Raw values of the program item form: inputs are strings, `NONE` = no item/setup/person. */
+/** Raw values of the program item form: inputs are strings, `NONE` = no item/setup. */
 export type ProgramItemFormValues = {
   entityTypeId: string;
   name: string;
@@ -12,7 +12,6 @@ export type ProgramItemFormValues = {
   itemId: string;
   setupId: string;
   quantity: string;
-  responsibleId: string;
   note: string;
   fields: Record<string, RawFieldValue>;
 };
@@ -39,7 +38,6 @@ export function programItemFormDefaults({
     itemId: programItem?.itemId ?? NONE,
     setupId: programItem?.setupId ?? NONE,
     quantity: programItem?.quantity === null ? "" : String(programItem?.quantity ?? ""),
-    responsibleId: programItem?.responsibleId ?? NONE,
     note: programItem?.note ?? "",
     fields: rawFields({ type, stored: programItem?.fields ?? {} }),
   };

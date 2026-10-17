@@ -28,7 +28,7 @@ The checks that run today:
   - The number of item parts (`ItemComponent`) per organization matches the data files.
 - **Part 3 (catalog):** the whole catalog of both organizations is seeded via `item.create` as SYSTEM, parts after the items they contain, and Nordkust management team via `item.saveAsPackage` right after its customer. The checks compare with the data files per organization: the number of items (Lindholmen 61, Vingaleden 9), customer-specific packages (Lindholmen 1), item parts (`ItemComponent`, choice options included) and choice groups (`ItemChoiceGroup`). The test also verifies that the Three-course dinner has the groups Starter, Main course and Dessert over 8 parts, and that Nordkust management team belongs to Nordkust Logistik. Every choice group in the tables is "choose 1" (`minPick` = `maxPick` = 1).
 - **Part 4 (customers), started:** the number of customers and contact persons per organization matches the data files, and Nordkust Logistik has its price list with a general discount of 15 %. The sales pipeline follows when those operations exist.
-- **Part 5 (bookings), started:** the number of bookings per organization matches the data files, each with its customer, type, time, headcount, own fields and owners (salesperson and coordinator by name). Every booking has the default `TENTATIVE` status until `booking.changeStatus` exists; the statuses in the tables, program items and requirements follow.
+- **Part 5 (bookings), started:** the number of bookings per organization matches the data files, each with its customer, type, time, headcount, own fields, main assignee and 0–2 followers by name (ADR 0034; `checkDemoAssignments` compares the counts). Every booking has the default `TENTATIVE` status until `booking.changeStatus` exists; the statuses in the tables, program items and requirements follow.
 - **All parts:** point 7.
 
 ## Exceptions and sign-in
@@ -221,31 +221,31 @@ Contact persons have the type Contact person; the role in parentheses is its Rol
 
 ## Sales flow and bookings
 
-Salesperson (S) and coordinator (C) are given by first name.
+The main assignee (A) and followers (F) are given by first name (ADR 0034): the coordinator answers for a booking and the salesperson follows it.
 
 ### Inquiries, options and quotes
 | # | Customer | What | Status | Shows |
 |---|---|---|---|---|
-| F1 | Göteborgs Seglarsällskap | Anniversary party, 150 people, D+60 | Inquiry `NEW`, no salesperson yet | the inbox |
-| F2 | Hisingen Energi | Kickoff, 100 people, D+45 in Vinga | `QUALIFIED`, S Erik. **Option O1, rank 1** on Vinga D+45 09–17, expires D+5 | option queue |
-| F3 | Kvarnby Design | Product launch, 80 people, D+45 in Vinga | `QUALIFIED`, S Sara. **Option O2, rank 2** on the same time | option queue |
+| F1 | Göteborgs Seglarsällskap | Anniversary party, 150 people, D+60 | Inquiry `NEW`, no assignee yet | the inbox |
+| F2 | Hisingen Energi | Kickoff, 100 people, D+45 in Vinga | `QUALIFIED`, A Erik. **Option O1, rank 1** on Vinga D+45 09–17, expires D+5 | option queue |
+| F3 | Kvarnby Design | Product launch, 80 people, D+45 in Vinga | `QUALIFIED`, A Sara. **Option O2, rank 2** on the same time | option queue |
 | F4 | Västra Sjukvårdsregionen | Workshop, 30 people, D+40 | `QUOTED`. Quote v1 (40 people) replaced by **v2 (30 people) `SENT`**, valid until D+10 | quote versions |
 | F5 | Göta Advokatbyrå | Evening event, 40 people, D+20 | `LOST`, reason "Price". Quote v1 `DECLINED` | loss reason |
 | F6 | Älvstrand Tech | Team day, 20 people, D+12 | `QUALIFIED`. Option O3 expired D−1 (`ACTIVE` until `option.expireDue` runs) | expiry |
 
 ### Bookings
-| # | Customer · type | When | Count | Contents | Status | S / C | Shows |
+| # | Customer · type | When | Count | Contents | Status | A / F | Shows |
 |---|---|---|---|---|---|---|---|
-| L1 | Hisingen Energi · Conference | D−21 | 40 | Full-day conference in Hönö (U-shape) | Completed | Erik / Johan | history |
-| L2 | Kvarnby Design · Event | D−10 | 80 | Evening event | Completed | Sara / Maria | history |
-| L3 | Västra Sjukvårdsregionen · Conference | D+3 | 60 | Day + evening in Hönö (Theatre) + Projector. In the evening the Reception buffet is replaced by the Three-course dinner. | Final count locked | Erik / Johan | **Requirements:** Gluten × 4 (Allergy), Tree nuts × 1 (Anaphylaxis), Vegetarian × 8, Wheelchair × 1. The nuts give "may contain" without blocking. See note below. |
-| L4 | Göta Advokatbyrå · Conference | D+5 | 12 | Half-day conference, Styrsö (Boardroom) | Confirmed | Sara / Maria | simple booking |
-| L5 | Älvstrand Tech · Event | D+14 | 120 | Vinga (Reception) + Reception buffet + Wine package | Awaiting deposit | Erik / Maria | **Blocked kitchen order:** Crustaceans × 2 (Anaphylaxis) against Toast Skagen, which is mandatory |
+| L1 | Hisingen Energi · Conference | D−21 | 40 | Full-day conference in Hönö (U-shape) | Completed | Johan / Erik | history |
+| L2 | Kvarnby Design · Event | D−10 | 80 | Evening event | Completed | Maria / Sara | history |
+| L3 | Västra Sjukvårdsregionen · Conference | D+3 | 60 | Day + evening in Hönö (Theatre) + Projector. In the evening the Reception buffet is replaced by the Three-course dinner. | Final count locked | Johan / Erik, Maria | **Requirements:** Gluten × 4 (Allergy), Tree nuts × 1 (Anaphylaxis), Vegetarian × 8, Wheelchair × 1. The nuts give "may contain" without blocking. See note below. |
+| L4 | Göta Advokatbyrå · Conference | D+5 | 12 | Half-day conference, Styrsö (Boardroom) | Confirmed | Maria / Sara | simple booking |
+| L5 | Älvstrand Tech · Event | D+14 | 120 | Vinga (Reception) + Reception buffet + Wine package | Awaiting deposit | Maria / Erik | **Blocked kitchen order:** Crustaceans × 2 (Anaphylaxis) against Toast Skagen, which is mandatory |
 | L6 | Hisingen Energi · Conference | D+30 | 25 | Full-day conference | Cancelled, reason "Budget" | Erik / – | cancellation |
 | L7 | Göta Advokatbyrå · Conference | D+1 10–12 | 4 | Asperö (Boardroom) + Coffee and tea | Tentative, Swish link sent | Sara / – | quick booking with payment link |
-| L10 | Hisingen Energi · Conference | D+4 13–16 | 6 | Donsö (Boardroom) + Afternoon break | Confirmed, on invoice | Erik / Johan | quick booking on invoice |
-| L8 | Göteborgs Seglarsällskap · Tour | D+2 14:00 | 22 | Exhibition tour with guide Oskar (German) | Confirmed | Sara / Johan | Tour type, bookable guide |
-| L9 | Kvarnby Design · Conference | D+8 | 18 | Design workshop + Conference lunch | Confirmed | Sara / Maria | activity that contains a room |
+| L10 | Hisingen Energi · Conference | D+4 13–16 | 6 | Donsö (Boardroom) + Afternoon break | Confirmed, on invoice | Johan / Erik | quick booking on invoice |
+| L8 | Göteborgs Seglarsällskap · Tour | D+2 14:00 | 22 | Exhibition tour with guide Oskar (German) | Confirmed | Johan / Sara | Tour type, bookable guide |
+| L9 | Kvarnby Design · Conference | D+8 | 18 | Design workshop + Conference lunch | Confirmed | Maria / Sara | activity that contains a room |
 
 **Note on L3:** the nut allergy hits Chocolate fondant, which has the alternatives Cloudberry parfait and Lemon sorbet. The result is "may contain" and no blocking (check 4). The replacement is made on the booking's copy of the package, so the catalog package is not changed (snapshot, ADR 0021). L3 thus also shows that a package can be adapted for a single occasion.
 
@@ -320,6 +320,8 @@ Seated (10 min), Standing (5 min), Deck reception (20 min).
 
 ## Customers and bookings
 Customers: Hisingen Energi AB (Company, the same name as at Lindholmen but a completely separate row in another organization; contact Mats Olsson), Familjen Rask (Private; contact Johan Rask), Kvarnby Design AB (Company; contact Linnea Kvist).
+
+Per Vinga is the main assignee of V1–V3 and Stina Holm follows them; V4 is assigned to Stina Holm.
 
 | # | Customer · type | When | Count | Contents | Status | Shows |
 |---|---|---|---|---|---|---|

@@ -1,3 +1,4 @@
+import { assignmentMcpTools } from "../features/assignment/mcp";
 import { auditLogMcpTools } from "../features/audit-log/mcp";
 import { bookingMcpTools } from "../features/booking/mcp";
 import { bookingSeriesMcpTools } from "../features/booking-series/mcp";
@@ -50,6 +51,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...bookingStatusMcpTools,
     ...bookingMcpTools,
     ...bookingSeriesMcpTools,
+    ...assignmentMcpTools,
     ...programItemMcpTools,
     ...requirementMcpTools,
     ...sheetMcpTools,

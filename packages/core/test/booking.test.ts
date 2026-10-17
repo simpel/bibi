@@ -38,8 +38,6 @@ describe("bookings (ADR 0022)", () => {
       reference: 1,
       bookingStatusId: tentative?.id,
       estimatedHeadcount: 40,
-      salesOwnerId: null,
-      coordinatorId: null,
       fields: { [key]: "Kickoff" },
     });
     const second = await createTestBooking({

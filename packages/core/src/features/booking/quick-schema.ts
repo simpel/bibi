@@ -24,16 +24,11 @@ export const QuickBookingInputSchema = z.object({
       "INVOICE confirms the booking at once (to the default CONFIRMED status); PAYMENT_LINK " +
         "leaves it TENTATIVE until the payment is done",
     ),
-  coordinatorId: z
+  assigneeId: z
     .string()
     .min(1)
     .nullish()
-    .describe("User id of the coordinator (a member); defaults to the user who books"),
-  salesOwnerId: z
-    .string()
-    .min(1)
-    .nullish()
-    .describe("User id of the salesperson (a member); defaults to none"),
+    .describe("User id of the main assignee (a member); defaults to the user who books"),
 });
 
 export type QuickBookingInput = z.infer<typeof QuickBookingInputSchema>;

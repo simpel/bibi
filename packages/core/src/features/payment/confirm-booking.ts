@@ -10,7 +10,7 @@ export type ConfirmOutcome = "confirmed" | "skipped" | "failed";
 /**
  * Moves a booking that is still tentative to its organization's default `CONFIRMED` status once it
  * has been paid (ADR 0028), as SYSTEM through `booking.changeStatus`, so the organization's own
- * transitions and the phase rules (a coordinator is required) still apply. A refusal never undoes
+ * transitions and the phase rules (a main assignee is required) still apply. A refusal never undoes
  * the payment: it is logged and staff confirm the booking by hand.
  */
 export async function confirmBookingAfterPayment({

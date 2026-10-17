@@ -27,7 +27,7 @@ async function draft() {
 
 describe("quote.send (ADR 0022)", () => {
   it("needs lines and a future validity, then sends and moves the inquiry to QUOTED", async () => {
-    const { context, inquiry, quote, erik } = await draft();
+    const { context, inquiry, quote } = await draft();
     const { id } = quote;
     const past = new Date(Date.now() - 1000);
     unwrap({

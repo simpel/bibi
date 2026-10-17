@@ -422,12 +422,12 @@
   "booking": {
     "singular": "Bokning",
     "plural": "Bokningar",
-    "listDescription": "Konferenser och evenemang med kund, tid, antal, status och ansvariga. Typen avgör vilka fält en bokning har.",
+    "listDescription": "Konferenser och evenemang med kund, tid, antal och status. Typen avgör vilka fält en bokning har.",
     "reference": "Bokning {reference}",
     "create": "Skapa bokning",
     "edit": "Redigera bokning",
     "createDescription": "Välj typ, kund och tid. Bokningen startar i standardstatusen för preliminära bokningar.",
-    "editDescription": "Ändra kund, tid, antal och typens fält. Status och ansvariga ändras separat.",
+    "editDescription": "Ändra kund, tid, antal och typens fält. Status och ansvarig ändras separat.",
     "created": "Bokningen har skapats.",
     "createQuick": "Snabbbokning",
     "quickDescription": "Boka ett litet möte i ett steg: kund, lokal, tid och antal. Ingen förfrågan eller offert behövs.",
@@ -444,15 +444,10 @@
       "paymentLink": "Betallänk (bekräfta när betald)"
     },
     "updated": "Bokningen har uppdaterats.",
-    "assign": "Byt ansvariga",
-    "assignDescription": "Välj säljare och koordinator bland medlemmarna.",
-    "assigned": "De ansvariga har uppdaterats.",
-    "noOwner": "Ingen",
-    "coordinatorRequired": "En bekräftad bokning måste ha en koordinator.",
     "changeStatus": "Byt status",
     "changeStatusDescription": "Flytta bokningen till en av de statusar som organisationen tillåter från nuvarande status. En avbokning kräver en anledning och frigör bokningens rum och resurser.",
     "statusChanged": "Statusen har ändrats.",
-    "phaseRuleRefused": "Ändringen bryter mot en bokningsregel: bekräftade och genomförda bokningar måste ha en koordinator, och en bokning kan markeras som genomförd först när den har tagit slut.",
+    "phaseRuleRefused": "Ändringen bryter mot en bokningsregel: bekräftade och genomförda bokningar måste ha en ansvarig, och en bokning kan markeras som genomförd först när den har tagit slut.",
     "reasonRequired": "Ange en anledning till avbokningen.",
     "empty": "Inga bokningar ännu.",
     "emptyDescription": "Skapa din första bokning.",
@@ -467,8 +462,6 @@
       "status": "Status",
       "estimatedHeadcount": "Beräknat antal",
       "guaranteedHeadcount": "Garanterat antal",
-      "salesOwner": "Säljare",
-      "coordinator": "Koordinator",
       "newStatus": "Ny status",
       "statusReason": "Anledning"
     },
@@ -477,8 +470,7 @@
       "customer": "Kund",
       "type": "Typ",
       "when": "När",
-      "status": "Status",
-      "salesOwner": "Säljare"
+      "status": "Status"
     }
   },
   "calendar": {
@@ -516,16 +508,11 @@
     "create": "Registrera förfrågan",
     "edit": "Redigera förfrågan",
     "createDescription": "Välj en typ och kunden. Förfrågan börjar som ny.",
-    "editDescription": "Ändra kund, kontaktperson, datum, antal, budget och typens fält. Status och säljare ändras separat.",
+    "editDescription": "Ändra kund, kontaktperson, datum, antal, budget och typens fält. Status och ansvarig ändras separat.",
     "created": "Förfrågan har registrerats.",
     "updated": "Förfrågan har uppdaterats.",
-    "assign": "Byt säljare",
-    "assignDescription": "Välj säljare bland medlemmarna.",
-    "assigned": "Säljaren har uppdaterats.",
-    "noOwner": "Ingen",
-    "ownerRequired": "En kvalificerad förfrågan behöver en säljare.",
     "qualify": "Kvalificera",
-    "qualifyDescription": "En kvalificerad förfrågan behöver en säljare. Välj en bland medlemmarna.",
+    "qualifyDescription": "En kvalificerad förfrågan behöver en ansvarig. Välj en bland medlemmarna eller behåll den nuvarande.",
     "qualified": "Förfrågan har kvalificerats.",
     "markLost": "Markera som förlorad",
     "markLostDescription": "Ange varför förfrågan förlorades. En förlorad förfrågan kan inte öppnas igen.",
@@ -551,17 +538,17 @@
       "when": "Önskade datum",
       "quantity": "Antal",
       "budget": "Budget (kr)",
-      "salesOwner": "Säljare",
-      "lossReason": "Orsak till förlust"
+      "lossReason": "Orsak till förlust",
+      "assignee": "Ansvarig"
     },
     "columns": {
       "customer": "Kund",
       "type": "Typ",
       "when": "Önskade datum",
       "quantity": "Antal",
-      "status": "Status",
-      "salesOwner": "Säljare"
-    }
+      "status": "Status"
+    },
+    "keepAssignee": "Behåll nuvarande ansvarig"
   },
   "quote": {
     "singular": "Offert",
@@ -710,14 +697,10 @@
     "archived": "Programpunkten har tagits bort.",
     "created": "Programpunkten har lagts till.",
     "updated": "Programpunkten har uppdaterats.",
-    "assign": "Byt ansvarig",
-    "assignDescription": "Den ansvariga måste vara medlem i organisationen.",
-    "assigned": "Ansvarig har bytts.",
     "empty": "Bokningen har inga programpunkter än.",
     "occupied": "Lokalen är redan belagd under perioden eller ställtiden.",
     "noItem": "Ingen lokal",
     "noSetup": "Ingen uppställning",
-    "noResponsible": "Ingen",
     "fields": {
       "type": "Typ",
       "name": "Namn",
@@ -726,7 +709,6 @@
       "item": "Lokal eller bokningsbar artikel",
       "setup": "Uppställning",
       "quantity": "Antal",
-      "responsible": "Ansvarig",
       "note": "Intern anteckning"
     },
     "columns": {
@@ -734,8 +716,7 @@
       "name": "Namn",
       "type": "Typ",
       "where": "Var",
-      "quantity": "Antal",
-      "responsible": "Ansvarig"
+      "quantity": "Antal"
     }
   },
   "requirement": {
@@ -1255,7 +1236,6 @@
         "booking_create": "Skapa bokning",
         "booking_createQuick": "Skapa snabbbokning",
         "booking_update": "Uppdatera bokning",
-        "booking_assign": "Tilldela bokning",
         "booking_changeStatus": "Ändra bokningsstatus",
         "bookingSeries_create": "Skapa bokningsserie",
         "bookingSeries_updateOccurrences": "Uppdatera seriens tillfällen",
@@ -1289,7 +1269,10 @@
         "skill_archive": "Arkivera färdighet",
         "skill_share": "Dela färdighet",
         "skill_import": "Importera färdighet",
-        "conversation_archive": "Arkivera konversation"
+        "conversation_archive": "Arkivera konversation",
+        "assignment_assign": "Byt ansvarig",
+        "assignment_follow": "Följ",
+        "assignment_unfollow": "Sluta följa"
       }
     },
     "description": "Chatta med assistenten om anläggningar, artiklar och färdigheter.",
@@ -1379,8 +1362,6 @@
         "open": "Öppna bokningen",
         "reference": "Bokning {reference}",
         "headcount": "{count, plural, one {# gäst} other {# gäster}}",
-        "hasCoordinator": "Koordinator utsedd",
-        "noCoordinator": "Ingen koordinator ännu",
         "columns": {
           "reference": "Nummer",
           "when": "När",
@@ -1412,8 +1393,6 @@
         "empty": "Inga förfrågningar hittades.",
         "open": "Öppna förfrågan",
         "quantity": "Antal: {count}",
-        "hasOwner": "Säljare tilldelad",
-        "noOwner": "Ingen säljare än",
         "lossReason": "Förlorad: {reason}",
         "columns": {
           "created": "Registrerad",
@@ -1457,8 +1436,6 @@
         "singular": "Programpunkt",
         "empty": "Inga programpunkter hittades.",
         "quantity": "{count} deltar",
-        "hasResponsible": "Har en ansvarig",
-        "noResponsible": "Ingen ansvarig",
         "archived": "Borttagen från programmet",
         "openBooking": "Öppna bokningen",
         "columns": {
@@ -1603,6 +1580,24 @@
           "name": "Namn",
           "phase": "Fas",
           "transitions": "Övergångar"
+        }
+      },
+      "assignment": {
+        "subject": {
+          "INQUIRY": "Förfrågan",
+          "BOOKING": "Bokning",
+          "ITEM": "Artikel"
+        },
+        "main": "Huvudansvarig",
+        "responsibility": "Ansvar",
+        "assigned": "Har en ansvarig",
+        "unassigned": "Ingen ansvarig ännu",
+        "followers": "{count, plural, =0 {Inga följare} one {# följare} other {# följare}}",
+        "empty": "Inga tilldelningar.",
+        "columns": {
+          "subject": "Gäller",
+          "assignee": "Ansvarig",
+          "followers": "Följare"
         }
       }
     }
@@ -2100,12 +2095,12 @@
         "inquiries": {
           "title": "Förfrågningar",
           "lead": "En förfrågan är en kunds intresse innan något är bokat. Använd den för att hålla reda på vem som frågat efter vad, och vem som tar hand om den.",
-          "body": "# När du använder en förfrågan\n\nAnvänd en förfrågan när en kund ber om något som behöver följas upp innan ni kan boka det. För ett litet möte som ni kan boka direkt hoppar du över förfrågan och gör en snabbbokning i stället. Se [Bokningar](/docs/guide/bookings).\n\n# Registrera en förfrågan\n\n1. Öppna **Förfrågningar** i vänstermenyn och välj **Registrera förfrågan**.\n2. Välj förfrågningstyp. Typerna ställs in av era administratörer. Finns det inga än, välj **Gå till typer** och skapa en först.\n3. Välj kund, och gärna en kontaktperson som arbetar hos kunden.\n4. Fyll i önskade datum, antal (till exempel antal gäster), budget och eventuella fält som er organisation lagt till på typen.\n5. Spara. Förfrågan startar med statusen **Ny**.\n\nFinns kunden inte än, skapa den först under **Kunder**. En kund kan ha flera kontaktpersoner, och varje kontakt har namn, e-post och telefonnummer.\n\n# Flytta den framåt\n\nEn förfrågan följer en fast väg. Du kan inte sätta status genom att redigera förfrågan. Du använder en knapp på förfrågans sida.\n\n- **Kvalificera** flyttar den från **Ny** till **Kvalificerad**. En kvalificerad förfrågan behöver en säljare, så välj en bland medlemmarna när du kvalificerar den.\n- **Markera som förlorad** avslutar den. Du måste ange en anledning, vilket gör att ni senare kan se varför affärer faller bort. En förlorad förfrågan kan inte öppnas igen.\n\nStatusarna **Offererad** och **Vunnen** finns i statuslistan, men offerter är inte tillgängliga än. Kommer senare: att skicka en offert, låta kunden acceptera den och göra om den vunna förfrågan till en bokning automatiskt.\n\nTills dess skapar du bokningen själv under **Bokningar** när en förfrågan blir en riktig order, med samma kund och datum.\n\n# Håll koll på ditt eget arbete\n\n- Listan visar varje förfrågans kund, typ, önskade datum, antal, status och säljare.\n- Du kan byta säljare med **Byt säljare**.\n- Varje ändring sparas under **Historik** på förfrågans sida, med vem som gjorde den.\n- Kunder kan svara på bokningsmejl, och svaren samlas på bokningen. Se [Bokningar](/docs/guide/bookings).\n\n# Tips\n\n- Lägg samma fält på förfrågningstypen som ni vill ha på bokningen, så blir det lätt att föra över uppgifterna.\n- Be assistenten om en överblick, till exempel \"Vilka förfrågningar saknar säljare?\"."
+          "body": "# När du använder en förfrågan\n\nAnvänd en förfrågan när en kund ber om något som behöver följas upp innan ni kan boka det. För ett litet möte som ni kan boka direkt hoppar du över förfrågan och gör en snabbbokning i stället. Se [Bokningar](/docs/guide/bookings).\n\n# Registrera en förfrågan\n\n1. Öppna **Förfrågningar** i vänstermenyn och välj **Registrera förfrågan**.\n2. Välj förfrågningstyp. Typerna ställs in av era administratörer. Finns det inga än, välj **Gå till typer** och skapa en först.\n3. Välj kund, och gärna en kontaktperson som arbetar hos kunden.\n4. Fyll i önskade datum, antal (till exempel antal gäster), budget och eventuella fält som er organisation lagt till på typen.\n5. Spara. Förfrågan startar med statusen **Ny**.\n\nFinns kunden inte än, skapa den först under **Kunder**. En kund kan ha flera kontaktpersoner, och varje kontakt har namn, e-post och telefonnummer.\n\n# Flytta den framåt\n\nEn förfrågan följer en fast väg. Du kan inte sätta status genom att redigera förfrågan. Du använder en knapp på förfrågans sida.\n\n- **Kvalificera** flyttar den från **Ny** till **Kvalificerad**. En kvalificerad förfrågan behöver en ansvarig, så välj en bland medlemmarna när du kvalificerar den.\n- **Markera som förlorad** avslutar den. Du måste ange en anledning, vilket gör att ni senare kan se varför affärer faller bort. En förlorad förfrågan kan inte öppnas igen.\n\nStatusarna **Offererad** och **Vunnen** finns i statuslistan, men offerter är inte tillgängliga än. Kommer senare: att skicka en offert, låta kunden acceptera den och göra om den vunna förfrågan till en bokning automatiskt.\n\nTills dess skapar du bokningen själv under **Bokningar** när en förfrågan blir en riktig order, med samma kund och datum.\n\n# Håll koll på ditt eget arbete\n\n- Listan visar varje förfrågans kund, typ, önskade datum, antal och status. Välj **Tilldelade mig** eller **Följer** för att bara se dina egna.\n- Du kan byta ansvarig med **Byt ansvarig** och välja **Följ** för att hållas informerad.\n- Varje ändring sparas under **Historik** på förfrågans sida, med vem som gjorde den.\n- Kunder kan svara på bokningsmejl, och svaren samlas på bokningen. Se [Bokningar](/docs/guide/bookings).\n\n# Tips\n\n- Lägg samma fält på förfrågningstypen som ni vill ha på bokningen, så blir det lätt att föra över uppgifterna.\n- Be assistenten om en överblick, till exempel \"Vilka förfrågningar saknar ansvarig?\"."
         },
         "bookings": {
           "title": "Bokningar",
           "lead": "En bokning är hela eventet: vem, när, var och vad. Här ser du hur du skapar en, för den genom statusarna och avbokar den.",
-          "body": "# Snabbbokning för ett litet möte\n\nEn snabbbokning är det snabbaste sättet att boka. Det finns ingen förfrågan och ingen offert.\n\n1. Öppna **Bokningar** och välj **Snabbbokning**.\n2. Välj **Bokningstyp**, **Programpunktstyp** och **Kund**.\n3. Välj **Lokal eller artikel**, tid och **Antal**.\n4. Under **Betalning** väljer du **Faktura (bekräfta nu)** eller **Betallänk (bekräfta när betald)**.\n5. Spara.\n\nÄr lokalen eller dess ställtid redan upptagen får du ett meddelande och kan välja en annan tid. Med fakturaalternativet bekräftas bokningen direkt. Med betallänk förblir den preliminär tills kunden betalat. Se [Betalningar](/docs/guide/payments).\n\n# Skapa en vanlig bokning\n\n1. Välj **Skapa bokning**.\n2. Välj typ, kund och tid. Bokningen startar i er standardstatus för preliminära bokningar och får nästa nummer.\n3. Lägg till programpunkter, behov och betalningar från bokningens sida.\n\n# Bokningens sida\n\n- **Program**: dagens rader. Välj **Lägg till programpunkt** och ange namn, tid, lokal, uppställning och antal. Lokalen hålls för den tiden, och uppställningens ställtid blockeras precis före. Du kan inte boka en lokal som redan är belagd.\n- **Behov**: antal per listvärde. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Blad**: versioner som du kan skapa och skicka.\n- **Betalningar**: betalningsbegäranden för bokningen.\n- **Mottagen e-post**: kundens svar, när er organisation har inkommande e-post uppsatt.\n- **Historik**: varje ändring, med vem som gjorde den.\n\n# Byt status\n\nVälj **Byt status** och välj en av de statusar som era administratörer satt upp. Varje status hör till en av fyra faser, och fasen avgör reglerna.\n\n- **Preliminär**: lokalerna hålls. Blad kan inte skickas.\n- **Bekräftad**: bokningen behöver en koordinator. Blad kan skickas.\n- **Genomförd**: behöver en koordinator och är bara tillåten efter att bokningen slutat.\n- **Avbokad**: du måste ange en anledning. Lokalerna släpps. En avbokad bokning kan inte öppnas igen, så skapa en ny i stället.\n\nVilka byten som är tillåtna från varje status bestämmer också era administratörer. Använd **Byt ansvariga** för att ange säljare och koordinator.\n\n# Återkommande bokningar\n\nFör en kund som bokar samma lokal regelbundet använder du **Bokningsserier**. Skapa en serie med en upprepningsregel, så skapar Okazi varje tillfälle som en vanlig bokning. Krockar ett tillfälle med en annan bokning markeras det med **Krock**, och du väljer en annan lokal eller tid. Du kan ändra **Bara det här tillfället** eller **Det här och följande tillfällen**, eller välja **Avboka serien**.\n\n# Kommer senare\n\nOfferter, signering med BankID och fakturor som skapas i Okazi är beslutade men inte byggda än."
+          "body": "# Snabbbokning för ett litet möte\n\nEn snabbbokning är det snabbaste sättet att boka. Det finns ingen förfrågan och ingen offert.\n\n1. Öppna **Bokningar** och välj **Snabbbokning**.\n2. Välj **Bokningstyp**, **Programpunktstyp** och **Kund**.\n3. Välj **Lokal eller artikel**, tid och **Antal**.\n4. Under **Betalning** väljer du **Faktura (bekräfta nu)** eller **Betallänk (bekräfta när betald)**.\n5. Spara.\n\nÄr lokalen eller dess ställtid redan upptagen får du ett meddelande och kan välja en annan tid. Med fakturaalternativet bekräftas bokningen direkt. Med betallänk förblir den preliminär tills kunden betalat. Se [Betalningar](/docs/guide/payments).\n\n# Skapa en vanlig bokning\n\n1. Välj **Skapa bokning**.\n2. Välj typ, kund och tid. Bokningen startar i er standardstatus för preliminära bokningar och får nästa nummer.\n3. Lägg till programpunkter, behov och betalningar från bokningens sida.\n\n# Bokningens sida\n\n- **Program**: dagens rader. Välj **Lägg till programpunkt** och ange namn, tid, lokal, uppställning och antal. Lokalen hålls för den tiden, och uppställningens ställtid blockeras precis före. Du kan inte boka en lokal som redan är belagd.\n- **Behov**: antal per listvärde. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Blad**: versioner som du kan skapa och skicka.\n- **Betalningar**: betalningsbegäranden för bokningen.\n- **Mottagen e-post**: kundens svar, när er organisation har inkommande e-post uppsatt.\n- **Historik**: varje ändring, med vem som gjorde den.\n\n# Byt status\n\nVälj **Byt status** och välj en av de statusar som era administratörer satt upp. Varje status hör till en av fyra faser, och fasen avgör reglerna.\n\n- **Preliminär**: lokalerna hålls. Blad kan inte skickas.\n- **Bekräftad**: bokningen behöver en ansvarig. Blad kan skickas.\n- **Genomförd**: behöver en ansvarig och är bara tillåten efter att bokningen slutat.\n- **Avbokad**: du måste ange en anledning. Lokalerna släpps. En avbokad bokning kan inte öppnas igen, så skapa en ny i stället.\n\nVilka byten som är tillåtna från varje status bestämmer också era administratörer. Använd **Byt ansvarig** på bokningssidan för att ange vem som ansvarar, och **Följ** för att hållas informerad. En snabbokning tilldelas dig.\n\n# Återkommande bokningar\n\nFör en kund som bokar samma lokal regelbundet använder du **Bokningsserier**. Skapa en serie med en upprepningsregel, så skapar Okazi varje tillfälle som en vanlig bokning. Krockar ett tillfälle med en annan bokning markeras det med **Krock**, och du väljer en annan lokal eller tid. Du kan ändra **Bara det här tillfället** eller **Det här och följande tillfällen**, eller välja **Avboka serien**.\n\n# Kommer senare\n\nOfferter, signering med BankID och fakturor som skapas i Okazi är beslutade men inte byggda än."
         },
         "items-and-venues": {
           "title": "Artiklar och anläggningar",
@@ -2120,7 +2115,7 @@
         "payments": {
           "title": "Betalningar",
           "lead": "Be en kund betala med kortlänk eller mot faktura. Pengarna går direkt till ert eget Stripe-konto, och Okazi håller dem aldrig.",
-          "body": "# Koppla Stripe först\n\nInnan du kan begära en betalning måste en administratör koppla er organisation till Stripe.\n\n1. Öppna **Inställningar** och välj **Betalningar**.\n2. Välj **Koppla till Stripe**. Du skickas till Stripe för att verifiera ert företag.\n3. När du kommer tillbaka väljer du **Uppdatera status**. Är registreringen inte klar, välj **Fortsätt registreringen**.\n\nStatusen visar **Inte kopplat**, **Registrering pågår**, **Aktivt** eller **Begränsat**. Betalningar fungerar när den är **Aktivt**. Är den **Begränsat** behöver Stripe fler uppgifter från er, så fortsätt registreringen.\n\nBetalningarna dras på ert eget anslutna konto, så ni är säljare och utbetalningen går till er.\n\n# Begär en betalning\n\n1. Öppna bokningen och hitta **Betalningar**.\n2. Välj **Begär betalning**.\n3. Välj metod och belopp.\n4. Spara.\n\nDet finns två metoder.\n\n- **Kort**: Okazi skapar en betallänk. Välj **Öppna betalningslänken** för att kopiera eller öppna den, och skicka den till kunden.\n- **Faktura**: Stripe mejlar en faktura till kunden. Kunden behöver en e-postadress på kundposten. Förfallodagen följer kundens betalningsvillkor, 30 dagar om inget är angivet.\n\nDu kan bara begära en betalning för en bokning som inte är avbokad.\n\n# Vad kunden ser\n\nKunden öppnar länken och kommer till en enkel sida med er organisations namn, bokningsnumret, beloppet och en knapp **Betala nu**. Stripe hanterar kortuppgifterna. Kunden behöver inget konto och ser aldrig Okazis app.\n\nHar länken gått ut säger sidan det och ber kunden kontakta er. Ni kan då begära en ny betalning.\n\n# Betalningsstatus\n\nVarje betalning har en status: **Väntar**, **Betald**, **Misslyckad**, **Avbruten** eller **Återbetald**. Statusen uppdateras av sig själv när Stripe rapporterar tillbaka. Du behöver inte markera något som betalt.\n\n# Betald betyder bekräftad\n\nNär en betalning är betald försöker Okazi flytta en preliminär bokning till er standardstatus för bekräftade bokningar. Det följer samma regler som en manuell ändring, till exempel att en bekräftad bokning behöver en koordinator. Nekas flytten registreras betalningen ändå som betald, och ni bekräftar bokningen för hand.\n\nVid en snabbbokning kan du i stället välja **Faktura (bekräfta nu)**, som bekräftar bokningen direkt.\n\n# Kommer senare\n\nSwish för kunder, prislistor som tillämpas på fakturor och fakturor som skickas till Fortnox, Visma eller Peppol är beslutade men finns inte än."
+          "body": "# Koppla Stripe först\n\nInnan du kan begära en betalning måste en administratör koppla er organisation till Stripe.\n\n1. Öppna **Inställningar** och välj **Betalningar**.\n2. Välj **Koppla till Stripe**. Du skickas till Stripe för att verifiera ert företag.\n3. När du kommer tillbaka väljer du **Uppdatera status**. Är registreringen inte klar, välj **Fortsätt registreringen**.\n\nStatusen visar **Inte kopplat**, **Registrering pågår**, **Aktivt** eller **Begränsat**. Betalningar fungerar när den är **Aktivt**. Är den **Begränsat** behöver Stripe fler uppgifter från er, så fortsätt registreringen.\n\nBetalningarna dras på ert eget anslutna konto, så ni är säljare och utbetalningen går till er.\n\n# Begär en betalning\n\n1. Öppna bokningen och hitta **Betalningar**.\n2. Välj **Begär betalning**.\n3. Välj metod och belopp.\n4. Spara.\n\nDet finns två metoder.\n\n- **Kort**: Okazi skapar en betallänk. Välj **Öppna betalningslänken** för att kopiera eller öppna den, och skicka den till kunden.\n- **Faktura**: Stripe mejlar en faktura till kunden. Kunden behöver en e-postadress på kundposten. Förfallodagen följer kundens betalningsvillkor, 30 dagar om inget är angivet.\n\nDu kan bara begära en betalning för en bokning som inte är avbokad.\n\n# Vad kunden ser\n\nKunden öppnar länken och kommer till en enkel sida med er organisations namn, bokningsnumret, beloppet och en knapp **Betala nu**. Stripe hanterar kortuppgifterna. Kunden behöver inget konto och ser aldrig Okazis app.\n\nHar länken gått ut säger sidan det och ber kunden kontakta er. Ni kan då begära en ny betalning.\n\n# Betalningsstatus\n\nVarje betalning har en status: **Väntar**, **Betald**, **Misslyckad**, **Avbruten** eller **Återbetald**. Statusen uppdateras av sig själv när Stripe rapporterar tillbaka. Du behöver inte markera något som betalt.\n\n# Betald betyder bekräftad\n\nNär en betalning är betald försöker Okazi flytta en preliminär bokning till er standardstatus för bekräftade bokningar. Det följer samma regler som en manuell ändring, till exempel att en bekräftad bokning behöver en ansvarig. Nekas flytten registreras betalningen ändå som betald, och ni bekräftar bokningen för hand.\n\nVid en snabbbokning kan du i stället välja **Faktura (bekräfta nu)**, som bekräftar bokningen direkt.\n\n# Kommer senare\n\nSwish för kunder, prislistor som tillämpas på fakturor och fakturor som skickas till Fortnox, Visma eller Peppol är beslutade men finns inte än."
         },
         "configuration": {
           "title": "Konfiguration",
@@ -2130,7 +2125,7 @@
         "members-and-roles": {
           "title": "Medlemmar och roller",
           "lead": "Bjud in kollegor, ge dem rätt behörighetsnivå och ta bort dem när de slutar.",
-          "body": "# Behörighetsnivåer\n\nVarje medlem har en åtkomstroll. Rollerna är fasta och går från minst till mest åtkomst.\n\n- **Läsare**: kan läsa allt men ändrar ingenting.\n- **Medlem**: kan också arbeta med den dagliga datan, som kunder, förfrågningar, bokningar, programpunkter, behov, betalningar och blad.\n- **Administratör**: allt en medlem kan, plus konfiguration (typer, listor, statusar, blad, prislistor), medlemmar och API-nycklar.\n- **Ägare**: allt, även andra ägare och själva organisationen. En organisation har alltid minst en ägare.\n\nBara ägare och administratörer ser **Inställningar**. Sidorna kontrollerar själva din behörighet, så att dölja menyn är bara en bekvämlighet.\n\n# Bjud in en kollega\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Bjud in medlem** och ange e-postadress och roll.\n3. Välj **Skicka inbjudan**.\n\nOkazi mejlar en länk. Personen loggar in eller skapar ett konto med samma e-postadress och väljer **Acceptera inbjudan**. Därefter går hen med i den inbjudna rollen. En inbjudan går ut efter 48 timmar.\n\nUnder **Väntande inbjudningar** ser du vem som inte svarat än. Välj **Återkalla** för att avbryta en inbjudan, så slutar länken fungera. Du kan inte ge någon mer åtkomst än du själv har, och en e-postadress som redan är medlem kan inte bjudas in igen.\n\n# Byt roll eller ta bort någon\n\nPå medlemssidan kan du byta en medlems roll. Ägare kan bara ändras av en annan ägare. För att ta bort någon väljer du **Ta bort**. Hen förlorar åtkomsten direkt, och det hen skapat finns kvar i historiken.\n\n# Vem som ansvarar för vad på en bokning\n\nÅtkomstrollerna avgör vad du får göra i appen. En separat idé avgör vem som ansvarar för en bokning.\n\n- En förfrågan har en säljare, och en bokning har en säljare och en koordinator. De måste vara medlemmar.\n- En förfrågan behöver en säljare innan den kan kvalificeras. En bekräftad bokning behöver en koordinator.\n- Ändra dem med **Byt säljare** eller **Byt ansvariga**.\n\nKommer senare: ansvar som ni definierar själva, till exempel \"Kökschef\". Ett ansvar täcker vissa artikeltyper, har en standardperson och följare, och får de matchande bladen automatiskt. När det kommer blir säljare och koordinator en del av samma idé.\n\n# Assistenten och API-åtkomst\n\nAssistenten agerar med din roll, så den kan aldrig göra mer än du. Kopplar ni andra verktyg använder de en roll som aldrig är över din. Se [Autentisering](/docs/developers/authentication)."
+          "body": "# Behörighetsnivåer\n\nVarje medlem har en åtkomstroll. Rollerna är fasta och går från minst till mest åtkomst.\n\n- **Läsare**: kan läsa allt men ändrar ingenting.\n- **Medlem**: kan också arbeta med den dagliga datan, som kunder, förfrågningar, bokningar, programpunkter, behov, betalningar och blad.\n- **Administratör**: allt en medlem kan, plus konfiguration (typer, listor, statusar, blad, prislistor), medlemmar och API-nycklar.\n- **Ägare**: allt, även andra ägare och själva organisationen. En organisation har alltid minst en ägare.\n\nBara ägare och administratörer ser **Inställningar**. Sidorna kontrollerar själva din behörighet, så att dölja menyn är bara en bekvämlighet.\n\n# Bjud in en kollega\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Bjud in medlem** och ange e-postadress och roll.\n3. Välj **Skicka inbjudan**.\n\nOkazi mejlar en länk. Personen loggar in eller skapar ett konto med samma e-postadress och väljer **Acceptera inbjudan**. Därefter går hen med i den inbjudna rollen. En inbjudan går ut efter 48 timmar.\n\nUnder **Väntande inbjudningar** ser du vem som inte svarat än. Välj **Återkalla** för att avbryta en inbjudan, så slutar länken fungera. Du kan inte ge någon mer åtkomst än du själv har, och en e-postadress som redan är medlem kan inte bjudas in igen.\n\n# Byt roll eller ta bort någon\n\nPå medlemssidan kan du byta en medlems roll. Ägare kan bara ändras av en annan ägare. För att ta bort någon väljer du **Ta bort**. Hen förlorar åtkomsten direkt, och det hen skapat finns kvar i historiken.\n\n# Vem som ansvarar för vad på en bokning\n\nÅtkomstrollerna avgör vad du får göra i appen. En separat idé avgör vem som ansvarar för en bokning.\n\n- Varje förfrågan och bokning har en ansvarig, som måste vara medlem. Andra medlemmar kan följa den för att hållas informerade.\n- En förfrågan behöver en ansvarig innan den kan kvalificeras, och en bekräftad bokning behöver en ansvarig.\n- Byt ansvarig med **Byt ansvarig** och välj **Följ** eller **Sluta följa** för dig själv. Listorna över förfrågningar och bokningar kan visa bara det som är **Tilldelade mig** eller det du **Följer**.\n\nAdministratörer definierar ansvar som \"Kökschef\" under **Inställningar, Ansvar**. Ett ansvar täcker vissa artikeltyper och har en standardperson och följare. Kommer senare: en bokning får automatiskt en ansvarig per ansvar utifrån sina artiklar, och de matchande bladen går till den personen och följarna.\n\n# Assistenten och API-åtkomst\n\nAssistenten agerar med din roll, så den kan aldrig göra mer än du. Kopplar ni andra verktyg använder de en roll som aldrig är över din. Se [Autentisering](/docs/developers/authentication)."
         }
       },
       "developers": {
@@ -2193,5 +2188,25 @@
     "signOutOthers": "Logga ut från andra sessioner",
     "signingOutOthers": "Loggar ut…",
     "signedOutOthers": "Du har loggats ut från dina andra sessioner."
+  },
+  "assignment": {
+    "title": "Ansvarig och följare",
+    "assignee": "Ansvarig",
+    "followers": "Följare",
+    "nobody": "Ingen",
+    "assign": "Byt ansvarig",
+    "assignDescription": "Välj den medlem som ansvarar för detta. Följare hålls informerade.",
+    "assigned": "Ansvarig har uppdaterats.",
+    "required": "I nuvarande status måste det finnas en ansvarig.",
+    "follow": "Följ",
+    "unfollow": "Sluta följa",
+    "followed": "Du följer nu detta.",
+    "unfollowed": "Du följer inte längre detta.",
+    "filter": {
+      "label": "Visa",
+      "all": "Alla",
+      "assigned": "Tilldelade mig",
+      "following": "Följer"
+    }
   }
 }

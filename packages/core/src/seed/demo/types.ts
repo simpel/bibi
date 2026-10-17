@@ -27,6 +27,6 @@ export type DemoOrg = {
   responsibilities: readonly DemoResponsibility[];
   /** Slice 4: customers with their contact persons. */
   customers: readonly DemoCustomer[];
-  /** Slice 5: bookings with their owners. */
+  /** Slice 5: bookings with their assignee and followers. */
   bookings: readonly DemoBooking[];
 };

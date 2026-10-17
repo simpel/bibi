@@ -22,7 +22,6 @@ describe("cross-organization isolation: inquiries", () => {
     for (const [name, args] of [
       ["inquiry_get", { id }],
       ["inquiry_update", { id, quantity: 99 }],
-      ["inquiry_assign", { id, salesOwnerId: null }],
       ["inquiry_qualify", { id }],
       ["inquiry_markLost", { id, lossReason: "Hacked" }],
     ] as const) {

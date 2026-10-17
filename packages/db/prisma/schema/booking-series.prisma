@@ -1,6 +1,6 @@
 /// BookingSeries – a recurring booking (ADR 0023). `rule` is the structured RRULE subset
 /// (`RecurrenceRule`), `template` what every occurrence gets (`BookingSeriesTemplate`: bookable
-/// items, setup, headcount, owners and own fields). Each occurrence is an ordinary `Booking` with
+/// items, setup, headcount, assignee and own fields). Each occurrence is an ordinary `Booking` with
 /// `seriesId` and `occurrenceIndex`, created with the series at most 12 months or 52 ahead.
 /// `startsAt`, `durationMinutes` and `template` describe the series going forward: a "this and
 /// following" change (`bookingSeries.updateOccurrences`) updates them, and its time offset moves

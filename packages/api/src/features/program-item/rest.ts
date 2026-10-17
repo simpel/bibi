@@ -12,9 +12,4 @@ export const programItemRoutes = [
   restRoute({ operation: "programItem.create", method: "POST", path: "/program-items" }),
   restRoute({ operation: "programItem.update", method: "PATCH", path: "/program-items/{id}" }),
   restRoute({ operation: "programItem.archive", method: "DELETE", path: "/program-items/{id}" }),
-  restRoute({
-    operation: "programItem.assign",
-    method: "PUT",
-    path: "/program-items/{id}/responsible",
-  }),
 ];

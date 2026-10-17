@@ -29,7 +29,7 @@ export type BootstrapDemoOrgInput = { db: Db; org: DemoOrg };
 /** Member id per user name, for `member.assignRole`. */
 export type DemoMembers = Map<string, string>;
 
-/** User id per user name, for owners of bookings (`salesOwnerId`, `coordinatorId`). */
+/** User id per user name, for the assignees and followers of bookings (ADR 0034). */
 export type DemoUserIds = Map<string, string>;
 
 /**

@@ -18,7 +18,6 @@ describe("cross-organization isolation for bookings", () => {
       ["booking_get", { id }],
       ["booking_changeStatus", { bookingId: id, statusId: statusB.data.id }],
       ["booking_update", { id, estimatedHeadcount: 99 }],
-      ["booking_assign", { id, salesOwnerId: null }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");
     }

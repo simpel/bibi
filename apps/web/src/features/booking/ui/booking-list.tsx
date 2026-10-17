@@ -7,6 +7,11 @@ import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import {
+  type MineFilter,
+  MineFilterLinks,
+  minePageInput,
+} from "@/features/assignment/ui/mine-filter";
 import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -19,7 +24,12 @@ import { BookingTable } from "./booking-table";
 import { CreateBookingButton } from "./create-booking-button";
 import { QuickBookingButton } from "./quick-booking-button";
 
-export type BookingListProps = { locale: Locale; cursor?: string | undefined };
+export type BookingListProps = {
+  locale: Locale;
+  cursor?: string | undefined;
+  /** Only bookings the signed-in member is assigned to or follows (ADR 0034). */
+  mine?: MineFilter | undefined;
+};
 
 const PAGE_SIZE = 20;
 
@@ -41,15 +51,15 @@ async function BookingActions({ data }: { data: BookingFormData }) {
 }
 
 /** Bookings page body: header with create, the table (or an empty state) and pagination. */
-export async function BookingList({ locale, cursor }: BookingListProps) {
+export async function BookingList({ locale, cursor, mine }: BookingListProps) {
   const t = await getTranslations("booking");
-  const { bookingWrite } = await getCallerAbilities();
+  const { bookingWrite, userId } = await getCallerAbilities();
   const [data, seriesTotals, result] = await Promise.all([
     loadBookingData(),
     loadSeriesTotals(),
     runOperation({
       operation: listBookings,
-      input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
+      input: minePageInput({ limit: PAGE_SIZE, cursor, mine, userId }),
     }),
   ]);
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
@@ -60,7 +70,8 @@ export async function BookingList({ locale, cursor }: BookingListProps) {
   return (
     <div className="grid gap-6">
       <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
-      {page.items.length === 0 && !cursor ? (
+      <MineFilterLinks pathname={ROUTES.bookings} mine={mine} />
+      {page.items.length === 0 && !cursor && !mine ? (
         <EmptyState
           title={t("empty")}
           description={noTypes ? t("noTypes") : t("emptyDescription")}
@@ -73,6 +84,7 @@ export async function BookingList({ locale, cursor }: BookingListProps) {
             pathname={ROUTES.bookings}
             cursor={cursor}
             nextCursor={page.nextCursor}
+            query={mine ? { mine } : {}}
           />
         </>
       )}

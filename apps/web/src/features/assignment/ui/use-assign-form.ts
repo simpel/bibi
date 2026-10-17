@@ -1,41 +1,43 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { BookingDto } from "@okazi/core";
 import { useRouter } from "@okazi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
-import { assignBookingAction } from "../actions";
+import { assignAction } from "../actions";
 import {
   type AssignFormOutput,
   type AssignFormValues,
+  type AssignSubject,
   assignFormDefaults,
   assignFormSchema,
 } from "./assign-form-schema";
 
-export type UseAssignFormInput = { booking: BookingDto; onDone: () => void };
+export type UseAssignFormInput = {
+  subject: AssignSubject;
+  assigneeId: string | null;
+  onDone: () => void;
+};
 
-/** Owners form state; a refused removal of the coordinator is shown on that field. */
-export function useAssignForm({ booking, onDone }: UseAssignFormInput) {
-  const t = useTranslations("booking");
+/** Main assignee form; a refused removal (the phase needs an assignee) shows on the field. */
+export function useAssignForm({ subject, assigneeId, onDone }: UseAssignFormInput) {
+  const t = useTranslations("assignment");
   const common = useTranslations("common");
   const router = useRouter();
   const form = useForm<AssignFormValues, unknown, AssignFormOutput>({
-    resolver: zodResolver(assignFormSchema({ id: booking.id }), useZodMessages()),
-    defaultValues: assignFormDefaults(booking),
+    resolver: zodResolver(assignFormSchema({ subject }), useZodMessages()),
+    defaultValues: assignFormDefaults({ assigneeId }),
   });
   const { submit, pending } = useFormAction({
     form,
-    action: ({ values }) => assignBookingAction({ input: values }),
+    action: ({ values }) => assignAction({ input: values }),
     messages: { pending: common("saving"), success: t("assigned") },
     onSuccess: () => {
       router.refresh();
       onDone();
     },
     onError: ({ error }) => {
-      if (error.code === "CONFLICT") {
-        form.setError("coordinatorId", { message: t("coordinatorRequired") });
-      }
+      if (error.code === "CONFLICT") form.setError("assigneeId", { message: t("required") });
     },
   });
   return { form, submit, pending };

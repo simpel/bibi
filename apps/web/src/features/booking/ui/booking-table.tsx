@@ -44,7 +44,6 @@ export async function BookingTable({ bookings, data, seriesTotals }: BookingTabl
           <TableHead>{t("columns.type")}</TableHead>
           <TableHead>{t("columns.when")}</TableHead>
           <TableHead>{t("columns.status")}</TableHead>
-          <TableHead>{t("columns.salesOwner")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -63,7 +62,6 @@ export async function BookingTable({ bookings, data, seriesTotals }: BookingTabl
             <TableCell>
               <BookingStatusLabel statuses={data.statuses} id={booking.bookingStatusId} />
             </TableCell>
-            <TableCell>{nameOf({ options: data.members, id: booking.salesOwnerId })}</TableCell>
           </TableRow>
         ))}
       </TableBody>

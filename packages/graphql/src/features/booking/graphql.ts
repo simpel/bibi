@@ -1,5 +1,4 @@
 import {
-  assignBooking,
   type BookingDto,
   BookingSchema,
   changeBookingStatus,
@@ -25,7 +24,7 @@ export const BookingRef = objectFromSchema<BookingDto>({
   omit: ["organizationId"],
   description:
     "Booking – the conference or event as a whole: type and fields, customer, time, headcount, " +
-    "the organization's own status and the owners (salesperson and coordinator).",
+    "the organization's own status and who answers for it (assignments).",
 });
 const BookingPageRef = pageType({ name: "BookingPage", item: BookingRef });
 
@@ -34,7 +33,6 @@ fieldFromOperation({ operation: getBooking, type: BookingRef, name: "booking" })
 mutationFromOperation({ operation: createBooking, type: BookingRef });
 mutationFromOperation({ operation: createQuickBookingOperation, type: BookingRef });
 mutationFromOperation({ operation: updateBooking, type: BookingRef });
-mutationFromOperation({ operation: assignBooking, type: BookingRef });
 mutationFromOperation({ operation: changeBookingStatus, type: BookingRef });
 
 builder.objectField(BookingRef, "entityType", (t) =>

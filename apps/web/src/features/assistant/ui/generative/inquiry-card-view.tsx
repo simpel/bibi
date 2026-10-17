@@ -12,7 +12,7 @@ import { fieldLines } from "./item-facts";
 
 export type InquiryCardViewProps = GenerativeProps<"inquiry-card">;
 
-/** One inquiry: status, desired dates, quantity, whether it has an owner, loss reason, fields. */
+/** One inquiry: status, desired dates, quantity, loss reason and own fields. */
 export function InquiryCardView({ inquiry }: InquiryCardViewProps) {
   const t = useTranslations("assistant.ui.inquiry");
   const format = useFormatter();
@@ -31,7 +31,6 @@ export function InquiryCardView({ inquiry }: InquiryCardViewProps) {
       <CardContent className="grid gap-1 p-4 pt-0 text-sm text-muted-foreground">
         <p>{desiredPeriod({ format, inquiry })}</p>
         {inquiry.quantity === null ? null : <p>{t("quantity", { count: inquiry.quantity })}</p>}
-        <p>{inquiry.salesOwnerId ? t("hasOwner") : t("noOwner")}</p>
         {inquiry.lossReason ? <p>{t("lossReason", { reason: inquiry.lossReason })}</p> : null}
         {fieldLines({ fields: inquiry.fields }).map((line) => (
           <p key={line}>{line}</p>

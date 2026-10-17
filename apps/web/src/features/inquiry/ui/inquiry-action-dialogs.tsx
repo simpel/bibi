@@ -2,9 +2,9 @@ import type { InquiryDto } from "@okazi/core";
 import { InquiryDialog } from "./inquiry-dialog";
 import type { InquiryFormData } from "./inquiry-form-data";
 import { LostDialog } from "./lost-dialog";
-import { OwnerDialog } from "./owner-dialog";
+import { QualifyDialog } from "./qualify-dialog";
 
-export type InquiryActionDialog = "edit" | "assign" | "qualify" | "lost" | null;
+export type InquiryActionDialog = "edit" | "qualify" | "lost" | null;
 
 export type InquiryActionDialogsProps = {
   inquiry: InquiryDto;
@@ -29,8 +29,7 @@ export function InquiryActionDialogs({
   return (
     <>
       <InquiryDialog {...shared} data={data} open={dialog === "edit"} />
-      <OwnerDialog {...shared} mode="qualify" members={data.members} open={dialog === "qualify"} />
-      <OwnerDialog {...shared} mode="assign" members={data.members} open={dialog === "assign"} />
+      <QualifyDialog {...shared} members={data.members} open={dialog === "qualify"} />
       <LostDialog {...shared} open={dialog === "lost"} />
     </>
   );

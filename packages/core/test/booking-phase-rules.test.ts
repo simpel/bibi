@@ -9,7 +9,7 @@ const upcoming = new Date(Date.UTC(2026, 10, 1, 13));
 
 type Row = {
   phase: BookingPhase;
-  coordinator: boolean;
+  assignee: boolean;
   endsAt: Date;
   reason?: string;
   expected: string | null;
@@ -17,27 +17,28 @@ type Row = {
 
 /** Every phase rule of ADR 0022, both sides of each condition. */
 const table: Row[] = [
-  { phase: "TENTATIVE", coordinator: false, endsAt: upcoming, expected: null },
-  { phase: "TENTATIVE", coordinator: true, endsAt: ended, expected: null },
-  { phase: "CONFIRMED", coordinator: false, endsAt: upcoming, expected: "CONFLICT" },
-  { phase: "CONFIRMED", coordinator: true, endsAt: upcoming, expected: null },
-  { phase: "CONFIRMED", coordinator: true, endsAt: ended, expected: null },
-  { phase: "COMPLETED", coordinator: true, endsAt: upcoming, expected: "CONFLICT" },
-  { phase: "COMPLETED", coordinator: false, endsAt: ended, expected: "CONFLICT" },
-  { phase: "COMPLETED", coordinator: true, endsAt: now, expected: null },
-  { phase: "COMPLETED", coordinator: true, endsAt: ended, expected: null },
-  { phase: "CANCELLED", coordinator: false, endsAt: upcoming, expected: "VALIDATION" },
-  { phase: "CANCELLED", coordinator: true, endsAt: ended, expected: "VALIDATION" },
-  { phase: "CANCELLED", coordinator: false, endsAt: upcoming, reason: "Moved", expected: null },
-  { phase: "CANCELLED", coordinator: true, endsAt: ended, reason: "Moved", expected: null },
+  { phase: "TENTATIVE", assignee: false, endsAt: upcoming, expected: null },
+  { phase: "TENTATIVE", assignee: true, endsAt: ended, expected: null },
+  { phase: "CONFIRMED", assignee: false, endsAt: upcoming, expected: "CONFLICT" },
+  { phase: "CONFIRMED", assignee: true, endsAt: upcoming, expected: null },
+  { phase: "CONFIRMED", assignee: true, endsAt: ended, expected: null },
+  { phase: "COMPLETED", assignee: true, endsAt: upcoming, expected: "CONFLICT" },
+  { phase: "COMPLETED", assignee: false, endsAt: ended, expected: "CONFLICT" },
+  { phase: "COMPLETED", assignee: true, endsAt: now, expected: null },
+  { phase: "COMPLETED", assignee: true, endsAt: ended, expected: null },
+  { phase: "CANCELLED", assignee: false, endsAt: upcoming, expected: "VALIDATION" },
+  { phase: "CANCELLED", assignee: true, endsAt: ended, expected: "VALIDATION" },
+  { phase: "CANCELLED", assignee: false, endsAt: upcoming, reason: "Moved", expected: null },
+  { phase: "CANCELLED", assignee: true, endsAt: ended, reason: "Moved", expected: null },
 ];
 
 describe("booking phase rules (ADR 0022)", () => {
   it.each(table)(
-    "$phase coordinator=$coordinator endsAt=$endsAt reason=$reason → $expected",
-    ({ phase, coordinator, endsAt, reason, expected }) => {
+    "$phase assignee=$assignee endsAt=$endsAt reason=$reason → $expected",
+    ({ phase, assignee, endsAt, reason, expected }) => {
       const result = checkPhaseRules({
-        booking: { coordinatorId: coordinator ? "user_1" : null, endsAt },
+        booking: { endsAt },
+        assigneeId: assignee ? "user_1" : null,
         phase,
         statusName: "Status",
         reason,
@@ -49,7 +50,8 @@ describe("booking phase rules (ADR 0022)", () => {
 
   it("points a missing cancellation reason at the reason field", () => {
     const result = checkPhaseRules({
-      booking: { coordinatorId: null, endsAt: upcoming },
+      booking: { endsAt: upcoming },
+      assigneeId: null,
       phase: "CANCELLED",
       statusName: "Cancelled",
       now,

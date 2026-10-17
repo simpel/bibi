@@ -34,6 +34,8 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Setup",
   "SheetDefinition",
   "Responsibility",
+  "Assignment",
+  "AssignmentFollower",
   "Item",
   "ItemSetup",
   "ItemComponent",
@@ -77,7 +79,8 @@ export const APP_ID_MODELS = new Set<string>(["Member", "Invitation", "Embedding
  * Invitation has its own `status` lifecycle; core audits both) and the payout account
  * (PaymentAccount: one row per organization with its own `status` lifecycle, never removed) and
  * payments (Payment: its own `status` lifecycle, never removed) and sheet versions (Sheet:
- * history, `sentAt` is its lifecycle, never removed).
+ * history, `sentAt` is its lifecycle, never removed) and followers (AssignmentFollower: removed on
+ * unfollow, audited on its assignment).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
   "ItemSetup",
@@ -92,4 +95,5 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "PaymentAccount",
   "Payment",
   "Sheet",
+  "AssignmentFollower",
 ]);

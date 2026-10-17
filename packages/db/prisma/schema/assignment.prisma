@@ -1,0 +1,48 @@
+/// What an assignment is about (ADR 0034).
+enum AssignmentSubjectType {
+  INQUIRY
+  BOOKING
+  ITEM
+}
+
+/// Assignment (ADR 0034) – who answers for a subject (an inquiry, a booking or an item). A subject
+/// has one main assignment (`responsibilityId` null) and, for bookings, one per responsibility.
+/// `subjectType`/`subjectId` follows the `Occupancy.sourceType`/`sourceId` pattern: core checks
+/// that the subject belongs to the organization. `assigneeId` is a member (user id); it is null
+/// when the subject only has followers so far.
+model Assignment {
+  id               String                @id @default(cuid(2))
+  organizationId   String
+  subjectType      AssignmentSubjectType
+  subjectId        String
+  responsibilityId String?
+  assigneeId       String?
+  status           RecordStatus          @default(ACTIVE)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  createdBy        String?
+  responsibility   Responsibility?       @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+  followers        AssignmentFollower[]
+
+  @@unique([id, organizationId])
+  // The main assignment (no responsibility) is kept unique by a partial index in the migration.
+  @@unique([organizationId, subjectType, subjectId, responsibilityId])
+  @@index([organizationId, assigneeId, status])
+}
+
+/// A member (user id) who follows an assignment (ADR 0034): need to know, never required by rules.
+/// Removed on unfollow (audited on the assignment).
+model AssignmentFollower {
+  id             String     @id @default(cuid(2))
+  organizationId String
+  assignmentId   String
+  userId         String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  createdBy      String?
+  assignment     Assignment @relation(fields: [assignmentId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([assignmentId, userId])
+  @@index([organizationId, userId])
+}

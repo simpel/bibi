@@ -16,7 +16,7 @@ export type ProgramItemFormProps = {
   onDone: () => void;
 };
 
-/** Create (type and responsible person first) or edit a program item, then the type's fields. */
+/** Create (type first) or edit a program item, then the type's fields. */
 export function ProgramItemForm({ programItem, ...props }: ProgramItemFormProps) {
   const common = useTranslations("common");
   const t = useTranslations("programItem");
@@ -36,7 +36,7 @@ export function ProgramItemForm({ programItem, ...props }: ProgramItemFormProps)
             }
           />
         )}
-        {type ? <ProgramCoreFields form={form} data={data} withResponsible={!programItem} /> : null}
+        {type ? <ProgramCoreFields form={form} data={data} /> : null}
         {type ? <TypeFields control={form.control} type={type} data={data} /> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>

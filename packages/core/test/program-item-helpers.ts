@@ -49,7 +49,6 @@ export type AddProgramItemInput = {
   to: number;
   itemId?: string;
   setupId?: string;
-  responsibleId?: string;
 };
 
 /** Runs `programItem.create` for `[from, to)` on 1 November 2026 (UTC) and returns the result. */

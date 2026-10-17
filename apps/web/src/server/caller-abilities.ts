@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 export type CallerAbilities = {
   /** The caller's fixed role (ADR 0034); `null` when not a member or no fixed role. */
   role: FixedRole | null;
+  /** The signed-in user (for follow and "Assigned to me"); null when not resolved. */
+  userId: string | null;
   skillAdmin: boolean;
   memberAdmin: boolean;
   configurationWrite: boolean;
@@ -17,6 +19,7 @@ export type CallerAbilities = {
   occupancyWrite: boolean;
   bookingWrite: boolean;
   programItemWrite: boolean;
+  assignmentWrite: boolean;
   requirementWrite: boolean;
   inquiryWrite: boolean;
   optionWrite: boolean;
@@ -28,6 +31,7 @@ export type CallerAbilities = {
 
 const NONE: CallerAbilities = {
   role: null,
+  userId: null,
   skillAdmin: false,
   memberAdmin: false,
   configurationWrite: false,
@@ -39,6 +43,7 @@ const NONE: CallerAbilities = {
   occupancyWrite: false,
   bookingWrite: false,
   programItemWrite: false,
+  assignmentWrite: false,
   requirementWrite: false,
   inquiryWrite: false,
   optionWrite: false,
@@ -56,9 +61,10 @@ const NONE: CallerAbilities = {
 export async function getCallerAbilities(): Promise<CallerAbilities> {
   const context = await resolveExecuteContext({ headers: await headers() });
   if (!context.ok) return NONE;
-  const { permissions, roles } = context.value;
+  const { permissions, roles, actor } = context.value;
   return {
     role: highestRole({ roles }),
+    userId: actor.userId,
     skillAdmin: hasPermission({ permissions, permission: "skill:admin" }),
     memberAdmin: hasPermission({ permissions, permission: "member:admin" }),
     configurationWrite: hasPermission({ permissions, permission: "configuration:write" }),
@@ -70,6 +76,7 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     occupancyWrite: hasPermission({ permissions, permission: "occupancy:write" }),
     bookingWrite: hasPermission({ permissions, permission: "booking:write" }),
     programItemWrite: hasPermission({ permissions, permission: "programItem:write" }),
+    assignmentWrite: hasPermission({ permissions, permission: "assignment:write" }),
     requirementWrite: hasPermission({ permissions, permission: "requirement:write" }),
     inquiryWrite: hasPermission({ permissions, permission: "inquiry:write" }),
     optionWrite: hasPermission({ permissions, permission: "option:write" }),

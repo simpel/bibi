@@ -13,7 +13,7 @@ export type BookingPhase = (typeof BOOKING_PHASES)[number];
 export const BookingPhaseSchema = z
   .enum(BOOKING_PHASES)
   .describe(
-    "Fixed phase: TENTATIVE (items occupied, no sheets), CONFIRMED (coordinator required), " +
+    "Fixed phase: TENTATIVE (items occupied, no sheets), CONFIRMED (main assignee required), " +
       "COMPLETED (after the booking ended, invoiceable), CANCELLED (reason required)",
   );
 

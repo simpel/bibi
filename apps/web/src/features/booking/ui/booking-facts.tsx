@@ -9,7 +9,7 @@ export type BookingFactsProps = { booking: BookingDto; data: BookingFormData };
 
 const count = ({ value }: { value: number | null }) => (value === null ? "–" : String(value));
 
-/** Description list of a booking: customer, time, headcount, status, owners and own fields. */
+/** Description list of a booking: customer, time, headcount, status and own fields. */
 export async function BookingFacts({ booking, data }: BookingFactsProps) {
   const t = await getTranslations("booking.fields");
   const common = await getTranslations("common");
@@ -28,11 +28,6 @@ export async function BookingFacts({ booking, data }: BookingFactsProps) {
     ...(booking.statusReason ? [{ label: t("statusReason"), value: booking.statusReason }] : []),
     { label: t("estimatedHeadcount"), value: count({ value: booking.estimatedHeadcount }) },
     { label: t("guaranteedHeadcount"), value: count({ value: booking.guaranteedHeadcount }) },
-    { label: t("salesOwner"), value: nameOf({ options: data.members, id: booking.salesOwnerId }) },
-    {
-      label: t("coordinator"),
-      value: nameOf({ options: data.members, id: booking.coordinatorId }),
-    },
     ...ownFieldFacts({
       type,
       stored: booking.fields,

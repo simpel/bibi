@@ -1,4 +1,5 @@
 import { ok, type Result } from "../../errors/result";
+import { followAssignment } from "../../features/assignment/write-operations";
 import { createBooking } from "../../features/booking/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
@@ -30,9 +31,18 @@ function at({ now, day, time }: AtInput): Date {
   return fromZonedParts({ date, time: { hour, minute, second: 0 }, timeZone: TIME_ZONE });
 }
 
-type OwnerInput = { userIds: DemoUserIds; name: string | undefined };
+type PeopleInput = { userIds: DemoUserIds; booking: DemoBooking };
 
-const owner = ({ userIds, name }: OwnerInput) => (name ? userIds.get(name) : undefined);
+/** The user ids of the booking's assignee and followers, or the first unknown name. */
+function resolvePeople({ userIds, booking }: PeopleInput) {
+  const names = [...(booking.assignee ? [booking.assignee] : []), ...(booking.followers ?? [])];
+  const unknown = names.find((name) => !userIds.has(name));
+  if (unknown) return missing({ what: `user ${unknown}` });
+  const id = ({ name }: { name: string }) => userIds.get(name) ?? "";
+  const assigneeId = booking.assignee ? id({ name: booking.assignee }) : null;
+  const followerIds = (booking.followers ?? []).map((name) => id({ name }));
+  return ok({ value: { assigneeId, followerIds } });
+}
 
 type BookingInput = Omit<SeedBookingsInput, "bookings" | "now"> & {
   booking: DemoBooking;
@@ -44,11 +54,8 @@ async function seedBooking({ context, refs, userIds, booking, now }: BookingInpu
   if (!type) return missing({ what: `booking type ${booking.type}` });
   const customer = await context.db.customer.findFirst({ where: { name: booking.customer } });
   if (!customer) return missing({ what: `customer ${booking.customer}` });
-  const salesOwnerId = owner({ userIds, name: booking.sales });
-  const coordinatorId = owner({ userIds, name: booking.coordinator });
-  if (booking.sales && !salesOwnerId) return missing({ what: `user ${booking.sales}` });
-  if (booking.coordinator && !coordinatorId)
-    return missing({ what: `user ${booking.coordinator}` });
+  const people = resolvePeople({ userIds, booking });
+  if (!people.ok) return people;
   const fields = resolveFields({ fields: booking.fields, type });
   if (!fields.ok) return fields;
   const input = {
@@ -57,14 +64,24 @@ async function seedBooking({ context, refs, userIds, booking, now }: BookingInpu
     startsAt: at({ now, day: booking.day, time: booking.from }),
     endsAt: at({ now, day: booking.day, time: booking.to }),
     estimatedHeadcount: booking.headcount,
-    salesOwnerId: salesOwnerId ?? null,
-    coordinatorId: coordinatorId ?? null,
+    assigneeId: people.value.assigneeId,
     fields: fields.value,
   };
-  return execute({ operation: createBooking, input, context });
+  const created = await execute({ operation: createBooking, input, context });
+  if (!created.ok) return created;
+  for (const userId of people.value.followerIds) {
+    const subject = { subjectType: "BOOKING" as const, subjectId: created.value.id };
+    const followed = await execute({
+      operation: followAssignment,
+      input: { ...subject, userId },
+      context,
+    });
+    if (!followed.ok) return followed;
+  }
+  return created;
 }
 
-/** Slice 5 of ADR 0025, started: bookings with salesperson and coordinator, as SYSTEM. */
+/** Slice 5 of ADR 0025, started: bookings with a main assignee and followers, as SYSTEM. */
 export async function seedDemoBookings({
   bookings,
   now = new Date(),

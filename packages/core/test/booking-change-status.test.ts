@@ -9,12 +9,12 @@ import { testOrg } from "./org-helpers";
 describe("booking.changeStatus (ADR 0022)", () => {
   it("moves along an allowed transition and audits the change", async () => {
     const { context, type, customer } = await bookingSetup();
-    const coordinatorId = await memberUser({ context, name: "Johan Ek" });
+    const assigneeId = await memberUser({ context, name: "Johan Ek" });
     const booking = await createTestBooking({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
-      coordinatorId,
+      assigneeId,
     });
     const confirmed = await statusByName({ context, name: "Confirmed" });
     const input = { bookingId: booking.id, statusId: confirmed.id };

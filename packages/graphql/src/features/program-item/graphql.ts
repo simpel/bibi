@@ -1,6 +1,5 @@
 import {
   archiveProgramItem,
-  assignProgramItem,
   createProgramItem,
   getProgramItem,
   listProgramItems,
@@ -24,7 +23,7 @@ export const ProgramItemRef = objectFromSchema<ProgramItemDto>({
   omit: ["organizationId"],
   description:
     "Program item – a row in a booking's run schedule: type and fields, time, the bookable " +
-    "item and setup it occupies, quantity, the optional responsible person and a note.",
+    "item and setup it occupies, quantity and a note.",
 });
 const ProgramItemPageRef = pageType({ name: "ProgramItemPage", item: ProgramItemRef });
 
@@ -33,7 +32,6 @@ fieldFromOperation({ operation: getProgramItem, type: ProgramItemRef, name: "pro
 mutationFromOperation({ operation: createProgramItem, type: ProgramItemRef });
 mutationFromOperation({ operation: updateProgramItem, type: ProgramItemRef });
 mutationFromOperation({ operation: archiveProgramItem, type: ProgramItemRef });
-mutationFromOperation({ operation: assignProgramItem, type: ProgramItemRef });
 
 builder.objectField(ProgramItemRef, "entityType", (t) =>
   t.field({
