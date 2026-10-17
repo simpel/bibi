@@ -1,0 +1,43 @@
+import type { OauthGrantDto } from "@okazi/core";
+import { actionsColumn, type ColumnDef } from "@okazi/ui";
+import { useFormatter, useTranslations } from "next-intl";
+import { useMemo } from "react";
+import { OauthGrantRowActions } from "./oauth-grant-row-actions";
+
+type Column = ColumnDef<OauthGrantDto>;
+
+/** Client · scopes · connected, then the row actions. */
+export function useOauthGrantColumns(): Column[] {
+  const t = useTranslations("integration.oauthGrants");
+  const common = useTranslations("common");
+  const format = useFormatter();
+  return useMemo<Column[]>(
+    () => [
+      {
+        id: "client",
+        header: t("columns.client"),
+        accessorFn: (grant) => grant.name,
+        cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+      },
+      {
+        id: "scopes",
+        header: t("columns.scopes"),
+        accessorFn: (grant) => grant.scopes.join(" "),
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">{row.original.scopes.join(" ")}</span>
+        ),
+      },
+      {
+        id: "connected",
+        header: t("columns.connected"),
+        accessorFn: (grant) => grant.connectedAt,
+        cell: ({ row }) => format.dateTime(row.original.connectedAt, { dateStyle: "medium" }),
+      },
+      actionsColumn<OauthGrantDto>({
+        label: common("actions"),
+        cell: (grant) => <OauthGrantRowActions grant={grant} />,
+      }),
+    ],
+    [t, common, format],
+  );
+}
