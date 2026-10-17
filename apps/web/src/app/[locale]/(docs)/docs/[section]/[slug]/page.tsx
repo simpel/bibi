@@ -5,6 +5,9 @@ import { DOC_SECTIONS, findDocPage } from "@/features/docs/pages";
 import { loadDocText } from "@/features/docs/server/doc-text";
 import { DocArticle } from "@/features/docs/ui/doc-article";
 
+/** Docs text embeds runtime URLs (`WEB_URL`, `MCP_URL`), so it is rendered per request. */
+export const dynamic = "force-dynamic";
+
 type DocPageProps = { params: Promise<{ locale: string; section: string; slug: string }> };
 
 export function generateStaticParams() {

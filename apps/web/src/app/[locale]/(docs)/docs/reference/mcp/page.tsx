@@ -5,6 +5,9 @@ import { mcpReference } from "@/features/docs/server/mcp-reference";
 import { DocArticle } from "@/features/docs/ui/doc-article";
 import { ReferenceExplorer } from "@/features/docs/ui/reference-explorer";
 
+/** Docs text embeds runtime URLs (`WEB_URL`, `MCP_URL`), so it is rendered per request. */
+export const dynamic = "force-dynamic";
+
 type McpReferencePageProps = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: McpReferencePageProps) {
