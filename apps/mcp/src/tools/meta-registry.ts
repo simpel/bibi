@@ -29,6 +29,7 @@ import { setupMcpTools } from "../features/setup/mcp";
 import { sheetMcpTools } from "../features/sheet/mcp";
 import { sheetDefinitionMcpTools } from "../features/sheet-definition/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
+import { userPreferenceMcpTools } from "../features/user-preference/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
 import { vocabularyMcpTools } from "../features/vocabulary/mcp";
 import { searchMcpTools } from "../search-mcp";
@@ -70,6 +71,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...auditLogMcpTools,
     ...apiKeyMcpTools,
     ...oauthGrantMcpTools,
+    ...userPreferenceMcpTools,
     ...searchMcpTools,
   ];
 }

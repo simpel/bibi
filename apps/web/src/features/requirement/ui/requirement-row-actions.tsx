@@ -1,8 +1,7 @@
 "use client";
 
 import type { RequirementDto } from "@okazi/core";
-import { Button } from "@okazi/ui";
-import { PencilIcon, Trash2Icon } from "lucide-react";
+import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { nameOf } from "@/components/form/named-option";
@@ -15,16 +14,16 @@ export type RequirementRowActionsProps = { requirement: RequirementDto; data: Re
 /** Edit the count or fields of one requirement, or remove it. */
 export function RequirementRowActions({ requirement, data }: RequirementRowActionsProps) {
   const t = useTranslations("requirement");
+  const common = useTranslations("common");
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
-  const icon = { variant: "ghost", size: "icon" } as const;
   return (
-    <div className="flex justify-end gap-1">
-      <Button {...icon} aria-label={t("edit")} onClick={() => setDialog("edit")}>
-        <PencilIcon />
-      </Button>
-      <Button {...icon} aria-label={t("archive")} onClick={() => setDialog("archive")}>
-        <Trash2Icon />
-      </Button>
+    <>
+      <DataTableRowActions label={common("actions")}>
+        <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
+        <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
+          {t("archive")}
+        </DropdownMenuItem>
+      </DataTableRowActions>
       <RequirementDialog
         data={data}
         bookingId={requirement.bookingId}
@@ -38,6 +37,6 @@ export function RequirementRowActions({ requirement, data }: RequirementRowActio
         open={dialog === "archive"}
         onOpenChange={(open) => !open && setDialog(null)}
       />
-    </div>
+    </>
   );
 }

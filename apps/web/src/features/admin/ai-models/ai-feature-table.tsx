@@ -1,7 +1,7 @@
 "use client";
 
-import { DataTable } from "@okazi/ui";
 import { useTranslations } from "next-intl";
+import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { AiFeatureRow } from "./model-options";
 import { useAiFeatureColumns } from "./use-ai-feature-columns";
 
@@ -12,7 +12,8 @@ export function AiFeatureTable({ rows }: AiFeatureTableProps) {
   const t = useTranslations("admin.aiModels");
   const columns = useAiFeatureColumns();
   return (
-    <DataTable
+    <PersistedDataTable
+      tableId="admin.ai-models"
       columns={columns}
       data={rows}
       getRowId={(row) => row.setting.id}

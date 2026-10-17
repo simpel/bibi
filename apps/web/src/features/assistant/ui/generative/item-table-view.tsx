@@ -1,47 +1,67 @@
 "use client";
 
 import { Link } from "@okazi/i18n/navigation";
-import { Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
+import { Card, type ColumnDef } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
+import { useMemo } from "react";
+import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { itemRoute } from "@/lib/configuration-routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
 export type ItemTableViewProps = GenerativeProps<"item-table">;
 
+type Row = ItemTableViewProps["items"][number];
+
+function useItemColumns(): ColumnDef<Row>[] {
+  const t = useTranslations("assistant.ui.item");
+  const format = useFormatter();
+  return useMemo<ColumnDef<Row>[]>(
+    () => [
+      {
+        id: "name",
+        header: t("columns.name"),
+        accessorFn: (item) => item.name,
+        cell: ({ row }) => (
+          <Link href={itemRoute({ id: row.original.id })} className="font-medium hover:underline">
+            {row.original.name}
+          </Link>
+        ),
+      },
+      {
+        id: "setups",
+        header: t("columns.setups"),
+        accessorFn: (item) => item.setups.length,
+        cell: ({ row }) => (row.original.setups.length > 0 ? row.original.setups.length : "–"),
+      },
+      {
+        id: "price",
+        header: t("columns.price"),
+        accessorFn: (item) => item.priceMinor ?? undefined,
+        cell: ({ row }) =>
+          row.original.priceMinor === null
+            ? "–"
+            : format.number(row.original.priceMinor / 100, { style: "currency", currency: "SEK" }),
+      },
+    ],
+    [t, format],
+  );
+}
+
 /** A page of items; each name links to the item page. */
 export function ItemTableView({ items, nextCursor }: ItemTableViewProps) {
   const t = useTranslations("assistant.ui.item");
-  const format = useFormatter();
+  const columns = useItemColumns();
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
   return (
     <Card data-slot="item-table" className="overflow-hidden shadow-none">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t("columns.name")}</TableHead>
-            <TableHead>{t("columns.price")}</TableHead>
-            <TableHead>{t("columns.setups")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell className="font-medium">
-                <Link href={itemRoute({ id: item.id })} className="hover:underline">
-                  {item.name}
-                </Link>
-              </TableCell>
-              <TableCell>
-                {item.priceMinor === null
-                  ? "–"
-                  : format.number(item.priceMinor / 100, { style: "currency", currency: "SEK" })}
-              </TableCell>
-              <TableCell>{item.setups.length > 0 ? item.setups.length : "–"}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <PersistedDataTable
+        tableId="assistant.item"
+        columns={columns}
+        data={items}
+        getRowId={(item) => item.id}
+        emptyText={t("empty")}
+      />
       <MoreHint nextCursor={nextCursor} />
     </Card>
   );

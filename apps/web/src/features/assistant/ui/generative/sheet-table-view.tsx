@@ -1,47 +1,71 @@
 "use client";
 
 import { Link } from "@okazi/i18n/navigation";
-import { Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
+import { Card, type ColumnDef } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
+import { useMemo } from "react";
+import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { bookingRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
 export type SheetTableViewProps = GenerativeProps<"sheet-table">;
 
+type Row = SheetTableViewProps["items"][number];
+
+function useSheetColumns(): ColumnDef<Row>[] {
+  const t = useTranslations("assistant.ui.sheet");
+  const format = useFormatter();
+  return useMemo<ColumnDef<Row>[]>(
+    () => [
+      {
+        id: "version",
+        header: t("columns.version"),
+        accessorFn: (sheet) => sheet.version,
+        cell: ({ row }) => (
+          <Link
+            href={bookingRoute({ id: row.original.bookingId })}
+            className="font-medium hover:underline"
+          >
+            {t("version", { version: row.original.version })}
+          </Link>
+        ),
+      },
+      {
+        id: "changes",
+        header: t("columns.changes"),
+        accessorFn: (sheet) => sheet.changes.length,
+        cell: ({ row }) =>
+          row.original.changes.length > 0 ? `★ ${row.original.changes.length}` : "–",
+      },
+      {
+        id: "sent",
+        header: t("columns.sent"),
+        accessorFn: (sheet) => (sheet.sentAt ? new Date(sheet.sentAt) : undefined),
+        cell: ({ row }) =>
+          row.original.sentAt
+            ? format.dateTime(new Date(row.original.sentAt), { dateStyle: "medium" })
+            : t("notSent"),
+      },
+    ],
+    [t, format],
+  );
+}
+
 /** A page of sheet versions; each row links to its booking's page. */
 export function SheetTableView({ items, nextCursor }: SheetTableViewProps) {
   const t = useTranslations("assistant.ui.sheet");
-  const format = useFormatter();
+  const columns = useSheetColumns();
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
   return (
     <Card data-slot="sheet-table" className="overflow-hidden shadow-none">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t("columns.version")}</TableHead>
-            <TableHead>{t("columns.changes")}</TableHead>
-            <TableHead>{t("columns.sent")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map((sheet) => (
-            <TableRow key={sheet.id}>
-              <TableCell className="font-medium">
-                <Link href={bookingRoute({ id: sheet.bookingId })} className="hover:underline">
-                  {t("version", { version: sheet.version })}
-                </Link>
-              </TableCell>
-              <TableCell>{sheet.changes.length > 0 ? `★ ${sheet.changes.length}` : "–"}</TableCell>
-              <TableCell>
-                {sheet.sentAt
-                  ? format.dateTime(new Date(sheet.sentAt), { dateStyle: "medium" })
-                  : t("notSent")}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <PersistedDataTable
+        tableId="assistant.sheet"
+        columns={columns}
+        data={items}
+        getRowId={(sheet) => sheet.id}
+        emptyText={t("empty")}
+      />
       <MoreHint nextCursor={nextCursor} />
     </Card>
   );

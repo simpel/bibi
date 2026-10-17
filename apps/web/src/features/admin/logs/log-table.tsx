@@ -1,8 +1,9 @@
 "use client";
 
 import type { SystemLogEntry } from "@okazi/core/schemas";
-import { cn, DataTable, type DataTableLabels } from "@okazi/ui";
+import { cn, type DataTableLabels } from "@okazi/ui";
 import { useTranslations } from "next-intl";
+import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { useLogColumns } from "./use-log-columns";
 import { useLogNavigation } from "./use-log-navigation";
 
@@ -35,7 +36,8 @@ export function LogTable({ items, page, pageSize, pageCount, total, selectedId }
   const labels = usePaginationLabels();
   const { navigate, pending } = useLogNavigation();
   return (
-    <DataTable
+    <PersistedDataTable
+      tableId="admin.logs"
       className={cn(pending && "opacity-60 transition-opacity")}
       columns={columns}
       data={items}

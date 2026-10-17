@@ -1,4 +1,4 @@
-export type { ColumnDef } from "@tanstack/react-table";
+export type { ColumnDef, SortingState } from "@tanstack/react-table";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";
 export * from "./components/behaviour-display/behaviour-display";
 export * from "./components/behaviour-display/bookable-display";
@@ -36,14 +36,13 @@ export {
   type DataTableProps,
   type DataTableServerPagination,
 } from "./components/data-table/data-table";
+export * from "./components/data-table/data-table-actions";
+export * from "./components/data-table/data-table-order";
 export {
   DataTablePagination,
   type DataTablePaginationProps,
 } from "./components/data-table/data-table-pagination";
-export type {
-  DataTableLabels,
-  DataTablePaginationState,
-} from "./components/data-table/data-table-types";
+export type * from "./components/data-table/data-table-types";
 export * from "./components/dialog/dialog";
 export {
   DropdownMenu,

@@ -51,4 +51,14 @@ export const UI_EXEMPT: readonly UiExempt[] = [
     operation: "auditLog.get",
     reason: "The history tab shows every entry in full from auditLog.list; one entry has no page",
   },
+  {
+    operation: "userPreference.list",
+    reason:
+      "No page of its own: pages read the user's preferences (e.g. table column order) with loadUserPreferences",
+  },
+  {
+    operation: "userPreference.set",
+    reason:
+      "No page of its own: UI that remembers a choice (e.g. table column order) saves it with saveUserPreference",
+  },
 ];

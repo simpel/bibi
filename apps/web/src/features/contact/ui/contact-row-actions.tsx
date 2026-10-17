@@ -1,8 +1,7 @@
 "use client";
 
 import type { ContactDto } from "@okazi/core";
-import { Button } from "@okazi/ui";
-import { ArchiveIcon, PencilIcon } from "lucide-react";
+import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
@@ -14,20 +13,16 @@ export type ContactRowActionsProps = { contact: ContactDto; data: TypedFormData 
 /** Edit and archive of one contact person in the customer's contact table. */
 export function ContactRowActions({ contact, data }: ContactRowActionsProps) {
   const t = useTranslations("contact");
+  const common = useTranslations("common");
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
   return (
-    <div className="flex justify-end gap-1">
-      <Button variant="ghost" size="icon" aria-label={t("edit")} onClick={() => setDialog("edit")}>
-        <PencilIcon />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={t("archive")}
-        onClick={() => setDialog("archive")}
-      >
-        <ArchiveIcon />
-      </Button>
+    <>
+      <DataTableRowActions label={common("actions")}>
+        <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
+        <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
+          {t("archive")}
+        </DropdownMenuItem>
+      </DataTableRowActions>
       <ContactDialog
         customerId={contact.customerId}
         data={data}
@@ -40,6 +35,6 @@ export function ContactRowActions({ contact, data }: ContactRowActionsProps) {
         open={dialog === "archive"}
         onOpenChange={(open) => !open && setDialog(null)}
       />
-    </div>
+    </>
   );
 }

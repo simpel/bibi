@@ -20,12 +20,13 @@ Okazi has many entities that link to each other across organization and company 
 Every exception is listed as a constant in `packages/db/src/scoped/` (`models.ts`, `conventions.ts`). `packages/db/test/conventions.test.ts` checks every Prisma model against them, so a new model that breaks a convention without being listed fails the test.
 
 ### Tables without `organizationId` (`UNSCOPED_MODELS`)
-`scopedDb` refuses these models. They follow their owner's schema and are exempt from the column, id and soft-delete rules below.
+`scopedDb` refuses the global and platform models. They follow their owner's schema and are exempt from the column, id and soft-delete rules below.
 
 | Kind | Models | Why |
 | --- | --- | --- |
 | Global (`GLOBAL_MODELS`) | `User`, `Session`, `Account`, `Verification`, `Organization`, `Apikey`, `Jwks`, `OauthClient`, `OauthResource`, `OauthClientResource`, `OauthRefreshToken`, `OauthAccessToken`, `OauthConsent`, `OauthClientAssertion` | Better Auth tables (`auth.prisma`, generated). Identity, sessions, API keys and OAuth are shared across organizations. `Organization.id` is the tenant id. |
 | Platform (`PLATFORM_MODELS`) | `SystemLog`, `AiSetting` | Platform tables (ADR 0015), written only by platform code with `getDb()`. |
+| User-scoped (`USER_SCOPED_MODELS`) | `UserPreference` | Belongs to one user across organizations (ADR 0039). Unlike the others it is reached through `scopedDb`, which pins it to the acting user (`userId = actorId`) and refuses the system actor. |
 
 `Skill` is org-scoped but has a nullable `organizationId`: SYSTEM skills are global rows (`GLOBAL_READ_MODELS`), readable from every organization and writable only by the seeder.
 
@@ -59,3 +60,6 @@ Every org-scoped model is soft-deleted (`SOFT_DELETE_MODELS`), append-only (`APP
 
 ## Addendum 2026-10-15
 - AuditLog retention and pseudonymisation: see 0032.
+
+## Addendum 2026-10-17
+- User-scoped tables (`USER_SCOPED_MODELS`, first `UserPreference`): see 0039.

@@ -44,6 +44,7 @@ export * from "./features/setup/schema";
 export * from "./features/sheet/schema";
 export * from "./features/sheet-definition/schema";
 export * from "./features/skill/schema";
+export * from "./features/user-preference/schema";
 export * from "./features/venue/schema";
 export * from "./features/vocabulary/schema";
 export {

@@ -35,3 +35,10 @@ export type Resource = (typeof RESOURCES)[number];
 
 /** The fixed role with every permission (ADR 0034). Never on an invitation or an API key. */
 export const OWNER_ROLE = "owner";
+
+/**
+ * Pseudo-resource for the caller's own user data (ADR 0039), e.g. `self:write` on
+ * `userPreference.set`. Not in `RESOURCES`: no role grants or withholds it, every authenticated
+ * member has it, and the data layer pins those rows to the caller (`USER_SCOPED_MODELS`).
+ */
+export const SELF_RESOURCE = "self";

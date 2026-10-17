@@ -67,8 +67,19 @@ export const GLOBAL_MODELS = new Set<string>([
 /** Platform tables (ADR 0015): written only by platform code with `getDb()`, refused by `scopedDb`. */
 export const PLATFORM_MODELS = new Set<string>(["SystemLog", "AiSetting", "StripeWebhookEvent"]);
 
+/**
+ * User-scoped tables (ADR 0039): rows belong to one user (`userId`) across organizations, e.g.
+ * UI preferences. `scopedDb` pins every query to its `actorId` instead of the organization and
+ * refuses them for the system actor. No `organizationId`, `status` or `createdBy`.
+ */
+export const USER_SCOPED_MODELS = new Set<string>(["UserPreference"]);
+
 /** Every model that is deliberately not org-scoped. Each Prisma model is here or org-scoped. */
-export const UNSCOPED_MODELS = new Set<string>([...GLOBAL_MODELS, ...PLATFORM_MODELS]);
+export const UNSCOPED_MODELS = new Set<string>([
+  ...GLOBAL_MODELS,
+  ...PLATFORM_MODELS,
+  ...USER_SCOPED_MODELS,
+]);
 
 /**
  * Soft-deleted models and the `status` filter reads/updates get unless the caller filters

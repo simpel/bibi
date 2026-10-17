@@ -71,6 +71,7 @@ erDiagram
   SheetDefinition }o--|| Responsibility : "goes to"
   Responsibility }o--o{ EntityType : "covers"
   User ||--o{ Invitation : "invites"
+  User ||--o{ UserPreference : "saves"
   Deposit ||--o{ Payment : "is paid with"
   Invoice ||--o{ Payment : "is settled with"
   Invoice ||--o{ OrderLine : "invoices"
@@ -757,6 +758,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `1:N` is assignee of → Assignment
 - `1:N` follows → Assignment (`AssignmentFollower`)
 - `1:N` is responsible for → Task
+- `1:N` saves → UserPreference
 
 | Role | Can |
 |---|---|
@@ -814,6 +816,20 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` User has connected this
 
 > Disconnecting revokes the app's tokens at once; it has to ask for access again. A grant belongs to the organization the user approved it for.
+
+### UserPreference (`UserPreference`)
+
+*MVP* · One saved UI choice of one user, e.g. the column order of a data table ([ADR 0039](decisions/0039-user-preferences.md)). Generic key/value: the UI that owns a key gives it meaning. User-scoped, not organization data: it follows the user across organizations, and nobody else can read or change it.
+
+**Attributes**
+- key (`^[a-z0-9][a-z0-9._-]*$`, max 200 characters, e.g. `table.columns.<tableId>`), unique per user
+- value (any JSON, max 10 KB, e.g. an array of column ids)
+- updated
+
+**Relations**
+- `N:1` belongs to → User
+
+> Operations (`self:read|write`, which every member has): `userPreference.list({ prefix? })` lists the caller's own preferences, `userPreference.set({ key, value })` saves one (upsert, audited). The data layer pins every row to the acting user (`USER_SCOPED_MODELS`).
 
 ### Task
 
@@ -986,5 +1002,6 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | OrderLine | Orderrad |
 | User | Användare |
 | Invitation | Inbjudan |
+| UserPreference | Användarinställning |
 | SystemLog | Systemlogg |
 | AiSetting | AI-inställning |

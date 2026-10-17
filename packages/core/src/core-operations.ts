@@ -29,6 +29,7 @@ import { setupOperations } from "./features/setup/operations";
 import { sheetOperations } from "./features/sheet/operations";
 import { sheetDefinitionOperations } from "./features/sheet-definition/operations";
 import { skillOperations } from "./features/skill/operations";
+import { userPreferenceOperations } from "./features/user-preference/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
 import type { AnyOperation } from "./operations/types";
@@ -73,6 +74,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...auditLogOperations,
     ...apiKeyOperations,
     ...oauthGrantOperations,
+    ...userPreferenceOperations,
     createSearchOperation({ embed }),
   ];
 }

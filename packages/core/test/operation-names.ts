@@ -128,6 +128,8 @@ const NAMES = [
   "skill.publish",
   "skill.share",
   "skill.update",
+  "userPreference.list",
+  "userPreference.set",
   "venue.archive",
   "venue.create",
   "venue.get",

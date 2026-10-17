@@ -1,8 +1,7 @@
 "use client";
 
 import type { OccupancyDto } from "@okazi/core";
-import { Button } from "@okazi/ui";
-import { PencilIcon, Undo2Icon } from "lucide-react";
+import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ArchiveOccupancyDialog } from "./archive-occupancy-dialog";
@@ -13,20 +12,16 @@ export type OccupancyRowActionsProps = { occupancy: OccupancyDto };
 /** Edit and release of one manual block in the item's occupancy table. */
 export function OccupancyRowActions({ occupancy }: OccupancyRowActionsProps) {
   const t = useTranslations("occupancy");
+  const common = useTranslations("common");
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
   return (
-    <div className="flex justify-end gap-1">
-      <Button variant="ghost" size="icon" aria-label={t("edit")} onClick={() => setDialog("edit")}>
-        <PencilIcon />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={t("archive")}
-        onClick={() => setDialog("archive")}
-      >
-        <Undo2Icon />
-      </Button>
+    <>
+      <DataTableRowActions label={common("actions")}>
+        <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
+        <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
+          {t("archive")}
+        </DropdownMenuItem>
+      </DataTableRowActions>
       <OccupancyDialog
         itemId={occupancy.itemId}
         occupancy={occupancy}
@@ -38,6 +33,6 @@ export function OccupancyRowActions({ occupancy }: OccupancyRowActionsProps) {
         open={dialog === "archive"}
         onOpenChange={(open) => !open && setDialog(null)}
       />
-    </div>
+    </>
   );
 }

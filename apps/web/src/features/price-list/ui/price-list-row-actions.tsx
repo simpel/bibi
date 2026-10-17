@@ -1,14 +1,7 @@
 "use client";
 
 import type { PriceListDto } from "@okazi/core";
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@okazi/ui";
-import { MoreHorizontalIcon } from "lucide-react";
+import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ArchivePriceListDialog } from "./archive-price-list-dialog";
@@ -26,22 +19,15 @@ function ActionsMenu({ onOpen }: MenuProps) {
   const t = useTranslations("priceList");
   const common = useTranslations("common");
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={common("actions")}>
-          <MoreHorizontalIcon />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onSelect={() => onOpen({ dialog: "edit" })}>{t("edit")}</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => onOpen({ dialog: "items" })}>
-          {t("items.edit")}
-        </DropdownMenuItem>
-        <DropdownMenuItem destructive onSelect={() => onOpen({ dialog: "archive" })}>
-          {t("archive")}
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <DataTableRowActions label={common("actions")}>
+      <DropdownMenuItem onSelect={() => onOpen({ dialog: "edit" })}>{t("edit")}</DropdownMenuItem>
+      <DropdownMenuItem onSelect={() => onOpen({ dialog: "items" })}>
+        {t("items.edit")}
+      </DropdownMenuItem>
+      <DropdownMenuItem destructive onSelect={() => onOpen({ dialog: "archive" })}>
+        {t("archive")}
+      </DropdownMenuItem>
+    </DataTableRowActions>
   );
 }
 

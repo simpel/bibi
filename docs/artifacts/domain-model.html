@@ -210,6 +210,7 @@ const E = [
   // Operations
   {id:"user",d:"ops",n:"User",p:"MVP",s:"A member of the organization with one of the fixed roles (viewer < member < admin < owner).",a:["name","role (viewer / member / admin / owner)","venues","platform role (user / admin)"]},
   {id:"invitation",d:"ops",n:"Invitation",p:"MVP",s:"An emailed invitation to join the organization as staff, with the fixed role the invitee gets on accepting.",a:["email","role (one of the fixed roles, never owner)","status (pending / accepted / rejected / canceled)","inviter","expires (48 hours)"]},
+  {id:"userpref",d:"ops",n:"UserPreference",p:"MVP",s:"One saved UI choice of one user, e.g. a data table's column order. User-scoped: follows the user across organizations, nobody else can read or change it (ADR 0039).",a:["key (e.g. table.columns.<tableId>), unique per user","value (any JSON, max 10 KB)","updated"],x:"userPreference.list({ prefix? }) and userPreference.set({ key, value }) (upsert, audited), permission self:read|write which every member has. The data layer pins every row to the acting user (USER_SCOPED_MODELS)."},
   {id:"auditlog",d:"ops",n:"AuditLog",p:"MVP",s:"Organization data: one row per change, read as an entity's history (permission audit:read, ADR 0006, 0014).",a:["actor (user / AI / system), approved by","assistant conversation","operation, entity type and id","before and after image (personal values redacted after 1 year, ADR 0032)","request id and surface","time","pseudonymisedAt"]},
   {id:"apikey",d:"ops",n:"ApiKey",p:"MVP",s:"A REST API key with one fixed role (viewer, member or admin). The secret is shown once (ADR 0005).",a:["name","role (never owner)","owner","expiry (optional)","last used"],x:"Acts with the weaker of its role and the owner's live role; never above the member who created it. Revoked keys are rejected at once."},
   {id:"oauthgrant",d:"ops",n:"OauthGrant",p:"MVP",s:"An app (e.g. an MCP client) a user has connected with OAuth. Only the user sees and disconnects it.",a:["app (OAuth client)","access (scopes)","connected"]},
@@ -228,110 +229,3 @@ const R = [
   ["etype","fielddef","1:N","has"],["etype","item","1:N","classifies"],["fielddef","vocab","N:0..1","selects from"],["setup","itemsetup","1:N","is used in"],["item","itemsetup","1:N","has"],
   ["user","apikey","1:N","owns"],["user","oauthgrant","1:N","has connected"],
   ["sheetdef","resp","N:1","goes to"],["resp","etype","N:M","covers"],["resp","assign","1:N","scopes"],["assign","lead","N:1","answers for"],["assign","booking","N:1","answers for"],["assign","item","N:1","answers for"],["sheetdef","etype","N:M","includes"],["sheetdef","fielddef","N:M","includes"],["sheetdef","sheet","1:N","produces version"],["user","assign","1:N","is assignee or follower of"],["user","invitation","1:N","invites"],["booking","bstatus","N:1","has status"],
-  ["org","contact","1:N","has"],["org","lead","1:N","sends"],["contact","lead","1:N","is contact for"],["org","pricelist","N:0..1","uses"],
-  ["lead","quote","1:N","is answered by"],["lead","hold","1:N","can create"],["quote","booking","1:0..1","becomes on accept"],["quote","contract","1:0..1","is signed via"],["quote","line","1:N","contains"],
-  ["series","booking","1:N","generates"],["series","pricelist","N:0..1","follows"],
-  ["booking","function","1:N","consists of"],["booking","req","1:N","has"],["function","req","1:N","adjusts"],["req","vocab","N:1","refers to value in"],["booking","policy","N:1","follows"],["booking","deposit","1:N","requires"],["booking","invoice","1:N","is invoiced via"],["booking","sheet","1:N","produces"],["org","booking","1:N","orders"],["org","item","1:N","owns packages"],
-  ["function","item","N:0..1","is held in"],["function","setup","N:0..1","is set up as"],["function","line","1:N","is charged via"],["function","block","1:1","reserves"],["hold","block","1:1","reserves"],
-  ["venue","item","1:N","has"],["item","block","1:N","has"],
-  ["item","component","1:N","contains"],["item","choice","1:N","has"],["choice","component","1:N","groups"],["item","vocab","N:M","is tagged with value in"],["line","item","N:1","refers to"],["pricelist","pricerow","1:N","contains"],["pricerow","item","N:1","refers to"],
-  ["deposit","payment","1:N","is paid with"],["invoice","payment","1:N","is settled with"],["invoice","line","1:N","invoices"],["invoice","deposit","1:N","offsets"],
-  ["user","auditlog","1:N","makes changes in"],["user","task","1:N","is responsible for"],["function","task","1:N","requires"],["inboundemail","booking","N:1","is a reply on"],["payment","booking","N:1","is paid for"],["message","booking","N:0..1","concerns"],["message","lead","N:0..1","concerns"],["screen","item","N:1","is placed at"],["access","function","N:1","opens for"]
-];
-
-const FLOW = [["Inquiry","sales"],["Option","sales"],["Quote","sales"],["Signing (later)","sales"],["Booking","booking"],["Program items","booking"],["Requirements","booking"],["Sheets","food"],["Delivery","space"],["Invoice","money"],["Fortnox / Visma","money"]];
-
-const byId = Object.fromEntries(E.map(e=>[e.id,e]));
-const dom = Object.fromEntries(DOMAINS.map(d=>[d.id,d]));
-let phase = "All", selected = null;
-
-document.getElementById("flow").innerHTML = FLOW.map(([t,d],i)=>
-  `${i?'<span class="arrow" aria-hidden="true">→</span>':''}<span class="step"><i style="background:var(${dom[d].color})"></i>${t}</span>`).join("");
-
-const phasesEl = document.getElementById("phases");
-["All","MVP","Phase 2","Phase 3"].forEach(p=>{
-  const b=document.createElement("button");b.className="chip";b.id="phase-"+p.replace(" ","");b.textContent=p;
-  b.setAttribute("aria-pressed",p===phase);b.onclick=()=>{phase=p;render()};phasesEl.appendChild(b);
-});
-
-function relsOf(id){
-  return R.filter(r=>r[0]===id||r[1]===id).map(([f,t,c,v])=>
-    f===id ? {other:t,text:`${v}`,card:c} : {other:f,text:`${byId[f].n.toLowerCase()} ${v} this`,card:c.split(":").reverse().join(":")});
-}
-
-function render(){
-  phasesEl.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",b.textContent===phase));
-  const visible = E.filter(e=>phase==="All"||e.p===phase);
-  document.getElementById("count").textContent = `${visible.length} entities`;
-  const related = selected ? new Set(relsOf(selected).map(r=>r.other)) : null;
-  const root = document.getElementById("domains"); root.innerHTML="";
-  DOMAINS.forEach(d=>{
-    const list = visible.filter(e=>e.d===d.id); if(!list.length) return;
-    const col=document.createElement("div");col.className="domain";col.style.setProperty("--dc",`var(${d.color})`);
-    col.innerHTML=`<h3><i style="width:10px;height:10px;border-radius:2px;background:var(${d.color});display:inline-block"></i>${d.name}<span>${list.length}</span></h3>`;
-    list.forEach(e=>{
-      const el=document.createElement("div");el.className="ent";el.tabIndex=0;el.id="e-"+e.id;el.setAttribute("role","button");el.setAttribute("aria-expanded",selected===e.id);
-      if(selected){ if(e.id===selected) el.classList.add("sel"); else if(related.has(e.id)) el.classList.add("rel"); else el.classList.add("dim"); }
-      el.innerHTML=`<div class="top"><span class="name">${e.n}</span>${e.x?'<span class="star" title="Differentiator">★</span>':''}<span class="phase ${e.p==="MVP"?"mvp":""}">${e.p}</span></div><div class="desc">${e.s}</div>`;
-      if(selected===e.id){
-        const rels=relsOf(e.id);
-        const det=document.createElement("div");det.className="detail";
-        det.innerHTML=`<div><h4>Attributes</h4><ul class="attrs">${e.a.map(a=>`<li>${a}</li>`).join("")}</ul></div>
-          <div><h4>Relations</h4><ul class="rels">${rels.map(r=>`<li><span class="card">${r.card}</span> ${r.text} <button data-go="${r.other}">${byId[r.other].n}</button></li>`).join("")}</ul></div>
-          ${e.x?`<div class="diff">★ ${e.x}</div>`:""}`;
-        det.addEventListener("click",ev=>{const g=ev.target.closest("[data-go]");if(g){ev.stopPropagation();go(g.dataset.go)} else ev.stopPropagation();});
-        el.appendChild(det);
-      }
-      const toggle=()=>{selected = selected===e.id?null:e.id; render(); if(selected) document.getElementById("e-"+e.id).focus({preventScroll:true});};
-      el.onclick=toggle; el.onkeydown=ev=>{if(ev.target===el&&(ev.key==="Enter"||ev.key===" ")){ev.preventDefault();toggle();}};
-      col.appendChild(el);
-    });
-    root.appendChild(col);
-  });
-}
-function go(id){
-  if(phase!=="All"&&byId[id].p!==phase) phase="All";
-  selected=id; render();
-  const el=document.getElementById("e-"+id); el.focus({preventScroll:true});
-  el.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"center"});
-}
-render();
-
-// Competitors: Y yes, P partial, N no, U unconfirmed
-const COLS = ["Inquiry / CRM","Quote","E-signing","Rooms & setups","Menu","Allergies per attendee","Kitchen order / sheet","Direct booking","Swish","Fortnox / Visma"];
-const COMP = [
-  {g:"Closest competitors in Sweden"},
-  {n:"Lega Online",o:"Multinet, SE",m:"PPYYPUYPUY",pr:"Not published",ref:"Ideon, WTC Malmö, Sensus (logos)"},
-  {n:"VisBook",o:"Visit Group, NO/SE",m:"UUUUYUPUUU",pr:"Revenue-based, not published",ref:"Hackholmssund, Trosa Stadshotell"},
-  {n:"Caspeco",o:"SE",m:"NYUUYUPYYY",pr:"Fixed monthly fee, not published",ref:"Restaurants; conferences unclear"},
-  {g:"Hotels' quote and S&C layer"},
-  {n:"MeetingPackage",o:"FI",m:"NYYYYUUYUN",pr:"~€350/venue/month (G2)",ref:"Scandic, Strawberry"},
-  {n:"Proposales",o:"SE",m:"PYYPYUUNUN",pr:"From SEK 2,990/month (BusinessWith)",ref:"Elite Hotels, Strawberry"},
-  {n:"Event Temple",o:"CA",m:"YYYPUPPYUN",pr:"From $249/month, annual contract",ref:"Strawberry, 174 hotels"},
-  {n:"Mews Events",o:"NL",m:"PYUPUUYPUU",pr:"Not published, requires Mews PMS",ref:"No Nordic found"},
-  {n:"Amadeus Delphi",o:"ES",m:"YYYYYUYPUU",pr:"Not published",ref:"Hilton Slussen (job ad)"},
-  {n:"Oracle OPERA SEM",o:"US",m:"YYUUYUYUUU",pr:"Not published",ref:"Solstrand (NO)"},
-  {g:"Venue and restaurant systems without a Nordic foothold"},
-  {n:"Venjue",o:"DK",m:"YYUYYYYUUN",pr:"0 / 445 / 895 DKK/month",ref:"Danish restaurants"},
-  {n:"Tripleseat",o:"US",m:"YYYYYUYYUN",pr:"Not published",ref:"No Nordic"},
-  {n:"Perfect Venue",o:"US",m:"YYYPYUYYNN",pr:"$0 / 199 / 299/month",ref:"USA/Canada only"},
-  {n:"Momentus",o:"US",m:"YYYUYUYYUU",pr:"Quote, enterprise",ref:"No Nordic"},
-  {g:"Generic booking (low-price floor)"},
-  {n:"Agendo",o:"SE",m:"NNYNNNNYYY",pr:"SEK 299–899/month",ref:"Small businesses, venue rental"},
-  {n:"BokaMera",o:"Visma, SE",m:"NNUNNNNYYY",pr:"SEK 0–569/month",ref:"6,000+ customers (2022)"},
-  {g:"Your system (target state)"},
-  {n:"Your system",o:"MVP",m:"YYYYYNYYYY",pr:"Published prices",ref:"—",you:true}
-];
-const MK = {Y:['m-y','✓','Yes'],P:['m-p','~','Partial'],N:['m-n','–','No'],U:['m-u','?','Unconfirmed']};
-const t=document.getElementById("comp");
-t.innerHTML = `<thead><tr><th class="p">Product</th>${COLS.map(c=>`<th>${c}</th>`).join("")}<th>Price</th><th>Nordic references</th></tr></thead><tbody>${
-  COMP.map(r=> r.g ? `<tr class="group"><td colspan="${COLS.length+3}">${r.g}</td></tr>` :
-  `<tr class="${r.you?'you':''}"><td class="p"><b>${r.n}</b><small>${r.o}</small></td>${[...r.m].map((c,i)=>{const[k,s,l]=MK[c];return `<td><span class="mark ${k}" title="${COLS[i]}: ${l}" aria-label="${l}">${s}</span></td>`}).join("")}<td class="txt">${r.pr}</td><td class="txt">${r.ref}</td></tr>`).join("")
-}</tbody>`;
-
-// Tabs
-const tabs=[...document.querySelectorAll('[role="tab"]')];
-function showTab(id){tabs.forEach(b=>{const on=b.id===id;b.setAttribute("aria-selected",on);document.getElementById(b.getAttribute("aria-controls")).hidden=!on;});}
-tabs.forEach(b=>b.onclick=()=>showTab(b.id));
-if(location.hash==="#competitors") showTab("tab-comp");
-</script>

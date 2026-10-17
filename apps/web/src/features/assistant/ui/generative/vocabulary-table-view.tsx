@@ -1,40 +1,59 @@
 "use client";
 
 import { Link } from "@okazi/i18n/navigation";
-import { Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
+import { Card, type ColumnDef } from "@okazi/ui";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
+import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { vocabularyRoute } from "@/lib/configuration-routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
 export type VocabularyTableViewProps = GenerativeProps<"vocabulary-table">;
 
+type Row = VocabularyTableViewProps["items"][number];
+
+function useVocabularyColumns(): ColumnDef<Row>[] {
+  const t = useTranslations("assistant.ui.vocabulary");
+  return useMemo<ColumnDef<Row>[]>(
+    () => [
+      {
+        id: "name",
+        header: t("columns.name"),
+        accessorFn: (vocabulary) => vocabulary.name,
+        cell: ({ row }) => (
+          <Link
+            href={vocabularyRoute({ id: row.original.id })}
+            className="font-medium hover:underline"
+          >
+            {row.original.name}
+          </Link>
+        ),
+      },
+      {
+        id: "values",
+        header: t("columns.values"),
+        accessorFn: (vocabulary) => vocabulary.values.length,
+      },
+    ],
+    [t],
+  );
+}
+
 /** A page of lists; each name links to the list page. */
 export function VocabularyTableView({ items, nextCursor }: VocabularyTableViewProps) {
   const t = useTranslations("assistant.ui.vocabulary");
+  const columns = useVocabularyColumns();
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
   return (
     <Card data-slot="vocabulary-table" className="overflow-hidden shadow-none">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t("columns.name")}</TableHead>
-            <TableHead>{t("columns.values")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map((vocabulary) => (
-            <TableRow key={vocabulary.id}>
-              <TableCell className="font-medium">
-                <Link href={vocabularyRoute({ id: vocabulary.id })} className="hover:underline">
-                  {vocabulary.name}
-                </Link>
-              </TableCell>
-              <TableCell>{vocabulary.values.length}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <PersistedDataTable
+        tableId="assistant.vocabulary"
+        columns={columns}
+        data={items}
+        getRowId={(vocabulary) => vocabulary.id}
+        emptyText={t("empty")}
+      />
       <MoreHint nextCursor={nextCursor} />
     </Card>
   );

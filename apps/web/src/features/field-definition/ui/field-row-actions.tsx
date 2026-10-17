@@ -1,51 +1,38 @@
 "use client";
 
 import type { FieldDefinitionDto } from "@okazi/core";
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@okazi/ui";
-import { MoreHorizontalIcon } from "lucide-react";
+import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ArchiveFieldDialog } from "./archive-field-dialog";
 import { FieldDialog } from "./field-dialog";
-import { FieldOrderButtons } from "./field-order-buttons";
+import { FieldMoveItems } from "./field-move-items";
 import type { VocabularyChoice } from "./field-source-fields";
 
 export type FieldRowActionsProps = {
   field: FieldDefinitionDto;
+  /** Neighbours in display order; absent at the ends of the list. */
   previous?: FieldDefinitionDto | undefined;
   next?: FieldDefinitionDto | undefined;
   vocabularies: VocabularyChoice[];
   linkTypes: VocabularyChoice[];
 };
 
-/** Reorder buttons plus an edit / archive menu for one field. */
+/** Move up / move down / edit / archive menu for one field. */
 export function FieldRowActions(props: FieldRowActionsProps) {
   const { field, previous, next, vocabularies, linkTypes } = props;
   const t = useTranslations("fieldDefinition");
   const common = useTranslations("common");
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
   return (
-    <div className="flex items-center justify-end">
-      <FieldOrderButtons field={field} previous={previous} next={next} />
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label={common("actions")}>
-            <MoreHorizontalIcon />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
-          <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
-            {t("archive")}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <>
+      <DataTableRowActions label={common("actions")}>
+        <FieldMoveItems field={field} previous={previous} next={next} />
+        <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
+        <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
+          {t("archive")}
+        </DropdownMenuItem>
+      </DataTableRowActions>
       <FieldDialog
         entityTypeId={field.entityTypeId}
         field={field}
@@ -59,6 +46,6 @@ export function FieldRowActions(props: FieldRowActionsProps) {
         open={dialog === "archive"}
         onOpenChange={(open) => !open && setDialog(null)}
       />
-    </div>
+    </>
   );
 }

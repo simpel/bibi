@@ -22,6 +22,9 @@ The parity core: every capability is defined **once** as an operation and then e
 - `createPlatformOperations({ listModels })`: `systemLog.list/get`, `aiFeature.list/update`, `aiModel.list`. **Not** registered in the org registry. Not in GraphQL, REST or MCP.
 - `resolveAiModel({ feature })` → `Result<string>`: the admin's choice (cache 30 s). No default: unchosen → `UNAVAILABLE` and `ai.modelNotConfigured` (error). `AI_FEATURES` is the registry.
 
+## User preferences (ADR 0039)
+- `userPreference.list({ prefix? })` and `userPreference.set({ key, value })` (upsert, audited): the caller's own UI preferences (e.g. `table.columns.<tableId>`), user-scoped, not org-scoped. Permission `self:read|write`: `SELF_RESOURCE` is not in `RESOURCES`, `hasPermission` grants it to every caller, and `scopedDb` pins the rows to the actor. The system actor gets `FORBIDDEN`.
+
 ## Errors
 - `AppError` with codes `NOT_FOUND | FORBIDDEN | UNAUTHENTICATED | VALIDATION | CONFLICT | INTERNAL | UNAVAILABLE` (503: the feature lacks configuration, e.g. an AI model). `INTERNAL` and `UNAVAILABLE` are logged as `operation.failed` (error).
 - Surfaces map with `toHttpStatus`, `toGraphqlExtensions`, `toMcpError` – no custom mappings.

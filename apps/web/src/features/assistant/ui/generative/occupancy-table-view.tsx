@@ -1,8 +1,10 @@
 "use client";
 
 import { Link } from "@okazi/i18n/navigation";
-import { Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
+import { Card, type ColumnDef } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
+import { useMemo } from "react";
+import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { itemRoute } from "@/lib/configuration-routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
@@ -10,36 +12,58 @@ import { occupancyPeriod } from "./occupancy-period";
 
 export type OccupancyTableViewProps = GenerativeProps<"occupancy-table">;
 
-/** A page of occupancies; each type links to the item's page. */
-export function OccupancyTableView({ items, nextCursor }: OccupancyTableViewProps) {
+type Row = OccupancyTableViewProps["items"][number];
+
+function useOccupancyColumns(): ColumnDef<Row>[] {
   const t = useTranslations("assistant.ui.occupancy");
   const types = useTranslations("occupancy.types");
   const format = useFormatter();
+  return useMemo<ColumnDef<Row>[]>(
+    () => [
+      {
+        id: "type",
+        header: t("columns.type"),
+        accessorFn: (occupancy) => types(occupancy.type),
+        cell: ({ row }) => (
+          <Link
+            href={itemRoute({ id: row.original.itemId })}
+            className="font-medium hover:underline"
+          >
+            {types(row.original.type)}
+          </Link>
+        ),
+      },
+      {
+        id: "note",
+        header: t("columns.note"),
+        accessorFn: (occupancy) => occupancy.note ?? undefined,
+        cell: ({ row }) => row.original.note ?? "–",
+      },
+      {
+        id: "period",
+        header: t("columns.period"),
+        accessorFn: (occupancy) => new Date(occupancy.startsAt),
+        cell: ({ row }) => occupancyPeriod({ format, ...row.original }),
+      },
+    ],
+    [t, types, format],
+  );
+}
+
+/** A page of occupancies; each type links to the item's page. */
+export function OccupancyTableView({ items, nextCursor }: OccupancyTableViewProps) {
+  const t = useTranslations("assistant.ui.occupancy");
+  const columns = useOccupancyColumns();
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
   return (
     <Card data-slot="occupancy-table" className="overflow-hidden shadow-none">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t("columns.type")}</TableHead>
-            <TableHead>{t("columns.period")}</TableHead>
-            <TableHead>{t("columns.note")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map((occupancy) => (
-            <TableRow key={occupancy.id}>
-              <TableCell className="font-medium">
-                <Link href={itemRoute({ id: occupancy.itemId })} className="hover:underline">
-                  {types(occupancy.type)}
-                </Link>
-              </TableCell>
-              <TableCell>{occupancyPeriod({ format, ...occupancy })}</TableCell>
-              <TableCell>{occupancy.note ?? "–"}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <PersistedDataTable
+        tableId="assistant.occupancy"
+        columns={columns}
+        data={items}
+        getRowId={(occupancy) => occupancy.id}
+        emptyText={t("empty")}
+      />
       <MoreHint nextCursor={nextCursor} />
     </Card>
   );

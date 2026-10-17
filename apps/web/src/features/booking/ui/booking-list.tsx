@@ -20,7 +20,7 @@ import { loadSeriesTotals } from "../../booking-series/load-series-totals";
 import { loadBookingData } from "../load-booking-data";
 import { loadQuickBookingData } from "../load-quick-booking-data";
 import type { BookingFormData } from "./booking-form-data";
-import { BookingTable } from "./booking-table";
+import { BookingListTable } from "./booking-list-table";
 import { CreateBookingButton } from "./create-booking-button";
 import { QuickBookingButton } from "./quick-booking-button";
 
@@ -79,7 +79,7 @@ export async function BookingList({ locale, cursor, mine }: BookingListProps) {
         />
       ) : (
         <>
-          <BookingTable bookings={page.items} data={data.value} seriesTotals={seriesTotals} />
+          <BookingListTable bookings={page.items} data={data.value} seriesTotals={seriesTotals} />
           <CursorPagination
             pathname={ROUTES.bookings}
             cursor={cursor}

@@ -1,8 +1,7 @@
 "use client";
 
 import type { ProgramItemDto } from "@okazi/core";
-import { Button } from "@okazi/ui";
-import { PencilIcon, Trash2Icon } from "lucide-react";
+import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ArchiveProgramItemDialog } from "./archive-program-item-dialog";
@@ -14,16 +13,16 @@ export type ProgramRowActionsProps = { programItem: ProgramItemDto; data: Progra
 /** Edit and remove one row of the run schedule. */
 export function ProgramRowActions({ programItem, data }: ProgramRowActionsProps) {
   const t = useTranslations("programItem");
+  const common = useTranslations("common");
   const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
-  const icon = { variant: "ghost", size: "icon" } as const;
   return (
-    <div className="flex justify-end gap-1">
-      <Button {...icon} aria-label={t("edit")} onClick={() => setDialog("edit")}>
-        <PencilIcon />
-      </Button>
-      <Button {...icon} aria-label={t("archive")} onClick={() => setDialog("archive")}>
-        <Trash2Icon />
-      </Button>
+    <>
+      <DataTableRowActions label={common("actions")}>
+        <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
+        <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
+          {t("archive")}
+        </DropdownMenuItem>
+      </DataTableRowActions>
       <ProgramItemDialog
         data={data}
         bookingId={programItem.bookingId}
@@ -37,6 +36,6 @@ export function ProgramRowActions({ programItem, data }: ProgramRowActionsProps)
         open={dialog === "archive"}
         onOpenChange={(open) => !open && setDialog(null)}
       />
-    </div>
+    </>
   );
 }

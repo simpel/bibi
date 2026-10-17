@@ -86,6 +86,7 @@ export {
   SOFT_DELETE_DEFAULTS,
   SOFT_DELETE_MODELS,
   UNSCOPED_MODELS,
+  USER_SCOPED_MODELS,
 } from "./scoped/models";
 export { PLATFORM_SCOPE } from "./scoped/platform-scope";
 export { ScopeViolationError } from "./scoped/scope-violation";

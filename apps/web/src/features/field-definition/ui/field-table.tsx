@@ -1,8 +1,10 @@
+"use client";
+
 import type { FieldDefinitionDto } from "@okazi/core";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
-import { getTranslations } from "next-intl/server";
-import { FieldRowActions } from "./field-row-actions";
+import { useTranslations } from "next-intl";
+import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { VocabularyChoice } from "./field-source-fields";
+import { useFieldColumns } from "./use-field-columns";
 
 export type FieldTableProps = {
   fields: FieldDefinitionDto[];
@@ -11,65 +13,17 @@ export type FieldTableProps = {
   canWrite: boolean;
 };
 
-type FieldRowProps = FieldTableProps & { index: number };
-
-/** One field: name, kind, required, where its alternatives come from, and the row actions. */
-async function FieldRow({ fields, vocabularies, linkTypes, canWrite, index }: FieldRowProps) {
-  const t = await getTranslations("fieldDefinition");
-  const common = await getTranslations("common");
-  const field = fields[index] as FieldDefinitionDto;
-  const list = vocabularies.find(({ id }) => id === field.vocabularyId);
-  const target = linkTypes.find(({ id }) => id === field.linkTypeId);
-  const source = list
-    ? t("listSource", { name: list.name })
-    : target
-      ? t("linkSource", { name: target.name })
-      : field.options.length > 0
-        ? t("optionsSource", { count: field.options.length })
-        : "–";
+/** Fields of a type: name, kind, required, source and the row actions. */
+export function FieldTable({ fields, vocabularies, linkTypes, canWrite }: FieldTableProps) {
+  const t = useTranslations("fieldDefinition");
+  const columns = useFieldColumns({ fields, vocabularies, linkTypes, canWrite });
   return (
-    <TableRow>
-      <TableCell className="font-medium">{field.name}</TableCell>
-      <TableCell>{t(`kinds.${field.kind}`)}</TableCell>
-      <TableCell>{field.required ? common("yes") : common("no")}</TableCell>
-      <TableCell>{source}</TableCell>
-      <TableCell>
-        {canWrite ? (
-          <FieldRowActions
-            field={field}
-            previous={fields[index - 1]}
-            next={fields[index + 1]}
-            vocabularies={vocabularies}
-            linkTypes={linkTypes}
-          />
-        ) : null}
-      </TableCell>
-    </TableRow>
-  );
-}
-
-/** Fields of a type in display order. */
-export async function FieldTable(props: FieldTableProps) {
-  const t = await getTranslations("fieldDefinition");
-  const common = await getTranslations("common");
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>{t("columns.name")}</TableHead>
-          <TableHead>{t("columns.kind")}</TableHead>
-          <TableHead>{t("columns.required")}</TableHead>
-          <TableHead>{t("columns.source")}</TableHead>
-          <TableHead className="w-36">
-            <span className="sr-only">{common("actions")}</span>
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {props.fields.map((field, index) => (
-          <FieldRow key={field.id} {...props} index={index} />
-        ))}
-      </TableBody>
-    </Table>
+    <PersistedDataTable
+      tableId="field-definition.list"
+      columns={columns}
+      data={fields}
+      getRowId={(field) => field.id}
+      emptyText={t("empty")}
+    />
   );
 }

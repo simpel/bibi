@@ -72,6 +72,18 @@
 - A new HTTP entry point is wrapped in `withRequestLogging({ surface, handler })`. Other entry points (CLI, jobs) run in `runWithLogContext`.
 - Feature folders have fixed file names: `schema.ts`, `operations.ts`, `graphql.ts`, `rest.ts`, `mcp.ts` and `ui/`.
 - UI is built only from `@okazi/ui`. Variants use cva. Tokens live in one file.
+- **Every table is a shadcn TanStack table** (shadcn's data-table pattern on `@tanstack/react-table`). Never a raw `<table>`, never another table library or a hand-rolled list pretending to be a table. In the web app a table is always rendered with `PersistedDataTable` (`apps/web/src/components/data-table/`, on `DataTable` in `@okazi/ui`) with a stable `tableId`; columns live in a `use-<entity>-columns` hook; the assistant's card has its own hook and `tableId` with the same cells. Never use the `Table*` primitives directly. The only exception is the calendar grid (a keyboard-navigated time grid, not a table of records). See `docs/decisions/0040-data-tables.md`.
+  - **All columns are sortable.**
+  - **Column order**, left to right:
+    1. Multiselect checkbox, only if bulk editing benefits the list.
+    2. Main title, name or identifier.
+    3. Descriptive columns (the organization's own fields), in the order the organization defines them.
+    4. Status.
+    5. Dates and times, then numbers and amounts.
+    6. Row actions, always the far-right column.
+  - **Users reorder columns by drag and drop.** This is always on and not a setting. The checkbox and row actions stay pinned at the edges. All other columns, including the title, can be moved. The order above is the default.
+  - **The order is saved per user and per table** as a user preference on the server, not in `localStorage`, so it follows her across devices. It is restored on every visit, so she always sees the same order.
+  - **Row actions** go in a `DropdownMenu` submenu. Every action in it has a text label. Never an icon-only action button.
 - `"use client"` is set only at the client boundary: components that a server component renders and that themselves have state, context or browser events. Children and hooks inherit the boundary and get no directive of their own.
 - Verified with `pnpm check:structure`.
 

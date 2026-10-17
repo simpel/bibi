@@ -12,7 +12,8 @@ Prisma 7 (the `prisma-client` generator, driver adapter `@prisma/adapter-pg`) ag
 - Business code **always** uses `scopedDb({ organizationId })`, never `getDb()`/`createDb()` directly.
   - Forces `organizationId` on all reads/writes (where, create, upsert) and removes attempts to change it.
   - Hides `status = ARCHIVED` on reads/updates unless you filter on `status` yourself.
-  - Models not listed in `ORG_SCOPED_MODELS` (`src/scoped/models.ts`) are rejected (fail closed). New org model → add it there. Every model is either there or in `UNSCOPED_MODELS` (`GLOBAL_MODELS` + `PLATFORM_MODELS`); `test/conventions.test.ts` enforces it.
+  - Models not listed in `ORG_SCOPED_MODELS` (`src/scoped/models.ts`) are rejected (fail closed). New org model → add it there. Every model is either there or in `UNSCOPED_MODELS` (`GLOBAL_MODELS` + `PLATFORM_MODELS` + `USER_SCOPED_MODELS`); `test/conventions.test.ts` enforces it.
+  - `USER_SCOPED_MODELS` (`UserPreference`, ADR 0039): no `organizationId`; `scopedDb` pins them to the acting user instead (`userId = actorId` on every where/create/upsert, `userId` stripped from updates) and refuses the system actor (`src/scoped/apply-user-scope.ts`, `test/user-scope.test.ts`).
   - Requires `actorId` and forces `createdBy = actorId` on every create of a model in `CREATED_BY_MODELS` (`src/scoped/conventions.ts`); updates cannot change `createdBy`. Handlers never set it. System work uses `SYSTEM_ACTOR_ID`.
   - `SOFT_DELETE_DEFAULTS` controls the default `status` filter per model (Skill: `not ARCHIVED`, others `ACTIVE`).
   - `GLOBAL_READ_MODELS` (Skill): reads see org rows **plus** global rows (`organizationId` null = SYSTEM skills) via an `AND: [{ OR: [{ organizationId }, { organizationId: null }] }]` on top of the caller's `where`. Writes remain locked to the org, so SYSTEM rows can never be created/changed/deleted via `scopedDb` (only via the dedicated seeder in core with `getDb()`).

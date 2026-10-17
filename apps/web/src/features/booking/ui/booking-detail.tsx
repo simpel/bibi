@@ -15,7 +15,7 @@ import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { BookingSeriesMarker } from "../../booking-series/ui/series-marker";
+import { BookingSeriesMarker } from "../../booking-series/ui/booking-series-marker";
 import { loadBookingData } from "../load-booking-data";
 import { BookingActions } from "./booking-actions";
 import { BookingFacts } from "./booking-facts";

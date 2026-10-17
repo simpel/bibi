@@ -33,6 +33,7 @@ import "../features/member/graphql";
 import "../features/audit-log/graphql";
 import "../features/api-key/graphql";
 import "../features/oauth-grant/graphql";
+import "../features/user-preference/graphql";
 import "./scalars";
 import "./search";
 import { builder } from "./builder";

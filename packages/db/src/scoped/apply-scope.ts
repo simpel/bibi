@@ -1,3 +1,4 @@
+import { applyUserScope } from "./apply-user-scope";
 import { CREATED_BY_MODELS } from "./conventions";
 import {
   APPEND_ONLY_MODELS,
@@ -6,6 +7,7 @@ import {
   ORG_SCOPED_MODELS,
   READ_OPERATIONS,
   UPDATE_OPERATIONS,
+  USER_SCOPED_MODELS,
 } from "./models";
 import { assertNoNestedWrites } from "./nested-writes";
 import { ScopeViolationError } from "./scope-violation";
@@ -43,7 +45,10 @@ function stripOwnership({ data }: StripInput): Args {
   return rest;
 }
 
-/** Rewrites Prisma args so every query is pinned to one organization. Fails closed. */
+/**
+ * Rewrites Prisma args so every query is pinned to one organization (user-scoped models: to the
+ * acting user). Fails closed.
+ */
 export function applyScope({
   model,
   operation,
@@ -52,6 +57,9 @@ export function applyScope({
   actorId,
 }: ApplyScopeInput): Args {
   const input: Args = { ...((args as Args | undefined) ?? {}) };
+  if (USER_SCOPED_MODELS.has(model)) {
+    return applyUserScope({ model, operation, args: input, actorId });
+  }
   if (!ORG_SCOPED_MODELS.has(model)) {
     throw new ScopeViolationError({ model, operation, reason: "model is not org-scoped" });
   }

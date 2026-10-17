@@ -1,0 +1,14 @@
+/// One UI preference of one user (ADR 0039), e.g. `table.columns.<tableId>` = column ids.
+/// User-scoped, NOT org-scoped: it follows the user across organizations. Reached only through
+/// `scopedDb`, which pins every query to the acting user (`USER_SCOPED_MODELS`). Upserted in
+/// place; there is no soft delete and no `createdBy` (the owner is `userId`).
+model UserPreference {
+  id        String   @id @default(cuid(2))
+  userId    String
+  key       String
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, key])
+}

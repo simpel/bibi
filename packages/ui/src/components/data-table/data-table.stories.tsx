@@ -1,31 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
+import { Button } from "../button/button";
 import { DataTable } from "./data-table";
-import type { DataTableLabels } from "./data-table-types";
-
-type Room = { id: string; name: string; seats: number };
-
-const rooms: Room[] = Array.from({ length: 120 }, (_, index) => ({
-  id: `room-${index}`,
-  name: `Room ${index + 1}`,
-  seats: 10 + index,
-}));
-
-const columns: ColumnDef<Room>[] = [
-  { accessorKey: "name", header: "Name" },
-  { accessorKey: "seats", header: "Seats" },
-];
-
-const labels: DataTableLabels = {
-  rowsPerPage: "Rows per page",
-  pageOf: (page, pageCount) => `Page ${page} of ${pageCount}`,
-  first: "First page",
-  previous: "Previous page",
-  next: "Next page",
-  last: "Last page",
-  total: (count) => `${count} rows`,
-};
+import {
+  baseColumns,
+  columnsWithActions,
+  paginationLabels,
+  type Room,
+  rooms,
+  textLabels,
+} from "./data-table-story-data";
 
 const meta = { title: "Components/DataTable", component: DataTable } satisfies Meta<
   typeof DataTable
@@ -34,39 +18,96 @@ const meta = { title: "Components/DataTable", component: DataTable } satisfies M
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function Demo() {
+const args = { columns: [], data: [], emptyText: "No rooms", textLabels };
+
+function PaginatedDemo() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 25 });
   const [selected, setSelected] = useState<string>();
   const start = pagination.pageIndex * pagination.pageSize;
   return (
     <DataTable
-      columns={columns}
+      columns={columnsWithActions}
       data={rooms.slice(start, start + pagination.pageSize)}
       pagination={{
         ...pagination,
         pageCount: Math.ceil(rooms.length / pagination.pageSize),
         totalCount: rooms.length,
         onPaginationChange: setPagination,
-        labels,
+        labels: paginationLabels,
       }}
       getRowId={(row) => row.id}
       selectedRowId={selected}
       onRowClick={(row) => setSelected(row.id)}
       emptyText="No rooms"
+      textLabels={textLabels}
     />
   );
 }
 
-export const Default: Story = {
-  args: {
-    columns: [],
-    data: [],
-    emptyText: "No rooms",
-  },
-  render: () => <Demo />,
+/** Server pagination, sortable and draggable columns, row actions and row click. */
+export const Default: Story = { args, render: () => <PaginatedDemo /> };
+
+/** Click a header to cycle ascending, descending, none. Names sort locale and number aware. */
+export const Sorting: Story = {
+  args,
+  render: () => (
+    <DataTable
+      columns={baseColumns}
+      data={rooms.slice(0, 12)}
+      emptyText="No rooms"
+      textLabels={textLabels}
+    />
+  ),
 };
 
-export const WithoutPagination: Story = {
-  args: { columns: [], data: [], emptyText: "No rooms" },
-  render: () => <DataTable columns={columns} data={rooms.slice(0, 5)} emptyText="No rooms" />,
+function ReorderDemo() {
+  const [order, setOrder] = useState<string[]>();
+  return (
+    <div className="flex flex-col gap-2">
+      <DataTable
+        columns={columnsWithActions}
+        data={rooms.slice(0, 6)}
+        columnOrder={order}
+        onColumnOrderChange={setOrder}
+        emptyText="No rooms"
+        textLabels={textLabels}
+      />
+      <p className="text-sm text-muted-foreground">Saved order: {order?.join(", ") ?? "default"}</p>
+    </div>
+  );
+}
+
+/** Drag the grip or use the keyboard (focus the grip, space, arrows). Actions stay far right. */
+export const DragReorder: Story = { args, render: () => <ReorderDemo /> };
+
+function SelectionDemo() {
+  const [message, setMessage] = useState("");
+  return (
+    <div className="flex flex-col gap-2">
+      <DataTable
+        columns={columnsWithActions}
+        data={rooms.slice(0, 10)}
+        getRowId={(row: Room) => row.id}
+        selectable
+        bulkActions={(rows) => (
+          <Button size="sm" onClick={() => setMessage(`Archived ${rows.length} rooms`)}>
+            Archive selected
+          </Button>
+        )}
+        emptyText="No rooms"
+        textLabels={textLabels}
+      />
+      <p className="text-sm text-muted-foreground">{message}</p>
+    </div>
+  );
+}
+
+/** Pinned checkbox column and a bulk action toolbar. */
+export const SelectionWithBulkActions: Story = { args, render: () => <SelectionDemo /> };
+
+export const Empty: Story = {
+  args,
+  render: () => (
+    <DataTable columns={baseColumns} data={[]} emptyText="No rooms" textLabels={textLabels} />
+  ),
 };

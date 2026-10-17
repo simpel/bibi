@@ -40,7 +40,7 @@ export async function BookingSeriesList({ locale, cursor }: BookingSeriesListPro
         <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />
       ) : (
         <>
-          <BookingSeriesTable series={page.items} data={data.value} />
+          <BookingSeriesTable series={page.items} customers={data.value.customers} />
           <CursorPagination
             pathname={ROUTES.bookingSeries}
             cursor={cursor}

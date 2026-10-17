@@ -29,6 +29,7 @@ import { setupRoutes } from "./features/setup/rest";
 import { sheetRoutes } from "./features/sheet/rest";
 import { sheetDefinitionRoutes } from "./features/sheet-definition/rest";
 import { skillRoutes } from "./features/skill/rest";
+import { userPreferenceRoutes } from "./features/user-preference/rest";
 import { venueRoutes } from "./features/venue/rest";
 import { vocabularyRoutes } from "./features/vocabulary/rest";
 import type { RestRoute } from "./rest-route";
@@ -70,6 +71,7 @@ export function listRestRoutes(): RestRoute[] {
     ...auditLogRoutes,
     ...apiKeyRoutes,
     ...oauthGrantRoutes,
+    ...userPreferenceRoutes,
     ...searchRoutes,
   ];
 }

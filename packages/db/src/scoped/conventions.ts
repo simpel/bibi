@@ -1,6 +1,7 @@
 /**
  * ADR 0006 conventions for org-scoped models and their listed exceptions. Global and platform
- * tables (`UNSCOPED_MODELS`) follow their owners (Better Auth, ADR 0015) and are exempt as a whole.
+ * tables (`UNSCOPED_MODELS`) follow their owners (Better Auth, ADR 0015) and are exempt as a whole;
+ * user-scoped tables (`USER_SCOPED_MODELS`, ADR 0039) are checked in `test/user-scope.test.ts`.
  * `packages/db/test/conventions.test.ts` checks every Prisma model against these lists.
  */
 

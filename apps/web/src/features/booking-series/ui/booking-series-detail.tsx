@@ -44,7 +44,11 @@ export async function BookingSeriesDetail({ locale, id }: BookingSeriesDetailPro
       />
       <SeriesFacts series={series.value} data={data.value} />
       <SeriesNotices series={series.value} />
-      <OccurrenceTable series={series.value} data={data.value} />
+      <OccurrenceTable
+        series={series.value}
+        statuses={data.value.statuses}
+        rooms={data.value.rooms}
+      />
     </div>
   );
 }

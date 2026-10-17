@@ -1,46 +1,62 @@
 "use client";
 
 import { Link } from "@okazi/i18n/navigation";
-import { Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
+import { Card, type ColumnDef } from "@okazi/ui";
 import { useTranslations } from "next-intl";
+import { useMemo } from "react";
+import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { entityTypeRoute } from "@/lib/configuration-routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
 export type EntityTypeTableViewProps = GenerativeProps<"entity-type-table">;
 
+type Row = EntityTypeTableViewProps["items"][number];
+
+function useEntityTypeColumns(): ColumnDef<Row>[] {
+  const t = useTranslations("assistant.ui.entityType");
+  return useMemo<ColumnDef<Row>[]>(
+    () => [
+      {
+        id: "name",
+        header: t("columns.name"),
+        accessorFn: (type) => type.name,
+        cell: ({ row }) => (
+          <Link
+            href={entityTypeRoute({ id: row.original.id })}
+            className="font-medium hover:underline"
+          >
+            {row.original.name}
+          </Link>
+        ),
+      },
+      { id: "base", header: t("columns.base"), accessorFn: (type) => t(`base.${type.base}`) },
+      {
+        id: "behaviours",
+        header: t("columns.behaviours"),
+        accessorFn: (type) =>
+          type.behaviours.map((behaviour) => t(`behaviour.${behaviour}`)).join(", ") || "–",
+      },
+      { id: "fields", header: t("columns.fields"), accessorFn: (type) => type.fields.length },
+    ],
+    [t],
+  );
+}
+
 /** A page of types; each name links to the type's settings page. */
 export function EntityTypeTableView({ items, nextCursor }: EntityTypeTableViewProps) {
   const t = useTranslations("assistant.ui.entityType");
+  const columns = useEntityTypeColumns();
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
   return (
     <Card data-slot="entity-type-table" className="overflow-hidden shadow-none">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t("columns.name")}</TableHead>
-            <TableHead>{t("columns.base")}</TableHead>
-            <TableHead>{t("columns.behaviours")}</TableHead>
-            <TableHead>{t("columns.fields")}</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {items.map((type) => (
-            <TableRow key={type.id}>
-              <TableCell className="font-medium">
-                <Link href={entityTypeRoute({ id: type.id })} className="hover:underline">
-                  {type.name}
-                </Link>
-              </TableCell>
-              <TableCell>{t(`base.${type.base}`)}</TableCell>
-              <TableCell>
-                {type.behaviours.map((behaviour) => t(`behaviour.${behaviour}`)).join(", ") || "–"}
-              </TableCell>
-              <TableCell>{type.fields.length}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <PersistedDataTable
+        tableId="assistant.entity-type"
+        columns={columns}
+        data={items}
+        getRowId={(type) => type.id}
+        emptyText={t("empty")}
+      />
       <MoreHint nextCursor={nextCursor} />
     </Card>
   );

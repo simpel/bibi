@@ -1,6 +1,7 @@
 import { flexRender, type Row } from "@tanstack/react-table";
 import { cn } from "../../lib/cn";
 import { TableCell, TableRow } from "../table/table";
+import { isPinnedColumn } from "./data-table-order";
 
 export type DataTableRowProps<TData> = {
   row: Row<TData>;
@@ -12,7 +13,7 @@ export function DataTableRow<TData>({ row, selected, onRowClick }: DataTableRowP
   const clickable = onRowClick !== undefined;
   return (
     <TableRow
-      data-state={selected ? "selected" : undefined}
+      data-state={selected || row.getIsSelected() ? "selected" : undefined}
       tabIndex={clickable ? 0 : undefined}
       className={cn(
         clickable && "cursor-pointer focus-visible:bg-muted focus-visible:outline-none",
@@ -27,7 +28,12 @@ export function DataTableRow<TData>({ row, selected, onRowClick }: DataTableRowP
       }}
     >
       {row.getVisibleCells().map((cell) => (
-        <TableCell key={cell.id}>
+        <TableCell
+          key={cell.id}
+          onClick={
+            isPinnedColumn({ id: cell.column.id }) ? (event) => event.stopPropagation() : undefined
+          }
+        >
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </TableCell>
       ))}

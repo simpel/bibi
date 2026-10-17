@@ -10,6 +10,7 @@ import { optionEntities } from "./parity-entities-option";
 import { paymentAccountEntity, paymentEntity } from "./parity-entities-payment";
 import { quoteEntity } from "./parity-entities-quote";
 import { sheet } from "./parity-entities-sheet";
+import { userPreferenceEntity } from "./parity-entities-user-preference";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
@@ -141,4 +142,5 @@ export const ENTITIES: ParityEntity[] = [
   paymentAccountEntity,
   paymentEntity(),
   ...integrationEntities(),
+  userPreferenceEntity,
 ];

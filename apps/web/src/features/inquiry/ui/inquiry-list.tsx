@@ -18,7 +18,7 @@ import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadInquiryData } from "../load-inquiry-data";
 import { CreateInquiryButton } from "./create-inquiry-button";
-import { InquiryTable } from "./inquiry-table";
+import { InquiryListTable } from "./inquiry-list-table";
 
 export type InquiryListProps = {
   locale: Locale;
@@ -63,7 +63,7 @@ export async function InquiryList({ locale, cursor, mine }: InquiryListProps) {
         />
       ) : (
         <>
-          <InquiryTable inquiries={page.items} data={data.value} />
+          <InquiryListTable inquiries={page.items} data={data.value} />
           <CursorPagination
             pathname={ROUTES.inquiries}
             cursor={cursor}

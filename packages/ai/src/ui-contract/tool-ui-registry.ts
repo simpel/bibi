@@ -122,4 +122,6 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   apiKey_revoke: "credentials are managed on /settings/integrations, not in chat",
   oauthGrant_list: "connected apps are managed on /profile, not in chat",
   oauthGrant_revoke: "connected apps are managed on /profile, not in chat",
+  userPreference_list: "UI preference bookkeeping (e.g. table column order), not a tool card",
+  userPreference_set: "UI preference bookkeeping (e.g. table column order), not a tool card",
 };

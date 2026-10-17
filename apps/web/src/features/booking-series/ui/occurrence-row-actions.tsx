@@ -2,41 +2,39 @@
 
 import type { SeriesOccurrenceDto } from "@okazi/core";
 import {
-  Button,
+  DataTableRowActions,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DropdownMenuItem,
 } from "@okazi/ui";
-import { PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { NamedOption } from "@/components/form/named-option";
 import { OccurrenceForm } from "./occurrence-form";
 
-export type EditOccurrenceButtonProps = {
+export type OccurrenceRowActionsProps = {
   seriesId: string;
   occurrence: SeriesOccurrenceDto;
   total: number;
   rooms: readonly NamedOption[];
 };
 
-/** Opens the dialog that changes this occurrence, or it and the following ones. */
-export function EditOccurrenceButton({ total, ...props }: EditOccurrenceButtonProps) {
+/** The row menu of an occurrence; "Change" opens the dialog for this and the following ones. */
+export function OccurrenceRowActions({ total, ...props }: OccurrenceRowActionsProps) {
   const t = useTranslations("bookingSeries");
+  const common = useTranslations("common");
   const [open, setOpen] = useState(false);
   const index = props.occurrence.occurrenceIndex;
   return (
     <>
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={t("editOccurrenceLabel", { index, total })}
-        onClick={() => setOpen(true)}
-      >
-        <PencilIcon />
-      </Button>
+      <DataTableRowActions label={common("actions")}>
+        <DropdownMenuItem onSelect={() => setOpen(true)}>
+          {t("editOccurrence", { index, total })}
+        </DropdownMenuItem>
+      </DataTableRowActions>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
