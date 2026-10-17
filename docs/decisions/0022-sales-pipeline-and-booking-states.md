@@ -59,3 +59,9 @@
 - The state machines are tested as tables: every allowed and every disallowed transition. The booking phase rules are tested separately, so that a custom transition can never bypass them.
 - Reports and filters that should work in all organizations group by phase, not by status.
 - AI can propose transitions but not perform them without approval (ADR 0007).
+
+## Addendum 2026-10-17 – owners become assignments (ADR 0034)
+- The owner fields `Inquiry.salesOwnerId`, `Booking.salesOwnerId`, `Booking.coordinatorId` and `ProgramItem.responsibleId` are replaced by assignments: one main assignee plus followers per inquiry and booking, and one assignment per responsibility on a booking.
+- "Requires a coordinator" in `CONFIRMED` (and `COMPLETED`) becomes "requires the booking's main assignee". "`salesOwnerId` required from `QUALIFIED`" becomes "requires the inquiry's main assignee".
+- `Quote` uses the inquiry's assignment. `quote.accept` copies the inquiry's main assignee and followers to the new booking.
+- `*.assign` commands are replaced by `assignment.assign|follow|unfollow`.

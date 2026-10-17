@@ -1,7 +1,7 @@
 # 0020 – Custom roles per organization
 
 - **Date:** 2026-10-14
-- **Status:** Accepted
+- **Status:** Superseded by 0034
 
 ## Context
 - Today there are four fixed levels: `viewer < member < admin < owner` (`packages/auth/src/permissions.ts`). Core translates them to `read|write|admin` on all resources (`packages/core/src/operations/permission.ts`).

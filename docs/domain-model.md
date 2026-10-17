@@ -4,7 +4,7 @@ Entities for a booking system for conferences + food & drink. Phasing: **MVP**, 
 
 Interactive view: [artifacts/domain-model.html](artifacts/domain-model.html).
 
-The model is configurable (see [ADR 0021](decisions/0021-configurable-items.md)). The code contains no domain words such as dish, allergen, room or kitchen order. Each organization sets up its own types, fields, vocabularies, setups, statuses, sheets and roles. The code only owns generic behaviors and fixed phases. See the Configuration section.
+The model is configurable (see [ADR 0021](decisions/0021-configurable-items.md)). The code contains no domain words such as dish, allergen, room or kitchen order. Each organization sets up its own types, fields, vocabularies, setups, statuses, sheets and responsibilities. The code only owns generic behaviors and fixed phases. See the Configuration section.
 
 ## Core flow
 
@@ -37,7 +37,13 @@ erDiagram
   Booking ||--o{ Deposit : "requires"
   Booking ||--o{ Invoice : "is invoiced via"
   Booking ||--o{ Sheet : "produces"
-  User ||--o{ Booking : "coordinates / sells"
+  Booking ||--o{ Assignment : "is assigned via"
+  Inquiry ||--o{ Assignment : "is assigned via"
+  Item ||--o{ Assignment : "is assigned via"
+  Responsibility ||--o{ Assignment : "scopes"
+  Assignment ||--o{ AssignmentFollower : "has"
+  User ||--o{ Assignment : "answers for"
+  User ||--o{ AssignmentFollower : "follows"
   Customer ||--o{ Booking : "orders"
   Customer ||--o{ Item : "owns packages"
   Booking ||--o{ InboundEmail : "receives replies as"
@@ -61,10 +67,9 @@ erDiagram
   Item }o--o{ VocabularyValue : "is tagged with"
   OrderLine }o--|| Item : "refers to"
   SheetDefinition ||--o{ Sheet : "produces version"
-  SheetDefinition }o--|| organizationRole : "goes to"
-  User }o--|| organizationRole : "has"
+  SheetDefinition }o--|| Responsibility : "goes to"
+  Responsibility }o--o{ EntityType : "covers"
   User ||--o{ Invitation : "invites"
-  Invitation }o--o{ organizationRole : "gives"
   Deposit ||--o{ Payment : "is paid with"
   Invoice ||--o{ Payment : "is settled with"
   Invoice ||--o{ OrderLine : "invoices"
@@ -75,7 +80,7 @@ erDiagram
 
 *MVP* · What the organization sets up itself. Everything is data per organization and is created through regular operations ([ADR 0021](decisions/0021-configurable-items.md)).
 
-A new organization starts empty. Nothing is preinstalled, except the `owner` role and one booking status per phase so that bookings work right away. Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with behaviours and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
+A new organization starts with the fixed access roles (`viewer`, `member`, `admin`, `owner`; [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)) and no responsibilities. Nothing else is preinstalled, except one booking status per phase so that bookings work right away. Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with behaviours and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
 
 ### EntityType (`EntityType`)
 
@@ -163,15 +168,15 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - name (unique)
 - item types (`entityTypeIds`, types of base `ITEM`) and fields of those types (`fieldIds`) that are included
 - vocabularies whose requirements are included (`vocabularyIds`)
-- receiving role (`roleId`, an organizationRole id or `owner`)
+- receiving responsibility (`responsibilityId`)
 - status (active / archived)
 
 **Relations**
-- `N:1` goes to → organizationRole
+- `N:1` goes to → Responsibility
 - `N:M` includes → EntityType, FieldDefinition, Vocabulary
 - `1:N` produces → Sheet
 
-> Operations: `sheetDefinition.*` under the resource `configuration`. Core checks that every id is an active row of the organization (`VALIDATION`). Archiving a type, field, vocabulary or role that an active sheet definition uses is refused with `CONFLICT` (ADR 0026).
+> Operations: `sheetDefinition.*` under the resource `configuration`. Core checks that every id is an active row of the organization (`VALIDATION`). Archiving a type, field, vocabulary or responsibility that an active sheet definition uses is refused with `CONFLICT` (ADR 0026, ADR 0034).
 
 ### BookingStatus (`BookingStatus`) with phase and transitions
 
@@ -191,27 +196,49 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 | Phase | System rules |
 |---|---|
 | `TENTATIVE` | Bookable items are occupied. Sheets cannot be sent. |
-| `CONFIRMED` | Requires a coordinator. Sheets and deposits can be sent. |
-| `COMPLETED` | Allowed only after the booking ends. The booking can be invoiced. |
+| `CONFIRMED` | Requires the booking's main assignee. Sheets and deposits can be sent. |
+| `COMPLETED` | Requires the main assignee. Allowed only after the booking ends. The booking can be invoiced. |
 | `CANCELLED` | Requires a reason. The occupancy is released and the cancellation terms apply. |
 
 > The organization defines the allowed transitions. The phase rules cannot be turned off. Reports group by phase, not by status.
 
 > Operations (`bookingStatus:admin` to change, `bookingStatus:read` to read): `bookingStatus.list|get|create|update|archive|reorder`, `bookingStatus.setTransitions` (replaces the targets of one status as a set) and `bookingStatus.importTemplate` (`default`: one status per phase; `conference-venue`: Tentative, Confirmed, Final count locked, Completed, Cancelled with every transition forward and to Cancelled until completed; existing names are skipped). Every new organization gets the `default` template from `provisionOrganization` as SYSTEM, run by Better Auth's `afterCreateOrganization` hook and by the demo seed.
 
-### Role (`organizationRole`)
+### Responsibility (`Responsibility`)
 
-*MVP* · A named set of permissions per organization ([ADR 0020](decisions/0020-custom-roles-per-organization.md)). Resources: `venue`, `item`, `customer`, `contact`, `priceList`, `occupancy`, `configuration`, `bookingStatus`, `booking`, `programItem`, `requirement`, `sheet`, `inquiry`, `search`, `conversation`, `skill`, `role`, `member`, `audit`, `payment`.
+*MVP* · Decided in [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md), not built yet. What someone answers for, e.g. "Head of kitchen" or "Head of exhibits". Organization data managed by admins. It carries no permissions: access comes from the fixed member roles (see User).
 
 **Attributes**
-- name
-- permissions (`<resource>:read|write|admin`, a higher action includes the lower)
-- system (`owner` is fixed and cannot be changed or deleted)
-- status (active / archived; can only be archived when no member or pending invitation has the role)
+- name (unique among the organization's active responsibilities)
+- covered item entity types (the item types it covers, e.g. "Food & drink")
+- default assignee (a member)
+- default followers (members, optional)
+- status (active / archived; archiving is refused with `CONFLICT` while an active sheet definition uses it)
 
 **Relations**
-- `1:N` User has this
+- `N:M` covers → EntityType
+- `1:N` scopes → Assignment
 - `1:N` SheetDefinition goes to this
+
+> Operations: `responsibility.list|get|create|update|archive` under the resource `configuration` (`admin` to change). The "Conference venue" template ships responsibilities (e.g. Sales, Coordinator, Head of kitchen) as optional data.
+
+### Assignment (`Assignment`)
+
+*MVP* · Decided in [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md), not built yet. Says who answers for a subject. Replaces `salesOwnerId`, `coordinatorId` and `responsibleId` ([ADR 0022](decisions/0022-sales-pipeline-and-booking-states.md) addendum).
+
+**Attributes**
+- subject (`subjectType` `INQUIRY` / `BOOKING` / `ITEM` and `subjectId`, the same pattern as `Occupancy.sourceType` / `sourceId`; core checks that the subject belongs to the organization)
+- responsibility (`responsibilityId`, optional; none = the subject's main assignment)
+- assignee (`assigneeId`, one member)
+- followers (`AssignmentFollower`, any number of members; need-to-know: they see the subject under "Following" and are included where the assignee is, e.g. sheets)
+
+**Relations**
+- `N:1` Inquiry, Booking or Item is answered for by this
+- `N:0..1` is scoped by → Responsibility
+- `N:1` User is the assignee
+- `1:N` has → AssignmentFollower
+
+> Unique on (subject, responsibility). A booking gets one assignment per responsibility derived from its lines' item entity types, with the default assignee and followers; an existing assignment is never overwritten, and it is archived when no line of the covered types remains. Operations, all audited and on every surface: `assignment.assign`, `assignment.follow`, `assignment.unfollow`, `assignment.list` and `assignment.listMine`. Assignee and followers must be members (`VALIDATION`).
 
 ## Sales & customer
 
@@ -265,7 +292,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - budget (`budgetMinor`, minor units)
 - status (`inquiryStatus`): `NEW → QUALIFIED → QUOTED → WON`, or `LOST` from any open status; `WON` and `LOST` are final
 - loss reason (`lossReason`, required for `LOST`)
-- responsible salesperson (`salesOwnerId`, a member, required from `QUALIFIED`)
+- main assignment (assignee and followers, see Assignment; an assignee is required from `QUALIFIED`)
 - statusChangedAt
 - channel (form, email, phone, Venuu) – *later*
 
@@ -276,10 +303,11 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `1:N` can create → Option
 - `1:N` InboundEmail is a reply on this
 - `0..1:N` Communication & log concerns this
+- `1:N` is answered for by → Assignment
 
 > ★ Pipeline with loss reason is missing at Lega. Status changes only through commands (`inquiry.qualify`, `inquiry.markLost`, later `quote.send` and `quote.accept`), never through `update`. The transition table lives in `features/inquiry/transitions.ts`; a disallowed move is `CONFLICT`.
 
-> Operations (`inquiry:write` to change, `inquiry:read` to read): `inquiry.list|get|create|update`, `inquiry.qualify` (needs a salesperson, given or already set), `inquiry.markLost` (needs a reason) and `inquiry.assign` (removing the salesperson is `CONFLICT` from `QUALIFIED`). Status history comes from `AuditLog`.
+> Operations (`inquiry:write` to change, `inquiry:read` to read): `inquiry.list|get|create|update`, `inquiry.qualify` (needs a main assignee, given or already set) and `inquiry.markLost` (needs a reason). The assignee is changed with `assignment.assign` and cannot be removed from `QUALIFIED` on (`CONFLICT`). Status history comes from `AuditLog`.
 
 ### Option ★
 
@@ -310,7 +338,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - lines (copies of order lines)
 - total excl. and incl. VAT
 - terms text
-- salesperson (inherited from the inquiry)
+- assignment (the inquiry's; the quote has none of its own)
 - acceptedBy, acceptedAt, acceptanceMethod (`MANUAL` now, later `BANKID` and `LINK`)
 
 **Relations**
@@ -347,8 +375,8 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - start – end
 - estimated headcount
 - guaranteed headcount (locked X days before)
-- salesperson (`salesOwnerId`, the user id of a member)
-- coordinator (`coordinatorId`, the user id of a member, required from the `CONFIRMED` phase)
+- main assignment (assignee and followers, copied from the inquiry on `quote.accept`; a quick booking gets the creating member; the assignee is required from the `CONFIRMED` phase)
+- responsibility assignments (one per responsibility derived from the item entity types of the booking's lines, see Assignment)
 - cancellation terms (not built yet)
 - seriesId and occurrenceIndex (if the booking belongs to a series)
 - clash (set when the series could not occupy its items for this occurrence; the user picks another item or time)
@@ -366,11 +394,11 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `1:N` requires → Deposit
 - `1:N` is invoiced via → Invoice
 - `1:N` produces → Sheet
-- `N:1` User coordinates and sells this
+- `1:N` is answered for by → Assignment
 - `N:1` Customer (organization) orders this
 - `0..1:N` Communication & log concerns this
 
-> Operations (resource `booking`): `booking.list|get|create|update`, `booking.assign` and `booking.changeStatus`. `create` gives the next reference number and the organization's default `TENTATIVE` status; the customer must be active. `update` changes customer, time, headcount and own fields, never type, status or owners. `booking.assign` changes the salesperson and/or coordinator: both must be members (`VALIDATION`), and the coordinator cannot be removed from the `CONFIRMED` phase on (`CONFLICT`). `booking.changeStatus({ bookingId, statusId, reason? })` follows only the organization's transitions (`CONFLICT` otherwise), and the phase rules apply to every transition: `CONFIRMED` and `COMPLETED` need a coordinator and `COMPLETED` an ended booking (`CONFLICT`), `CANCELLED` needs a reason (`VALIDATION`), archives the booking's occupancy (`sourceType` `booking`) and runs the cancellation-terms hook. Every change is audited.
+> Operations (resource `booking`): `booking.list|get|create|update` and `booking.changeStatus`. `create` gives the next reference number and the organization's default `TENTATIVE` status; the customer must be active. `update` changes customer, time, headcount and own fields, never type, status or assignments. Assignees and followers are set with `assignment.assign|follow|unfollow` ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)): they must be members (`VALIDATION`), and the main assignee cannot be removed from the `CONFIRMED` phase on (`CONFLICT`). `booking.changeStatus({ bookingId, statusId, reason? })` follows only the organization's transitions (`CONFLICT` otherwise), and the phase rules apply to every transition: `CONFIRMED` and `COMPLETED` need the main assignee and `COMPLETED` an ended booking (`CONFLICT`), `CANCELLED` needs a reason (`VALIDATION`), archives the booking's occupancy (`sourceType` `booking`) and runs the cancellation-terms hook. Every change is audited.
 
 > Status changes only with `booking.changeStatus`. A quick booking is created by staff in a `TENTATIVE` status. The customer pays through a Swish or card link (the booking is then confirmed when the payment completes) or against invoice. `booking.export` gives the booking as json, pdf or csv ([ADR 0024](decisions/0024-booking-export-instead-of-partner.md)).
 
@@ -381,7 +409,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 **Attributes**
 - booking type (base `BOOKING`, every occurrence gets it)
 - customer
-- template (bookable items, setup, estimated headcount, owners and own field values)
+- template (bookable items, setup, estimated headcount, assignees and own field values)
 - rule (subset of RFC 5545 RRULE: `FREQ`, `INTERVAL`, `BYDAY`, `BYMONTHDAY`, `COUNT` or `UNTIL`)
 - first start, length in minutes and time zone (every occurrence keeps the wall time)
 - truncated (the rule continues past the generated horizon)
@@ -408,7 +436,6 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - bookable item (`itemId`, optional; an item whose type is `BOOKABLE`, e.g. a venue space)
 - setup (`setupId`, optional; one of the item's setups, requires the item)
 - quantity (`quantity`, e.g. the headcount)
-- responsible (`responsibleId`, optional; the user id of a member)
 - internal note
 
 **Relations**
@@ -421,7 +448,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - `1:N` requires → Task
 - `1:N` AccessCode opens for this
 
-> Operations (resource `programItem`): `programItem.list|get|create|update|archive` and `programItem.assign` ([ADR 0022](decisions/0022-sales-pipeline-and-booking-states.md)). With a bookable item the program item holds a `BOOKING` occupancy for its period, and with a setup also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = programItem`). An overlap is refused (`CONFLICT`) and nothing is saved. `update` moves the occupancy when item, setup or time change; `archive` releases it. `programItem.assign` sets, changes or removes the responsible person, who must be a member (`VALIDATION`). Every change is audited.
+> Operations (resource `programItem`): `programItem.list|get|create|update|archive`. Who answers for a program item comes from the booking's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the program item holds a `BOOKING` occupancy for its period, and with a setup also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = programItem`). An overlap is refused (`CONFLICT`) and nothing is saved. `update` moves the occupancy when item, setup or time change; `archive` releases it. Every change is audited.
 
 ### Requirement ★ (`Requirement`)
 
@@ -565,7 +592,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 ### Sheet ★ (`Sheet`)
 
-*MVP* · A compilation for a role, e.g. kitchen order, brewing order or guide brief. Created from a sheet definition. Replaces Kitchen order.
+*MVP* · A compilation for a responsibility, e.g. kitchen order, brewing order or guide brief. Created from a sheet definition. Replaces Kitchen order.
 
 **Attributes**
 - booking
@@ -573,7 +600,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 - version (1, 2, 3, … per booking and sheet definition)
 - content: a snapshot of the booking's rows (`BOOKING`, `ITEM`, `REQUIREMENT`) as the definition includes them: the booking itself, the program items that use an item of an included type with the included fields, and the counts of the included lists (never names)
 - changes (★): the rows added, changed or removed since the last sent version (`baseVersion`)
-- receiving role (a copy of the definition's role at generation)
+- receiving responsibility (a copy of the definition's responsibility at generation; the sheet goes to that responsibility's assignee and followers on the booking)
 - sent (`sentAt`, `sentBy`)
 - matches: the counts that hit the booking's items (program items whose item is of an included type): the count, the list value, the program item, the carrying items and `CONTAINS` (carried by the item or a mandatory part) or `MAY_CONTAIN` (only optional parts or choice options)
 - blocked (yes/no): true when a match is `CONTAINS`
@@ -590,7 +617,7 @@ A new organization starts empty. Nothing is preinstalled, except the `owner` rol
 
 ### PriceList
 
-*MVP* · Customer prices ([ADR 0023](decisions/0023-recurring-bookings-and-customer-pricing.md)). Built: `priceList.list/get/create/update/setItems/archive` (resource `priceList`; the "Conference venue" role template gives Finance `admin` and Sales `read`).
+*MVP* · Customer prices ([ADR 0023](decisions/0023-recurring-bookings-and-customer-pricing.md)). Built: `priceList.list/get/create/update/setItems/archive` (resource `priceList`; admins manage price lists, members read).
 
 **Attributes**
 - name
@@ -676,7 +703,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` Deposit is paid with this (not built yet)
 - `N:1` Invoice is settled with this (not built yet)
 
-> Operations: `payment.list` (per booking, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ bookingId, method, amountMinor, currency?, description? })` (`payment:write`), on every surface (GraphQL also as `Booking.payments`; web on the booking page). `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), a booking that is not cancelled, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` and the booking moves from its tentative phase to the default `CONFIRMED` status through `booking.changeStatus` (a refusal, e.g. no coordinator, is logged `payment.webhook.confirm_failed` and never undoes the payment), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, booking reference, amount, status, pay link); an unknown or malformed token is `NOT_FOUND`.
+> Operations: `payment.list` (per booking, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ bookingId, method, amountMinor, currency?, description? })` (`payment:write`), on every surface (GraphQL also as `Booking.payments`; web on the booking page). `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), a booking that is not cancelled, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` and the booking moves from its tentative phase to the default `CONFIRMED` status through `booking.changeStatus` (a refusal, e.g. no main assignee, is logged `payment.webhook.confirm_failed` and never undoes the payment), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, booking reference, amount, status, pay link); an unknown or malformed token is `NOT_FOUND`.
 
 > ★ Swish and card directly in the booking. Lega shows no online payment.
 
@@ -702,37 +729,43 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### User
 
-*MVP* · A member of the organization. The roles are the organization's own (ADR 0020).
+*MVP* · A member of the organization. Access comes from one of the fixed roles ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)).
 
 **Attributes**
 - name
-- roles (from the organization's roles)
+- role (one of `viewer < member < admin < owner`, see the table below)
 - venues
 - platform role (`user` / `admin`): Okazi's own staff only, gives `/admin` ([ADR 0015](decisions/0015-platform-admin.md))
 
 **Relations**
-- `N:1` has → Role
-- `1:N` coordinates and sells → Booking
+- `1:N` is assignee of → Assignment
+- `1:N` follows → Assignment (`AssignmentFollower`)
 - `1:N` is responsible for → Task
 
-> Core does not look up roles. `packages/auth` resolves the member's roles to permissions once per call. API keys are issued with a role name (never `owner`) and never get more than the member's own permissions. No one can give a role more than they have themselves.
+| Role | Can |
+|---|---|
+| `viewer` | read everything |
+| `member` | read everything, write operational data (customers, inquiries, quotes, bookings, program items, requirements, payments, sheets) |
+| `admin` | everything a member can, plus configuration (types, fields, lists, setups, statuses, responsibilities, sheet definitions, price lists), members and API keys |
+| `owner` | everything, incl. other owners and the organization itself |
+
+> Core does not look up roles. `packages/auth` resolves the member's role to permissions once per call with a constant role → permission map (`<resource>:read|write|admin`); there is no role table. `member.assignRole` takes one of the fixed roles. API keys are issued with a fixed role, never `owner`, and never above the member's own.
 
 > Members join only by invitation and leave with `member.remove`. The organization always keeps an owner: the last owner cannot be removed, and only an owner removes another owner.
 
 ### Invitation
 
-*MVP* · An emailed invitation to join the organization as staff (ADR 0004). Created with `member.invite`, revoked with `member.cancelInvitation`; the invitee accepts through the link (Better Auth) and becomes a member with the invited roles.
+*MVP* · An emailed invitation to join the organization as staff (ADR 0004). Created with `member.invite`, revoked with `member.cancelInvitation`; the invitee accepts through the link (Better Auth) and becomes a member with the invited role.
 
 **Attributes**
 - email
-- roles (from the organization's roles, never `owner`)
+- role (one of the fixed roles, never `owner`)
 - status (pending / accepted / rejected / canceled)
 - inviter
 - expires (48 hours after it was sent)
 
 **Relations**
 - `N:1` is sent by → User
-- `N:M` gives → Role
 
 > No one can invite with more access than they have themselves. An email that is already a member or has a pending invitation cannot be invited again.
 
@@ -895,7 +928,9 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | Sign | Skylt |
 | AccessCode | Passerkod |
 | Task | Uppgift |
-| organizationRole | Roll |
+| Responsibility | Ansvar |
+| Assignment | Tilldelning |
+| AssignmentFollower | Följare |
 | Invoice | Faktura |
 | Deposit | Förskott |
 | Payment | Betalning |

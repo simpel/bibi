@@ -8,8 +8,8 @@
 ## Differentiators (drive prioritisation)
 - Quick booking for smaller meetings: staff book directly without an inquiry and quote, and the customer pays via a Swish or card link or by invoice. Okazi is an internal tool for staff. Guests and customers never use the app; they only see the payment page.
 - Needs as counts against the organization's own lists (e.g. the EU's 14 allergens as an importable template), matched against items and compiled into sheets. No personal data about guests.
-- Versioned sheets (e.g. kitchen order) sent to a role, plus export (json, pdf, csv) for handover outside the system.
-- Configurable domain: each organization sets up its own types, fields, lists, statuses and roles (ADR 0020, 0021).
+- Versioned sheets (e.g. kitchen order) sent to a responsibility (e.g. head of kitchen), plus export (json, pdf, csv) for handover outside the system.
+- Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses fixed roles: owner, admin, member, viewer.
 - Options with a queue (1st/2nd option) and automatic expiry.
 - Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Fortnox, Visma and Peppol deferred, ADR 0028 and 0029).
 - Okazi's own prices are published and venues can sign up without talking to sales.
@@ -55,7 +55,7 @@
   - Searchable entities implement `Embeddable`.
   - Reusable AI behaviour lives as skills (System / Organization / Personal), not as ad hoc prompts.
   - See `docs/decisions/0007-ai-first-ux.md` and `docs/decisions/0008-semantic-search-and-skills.md`.
-- **Configurable domain.** No domain words in code. The organization defines types, fields, lists, booking statuses and roles as data. Code owns only generic behaviours (`PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS`) and fixed phases. Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
+- **Configurable domain.** No domain words in code. The organization defines types, fields, lists, booking statuses and responsibilities as data. Every inquiry, booking and item has one assignee plus followers (ADR 0034). Code owns only generic behaviours (`PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS`) and fixed phases. Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
 - **Multi-tenant.** Everything is scoped by `organizationId`. Every mutation is logged in `AuditLog`. See `docs/decisions/0004-multi-tenancy.md` and `docs/decisions/0006-database-conventions.md`.
 - **Everything is logged.** Core `execute` writes one system log row per operation (succeeded, rejected or failed). Every entry point opens a request context with `requestId` and `surface`, which also end up on `AuditLog`. See `docs/decisions/0014-system-logging.md`.
 
