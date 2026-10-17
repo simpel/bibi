@@ -8,6 +8,7 @@ import { defaultActiveOrganization } from "./default-active-organization";
 import { sendPasswordResetMail } from "./mail";
 import { adminPlugin, DISABLED_ADMIN_PATHS } from "./plugins/admin";
 import { apiKeyPlugin } from "./plugins/api-key";
+import { devSwitchUserPlugin } from "./plugins/dev-switch-user";
 import { emailLoginPlugins } from "./plugins/email-login";
 import { mcpPlugins } from "./plugins/mcp";
 import { organizationPlugin } from "./plugins/organization";
@@ -60,6 +61,7 @@ export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
       adminPlugin(),
       organizationPlugin(),
       apiKeyPlugin(),
+      devSwitchUserPlugin(),
       ...emailLoginPlugins(),
       ...mcpPlugins(),
       nextCookies(),

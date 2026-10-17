@@ -1476,6 +1476,13 @@
     "approvalExpired": "The proposal has expired or cannot be approved. Ask the assistant to propose it again.",
     "unavailable": "This feature is not available right now. An administrator needs to configure it."
   },
+  "dev": {
+    "services": "Services",
+    "devUsers": "Dev users",
+    "switchUser": "Switch dev user",
+    "switching": "Switching user…",
+    "switched": "Signed in as {name}."
+  },
   "shell": {
     "mainNavigation": "Main navigation",
     "userMenu": "User menu",
