@@ -4,10 +4,8 @@ import { signUpWithOrganization } from "./steps";
 
 test("create a personal skill, export it and import it back", async ({ page }) => {
   await signUpWithOrganization({ page, name: "Skills AB" });
-  await page
-    .getByRole("navigation", { name: "Huvudnavigering" })
-    .getByRole("link", { name: "Färdigheter" })
-    .click();
+  await page.getByRole("button", { name: "Användarmeny" }).click();
+  await page.getByRole("menuitem", { name: "Mina färdigheter" }).click();
   await expect(page).toHaveURL(/\/sv\/skills$/);
   await expect(page.getByRole("heading", { name: "Färdigheter", level: 1 })).toBeVisible();
 

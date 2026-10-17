@@ -132,7 +132,16 @@
     "members": "Medlemmar",
     "payments": "Betalningar",
     "bookingStatuses": "Bokningsstatusar",
-    "priceLists": "Prislistor"
+    "priceLists": "Prislistor",
+    "assistant": "Assistent",
+    "newChat": "Ny chatt",
+    "recent": "Senaste",
+    "platformAdmin": "Plattformsadmin",
+    "groups": {
+      "work": "Arbete",
+      "catalog": "Katalog",
+      "admin": "Administration"
+    }
   },
   "venue": {
     "singular": "Anläggning",
@@ -1479,7 +1488,25 @@
     "languageEn": "English",
     "themeLight": "Ljust",
     "themeDark": "Mörkt",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "adminNavigation": "Administration",
+    "mySkills": "Mina färdigheter"
+  },
+  "settingsHub": {
+    "title": "Inställningar",
+    "description": "Hur er organisation är uppsatt. Ändringar här påverkar alla.",
+    "items": {
+      "types": "Vilka sorters artiklar ni erbjuder och vilka fält de har.",
+      "lists": "Era egna värdelistor, till exempel allergener eller utrustning.",
+      "setups": "Möblering som teater, klassrum eller styrelserum.",
+      "sheets": "Bladdefinitioner, till exempel köksbeställningen, och vem som får dem.",
+      "priceLists": "Priser per kundgrupp eller säsong.",
+      "bookingStatuses": "De statusar en bokning går igenom.",
+      "members": "Vem som har åtkomst och med vilken roll.",
+      "roles": "Vad varje roll får läsa och ändra.",
+      "payments": "Stripe-konto för kortbetalningar och fakturor.",
+      "skills": "Återanvändbara instruktioner för assistenten."
+    }
   },
   "commandBar": {
     "title": "Kommandofält",

@@ -1,8 +1,7 @@
 "use client";
 
-import { useRouter } from "@okazi/i18n/navigation";
+import { Link, useRouter } from "@okazi/i18n/navigation";
 import {
-  Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -10,19 +9,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@okazi/ui";
-import { LogOutIcon } from "lucide-react";
+import { BookOpenIcon, LogOutIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
 import { ROUTES } from "@/lib/routes";
-import { AdminMenuItem } from "./admin-menu-item";
+import { LocaleMenu } from "./locale-menu";
+import { OrgMenu } from "./org-menu";
+import type { ShellUser } from "./shell-types";
+import { ThemeMenu } from "./theme-menu";
+import { UserMenuTrigger } from "./user-menu-trigger";
 
-export type UserMenuProps = { name: string; email: string; platformAdmin: boolean };
+export type UserMenuProps = { user: ShellUser; organizationId: string };
 
-export function UserMenu({ name, email, platformAdmin }: UserMenuProps) {
+/** Bottom-left account menu: organization, theme, language, my skills, sign out (ADR 0036). */
+export function UserMenu({ user, organizationId }: UserMenuProps) {
   const t = useTranslations("shell");
   const auth = useTranslations("auth");
   const router = useRouter();
-  const initials = (name || email).slice(0, 2).toUpperCase();
   const signOut = async () => {
     await authClient.signOut();
     router.replace(ROUTES.login);
@@ -31,19 +34,24 @@ export function UserMenu({ name, email, platformAdmin }: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="secondary" size="icon" className="rounded-full" aria-label={t("userMenu")}>
-          <span aria-hidden="true" className="text-xs font-semibold">
-            {initials}
-          </span>
-        </Button>
+        <UserMenuTrigger user={user} organizationId={organizationId} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-60">
+      <DropdownMenuContent side="top" align="start" className="w-60">
         <DropdownMenuLabel className="grid gap-0.5 font-normal">
           <span className="text-xs text-muted-foreground">{t("signedInAs")}</span>
-          <span className="truncate text-sm font-medium">{email}</span>
+          <span className="truncate text-sm font-medium">{user.email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        {platformAdmin ? <AdminMenuItem /> : null}
+        <OrgMenu organizationId={organizationId} />
+        <ThemeMenu />
+        <LocaleMenu />
+        <DropdownMenuItem asChild>
+          <Link href={ROUTES.skills}>
+            <BookOpenIcon />
+            {t("mySkills")}
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={signOut}>
           <LogOutIcon />
           {auth("signOut")}

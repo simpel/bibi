@@ -15,6 +15,6 @@ export async function afterOrganization({ router }: AfterOrganizationInput): Pro
     await authClient.oauth2.continue({ postLogin: true });
     return;
   }
-  router.replace(ROUTES.venues);
+  router.replace(ROUTES.home);
   router.refresh();
 }

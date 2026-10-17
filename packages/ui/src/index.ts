@@ -60,6 +60,7 @@ export {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./components/dropdown-menu/dropdown-menu";
+export * from "./components/dropdown-menu/dropdown-menu-sub";
 export * from "./components/field-controls/boolean-control";
 export * from "./components/field-controls/choice-control";
 export * from "./components/field-controls/control-props";

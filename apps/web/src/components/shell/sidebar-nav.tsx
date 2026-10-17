@@ -1,33 +1,57 @@
 "use client";
 
-import { Link, usePathname } from "@okazi/i18n/navigation";
-import { cn } from "@okazi/ui";
+import { usePathname } from "@okazi/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { NAV_ITEMS } from "./nav-items";
+import { NAV_GROUPS, type NavAudience, type NavGroupId } from "./nav-items";
+import type { ShellAccess } from "./shell-types";
+import { isActive, SidebarLink } from "./sidebar-link";
 
-export function SidebarNav() {
+export type SidebarNavProps = {
+  groups: readonly NavGroupId[];
+  label: "mainNavigation" | "adminNavigation";
+  access: ShellAccess;
+  /** Show each group's heading (the main zone); the admin zone has none. */
+  headings: boolean;
+};
+
+const VISIBLE: Record<NavAudience, (access: ShellAccess) => boolean> = {
+  everyone: () => true,
+  configure: (access) => access.canConfigure,
+  platformAdmin: (access) => access.platformAdmin,
+};
+
+/** One sidebar zone: its groups, filtered by what the member may see (ADR 0036). */
+export function SidebarNav({ groups, label, access, headings }: SidebarNavProps) {
   const t = useTranslations("nav");
-  const label = useTranslations("shell");
+  const shell = useTranslations("shell");
   const pathname = usePathname();
+  const visible = groups
+    .map((group) => ({
+      group,
+      items: NAV_GROUPS[group].filter((i) => VISIBLE[i.audience](access)),
+    }))
+    .filter(({ items }) => items.length > 0);
+  if (visible.length === 0) return null;
   return (
-    <nav aria-label={label("mainNavigation")} className="grid gap-1">
-      {NAV_ITEMS.map(({ href, labelKey, icon: Icon }) => {
-        const active = pathname === href || pathname.startsWith(`${href}/`);
-        return (
-          <Link
-            key={href}
-            href={href}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-              active && "bg-accent text-accent-foreground",
-            )}
-          >
-            <Icon className="size-4" />
-            {t(labelKey)}
-          </Link>
-        );
-      })}
+    <nav aria-label={shell(label)} className="grid gap-4">
+      {visible.map(({ group, items }) => (
+        <div key={group} className="grid gap-1">
+          {headings ? (
+            <span className="px-3 text-xs font-medium text-muted-foreground">
+              {t(`groups.${group}`)}
+            </span>
+          ) : null}
+          {items.map(({ href, labelKey, icon }) => (
+            <SidebarLink
+              key={href}
+              href={href}
+              label={t(labelKey)}
+              icon={icon}
+              active={isActive({ pathname, href })}
+            />
+          ))}
+        </div>
+      ))}
     </nav>
   );
 }

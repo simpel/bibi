@@ -39,7 +39,8 @@ test("sign up, create org, venue, type and item, search, switch locale, archive"
   await page.getByRole("searchbox", { name: "Semantisk sökning" }).fill("Solvik");
   await expect(page.getByText("1 träff").or(page.getByText(/\d+ träffar/))).toBeVisible();
 
-  await page.getByRole("button", { name: "Språk" }).click();
+  await page.getByRole("button", { name: "Användarmeny" }).click();
+  await page.getByRole("menuitem", { name: "Språk" }).click();
   await page.getByRole("menuitem", { name: "English" }).click();
   await expect(page).toHaveURL(/\/en\/venues/);
   await expect(page.getByRole("button", { name: "Create venue" }).first()).toBeVisible();
@@ -55,7 +56,8 @@ test("theme toggle, localized validation messages and mapped sign-in errors", as
   await signUp({ page, credentials });
   await createOrganization({ page, name: "Validering AB" });
 
-  await page.getByRole("button", { name: "Tema" }).click();
+  await page.getByRole("button", { name: "Användarmeny" }).click();
+  await page.getByRole("menuitem", { name: "Tema" }).click();
   await page.getByRole("menuitem", { name: "Mörkt" }).click();
   await expect(page.locator("html")).toHaveClass(/dark/);
 
@@ -77,5 +79,5 @@ test("theme toggle, localized validation messages and mapped sign-in errors", as
   await page.waitForTimeout(10_500);
   await page.getByRole("textbox", { name: "Lösenord" }).fill(credentials.password);
   await page.getByRole("button", { name: "Logga in" }).click();
-  await expect(page).toHaveURL(/\/sv\/venues$/);
+  await expect(page).toHaveURL(/\/sv$/);
 });

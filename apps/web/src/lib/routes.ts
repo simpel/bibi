@@ -11,6 +11,7 @@ export const ROUTES = {
   bookings: "/bookings",
   bookingSeries: "/booking-series",
   inquiries: "/inquiries",
+  settings: "/settings",
   settingsTypes: "/settings/types",
   settingsLists: "/settings/lists",
   settingsSetups: "/settings/setups",

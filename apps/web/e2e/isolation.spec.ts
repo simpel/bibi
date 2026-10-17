@@ -31,7 +31,7 @@ test("cross-organization isolation: cannot access another org's venue from URL",
   await expect(page.getByText("Vi hittade inte det du letade efter.")).toBeVisible();
 });
 
-test("org switcher displays the current organization", async ({ page }) => {
+test("the user menu shows the current organization and lists it to switch", async ({ page }) => {
   // This test verifies the org switcher exists and displays the current organization.
   // A full test of switching between orgs would require a user to be in multiple organizations,
   // which would need an invite/membership mechanism. That could be tested separately by either:
@@ -41,12 +41,10 @@ test("org switcher displays the current organization", async ({ page }) => {
   await signUp({ page, credentials: uniqueCredentials() });
   await createOrganization({ page, name: "Test Organization" });
 
-  // The org switcher should be visible and show the current org
-  const orgSwitcher = page.locator('[aria-label="Byt organisation"]');
-  await expect(orgSwitcher).toBeVisible();
-  await expect(orgSwitcher).toContainText("Test Organization");
-
-  // Verify the switcher opens a menu
-  await orgSwitcher.click();
+  // The user menu (bottom left, ADR 0036) shows the current org and lists it under "switch"
+  const userMenu = page.getByRole("button", { name: "Användarmeny" });
+  await expect(userMenu).toContainText("Test Organization");
+  await userMenu.click();
+  await page.getByRole("menuitem", { name: "Byt organisation" }).click();
   await expect(page.getByRole("menuitem", { name: "Test Organization" })).toBeVisible();
 });

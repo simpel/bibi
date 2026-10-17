@@ -18,7 +18,7 @@ export function useInvitationActions({ invitationId }: UseInvitationActionsInput
       call: () => authClient.organization.acceptInvitation({ invitationId }),
       messages: { pending: t("acceptingInvitation"), success: t("invitationAccepted") },
       onSuccess: () => {
-        router.replace(ROUTES.venues);
+        router.replace(ROUTES.home);
         router.refresh();
       },
     });
@@ -27,7 +27,7 @@ export function useInvitationActions({ invitationId }: UseInvitationActionsInput
       call: () => authClient.organization.rejectInvitation({ invitationId }),
       messages: { pending: t("decliningInvitation"), success: t("invitationDeclined") },
       onSuccess: () => {
-        router.replace(ROUTES.venues);
+        router.replace(ROUTES.home);
       },
     });
   return { pending, accept, decline };

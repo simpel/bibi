@@ -132,7 +132,16 @@
     "members": "Members",
     "bookingStatuses": "Booking statuses",
     "payments": "Payments",
-    "priceLists": "Price lists"
+    "priceLists": "Price lists",
+    "assistant": "Assistant",
+    "newChat": "New chat",
+    "recent": "Recent",
+    "platformAdmin": "Platform admin",
+    "groups": {
+      "work": "Work",
+      "catalog": "Catalog",
+      "admin": "Administration"
+    }
   },
   "venue": {
     "singular": "Venue",
@@ -1479,7 +1488,25 @@
     "languageEn": "English",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "adminNavigation": "Administration",
+    "mySkills": "My skills"
+  },
+  "settingsHub": {
+    "title": "Settings",
+    "description": "How your organization is set up. Changes here affect everyone.",
+    "items": {
+      "types": "The kinds of items you offer and the fields they have.",
+      "lists": "Your own value lists, such as allergens or equipment.",
+      "setups": "Room setups like theatre, classroom or boardroom.",
+      "sheets": "Sheet definitions, such as the kitchen order, and who gets them.",
+      "priceLists": "Prices per customer group or season.",
+      "bookingStatuses": "The statuses a booking moves through.",
+      "members": "Who has access and with which role.",
+      "roles": "What each role may read and change.",
+      "payments": "Stripe account for card payments and invoices.",
+      "skills": "Reusable instructions for the assistant."
+    }
   },
   "commandBar": {
     "title": "Command bar",

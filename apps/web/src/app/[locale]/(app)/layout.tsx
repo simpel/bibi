@@ -3,6 +3,7 @@ import { resolveLocale } from "@okazi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { AppShell } from "@/components/shell/app-shell";
+import { getCallerAbilities } from "@/server/caller-abilities";
 import { requireReadySession } from "@/server/guard";
 
 type AppLayoutProps = { children: ReactNode; params: Promise<{ locale: string }> };
@@ -13,10 +14,17 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
   setRequestLocale(locale);
   const { session, organizationId } = await requireReadySession({ locale });
   const { id, name, email } = session.user;
-  // Only decides whether the menu shows the admin link; `/admin` checks again.
-  const platformAdmin = await isPlatformAdmin({ userId: id });
+  // Only decide which sidebar links show (ADR 0036); `/settings/*` and `/admin` check again.
+  const [platformAdmin, abilities] = await Promise.all([
+    isPlatformAdmin({ userId: id }),
+    getCallerAbilities(),
+  ]);
   return (
-    <AppShell organizationId={organizationId} user={{ name, email, platformAdmin }}>
+    <AppShell
+      organizationId={organizationId}
+      user={{ name, email }}
+      access={{ canConfigure: abilities.configurationWrite, platformAdmin }}
+    >
       {children}
     </AppShell>
   );
