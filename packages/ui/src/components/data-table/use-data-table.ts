@@ -36,7 +36,7 @@ export function useDataTable<TData, TValue>({ props }: { props: DataTableProps<T
     columns,
     getRowId: props.getRowId,
     state: {
-      ...sorting,
+      sorting: sorting.sorting,
       columnOrder: order,
       rowSelection,
       ...(pagination
@@ -44,6 +44,7 @@ export function useDataTable<TData, TValue>({ props }: { props: DataTableProps<T
         : {}),
     },
     ...(pagination ? { pageCount: pagination.pageCount, manualPagination: true } : {}),
+    onSortingChange: sorting.onSortingChange,
     manualSorting: props.manualSorting ?? false,
     enableMultiSort: false,
     enableRowSelection: selectable ?? false,

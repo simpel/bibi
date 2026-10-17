@@ -17,6 +17,7 @@ import {
 import type { ReactNode } from "react";
 import { buildAnnouncements } from "./data-table-announcements";
 import { isPinnedColumn, resolveColumnOrder } from "./data-table-order";
+import { restrictToMovableColumns } from "./data-table-restrict-modifier";
 import type { DataTableTextLabels } from "./data-table-types";
 
 export type DataTableDndProps = {
@@ -56,7 +57,7 @@ export function DataTableDnd({
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
-      modifiers={[restrictToHorizontalAxis]}
+      modifiers={[restrictToHorizontalAxis, restrictToMovableColumns]}
       onDragEnd={handleDragEnd}
       accessibility={{
         announcements: buildAnnouncements({ movable, titles, labels }),
