@@ -407,7 +407,10 @@
     },
     "occurrencesUpdated": "The occurrences have been changed.",
     "itemsTaken": "The room is already taken at that time. Pick another room or time.",
-    "scope": { "this": "Only this occurrence", "following": "This and following occurrences" },
+    "scope": {
+      "this": "Only this occurrence",
+      "following": "This and following occurrences"
+    },
     "editOccurrence": "Change occurrence {index}/{total}",
     "editOccurrenceLabel": "Change occurrence {index}/{total}",
     "editOccurrenceDescription": "Move the occurrence to another time or room. \"This and following\" moves every later occurrence by the same amount and changes the series going forward.",
@@ -1181,7 +1184,11 @@
         "singular": "Item",
         "empty": "No items found.",
         "open": "Open the item",
-        "columns": { "name": "Name", "price": "Price", "setups": "Setups" },
+        "columns": {
+          "name": "Name",
+          "price": "Price",
+          "setups": "Setups"
+        },
         "priceUnit": {
           "PER_PERSON": "per person",
           "PER_UNIT": "per unit",
@@ -1204,14 +1211,22 @@
         "singular": "Customer",
         "empty": "No customers found.",
         "open": "Open the customer",
-        "columns": { "name": "Name", "city": "City", "email": "Email" },
+        "columns": {
+          "name": "Name",
+          "city": "City",
+          "email": "Email"
+        },
         "terms": "Payment terms {days} days"
       },
       "contact": {
         "singular": "Contact person",
         "empty": "No contact persons found.",
         "openCustomer": "Open the customer",
-        "columns": { "name": "Name", "email": "Email", "phone": "Phone" }
+        "columns": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone"
+        }
       },
       "booking": {
         "singular": "Booking",
@@ -1240,7 +1255,11 @@
         "noClashes": "No clashes",
         "clash": "Clash",
         "occurrence": "Occurrence {index}/{total}",
-        "columns": { "rule": "Recurrence", "occurrences": "Occurrences", "clashes": "Clashes" },
+        "columns": {
+          "rule": "Recurrence",
+          "occurrences": "Occurrences",
+          "clashes": "Clashes"
+        },
         "cancelled": "Cancelled"
       },
       "inquiry": {
@@ -1263,7 +1282,11 @@
         "released": "Released",
         "empty": "No occupancy found.",
         "openItem": "Open the item",
-        "columns": { "type": "Type", "period": "Period", "note": "Note" }
+        "columns": {
+          "type": "Type",
+          "period": "Period",
+          "note": "Note"
+        }
       },
       "programItem": {
         "singular": "Program item",
@@ -1273,7 +1296,11 @@
         "noResponsible": "No responsible person",
         "archived": "Removed from the program",
         "openBooking": "Open the booking",
-        "columns": { "name": "Name", "when": "When", "quantity": "Quantity" }
+        "columns": {
+          "name": "Name",
+          "when": "When",
+          "quantity": "Quantity"
+        }
       },
       "requirement": {
         "singular": "Requirement",
@@ -1304,7 +1331,12 @@
         "empty": "No types found.",
         "open": "Open the type",
         "noFields": "The type has no fields.",
-        "columns": { "name": "Name", "base": "Base", "behaviours": "Behaviours", "fields": "Fields" },
+        "columns": {
+          "name": "Name",
+          "base": "Base",
+          "behaviours": "Behaviours",
+          "fields": "Fields"
+        },
         "base": {
           "ITEM": "Item",
           "CUSTOMER": "Customer",
@@ -1329,7 +1361,11 @@
         "key": "Key: {key}",
         "openList": "Open the list",
         "openType": "Open the type",
-        "columns": { "name": "Name", "kind": "Field kind", "required": "Required" },
+        "columns": {
+          "name": "Name",
+          "kind": "Field kind",
+          "required": "Required"
+        },
         "kind": {
           "TEXT": "Text",
           "NUMBER": "Number",
@@ -1344,21 +1380,31 @@
         "empty": "No lists found.",
         "open": "Open the list",
         "valuesCount": "{count, plural, one {# value} other {# values}}",
-        "columns": { "name": "Name", "values": "List values" }
+        "columns": {
+          "name": "Name",
+          "values": "List values"
+        }
       },
       "setup": {
         "singular": "Setup",
         "empty": "No setups found.",
         "open": "Open setups",
         "changeover": "Changeover {minutes} min",
-        "columns": { "name": "Name", "changeover": "Changeover" }
+        "columns": {
+          "name": "Name",
+          "changeover": "Changeover"
+        }
       },
       "priceList": {
         "singular": "Price list",
         "archived": "Archived",
         "empty": "No price lists found.",
         "open": "Open price lists",
-        "columns": { "name": "Name", "validity": "Validity", "pricing": "Pricing" }
+        "columns": {
+          "name": "Name",
+          "validity": "Validity",
+          "pricing": "Pricing"
+        }
       },
       "sheetDefinition": {
         "singular": "Sheet",
@@ -1366,7 +1412,10 @@
         "empty": "No sheets found.",
         "open": "Open sheets",
         "contents": "{types, plural, one {# item type} other {# item types}}, {fields, plural, one {# field} other {# fields}}, {lists, plural, one {# list} other {# lists}}",
-        "columns": { "name": "Name", "contents": "Includes" }
+        "columns": {
+          "name": "Name",
+          "contents": "Includes"
+        }
       },
       "bookingStatus": {
         "singular": "Booking status",
@@ -1844,5 +1893,153 @@
     "remove": "Remove",
     "removeConfirm": "Remove {name} from the organization? They lose access immediately.",
     "removed": "The member has been removed."
+  },
+  "docs": {
+    "title": "Okazi Docs",
+    "description": "Documentation for staff and developers",
+    "toggleSidebar": "Toggle sidebar",
+    "signIn": "Sign in",
+    "sections": {
+      "guide": "Guide",
+      "developers": "Developers",
+      "reference": "Reference"
+    },
+    "home": {
+      "title": "Okazi documentation",
+      "lead": "How to book meetings, food and rooms with Okazi, and how to build on it with the REST API, GraphQL and MCP.",
+      "cards": {
+        "guide": {
+          "title": "Guide",
+          "description": "Get started, book meetings, handle inquiries, needs, sheets and payments."
+        },
+        "developers": {
+          "title": "Developers",
+          "description": "Authentication, REST, GraphQL, MCP and how AI approvals work."
+        },
+        "rest": {
+          "title": "REST reference",
+          "description": "Every /api/v1 route in the interactive API reference, with try-it-out."
+        },
+        "mcp": {
+          "title": "MCP tools",
+          "description": "Every MCP tool with arguments, results and example calls."
+        }
+      }
+    },
+    "reference": {
+      "searchPlaceholder": "Filter by path, tool, operation or text",
+      "noResults": "Nothing matches the filter.",
+      "groups": "Sections",
+      "readOnly": "Read-only",
+      "changesData": "Changes data",
+      "approval": "AI needs approval",
+      "operation": "Core operation",
+      "arguments": "Arguments",
+      "response": "Response",
+      "example": "Example",
+      "required": "required",
+      "nullable": "nullable",
+      "oneOf": "One of:",
+      "noFields": "No fields.",
+      "rest": {
+        "title": "REST reference"
+      },
+      "mcp": {
+        "title": "MCP tools",
+        "lead": "Every tool the Okazi MCP server lists for a signed-in user. Open a tool to see its arguments, result and an example tools/call request.",
+        "body": "Server URL: `{{mcpUrl}}/mcp`. See [MCP server](/docs/developers/mcp) for how to connect, and [AI approvals](/docs/developers/approvals) for what happens when an assistant calls a tool that changes data."
+      }
+    },
+    "pages": {
+      "guide": {
+        "introduction": {
+          "title": "Introduction",
+          "lead": "Okazi is a booking system for conferences, food and drink at venues without a hotel system. Your staff use it. Your guests and customers never log in.",
+          "body": "# What Okazi is for\n\nOkazi helps venue staff handle bookings from the first inquiry to the finished event. It is built for places such as experience centres, museums, conference estates, manor houses and restaurants with private rooms.\n\nThe people who use it are your sales staff, coordinators, kitchen leads and administrators. Customers and guests never use the app. The only page a customer sees is the payment page you send them.\n\n# What you can do\n\n- **Book a small meeting in one step.** A quick booking needs a customer, a room, a time and a quantity. No inquiry or quote is needed. The customer pays by card link or by invoice. See [Bookings](/docs/guide/bookings).\n- **Track inquiries.** Register what a customer asks for, qualify it, and mark it lost with a reason if it goes nowhere. See [Inquiries](/docs/guide/inquiries).\n- **Plan the program.** Add program items to a booking, with the room, the setup and the number of people. Rooms cannot be double booked.\n- **Record needs as counts.** For example \"Gluten x 3\" or \"Wheelchair x 2\", never tied to a named person. See [Needs and sheets](/docs/guide/needs-and-sheets).\n- **Send sheets to the people who need them.** A sheet is a versioned compilation, for example a kitchen order, and Okazi marks what changed since the last version you sent.\n- **Take payment.** Customers pay a link or an invoice, and the money goes straight to your own Stripe account. See [Payments](/docs/guide/payments).\n- **Ask the assistant.** You can do most of this by chatting. The assistant proposes changes and you approve them. See [The assistant](/docs/guide/assistant).\n\n# Your organization sets the vocabulary\n\nOkazi does not decide what you call things. Each organization defines its own types, fields, lists, statuses, sheets and responsibilities. A conference estate may have \"Conference room\" and \"Dish\". A museum may have \"Gallery\" and \"Guided tour\". This guide uses examples such as allergens and kitchen orders, but they are examples only. What you see in your own account depends on how it is set up. See [Configuration](/docs/guide/configuration).\n\n# Where to start\n\n1. Read [Getting started](/docs/guide/getting-started) to sign in and find your way around.\n2. If you are an administrator, set up your types, lists and statuses first.\n3. Try a quick booking, either from Bookings or by asking the assistant.\n\n# For developers\n\nIf you want to connect your own systems, see the [developer documentation](/docs/developers/overview)."
+        },
+        "getting-started": {
+          "title": "Getting started",
+          "lead": "Sign in, pick your organization and learn where things are in the menu.",
+          "body": "# Sign in\n\n1. Open Okazi and choose **Sign in**. You can use your password, a **Sign-in link** sent by email, or a **One-time code**.\n2. If you are new, choose **Create account**. The password needs at least 10 characters.\n3. If a colleague invited you, open the link in the invitation email, sign in with the invited email address and choose **Accept invitation**.\n\nIf you belong to several organizations, you land on **Choose organization**. Pick one, or choose **Create organization** to start a new one. You can switch later from the user menu.\n\n# The start page is the assistant\n\nAfter you sign in you land on a chat. This is the assistant, and it is the quickest way to find things or make a change. Choose **New chat** to start over. Earlier conversations are listed in the left menu under **Assistant**. See [The assistant](/docs/guide/assistant).\n\n# The left menu\n\nThe menu has three parts.\n\n- **Assistant** at the top: the home page, **New chat** and your recent conversations.\n- **Work**: **Bookings**, **Inquiries**, **Booking series** and **Customers**.\n- **Catalog**: **Items** and **Venues**.\n\nAt the bottom left you find **Settings** (only for owners and administrators) and your user menu. The user menu holds theme (light, dark or system), language (Swedish or English), switching organization, **My skills** and **Sign out**.\n\nAt the top of the page there is a command bar. Press Cmd+K (Ctrl+K on Windows) to search or jump to a page. On pages other than the start page, the assistant opens as a side panel with Cmd+J (Ctrl+J), and it knows which booking or customer you are looking at.\n\n# A first checklist\n\nIf your organization is new and you are an administrator, work through this list. Each step links to a page with details.\n\n1. Create your types under **Settings, Types**, or import a template. See [Configuration](/docs/guide/configuration).\n2. Add your lists, for example allergens, under **Settings, Lists**.\n3. Create your booking statuses under **Settings, Booking statuses**.\n4. Create a venue, then add your rooms and other items. See [Items and venues](/docs/guide/items-and-venues).\n5. Invite your colleagues under **Settings, Members**. See [Members and roles](/docs/guide/members-and-roles).\n6. Connect Stripe under **Settings, Payments** if you want customers to pay online. See [Payments](/docs/guide/payments).\n7. Add a customer, then try a quick booking. See [Bookings](/docs/guide/bookings).\n\nIf you are not an administrator, you will not see **Settings**. Ask an administrator in your organization to set up what you need."
+        },
+        "assistant": {
+          "title": "The assistant",
+          "lead": "The assistant answers questions and prepares changes for you. It never changes anything until you approve.",
+          "body": "# What it can do\n\nThe assistant works as you. It can only see and do what your own role allows, in your own organization. Use it to:\n\n- find bookings, inquiries, customers, items and venues\n- show a booking, a sheet or a list of occupied rooms\n- prepare a change, for example creating a customer or moving a program item\n\nTry questions such as \"Show all venues\", \"Find bookable items that fit 50 people\" or \"Which skills are available?\".\n\n# Where to find it\n\n- On the start page it fills the screen. Choose **New chat** for a fresh conversation.\n- On every other page it is a side panel. Open or close it with Cmd+J (Ctrl+J), or with the assistant button in the top bar. Drag the edge to resize it.\n- On a booking or customer page it knows what you are looking at, so you can say \"move this program item to 14:00\".\n- Your recent conversations are listed in the left menu under **Assistant**. You can rename or archive a conversation from its menu.\n- On a phone the menu opens as a drawer from the top bar.\n\n# Approving changes\n\nThe assistant never saves a change by itself. When it wants to change something it shows an **Approve action** card that lists exactly what will happen.\n\n1. Read the card. Check the fields and values.\n2. Choose **Approve** to carry it out, or **Reject** to drop it.\n3. A proposal expires after a short time. If you see **The proposal has expired**, ask again.\n\nEvery change is recorded in the history of the booking or customer. History shows whether the assistant proposed it and who approved it.\n\n# Skills\n\nA skill is a saved set of instructions that the assistant loads when it fits the task, for example \"how we write a quote reply\". There are three kinds: system skills that come with Okazi, organization skills shared by your administrators, and personal skills only you can see.\n\n- Find organization skills under **Settings, Skills**, and your own under **My skills** in the user menu.\n- Choose **Create skill**, describe when it applies and what the assistant should do, then publish it.\n- You can also import a SKILL.md file. It arrives as a draft.\n\n# Good to know\n\n- The assistant can be wrong. Check the approval card, not just the chat text.\n- It uses the same rules as you do. If you cannot change something, neither can it.\n- If the assistant is unavailable, an administrator at Okazi has not selected a model yet. The rest of the app works as usual.\n- Developers can connect other tools to the same capabilities. See [MCP](/docs/developers/mcp) and [Approvals](/docs/developers/approvals)."
+        },
+        "inquiries": {
+          "title": "Inquiries",
+          "lead": "An inquiry is interest from a customer before anything is booked. Use it to keep track of who asked for what, and who is handling it.",
+          "body": "# When to use an inquiry\n\nUse an inquiry when a customer asks for something that needs follow-up before you can book it. For a small meeting that you can book straight away, skip the inquiry and make a quick booking instead. See [Bookings](/docs/guide/bookings).\n\n# Register an inquiry\n\n1. Open **Inquiries** in the left menu and choose **Register inquiry**.\n2. Pick the inquiry type. Types are set up by your administrators. If none exist yet, choose **Go to types** and create one first.\n3. Pick the customer, and optionally a contact person who works at that customer.\n4. Fill in the desired dates, the quantity (for example the number of guests), the budget and any fields your organization has added to the type.\n5. Save. The inquiry starts with the status **New**.\n\nIf the customer does not exist yet, create it first under **Customers**. A customer can have several contact persons, and each contact has a name, email and phone number.\n\n# Move it forward\n\nAn inquiry follows a fixed path. You cannot set the status by editing the inquiry. You use a button on the inquiry page.\n\n- **Qualify** moves it from **New** to **Qualified**. A qualified inquiry needs a salesperson, so pick one among your members when you qualify it.\n- **Mark as lost** closes it. You must give a reason, which makes it possible to see later why deals fall through. A lost inquiry cannot be reopened.\n\nThe statuses **Quoted** and **Won** exist in the list of statuses, but quotes are not available yet. Coming later: sending a quote, having the customer accept it, and turning the accepted inquiry into a booking automatically.\n\nUntil then, when an inquiry becomes a real order, create the booking yourself from **Bookings** and add the same customer and dates.\n\n# Keep track of your own work\n\n- The list shows each inquiry's customer, type, desired dates, quantity, status and salesperson.\n- You can change the salesperson with **Change salesperson**.\n- Every change is recorded under **History** on the inquiry page, including who made it.\n- Customers can reply to booking emails, and replies are collected on the booking. See [Bookings](/docs/guide/bookings).\n\n# Tips\n\n- Put the same fields on the inquiry type that you want on the booking, so the information is easy to copy across.\n- Ask the assistant for an overview, for example \"Which inquiries have no salesperson?\"."
+        },
+        "bookings": {
+          "title": "Bookings",
+          "lead": "A booking is the whole event: who, when, where and what. This page shows how to create one, run it through its statuses and cancel it.",
+          "body": "# Quick booking for a small meeting\n\nA quick booking is the fastest way to book. There is no inquiry and no quote.\n\n1. Open **Bookings** and choose **Quick booking**.\n2. Pick the **Booking type**, the **Program item type**, and the **Customer**.\n3. Pick the **Room or item**, the time and the **Quantity**.\n4. Under **Payment**, choose **Invoice (confirm now)** or **Payment link (confirm when paid)**.\n5. Save.\n\nIf the room or its changeover time is already taken, you get a message and can pick another time. With the invoice option the booking is confirmed straight away. With the payment link option it stays tentative until the customer pays. See [Payments](/docs/guide/payments).\n\n# Create a regular booking\n\n1. Choose **Create booking**.\n2. Pick a type, the customer and the time. The booking starts in your default tentative status and gets the next reference number.\n3. Add program items, needs and payments from the booking page.\n\n# The booking page\n\n- **Program**: the day's rows. Choose **Add program item** and give a name, time, room, setup and quantity. A room is held for that time, and the setup's changeover time is blocked right before it. You cannot book a room that is already occupied.\n- **Requirements**: counts per list value. See [Needs and sheets](/docs/guide/needs-and-sheets).\n- **Sheets**: versions you can generate and send.\n- **Payments**: payment requests for this booking.\n- **Received email**: replies from the customer, when your organization has inbound email set up.\n- **History**: every change, with who made it.\n\n# Change the status\n\nChoose **Change status** and pick one of the statuses your administrators have set up. Each status belongs to one of four phases, and the phase decides the rules.\n\n- **Tentative**: the rooms are held. Sheets cannot be sent.\n- **Confirmed**: the booking needs a coordinator. Sheets can be sent.\n- **Completed**: needs a coordinator, and is allowed only after the booking has ended.\n- **Cancelled**: you must give a reason. The rooms are released. A cancelled booking cannot be reopened, so create a new one instead.\n\nWhich moves are allowed from each status is also set by your administrators. Use **Change owners** to set the salesperson and coordinator.\n\n# Recurring bookings\n\nFor a customer who books the same room regularly, use **Booking series**. Create a series with a repeat rule, and Okazi creates every occurrence as a normal booking. If an occurrence clashes with another booking it is marked **Clash**, and you pick another room or time. You can change **Only this occurrence** or **This and following occurrences**, or choose **Cancel series**.\n\n# Coming later\n\nQuotes, signing by BankID and invoices created in Okazi are decided but not built yet."
+        },
+        "items-and-venues": {
+          "title": "Items and venues",
+          "lead": "Venues are your buildings and sites. Items are everything you sell or book: rooms, dishes, drinks, equipment and packages.",
+          "body": "# Venues\n\nA venue is a building or site. Items belong to a venue.\n\n1. Open **Venues** in the left menu and choose **Create venue**.\n2. Enter the name, address, contact details and opening hours.\n3. Save. The venue page lists the items at that venue.\n\nArchiving a venue also archives its items.\n\n# Items\n\nAn item is anything that can be sold or booked. What an item looks like depends on its **type**, and your administrators define the types. A \"Conference room\" type might have fields for floor and area. A \"Dish\" type might have a price and a list of allergens.\n\nTo add an item:\n\n1. Open **Items** and choose **Create item**.\n2. Pick the type, then fill in the name, description, venue and the type's fields.\n3. Save.\n\nIf no types exist yet, choose **Go to types** and create one first. Use the type filter on the list to find items quickly.\n\n# What a type can do\n\nWhen a type is created it can switch on any of these behaviours. They are the only things Okazi builds in. Everything else is your own naming.\n\n- **Priced**: the item has a price, a price unit (per person, per unit, per hour or flat) and VAT.\n- **Composable**: the item contains other items, with quantity and timing. A package is an example.\n- **Choices**: a composable item can offer choice groups, for example \"choose 1 of 3 main courses\".\n- **Bookable**: the item can be occupied in time, and Okazi stops double booking. A room is an example.\n- **Setups**: a bookable item has a capacity per setup, for example 80 people in Theatre and 40 in U-shape.\n\n# Setups and changeover\n\nSetups are your named room layouts, such as Cinema, U-shape or Mingle. Each has a changeover time, which Okazi blocks right before a booking that uses it. Create them under **Settings, Setups**, and set the capacity per setup on each bookable item.\n\n# Packages for one customer\n\nOn a customer page, choose **Save as package** to build a package from catalog items. The package is shown only for that customer and the catalog does not change.\n\n# Contents of an item\n\nAn item that contains other items shows **Contents** with what it **Contains** (mandatory parts) and what it **May contain** (optional parts and choices). This is what Okazi compares with the counts you record. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Blocking an item\n\nTo take a room out of use for maintenance or internal use, open the item and choose **Block item**. Bookings cannot overlap a block. Choose **Release block** to open it again.\n\n# Prices for a customer\n\nPrice lists let you give a customer a general discount or special prices per item. See [Configuration](/docs/guide/configuration)."
+        },
+        "needs-and-sheets": {
+          "title": "Needs and sheets",
+          "lead": "Record what a booking needs as counts, and send versioned sheets to the people who prepare it. No personal data about guests is stored.",
+          "body": "# Needs are counts\n\nA need (called a requirement in the app) is a number against a value in one of your own lists. For example, if your organization has a list of allergens, \"Gluten x 3\" means three guests need gluten-free food. \"Wheelchair x 2\" works the same way with an accessibility list.\n\nNeeds are never tied to a named person. You never enter a guest's name or health details.\n\n# Add a need to a booking\n\n1. Open the booking and go to **Requirements**.\n2. Choose **Add requirement**.\n3. Pick the list value and enter the count.\n4. Choose where it applies: **Whole booking**, or one program item.\n\nYou can only have one count per list value in each place. If you try to add a second one you are asked to edit the existing count. A count on a program item replaces the booking's count for that item, value by value. A count of 0 on a program item means \"none here\".\n\nIf your administrators gave the need type extra fields, such as severity, you can fill those in too. Use **Remove requirement** if a count is no longer needed.\n\n# Matching against items\n\nOkazi compares each need with the items on the booking that carry the same list value. The result is shown as one of two kinds of match.\n\n- **Contains**: the item, or a mandatory part of it, is tagged with that value.\n- **May contain**: only optional parts or choice options carry it.\n\nA match that **Contains** and has no alternative **blocks** the sheet. The sheet shows **Blocked: cannot be sent** until you fix the booking, for example by picking an alternative.\n\n# Sheets\n\nA sheet is a compilation for one responsibility, for example a kitchen order for the head of kitchen. Your administrators define which sheets exist, what each one includes and who receives it. See [Configuration](/docs/guide/configuration).\n\n1. Open the booking and go to **Sheets**.\n2. Choose **Generate version**. Okazi takes a snapshot of the booking with what that sheet includes.\n3. Review the rows, the counts and any matches.\n4. Choose **Send**.\n\n# Versions and changes\n\nEvery time the booking changes you can generate a new version. Okazi marks what was **Added**, **Changed** or **Removed since the last sent version**, so the kitchen sees what is new. A version is never edited or deleted, and each version can be sent once.\n\nSheets can be sent only when the booking is in a confirmed phase. In a tentative booking you can generate and check them but not send. Only the latest version can be sent.\n\n# Coming later\n\nExporting a sheet as JSON, PDF or CSV for handover outside the system is planned but not available yet."
+        },
+        "payments": {
+          "title": "Payments",
+          "lead": "Ask a customer to pay by card link or by invoice. The money goes straight to your own Stripe account, and Okazi never holds it.",
+          "body": "# Connect Stripe first\n\nBefore you can request a payment, an administrator must connect your organization to Stripe.\n\n1. Open **Settings** and choose **Payments**.\n2. Choose **Connect to Stripe**. You are sent to Stripe to verify your business.\n3. When you come back, choose **Refresh status**. If onboarding is not finished, choose **Continue onboarding**.\n\nThe status shows **Not connected**, **Onboarding**, **Active** or **Restricted**. Payments work when it is **Active**. If it is **Restricted**, Stripe needs more information from you, so continue onboarding.\n\nPayments are charged on your own connected account, so you are the merchant and the payout goes to you.\n\n# Request a payment\n\n1. Open the booking and find **Payments**.\n2. Choose **Request payment**.\n3. Pick the method and the amount.\n4. Save.\n\nThere are two methods.\n\n- **Card**: Okazi creates a payment link. Choose **Open payment link** to copy or open it, and send it to the customer.\n- **Invoice**: Stripe emails an invoice to the customer. The customer needs an email address on the customer record. The due date follows the customer's payment terms, 30 days if none is set.\n\nYou can request a payment only for a booking that is not cancelled.\n\n# What the customer sees\n\nThe customer opens the link and lands on a simple page with your organization name, the booking reference, the amount and a **Pay now** button. Stripe handles the card details. The customer does not need an account and never sees Okazi's app.\n\nIf the link has expired, the page says so and asks the customer to contact you. You can then request a new payment.\n\n# Payment status\n\nEach payment has a status: **Pending**, **Paid**, **Failed**, **Cancelled** or **Refunded**. The status updates by itself when Stripe reports back. You do not need to mark anything as paid.\n\n# Paid means confirmed\n\nWhen a payment is paid, Okazi tries to move a tentative booking to your default confirmed status. This follows the same rules as a manual change, for example that a confirmed booking needs a coordinator. If the move is refused, the payment is still recorded as paid and you confirm the booking by hand.\n\nWith a quick booking you can instead choose **Invoice (confirm now)**, which confirms the booking at once.\n\n# Coming later\n\nSwish for customers, price lists applied to invoices, and invoices sent to Fortnox, Visma or Peppol are decided but not available yet."
+        },
+        "configuration": {
+          "title": "Configuration",
+          "lead": "Owners and administrators set up what things are called and how they work in your organization. Everything here is your own data.",
+          "body": "# Who can configure\n\nOnly owners and administrators see **Settings** in the left menu. It opens a page that lists every configuration area. Changes affect everyone in the organization.\n\n# Types and fields\n\nUnder **Settings, Types** you define the kinds of records you work with: items, customers, contacts, inquiries, bookings, requirements and program items. For example \"Conference room\", \"Dish\", \"Company\" or \"Conference\".\n\n1. Choose **Create type**, say what it is for and name it.\n2. For an item type, switch on behaviours such as **Priced**, **Bookable** or **Setups**. See [Items and venues](/docs/guide/items-and-venues).\n3. Add fields. A field can be text, number, yes/no, date, choice, multiple choice or a link to another record. Mark it required if it must always be filled in.\n\nA type cannot be archived while it is in use, and a field cannot change kind once it has data.\n\n# Lists\n\nUnder **Settings, Lists** you keep your own word lists, such as allergens, diets or accessibility needs. Fields and needs point to a list. To get started, choose **Import the EU's 14 allergens**. You can edit the list afterwards. A list or a value cannot be archived while a field uses it or a need counts it.\n\n# Setups\n\nUnder **Settings, Setups** you name your room layouts and set the changeover time. See [Items and venues](/docs/guide/items-and-venues).\n\n# Booking statuses\n\nUnder **Settings, Booking statuses** you decide what your bookings are called as they progress. Each status has a name, a colour and one of four fixed phases: **Tentative**, **Confirmed**, **Completed** or **Cancelled**. The phase carries the rules, which you cannot turn off. See [Bookings](/docs/guide/bookings).\n\n1. Choose **Create status**, or **Import conference venue template** for a ready set.\n2. Use **Edit transitions** to choose which statuses a booking may move to from each one.\n3. Reorder with the arrows. The first status of a phase is the default for that phase.\n\nA status in use can be archived but not deleted, and each phase must keep at least one status.\n\n# Sheets\n\nUnder **Settings, Sheets** you define a sheet such as \"Kitchen order\": name it, choose which item types and fields it includes, which lists' needs it counts, and which role receives it. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Price lists\n\nUnder **Settings, Price lists** you create a list for a customer or for everyone, with a validity period. Choose either a general discount in percent, or a price per item, not both. New order lines use the list's prices, and an archived list no longer applies.\n\n# Payments and skills\n\n**Settings, Payments** connects Stripe. See [Payments](/docs/guide/payments). **Settings, Skills** holds organization skills for the assistant. See [The assistant](/docs/guide/assistant).\n\n# Templates and the assistant\n\nTemplates such as the conference venue starter set are optional. They are only data, so you can change everything afterwards. You can also ask the assistant to propose a setup, for example \"We are a manor with a restaurant\". You approve each change."
+        },
+        "members-and-roles": {
+          "title": "Members and roles",
+          "lead": "Invite colleagues, give them the right access level and remove them when they leave.",
+          "body": "# Access levels\n\nEvery member has one access role. The roles are fixed and go from least to most access.\n\n- **Viewer**: can read everything, and changes nothing.\n- **Member**: can also work with day-to-day data such as customers, inquiries, bookings, program items, needs, payments and sheets.\n- **Admin**: everything a member can do, plus configuration (types, lists, statuses, sheets, price lists), members and API keys.\n- **Owner**: everything, including other owners and the organization itself. An organization always keeps at least one owner.\n\nOnly owners and admins see **Settings**. The pages check your access themselves, so hiding the menu is only a convenience.\n\n# Invite a colleague\n\n1. Open **Settings** and choose **Members**.\n2. Choose **Invite member** and enter the email address and role.\n3. Choose **Send invitation**.\n\nOkazi emails a link. The person signs in or creates an account with that same email address and chooses **Accept invitation**. They then join with the invited role. An invitation expires after 48 hours.\n\nUnder **Pending invitations** you can see who has not answered yet. Choose **Revoke** to cancel an invitation, and the link stops working. You cannot give someone more access than you have yourself, and an email address that is already a member cannot be invited again.\n\n# Change a role or remove someone\n\nOn the members page you can change a member's role. Owners can only be changed by another owner. To remove someone, choose **Remove**. They lose access immediately, and what they created stays in the history.\n\n# Who does what on a booking\n\nAccess roles decide what you may do in the app. A separate idea decides who answers for a booking.\n\n- An inquiry has a salesperson, and a booking has a salesperson and a coordinator. They must be members.\n- An inquiry needs a salesperson before it can be qualified. A confirmed booking needs a coordinator.\n- Change them with **Change salesperson** or **Change owners**.\n\nComing later: responsibilities that you define yourself, such as \"Head of kitchen\". A responsibility covers certain item types, has a default person and followers, and receives the matching sheets automatically. When it arrives, the salesperson and coordinator will become part of the same idea.\n\n# The assistant and API access\n\nThe assistant acts with your role, so it can never do more than you can. If you connect other tools, they use a role that is never above yours. See [Authentication](/docs/developers/authentication)."
+        }
+      },
+      "developers": {
+        "overview": {
+          "title": "Developer overview",
+          "lead": "Okazi has four ways in: the web app, a REST API, a GraphQL graph and an MCP server. They all run the same operations with the same permissions.",
+          "body": "# One set of operations, four surfaces\n\nEvery capability in Okazi is defined once as a **core operation**, for example `venue.create` or `booking.list`. Each operation has an input schema, an output schema, a required permission and a handler. The surfaces are generated from that list:\n\n- **REST** at `{{webUrl}}/api/v1`, described by an OpenAPI 3.1 document.\n- **GraphQL** at `{{webUrl}}/api/graphql`, for reading related data in one request.\n- **MCP** at `{{mcpUrl}}/mcp`, one tool per operation, for AI assistants such as Claude.\n- **The web app**, which staff use every day.\n\nBecause everything comes from the same operations, a command that exists in the web app also exists in REST and MCP, with the same validation and the same errors. A parity test in CI keeps it that way.\n\n# Tenancy\n\nAll data belongs to an **organization**. Every credential resolves to one user in one organization, and every operation is scoped to that organization. You can never read or change another organization's data, whichever surface you use.\n\n# Audit and logging\n\nEvery command writes an audit log entry with the actor (`user` or `ai`), the surface and a request id. Organization owners and admins can read the history in the app and through `auditLog.list`.\n\n# Where to go next\n\n- [Authentication](/docs/developers/authentication): API keys, sessions and OAuth.\n- [REST API](/docs/developers/rest-api) and the [REST reference]({{webUrl}}/api/v1/docs).\n- [MCP server](/docs/developers/mcp) and the [MCP tool reference](/docs/reference/mcp).\n- [AI approvals](/docs/developers/approvals): why AI commands become proposals.\n- [Errors and limits](/docs/developers/errors).\n"
+        },
+        "authentication": {
+          "title": "Authentication",
+          "lead": "Every request is made as a user in one organization. Use an API key for server-to-server integrations and OAuth for MCP clients and third-party apps.",
+          "body": "# API keys (REST and GraphQL)\n\nAn API key belongs to a user and is bound to one organization. Its access comes from the role it was issued with. Send it as a bearer token:\n\n```\nAuthorization: Bearer okz_<your key>\n```\n\nThe `x-api-key: okz_<your key>` header works too. Keys always start with `okz_`.\n\n- Keys are rate limited to 600 requests per minute.\n- The owner's membership is checked on every request. If the user leaves the organization, the key stops working.\n- Treat a key like a password. Never put it in front-end code or a public repository.\n\nAPI keys are issued by an owner or admin of the organization. Self-service key management in Settings is coming.\n\n# OAuth 2.1 (MCP clients and apps)\n\nMCP clients such as Claude Desktop sign in with OAuth. The client is sent to the Okazi sign-in page, the user signs in and picks an organization, and the client receives an access token that acts as that user.\n\n- Discovery: `{{webUrl}}/.well-known/oauth-authorization-server`\n- Protected resource metadata for MCP: `{{mcpUrl}}/.well-known/oauth-protected-resource`\n- Authorization endpoint: `{{webUrl}}/api/auth/oauth2/authorize`\n- Token endpoint: `{{webUrl}}/api/auth/oauth2/token`\n- Scopes: `okazi:read` and `okazi:write`\n\nMost MCP clients do all of this for you when you add the server URL.\n\n# Session cookie\n\nThe web app uses a session cookie. Requests from a signed-in browser to `/api/v1` and `/api/graphql` are authenticated the same way. This is meant for the app itself, not for integrations.\n\n# Permissions\n\nEach member has one of four fixed roles: **owner**, **admin**, **member** or **viewer**. Every operation names the permission it needs, for example `venue:create`. The reference lists the permission for each route and tool. A call without it fails with `FORBIDDEN`.\n"
+        },
+        "rest-api": {
+          "title": "REST API",
+          "lead": "A JSON API under /api/v1 with one route per operation, described by an OpenAPI 3.1 document that is generated from the code.",
+          "body": "# Base URL and spec\n\n- Base URL: `{{webUrl}}/api/v1`\n- OpenAPI document: [{{webUrl}}/api/v1/openapi.json]({{webUrl}}/api/v1/openapi.json)\n- Interactive reference (browse every route and try requests): [{{webUrl}}/api/v1/docs]({{webUrl}}/api/v1/docs)\n\nYou can generate a typed client from the OpenAPI document with any OpenAPI generator.\n\n# Requests\n\n- Reads use `GET`. Query parameters carry filters and pagination.\n- Creates use `POST`, updates use `PATCH`, archives and removals use `DELETE` or a `POST` to an action route.\n- Bodies are JSON. Send `Content-Type: application/json`.\n- Dates and times are ISO 8601 strings in UTC, for example `2026-11-05T09:00:00.000Z`.\n\n```\ncurl \"{{webUrl}}/api/v1/venues?limit=20\" \\\n  -H \"Authorization: Bearer okz_<your key>\"\n```\n\n# Pagination\n\nList routes take `limit` (1 to 100, default 50) and `cursor`. The response has `items` and `nextCursor`. Pass `nextCursor` as `cursor` to get the next page. When `nextCursor` is `null` you have reached the end.\n\n```\n{ \"items\": [ ... ], \"nextCursor\": \"clx2...\" }\n```\n\n# Configurable fields\n\nOrganizations define their own types, fields and lists. Entities that support it carry a `fields` object with the organization's custom values. Read the organization's field definitions (`GET /field-definitions`) to know which keys and value types to expect.\n\n# Responses and errors\n\nSuccess returns `200` (or `201` for creates) with the operation's output as JSON. Failures return the error envelope described in [Errors and limits](/docs/developers/errors).\n"
+        },
+        "graphql": {
+          "title": "GraphQL",
+          "lead": "A read-focused graph for fetching related data in one request, for example a booking with its program, needs and sheets.",
+          "body": "# Endpoint\n\n`POST {{webUrl}}/api/graphql` with a JSON body of `query`, `variables` and optionally `operationName`. Authenticate the same way as REST (API key, OAuth token or session).\n\n```\ncurl -X POST \"{{webUrl}}/api/graphql\" \\\n  -H \"Authorization: Bearer okz_<your key>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"query\":\"{ venues { items { id name } } }\"}'\n```\n\n# Schema\n\nThe schema is generated from the same operations and Zod schemas as REST and MCP. Every entity can be read through the graph, and every command is also available as a mutation.\n\nIntrospection is turned off in production. Get the schema as SDL from the MCP tool `graphql_schema`, or run the app locally where GraphiQL and introspection are on.\n\n# Limits\n\nQueries are checked for depth and cost before they run. A query that is too deep or too expensive is rejected with a validation error. Split it into smaller queries or use pagination.\n\n# When to use GraphQL or REST\n\n- Use **GraphQL** to read a tree of related data in one round trip.\n- Use **REST** for simple integrations, webhooks-style syncs and anything where an OpenAPI client is convenient.\n"
+        },
+        "mcp": {
+          "title": "MCP server",
+          "lead": "Connect Claude or any other MCP client to Okazi. The assistant works as you, with your permissions, and every change waits for your approval.",
+          "body": "# Server URL\n\n`{{mcpUrl}}/mcp` (Streamable HTTP). The server is stateless: each request is authenticated with an OAuth access token.\n\n# Connect a client\n\n1. In your MCP client (for example Claude Desktop or Claude Code), add a remote MCP server with the URL above.\n2. The client opens the Okazi sign-in page. Sign in and choose the organization.\n3. The client receives a token and lists the tools. You are ready.\n\nThe client discovers the authorization server through `{{mcpUrl}}/.well-known/oauth-protected-resource`, so there is nothing else to configure.\n\n# Tools\n\nThere is one tool per core operation. The name is the operation name with dots replaced by underscores: `venue.create` becomes `venue_create`. Each tool has a JSON Schema for its input and output, and hints that tell the client whether it is read-only or changes data. See the full [MCP tool reference](/docs/reference/mcp).\n\nTwo generic tools make reading easier:\n\n- `graphql_schema` returns the GraphQL schema as SDL.\n- `graphql_query` runs a read-only GraphQL query. Mutations are rejected.\n\nThe assistant also gets the organization's own field and type names in the tool descriptions, so it can use the words your venue uses.\n\n# Changes need approval\n\nWhen an AI assistant calls a tool that changes data, Okazi does **not** run it. It answers with `status: approval_required` and a short summary. The user approves or cancels the proposal in the Okazi app. Read [AI approvals](/docs/developers/approvals) for the details.\n\n# Untrusted content\n\nSome tools return text that came from outside the organization, for example received e-mails. These tools are marked as untrusted output, so clients and the assistant treat the content as data, never as instructions.\n"
+        },
+        "approvals": {
+          "title": "AI approvals",
+          "lead": "AI proposes, people decide. Commands called by an AI actor are turned into proposals that a person must approve in the app.",
+          "body": "# How it works\n\n1. The assistant calls a command, for example `booking_create`.\n2. Instead of running it, the MCP server returns a proposal:\n\n```\n{\n  \"status\": \"approval_required\",\n  \"operation\": \"booking.create\",\n  \"summary\": \"Create booking Board meeting on 5 Nov for Acme AB\",\n  \"approvalToken\": \"...\",\n  \"expiresAt\": \"2026-11-04T10:10:00.000Z\"\n}\n```\n\n3. The app shows the proposal as a card. The user reads the summary and clicks **Approve** or **Cancel**.\n4. On approval, the app runs the command as the user. The audit log records `actor=ai`, the conversation and who approved it.\n\nProposals expire after 10 minutes. The assistant must not retry a command that is waiting for approval.\n\n# What needs approval\n\n- Every command (anything that changes data) called by an AI actor needs approval by default.\n- Queries (reads) never need approval.\n- The reference marks each route and tool that needs approval with a badge.\n\n# Integrations with API keys\n\nCalls made with an API key or by a person in the app are not AI calls. They run directly, with the permissions of the key or the user. Approval is only for AI actors.\n"
+        },
+        "errors": {
+          "title": "Errors and limits",
+          "lead": "Every surface returns the same typed errors, with a stable code, a message and field-level issues.",
+          "body": "# Error envelope\n\nREST returns errors as JSON with a matching HTTP status:\n\n```\n{\n  \"error\": {\n    \"code\": \"VALIDATION\",\n    \"message\": \"Invalid input\",\n    \"issues\": [ { \"path\": \"name\", \"message\": \"Required\" } ]\n  }\n}\n```\n\n`issues[].path` is the field, dot-joined for nested fields (`rooms.0.name`). MCP tools return the same object with `isError: true`. GraphQL puts the code in `errors[].extensions.code`.\n\n# Codes\n\n- `VALIDATION` (400): the input did not match the schema. Check `issues`.\n- `UNAUTHENTICATED` (401): no credential or an invalid one.\n- `FORBIDDEN` (403): signed in, but the role lacks the permission or you are not a member of the organization.\n- `NOT_FOUND` (404): the record does not exist in your organization.\n- `CONFLICT` (409): the change clashes with existing data, for example an overlapping occupancy or a duplicate name.\n- `UNAVAILABLE` (503): a capability is not set up right now, for example no AI model is configured.\n- `INTERNAL` (500): something went wrong on our side. Retry later and quote the request id if you contact support.\n\n# Limits\n\n- API keys: 600 requests per minute.\n- List pages: at most 100 items per request.\n- GraphQL: queries have a maximum depth and cost.\n- MCP `graphql_query`: queries only, with a maximum length.\n\n# Retries\n\nReads are safe to retry. For commands, check the result before retrying a request that timed out, so you do not create the same record twice.\n"
+        }
+      }
+    }
   }
 }

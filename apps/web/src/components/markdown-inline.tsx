@@ -1,3 +1,4 @@
+import { Link } from "@okazi/i18n/navigation";
 import type { ReactNode } from "react";
 import type { Inline } from "@/lib/markdown/types";
 
@@ -18,6 +19,13 @@ function renderNode({ node }: NodeInput): ReactNode {
         <code className="rounded bg-muted px-1 py-0.5 font-mono text-[0.85em]">{node.text}</code>
       );
     case "link":
+      if (node.href.startsWith("/")) {
+        return (
+          <Link href={node.href} className="text-primary underline underline-offset-2">
+            {renderNodes({ nodes: node.children })}
+          </Link>
+        );
+      }
       return (
         <a
           href={node.href}
