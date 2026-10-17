@@ -2,7 +2,7 @@ import { DEFAULT_TIME_ZONE, type Locale } from "@okazi/i18n";
 import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { getFormatter, getTranslations } from "next-intl/server";
-import type { ReactNode } from "react";
+import type { ComponentProps, ReactNode } from "react";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
@@ -27,14 +27,53 @@ async function NoSpaces({ header }: { header: ReactNode }) {
     </Button>
   );
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-6 overflow-auto p-4 sm:p-6">
       {header}
       <EmptyState title={t("noSpaces")} description={t("noSpacesDescription")} action={action} />
     </div>
   );
 }
 
-/** `/calendar`: header, toolbar and the occupancy of every space for the shown day or week. */
+type CalendarLayoutProps = { header: ReactNode; toolbar: ReactNode; children: ReactNode };
+
+/** Full-width toolbar row; the body scrolls on its own below it. */
+function CalendarLayout({ header, toolbar, children }: CalendarLayoutProps) {
+  return (
+    <>
+      <div className="grid shrink-0 gap-4 p-4 pb-3 sm:px-6 sm:pt-6">
+        {header}
+        {toolbar}
+      </div>
+      <div className="min-h-0 flex-1 overflow-auto px-4 pb-4 sm:px-6 sm:pb-6">{children}</div>
+    </>
+  );
+}
+
+type LoadErrorProps = { errorKey: ComponentProps<typeof ErrorState>["errorKey"] };
+
+function LoadError({ errorKey }: LoadErrorProps) {
+  return (
+    <div className="p-4 sm:p-6">
+      <ErrorState errorKey={errorKey} />
+    </div>
+  );
+}
+
+type FormatPeriodInput = {
+  format: Awaited<ReturnType<typeof getFormatter>>;
+  range: ReturnType<typeof calendarRange>;
+};
+
+const formatPeriod = ({ format, range }: FormatPeriodInput): string =>
+  format.dateTimeRange(range.from, new Date(range.to.getTime() - 1), {
+    dateStyle: "medium",
+    timeZone: TIME_ZONE,
+  });
+
+/**
+ * `/calendar` (a canvas page, ADR 0038): a full-width toolbar row and the occupancy of every space
+ * for the shown day or week, which scrolls on its own below it.
+ */
 export async function CalendarPage({ locale, raw }: CalendarPageProps) {
   const t = await getTranslations("calendar");
   const format = await getFormatter();
@@ -46,31 +85,30 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
     loadCalendar({ ...range, venueId: params.venueId, typeId: params.typeId }),
     getCallerAbilities(),
   ]);
-  if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
-  const last = new Date(range.to.getTime() - 1);
-  const period = format.dateTimeRange(range.from, last, {
-    dateStyle: "medium",
-    timeZone: TIME_ZONE,
-  });
+  if (!result.ok) return <LoadError errorKey={handleLoadError({ error: result.error, locale })} />;
+  const period = formatPeriod({ format, range });
   const header = <PageHeader title={t("title")} description={t("description")} />;
   if (result.value.spaces.length === 0 && !params.venueId) return <NoSpaces header={header} />;
   return (
-    <div className="grid gap-6">
-      {header}
-      <CalendarToolbar
-        params={params}
-        today={today}
-        period={period}
-        venues={result.value.venues}
-        types={result.value.types}
-        typeId={result.value.typeId}
-      />
+    <CalendarLayout
+      header={header}
+      toolbar={
+        <CalendarToolbar
+          params={params}
+          today={today}
+          period={period}
+          venues={result.value.venues}
+          types={result.value.types}
+          typeId={result.value.typeId}
+        />
+      }
+    >
       <CalendarBody
         params={params}
         data={result.value}
         timeZone={TIME_ZONE}
         canBook={bookingWrite}
       />
-    </div>
+    </CalendarLayout>
   );
 }

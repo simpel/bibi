@@ -4,8 +4,9 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 
 ## Structure
 - `src/app/[locale]/` – pages (`(auth)` = login, sign-up, select-organization, oauth/consent, accept-invitation/[id]; `(app)` = protected shell; `/` is the assistant (ADR 0035), `/settings` the settings hub). `page.tsx`/`layout.tsx`/`route.ts` are thin: they read params and render a feature.
-- `src/app/[locale]/(app)/skills` (`page`, `new`, `[id]`, `[id]/edit`) – the Skills section.
-- `src/app/[locale]/(app)/settings/*` – configuration, for admins and owners only (ADR 0034): `settings/layout.tsx` shows a forbidden state to members and viewers, and the sidebar hides the entry. `settings/members` changes a member's fixed role, invites and removes; members above the caller's own role are read-only (`features/member/assignable-roles.ts`). Every role reads everything, so `caller-abilities.ts` has write/admin abilities and the caller's `role`, but no read abilities.
+- Page width (ADR 0038): `(app)/(contained)/` pages sit in `PageContainer` (`@okazi/ui`: `default`, nest `narrow` or `wide` with `gutter={false}`); `(app)/(canvas)/` pages (`/`, `/calendar`) are full width, fill the viewport below the top bar and own their gutter and scrolling. A new page goes into one of the two groups; `AppShell` adds no container.
+- `src/app/[locale]/(app)/(contained)/skills` (`page`, `new`, `[id]`, `[id]/edit`) – the Skills section.
+- `src/app/[locale]/(app)/(contained)/settings/*` – configuration, for admins and owners only (ADR 0034): `settings/layout.tsx` shows a forbidden state to members and viewers, and the sidebar hides the entry. `settings/members` changes a member's fixed role, invites and removes; members above the caller's own role are read-only (`features/member/assignable-roles.ts`). Every role reads everything, so `caller-abilities.ts` has write/admin abilities and the caller's `role`, but no read abilities.
 - `src/app/api/auth/[...all]` (Better Auth), `api/graphql`, `api/v1/[...path]` (REST + OpenAPI), `api/chat` (the assistant's turn, `createChatHandler`), `api/assistant/approval` (the approval card's POST, `createApprovalHandler`), `.well-known/oauth-authorization-server` and `oauth-protected-resource` (discovery for MCP/OAuth, forwarded to Better Auth). The chat and approval routes have `runtime = "nodejs"`, `dynamic = "force-dynamic"` and `maxDuration`.
 - `src/features/<entity>/ui/` – components per entity (fixed names `venue`, `item`, `skill`; `auth/ui` for sign-in; `assistant/` see below). `actions.ts` next to `ui/` = server actions. `web-surfaces.ts` = which operations have UI (`route` or `route: "*"` + `component` for UI in the shell, e.g. the assistant panel; `UI_EXEMPT` in `ui-exempt.ts` lists operations deliberately without UI).
 - `src/components/` – app level: `shell/` (sidebar in three zones per ADR 0036: assistant + recent conversations, work/catalog, and bottom-left settings, platform admin and the user menu with organization, theme and language; ⌘K incl. "Ask the assistant"; the `/settings` hub), `form/`, `states/`, `confirm-dialog`, `markdown-view` (safe markdown without raw HTML, parser in `lib/markdown/`).
@@ -24,7 +25,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 ## Adding a page/feature
 1. Core operation first (`packages/core`), then GraphQL/REST/MCP.
 2. `src/features/<entity>/actions.ts` (server actions) and `ui/` (list = server component, form/dialog = client). Copy `venue/ui` and `item/ui`.
-3. Page: `src/app/[locale]/(app)/<route>/page.tsx` (thin), nav in the right group of `components/shell/nav-items.ts` (configuration pages go to `settings-items.ts`, ADR 0036).
+3. Page: `src/app/[locale]/(app)/(contained)/<route>/page.tsx` (thin; `(canvas)` only for full-width pages, ADR 0038), nav in the right group of `components/shell/nav-items.ts` (configuration pages go to `settings-items.ts`, ADR 0036).
 4. Add the operations to `WEB_SURFACES` in `features/web-surfaces.ts` (or to `UI_EXEMPT` in `features/ui-exempt.ts` with a reason).
 5. Text in `packages/i18n/messages/sv.json` and `en.json` (key parity is tested).
 

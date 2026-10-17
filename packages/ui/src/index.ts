@@ -17,11 +17,7 @@ export {
   CardTitle,
 } from "./components/card/card";
 export { Checkbox, type CheckboxProps } from "./components/checkbox/checkbox";
-export {
-  ColorSwatch,
-  type ColorSwatchProps,
-  colorSwatchVariants,
-} from "./components/color-swatch/color-swatch";
+export * from "./components/color-swatch/color-swatch";
 export { Combobox, type ComboboxProps } from "./components/combobox/combobox";
 export type { ComboboxOption } from "./components/combobox/combobox-groups";
 export {
@@ -78,6 +74,7 @@ export { FormDescription, FormMessage } from "./components/form/form-message";
 export { FormField, type FormFieldProps } from "./components/form-field/form-field";
 export { Input, type InputProps } from "./components/input/input";
 export { Label, type LabelProps } from "./components/label/label";
+export * from "./components/page-container/page-container";
 export * from "./components/popover/popover";
 export {
   Select,

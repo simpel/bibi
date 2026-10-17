@@ -8,7 +8,9 @@ import { WEB_SURFACES } from "./web-surfaces";
 const stubEmbed = async () => ({ model: "stub", embeddings: [] });
 const operationNames = createCoreOperations({ embed: stubEmbed }).map(({ name }) => name);
 const srcDir = join(import.meta.dirname, "..");
-const appDir = join(srcDir, "app", "[locale]", "(app)");
+const appDirs = ["(contained)", "(canvas)"].map((group) =>
+  join(srcDir, "app", "[locale]", "(app)", group),
+);
 
 describe("web surfaces", () => {
   it("covers every core operation or lists it as uiExempt with a reason", () => {
@@ -35,7 +37,7 @@ describe("web surfaces", () => {
     const missing = WEB_SURFACES.filter(({ route, component }) =>
       route === "*"
         ? !component || !existsSync(join(srcDir, component))
-        : !existsSync(join(appDir, route, "page.tsx")),
+        : !appDirs.some((dir) => existsSync(join(dir, route, "page.tsx"))),
     );
     expect(missing).toEqual([]);
   });
