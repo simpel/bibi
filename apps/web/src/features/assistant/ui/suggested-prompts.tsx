@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@okazi/ui";
+import { ConversationEmptyState, Suggestion, Suggestions } from "@okazi/ui";
 import { SparklesIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -12,27 +12,25 @@ const KEYS = ["listVenues", "createVenue", "findItems", "listSkills"] as const;
 export function SuggestedPrompts({ onPick }: SuggestedPromptsProps) {
   const t = useTranslations("assistant");
   return (
-    <div
-      className="flex flex-1 flex-col justify-center gap-4 px-4 py-6"
+    <ConversationEmptyState
       data-slot="assistant-empty"
+      title={t("emptyTitle")}
+      description={t("emptyDescription")}
     >
-      <div className="grid justify-items-center gap-1 text-center">
-        <SparklesIcon className="size-6 text-primary" />
-        <h3 className="font-serif text-lg">{t("emptyTitle")}</h3>
+      <div className="grid justify-items-center gap-3">
+        <SparklesIcon className="size-8 text-primary" />
+        <h3 className="font-serif text-2xl">{t("emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground">{t("emptyDescription")}</p>
+        <Suggestions className="mt-2 max-w-2xl">
+          {KEYS.map((key) => (
+            <Suggestion
+              key={key}
+              suggestion={t(`suggestions.${key}`)}
+              onClick={({ suggestion }) => onPick({ text: suggestion })}
+            />
+          ))}
+        </Suggestions>
       </div>
-      <div className="grid gap-2">
-        {KEYS.map((key) => (
-          <Button
-            key={key}
-            variant="outline"
-            className="h-auto justify-start whitespace-normal py-2 text-left font-normal"
-            onClick={() => onPick({ text: t(`suggestions.${key}`) })}
-          >
-            {t(`suggestions.${key}`)}
-          </Button>
-        ))}
-      </div>
-    </div>
+    </ConversationEmptyState>
   );
 }

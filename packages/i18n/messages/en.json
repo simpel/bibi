@@ -157,6 +157,8 @@
     "detail": "Details",
     "newChat": "New chat",
     "recent": "Recent",
+    "chats": "Chats",
+    "showMore": "Show more",
     "platformAdmin": "Platform admin",
     "groups": {
       "work": "Work",
@@ -1296,10 +1298,16 @@
     },
     "description": "Chat with the assistant about venues, items and skills.",
     "stop": "Stop",
-    "backToChat": "Back to the chat",
     "emptyTitle": "What can I help you with?",
     "emptyDescription": "I can search, show and propose changes. Changes always need your approval.",
     "loadingConversation": "Loading the conversation...",
+    "skills": {
+      "label": "Skills",
+      "search": "Search skills...",
+      "empty": "No skills found.",
+      "failed": "Could not load the skills.",
+      "use": "Use the skill \"{name}\":"
+    },
     "suggestions": {
       "listVenues": "Show all venues",
       "createVenue": "Create a venue called Test Hall",
@@ -1744,7 +1752,13 @@
     "devUsers": "Dev users",
     "switchUser": "Switch dev user",
     "switching": "Switching user…",
-    "switched": "Signed in as {name}."
+    "switched": "Signed in as {name}.",
+    "reseed": "Reseed database",
+    "reseeding": "Reseeding database…",
+    "reseeded": "Database reseeded.",
+    "searchUsers": "Search users…",
+    "noUsers": "No users found.",
+    "allUsers": "All users ({count})"
   },
   "shell": {
     "mainNavigation": "Main navigation",

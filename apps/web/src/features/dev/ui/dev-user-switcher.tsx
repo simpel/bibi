@@ -5,17 +5,16 @@ import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@okazi/ui";
-import { UsersIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { DatabaseIcon, UsersIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { DevService } from "@/lib/dev-services";
-import { useToastAction } from "@/lib/use-toast-action";
-import { switchDevUserAction } from "../actions";
 import { DevServiceMenu } from "./dev-service-menu";
 import { DevUserMenuGroups } from "./dev-user-menu-groups";
+import { useDevSwitcherActions } from "./use-dev-switcher-actions";
 
 export type DevUserSwitcherProps = {
   users: DevUser[];
@@ -26,17 +25,10 @@ export type DevUserSwitcherProps = {
 /** Development only (rendered by `DevUserSwitcherSlot`): pick a seeded user to sign in as. */
 export function DevUserSwitcher({ users, services, currentUserId }: DevUserSwitcherProps) {
   const t = useTranslations("dev");
-  const router = useRouter();
-  const { run, pending } = useToastAction();
-  const switchTo = ({ user }: { user: DevUser }) =>
-    run({
-      action: () => switchDevUserAction({ userId: user.id }),
-      messages: { pending: t("switching"), success: t("switched", { name: user.name }) },
-      onSuccess: () => router.refresh(),
-    });
+  const { open, setOpen, pending, switchTo, reseed } = useDevSwitcherActions();
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      <DropdownMenu>
+      <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="secondary" size="sm" disabled={pending} aria-label={t("switchUser")}>
             <UsersIcon />
@@ -47,6 +39,11 @@ export function DevUserSwitcher({ users, services, currentUserId }: DevUserSwitc
           <DevServiceMenu services={services} />
           <DropdownMenuSeparator />
           <DevUserMenuGroups users={users} currentUserId={currentUserId} onSelect={switchTo} />
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={reseed}>
+            <DatabaseIcon />
+            {t("reseed")}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

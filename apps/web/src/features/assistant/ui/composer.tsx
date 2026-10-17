@@ -1,10 +1,17 @@
 "use client";
 
-import { Button, Textarea } from "@okazi/ui";
+import {
+  PromptInput,
+  PromptInputBody,
+  PromptInputFooter,
+  PromptInputSubmit,
+  PromptInputTextarea,
+  PromptInputTools,
+} from "@okazi/ui";
 import type { ChatStatus } from "ai";
-import { SendIcon, SquareIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ComposerDraft } from "../state/use-prefill";
+import { SkillPicker } from "./skill-picker";
 import { useComposer } from "./use-composer";
 
 export type ComposerProps = {
@@ -14,41 +21,40 @@ export type ComposerProps = {
   draft?: ComposerDraft | null | undefined;
 };
 
-/** Message box: Enter sends, Shift+Enter adds a line; while the model works a stop button shows. */
+/** AI Elements message box: Enter sends, Shift+Enter adds a line; while the model works a stop button shows. */
 export function Composer({ status, onSend, onStop, draft }: ComposerProps) {
   const t = useTranslations("assistant");
-  const { text, setText, input, busy, submit, onKeyDown } = useComposer({
-    status,
-    onSend,
-    draft,
-  });
+  const { input, insert } = useComposer({ draft });
+  const busy = status === "submitted" || status === "streaming";
   return (
-    <form
-      className="flex items-end gap-2 border-t p-3"
-      onSubmit={(event) => {
-        event.preventDefault();
-        submit();
-      }}
-    >
-      <Textarea
-        ref={input}
-        rows={2}
-        value={text}
-        onChange={(event) => setText(event.target.value)}
-        onKeyDown={(event) => onKeyDown({ event })}
-        placeholder={t("placeholder")}
-        aria-label={t("placeholder")}
-        className="min-h-0 resize-none"
-      />
-      {busy ? (
-        <Button type="button" size="icon" variant="outline" onClick={onStop} aria-label={t("stop")}>
-          <SquareIcon />
-        </Button>
-      ) : (
-        <Button type="submit" size="icon" disabled={!text.trim()} aria-label={t("send")}>
-          <SendIcon />
-        </Button>
-      )}
-    </form>
+    <div className="mx-auto w-full max-w-3xl p-4 pt-0">
+      <PromptInput
+        onSubmit={({ text }, event) => {
+          if (busy) return;
+          onSend({ text });
+          event.currentTarget.reset();
+        }}
+      >
+        <PromptInputBody>
+          <PromptInputTextarea
+            ref={input}
+            placeholder={t("placeholder")}
+            aria-label={t("placeholder")}
+          />
+        </PromptInputBody>
+        <PromptInputFooter>
+          <PromptInputTools>
+            <SkillPicker
+              onPick={({ skill }) => insert({ text: t("skills.use", { name: skill.name }) })}
+            />
+          </PromptInputTools>
+          <PromptInputSubmit
+            status={status}
+            onStop={onStop}
+            aria-label={busy ? t("stop") : t("send")}
+          />
+        </PromptInputFooter>
+      </PromptInput>
+    </div>
   );
 }

@@ -1,6 +1,7 @@
 "use server";
 
-import { switchDevUser } from "@okazi/auth";
+import { getAuth, isDevEnvironment, listDevUsers, switchDevUser } from "@okazi/auth";
+import { seedDemo } from "@okazi/core/seed/demo";
 import { headers } from "next/headers";
 import type { ActionResult } from "@/lib/action-result";
 
@@ -13,4 +14,24 @@ export async function switchDevUserAction({
   const switched = await switchDevUser({ userId, headers: await headers() });
   if (switched) return { ok: true, value: null };
   return { ok: false, error: { code: "FORBIDDEN", message: "Switch failed", issues: [] } };
+}
+
+/**
+ * Dev switcher: recreates the demo organizations and their users (ADR 0025), then signs in again
+ * as the same email, because reseeding gives every user a new id and drops the old session.
+ */
+export async function reseedDevDatabaseAction(): Promise<ActionResult<null>> {
+  if (!isDevEnvironment()) {
+    return { ok: false, error: { code: "FORBIDDEN", message: "Dev only", issues: [] } };
+  }
+  const session = await getAuth().api.getSession({ headers: await headers() });
+  const result = await seedDemo();
+  if (!result.ok) {
+    const { code, message } = result.error;
+    return { ok: false, error: { code, message, issues: [] } };
+  }
+  const users = await listDevUsers();
+  const user = users.find((u) => u.email === session?.user.email) ?? users[0];
+  if (user) await switchDevUser({ userId: user.id, headers: await headers() });
+  return { ok: true, value: null };
 }

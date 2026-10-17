@@ -1,4 +1,9 @@
 export type { ColumnDef, SortingState } from "@tanstack/react-table";
+export * from "./components/ai-elements/conversation";
+export * from "./components/ai-elements/message";
+export * from "./components/ai-elements/prompt-input";
+export * from "./components/ai-elements/shimmer";
+export * from "./components/ai-elements/suggestion";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";
 export * from "./components/behaviour-display/behaviour-display";
 export * from "./components/behaviour-display/bookable-display";
@@ -7,15 +12,7 @@ export * from "./components/behaviour-display/composable-display";
 export * from "./components/behaviour-display/priced-display";
 export * from "./components/behaviour-display/setups-display";
 export { Button, type ButtonProps, buttonVariants } from "./components/button/button";
-export {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  type CardProps,
-  CardTitle,
-} from "./components/card/card";
+export * from "./components/card/card";
 export { Checkbox, type CheckboxProps } from "./components/checkbox/checkbox";
 export * from "./components/color-swatch/color-swatch";
 export { Combobox, type ComboboxProps } from "./components/combobox/combobox";
@@ -71,6 +68,7 @@ export { FormItem } from "./components/form/form-item";
 export { FormLabel } from "./components/form/form-label";
 export { FormDescription, FormMessage } from "./components/form/form-message";
 export { FormField, type FormFieldProps } from "./components/form-field/form-field";
+export * from "./components/hover-card/hover-card";
 export { Input, type InputProps } from "./components/input/input";
 export { Label, type LabelProps } from "./components/label/label";
 export * from "./components/page-container/page-container";

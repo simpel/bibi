@@ -1,38 +1,47 @@
 "use client";
 
+import { ConversationContent, Message, MessageContent } from "@okazi/ui";
 import type { ChatStatus, UIMessage } from "ai";
-import { useEffect, useRef } from "react";
-import { MessageItem } from "./message-item";
+import { isTextUIPart } from "ai";
+import { ChatError } from "./chat-error";
+import { MessageParts } from "./message-parts";
 import { ThinkingIndicator } from "./thinking-indicator";
 
-export type MessageListProps = { messages: UIMessage[]; status: ChatStatus };
+export type MessageListProps = {
+  messages: UIMessage[];
+  status: ChatStatus;
+  error: Error | undefined;
+  onRetry: () => void;
+};
 
-const waitingForOutput = ({ messages, status }: MessageListProps): boolean => {
+const waitingForOutput = ({
+  messages,
+  status,
+}: Pick<MessageListProps, "messages" | "status">): boolean => {
   if (status === "submitted") return true;
   const last = messages[messages.length - 1];
   return status === "streaming" && last?.role === "assistant" && last.parts.length === 0;
 };
 
-/** Scrolling transcript; follows new output to the bottom. */
-export function MessageList({ messages, status }: MessageListProps) {
-  const endRef = useRef<HTMLDivElement>(null);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll whenever the transcript changes
-  useEffect(() => {
-    endRef.current?.scrollIntoView({ block: "end" });
-  }, [messages, status]);
+const userText = ({ message }: { message: UIMessage }): string =>
+  message.parts
+    .filter(isTextUIPart)
+    .map((part) => part.text)
+    .join("\n");
+
+/** Transcript as AI Elements messages: user text in a bubble, assistant parts as flowing content. */
+export function MessageList({ messages, status, error, onRetry }: MessageListProps) {
   return (
-    <div
-      className="flex-1 overflow-y-auto px-4 py-3"
-      data-slot="assistant-messages"
-      aria-live="polite"
-    >
-      <div className="grid gap-4">
-        {messages.map((message) => (
-          <MessageItem key={message.id} message={message} />
-        ))}
-        {waitingForOutput({ messages, status }) ? <ThinkingIndicator /> : null}
-      </div>
-      <div ref={endRef} />
-    </div>
+    <ConversationContent data-slot="assistant-messages">
+      {messages.map((message) => (
+        <Message key={message.id} from={message.role}>
+          <MessageContent>
+            {message.role === "user" ? userText({ message }) : <MessageParts message={message} />}
+          </MessageContent>
+        </Message>
+      ))}
+      {waitingForOutput({ messages, status }) ? <ThinkingIndicator /> : null}
+      <ChatError error={error} onRetry={onRetry} />
+    </ConversationContent>
   );
 }

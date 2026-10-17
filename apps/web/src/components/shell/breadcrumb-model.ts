@@ -6,11 +6,13 @@ export type CrumbLabelKey =
   | SettingsKey
   | "profile"
   | "quotes"
+  | "chats"
   | "new"
   | "edit"
   | "detail";
 
 const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
+  chats: "chats",
   calendar: "calendar",
   bookings: "bookings",
   inquiries: "inquiries",

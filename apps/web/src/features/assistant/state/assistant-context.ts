@@ -6,11 +6,7 @@ import type { useAssistantChat } from "./use-assistant-chat";
 import type { useConversations } from "./use-conversations";
 import type { ComposerDraft } from "./use-prefill";
 
-export type AssistantView = "chat" | "history";
-
 export type AssistantContextValue = {
-  view: AssistantView;
-  setView: (input: { view: AssistantView }) => void;
   session: ReturnType<typeof useAssistantChat>;
   conversations: ReturnType<typeof useConversations>;
   /** Navigates to the start page, where the assistant lives. */
@@ -23,7 +19,7 @@ export type AssistantContextValue = {
   draft: ComposerDraft | null;
   /** Starts an empty conversation (created on the first message). */
   newConversation: () => void;
-  /** Opens a stored conversation; resolves to an error key when it cannot be loaded. */
+  /** Opens a stored conversation on the start page; resolves to an error key when it cannot be loaded. */
   selectConversation: (input: { id: string }) => Promise<ErrorKey | null>;
 };
 

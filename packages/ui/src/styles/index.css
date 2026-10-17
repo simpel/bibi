@@ -4,3 +4,4 @@
 @import "./base.css";
 
 @source "../";
+@source "../../node_modules/streamdown/dist/*.js";

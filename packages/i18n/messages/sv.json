@@ -157,6 +157,8 @@
     "detail": "Detaljer",
     "newChat": "Ny chatt",
     "recent": "Senaste",
+    "chats": "Chattar",
+    "showMore": "Visa fler",
     "platformAdmin": "Plattformsadmin",
     "groups": {
       "work": "Arbete",
@@ -1296,10 +1298,16 @@
     },
     "description": "Chatta med assistenten om anläggningar, artiklar och färdigheter.",
     "stop": "Stoppa",
-    "backToChat": "Tillbaka till chatten",
     "emptyTitle": "Vad kan jag hjälpa dig med?",
     "emptyDescription": "Jag kan söka, visa och föreslå ändringar. Ändringar kräver alltid ditt godkännande.",
     "loadingConversation": "Laddar konversationen...",
+    "skills": {
+      "label": "Färdigheter",
+      "search": "Sök färdigheter...",
+      "empty": "Inga färdigheter hittades.",
+      "failed": "Kunde inte hämta färdigheterna.",
+      "use": "Använd färdigheten \"{name}\":"
+    },
     "suggestions": {
       "listVenues": "Visa alla anläggningar",
       "createVenue": "Skapa en anläggning som heter Testsalen",
@@ -1744,7 +1752,13 @@
     "devUsers": "Dev-användare",
     "switchUser": "Byt dev-användare",
     "switching": "Byter användare…",
-    "switched": "Inloggad som {name}."
+    "switched": "Inloggad som {name}.",
+    "reseed": "Återskapa databasen",
+    "reseeding": "Återskapar databasen…",
+    "reseeded": "Databasen är återskapad.",
+    "searchUsers": "Sök användare…",
+    "noUsers": "Inga användare hittades.",
+    "allUsers": "Alla användare ({count})"
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",
