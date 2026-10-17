@@ -48,6 +48,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "BookingSeries",
   "ProgramItem",
   "Requirement",
+  "Sheet",
   "Inquiry",
   "InboundEmail",
   "PaymentAccount",
@@ -77,7 +78,8 @@ export const APP_ID_MODELS = new Set<string>([
  * search index (Embedding) and Better Auth membership rows (Member is deleted on removal,
  * Invitation has its own `status` lifecycle; core audits both) and the payout account
  * (PaymentAccount: one row per organization with its own `status` lifecycle, never removed) and
- * payments (Payment: its own `status` lifecycle, never removed).
+ * payments (Payment: its own `status` lifecycle, never removed) and sheet versions (Sheet:
+ * history, `sentAt` is its lifecycle, never removed).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
   "ItemSetup",
@@ -90,4 +92,5 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "Invitation",
   "PaymentAccount",
   "Payment",
+  "Sheet",
 ]);

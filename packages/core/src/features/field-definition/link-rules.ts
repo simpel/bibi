@@ -1,4 +1,5 @@
 import { ok, type Result } from "../../errors/result";
+import { hasPermission, type Permission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import { type FieldKind, isLinkableBase } from "./field-kinds";
@@ -67,12 +68,37 @@ export async function linkedRecordExists({
 }
 
 export type CheckLinkValuesInput = {
-  context: Db;
+  context: Pick<OperationContext, "db" | "permissions">;
   specs: readonly FieldSpec[];
   values: Record<string, unknown>;
 };
 
-/** Every LINK value must be an active record of the field's target type, in the organization. */
+/** The permission resource that guards reading records of a linkable base. */
+const BASE_RESOURCE: Readonly<Record<string, string>> = {
+  ITEM: "item",
+  CUSTOMER: "customer",
+  CONTACT: "contact",
+  BOOKING: "booking",
+};
+
+type CanReadTargetInput = { context: CheckLinkValuesInput["context"]; linkTypeId: string };
+
+/**
+ * Whether the caller may read the target type's records. Checked before the existence lookup so a
+ * caller without read access cannot probe which ids exist (the answer does not depend on the id).
+ */
+async function canReadTarget({ context, linkTypeId }: CanReadTargetInput): Promise<boolean> {
+  const type = await context.db.entityType.findFirst({ where: { id: linkTypeId } });
+  const resource = type ? BASE_RESOURCE[type.base] : undefined;
+  if (!resource) return false;
+  const permission = `${resource}:read` as Permission;
+  return hasPermission({ permissions: context.permissions, permission });
+}
+
+/**
+ * Every LINK value must be an active record of the field's target type, in the organization, and
+ * the caller needs `<base>:read` on the target base to set one.
+ */
 export async function checkLinkValues({
   context,
   specs,
@@ -82,9 +108,12 @@ export async function checkLinkValues({
   for (const spec of specs) {
     const id = values[spec.key];
     if (spec.kind !== "LINK" || typeof id !== "string") continue;
-    const found = spec.linkTypeId
-      ? await linkedRecordExists({ context, linkTypeId: spec.linkTypeId, id })
-      : false;
+    const { linkTypeId } = spec;
+    if (linkTypeId && !(await canReadTarget({ context, linkTypeId }))) {
+      issues.push({ path: `fields.${spec.key}`, message: `No permission to link ${spec.name}` });
+      continue;
+    }
+    const found = linkTypeId ? await linkedRecordExists({ context, linkTypeId, id }) : false;
     if (!found)
       issues.push({ path: `fields.${spec.key}`, message: `Not a record of ${spec.name}` });
   }

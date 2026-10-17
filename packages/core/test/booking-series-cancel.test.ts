@@ -5,8 +5,9 @@ import {
   type ExecuteContext,
   execute,
 } from "../src/index";
+import { bookingSetup, createTestBooking } from "./booking-helpers";
 import { bookingsOn, seriesSetup, updateOccurrences } from "./booking-series-helpers";
-import { errorCode, unwrap } from "./helpers";
+import { errorCode, testContext, unwrap } from "./helpers";
 
 const WEEK = 7 * 24 * 3_600_000;
 
@@ -78,5 +79,29 @@ describe("bookingSeries.cancel (ADR 0023)", () => {
       patch: { estimatedHeadcount: 4 },
     });
     expect(errorCode({ result: change })).toBe("CONFLICT");
+  });
+  it("keeps series per organization and refuses a status of another organization", async () => {
+    const { context, series } = await runningSeries();
+    const outsider = testContext();
+    expect(errorCode({ result: await cancel({ context: outsider, id: series.id }) })).toBe(
+      "NOT_FOUND",
+    );
+    const own = await context.db.bookingSeries.findUniqueOrThrow({ where: { id: series.id } });
+    expect(own.cancelledAt).toBeNull();
+    const other = await bookingSetup();
+    await createTestBooking({
+      context: other.context,
+      entityTypeId: other.type.id,
+      customerId: other.customer.id,
+    });
+    const foreign = await other.context.db.bookingStatus.findFirstOrThrow({
+      where: { phase: "CANCELLED" },
+    });
+    const wrong = await execute({
+      operation: cancelBookingSeries,
+      input: { id: series.id, reason: "x", statusId: foreign.id },
+      context,
+    });
+    expect(errorCode({ result: wrong })).toBe("VALIDATION");
   });
 });

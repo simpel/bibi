@@ -3,12 +3,12 @@
 import { Button, Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@okazi/ui";
 import { MenuIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Sidebar } from "./sidebar";
+import { Sidebar, type SidebarProps } from "./sidebar";
 
-export type MobileNavProps = { organizationId: string };
+export type MobileNavProps = SidebarProps;
 
-/** Sidebar in a sheet below the `md` breakpoint. */
-export function MobileNav({ organizationId }: MobileNavProps) {
+/** Sidebar in a sheet below the `md` breakpoint (ADR 0035). */
+export function MobileNav(props: MobileNavProps) {
   const t = useTranslations("nav");
   return (
     <Sheet>
@@ -20,7 +20,7 @@ export function MobileNav({ organizationId }: MobileNavProps) {
       <SheetContent side="left" className="w-72 p-0">
         <SheetTitle className="sr-only">{t("openMenu")}</SheetTitle>
         <SheetDescription className="sr-only">{t("openMenu")}</SheetDescription>
-        <Sidebar organizationId={organizationId} />
+        <Sidebar {...props} />
       </SheetContent>
     </Sheet>
   );

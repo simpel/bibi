@@ -11,6 +11,7 @@ import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { loadSeriesTotals } from "../../booking-series/load-series-totals";
 import { loadBookingData } from "../load-booking-data";
 import { loadQuickBookingData } from "../load-quick-booking-data";
 import type { BookingFormData } from "./booking-form-data";
@@ -43,8 +44,9 @@ async function BookingActions({ data }: { data: BookingFormData }) {
 export async function BookingList({ locale, cursor }: BookingListProps) {
   const t = await getTranslations("booking");
   const { bookingWrite } = await getCallerAbilities();
-  const [data, result] = await Promise.all([
+  const [data, seriesTotals, result] = await Promise.all([
     loadBookingData(),
+    loadSeriesTotals(),
     runOperation({
       operation: listBookings,
       input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
@@ -66,7 +68,7 @@ export async function BookingList({ locale, cursor }: BookingListProps) {
         />
       ) : (
         <>
-          <BookingTable bookings={page.items} data={data.value} />
+          <BookingTable bookings={page.items} data={data.value} seriesTotals={seriesTotals} />
           <CursorPagination
             pathname={ROUTES.bookings}
             cursor={cursor}

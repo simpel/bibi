@@ -29,19 +29,21 @@ const priceListsRead: PermissionSet = { priceList: ["read"] };
 const priceListsAdmin: PermissionSet = { priceList: ["admin"] };
 
 /**
- * Bookings, their program items, requirement counts (ADR 0021) and owners (ADR 0022); owners are
+ * Bookings, their program items, requirement counts and sheets (ADR 0021) and owners (ADR 0022); owners are
  * members, shown and picked by name.
  */
 const bookingsRead: PermissionSet = {
   booking: ["read"],
   programItem: ["read"],
   requirement: ["read"],
+  sheet: ["read"],
   member: ["read"],
 };
 const bookingsWrite: PermissionSet = {
   booking: ["write"],
   programItem: ["write"],
   requirement: ["write"],
+  sheet: ["write"],
   member: ["read"],
 };
 
@@ -71,8 +73,8 @@ const readAll: PermissionSet = {
 /**
  * "Conference venue" (ADR 0020). Optional data an organization imports and then edits freely.
  * Follows the ADR's role table for the resources that exist; options, quotes and invoices are
- * added to the roles below when those resources exist. Sheets are read through
- * `configuration:read`, which every role has.
+ * added to the roles below when those resources exist. Sheet definitions are read through
+ * `configuration:read`, which every role has; the generated sheets follow the booking.
  */
 export const conferenceVenueTemplate: RoleTemplate = {
   key: "conference-venue",
@@ -92,6 +94,7 @@ export const conferenceVenueTemplate: RoleTemplate = {
         booking: ["admin"],
         programItem: ["admin"],
         requirement: ["admin"],
+        sheet: ["admin"],
         inquiry: ["admin"],
         search: ["admin"],
         conversation: ["admin"],

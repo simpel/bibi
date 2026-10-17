@@ -35,29 +35,33 @@ function usage() {
   return "Usage: pnpm gen entity <Name>   (PascalCase, e.g. Venue or AgendaItem)";
 }
 
-function main({ argv }) {
-  const [kind, name] = argv;
-  if (kind !== "entity" || !name) return fail({ message: usage() });
-  if (!ENTITY_NAME.test(name))
-    return fail({ message: `Invalid name "${name}". Use PascalCase, e.g. Venue.` });
-
+export function generateEntity({ name, root }) {
   const names = deriveNames({ name });
   const plan = planFiles({ names });
-  const existing = plan.filter(({ relPath }) => existsSync(join(ROOT, relPath)));
+  const existing = plan.filter(({ relPath }) => existsSync(join(root, relPath)));
   if (existing.length > 0) {
     const message = [
       "Aborting, these files already exist (never overwritten):",
       ...existing.map((f) => `  ${f.relPath}`),
     ].join("\n");
-    return fail({ message });
+    return { ok: false, message };
   }
-
   for (const { templatePath, relPath } of plan) {
     const text = renderTemplate({ text: readFileSync(templatePath, "utf8"), names });
-    mkdirSync(dirname(join(ROOT, relPath)), { recursive: true });
-    writeFileSync(join(ROOT, relPath), text, { flag: "wx" });
+    mkdirSync(dirname(join(root, relPath)), { recursive: true });
+    writeFileSync(join(root, relPath), text, { flag: "wx" });
   }
-  console.log(nextSteps({ names, plan }));
+  return { ok: true, names, plan };
+}
+
+function main({ argv }) {
+  const [kind, name] = argv;
+  if (kind !== "entity" || !name) return fail({ message: usage() });
+  if (!ENTITY_NAME.test(name))
+    return fail({ message: `Invalid name "${name}". Use PascalCase, e.g. Venue.` });
+  const result = generateEntity({ name, root: ROOT });
+  if (!result.ok) return fail({ message: result.message });
+  console.log(nextSteps({ names: result.names, plan: result.plan }));
   return 0;
 }
 
@@ -70,7 +74,7 @@ export function nextSteps({ names, plan }) {
     "Checklist of files to change by hand (all required for parity, structure and type checks):",
     `  [ ] packages/db/prisma/schema/${kebab}.prisma: add domain fields, then pnpm db:generate and pnpm --filter @okazi/db migrate:dev.`,
     `  [ ] packages/db/src/scoped/models.ts: add "${Pascal}" to ORG_SCOPED_MODELS and to SOFT_DELETE_DEFAULTS (["${Pascal}", "ACTIVE"]).`,
-    `  [ ] packages/core/src/index.ts, core-operations.ts and schemas.ts: export ${camel}Schema, the types and the operations; register the operations.`,
+    `  [ ] packages/core/src/index.ts, core-operations.ts and schemas.ts: export ${Pascal}Schema, the types and the operations; register ${camel}Operations. Add "${camel}" to RESOURCES (permissions/resources.ts) and ${camel}Embeddable to search/embeddables.ts.`,
     `  [ ] packages/graphql/src/schema/schema.ts: add import "../features/${kebab}/graphql";`,
     "  [ ] packages/api and apps/mcp: register the REST routes and MCP tools from rest.ts and mcp.ts.",
     `  [ ] apps/web/src/features/web-surfaces.ts: add each ${kebab}.* operation to WEB_SURFACES (or UI_EXEMPT in ui-exempt.ts with a reason).`,

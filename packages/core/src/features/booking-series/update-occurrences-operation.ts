@@ -27,7 +27,12 @@ async function applyChange({ context, seriesId, fromIndex, scope, patch }: Apply
   }
   const template = series.template as BookingSeriesTemplate;
   const setupId = patch.setupId !== undefined ? patch.setupId : template.setupId;
-  const items = await checkSeriesItems({ context, itemIds: patch.itemIds ?? [], setupId });
+  const items = await checkSeriesItems({
+    context,
+    itemIds: patch.itemIds ?? [],
+    setupId,
+    customerId: series.customerId,
+  });
   if (!items.ok) return items;
   const offsetMs = patch.startsAt ? patch.startsAt.getTime() - anchor.startsAt.getTime() : 0;
   const shared = { context, patch, offsetMs, template, changeoverMinutes: items.value };

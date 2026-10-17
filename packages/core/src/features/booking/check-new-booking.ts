@@ -5,7 +5,7 @@ import { validateFields } from "../field-definition/field-values";
 import { checkCustomer, checkOwners } from "./booking-rules";
 
 export type CheckNewBookingInput = {
-  context: Pick<OperationContext, "db">;
+  context: Pick<OperationContext, "db" | "permissions">;
   entityTypeId: string;
   customerId: string;
   salesOwnerId?: string | null | undefined;

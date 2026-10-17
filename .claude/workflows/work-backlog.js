@@ -213,7 +213,7 @@ ${CO_AUTHOR}
 3. Ensure Postgres is up (docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres), then always run ${CHECKS}. This is the independent check before main. If a failure comes from a conflict you resolved, fix it, fold it into the ticket's commit (git add -A, git commit --amend --no-edit) and re-run (at most 2 tries). On any remaining failure return landed=false, reason "red before push" plus a short excerpt.
 4. git push origin HEAD:main. Never force-push. If rejected because origin moved, go back to step 2 (at most 3 tries in total).
 5. ${moveCard(t, 'Done')}
-6. From ${REPO}: pnpm wt:rm ${wtName(t)} --delete-branch.
+6. From ${REPO}: pnpm wt:rm ${wtName(t)} --delete-branch, then tools/backlog/release.sh ${t.number} (releases the ticket lock).
 Return landed=true and the pushed SHA.`
 
 const parkPrompt = (t, dir, reason) => `Issue #${t.number} could not land. Park its work so a human or a later run can pick it up.
@@ -225,7 +225,7 @@ ${CO_AUTHOR}
 3. If the branch has no commits beyond origin/main (git log origin/main..HEAD is empty), skip to step 5 and return branch "".
 4. git branch -m parked/${t.number} (append -2, -3, … if taken), then git push -u origin <branch>. Never force-push.
 5. gh issue comment ${t.number} -R simpel/okazi with a short English note: the work-backlog run parked it, the branch link (https://github.com/simpel/okazi/tree/<branch>) if any, and the reason (max 30 lines). Then: ${moveCard(t, 'Parked')}
-6. From ${REPO}: pnpm wt:rm ${wtName(t)} --force (keeps the branch; drops the worktree database).
+6. From ${REPO}: pnpm wt:rm ${wtName(t)} --force (keeps the branch; drops the worktree database), then tools/backlog/release.sh ${t.number} (releases the ticket lock).
 Return ok and the branch name.`
 
 const followUpPrompt = (items) => `File follow-up issues on simpel/okazi for problems agents found outside their ticket's scope. Work in ${REPO}; do not edit files.
@@ -271,6 +271,8 @@ async function runTicket(t) {
   const collect = (r) => r && r.followUps && r.followUps.forEach((f) => followUps.push({ ...f, from: t.number }))
   const impl = await agent(implPrompt(t, dir), { label: `#${t.number} ${state.model}`, phase: 'Implement', schema: IMPL, model: state.model })
   if (!impl) return park(t, dir, 'implement agent failed')
+  // prep.sh refuses closed issues and locked tickets (another run or agent owns the worktree): never park those,
+  // parking would touch the other run's worktree.
   if (impl.status === 'prep_failed') return { t, outcome: 'failed', reason: `worktree setup failed: ${impl.notes || impl.summary}` }
   collect(impl)
   if (impl.status === 'blocked') return park(t, dir, `blocked: ${impl.notes || impl.summary}`)
@@ -305,6 +307,8 @@ const adrs = (t) => t.labels.filter((l) => l.startsWith('adr:'))
 function packBatch(tickets) {
   const ready = tickets
     .filter((t) => t.openBlockers.length === 0)
+    // Defence in depth: select.mjs already limits to the wanted statuses, so a card being worked on is never dispatched twice.
+    .filter((t) => STATUSES.includes(t.status))
     .filter((t) => !t.labels.includes('type:decision'))
     // Agent findings wait in Backlog until a human moves them to Todo; otherwise a run could feed itself.
     .filter((t) => !(t.labels.includes('source:agent') && t.status === 'Backlog'))

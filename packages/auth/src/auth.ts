@@ -5,7 +5,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { authAfterHook, authLogger } from "./auth-logging";
 import { defaultActiveOrganization } from "./default-active-organization";
-import { sendAuthMail } from "./mail";
+import { sendPasswordResetMail } from "./mail";
 import { adminPlugin, DISABLED_ADMIN_PATHS } from "./plugins/admin";
 import { apiKeyPlugin } from "./plugins/api-key";
 import { devSwitchUserPlugin } from "./plugins/dev-switch-user";
@@ -42,7 +42,7 @@ export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
       enabled: true,
       minPasswordLength: 10,
       sendResetPassword: async ({ user, url }) => {
-        await sendAuthMail({ to: user.email, subject: "Reset your password", text: url });
+        await sendPasswordResetMail({ to: user.email, url });
       },
     },
     databaseHooks: {

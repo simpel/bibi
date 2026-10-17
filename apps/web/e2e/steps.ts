@@ -24,7 +24,10 @@ export async function signUp({ page, credentials }: PageInput & { credentials: C
 export async function createOrganization({ page, name }: PageInput & { name: string }) {
   await page.getByLabel("Organisationens namn").fill(name);
   await page.getByRole("button", { name: "Skapa organisation" }).click();
-  await expect(page).toHaveURL(/\/sv\/venues$/);
+  // Home is the assistant (ADR 0035); the steps that follow start from the venue list.
+  await expect(page).toHaveURL(/\/sv$/);
+  await expect(page.locator('[data-slot="assistant-home"]')).toBeVisible();
+  await page.goto("/sv/venues");
   await expect(page.getByText("Inga anläggningar ännu.")).toBeVisible();
 }
 

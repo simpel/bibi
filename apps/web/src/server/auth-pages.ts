@@ -9,7 +9,7 @@ export type AuthPageInput = { locale: Locale };
 /** Login/sign-up pages: signed-in users go on to the app (or to organization selection). */
 export async function redirectIfSignedIn({ locale }: AuthPageInput): Promise<void> {
   const state = await getSessionState();
-  if (state.status === "ready") redirect({ href: ROUTES.venues, locale });
+  if (state.status === "ready") redirect({ href: ROUTES.home, locale });
   if (state.status === "needsOrganization") redirect({ href: ROUTES.selectOrganization, locale });
 }
 

@@ -17,7 +17,7 @@ export function mergeFields({ before, patch }: MergeFieldsInput): FieldValues {
 }
 
 export type ValidateFieldsInput = {
-  context: Pick<OperationContext, "db">;
+  context: Pick<OperationContext, "db" | "permissions">;
   entityTypeId: string;
   values: FieldValues;
 };

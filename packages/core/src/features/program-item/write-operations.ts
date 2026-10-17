@@ -49,7 +49,10 @@ export const updateProgramItem = defineOperation({
     const setupId = data.setupId === undefined ? (itemId ? before.setupId : null) : data.setupId;
     const place = { itemId, setupId, startsAt: data.startsAt ?? before.startsAt };
     const after = { ...place, endsAt: data.endsAt ?? before.endsAt };
-    for (const check of [checkPeriod(after), await checkPlace({ context, itemId, setupId })]) {
+    for (const check of [
+      checkPeriod(after),
+      await checkPlace({ context, bookingId: before.bookingId, itemId, setupId }),
+    ]) {
       if (!check.ok) return check;
     }
     let json: ReturnType<typeof toJson>;

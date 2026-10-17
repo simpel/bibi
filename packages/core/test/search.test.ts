@@ -10,6 +10,7 @@ import {
   indexEntity,
   itemEmbeddable,
 } from "../src/index";
+import type { PermissionSet } from "../src/permissions/permission-set";
 import { fakeEmbed } from "./fake-embed";
 import { testContext, unwrap } from "./helpers";
 import { createRoomType } from "./item-helpers";
@@ -81,5 +82,22 @@ describe("search", () => {
       result: await execute({ operation: search, input: { query: "daylight" }, context }),
     });
     expect(result.hits.map((hit) => hit.entityId)).not.toContain(room.id);
+  });
+
+  it("drops venue and item hits for callers without venue:read / item:read", async () => {
+    const context = testContext();
+    await seed({ context });
+    const query = async ({ permissions }: { permissions: PermissionSet }) => {
+      const caller = testContext({ organizationId: context.organizationId, permissions });
+      const result = await execute({
+        operation: search,
+        input: { query: "Lindholmen daylight" },
+        context: caller,
+      });
+      return unwrap({ result }).hits.map((hit) => hit.entityType);
+    };
+    expect(await query({ permissions: { search: ["read"] } })).toEqual([]);
+    expect(await query({ permissions: { search: ["read"], item: ["read"] } })).toEqual(["item"]);
+    expect(await query({ permissions: { search: ["read"], venue: ["read"] } })).toEqual(["venue"]);
   });
 });

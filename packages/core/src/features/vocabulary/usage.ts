@@ -15,7 +15,7 @@ export const listFieldsUsing = ({ context, vocabularyId }: ListFieldsUsingInput)
 export type ValueInUseInput = ListFieldsUsingInput & { valueId: string };
 
 /**
- * Number of active records that carry the list value: in any field (items, customers, contacts …)
+ * Number of active records that carry the list value: in any field (items, customers, contacts, bookings)
  * or as the value a requirement counts (ADR 0021).
  */
 export async function countRecordsUsingValue({

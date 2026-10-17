@@ -21,6 +21,7 @@ import { programItemOperations } from "./features/program-item/operations";
 import { requirementOperations } from "./features/requirement/operations";
 import { roleOperations } from "./features/role/operations";
 import { setupOperations } from "./features/setup/operations";
+import { sheetOperations } from "./features/sheet/operations";
 import { sheetDefinitionOperations } from "./features/sheet-definition/operations";
 import { skillOperations } from "./features/skill/operations";
 import { venueOperations } from "./features/venue/operations";
@@ -51,6 +52,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...bookingSeriesOperations,
     ...programItemOperations,
     ...requirementOperations,
+    ...sheetOperations,
     ...inquiryOperations,
     ...inboundEmailOperations,
     ...paymentAccountOperations,

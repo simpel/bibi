@@ -7,6 +7,7 @@ import {
   READ_OPERATIONS,
   UPDATE_OPERATIONS,
 } from "./models";
+import { assertNoNestedWrites } from "./nested-writes";
 import { ScopeViolationError } from "./scope-violation";
 import { scopeWhere } from "./scope-where";
 
@@ -57,6 +58,9 @@ export function applyScope({
   const mutates = UPDATE_OPERATIONS.has(operation) || DELETE_OPERATIONS.has(operation);
   if (APPEND_ONLY_MODELS.has(model) && (mutates || operation === "upsert")) {
     throw new ScopeViolationError({ model, operation, reason: "model is append-only" });
+  }
+  for (const data of [input.data, input.create, input.update]) {
+    assertNoNestedWrites({ model, operation, data });
   }
   if (CREATE_OPERATIONS.has(operation)) {
     const data = scopeCreateData({ model, data: input.data, organizationId, actorId });

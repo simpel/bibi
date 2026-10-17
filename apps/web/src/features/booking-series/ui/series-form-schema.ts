@@ -1,5 +1,6 @@
 import type { BookingSeriesCreateInput, EntityTypeDto, VocabularyDto } from "@okazi/core";
 import { BookingSeriesCreateInputSchema, buildFieldsSchema } from "@okazi/core/schemas";
+import { DEFAULT_TIME_ZONE } from "@okazi/i18n";
 import { NONE } from "@/components/form/option-select-field";
 import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsToInput, type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
@@ -36,9 +37,6 @@ export const seriesFormDefaults = ({ type }: { type: EntityTypeDto | undefined }
 
 const picked = ({ value }: { value: string }) => (value === NONE || value === "" ? null : value);
 
-/** The browser's time zone: the wall time the user typed is kept for every occurrence. */
-const browserTimeZone = () => Intl.DateTimeFormat().resolvedOptions().timeZone;
-
 export type SeriesSchemaInput = { type: EntityTypeDto | undefined; vocabularies: VocabularyDto[] };
 
 /** Core's create schema with `fields` checked against the type; the server validates again. */
@@ -54,7 +52,7 @@ export function seriesFormSchema({ type, vocabularies }: SeriesSchemaInput) {
         rule: values.rule,
         startsAt: fromLocalInputValue({ value: values.startsAt }),
         durationMinutes: numberOrUndefined({ value: values.durationMinutes }),
-        timeZone: browserTimeZone(),
+        timeZone: DEFAULT_TIME_ZONE,
         itemIds: itemId ? [itemId] : [],
         setupId: picked({ value: values.setupId }),
         estimatedHeadcount: numberOrNull({ value: values.estimatedHeadcount }),

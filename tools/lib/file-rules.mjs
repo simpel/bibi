@@ -21,7 +21,7 @@ export function checkFile({ relPath, content }) {
   const problems = [];
   const lineCount = content.split("\n").length;
   if (lineCount > MAX_FILE_LINES) {
-    problems.push(`${lineCount} rader (max ${MAX_FILE_LINES})`);
+    problems.push(`${lineCount} lines (max ${MAX_FILE_LINES})`);
   }
   if (DEFAULT_EXPORT.test(content) && !DEFAULT_EXPORT_ALLOWED.test(relPath)) {
     problems.push("default export (only allowed in page/layout/route/config/stories)");

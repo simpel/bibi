@@ -23,16 +23,17 @@ describe("sendMail", () => {
   it("sends through the installed provider and logs mail.sent with a masked recipient", async () => {
     const memory = createMemoryMailProvider();
     setMailProvider({ provider: memory.provider });
-    const result = await sendMail(message);
+    const result = await sendMail({ ...message, kind: "test.hello" });
     expect(result.ok).toBe(true);
     expect(memory.outbox).toEqual([message]);
     const [entry] = logs.events({ event: "mail.sent" });
     expect(entry).toMatchObject({
       provider: "memory",
       recipient: "***@example.test",
-      subject: "Hello",
+      kind: "test.hello",
     });
     expect(JSON.stringify(entry)).not.toContain("guest@");
+    expect(entry).not.toHaveProperty("subject");
   });
 
   it("returns the provider error and logs mail.failed", async () => {

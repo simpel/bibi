@@ -29,7 +29,7 @@ export async function insertProgramItem({
     await loadTypeOfBase({ context, entityTypeId, base: "PROGRAM_ITEM" }),
     await checkBooking({ context, bookingId: data.bookingId }),
     checkPeriod(data),
-    await checkPlace({ context, itemId, setupId }),
+    await checkPlace({ context, bookingId: data.bookingId, itemId, setupId }),
     await checkMembers({ context, userIds: { responsibleId: data.responsibleId } }),
   ]) {
     if (!check.ok) return check;

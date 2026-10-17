@@ -96,4 +96,26 @@ describe("seed:demo slices 1–5 (ADR 0025)", () => {
     expect(bookings[0]).toMatchObject({ reference: 1, estimatedHeadcount: 40 });
     expect(bookings[0]?.salesOwnerId).toBe(erik?.userId);
   });
+
+  it("re-seeds an organization that has occupancy rows", async () => {
+    const orgs = testOrgs();
+    const first = await seedDemo({ orgs });
+    if (!first.ok) throw first.error;
+    const db = getDb();
+    const organizationId = first.value.organizations[0]?.organizationId;
+    const item = await db.item.findFirst({ where: { organizationId } });
+    if (!organizationId || !item) throw new Error("Seeded organization has no item");
+    await db.occupancy.create({
+      data: {
+        organizationId,
+        itemId: item.id,
+        type: "MAINTENANCE",
+        startsAt: new Date("2030-01-01T08:00:00Z"),
+        endsAt: new Date("2030-01-01T10:00:00Z"),
+      },
+    });
+    const second = await seedDemo({ orgs });
+    if (!second.ok) throw second.error;
+    expect(await db.occupancy.count({ where: { organizationId } })).toBe(0);
+  });
 });

@@ -61,6 +61,7 @@ export {
   RecordStatus,
   type Requirement,
   type Setup,
+  type Sheet,
   type Skill,
   SkillScope,
   SkillStatus,

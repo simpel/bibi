@@ -6,7 +6,7 @@ import type { z } from "zod";
 import { formSchema } from "@/lib/form-schema";
 import { useZodMessages } from "@/lib/use-zod-messages";
 
-export type ArchiveCustomerValues = { archiveBookings: boolean };
+export type ArchiveCustomerValues = { archiveBookings: boolean; archiveInquiries: boolean };
 export type ArchiveCustomerInput = z.infer<typeof CustomerArchiveInputSchema>;
 
 export type UseArchiveCustomerFormInput = { id: string };
@@ -21,12 +21,13 @@ export function useArchiveCustomerForm({ id }: UseArchiveCustomerFormInput) {
         toInput: ({ values }: { values: ArchiveCustomerValues }) => ({
           id,
           archiveBookings: values.archiveBookings,
+          archiveInquiries: values.archiveInquiries,
         }),
       }),
     [id],
   );
   return useForm<ArchiveCustomerValues, unknown, ArchiveCustomerInput>({
     resolver: zodResolver(schema, messages),
-    defaultValues: { archiveBookings: false },
+    defaultValues: { archiveBookings: false, archiveInquiries: false },
   });
 }

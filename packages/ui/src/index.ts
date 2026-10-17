@@ -49,7 +49,18 @@ export type {
   DataTablePaginationState,
 } from "./components/data-table/data-table-types";
 export * from "./components/dialog/dialog";
-export * from "./components/dropdown-menu/dropdown-menu";
+export {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  type DropdownMenuItemProps,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./components/dropdown-menu/dropdown-menu";
+export * from "./components/dropdown-menu/dropdown-menu-sub";
 export * from "./components/field-controls/boolean-control";
 export * from "./components/field-controls/choice-control";
 export * from "./components/field-controls/control-props";

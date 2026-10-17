@@ -68,11 +68,30 @@ describe("venue + item CRUD over HTTP", () => {
     expect(second.json.nextCursor).toBeNull();
   });
 
-  it("serves search at GET /search", async () => {
+  it("indexes venues created and changed over REST so they are findable in search", async () => {
     const org = newOrgId();
-    await call({ method: "POST", path: "/venues", org, body: { name: "Herrgården Solbacka" } });
-    const result = await call({ path: "/search?query=Solbacka&entityTypes=venue&limit=5", org });
-    expect(result.status).toBe(200);
-    expect(Array.isArray(result.json.hits)).toBe(true);
+    const created = await call({
+      method: "POST",
+      path: "/venues",
+      org,
+      body: { name: "Herrgården Solbacka" },
+    });
+    const search = ({ query }: { query: string }) =>
+      call({ path: `/search?query=${query}&entityTypes=venue&limit=5`, org });
+    const found = await search({ query: "Solbacka" });
+    expect(found.status).toBe(200);
+    expect(found.json.hits.map((hit: { entityId: string }) => hit.entityId)).toContain(
+      created.json.id,
+    );
+    await call({
+      method: "PATCH",
+      path: `/venues/${created.json.id}`,
+      org,
+      body: { name: "Kvarnbäcken" },
+    });
+    const renamed = await search({ query: "Kvarnbäcken" });
+    expect(renamed.json.hits.map((hit: { entityId: string }) => hit.entityId)).toContain(
+      created.json.id,
+    );
   });
 });

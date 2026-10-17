@@ -30,7 +30,7 @@ export async function loadItemGraph({ context, rootId }: LoadItemGraphInput): Pr
     const components = rows.length
       ? await context.db.itemComponent.findMany({
           where: { parentId: { in: rows.map((row) => row.id) } },
-          orderBy: [{ offsetMinutes: "asc" }, { createdAt: "asc" }, { id: "asc" }],
+          orderBy: [{ offsetMinutes: "asc" }, { position: "asc" }],
         })
       : [];
     for (const component of components) {

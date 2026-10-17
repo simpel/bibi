@@ -132,7 +132,16 @@
     "members": "Members",
     "bookingStatuses": "Booking statuses",
     "payments": "Payments",
-    "priceLists": "Price lists"
+    "priceLists": "Price lists",
+    "assistant": "Assistant",
+    "newChat": "New chat",
+    "recent": "Recent",
+    "platformAdmin": "Platform admin",
+    "groups": {
+      "work": "Work",
+      "catalog": "Catalog",
+      "admin": "Administration"
+    }
   },
   "venue": {
     "singular": "Venue",
@@ -289,6 +298,7 @@
     "archived": "The customer has been archived.",
     "archiveBlocked": "This customer has {count, plural, one {# booking} other {# bookings}} that {count, plural, one {is} other {are}} not archived. The customer cannot be archived while {count, plural, one {it remains} other {they remain}}.",
     "archiveBookings": "Also archive {count, plural, one {the booking} other {all # bookings}} for this customer",
+    "archiveInquiries": "Also archive the customer's active inquiries, if any",
     "archivedWithBookings": "The customer and {count, plural, one {# booking} other {# bookings}} have been archived.",
     "created": "The customer has been created.",
     "updated": "The customer has been updated.",
@@ -357,6 +367,8 @@
     "empty": "No booking series yet.",
     "emptyDescription": "Create a series for a customer who books the same thing regularly.",
     "occurrence": "{index}/{total}",
+    "marker": "Series {index}/{total}",
+    "markerNoTotal": "Series {index}",
     "clash": "Clash",
     "clashCount": "{count, plural, one {# clash} other {# clashes}}",
     "clashNotice": "{count, plural, one {# occurrence clashes} other {# occurrences clash}} with another booking or a blocked time. It is created without the room; pick another room or time for it.",
@@ -620,6 +632,37 @@
       "where": "Applies to",
       "quantity": "Quantity",
       "type": "Type"
+    }
+  },
+  "sheet": {
+    "singular": "Sheet",
+    "plural": "Sheets",
+    "empty": "No sheets are defined yet. Define them under Settings.",
+    "noVersion": "No version has been generated yet.",
+    "nothingIncluded": "The booking has nothing that this sheet includes yet.",
+    "generate": "Generate version",
+    "generating": "Generating sheet…",
+    "generated": "Sheet version {version} is ready.",
+    "send": "Send",
+    "sent": "The sheet has been sent.",
+    "version": "Version {version}",
+    "notSent": "Not sent",
+    "sentAt": "Sent {when}",
+    "changes": "{count, plural, =0 {No changes} one {# change} other {# changes}} since version {version}",
+    "booking": "Booking {reference}",
+    "headcount": "{count, plural, one {# guest} other {# guests}}",
+    "onBooking": "Whole booking",
+    "onProgramItem": "One program item",
+    "change": {
+      "ADDED": "Added since the last sent version",
+      "CHANGED": "Changed since the last sent version",
+      "REMOVED": "Removed since the last sent version"
+    },
+    "blocked": "Blocked: cannot be sent",
+    "matches": {
+      "CONTAINS": "Contains",
+      "MAY_CONTAIN": "May contain",
+      "line": "{count, plural, one {# guest} other {# guests}}: {name} in {item} ({carriers})"
     }
   },
   "entityType": {
@@ -1022,7 +1065,8 @@
         "invoiceCountry": "Invoice country",
         "paymentTermsDays": "Payment terms (days)",
         "creditLimitMinor": "Credit limit (minor units)",
-        "archiveBookings": "Also archive bookings"
+        "archiveBookings": "Also archive bookings",
+        "archiveInquiries": "Also archive inquiries"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -1037,6 +1081,14 @@
         "contact_create": "Add contact person",
         "contact_update": "Update contact person",
         "contact_archive": "Archive contact person",
+        "booking_create": "Create booking",
+        "booking_createQuick": "Create quick booking",
+        "booking_update": "Update booking",
+        "booking_assign": "Assign booking",
+        "booking_changeStatus": "Change booking status",
+        "bookingSeries_create": "Create booking series",
+        "bookingSeries_updateOccurrences": "Update series occurrences",
+        "bookingSeries_cancel": "Cancel booking series",
         "entityType_create": "Create type",
         "entityType_update": "Update type",
         "entityType_archive": "Archive type",
@@ -1208,6 +1260,18 @@
         "columns": {
           "quantity": "Count",
           "where": "Applies to"
+        }
+      },
+      "sheet": {
+        "singular": "Sheet",
+        "empty": "No sheets found.",
+        "version": "Version {version}",
+        "notSent": "Not sent",
+        "openBooking": "Open the booking",
+        "columns": {
+          "version": "Version",
+          "changes": "Changes",
+          "sent": "Sent"
         }
       },
       "entityType": {
@@ -1391,7 +1455,7 @@
     "forbidden": "You do not have permission to do this.",
     "validation": "Please check the highlighted fields.",
     "required": "This field is required.",
-    "conflict": "The information was changed by someone else.",
+    "conflict": "This clashes with existing information.",
     "network": "The server could not be reached.",
     "invalidCredentials": "Wrong email or password.",
     "emailTaken": "An account with that email address already exists.",
@@ -1431,7 +1495,25 @@
     "languageEn": "English",
     "themeLight": "Light",
     "themeDark": "Dark",
-    "themeSystem": "System"
+    "themeSystem": "System",
+    "adminNavigation": "Administration",
+    "mySkills": "My skills"
+  },
+  "settingsHub": {
+    "title": "Settings",
+    "description": "How your organization is set up. Changes here affect everyone.",
+    "items": {
+      "types": "The kinds of items you offer and the fields they have.",
+      "lists": "Your own value lists, such as allergens or equipment.",
+      "setups": "Room setups like theatre, classroom or boardroom.",
+      "sheets": "Sheet definitions, such as the kitchen order, and who gets them.",
+      "priceLists": "Prices per customer group or season.",
+      "bookingStatuses": "The statuses a booking moves through.",
+      "members": "Who has access and with which role.",
+      "roles": "What each role may read and change.",
+      "payments": "Stripe account for card payments and invoices.",
+      "skills": "Reusable instructions for the assistant."
+    }
   },
   "commandBar": {
     "title": "Command bar",
@@ -1598,6 +1680,7 @@
       "booking": "Bookings and their owners",
       "programItem": "Program items (the booking's run schedule)",
       "requirement": "Requirements (counts against list values on bookings)",
+      "sheet": "Sheets (versioned compilations for a role)",
       "inquiry": "Inquiries and their salesperson",
       "search": "Search",
       "conversation": "Conversations",

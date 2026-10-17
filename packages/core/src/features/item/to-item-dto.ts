@@ -33,7 +33,7 @@ export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<It
   });
   const components = await context.db.itemComponent.findMany({
     where: { parentId: { in: ids } },
-    orderBy: [{ offsetMinutes: "asc" }, { createdAt: "asc" }, { id: "asc" }],
+    orderBy: [{ offsetMinutes: "asc" }, { position: "asc" }],
   });
   const groups = await context.db.itemChoiceGroup.findMany({
     where: { itemId: { in: ids } },

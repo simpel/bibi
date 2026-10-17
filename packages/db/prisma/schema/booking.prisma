@@ -42,6 +42,7 @@ model Booking {
   payments            Payment[]
   programItems        ProgramItem[]
   requirements        Requirement[]
+  sheets              Sheet[]
 
   @@unique([id, organizationId])
   @@unique([organizationId, reference])

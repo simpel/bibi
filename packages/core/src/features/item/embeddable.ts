@@ -16,6 +16,7 @@ export type IndexedItem = Item & {
 
 export const itemEmbeddable: Embeddable<IndexedItem> = {
   entityType: "item",
+  readPermission: "item:read",
   toText: ({ entity }) =>
     [
       entity.name,

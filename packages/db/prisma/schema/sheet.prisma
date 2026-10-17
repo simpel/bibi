@@ -1,0 +1,38 @@
+/// Sheet – one version of a booking's compilation for a role (ADR 0021), e.g. a kitchen order.
+/// `content` is a snapshot of the booking at generation, shaped by its `SheetDefinition`.
+/// `changes` marks (★) what differs from `baseVersion`, the last version that was sent before
+/// this one; both are null/empty for the first send. A version is never edited or removed:
+/// `sentAt` is its only lifecycle, and a changed booking produces the next version.
+model Sheet {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  bookingId         String
+  sheetDefinitionId String
+  /// 1, 2, 3, … per booking and definition.
+  version           Int
+  /// The receiving role at generation: an `OrganizationRole` id, or `owner`.
+  roleId            String
+  /// Snapshot of the booking's rows the definition includes.
+  content           Json
+  /// Rows added, changed or removed since `baseVersion` (see core `SheetChange`).
+  changes           Json            @default("[]")
+  /// Counts that hit the booking's items at generation (core `SheetMatch`), blocking ones first.
+  matches           Json            @default("[]")
+  /// True when a match is blocking (an item contains a counted value): `sheet.send` is refused.
+  blocked           Boolean         @default(false)
+  /// The last sent version the changes are measured against; null when none was sent before.
+  baseVersion       Int?
+  sentAt            DateTime?
+  /// User id of whoever sent it.
+  sentBy            String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  booking           Booking         @relation(fields: [bookingId, organizationId], references: [id, organizationId])
+  sheetDefinition   SheetDefinition @relation(fields: [sheetDefinitionId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([bookingId, sheetDefinitionId, version])
+  @@index([organizationId, bookingId])
+  @@index([organizationId, sheetDefinitionId])
+}

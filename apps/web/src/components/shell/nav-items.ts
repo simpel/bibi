@@ -1,62 +1,65 @@
 import {
-  BookOpenIcon,
   BoxIcon,
   BuildingIcon,
   CalendarIcon,
-  CircleDotIcon,
-  ClipboardListIcon,
   ContactIcon,
-  CreditCardIcon,
   InboxIcon,
-  LayoutGridIcon,
-  ListIcon,
   type LucideIcon,
   Repeat2Icon,
-  ShapesIcon,
-  ShieldIcon,
-  TagIcon,
-  UsersIcon,
+  SettingsIcon,
+  ShieldCheckIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 
+export type NavLabelKey =
+  | "bookings"
+  | "inquiries"
+  | "bookingSeries"
+  | "customers"
+  | "items"
+  | "venues"
+  | "settings"
+  | "platformAdmin";
+
+/** Who sees an entry: everyone, members who can configure, or platform admins (ADR 0036). */
+export type NavAudience = "everyone" | "configure" | "platformAdmin";
+
 export type NavItem = {
   href: string;
-  labelKey:
-    | "venues"
-    | "items"
-    | "customers"
-    | "inquiries"
-    | "bookings"
-    | "bookingSeries"
-    | "skills"
-    | "types"
-    | "lists"
-    | "setups"
-    | "sheets"
-    | "priceLists"
-    | "bookingStatuses"
-    | "roles"
-    | "members"
-    | "payments";
+  labelKey: NavLabelKey;
   icon: LucideIcon;
+  audience: NavAudience;
 };
 
-/** Sidebar entries; add the next entity here (and its `nav.*` message). */
-export const NAV_ITEMS: readonly NavItem[] = [
-  { href: ROUTES.venues, labelKey: "venues", icon: BuildingIcon },
-  { href: ROUTES.items, labelKey: "items", icon: BoxIcon },
-  { href: ROUTES.customers, labelKey: "customers", icon: ContactIcon },
-  { href: ROUTES.inquiries, labelKey: "inquiries", icon: InboxIcon },
-  { href: ROUTES.bookings, labelKey: "bookings", icon: CalendarIcon },
-  { href: ROUTES.bookingSeries, labelKey: "bookingSeries", icon: Repeat2Icon },
-  { href: ROUTES.skills, labelKey: "skills", icon: BookOpenIcon },
-  { href: ROUTES.settingsTypes, labelKey: "types", icon: ShapesIcon },
-  { href: ROUTES.settingsLists, labelKey: "lists", icon: ListIcon },
-  { href: ROUTES.settingsSetups, labelKey: "setups", icon: LayoutGridIcon },
-  { href: ROUTES.settingsSheets, labelKey: "sheets", icon: ClipboardListIcon },
-  { href: ROUTES.settingsPriceLists, labelKey: "priceLists", icon: TagIcon },
-  { href: ROUTES.settingsBookingStatuses, labelKey: "bookingStatuses", icon: CircleDotIcon },
-  { href: ROUTES.settingsRoles, labelKey: "roles", icon: ShieldIcon },
-  { href: ROUTES.settingsMembers, labelKey: "members", icon: UsersIcon },
-  { href: ROUTES.settingsPayments, labelKey: "payments", icon: CreditCardIcon },
-];
+export type NavGroupId = "work" | "catalog" | "admin";
+
+/**
+ * Sidebar entries per zone, most used first (ADR 0036). A new entity adds its entry to the
+ * right group (and its `nav.*` message); configuration pages go to `SETTINGS_ITEMS` instead.
+ */
+export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
+  work: [
+    { href: ROUTES.bookings, labelKey: "bookings", icon: CalendarIcon, audience: "everyone" },
+    { href: ROUTES.inquiries, labelKey: "inquiries", icon: InboxIcon, audience: "everyone" },
+    {
+      href: ROUTES.bookingSeries,
+      labelKey: "bookingSeries",
+      icon: Repeat2Icon,
+      audience: "everyone",
+    },
+    { href: ROUTES.customers, labelKey: "customers", icon: ContactIcon, audience: "everyone" },
+  ],
+  catalog: [
+    { href: ROUTES.items, labelKey: "items", icon: BoxIcon, audience: "everyone" },
+    { href: ROUTES.venues, labelKey: "venues", icon: BuildingIcon, audience: "everyone" },
+  ],
+  admin: [
+    { href: ROUTES.settings, labelKey: "settings", icon: SettingsIcon, audience: "configure" },
+    {
+      href: ROUTES.admin,
+      labelKey: "platformAdmin",
+      icon: ShieldCheckIcon,
+      audience: "platformAdmin",
+    },
+  ],
+};

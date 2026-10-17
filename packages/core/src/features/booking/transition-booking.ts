@@ -44,6 +44,10 @@ export async function transitionBooking({
   now,
 }: TransitionBookingInput): Promise<Result<BookingDto>> {
   const fromStatusId = before.bookingStatusId;
+  const from = await context.db.bookingStatus.findFirst({ where: { id: fromStatusId } });
+  if (from?.phase === "CANCELLED") {
+    return conflict({ message: "A cancelled booking cannot be moved to another status" });
+  }
   const allowed = await checkTransition({ context, fromStatusId, toStatusId: status.id });
   if (!allowed.ok) return allowed;
   const { phase, name: statusName } = status;

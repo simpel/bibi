@@ -6,6 +6,7 @@ import { ROUTES } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { archiveCustomerAction } from "../actions";
 import { ArchiveBookingsField } from "./archive-bookings-field";
+import { ArchiveInquiriesField } from "./archive-inquiries-field";
 import { useArchiveCustomerForm } from "./use-archive-customer-form";
 
 export type ArchiveCustomerFormProps = { customer: CustomerDto; onClose: () => void };
@@ -38,6 +39,7 @@ export function ArchiveCustomerForm({ customer, onClose }: ArchiveCustomerFormPr
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
         {count > 0 ? <ArchiveBookingsField form={form} count={count} /> : null}
+        <ArchiveInquiriesField form={form} />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>
             {common("cancel")}

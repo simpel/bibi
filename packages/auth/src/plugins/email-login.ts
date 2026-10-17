@@ -9,6 +9,7 @@ export function emailLoginPlugins() {
       sendMagicLink: async ({ email, url }) => {
         await sendAuthMail({
           to: email,
+          kind: "auth.magic-link",
           subject: "Sign in to Okazi",
           text: `Click the link to sign in (valid for 15 minutes):\n\n${url}`,
         });
@@ -19,7 +20,8 @@ export function emailLoginPlugins() {
       sendVerificationOTP: async ({ email, otp }) => {
         await sendAuthMail({
           to: email,
-          subject: `Your Okazi code: ${otp}`,
+          kind: "auth.sign-in-code",
+          subject: "Your Okazi sign-in code",
           text: `Your one-time code is ${otp}. It is valid for 10 minutes.`,
         });
       },

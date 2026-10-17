@@ -54,3 +54,7 @@ Types for `Item` switch on behaviors:
 - The operations are generic (`item.*`, `entityType.*`, `fieldDefinition.*`, `vocabulary.*`, `requirement.*`, `sheet.*`, `setup.*`). GraphQL and REST expose fields as `fields: JSON` plus the definitions. The MCP tools describe the organization's fields dynamically, so the AI sees "Cabins" at the boat company and "Daylight" at the conference estate.
 - UI and AI must read the configuration to know what applies. Each behavior and field type therefore gets its own Zod schema and its own component in `@okazi/ui`.
 - Reports that should work in all organizations build on behaviors and phases, never on type names.
+
+## Addendum 2026-10-17 – sheets go to a responsibility (ADR 0034)
+- Custom roles are removed (ADR 0034). A sheet definition goes to a **responsibility** (e.g. "Head of kitchen") instead of a role, and a generated sheet is addressed to that responsibility's assignee and followers on the booking.
+- Responsibilities are configured the same way as statuses and types, and cover item entity types: a booking with an item of a covered type automatically gets that responsibility's assignment.

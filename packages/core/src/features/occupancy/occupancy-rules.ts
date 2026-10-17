@@ -5,16 +5,24 @@ import { MANUAL_OCCUPANCY_TYPES, type OccupancyType } from "./schema";
 
 type Db = Pick<OperationContext, "db">;
 
-export type CheckBookableInput = { context: Db; itemId: string };
+export type CheckBookableInput = { context: Db; itemId: string; customerId?: string };
 
-/** Only active items whose type is `BOOKABLE` (ADR 0021) can be occupied. */
+/**
+ * Only active items whose type is `BOOKABLE` (ADR 0021) can be occupied. With `customerId` (the
+ * booking's customer) the item must be general or that customer's own package.
+ */
 export async function checkBookable({
   context,
   itemId,
+  customerId,
 }: CheckBookableInput): Promise<Result<true>> {
   const item = await context.db.item.findFirst({
     where: { id: itemId, entityType: { behaviours: { has: "BOOKABLE" } } },
   });
+  if (item && customerId && item.customerId && item.customerId !== customerId) {
+    const message = "The item is a package for another customer";
+    return invalid({ message, issues: [{ path: "itemId", message }] });
+  }
   if (item) return ok({ value: true });
   const message = "Unknown bookable item";
   return invalid({ message, issues: [{ path: "itemId", message }] });
