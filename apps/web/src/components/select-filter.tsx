@@ -2,7 +2,7 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@okazi/ui";
 
-export type SkillSelectFilterProps = {
+export type SelectFilterProps = {
   label: string;
   allLabel: string;
   value: string | undefined;
@@ -14,13 +14,7 @@ export type SkillSelectFilterProps = {
 const ALL = "all";
 
 /** A filter dropdown with an "all" entry; reports `undefined` for "all". */
-export function SkillSelectFilter({
-  label,
-  allLabel,
-  value,
-  options,
-  onChange,
-}: SkillSelectFilterProps) {
+export function SelectFilter({ label, allLabel, value, options, onChange }: SelectFilterProps) {
   return (
     <Select
       value={value ?? ALL}

@@ -2,6 +2,7 @@ import {
   BoxIcon,
   BuildingIcon,
   CalendarIcon,
+  CalendarRangeIcon,
   ContactIcon,
   InboxIcon,
   type LucideIcon,
@@ -12,6 +13,7 @@ import {
 import { ROUTES } from "@/lib/routes";
 
 export type NavLabelKey =
+  | "calendar"
   | "bookings"
   | "inquiries"
   | "bookingSeries"
@@ -39,6 +41,7 @@ export type NavGroupId = "work" | "catalog" | "admin";
  */
 export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
   work: [
+    { href: ROUTES.calendar, labelKey: "calendar", icon: CalendarRangeIcon, audience: "everyone" },
     { href: ROUTES.bookings, labelKey: "bookings", icon: CalendarIcon, audience: "everyone" },
     { href: ROUTES.inquiries, labelKey: "inquiries", icon: InboxIcon, audience: "everyone" },
     {

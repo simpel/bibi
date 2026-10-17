@@ -4,6 +4,7 @@ import { createContext, useContext } from "react";
 import type { ErrorKey } from "@/lib/error-key";
 import type { useAssistantChat } from "./use-assistant-chat";
 import type { useConversations } from "./use-conversations";
+import type { ComposerDraft } from "./use-prefill";
 
 export type AssistantView = "chat" | "history";
 
@@ -19,6 +20,10 @@ export type AssistantContextValue = {
   conversations: ReturnType<typeof useConversations>;
   /** ⌘K hand-off: a fresh conversation with this one question; opens the panel. */
   ask: (input: { text: string }) => void;
+  /** A fresh conversation with this text in the message box, not sent; opens the panel. */
+  prefill: (input: { text: string }) => void;
+  /** The latest prefilled text for the composer. */
+  draft: ComposerDraft | null;
   /** Starts an empty conversation (created on the first message). */
   newConversation: () => void;
   /** Opens a stored conversation; resolves to an error key when it cannot be loaded. */

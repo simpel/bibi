@@ -122,6 +122,7 @@
     "lists": "Lists",
     "setups": "Setups",
     "sheets": "Sheets",
+    "calendar": "Calendar",
     "bookings": "Bookings",
     "bookingSeries": "Booking series",
     "skills": "Skills",
@@ -476,6 +477,31 @@
       "status": "Status",
       "salesOwner": "Salesperson"
     }
+  },
+  "calendar": {
+    "title": "Calendar",
+    "description": "Occupancy per space, by day or week. Open a block to see its booking.",
+    "views": {
+      "day": "Day",
+      "week": "Week"
+    },
+    "view": "View",
+    "previous": "Previous",
+    "next": "Next",
+    "today": "Today",
+    "venue": "Venue",
+    "allVenues": "All venues",
+    "spaces": "Spaces",
+    "gridLabel": "Occupancy per space",
+    "option": "{position, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} option",
+    "bookSlot": "Book {space}, {when}, with the assistant",
+    "bookPromptTime": "Book {space} on {date} at {time}.",
+    "bookPromptDay": "Book {space} on {date}.",
+    "noSpaces": "No bookable spaces",
+    "noSpacesDescription": "Items whose type is bookable show up here as rows.",
+    "goToItems": "Go to items",
+    "emptyDay": "Nothing booked.",
+    "keyboardHint": "Use the arrow keys to move between spaces and times."
   },
   "inquiry": {
     "singular": "Inquiry",

@@ -1,9 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { SelectFilter } from "@/components/select-filter";
 import { scopeKey, statusKey } from "@/lib/skill-labels";
 import { SKILL_SCOPES, SKILL_STATUSES, type SkillFilters } from "../skill-filters";
-import { SkillSelectFilter } from "./skill-select-filter";
 
 export type SkillFilterSelectsProps = {
   filters: SkillFilters;
@@ -15,7 +15,7 @@ export function SkillFilterSelects({ filters, onChange }: SkillFilterSelectsProp
   const t = useTranslations("skills");
   return (
     <>
-      <SkillSelectFilter
+      <SelectFilter
         label={t("filters.scope")}
         allLabel={t("filters.allScopes")}
         value={filters.scope}
@@ -25,7 +25,7 @@ export function SkillFilterSelects({ filters, onChange }: SkillFilterSelectsProp
         }))}
         onChange={(value) => onChange({ scope: SKILL_SCOPES.find((scope) => scope === value) })}
       />
-      <SkillSelectFilter
+      <SelectFilter
         label={t("filters.status")}
         allLabel={t("filters.allStatuses")}
         value={filters.status}

@@ -122,6 +122,7 @@
     "lists": "Listor",
     "setups": "Uppställningar",
     "sheets": "Blad",
+    "calendar": "Kalender",
     "bookings": "Bokningar",
     "bookingSeries": "Bokningsserier",
     "skills": "Färdigheter",
@@ -476,6 +477,31 @@
       "status": "Status",
       "salesOwner": "Säljare"
     }
+  },
+  "calendar": {
+    "title": "Kalender",
+    "description": "Beläggning per lokal, per dag eller vecka. Öppna ett block för att se bokningen.",
+    "views": {
+      "day": "Dag",
+      "week": "Vecka"
+    },
+    "view": "Vy",
+    "previous": "Föregående",
+    "next": "Nästa",
+    "today": "Idag",
+    "venue": "Anläggning",
+    "allVenues": "Alla anläggningar",
+    "spaces": "Lokaler",
+    "gridLabel": "Beläggning per lokal",
+    "option": "{position, selectordinal, one {#:a} other {#:e}} option",
+    "bookSlot": "Boka {space}, {when}, med assistenten",
+    "bookPromptTime": "Boka {space} den {date} kl. {time}.",
+    "bookPromptDay": "Boka {space} den {date}.",
+    "noSpaces": "Inga bokningsbara lokaler",
+    "noSpacesDescription": "Artiklar vars typ är bokningsbar visas här som rader.",
+    "goToItems": "Gå till artiklar",
+    "emptyDay": "Inget bokat.",
+    "keyboardHint": "Använd piltangenterna för att flytta mellan lokaler och tider."
   },
   "inquiry": {
     "singular": "Förfrågan",

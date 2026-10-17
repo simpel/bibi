@@ -20,7 +20,7 @@ function LoadingConversation() {
 
 /** The conversation: transcript (or the empty state), error line and message box. */
 export function ChatView() {
-  const { session } = useAssistant();
+  const { session, draft } = useAssistant();
   const { chat, loading } = session;
   const { messages, status, error, sendMessage, stop, regenerate } = chat;
   const send = ({ text }: { text: string }) => void sendMessage({ text });
@@ -30,7 +30,7 @@ export function ChatView() {
       {!loading && messages.length === 0 ? <SuggestedPrompts onPick={send} /> : null}
       {!loading && messages.length > 0 ? <MessageList messages={messages} status={status} /> : null}
       <ChatError error={error} onRetry={() => void regenerate()} />
-      <Composer status={status} onSend={send} onStop={() => void stop()} />
+      <Composer status={status} onSend={send} onStop={() => void stop()} draft={draft} />
     </div>
   );
 }

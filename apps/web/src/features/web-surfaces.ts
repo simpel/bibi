@@ -37,6 +37,8 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "item.archive", route: "/items/[id]" },
   // A bookable item's occupancy is listed and its manual blocks edited on the item page.
   { operation: "occupancy.list", route: "/items/[id]" },
+  // The calendar shows the occupancy of every space by day or week.
+  { operation: "occupancy.list", route: "/calendar" },
   { operation: "occupancy.create", route: "/items/[id]" },
   { operation: "occupancy.update", route: "/items/[id]" },
   { operation: "occupancy.archive", route: "/items/[id]" },

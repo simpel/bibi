@@ -4,9 +4,9 @@ import { useCallback, useMemo } from "react";
 import type { AssistantContextValue } from "./assistant-context";
 import { useAssistantChat } from "./use-assistant-chat";
 import { useAssistantShortcut } from "./use-assistant-shortcut";
-import { useConversationActions } from "./use-conversation-actions";
 import { useConversations } from "./use-conversations";
 import { usePanelState } from "./use-panel-state";
+import { useSessionActions } from "./use-session-actions";
 
 /** Builds the context value: panel state, the chat session and the conversation history. */
 export function useAssistantController(): AssistantContextValue {
@@ -17,13 +17,7 @@ export function useAssistantController(): AssistantContextValue {
   const onConversationChanged = useCallback(() => void refresh(), [refresh]);
   const session = useAssistantChat({ onConversationChanged });
   useAssistantShortcut({ onToggle: toggle });
-  const actions = useConversationActions({
-    startNew: session.startNew,
-    openConversation: session.openConversation,
-    sendMessage: async ({ text }) => session.chat.sendMessage({ text }),
-    setView,
-    setOpen,
-  });
+  const actions = useSessionActions({ session, setView, setOpen });
   return useMemo(
     () => ({
       open,
