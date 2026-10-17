@@ -9,7 +9,9 @@ export type SeedOrgMemberInput = { context: ExecuteContext };
  * it), the caller's user row (the inviter of `member.invite`) and one viewer to assign a role
  * to (there is no `member.create` operation).
  */
-export async function seedOrgMember({ context }: SeedOrgMemberInput): Promise<{ id: string }> {
+export async function seedOrgMember({
+  context,
+}: SeedOrgMemberInput): Promise<{ id: string; userId: string }> {
   const { organizationId } = context;
   const db = getDb();
   await db.organization.create({
@@ -30,5 +32,5 @@ export async function seedOrgMember({ context }: SeedOrgMemberInput): Promise<{ 
   await db.member.create({
     data: { id, organizationId, userId, role: "viewer", createdAt: new Date() },
   });
-  return { id };
+  return { id, userId };
 }

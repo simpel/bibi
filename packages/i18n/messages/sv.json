@@ -121,6 +121,7 @@
     "types": "Typer",
     "lists": "Listor",
     "setups": "Uppställningar",
+    "responsibilities": "Ansvar",
     "sheets": "Blad",
     "calendar": "Kalender",
     "bookings": "Bokningar",
@@ -931,6 +932,45 @@
       "saved": "Artikelpriserna har sparats."
     }
   },
+  "responsibility": {
+    "singular": "Ansvar",
+    "plural": "Ansvar",
+    "listDescription": "Vad någon svarar för, till exempel Kökschef eller Utställningschef: vilka artikeltyper varje ansvar täcker och vem det går till som standard.",
+    "create": "Skapa ansvar",
+    "edit": "Redigera ansvar",
+    "createDescription": "Namnge ansvaret, välj vilka artikeltyper det täcker och vem som svarar för det som standard.",
+    "editDescription": "Ändra namnet, vilka artikeltyper det täcker eller standardpersonerna.",
+    "archive": "Arkivera ansvar",
+    "archiveConfirm": "Vill du arkivera ansvaret {name}?",
+    "archived": "Ansvaret har arkiverats.",
+    "created": "Ansvaret har skapats.",
+    "updated": "Ansvaret har uppdaterats.",
+    "empty": "Inga ansvar ännu.",
+    "emptyDescription": "Skapa ansvar som Försäljning, Koordinator eller Kökschef.",
+    "saving": "Sparar ansvar…",
+    "archiving": "Arkiverar ansvar…",
+    "selectPerson": "Välj en medlem",
+    "fields": {
+      "name": "Namn",
+      "entityTypeIds": "Täckta artikeltyper",
+      "defaultAssigneeId": "Standardansvarig",
+      "defaultFollowerIds": "Standardföljare"
+    },
+    "hints": {
+      "entityTypeIds": "En bokning med en rad av dessa typer får detta ansvar.",
+      "defaultFollowerIds": "Medlemmar som hålls informerade som standard."
+    },
+    "none": {
+      "entityTypeIds": "Det finns inga artikeltyper. Skapa dem under Typer.",
+      "defaultFollowerIds": "Det finns inga medlemmar."
+    },
+    "columns": {
+      "name": "Namn",
+      "types": "Täckta artikeltyper",
+      "assignee": "Standardansvarig",
+      "followers": "Standardföljare"
+    }
+  },
   "sheetDefinition": {
     "singular": "Blad",
     "plural": "Blad",
@@ -1135,6 +1175,9 @@
         "setup_create": "Skapa uppställning",
         "setup_update": "Ändra uppställning",
         "setup_archive": "Arkivera uppställning",
+        "responsibility_create": "Skapa ansvar",
+        "responsibility_update": "Uppdatera ansvar",
+        "responsibility_archive": "Arkivera ansvar",
         "sheetDefinition_create": "Skapa blad",
         "sheetDefinition_update": "Uppdatera blad",
         "sheetDefinition_archive": "Arkivera blad",
@@ -1407,6 +1450,17 @@
           "pricing": "Prissättning"
         }
       },
+      "responsibility": {
+        "singular": "Ansvar",
+        "archived": "Arkiverad",
+        "empty": "Inga ansvar hittades.",
+        "open": "Öppna ansvar",
+        "covers": "{types, plural, one {# artikeltyp} other {# artikeltyper}}, {followers, plural, =0 {inga följare} one {# följare} other {# följare}}",
+        "columns": {
+          "name": "Namn",
+          "covers": "Täcker"
+        }
+      },
       "sheetDefinition": {
         "singular": "Blad",
         "archived": "Arkiverat",
@@ -1583,6 +1637,7 @@
       "types": "Vilka sorters artiklar ni erbjuder och vilka fält de har.",
       "lists": "Era egna värdelistor, till exempel allergener eller utrustning.",
       "setups": "Möblering som teater, klassrum eller styrelserum.",
+      "responsibilities": "Vad någon svarar för, till exempel kökschef, och vem det går till som standard.",
       "sheets": "Bladdefinitioner, till exempel köksbeställningen, och vem som får dem.",
       "priceLists": "Priser per kundgrupp eller säsong.",
       "bookingStatuses": "De statusar en bokning går igenom.",

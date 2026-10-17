@@ -11,7 +11,8 @@ const testOrgs = () => {
   return [lindholmen, vingaleden].map((org) => ({ ...org, slug: `${org.slug}-${suffix}` }));
 };
 
-describe("seed:demo slices 1–5 (ADR 0025)", () => {
+// Each test seeds the full demo (twice for idempotency checks); allow headroom for a loaded machine.
+describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
   it("creates both orgs with fixed-role members, passes its checks and is idempotent", async () => {
     const orgs = testOrgs();
     const first = await seedDemo({ orgs });

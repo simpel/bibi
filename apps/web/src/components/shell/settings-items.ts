@@ -8,6 +8,7 @@ import {
   type LucideIcon,
   ShapesIcon,
   TagIcon,
+  UserCheckIcon,
   UsersIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
@@ -16,6 +17,7 @@ export type SettingsKey =
   | "types"
   | "lists"
   | "setups"
+  | "responsibilities"
   | "sheets"
   | "priceLists"
   | "bookingStatuses"
@@ -30,6 +32,7 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
   { href: ROUTES.settingsTypes, key: "types", icon: ShapesIcon },
   { href: ROUTES.settingsLists, key: "lists", icon: ListIcon },
   { href: ROUTES.settingsSetups, key: "setups", icon: LayoutGridIcon },
+  { href: ROUTES.settingsResponsibilities, key: "responsibilities", icon: UserCheckIcon },
   { href: ROUTES.settingsSheets, key: "sheets", icon: ClipboardListIcon },
   { href: ROUTES.settingsPriceLists, key: "priceLists", icon: TagIcon },
   { href: ROUTES.settingsBookingStatuses, key: "bookingStatuses", icon: CircleDotIcon },

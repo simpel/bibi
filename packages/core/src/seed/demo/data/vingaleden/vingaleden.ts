@@ -2,6 +2,7 @@ import type { DemoOrg } from "../../types";
 import { vingaledenBookings } from "./bookings";
 import { vingaledenBoats, vingaledenConfig } from "./config";
 import { vingaledenCustomers } from "./customers";
+import { vingaledenResponsibilities } from "./responsibilities";
 import { vingaledenTours } from "./tours";
 
 /**
@@ -29,6 +30,7 @@ export const vingaleden: DemoOrg = {
     // Check 2: no allergen list at all. Its sheets (slice 6) will not include food either.
     checks: { absentLists: ["Allergens"] },
   },
+  responsibilities: vingaledenResponsibilities,
   customers: vingaledenCustomers,
   bookings: vingaledenBookings,
 };

@@ -10,11 +10,11 @@ import { lindholmen } from "./data/lindholmen/lindholmen";
 import { vingaleden } from "./data/vingaleden/vingaleden";
 import { refuseProduction } from "./guard";
 import { resetDemoOrg } from "./reset";
-import { seedDemoBookings } from "./seed-bookings";
 import { seedDemoConfig } from "./seed-config";
-import { seedDemoCustomers } from "./seed-customers";
 import { seedDemoItems } from "./seed-items";
+import { seedDemoResponsibilities } from "./seed-responsibilities";
 import { seedDemoRoles } from "./seed-roles";
+import { seedDemoSales } from "./seed-sales";
 import type { DemoOrg } from "./types";
 import { bootstrapDemoOrg } from "./users";
 
@@ -82,25 +82,26 @@ async function seedSlices({
   ranParts.add(1);
   const refs = await seedDemoConfig({ context, config: org.config });
   if (!refs.ok) return refs;
+  const responsibilities = await seedDemoResponsibilities({
+    context,
+    org,
+    refs: refs.value,
+    userIds,
+  });
+  if (!responsibilities.ok) return responsibilities;
   ranParts.add(2);
   const items = await seedDemoItems({ context, config: org.config, refs: refs.value });
   if (!items.ok) return items;
   ranParts.add(3);
-  const customers = await seedDemoCustomers({
+  const sales = await seedDemoSales({
     context,
-    customers: org.customers,
+    org,
     refs: refs.value,
     catalog: items.value,
-  });
-  if (!customers.ok) return customers;
-  ranParts.add(4);
-  const bookings = await seedDemoBookings({
-    context,
-    bookings: org.bookings,
-    refs: refs.value,
     userIds,
   });
-  if (!bookings.ok) return bookings;
+  if (!sales.ok) return sales;
+  ranParts.add(4);
   ranParts.add(5);
   return ok({ value: ranParts });
 }

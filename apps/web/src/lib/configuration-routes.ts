@@ -22,6 +22,11 @@ export function setupsRoute(): string {
   return ROUTES.settingsSetups;
 }
 
+/** `/settings/responsibilities`: the organization's responsibilities (no detail page). */
+export function responsibilitiesRoute(): string {
+  return ROUTES.settingsResponsibilities;
+}
+
 /** `/settings/sheets`: the organization's sheet definitions (no detail page). */
 export function sheetDefinitionsRoute(): string {
   return ROUTES.settingsSheets;

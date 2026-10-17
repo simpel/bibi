@@ -17,6 +17,9 @@ export type ConfigurationTemplateType = {
   fields?: readonly ConfigurationTemplateField[];
 };
 
+/** A responsibility on a template; `types` name item types of the template (or existing ones). */
+export type ConfigurationTemplateResponsibility = { name: string; types: readonly string[] };
+
 /**
  * A starter configuration an organization can import and then edit freely (ADR 0021): lists,
  * setups, and types with behaviours and fields. Domain words live only in this data.
@@ -30,4 +33,6 @@ export type ConfigurationTemplate = {
   lists: readonly { name: string; values: readonly string[] }[];
   setups: readonly { name: string; changeoverMinutes: number }[];
   types: readonly ConfigurationTemplateType[];
+  /** Example responsibilities (ADR 0034), imported with the importing member as default assignee. */
+  responsibilities: readonly ConfigurationTemplateResponsibility[];
 };

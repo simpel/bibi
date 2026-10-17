@@ -73,6 +73,11 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
       expected: templateValues + sum({ values: config.lists.map((list) => list.values.length) }),
     },
     { what: "setups", actual: await db.setup.count(), expected: config.setups.length },
+    {
+      what: "responsibilities",
+      actual: await db.responsibility.count(),
+      expected: org.responsibilities.length,
+    },
     { what: "types", actual: await db.entityType.count(), expected: config.types.length },
     {
       what: "fields",

@@ -43,6 +43,7 @@ The parity core: every capability is defined **once** as an operation and then e
 - `member.list` (`member:read`), `member.assignRole|remove|invite|listInvitations|cancelInvitation` (`member:admin`). Rows in `member`/`invitation` (Better Auth tables, org-scoped in `scopedDb`). `member.role` holds one fixed role; `parseMemberRole` turns anything else into `null` (grants nothing).
 - Fixed roles: `FIXED_ROLES` (`viewer < member < admin < owner`) and `GRANTABLE_ROLES` (no `owner`) in `permissions/fixed-roles.ts`. What they grant is `ROLE_PERMISSIONS` in `packages/auth`; core only compares ranks.
 - Anti-escalation (`features/member/role-access.ts`, by rank of `context.roles`, system excepted): nobody gives a role above their own or changes/removes a member above them; only an owner changes or removes an owner. The organization always keeps an owner (`checkOwnerKept`, CONFLICT, also for system). Invitations never carry `owner`.
+- `responsibility.list|get|create|update|archive` (`configuration:read|write`, ADR 0034): name, covered item types (`entityTypeIds`), default assignee and followers (`defaultAssigneeId`, `defaultFollowerIds`, user ids). `checkResponsibilityContents` refuses non-item types and non-members (`VALIDATION`); `insertResponsibility` is shared with `configuration.importTemplate`, which makes the importing member the default assignee of the template's responsibilities and creates none for a caller who is not a member.
 - Sheet definitions still name a fixed role in `roleId` until sheets go to a responsibility.
 - Tests that create members need a real `organization` row: `testOrg()` in `test/org-helpers.ts`. `testContext({ role })` sets the caller's fixed role (default from `access`: read → viewer, write → member, admin → owner).
 
@@ -65,6 +66,7 @@ The parity core: every capability is defined **once** as an operation and then e
 - `seedDemo()` in `src/seed/demo/` (`@okazi/core/seed/demo`, CLI `seed:demo`). The spec is `docs/demo-seed.md`, and `data/<org>/*.ts` follows it. Everything goes through `execute` as SYSTEM, except the Better Auth rows in `users.ts`.
 - Parts that are built:
   - roles (`seed-roles.ts`)
+  - responsibilities (`seed-responsibilities.ts`, after the types)
   - configuration (`seed-config.ts`)
   - venue, bookable spaces and the first composed items (`seed-items.ts`)
 - The checks are in `checks.ts` and `config-checks.ts`.

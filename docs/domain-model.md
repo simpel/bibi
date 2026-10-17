@@ -206,21 +206,21 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 ### Responsibility (`Responsibility`)
 
-*MVP* · Decided in [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md), not built yet. What someone answers for, e.g. "Head of kitchen" or "Head of exhibits". Organization data managed by admins. It carries no permissions: access comes from the fixed member roles (see User).
+*MVP* · Decided in [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md). What someone answers for, e.g. "Head of kitchen" or "Head of exhibits". Organization data managed by admins. It carries no permissions: access comes from the fixed member roles (see User).
 
 **Attributes**
 - name (unique among the organization's active responsibilities)
-- covered item entity types (the item types it covers, e.g. "Food & drink")
-- default assignee (a member)
-- default followers (members, optional)
-- status (active / archived; archiving is refused with `CONFLICT` while an active sheet definition uses it)
+- covered item entity types (`entityTypeIds`: the item types it covers, e.g. "Food & drink")
+- default assignee (`defaultAssigneeId`: a member, by user id)
+- default followers (`defaultFollowerIds`: members by user id, optional)
+- status (active / archived)
 
 **Relations**
 - `N:M` covers → EntityType
 - `1:N` scopes → Assignment
 - `1:N` SheetDefinition goes to this
 
-> Operations: `responsibility.list|get|create|update|archive` under the resource `configuration` (`admin` to change). The "Conference venue" template ships responsibilities (e.g. Sales, Coordinator, Head of kitchen) as optional data.
+> Operations: `responsibility.list|get|create|update|archive` under the resource `configuration` (`configuration:write`, held by `admin` and `owner`, to change). The covered types and people are stored as id lists and checked by core: every covered type must be an active item type of the organization and the default assignee and followers must be members (`VALIDATION`); the assignee is not repeated among the followers. Names are unique among active responsibilities (`CONFLICT`). Settings page: `/settings/responsibilities`. The "Conference venue" template ships Sales (Package), Coordinator (Conference room, Equipment) and Head of kitchen (Dish, Drink, Meal) as optional data; `configuration.importTemplate` makes the importing member their default assignee and creates none when the caller is not a member (e.g. SYSTEM). Archiving is refused with `CONFLICT` while an active sheet definition uses the responsibility, once sheets go to a responsibility.
 
 ### Assignment (`Assignment`)
 

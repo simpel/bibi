@@ -77,6 +77,8 @@ export * from "./features/program-item/write-operations";
 export * from "./features/requirement/effective";
 export * from "./features/requirement/operations";
 export * from "./features/requirement/write-operations";
+export * from "./features/responsibility/read-operations";
+export * from "./features/responsibility/write-operations";
 export * from "./features/setup/operations";
 export * from "./features/sheet/operations";
 export * from "./features/sheet-definition/read-operations";

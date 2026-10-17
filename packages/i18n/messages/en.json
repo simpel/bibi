@@ -121,6 +121,7 @@
     "types": "Types",
     "lists": "Lists",
     "setups": "Setups",
+    "responsibilities": "Responsibilities",
     "sheets": "Sheets",
     "calendar": "Calendar",
     "bookings": "Bookings",
@@ -931,6 +932,45 @@
       "saved": "The item prices have been saved."
     }
   },
+  "responsibility": {
+    "singular": "Responsibility",
+    "plural": "Responsibilities",
+    "listDescription": "What someone answers for, e.g. Head of kitchen or Head of exhibits: the item types each covers and who it defaults to.",
+    "create": "Create responsibility",
+    "edit": "Edit responsibility",
+    "createDescription": "Name the responsibility, choose the item types it covers and who answers for it by default.",
+    "editDescription": "Change the name, the item types it covers or the default people.",
+    "archive": "Archive responsibility",
+    "archiveConfirm": "Do you want to archive the responsibility {name}?",
+    "archived": "The responsibility has been archived.",
+    "created": "The responsibility has been created.",
+    "updated": "The responsibility has been updated.",
+    "empty": "No responsibilities yet.",
+    "emptyDescription": "Create responsibilities such as Sales, Coordinator or Head of kitchen.",
+    "saving": "Saving responsibility…",
+    "archiving": "Archiving responsibility…",
+    "selectPerson": "Choose a member",
+    "fields": {
+      "name": "Name",
+      "entityTypeIds": "Covered item types",
+      "defaultAssigneeId": "Default assignee",
+      "defaultFollowerIds": "Default followers"
+    },
+    "hints": {
+      "entityTypeIds": "A booking with a line of these types gets this responsibility.",
+      "defaultFollowerIds": "Members who are kept informed by default."
+    },
+    "none": {
+      "entityTypeIds": "There are no item types. Create them under Types.",
+      "defaultFollowerIds": "There are no members."
+    },
+    "columns": {
+      "name": "Name",
+      "types": "Covered item types",
+      "assignee": "Default assignee",
+      "followers": "Default followers"
+    }
+  },
   "sheetDefinition": {
     "singular": "Sheet",
     "plural": "Sheets",
@@ -1135,6 +1175,9 @@
         "setup_create": "Create setup",
         "setup_update": "Update setup",
         "setup_archive": "Archive setup",
+        "responsibility_create": "Create responsibility",
+        "responsibility_update": "Update responsibility",
+        "responsibility_archive": "Archive responsibility",
         "sheetDefinition_create": "Create sheet",
         "sheetDefinition_update": "Update sheet",
         "sheetDefinition_archive": "Archive sheet",
@@ -1407,6 +1450,17 @@
           "pricing": "Pricing"
         }
       },
+      "responsibility": {
+        "singular": "Responsibility",
+        "archived": "Archived",
+        "empty": "No responsibilities found.",
+        "open": "Open responsibilities",
+        "covers": "{types, plural, one {# item type} other {# item types}}, {followers, plural, =0 {no followers} one {# follower} other {# followers}}",
+        "columns": {
+          "name": "Name",
+          "covers": "Covers"
+        }
+      },
       "sheetDefinition": {
         "singular": "Sheet",
         "archived": "Archived",
@@ -1583,6 +1637,7 @@
       "types": "The kinds of items you offer and the fields they have.",
       "lists": "Your own value lists, such as allergens or equipment.",
       "setups": "Room setups like theatre, classroom or boardroom.",
+      "responsibilities": "What someone answers for, such as head of kitchen, and who it defaults to.",
       "sheets": "Sheet definitions, such as the kitchen order, and who gets them.",
       "priceLists": "Prices per customer group or season.",
       "bookingStatuses": "The statuses a booking moves through.",

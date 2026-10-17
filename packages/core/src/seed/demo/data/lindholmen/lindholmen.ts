@@ -7,6 +7,7 @@ import { lindholmenDishes } from "./dishes";
 import { lindholmenDrinks } from "./drinks";
 import { lindholmenMeals } from "./meals";
 import { lindholmenPackages } from "./packages";
+import { lindholmenResponsibilities } from "./responsibilities";
 import { lindholmenRooms } from "./rooms";
 import { lindholmenTypes } from "./types";
 
@@ -47,6 +48,7 @@ export const lindholmen: DemoOrg = {
     ],
     checks: { listSizes: { Allergens: 14 } },
   },
+  responsibilities: lindholmenResponsibilities,
   customers: lindholmenCustomers,
   bookings: lindholmenBookings,
 };

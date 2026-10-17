@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { CONFIGURATION_TEMPLATE_KEYS } from "../../templates/configuration/configuration-templates";
 import { EntityTypeSchema } from "../entity-type/schema";
+import { ResponsibilitySchema } from "../responsibility/schema";
 import { SetupSchema } from "../setup/schema";
 import { VocabularySchema } from "../vocabulary/schema";
 
@@ -9,7 +10,8 @@ export const ConfigurationImportTemplateInputSchema = z.object({
     .enum(CONFIGURATION_TEMPLATE_KEYS)
     .describe(
       "conference-venue: lists (allergens, diet, severity, accessibility), room setups and " +
-        "types such as Conference room, Dish, Meal, Package, Company and Conference",
+        "types such as Conference room, Dish, Meal, Package, Company and Conference, and example " +
+        "responsibilities Sales, Coordinator and Head of kitchen",
     ),
 });
 
@@ -21,9 +23,15 @@ export const ConfigurationImportTemplateOutputSchema = z.object({
     vocabularies: z.array(VocabularySchema),
     setups: z.array(SetupSchema),
     entityTypes: z.array(EntityTypeSchema),
+    responsibilities: z.array(ResponsibilitySchema),
   }),
   /** Names that already existed and were left untouched (a type keeps its own fields). */
-  skipped: z.object({ vocabularies: NamesSchema, setups: NamesSchema, entityTypes: NamesSchema }),
+  skipped: z.object({
+    vocabularies: NamesSchema,
+    setups: NamesSchema,
+    entityTypes: NamesSchema,
+    responsibilities: NamesSchema,
+  }),
 });
 
 export type ConfigurationImportTemplateInput = z.infer<

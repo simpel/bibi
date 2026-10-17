@@ -24,11 +24,16 @@ export async function testOrg({ access, permissions }: TestOrgInput = {}): Promi
 export type AddTestMemberInput = { context: ExecuteContext; role: string; name?: string };
 
 /** A user + membership row, like Better Auth's `addMember` writes it. Returns the member id. */
-export async function addTestMember({
+export async function addTestMember({ context, role, name }: AddTestMemberInput): Promise<string> {
+  return (await addTestMemberWithUser({ context, role, ...(name ? { name } : {}) })).memberId;
+}
+
+/** Like `addTestMember`, but also returns the user id (what assignments refer to). */
+export async function addTestMemberWithUser({
   context,
   role,
   name = "Test Person",
-}: AddTestMemberInput): Promise<string> {
+}: AddTestMemberInput): Promise<{ memberId: string; userId: string }> {
   const userId = `user_${createId()}`;
   await getDb().user.create({
     data: { id: userId, name, email: `${userId}@example.test`, emailVerified: true },
@@ -43,5 +48,5 @@ export async function addTestMember({
       createdAt: new Date(),
     },
   });
-  return memberId;
+  return { memberId, userId };
 }

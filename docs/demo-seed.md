@@ -22,7 +22,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 The checks that run today:
 - **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
 - **Part 2 (configuration):**
-  - The number of rows per organization matches for venue, vocabularies, vocabulary values, setups, types, fields, items and capacities (point 1 for what exists).
+  - The number of rows per organization matches for venue, vocabularies, vocabulary values, setups, responsibilities, types, fields, items and capacities (point 1 for what exists).
   - Vingaleden has no vocabulary "Allergens" (the first half of point 2).
   - Lindholmen's imported vocabulary "Allergens" has 14 values.
   - The number of item parts (`ItemComponent`) per organization matches the data files.
@@ -47,7 +47,7 @@ Slug `lindholmen-demo`. Venue: Lindholmspiren 1, 417 56 Göteborg.
 ## Configuration
 
 ### Roles
-Fixed roles (ADR 0034). The function in parentheses is what the person answers for; it becomes a responsibility once those exist.
+Fixed roles (ADR 0034). The function in parentheses is what the person answers for; see Responsibilities below.
 
 | User | Role |
 |---|---|
@@ -59,6 +59,15 @@ Fixed roles (ADR 0034). The function in parentheses is what the person answers f
 | Ali Karimi (kitchen) | member |
 | Peter Sjoberg (caretaker) | viewer |
 | Lena Strand (finance) | member |
+
+### Responsibilities
+Seeded in part 2 via `responsibility.create` as SYSTEM, after the item types. Followers are optional.
+
+| Responsibility | Covers (item types) | Default assignee | Default followers |
+|---|---|---|---|
+| Sales | Package | Erik Lund | Sara Nilsson |
+| Coordinator | Conference room, Equipment, Tour, Guide | Johan Ek | Maria Holm |
+| Head of kitchen | Dish, Drink, Meal | Ali Karimi | – |
 
 ### Vocabularies
 | Vocabulary | Values |
@@ -263,6 +272,12 @@ Fixed roles (ADR 0034).
 | Kalle Ek (skipper) | viewer |
 | Jonna Sand (skipper) | viewer |
 
+### Responsibilities
+| Responsibility | Covers (item types) | Default assignee | Default followers |
+|---|---|---|---|
+| Booking | Tour, Add-on | Stina Holm | – |
+| Skipper | Boat, Skipper | Kalle Ek | Jonna Sand |
+
 ### Vocabularies
 | Vocabulary | Values |
 |---|---|
@@ -319,7 +334,7 @@ Customers: Hisingen Energi AB (Company, the same name as at Lindholmen but a com
 ## Structure in the code
 
 - `packages/core/src/seed/demo/data/` has one folder per organization (`lindholmen/`, `vingaleden/`). The files are pure data, split so that no file goes over 150 lines, e.g. `lindholmen.ts` (roles and users), `config.ts`, `types.ts`, `rooms.ts`, `dishes.ts`, `drinks.ts`, `meals.ts`, `activities.ts` (guides, tours, equipment), `packages.ts`, `customers.ts` and `bookings.ts`; Vingaleden's skippers, trips and add-ons are in `tours.ts`. Later parts add `pipeline.ts`.
-- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-items.ts`, `seed-customers.ts` and `seed-bookings.ts`. Items with `parts` or `choices` come after the items they contain (`seed-item-input.ts` resolves them); a choice group's options become parts too. Contact persons, the price list and customer-specific packages are created right after their customer.
+- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-responsibilities.ts`, `seed-items.ts`, `seed-customers.ts` and `seed-bookings.ts`. Items with `parts` or `choices` come after the items they contain (`seed-item-input.ts` resolves them); a choice group's options become parts too. Contact persons, the price list and customer-specific packages are created right after their customer.
   - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`.
   - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
 - `checks.ts` and `config-checks.ts` contain the checks above.

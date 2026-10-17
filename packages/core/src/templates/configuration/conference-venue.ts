@@ -24,4 +24,9 @@ export const conferenceVenueConfiguration: ConfigurationTemplate = {
     { name: "Reception", changeoverMinutes: 15 },
   ],
   types: conferenceVenueTypes,
+  responsibilities: [
+    { name: "Sales", types: ["Package"] },
+    { name: "Coordinator", types: ["Conference room", "Equipment"] },
+    { name: "Head of kitchen", types: ["Dish", "Drink", "Meal"] },
+  ],
 };

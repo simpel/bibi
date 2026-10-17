@@ -13,6 +13,7 @@ import { PAYMENT_UI_ENTRIES } from "./payment-entries";
 import { PRICE_LIST_UI_ENTRIES } from "./price-list-entries";
 import { PROGRAM_ITEM_UI_ENTRIES } from "./program-item-entries";
 import { REQUIREMENT_UI_ENTRIES } from "./requirement-entries";
+import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
 import { SHEET_DEFINITION_UI_ENTRIES } from "./sheet-definition-entries";
 import { SHEET_UI_ENTRIES } from "./sheet-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
@@ -66,6 +67,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...INBOUND_EMAIL_UI_ENTRIES,
   ...PAYMENT_ACCOUNT_UI_ENTRIES,
   ...PAYMENT_UI_ENTRIES,
+  ...RESPONSIBILITY_UI_ENTRIES,
   ...SHEET_DEFINITION_UI_ENTRIES,
   ...SHEET_UI_ENTRIES,
   ...ACCESS_UI_ENTRIES,

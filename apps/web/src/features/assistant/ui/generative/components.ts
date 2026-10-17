@@ -42,6 +42,8 @@ import { ProgramItemCardView } from "./program-item-card-view";
 import { ProgramItemTableView } from "./program-item-table-view";
 import { RequirementCardView } from "./requirement-card-view";
 import { RequirementTableView } from "./requirement-table-view";
+import { ResponsibilityCardView } from "./responsibility-card-view";
+import { ResponsibilityTableView } from "./responsibility-table-view";
 import { SearchResultsView } from "./search-results-view";
 import { SetupCardView } from "./setup-card-view";
 import { SetupTableView } from "./setup-table-view";
@@ -100,6 +102,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "vocabulary-card": VocabularyCardView,
   "setup-table": SetupTableView,
   "setup-card": SetupCardView,
+  "responsibility-table": ResponsibilityTableView,
+  "responsibility-card": ResponsibilityCardView,
   "sheet-definition-table": SheetDefinitionTableView,
   "sheet-definition-card": SheetDefinitionCardView,
   "sheet-table": SheetTableView,

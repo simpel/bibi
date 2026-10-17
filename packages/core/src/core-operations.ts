@@ -19,6 +19,7 @@ import { paymentAccountOperations } from "./features/payment-account/operations"
 import { priceListOperations } from "./features/price-list/operations";
 import { programItemOperations } from "./features/program-item/operations";
 import { requirementOperations } from "./features/requirement/operations";
+import { responsibilityOperations } from "./features/responsibility/operations";
 import { setupOperations } from "./features/setup/operations";
 import { sheetOperations } from "./features/sheet/operations";
 import { sheetDefinitionOperations } from "./features/sheet-definition/operations";
@@ -39,6 +40,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...fieldDefinitionOperations,
     ...vocabularyOperations,
     ...setupOperations,
+    ...responsibilityOperations,
     ...sheetDefinitionOperations,
     ...configurationOperations,
     ...itemOperations,

@@ -10,6 +10,7 @@ import type { PaymentWire } from "./payment-entries";
 import type { PriceListWire } from "./price-list-entries";
 import type { ProgramItemWire } from "./program-item-entries";
 import type { RequirementWire } from "./requirement-entries";
+import type { ResponsibilityWire } from "./responsibility-entries";
 import type { SheetDefinitionWire } from "./sheet-definition-entries";
 import type { SheetWire } from "./sheet-entries";
 import type {
@@ -73,6 +74,8 @@ export type ToolUiProps = {
   "vocabulary-card": { vocabulary: VocabularyWire };
   "setup-table": { items: SetupWire[]; nextCursor: string | null };
   "setup-card": { setup: SetupWire };
+  "responsibility-table": { items: ResponsibilityWire[]; nextCursor: string | null };
+  "responsibility-card": { responsibility: ResponsibilityWire };
   "sheet-definition-table": { items: SheetDefinitionWire[]; nextCursor: string | null };
   "sheet-definition-card": { sheet: SheetDefinitionWire };
   "sheet-table": { items: SheetWire[]; nextCursor: string | null };

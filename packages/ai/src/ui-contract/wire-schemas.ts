@@ -15,6 +15,7 @@ import {
   VocabularySchema,
 } from "@okazi/core/schemas";
 import { z } from "zod";
+import { ResponsibilityWireSchema } from "./responsibility-entries";
 
 /**
  * JSON ("wire") forms of core output schemas as tool results carry them (dates = ISO strings).
@@ -74,11 +75,13 @@ export const ConfigurationImportWireSchema = z.object({
     vocabularies: z.array(VocabularyWireSchema),
     setups: z.array(SetupWireSchema),
     entityTypes: z.array(EntityTypeWireSchema),
+    responsibilities: z.array(ResponsibilityWireSchema),
   }),
   skipped: z.object({
     vocabularies: z.array(z.string()),
     setups: z.array(z.string()),
     entityTypes: z.array(z.string()),
+    responsibilities: z.array(z.string()),
   }),
 });
 

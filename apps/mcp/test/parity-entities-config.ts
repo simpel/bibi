@@ -1,4 +1,5 @@
 import { byId, type ParityEntity, tool } from "./parity-entities";
+import { responsibility } from "./parity-entities-responsibility";
 import { sheetDefinition } from "./parity-entities-sheet";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
@@ -139,6 +140,7 @@ export function configurationEntities(): ParityEntity[] {
     vocabulary,
     vocabularyValue,
     setup,
+    responsibility,
     sheetDefinition,
     item,
     occupancy,
