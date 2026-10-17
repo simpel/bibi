@@ -1,0 +1,25 @@
+import { resolveLocale } from "@okazi/i18n";
+import { setRequestLocale } from "next-intl/server";
+import { loadDocText } from "@/features/docs/server/doc-text";
+import { DocArticle } from "@/features/docs/ui/doc-article";
+import { DocsHomeCards } from "@/features/docs/ui/docs-home-cards";
+
+type DocsHomeProps = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: DocsHomeProps) {
+  const { locale } = await params;
+  const text = await loadDocText({ locale, key: "home" });
+  return { title: `${text.title} · Okazi`, description: text.lead };
+}
+
+/** Docs start page: one card per audience (staff guide, developers, reference). */
+export default async function DocsHome({ params }: DocsHomeProps) {
+  const { locale } = await params;
+  setRequestLocale(resolveLocale({ value: locale }));
+  const text = await loadDocText({ locale, key: "home" });
+  return (
+    <DocArticle title={text.title} lead={text.lead}>
+      <DocsHomeCards />
+    </DocArticle>
+  );
+}
