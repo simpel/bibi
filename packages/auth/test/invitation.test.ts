@@ -11,7 +11,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { getAuth, invitationMailHook } from "../src/index";
 import { installFakeMail, uninstallFakeMail } from "./fake-mail";
 import { createOrg, signUp, type TestUser } from "./helpers";
-import { addMember, addRole, READ_ONLY } from "./roles";
+import { addMember } from "./roles";
 
 afterEach(() => uninstallFakeMail());
 
@@ -26,11 +26,10 @@ const ownerContext = ({ organizationId, owner }: { organizationId: string; owner
 const inviteAs = async ({ invitee }: { invitee: TestUser }) => {
   const owner = await signUp();
   const organizationId = await createOrg({ headers: owner.headers });
-  await addRole({ organizationId, name: "Read", permissions: READ_ONLY });
   const context = ownerContext({ organizationId, owner });
   const result = await execute({
     operation: inviteMember,
-    input: { email: invitee.email, roles: ["Read"] },
+    input: { email: invitee.email, role: "viewer" as const },
     context,
     afterCommit: [invitationMailHook],
   });
@@ -39,7 +38,7 @@ const inviteAs = async ({ invitee }: { invitee: TestUser }) => {
 };
 
 describe("invitations (core member.invite + Better Auth acceptance)", () => {
-  it("mails the link and lets the invitee accept with the invited roles", async () => {
+  it("mails the link and lets the invitee accept with the invited role", async () => {
     const outbox = installFakeMail();
     const invitee = await signUp();
     const { organizationId, invitation } = await inviteAs({ invitee });
@@ -53,7 +52,7 @@ describe("invitations (core member.invite + Better Auth acceptance)", () => {
     const member = await getDb().member.findFirstOrThrow({
       where: { organizationId, userId: invitee.userId },
     });
-    expect(member.role).toBe("Read");
+    expect(member.role).toBe("viewer");
   });
 
   it("makes a revoked invitation unusable", async () => {
@@ -80,7 +79,7 @@ describe("invitations (core member.invite + Better Auth acceptance)", () => {
     const api = getAuth().api;
     const invite = api.createInvitation({
       headers: owner.headers,
-      body: { organizationId, email: "backdoor@example.test", role: "Read" as "member" },
+      body: { organizationId, email: "backdoor@example.test", role: "viewer" },
     });
     await expect(invite).rejects.toThrow(/not allowed/i);
     const cancel = api.cancelInvitation({
@@ -89,7 +88,7 @@ describe("invitations (core member.invite + Better Auth acceptance)", () => {
     });
     await expect(cancel).rejects.toThrow(/not allowed/i);
     const staff = await signUp();
-    await addMember({ organizationId, userId: staff.userId, role: "Read" });
+    await addMember({ organizationId, userId: staff.userId, role: "viewer" });
     const remove = api.removeMember({
       headers: owner.headers,
       body: { memberIdOrEmail: staff.email, organizationId },

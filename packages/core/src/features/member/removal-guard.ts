@@ -1,41 +1,37 @@
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { isPermissionSubset } from "../../permissions/permission-set";
+import type { FixedRole } from "../../permissions/fixed-roles";
 import { OWNER_ROLE } from "../../permissions/resources";
-import { grantedByRoles } from "./assigned-roles";
-import { memberHasRoleWhere } from "./member-roles";
+import { checkCanManageMember } from "./role-access";
 
-export type CheckRemovableInput = {
-  context: Pick<OperationContext, "db" | "actor" | "roles" | "permissions">;
-  roles: readonly string[];
+export type CheckOwnerKeptInput = {
+  context: Pick<OperationContext, "db">;
+  /** The member's role now, and what it becomes (`null` = removed). */
+  from: FixedRole | null;
+  to: FixedRole | null;
 };
 
-const refuse = ({ code, message }: { code: "CONFLICT" | "FORBIDDEN"; message: string }) =>
-  err({ error: new AppError({ code, message }) });
+/** The organization always keeps an owner (ADR 0034), also for system actors. */
+export async function checkOwnerKept({ context, from, to }: CheckOwnerKeptInput) {
+  if (from !== OWNER_ROLE || to === OWNER_ROLE) return ok({ value: true as const });
+  const owners = await context.db.member.count({ where: { role: OWNER_ROLE } });
+  if (owners > 1) return ok({ value: true as const });
+  const message = "The organization's last owner cannot be removed or given another role";
+  return err({ error: new AppError({ code: "CONFLICT", message }) });
+}
 
-/**
- * The organization always keeps an owner, only an owner removes another owner, and nobody
- * removes a member who has more access than they have themselves (ADR 0020).
- */
+export type CheckRemovableInput = {
+  context: Pick<OperationContext, "db" | "actor" | "roles">;
+  role: FixedRole | null;
+};
+
+/** Never the last owner, only an owner removes an owner, never someone above the caller. */
 export async function checkRemovable({
   context,
-  roles,
+  role,
 }: CheckRemovableInput): Promise<Result<true>> {
-  const trusted = context.actor.type === "system";
-  if (roles.includes(OWNER_ROLE)) {
-    const owners = await context.db.member.count({
-      where: memberHasRoleWhere({ name: OWNER_ROLE }),
-    });
-    if (owners <= 1)
-      return refuse({ code: "CONFLICT", message: "The last owner cannot be removed" });
-    if (trusted || context.roles.includes(OWNER_ROLE)) return ok({ value: true });
-    return refuse({ code: "FORBIDDEN", message: "Only an owner can remove an owner" });
-  }
-  const permissions = await grantedByRoles({ context, names: roles });
-  if (trusted || isPermissionSubset({ subset: permissions, of: context.permissions })) {
-    return ok({ value: true });
-  }
-  const message = "You cannot remove a member who has more access than you";
-  return refuse({ code: "FORBIDDEN", message });
+  const kept = await checkOwnerKept({ context, from: role, to: null });
+  if (!kept.ok) return kept;
+  return checkCanManageMember({ context, role });
 }

@@ -125,7 +125,7 @@ describe("auditLog.list / auditLog.get", () => {
   it("hides pending invitations' audit rows unless member:admin", async () => {
     const inviter = await withInviter();
     unwrap({
-      result: await invite({ context: inviter, email: "secret@example.test", roles: ["Kitchen"] }),
+      result: await invite({ context: inviter, email: "secret@example.test", role: "viewer" }),
     });
     const peer = testContext({
       organizationId: inviter.organizationId,

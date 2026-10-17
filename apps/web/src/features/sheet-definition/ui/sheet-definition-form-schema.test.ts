@@ -8,10 +8,14 @@ import { fieldsOfTypes, namesOf } from "./sheet-options";
 
 describe("sheet definition form schema", () => {
   it("trims the name and keeps the chosen ids", () => {
-    const values = { ...sheetDefinitionFormDefaults({}), name: " Kitchen order ", roleId: "r1" };
+    const values = {
+      ...sheetDefinitionFormDefaults({}),
+      name: " Kitchen order ",
+      roleId: "member",
+    };
     expect(sheetDefinitionFormToInput({ values })).toMatchObject({
       name: "Kitchen order",
-      roleId: "r1",
+      roleId: "member",
     });
   });
 
@@ -25,6 +29,12 @@ describe("sheet definition form schema", () => {
       roleId: "owner",
     });
     expect(ok.success).toBe(true);
+    const custom = sheetDefinitionFormSchema.safeParse({
+      ...sheetDefinitionFormDefaults({}),
+      name: "Kitchen order",
+      roleId: "Kitchen",
+    });
+    expect(custom.success).toBe(false);
   });
 
   it("offers the fields of the chosen types and names ids", () => {

@@ -32,7 +32,6 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Conversation",
   "Message",
   "Skill",
-  "OrganizationRole",
   "Member",
   "Invitation",
 ]);
@@ -89,7 +88,6 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["Inquiry", "ACTIVE"],
   ["Conversation", "ACTIVE"],
   ["Skill", { not: "ARCHIVED" }],
-  ["OrganizationRole", "ACTIVE"],
 ]);
 
 /** Models soft-deleted via `status`; reads exclude archived rows unless `status` is filtered. */

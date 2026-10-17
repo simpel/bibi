@@ -22,7 +22,6 @@ import type {
   ItemWire,
   MemberWire,
   OccupancyWire,
-  RoleWire,
   SearchHitWire,
   SetupWire,
   SkillCardWire,
@@ -78,8 +77,6 @@ export type ToolUiProps = {
   "sheet-definition-card": { sheet: SheetDefinitionWire };
   "sheet-table": { items: SheetWire[]; nextCursor: string | null };
   "sheet-card": { sheet: SheetWire };
-  "role-table": { items: RoleWire[]; nextCursor: string | null };
-  "role-card": { role: RoleWire };
   "member-table": { items: MemberWire[]; nextCursor: string | null };
   "member-card": { member: MemberWire };
   "invitation-table": { items: InvitationWire[]; nextCursor: string | null };

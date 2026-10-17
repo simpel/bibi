@@ -1,25 +1,15 @@
-import { OWNER_ROLE } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { isFixedRole } from "@okazi/core";
 import { APIError } from "better-auth/api";
 
-export type AssertKnownRolesInput = { organizationId: string; role: string | readonly string[] };
+export type AssertFixedRoleInput = { role: string | readonly string[] };
 
 /**
  * Better Auth's `addMember` does not validate role names (invitations are created by core
- * `member.invite`, which does). Members may only get `owner` or one of the organization's ACTIVE roles
- * (ADR 0020), so a dormant name can never start granting access later.
+ * `member.invite`, which does). A member gets exactly one fixed role (ADR 0034).
  */
-export async function assertKnownRoles({ organizationId, role }: AssertKnownRolesInput) {
-  const names = (Array.isArray(role) ? role : String(role).split(","))
-    .map((name) => name.trim())
-    .filter((name) => name !== "" && name !== OWNER_ROLE);
-  if (names.length === 0) return;
-  const rows = await getDb().organizationRole.findMany({
-    where: { organizationId, role: { in: names }, status: "ACTIVE" },
-    select: { role: true },
-  });
-  const unknown = names.filter((name) => !rows.some((row) => row.role === name));
-  if (unknown.length > 0) {
-    throw new APIError("BAD_REQUEST", { message: `Unknown role(s): ${unknown.join(", ")}` });
+export function assertFixedRole({ role }: AssertFixedRoleInput): void {
+  const name = Array.isArray(role) ? role.join(",") : String(role);
+  if (!isFixedRole({ role: name.trim() })) {
+    throw new APIError("BAD_REQUEST", { message: `Not a fixed role: ${name}` });
   }
 }

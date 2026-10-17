@@ -16,7 +16,7 @@ export {
 export { getAuth } from "./get-auth";
 export { invitationMailHook } from "./invitations/invitation-mail-hook";
 export { authHandler, handleAuthRequest } from "./next";
-export { accessControl, orgRoles, ownerPermissions } from "./permissions";
+export { accessControl, orgRoles } from "./permissions";
 export { type IsPlatformAdminInput, isPlatformAdmin } from "./platform/is-platform-admin";
 export {
   type ResolvePlatformContextInput,
@@ -32,4 +32,9 @@ export {
   type ResolveExecuteContextInput,
   resolveExecuteContext,
 } from "./resolve/resolve-execute-context";
+export {
+  ROLE_PERMISSIONS,
+  type RolePermissionsInput,
+  rolePermissions,
+} from "./roles/role-permissions";
 export { AUTH_BASE_PATH, MCP_PATH, mcpResourceUrl } from "./urls";

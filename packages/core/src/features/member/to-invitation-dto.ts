@@ -1,5 +1,5 @@
 import type { Invitation } from "@okazi/db";
-import { splitMemberRoles } from "./member-roles";
+import { parseMemberRole } from "./member-roles";
 import { type InvitationDto, InvitationStatusSchema } from "./schema";
 
 /** Better Auth's default lifetime of an invitation (48 hours). */
@@ -26,7 +26,7 @@ export function toInvitationDto({ row }: ToInvitationDtoInput): InvitationDto {
     id: row.id,
     organizationId: row.organizationId,
     email: row.email,
-    roles: splitMemberRoles({ role: row.role ?? "" }),
+    role: parseMemberRole({ role: row.role }),
     status: status.success ? status.data : "canceled",
     inviterId: row.inviterId,
     expiresAt: row.expiresAt,

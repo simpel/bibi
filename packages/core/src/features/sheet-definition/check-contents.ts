@@ -1,8 +1,8 @@
 import type { AppErrorIssue } from "../../errors/app-error";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { isFixedRole } from "../../permissions/fixed-roles";
 import { invalid } from "../../shared/errors";
-import { OWNER_ROLE_ID } from "../role/to-role-dto";
 import type { SheetDefinitionContents } from "./schema";
 
 type Db = Pick<OperationContext, "db">;
@@ -38,15 +38,10 @@ const dedupe = ({ contents }: { contents: SheetDefinitionContents }) => ({
   vocabularyIds: [...new Set(contents.vocabularyIds)],
 });
 
-/** True for the fixed `owner` role and for an active role of the organization. */
-export async function roleExists({ context, roleId }: { context: Db; roleId: string }) {
-  if (roleId === OWNER_ROLE_ID) return true;
-  return (await context.db.organizationRole.findFirst({ where: { id: roleId } })) !== null;
-}
-
 /**
  * `VALIDATION` unless every id refers to an active row of the organization: item types,
- * fields of those types, lists and the receiving role. A sheet includes items or requirements.
+ * fields of those types and lists, and the receiving role is a fixed role (ADR 0034, until
+ * sheets go to a responsibility). A sheet includes items or requirements.
  */
 export async function checkSheetContents({
   context,
@@ -74,8 +69,8 @@ export async function checkSheetContents({
   const issues: AppErrorIssue[] = problems
     .filter(([, unknown]) => unknown.length > 0)
     .map(([path, unknown, what]) => ({ path, message: `Not ${what}: ${unknown.join(", ")}` }));
-  if (!(await roleExists({ context, roleId: contents.roleId }))) {
-    issues.push({ path: "roleId", message: `No role with id ${contents.roleId}` });
+  if (!isFixedRole({ role: contents.roleId })) {
+    issues.push({ path: "roleId", message: `Not a fixed role: ${contents.roleId}` });
   }
   if (contents.entityTypeIds.length + contents.vocabularyIds.length === 0) {
     issues.push({ path: "entityTypeIds", message: "Include item types or lists" });

@@ -7,21 +7,8 @@ import {
   InvitationWireSchema,
   MemberListWireSchema,
   MemberWireSchema,
-  RoleImportWireSchema,
-  RoleListWireSchema,
-  RoleWireSchema,
 } from "./wire-schemas";
 
-const roleTable = uiEntry({
-  component: "role-table",
-  schema: RoleListWireSchema,
-  toProps: ({ value }) => value,
-});
-const roleCard = uiEntry({
-  component: "role-card",
-  schema: RoleWireSchema,
-  toProps: ({ value }) => ({ role: value }),
-});
 const memberCard = uiEntry({
   component: "member-card",
   schema: MemberWireSchema,
@@ -33,18 +20,8 @@ const invitationCard = uiEntry({
   toProps: ({ value }) => ({ invitation: value }),
 });
 
-/** Roles, members, invitations and the audit log (ADR 0004, 0006, 0020): tool name → generative-UI component. */
+/** Members, invitations and the audit log (ADR 0004, 0006, 0034): tool name → generative-UI component. */
 export const ACCESS_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
-  role_list: roleTable,
-  role_get: roleCard,
-  role_create: roleCard,
-  role_update: roleCard,
-  role_archive: roleCard,
-  role_importTemplate: uiEntry({
-    component: "role-table",
-    schema: RoleImportWireSchema,
-    toProps: ({ value }) => ({ items: value.created, nextCursor: null }),
-  }),
   member_list: uiEntry({
     component: "member-table",
     schema: MemberListWireSchema,

@@ -1,29 +1,11 @@
-export type SplitMemberRolesInput = { role: string };
+import { type FixedRole, parseFixedRole } from "../../permissions/fixed-roles";
 
-/** Better Auth stores a member's roles comma-separated in `member.role`. */
-export function splitMemberRoles({ role }: SplitMemberRolesInput): string[] {
-  return role
-    .split(",")
-    .map((name) => name.trim())
-    .filter((name) => name !== "");
-}
+export type ParseMemberRoleInput = { role: string | null };
 
-export type JoinMemberRolesInput = { roles: readonly string[] };
-
-export function joinMemberRoles({ roles }: JoinMemberRolesInput): string {
-  return [...new Set(roles)].join(",");
-}
-
-export type MemberHasRoleWhereInput = { name: string };
-
-/** Prisma filter: `member.role` (comma-separated) contains exactly `name`. */
-export function memberHasRoleWhere({ name }: MemberHasRoleWhereInput) {
-  return {
-    OR: [
-      { role: name },
-      { role: { startsWith: `${name},` } },
-      { role: { endsWith: `,${name}` } },
-      { role: { contains: `,${name},` } },
-    ],
-  };
+/**
+ * Better Auth stores the member's role as a string. Okazi only writes one fixed role
+ * (ADR 0034); anything else (a stale name, a comma-separated list) is `null` and grants nothing.
+ */
+export function parseMemberRole({ role }: ParseMemberRoleInput): FixedRole | null {
+  return parseFixedRole({ role: (role ?? "").trim() });
 }

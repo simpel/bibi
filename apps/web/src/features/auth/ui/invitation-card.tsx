@@ -1,5 +1,6 @@
 "use client";
 
+import { FIXED_ROLES } from "@okazi/core/schemas";
 import { Button, Skeleton } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { AuthCard } from "./auth-card";
@@ -12,6 +13,7 @@ export type InvitationCardProps = { invitationId: string };
 export function InvitationCard({ invitationId }: InvitationCardProps) {
   const t = useTranslations("auth");
   const errors = useTranslations("errors");
+  const roles = useTranslations("role");
   const invitation = useInvitation({ invitationId });
   const { pending, accept, decline } = useInvitationActions({ invitationId });
   if (invitation.status === "loading") return <Skeleton className="h-40 w-full max-w-md" />;
@@ -24,7 +26,9 @@ export function InvitationCard({ invitationId }: InvitationCardProps) {
       </AuthCard>
     );
   }
-  const { organizationName, inviterEmail, role } = invitation;
+  const { organizationName, inviterEmail } = invitation;
+  const fixed = FIXED_ROLES.find((name) => name === invitation.role);
+  const role = fixed ? roles(fixed) : invitation.role;
   return (
     <AuthCard
       title={t("invitationTitle", { organization: organizationName })}

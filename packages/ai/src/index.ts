@@ -95,7 +95,6 @@ export type {
   ItemWire,
   MemberWire,
   OccupancyWire,
-  RoleWire,
   SearchHitWire,
   SetupWire,
   SkillCardWire,

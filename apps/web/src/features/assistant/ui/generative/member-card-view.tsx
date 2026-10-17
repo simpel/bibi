@@ -1,13 +1,14 @@
 "use client";
 
 import { Link } from "@okazi/i18n/navigation";
-import { Badge, Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
+import { Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
+import { RoleBadge } from "@/features/member/ui/role-badge";
 import { ROUTES } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 
 export type MemberCardViewProps = GenerativeProps<"member-card">;
 
-/** One staff member: name, email and roles. */
+/** One staff member: name, email and role. */
 export function MemberCardView({ member }: MemberCardViewProps) {
   return (
     <Card data-slot="member-card" className="shadow-none">
@@ -20,13 +21,7 @@ export function MemberCardView({ member }: MemberCardViewProps) {
         <p className="text-sm text-muted-foreground">{member.email}</p>
       </CardHeader>
       <CardContent className="p-4 pt-0">
-        <ul className="flex flex-wrap gap-1">
-          {member.roles.map((role) => (
-            <li key={role}>
-              <Badge variant="secondary">{role}</Badge>
-            </li>
-          ))}
-        </ul>
+        <RoleBadge role={member.role} />
       </CardContent>
     </Card>
   );

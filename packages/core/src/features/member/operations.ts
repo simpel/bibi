@@ -1,13 +1,11 @@
 import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { OWNER_ROLE } from "../../permissions/resources";
 import { paginate } from "../../shared/paginate";
-import { checkCanGrant } from "../role/access";
-import { resolveAssignedRoles } from "./assigned-roles";
 import { cancelInvitation, inviteMember, listInvitations } from "./invitation-operations";
-import { joinMemberRoles, memberHasRoleWhere, splitMemberRoles } from "./member-roles";
-import { checkRemovable } from "./removal-guard";
+import { parseMemberRole } from "./member-roles";
+import { checkOwnerKept, checkRemovable } from "./removal-guard";
+import { checkCanGrantRole, checkCanManageMember } from "./role-access";
 import {
   MemberAssignRoleInputSchema,
   MemberListInputSchema,
@@ -17,19 +15,21 @@ import {
 } from "./schema";
 import { MEMBER_SELECT, toMemberDto } from "./to-member-dto";
 
-const fail = ({ code, message }: { code: "NOT_FOUND" | "FORBIDDEN"; message: string }) =>
-  err({ error: new AppError({ code, message }) });
+const notFound = () =>
+  err({ error: new AppError({ code: "NOT_FOUND", message: "Member not found" }) });
 
 export const listMembers = defineOperation({
   name: "member.list",
   kind: "query",
-  description: "List the organization's staff members with their roles. Filter by role name.",
+  description:
+    "List the organization's staff members with their access role (viewer, member, admin or " +
+    "owner). Filter by role.",
   input: MemberListInputSchema,
   output: MemberListOutputSchema,
   permission: "member:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.member.findMany({
-      where: input.role ? memberHasRoleWhere({ name: input.role }) : {},
+      where: input.role ? { role: input.role } : {},
       select: MEMBER_SELECT,
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
       take: input.limit + 1,
@@ -44,8 +44,9 @@ export const assignMemberRole = defineOperation({
   name: "member.assignRole",
   kind: "command",
   description:
-    "Replace a member's roles with the given role names (see role.list). The owner role cannot " +
-    "be assigned or taken away, and you cannot assign more access than you have yourself.",
+    "Give a member one of the fixed roles: viewer (reads), member (also writes operational " +
+    "data), admin (also configuration, members and API keys) or owner (everything). You cannot " +
+    "give a role above your own or change someone above you, and the last owner stays owner.",
   input: MemberAssignRoleInputSchema,
   output: MemberSchema,
   permission: "member:admin",
@@ -54,17 +55,17 @@ export const assignMemberRole = defineOperation({
       where: { id: input.id },
       select: MEMBER_SELECT,
     });
-    if (!before) return fail({ code: "NOT_FOUND", message: "Member not found" });
-    if (splitMemberRoles({ role: before.role }).includes(OWNER_ROLE)) {
-      return fail({ code: "FORBIDDEN", message: "The owner's roles cannot be changed" });
-    }
-    const granted = await resolveAssignedRoles({ context, names: input.roles });
-    if (!granted.ok) return granted;
-    const allowed = checkCanGrant({ context, permissions: granted.value });
+    if (!before) return notFound();
+    const from = parseMemberRole({ role: before.role });
+    const allowed = checkCanManageMember({ context, role: from });
     if (!allowed.ok) return allowed;
+    const granted = checkCanGrantRole({ context, role: input.role });
+    if (!granted.ok) return granted;
+    const kept = await checkOwnerKept({ context, from, to: input.role });
+    if (!kept.ok) return kept;
     const row = await context.db.member.update({
       where: { id: input.id },
-      data: { role: joinMemberRoles({ roles: input.roles }) },
+      data: { role: input.role },
       select: MEMBER_SELECT,
     });
     const member = toMemberDto({ row });
@@ -82,7 +83,7 @@ export const removeMember = defineOperation({
   kind: "command",
   description:
     "Remove a member from the organization; they lose access at once. The last owner cannot be " +
-    "removed, only an owner removes an owner, and you cannot remove someone with more access.",
+    "removed, only an owner removes an owner, and you cannot remove someone above your own role.",
   input: MemberRemoveInputSchema,
   output: MemberSchema,
   permission: "member:admin",
@@ -91,9 +92,9 @@ export const removeMember = defineOperation({
       where: { id: input.id },
       select: MEMBER_SELECT,
     });
-    if (!row) return fail({ code: "NOT_FOUND", message: "Member not found" });
+    if (!row) return notFound();
     const member = toMemberDto({ row });
-    const removable = await checkRemovable({ context, roles: member.roles });
+    const removable = await checkRemovable({ context, role: member.role });
     if (!removable.ok) return removable;
     await context.db.member.delete({ where: { id: input.id } });
     context.recordChange({ entityId: member.id, before: member });

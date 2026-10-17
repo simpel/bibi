@@ -18,7 +18,7 @@ export const MemberRef = objectFromSchema<MemberDto>({
   name: "Member",
   schema: MemberSchema,
   omit: ["organizationId"],
-  description: "Staff member of the organization with their role names.",
+  description: "Staff member of the organization with their fixed access role.",
 });
 const MemberPageRef = pageType({ name: "MemberPage", item: MemberRef });
 
@@ -26,7 +26,7 @@ export const InvitationRef = objectFromSchema<InvitationDto>({
   name: "Invitation",
   schema: InvitationSchema,
   omit: ["organizationId"],
-  description: "Invitation to join the organization as staff, with the roles it gives.",
+  description: "Invitation to join the organization as staff, with the fixed role it gives.",
 });
 const InvitationPageRef = pageType({ name: "InvitationPage", item: InvitationRef });
 

@@ -33,13 +33,21 @@ export * from "./features/payment-account/schema";
 export * from "./features/price-list/schema";
 export * from "./features/program-item/schema";
 export * from "./features/requirement/schema";
-export * from "./features/role/schema";
 export * from "./features/setup/schema";
 export * from "./features/sheet/schema";
 export * from "./features/sheet-definition/schema";
 export * from "./features/skill/schema";
 export * from "./features/venue/schema";
 export * from "./features/vocabulary/schema";
+export {
+  FIXED_ROLES,
+  type FixedRole,
+  FixedRoleSchema,
+  GRANTABLE_ROLES,
+  type GrantableRole,
+  GrantableRoleSchema,
+  roleRank,
+} from "./permissions/fixed-roles";
 export { type PermissionSet, PermissionSetSchema } from "./permissions/permission-set";
 export {
   PERMISSION_ACTIONS,

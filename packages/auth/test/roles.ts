@@ -1,33 +1,24 @@
-import {
-  createExecuteContext,
-  createRole,
-  execute,
-  grantAll,
-  type PermissionSet,
-} from "@okazi/core";
+import type { FixedRole } from "@okazi/core";
 import { getAuth } from "../src/index";
-
-export type AddRoleInput = { organizationId: string; name: string; permissions: PermissionSet };
-
-/** Creates an org role through core, as SYSTEM (like the demo seed does). */
-export async function addRole({ organizationId, name, permissions }: AddRoleInput): Promise<void> {
-  const context = createExecuteContext({
-    organizationId,
-    roles: [],
-    permissions: grantAll({ upTo: "admin" }),
-    actor: { type: "system", userId: null },
-  });
-  const result = await execute({ operation: createRole, input: { name, permissions }, context });
-  if (!result.ok) throw result.error;
-}
+import { createOrg, signIn, signUp } from "./helpers";
 
 export type AddMemberInput = { organizationId: string; userId: string; role: string };
 
+/** Adds a member through Better Auth (its `beforeAddMember` hook allows fixed roles only). */
 export async function addMember({ organizationId, userId, role }: AddMemberInput): Promise<void> {
-  // Better Auth types `role` as its static roles; dynamic roles (organizationRole) are strings.
-  const body = { userId, organizationId, role: role as "member" };
+  // Better Auth types `role` as the configured roles; tests also try names that are refused.
+  const body = { userId, organizationId, role: role as FixedRole };
   await getAuth().api.addMember({ body });
 }
 
-export const READ_ONLY: PermissionSet = { venue: ["read"], item: ["read"] };
-export const WRITER: PermissionSet = { venue: ["write"], item: ["write"] };
+export type MemberSessionInput = { role: FixedRole };
+
+/** An owner's new organization plus a signed-in member with `role` in it. */
+export async function memberSession({ role }: MemberSessionInput) {
+  const owner = await signUp();
+  const organizationId = await createOrg({ headers: owner.headers });
+  const user = await signUp();
+  await addMember({ organizationId, userId: user.userId, role });
+  const headers = await signIn({ email: user.email });
+  return { organizationId, owner, user, headers };
+}

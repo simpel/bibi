@@ -1,7 +1,6 @@
 import {
   createEntityType,
   createFieldDefinition,
-  createRole,
   createVocabulary,
   type ExecuteContext,
   execute,
@@ -10,7 +9,7 @@ import { unwrap } from "./helpers";
 
 export type SheetSetupInput = { context: ExecuteContext };
 
-/** A kitchen-order setup: a dish type with a field, an allergen list and a Kitchen role. */
+/** A kitchen-order setup: a dish type with a field, an allergen list, sent to members. */
 export async function createSheetSetup({ context }: SheetSetupInput) {
   const dish = unwrap({
     result: await execute({
@@ -29,12 +28,5 @@ export async function createSheetSetup({ context }: SheetSetupInput) {
   const list = unwrap({
     result: await execute({ operation: createVocabulary, input: { name: "Allergens" }, context }),
   });
-  const role = unwrap({
-    result: await execute({
-      operation: createRole,
-      input: { name: "Kitchen", permissions: { configuration: ["read"] } },
-      context,
-    }),
-  });
-  return { dish, field, list, role };
+  return { dish, field, list, role: "member" as const };
 }

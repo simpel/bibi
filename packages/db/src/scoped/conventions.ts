@@ -56,19 +56,13 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Conversation",
   "Message",
   "Skill",
-  "OrganizationRole",
 ]);
 
 /**
  * Org-scoped models whose id has no `@default(cuid(2))`: the writer passes `createId()` (core for
  * Better Auth tables, raw SQL for Embedding). Rows Better Auth writes itself use its own format.
  */
-export const APP_ID_MODELS = new Set<string>([
-  "Member",
-  "Invitation",
-  "OrganizationRole",
-  "Embedding",
-]);
+export const APP_ID_MODELS = new Set<string>(["Member", "Invitation", "Embedding"]);
 
 /**
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:

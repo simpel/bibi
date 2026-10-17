@@ -4,10 +4,8 @@ import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import { checkCanGrant } from "../role/access";
-import { resolveAssignedRoles } from "./assigned-roles";
 import { findInvitationConflict } from "./invitation-conflict";
-import { joinMemberRoles } from "./member-roles";
+import { checkCanGrantRole } from "./role-access";
 import {
   InvitationIdInputSchema,
   InvitationListInputSchema,
@@ -25,9 +23,9 @@ export const inviteMember = defineOperation({
   kind: "command",
   entityType: "invitation",
   description:
-    "Invite a person by email to join the organization as staff with the given role names " +
-    "(see role.list). They get an email with a link and become a member when they accept. " +
-    "You cannot invite with more access than you have yourself.",
+    "Invite a person by email to join the organization as staff with one fixed role (viewer, " +
+    "member or admin; owner is never invited). They get an email with a link and become a " +
+    "member when they accept. You cannot invite with a role above your own.",
   input: MemberInviteInputSchema,
   output: InvitationSchema,
   permission: "member:admin",
@@ -35,9 +33,7 @@ export const inviteMember = defineOperation({
     const inviterId = context.actor.userId;
     if (!inviterId)
       return fail({ code: "FORBIDDEN", message: "Invitations need a signed-in user" });
-    const granted = await resolveAssignedRoles({ context, names: input.roles });
-    if (!granted.ok) return granted;
-    const allowed = checkCanGrant({ context, permissions: granted.value });
+    const allowed = checkCanGrantRole({ context, role: input.role });
     if (!allowed.ok) return allowed;
     const email = input.email.toLowerCase();
     const conflict = await findInvitationConflict({ context, email });
@@ -48,7 +44,7 @@ export const inviteMember = defineOperation({
         id: createId(),
         organizationId: context.organizationId,
         email,
-        role: joinMemberRoles({ roles: input.roles }),
+        role: input.role,
         status: "pending",
         inviterId,
         expiresAt: new Date(now.getTime() + INVITATION_TTL_MS),
@@ -95,7 +91,7 @@ export const listInvitations = defineOperation({
   name: "member.listInvitations",
   kind: "query",
   entityType: "invitation",
-  description: "List the organization's pending, unexpired invitations with the roles they give.",
+  description: "List the organization's pending, unexpired invitations with the role they give.",
   input: InvitationListInputSchema,
   output: InvitationListOutputSchema,
   permission: "member:admin",

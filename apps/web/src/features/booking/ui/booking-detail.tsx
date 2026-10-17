@@ -34,7 +34,7 @@ const BackLink = ({ label }: { label: string }) => (
 export async function BookingDetail({ locale, id }: BookingDetailProps) {
   const common = await getTranslations("common");
   const t = await getTranslations("booking");
-  const { bookingWrite, paymentRead, paymentWrite } = await getCallerAbilities();
+  const { bookingWrite, paymentWrite } = await getCallerAbilities();
   const [booking, data] = await Promise.all([
     runOperation({ operation: getBooking, input: { id } }),
     loadBookingData(),
@@ -58,9 +58,7 @@ export async function BookingDetail({ locale, id }: BookingDetailProps) {
         index={booking.value.occurrenceIndex}
       />
       <BookingFacts booking={booking.value} data={data.value} />
-      {paymentRead ? (
-        <BookingPayments locale={locale} bookingId={id} canRequest={paymentWrite} />
-      ) : null}
+      <BookingPayments locale={locale} bookingId={id} canRequest={paymentWrite} />
       <ProgramSection locale={locale} booking={booking.value} />
       <RequirementSection locale={locale} booking={booking.value} />
       <SheetSection locale={locale} booking={booking.value} />

@@ -1,104 +1,83 @@
 import { describe, expect, it } from "vitest";
-import { assignMemberRole, createRole, execute, listMembers } from "../src/index";
-import { errorCode, testContext, unwrap } from "./helpers";
+import { assignMemberRole, type ExecuteContext, execute, listMembers } from "../src/index";
+import { errorCode, unwrap } from "./helpers";
 import { addTestMember, testOrg } from "./org-helpers";
 
-const withRoles = async () => {
-  const context = await testOrg();
-  for (const [name, permissions] of [
-    ["Kitchen", { venue: ["read"] }],
-    ["Head chef", { venue: ["write"] }],
-    ["Admin", { role: ["admin"], member: ["admin"], venue: ["admin"] }],
-  ] as const) {
-    unwrap({
-      result: await execute({ operation: createRole, input: { name, permissions }, context }),
-    });
-  }
-  return context;
-};
+const assign = ({ context, id, role }: { context: ExecuteContext; id: string; role: string }) =>
+  execute({ operation: assignMemberRole, input: { id, role: role as "member" }, context });
 
-describe("member operations (ADR 0020)", () => {
-  it("lists members with roles and filters on the exact role name", async () => {
-    const context = await withRoles();
+describe("member operations (ADR 0034)", () => {
+  it("lists members with their fixed role and filters on it", async () => {
+    const context = await testOrg();
     await addTestMember({ context, role: "owner", name: "Anna" });
-    await addTestMember({ context, role: "Head chef", name: "Ali" });
+    await addTestMember({ context, role: "member", name: "Ali" });
     await addTestMember({ context, role: "Sales,Kitchen", name: "Erik" });
     const all = unwrap({ result: await execute({ operation: listMembers, input: {}, context }) });
-    expect(all.items.map((member) => [member.name, member.roles])).toEqual([
-      ["Anna", ["owner"]],
-      ["Ali", ["Head chef"]],
-      ["Erik", ["Sales", "Kitchen"]],
+    expect(all.items.map((member) => [member.name, member.role])).toEqual([
+      ["Anna", "owner"],
+      ["Ali", "member"],
+      ["Erik", null],
     ]);
-    const kitchen = unwrap({
-      result: await execute({ operation: listMembers, input: { role: "Kitchen" }, context }),
+    const members = unwrap({
+      result: await execute({ operation: listMembers, input: { role: "member" }, context }),
     });
-    expect(kitchen.items.map((member) => member.name)).toEqual(["Erik"]);
+    expect(members.items.map((member) => member.name)).toEqual(["Ali"]);
   });
 
-  it("assigns existing roles and audits the change", async () => {
-    const context = await withRoles();
-    const id = await addTestMember({ context, role: "Kitchen" });
-    const member = unwrap({
-      result: await execute({
-        operation: assignMemberRole,
-        input: { id, roles: ["Head chef"] },
-        context,
-      }),
-    });
-    expect(member.roles).toEqual(["Head chef"]);
+  it("assigns a fixed role, audits it and rejects other names", async () => {
+    const context = await testOrg();
+    const id = await addTestMember({ context, role: "viewer" });
+    const member = unwrap({ result: await assign({ context, id, role: "admin" }) });
+    expect(member.role).toBe("admin");
     const audit = await context.db.auditLog.findFirst({
       where: { operation: "member.assignRole" },
     });
-    expect(audit?.before).toMatchObject({ roles: ["Kitchen"] });
-    const unknown = await execute({
-      operation: assignMemberRole,
-      input: { id, roles: ["Does not exist"] },
-      context,
-    });
+    expect(audit?.before).toMatchObject({ role: "viewer" });
+    expect(audit?.after).toMatchObject({ role: "admin" });
+    const unknown = await assign({ context, id, role: "Kitchen" });
     expect(errorCode({ result: unknown })).toBe("VALIDATION");
   });
 
-  it("protects the owner and refuses escalation", async () => {
-    const context = await withRoles();
+  it("never gives a role above the caller's own nor changes someone above them", async () => {
+    const context = await testOrg();
+    const admin = { ...context, roles: ["admin"] };
+    const id = await addTestMember({ context, role: "member" });
+    expect(errorCode({ result: await assign({ context: admin, id, role: "owner" }) })).toBe(
+      "FORBIDDEN",
+    );
+    unwrap({ result: await assign({ context: admin, id, role: "admin" }) });
     const ownerId = await addTestMember({ context, role: "owner" });
-    const demote = await execute({
-      operation: assignMemberRole,
-      input: { id: ownerId, roles: ["Kitchen"] },
-      context,
-    });
+    await addTestMember({ context, role: "owner" });
+    const demote = await assign({ context: admin, id: ownerId, role: "viewer" });
     expect(errorCode({ result: demote })).toBe("FORBIDDEN");
-    const id = await addTestMember({ context, role: "Kitchen" });
-    const promote = await execute({
-      operation: assignMemberRole,
-      input: { id, roles: ["owner"] },
-      context,
+    const viaMember = await assign({
+      context: { ...context, roles: ["member"] },
+      id,
+      role: "viewer",
     });
-    expect(errorCode({ result: promote })).toBe("VALIDATION");
-    const limited = testContext({
-      organizationId: context.organizationId,
-      permissions: { member: ["admin"], venue: ["read"] },
-    });
-    const escalate = await execute({
-      operation: assignMemberRole,
-      input: { id, roles: ["Admin"] },
-      context: limited,
-    });
-    expect(errorCode({ result: escalate })).toBe("FORBIDDEN");
+    expect(errorCode({ result: viaMember })).toBe("FORBIDDEN");
+  });
+
+  it("lets an owner promote and demote owners but keeps the last one", async () => {
+    const context = await testOrg();
+    const ownerId = await addTestMember({ context, role: "owner" });
+    const last = await assign({ context, id: ownerId, role: "admin" });
+    expect(errorCode({ result: last })).toBe("CONFLICT");
+    const id = await addTestMember({ context, role: "member" });
+    unwrap({ result: await assign({ context, id, role: "owner" }) });
+    const demoted = unwrap({ result: await assign({ context, id: ownerId, role: "admin" }) });
+    expect(demoted.role).toBe("admin");
   });
 
   it("never reaches members of another organization", async () => {
-    const context = await withRoles();
-    const id = await addTestMember({ context, role: "Kitchen" });
-    const other = await withRoles();
+    const context = await testOrg();
+    const id = await addTestMember({ context, role: "viewer" });
+    const other = await testOrg();
     const list = unwrap({
       result: await execute({ operation: listMembers, input: {}, context: other }),
     });
     expect(list.items).toEqual([]);
-    const assign = await execute({
-      operation: assignMemberRole,
-      input: { id, roles: ["Head chef"] },
-      context: other,
-    });
-    expect(errorCode({ result: assign })).toBe("NOT_FOUND");
+    const result = await assign({ context: other, id, role: "member" });
+    expect(errorCode({ result })).toBe("NOT_FOUND");
   });
 });

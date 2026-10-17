@@ -57,7 +57,7 @@ export * from "./features/item/read-operations";
 export * from "./features/item/resolve-operation";
 export * from "./features/item/write-operations";
 export * from "./features/member/invitation-operations";
-export { splitMemberRoles } from "./features/member/member-roles";
+export { parseMemberRole } from "./features/member/member-roles";
 export * from "./features/member/operations";
 export * from "./features/message/operations";
 export * from "./features/occupancy/operations";
@@ -77,11 +77,6 @@ export * from "./features/program-item/write-operations";
 export * from "./features/requirement/effective";
 export * from "./features/requirement/operations";
 export * from "./features/requirement/write-operations";
-export * from "./features/role/lifecycle-operations";
-export * from "./features/role/operations";
-export * from "./features/role/read-operations";
-export { parseRolePermissions } from "./features/role/to-role-dto";
-export * from "./features/role/write-operations";
 export * from "./features/setup/operations";
 export * from "./features/sheet/operations";
 export * from "./features/sheet-definition/read-operations";
@@ -105,6 +100,7 @@ export { requiresApproval } from "./operations/requires-approval";
 export type * from "./operations/types";
 export { UNTRUSTED_OUTPUT_META_KEY } from "./operations/untrusted-output";
 export { type ProvisionOrganizationInput, provisionOrganization } from "./organization/provision";
+export * from "./permissions/fixed-roles";
 export {
   grantAll,
   intersectPermissions,
@@ -145,5 +141,3 @@ export { type CreateSearchOperationInput, createSearchOperation } from "./search
 export * from "./search/search-schema";
 export { parseSkillMarkdown } from "./skills/markdown/parse-skill-markdown";
 export { renderSkillMarkdown } from "./skills/markdown/render-skill-markdown";
-export type { RoleTemplate } from "./templates/roles/role-template";
-export * from "./templates/roles/role-templates";

@@ -3,12 +3,13 @@
 import { Link } from "@okazi/i18n/navigation";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
+import { RoleBadge } from "@/features/member/ui/role-badge";
 import { ROUTES } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 
 export type InvitationCardViewProps = GenerativeProps<"invitation-card">;
 
-/** One invitation: email, status, the roles it gives and when it expires. */
+/** One invitation: email, status, the role it gives and when it expires. */
 export function InvitationCardView({ invitation }: InvitationCardViewProps) {
   const t = useTranslations("member");
   const format = useFormatter();
@@ -29,13 +30,7 @@ export function InvitationCardView({ invitation }: InvitationCardViewProps) {
         </Badge>
       </CardHeader>
       <CardContent className="grid gap-2 p-4 pt-0 text-sm">
-        <ul className="flex flex-wrap gap-1">
-          {invitation.roles.map((role) => (
-            <li key={role}>
-              <Badge variant="secondary">{role}</Badge>
-            </li>
-          ))}
-        </ul>
+        <RoleBadge role={invitation.role} />
         <p className="text-muted-foreground">{t("expiresAt", { date: expires })}</p>
       </CardContent>
     </Card>

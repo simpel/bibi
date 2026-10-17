@@ -1,5 +1,6 @@
 "use client";
 
+import type { FixedRole } from "@okazi/core/schemas";
 import {
   Button,
   Dialog,
@@ -13,10 +14,10 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { InviteMemberForm } from "./invite-member-form";
 
-export type InviteMemberButtonProps = { roleNames: string[] };
+export type InviteMemberButtonProps = { roles: FixedRole[] };
 
-/** Opens the invitation dialog: email and the roles the invitee gets. */
-export function InviteMemberButton({ roleNames }: InviteMemberButtonProps) {
+/** Opens the invitation dialog: email and the role the invitee gets. */
+export function InviteMemberButton({ roles }: InviteMemberButtonProps) {
   const t = useTranslations("member");
   const [open, setOpen] = useState(false);
   return (
@@ -31,7 +32,7 @@ export function InviteMemberButton({ roleNames }: InviteMemberButtonProps) {
             <DialogTitle>{t("invite")}</DialogTitle>
             <DialogDescription>{t("inviteDescription")}</DialogDescription>
           </DialogHeader>
-          {open ? <InviteMemberForm roleNames={roleNames} onDone={() => setOpen(false)} /> : null}
+          {open ? <InviteMemberForm roles={roles} onDone={() => setOpen(false)} /> : null}
         </DialogContent>
       </Dialog>
     </>

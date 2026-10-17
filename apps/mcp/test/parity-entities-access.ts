@@ -6,11 +6,11 @@ import { createRestClient } from "./parity-rest";
 /** Invitations are read back from the pending list of each surface. */
 const invitation: ParityEntity = {
   name: "invitation",
-  create: ({ mcp, made }) =>
+  create: ({ mcp }) =>
     tool({
       mcp,
       name: "member_invite",
-      args: { email: `invitee-${createId()}@x.test`, roles: [made.role.name] },
+      args: { email: `invitee-${createId()}@x.test`, role: "member" },
     }),
   viaMcp: async ({ mcp, created }) =>
     (await tool({ mcp, name: "member_listInvitations", args: {} })).items.find(
@@ -41,10 +41,9 @@ const auditLog: ParityEntity = {
 };
 
 /**
- * Roles and members (ADR 0020). There is no `member.create`: the parity test seeds one member
- * row (`made.memberSeed`) and the entity is "created" by assigning it the role made before.
- * Invitations come next: they invite with that role. The audit log comes last: it reads the
- * history the creates above wrote.
+ * Members with fixed roles (ADR 0034). There is no `member.create`: the parity test seeds one
+ * member row (`made.memberSeed`) and the entity is "created" by assigning it a fixed role.
+ * Invitations come next. The audit log comes last: it reads the history the creates above wrote.
  */
 export function accessEntities(): ParityEntity[] {
   const member: ParityEntity = {
@@ -53,7 +52,7 @@ export function accessEntities(): ParityEntity[] {
       tool({
         mcp,
         name: "member_assignRole",
-        args: { id: made.memberSeed.id, roles: [made.role.name] },
+        args: { id: made.memberSeed.id, role: "member" },
       }),
     viaMcp: async ({ mcp, created }) =>
       (await tool({ mcp, name: "member_list", args: {} })).items.find(
@@ -69,16 +68,5 @@ export function accessEntities(): ParityEntity[] {
       return data.members.items.find((item: { id: string }) => item.id === created.id);
     },
   };
-  return [
-    byId({
-      name: "role",
-      field: "role",
-      list: "roles",
-      createTool: "role_create",
-      args: { name: "Parity role", permissions: { venue: ["write"], item: ["read"] } },
-    }),
-    member,
-    invitation,
-    auditLog,
-  ];
+  return [member, invitation, auditLog];
 }

@@ -23,7 +23,7 @@ export const DEMO_ORGS: readonly DemoOrg[] = [lindholmen, vingaleden];
 
 /** Parts of the demo seed (ADR 0025). Each part is seeded when the corresponding operations exist. */
 export const DEMO_SEED_PARTS = [
-  { part: 1, name: "Custom roles" },
+  { part: 1, name: "Fixed roles" },
   { part: 2, name: "Configurable domain (types, fields, vocabularies, setups, behaviors)" },
   { part: 3, name: "Items and composition" },
   { part: 4, name: "Customers, price lists and sales pipeline" },

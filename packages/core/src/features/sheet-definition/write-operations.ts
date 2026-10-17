@@ -25,8 +25,9 @@ export const createSheetDefinition = defineOperation({
   kind: "command",
   description:
     "Define a sheet, e.g. Kitchen order: the item types and fields it includes, the lists whose " +
-    "requirements it counts and the role it goes to. Sheet names are unique. Every id must be " +
-    "an active item type, a field of one of those types, a list or a role (else VALIDATION).",
+    "requirements it counts and the fixed role it goes to (viewer, member, admin or owner). " +
+    "Sheet names are unique. Every id must be an active item type, a field of one of those " +
+    "types or a list (else VALIDATION).",
   input: SheetDefinitionCreateInputSchema,
   output: SheetDefinitionSchema,
   permission: "configuration:write",

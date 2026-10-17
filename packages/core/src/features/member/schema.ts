@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { RoleNameSchema } from "../role/schema";
+import { FixedRoleSchema, GrantableRoleSchema } from "../../permissions/fixed-roles";
 
 /** A staff member of the organization. Only what is needed to assign work; no other data. */
 export const MemberSchema = z.object({
@@ -8,7 +8,8 @@ export const MemberSchema = z.object({
   userId: z.string(),
   name: z.string(),
   email: z.string(),
-  roles: z.array(z.string()),
+  /** `null` when the stored role is not a fixed role; such a member can do nothing. */
+  role: FixedRoleSchema.nullable(),
   createdAt: z.date(),
 });
 
@@ -17,7 +18,7 @@ export const MemberIdInputSchema = z.object({ id: z.string().min(1) });
 export const MemberListInputSchema = z.object({
   limit: z.number().int().min(1).max(100).default(50),
   cursor: z.string().optional().describe("id of the last item from the previous page"),
-  role: z.string().trim().min(1).optional().describe("Only members with this role name"),
+  role: FixedRoleSchema.optional().describe("Only members with this role"),
 });
 
 export const MemberListOutputSchema = z.object({
@@ -27,11 +28,9 @@ export const MemberListOutputSchema = z.object({
 
 export const MemberAssignRoleInputSchema = z.object({
   id: z.string().min(1).describe("Member id (from member.list)"),
-  roles: z
-    .array(RoleNameSchema)
-    .min(1)
-    .max(10)
-    .describe("Role names that replace the member's current roles"),
+  role: FixedRoleSchema.describe(
+    "The member's new role: viewer, member, admin or owner (never above your own)",
+  ),
 });
 
 export type MemberDto = z.infer<typeof MemberSchema>;
@@ -43,12 +42,12 @@ export const MemberRemoveInputSchema = z.object({
 /** Better Auth's invitation states; only `pending` invitations can be accepted or cancelled. */
 export const InvitationStatusSchema = z.enum(["pending", "accepted", "rejected", "canceled"]);
 
-/** An invitation to join the organization as staff, with the roles the invitee will get. */
+/** An invitation to join the organization as staff, with the role the invitee will get. */
 export const InvitationSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   email: z.string(),
-  roles: z.array(z.string()),
+  role: FixedRoleSchema.nullable(),
   status: InvitationStatusSchema,
   inviterId: z.string(),
   expiresAt: z.date(),
@@ -60,11 +59,9 @@ export const MemberInviteInputSchema = z.object({
     .email()
     .max(254)
     .describe("Email address of the person to invite; they accept with this address"),
-  roles: z
-    .array(RoleNameSchema)
-    .min(1)
-    .max(10)
-    .describe("Role names (see role.list) the invitee gets when they accept"),
+  role: GrantableRoleSchema.describe(
+    "The role the invitee gets when they accept: viewer, member or admin (never above your own)",
+  ),
 });
 
 export const InvitationIdInputSchema = z.object({

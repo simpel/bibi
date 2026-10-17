@@ -1,16 +1,22 @@
-import type { MemberDto } from "@okazi/core";
+import type { FixedRole, MemberDto } from "@okazi/core";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
 import { getTranslations } from "next-intl/server";
-import { AssignRolesButton } from "./assign-roles-button";
+import { canManageMember } from "../assignable-roles";
+import { AssignRoleButton } from "./assign-role-button";
 import { RemoveMemberButton } from "./remove-member-button";
-import { RoleBadges } from "./role-badges";
+import { RoleBadge } from "./role-badge";
 
-export type MemberTableProps = { members: MemberDto[]; roleNames: string[]; canAdmin: boolean };
+export type MemberTableProps = {
+  members: MemberDto[];
+  /** The roles the caller may give; empty when they cannot manage members. */
+  roles: FixedRole[];
+  /** The caller's own role: members above it are read-only here. */
+  caller: FixedRole | null;
+  canAdmin: boolean;
+};
 
-const OWNER = "owner";
-
-/** Staff with their roles; members holding the owner role are read-only here. */
-export async function MemberTable({ members, roleNames, canAdmin }: MemberTableProps) {
+/** Staff with their fixed role (ADR 0034). */
+export async function MemberTable({ members, roles, caller, canAdmin }: MemberTableProps) {
   const t = await getTranslations("member");
   const common = await getTranslations("common");
   return (
@@ -31,12 +37,12 @@ export async function MemberTable({ members, roleNames, canAdmin }: MemberTableP
             <TableCell className="font-medium">{member.name}</TableCell>
             <TableCell>{member.email}</TableCell>
             <TableCell>
-              <RoleBadges roles={member.roles} />
+              <RoleBadge role={member.role} />
             </TableCell>
             <TableCell>
-              {canAdmin && !member.roles.includes(OWNER) ? (
+              {canAdmin && canManageMember({ caller, member: member.role }) ? (
                 <div className="flex justify-end gap-2">
-                  <AssignRolesButton member={member} roleNames={roleNames} />
+                  <AssignRoleButton member={member} roles={roles} />
                   <RemoveMemberButton member={member} />
                 </div>
               ) : null}

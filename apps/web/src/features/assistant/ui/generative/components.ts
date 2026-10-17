@@ -42,8 +42,6 @@ import { ProgramItemCardView } from "./program-item-card-view";
 import { ProgramItemTableView } from "./program-item-table-view";
 import { RequirementCardView } from "./requirement-card-view";
 import { RequirementTableView } from "./requirement-table-view";
-import { RoleCardView } from "./role-card-view";
-import { RoleTableView } from "./role-table-view";
 import { SearchResultsView } from "./search-results-view";
 import { SetupCardView } from "./setup-card-view";
 import { SetupTableView } from "./setup-table-view";
@@ -106,8 +104,6 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "sheet-definition-card": SheetDefinitionCardView,
   "sheet-table": SheetTableView,
   "sheet-card": SheetCardView,
-  "role-table": RoleTableView,
-  "role-card": RoleCardView,
   "member-table": MemberTableView,
   "member-card": MemberCardView,
   "invitation-table": InvitationTableView,

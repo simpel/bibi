@@ -2,7 +2,7 @@ import { OWNER_ROLE } from "@okazi/core";
 import { APIError } from "better-auth/api";
 import { organization } from "better-auth/plugins";
 import { accessControl, orgRoles } from "../permissions";
-import { assertKnownRoles } from "./check-member-roles";
+import { assertFixedRole } from "./check-member-roles";
 import { provisionOrganizationHook } from "./provision-organization-hook";
 
 const closed = ({ operation }: { operation: string }): never => {
@@ -18,13 +18,12 @@ export function organizationPlugin() {
     ac: accessControl,
     roles: orgRoles,
     creatorRole: OWNER_ROLE,
-    // Custom roles per organization (ADR 0020). Rows are written by core `role.*` only.
-    dynamicAccessControl: { enabled: true },
+    // Fixed roles only (ADR 0034): no `organizationRole` table, no dynamic access control.
     organizationHooks: {
       // Default booking statuses etc. are created by core as SYSTEM (ADR 0022).
       afterCreateOrganization: provisionOrganizationHook,
       beforeAddMember: async ({ member }) => {
-        await assertKnownRoles({ organizationId: member.organizationId, role: member.role });
+        assertFixedRole({ role: member.role });
       },
       // Better Auth lets the creator (owner) bypass its own `member:update` check here, so the
       // endpoint is closed outright: roles are assigned via core `member.assignRole` (audited).
@@ -34,14 +33,6 @@ export function organizationPlugin() {
       beforeCreateInvitation: async () => closed({ operation: "member.invite" }),
       beforeCancelInvitation: async () => closed({ operation: "member.cancelInvitation" }),
       beforeRemoveMember: async () => closed({ operation: "member.remove" }),
-    },
-    schema: {
-      organizationRole: {
-        additionalFields: {
-          status: { type: "string", required: true, defaultValue: "ACTIVE", input: false },
-          createdBy: { type: "string", required: false, input: false },
-        },
-      },
     },
   });
 }

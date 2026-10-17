@@ -1,4 +1,4 @@
-import { listMembers, listRoles } from "@okazi/core";
+import { type FixedRole, listMembers, type MemberDto } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { CursorPagination } from "@/components/cursor-pagination";
@@ -9,6 +9,7 @@ import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { assignableRoles, invitableRoles } from "../assignable-roles";
 import { InvitationList } from "./invitation-list";
 import { InviteMemberButton } from "./invite-member-button";
 import { MemberTable } from "./member-table";
@@ -17,49 +18,52 @@ export type MemberListProps = { locale: Locale; cursor?: string | undefined };
 
 const PAGE_SIZE = 50;
 
-/** Role names an admin can assign or invite with (the fixed owner role excluded). */
-async function assignableRoleNames(): Promise<string[]> {
-  const roles = await runOperation({ operation: listRoles, input: { limit: 100 } });
-  return roles.ok ? roles.value.items.filter((role) => !role.system).map((role) => role.name) : [];
-}
+type MemberContentProps = {
+  page: { items: MemberDto[]; nextCursor: string | null };
+  cursor?: string | undefined;
+  role: FixedRole | null;
+  canAdmin: boolean;
+};
 
-/** Members page body: staff table; member admins also assign roles, invite and remove. */
-export async function MemberList({ locale, cursor }: MemberListProps) {
+async function MemberContent({ page, cursor, role, canAdmin }: MemberContentProps) {
   const t = await getTranslations("member");
-  const { memberAdmin } = await getCallerAbilities();
-  const [members, roleNames] = await Promise.all([
-    runOperation({
-      operation: listMembers,
-      input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
-    }),
-    assignableRoleNames(),
-  ]);
-  const actions = memberAdmin ? <InviteMemberButton roleNames={roleNames} /> : undefined;
-  const header = (
-    <PageHeader title={t("plural")} description={t("listDescription")} actions={actions} />
-  );
-  if (!members.ok) {
-    const errorKey = handleLoadError({ error: members.error, locale });
-    return (
-      <div className="grid gap-6">
-        {header}
-        <ErrorState errorKey={errorKey} />
-      </div>
-    );
-  }
+  const roles = assignableRoles({ caller: role });
   return (
-    <div className="grid gap-6">
-      {header}
-      {members.value.items.length === 0 ? (
-        <EmptyState title={t("empty")} />
-      ) : (
-        <MemberTable members={members.value.items} roleNames={roleNames} canAdmin={memberAdmin} />
-      )}
+    <>
+      {page.items.length === 0 ? <EmptyState title={t("empty")} /> : null}
+      {page.items.length > 0 ? (
+        <MemberTable members={page.items} roles={roles} caller={role} canAdmin={canAdmin} />
+      ) : null}
       <CursorPagination
         pathname={ROUTES.settingsMembers}
         cursor={cursor}
-        nextCursor={members.value.nextCursor}
+        nextCursor={page.nextCursor}
       />
+    </>
+  );
+}
+
+/** Members page body: staff table; admins and owners also change roles, invite and remove. */
+export async function MemberList({ locale, cursor }: MemberListProps) {
+  const t = await getTranslations("member");
+  const { memberAdmin, role } = await getCallerAbilities();
+  const members = await runOperation({
+    operation: listMembers,
+    input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
+  });
+  const invite = <InviteMemberButton roles={invitableRoles({ caller: role })} />;
+  return (
+    <div className="grid gap-6">
+      <PageHeader
+        title={t("plural")}
+        description={t("listDescription")}
+        actions={memberAdmin ? invite : undefined}
+      />
+      {members.ok ? (
+        <MemberContent page={members.value} cursor={cursor} role={role} canAdmin={memberAdmin} />
+      ) : (
+        <ErrorState errorKey={handleLoadError({ error: members.error, locale })} />
+      )}
       {memberAdmin ? <InvitationList locale={locale} /> : null}
     </div>
   );

@@ -30,8 +30,8 @@ Every exception is listed as a constant in `packages/db/src/scoped/` (`models.ts
 `Skill` is org-scoped but has a nullable `organizationId`: SYSTEM skills are global rows (`GLOBAL_READ_MODELS`), readable from every organization and writable only by the seeder.
 
 ### Ids
-- Better Auth generates its own ids (not cuid2) for rows it writes, and its tables have no `@default(cuid(2))`. This applies to every global table, and to `Member`, `Invitation` and `OrganizationRole` rows written through Better Auth.
-- When core writes `Member`, `Invitation` or `OrganizationRole` itself, and when the search index writes `Embedding` (raw SQL), the writer passes `createId()` (cuid2). These are `APP_ID_MODELS`.
+- Better Auth generates its own ids (not cuid2) for rows it writes, and its tables have no `@default(cuid(2))`. This applies to every global table, and to `Member` and `Invitation` rows written through Better Auth.
+- When core writes `Member` or `Invitation` itself, and when the search index writes `Embedding` (raw SQL), the writer passes `createId()` (cuid2). These are `APP_ID_MODELS`.
 
 ### Missing convention columns (`COLUMN_EXCEPTIONS`)
 | Model | Missing | Why |

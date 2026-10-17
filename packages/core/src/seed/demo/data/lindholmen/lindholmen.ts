@@ -11,35 +11,21 @@ import { lindholmenRooms } from "./rooms";
 import { lindholmenTypes } from "./types";
 
 /**
- * Lindholmen Experience Center (`docs/demo-seed.md`): the "Conference venue" template plus its own
- * role Caretaker. Caretaker gets setup sheets in slice 6; for now it reads the catalog.
+ * Lindholmen Experience Center (`docs/demo-seed.md`): fixed roles (ADR 0034). Johan configures,
+ * the caretaker only reads; what each person answers for comes with responsibilities.
  */
 export const lindholmen: DemoOrg = {
   slug: "lindholmen-demo",
   name: "Lindholmen Experience Center",
-  templates: ["conference-venue"],
-  roles: [
-    {
-      name: "Caretaker",
-      permissions: {
-        search: ["read"],
-        conversation: ["write"],
-        skill: ["write"],
-        venue: ["read"],
-        item: ["read"],
-        configuration: ["read"],
-      },
-    },
-  ],
   users: [
     { name: "Anna Berg", role: "owner" },
-    { name: "Erik Lund", role: "Sales" },
-    { name: "Sara Nilsson", role: "Sales" },
-    { name: "Johan Ek", role: "Coordinator" },
-    { name: "Maria Holm", role: "Coordinator" },
-    { name: "Ali Karimi", role: "Kitchen" },
-    { name: "Peter Sjoberg", role: "Caretaker" },
-    { name: "Lena Strand", role: "Finance" },
+    { name: "Erik Lund", role: "member" },
+    { name: "Sara Nilsson", role: "member" },
+    { name: "Johan Ek", role: "admin" },
+    { name: "Maria Holm", role: "member" },
+    { name: "Ali Karimi", role: "member" },
+    { name: "Peter Sjoberg", role: "viewer" },
+    { name: "Lena Strand", role: "member" },
   ],
   config: {
     ...lindholmenLists,

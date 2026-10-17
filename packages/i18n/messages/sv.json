@@ -129,7 +129,6 @@
     "settings": "Inställningar",
     "openMenu": "Öppna meny",
     "commandBar": "Kommandofält",
-    "roles": "Roller",
     "members": "Medlemmar",
     "payments": "Betalningar",
     "bookingStatuses": "Bokningsstatusar",
@@ -1585,7 +1584,6 @@
       "priceLists": "Priser per kundgrupp eller säsong.",
       "bookingStatuses": "De statusar en bokning går igenom.",
       "members": "Vem som har åtkomst och med vilken roll.",
-      "roles": "Vad varje roll får läsa och ändra.",
       "payments": "Stripe-konto för kortbetalningar och fakturor.",
       "skills": "Återanvändbara instruktioner för assistenten."
     }
@@ -1710,64 +1708,17 @@
     }
   },
   "role": {
-    "singular": "Roll",
-    "plural": "Roller",
-    "listDescription": "Vad personalen får göra i organisationen. Ägarrollen är fast.",
-    "create": "Skapa roll",
-    "edit": "Redigera roll",
-    "createDescription": "Namnge rollen och välj vad den får göra.",
-    "editDescription": "Ändra namn och behörigheter. Omdöpning gäller även medlemmarna.",
-    "archive": "Arkivera roll",
-    "archiveConfirm": "Vill du arkivera rollen {name}? Det går inte så länge medlemmar har den.",
-    "archived": "Rollen har arkiverats.",
-    "created": "Rollen har skapats.",
-    "updated": "Rollen har uppdaterats.",
-    "empty": "Inga roller.",
-    "system": "Systemroll",
-    "allPermissions": "Allt",
-    "importTemplate": "Importera mall Konferensgård",
-    "imported": "{created, plural, one {# roll} other {# roller}} skapades, {skipped} fanns redan.",
-    "fields": {
-      "name": "Namn",
-      "permissions": "Behörigheter"
-    },
-    "columns": {
-      "name": "Namn",
-      "permissions": "Behörigheter"
-    },
-    "matrix": {
-      "resource": "Resurs"
-    },
-    "actions": {
-      "read": "Läsa",
-      "write": "Skriva",
-      "admin": "Administrera"
-    },
-    "resources": {
-      "venue": "Anläggningar",
-      "item": "Artiklar",
-      "customer": "Kunder",
-      "contact": "Kontaktpersoner",
-      "priceList": "Prislistor (kundpriser)",
-      "occupancy": "Beläggning (blockera bokningsbara artiklar)",
-      "configuration": "Konfiguration (typer, fält, listor, uppställningar)",
-      "bookingStatus": "Bokningsstatusar och övergångar",
-      "booking": "Bokningar och deras ansvariga",
-      "programItem": "Programpunkter (bokningens körschema)",
-      "requirement": "Behov (antal mot listvärden på bokningar)",
-      "sheet": "Blad (versionerade sammanställningar till en roll)",
-      "inquiry": "Förfrågningar och deras säljare",
-      "search": "Sök",
-      "conversation": "Konversationer",
-      "skill": "Färdigheter",
-      "role": "Roller",
-      "member": "Medlemmar",
-      "audit": "Ändringshistorik (granskningslogg)",
-      "payment": "Betalningar (Stripe-utbetalningskonto)"
-    },
-    "saving": "Sparar roll…",
-    "archiving": "Arkiverar roll…",
-    "importing": "Importerar mall…"
+    "viewer": "Läsare",
+    "member": "Medlem",
+    "admin": "Administratör",
+    "owner": "Ägare",
+    "unknown": "Ingen åtkomst",
+    "descriptions": {
+      "viewer": "Läser allt, ändrar inget.",
+      "member": "Bokar också och hanterar kunder, förfrågningar, bokningar, betalningar och blad.",
+      "admin": "Sätter också upp typer, listor, statusar, blad, prislistor, medlemmar och API-nycklar.",
+      "owner": "Allt, även andra ägare och själva organisationen."
+    }
   },
   "auditLog": {
     "details": "Detaljer",
@@ -1861,21 +1812,21 @@
   "member": {
     "singular": "Medlem",
     "plural": "Medlemmar",
-    "listDescription": "Personalen i organisationen och deras roller. Ägare kan inte ändras.",
+    "listDescription": "Personalen i organisationen och deras åtkomstroll.",
     "empty": "Inga medlemmar.",
-    "assignRoles": "Tilldela roller",
-    "assignDescription": "Välj roller för {name}. De ersätter nuvarande roller.",
-    "noRoles": "Det finns inga roller att tilldela. Skapa roller först.",
-    "updated": "Rollerna har uppdaterats.",
+    "assignRoles": "Byt roll",
+    "assignDescription": "Välj roll för {name}.",
+    "updated": "Rollen har uppdaterats.",
     "columns": {
       "name": "Namn",
       "email": "E-post",
-      "roles": "Roller",
+      "roles": "Roll",
       "expires": "Går ut"
     },
-    "saving": "Sparar roller…",
+    "selectRole": "Välj en roll",
+    "saving": "Sparar roll…",
     "invite": "Bjud in medlem",
-    "inviteDescription": "Vi mejlar en länk. Personen blir medlem med de valda rollerna när hen accepterar.",
+    "inviteDescription": "Vi mejlar en länk. Personen blir medlem med den valda rollen när hen accepterar.",
     "sendInvitation": "Skicka inbjudan",
     "invited": "Inbjudan har skickats.",
     "invitations": "Väntande inbjudningar",

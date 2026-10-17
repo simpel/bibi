@@ -129,7 +129,6 @@
     "settings": "Settings",
     "openMenu": "Open menu",
     "commandBar": "Command bar",
-    "roles": "Roles",
     "members": "Members",
     "bookingStatuses": "Booking statuses",
     "payments": "Payments",
@@ -1585,7 +1584,6 @@
       "priceLists": "Prices per customer group or season.",
       "bookingStatuses": "The statuses a booking moves through.",
       "members": "Who has access and with which role.",
-      "roles": "What each role may read and change.",
       "payments": "Stripe account for card payments and invoices.",
       "skills": "Reusable instructions for the assistant."
     }
@@ -1710,64 +1708,17 @@
     }
   },
   "role": {
-    "singular": "Role",
-    "plural": "Roles",
-    "listDescription": "What staff may do in the organization. The owner role is fixed.",
-    "create": "Create role",
-    "edit": "Edit role",
-    "createDescription": "Name the role and choose what it may do.",
-    "editDescription": "Change the name and permissions. A rename also applies to members.",
-    "archive": "Archive role",
-    "archiveConfirm": "Do you want to archive the role {name}? This fails while members hold it.",
-    "archived": "The role has been archived.",
-    "created": "The role has been created.",
-    "updated": "The role has been updated.",
-    "empty": "No roles.",
-    "system": "System role",
-    "allPermissions": "Everything",
-    "importTemplate": "Import Conference venue template",
-    "imported": "{created, plural, one {# role} other {# roles}} created, {skipped} already existed.",
-    "fields": {
-      "name": "Name",
-      "permissions": "Permissions"
-    },
-    "columns": {
-      "name": "Name",
-      "permissions": "Permissions"
-    },
-    "matrix": {
-      "resource": "Resource"
-    },
-    "actions": {
-      "read": "Read",
-      "write": "Write",
-      "admin": "Administer"
-    },
-    "resources": {
-      "venue": "Venues",
-      "item": "Items",
-      "customer": "Customers",
-      "contact": "Contact persons",
-      "priceList": "Price lists (customer prices)",
-      "occupancy": "Occupancy (blocking bookable items)",
-      "configuration": "Configuration (types, fields, lists, setups)",
-      "bookingStatus": "Booking statuses and transitions",
-      "booking": "Bookings and their owners",
-      "programItem": "Program items (the booking's run schedule)",
-      "requirement": "Requirements (counts against list values on bookings)",
-      "sheet": "Sheets (versioned compilations for a role)",
-      "inquiry": "Inquiries and their salesperson",
-      "search": "Search",
-      "conversation": "Conversations",
-      "skill": "Skills",
-      "role": "Roles",
-      "member": "Members",
-      "audit": "Change history (audit log)",
-      "payment": "Payments (Stripe payout account)"
-    },
-    "saving": "Saving role…",
-    "archiving": "Archiving role…",
-    "importing": "Importing template…"
+    "viewer": "Viewer",
+    "member": "Member",
+    "admin": "Admin",
+    "owner": "Owner",
+    "unknown": "No access",
+    "descriptions": {
+      "viewer": "Reads everything, changes nothing.",
+      "member": "Also books and handles customers, inquiries, bookings, payments and sheets.",
+      "admin": "Also sets up types, lists, statuses, sheets, price lists, members and API keys.",
+      "owner": "Everything, including other owners and the organization itself."
+    }
   },
   "auditLog": {
     "details": "Details",
@@ -1861,21 +1812,21 @@
   "member": {
     "singular": "Member",
     "plural": "Members",
-    "listDescription": "Staff in the organization and their roles. Owners cannot be changed.",
+    "listDescription": "Staff in the organization and their access role.",
     "empty": "No members.",
-    "assignRoles": "Assign roles",
-    "assignDescription": "Choose roles for {name}. They replace the current roles.",
-    "noRoles": "There are no roles to assign. Create roles first.",
-    "updated": "The roles have been updated.",
+    "assignRoles": "Change role",
+    "assignDescription": "Choose the role for {name}.",
+    "updated": "The role has been updated.",
     "columns": {
       "name": "Name",
       "email": "Email",
-      "roles": "Roles",
+      "roles": "Role",
       "expires": "Expires"
     },
-    "saving": "Saving roles…",
+    "selectRole": "Choose a role",
+    "saving": "Saving role…",
     "invite": "Invite member",
-    "inviteDescription": "We email a link. The person becomes a member with the chosen roles when they accept.",
+    "inviteDescription": "We email a link. The person becomes a member with the chosen role when they accept.",
     "sendInvitation": "Send invitation",
     "invited": "The invitation has been sent.",
     "invitations": "Pending invitations",

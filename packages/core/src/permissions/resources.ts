@@ -3,8 +3,8 @@ export const PERMISSION_ACTIONS = ["read", "write", "admin"] as const;
 export type PermissionAction = (typeof PERMISSION_ACTIONS)[number];
 
 /**
- * Every resource an operation can require a permission on. New resource → add it here; roles
- * (ADR 0020) can only grant resources listed here.
+ * Every resource an operation can require a permission on. New resource → add it here and to
+ * the fixed role map in `packages/auth` (ADR 0034).
  */
 export const RESOURCES = [
   "venue",
@@ -23,12 +23,11 @@ export const RESOURCES = [
   "search",
   "conversation",
   "skill",
-  "role",
   "member",
   "audit",
   "payment",
 ] as const;
 export type Resource = (typeof RESOURCES)[number];
 
-/** The fixed system role with every permission (ADR 0020). Never stored as an org role. */
+/** The fixed role with every permission (ADR 0034). Never on an invitation or an API key. */
 export const OWNER_ROLE = "owner";

@@ -25,7 +25,6 @@ import "../features/payment-account/graphql";
 import "../features/conversation/graphql";
 import "../features/message/graphql";
 import "../features/skill/graphql";
-import "../features/role/graphql";
 import "../features/member/graphql";
 import "../features/audit-log/graphql";
 import "./scalars";

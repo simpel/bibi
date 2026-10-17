@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { FixedRoleSchema } from "../../permissions/fixed-roles";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 
@@ -9,7 +10,7 @@ export const SheetDefinitionSchema = z.object({
   entityTypeIds: z.array(z.string()).describe("Item types whose items appear on the sheet"),
   fieldIds: z.array(z.string()).describe("Fields of those types shown per item"),
   vocabularyIds: z.array(z.string()).describe("Lists whose requirements are counted"),
-  roleId: z.string().describe("The role the sheet goes to (role id, or owner)"),
+  roleId: z.string().describe("The fixed role the sheet goes to: viewer, member, admin or owner"),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -30,7 +31,7 @@ export const SheetDefinitionCreateInputSchema = z.object({
   vocabularyIds: IdsSchema.default([]).describe(
     "Ids of lists (vocabulary.list) whose requirements are counted on the sheet",
   ),
-  roleId: z.string().min(1).describe("Id of the receiving role (role.list), e.g. Kitchen"),
+  roleId: FixedRoleSchema.describe("The fixed role that receives the sheet, e.g. member"),
 });
 
 export const SheetDefinitionUpdateInputSchema = z.object({
@@ -39,7 +40,7 @@ export const SheetDefinitionUpdateInputSchema = z.object({
   entityTypeIds: IdsSchema.optional().describe("Replaces the item types"),
   fieldIds: IdsSchema.optional().describe("Replaces the fields"),
   vocabularyIds: IdsSchema.optional().describe("Replaces the lists"),
-  roleId: z.string().min(1).optional().describe("Id of the receiving role"),
+  roleId: FixedRoleSchema.optional().describe("The fixed role that receives the sheet"),
 });
 
 export const SheetDefinitionIdInputSchema = z.object({ id: z.string().min(1) });

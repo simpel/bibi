@@ -5,8 +5,9 @@
 // Tenancy: `Organization.id` IS the `organizationId` on every business row (Venue, AuditLog,
 // Embedding, ...). There is deliberately no FK from business tables to `organization` (Better Auth
 // owns these tables, ADR 0004); `packages/auth` resolves the org and `scopedDb` pins it.
-// Auth tables are not in ORG_SCOPED_MODELS, except Member, OrganizationRole and Invitation: core
-// `member.*` and `role.*` write those rows the way Better Auth would, so they are authorized and audited.
+// Auth tables are not in ORG_SCOPED_MODELS, except Member and Invitation: core `member.*` writes
+// those rows the way Better Auth would, so they are authorized and audited. `role` holds one fixed
+// role (viewer, member, admin or owner, ADR 0034).
 
 model User {
   id                 String              @id
@@ -94,8 +95,6 @@ model Organization {
   metadata    String?
   members     Member[]
   invitations Invitation[]
-
-  organizationroles OrganizationRole[]
 
   @@unique([slug])
   @@map("organization")
@@ -344,20 +343,4 @@ model OauthClientAssertion {
   expiresAt DateTime
 
   @@map("oauthClientAssertion")
-}
-
-model OrganizationRole {
-  id             String       @id
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  role           String
-  permission     String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime?    @updatedAt
-  status         String?      @default("ACTIVE")
-  createdBy      String?
-
-  @@index([organizationId])
-  @@index([role])
-  @@map("organizationRole")
 }

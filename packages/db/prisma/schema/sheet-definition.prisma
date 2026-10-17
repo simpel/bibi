@@ -1,7 +1,7 @@
 /// Sheet definition (ADR 0021) – an organization's own sheet, e.g. Kitchen order or Brewing order.
 /// It names the item types and fields a sheet includes, the lists whose requirements it includes
-/// and the role it goes to. The referenced ids are validated by core (`sheetDefinition.*`), and
-/// archiving a referenced type, field, list or role is refused while a definition uses it.
+/// and the fixed role it goes to. The referenced ids are validated by core (`sheetDefinition.*`), and
+/// archiving a referenced type, field or list is refused while a definition uses it.
 model SheetDefinition {
   id             String       @id @default(cuid(2))
   organizationId String
@@ -12,7 +12,7 @@ model SheetDefinition {
   fieldIds       String[]
   /// Lists (`Vocabulary`) whose requirements are counted on the sheet.
   vocabularyIds  String[]
-  /// The receiving role: an `OrganizationRole` id, or `owner` for the fixed role.
+  /// The receiving fixed role (viewer, member, admin or owner, ADR 0034) until sheets go to a responsibility.
   roleId         String
   status         RecordStatus @default(ACTIVE)
   createdAt      DateTime     @default(now())

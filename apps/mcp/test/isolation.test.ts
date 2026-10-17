@@ -33,35 +33,23 @@ describe("cross-organization isolation", () => {
     expect(audit.map((row: { operation: string }) => row.operation)).toEqual(["venue.create"]);
   });
 
-  it("hides roles and members of one organization from another", async () => {
+  it("hides members of one organization from another", async () => {
     const contextA = testContext();
     const contextB = testContext();
     const memberA = await seedOrgMember({ context: contextA });
     await seedOrgMember({ context: contextB });
     const a = await connect({ context: contextA });
     const b = await connect({ context: contextB });
-    const role = await call({
-      client: a,
-      name: "role_create",
-      args: { name: "Hemlig", permissions: { venue: ["read"] } },
-    });
-    expect(
-      (await call({ client: b, name: "role_get", args: { id: role.data.id } })).data.code,
-    ).toBe("NOT_FOUND");
-    const names = (await call({ client: b, name: "role_list" })).data.items.map(
-      (item: { name: string }) => item.name,
-    );
-    expect(names).toEqual(["owner"]);
+    const own = (await call({ client: a, name: "member_list" })).data.items;
+    expect(own.map((item: { id: string }) => item.id)).toContain(memberA.id);
     const members = (await call({ client: b, name: "member_list" })).data.items;
     expect(members.map((item: { id: string }) => item.id)).not.toContain(memberA.id);
     const assign = await call({
       client: b,
       name: "member_assignRole",
-      args: { id: memberA.id, roles: ["Hemlig"] },
+      args: { id: memberA.id, role: "admin" },
     });
     expect(assign.data.code).toBe("NOT_FOUND");
-    const archive = await call({ client: b, name: "role_archive", args: { id: role.data.id } });
-    expect(archive.data.code).toBe("NOT_FOUND");
     const remove = await call({ client: b, name: "member_remove", args: { id: memberA.id } });
     expect(remove.data.code).toBe("NOT_FOUND");
   });
@@ -73,15 +61,10 @@ describe("cross-organization isolation", () => {
     await seedOrgMember({ context: contextB });
     const a = await connect({ context: contextA });
     const b = await connect({ context: contextB });
-    await call({
-      client: a,
-      name: "role_create",
-      args: { name: "Hemlig", permissions: { venue: ["read"] } },
-    });
     const invited = await call({
       client: a,
       name: "member_invite",
-      args: { email: "secret@x.test", roles: ["Hemlig"] },
+      args: { email: "secret@x.test", role: "viewer" },
     });
     expect(invited.data.status).toBe("pending");
     expect((await call({ client: b, name: "member_listInvitations" })).data.items).toEqual([]);

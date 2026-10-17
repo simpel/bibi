@@ -1,5 +1,5 @@
 import type { Member } from "@okazi/db";
-import { splitMemberRoles } from "./member-roles";
+import { parseMemberRole } from "./member-roles";
 import type { MemberDto } from "./schema";
 
 /** Selected with every member read, so the DTO never carries more user data than this. */
@@ -25,7 +25,7 @@ export function toMemberDto({ row }: ToMemberDtoInput): MemberDto {
     userId: row.userId,
     name: row.user.name,
     email: row.user.email,
-    roles: splitMemberRoles({ role: row.role }),
+    role: parseMemberRole({ role: row.role }),
     createdAt: row.createdAt,
   };
 }

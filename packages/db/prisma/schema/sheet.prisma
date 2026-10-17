@@ -10,7 +10,7 @@ model Sheet {
   sheetDefinitionId String
   /// 1, 2, 3, … per booking and definition.
   version           Int
-  /// The receiving role at generation: an `OrganizationRole` id, or `owner`.
+  /// The receiving fixed role at generation (ADR 0034).
   roleId            String
   /// Snapshot of the booking's rows the definition includes.
   content           Json

@@ -1,11 +1,12 @@
 import "server-only";
 import { resolveExecuteContext } from "@okazi/auth";
-import { hasPermission } from "@okazi/core";
+import { type FixedRole, hasPermission, highestRole } from "@okazi/core";
 import { headers } from "next/headers";
 
 export type CallerAbilities = {
+  /** The caller's fixed role (ADR 0034); `null` when not a member or no fixed role. */
+  role: FixedRole | null;
   skillAdmin: boolean;
-  roleAdmin: boolean;
   memberAdmin: boolean;
   configurationWrite: boolean;
   bookingStatusAdmin: boolean;
@@ -18,17 +19,14 @@ export type CallerAbilities = {
   programItemWrite: boolean;
   requirementWrite: boolean;
   inquiryWrite: boolean;
-  auditRead: boolean;
   paymentAdmin: boolean;
-  sheetRead: boolean;
   sheetWrite: boolean;
-  paymentRead: boolean;
   paymentWrite: boolean;
 };
 
 const NONE: CallerAbilities = {
+  role: null,
   skillAdmin: false,
-  roleAdmin: false,
   memberAdmin: false,
   configurationWrite: false,
   bookingStatusAdmin: false,
@@ -41,25 +39,23 @@ const NONE: CallerAbilities = {
   programItemWrite: false,
   requirementWrite: false,
   inquiryWrite: false,
-  auditRead: false,
   paymentAdmin: false,
-  sheetRead: false,
   sheetWrite: false,
-  paymentRead: false,
   paymentWrite: false,
 };
 
 /**
- * What the signed-in user's organization role allows, for hiding buttons that would only fail
- * (the operations still enforce everything). Uses the same resolver as `runOperation`.
+ * What the signed-in user's fixed role allows, for hiding buttons and admin pages that would only
+ * fail (the operations still enforce everything). Uses the same resolver as `runOperation`.
+ * Every role reads everything (ADR 0034), so there are no read abilities.
  */
 export async function getCallerAbilities(): Promise<CallerAbilities> {
   const context = await resolveExecuteContext({ headers: await headers() });
   if (!context.ok) return NONE;
-  const { permissions } = context.value;
+  const { permissions, roles } = context.value;
   return {
+    role: highestRole({ roles }),
     skillAdmin: hasPermission({ permissions, permission: "skill:admin" }),
-    roleAdmin: hasPermission({ permissions, permission: "role:admin" }),
     memberAdmin: hasPermission({ permissions, permission: "member:admin" }),
     configurationWrite: hasPermission({ permissions, permission: "configuration:write" }),
     bookingStatusAdmin: hasPermission({ permissions, permission: "bookingStatus:admin" }),
@@ -72,11 +68,8 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     programItemWrite: hasPermission({ permissions, permission: "programItem:write" }),
     requirementWrite: hasPermission({ permissions, permission: "requirement:write" }),
     inquiryWrite: hasPermission({ permissions, permission: "inquiry:write" }),
-    auditRead: hasPermission({ permissions, permission: "audit:read" }),
     paymentAdmin: hasPermission({ permissions, permission: "payment:admin" }),
-    sheetRead: hasPermission({ permissions, permission: "sheet:read" }),
     sheetWrite: hasPermission({ permissions, permission: "sheet:write" }),
-    paymentRead: hasPermission({ permissions, permission: "payment:read" }),
     paymentWrite: hasPermission({ permissions, permission: "payment:write" }),
   };
 }

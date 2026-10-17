@@ -1,34 +1,24 @@
 import { getDb } from "@okazi/db";
 import { createId } from "@paralleldrive/cuid2";
-import { createRole, type ExecuteContext, execute, inviteMember } from "../src/index";
-import { unwrap } from "./helpers";
+import { type ExecuteContext, execute, type GrantableRole, inviteMember } from "../src/index";
 import { testOrg } from "./org-helpers";
 
-/** An org with roles, and an inviter that is a real user (`invitation.inviterId` has a FK). */
+/** An owner context whose inviter is a real user (`invitation.inviterId` has a FK). */
 export const withInviter = async (): Promise<ExecuteContext> => {
   const base = await testOrg();
   const userId = `user_${createId()}`;
   await getDb().user.create({
     data: { id: userId, name: "Inviter", email: `${userId}@example.test`, emailVerified: true },
   });
-  const context = { ...base, actor: { type: "user" as const, userId } };
-  for (const [name, permissions] of [
-    ["Kitchen", { venue: ["read"] }],
-    ["Admin", { member: ["admin"], venue: ["admin"] }],
-  ] as const) {
-    unwrap({
-      result: await execute({ operation: createRole, input: { name, permissions }, context }),
-    });
-  }
-  return context;
+  return { ...base, actor: { type: "user" as const, userId } };
 };
 
 export const invite = ({
   context,
   email,
-  roles,
+  role,
 }: {
   context: ExecuteContext;
   email: string;
-  roles: string[];
-}) => execute({ operation: inviteMember, input: { email, roles }, context });
+  role: GrantableRole;
+}) => execute({ operation: inviteMember, input: { email, role }, context });

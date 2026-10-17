@@ -6,10 +6,10 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 - `resolveExecuteContext({ headers })` → `Result<ExecuteContext>` is the **only** caller lookup for web, GraphQL, REST and MCP. Never build `createExecuteContext` yourself in a surface.
   - Order: `x-api-key` / `Authorization: Bearer okz_…` (API key) → `Authorization: Bearer <jwt>` (OAuth token) → session cookie.
   - Org: session = `session.activeOrganizationId`; API key = `metadata.organizationId`; OAuth = claim `okazi_org` (the active org when the user approved the client).
-  - Roles are read **live** from `member` on every call and resolved to `permissions` (`resolve/role-permissions.ts`): `owner` = everything, others = the union of the organization's active `organizationRole` rows. Unknown/archived roles give nothing (ADR 0020).
-  - API key: `metadata.role` (a role name, never `owner`). Effective permissions = the member's ∩ the key role's, both live.
+  - The role is read **live** from `member` on every call and resolved to `permissions` with the constant map `ROLE_PERMISSIONS` (`roles/role-permissions.ts`, ADR 0034). A stored name that is not a fixed role gives nothing (`roles: []`).
+  - API key: `metadata.role` (`viewer`, `member` or `admin`, never `owner`). The key acts with the weaker of its role and the member's live role (`roles` = that one role).
   - `UNAUTHENTICATED` = missing/invalid credential. `FORBIDDEN` = no org, not a member, or a disallowed AI actor.
-- `getAuth()` (lazy singleton), `authHandler` (`export const { GET, POST } = authHandler;` in `app/api/auth/[...all]/route.ts`), `requireSession({ headers })`, `createOrgApiKey({ headers, organizationId, name, role })`.
+- `getAuth()` (lazy singleton), `authHandler` (`export const { GET, POST } = authHandler;` in `app/api/auth/[...all]/route.ts`), `requireSession({ headers })`, `createOrgApiKey({ headers, organizationId, name, role })` (role never `owner` nor above the caller's own).
 - Web client: `createAuthClient({})` from `@okazi/auth/client` (imports no server code).
 - `Organization.id` = `organizationId` on all business rows. No FK (Better Auth owns the tables).
 
@@ -36,18 +36,20 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 - If the session has no active org, the user is sent to `/select-organization` before consent. The web app needs the pages `/login`, `/oauth/consent`, `/select-organization`, `/accept-invitation/[id]`.
 - Users may not create OAuth clients via the API. The web client is provisioned by ops and its id is set in `WEB_OAUTH_CLIENT_ID`.
 
-## Roles and permissions (ADR 0020)
-- Organization plugin with `dynamicAccessControl`: roles per org in `organizationRole` (`permission` = JSON `PermissionSet`, plus `status`/`createdBy`). The rows are written **only** by core `role.*`.
-- The only static role is `owner`. Better Auth's `admin`/`member` are overridden without permissions.
+## Roles and permissions (ADR 0034)
+- Fixed roles `viewer < member < admin < owner`, no `organizationRole` table and no `dynamicAccessControl`. `ROLE_PERMISSIONS` (`roles/role-permissions.ts`) is the only role → permission map:
+  - `viewer`: `read` on every resource, plus `write` on its own `conversation` and personal `skill` (the assistant).
+  - `member`: viewer + `write` on operational data (`customer`, `contact`, `inquiry`, `booking`, `programItem`, `occupancy`, `requirement`, `payment`, `sheet`).
+  - `admin` and `owner`: `admin` on everything. What only an owner may do (change or remove owners, keep the last owner, the organization itself) is checked by core `member.*` (rank in `FIXED_ROLES`) and Better Auth's owner statements.
+- Better Auth roles (`orgRoles` in `permissions.ts`): only `owner` keeps Better Auth statements; `admin`/`member`/`viewer` have none. `beforeAddMember` refuses anything but a fixed role.
 - Better Auth's own role paths are closed: `owner` has no `ac`, and `updateMemberRole` is blocked with `organizationHooks.beforeUpdateMemberRole` (the creator would otherwise bypass the check). Roles are assigned via `member.assignRole`.
-- Okazi and Better Auth share the resource name `member`; the statements are merged per resource in `permissions.ts`, never overwritten.
 
 ## Adding a permission
 1. Add the resource to `RESOURCES` in `packages/core/src/permissions/resources.ts`.
 2. Use `"<resource>:read|write|admin"` as `permission` in the core operation.
-3. Add it to the role templates (`packages/core/src/templates/roles/`) where it belongs. Existing org roles do not get it automatically.
+3. Decide in `ROLE_PERMISSIONS` whether `member` writes it (operational data) or only admins do (configuration). Every role reads every resource.
 
-Resources today: `venue`, `item`, `configuration`, `search`, `conversation`, `skill`, `role`, `member`.
+Resources today: see `RESOURCES` (`venue`, `item`, `customer`, …, `member`, `audit`, `payment`).
 
 ## Schema and tests
 - `auth.prisma` is generated: `pnpm --filter @okazi/auth auth:generate`. Remove `generator`/`datasource` from the result, then run `pnpm --filter @okazi/db migrate:dev --name <name>`.

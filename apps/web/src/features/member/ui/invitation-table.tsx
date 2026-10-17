@@ -2,11 +2,11 @@ import type { InvitationDto } from "@okazi/core";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { CancelInvitationButton } from "./cancel-invitation-button";
-import { RoleBadges } from "./role-badges";
+import { RoleBadge } from "./role-badge";
 
 export type InvitationTableProps = { invitations: InvitationDto[] };
 
-/** Pending invitations with the roles they give and when the link expires. */
+/** Pending invitations with the role they give and when the link expires. */
 export async function InvitationTable({ invitations }: InvitationTableProps) {
   const t = await getTranslations("member");
   const common = await getTranslations("common");
@@ -28,7 +28,7 @@ export async function InvitationTable({ invitations }: InvitationTableProps) {
           <TableRow key={invitation.id}>
             <TableCell className="font-medium">{invitation.email}</TableCell>
             <TableCell>
-              <RoleBadges roles={invitation.roles} />
+              <RoleBadge role={invitation.role} />
             </TableCell>
             <TableCell>
               {format.dateTime(invitation.expiresAt, { dateStyle: "medium", timeStyle: "short" })}

@@ -1,8 +1,8 @@
 import type { Booking } from "@okazi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { isFixedRole } from "../../permissions/fixed-roles";
 import { invalid, notFound } from "../../shared/errors";
-import { roleExists } from "../sheet-definition/check-contents";
 import type { SheetDefinitionDto } from "../sheet-definition/schema";
 
 export type Sources = { booking: Booking; definition: SheetDefinitionDto };
@@ -12,7 +12,7 @@ export type LoadSourcesInput = {
   sheetDefinitionId: string;
 };
 
-/** The booking and the active definition, or `NOT_FOUND`; the receiving role must still exist. */
+/** The booking and the active definition, or `NOT_FOUND`; the receiving role must be a fixed role. */
 export async function loadSources({
   context,
   bookingId,
@@ -24,8 +24,8 @@ export async function loadSources({
     where: { id: sheetDefinitionId },
   });
   if (!definition) return notFound({ entity: "Sheet definition" });
-  if (!(await roleExists({ context, roleId: definition.roleId }))) {
-    const message = `The sheet goes to a role that no longer exists (${definition.roleId})`;
+  if (!isFixedRole({ role: definition.roleId })) {
+    const message = `The sheet goes to a role that does not exist (${definition.roleId})`;
     return invalid({ message, issues: [{ path: "sheetDefinitionId", message }] });
   }
   return ok({ value: { booking, definition } });

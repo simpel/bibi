@@ -8,21 +8,18 @@ type Db = Pick<OperationContext, "db">;
 export type SheetReference =
   | { entityTypeId: string }
   | { fieldId: string }
-  | { vocabularyId: string }
-  | { roleId: string };
+  | { vocabularyId: string };
 
 function whereUsing({ reference }: { reference: SheetReference }) {
   if ("entityTypeId" in reference) return { entityTypeIds: { has: reference.entityTypeId } };
   if ("fieldId" in reference) return { fieldIds: { has: reference.fieldId } };
-  if ("vocabularyId" in reference) return { vocabularyIds: { has: reference.vocabularyId } };
-  return { roleId: reference.roleId };
+  return { vocabularyIds: { has: reference.vocabularyId } };
 }
 
 export type CheckNotOnSheetsInput = { context: Db; reference: SheetReference; what: string };
 
 /**
- * `CONFLICT` while an active sheet definition includes the type, field or list, or goes to
- * the role (ADR 0026: data exists → CONFLICT). `what` names the record in the message.
+ * `CONFLICT` while an active sheet definition includes the type, field or list (ADR 0026: data exists → CONFLICT). `what` names the record in the message.
  */
 export async function checkNotOnSheets({
   context,

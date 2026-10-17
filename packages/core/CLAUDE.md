@@ -39,13 +39,12 @@ The parity core: every capability is defined **once** as an operation and then e
   - SYSTEM skills: `src/skills/system/*.md` (written in English; the assistant still answers in the user's language). `seedSystemSkills({ db?, embed?, directory? })` (imported from `@okazi/core/seed`, **not** from index – it reads files and must not end up in the web bundle) upserts per `source = system:<file>`, idempotent, bumps the version on change, archives removed files and indexes globally if `embed` is given. CLI: `pnpm --filter @okazi/core seed:skills`. No AuditLog row (the rows have no organization; changes are reviewed as code).
 - `Actor.approvedBy` is set only by the approval flow and stored in `AuditLog.approvedBy`.
 
-## Roles and members (ADR 0020)
-- `role.list|get` (`role:read`), `role.create|update|archive|importTemplate` (`role:admin`), `member.list` (`member:read`), `member.assignRole` (`member:admin`). Rows in `organizationRole`/`member` (Better Auth tables, org-scoped in `scopedDb`).
-- `owner` is fixed (id `"owner"` in `role.get`), cannot be created, changed, assigned or taken from anyone.
-- Anti-escalation (`features/role/access.ts`): nobody can create, change or assign a role that grants more than they have themselves (system excepted).
-- Permissions are normalized (admin ⇒ write ⇒ read). Renaming rewrites `member.role`. Archiving is denied (CONFLICT) as long as someone has the role.
-- Templates are data in `templates/roles/` (`conference-venue` = "Conference estate") and grow with each part of ADR 0025.
-- Tests that create roles/members need a real `organization` row: `testOrg()` in `test/org-helpers.ts`.
+## Members and fixed roles (ADR 0034)
+- `member.list` (`member:read`), `member.assignRole|remove|invite|listInvitations|cancelInvitation` (`member:admin`). Rows in `member`/`invitation` (Better Auth tables, org-scoped in `scopedDb`). `member.role` holds one fixed role; `parseMemberRole` turns anything else into `null` (grants nothing).
+- Fixed roles: `FIXED_ROLES` (`viewer < member < admin < owner`) and `GRANTABLE_ROLES` (no `owner`) in `permissions/fixed-roles.ts`. What they grant is `ROLE_PERMISSIONS` in `packages/auth`; core only compares ranks.
+- Anti-escalation (`features/member/role-access.ts`, by rank of `context.roles`, system excepted): nobody gives a role above their own or changes/removes a member above them; only an owner changes or removes an owner. The organization always keeps an owner (`checkOwnerKept`, CONFLICT, also for system). Invitations never carry `owner`.
+- Sheet definitions still name a fixed role in `roleId` until sheets go to a responsibility.
+- Tests that create members need a real `organization` row: `testOrg()` in `test/org-helpers.ts`. `testContext({ role })` sets the caller's fixed role (default from `access`: read → viewer, write → member, admin → owner).
 
 ## Configurable domain (ADR 0021, 0026)
 - `entityType.*`, `fieldDefinition.*`, `vocabulary.*` (plus `addValue|updateValue|archiveValue|importTemplate`) and `setup.*` require `configuration:read|write`. `item.*` requires `item:read|write`.

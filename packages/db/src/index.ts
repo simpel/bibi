@@ -48,7 +48,6 @@ export {
   MessageRole,
   type Occupancy,
   OccupancyType,
-  type OrganizationRole,
   type Payment,
   type PaymentAccount,
   PaymentMethod,

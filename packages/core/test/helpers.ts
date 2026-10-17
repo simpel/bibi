@@ -3,6 +3,7 @@ import {
   type Actor,
   createExecuteContext,
   type ExecuteContext,
+  type FixedRole,
   grantAll,
   type PermissionAction,
   type PermissionSet,
@@ -13,7 +14,15 @@ export type TestContextInput = {
   /** Every resource up to this action (default `admin`), or explicit `permissions`. */
   access?: PermissionAction;
   permissions?: PermissionSet;
+  /** The caller's fixed role (ADR 0034); defaults to read → viewer, write → member, admin → owner. */
+  role?: FixedRole;
   actor?: Actor;
+};
+
+const ROLE_FOR_ACCESS: Record<PermissionAction, FixedRole> = {
+  read: "viewer",
+  write: "member",
+  admin: "owner",
 };
 
 /** Fresh org per call: tests never share rows, so no cleanup is needed. */
@@ -21,9 +30,10 @@ export function testContext({
   organizationId = `org_${createId()}`,
   access = "admin",
   permissions = grantAll({ upTo: access }),
+  role = ROLE_FOR_ACCESS[access],
   actor = { type: "user", userId: `user_${createId()}` },
 }: TestContextInput = {}): ExecuteContext {
-  return createExecuteContext({ organizationId, roles: [access], permissions, actor });
+  return createExecuteContext({ organizationId, roles: [role], permissions, actor });
 }
 
 export type UnwrapInput<T> = { result: { ok: true; value: T } | { ok: false; error: Error } };

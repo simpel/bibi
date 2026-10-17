@@ -1,16 +1,23 @@
-import { err, fromUnknown, isPermissionSubset, OWNER_ROLE, ok, type Result } from "@okazi/core";
+import {
+  err,
+  fromUnknown,
+  GrantableRoleSchema,
+  OWNER_ROLE,
+  ok,
+  type Result,
+  roleRank,
+} from "@okazi/core";
 import { z } from "zod";
 import { getAuth } from "../get-auth";
 import { requireSession } from "../require-session";
 import { forbidden } from "../resolve/errors";
 import { loadMembership } from "../resolve/membership";
-import { resolveRolePermissions } from "../resolve/role-permissions";
 
 export const CreateOrgApiKeyInputSchema = z.object({
   organizationId: z.string().min(1),
   name: z.string().trim().min(1).max(32),
-  /** One of the organization's roles. `owner` is never allowed (keys are capped below it). */
-  role: z.string().trim().min(1).max(64),
+  /** A fixed role (ADR 0034): viewer, member or admin, never `owner` nor above the caller's own. */
+  role: GrantableRoleSchema,
   /** Seconds until expiry; omit for a non-expiring key. */
   expiresIn: z.number().int().positive().optional(),
 });
@@ -23,8 +30,8 @@ export type CreateOrgApiKeyInput = z.input<typeof CreateOrgApiKeyInputSchema> & 
 export type CreatedApiKey = { id: string; key: string; start: string | null };
 
 /**
- * Issues an API key for the signed-in user, bound to `organizationId` and one of its roles.
- * The caller must be a member, and the role may not grant more than the caller has.
+ * Issues an API key for the signed-in user, bound to `organizationId` and a fixed role.
+ * The caller must be a member, and the role may not be above the caller's own.
  */
 export async function createOrgApiKey({
   headers,
@@ -32,13 +39,17 @@ export async function createOrgApiKey({
 }: CreateOrgApiKeyInput): Promise<Result<CreatedApiKey>> {
   const session = await requireSession({ headers });
   if (!session.ok) return session;
-  const { organizationId, name, role, expiresIn } = CreateOrgApiKeyInputSchema.parse(input);
+  // Untyped callers can still send `owner`: refuse it as FORBIDDEN, not as a malformed input.
+  if ((input.role as string) === OWNER_ROLE) {
+    return forbidden({ message: "API keys cannot have the owner role" });
+  }
+  const parsed = CreateOrgApiKeyInputSchema.safeParse(input);
+  if (!parsed.success) return err({ error: fromUnknown({ error: parsed.error }) });
+  const { organizationId, name, role, expiresIn } = parsed.data;
   const userId = session.value.user.id;
   const membership = await loadMembership({ userId, organizationId });
   if (!membership) return forbidden({ message: "Not a member of the organization" });
-  if (role === OWNER_ROLE) return forbidden({ message: "API keys cannot have the owner role" });
-  const permissions = await resolveRolePermissions({ organizationId, roles: [role] });
-  if (!isPermissionSubset({ subset: permissions, of: membership.permissions })) {
+  if (roleRank({ role }) > roleRank({ role: membership.role ?? "" })) {
     return forbidden({ message: `Cannot issue a key with role ${role}: it exceeds your access` });
   }
   try {

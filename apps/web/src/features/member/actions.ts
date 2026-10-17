@@ -3,6 +3,8 @@
 import {
   assignMemberRole,
   cancelInvitation,
+  type FixedRole,
+  type GrantableRole,
   type InvitationDto,
   inviteMember,
   type MemberDto,
@@ -12,14 +14,14 @@ import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
-export type AssignMemberRolesActionInput = { id: string; roles: string[] };
+export type AssignMemberRoleActionInput = { id: string; role: FixedRole };
 
-export async function assignMemberRolesAction({
+export async function assignMemberRoleAction({
   id,
-  roles,
-}: AssignMemberRolesActionInput): Promise<ActionResult<MemberDto>> {
+  role,
+}: AssignMemberRoleActionInput): Promise<ActionResult<MemberDto>> {
   return toActionResult({
-    result: await runOperation({ operation: assignMemberRole, input: { id, roles } }),
+    result: await runOperation({ operation: assignMemberRole, input: { id, role } }),
   });
 }
 
@@ -31,14 +33,14 @@ export async function removeMemberAction({
   return toActionResult({ result: await runOperation({ operation: removeMember, input: { id } }) });
 }
 
-export type InviteMemberActionInput = { email: string; roles: string[] };
+export type InviteMemberActionInput = { email: string; role: GrantableRole };
 
 export async function inviteMemberAction({
   email,
-  roles,
+  role,
 }: InviteMemberActionInput): Promise<ActionResult<InvitationDto>> {
   return toActionResult({
-    result: await runOperation({ operation: inviteMember, input: { email, roles } }),
+    result: await runOperation({ operation: inviteMember, input: { email, role } }),
   });
 }
 

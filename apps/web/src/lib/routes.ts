@@ -19,7 +19,6 @@ export const ROUTES = {
   settingsSheets: "/settings/sheets",
   settingsPriceLists: "/settings/price-lists",
   settingsBookingStatuses: "/settings/booking-statuses",
-  settingsRoles: "/settings/roles",
   settingsMembers: "/settings/members",
   settingsPayments: "/settings/payments",
   admin: "/admin",

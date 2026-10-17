@@ -5,8 +5,8 @@ import { createId } from "@paralleldrive/cuid2";
 export type SeedOrgMemberInput = { context: ExecuteContext };
 
 /**
- * Better Auth rows the access entities need: the `organization` (roles have a foreign key to
- * it), the caller's user row (the inviter of `member.invite`) and one member to assign a role
+ * Better Auth rows the access entities need: the `organization` (members have a foreign key to
+ * it), the caller's user row (the inviter of `member.invite`) and one viewer to assign a role
  * to (there is no `member.create` operation).
  */
 export async function seedOrgMember({ context }: SeedOrgMemberInput): Promise<{ id: string }> {
@@ -28,7 +28,7 @@ export async function seedOrgMember({ context }: SeedOrgMemberInput): Promise<{ 
   await db.user.create({ data: { id: userId, name: "Parity Person", email: `${userId}@x.test` } });
   const id = `member_${createId()}`;
   await db.member.create({
-    data: { id, organizationId, userId, role: "New", createdAt: new Date() },
+    data: { id, organizationId, userId, role: "viewer", createdAt: new Date() },
   });
   return { id };
 }

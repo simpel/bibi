@@ -1,66 +1,21 @@
-import type { PermissionSet } from "../../../../permissions/permission-set";
 import type { DemoOrg } from "../../types";
 import { vingaledenBookings } from "./bookings";
 import { vingaledenBoats, vingaledenConfig } from "./config";
 import { vingaledenCustomers } from "./customers";
 import { vingaledenTours } from "./tours";
 
-const base: PermissionSet = { search: ["read"], conversation: ["write"], skill: ["write"] };
-
 /**
- * Vingaleden Archipelago Tours (`docs/demo-seed.md`): no templates, three roles of its own.
- * Both read the fleet (venues, items and configuration). Booking also writes customers,
- * contact persons and bookings, Skipper reads bookings; inquiries and sheets follow in slices 4–6.
+ * Vingaleden Archipelago Tours (`docs/demo-seed.md`): fixed roles (ADR 0034). Stina books,
+ * the skippers only read.
  */
 export const vingaleden: DemoOrg = {
   slug: "vingaleden-demo",
   name: "Vingaleden Archipelago Tours",
-  templates: [],
-  roles: [
-    {
-      name: "Admin",
-      permissions: {
-        venue: ["admin"],
-        item: ["admin"],
-        customer: ["admin"],
-        contact: ["admin"],
-        booking: ["admin"],
-        configuration: ["admin"],
-        search: ["admin"],
-        conversation: ["admin"],
-        skill: ["admin"],
-        role: ["admin"],
-        member: ["admin"],
-        audit: ["admin"],
-      },
-    },
-    {
-      name: "Booking",
-      permissions: {
-        ...base,
-        ...{ venue: ["read"], item: ["read"], configuration: ["read"] },
-        ...{ customer: ["write"], contact: ["write"], booking: ["write"], member: ["read"] },
-      },
-    },
-    {
-      name: "Skipper",
-      permissions: {
-        ...base,
-        ...{
-          venue: ["read"],
-          item: ["read"],
-          configuration: ["read"],
-          booking: ["read"],
-          member: ["read"],
-        },
-      },
-    },
-  ],
   users: [
     { name: "Per Vinga", role: "owner" },
-    { name: "Stina Holm", role: "Booking" },
-    { name: "Kalle Ek", role: "Skipper" },
-    { name: "Jonna Sand", role: "Skipper" },
+    { name: "Stina Holm", role: "member" },
+    { name: "Kalle Ek", role: "viewer" },
+    { name: "Jonna Sand", role: "viewer" },
   ],
   config: {
     ...vingaledenConfig,

@@ -7,7 +7,6 @@ import {
   ListIcon,
   type LucideIcon,
   ShapesIcon,
-  ShieldIcon,
   TagIcon,
   UsersIcon,
 } from "lucide-react";
@@ -20,7 +19,6 @@ export type SettingsKey =
   | "sheets"
   | "priceLists"
   | "bookingStatuses"
-  | "roles"
   | "members"
   | "payments"
   | "skills";
@@ -36,7 +34,6 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
   { href: ROUTES.settingsPriceLists, key: "priceLists", icon: TagIcon },
   { href: ROUTES.settingsBookingStatuses, key: "bookingStatuses", icon: CircleDotIcon },
   { href: ROUTES.settingsMembers, key: "members", icon: UsersIcon },
-  { href: ROUTES.settingsRoles, key: "roles", icon: ShieldIcon },
   { href: ROUTES.settingsPayments, key: "payments", icon: CreditCardIcon },
   { href: ROUTES.skills, key: "skills", icon: BookOpenIcon },
 ];

@@ -44,8 +44,6 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "sheet-definition-card",
   "sheet-table",
   "sheet-card",
-  "role-table",
-  "role-card",
   "member-table",
   "member-card",
   "invitation-table",

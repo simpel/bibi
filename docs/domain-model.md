@@ -749,7 +749,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 | `admin` | everything a member can, plus configuration (types, fields, lists, setups, statuses, responsibilities, sheet definitions, price lists), members and API keys |
 | `owner` | everything, incl. other owners and the organization itself |
 
-> Core does not look up roles. `packages/auth` resolves the member's role to permissions once per call with a constant role → permission map (`<resource>:read|write|admin`); there is no role table. `member.assignRole` takes one of the fixed roles. API keys are issued with a fixed role, never `owner`, and never above the member's own.
+> Core does not look up permissions per role; it only compares role ranks (nobody gives a role above their own, only an owner changes an owner, the last owner stays). `packages/auth` resolves the member's role to permissions once per call with a constant role → permission map (`<resource>:read|write|admin`); there is no role table. `member.assignRole` takes one of the fixed roles. API keys are issued with a fixed role, never `owner`, and never above the member's own.
 
 > Members join only by invitation and leave with `member.remove`. The organization always keeps an owner: the last owner cannot be removed, and only an owner removes another owner.
 

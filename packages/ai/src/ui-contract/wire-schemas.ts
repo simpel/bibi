@@ -8,7 +8,6 @@ import {
   ItemSchema,
   MemberSchema,
   OccupancySchema,
-  RoleSchema,
   SearchHitSchema,
   SetupSchema,
   SkillSchema,
@@ -41,10 +40,6 @@ export const EntityTypeWireSchema = EntityTypeSchema.extend({
 });
 export const VocabularyWireSchema = VocabularySchema.extend(isoDates);
 export const SetupWireSchema = SetupSchema.extend(isoDates);
-export const RoleWireSchema = RoleSchema.extend({
-  createdAt: z.string(),
-  updatedAt: z.string().nullable(),
-});
 export const MemberWireSchema = MemberSchema.extend({ createdAt: z.string() });
 export const InvitationWireSchema = InvitationSchema.extend({
   createdAt: z.string(),
@@ -70,15 +65,9 @@ export const EntityTypeListWireSchema = page({ item: EntityTypeWireSchema });
 export const VocabularyListWireSchema = page({ item: VocabularyWireSchema });
 export const SetupListWireSchema = page({ item: SetupWireSchema });
 
-export const RoleListWireSchema = page({ item: RoleWireSchema });
 export const MemberListWireSchema = page({ item: MemberWireSchema });
 export const InvitationListWireSchema = page({ item: InvitationWireSchema });
 export const AuditLogListWireSchema = page({ item: AuditLogWireSchema });
-/** `role_importTemplate` output: the roles it created. */
-export const RoleImportWireSchema = z.object({
-  created: z.array(RoleWireSchema),
-  skipped: z.array(z.string()),
-});
 /** `configuration_importTemplate` output: what the import created, and the names it skipped. */
 export const ConfigurationImportWireSchema = z.object({
   created: z.object({
@@ -140,7 +129,6 @@ export type FieldDefinitionWire = z.infer<typeof FieldDefinitionWireSchema>;
 export type EntityTypeWire = z.infer<typeof EntityTypeWireSchema>;
 export type VocabularyWire = z.infer<typeof VocabularyWireSchema>;
 export type SetupWire = z.infer<typeof SetupWireSchema>;
-export type RoleWire = z.infer<typeof RoleWireSchema>;
 export type MemberWire = z.infer<typeof MemberWireSchema>;
 export type InvitationWire = z.infer<typeof InvitationWireSchema>;
 export type AuditLogWire = z.infer<typeof AuditLogWireSchema>;

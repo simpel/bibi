@@ -12,7 +12,7 @@ const testOrgs = () => {
 };
 
 describe("seed:demo slices 1–5 (ADR 0025)", () => {
-  it("creates both orgs with roles and members, passes its checks and is idempotent", async () => {
+  it("creates both orgs with fixed-role members, passes its checks and is idempotent", async () => {
     const orgs = testOrgs();
     const first = await seedDemo({ orgs });
     if (!first.ok) throw first.error;
@@ -23,15 +23,17 @@ describe("seed:demo slices 1–5 (ADR 0025)", () => {
       expect(await db.organization.count({ where: { slug: org.slug } })).toBe(1);
     }
     const [lind, vinga] = second.value.organizations;
-    const roles = ({ organizationId }: { organizationId?: string }) =>
-      db.organizationRole.count({ where: { organizationId } });
-    expect(await roles({ organizationId: lind?.organizationId })).toBe(7);
-    expect(await roles({ organizationId: vinga?.organizationId })).toBe(3);
     expect(await db.member.count({ where: { organizationId: lind?.organizationId } })).toBe(8);
-    const vingaKitchen = await db.organizationRole.count({
-      where: { organizationId: vinga?.organizationId, role: "Kitchen" },
+    const roles = await db.member.findMany({
+      where: { organizationId: vinga?.organizationId },
+      select: { role: true },
     });
-    expect(vingaKitchen).toBe(0);
+    expect(roles.map((member) => member.role).sort()).toEqual([
+      "member",
+      "owner",
+      "viewer",
+      "viewer",
+    ]);
     const items = ({ organizationId }: { organizationId?: string }) =>
       db.item.count({ where: { organizationId, status: "ACTIVE" } });
     expect(await items({ organizationId: lind?.organizationId })).toBe(61);

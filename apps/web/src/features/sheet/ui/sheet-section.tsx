@@ -14,8 +14,7 @@ export type SheetSectionProps = { locale: Locale; booking: BookingDto };
  * changed since the last sent one. Versions go out only from the confirmed phase (`sheet.send`).
  */
 export async function SheetSection({ locale, booking }: SheetSectionProps) {
-  const { sheetRead, sheetWrite } = await getCallerAbilities();
-  if (!sheetRead) return null;
+  const { sheetWrite } = await getCallerAbilities();
   const t = await getTranslations("sheet");
   const [definitions, sheets] = await Promise.all([
     runOperation({ operation: listSheetDefinitions, input: { limit: 100 } }),

@@ -1,24 +1,16 @@
 "use client";
 
 import { Link } from "@okazi/i18n/navigation";
-import {
-  Badge,
-  Card,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@okazi/ui";
+import { Card, Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@okazi/ui";
 import { useTranslations } from "next-intl";
+import { RoleBadge } from "@/features/member/ui/role-badge";
 import { ROUTES } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
 export type MemberTableViewProps = GenerativeProps<"member-table">;
 
-/** A page of staff members with their roles. */
+/** A page of staff members with their role. */
 export function MemberTableView({ items, nextCursor }: MemberTableViewProps) {
   const t = useTranslations("member");
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
@@ -43,13 +35,7 @@ export function MemberTableView({ items, nextCursor }: MemberTableViewProps) {
                 </span>
               </TableCell>
               <TableCell>
-                <ul className="flex flex-wrap gap-1">
-                  {member.roles.map((role) => (
-                    <li key={role}>
-                      <Badge variant="secondary">{role}</Badge>
-                    </li>
-                  ))}
-                </ul>
+                <RoleBadge role={member.role} />
               </TableCell>
             </TableRow>
           ))}

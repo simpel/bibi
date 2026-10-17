@@ -1,13 +1,14 @@
-import { Button, DialogFooter, Form, FormController, FormItem, FormMessage } from "@okazi/ui";
+import type { FixedRole } from "@okazi/core/schemas";
+import { Button, DialogFooter, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
-import { RoleChecklist } from "./role-checklist";
+import { RoleField } from "./role-field";
 import { useInviteMemberForm } from "./use-invite-member-form";
 
-export type InviteMemberFormProps = { roleNames: string[]; onDone: () => void };
+export type InviteMemberFormProps = { roles: FixedRole[]; onDone: () => void };
 
-/** Email and at least one role, validated by core's `member.invite` schema. */
-export function InviteMemberForm({ roleNames, onDone }: InviteMemberFormProps) {
+/** Email and one fixed role, validated by core's `member.invite` schema. */
+export function InviteMemberForm({ roles, onDone }: InviteMemberFormProps) {
   const t = useTranslations("member");
   const common = useTranslations("common");
   const { form, submit, pending } = useInviteMemberForm({ onDone });
@@ -15,19 +16,7 @@ export function InviteMemberForm({ roleNames, onDone }: InviteMemberFormProps) {
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
         <TextField form={form} name="email" type="email" label={t("columns.email")} required />
-        <FormController
-          control={form.control}
-          name="roles"
-          render={({ field }) => (
-            <FormItem>
-              <RoleChecklist roleNames={roleNames} value={field.value} onChange={field.onChange} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        {roleNames.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("noRoles")}</p>
-        ) : null}
+        <RoleField control={form.control} name="role" roles={roles} />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>
             {common("cancel")}

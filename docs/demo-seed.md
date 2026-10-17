@@ -20,7 +20,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 7. Every write has a row in `AuditLog` with actor `SYSTEM`.
 
 The checks that run today:
-- **Part 1 (roles):** roles and members per organization, and that every user has their role according to the tables.
+- **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
 - **Part 2 (configuration):**
   - The number of rows per organization matches for venue, vocabularies, vocabulary values, setups, types, fields, items and capacities (point 1 for what exists).
   - Vingaleden has no vocabulary "Allergens" (the first half of point 2).
@@ -35,7 +35,7 @@ The checks that run today:
 
 - The organization, the users and the memberships are Better Auth tables. They are written directly (`seed/demo/users.ts`), the same way sign-up and `addMember` do. Everything else goes through `execute` as `SYSTEM`. The owner gets `owner` directly, the others get their role via `member.assignRole`. Right after, `provisionOrganization` gives each organization its defaults (one booking status per phase, ADR 0022) as SYSTEM, the same way Better Auth's `afterCreateOrganization` hook does for a real sign-up.
 - The users' email is `firstname.lastname@<slug>.okazi.test`, e.g. `anna.berg@lindholmen-demo.okazi.test`. Sign in with a magic link or a one-time code; the email ends up in Mailpit.
-- Every role reads venues, items (`item`) and the configuration (`configuration`). Sales (template) and Vingaleden's Booking write customers and contact persons (`customer`, `contact`) and bookings (`booking`); Coordinator (template) reads customers and writes bookings, program items and occupancy; the other template roles and Vingaleden's Skipper read bookings. Everyone with bookings also reads members (`member`), because owners are shown and picked by name. Sheets follow in part 6. Admin has `admin` on all of them.
+- Access uses the fixed roles (ADR 0034): `viewer` reads everything, `member` also writes operational data (customers, inquiries, bookings, program items, requirements, payments, sheets), `admin` also configures and manages members, `owner` can do everything. What each person answers for (sales, coordinator, kitchen, caretaker) comes with responsibilities, not roles.
 - Part 2 seeds the configuration and the bookable spaces: Lindholmen's 10 conference rooms and Vingaleden's 3 boats, each in the organization's venue. Part 3 seeds the rest of the catalog (dishes, drinks, meals, guides, tours, equipment, packages, skippers, trips and add-ons) in the same venue. A part has no setup of its own, so "Knippla in the Cabaret setup" and "The View, Banquet" are seeded as the room only; the setup is chosen on the booking. Tour group sizes ("max 25 people") are not seeded, since Tour has no `SETUPS`. The requirement types under "Other types" come in part 5, because they point to vocabularies via `requirement.*`.
 
 ---
@@ -47,18 +47,18 @@ Slug `lindholmen-demo`. Venue: Lindholmspiren 1, 417 56 Göteborg.
 ## Configuration
 
 ### Roles
-Imported from the "Conference venue" template (ADR 0020), plus a custom role Caretaker.
+Fixed roles (ADR 0034). The function in parentheses is what the person answers for; it becomes a responsibility once those exist.
 
 | User | Role |
 |---|---|
 | Anna Berg | owner |
-| Erik Lund | Sales |
-| Sara Nilsson | Sales |
-| Johan Ek | Coordinator |
-| Maria Holm | Coordinator |
-| Ali Karimi | Kitchen |
-| Peter Sjoberg | Caretaker |
-| Lena Strand | Finance |
+| Erik Lund (sales) | member |
+| Sara Nilsson (sales) | member |
+| Johan Ek (coordinator) | admin |
+| Maria Holm (coordinator) | member |
+| Ali Karimi (kitchen) | member |
+| Peter Sjoberg (caretaker) | viewer |
+| Lena Strand (finance) | member |
 
 ### Vocabularies
 | Vocabulary | Values |
@@ -104,7 +104,7 @@ Theatre (15 min), Classroom (30), U-shape (30), Boardroom (20), Cabaret (40), Ba
 | Cancelled | `CANCELLED` |
 
 ### Sheets
-| Sheet | Item types | Requirements | To role |
+| Sheet | Item types | Requirements | To (responsibility, ADR 0034) |
 |---|---|---|---|
 | Kitchen order | Dish, Drink, Meal | Allergens, Diet | Kitchen |
 | Setup order | Conference room, Equipment | Accessibility | Caretaker |
@@ -254,14 +254,14 @@ Slug `vingaleden-demo`. Venue: Saltholmen, 426 76 Västra Frölunda. No food and
 ## Configuration
 
 ### Roles
-No templates. Custom roles: Admin, Booking (writes customer, inquiry, booking) and Skipper (reads booking and sheets).
+Fixed roles (ADR 0034).
 
 | User | Role |
 |---|---|
 | Per Vinga | owner |
-| Stina Holm | Booking |
-| Kalle Ek | Skipper |
-| Jonna Sand | Skipper |
+| Stina Holm (booking) | member |
+| Kalle Ek (skipper) | viewer |
+| Jonna Sand (skipper) | viewer |
 
 ### Vocabularies
 | Vocabulary | Values |
