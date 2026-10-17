@@ -7,6 +7,9 @@ describe("authErrorKey", () => {
     expect(authErrorKey({ error: { code: "INVALID_EMAIL_OR_PASSWORD", status: 401 } })).toBe(
       "invalidCredentials",
     );
+    expect(authErrorKey({ error: { code: "INVALID_PASSWORD", status: 400 } })).toBe(
+      "invalidCredentials",
+    );
     expect(authErrorKey({ error: { code: "USER_ALREADY_EXISTS", status: 422 } })).toBe(
       "emailTaken",
     );

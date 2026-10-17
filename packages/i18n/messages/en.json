@@ -1571,7 +1571,8 @@
     "themeDark": "Dark",
     "themeSystem": "System",
     "adminNavigation": "Administration",
-    "mySkills": "My skills"
+    "mySkills": "My skills",
+    "profile": "Profile"
   },
   "settingsHub": {
     "title": "Settings",
@@ -1992,5 +1993,27 @@
         }
       }
     }
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Your name, password and sign-in sessions.",
+    "details": "Details",
+    "saveName": "Save name",
+    "savingName": "Saving…",
+    "nameSaved": "Your name has been updated.",
+    "passwordTitle": "Password",
+    "passwordDescription": "Changing your password signs you out of your other sessions.",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "changePassword": "Change password",
+    "savingPassword": "Changing password…",
+    "passwordSaved": "Your password has been changed.",
+    "sessionsTitle": "Active sessions",
+    "sessionsDescription": "Where you are currently signed in.",
+    "thisSession": "This session",
+    "unknownDevice": "Unknown device",
+    "signOutOthers": "Sign out of other sessions",
+    "signingOutOthers": "Signing out…",
+    "signedOutOthers": "You have been signed out of your other sessions."
   }
 }

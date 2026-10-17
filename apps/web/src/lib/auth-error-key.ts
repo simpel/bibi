@@ -17,6 +17,7 @@ export type AuthErrorKeyInput = { error: AuthClientError | null | undefined };
 
 const KEY_BY_CODE: Record<string, AuthErrorKey> = {
   INVALID_EMAIL_OR_PASSWORD: "invalidCredentials",
+  INVALID_PASSWORD: "invalidCredentials",
   USER_ALREADY_EXISTS: "emailTaken",
   USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL: "emailTaken",
   PASSWORD_TOO_SHORT: "passwordTooShort",

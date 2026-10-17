@@ -1571,7 +1571,8 @@
     "themeDark": "Mörkt",
     "themeSystem": "System",
     "adminNavigation": "Administration",
-    "mySkills": "Mina färdigheter"
+    "mySkills": "Mina färdigheter",
+    "profile": "Profil"
   },
   "settingsHub": {
     "title": "Inställningar",
@@ -1992,5 +1993,27 @@
         }
       }
     }
+  },
+  "profile": {
+    "title": "Profil",
+    "description": "Ditt namn, ditt lösenord och dina inloggade sessioner.",
+    "details": "Uppgifter",
+    "saveName": "Spara namn",
+    "savingName": "Sparar…",
+    "nameSaved": "Ditt namn har uppdaterats.",
+    "passwordTitle": "Lösenord",
+    "passwordDescription": "När du byter lösenord loggas du ut från dina andra sessioner.",
+    "currentPassword": "Nuvarande lösenord",
+    "newPassword": "Nytt lösenord",
+    "changePassword": "Byt lösenord",
+    "savingPassword": "Byter lösenord…",
+    "passwordSaved": "Ditt lösenord har ändrats.",
+    "sessionsTitle": "Aktiva sessioner",
+    "sessionsDescription": "Var du är inloggad just nu.",
+    "thisSession": "Den här sessionen",
+    "unknownDevice": "Okänd enhet",
+    "signOutOthers": "Logga ut från andra sessioner",
+    "signingOutOthers": "Loggar ut…",
+    "signedOutOthers": "Du har loggats ut från dina andra sessioner."
   }
 }

@@ -15,13 +15,14 @@ import { authClient } from "@/lib/auth-client";
 import { ROUTES } from "@/lib/routes";
 import { LocaleMenu } from "./locale-menu";
 import { OrgMenu } from "./org-menu";
+import { ProfileMenuItem } from "./profile-menu-item";
 import type { ShellUser } from "./shell-types";
 import { ThemeMenu } from "./theme-menu";
 import { UserMenuTrigger } from "./user-menu-trigger";
 
 export type UserMenuProps = { user: ShellUser; organizationId: string };
 
-/** Bottom-left account menu: organization, theme, language, my skills, sign out (ADR 0036). */
+/** Bottom-left account menu: profile, organization, theme, language, my skills, sign out (ADR 0036). */
 export function UserMenu({ user, organizationId }: UserMenuProps) {
   const t = useTranslations("shell");
   const auth = useTranslations("auth");
@@ -42,6 +43,7 @@ export function UserMenu({ user, organizationId }: UserMenuProps) {
           <span className="truncate text-sm font-medium">{user.email}</span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        <ProfileMenuItem />
         <OrgMenu organizationId={organizationId} />
         <ThemeMenu />
         <LocaleMenu />
