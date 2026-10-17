@@ -19,8 +19,8 @@ export type WebSurface = {
   component?: string;
 };
 
-/** The assistant panel (conversation history, rename, archive, chat) is mounted on every page. */
-const PANEL = { route: "*", component: "features/assistant/ui/assistant-panel.tsx" } as const;
+/** The assistant (conversation history, rename, archive, chat) lives on the start page. */
+const PANEL = { route: "/" } as const;
 
 export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "venue.list", route: "/venues" },

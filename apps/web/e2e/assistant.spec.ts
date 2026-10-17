@@ -33,9 +33,10 @@ test("a proposed venue needs approval: nothing is created until the user approve
     .getByRole("link", { name: "Anläggningar" })
     .click();
   await expect(page.getByRole("link", { name: "Test Hall" }).first()).toBeVisible();
-  await expect(page.locator(PANEL)).toBeVisible();
+  await expect(page.locator(PANEL)).toHaveCount(0);
 
   // The decision is stored: reopening the conversation shows the card as approved, not pending.
+  await page.goto("/");
   const panel = page.locator(PANEL);
   await panel.getByRole("button", { name: "Ny konversation" }).first().click();
   await expect(card).toHaveCount(0);
@@ -113,19 +114,16 @@ test("⌘K asks the assistant a one-shot question and opens the panel on it", as
   ).toBeVisible();
 });
 
-test("English strings, shortcut toggle and the mobile sheet", async ({ page }) => {
+test("English strings, and the assistant only lives on the start page", async ({ page }) => {
   await signUpWithOrganization({ page, name: "English AB" });
   await page.goto("/en/venues");
-  await page.getByRole("button", { name: "Open the assistant" }).click();
+  await expect(page.locator(PANEL)).toHaveCount(0);
+  await page.goto("/en");
   const panel = page.locator(PANEL);
   await expect(panel.getByText("What can I help you with?")).toBeVisible();
   await expect(panel.getByRole("button", { name: "Show all venues" })).toBeVisible();
-  await page.keyboard.press("Control+j");
-  await expect(panel).toHaveCount(0);
 
   await page.setViewportSize({ width: 390, height: 800 });
-  await page.getByRole("button", { name: "Open the assistant" }).click();
-  await expect(page.getByRole("dialog")).toBeVisible();
   await page.getByRole("button", { name: "Show all venues" }).click();
   await expect(page.getByText(/scripted test assistant/)).toBeVisible();
 });

@@ -1,0 +1,16 @@
+import { describe, expect, it } from "vitest";
+import { buildCrumbs } from "./breadcrumb-model";
+
+describe("buildCrumbs", () => {
+  it("is empty on the start page", () => {
+    expect(buildCrumbs({ pathname: "/" })).toEqual([]);
+  });
+
+  it("builds one linked crumb per segment and labels ids as details", () => {
+    expect(buildCrumbs({ pathname: "/settings/price-lists/abc" })).toEqual([
+      { href: "/settings", labelKey: "settings" },
+      { href: "/settings/price-lists", labelKey: "priceLists" },
+      { href: "/settings/price-lists/abc", labelKey: "detail" },
+    ]);
+  });
+});

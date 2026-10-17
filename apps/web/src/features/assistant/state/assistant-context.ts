@@ -9,18 +9,15 @@ import type { ComposerDraft } from "./use-prefill";
 export type AssistantView = "chat" | "history";
 
 export type AssistantContextValue = {
-  open: boolean;
-  setOpen: (input: { open: boolean }) => void;
-  toggle: () => void;
   view: AssistantView;
   setView: (input: { view: AssistantView }) => void;
-  width: number;
-  setWidth: (input: { width: number }) => void;
   session: ReturnType<typeof useAssistantChat>;
   conversations: ReturnType<typeof useConversations>;
-  /** ⌘K hand-off: a fresh conversation with this one question; opens the panel. */
+  /** Navigates to the start page, where the assistant lives. */
+  goHome: () => void;
+  /** ⌘K hand-off: a fresh conversation with this one question; goes to the start page. */
   ask: (input: { text: string }) => void;
-  /** A fresh conversation with this text in the message box, not sent; opens the panel. */
+  /** A fresh conversation with this text in the message box, not sent; goes to the start page. */
   prefill: (input: { text: string }) => void;
   /** The latest prefilled text for the composer. */
   draft: ComposerDraft | null;

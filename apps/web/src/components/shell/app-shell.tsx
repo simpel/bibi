@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { AssistantProvider } from "@/features/assistant/state/assistant-provider";
-import { AssistantPanel } from "@/features/assistant/ui/assistant-panel";
 import type { ShellAccess, ShellUser } from "./shell-types";
 import { Sidebar } from "./sidebar";
 import { TopBar } from "./top-bar";
@@ -12,7 +11,7 @@ export type AppShellProps = {
   children: ReactNode;
 };
 
-/** Authenticated layout: sidebar (desktop), top bar, content and the persistent assistant panel. */
+/** Authenticated layout: sidebar (desktop), top bar, and content; the assistant itself lives on the start page. */
 export function AppShell({ organizationId, user, access, children }: AppShellProps) {
   return (
     <AssistantProvider>
@@ -26,7 +25,6 @@ export function AppShell({ organizationId, user, access, children }: AppShellPro
             <div className="mx-auto w-full max-w-5xl">{children}</div>
           </main>
         </div>
-        <AssistantPanel />
       </div>
     </AssistantProvider>
   );

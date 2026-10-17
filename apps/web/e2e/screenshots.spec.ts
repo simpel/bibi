@@ -41,14 +41,12 @@ async function seed({ page }: { page: Page }) {
   });
 }
 
-async function openPanel({ page, mode }: { page: Page; mode: Mode }) {
-  if (mode.width < 500) await page.getByRole("button", { name: "Öppna assistenten" }).click();
-  else await openAssistant({ page });
-  await expect(page.locator(PANEL)).toBeVisible();
+async function openPanel({ page }: { page: Page }) {
+  await openAssistant({ page });
 }
 
 async function assistantShots({ page, mode }: { page: Page; mode: Mode }) {
-  await openPanel({ page, mode });
+  await openPanel({ page });
   await shot({ page, mode, name: "assistant-empty" });
   await sendChat({ page, text: "list venues" });
   await expect(page.locator('[data-slot="venue-table"]')).toBeVisible();

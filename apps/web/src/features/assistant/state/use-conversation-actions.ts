@@ -8,7 +8,7 @@ export type UseConversationActionsInput = {
   openConversation: AssistantContextValue["selectConversation"];
   sendMessage: (input: { text: string }) => Promise<void>;
   setView: (view: AssistantView) => void;
-  setOpen: (open: boolean) => void;
+  goHome: () => void;
 };
 
 /** New conversation, the ⌘K one-shot `ask` and switching to a stored conversation. */
@@ -17,7 +17,7 @@ export function useConversationActions({
   openConversation,
   sendMessage,
   setView,
-  setOpen,
+  goHome,
 }: UseConversationActionsInput) {
   const newConversation = useCallback(() => {
     startNew();
@@ -27,10 +27,10 @@ export function useConversationActions({
     ({ text }: { text: string }) => {
       startNew();
       setView("chat");
-      setOpen(true);
+      goHome();
       void sendMessage({ text });
     },
-    [startNew, setView, setOpen, sendMessage],
+    [startNew, setView, goHome, sendMessage],
   );
   const selectConversation = useCallback(
     async ({ id }: { id: string }) => {

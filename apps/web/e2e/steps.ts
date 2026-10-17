@@ -85,7 +85,7 @@ export async function addItem({
   await expect(page.getByRole("link", { name })).toBeVisible();
 }
 
-export const PANEL = '[data-slot="assistant-panel"]';
+export const PANEL = '[data-slot="assistant-home"]';
 
 /** Sign up + organization in one go; the user ends on the (empty) venue list. */
 export async function signUpWithOrganization({ page, name }: PageInput & { name: string }) {
@@ -93,9 +93,9 @@ export async function signUpWithOrganization({ page, name }: PageInput & { name:
   await createOrganization({ page, name });
 }
 
-/** Opens the assistant panel with the keyboard shortcut (Ctrl+J, ⌘J on macOS). */
+/** Opens the assistant, which lives on the start page. */
 export async function openAssistant({ page }: PageInput) {
-  await page.keyboard.press("Control+j");
+  await page.goto("/");
   await expect(page.locator(PANEL)).toBeVisible();
 }
 

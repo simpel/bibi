@@ -12,11 +12,11 @@ import { useVenueShortcuts } from "./use-venue-shortcuts";
 
 /**
  * ⌘K command bar: navigation and venue and item quick actions plus "Ask assistant" for natural
- * language (ADR 0007). Free text + Enter hands a one-shot question to the assistant panel.
+ * language (ADR 0007). Free text + Enter hands a one-shot question to the assistant on the start page.
  */
 export function CommandBar() {
   const t = useTranslations("commandBar");
-  const { ask, setOpen: setPanelOpen } = useAssistant();
+  const { ask, goHome } = useAssistant();
   const [open, setOpen] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [query, setQuery] = useState("");
@@ -32,7 +32,7 @@ export function CommandBar() {
   const venues = useVenueShortcuts({ enabled: loaded });
   const onAsk = ({ text }: { text: string }) => {
     if (text) ask({ text });
-    else setPanelOpen({ open: true });
+    else goHome();
     close();
   };
   return (
