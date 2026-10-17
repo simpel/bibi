@@ -49,16 +49,20 @@ const inquiriesBlock = ({ name, count }: InquiriesBlockInput) =>
     ],
   });
 
-type CascadeFlags = { archiveBookings: boolean; archiveInquiries: boolean };
+type CascadeFlags = {
+  archiveBookings: boolean;
+  archiveInquiries: boolean;
+  expectedBookingCount?: number | undefined;
+};
 type CascadeArchiveInput = { context: OperationContext; customer: CustomerDto } & CascadeFlags;
 
 /** Blocks on bookings and inquiries unless cascaded; always archives the customer's packages. */
 async function cascadeArchive({ context, customer, ...flags }: CascadeArchiveInput) {
-  if (customer.bookingCount > 0) {
-    if (!flags.archiveBookings) return bookingsBlock({ customer });
-    const archived = await archiveCustomerBookings({ context, customer });
+  if (flags.archiveBookings) {
+    const expected = flags.expectedBookingCount;
+    const archived = await archiveCustomerBookings({ context, customer, expected });
     if (!archived.ok) return archived;
-  }
+  } else if (customer.bookingCount > 0) return bookingsBlock({ customer });
   const inquiries = await context.db.inquiry.count({ where: { customerId: customer.id } });
   if (inquiries > 0) {
     if (!flags.archiveInquiries) return inquiriesBlock({ name: customer.name, count: inquiries });
@@ -92,13 +96,15 @@ export const archiveCustomer = defineOperation({
     "archived with the customer, with their program items and room occupancy (needs " +
     "booking:write). Active inquiries block it too, unless `archiveInquiries` is true (needs " +
     "inquiry:write). The customer's own packages are archived with it (needs item:write). " +
+    "With `archiveBookings` and `expectedBookingCount` it is refused with CONFLICT, and nothing " +
+    "is archived, unless exactly that many bookings would be archived. " +
     "Refused while a LINK field points to the customer or to anything archived with it.",
   input: CustomerArchiveInputSchema,
   output: CustomerSchema,
   permission: "customer:write",
   embeddable: customerEmbeddable,
   handler: async ({ input, context }) => {
-    const { id, archiveBookings, archiveInquiries } = input;
+    const { id, archiveBookings, archiveInquiries, expectedBookingCount } = input;
     const before = await loadCustomer({ context, id });
     if (!before) return notFound({ entity: "Customer" });
     const contacts = await context.db.contact.count({ where: { customerId: id } });
@@ -115,6 +121,7 @@ export const archiveCustomer = defineOperation({
       customer: before,
       archiveBookings,
       archiveInquiries,
+      expectedBookingCount,
     });
     if (!cascaded.ok) return cascaded;
     const row = await context.db.customer.update({

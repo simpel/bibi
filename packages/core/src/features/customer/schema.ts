@@ -83,6 +83,16 @@ export const CustomerArchiveInputSchema = z.object({
       "Also archive all of the customer's active inquiries. " +
         "Without it, any such inquiry blocks archiving the customer.",
     ),
+  expectedBookingCount: z
+    .number()
+    .int()
+    .min(0)
+    .optional()
+    .describe(
+      "With archiveBookings: the number of not archived bookings the caller saw. Unless exactly " +
+        "that many bookings are archived, the archive is refused with CONFLICT. In an assistant " +
+        "proposal the server sets it to the current count; a value sent by the assistant is replaced.",
+    ),
 });
 
 export const CustomerListInputSchema = z.object({

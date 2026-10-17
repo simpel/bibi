@@ -10,6 +10,7 @@ import {
 } from "@okazi/core";
 import type { McpToolMeta } from "../tools/meta";
 import { toJsonValue } from "../tools/results";
+import { bindProposal } from "./bind";
 import { signApprovalToken } from "./sign";
 import type { ApprovalRequired } from "./types";
 
@@ -36,6 +37,7 @@ async function summarize({ meta, operation, input, context }: SummaryInput): Pro
 /**
  * Turns an AI-proposed command into an `approval_required` result without executing it. Input
  * and permission are checked first so the user is never asked to approve something that fails.
+ * Server-bound facts (`meta.bind`) are added before signing, so the card shows what is signed.
  */
 export async function proposeApproval({
   operation,
@@ -54,7 +56,9 @@ export async function proposeApproval({
       error: appError({ code: "FORBIDDEN", message: `Missing permission ${operation.permission}` }),
     });
   }
-  const input = toJsonValue({ value: parsed.data });
+  const bound = await bindProposal({ meta, operation, input: parsed.data, context });
+  if (!bound.ok) return bound;
+  const input = toJsonValue({ value: bound.value });
   const { token, claims } = signApprovalToken({
     operation: operation.name,
     input,

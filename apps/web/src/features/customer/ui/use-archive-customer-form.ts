@@ -9,10 +9,15 @@ import { useZodMessages } from "@/lib/use-zod-messages";
 export type ArchiveCustomerValues = { archiveBookings: boolean; archiveInquiries: boolean };
 export type ArchiveCustomerInput = z.infer<typeof CustomerArchiveInputSchema>;
 
-export type UseArchiveCustomerFormInput = { id: string };
+/** `bookingCount` is the count the dialog shows; it is sent as `expectedBookingCount` (#144). */
+export type UseArchiveCustomerFormInput = { id: string; bookingCount: number };
 
-/** react-hook-form wired to core's `customer.archive` schema; the cascade box starts unticked. */
-export function useArchiveCustomerForm({ id }: UseArchiveCustomerFormInput) {
+/**
+ * react-hook-form wired to core's `customer.archive` schema; the cascade box starts unticked.
+ * With the box ticked the count the user saw is bound to the input, so core refuses with
+ * CONFLICT instead of archiving bookings added after the dialog opened.
+ */
+export function useArchiveCustomerForm({ id, bookingCount }: UseArchiveCustomerFormInput) {
   const messages = useZodMessages();
   const schema = useMemo(
     () =>
@@ -22,9 +27,10 @@ export function useArchiveCustomerForm({ id }: UseArchiveCustomerFormInput) {
           id,
           archiveBookings: values.archiveBookings,
           archiveInquiries: values.archiveInquiries,
+          ...(values.archiveBookings ? { expectedBookingCount: bookingCount } : {}),
         }),
       }),
-    [id],
+    [id, bookingCount],
   );
   return useForm<ArchiveCustomerValues, unknown, ArchiveCustomerInput>({
     resolver: zodResolver(schema, messages),

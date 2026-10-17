@@ -1,4 +1,4 @@
-import type { ExecuteContext } from "@okazi/core";
+import type { ExecuteContext, Result } from "@okazi/core";
 import { toToolName } from "./tool-name";
 
 /** `context` is the proposing caller's, for summaries that must read data (e.g. counts). */
@@ -6,6 +6,13 @@ export type SummaryInput = { input: Record<string, unknown>; context: ExecuteCon
 
 /** One-line, human-readable proposal text shown on the approval card. */
 export type SummaryFn = (args: SummaryInput) => string | Promise<string>;
+
+/**
+ * Server-side facts added to a proposal's input before it is signed (#144), e.g. the count the
+ * approval card shows, so the operation can refuse on confirm if they changed. An error refuses
+ * the proposal.
+ */
+export type BindFn = (args: SummaryInput) => Promise<Result<Record<string, unknown>>>;
 
 export type McpToolMetaInput = {
   /** Core operation name, e.g. `venue.create`. */
@@ -15,6 +22,7 @@ export type McpToolMetaInput = {
   /** Repeating the call with the same input has no further effect. */
   idempotent?: boolean;
   summary?: SummaryFn;
+  bind?: BindFn;
 };
 
 export type McpToolMeta = McpToolMetaInput & { toolName: string };
@@ -28,8 +36,10 @@ export function mcpTool({
   destructive,
   idempotent,
   summary,
+  bind,
 }: McpToolMetaInput): McpToolMeta {
-  return { operation, destructive, idempotent, summary, toolName: toToolName({ operation }) };
+  const toolName = toToolName({ operation });
+  return { operation, destructive, idempotent, summary, bind, toolName };
 }
 
 export type TextFieldInput = { value: unknown };

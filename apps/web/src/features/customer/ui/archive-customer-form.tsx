@@ -14,14 +14,15 @@ export type ArchiveCustomerFormProps = { customer: CustomerDto; onClose: () => v
 /**
  * Bookings that are not archived block archiving the customer, whatever their status (#134):
  * the form says how many, and confirm stays disabled until the box to archive them too is
- * ticked. The detail page is gone afterwards, so go back to the list.
+ * ticked. The count shown is bound to the input (#144). The detail page is gone afterwards, so
+ * go back to the list.
  */
 export function ArchiveCustomerForm({ customer, onClose }: ArchiveCustomerFormProps) {
   const t = useTranslations("customer");
   const common = useTranslations("common");
   const router = useRouter();
-  const form = useArchiveCustomerForm({ id: customer.id });
   const count = customer.bookingCount;
+  const form = useArchiveCustomerForm({ id: customer.id, bookingCount: count });
   const blocked = count > 0 && !form.watch("archiveBookings");
   const { submit, pending } = useFormAction({
     form,
@@ -34,6 +35,8 @@ export function ArchiveCustomerForm({ customer, onClose }: ArchiveCustomerFormPr
       onClose();
       router.replace(ROUTES.customers);
     },
+    // A CONFLICT may mean the booking count changed since the dialog opened: reload the count.
+    onError: () => router.refresh(),
   });
   return (
     <Form {...form}>

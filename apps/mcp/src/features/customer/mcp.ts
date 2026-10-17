@@ -1,4 +1,5 @@
 import { mcpTool, text } from "../../tools/meta";
+import { bindArchiveCustomer } from "./archive-binding";
 import { archiveCustomerSummary } from "./archive-summary";
 
 export const customerMcpTools = [
@@ -22,5 +23,6 @@ export const customerMcpTools = [
     destructive: true,
     idempotent: true,
     summary: archiveCustomerSummary,
+    bind: bindArchiveCustomer,
   }),
 ];
