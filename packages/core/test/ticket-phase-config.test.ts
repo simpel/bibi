@@ -9,7 +9,7 @@ import {
 import { errorCode, testContext, unwrap } from "./helpers";
 import { phaseByName, phases, provisionedContext } from "./ticket-phase-helpers";
 
-const conferenceVenue = { template: "conference-venue" };
+const conferenceEstate = { template: "conference-estate" };
 
 describe("ticket phase order, transitions and templates (ADR 0043)", () => {
   it("reorders freely but needs every active phase once", async () => {
@@ -57,22 +57,24 @@ describe("ticket phase order, transitions and templates (ADR 0043)", () => {
     const first = unwrap({
       result: await execute({
         operation: importTicketPhaseTemplate,
-        input: conferenceVenue,
+        input: conferenceEstate,
         context,
       }),
     });
     expect(first.created.map((phase) => phase.name)).toEqual([
-      "Tentative",
+      "New",
+      "Site visit",
+      "Quote sent",
       "Final count locked",
       "Cancelled",
     ]);
-    expect(first.skipped).toEqual(["Confirmed", "Completed"]);
+    expect(first.skipped).toEqual(["Confirmed", "Completed", "Lost"]);
     const entries = (await phases({ context })).filter((phase) => phase.entry);
     expect(entries.map((phase) => phase.name)).toEqual(["Lead"]);
     const second = unwrap({
       result: await execute({
         operation: importTicketPhaseTemplate,
-        input: conferenceVenue,
+        input: conferenceEstate,
         context,
       }),
     });
@@ -84,13 +86,13 @@ describe("ticket phase order, transitions and templates (ADR 0043)", () => {
     const result = unwrap({
       result: await execute({
         operation: importTicketPhaseTemplate,
-        input: conferenceVenue,
+        input: conferenceEstate,
         context,
       }),
     });
-    expect(result.created).toHaveLength(5);
-    expect(result.created[0]).toMatchObject({ name: "Tentative", entry: true });
-    expect(result.transitionsAdded).toBe(9);
+    expect(result.created).toHaveLength(8);
+    expect(result.created[0]).toMatchObject({ name: "New", entry: true });
+    expect(result.transitionsAdded).toBe(25);
     const audit = await getDb().auditLog.findMany({
       where: { organizationId: context.organizationId, operation: "ticketPhase.importTemplate" },
     });

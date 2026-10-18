@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { PHASE_GRID_TEMPLATE_KEYS } from "../../templates/phase-grid/phase-grid-templates";
 
 /**
  * One cell of the phase grid (ADR 0044): when a ticket enters `phaseId`, its lines of item type
@@ -46,6 +47,24 @@ export const PhaseGridSetCellInputSchema = z.object({
     ),
 });
 
+export const PhaseGridImportTemplateInputSchema = z.object({
+  template: z
+    .enum(PHASE_GRID_TEMPLATE_KEYS)
+    .describe(
+      "default: the open default phases set the one state every type has. conference-estate: " +
+        "prebooked, estimated and planned until Confirmed, then booked, ordered and confirmed, " +
+        "and locked food at Final count locked. Matched by state name",
+    ),
+});
+
+export const PhaseGridImportTemplateOutputSchema = z.object({
+  /** Cells this import set; cells that were already set are kept. */
+  applied: z.number().int(),
+  /** The whole grid afterwards. */
+  grid: PhaseGridSchema,
+});
+
 export type PhaseGridCellDto = z.infer<typeof PhaseGridCellSchema>;
 export type PhaseGridDto = z.infer<typeof PhaseGridSchema>;
 export type PhaseGridSetCellInput = z.infer<typeof PhaseGridSetCellInputSchema>;
+export type PhaseGridImportTemplateOutput = z.infer<typeof PhaseGridImportTemplateOutputSchema>;

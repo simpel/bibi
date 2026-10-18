@@ -41,5 +41,6 @@ export const PIPELINE_OPERATION_KEYS = [
   "line_changeState",
   "line_followPhase",
   "phaseGrid_setCell",
+  "phaseGrid_importTemplate",
   "ticket_expireHolds",
 ] as const;

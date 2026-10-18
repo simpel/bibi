@@ -1,4 +1,5 @@
 import type { FixedRole } from "../../permissions/fixed-roles";
+import type { TicketPhaseTemplate } from "../../templates/ticket-phases/ticket-phase-template";
 import type { DemoConfig } from "./config-types";
 import type { DemoCustomer } from "./customer-types";
 import type { DemoTicket } from "./ticket-types";
@@ -23,6 +24,12 @@ export type DemoResponsibility = {
  */
 export type DemoGridCell = { phase: string; type: string; state: string };
 
+/**
+ * An organization's pipeline (ADR 0043, 0044): its phases with flags and transitions (the shape of
+ * a phase template) and the grid cells by name. Item states come from the item types' templates.
+ */
+export type DemoPipeline = { phases: TicketPhaseTemplate; cells: readonly DemoGridCell[] };
+
 /** Everything ADR 0025 seeds for one organization so far (`docs/demo-seed.md`). */
 export type DemoOrg = {
   slug: string;
@@ -33,8 +40,8 @@ export type DemoOrg = {
   responsibilities: readonly DemoResponsibility[];
   /** Slice 4: customers with their contact persons. */
   customers: readonly DemoCustomer[];
-  /** Slice 5: the phase grid, set before the tickets so their lines follow it. */
-  pipeline: readonly DemoGridCell[];
+  /** Slice 5: the phases and the phase grid, set before the tickets so their lines follow it. */
+  pipeline: DemoPipeline;
   /** Slice 5: tickets with their assignee and followers. */
   tickets: readonly DemoTicket[];
 };

@@ -22,6 +22,7 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "apiKey.revoke", route: "/settings/integrations" },
   { operation: "phaseGrid.get", route: "/settings/pipeline" },
   { operation: "phaseGrid.setCell", route: "/settings/pipeline" },
+  { operation: "phaseGrid.importTemplate", route: "/settings/pipeline" },
   { operation: "itemState.list", route: "/settings/item-states" },
   { operation: "itemState.get", route: "/settings/item-states" },
   { operation: "itemState.create", route: "/new/item-state" },

@@ -1358,6 +1358,7 @@
         "itemState_archive": "Arkivera läge",
         "itemState_reorder": "Ändra ordning på lägen",
         "itemState_setTransitions": "Ange lägesövergångar",
+        "phaseGrid_importTemplate": "Importera fasrutnätsmall",
         "phaseGrid_setCell": "Ange cell i fasrutnätet",
         "line_changeState": "Byt läge på rad",
         "line_followPhase": "Låt raden följa fasen",

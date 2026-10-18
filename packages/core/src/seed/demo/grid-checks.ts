@@ -32,7 +32,7 @@ function moveFailures({ org, ticket, before, after }: ExpectInput): string[] {
     const was = before.find((row) => row.name === line.name);
     const now = after.find((row) => row.name === line.name);
     const type = was?.item?.entityType.name;
-    const cell = org.pipeline.find((row) => row.phase === move.to && row.type === type);
+    const cell = org.pipeline.cells.find((row) => row.phase === move.to && row.type === type);
     const expected =
       move.blocked || line.state ? was?.state?.name : (cell?.state ?? was?.state?.name);
     if (now?.state?.name === expected && now?.stateOverridden === Boolean(line.state)) return [];

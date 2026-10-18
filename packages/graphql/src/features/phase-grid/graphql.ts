@@ -1,8 +1,10 @@
 import {
   getPhaseGrid,
+  importPhaseGridTemplate,
   type PhaseGridCellDto,
   PhaseGridCellSchema,
   type PhaseGridDto,
+  type PhaseGridImportTemplateOutput,
   setPhaseGridCell,
 } from "@okazi/core";
 import { builder } from "../../schema/builder";
@@ -30,8 +32,21 @@ PhaseGridRef.implement({
   }),
 });
 
+const PhaseGridImportRef = builder.objectRef<PhaseGridImportTemplateOutput>("PhaseGridImport");
+PhaseGridImportRef.implement({
+  description: "Result of importing a phase grid template.",
+  fields: (t) => ({
+    applied: t.int({
+      description: "Cells set by this import; cells that were already set are kept.",
+      resolve: (result) => result.applied,
+    }),
+    grid: t.field({ type: PhaseGridRef, resolve: (result) => result.grid }),
+  }),
+});
+
 fieldFromOperation({ operation: getPhaseGrid, type: PhaseGridRef, name: "phaseGrid" });
 mutationFromOperation({ operation: setPhaseGridCell, type: PhaseGridRef });
+mutationFromOperation({ operation: importPhaseGridTemplate, type: PhaseGridImportRef });
 
 builder.objectFields(PhaseGridCellRef, (t) => ({
   phase: t.field({

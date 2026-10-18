@@ -12,6 +12,7 @@ import { refuseProduction } from "./guard";
 import { resetDemoOrg } from "./reset";
 import { seedDemoConfig } from "./seed-config";
 import { seedDemoItems } from "./seed-items";
+import { seedDemoPipeline } from "./seed-pipeline";
 import { seedDemoResponsibilities } from "./seed-responsibilities";
 import { seedDemoRoles } from "./seed-roles";
 import { seedDemoSales } from "./seed-sales";
@@ -92,6 +93,8 @@ async function seedSlices({
   const items = await seedDemoItems({ context, config: org.config, refs: refs.value });
   if (!items.ok) return items;
   ranParts.add(3);
+  const pipeline = await seedDemoPipeline({ context, pipeline: org.pipeline });
+  if (!pipeline.ok) return pipeline;
   const sales = await seedDemoSales({
     context,
     org,
@@ -109,7 +112,7 @@ async function seedOne({ db, org }: SeedOneInput): Promise<Result<string>> {
   await resetDemoOrg({ db, org });
   const { organizationId, members, userIds } = await bootstrapDemoOrg({ db, org });
   // What Better Auth's afterCreateOrganization hook does for a real signup.
-  const provisioned = await provisionOrganization({ organizationId, db });
+  const provisioned = await provisionOrganization({ organizationId, db, pipeline: "none" });
   if (!provisioned.ok) return provisioned;
   const context = createExecuteContext({
     organizationId,

@@ -7,12 +7,11 @@ const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
 
 /**
  * Lindholmen's tickets (`docs/demo-seed.md`, Tickets) with a main assignee (the coordinator, or
- * the salesperson) and the salesperson as follower (ADR 0034). Until the organization's own
- * phases are seeded (#271), the phases are those of the default template (Lead, Confirmed,
- * Completed, Lost): open tickets after the deal are Confirmed, a cancelled one is Lost. The leads
- * F2, F3 and F6 stay in the entry phase with a room line in its initial state, Prebooked (a soft
- * hold, ADR 0044): F2 and F3 hold Vinga at the same time, F6's holdsUntil has passed. L4's
- * Styrsö line is Booked by the grid when L4 is confirmed. L11 stays in Lead with its lunch
+ * the salesperson) and the salesperson as follower (ADR 0034). The phases are the
+ * organization's own (`pipeline.ts`): open tickets after the deal are Confirmed, a lost one is
+ * Lost. The leads F2, F3 and F6 stay before the quote with a room line in its initial state,
+ * Prebooked (a soft hold, ADR 0044): F2 and F3 hold Vinga at the same time, F6's holdsUntil has passed. L4's
+ * Styrsö line is Booked by the grid when L4 is confirmed. L11 waits in Quote sent with its lunch
  * overridden to Locked; L12 soft-holds Styrsö inside L4's booking, so its move to Confirmed is
  * blocked (both used by `checkDemoGrid`).
  */
@@ -84,7 +83,12 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   },
   {
     ...{ ref: "L11", customer: gota, type: "Conference", day: 6, from: "09:00", to: "13:00" },
-    ...{ headcount: 10, assignee: "Maria Holm", checkMove: { to: "Confirmed", blocked: false } },
+    ...{
+      phase: "Quote sent",
+      headcount: 10,
+      assignee: "Maria Holm",
+      checkMove: { to: "Confirmed", blocked: false },
+    },
     fields: { Purpose: "Board meeting" },
     lines: [
       { item: "Styrsö", name: "Board meeting", from: "09:00", to: "12:00" },

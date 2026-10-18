@@ -22,4 +22,9 @@ const gridTable = uiEntry({
 export const PHASE_GRID_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   phaseGrid_get: gridTable,
   phaseGrid_setCell: gridTable,
+  phaseGrid_importTemplate: uiEntry({
+    component: "phase-grid-table",
+    schema: z.object({ applied: z.number(), grid: PhaseGridWireSchema }),
+    toProps: ({ value }) => value.grid,
+  }),
 };

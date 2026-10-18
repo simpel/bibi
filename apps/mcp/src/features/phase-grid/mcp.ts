@@ -12,4 +12,10 @@ export const phaseGridMcpTools = [
         : `When a ticket enters phase ${text({ value: input.phaseId })}, move its lines of item ` +
           `type ${text({ value: input.entityTypeId })} to state ${text({ value: input.stateId })}`,
   }),
+  mcpTool({
+    operation: "phaseGrid.importTemplate",
+    idempotent: true,
+    summary: ({ input }) =>
+      `Fill empty phase grid cells from template ${text({ value: input.template })}`,
+  }),
 ];

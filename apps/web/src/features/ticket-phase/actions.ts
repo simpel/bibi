@@ -3,6 +3,7 @@
 import {
   archiveTicketPhase,
   createTicketPhase,
+  importPhaseGridTemplate,
   importTicketPhaseTemplate,
   reorderTicketPhases,
   setTicketPhaseTransitions,
@@ -57,11 +58,15 @@ export async function setTicketPhaseTransitionsAction({
   return toActionResult({ result });
 }
 
-/** Imports the "Conference venue" phases; names that already exist are skipped. */
+/**
+ * Imports the "Conference estate" phases, then fills the phase grid's empty cells from the
+ * matching template; phase names that already exist are skipped.
+ */
 export async function importTicketPhaseTemplateAction(): Promise<
   ActionResult<TicketPhaseImportResult>
 > {
-  const input = { template: "conference-venue" as const };
+  const input = { template: "conference-estate" as const };
   const result = await runOperation({ operation: importTicketPhaseTemplate, input });
+  if (result.ok) await runOperation({ operation: importPhaseGridTemplate, input });
   return toActionResult({ result });
 }

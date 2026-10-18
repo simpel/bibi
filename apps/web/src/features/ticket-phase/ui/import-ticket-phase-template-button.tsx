@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useToastAction } from "@/lib/use-toast-action";
 import { importTicketPhaseTemplateAction } from "../actions";
 
-/** Imports the "Conference venue" phases and transitions; existing names are skipped. */
+/** Imports the "Conference estate" phases, transitions and grid; existing names are skipped. */
 export function ImportTicketPhaseTemplateButton() {
   const t = useTranslations("ticketPhase");
   const router = useRouter();

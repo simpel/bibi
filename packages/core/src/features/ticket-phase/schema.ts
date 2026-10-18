@@ -106,8 +106,9 @@ export const TicketPhaseImportTemplateInputSchema = z.object({
   template: z
     .enum(TICKET_PHASE_TEMPLATE_KEYS)
     .describe(
-      "default: Lead, Confirmed, Completed, Lost. conference-venue: Tentative, Confirmed, Final " +
-        "count locked, Completed, Cancelled. Every move forward and to a terminal phase",
+      "default: Lead, Confirmed, Completed, Lost. conference-estate: New, Site visit, Quote sent, " +
+        "Confirmed, Final count locked, Completed, Lost, Cancelled. Every move forward and to a " +
+        "terminal phase",
     ),
 });
 

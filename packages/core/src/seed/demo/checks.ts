@@ -6,6 +6,7 @@ import { checkDemoBoard } from "./board-checks";
 import { checkDemoConfig } from "./config-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
+import { checkDemoPipeline } from "./pipeline-checks";
 import { checkDemoTickets } from "./ticket-checks";
 import type { DemoOrg } from "./types";
 
@@ -13,8 +14,8 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
  * The checks in `docs/demo-seed.md` that slices 1–5 can verify: the member count, everyone
- * has their documented role, the configuration and items (`checkDemoConfig`), the phases and
- * tickets per phase (`checkDemoTickets`), the tickets' assignees and followers
+ * has their documented role, the configuration and items (`checkDemoConfig`), the pipeline (`checkDemoPipeline`: phases,
+ * states and grid cells) and the tickets per phase (`checkDemoTickets`), the tickets' assignees and followers
  * (`checkDemoAssignments`), the lines' soft holds and their expiry (`checkDemoHolds`), the phase
  * moves the grid drives (`checkDemoGrid`), and every write
  * was audited as SYSTEM. Returns failure messages.
@@ -35,6 +36,7 @@ export async function checkDemoOrg({ context, org }: CheckDemoOrgInput): Promise
     }
   }
   failures.push(...(await checkDemoConfig({ context, org })));
+  failures.push(...(await checkDemoPipeline({ context, org })));
   failures.push(...(await checkDemoTickets({ context, org })));
   failures.push(...(await checkDemoBoard({ context, org })));
   failures.push(...(await checkDemoAssignments({ context, org })));

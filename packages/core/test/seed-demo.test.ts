@@ -87,7 +87,7 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     const statuses = await db.ticketPhase.count({
       where: { organizationId: lind?.organizationId },
     });
-    expect(statuses).toBe(4);
+    expect(statuses).toBe(8);
     const tickets = await db.ticket.findMany({
       where: { organizationId: lind?.organizationId },
       orderBy: { reference: "asc" },

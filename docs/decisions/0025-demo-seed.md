@@ -20,7 +20,7 @@
   1. Custom roles (ADR 0020)
   2. Configurable domain: types, fields, vocabularies, setups and behaviors (ADR 0021)
   3. Items and composition: catalog and packages
-  4. Customers, price lists, ticket phases and item states (ADR 0022, 0023, 0043, 0044)
+  4. Customers, price lists, ticket phases and item states (ADR 0022, 0023, 0043, 0044). Each organization gets its own phases, transitions and phase grid from `data/<org>/pipeline.ts` (Lindholmen the conference-estate set, Vingaleden its own tour-company set); the organization is provisioned without the default phases and the checks assert the counts
   5. Tickets, lines and requirements
   6. Sheets with matching and blocking
   7. Export (ADR 0024)

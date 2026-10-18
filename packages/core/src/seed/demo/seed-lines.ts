@@ -34,7 +34,7 @@ async function overrideState({ context, line, lineId, item }: OverrideInput) {
 
 /**
  * The ticket's lines (ADR 0044) via `programItem.create` as SYSTEM, in the organization's line
- * type: each starts in its Lead cell of the phase grid (else its type's initial state), so a room
+ * type: each starts in the entry phase's cell of the phase grid (else its type's initial state), so a room
  * line is a soft hold, and a line with `state` is then overridden to it.
  */
 export async function seedDemoLines({

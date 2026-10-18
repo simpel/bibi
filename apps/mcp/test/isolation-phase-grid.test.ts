@@ -52,5 +52,13 @@ describe("cross-organization isolation: the phase grid and line overrides", () =
     expect(mine.data.cells.map((cell: { stateId: string }) => cell.stateId)).toEqual([
       seedA.stateId,
     ]);
+    const imported = await call({
+      client: b,
+      name: "phaseGrid_importTemplate",
+      args: { template: "default" },
+    });
+    expect(imported.isError, JSON.stringify(imported.data)).toBe(false);
+    const after = await call({ client: a, name: "phaseGrid_get", args: {} });
+    expect(after.data.cells).toEqual(mine.data.cells);
   });
 });

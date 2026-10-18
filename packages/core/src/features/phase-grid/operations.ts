@@ -1,8 +1,16 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { getPhaseGridTemplate } from "../../templates/phase-grid/phase-grid-templates";
 import { checkCell } from "./cell-rules";
+import { importPhaseGrid } from "./import-template";
 import { loadGrid } from "./load-grid";
-import { PhaseGridGetInputSchema, PhaseGridSchema, PhaseGridSetCellInputSchema } from "./schema";
+import {
+  PhaseGridGetInputSchema,
+  PhaseGridImportTemplateInputSchema,
+  PhaseGridImportTemplateOutputSchema,
+  PhaseGridSchema,
+  PhaseGridSetCellInputSchema,
+} from "./schema";
 
 export const getPhaseGrid = defineOperation({
   name: "phaseGrid.get",
@@ -54,5 +62,21 @@ export const setPhaseGridCell = defineOperation({
   },
 });
 
+export const importPhaseGridTemplate = defineOperation({
+  name: "phaseGrid.importTemplate",
+  kind: "command",
+  description:
+    "Fill the phase grid from a template (ADR 0044): for every open phase and item type, the " +
+    "first template cell whose phase has the phase's name and whose state name is a state of " +
+    "the type is set. Cells that are already set are kept, so it is safe to run again. " +
+    "Existing tickets are not moved. Returns the number of cells set and the whole grid.",
+  input: PhaseGridImportTemplateInputSchema,
+  output: PhaseGridImportTemplateOutputSchema,
+  permission: "phaseGrid:admin",
+  entityType: "phaseStateRule",
+  handler: ({ input, context }) =>
+    importPhaseGrid({ context, template: getPhaseGridTemplate({ key: input.template }) }),
+});
+
 /** Every phase grid operation (ADR 0044). */
-export const phaseGridOperations = [getPhaseGrid, setPhaseGridCell];
+export const phaseGridOperations = [getPhaseGrid, setPhaseGridCell, importPhaseGridTemplate];
