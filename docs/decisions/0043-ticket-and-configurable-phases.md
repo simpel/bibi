@@ -62,7 +62,7 @@
 - The ticket types, phases, transitions and predefined tickets of an organization are data, set up through the guided setup (ADR 0044) and edited in settings.
 - Templates ("Conference estate": New, Site visit, Quote sent, Confirmed, Final count locked, Completed, Lost, Cancelled) preset phases, transitions and flags.
 - The demo seed (ADR 0025) creates phases, states, grids and predefined tickets per organization.
-- There are no production users, so the schema is changed in place without data migration.
+- There are no production users, so no data is migrated or backfilled. The schema change is added as new migrations; applied migrations are never edited. The old tables are dropped in the same change only after confirming no deployed database holds data that must survive; otherwise expand/contract applies (ADR 0013).
 
 ## Not decided
 - One pipeline per organization. A pipeline per ticket type is deferred; a nullable `pipelineId` on `TicketPhase` would allow it later.
