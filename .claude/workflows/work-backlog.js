@@ -34,8 +34,6 @@ const moveCard = (t, status) => `Move the issue's board card to "${status}" with
 const CO_AUTHOR = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
 const wtName = (t) => `t-${t.number}`
 const wtDir = (t) => `${REPO}-worktrees/${wtName(t)}` // where pnpm wt:new puts it
-// Cheapest first: a lint, structure or type error is known in seconds, before the slow test run starts.
-const CHECKS = 'pnpm lint, pnpm check:structure, pnpm typecheck, pnpm db:migrate, pnpm test'
 
 // ---- Model choice (deterministic, from labels) ----------------------------
 function pickModel(t) {
@@ -135,11 +133,13 @@ const REVIEW = {
 const LAND = {
   type: 'object',
   properties: {
-    landed: { type: 'boolean' },
+    state: { type: 'string', enum: ['landed', 'conflict', 'red', 'failed'] },
     sha: { type: 'string' },
+    files: { type: 'string' },
     reason: { type: 'string' },
+    checks: VERIFY,
   },
-  required: ['landed'],
+  required: ['state'],
 }
 const FILED = {
   type: 'object',
@@ -151,8 +151,8 @@ const FILED = {
 }
 const PARK = {
   type: 'object',
-  properties: { ok: { type: 'boolean' }, branch: { type: 'string' }, problem: { type: 'string' } },
-  required: ['ok'],
+  properties: { state: { type: 'string' }, branch: { type: 'string' } },
+  required: ['state'],
 }
 
 // ---- Prompts ---------------------------------------------------------------
@@ -171,8 +171,8 @@ It prints one JSON object { ok, problem?, tickets }. Return it unchanged. If the
 }
 
 // The final checks run inside the implementing agent: a separate verify agent re-paid the whole base context
-// just to run commands, and the land step re-runs them anyway.
-const RUN_CHECKS = `Run the full checks: first docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres, then in order ${CHECKS}, piping long output through tail or grep. Run the first three even if one fails and report every failure; if any of them failed, skip db:migrate and pnpm test (they would only repeat the problem) and report green=false. Report them in checks: green=true only if every command passed; for each failure keep a short excerpt (<60 lines).`
+// just to run commands. checks.sh is the single definition (order, Postgres, JSON report) shared with the land step.
+const RUN_CHECKS = `Run the full checks with exactly this command from the worktree: tools/backlog/checks.sh. It starts Postgres, runs lint, check:structure and typecheck (all reported), then db:migrate and the tests only when those are green, and prints one JSON line {green, failures:[{check, output}]}. Copy it into checks unchanged.`
 
 const implPrompt = (t, dir) => `Implement GitHub issue #${t.number} ("${t.title}").
 Setup (run exactly these two commands first):
@@ -203,31 +203,29 @@ const reviewPrompt = (t, dir) => `Use the tenancy-review skill on the uncommitte
 ${inWorktree(dir)}
 Check org scoping, permissions, AuditLog, and AI approval, plus the new-feature gates: referenced ids checked for org and read permission, read permission on search and UI, archive/rename/removal lifecycle, races returning CONFLICT. Do not edit files. ok=false only for a real tenancy/permission/audit defect in this ticket's changes; list each with file:line. Defects in code this ticket did not touch go in followUps instead (they must not block the ticket).`
 
-const landPrompt = (t, dir, summary) => `Land issue #${t.number} on main. Other tickets land one at a time, so origin/main may have moved.
-${inWorktree(dir)}
-1. If there are uncommitted changes: git add -A, then git commit with subject "${t.title}", a blank line, "Closes #${t.number}", a blank line, a 1-3 line summary (${summary}), a blank line, and:
-${CO_AUTHOR}
-2. git fetch origin, then git rebase origin/main. On a conflict, resolve it rather than giving up: tickets in a batch often touch the same registries, index files, i18n messages or role templates.
-   - For each conflicted file, read both sides (git diff, git log -p origin/main -3 -- <file>) and keep the intent of BOTH: main's change and this ticket's. Never drop main's lines to make the conflict go away.
-   - git add the file, then git rebase --continue (GIT_EDITOR=true). Repeat for every conflicting commit.
-   - Only if a conflict is a real semantic clash you cannot reconcile with confidence: git rebase --abort and return landed=false, reason "rebase conflict: <files>: <why it could not be resolved>".
-3. Ensure Postgres is up (docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres). Before the rebase, compare git merge-base HEAD origin/main with git rev-parse origin/main. If they are equal, origin/main has not moved since this branch was cut, the rebase changes nothing and the implementer's green checks ran on this exact tree: skip the checks. If they differ, run ${CHECKS} after the rebase. This is the independent check before main. If a failure comes from a conflict you resolved, fix it, fold it into the ticket's commit (git add -A, git commit --amend --no-edit) and re-run (at most 2 tries). On any remaining failure return landed=false, reason "red before push" plus a short excerpt.
-4. git push origin HEAD:main. Never force-push. If rejected because origin moved, go back to step 2 (at most 3 tries in total).
-5. ${moveCard(t, 'Done')}
-6. From ${REPO}: pnpm wt:rm ${wtName(t)} --delete-branch, then tools/backlog/release.sh ${t.number} (releases the ticket lock).
-Return landed=true and the pushed SHA.`
+// Landing and parking are scripts (tools/backlog/land.sh, park.sh, tested in a sandbox repo): commit, rebase, the
+// skip-checks-when-main-did-not-move rule, push retries, board move and cleanup are deterministic. The agent that
+// runs them is a one-command runner; a model only works where judgment is needed (conflicts, red checks).
+const sh = (v) => `'${String(v).replace(/'/g, `'\\''`)}'`
+const boardEnv = (t) => `ITEM_ID=${t.itemId} PROJECT_ID=${PROJECT_ID} STATUS_FIELD=${STATUS_FIELD} DONE_OPTION=${STATUS_OPTION.Done} PARKED_OPTION=${STATUS_OPTION.Parked} CO_AUTHOR=${sh(CO_AUTHOR)}`
+const withStdin = (cmd, text) => `${cmd} <<'OKAZI_EOF'\n${text}\nOKAZI_EOF`
+const runnerPrompt = (cmd) => `Run exactly this one command from ${REPO} and nothing else. Its last line of output is one JSON object; return that object unchanged. If it prints no JSON, return state="failed" with the last 20 lines as reason.\n${cmd}`
+const landCmd = (t, summary) => withStdin(`${boardEnv(t)} tools/backlog/land.sh ${t.number} --title ${sh(t.title)}`, summary)
+const resumeCmd = (t) => `${boardEnv(t)} tools/backlog/land.sh ${t.number} --resume`
 
-const parkPrompt = (t, dir, reason) => `Issue #${t.number} could not land. Park its work so a human or a later run can pick it up.
+const resolvePrompt = (t, dir, files) => `Rebasing issue #${t.number} ("${t.title}") onto origin/main stopped on conflicts in: ${files}. Tickets in a batch often touch the same registries, index files, i18n messages or role templates.
 ${inWorktree(dir)}
-Reason: ${reason}
-1. If a rebase is in progress: git rebase --abort.
-2. If there are uncommitted changes: git add -A, then git commit with subject "WIP (parked): #${t.number} ${t.title}", a blank line, "Refs #${t.number}" (never "Closes"), the reason (max 30 lines), a blank line, and:
-${CO_AUTHOR}
-3. If the branch has no commits beyond origin/main (git log origin/main..HEAD is empty), skip to step 5 and return branch "".
-4. git branch -m parked/${t.number} (append -2, -3, … if taken), then git push -u origin <branch>. Never force-push.
-5. gh issue comment ${t.number} -R simpel/okazi with a short English note: the work-backlog run parked it, the branch link (https://github.com/simpel/okazi/tree/<branch>) if any, and the reason (max 30 lines). Then: ${moveCard(t, 'Parked')}
-6. From ${REPO}: pnpm wt:rm ${wtName(t)} --force (keeps the branch; drops the worktree database), then tools/backlog/release.sh ${t.number} (releases the ticket lock).
-Return ok and the branch name.`
+- For each conflicted file, read both sides (git diff, git log -p origin/main -3 -- <file>) and keep the intent of BOTH: main's change and this ticket's. Never drop main's lines to make the conflict go away.
+- git add each resolved file. Do not run git rebase --continue, commit or push: the script does that.
+- Only if a conflict is a real semantic clash you cannot reconcile with confidence: git rebase --abort and return state="failed", reason "rebase conflict: <files>: <why>".
+- Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCmd(t)}`
+
+const landFixPrompt = (t, dir, checks) => `After rebasing issue #${t.number} ("${t.title}") onto a moved origin/main the checks are red. The cause is most likely a clash between this ticket and what landed on main meanwhile.
+${inWorktree(dir)}
+${checks.failures.map((f) => `### ${f.check}\n${f.output}`).join('\n\n')}
+Fix the cause in the worktree. ${READING_RULES} Do not run git add, commit, amend or push: the script amends the ticket's commit. Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCmd(t)}`
+
+const parkCmd = (t, reason) => withStdin(`${boardEnv(t)} tools/backlog/park.sh ${t.number} ${sh(t.title)}`, reason)
 
 const followUpPrompt = (items) => `File follow-up issues on simpel/okazi for problems agents found outside their ticket's scope. Work in ${REPO}; do not edit files.
 Findings (JSON): ${JSON.stringify(items)}
@@ -248,9 +246,28 @@ function serially(fn) {
 }
 
 async function park(t, dir, reason) {
-  const p = await agent(parkPrompt(t, dir, reason), { label: `park #${t.number}`, phase: 'Park', schema: PARK, model: 'haiku' })
+  const p = await agent(runnerPrompt(parkCmd(t, reason)), { label: `park #${t.number}`, phase: 'Park', schema: PARK, model: 'haiku', effort: 'low' })
   log(`#${t.number} parked${p && p.branch ? ` on ${p.branch}` : ''}: ${reason.split('\n')[0]}`)
   return { t, outcome: 'parked', branch: p ? p.branch : null, reason: reason.split('\n')[0] }
+}
+
+// Landing is serialised as a whole, resolve and fix rounds included: main must not move under a half-landed ticket.
+async function landTicket(t, dir, summary) {
+  const step = (prompt, model, label) => agent(prompt, { label: `${label} #${t.number}`, phase: 'Land', schema: LAND, model, ...(model === 'haiku' ? { effort: 'low' } : {}) })
+  let r = await step(runnerPrompt(landCmd(t, summary)), 'haiku', 'land')
+  for (let round = 1; r && r.state !== 'landed' && round <= 2; round++) {
+    if (r.state === 'conflict') r = await step(resolvePrompt(t, dir, r.files), 'sonnet', `resolve r${round}`)
+    else if (r.state === 'red' && r.checks) r = await step(landFixPrompt(t, dir, r.checks), 'sonnet', `land-fix r${round}`)
+    else break
+  }
+  return r
+}
+
+const landFailure = (r) => {
+  if (!r) return 'land agent failed'
+  if (r.state === 'conflict') return `rebase conflict: ${r.files}`
+  if (r.state === 'red') return `red before push\n${(r.checks ? r.checks.failures : []).map((f) => `${f.check}:\n${f.output}`).join('\n\n')}`
+  return r.reason || `land ${r.state}`
 }
 
 // Each fix round reports its own checks, so no separate verify agent is needed between rounds.
@@ -293,10 +310,8 @@ async function runTicket(t) {
     if (!r.ok) return park(t, dir, `tenancy review rejected\n${r.findings.join('\n')}`)
   }
 
-  const land = await serially(() =>
-    agent(landPrompt(t, dir, impl.summary), { label: `land #${t.number}`, phase: 'Land', schema: LAND, model: 'sonnet' }),
-  )
-  if (!land || !land.landed) return park(t, dir, land ? land.reason : 'land agent failed')
+  const land = await serially(() => landTicket(t, dir, impl.summary))
+  if (!land || land.state !== 'landed') return park(t, dir, landFailure(land))
   log(`#${t.number} landed ${land.sha || ''} (${state.model})`)
   return { t, outcome: 'landed', sha: land.sha, model: state.model }
 }
