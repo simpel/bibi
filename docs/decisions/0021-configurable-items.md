@@ -58,3 +58,7 @@ Types for `Item` switch on behaviors:
 ## Addendum 2026-10-17 – sheets go to a responsibility (ADR 0034)
 - Custom roles are removed (ADR 0034). A sheet definition goes to a **responsibility** (e.g. "Head of kitchen") instead of a role, and a generated sheet is addressed to that responsibility's assignee and followers on the booking.
 - Responsibilities are configured the same way as statuses and types, and cover item entity types: a booking with an item of a covered type automatically gets that responsibility's assignment.
+
+## Addendum 2026-10-18 – ticket and states (ADR 0043, 0044)
+- The base types `INQUIRY` and `BOOKING` become one base type `TICKET` (ADR 0043). Every organization's ticket types, phases, item states and the phase grid are configured data, set up through the guided setup (ADR 0044).
+- Behaviors on item types gain state flags (`hold`, `inSheets`, `released`, `expires`) on `ItemState`. `BOOKABLE` still decides whether a type may hold an item.

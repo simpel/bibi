@@ -1,7 +1,7 @@
 # 0022 – Sales pipeline, statuses and owners
 
 - **Date:** 2026-10-14
-- **Status:** Accepted
+- **Status:** Partly superseded by [0043](0043-ticket-and-configurable-phases.md) and [0044](0044-line-states-and-the-phase-grid.md)
 
 ## Context
 - The core flow in the domain model is Inquiry → Option → Quote → Booking. Each step has a status, but the transitions and the division of responsibility are not decided.
@@ -66,3 +66,7 @@
 - "Requires a coordinator" in `CONFIRMED` (and `COMPLETED`) becomes "requires the booking's main assignee". "`salesOwnerId` required from `QUALIFIED`" becomes "requires the inquiry's main assignee".
 - `Quote` uses the inquiry's assignment. `quote.accept` copies the inquiry's main assignee and followers to the new booking.
 - `*.assign` commands are replaced by `assignment.assign|follow|unfollow`.
+
+## Addendum 2026-10-18 – superseded in part (ADR 0043, 0044)
+- **Superseded:** the fixed inquiry state machine, `BookingStatus` and its fixed phases, the separate `Booking` created by `quote.accept`, `Option` and the occupancy types `BOOKING`/`OPTION`. One `Ticket` lives in organization-defined phases (ADR 0043) and its lines carry states with soft and hard holds (ADR 0044).
+- **Still valid:** quotes are versioned and store `acceptedBy`, `acceptedAt` and `acceptanceMethod`; owners are assignments (ADR 0034); occupancy is collision-free for hard holds, enforced by an exclusion constraint; soft holds queue by rank and expire (ADR 0027); status history comes from `AuditLog`; the customer never uses the app.
