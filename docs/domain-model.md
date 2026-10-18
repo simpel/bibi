@@ -207,7 +207,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 **Attributes**
 - type (`entityTypeId`, an item type), name, color, order
 - initial (exactly one initial state per type; every type has at least one state)
-- flags: `hold` (`NONE` / `SOFT` / `HARD`, only for `BOOKABLE` types), `inSheets`, `released` (final, drops the hold), `expires` (a soft hold carries an expiry and falls to the type's `expiryStateId`)
+- flags: `hold` (`NONE` / `SOFT` / `HARD`, only for `BOOKABLE` types), `inSheets`, `released` (final, drops the hold), `expires` (lines in this state fall to the type's `expiryStateId` when the ticket's `holdsUntil` passes)
 
 **Relations**
 - `N:1` EntityType has this
@@ -215,7 +215,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` is from/to in → Transition (`ItemStateTransition`)
 - `1:N` is the result of → PhaseStateRule
 
-> A state in use is archived only with a chosen target state of the same type. `hold = SOFT` queues by rank like the former Option; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
+> A state in use is archived only with a chosen target state of the same type. `hold = SOFT` reserves the item without blocking others, like the former Option, but with no queue: overlapping soft holds are listed by `heldAt` and staff decide who gets the item; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
 
 ### PhaseStateRule (`PhaseStateRule`) – the phase grid
 
@@ -313,6 +313,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - type (the organization's own, base `TICKET`) and custom fields
 - customer and contact person (optional; must work at the customer)
 - desired period (`desiredStartsAt`, `desiredEndsAt`, optional) – what the customer asked for; each line has its own time
+- holds until (`holdsUntil`, optional): one date for the whole ticket ("we hold this until 28 Feb"). When it passes, every line in an `expires` state falls to its type's expiry state; other lines and the phase are unchanged ([ADR 0044](decisions/0044-line-states-and-the-phase-grid.md))
 - quantity (e.g. the number of guests), estimated and guaranteed headcount, budget (`budgetMinor`, minor units)
 - phase (`phaseId`), `phaseChangedAt`, reason of the last phase change (required by phases with `requiresReason`)
 - main assignment and responsibility assignments (see Assignment; the main assignee is required by phases with `requiresAssignee`)
@@ -356,7 +357,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 > ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by item in order, and the lines the version dropped are listed as removed. `quote.accept` sets the inquiry to `WON`, converts the options (`CONVERTED`) and creates the booking. A quote can cover a whole series. A quote can also be built directly from items, and "Save as package" then creates a customer-specific item.
 
-> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open inquiry that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the inquiry moves `QUALIFIED → QUOTED` and older `SENT` versions expire), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`.
+> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open ticket that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the inquiry moves `QUALIFIED → QUOTED` and older `SENT` versions expire), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`.
 
 ### Agreement & signing
 
@@ -385,7 +386,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - setup (`setupId`, optional; one of the item's setups, requires the item)
 - quantity (`quantity`, e.g. the headcount)
 - state (`stateId`, an `ItemState` of the item's type), `stateOverridden` (set by hand, skipped by phase moves)
-- expiry (`expiresAt`, for a soft hold) and queue rank (`rank`, soft holds on the same item and time)
+- held since (`heldAt`, when the line entered its current state; shown oldest first where soft holds overlap, no queue or rank); the line has no expiry of its own, see Ticket `holdsUntil`
 - internal note
 
 **Relations**

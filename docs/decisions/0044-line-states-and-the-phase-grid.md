@@ -18,17 +18,18 @@
 
   | Flag | The system does |
   |---|---|
-  | `hold` | `NONE`, `SOFT` or `HARD`. Only for types with `BOOKABLE` (ADR 0021). `SOFT` holds the item without blocking others and queues by rank. `HARD` blocks it. |
+  | `hold` | `NONE`, `SOFT` or `HARD`. Only for types with `BOOKABLE` (ADR 0021). `SOFT` reserves the item without blocking others. `HARD` blocks it. |
   | `inSheets` | Lines in this state are included in generated sheets. |
   | `released` | Final state. The hold is dropped. Nothing leaves it. |
-  | `expires` | A soft hold carries an expiry date and falls to the type's `expiryStateId` when it passes (replaces option expiry, ADR 0027). |
+  | `expires` | Lines in this state fall to the type's `expiryStateId` when the ticket's `holdsUntil` date passes (replaces option expiry, ADR 0027). |
 
 - Types without `BOOKABLE` use `hold = NONE` and the other flags only. Food, drinks and activities get their own state lists, usually short.
 - State transitions between states of one type are data (`ItemStateTransition`) with the default "every forward move and to released".
 
 ### Lines carry the state
-- A line (`ProgramItem`, ADR 0043) has `stateId`, `stateOverridden` and, for a soft hold, `expiresAt`. The line's occupancy is **derived**: a `SOFT` state creates a soft occupancy, `HARD` a blocking one, `NONE`/`released` none. The exclusion constraint stays: hard holds, setup, maintenance and internal blocks never overlap on one item; soft holds may.
-- Soft holds on the same item and time queue by rank, kept in step by core as today (ADR 0022). A hard hold sorts ahead of every soft hold, and the soft holds behind it keep their rank but are marked "blocked".
+- A line (`ProgramItem`, ADR 0043) has `stateId`, `stateOverridden`, `heldAt` (when the line entered its current state). It has no expiry of its own. The line's occupancy is **derived**: a `SOFT` state creates a soft occupancy, `HARD` a blocking one, `NONE`/`released` none. The exclusion constraint stays: hard holds, setup, maintenance and internal blocks never overlap on one item; soft holds may.
+- **One expiry date per ticket.** `Ticket.holdsUntil` (optional, "we hold this until 28 Feb") applies to every line whose state has `expires`. Lines in other states, such as booked rooms or ordered food, ignore it. Changing the date is `ticket.update` and is audited. Without a date nothing expires.
+- **No queue and no rank.** Several soft holds may overlap on one item and time. The calendar and conflict lists show each holder's `heldAt` date ("held since"), oldest first, so staff can see who held it first. Who gets the room is a human decision: a VIP customer can go ahead of an earlier holder. A hard hold blocks as before, and the soft holders it overlaps are shown as blocked, with the ticket that holds it.
 - `SETUP`, `MAINTENANCE` and `INTERNAL` occupancy stay as manual or derived blocks.
 
 ### The phase grid
@@ -66,9 +67,9 @@
 - All operations on all four surfaces. AI proposes, the user approves (ADR 0007). AI can suggest a full setup from a description of the organization.
 
 ## Consequences
-- `Option` and its operations are removed. `option.expireDue` becomes `line.expireDue` (job, ADR 0027). Soft-hold rank moves to the line.
+- `Option` and its operations are removed. `option.expireDue` becomes `ticket.expireHolds` (job, ADR 0027): for every ticket whose `holdsUntil` has passed, lines in an `expires` state move to their type's `expiryStateId`, audited per line. The ticket's phase does not change. Soft holds are plain lines with a `heldAt` date; there is no rank.
 - `OccupancyType` loses `BOOKING` and `OPTION` for `HOLD` with a `holdKind` (`SOFT`/`HARD`) plus a link to the line's state.
-- `ProgramItem` gets `stateId`, `stateOverridden`, `expiresAt`, `rank`. It may be renamed `TicketLine` in a follow-up; not decided here.
+- `ProgramItem` gets `stateId`, `stateOverridden`, `heldAt`; `Ticket` gets `holdsUntil`. It may be renamed `TicketLine` in a follow-up; not decided here.
 - Sheets use `inSheets` to choose lines, so a sheet only contains what the organization has marked as sendable.
 - The domain model, ER diagram and glossary change: Inquiry, Booking and Option are removed, Ticket, TicketPhase, ItemState and PhaseStateRule are added (`docs/domain-model.md` and `docs/artifacts/domain-model.html` together).
 - The demo seed gets per-organization phases, states and grids (ADR 0025).
