@@ -17,6 +17,7 @@ Template: `packages/core/src/features/setup/operations.ts` (simple) or `features
    - If it changes searchable fields: set `embeddable`.
 3. Add the operation to the entity's list and to `core-operations.ts`. Call it through `execute`, never `handler` directly.
 4. **Adapters in the same change:** `rest.ts` (`restRoute`), `graphql.ts` (`*FromOperation`), `mcp.ts`, `apps/web/src/features/web-surfaces.ts` (or `UI_EXEMPT` in `ui-exempt.ts` with a reason) and `tool-ui-registry.ts`.
-5. Tests against a real Postgres in `packages/core`. Run `pnpm test`.
+5. Tests against a real Postgres in `packages/core`, plus an isolation step in `apps/mcp/test/isolation-<area>.test.ts` (organization B calls the tool with A's ids, gets `NOT_FOUND`; `isolation-coverage.test.ts` enforces it). Check every referenced id for organization and read permission. Run `pnpm test`.
+6. Run the remaining gates in skill `new-feature` (lifecycle, concurrency, approval label).
 
 Should the state be changeable by AI? See `docs/decisions/0007-ai-first-ux.md`.

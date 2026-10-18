@@ -181,7 +181,7 @@ Setup (run exactly these two commands first):
 Then work only in the worktree:
 ${inWorktree(dir)}
 - Read the issue: gh issue view ${t.number} -R simpel/okazi. Its "To do" and "Done when" sections are the spec. Read the linked ADR in docs/decisions/.
-- Use the matching repo skill (new-entity, new-core-operation, db-migration, i18n-strings, new-ui-component, structure-fix) where it fits. Migrations are fine: your database is yours alone.
+- Start with the new-feature skill: it fixes the order of work and the gates (isolation test, referenced-id checks, read permission, lifecycle, concurrency, approval labels) that belong to this ticket. Then use the skill it names for each step (new-entity, new-core-operation, db-migration, i18n-strings, new-ui-component, structure-fix). Migrations are fine: your database is yours alone.
 - While working, run targeted checks (pnpm test for the packages you touch). Pipe long output through tail or grep.
 - ${READING_RULES}
 - Do NOT run git add/commit/push/rebase/stash/checkout/reset. The landing step commits.
@@ -200,7 +200,7 @@ Return the full list of files this ticket has touched so far (including earlier 
 
 const reviewPrompt = (t, dir) => `Use the tenancy-review skill on the uncommitted changes for issue #${t.number} (git diff plus untracked files in the worktree).
 ${inWorktree(dir)}
-Check org scoping, permissions, AuditLog, and AI approval. Do not edit files. ok=false only for a real tenancy/permission/audit defect in this ticket's changes; list each with file:line. Defects in code this ticket did not touch go in followUps instead (they must not block the ticket).`
+Check org scoping, permissions, AuditLog, and AI approval, plus the new-feature gates: referenced ids checked for org and read permission, read permission on search and UI, archive/rename/removal lifecycle, races returning CONFLICT. Do not edit files. ok=false only for a real tenancy/permission/audit defect in this ticket's changes; list each with file:line. Defects in code this ticket did not touch go in followUps instead (they must not block the ticket).`
 
 const landPrompt = (t, dir, summary) => `Land issue #${t.number} on main. Other tickets land one at a time, so origin/main may have moved.
 ${inWorktree(dir)}

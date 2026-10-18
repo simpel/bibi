@@ -79,6 +79,7 @@ export function nextSteps({ names, plan }) {
     "  [ ] packages/api and apps/mcp: register the REST routes and MCP tools from rest.ts and mcp.ts.",
     `  [ ] apps/web/src/features/web-surfaces.ts: add each ${kebab}.* operation to WEB_SURFACES (or UI_EXEMPT in ui-exempt.ts with a reason).`,
     `  [ ] apps/mcp/test/parity-entities.ts: add a ${kebab} entry to ENTITIES.`,
+    `  [ ] apps/mcp/test/isolation-${kebab}.test.ts: organization B calls every ${camel}.* tool with A's ids and gets NOT_FOUND (isolation-coverage.test.ts fails without it). Then the gates in skill new-feature.`,
     `  [ ] packages/i18n/messages/sv.json and en.json: add the "${camel}" keys (skill i18n-strings).`,
     `  [ ] docs/domain-model.md and docs/artifacts/domain-model.html: add ${Pascal} together.`,
     `  [ ] Replace every TODO in the generated files (apps/web/src/features/${kebab}/ui/README.md lists the UI work).`,

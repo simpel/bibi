@@ -14,6 +14,7 @@ Check in the diff:
 - **AI:** mutations from the assistant return `approval_required`. The AI actor is accepted only for the assistant's OAuth client. No special path into the service layer.
 - **Reads:** search and lists filter `status` (soft delete) and visibility (`filter-visible-hits`). No cross-org ids via parameters.
 - **Boundaries:** Zod on all input (HTTP, GraphQL arguments, MCP, env, AI output). Env only via `@okazi/config`. No secrets in logs or error messages.
-- **Tests:** the isolation test (`apps/mcp/test/isolation.test.ts`) covers the new entity with two organizations.
+- **Tests:** an `apps/mcp/test/isolation-<area>.test.ts` step covers every new operation with two organizations (`isolation-coverage.test.ts` enforces it; `ISOLATION_GAPS` must not grow).
+- **References and lifecycle:** every input id pointing at another record is checked for organization and read permission. Archive, rename and removal handle what links to the record. Races return `CONFLICT`.
 
 Report findings with file:line, scenario and suggested fix. Make no changes without asking.

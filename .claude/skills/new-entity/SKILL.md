@@ -15,6 +15,7 @@ Follow the order. Core first, adapters in the same change (ADR 0003).
 6. **Generative UI:** component in `@okazi/ui` plus wire schema and a line in `packages/ai/src/ui-contract/tool-ui-registry.ts` (or `GENERIC_UI_TOOLS`).
 7. **i18n:** keys in `sv.json` and `en.json` (see skill `i18n-strings`).
 8. **Docs:** update `docs/domain-model.md` and `docs/artifacts/domain-model.html` together.
-9. **Verify:** `pnpm lint && pnpm check:structure && pnpm typecheck && pnpm test`. The parity test in `apps/mcp/test/parity*.ts` must be green.
+9. **Isolation test:** add a step to `apps/mcp/test/isolation-<area>.test.ts` for every new operation (organization B gets `NOT_FOUND` with A's ids). `isolation-coverage.test.ts` fails without it. Other gates: skill `new-feature`.
+10. **Verify:** `pnpm lint && pnpm check:structure && pnpm typecheck && pnpm test`. The parity test in `apps/mcp/test/parity*.ts` must be green.
 
 Operation details are in skill `new-core-operation`.
