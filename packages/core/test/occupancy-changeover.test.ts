@@ -13,7 +13,7 @@ import { defineOperation } from "../src/operations/define-operation";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { createBookableItem, hours } from "./occupancy-helpers";
 
-/** A stand-in for the booking commands that will call the helper (ADR 0025). */
+/** A stand-in for the ticket commands that will call the helper (ADR 0025). */
 const book = defineOperation({
   name: "test.book",
   kind: "command",
@@ -22,7 +22,7 @@ const book = defineOperation({
   output: OccupancySchema.nullable(),
   permission: "occupancy:write",
   handler: async ({ input, context }) => {
-    const source = { sourceType: "test", sourceId: "booking-1" };
+    const source = { sourceType: "test", sourceId: "ticket-1" };
     const added = await addChangeover({ context, ...input, ...source });
     return added.ok ? ok({ value: added.value }) : added;
   },
@@ -52,7 +52,7 @@ describe("changeover as SETUP occupancy (ADR 0022)", () => {
       startsAt: new Date(Date.UTC(2026, 10, 1, 8, 30)),
       endsAt: startsAt,
       sourceType: "test",
-      sourceId: "booking-1",
+      sourceId: "ticket-1",
     });
   });
 

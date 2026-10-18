@@ -26,7 +26,7 @@ describe("SYSTEM skills", () => {
         "create-venue-with-items",
         "find-available-space",
         "propose-configuration",
-        "summarize-booking-risks",
+        "summarize-ticket-risks",
       ]),
     );
   });

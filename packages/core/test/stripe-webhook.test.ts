@@ -22,8 +22,8 @@ describe("Stripe webhook", () => {
     expect([bad.status, missing.status]).toEqual([401, 401]);
   });
 
-  it("marks the payment paid and confirms the booking", async () => {
-    const { context, account, payment, bookingId } = await pendingPayment({ coordinated: true });
+  it("marks the payment paid and never moves the ticket's phase", async () => {
+    const { context, account, payment, ticketId } = await pendingPayment({ coordinated: true });
     const posted = await postEvent({
       event: paidEvent({ account, reference: payment.providerReference }),
     });
@@ -31,11 +31,11 @@ describe("Stripe webhook", () => {
     const row = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
     expect(row.status).toBe("SUCCEEDED");
     expect(row.paidAt).toBeInstanceOf(Date);
-    const booking = await context.db.booking.findUniqueOrThrow({
-      where: { id: bookingId },
-      include: { bookingStatus: true },
+    const ticket = await context.db.ticket.findUniqueOrThrow({
+      where: { id: ticketId },
+      include: { phase: true },
     });
-    expect(booking.bookingStatus.phase).toBe("CONFIRMED");
+    expect(ticket.phase.entry).toBe(true);
     const audit = await context.db.auditLog.findMany({
       where: { operation: "payment.applySignal" },
     });
@@ -52,22 +52,6 @@ describe("Stripe webhook", () => {
       where: { operation: "payment.applySignal" },
     });
     expect(audit).toHaveLength(1);
-  });
-
-  it("records the payment but leaves the booking when it cannot be confirmed", async () => {
-    const { context, account, payment, bookingId } = await pendingPayment({ coordinated: false });
-    const posted = await postEvent({
-      event: paidEvent({ account, reference: payment.providerReference }),
-    });
-    expect(posted.status).toBe(200);
-    const row = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
-    expect(row.status).toBe("SUCCEEDED");
-    const booking = await context.db.booking.findUniqueOrThrow({
-      where: { id: bookingId },
-      include: { bookingStatus: true },
-    });
-    expect(booking.bookingStatus.phase).toBe("TENTATIVE");
-    expect(logs.events({ event: "payment.webhook.confirm_failed" })).toHaveLength(1);
   });
 
   it("never moves a paid payment backwards", async () => {

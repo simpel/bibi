@@ -2,7 +2,7 @@ import type { EntityTypeDto, RequirementDto } from "@okazi/core";
 import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 
-/** Raw values of the requirement form: inputs are strings, `NONE` = the whole booking. */
+/** Raw values of the requirement form: inputs are strings, `NONE` = the whole ticket. */
 export type RequirementFormValues = {
   entityTypeId: string;
   programItemId: string;

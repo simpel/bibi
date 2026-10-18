@@ -34,7 +34,7 @@ export const applyPaymentSignal = defineOperation({
     });
     if (!before) return notFound({ entity: "Payment" });
     const next = nextPaymentState({ payment: before, signal: input, now: new Date() });
-    const base = { paymentId: before.id, bookingId: before.bookingId };
+    const base = { paymentId: before.id, ticketId: before.ticketId };
     if (!next) return ok({ value: { ...base, status: before.status, changed: false } });
     const row = await context.db.payment.update({ where: { id: before.id }, data: next });
     context.recordChange({ entityId: row.id, before, after: row });

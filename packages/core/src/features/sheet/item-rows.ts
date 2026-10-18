@@ -5,17 +5,17 @@ import type { SheetRow } from "./schema";
 
 export type ItemRowsInput = {
   context: Pick<OperationContext, "db">;
-  bookingId: string;
+  ticketId: string;
   definition: Pick<SheetDefinitionDto, "entityTypeIds" | "fieldIds">;
 };
 
 /**
- * One row per program item of the booking that uses an item of an included type, with the
+ * One row per program item of the ticket that uses an item of an included type, with the
  * included fields of that item's type, earliest first.
  */
 export async function itemRows({
   context,
-  bookingId,
+  ticketId,
   definition,
 }: ItemRowsInput): Promise<SheetRow[]> {
   const [fields, programItems] = await Promise.all([
@@ -25,7 +25,7 @@ export async function itemRows({
       orderBy: [{ position: "asc" }, { id: "asc" }],
     }),
     context.db.programItem.findMany({
-      where: { bookingId, item: { entityTypeId: { in: definition.entityTypeIds } } },
+      where: { ticketId, item: { entityTypeId: { in: definition.entityTypeIds } } },
       include: { item: true },
       orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     }),

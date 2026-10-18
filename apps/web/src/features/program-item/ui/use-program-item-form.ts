@@ -15,7 +15,7 @@ import { type ProgramItemFormValues, programItemFormDefaults } from "./program-i
 
 export type UseProgramItemFormInput = {
   data: ProgramFormData;
-  bookingId: string;
+  ticketId: string;
   /** Where a new program item starts by default. */
   startsAt: Date;
   /** Present = edit mode, absent = create mode. */
@@ -35,10 +35,10 @@ const save = ({ programItem, values, type }: SaveInput) =>
     ? updateProgramItemAction({ input: toProgramItemUpdate({ programItem, values, type }) })
     : createProgramItemAction({ input: values });
 
-/** Program item form state; the booking page reloads with the changed run schedule. */
+/** Program item form state; the ticket page reloads with the changed run schedule. */
 export function useProgramItemForm({
   data,
-  bookingId,
+  ticketId,
   startsAt,
   programItem,
   onDone,
@@ -50,7 +50,7 @@ export function useProgramItemForm({
   const resolver = useTypedResolver<ProgramItemFormValues, ProgramItemFormOutput>({
     types: data.types,
     schemaFor: ({ type }) =>
-      programItemFormSchema({ bookingId, type, vocabularies: data.vocabularies }),
+      programItemFormSchema({ ticketId, type, vocabularies: data.vocabularies }),
   });
   const initial = typeOf({ id: programItem?.entityTypeId ?? data.types[0]?.id ?? "" });
   const form = useForm<ProgramItemFormValues, unknown, ProgramItemFormOutput>({

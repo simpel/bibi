@@ -53,14 +53,14 @@ describe("LINK fields (ADR 0021, 0026)", () => {
     expect(
       errorCode({ result: await field({ input: { linkTypeId: foreign.entityTypeId } }) }),
     ).toBe("VALIDATION");
-    const inquiry = unwrap({
+    const requirement = unwrap({
       result: await execute({
         operation: createEntityType,
-        input: { base: "INQUIRY", name: "Inquiry" },
+        input: { base: "REQUIREMENT", name: "Diet" },
         context,
       }),
     });
-    expect(errorCode({ result: await field({ input: { linkTypeId: inquiry.id } }) })).toBe(
+    expect(errorCode({ result: await field({ input: { linkTypeId: requirement.id } }) })).toBe(
       "VALIDATION",
     );
     const text = await field({ input: { kind: "TEXT", linkTypeId: room.id } });

@@ -11,10 +11,9 @@ export type PipelineBoardViewProps = GenerativeProps<"pipeline-board">;
 /** The pipeline as lane counts; the full board is on `/pipeline`. */
 export function PipelineBoardView({ board }: PipelineBoardViewProps) {
   const t = useTranslations("assistant.ui.pipeline");
-  const statuses = useTranslations("inquiry.statuses");
   const lanes = board.columns.map((column) => ({
     id: column.id,
-    title: column.inquiryStatus ? statuses(column.inquiryStatus) : column.title,
+    title: column.title,
     count: board.cards.filter((card) => card.columnId === column.id).length,
   }));
   return (

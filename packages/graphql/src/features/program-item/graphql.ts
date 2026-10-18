@@ -13,16 +13,16 @@ import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
 import { requirePermission } from "../../schema/require-permission";
 import { runOperation } from "../../schema/run-operation";
-import { BookingRef } from "../booking/graphql";
 import { EntityTypeRef } from "../entity-type/graphql";
 import { SetupRef } from "../setup/graphql";
+import { TicketRef } from "../ticket/graphql";
 
 export const ProgramItemRef = objectFromSchema<ProgramItemDto>({
   name: "ProgramItem",
   schema: ProgramItemSchema,
   omit: ["organizationId"],
   description:
-    "Program item – a row in a booking's run schedule: type and fields, time, the bookable " +
+    "Program item – a row in a ticket's run schedule: type and fields, time, the bookable " +
     "item and setup it occupies, quantity and a note.",
 });
 const ProgramItemPageRef = pageType({ name: "ProgramItemPage", item: ProgramItemRef });
@@ -57,16 +57,16 @@ builder.objectField(ProgramItemRef, "setup", (t) =>
   }),
 );
 
-// Graph edge. It lives here so that booking/graphql.ts does not need to import this file.
-builder.objectField(BookingRef, "programItems", (t) =>
+// Graph edge. It lives here so that ticket/graphql.ts does not need to import this file.
+builder.objectField(TicketRef, "programItems", (t) =>
   t.field({
     type: [ProgramItemRef],
-    description: "The booking's run schedule, earliest first.",
+    description: "The ticket's run schedule, earliest first.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
-    resolve: async (booking, { limit }, ctx) => {
+    resolve: async (ticket, { limit }, ctx) => {
       const page = (await runOperation({
         operation: listProgramItems,
-        input: { bookingId: booking.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) },
+        input: { ticketId: ticket.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) },
         ctx,
       })) as { items: ProgramItemDto[] };
       return page.items;

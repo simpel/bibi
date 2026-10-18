@@ -3,11 +3,11 @@ import { useFormatter, useTranslations } from "next-intl";
 
 export type PipelineCardContentProps = { card: PipelineCard };
 
-/** What a board card shows: booking number and type, customer, start and quantity. */
+/** What a board card shows: ticket number and type, customer, start and quantity. */
 export function PipelineCardContent({ card }: PipelineCardContentProps) {
   const t = useTranslations("pipeline");
   const format = useFormatter();
-  const heading = card.reference === null ? card.typeName : `#${card.reference} · ${card.typeName}`;
+  const heading = `#${card.reference} · ${card.typeName}`;
   return (
     <div className="grid gap-0.5 text-sm">
       <span className="flex items-center gap-1 font-medium">{heading}</span>

@@ -7,7 +7,7 @@ import { MoreHint } from "./more-hint";
 
 export type InboundEmailTableViewProps = GenerativeProps<"inbound-email-table">;
 
-/** A page of mails received on a booking's inbound address, newest first. */
+/** A page of mails received on a ticket's inbound address, newest first. */
 export function InboundEmailTableView({ items, nextCursor }: InboundEmailTableViewProps) {
   return (
     <Card data-slot="inbound-email-table" className="px-4 shadow-none">

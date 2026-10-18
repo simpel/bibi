@@ -15,7 +15,7 @@ import { type RequirementFormValues, requirementFormDefaults } from "./requireme
 
 export type UseRequirementFormInput = {
   data: RequirementFormData;
-  bookingId: string;
+  ticketId: string;
   /** Present = edit mode, absent = create mode. */
   requirement?: RequirementDto | undefined;
   onDone: () => void;
@@ -33,10 +33,10 @@ const save = ({ requirement, values, type }: SaveInput) =>
     ? updateRequirementAction({ input: toRequirementUpdate({ requirement, values, type }) })
     : createRequirementAction({ input: values });
 
-/** Requirement form state; the booking page reloads with the changed counts. */
+/** Requirement form state; the ticket page reloads with the changed counts. */
 export function useRequirementForm({
   data,
-  bookingId,
+  ticketId,
   requirement,
   onDone,
 }: UseRequirementFormInput) {
@@ -47,7 +47,7 @@ export function useRequirementForm({
   const resolver = useTypedResolver<RequirementFormValues, RequirementFormOutput>({
     types: data.types,
     schemaFor: ({ type }) =>
-      requirementFormSchema({ bookingId, type, vocabularies: data.vocabularies }),
+      requirementFormSchema({ ticketId, type, vocabularies: data.vocabularies }),
   });
   const initial = typeOf({ id: requirement?.entityTypeId ?? data.types[0]?.id ?? "" });
   const form = useForm<RequirementFormValues, unknown, RequirementFormOutput>({

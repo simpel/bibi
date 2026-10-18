@@ -7,7 +7,7 @@ export type LoadRequirementDataInput = { programItems: ProgramItemDto[] };
 
 /**
  * Requirement types and lists (own fields and the values to count, one page each) and the
- * booking's program items a count can apply to.
+ * ticket's program items a count can apply to.
  */
 export async function loadRequirementData({
   programItems,

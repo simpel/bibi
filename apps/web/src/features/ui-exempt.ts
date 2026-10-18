@@ -6,7 +6,7 @@ export const UI_EXEMPT: readonly UiExempt[] = [
   {
     operation: "assignment.listMine",
     reason:
-      "The My work page (#253) shows it; until then the inquiry and booking lists filter by Assigned to me and Following with their own list operations.",
+      "The My work page (#253) shows it; until then the ticket list filters by Assigned to me and Following with its own list operation.",
   },
   {
     operation: "occupancy.get",
@@ -21,17 +21,17 @@ export const UI_EXEMPT: readonly UiExempt[] = [
   {
     operation: "programItem.get",
     reason:
-      "A program item has no page of its own: the booking page lists the run schedule with programItem.list and edits it inline.",
+      "A program item has no page of its own: the ticket page lists the run schedule with programItem.list and edits it inline.",
   },
   {
     operation: "requirement.get",
     reason:
-      "A requirement has no page of its own: the booking page lists its counts with requirement.list and edits them inline.",
+      "A requirement has no page of its own: the ticket page lists its counts with requirement.list and edits them inline.",
   },
   {
     operation: "sheet.get",
     reason:
-      "A sheet version has no page of its own: the booking page lists the newest version per sheet with sheet.list.",
+      "A sheet version has no page of its own: the ticket page lists the newest version per sheet with sheet.list.",
   },
   {
     operation: "contact.get",
@@ -40,12 +40,12 @@ export const UI_EXEMPT: readonly UiExempt[] = [
   },
   {
     operation: "inboundEmail.get",
-    reason: "The booking page shows each received mail in full from inboundEmail.list",
+    reason: "The ticket page shows each received mail in full from inboundEmail.list",
   },
   {
     operation: "payment.get",
     reason:
-      "The booking page shows every payment in full from payment.list; one payment has no page",
+      "The ticket page shows every payment in full from payment.list; one payment has no page",
   },
   {
     operation: "auditLog.get",

@@ -5,8 +5,8 @@ export const programItemRoutes = [
   restRoute({
     operation: "programItem.list",
     method: "GET",
-    path: "/bookings/{bookingId}/program-items",
-    operationId: "programItemListByBooking",
+    path: "/tickets/{ticketId}/program-items",
+    operationId: "programItemListByTicket",
   }),
   restRoute({ operation: "programItem.get", method: "GET", path: "/program-items/{id}" }),
   restRoute({ operation: "programItem.create", method: "POST", path: "/program-items" }),

@@ -1,12 +1,12 @@
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { expect } from "vitest";
 import { call } from "./helpers";
-import { seedBooking } from "./seed-booking";
+import { seedTicket } from "./seed-ticket";
 
 export type SeedProgramInput = { client: Client };
 
 export type SeededProgram = {
-  bookingId: string;
+  ticketId: string;
   itemId: string;
   programItemId: string;
   programTypeId: string;
@@ -27,9 +27,9 @@ async function type({ client, ...args }: { client: Client; base: string; name: s
   return ok({ client, name: "entityType_create", args });
 }
 
-/** A booking with a bookable item, a program item, and a list value to count requirements of. */
+/** A ticket with a bookable item, a program item, and a list value to count requirements of. */
 export async function seedProgram({ client }: SeedProgramInput): Promise<SeededProgram> {
-  const { id: bookingId } = await seedBooking({ client });
+  const { id: ticketId } = await seedTicket({ client });
   const roomType = await ok({
     client,
     name: "entityType_create",
@@ -46,7 +46,7 @@ export async function seedProgram({ client }: SeedProgramInput): Promise<SeededP
     client,
     name: "programItem_create",
     args: {
-      bookingId,
+      ticketId,
       entityTypeId: programType.id,
       name: "Hidden session",
       startsAt: START,
@@ -60,7 +60,7 @@ export async function seedProgram({ client }: SeedProgramInput): Promise<SeededP
     args: { name: "Secret allergens", values: ["Gluten"] },
   });
   return {
-    bookingId,
+    ticketId,
     itemId: item.id,
     programItemId: programItem.id,
     programTypeId: programType.id,

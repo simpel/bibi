@@ -5,7 +5,6 @@ import {
   CalendarCheckIcon,
   CircleDotIcon,
   ClipboardListIcon,
-  InboxIcon,
   LayoutGridIcon,
   ListIcon,
   ShapesIcon,
@@ -23,22 +22,15 @@ import type { CreateItem } from "./create-item-types";
  * Everything a member can create, one card each on `/new`. A thing with a step-by-step page
  * links to `/new/<thing>`; the others open their list with the create dialog (`?create=1`)
  * until they get their own page. Quotes, occupancies, options and program items are created
- * from the booking or item they belong to, so they are not listed.
+ * from the ticket or item they belong to, so they are not listed.
  */
 export const CREATE_ITEMS: readonly CreateItem[] = [
   {
-    key: "booking",
+    key: "ticket",
     group: "work",
-    href: ROUTES.bookingNew,
+    href: ROUTES.ticketNew,
     icon: CalendarCheckIcon,
-    ability: "bookingWrite",
-  },
-  {
-    key: "inquiry",
-    group: "work",
-    href: ROUTES.inquiryNew,
-    icon: InboxIcon,
-    ability: "inquiryWrite",
+    ability: "ticketWrite",
   },
   {
     key: "customer",
@@ -105,11 +97,11 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
     ability: "configurationWrite",
   },
   {
-    key: "bookingStatus",
+    key: "ticketPhase",
     group: "settings",
-    href: ROUTES.settingsBookingStatuses,
+    href: ROUTES.settingsPipeline,
     icon: CircleDotIcon,
-    ability: "bookingStatusAdmin",
+    ability: "ticketPhaseAdmin",
   },
   {
     key: "member",

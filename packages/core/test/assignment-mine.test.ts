@@ -3,17 +3,16 @@ import {
   assignAssignment,
   createResponsibility,
   execute,
-  listBookings,
-  listInquiries,
   listMyAssignments,
+  listTickets,
 } from "../src/index";
-import { assignTo, bookingSubject, followAs } from "./assignment-helpers";
-import { bookingSetup, createTestBooking, memberUser } from "./booking-helpers";
+import { assignTo, followAs, ticketSubject } from "./assignment-helpers";
 import { errorCode, testContext, unwrap } from "./helpers";
+import { createTestTicket, memberUser, ticketSetup } from "./ticket-helpers";
 
 async function setup() {
-  const { context, type, customer } = await bookingSetup();
-  const book = () => createTestBooking({ context, entityTypeId: type.id, customerId: customer.id });
+  const { context, type, customer } = await ticketSetup();
+  const book = () => createTestTicket({ context, entityTypeId: type.id, customerId: customer.id });
   const [first, second] = [await book(), await book()];
   const erik = await memberUser({ context, name: "Erik Lund" });
   const johan = await memberUser({ context, name: "Johan Ek" });
@@ -23,9 +22,9 @@ async function setup() {
 describe("assignment.listMine and the list filters (ADR 0034)", () => {
   it("lists what a member is assigned to and what they follow", async () => {
     const { context, first, second, erik, johan } = await setup();
-    await assignTo({ context, ...bookingSubject(first), assigneeId: johan });
-    await followAs({ context, ...bookingSubject(second), userId: johan });
-    await assignTo({ context, ...bookingSubject(second), assigneeId: erik });
+    await assignTo({ context, ...ticketSubject(first), assigneeId: johan });
+    await followAs({ context, ...ticketSubject(second), userId: johan });
+    await assignTo({ context, ...ticketSubject(second), assigneeId: erik });
     const asJohan = testContext({
       organizationId: context.organizationId,
       actor: { type: "user", userId: johan },
@@ -37,19 +36,11 @@ describe("assignment.listMine and the list filters (ADR 0034)", () => {
     const following = unwrap({ result: await mine({ kind: "FOLLOWING" }) });
     expect(following.items.map((row) => row.subjectId)).toEqual([second.id]);
     const page = ({ filter }: { filter: { assigneeId: string } | { followerId: string } }) =>
-      execute({ operation: listBookings, input: { limit: 50, ...filter }, context });
+      execute({ operation: listTickets, input: { limit: 50, ...filter }, context });
     const byAssignee = unwrap({ result: await page({ filter: { assigneeId: johan } }) });
     expect(byAssignee.items.map((row) => row.id)).toEqual([first.id]);
     const byFollower = unwrap({ result: await page({ filter: { followerId: johan } }) });
     expect(byFollower.items.map((row) => row.id)).toEqual([second.id]);
-    const inquiries = unwrap({
-      result: await execute({
-        operation: listInquiries,
-        input: { limit: 50, assigneeId: johan },
-        context,
-      }),
-    });
-    expect(inquiries.items).toEqual([]);
   });
 
   it("keeps one assignment per responsibility next to the main one", async () => {
@@ -61,7 +52,7 @@ describe("assignment.listMine and the list filters (ADR 0034)", () => {
         context,
       }),
     });
-    const subject = bookingSubject(first);
+    const subject = ticketSubject(first);
     await assignTo({ context, ...subject, assigneeId: johan });
     const part = await assignTo({
       context,
@@ -77,17 +68,17 @@ describe("assignment.listMine and the list filters (ADR 0034)", () => {
       assigneeId: johan,
     });
     expect(again.id).toBe(part.id);
-    const onInquiry = await execute({
+    const onItem = await execute({
       operation: assignAssignment,
       input: {
-        subjectType: "INQUIRY",
+        subjectType: "ITEM",
         subjectId: "x",
         responsibilityId: kitchen.id,
         assigneeId: erik,
       },
       context,
     });
-    expect(errorCode({ result: onInquiry })).toBe("NOT_FOUND");
+    expect(errorCode({ result: onItem })).toBe("NOT_FOUND");
     const count = await context.db.assignment.count({ where: { subjectId: first.id } });
     expect(count).toBe(2);
   });

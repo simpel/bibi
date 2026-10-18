@@ -1,14 +1,14 @@
-import type { BookingDto, OccupancyDto, OccupancyType, ProgramItemDto } from "@okazi/core/schemas";
+import type { OccupancyDto, OccupancyType, ProgramItemDto, TicketDto } from "@okazi/core/schemas";
 import { optionQueuePositions } from "./option-queue";
 
-/** One occupancy on the calendar, with the booking it belongs to (when it has one). */
+/** One occupancy on the calendar, with the ticket it belongs to (when it has one). */
 export type CalendarBlock = {
   id: string;
   itemId: string;
   type: OccupancyType;
   startsAt: Date;
   endsAt: Date;
-  bookingId: string | null;
+  ticketId: string | null;
   reference: number | null;
   /** The program item's name, or the note of a manual block. */
   title: string | null;
@@ -19,40 +19,40 @@ export type CalendarBlock = {
 export type ToCalendarBlocksInput = {
   occupancies: OccupancyDto[];
   programItems: ProgramItemDto[];
-  bookings: BookingDto[];
-  /** `Occupancy.sourceType` values: a booking's own rows and a program item's rows. */
-  sources: { booking: string; programItem: string };
+  tickets: TicketDto[];
+  /** `Occupancy.sourceType` values: a ticket's own rows and a program item's rows. */
+  sources: { ticket: string; programItem: string };
 };
 
 /**
  * Joins occupancies with their source: a program item's rows (and its setup time) belong to
- * the program item's booking, a booking's own rows to that booking.
+ * the program item's ticket, a ticket's own rows to that ticket.
  */
 export function toCalendarBlocks({
   occupancies,
   programItems,
-  bookings,
+  tickets,
   sources,
 }: ToCalendarBlocksInput): CalendarBlock[] {
   const programById = new Map(programItems.map((item) => [item.id, item]));
-  const bookingById = new Map(bookings.map((booking) => [booking.id, booking]));
+  const ticketById = new Map(tickets.map((ticket) => [ticket.id, ticket]));
   const queue = optionQueuePositions({ occupancies });
   return occupancies.map((occupancy) => {
     const program =
       occupancy.sourceType === sources.programItem && occupancy.sourceId
         ? programById.get(occupancy.sourceId)
         : undefined;
-    const ownBooking = occupancy.sourceType === sources.booking ? occupancy.sourceId : null;
-    const bookingId = program?.bookingId ?? ownBooking ?? null;
-    const booking = bookingId ? bookingById.get(bookingId) : undefined;
+    const ownTicket = occupancy.sourceType === sources.ticket ? occupancy.sourceId : null;
+    const ticketId = program?.ticketId ?? ownTicket ?? null;
+    const ticket = ticketId ? ticketById.get(ticketId) : undefined;
     return {
       id: occupancy.id,
       itemId: occupancy.itemId,
       type: occupancy.type,
       startsAt: occupancy.startsAt,
       endsAt: occupancy.endsAt,
-      bookingId,
-      reference: booking?.reference ?? null,
+      ticketId,
+      reference: ticket?.reference ?? null,
       title: program?.name ?? occupancy.note,
       queuePosition: queue.get(occupancy.id) ?? null,
     };

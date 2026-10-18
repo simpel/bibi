@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { execute, generateSheet, type SheetDto, sendSheet, updateRequirement } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { addRequirement } from "./requirement-helpers";
-import { confirmBooking } from "./sheet-helpers";
-import { countOnBooking, type MatchSetup, matchSetup, serve } from "./sheet-match-helpers";
+import { confirmTicket } from "./sheet-helpers";
+import { countOnTicket, type MatchSetup, matchSetup, serve } from "./sheet-match-helpers";
 
-const generate = ({ context, booking, definition }: MatchSetup) =>
+const generate = ({ context, ticket, definition }: MatchSetup) =>
   execute({
     operation: generateSheet,
-    input: { bookingId: booking.id, sheetDefinitionId: definition.id },
+    input: { ticketId: ticket.id, sheetDefinitionId: definition.id },
     context,
   });
 
@@ -61,7 +61,7 @@ describe("sheet matches (ADR 0021)", () => {
   it.each(CASES)("$title", async ({ menu, count, kind, carriers }) => {
     const setup = await matchSetup();
     await serve({ setup, menu });
-    await countOnBooking({ setup, value: setup[count], quantity: 3 });
+    await countOnTicket({ setup, value: setup[count], quantity: 3 });
     const sheet = unwrap({ result: await generate(setup) });
     if (!kind) {
       expect(sheet).toMatchObject({ blocked: false, matches: [] });
@@ -80,8 +80,8 @@ describe("sheet matches (ADR 0021)", () => {
   it("refuses to send a blocked sheet until the count is gone", async () => {
     const setup = await matchSetup();
     await serve({ setup, menu: "mandatory" });
-    const count = await countOnBooking({ setup, value: setup.gluten, quantity: 2 });
-    await confirmBooking({ context: setup.context, bookingId: setup.booking.id });
+    const count = await countOnTicket({ setup, value: setup.gluten, quantity: 2 });
+    await confirmTicket({ context: setup.context, ticketId: setup.ticket.id });
     const blocked = unwrap({ result: await generate(setup) });
     expect(blocked.blocked).toBe(true);
     expect(errorCode({ result: await send({ setup, sheet: blocked }) })).toBe("CONFLICT");
@@ -98,19 +98,19 @@ describe("sheet matches (ADR 0021)", () => {
     const setup = await matchSetup();
     await serve({ setup, menu: "optional" });
     await serve({ setup, menu: "mandatory" });
-    await countOnBooking({ setup, value: setup.gluten, quantity: 4 });
+    await countOnTicket({ setup, value: setup.gluten, quantity: 4 });
     const sheet = unwrap({ result: await generate(setup) });
     expect(sheet.matches.map((match) => match.kind)).toEqual(["CONTAINS", "MAY_CONTAIN"]);
     expect(sheet.blocked).toBe(true);
   });
 
-  it("lets a program item's own count of 0 replace the booking's count", async () => {
+  it("lets a program item's own count of 0 replace the ticket's count", async () => {
     const setup = await matchSetup();
     const held = await serve({ setup, menu: "mandatory" });
-    await countOnBooking({ setup, value: setup.gluten, quantity: 4 });
+    await countOnTicket({ setup, value: setup.gluten, quantity: 4 });
     const own = {
       context: setup.context,
-      bookingId: setup.booking.id,
+      ticketId: setup.ticket.id,
       entityTypeId: setup.type.id,
     };
     unwrap({

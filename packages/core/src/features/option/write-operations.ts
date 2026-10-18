@@ -19,7 +19,7 @@ export const createOption = defineOperation({
   description:
     "Place an option (a preliminary hold) on a bookable item for a period until an expiry date " +
     "(ADR 0022). Options queue per item and time: the rank is set automatically to the number of " +
-    "active overlapping options + 1 (1 = first option). Optionally tied to an inquiry.",
+    "active overlapping options + 1 (1 = first option). Optionally tied to a ticket.",
   input: OptionCreateInputSchema,
   output: OptionSchema,
   permission: "option:write",

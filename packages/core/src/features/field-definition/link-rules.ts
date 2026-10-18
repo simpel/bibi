@@ -29,7 +29,7 @@ async function linksRequirementToPerson({ context, entityTypeId, targetBase }: P
 
 /**
  * A LINK field needs a target type (`linkTypeId`) whose records can be linked: an active item,
- * customer, contact or booking type of the organization. A requirement type's fields cannot link
+ * customer, contact or ticket type of the organization. A requirement type's fields cannot link
  * to people. Other kinds take no target.
  */
 export async function checkLinkTarget({
@@ -78,7 +78,7 @@ const BASE_RESOURCE: Readonly<Record<string, string>> = {
   ITEM: "item",
   CUSTOMER: "customer",
   CONTACT: "contact",
-  BOOKING: "booking",
+  TICKET: "ticket",
 };
 
 type CanReadTargetInput = { context: CheckLinkValuesInput["context"]; linkTypeId: string };

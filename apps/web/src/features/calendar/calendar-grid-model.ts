@@ -1,5 +1,5 @@
 import type { OccupancyType } from "@okazi/core/schemas";
-import { bookingRoute } from "@/lib/routes";
+import { ticketRoute } from "@/lib/routes";
 import type { CalendarBlock } from "./calendar-blocks";
 import type { CalendarColumn, PlacedBlock } from "./calendar-layout";
 import type { CalendarView } from "./calendar-params";
@@ -42,12 +42,12 @@ export type CalendarLabels = {
 
 type LabelInput = { block: CalendarBlock; labels: CalendarLabels };
 
-/** "2nd option · Booking 12 · Lunch"; a plain booking shows its reference and program item. */
+/** "2nd option · Ticket 12 · Lunch"; a plain ticket shows its reference and program item. */
 export function blockLabel({ block, labels }: LabelInput): string {
   const kind =
     block.queuePosition !== null
       ? labels.option({ position: block.queuePosition })
-      : block.type === "BOOKING" && block.bookingId
+      : block.type === "BOOKING" && block.ticketId
         ? null
         : labels.type({ type: block.type });
   const reference =
@@ -62,7 +62,7 @@ function toGridBlock({ placed, lane, labels }: ToGridBlockInput): GridBlock {
   const { block, offset, span } = placed;
   return {
     id: block.id,
-    href: block.bookingId ? bookingRoute({ id: block.bookingId }) : null,
+    href: block.ticketId ? ticketRoute({ id: block.ticketId }) : null,
     type: block.type,
     label: blockLabel({ block, labels }),
     time: labels.time({ block }),

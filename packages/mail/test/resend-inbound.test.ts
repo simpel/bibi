@@ -16,8 +16,8 @@ const received = {
     created_at: "2026-10-15T10:00:00.000Z",
     message_id: "<111@example.test>",
     from: "Guest <guest@example.test>",
-    to: ["booking-abc@in.okazi.test"],
-    subject: "Re: your booking",
+    to: ["ticket-abc@in.okazi.test"],
+    subject: "Re: your ticket",
   },
 };
 
@@ -49,8 +49,8 @@ describe("Resend provider: parseInbound", () => {
       providerEmailId: received.data.email_id,
       messageId: "<111@example.test>",
       from: "Guest <guest@example.test>",
-      to: ["booking-abc@in.okazi.test"],
-      subject: "Re: your booking",
+      to: ["ticket-abc@in.okazi.test"],
+      subject: "Re: your ticket",
       receivedAt: "2026-10-15T10:00:00.000Z",
     });
   });

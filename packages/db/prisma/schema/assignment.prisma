@@ -1,12 +1,11 @@
 /// What an assignment is about (ADR 0034).
 enum AssignmentSubjectType {
-  INQUIRY
-  BOOKING
+  TICKET
   ITEM
 }
 
-/// Assignment (ADR 0034) – who answers for a subject (an inquiry, a booking or an item). A subject
-/// has one main assignment (`responsibilityId` null) and, for bookings, one per responsibility.
+/// Assignment (ADR 0034) – who answers for a subject (a ticket or an item). A subject
+/// has one main assignment (`responsibilityId` null) and, for tickets, one per responsibility.
 /// `subjectType`/`subjectId` follows the `Occupancy.sourceType`/`sourceId` pattern: core checks
 /// that the subject belongs to the organization. `assigneeId` is a member (user id); it is null
 /// when the subject only has followers so far.

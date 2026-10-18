@@ -6,8 +6,8 @@ import { activeOccupancies, addProgramItem, programSetup } from "./program-item-
 
 describe("program item occupancy (ADR 0022)", () => {
   it("occupies the item with BOOKING plus SETUP changeover time", async () => {
-    const { context, booking, type, room, setup } = await programSetup();
-    const base = { context, bookingId: booking.id, entityTypeId: type.id, itemId: room.id };
+    const { context, ticket, type, room, setup } = await programSetup();
+    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
       result: await addProgramItem({ ...base, from: 10, to: 12, setupId: setup.id }),
     });
@@ -19,8 +19,8 @@ describe("program item occupancy (ADR 0022)", () => {
   });
 
   it("refuses an overlap with CONFLICT, including the changeover time", async () => {
-    const { context, booking, type, room, setup } = await programSetup();
-    const base = { context, bookingId: booking.id, entityTypeId: type.id, itemId: room.id };
+    const { context, ticket, type, room, setup } = await programSetup();
+    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
     unwrap({ result: await addProgramItem({ ...base, from: 10, to: 12 }) });
     expect(errorCode({ result: await addProgramItem({ ...base, from: 11, to: 13 }) })).toBe(
       "CONFLICT",
@@ -29,13 +29,13 @@ describe("program item occupancy (ADR 0022)", () => {
     expect(errorCode({ result: await addProgramItem({ ...base, from: 12, to: 14 }) })).toBeNull();
     const clash = await addProgramItem({ ...base, from: 14, to: 15, setupId: setup.id });
     expect(errorCode({ result: clash })).toBe("CONFLICT");
-    const count = await context.db.programItem.count({ where: { bookingId: booking.id } });
+    const count = await context.db.programItem.count({ where: { ticketId: ticket.id } });
     expect(count).toBe(2);
   });
 
   it("moves the occupancy on update and releases it on archive", async () => {
-    const { context, booking, type, room, setup } = await programSetup();
-    const base = { context, bookingId: booking.id, entityTypeId: type.id, itemId: room.id };
+    const { context, ticket, type, room, setup } = await programSetup();
+    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
       result: await addProgramItem({ ...base, from: 10, to: 12, setupId: setup.id }),
     });
@@ -59,8 +59,8 @@ describe("program item occupancy (ADR 0022)", () => {
   });
 
   it("releases the item when the program item is archived", async () => {
-    const { context, booking, type, room } = await programSetup();
-    const base = { context, bookingId: booking.id, entityTypeId: type.id, itemId: room.id };
+    const { context, ticket, type, room } = await programSetup();
+    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({ result: await addProgramItem({ ...base, from: 10, to: 12 }) });
     const input = { id: item.id };
     unwrap({ result: await execute({ operation: archiveProgramItem, input, context }) });

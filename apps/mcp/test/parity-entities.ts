@@ -2,7 +2,6 @@ import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import type { ExecuteContext } from "@okazi/core";
 import { call, type Json } from "./helpers";
 import { accessEntities } from "./parity-entities-access";
-import { bookingEntities } from "./parity-entities-booking";
 import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
 import { integrationEntities } from "./parity-entities-integration";
@@ -10,6 +9,7 @@ import { optionEntities } from "./parity-entities-option";
 import { paymentAccountEntity, paymentEntity } from "./parity-entities-payment";
 import { quoteEntity } from "./parity-entities-quote";
 import { sheet } from "./parity-entities-sheet";
+import { ticketEntities } from "./parity-entities-ticket";
 import { userPreferenceEntity } from "./parity-entities-user-preference";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
@@ -107,13 +107,13 @@ export const ENTITIES: ParityEntity[] = [
   ...configurationEntities(),
   ...customerEntities(),
   byId({
-    name: "bookingStatus",
-    field: "bookingStatus",
-    list: "booking-statuses",
-    createTool: "bookingStatus_create",
-    args: { name: "Parity status", color: "#22c55e", phase: "TENTATIVE" },
+    name: "ticketPhase",
+    field: "ticketPhase",
+    list: "ticket-phases",
+    createTool: "ticketPhase_create",
+    args: { name: "Parity phase", color: "#22c55e", entry: true },
   }),
-  ...bookingEntities(),
+  ...ticketEntities(),
   ...optionEntities(),
   quoteEntity(),
   sheet(),

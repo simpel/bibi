@@ -24,7 +24,7 @@ export type RawOccupancyInput = {
 };
 
 /**
- * Writes a booking or option row directly: their own commands come with later slices of ADR 0025.
+ * Writes a ticket or option row directly: their own commands come with later slices of ADR 0025.
  */
 export const insertRaw = ({ context, itemId, type, from, to }: RawOccupancyInput) =>
   context.db.occupancy.create({

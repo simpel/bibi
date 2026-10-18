@@ -9,7 +9,7 @@ import { sendSheetAction } from "../actions";
 
 export type SendSheetButtonProps = { id: string };
 
-/** Sends the version to its role; the server refuses it unless the booking is confirmed. */
+/** Sends the version to its role; the server refuses it unless the ticket is confirmed. */
 export function SendSheetButton({ id }: SendSheetButtonProps) {
   const t = useTranslations("sheet");
   const common = useTranslations("common");

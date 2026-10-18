@@ -1,15 +1,15 @@
 import "server-only";
 import {
-  BOOKING_OCCUPANCY_SOURCE,
-  listBookings,
   listEntityTypes,
   listItems,
   listOccupancies,
   listProgramItems,
+  listTickets,
   listVenues,
   ok,
   PROGRAM_ITEM_SOURCE,
   type Result,
+  TICKET_OCCUPANCY_SOURCE,
   type VenueDto,
 } from "@okazi/core";
 import { listAll } from "@/server/list-all";
@@ -44,26 +44,26 @@ function loadSources({ from, to, venueId }: LoadCalendarInput) {
     listAll({ operation: listEntityTypes, input: { base: "ITEM" as const } }),
     listAll({ operation: listOccupancies, input: { from, to }, maxPages: 20 }),
     listAll({ operation: listProgramItems, input: programWindow, maxPages: 20 }),
-    listAll({ operation: listBookings, input: programWindow, maxPages: 20 }),
+    listAll({ operation: listTickets, input: programWindow, maxPages: 20 }),
   ]);
 }
 
 /**
  * The calendar's data from existing reads (no operation of its own): the bookable items
  * (spaces) of the venue, one type at a time (`selectSpaces`), their occupancies in `[from, to)`
- * and the program items and bookings those come from, so each block can open its booking.
+ * and the program items and tickets those come from, so each block can open its ticket.
  */
 export async function loadCalendar({
   typeId,
   ...window
 }: LoadCalendarInput): Promise<Result<CalendarData>> {
-  const [venues, items, types, occupancies, programItems, bookings] = await loadSources(window);
+  const [venues, items, types, occupancies, programItems, tickets] = await loadSources(window);
   if (!venues.ok) return venues;
   if (!items.ok) return items;
   if (!types.ok) return types;
   if (!occupancies.ok) return occupancies;
   if (!programItems.ok) return programItems;
-  if (!bookings.ok) return bookings;
+  if (!tickets.ok) return tickets;
   const selected = selectSpaces({
     spaces: items.value.map(({ id, name, venueId, entityTypeId }) => ({
       id,
@@ -78,8 +78,8 @@ export async function loadCalendar({
   const blocks = toCalendarBlocks({
     occupancies: occupancies.value.filter(({ itemId }) => spaceIds.has(itemId)),
     programItems: programItems.value,
-    bookings: bookings.value,
-    sources: { booking: BOOKING_OCCUPANCY_SOURCE, programItem: PROGRAM_ITEM_SOURCE },
+    tickets: tickets.value,
+    sources: { ticket: TICKET_OCCUPANCY_SOURCE, programItem: PROGRAM_ITEM_SOURCE },
   });
   const venueRows = venues.value.map(({ id, name }) => ({ id, name }));
   return ok({ value: { venues: venueRows, ...selected, blocks } });

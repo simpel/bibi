@@ -20,20 +20,20 @@ export type ProgramItemFormOutput = z.infer<typeof ProgramItemCreateInputSchema>
 const picked = ({ value }: { value: string }) => (value === NONE || value === "" ? null : value);
 
 export type ProgramItemSchemaInput = {
-  bookingId: string;
+  ticketId: string;
   type: EntityTypeDto | undefined;
   vocabularies: VocabularyDto[];
 };
 
 /** Core's program item schema with `fields` checked against the type; the server checks again. */
-export function programItemFormSchema({ bookingId, type, vocabularies }: ProgramItemSchemaInput) {
+export function programItemFormSchema({ ticketId, type, vocabularies }: ProgramItemSchemaInput) {
   const specs = specsOf({ type, vocabularies });
   return formSchema({
     schema: ProgramItemCreateInputSchema.extend({ fields: buildFieldsSchema({ specs }) }),
     toInput: ({ values }: { values: ProgramItemFormValues }) => {
       const itemId = picked({ value: values.itemId });
       return {
-        bookingId,
+        ticketId,
         entityTypeId: values.entityTypeId,
         name: values.name,
         startsAt: fromLocalInputValue({ value: values.startsAt }),
@@ -54,13 +54,13 @@ export type ProgramItemUpdateArgs = {
   type: EntityTypeDto | undefined;
 };
 
-/** Create-shaped values → `programItem.update` input (booking and type are fixed). */
+/** Create-shaped values → `programItem.update` input (ticket and type are fixed). */
 export function toProgramItemUpdate({
   programItem,
   values,
   type,
 }: ProgramItemUpdateArgs): ProgramItemUpdateInput {
-  const { bookingId: _b, entityTypeId: _t, fields, ...rest } = values;
+  const { ticketId: _b, entityTypeId: _t, fields, ...rest } = values;
   return {
     id: programItem.id,
     ...rest,

@@ -49,7 +49,7 @@ type NameRow = { id: string; name: string };
 
 /**
  * Names of the records the rows' field values refer to: list values (archived included) and
- * linked items, customers, contacts and bookings (by reference). Ids are globally unique.
+ * linked items, customers, contacts and tickets (by reference). Ids are globally unique.
  */
 export async function loadValueNames({
   db,
@@ -61,7 +61,7 @@ export async function loadValueNames({
       .filter((v) => typeof v === "string"),
   );
   const where = { id: { in: ids } };
-  const [values, items, customers, contacts, bookings] = await Promise.all([
+  const [values, items, customers, contacts, tickets] = await Promise.all([
     db.vocabularyValue.findMany({
       where: { ...where, status: { in: ["ACTIVE", "ARCHIVED"] } },
       select: { id: true, name: true },
@@ -69,9 +69,9 @@ export async function loadValueNames({
     db.item.findMany({ where, select: { id: true, name: true } }),
     db.customer.findMany({ where, select: { id: true, name: true } }),
     db.contact.findMany({ where, select: { id: true, name: true } }),
-    db.booking.findMany({ where, select: { id: true, reference: true } }),
+    db.ticket.findMany({ where, select: { id: true, reference: true } }),
   ]);
-  const refs: NameRow[] = bookings.map((b) => ({ id: b.id, name: String(b.reference) }));
+  const refs: NameRow[] = tickets.map((b) => ({ id: b.id, name: String(b.reference) }));
   return new Map(
     [...values, ...items, ...customers, ...contacts, ...refs].map((r) => [r.id, r.name]),
   );

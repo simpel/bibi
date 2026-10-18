@@ -1,5 +1,5 @@
 import { defineOperation } from "../../operations/define-operation";
-import { checkCustomer } from "../booking/booking-rules";
+import { checkCustomer } from "../ticket/ticket-rules";
 import { itemEmbeddable } from "./embeddable";
 import { insertItem } from "./insert-item";
 import { ItemSaveAsPackageInputSchema } from "./package-schema";

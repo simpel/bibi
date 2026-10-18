@@ -10,7 +10,7 @@ export function inboundMail({ recipients }: InboundMailInput): InboundMailConten
     messageId: "<111@example.test>",
     fromAddress: "Guest <guest@example.test>",
     toAddresses: recipients,
-    subject: "Re: your booking",
+    subject: "Re: your ticket",
     text: "We will be 40 guests.",
     html: "<p>We will be 40 guests.</p>",
     attachments: [{ id: "att_1", filename: "menu.pdf", contentType: "application/pdf", size: 10 }],

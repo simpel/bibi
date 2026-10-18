@@ -6,7 +6,7 @@ export const programItemMcpTools = [
   mcpTool({
     operation: "programItem.create",
     summary: ({ input }) =>
-      `Add "${text({ value: input.name })}" to booking ${text({ value: input.bookingId })} ` +
+      `Add "${text({ value: input.name })}" to ticket ${text({ value: input.ticketId })} ` +
       `from ${text({ value: input.startsAt })} to ${text({ value: input.endsAt })}`,
   }),
   mcpTool({

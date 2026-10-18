@@ -16,25 +16,25 @@ import type { QuoteAbilities } from "./ui/quote-actions";
 
 export type QuotePageData = {
   quote: QuoteDto;
-  /** Every version of the inquiry's quote, newest first. */
+  /** Every version of the ticket's quote, newest first. */
   versions: QuoteDto[];
-  /** The inquiry's salesperson: a quote has no owner of its own (ADR 0034). */
+  /** The ticket's salesperson: a quote has no owner of its own (ADR 0034). */
   ownerId: string | null;
   members: NamedOption[];
   items: NamedOption[];
   can: QuoteAbilities;
 };
 
-/** The quote, its sibling versions, the inquiry's salesperson and the items to pick. */
+/** The quote, its sibling versions, the ticket's salesperson and the items to pick. */
 export async function loadQuotePage({ id }: { id: string }): Promise<Result<QuotePageData>> {
   const loaded = await runOperation({ operation: getQuote, input: { id } });
   if (!loaded.ok) return loaded;
   const quote = loaded.value;
   const [versions, assignments, members, items, { quoteWrite }] = await Promise.all([
-    runOperation({ operation: listQuotes, input: { inquiryId: quote.inquiryId, limit: 100 } }),
+    runOperation({ operation: listQuotes, input: { ticketId: quote.ticketId, limit: 100 } }),
     runOperation({
       operation: listAssignments,
-      input: { subjectType: "INQUIRY", subjectId: quote.inquiryId },
+      input: { subjectType: "TICKET", subjectId: quote.ticketId },
     }),
     runOperation({ operation: listMembers, input: { limit: 100 } }),
     loadQuoteItems(),

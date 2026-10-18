@@ -5,10 +5,6 @@ import { AssignmentCardView } from "./assignment-card-view";
 import { AssignmentTableView } from "./assignment-table-view";
 import { AuditLogCardView } from "./audit-log-card-view";
 import { AuditLogTableView } from "./audit-log-table-view";
-import { BookingCardView } from "./booking-card-view";
-import { BookingStatusCardView } from "./booking-status-card-view";
-import { BookingStatusTableView } from "./booking-status-table-view";
-import { BookingTableView } from "./booking-table-view";
 import { ContactCardView } from "./contact-card-view";
 import { ContactTableView } from "./contact-table-view";
 import { CustomerCardView } from "./customer-card-view";
@@ -21,8 +17,6 @@ import { FieldDefinitionTableView } from "./field-definition-table-view";
 import type { GenerativeProps } from "./generative-props";
 import { InboundEmailCardView } from "./inbound-email-card-view";
 import { InboundEmailTableView } from "./inbound-email-table-view";
-import { InquiryCardView } from "./inquiry-card-view";
-import { InquiryTableView } from "./inquiry-table-view";
 import { InvitationCardView } from "./invitation-card-view";
 import { InvitationTableView } from "./invitation-table-view";
 import { ItemCardView } from "./item-card-view";
@@ -58,6 +52,10 @@ import { SheetDefinitionTableView } from "./sheet-definition-table-view";
 import { SheetTableView } from "./sheet-table-view";
 import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
+import { TicketCardView } from "./ticket-card-view";
+import { TicketPhaseCardView } from "./ticket-phase-card-view";
+import { TicketPhaseTableView } from "./ticket-phase-table-view";
+import { TicketTableView } from "./ticket-table-view";
 import { VenueCardView } from "./venue-card-view";
 import { VenueTableView } from "./venue-table-view";
 import { VocabularyCardView } from "./vocabulary-card-view";
@@ -82,16 +80,14 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "occupancy-card": OccupancyCardView,
   "price-list-table": PriceListTableView,
   "price-list-card": PriceListCardView,
-  "booking-status-table": BookingStatusTableView,
-  "booking-status-card": BookingStatusCardView,
-  "booking-table": BookingTableView,
-  "booking-card": BookingCardView,
+  "ticket-phase-table": TicketPhaseTableView,
+  "ticket-phase-card": TicketPhaseCardView,
+  "ticket-table": TicketTableView,
+  "ticket-card": TicketCardView,
   "program-item-table": ProgramItemTableView,
   "program-item-card": ProgramItemCardView,
   "requirement-table": RequirementTableView,
   "requirement-card": RequirementCardView,
-  "inquiry-table": InquiryTableView,
-  "inquiry-card": InquiryCardView,
   "pipeline-board": PipelineBoardView,
   "option-card": OptionCardView,
   "option-queue": OptionQueueView,

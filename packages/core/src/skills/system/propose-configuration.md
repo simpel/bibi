@@ -18,7 +18,7 @@ words: use the user's own vocabulary for every name.
    (`fieldDefinition_list` per type when needed). Never propose something that already exists.
    Offer to extend an existing configuration instead of duplicating it.
 2. Ask at most two short questions if the description is too thin (what is sold or booked,
-   what must be tracked per booking). Otherwise go straight to a proposal.
+   what must be tracked per ticket). Otherwise go straight to a proposal.
 3. Present the whole proposal as one short plan before creating anything:
    - Lists (with values), e.g. needs counted against a list such as allergens.
    - Setups (ways a space can be arranged) with `changeoverMinutes`.
@@ -26,7 +26,7 @@ words: use the user's own vocabulary for every name.
      CHOICES (needs COMPOSABLE), BOOKABLE, SETUPS (needs BOOKABLE).
    - Fields per type with a kind: TEXT, NUMBER, BOOLEAN, DATE, CHOICE, MULTI_CHOICE, LINK. Choice
      fields use a list (`vocabularyId`) or inline `options`. A LINK field points to records of
-     another type (`linkTypeId`: an item, customer, contact or booking type), so create the
+     another type (`linkTypeId`: an item, customer, contact or ticket type), so create the
      target type first.
 4. Prefer templates when they fit instead of creating item by item:
    - `configuration_importTemplate` with `conference-venue` for lists, setups and types of a

@@ -3,7 +3,7 @@ import { PaymentEntry, type PaymentValue } from "./payment-entry";
 
 export type PaymentListProps = { payments: readonly PaymentValue[] };
 
-/** Requested payments, newest first; shared by the booking page and the assistant's tool card. */
+/** Requested payments, newest first; shared by the ticket page and the assistant's tool card. */
 export function PaymentList({ payments }: PaymentListProps) {
   const t = useTranslations("payment");
   if (payments.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;

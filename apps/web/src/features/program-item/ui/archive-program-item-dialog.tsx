@@ -11,7 +11,7 @@ export type ArchiveProgramItemDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-/** Remove confirmation; the booking page then reloads without the program item. */
+/** Remove confirmation; the ticket page then reloads without the program item. */
 export function ArchiveProgramItemDialog({
   programItem,
   open,

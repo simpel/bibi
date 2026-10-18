@@ -5,7 +5,7 @@ import { Card, type ColumnDef } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { bookingRoute } from "@/lib/routes";
+import { ticketRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 import { occupancyPeriod } from "./occupancy-period";
@@ -25,7 +25,7 @@ function useProgramItemColumns(): ColumnDef<Row>[] {
         accessorFn: (item) => item.name,
         cell: ({ row }) => (
           <Link
-            href={bookingRoute({ id: row.original.bookingId })}
+            href={ticketRoute({ id: row.original.ticketId })}
             className="font-medium hover:underline"
           >
             {row.original.name}
@@ -49,7 +49,7 @@ function useProgramItemColumns(): ColumnDef<Row>[] {
   );
 }
 
-/** A page of program items; each name links to its booking's page. */
+/** A page of program items; each name links to its ticket's page. */
 export function ProgramItemTableView({ items, nextCursor }: ProgramItemTableViewProps) {
   const t = useTranslations("assistant.ui.programItem");
   const columns = useProgramItemColumns();

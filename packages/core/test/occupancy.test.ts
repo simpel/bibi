@@ -27,8 +27,8 @@ describe("occupancy (ADR 0022)", () => {
     const after = { ...overlap, ...hours({ from: 12, to: 13 }) };
     const adjacent = await execute({ operation: createOccupancy, input: after, context });
     expect(errorCode({ result: adjacent })).toBeNull();
-    const booking = insertRaw({ context, itemId: item.id, type: "BOOKING", from: 9, to: 10 });
-    await expect(booking).rejects.toThrow();
+    const ticket = insertRaw({ context, itemId: item.id, type: "BOOKING", from: 9, to: 10 });
+    await expect(ticket).rejects.toThrow();
   });
 
   it("lets options overlap each other and blocked periods", async () => {
@@ -82,8 +82,8 @@ describe("occupancy (ADR 0022)", () => {
     unwrap({ result: await execute({ operation: archiveOccupancy, input: block, context }) });
     const gone = await execute({ operation: getOccupancy, input: block, context });
     expect(errorCode({ result: gone })).toBe("NOT_FOUND");
-    const booking = await insertRaw({ context, itemId: item.id, type: "BOOKING", from: 8, to: 9 });
-    const locked = await execute({ operation: archiveOccupancy, input: booking, context });
+    const ticket = await insertRaw({ context, itemId: item.id, type: "BOOKING", from: 8, to: 9 });
+    const locked = await execute({ operation: archiveOccupancy, input: ticket, context });
     expect(errorCode({ result: locked })).toBe("CONFLICT");
   });
 

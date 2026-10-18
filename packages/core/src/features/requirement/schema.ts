@@ -6,11 +6,11 @@ import { FieldValuesSchema } from "../field-definition/field-values-schema";
 export const RequirementSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  bookingId: z.string(),
+  ticketId: z.string(),
   programItemId: z
     .string()
     .nullable()
-    .describe("The program item it applies to; null = the whole booking"),
+    .describe("The program item it applies to; null = the whole ticket"),
   entityTypeId: z.string(),
   vocabularyValueId: z.string().describe("The list value counted, e.g. Gluten"),
   quantity: z.number().int(),
@@ -27,17 +27,17 @@ const QuantitySchema = z
   .min(0)
   .max(100_000)
   .describe(
-    "How many, e.g. 3 guests. On a program item it replaces the booking's count for the value " +
+    "How many, e.g. 3 guests. On a program item it replaces the ticket's count for the value " +
       "there; 0 means none there.",
   );
 
 export const RequirementCreateInputSchema = z.object({
-  bookingId: z.string().min(1).describe("Id of the booking (booking.list)"),
+  ticketId: z.string().min(1).describe("Id of the ticket (ticket.list)"),
   programItemId: z
     .string()
     .min(1)
     .nullish()
-    .describe("Id of one of the booking's program items (programItem.list); omit for the booking"),
+    .describe("Id of one of the ticket's program items (programItem.list); omit for the ticket"),
   entityTypeId: z
     .string()
     .min(1)
@@ -61,7 +61,7 @@ export const RequirementUpdateInputSchema = z.object({
 export const RequirementIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const RequirementListInputSchema = z.object({
-  bookingId: z.string().optional().describe("Only requirements on this booking (both levels)"),
+  ticketId: z.string().optional().describe("Only requirements on this ticket (both levels)"),
   programItemId: z.string().optional().describe("Only requirements on this program item"),
   vocabularyValueId: z.string().optional().describe("Only requirements for this list value"),
   ...PageInputShape,

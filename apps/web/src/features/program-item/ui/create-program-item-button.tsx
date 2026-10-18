@@ -9,11 +9,11 @@ import { ProgramItemDialog } from "./program-item-dialog";
 
 export type CreateProgramItemButtonProps = {
   data: ProgramFormData;
-  bookingId: string;
+  ticketId: string;
   startsAt: Date;
 };
 
-/** Opens the program item dialog for the booking on the page. */
+/** Opens the program item dialog for the ticket on the page. */
 export function CreateProgramItemButton(props: CreateProgramItemButtonProps) {
   const t = useTranslations("programItem");
   const [open, setOpen] = useState(false);

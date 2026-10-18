@@ -17,18 +17,18 @@ import type { RequirementFormValues } from "./requirement-form-values";
 export type RequirementFormOutput = z.infer<typeof RequirementCreateInputSchema>;
 
 export type RequirementSchemaInput = {
-  bookingId: string;
+  ticketId: string;
   type: EntityTypeDto | undefined;
   vocabularies: VocabularyDto[];
 };
 
 /** Core's requirement schema with `fields` checked against the type; the server checks again. */
-export function requirementFormSchema({ bookingId, type, vocabularies }: RequirementSchemaInput) {
+export function requirementFormSchema({ ticketId, type, vocabularies }: RequirementSchemaInput) {
   const specs = specsOf({ type, vocabularies });
   return formSchema({
     schema: RequirementCreateInputSchema.extend({ fields: buildFieldsSchema({ specs }) }),
     toInput: ({ values }: { values: RequirementFormValues }) => ({
-      bookingId,
+      ticketId,
       programItemId: values.programItemId === NONE ? null : values.programItemId,
       entityTypeId: values.entityTypeId,
       vocabularyValueId: values.vocabularyValueId,

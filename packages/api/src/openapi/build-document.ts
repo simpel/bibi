@@ -45,7 +45,7 @@ export function buildOpenApiDocument({ compiled, basePath }: BuildOpenApiInput):
       title: "Okazi API",
       version: "1.0.0",
       description:
-        "REST API for Okazi (conference + food & beverage booking). Derived from the same operations as GraphQL and MCP.",
+        "REST API for Okazi (conference + food & beverage ticket). Derived from the same operations as GraphQL and MCP.",
     },
     servers: [{ url: basePath }],
     paths,

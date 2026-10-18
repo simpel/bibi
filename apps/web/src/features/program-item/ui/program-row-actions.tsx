@@ -25,7 +25,7 @@ export function ProgramRowActions({ programItem, data }: ProgramRowActionsProps)
       </DataTableRowActions>
       <ProgramItemDialog
         data={data}
-        bookingId={programItem.bookingId}
+        ticketId={programItem.ticketId}
         startsAt={programItem.startsAt}
         programItem={programItem}
         open={dialog === "edit"}

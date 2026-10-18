@@ -26,8 +26,8 @@ export const declineQuote = closeQuote({
   name: "quote.decline",
   to: "DECLINED",
   description:
-    "Record that the customer declined a SENT quote (ADR 0022). The inquiry stays open: make a " +
-    "new version with quote.revise or mark the inquiry lost. Any other status is a CONFLICT.",
+    "Record that the customer declined a SENT quote (ADR 0022). The ticket stays open: make a " +
+    "new version with quote.revise or move the ticket to a terminal phase. Any other status is a CONFLICT.",
 });
 
 export const expireQuote = closeQuote({

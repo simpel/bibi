@@ -9,9 +9,9 @@ import {
   getCustomer,
   listCustomers,
 } from "../src/index";
-import { bookingSetup, createTestBooking } from "./booking-helpers";
 import { createTypeWithField } from "./customer-helpers";
 import { errorCode, testContext, unwrap } from "./helpers";
+import { createTestTicket, ticketSetup } from "./ticket-helpers";
 
 describe("customer archiving and type usage (ADR 0021, 0022)", () => {
   it("lists by type and name, and archiving is refused while contacts are active", async () => {
@@ -41,9 +41,9 @@ describe("customer archiving and type usage (ADR 0021, 0022)", () => {
     expect(errorCode({ result: refused })).toBe("CONFLICT");
   });
 
-  it("refuses archiving a customer with active bookings", async () => {
-    const { context, type, customer } = await bookingSetup();
-    await createTestBooking({ context, entityTypeId: type.id, customerId: customer.id });
+  it("refuses archiving a customer with active tickets", async () => {
+    const { context, type, customer } = await ticketSetup();
+    await createTestTicket({ context, entityTypeId: type.id, customerId: customer.id });
     const refused = await execute({
       operation: archiveCustomer,
       input: { id: customer.id },

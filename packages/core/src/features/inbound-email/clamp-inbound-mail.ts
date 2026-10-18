@@ -1,6 +1,6 @@
 import { INBOUND_BODY_MAX, type InboundEmailReceiveInput } from "./schema";
 
-type MailFields = Omit<InboundEmailReceiveInput, "bookingId">;
+type MailFields = Omit<InboundEmailReceiveInput, "ticketId">;
 
 const clip = ({ value, max }: { value: string | null; max: number }) =>
   value === null ? null : value.slice(0, max);

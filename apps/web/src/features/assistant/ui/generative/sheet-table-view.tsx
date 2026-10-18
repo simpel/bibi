@@ -5,7 +5,7 @@ import { Card, type ColumnDef } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { bookingRoute } from "@/lib/routes";
+import { ticketRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
@@ -24,7 +24,7 @@ function useSheetColumns(): ColumnDef<Row>[] {
         accessorFn: (sheet) => sheet.version,
         cell: ({ row }) => (
           <Link
-            href={bookingRoute({ id: row.original.bookingId })}
+            href={ticketRoute({ id: row.original.ticketId })}
             className="font-medium hover:underline"
           >
             {t("version", { version: row.original.version })}
@@ -52,7 +52,7 @@ function useSheetColumns(): ColumnDef<Row>[] {
   );
 }
 
-/** A page of sheet versions; each row links to its booking's page. */
+/** A page of sheet versions; each row links to its ticket's page. */
 export function SheetTableView({ items, nextCursor }: SheetTableViewProps) {
   const t = useTranslations("assistant.ui.sheet");
   const columns = useSheetColumns();

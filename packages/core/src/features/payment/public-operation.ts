@@ -21,21 +21,21 @@ export const getPublicPaymentOperation = defineOperation({
   handler: async ({ input, context }) => {
     const payment = await context.db.payment.findFirst({ where: { publicToken: input.token } });
     if (!payment) return notFound({ entity: "Payment" });
-    const booking = await context.db.booking.findFirst({
-      where: { id: payment.bookingId },
+    const ticket = await context.db.ticket.findFirst({
+      where: { id: payment.ticketId },
       select: { reference: true },
     });
     const organization = await getDb().organization.findUnique({
       where: { id: payment.organizationId },
       select: { name: true },
     });
-    if (!booking || !organization) return notFound({ entity: "Payment" });
+    if (!ticket || !organization) return notFound({ entity: "Payment" });
     const expired =
       payment.status === "PENDING" && payment.expiresAt && payment.expiresAt <= new Date();
     return ok({
       value: {
         organizationName: organization.name,
-        bookingReference: booking.reference,
+        ticketReference: ticket.reference,
         method: payment.method,
         status: expired ? "EXPIRED" : payment.status,
         amountMinor: payment.amountMinor,

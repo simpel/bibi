@@ -9,7 +9,7 @@ enum PriceUnit {
 /// Artikel – anything that can be sold or booked (ADR 0021). Its type decides the behaviours;
 /// the behaviour columns are null unless the type has the behaviour.
 model Item {
-  id                     String          @id @default(cuid(2))
+  id                     String            @id @default(cuid(2))
   organizationId         String
   entityTypeId           String
   venueId                String?
@@ -18,25 +18,25 @@ model Item {
   name                   String
   description            String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
-  fields                 Json            @default("{}")
+  fields                 Json              @default("{}")
   /// PRICED: price in minor units (1/100 kr), unit and VAT (null = the venue's default).
   priceMinor             Int?
   priceUnit              PriceUnit?
   vatRatePercent         Int?
   /// BOOKABLE: default length of a booking.
   defaultDurationMinutes Int?
-  status                 RecordStatus    @default(ACTIVE)
-  createdAt              DateTime        @default(now())
-  updatedAt              DateTime        @updatedAt
+  status                 RecordStatus      @default(ACTIVE)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
   createdBy              String?
-  entityType             EntityType      @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  venue                  Venue?          @relation(fields: [venueId, organizationId], references: [id, organizationId])
-  customer               Customer?       @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  entityType             EntityType        @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  venue                  Venue?            @relation(fields: [venueId, organizationId], references: [id, organizationId])
+  customer               Customer?         @relation(fields: [customerId, organizationId], references: [id, organizationId])
   setups                 ItemSetup[]
   /// COMPOSABLE: the parts this item contains.
-  components             ItemComponent[] @relation("ItemComponentParent")
+  components             ItemComponent[]   @relation("ItemComponentParent")
   /// The composed items this item is a part of.
-  partOf                 ItemComponent[] @relation("ItemComponentPart")
+  partOf                 ItemComponent[]   @relation("ItemComponentPart")
   /// CHOICES: choice groups among the parts.
   choiceGroups           ItemChoiceGroup[]
   /// BOOKABLE: the periods the item is held (ADR 0022).
@@ -77,26 +77,26 @@ model ItemSetup {
 /// Item component – one part of a `COMPOSABLE` item (ADR 0021). Replaced as a set by `item.*`.
 /// The graph is acyclic and at most 5 levels deep; core enforces both.
 model ItemComponent {
-  id              String   @id @default(cuid(2))
+  id              String           @id @default(cuid(2))
   organizationId  String
   parentId        String
   partId          String
-  quantity        Int      @default(1)
+  quantity        Int              @default(1)
   /// Start of the part relative to the start of the parent, in minutes.
-  offsetMinutes   Int      @default(0)
+  offsetMinutes   Int              @default(0)
   /// Length of the part; null = the parent's length.
   durationMinutes Int?
   /// Mandatory part (true) or optional part (false).
-  required        Boolean  @default(true)
+  required        Boolean          @default(true)
   /// CHOICES: the choice group this part is an option in; null = not an option.
   choiceGroupId   String?
   /// Order of the parts on the item, from 0. Breaks ties between parts with the same offset.
   position        Int
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
   createdBy       String?
-  parent          Item     @relation("ItemComponentParent", fields: [parentId, organizationId], references: [id, organizationId])
-  part            Item     @relation("ItemComponentPart", fields: [partId, organizationId], references: [id, organizationId])
+  parent          Item             @relation("ItemComponentParent", fields: [parentId, organizationId], references: [id, organizationId])
+  part            Item             @relation("ItemComponentPart", fields: [partId, organizationId], references: [id, organizationId])
   choiceGroup     ItemChoiceGroup? @relation(fields: [choiceGroupId, organizationId], references: [id, organizationId])
 
   @@unique([parentId, partId])

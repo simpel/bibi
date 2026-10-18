@@ -5,17 +5,17 @@ import {
   execute,
   updateItem,
 } from "../src/index";
-import { bookingSetup, createTestBooking } from "./booking-helpers";
 import { createTypeWithField } from "./customer-helpers";
 import { unwrap } from "./helpers";
 import { createBookableItem, hours } from "./occupancy-helpers";
+import { createTestTicket, ticketSetup } from "./ticket-helpers";
 
-/** A booking, a program item type with one TEXT field and a bookable room with a setup. */
+/** A ticket, a program item type with one TEXT field and a bookable room with a setup. */
 export async function programSetup() {
-  const { context, type: bookingType, customer } = await bookingSetup();
-  const booking = await createTestBooking({
+  const { context, type: ticketType, customer } = await ticketSetup();
+  const ticket = await createTestTicket({
     context,
-    entityTypeId: bookingType.id,
+    entityTypeId: ticketType.id,
     customerId: customer.id,
   });
   const { type, key } = await createTypeWithField({
@@ -38,12 +38,12 @@ export async function programSetup() {
       context,
     }),
   });
-  return { context, booking, type, key, room, setup };
+  return { context, ticket, type, key, room, setup };
 }
 
 export type AddProgramItemInput = {
   context: ExecuteContext;
-  bookingId: string;
+  ticketId: string;
   entityTypeId: string;
   from: number;
   to: number;

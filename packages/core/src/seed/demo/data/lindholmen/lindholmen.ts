@@ -1,6 +1,5 @@
 import type { DemoOrg } from "../../types";
 import { lindholmenActivities } from "./activities";
-import { lindholmenBookings } from "./bookings";
 import { lindholmenLists } from "./config";
 import { lindholmenCustomers } from "./customers";
 import { lindholmenDishes } from "./dishes";
@@ -9,6 +8,7 @@ import { lindholmenMeals } from "./meals";
 import { lindholmenPackages } from "./packages";
 import { lindholmenResponsibilities } from "./responsibilities";
 import { lindholmenRooms } from "./rooms";
+import { lindholmenTickets } from "./tickets";
 import { lindholmenTypes } from "./types";
 
 /**
@@ -50,5 +50,5 @@ export const lindholmen: DemoOrg = {
   },
   responsibilities: lindholmenResponsibilities,
   customers: lindholmenCustomers,
-  bookings: lindholmenBookings,
+  tickets: lindholmenTickets,
 };

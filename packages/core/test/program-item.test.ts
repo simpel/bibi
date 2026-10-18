@@ -19,9 +19,9 @@ const issueOf = ({ result }: { result: Failure }) =>
   result.ok ? null : { code: result.error?.code, path: result.error?.issues[0]?.path };
 
 describe("programItem (ADR 0022)", () => {
-  it("adds program items to a booking with own fields and lists them by time", async () => {
-    const { context, booking, type, key } = await programSetup();
-    const base = { context, bookingId: booking.id, entityTypeId: type.id };
+  it("adds program items to a ticket with own fields and lists them by time", async () => {
+    const { context, ticket, type, key } = await programSetup();
+    const base = { context, ticketId: ticket.id, entityTypeId: type.id };
     unwrap({ result: await addProgramItem({ ...base, from: 13, to: 14 }) });
     const first = unwrap({
       result: await execute({
@@ -35,16 +35,16 @@ describe("programItem (ADR 0022)", () => {
       }),
     });
     expect(first).toMatchObject({ quantity: 40, fields: { [key]: "A-12" } });
-    const input = { bookingId: booking.id };
+    const input = { ticketId: ticket.id };
     const list = unwrap({ result: await execute({ operation: listProgramItems, input, context }) });
     expect(list.items.map((item) => item.id)[0]).toBe(first.id);
     expect(list.items).toHaveLength(2);
   });
 
-  it("refuses an unknown type, booking, item or setup", async () => {
-    const { context, booking, type, room, setup } = await programSetup();
-    const base = { context, bookingId: booking.id, entityTypeId: type.id, from: 9, to: 10 };
-    const bookingType = await createTypeWithField({ context, base: "BOOKING", name: "Other" });
+  it("refuses an unknown type, ticket, item or setup", async () => {
+    const { context, ticket, type, room, setup } = await programSetup();
+    const base = { context, ticketId: ticket.id, entityTypeId: type.id, from: 9, to: 10 };
+    const ticketType = await createTypeWithField({ context, base: "TICKET", name: "Other" });
     const plainType = unwrap({
       result: await execute({
         operation: createEntityType,
@@ -57,8 +57,8 @@ describe("programItem (ADR 0022)", () => {
       result: await execute({ operation: createSetup, input: { name: "Cabaret" }, context }),
     });
     const cases = [
-      [{ entityTypeId: bookingType.type.id }, "entityTypeId"],
-      [{ bookingId: "missing" }, "bookingId"],
+      [{ entityTypeId: ticketType.type.id }, "entityTypeId"],
+      [{ ticketId: "missing" }, "ticketId"],
       [{ itemId: plain.id }, "itemId"],
       [{ setupId: setup.id }, "setupId"],
       [{ itemId: room.id, setupId: other.id }, "setupId"],
@@ -73,19 +73,19 @@ describe("programItem (ADR 0022)", () => {
   });
 
   it("hides program items from another organization", async () => {
-    const { context, booking, type } = await programSetup();
-    const base = { context, bookingId: booking.id, entityTypeId: type.id, from: 9, to: 10 };
+    const { context, ticket, type } = await programSetup();
+    const base = { context, ticketId: ticket.id, entityTypeId: type.id, from: 9, to: 10 };
     const item = unwrap({ result: await addProgramItem(base) });
     const foreign = await testOrg();
     const input = { id: item.id };
     const result = await execute({ operation: getProgramItem, input, context: foreign });
     expect(errorCode({ result })).toBe("NOT_FOUND");
     const own = await programSetup();
-    const crossBooking = await addProgramItem({
+    const crossTicket = await addProgramItem({
       ...base,
       context: own.context,
       entityTypeId: own.type.id,
     });
-    expect(issueOf({ result: crossBooking })).toEqual({ code: "VALIDATION", path: "bookingId" });
+    expect(issueOf({ result: crossTicket })).toEqual({ code: "VALIDATION", path: "ticketId" });
   });
 });

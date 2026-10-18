@@ -29,6 +29,6 @@ Goal: shortlist bookable items that fit the request and explain why each one fit
 
 ## Availability
 
-Okazi does not yet expose bookings or calendars to the assistant. Say clearly that the list is
-based on item data only and that availability for the date must be checked before booking.
+Okazi does not yet expose tickets or calendars to the assistant. Say clearly that the list is
+based on item data only and that availability for the date must be checked before ticket.
 Never claim that something is free.

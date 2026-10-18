@@ -3,12 +3,12 @@ import { toolCallExample } from "./request-example";
 import type { ReferenceEntry } from "./types";
 
 const ENTRY: ReferenceEntry = {
-  id: "booking_update",
-  toolName: "booking_update",
-  group: "booking",
-  operation: "booking.update",
-  summary: "Update a booking",
-  permission: "booking:update",
+  id: "ticket_update",
+  toolName: "ticket_update",
+  group: "ticket",
+  operation: "ticket.update",
+  summary: "Update a ticket",
+  permission: "ticket:update",
   readOnly: false,
   approval: true,
   input: {
@@ -28,7 +28,7 @@ describe("toolCallExample", () => {
     const call = JSON.parse(toolCallExample({ entry: ENTRY }));
     expect(call.method).toBe("tools/call");
     expect(call.params).toEqual({
-      name: "booking_update",
+      name: "ticket_update",
       arguments: { id: "string", startsAt: "2026-11-05T09:00:00.000Z" },
     });
   });

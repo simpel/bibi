@@ -12,11 +12,11 @@ export const InboundAttachmentSchema = z.object({
   size: z.number().int().min(0).nullable().describe("Size in bytes"),
 });
 
-/** A mail received on a booking's inbound address (ADR 0012). Never edited. */
+/** A mail received on a ticket's inbound address (ADR 0012). Never edited. */
 export const InboundEmailSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  bookingId: z.string(),
+  ticketId: z.string(),
   providerEmailId: z.string(),
   messageId: z.string().nullable(),
   fromAddress: z.string(),
@@ -32,7 +32,7 @@ export const InboundEmailSchema = z.object({
 
 export const InboundEmailListInputSchema = z.object({
   ...PageInputShape,
-  bookingId: z.string().min(1).describe("Id of the booking whose received mails to list"),
+  ticketId: z.string().min(1).describe("Id of the ticket whose received mails to list"),
 });
 
 export const InboundEmailListOutputSchema = z.object({
@@ -46,7 +46,7 @@ const address = z.string().min(1).max(1000);
 
 /** What the inbound webhook hands to `inboundEmail.receive` (SYSTEM only). */
 export const InboundEmailReceiveInputSchema = z.object({
-  bookingId: z.string().min(1),
+  ticketId: z.string().min(1),
   providerEmailId: z.string().min(1).max(200),
   messageId: z.string().max(1000).nullable(),
   fromAddress: address,

@@ -9,7 +9,7 @@ export type CheckBookableInput = { context: Db; itemId: string; customerId?: str
 
 /**
  * Only active items whose type is `BOOKABLE` (ADR 0021) can be occupied. With `customerId` (the
- * booking's customer) the item must be general or that customer's own package.
+ * ticket's customer) the item must be general or that customer's own package.
  */
 export async function checkBookable({
   context,

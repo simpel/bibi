@@ -7,15 +7,15 @@ import { SheetRowsView } from "./sheet-rows-view";
 import { SheetStatus } from "./sheet-status";
 
 export type SheetPanelProps = {
-  bookingId: string;
+  ticketId: string;
   definition: { id: string; name: string };
-  /** The newest version for the booking, or null before the first one. */
+  /** The newest version for the ticket, or null before the first one. */
   sheet: SheetDto | null;
   canWrite: boolean;
 };
 
-/** One sheet definition on the booking page: its newest version and the way to the next. */
-export async function SheetPanel({ bookingId, definition, sheet, canWrite }: SheetPanelProps) {
+/** One sheet definition on the ticket page: its newest version and the way to the next. */
+export async function SheetPanel({ ticketId, definition, sheet, canWrite }: SheetPanelProps) {
   const t = await getTranslations("sheet");
   return (
     <article data-slot="sheet-panel" className="grid gap-3 rounded-lg border p-4">
@@ -23,7 +23,7 @@ export async function SheetPanel({ bookingId, definition, sheet, canWrite }: She
         <h3 className="font-medium">{definition.name}</h3>
         {canWrite ? (
           <div className="flex gap-2">
-            <GenerateSheetButton bookingId={bookingId} sheetDefinitionId={definition.id} />
+            <GenerateSheetButton ticketId={ticketId} sheetDefinitionId={definition.id} />
             {sheet && !sheet.sentAt && !sheet.blocked ? <SendSheetButton id={sheet.id} /> : null}
           </div>
         ) : null}

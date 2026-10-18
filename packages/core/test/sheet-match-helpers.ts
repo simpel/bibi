@@ -35,7 +35,7 @@ async function make({ context, ...input }: MakeInput) {
 }
 
 /**
- * A booking with a sheet definition over the Menu type and the Allergens list, and menus:
+ * A ticket with a sheet definition over the Menu type and the Allergens list, and menus:
  * `mandatory` (bread with Gluten), `optional` (optional bread), `alternative` (bread or plain,
  * pick one), `lactose` (butter with Lactose) and `plain` (no tags).
  */
@@ -84,13 +84,13 @@ export type MatchSetup = Awaited<ReturnType<typeof matchSetup>>;
 
 export type ServeInput = { setup: MatchSetup; menu: keyof MatchSetup["menus"] };
 
-/** Serves the menu on a program item (16–17) of the booking. */
+/** Serves the menu on a program item (16–17) of the ticket. */
 export async function serve({ setup, menu }: ServeInput) {
-  const { context, booking, morning, menus } = setup;
+  const { context, ticket, morning, menus } = setup;
   return unwrap({
     result: await addProgramItem({
       context,
-      bookingId: booking.id,
+      ticketId: ticket.id,
       entityTypeId: morning.entityTypeId,
       itemId: menus[menu],
       from: 16,
@@ -101,9 +101,9 @@ export async function serve({ setup, menu }: ServeInput) {
 
 export type CountInput = { setup: MatchSetup; value: string; quantity: number };
 
-/** Counts guests on the booking for one list value. */
-export async function countOnBooking({ setup, value, quantity }: CountInput) {
-  const { context, booking, type } = setup;
-  const base = { context, bookingId: booking.id, entityTypeId: type.id };
+/** Counts guests on the ticket for one list value. */
+export async function countOnTicket({ setup, value, quantity }: CountInput) {
+  const { context, ticket, type } = setup;
+  const base = { context, ticketId: ticket.id, entityTypeId: type.id };
   return unwrap({ result: await addRequirement({ ...base, vocabularyValueId: value, quantity }) });
 }

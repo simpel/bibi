@@ -25,7 +25,7 @@ const base = {
   connectedAccountId: "acct_venue",
   amountMinor: 125_000,
   currency: "SEK",
-  description: "Booking #7",
+  description: "Ticket #7",
   idempotencyKey: "okazi-payment-p1",
   metadata: { paymentId: "p1" },
 };

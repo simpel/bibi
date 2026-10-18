@@ -12,18 +12,6 @@ export * from "./features/api-key/write-operations";
 export * from "./features/assignment/read-operations";
 export * from "./features/assignment/write-operations";
 export * from "./features/audit-log/operations";
-export { BOOKING_OCCUPANCY_SOURCE } from "./features/booking/cancellation";
-export * from "./features/booking/change-status-operation";
-export * from "./features/booking/operations";
-export * from "./features/booking/write-operations";
-export * from "./features/booking-status/import-template-operation";
-export {
-  toBookingStatusDto,
-  WITH_TRANSITIONS,
-} from "./features/booking-status/load-booking-status";
-export * from "./features/booking-status/order-operations";
-export * from "./features/booking-status/read-operations";
-export * from "./features/booking-status/write-operations";
 export * from "./features/configuration/operations";
 export * from "./features/contact/operations";
 export * from "./features/contact/write-operations";
@@ -40,10 +28,6 @@ export * from "./features/inbound-email/address";
 export * from "./features/inbound-email/deliver-inbound-email";
 export * from "./features/inbound-email/operations";
 export { receiveInboundEmail } from "./features/inbound-email/receive-operation";
-export * from "./features/inquiry/lifecycle-operations";
-export * from "./features/inquiry/operations";
-export * from "./features/inquiry/transitions";
-export * from "./features/inquiry/write-operations";
 export { itemEmbeddable } from "./features/item/embeddable";
 export * from "./features/item/lifecycle-operations";
 export * from "./features/item/package-operations";
@@ -93,6 +77,20 @@ export * from "./features/skill/operations";
 export * from "./features/skill/read-operations";
 export * from "./features/skill/transfer-operations";
 export * from "./features/skill/write-operations";
+export { TICKET_OCCUPANCY_SOURCE } from "./features/ticket/cancellation";
+export * from "./features/ticket/change-phase-operation";
+export * from "./features/ticket/export-operation";
+export * from "./features/ticket/operations";
+export * from "./features/ticket/write-operations";
+export * from "./features/ticket-phase/archive-operation";
+export * from "./features/ticket-phase/import-template-operation";
+export {
+  toTicketPhaseDto,
+  WITH_TRANSITIONS,
+} from "./features/ticket-phase/load-ticket-phase";
+export * from "./features/ticket-phase/order-operations";
+export * from "./features/ticket-phase/read-operations";
+export * from "./features/ticket-phase/write-operations";
 export * from "./features/user-preference/operations";
 export { venueEmbeddable } from "./features/venue/embeddable";
 export * from "./features/venue/operations";

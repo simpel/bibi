@@ -5,7 +5,7 @@ const LINE =
   "tags totalExclVatMinor vatMinor";
 
 /**
- * A quote (ADR 0022) to the inquiry created earlier, with a line that copies the room; a
+ * A quote (ADR 0022) to the ticket created earlier, with a line that copies the room; a
  * function so the import cycle with `parity-entities.ts` resolves first.
  */
 export const quoteEntity = (): ParityEntity => ({
@@ -22,7 +22,7 @@ export const quoteEntity = (): ParityEntity => ({
       mcp,
       name: "quote_create",
       args: {
-        inquiryId: made.inquiry.id,
+        ticketId: made.ticket.id,
         validUntil: "2026-12-01T00:00:00.000Z",
         terms: "Net 30",
         lines: [{ itemId: made.item.id, quantity: 2, discountPercent: 10 }],

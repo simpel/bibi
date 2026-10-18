@@ -1,11 +1,11 @@
 import "server-only";
 import {
   type EntityTypeDto,
-  listBookings,
   listContacts,
   listCustomers,
   listEntityTypes,
   listItems,
+  listTickets,
   type Result,
 } from "@okazi/core";
 import type { LinkTarget, LinkTargets } from "@/components/typed-fields/typed-form-data";
@@ -29,8 +29,8 @@ async function targetsOf({ base, entityTypeId }: TargetsInput): Promise<LinkTarg
     return named({ result: await runOperation({ operation: listCustomers, input }) });
   if (base === "CONTACT")
     return named({ result: await runOperation({ operation: listContacts, input }) });
-  if (base !== "BOOKING") return [];
-  const result = await runOperation({ operation: listBookings, input });
+  if (base !== "TICKET") return [];
+  const result = await runOperation({ operation: listTickets, input });
   const rows = result.ok ? result.value.items : [];
   return rows.map(({ id, reference }) => ({ value: id, label: `#${reference}` }));
 }

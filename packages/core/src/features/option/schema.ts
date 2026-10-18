@@ -14,7 +14,7 @@ export const OptionSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   itemId: z.string(),
-  inquiryId: z.string().nullable(),
+  ticketId: z.string().nullable(),
   startsAt: z.date(),
   endsAt: z.date(),
   expiresAt: z.date(),
@@ -35,11 +35,11 @@ export const OptionCreateInputSchema = z.object({
   startsAt: z.coerce.date().describe("Start of the held period, ISO 8601"),
   endsAt: z.coerce.date().describe("End of the held period (exclusive), ISO 8601"),
   expiresAt: z.coerce.date().describe("When the option expires unless converted, ISO 8601"),
-  inquiryId: z
+  ticketId: z
     .string()
     .min(1)
     .nullish()
-    .describe("Id of the inquiry the option is placed for (inquiry.list)"),
+    .describe("Id of the ticket the option is placed for (ticket.list)"),
   note: z.string().trim().max(500).nullish().describe("Free note, e.g. what the hold is for"),
 });
 
@@ -47,7 +47,7 @@ export const OptionIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const OptionListInputSchema = z.object({
   itemId: z.string().optional().describe("Only options on this item"),
-  inquiryId: z.string().optional().describe("Only options placed for this inquiry"),
+  ticketId: z.string().optional().describe("Only options placed for this ticket"),
   optionStatus: OptionStatusSchema.optional().describe("ACTIVE, CONVERTED, EXPIRED or RELEASED"),
   from: z.coerce.date().optional().describe("Only periods that end after this time"),
   to: z.coerce.date().optional().describe("Only periods that start before this time"),

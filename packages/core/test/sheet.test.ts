@@ -8,14 +8,15 @@ import {
   sendSheet,
 } from "../src/index";
 import { errorCode, peer, unwrap } from "./helpers";
-import { confirmBooking, setCount, sheetSetup } from "./sheet-helpers";
+import { confirmTicket, setCount, sheetSetup } from "./sheet-helpers";
+import { moveToPhase } from "./ticket-helpers";
 
 type SetupResult = Awaited<ReturnType<typeof sheetSetup>>;
 
-const generate = ({ context, booking, definition }: SetupResult) =>
+const generate = ({ context, ticket, definition }: SetupResult) =>
   execute({
     operation: generateSheet,
-    input: { bookingId: booking.id, sheetDefinitionId: definition.id },
+    input: { ticketId: ticket.id, sheetDefinitionId: definition.id },
     context,
   });
 
@@ -25,13 +26,13 @@ const send = ({ setup, sheet }: SendInput) =>
   execute({ operation: sendSheet, input: { id: sheet.id }, context: setup.context });
 
 describe("sheet.generate (ADR 0021)", () => {
-  it("snapshots the booking, the included items with fields and the counts", async () => {
+  it("snapshots the ticket, the included items with fields and the counts", async () => {
     const setup = await sheetSetup();
     const sheet = unwrap({ result: await generate(setup) });
     expect(sheet).toMatchObject({ version: 1, roleId: "owner", baseVersion: null, sentAt: null });
     expect(sheet.changes).toEqual([]);
     const [head, item, count] = sheet.content.rows;
-    expect(head).toMatchObject({ kind: "BOOKING", key: setup.booking.id });
+    expect(head).toMatchObject({ kind: "TICKET", key: setup.ticket.id });
     expect(item).toMatchObject({
       kind: "ITEM",
       key: setup.held.id,
@@ -48,7 +49,7 @@ describe("sheet.generate (ADR 0021)", () => {
     expect(sheet.content.rows).toHaveLength(3);
   });
 
-  it("returns the latest version while the booking is unchanged", async () => {
+  it("returns the latest version while the ticket is unchanged", async () => {
     const setup = await sheetSetup();
     const first = unwrap({ result: await generate(setup) });
     const again = unwrap({ result: await generate(setup) });
@@ -61,7 +62,7 @@ describe("sheet.generate (ADR 0021)", () => {
 
   it("marks the rows changed since the last SENT version with ★ data", async () => {
     const setup = await sheetSetup();
-    await confirmBooking({ context: setup.context, bookingId: setup.booking.id });
+    await confirmTicket({ context: setup.context, ticketId: setup.ticket.id });
     const first = unwrap({ result: await generate(setup) });
     unwrap({ result: await send({ setup, sheet: first }) });
     unwrap({ result: await setCount({ ...setup, id: setup.count.id, quantity: 7 }) });
@@ -69,7 +70,7 @@ describe("sheet.generate (ADR 0021)", () => {
     expect(second).toMatchObject({ version: 2, baseVersion: 1 });
     expect(second.changes).toEqual([
       {
-        key: `booking:${setup.gluten}`,
+        key: `ticket:${setup.gluten}`,
         kind: "REQUIREMENT",
         change: "CHANGED",
         label: "Gluten",
@@ -82,10 +83,10 @@ describe("sheet.generate (ADR 0021)", () => {
     expect(third.changes.map((change) => change.changed)).toEqual([["quantity"]]);
   });
 
-  it("refuses an unknown booking or definition, and other organizations' ids", async () => {
+  it("refuses an unknown ticket or definition, and other organizations' ids", async () => {
     const setup = await sheetSetup();
     const other = await sheetSetup();
-    const unknown = { ...setup, booking: { ...setup.booking, id: "nope" } };
+    const unknown = { ...setup, ticket: { ...setup.ticket, id: "nope" } };
     expect(errorCode({ result: await generate(unknown) })).toBe("NOT_FOUND");
     const foreign = { ...setup, definition: other.definition };
     expect(errorCode({ result: await generate(foreign) })).toBe("NOT_FOUND");
@@ -95,19 +96,22 @@ describe("sheet.generate (ADR 0021)", () => {
 });
 
 describe("sheet.send (ADR 0022)", () => {
-  it("is rejected in the TENTATIVE phase and works from CONFIRMED, once", async () => {
+  it("is sent once while the ticket is open and refused once it is closed", async () => {
     const setup = await sheetSetup();
     const sheet = unwrap({ result: await generate(setup) });
-    expect(errorCode({ result: await send({ setup, sheet }) })).toBe("CONFLICT");
-    await confirmBooking({ context: setup.context, bookingId: setup.booking.id });
     const sent = unwrap({ result: await send({ setup, sheet }) });
     expect(sent.sentAt).toBeInstanceOf(Date);
     expect(errorCode({ result: await send({ setup, sheet }) })).toBe("CONFLICT");
+    const closed = await sheetSetup();
+    const draft = unwrap({ result: await generate(closed) });
+    const lost = { context: closed.context, ticketId: closed.ticket.id, name: "Lost" };
+    unwrap({ result: await moveToPhase({ ...lost, reason: "Price" }) });
+    expect(errorCode({ result: await send({ setup: closed, sheet: draft }) })).toBe("CONFLICT");
   });
 
   it("sends only the latest version", async () => {
     const setup = await sheetSetup();
-    await confirmBooking({ context: setup.context, bookingId: setup.booking.id });
+    await confirmTicket({ context: setup.context, ticketId: setup.ticket.id });
     const first = unwrap({ result: await generate(setup) });
     unwrap({ result: await setCount({ ...setup, id: setup.count.id, quantity: 6 }) });
     const second = unwrap({ result: await generate(setup) });

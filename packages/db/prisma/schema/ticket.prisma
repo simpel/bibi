@@ -1,0 +1,51 @@
+/// Ticket – one customer request from first contact to the delivered event (ADR 0043). Its type
+/// (base `TICKET`) decides its own fields. `phaseId` is one of the organization's own phases; it
+/// is set to the default `entry` phase on create and changed only by `ticket.changePhase`.
+/// `status` is the soft-delete flag (ADR 0006), not the phase.
+model Ticket {
+  id                  String         @id @default(cuid(2))
+  organizationId      String
+  /// Reference number, sequential per organization (1, 2, 3, …).
+  reference           Int
+  entityTypeId        String
+  customerId          String
+  /// A contact person at the customer (optional).
+  contactId           String?
+  phaseId             String
+  /// The period the customer asked for; each line has its own time.
+  desiredStartsAt     DateTime?
+  desiredEndsAt       DateTime?
+  /// The requested quantity, e.g. the number of guests.
+  quantity            Int?
+  estimatedHeadcount  Int?
+  /// Locked some days before the event.
+  guaranteedHeadcount Int?
+  /// Budget in minor units (1/100 kr).
+  budgetMinor         Int?
+  phaseChangedAt      DateTime       @default(now())
+  /// Why the phase last changed (`ticket.changePhase` reason); required by `requiresReason` phases.
+  phaseReason         String?
+  /// Values of the type's own fields, keyed by `FieldDefinition.key`.
+  fields              Json           @default("{}")
+  status              RecordStatus   @default(ACTIVE)
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  createdBy           String?
+  entityType          EntityType     @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  customer            Customer       @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  contact             Contact?       @relation(fields: [contactId, organizationId], references: [id, organizationId])
+  phase               TicketPhase    @relation(fields: [phaseId, organizationId], references: [id, organizationId])
+  inboundEmails       InboundEmail[]
+  options             Option[]
+  payments            Payment[]
+  programItems        ProgramItem[]
+  quotes              Quote[]
+  requirements        Requirement[]
+  sheets              Sheet[]
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, reference])
+  @@index([organizationId, status, desiredStartsAt])
+  @@index([organizationId, customerId])
+  @@index([organizationId, phaseId])
+}

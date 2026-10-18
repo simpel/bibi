@@ -4,9 +4,9 @@ import { APIError } from "better-auth/api";
 export type ProvisionHookInput = { organization: { id: string } };
 
 /**
- * `afterCreateOrganization`: gives the new organization its defaults (one booking status per
- * phase, ADR 0022) through core as SYSTEM. Core logs the operation; a failure is surfaced to
- * the creator instead of leaving an organization that cannot take bookings unnoticed.
+ * `afterCreateOrganization`: gives the new organization its defaults (a minimal set of
+ * ticket phases, ADR 0043) through core as SYSTEM. Core logs the operation; a failure is surfaced to
+ * the creator instead of leaving an organization that cannot take tickets unnoticed.
  */
 export async function provisionOrganizationHook({ organization }: ProvisionHookInput) {
   const result = await provisionOrganization({ organizationId: organization.id });

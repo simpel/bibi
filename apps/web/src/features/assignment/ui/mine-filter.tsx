@@ -2,7 +2,7 @@ import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { getTranslations } from "next-intl/server";
 
-/** `?mine=` on the inquiry and booking lists (ADR 0034). */
+/** `?mine=` on the ticket list (ADR 0034). */
 export const MINE_FILTERS = ["assigned", "following"] as const;
 export type MineFilter = (typeof MINE_FILTERS)[number];
 

@@ -23,8 +23,8 @@ export type QuoteFormOutput =
   | z.infer<typeof QuoteCreateInputSchema>
   | z.infer<typeof QuoteUpdateInputSchema>;
 
-/** The quote answers `inquiryId` (create) or is the draft `id` (update). */
-export type QuoteFormTarget = { inquiryId: string } | { id: string };
+/** The quote answers `ticketId` (create) or is the draft `id` (update). */
+export type QuoteFormTarget = { ticketId: string } | { id: string };
 
 const toMinor = ({ value }: { value: string }) => {
   const kr = numberOrUndefined({ value });
@@ -64,7 +64,7 @@ export const quoteFormSchema = ({ target }: { target: QuoteFormTarget }) =>
         schema: QuoteCreateInputSchema,
         toInput: ({ values }: { values: QuoteFormValues }) => ({
           ...quoteFormToInput({ values }),
-          inquiryId: target.inquiryId,
+          ticketId: target.ticketId,
         }),
       });
 

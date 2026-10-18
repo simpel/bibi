@@ -12,15 +12,14 @@ import { fieldFromOperation, mutationFromOperation } from "../../schema/from-ope
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
 import { runOperation } from "../../schema/run-operation";
-import { BookingRef } from "../booking/graphql";
-import { InquiryRef } from "../inquiry/graphql";
+import { TicketRef } from "../ticket/graphql";
 
 export const AssignmentRef = objectFromSchema<AssignmentDto>({
   name: "Assignment",
   schema: AssignmentSchema,
   omit: ["organizationId"],
   description:
-    "Assignment – who answers for an inquiry, a booking or an item (one assignee) and who " +
+    "Assignment – who answers for a ticket or an item (one assignee) and who " +
     "follows it. responsibilityId null is the main assignment.",
 });
 const AssignmentListRef = builder
@@ -41,10 +40,7 @@ mutationFromOperation({ operation: assignAssignment, type: AssignmentRef });
 mutationFromOperation({ operation: followAssignment, type: AssignmentRef });
 mutationFromOperation({ operation: unfollowAssignment, type: AssignmentRef });
 
-for (const [ref, subjectType] of [
-  [BookingRef, "BOOKING"],
-  [InquiryRef, "INQUIRY"],
-] as const) {
+for (const [ref, subjectType] of [[TicketRef, "TICKET"]] as const) {
   builder.objectField(ref, "assignments", (t) =>
     t.field({
       type: [AssignmentRef],

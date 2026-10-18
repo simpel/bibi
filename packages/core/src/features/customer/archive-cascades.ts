@@ -2,11 +2,10 @@ import { appError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import { hasPermission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
-import { archiveBooking } from "../booking/archive-booking";
-import { toBookingDto } from "../booking/to-booking-dto";
-import { toInquiryDto } from "../inquiry/to-inquiry-dto";
 import { toItemDtos } from "../item/to-item-dto";
-import { checkExpectedBookingCount } from "./archive-expected";
+import { archiveTicket } from "../ticket/archive-ticket";
+import { toTicketDto } from "../ticket/to-ticket-dto";
+import { checkExpectedTicketCount } from "./archive-expected";
 import type { CustomerDto } from "./schema";
 
 export type CascadeInput = { context: OperationContext; customer: CustomerDto };
@@ -23,50 +22,27 @@ function requirePermission({ context, permission, what }: RequireInput): Result<
   return err({ error: appError({ code: "FORBIDDEN", message }) });
 }
 
-export type ArchiveBookingsInput = CascadeInput & { expected?: number | undefined };
+export type ArchiveTicketsInput = CascadeInput & { expected?: number | undefined };
 
 /**
- * Archives every booking of the customer that is not archived, through `archiveBooking`. With
+ * Archives every ticket of the customer that is not archived, through `archiveTicket`. With
  * `expected` (the count the approver saw, #144) the archive is refused before anything is
- * written unless exactly that many bookings are archived, the same rows read here.
+ * written unless exactly that many tickets are archived, the same rows read here.
  */
-export async function archiveCustomerBookings({
+export async function archiveCustomerTickets({
   context,
   customer,
   expected,
-}: ArchiveBookingsInput): Promise<Result<number>> {
-  const rows = await context.db.booking.findMany({ where: { customerId: customer.id } });
-  const changed = checkExpectedBookingCount({ name: customer.name, expected, actual: rows.length });
+}: ArchiveTicketsInput): Promise<Result<number>> {
+  const rows = await context.db.ticket.findMany({ where: { customerId: customer.id } });
+  const changed = checkExpectedTicketCount({ name: customer.name, expected, actual: rows.length });
   if (changed) return changed;
   if (rows.length === 0) return ok({ value: 0 });
-  const allowed = requirePermission({ context, permission: "booking:write", what: "bookings" });
+  const allowed = requirePermission({ context, permission: "ticket:write", what: "tickets" });
   if (!allowed.ok) return allowed;
   for (const row of rows) {
-    const archived = await archiveBooking({ context, booking: toBookingDto({ row }) });
+    const archived = await archiveTicket({ context, ticket: toTicketDto({ row }) });
     if (!archived.ok) return archived;
-  }
-  return ok({ value: rows.length });
-}
-
-/** Archives every active inquiry of the customer; one audit row each. */
-export async function archiveCustomerInquiries({
-  context,
-  customer,
-}: CascadeInput): Promise<Result<number>> {
-  const allowed = requirePermission({ context, permission: "inquiry:write", what: "inquiries" });
-  if (!allowed.ok) return allowed;
-  const rows = await context.db.inquiry.findMany({ where: { customerId: customer.id } });
-  for (const row of rows) {
-    const updated = await context.db.inquiry.update({
-      where: { id: row.id },
-      data: { status: "ARCHIVED" },
-    });
-    context.recordChange({
-      entityType: "inquiry",
-      entityId: row.id,
-      before: toInquiryDto({ row }),
-      after: toInquiryDto({ row: updated }),
-    });
   }
   return ok({ value: rows.length });
 }

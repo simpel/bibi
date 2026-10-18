@@ -29,7 +29,7 @@ export function PaymentPageCard({ payment, returning = false }: PaymentPageCardP
   const t = useTranslations("payment.public");
   const format = useFormatter();
   const outcome = paymentOutcome({ payment, returning });
-  const values = { organization: payment.organizationName, reference: payment.bookingReference };
+  const values = { organization: payment.organizationName, reference: payment.ticketReference };
   const amount = format.number(payment.amountMinor / 100, {
     style: "currency",
     currency: payment.currency,

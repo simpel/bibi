@@ -46,7 +46,7 @@ async function handle({ request, provider, domain, db }: HandleInput): Promise<R
 /**
  * `POST` endpoint for the provider's inbound webhook (ADR 0012): verifies the signature
  * (`parseInbound`, 401 on a bad one), fetches the body (`fetchInbound`) and stores the mail on
- * the booking its address names. Unknown addresses answer 200 so the provider stops retrying;
+ * the ticket its address names. Unknown addresses answer 200 so the provider stops retrying;
  * provider outages answer 503 so it retries.
  */
 export function createInboundWebhookHandler({

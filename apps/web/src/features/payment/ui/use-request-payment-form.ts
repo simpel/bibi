@@ -19,13 +19,13 @@ export type RequestPaymentFormValues = {
 export type RequestPaymentFormOutput = z.infer<typeof PaymentCreateInputSchema>;
 
 /** Core's `payment.create` schema; the amount is typed in kronor and sent in öre. */
-const requestPaymentFormSchema = ({ bookingId }: { bookingId: string }) =>
+const requestPaymentFormSchema = ({ ticketId }: { ticketId: string }) =>
   formSchema({
     schema: PaymentCreateInputSchema,
     toInput: ({ values }: { values: RequestPaymentFormValues }) => {
       const kr = numberOrNull({ value: values.amount });
       return {
-        bookingId,
+        ticketId,
         method: values.method,
         amountMinor: kr === null ? undefined : Math.round(kr * 100),
         description: blankToUndefined({ value: values.description }),
@@ -33,15 +33,15 @@ const requestPaymentFormSchema = ({ bookingId }: { bookingId: string }) =>
     },
   });
 
-export type UseRequestPaymentFormInput = { bookingId: string; onDone: () => void };
+export type UseRequestPaymentFormInput = { ticketId: string; onDone: () => void };
 
 /** Request-payment form state: method, amount and the text the customer sees. */
-export function useRequestPaymentForm({ bookingId, onDone }: UseRequestPaymentFormInput) {
+export function useRequestPaymentForm({ ticketId, onDone }: UseRequestPaymentFormInput) {
   const t = useTranslations("payment");
   const common = useTranslations("common");
   const router = useRouter();
   const form = useForm<RequestPaymentFormValues, unknown, RequestPaymentFormOutput>({
-    resolver: zodResolver(requestPaymentFormSchema({ bookingId }), useZodMessages()),
+    resolver: zodResolver(requestPaymentFormSchema({ ticketId }), useZodMessages()),
     defaultValues: { method: "CARD", amount: "", description: "" },
   });
   const { submit, pending } = useFormAction({

@@ -1,9 +1,6 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
 import type { AssignmentWire } from "./assignment-entries";
-import type { BookingWire } from "./booking-entries";
-import type { BookingStatusWire } from "./booking-status-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
-import type { InquiryWire } from "./inquiry-entries";
 import type { ItemResolutionWire } from "./item-resolution-entries";
 import type { OptionWire } from "./option-entries";
 import type { PaymentAccountWire } from "./payment-account-entries";
@@ -16,6 +13,8 @@ import type { RequirementWire } from "./requirement-entries";
 import type { ResponsibilityWire } from "./responsibility-entries";
 import type { SheetDefinitionWire } from "./sheet-definition-entries";
 import type { SheetWire } from "./sheet-entries";
+import type { TicketWire } from "./ticket-entries";
+import type { TicketPhaseWire } from "./ticket-phase-entries";
 import type {
   AuditLogWire,
   ContactWire,
@@ -52,16 +51,14 @@ export type ToolUiProps = {
   "occupancy-card": { occupancy: OccupancyWire };
   "price-list-table": { items: PriceListWire[]; nextCursor: string | null };
   "price-list-card": { priceList: PriceListWire };
-  "booking-status-table": { items: BookingStatusWire[]; nextCursor: string | null };
-  "booking-status-card": { status: BookingStatusWire };
-  "booking-table": { items: BookingWire[]; nextCursor: string | null };
-  "booking-card": { booking: BookingWire };
+  "ticket-phase-table": { items: TicketPhaseWire[]; nextCursor: string | null };
+  "ticket-phase-card": { phase: TicketPhaseWire };
+  "ticket-table": { items: TicketWire[]; nextCursor: string | null };
+  "ticket-card": { ticket: TicketWire };
   "program-item-table": { items: ProgramItemWire[]; nextCursor: string | null };
   "program-item-card": { programItem: ProgramItemWire };
   "requirement-table": { items: RequirementWire[]; nextCursor: string | null };
   "requirement-card": { requirement: RequirementWire };
-  "inquiry-table": { items: InquiryWire[]; nextCursor: string | null };
-  "inquiry-card": { inquiry: InquiryWire };
   "pipeline-board": { board: PipelineBoardWire };
   "option-card": { option: OptionWire };
   "option-queue": { items: OptionWire[]; nextCursor: string | null };

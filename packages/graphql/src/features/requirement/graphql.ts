@@ -13,9 +13,9 @@ import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
 import { requirePermission } from "../../schema/require-permission";
 import { runOperation } from "../../schema/run-operation";
-import { BookingRef } from "../booking/graphql";
 import { EntityTypeRef } from "../entity-type/graphql";
 import { ProgramItemRef } from "../program-item/graphql";
+import { TicketRef } from "../ticket/graphql";
 import { VocabularyValueRef } from "../vocabulary/graphql";
 
 export const RequirementRef = objectFromSchema<RequirementDto>({
@@ -23,8 +23,8 @@ export const RequirementRef = objectFromSchema<RequirementDto>({
   schema: RequirementSchema,
   omit: ["organizationId"],
   description:
-    "Requirement – a count against a list value (e.g. Gluten × 3) on a booking, or on one of " +
-    "its program items where it replaces the booking's count. Never linked to a person.",
+    "Requirement – a count against a list value (e.g. Gluten × 3) on a ticket, or on one of " +
+    "its program items where it replaces the ticket's count. Never linked to a person.",
 });
 const RequirementPageRef = pageType({ name: "RequirementPage", item: RequirementRef });
 
@@ -57,22 +57,22 @@ builder.objectField(RequirementRef, "vocabularyValue", (t) =>
   }),
 );
 
-type ListByInput = { bookingId?: string; programItemId?: string; limit: number | null | undefined };
+type ListByInput = { ticketId?: string; programItemId?: string; limit: number | null | undefined };
 
-/** Graph edges from the booking and the program item; they read through `requirement.list`. */
+/** Graph edges from the ticket and the program item; they read through `requirement.list`. */
 const listBy = ({ limit, ...where }: ListByInput) => ({
   ...where,
   limit: Math.min(Math.max(limit ?? 50, 1), 100),
 });
 
-// Graph edges. They live here so that booking/ and program-item/graphql.ts need not import this.
-builder.objectField(BookingRef, "requirements", (t) =>
+// Graph edges. They live here so that ticket/ and program-item/graphql.ts need not import this.
+builder.objectField(TicketRef, "requirements", (t) =>
   t.field({
     type: [RequirementRef],
-    description: "The booking's requirements, both levels (programItemId null = the booking).",
+    description: "The ticket's requirements, both levels (programItemId null = the ticket).",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
-    resolve: async (booking, { limit }, ctx) => {
-      const input = listBy({ bookingId: booking.id, limit });
+    resolve: async (ticket, { limit }, ctx) => {
+      const input = listBy({ ticketId: ticket.id, limit });
       const page = (await runOperation({ operation: listRequirements, input, ctx })) as {
         items: RequirementDto[];
       };
@@ -84,7 +84,7 @@ builder.objectField(BookingRef, "requirements", (t) =>
 builder.objectField(ProgramItemRef, "requirements", (t) =>
   t.field({
     type: [RequirementRef],
-    description: "The program item's own counts; they replace the booking's for their values.",
+    description: "The program item's own counts; they replace the ticket's for their values.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
     resolve: async (programItem, { limit }, ctx) => {
       const input = listBy({ programItemId: programItem.id, limit });

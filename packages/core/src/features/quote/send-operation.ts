@@ -2,10 +2,8 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { invalid, notFound } from "../../shared/errors";
-import { moveInquiry } from "../inquiry/move-inquiry";
-import type { InquiryDto } from "../inquiry/schema";
 import { moveQuote } from "./move-quote";
-import { loadOpenInquiry } from "./quote-rules";
+import { loadOpenTicket } from "./quote-rules";
 import { type QuoteDto, QuoteIdInputSchema, QuoteSchema } from "./schema";
 import { loadQuote } from "./to-quote-dto";
 import { checkQuoteTransition } from "./transitions";
@@ -25,16 +23,12 @@ function checkSendable({ quote }: { quote: QuoteDto }): Result<true> {
   return ok({ value: true });
 }
 
-type SupersedeInput = { context: Context; inquiry: InquiryDto; quote: QuoteDto };
+type SupersedeInput = { context: Context; quote: QuoteDto };
 
-/** Moves the inquiry to QUOTED (from QUALIFIED) and expires its older SENT versions. */
-async function supersede({ context, inquiry, quote }: SupersedeInput): Promise<Result<true>> {
-  if (inquiry.inquiryStatus !== "QUOTED") {
-    const moved = await moveInquiry({ context, before: inquiry, to: "QUOTED" });
-    if (!moved.ok) return moved;
-  }
+/** Expires the older SENT versions of the quote. */
+async function supersede({ context, quote }: SupersedeInput): Promise<Result<true>> {
   const older = await context.db.quote.findMany({
-    where: { inquiryId: quote.inquiryId, quoteStatus: "SENT", id: { not: quote.id } },
+    where: { ticketId: quote.ticketId, quoteStatus: "SENT", id: { not: quote.id } },
     select: { id: true },
   });
   for (const { id } of older) {
@@ -51,9 +45,9 @@ export const sendQuote = defineOperation({
   kind: "command",
   description:
     "Mark a DRAFT quote as SENT to the customer (ADR 0022). It needs at least one line and a " +
-    "future `validUntil`. The inquiry moves to QUOTED (it must be QUALIFIED or already QUOTED, " +
-    "otherwise CONFLICT) and older SENT versions of the quote expire. Any other starting " +
-    "status is a CONFLICT.",
+    "future `validUntil`, and the ticket must not be in a terminal phase. Older SENT versions " +
+    "of the quote expire. The ticket's phase does not change. Any other starting status is a " +
+    "CONFLICT.",
   input: QuoteIdInputSchema,
   output: QuoteSchema,
   permission: "quote:write",
@@ -66,9 +60,9 @@ export const sendQuote = defineOperation({
     ]) {
       if (!check.ok) return check;
     }
-    const inquiry = await loadOpenInquiry({ context, inquiryId: before.inquiryId });
-    if (!inquiry.ok) return inquiry;
-    const superseded = await supersede({ context, inquiry: inquiry.value, quote: before });
+    const ticket = await loadOpenTicket({ context, ticketId: before.ticketId });
+    if (!ticket.ok) return ticket;
+    const superseded = await supersede({ context, quote: before });
     if (!superseded.ok) return superseded;
     return moveQuote({ context, before, to: "SENT" });
   },

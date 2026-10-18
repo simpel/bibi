@@ -12,8 +12,8 @@ import { fieldFromOperation, mutationFromOperation } from "../../schema/from-ope
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
 import { runOperation } from "../../schema/run-operation";
-import { InquiryRef } from "../inquiry/graphql";
 import { ItemRef } from "../item/graphql";
+import { TicketRef } from "../ticket/graphql";
 
 export const OptionRef = objectFromSchema<OptionDto>({
   name: "Option",
@@ -37,7 +37,7 @@ mutationFromOperation({ operation: createOption, type: OptionRef });
 mutationFromOperation({ operation: releaseOption, type: OptionRef });
 mutationFromOperation({ operation: expireDueOptions, type: OptionExpireDueRef });
 
-// Graph edges. They live here so that item/ and inquiry/graphql.ts do not need to import this file.
+// Graph edges. They live here so that item/ and ticket/graphql.ts do not need to import this file.
 builder.objectField(ItemRef, "options", (t) =>
   t.field({
     type: [OptionRef],
@@ -54,15 +54,15 @@ builder.objectField(ItemRef, "options", (t) =>
   }),
 );
 
-builder.objectField(InquiryRef, "options", (t) =>
+builder.objectField(TicketRef, "options", (t) =>
   t.field({
     type: [OptionRef],
-    description: "Options placed for the inquiry (all statuses), by item, start and rank.",
+    description: "Options placed for the ticket (all statuses), by item, start and rank.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
-    resolve: async (inquiry, { limit }, ctx) => {
+    resolve: async (ticket, { limit }, ctx) => {
       const page = (await runOperation({
         operation: listOptions,
-        input: { inquiryId: inquiry.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) },
+        input: { ticketId: ticket.id, limit: Math.min(Math.max(limit ?? 50, 1), 100) },
         ctx,
       })) as { items: OptionDto[] };
       return page.items;

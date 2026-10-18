@@ -5,7 +5,7 @@ import { Card, type ColumnDef } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
-import { bookingRoute } from "@/lib/routes";
+import { ticketRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
@@ -23,7 +23,7 @@ function useRequirementColumns(): ColumnDef<Row>[] {
         accessorFn: (requirement) => requirement.quantity,
         cell: ({ row }) => (
           <Link
-            href={bookingRoute({ id: row.original.bookingId })}
+            href={ticketRoute({ id: row.original.ticketId })}
             className="font-medium hover:underline"
           >
             {row.original.quantity}
@@ -34,14 +34,14 @@ function useRequirementColumns(): ColumnDef<Row>[] {
         id: "where",
         header: t("columns.where"),
         accessorFn: (requirement) =>
-          requirement.programItemId ? t("onProgramItem") : t("onBooking"),
+          requirement.programItemId ? t("onProgramItem") : t("onTicket"),
       },
     ],
     [t],
   );
 }
 
-/** A page of requirements; each row links to its booking's page. */
+/** A page of requirements; each row links to its ticket's page. */
 export function RequirementTableView({ items, nextCursor }: RequirementTableViewProps) {
   const t = useTranslations("assistant.ui.requirement");
   const columns = useRequirementColumns();

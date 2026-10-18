@@ -11,7 +11,7 @@ export const createPayment = defineOperation({
   name: "payment.create",
   kind: "command",
   description:
-    "Request a payment from the booking's customer, charged directly on the organization's " +
+    "Request a payment from the ticket's customer, charged directly on the organization's " +
     "Stripe account. CARD returns a hosted checkout link (paymentUrl) to send to the customer; " +
     "INVOICE emails a Stripe invoice to the customer's email. Needs an ACTIVE payment account. " +
     "The payment starts PENDING and is updated when Stripe reports it paid.",
@@ -38,7 +38,7 @@ export const createPayment = defineOperation({
         id: paymentId,
         publicToken,
         organizationId: context.organizationId,
-        bookingId: input.bookingId,
+        ticketId: input.ticketId,
         method: input.method,
         amountMinor: input.amountMinor,
         currency: input.currency,

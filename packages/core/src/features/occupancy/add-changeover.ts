@@ -10,7 +10,7 @@ export type AddChangeoverInput = {
   setupId: string;
   /** Start of the period the item is set up for; the changeover ends here. */
   startsAt: Date;
-  /** The record the changeover belongs to, e.g. a booking line. */
+  /** The record the changeover belongs to, e.g. a ticket line. */
   sourceType: string;
   sourceId: string;
 };

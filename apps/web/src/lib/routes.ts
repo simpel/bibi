@@ -19,12 +19,10 @@ export const ROUTES = {
   sheetNew: "/new/sheet",
   responsibilityNew: "/new/responsibility",
   priceListNew: "/new/price-list",
-  bookingNew: "/new/booking",
-  inquiryNew: "/new/inquiry",
+  ticketNew: "/new/ticket",
   customers: "/customers",
-  bookings: "/bookings",
+  tickets: "/tickets",
   calendar: "/calendar",
-  inquiries: "/inquiries",
   quotes: "/quotes",
   settings: "/settings",
   settingsTypes: "/settings/types",
@@ -33,7 +31,7 @@ export const ROUTES = {
   settingsResponsibilities: "/settings/responsibilities",
   settingsSheets: "/settings/sheets",
   settingsPriceLists: "/settings/price-lists",
-  settingsBookingStatuses: "/settings/booking-statuses",
+  settingsPipeline: "/settings/pipeline",
   settingsMembers: "/settings/members",
   settingsPayments: "/settings/payments",
   settingsIntegrations: "/settings/integrations",
@@ -74,16 +72,10 @@ export function customerRoute({ id }: CustomerRouteInput): string {
   return `${ROUTES.customers}/${encodeURIComponent(id)}`;
 }
 
-export type BookingRouteInput = { id: string };
+export type TicketRouteInput = { id: string };
 
-export function bookingRoute({ id }: BookingRouteInput): string {
-  return `${ROUTES.bookings}/${encodeURIComponent(id)}`;
-}
-
-export type InquiryRouteInput = { id: string };
-
-export function inquiryRoute({ id }: InquiryRouteInput): string {
-  return `${ROUTES.inquiries}/${encodeURIComponent(id)}`;
+export function ticketRoute({ id }: TicketRouteInput): string {
+  return `${ROUTES.tickets}/${encodeURIComponent(id)}`;
 }
 
 export type QuoteRouteInput = { id: string };

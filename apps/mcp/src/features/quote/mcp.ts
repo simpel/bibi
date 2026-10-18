@@ -9,7 +9,7 @@ export const quoteMcpTools = [
   mcpTool({
     operation: "quote.create",
     summary: ({ input }) =>
-      `Create a quote for inquiry ${text({ value: input.inquiryId })}${lineCount(input)}`,
+      `Create a quote for ticket ${text({ value: input.ticketId })}${lineCount(input)}`,
   }),
   mcpTool({
     operation: "quote.update",
@@ -25,8 +25,7 @@ export const quoteMcpTools = [
   }),
   mcpTool({
     operation: "quote.send",
-    summary: ({ input }) =>
-      `Mark quote ${text({ value: input.id })} as sent (the inquiry becomes QUOTED)`,
+    summary: ({ input }) => `Mark quote ${text({ value: input.id })} as sent`,
   }),
   mcpTool({
     operation: "quote.decline",

@@ -88,14 +88,14 @@ export const lindholmenTypes: readonly DemoType[] = [
       { name: "Role", kind: "CHOICE", options: ["Orderer", "Invoice recipient", "Organizer"] },
     ],
   },
-  { base: "BOOKING", name: "Conference", fields: [{ name: "Purpose", kind: "TEXT" }] },
+  { base: "TICKET", name: "Conference", fields: [{ name: "Purpose", kind: "TEXT" }] },
   {
-    base: "BOOKING",
+    base: "TICKET",
     name: "Event",
     fields: [
       { name: "Dresscode", kind: "CHOICE", list: "Dresscode" },
       { name: "Speaker/entertainment", kind: "TEXT" },
     ],
   },
-  { base: "BOOKING", name: "Tour", fields: [{ name: "School class", kind: "BOOLEAN" }] },
+  { base: "TICKET", name: "Tour", fields: [{ name: "School class", kind: "BOOLEAN" }] },
 ];

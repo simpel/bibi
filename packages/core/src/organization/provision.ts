@@ -1,6 +1,6 @@
 import type { Db } from "@okazi/db";
 import { ok, type Result } from "../errors/result";
-import { importBookingStatusTemplate } from "../features/booking-status/import-template-operation";
+import { importTicketPhaseTemplate } from "../features/ticket-phase/import-template-operation";
 import { createExecuteContext } from "../operations/context";
 import { execute } from "../operations/execute";
 import { grantAll } from "../permissions/permission-set";
@@ -13,8 +13,8 @@ export type ProvisionOrganizationInput = {
 
 /**
  * The defaults every new organization starts with, created through core operations as SYSTEM
- * (audited and logged like any command): one booking status per phase (ADR 0022), so bookings
- * work immediately. Called by Better Auth's `afterCreateOrganization` and the demo seed.
+ * (audited and logged like any command): a minimal set of ticket phases (ADR 0043), so
+ * tickets work immediately. Called by Better Auth's `afterCreateOrganization` and the demo seed.
  */
 export async function provisionOrganization({
   organizationId,
@@ -28,6 +28,6 @@ export async function provisionOrganization({
     ...(db ? { db } : {}),
   });
   const input = { template: "default" };
-  const statuses = await execute({ operation: importBookingStatusTemplate, input, context });
+  const statuses = await execute({ operation: importTicketPhaseTemplate, input, context });
   return statuses.ok ? ok({ value: true }) : statuses;
 }

@@ -9,7 +9,7 @@ import { useRequirementForm } from "./use-requirement-form";
 
 export type RequirementFormProps = {
   data: RequirementFormData;
-  bookingId: string;
+  ticketId: string;
   requirement?: RequirementDto | undefined;
   onDone: () => void;
 };

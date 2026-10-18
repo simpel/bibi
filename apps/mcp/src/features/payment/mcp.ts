@@ -16,6 +16,6 @@ export const paymentMcpTools = [
     operation: "payment.create",
     summary: ({ input }) =>
       `Request ${amount({ input })} by ${input.method === "INVOICE" ? "invoice" : "card"} ` +
-      `for booking ${text({ value: input.bookingId })}`,
+      `for ticket ${text({ value: input.ticketId })}`,
   }),
 ];

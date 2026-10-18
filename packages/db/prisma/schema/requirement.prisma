@@ -1,12 +1,12 @@
-/// Requirement – a count against a list value on a booking (ADR 0021), e.g. Gluten × 3 or
-/// Wheelchair × 2. Without `programItemId` it applies to the whole booking; with one it applies to
-/// that program item and replaces the booking's count for the same value there. Its type (base
+/// Requirement – a count against a list value on a ticket (ADR 0021), e.g. Gluten × 3 or
+/// Wheelchair × 2. Without `programItemId` it applies to the whole ticket; with one it applies to
+/// that program item and replaces the ticket's count for the same value there. Its type (base
 /// `REQUIREMENT`) decides its own fields, e.g. Severity. Never linked to a person: no guest data.
 model Requirement {
   id                String          @id @default(cuid(2))
   organizationId    String
-  bookingId         String
-  /// The program item it applies to; null = the whole booking.
+  ticketId          String
+  /// The program item it applies to; null = the whole ticket.
   programItemId     String?
   entityTypeId      String
   /// The list value counted, e.g. Gluten in the list Allergens.
@@ -19,13 +19,13 @@ model Requirement {
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   createdBy         String?
-  booking           Booking         @relation(fields: [bookingId, organizationId], references: [id, organizationId])
+  ticket            Ticket          @relation(fields: [ticketId, organizationId], references: [id, organizationId])
   programItem       ProgramItem?    @relation(fields: [programItemId, organizationId], references: [id, organizationId])
   entityType        EntityType      @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   vocabularyValue   VocabularyValue @relation(fields: [vocabularyValueId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
-  @@index([organizationId, bookingId, status])
+  @@index([organizationId, ticketId, status])
   @@index([organizationId, programItemId])
   @@index([organizationId, vocabularyValueId])
   @@index([organizationId, entityTypeId])

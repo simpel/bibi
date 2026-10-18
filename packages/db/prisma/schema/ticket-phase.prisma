@@ -1,0 +1,49 @@
+// Ticket phases per organization (ADR 0043): the organization's own phases, in its own order.
+// Behaviour comes only from the generic phase flags. Transitions between phases are data too.
+
+/// Ticket phase – an organization's own phase, e.g. Lead, Quote sent or Lost. Exactly one active
+/// phase is the default `entry` (the first by `position`), and at least one is `terminal`.
+model TicketPhase {
+  id               String                  @id @default(cuid(2))
+  organizationId   String
+  name             String
+  color            String
+  position         Int                     @default(0)
+  /// New tickets start here.
+  entry            Boolean                 @default(false)
+  /// No move leaves this phase; entering it releases every line.
+  terminal         Boolean                 @default(false)
+  /// A reason is required to enter.
+  requiresReason   Boolean                 @default(false)
+  /// The ticket must have its main assignee (ADR 0034) to enter.
+  requiresAssignee Boolean                 @default(false)
+  /// Invoices can be created in this phase.
+  invoiceable      Boolean                 @default(false)
+  status           RecordStatus            @default(ACTIVE)
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+  createdBy        String?
+  transitionsFrom  TicketPhaseTransition[] @relation("TransitionFrom")
+  transitionsTo    TicketPhaseTransition[] @relation("TransitionTo")
+  tickets          Ticket[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status, position])
+}
+
+/// Ticket phase transition – an allowed move from one phase to another (from → to). Replaced as a
+/// set per `from` phase by `ticketPhase.setTransitions`.
+model TicketPhaseTransition {
+  id             String      @id @default(cuid(2))
+  organizationId String
+  fromPhaseId    String
+  toPhaseId      String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  createdBy      String?
+  fromPhase      TicketPhase @relation("TransitionFrom", fields: [fromPhaseId, organizationId], references: [id, organizationId])
+  toPhase        TicketPhase @relation("TransitionTo", fields: [toPhaseId, organizationId], references: [id, organizationId])
+
+  @@unique([fromPhaseId, toPhaseId])
+  @@index([organizationId, fromPhaseId])
+}

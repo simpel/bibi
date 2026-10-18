@@ -4,7 +4,7 @@ import { blockLabel, type CalendarLabels } from "./calendar-grid-model";
 
 const labels = {
   type: ({ type }) => type,
-  reference: ({ reference }) => `Booking ${reference}`,
+  reference: ({ reference }) => `Ticket ${reference}`,
   option: ({ position }) => `Option ${position}`,
 } as CalendarLabels;
 
@@ -14,23 +14,23 @@ const base: CalendarBlock = {
   type: "BOOKING",
   startsAt: new Date(0),
   endsAt: new Date(1),
-  bookingId: "b1",
+  ticketId: "b1",
   reference: 12,
   title: "Lunch",
   queuePosition: null,
 };
 
 describe("block label", () => {
-  it("names a booking by reference and program item", () => {
-    expect(blockLabel({ block: base, labels })).toBe("Booking 12 · Lunch");
+  it("names a ticket by reference and program item", () => {
+    expect(blockLabel({ block: base, labels })).toBe("Ticket 12 · Lunch");
   });
 
   it("leads with the queue position of an option and the type of other rows", () => {
     expect(blockLabel({ block: { ...base, type: "OPTION", queuePosition: 2 }, labels })).toBe(
-      "Option 2 · Booking 12 · Lunch",
+      "Option 2 · Ticket 12 · Lunch",
     );
     expect(blockLabel({ block: { ...base, type: "SETUP" }, labels })).toBe(
-      "SETUP · Booking 12 · Lunch",
+      "SETUP · Ticket 12 · Lunch",
     );
   });
 
@@ -38,7 +38,7 @@ describe("block label", () => {
     const manual = {
       ...base,
       type: "INTERNAL" as const,
-      bookingId: null,
+      ticketId: null,
       reference: null,
       title: null,
     };

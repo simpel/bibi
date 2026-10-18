@@ -6,7 +6,7 @@ import type { RequirementFormData } from "./requirement-form-data";
 
 export type RequirementDialogProps = {
   data: RequirementFormData;
-  bookingId: string;
+  ticketId: string;
   /** Present = edit mode, absent = create mode. */
   requirement?: RequirementDto | undefined;
   open: boolean;

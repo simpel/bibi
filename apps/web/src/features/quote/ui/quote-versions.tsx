@@ -11,7 +11,7 @@ export type QuoteVersionsProps = {
   currentId?: string;
 };
 
-/** Every version of an inquiry's quote, newest first; each links to its page. */
+/** Every version of an ticket's quote, newest first; each links to its page. */
 export function QuoteVersions({ quotes, currentId }: QuoteVersionsProps) {
   const t = useTranslations("quote");
   const columns = useQuoteVersionColumns();

@@ -1,11 +1,8 @@
 import { ACCESS_UI_ENTRIES } from "./access-entries";
 import { ASSIGNMENT_UI_ENTRIES } from "./assignment-entries";
-import { BOOKING_UI_ENTRIES } from "./booking-entries";
-import { BOOKING_STATUS_UI_ENTRIES } from "./booking-status-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
 import { INBOUND_EMAIL_UI_ENTRIES } from "./inbound-email-entries";
-import { INQUIRY_UI_ENTRIES } from "./inquiry-entries";
 import { ITEM_RESOLUTION_UI_ENTRIES } from "./item-resolution-entries";
 import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
 import { OPTION_UI_ENTRIES } from "./option-entries";
@@ -19,6 +16,8 @@ import { REQUIREMENT_UI_ENTRIES } from "./requirement-entries";
 import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
 import { SHEET_DEFINITION_UI_ENTRIES } from "./sheet-definition-entries";
 import { SHEET_UI_ENTRIES } from "./sheet-entries";
+import { TICKET_UI_ENTRIES } from "./ticket-entries";
+import { TICKET_PHASE_UI_ENTRIES } from "./ticket-phase-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 import {
@@ -61,12 +60,11 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...CUSTOMER_UI_ENTRIES,
   ...OCCUPANCY_UI_ENTRIES,
   ...PRICE_LIST_UI_ENTRIES,
-  ...BOOKING_STATUS_UI_ENTRIES,
-  ...BOOKING_UI_ENTRIES,
+  ...TICKET_PHASE_UI_ENTRIES,
+  ...TICKET_UI_ENTRIES,
   ...PROGRAM_ITEM_UI_ENTRIES,
   ...ASSIGNMENT_UI_ENTRIES,
   ...REQUIREMENT_UI_ENTRIES,
-  ...INQUIRY_UI_ENTRIES,
   ...PIPELINE_UI_ENTRIES,
   ...OPTION_UI_ENTRIES,
   ...QUOTE_UI_ENTRIES,
@@ -115,6 +113,7 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   message_list: "chat history UI, not a tool card",
   message_append: "chat bookkeeping",
   skill_export: "SKILL.md text; shown as code/JSON",
+  ticket_export: "versioned JSON document for handover; shown as code/JSON",
   graphql_schema: "SDL text",
   graphql_query: "free-form GraphQL result",
   apiKey_list: "credentials are managed on /settings/integrations, not in chat",

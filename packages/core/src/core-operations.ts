@@ -1,8 +1,6 @@
 import { apiKeyOperations } from "./features/api-key/operations";
 import { assignmentOperations } from "./features/assignment/operations";
 import { auditLogOperations } from "./features/audit-log/operations";
-import { bookingOperations } from "./features/booking/operations";
-import { bookingStatusOperations } from "./features/booking-status/operations";
 import { configurationOperations } from "./features/configuration/operations";
 import { contactOperations } from "./features/contact/operations";
 import { conversationOperations } from "./features/conversation/operations";
@@ -10,7 +8,6 @@ import { customerOperations } from "./features/customer/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
 import { inboundEmailOperations } from "./features/inbound-email/operations";
-import { inquiryOperations } from "./features/inquiry/operations";
 import { itemOperations } from "./features/item/operations";
 import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
@@ -29,6 +26,8 @@ import { setupOperations } from "./features/setup/operations";
 import { sheetOperations } from "./features/sheet/operations";
 import { sheetDefinitionOperations } from "./features/sheet-definition/operations";
 import { skillOperations } from "./features/skill/operations";
+import { ticketOperations } from "./features/ticket/operations";
+import { ticketPhaseOperations } from "./features/ticket-phase/operations";
 import { userPreferenceOperations } from "./features/user-preference/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
@@ -54,13 +53,12 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...contactOperations,
     ...priceListOperations,
     ...occupancyOperations,
-    ...bookingStatusOperations,
-    ...bookingOperations,
+    ...ticketPhaseOperations,
+    ...ticketOperations,
     ...programItemOperations,
     ...assignmentOperations,
     ...requirementOperations,
     ...sheetOperations,
-    ...inquiryOperations,
     ...pipelineOperations,
     ...optionOperations,
     ...quoteOperations,

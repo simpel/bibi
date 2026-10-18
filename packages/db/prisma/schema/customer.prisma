@@ -24,10 +24,9 @@ model Customer {
   createdBy            String?
   entityType           EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   contacts             Contact[]
-  bookings             Booking[]
+  tickets              Ticket[]
   /// Customer-specific packages (`Item.customerId`, ADR 0021).
   items                Item[]
-  inquiries            Inquiry[]
   /// Customer prices (ADR 0023).
   priceLists           PriceList[]
 
@@ -54,7 +53,7 @@ model Contact {
   createdBy      String?
   entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   customer       Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId])
-  inquiries      Inquiry[]
+  tickets        Ticket[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

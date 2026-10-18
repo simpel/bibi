@@ -4,7 +4,7 @@ export const inboundEmailRoutes = [
   restRoute({
     operation: "inboundEmail.list",
     method: "GET",
-    path: "/bookings/{bookingId}/inbound-emails",
+    path: "/tickets/{ticketId}/inbound-emails",
   }),
   restRoute({ operation: "inboundEmail.get", method: "GET", path: "/inbound-emails/{id}" }),
 ];

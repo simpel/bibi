@@ -6,7 +6,7 @@ import { nameOf } from "@/components/form/named-option";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { FactList } from "@/components/typed-fields/fact-list";
-import { inquiryRoute } from "@/lib/routes";
+import { ticketRoute } from "@/lib/routes";
 import { handleLoadError } from "@/server/load-error";
 import { loadQuotePage } from "../load-quote-page";
 import { QuoteActions } from "./quote-actions";
@@ -36,11 +36,11 @@ export async function QuoteDetail({ locale, id }: QuoteDetailProps) {
   return (
     <div className="grid gap-6">
       <Link
-        href={inquiryRoute({ id: quote.inquiryId })}
+        href={ticketRoute({ id: quote.ticketId })}
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeftIcon className="size-4" />
-        {t("backToInquiry")}
+        {t("backToTicket")}
       </Link>
       <PageHeader
         title={t("title", { version: quote.version })}

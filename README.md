@@ -2,7 +2,7 @@
 
 Booking system for businesses that sell conferences with food and drink: experience centers, museums, conference estates, manor houses and restaurants with private rooms (e.g. World of Volvo).
 
-Core flow: inquiry → option → quote → signing → booking → program items → participants & diets → kitchen order → delivery → invoice → Fortnox/Visma.
+Core flow: ticket (through the organization's own phases) → lines (program items) → quote → signing → needs → kitchen order and other sheets → delivery → invoice → Fortnox/Visma.
 
 ## Status
 
@@ -54,7 +54,7 @@ Create `.env` in the repo root (there is no `.env.example` yet). The web app, th
 | `MAIL_PROVIDER` | Mail adapter (ADR 0012): `smtp` (default, Mailpit in dev via `SMTP_URL`) or `resend` (production) |
 | `RESEND_API_KEY` | Resend API key, required when `MAIL_PROVIDER=resend` |
 | `RESEND_WEBHOOK_SECRET` | Signing secret (`whsec_...`) of Resend's `email.received` webhook; inbound mail is refused without it |
-| `MAIL_INBOUND_DOMAIN` | Inbound subdomain for booking reply addresses (`booking-<id>@<domain>`); unset = no reply address and the webhook answers 503. DNS: `docs/runbooks/inbound-email.md` |
+| `MAIL_INBOUND_DOMAIN` | Inbound subdomain for ticket reply addresses (`ticket-<id>@<domain>`); unset = no reply address and the webhook answers 503. DNS: `docs/runbooks/inbound-email.md` |
 | `AI_GATEWAY_API_KEY` | Key for Vercel AI Gateway (assistant and embeddings) |
 | `WEB_URL` | Base URL of the web app, e.g. `http://localhost:3000` |
 | `MCP_URL` | Base URL of the MCP server, e.g. `http://localhost:3001` |

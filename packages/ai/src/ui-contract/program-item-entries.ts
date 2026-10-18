@@ -28,7 +28,7 @@ const programItemCard = uiEntry({
   toProps: ({ value }) => ({ programItem: value }),
 });
 
-/** Tool → component for a booking's run schedule (ADR 0022). */
+/** Tool → component for a ticket's run schedule (ADR 0022). */
 export const PROGRAM_ITEM_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   programItem_list: programItemTable,
   programItem_get: programItemCard,

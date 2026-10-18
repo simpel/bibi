@@ -4,15 +4,15 @@ import { createClient, testContext } from "./helpers";
 
 const TYPE = `mutation($i: EntityTypeCreateInput!) { entityTypeCreate(input: $i) { id } }`;
 const CUSTOMER = `mutation($i: CustomerCreateInput!) { customerCreate(input: $i) { id } }`;
-const BOOKING = `mutation($i: BookingCreateInput!) { bookingCreate(input: $i) { id } }`;
+const TICKET = `mutation($i: TicketCreateInput!) { ticketCreate(input: $i) { id } }`;
 const LIST = `mutation($i: VocabularyCreateInput!) { vocabularyCreate(input: $i) { values { id } } }`;
 const ADD = `mutation($i: RequirementCreateInput!) { requirementCreate(input: $i) { id } }`;
 const READ =
-  "query($id: String!) { booking(id: $id) { requirements { quantity programItemId vocabularyValue { name } } } }";
+  "query($id: String!) { ticket(id: $id) { requirements { quantity programItemId vocabularyValue { name } } } }";
 
 type Gql = ReturnType<typeof createClient>;
 
-async function bookingWithList({ gql }: { gql: Gql }) {
+async function ticketWithList({ gql }: { gql: Gql }) {
   const type = async ({ base }: { base: string }) =>
     (await gql({ query: TYPE, variables: { i: { base, name: `${base} type` } } })).body.data
       .entityTypeCreate.id as string;
@@ -20,14 +20,14 @@ async function bookingWithList({ gql }: { gql: Gql }) {
     query: CUSTOMER,
     variables: { i: { entityTypeId: await type({ base: "CUSTOMER" }), name: "Kvarnby AB" } },
   });
-  const booking = await gql({
-    query: BOOKING,
+  const ticket = await gql({
+    query: TICKET,
     variables: {
       i: {
-        entityTypeId: await type({ base: "BOOKING" }),
+        entityTypeId: await type({ base: "TICKET" }),
         customerId: customer.body.data.customerCreate.id,
-        startsAt: "2026-11-03T08:00:00.000Z",
-        endsAt: "2026-11-03T16:00:00.000Z",
+        desiredStartsAt: "2026-11-03T08:00:00.000Z",
+        desiredEndsAt: "2026-11-03T16:00:00.000Z",
       },
     },
   });
@@ -36,25 +36,25 @@ async function bookingWithList({ gql }: { gql: Gql }) {
     variables: { i: { name: "Allergens", values: ["Gluten"] } },
   });
   return {
-    bookingId: booking.body.data.bookingCreate.id as string,
+    ticketId: ticket.body.data.ticketCreate.id as string,
     entityTypeId: await type({ base: "REQUIREMENT" }),
     vocabularyValueId: list.body.data.vocabularyCreate.values[0].id as string,
   };
 }
 
 describe("requirement graph (ADR 0021)", () => {
-  it("resolves booking { requirements { vocabularyValue } } and maps a duplicate to CONFLICT", async () => {
+  it("resolves ticket { requirements { vocabularyValue } } and maps a duplicate to CONFLICT", async () => {
     const context = testContext();
     expect((await provisionOrganization({ organizationId: context.organizationId })).ok).toBe(true);
     const gql = createClient({ context });
-    const add = { ...(await bookingWithList({ gql })), quantity: 3 };
+    const add = { ...(await ticketWithList({ gql })), quantity: 3 };
     const created = await gql({ query: ADD, variables: { i: add } });
     expect(created.body.errors).toBeUndefined();
     const twice = await gql({ query: ADD, variables: { i: add } });
     expect(twice.body.errors?.[0]?.extensions?.code).toBe("CONFLICT");
-    const res = await gql({ query: READ, variables: { id: add.bookingId } });
+    const res = await gql({ query: READ, variables: { id: add.ticketId } });
     expect(res.body.errors).toBeUndefined();
-    expect(res.body.data.booking.requirements).toEqual([
+    expect(res.body.data.ticket.requirements).toEqual([
       { quantity: 3, programItemId: null, vocabularyValue: { name: "Gluten" } },
     ]);
   });

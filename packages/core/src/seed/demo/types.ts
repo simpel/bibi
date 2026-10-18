@@ -1,7 +1,7 @@
 import type { FixedRole } from "../../permissions/fixed-roles";
-import type { DemoBooking } from "./booking-types";
 import type { DemoConfig } from "./config-types";
 import type { DemoCustomer } from "./customer-types";
+import type { DemoTicket } from "./ticket-types";
 
 /** One demo staff member with their fixed access role (ADR 0034). */
 export type DemoUser = { name: string; role: FixedRole };
@@ -27,6 +27,6 @@ export type DemoOrg = {
   responsibilities: readonly DemoResponsibility[];
   /** Slice 4: customers with their contact persons. */
   customers: readonly DemoCustomer[];
-  /** Slice 5: bookings with their assignee and followers. */
-  bookings: readonly DemoBooking[];
+  /** Slice 5: tickets with their assignee and followers. */
+  tickets: readonly DemoTicket[];
 };

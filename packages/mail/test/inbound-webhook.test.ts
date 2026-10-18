@@ -1,4 +1,4 @@
-import { bookingInboundAddress, execute, listInboundEmails } from "@okazi/core";
+import { execute, listInboundEmails, ticketInboundAddress } from "@okazi/core";
 import { describe, expect, it } from "vitest";
 import {
   createInboundWebhookHandler,
@@ -6,7 +6,7 @@ import {
   type ResendTransport,
   signSvixPayload,
 } from "../src/index";
-import { bookingFixture } from "./booking-fixture";
+import { ticketFixture } from "./ticket-fixture";
 
 const domain = "in.okazi.test";
 const secret = `whsec_${Buffer.from("inbound-test-secret").toString("base64")}`;
@@ -22,7 +22,7 @@ const resendApi =
       to: [to],
       cc: [],
       received_for: [to],
-      subject: "Re: your booking",
+      subject: "Re: your ticket",
       text: "We will be 40 guests.",
       html: "<p>We will be 40 guests.</p>",
       message_id: "<111@example.test>",
@@ -65,36 +65,36 @@ const handlerFor = ({ to }: { to: string }) =>
   });
 
 describe("inbound webhook", () => {
-  it("saves a signed reply on the booking its address names", async () => {
-    const { context, bookingId } = await bookingFixture();
-    const to = bookingInboundAddress({ bookingId, domain });
-    const response = await handlerFor({ to })(signedRequest({ to, emailId: `email_${bookingId}` }));
+  it("saves a signed reply on the ticket its address names", async () => {
+    const { context, ticketId } = await ticketFixture();
+    const to = ticketInboundAddress({ ticketId, domain });
+    const response = await handlerFor({ to })(signedRequest({ to, emailId: `email_${ticketId}` }));
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ status: "stored" });
-    const result = await execute({ operation: listInboundEmails, input: { bookingId }, context });
+    const result = await execute({ operation: listInboundEmails, input: { ticketId }, context });
     const items = result.ok ? result.value.items : [];
     expect(items).toHaveLength(1);
     expect(items[0]).toMatchObject({
       organizationId: context.organizationId,
-      bookingId,
+      ticketId,
       text: "We will be 40 guests.",
       attachments: [{ id: "att_1", filename: "menu.pdf" }],
     });
   });
 
   it("rejects an invalid signature and stores nothing", async () => {
-    const { context, bookingId } = await bookingFixture();
-    const to = bookingInboundAddress({ bookingId, domain });
+    const { context, ticketId } = await ticketFixture();
+    const to = ticketInboundAddress({ ticketId, domain });
     const forged = `whsec_${Buffer.from("forged").toString("base64")}`;
-    const request = signedRequest({ to, emailId: `email_${bookingId}`, signWith: forged });
+    const request = signedRequest({ to, emailId: `email_${ticketId}`, signWith: forged });
     const response = await handlerFor({ to })(request);
     expect(response.status).toBe(401);
-    const result = await execute({ operation: listInboundEmails, input: { bookingId }, context });
+    const result = await execute({ operation: listInboundEmails, input: { ticketId }, context });
     expect(result.ok && result.value.items).toEqual([]);
   });
 
   it("acknowledges mail to an unknown address without storing it", async () => {
-    const to = `booking-unknown@${domain}`;
+    const to = `ticket-unknown@${domain}`;
     const response = await handlerFor({ to })(signedRequest({ to, emailId: "email_unknown" }));
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ status: "unmatched" });

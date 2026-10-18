@@ -19,7 +19,7 @@ export const OccupancyRef = objectFromSchema<OccupancyDto>({
   schema: OccupancySchema,
   omit: ["organizationId"],
   description:
-    "Occupancy – a bookable item is taken for [startsAt, endsAt): booking, option, setup time, " +
+    "Occupancy – a bookable item is taken for [startsAt, endsAt): ticket, option, setup time, " +
     "maintenance or internal use. Only options may overlap.",
 });
 const OccupancyPageRef = pageType({ name: "OccupancyPage", item: OccupancyRef });

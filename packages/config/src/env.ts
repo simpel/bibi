@@ -14,7 +14,7 @@ const envSchema = z
     /** Signing secret (`whsec_...`) of the Resend inbound webhook; inbound mail is refused without it. */
     RESEND_WEBHOOK_SECRET: z.string().optional(),
     /**
-     * Inbound subdomain for booking reply addresses (`booking-<id>@<domain>`, ADR 0012), e.g.
+     * Inbound subdomain for ticket reply addresses (`ticket-<id>@<domain>`, ADR 0012), e.g.
      * `in.okazi.se`. Unset: no reply address is shown and the inbound webhook answers 503.
      */
     MAIL_INBOUND_DOMAIN: z

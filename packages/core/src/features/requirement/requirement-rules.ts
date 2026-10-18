@@ -1,26 +1,26 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
-import { checkBooking } from "../program-item/program-item-rules";
+import { checkTicket } from "../program-item/program-item-rules";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-export type CheckLevelInput = Db & { bookingId: string; programItemId: string | null };
+export type CheckLevelInput = Db & { ticketId: string; programItemId: string | null };
 
 /**
- * Where a requirement applies: an active booking of the organization, optionally one of that
- * booking's active program items. A program item of another booking is a `VALIDATION` issue.
+ * Where a requirement applies: an active ticket of the organization, optionally one of that
+ * ticket's active program items. A program item of another ticket is a `VALIDATION` issue.
  */
 export async function checkLevel({
   context,
-  bookingId,
+  ticketId,
   programItemId,
 }: CheckLevelInput): Promise<Result<boolean>> {
-  const booking = await checkBooking({ context, bookingId });
-  if (!booking.ok || !programItemId) return booking;
-  const found = await context.db.programItem.count({ where: { id: programItemId, bookingId } });
+  const ticket = await checkTicket({ context, ticketId });
+  if (!ticket.ok || !programItemId) return ticket;
+  const found = await context.db.programItem.count({ where: { id: programItemId, ticketId } });
   if (found > 0) return ok({ value: true });
-  const message = "Not a program item of the booking";
+  const message = "Not a program item of the ticket";
   return invalid({ message, issues: [{ path: "programItemId", message }] });
 }
 
@@ -47,15 +47,15 @@ export type CheckFreeInput = CheckLevelInput & { vocabularyValueId: string };
 /** One active count per list value and level; a second one is a `CONFLICT` (update it instead). */
 export async function checkFree({
   context,
-  bookingId,
+  ticketId,
   programItemId,
   vocabularyValueId,
 }: CheckFreeInput): Promise<Result<true>> {
   const taken = await context.db.requirement.count({
-    where: { bookingId, programItemId, vocabularyValueId },
+    where: { ticketId, programItemId, vocabularyValueId },
   });
   if (taken === 0) return ok({ value: true });
-  const where = programItemId ? "The program item" : "The booking";
+  const where = programItemId ? "The program item" : "The ticket";
   const message = `${where} already has a count for the value; update it instead`;
   return conflict({ message, issues: [{ path: "vocabularyValueId", message }] });
 }

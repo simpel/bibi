@@ -4,12 +4,12 @@ import {
   createPayment,
   createStripeWebhookHandler,
   execute,
-  setBookingStatusTransitions,
+  setTicketPhaseTransitions,
 } from "../src/index";
-import { createTestBooking, memberUser } from "./booking-helpers";
-import { statusByName } from "./booking-status-helpers";
 import { unwrap } from "./helpers";
 import { paymentSetup } from "./payment-helpers";
+import { createTestTicket, memberUser } from "./ticket-helpers";
+import { phaseByName } from "./ticket-phase-helpers";
 
 export const SECRET = "whsec_test_secret";
 
@@ -53,16 +53,16 @@ export async function postEvent({ event, secret = SECRET, header }: PostInput) {
   return { status: response.status, body: (await response.json()) as { status?: string } };
 }
 
-/** A paid-for-able card payment on a booking whose Tentative status may move to Confirmed. */
+/** A paid-for-able card payment on a ticket whose Lead phase may move to Confirmed. */
 export async function webhookSetup() {
   const setup = await paymentSetup();
   const { context } = setup;
-  const tentative = await statusByName({ context, name: "Tentative" });
-  const confirmed = await statusByName({ context, name: "Confirmed" });
+  const lead = await phaseByName({ context, name: "Lead" });
+  const confirmed = await phaseByName({ context, name: "Confirmed" });
   unwrap({
     result: await execute({
-      operation: setBookingStatusTransitions,
-      input: { id: tentative.id, toStatusIds: [confirmed.id] },
+      operation: setTicketPhaseTransitions,
+      input: { id: lead.id, toPhaseIds: [confirmed.id] },
       context,
     }),
   });
@@ -71,31 +71,31 @@ export async function webhookSetup() {
 
 type SetupInput = { coordinated: boolean };
 
-/** A pending card payment; `coordinated` decides whether the booking may be confirmed. */
+/** A pending card payment; `coordinated` decides whether the ticket may be confirmed. */
 export async function pendingPayment({ coordinated }: SetupInput) {
   const setup = await webhookSetup();
   const { context } = setup;
-  const bookingId = coordinated
+  const ticketId = coordinated
     ? (
-        await createTestBooking({
+        await createTestTicket({
           context,
           entityTypeId: (
-            await context.db.booking.findUniqueOrThrow({ where: { id: setup.bookingId } })
+            await context.db.ticket.findUniqueOrThrow({ where: { id: setup.ticketId } })
           ).entityTypeId,
           customerId: setup.customerId,
           assigneeId: await memberUser({ context, name: "Coordinator" }),
         })
       ).id
-    : setup.bookingId;
+    : setup.ticketId;
   const payment = unwrap({
     result: await execute({
       operation: createPayment,
-      input: { bookingId, method: "CARD", amountMinor: 125_000 },
+      input: { ticketId, method: "CARD", amountMinor: 125_000 },
       context,
     }),
   });
   const account = setup.account.stripeAccountId ?? "";
-  return { ...setup, bookingId, payment, account };
+  return { ...setup, ticketId, payment, account };
 }
 
 export const paidEvent = ({ account, reference }: { account: string; reference: string }) =>

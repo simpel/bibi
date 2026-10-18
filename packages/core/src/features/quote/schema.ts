@@ -23,8 +23,8 @@ export const QuoteLineSchema = OrderLineSchema.extend({
 export const QuoteSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  inquiryId: z.string(),
-  version: z.number().int().describe("1 for the first quote of the inquiry, then +1 per version"),
+  ticketId: z.string(),
+  version: z.number().int().describe("1 for the first quote of the ticket, then +1 per version"),
   previousId: z.string().nullable().describe("The version this one was made from"),
   /** Changed only by the quote's own commands (`quote.send`, `quote.decline`, …). */
   quoteStatus: QuoteStatusSchema,
@@ -57,7 +57,7 @@ const QuoteTermsShape = {
 };
 
 export const QuoteCreateInputSchema = z.object({
-  inquiryId: z.string().min(1).describe("Id of the open inquiry the quote answers (inquiry.list)"),
+  ticketId: z.string().min(1).describe("Id of the open ticket the quote answers (ticket.list)"),
   ...QuoteTermsShape,
 });
 
@@ -67,7 +67,7 @@ export const QuoteUpdateInputSchema = z.object({ id: z.string().min(1), ...Quote
 export const QuoteIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const QuoteListInputSchema = z.object({
-  inquiryId: z.string().optional().describe("Only the versions of this inquiry's quote"),
+  ticketId: z.string().optional().describe("Only the versions of this ticket's quote"),
   quoteStatus: QuoteStatusSchema.optional().describe("Only quotes with this status"),
   ...PageInputShape,
 });

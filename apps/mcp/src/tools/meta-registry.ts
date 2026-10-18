@@ -1,8 +1,6 @@
 import { apiKeyMcpTools } from "../features/api-key/mcp";
 import { assignmentMcpTools } from "../features/assignment/mcp";
 import { auditLogMcpTools } from "../features/audit-log/mcp";
-import { bookingMcpTools } from "../features/booking/mcp";
-import { bookingStatusMcpTools } from "../features/booking-status/mcp";
 import { configurationMcpTools } from "../features/configuration/mcp";
 import { contactMcpTools } from "../features/contact/mcp";
 import { conversationMcpTools } from "../features/conversation/mcp";
@@ -10,7 +8,6 @@ import { customerMcpTools } from "../features/customer/mcp";
 import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { inboundEmailMcpTools } from "../features/inbound-email/mcp";
-import { inquiryMcpTools } from "../features/inquiry/mcp";
 import { itemMcpTools } from "../features/item/mcp";
 import { memberMcpTools } from "../features/member/mcp";
 import { messageMcpTools } from "../features/message/mcp";
@@ -29,6 +26,8 @@ import { setupMcpTools } from "../features/setup/mcp";
 import { sheetMcpTools } from "../features/sheet/mcp";
 import { sheetDefinitionMcpTools } from "../features/sheet-definition/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
+import { ticketMcpTools } from "../features/ticket/mcp";
+import { ticketPhaseMcpTools } from "../features/ticket-phase/mcp";
 import { userPreferenceMcpTools } from "../features/user-preference/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
 import { vocabularyMcpTools } from "../features/vocabulary/mcp";
@@ -51,13 +50,12 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...priceListMcpTools,
     ...contactMcpTools,
     ...occupancyMcpTools,
-    ...bookingStatusMcpTools,
-    ...bookingMcpTools,
+    ...ticketPhaseMcpTools,
+    ...ticketMcpTools,
     ...assignmentMcpTools,
     ...programItemMcpTools,
     ...requirementMcpTools,
     ...sheetMcpTools,
-    ...inquiryMcpTools,
     ...pipelineMcpTools,
     ...optionMcpTools,
     ...quoteMcpTools,

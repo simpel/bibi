@@ -3,9 +3,9 @@
 import { Button } from "@okazi/ui";
 import { DownloadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { downloadText } from "@/lib/download-text";
 import { useToastAction } from "@/lib/use-toast-action";
 import { exportSkillAction } from "../actions";
-import { downloadText } from "./download-text";
 
 export type ExportSkillButtonProps = { id: string };
 

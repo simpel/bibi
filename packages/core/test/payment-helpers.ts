@@ -7,9 +7,9 @@ import {
   startPaymentOnboarding,
   syncPaymentAccount,
 } from "../src/index";
-import { bookingSetup, createTestBooking } from "./booking-helpers";
 import { unwrap } from "./helpers";
 import { installFakeGateway } from "./payment-account-helpers";
+import { createTestTicket, ticketSetup } from "./ticket-helpers";
 
 export type ActivateInput = { context: ExecuteContext };
 
@@ -21,16 +21,16 @@ export async function activatePaymentAccount({ context }: ActivateInput) {
   return unwrap({ result: await execute({ operation: syncPaymentAccount, input: {}, context }) });
 }
 
-/** A booking at an organization whose payment account is active, with an in-memory provider. */
+/** A ticket at an organization whose payment account is active, with an in-memory provider. */
 export async function paymentSetup(): Promise<{
   context: ExecuteContext;
-  bookingId: string;
+  ticketId: string;
   customerId: string;
   account: { stripeAccountId: string | null };
   provider: MemoryPaymentProvider;
 }> {
-  const { context, type, customer } = await bookingSetup();
-  const booking = await createTestBooking({
+  const { context, type, customer } = await ticketSetup();
+  const ticket = await createTestTicket({
     context,
     entityTypeId: type.id,
     customerId: customer.id,
@@ -38,5 +38,5 @@ export async function paymentSetup(): Promise<{
   const account = await activatePaymentAccount({ context });
   const provider = createMemoryPaymentProvider();
   setPaymentProvider({ provider });
-  return { context, bookingId: booking.id, customerId: customer.id, account, provider };
+  return { context, ticketId: ticket.id, customerId: customer.id, account, provider };
 }

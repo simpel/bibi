@@ -2,63 +2,69 @@ import type { PipelineCard, PipelineColumn } from "@okazi/core";
 import { describe, expect, it } from "vitest";
 import { canMoveCard } from "./move-rules";
 
-const column = ({ ...overrides }: Partial<PipelineColumn>): PipelineColumn => ({
-  id: "c",
-  kind: "BOOKING",
-  title: "C",
-  color: null,
-  inquiryStatus: null,
-  bookingStatusId: null,
-  phase: null,
+const card = ({ overrides = {} }: { overrides?: Partial<PipelineCard> } = {}): PipelineCard => ({
+  id: "t1",
+  columnId: "lead",
+  reference: 1,
+  typeName: "Conference",
+  customerName: "Hisingen Energi AB",
+  startsAt: null,
+  endsAt: null,
+  quantity: 10,
+  phaseChangedAt: new Date("2026-10-01T08:00:00Z"),
+  assigneeId: null,
+  ...overrides,
+});
+
+const column = ({
+  overrides = {},
+}: {
+  overrides?: Partial<PipelineColumn>;
+} = {}): PipelineColumn => ({
+  id: "lead",
+  title: "Lead",
+  color: "#f59e0b",
+  requiresReason: false,
   closed: false,
   ...overrides,
 });
-type CardInput = { kind: PipelineCard["kind"] };
-const card = ({ kind }: CardInput): PipelineCard => ({
-  id: "x",
-  kind,
-  columnId: "c",
-  reference: null,
-  typeName: "T",
-  customerName: "Cu",
-  startsAt: null,
-  endsAt: null,
-  quantity: null,
-  assigneeId: null,
+
+const lead = column();
+const confirmed = column({ overrides: { id: "confirmed", title: "Confirmed" } });
+const lost = column({
+  overrides: { id: "lost", title: "Lost", closed: true, requiresReason: true },
 });
+const completed = column({ overrides: { id: "completed", title: "Completed", closed: true } });
+const transitions = { lead: ["confirmed", "lost", "completed"], confirmed: ["completed"] };
 
-describe("canMoveCard", () => {
-  const tentative = column({ id: "booking:a", bookingStatusId: "a" });
-  const confirmed = column({ id: "booking:b", bookingStatusId: "b" });
-  const cancelled = column({ id: "booking:c", bookingStatusId: "c", closed: true });
-  const transitions = { a: ["b", "c"], b: [] };
-
-  it("follows the organization's booking transitions", () => {
-    const input = { card: card({ kind: "BOOKING" }), transitions };
-    expect(canMoveCard({ ...input, from: tentative, to: confirmed })).toBe(true);
-    expect(canMoveCard({ ...input, from: confirmed, to: tentative })).toBe(false);
+describe("pipeline move rules (ADR 0041, 0043)", () => {
+  it("allows the organization's transitions", () => {
+    expect(canMoveCard({ card: card(), from: lead, to: confirmed, transitions })).toBe(true);
+    expect(canMoveCard({ card: card(), from: lead, to: completed, transitions })).toBe(true);
   });
 
-  it("never accepts drops on closed lanes or the same lane", () => {
-    const input = { card: card({ kind: "BOOKING" }), transitions };
-    expect(canMoveCard({ ...input, from: tentative, to: cancelled })).toBe(false);
-    expect(canMoveCard({ ...input, from: tentative, to: tentative })).toBe(false);
+  it("refuses moves the organization does not allow", () => {
+    const back = {
+      card: card({ overrides: { columnId: "confirmed" } }),
+      from: confirmed,
+      to: lead,
+      transitions,
+    };
+    expect(canMoveCard(back)).toBe(false);
   });
 
-  it("moves inquiries only from NEW to QUALIFIED", () => {
-    const input = { card: card({ kind: "INQUIRY" }), transitions };
-    const stage = ({ status }: { status: PipelineColumn["inquiryStatus"] }) =>
-      column({ id: `inquiry:${status}`, kind: "INQUIRY", inquiryStatus: status });
-    expect(
-      canMoveCard({ ...input, from: stage({ status: "NEW" }), to: stage({ status: "QUALIFIED" }) }),
-    ).toBe(true);
-    expect(
-      canMoveCard({
-        ...input,
-        from: stage({ status: "QUALIFIED" }),
-        to: stage({ status: "QUOTED" }),
-      }),
-    ).toBe(false);
-    expect(canMoveCard({ ...input, from: stage({ status: "NEW" }), to: confirmed })).toBe(false);
+  it("leaves phases that need a reason to the ticket page", () => {
+    expect(canMoveCard({ card: card(), from: lead, to: lost, transitions })).toBe(false);
+  });
+
+  it("never moves a card out of a closed lane or onto its own lane", () => {
+    const closed = {
+      card: card({ overrides: { columnId: "completed" } }),
+      from: completed,
+      to: lead,
+      transitions,
+    };
+    expect(canMoveCard(closed)).toBe(false);
+    expect(canMoveCard({ card: card(), from: lead, to: lead, transitions })).toBe(false);
   });
 });

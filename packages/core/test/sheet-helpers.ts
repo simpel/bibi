@@ -1,6 +1,6 @@
 import {
   assignAssignment,
-  changeBookingStatus,
+  changeTicketPhase,
   createEntityType,
   createFieldDefinition,
   createSheetDefinition,
@@ -9,12 +9,12 @@ import {
   updateItem,
   updateRequirement,
 } from "../src/index";
-import { memberUser } from "./booking-helpers";
-import { statusByName } from "./booking-status-helpers";
 import { unwrap } from "./helpers";
 import { createTestItem } from "./item-helpers";
 import { addProgramItem } from "./program-item-helpers";
 import { addRequirement, requirementSetup } from "./requirement-helpers";
+import { memberUser } from "./ticket-helpers";
+import { phaseByName } from "./ticket-phase-helpers";
 
 type ContextInput = { context: ExecuteContext };
 
@@ -57,24 +57,24 @@ async function createKitchenOrder({ context, entityTypeId, fieldId, listId }: De
 }
 
 /**
- * A tentative booking with the room Älvsalen on a program item 14–15, 5 gluten-free guests on
- * the booking, and the sheet definition "Kitchen order" that includes both.
+ * A tentative ticket with the room Älvsalen on a program item 14–15, 5 gluten-free guests on
+ * the ticket, and the sheet definition "Kitchen order" that includes both.
  */
 export async function sheetSetup() {
   const setup = await requirementSetup();
-  const { context, booking, morning, type, gluten, list } = setup;
+  const { context, ticket, morning, type, gluten, list } = setup;
   const { roomType, floor, room } = await createLounge({ context });
   const held = unwrap({
     result: await addProgramItem({
       context,
-      bookingId: booking.id,
+      ticketId: ticket.id,
       entityTypeId: morning.entityTypeId,
       itemId: room.id,
       from: 14,
       to: 15,
     }),
   });
-  const base = { context, bookingId: booking.id, entityTypeId: type.id };
+  const base = { context, ticketId: ticket.id, entityTypeId: type.id };
   const count = unwrap({
     result: await addRequirement({ ...base, vocabularyValueId: gluten, quantity: 5 }),
   });
@@ -89,23 +89,23 @@ export async function sheetSetup() {
 
 export type SetupResult = Awaited<ReturnType<typeof sheetSetup>>;
 
-export type ConfirmInput = { context: ExecuteContext; bookingId: string };
+export type ConfirmInput = { context: ExecuteContext; ticketId: string };
 
-/** Gives the booking a main assignee and moves it to the CONFIRMED phase. */
-export async function confirmBooking({ context, bookingId }: ConfirmInput) {
+/** Gives the ticket a main assignee and moves it to the CONFIRMED phase. */
+export async function confirmTicket({ context, ticketId }: ConfirmInput) {
   const assigneeId = await memberUser({ context, name: "Johan Ek" });
   unwrap({
     result: await execute({
       operation: assignAssignment,
-      input: { subjectType: "BOOKING", subjectId: bookingId, assigneeId },
+      input: { subjectType: "TICKET", subjectId: ticketId, assigneeId },
       context,
     }),
   });
-  const confirmed = await statusByName({ context, name: "Confirmed" });
+  const confirmed = await phaseByName({ context, name: "Confirmed" });
   unwrap({
     result: await execute({
-      operation: changeBookingStatus,
-      input: { bookingId, statusId: confirmed.id },
+      operation: changeTicketPhase,
+      input: { ticketId, phaseId: confirmed.id },
       context,
     }),
   });

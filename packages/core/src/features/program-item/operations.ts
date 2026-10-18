@@ -17,14 +17,14 @@ export const listProgramItems = defineOperation({
   kind: "query",
   description:
     "List program items (the run schedule: sessions, breaks, meals, activities), earliest " +
-    "first. Filter by booking, bookable item and a time window (from/to).",
+    "first. Filter by ticket, bookable item and a time window (from/to).",
   input: ProgramItemListInputSchema,
   output: ProgramItemListOutputSchema,
   permission: "programItem:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.programItem.findMany({
       where: {
-        ...(input.bookingId ? { bookingId: input.bookingId } : {}),
+        ...(input.ticketId ? { ticketId: input.ticketId } : {}),
         ...(input.itemId ? { itemId: input.itemId } : {}),
         ...(input.from ? { endsAt: { gt: input.from } } : {}),
         ...(input.to ? { startsAt: { lt: input.to } } : {}),

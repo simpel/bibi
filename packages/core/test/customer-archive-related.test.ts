@@ -3,72 +3,27 @@ import {
   archiveCustomer,
   archiveItem,
   archiveSetup,
-  createEntityType,
   type ExecuteContext,
   execute,
-  grantAll,
   saveItemAsPackage,
 } from "../src/index";
-import { bookingSetup, createTestBooking } from "./booking-helpers";
-import { errorCode, testContext, unwrap } from "./helpers";
-import { createTestInquiry } from "./inquiry-helpers";
+import { errorCode, unwrap } from "./helpers";
 import { createMealSetup } from "./item-choice-group-helpers";
 import { addProgramItem, programSetup } from "./program-item-helpers";
+import { createTestTicket, ticketSetup } from "./ticket-helpers";
 
 type ArchiveInput = {
   context: ExecuteContext;
   id: string;
-  archiveBookings?: boolean;
-  archiveInquiries?: boolean;
+  archiveTickets?: boolean;
 };
 
 const archive = ({ context, ...input }: ArchiveInput) =>
   execute({ operation: archiveCustomer, input, context });
 
-describe("customer.archive with inquiries (#159)", () => {
-  it("is blocked by an active inquiry unless archiveInquiries is set, then audits it", async () => {
-    const { context, customer } = await bookingSetup();
-    const inquiryType = unwrap({
-      result: await execute({
-        operation: createEntityType,
-        input: { base: "INQUIRY", name: "Meeting" },
-        context,
-      }),
-    });
-    const inquiry = await createTestInquiry({
-      context,
-      entityTypeId: inquiryType.id,
-      customerId: customer.id,
-    });
-    const refused = await archive({ context: context, id: customer.id });
-    expect(errorCode({ result: refused })).toBe("CONFLICT");
-    if (refused.ok) throw new Error("expected a conflict");
-    expect(refused.error.issues?.[0]?.path).toBe("archiveInquiries");
-
-    const reader = testContext({
-      organizationId: context.organizationId,
-      permissions: { ...grantAll({ upTo: "admin" }), inquiry: ["read" as const] },
-    });
-    const forbidden = await archive({ context: reader, id: customer.id, archiveInquiries: true });
-    expect(errorCode({ result: forbidden })).toBe("FORBIDDEN");
-
-    unwrap({
-      result: await archive({ context: context, id: customer.id, archiveInquiries: true }),
-    });
-    const row = await context.db.inquiry.findFirst({
-      where: { id: inquiry.id, status: "ARCHIVED" },
-    });
-    expect(row).not.toBeNull();
-    const audit = await context.db.auditLog.findMany({
-      where: { operation: "customer.archive", entityType: "inquiry", entityId: inquiry.id },
-    });
-    expect(audit).toHaveLength(1);
-  });
-});
-
 describe("customer.archive with packages (#151)", () => {
   it("archives the customer's packages with it, one audit row each", async () => {
-    const { context, customer } = await bookingSetup();
+    const { context, customer } = await ticketSetup();
     const { meal, cod, veal } = await createMealSetup({ context });
     const pkg = unwrap({
       result: await execute({
@@ -92,23 +47,23 @@ describe("customer.archive with packages (#151)", () => {
   });
 });
 
-describe("archiving bookings releases program items and rooms (#166, #145)", () => {
+describe("archiving tickets releases program items and rooms (#166, #145)", () => {
   it("frees the room after the customer cascade and archives the program item", async () => {
-    const { context, booking, type, room, setup } = await programSetup();
-    const base = { context, bookingId: booking.id, entityTypeId: type.id, itemId: room.id };
+    const { context, ticket, type, room, setup } = await programSetup();
+    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
       result: await addProgramItem({ ...base, from: 10, to: 12, setupId: setup.id }),
     });
-    const other = await createTestBooking({
+    const other = await createTestTicket({
       context,
-      entityTypeId: booking.entityTypeId,
-      customerId: booking.customerId,
+      entityTypeId: ticket.entityTypeId,
+      customerId: ticket.customerId,
     });
-    const clash = await addProgramItem({ ...base, bookingId: other.id, from: 10, to: 12 });
+    const clash = await addProgramItem({ ...base, ticketId: other.id, from: 10, to: 12 });
     expect(errorCode({ result: clash })).toBe("CONFLICT");
 
     unwrap({
-      result: await archive({ context: context, id: booking.customerId, archiveBookings: true }),
+      result: await archive({ context: context, id: ticket.customerId, archiveTickets: true }),
     });
 
     const archived = await context.db.programItem.findFirst({
@@ -128,8 +83,8 @@ describe("archiving bookings releases program items and rooms (#166, #145)", () 
 
 describe("item.archive and setup.archive with program items", () => {
   it("are refused while an active program item uses the item or the setup", async () => {
-    const { context, booking, type, room, setup } = await programSetup();
-    const base = { context, bookingId: booking.id, entityTypeId: type.id, itemId: room.id };
+    const { context, ticket, type, room, setup } = await programSetup();
+    const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
     unwrap({ result: await addProgramItem({ ...base, from: 10, to: 12, setupId: setup.id }) });
     const item = await execute({ operation: archiveItem, input: { id: room.id }, context });
     expect(errorCode({ result: item })).toBe("CONFLICT");

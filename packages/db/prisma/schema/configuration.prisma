@@ -6,8 +6,7 @@ enum EntityBase {
   ITEM
   CUSTOMER
   CONTACT
-  INQUIRY
-  BOOKING
+  TICKET
   REQUIREMENT
   PROGRAM_ITEM
 }
@@ -48,17 +47,16 @@ model EntityType {
   items          Item[]
   customers      Customer[]
   contacts       Contact[]
-  bookings       Booking[]
+  tickets        Ticket[]
   programItems   ProgramItem[]
   requirements   Requirement[]
-  inquiries      Inquiry[]
 
   @@unique([id, organizationId])
   @@index([organizationId, base, status])
 }
 
 /// Field definition – one field of a type. Values live as JSON on the row, keyed by `key`.
-/// A LINK field holds the id of one record of `linkTypeId` (an item, customer, contact or booking type).
+/// A LINK field holds the id of one record of `linkTypeId` (an item, customer, contact or ticket type).
 model FieldDefinition {
   id             String       @id @default(cuid(2))
   organizationId String
@@ -102,16 +100,16 @@ model Vocabulary {
 
 /// List value – one value of a list, e.g. Gluten.
 model VocabularyValue {
-  id             String       @id @default(cuid(2))
+  id             String        @id @default(cuid(2))
   organizationId String
   vocabularyId   String
   name           String
-  position       Int          @default(0)
-  status         RecordStatus @default(ACTIVE)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  position       Int           @default(0)
+  status         RecordStatus  @default(ACTIVE)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   createdBy      String?
-  vocabulary     Vocabulary   @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
+  vocabulary     Vocabulary    @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
   requirements   Requirement[]
 
   @@unique([id, organizationId])
@@ -120,13 +118,13 @@ model VocabularyValue {
 
 /// Setup – an organization's own setup with changeover time, e.g. Theatre or U-shape.
 model Setup {
-  id                String       @id @default(cuid(2))
+  id                String        @id @default(cuid(2))
   organizationId    String
   name              String
-  changeoverMinutes Int          @default(0)
-  status            RecordStatus @default(ACTIVE)
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  changeoverMinutes Int           @default(0)
+  status            RecordStatus  @default(ACTIVE)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
   createdBy         String?
   items             ItemSetup[]
   programItems      ProgramItem[]

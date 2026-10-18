@@ -7,7 +7,7 @@ import { MoreHint } from "./more-hint";
 
 export type PaymentTableViewProps = GenerativeProps<"payment-table">;
 
-/** A page of payments requested for a booking, newest first. */
+/** A page of payments requested for a ticket, newest first. */
 export function PaymentTableView({ items, nextCursor }: PaymentTableViewProps) {
   return (
     <Card data-slot="payment-table" className="px-4 shadow-none">

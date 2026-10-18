@@ -7,7 +7,6 @@ import { execute } from "../../operations/execute";
 import { grantAll } from "../../permissions/permission-set";
 import { applyPaymentAccountSignal } from "../payment-account/apply-signal-operation";
 import { applyPaymentSignal } from "./apply-signal-operation";
-import { confirmBookingAfterPayment } from "./confirm-booking";
 import { type StripeAction, type StripeEvent, toStripeAction } from "./stripe-webhook-event";
 import type { PaymentSignal } from "./webhook-schema";
 
@@ -42,12 +41,10 @@ async function organizationOf({ db, action }: { db: Db; action: StripeAction }) 
 
 type ApplyInput = { context: ExecuteContext; signal: PaymentSignal };
 
+/** Sets the payment's status only: a payment never moves the ticket's phase (ADR 0043). */
 async function applyToPayment({ context, signal }: ApplyInput): Promise<Result<true>> {
   const applied = await execute({ operation: applyPaymentSignal, input: signal, context });
   if (!applied.ok) return err({ error: applied.error });
-  if (signal.kind === "paid" && applied.value.changed) {
-    await confirmBookingAfterPayment({ context, bookingId: applied.value.bookingId });
-  }
   return ok({ value: true });
 }
 

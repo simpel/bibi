@@ -3,11 +3,11 @@ import { tool } from "./parity-entities";
 import { ASSIGNMENTS_FIELD, gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
-/** The inquiry made earlier gets the seeded member as main assignee and follower (ADR 0034). */
+/** The ticket made earlier gets the seeded member as main assignee and follower (ADR 0034). */
 export const assignment = (): ParityEntity => ({
   name: "assignment",
   create: async ({ mcp, made }) => {
-    const subject = { subjectType: "INQUIRY", subjectId: made.inquiry.id };
+    const subject = { subjectType: "TICKET", subjectId: made.ticket.id };
     const userId = made.memberSeed.userId;
     await tool({ mcp, name: "assignment_assign", args: { ...subject, assigneeId: userId } });
     return tool({ mcp, name: "assignment_follow", args: { ...subject, userId } });

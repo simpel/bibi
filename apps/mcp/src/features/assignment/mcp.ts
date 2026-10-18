@@ -2,7 +2,7 @@ import { mcpTool, text } from "../../tools/meta";
 
 type SlotInput = { input: Record<string, unknown> };
 
-/** "booking b1" or "booking b1 (responsibility r1)". */
+/** "ticket b1" or "ticket b1 (responsibility r1)". */
 const slot = ({ input }: SlotInput): string =>
   `${String(input.subjectType).toLowerCase()} ${text({ value: input.subjectId })}${
     input.responsibilityId ? ` (responsibility ${text({ value: input.responsibilityId })})` : ""

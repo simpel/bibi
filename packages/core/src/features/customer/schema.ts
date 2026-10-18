@@ -17,10 +17,10 @@ export const CustomerSchema = z.object({
   paymentTermsDays: z.number().int().nullable(),
   creditLimitMinor: z.number().int().nullable(),
   fields: FieldValuesSchema,
-  bookingCount: z
+  ticketCount: z
     .number()
     .int()
-    .describe("Number of the customer's bookings that are not archived; each blocks archiving it"),
+    .describe("Number of the customer's tickets that are not archived; each blocks archiving it"),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -69,28 +69,21 @@ export const CustomerIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const CustomerArchiveInputSchema = z.object({
   id: z.string().min(1),
-  archiveBookings: z
+  archiveTickets: z
     .boolean()
     .default(false)
     .describe(
-      "Also archive all of the customer's bookings that are not archived, in every status. " +
-        "Without it, any such booking blocks archiving the customer.",
+      "Also archive all of the customer's tickets that are not archived, in every phase. " +
+        "Without it, any such ticket blocks archiving the customer.",
     ),
-  archiveInquiries: z
-    .boolean()
-    .default(false)
-    .describe(
-      "Also archive all of the customer's active inquiries. " +
-        "Without it, any such inquiry blocks archiving the customer.",
-    ),
-  expectedBookingCount: z
+  expectedTicketCount: z
     .number()
     .int()
     .min(0)
     .optional()
     .describe(
-      "With archiveBookings: the number of not archived bookings the caller saw. Unless exactly " +
-        "that many bookings are archived, the archive is refused with CONFLICT. In an assistant " +
+      "With archiveTickets: the number of not archived tickets the caller saw. Unless exactly " +
+        "that many tickets are archived, the archive is refused with CONFLICT. In an assistant " +
         "proposal the server sets it to the current count; a value sent by the assistant is replaced.",
     ),
 });

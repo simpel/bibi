@@ -65,10 +65,7 @@ export type { ResolveContext } from "./server/resolve-user";
 export type { AssistantServerOptions } from "./server/server-options";
 export { LOCAL_SKILL_TOOLS } from "./skills/create-skill-tools";
 export type { AssignmentWire } from "./ui-contract/assignment-entries";
-export type { BookingWire } from "./ui-contract/booking-entries";
-export type { BookingStatusWire } from "./ui-contract/booking-status-entries";
 export type { InboundEmailWire } from "./ui-contract/inbound-email-entries";
-export type { InquiryWire } from "./ui-contract/inquiry-entries";
 export type { ItemResolutionWire } from "./ui-contract/item-resolution-entries";
 export type { OptionWire } from "./ui-contract/option-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
@@ -82,6 +79,8 @@ export { type ResolveToolUiInput, resolveToolUi } from "./ui-contract/resolve-to
 export type { ResponsibilityWire } from "./ui-contract/responsibility-entries";
 export type { SheetDefinitionWire } from "./ui-contract/sheet-definition-entries";
 export type { SheetWire } from "./ui-contract/sheet-entries";
+export type { TicketWire } from "./ui-contract/ticket-entries";
+export type { TicketPhaseWire } from "./ui-contract/ticket-phase-entries";
 export { GENERIC_UI_TOOLS, TOOL_UI_REGISTRY } from "./ui-contract/tool-ui-registry";
 export type {
   ToolUi,

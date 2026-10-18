@@ -1,11 +1,11 @@
-/// A payment requested from the customer for a booking (ADR 0028, 0029): a card checkout or a
+/// A payment requested from the customer for a ticket (ADR 0028, 0029): a card checkout or a
 /// Stripe invoice, charged directly on the organization's connected account (direct charge, the
 /// venue is the merchant). Created by `payment.create`; the status follows the provider (webhook).
 /// Never deleted: `status` is its lifecycle. Deposit and Invoice link here once they exist.
 model Payment {
   id                  String        @id @default(cuid(2))
   organizationId      String
-  bookingId           String
+  ticketId            String
   method              PaymentMethod
   status              PaymentStatus @default(PENDING)
   /// Amount in minor units (öre for SEK).
@@ -31,11 +31,11 @@ model Payment {
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
   createdBy           String?
-  booking             Booking       @relation(fields: [bookingId, organizationId], references: [id, organizationId])
+  ticket              Ticket        @relation(fields: [ticketId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@unique([providerReference])
-  @@index([organizationId, bookingId])
+  @@index([organizationId, ticketId])
 }
 
 enum PaymentMethod {

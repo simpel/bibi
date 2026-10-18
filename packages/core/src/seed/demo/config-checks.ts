@@ -7,7 +7,7 @@ export type CheckDemoConfigInput = { context: ExecuteContext; org: DemoOrg };
 
 type Count = { what: string; actual: number; expected: number };
 
-/** Slices 4–5: customers, their contact persons and the bookings. */
+/** Slices 4–5: customers, their contact persons and the tickets. */
 async function customerCounts({ context, org }: CheckDemoConfigInput): Promise<Count[]> {
   const contacts = org.customers.reduce((sum, customer) => sum + customer.contacts.length, 0);
   return [
@@ -17,7 +17,7 @@ async function customerCounts({ context, org }: CheckDemoConfigInput): Promise<C
       expected: org.customers.length,
     },
     { what: "contacts", actual: await context.db.contact.count(), expected: contacts },
-    { what: "bookings", actual: await context.db.booking.count(), expected: org.bookings.length },
+    { what: "tickets", actual: await context.db.ticket.count(), expected: org.tickets.length },
   ];
 }
 

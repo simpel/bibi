@@ -1,31 +1,31 @@
 import { describe, expect, it } from "vitest";
 import {
   assignAssignment,
-  changeBookingStatus,
-  createBooking,
+  changeTicketPhase,
+  createTicket,
   execute,
   listAssignments,
   unfollowAssignment,
 } from "../src/index";
-import { assignTo, bookingSubject, followAs } from "./assignment-helpers";
-import { bookingSetup, createTestBooking, memberUser } from "./booking-helpers";
-import { statusByName } from "./booking-status-helpers";
+import { assignTo, followAs, ticketSubject } from "./assignment-helpers";
 import { errorCode, unwrap } from "./helpers";
 import { testOrg } from "./org-helpers";
+import { createTestTicket, memberUser, ticketSetup } from "./ticket-helpers";
+import { phaseByName } from "./ticket-phase-helpers";
 
 async function setup() {
-  const { context, type, customer } = await bookingSetup();
-  const booking = await createTestBooking({
+  const { context, type, customer } = await ticketSetup();
+  const ticket = await createTestTicket({
     context,
     entityTypeId: type.id,
     customerId: customer.id,
   });
-  return { context, type, customer, booking, subject: bookingSubject(booking) };
+  return { context, type, customer, ticket, subject: ticketSubject(ticket) };
 }
 
 describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
   it("sets one assignee plus followers and audits every change", async () => {
-    const { context, booking, subject } = await setup();
+    const { context, ticket, subject } = await setup();
     const erik = await memberUser({ context, name: "Erik Lund" });
     const johan = await memberUser({ context, name: "Johan Ek" });
     const assigned = await assignTo({ context, ...subject, assigneeId: johan });
@@ -57,11 +57,11 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
       "assignment.unfollow",
     ]);
     expect(rows[0]?.entityType).toBe("assignment");
-    expect(booking.id).toBe(assigned.subjectId);
+    expect(ticket.id).toBe(assigned.subjectId);
   });
 
   it("refuses people who are not members, also on create", async () => {
-    const { context, type, customer, booking, subject } = await setup();
+    const { context, type, customer, subject } = await setup();
     const elsewhere = await memberUser({ context: await testOrg(), name: "Outsider" });
     const assign = await execute({
       operation: assignAssignment,
@@ -70,12 +70,10 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
     });
     expect(assign.ok ? null : assign.error.issues[0]?.path).toBe("assigneeId");
     const create = await execute({
-      operation: createBooking,
+      operation: createTicket,
       input: {
         entityTypeId: type.id,
         customerId: customer.id,
-        startsAt: booking.startsAt,
-        endsAt: booking.endsAt,
         assigneeId: "user_unknown",
       },
       context,
@@ -83,7 +81,7 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
     expect(create.ok ? null : create.error.issues[0]?.path).toBe("assigneeId");
   });
 
-  it("refuses subjects of another organization and responsibilities off a booking", async () => {
+  it("refuses subjects of another organization and responsibilities off a ticket", async () => {
     const { context, subject } = await setup();
     const other = await testOrg();
     const johan = await memberUser({ context: other, name: "Johan Ek" });
@@ -103,15 +101,15 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
     expect(errorCode({ result: item })).toBe("NOT_FOUND");
   });
 
-  it("keeps the booking's main assignee from the CONFIRMED phase on", async () => {
-    const { context, booking, subject } = await setup();
-    const confirmed = await statusByName({ context, name: "Confirmed" });
-    const move = { bookingId: booking.id, statusId: confirmed.id };
-    const refused = await execute({ operation: changeBookingStatus, input: move, context });
+  it("keeps the ticket's main assignee in a phase that requires one", async () => {
+    const { context, ticket, subject } = await setup();
+    const confirmed = await phaseByName({ context, name: "Confirmed" });
+    const move = { ticketId: ticket.id, phaseId: confirmed.id };
+    const refused = await execute({ operation: changeTicketPhase, input: move, context });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     const johan = await memberUser({ context, name: "Johan Ek" });
     await assignTo({ context, ...subject, assigneeId: johan });
-    unwrap({ result: await execute({ operation: changeBookingStatus, input: move, context }) });
+    unwrap({ result: await execute({ operation: changeTicketPhase, input: move, context }) });
     const removed = await execute({
       operation: assignAssignment,
       input: { ...subject, assigneeId: null },

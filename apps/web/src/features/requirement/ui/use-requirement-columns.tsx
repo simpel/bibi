@@ -27,7 +27,7 @@ export function useRequirementColumns({ data, canWrite }: UseRequirementColumnsI
         accessorFn: (row) =>
           row.programItemId
             ? nameOf({ options: data.programItems, id: row.programItemId })
-            : t("wholeBooking"),
+            : t("wholeTicket"),
       },
       {
         id: "type",

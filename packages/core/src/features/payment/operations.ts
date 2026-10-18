@@ -22,14 +22,14 @@ export const listPayments = defineOperation({
   name: "payment.list",
   kind: "query",
   description:
-    "Payments requested for a booking, newest first: method (CARD or INVOICE), status, amount " +
+    "Payments requested for a ticket, newest first: method (CARD or INVOICE), status, amount " +
     "in minor units, currency and the customer's payment link.",
   input: PaymentListInputSchema,
   output: PaymentListOutputSchema,
   permission: "payment:read",
-  handler: async ({ input: { bookingId, limit, cursor }, context }) => {
+  handler: async ({ input: { ticketId, limit, cursor }, context }) => {
     const rows = await context.db.payment.findMany({
-      where: { bookingId },
+      where: { ticketId },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       ...pageArgs({ limit, cursor }),
     });

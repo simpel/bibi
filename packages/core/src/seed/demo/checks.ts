@@ -3,14 +3,16 @@ import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { checkDemoAssignments } from "./assignment-checks";
 import { checkDemoConfig } from "./config-checks";
+import { checkDemoTickets } from "./ticket-checks";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
  * The checks in `docs/demo-seed.md` that slices 1–5 can verify: the member count, everyone
- * has their documented role, the configuration and items (`checkDemoConfig`), the bookings'
- * assignees and followers (`checkDemoAssignments`), and every write
+ * has their documented role, the configuration and items (`checkDemoConfig`), the phases and
+ * tickets per phase (`checkDemoTickets`), the tickets' assignees and followers
+ * (`checkDemoAssignments`), and every write
  * was audited as SYSTEM. Returns failure messages.
  */
 export async function checkDemoOrg({ context, org }: CheckDemoOrgInput): Promise<string[]> {
@@ -29,6 +31,7 @@ export async function checkDemoOrg({ context, org }: CheckDemoOrgInput): Promise
     }
   }
   failures.push(...(await checkDemoConfig({ context, org })));
+  failures.push(...(await checkDemoTickets({ context, org })));
   failures.push(...(await checkDemoAssignments({ context, org })));
 
   // Check 7 (ADR 0025): every write (organization-scoped) must have an audit row as SYSTEM.

@@ -4,8 +4,7 @@ import type { CallerAbilities } from "@/server/caller-abilities";
 export type CreateGroup = "work" | "catalog" | "settings";
 
 export type CreateKey =
-  | "booking"
-  | "inquiry"
+  | "ticket"
   | "customer"
   | "item"
   | "venue"
@@ -16,7 +15,7 @@ export type CreateKey =
   | "responsibility"
   | "sheet"
   | "priceList"
-  | "bookingStatus"
+  | "ticketPhase"
   | "member";
 
 export type CreateItem = {

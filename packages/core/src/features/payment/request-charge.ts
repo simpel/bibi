@@ -42,9 +42,9 @@ export async function requestCharge({
     amountMinor: input.amountMinor,
     currency: input.currency,
     applicationFeeMinor,
-    description: input.description ?? `Booking #${target.booking.reference}`,
+    description: input.description ?? `Ticket #${target.ticket.reference}`,
     idempotencyKey: `okazi-payment-${paymentId}`,
-    metadata: { paymentId, bookingId: target.booking.id, organizationId },
+    metadata: { paymentId, ticketId: target.ticket.id, organizationId },
   };
   const provider = getPaymentProvider();
   if (input.method === "CARD") {

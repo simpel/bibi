@@ -1,4 +1,4 @@
-import type { Booking } from "@okazi/db";
+import type { Ticket } from "@okazi/db";
 import type { OperationContext } from "../../operations/types";
 import type { SheetDefinitionDto } from "../sheet-definition/schema";
 import { itemRows } from "./item-rows";
@@ -7,32 +7,32 @@ import type { SheetContent } from "./schema";
 
 export type BuildSheetContentInput = {
   context: Pick<OperationContext, "db">;
-  booking: Booking;
+  ticket: Ticket;
   definition: SheetDefinitionDto;
 };
 
 /**
- * The snapshot a sheet version holds: the booking, then what the definition includes (items of
+ * The snapshot a sheet version holds: the ticket, then what the definition includes (items of
  * its types with its fields, counts of its lists). Reads current data only; nothing is written.
  */
 export async function buildSheetContent({
   context,
-  booking,
+  ticket,
   definition,
 }: BuildSheetContentInput): Promise<SheetContent> {
   const [items, requirements] = await Promise.all([
-    itemRows({ context, bookingId: booking.id, definition }),
-    requirementRows({ context, bookingId: booking.id, definition }),
+    itemRows({ context, ticketId: ticket.id, definition }),
+    requirementRows({ context, ticketId: ticket.id, definition }),
   ]);
   const head = {
-    kind: "BOOKING",
-    key: booking.id,
+    kind: "TICKET",
+    key: ticket.id,
     parentKey: null,
-    label: String(booking.reference),
+    label: String(ticket.reference),
     itemName: null,
-    quantity: booking.guaranteedHeadcount ?? booking.estimatedHeadcount,
-    startsAt: booking.startsAt.toISOString(),
-    endsAt: booking.endsAt.toISOString(),
+    quantity: ticket.guaranteedHeadcount ?? ticket.estimatedHeadcount ?? ticket.quantity,
+    startsAt: ticket.desiredStartsAt?.toISOString() ?? null,
+    endsAt: ticket.desiredEndsAt?.toISOString() ?? null,
     values: {},
   } as const;
   return { rows: [head, ...items, ...requirements] };

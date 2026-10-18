@@ -47,6 +47,6 @@ export {
   type SentMail,
   SentMailSchema,
 } from "./schema";
-export { type SendBookingMailInput, sendBookingMail } from "./send-booking-mail";
 export { type SendMailInput, sendMail } from "./send-mail";
+export { type SendTicketMailInput, sendTicketMail } from "./send-ticket-mail";
 export { type CreateSmtpProviderInput, createSmtpProvider } from "./smtp/create-smtp-provider";

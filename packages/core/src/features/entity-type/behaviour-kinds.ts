@@ -5,8 +5,7 @@ export const ENTITY_BASES = [
   "ITEM",
   "CUSTOMER",
   "CONTACT",
-  "INQUIRY",
-  "BOOKING",
+  "TICKET",
   "REQUIREMENT",
   "PROGRAM_ITEM",
 ] as const;

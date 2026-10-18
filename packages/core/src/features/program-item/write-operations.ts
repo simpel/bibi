@@ -23,7 +23,7 @@ export const createProgramItem = defineOperation({
   name: "programItem.create",
   kind: "command",
   description:
-    "Add a program item (a row in the booking's run schedule) of one of the organization's " +
+    "Add a program item (a row in the ticket's run schedule) of one of the organization's " +
     `program item types. ${OCCUPY_NOTE}`,
   input: ProgramItemCreateInputSchema,
   output: ProgramItemSchema,
@@ -51,7 +51,7 @@ export const updateProgramItem = defineOperation({
     const after = { ...place, endsAt: data.endsAt ?? before.endsAt };
     for (const check of [
       checkPeriod(after),
-      await checkPlace({ context, bookingId: before.bookingId, itemId, setupId }),
+      await checkPlace({ context, ticketId: before.ticketId, itemId, setupId }),
     ]) {
       if (!check.ok) return check;
     }

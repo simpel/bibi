@@ -27,7 +27,7 @@ const assignmentCard = uiEntry({
   toProps: ({ value }) => ({ assignment: value }),
 });
 
-/** Tool → component for who answers for and follows inquiries, bookings and items (ADR 0034). */
+/** Tool → component for who answers for and follows tickets and items (ADR 0034). */
 export const ASSIGNMENT_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   assignment_list: assignmentTable,
   assignment_listMine: assignmentTable,

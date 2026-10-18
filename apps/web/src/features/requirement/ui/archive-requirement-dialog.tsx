@@ -13,7 +13,7 @@ export type ArchiveRequirementDialogProps = {
   onOpenChange: (open: boolean) => void;
 };
 
-/** Remove confirmation; the booking page then reloads without the count. */
+/** Remove confirmation; the ticket page then reloads without the count. */
 export function ArchiveRequirementDialog({
   requirement,
   name,

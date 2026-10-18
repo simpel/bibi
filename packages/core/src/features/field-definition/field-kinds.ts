@@ -26,7 +26,7 @@ export const isChoiceKind = ({ kind }: IsChoiceKindInput) =>
   kind === "CHOICE" || kind === "MULTI_CHOICE";
 
 /** Bases whose types have records a LINK field can point to. */
-export const LINKABLE_BASES = ["ITEM", "CUSTOMER", "CONTACT", "BOOKING"] as const;
+export const LINKABLE_BASES = ["ITEM", "CUSTOMER", "CONTACT", "TICKET"] as const;
 export type LinkableBase = (typeof LINKABLE_BASES)[number];
 
 export type IsLinkableBaseInput = { base: string };

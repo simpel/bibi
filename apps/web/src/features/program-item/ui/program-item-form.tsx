@@ -10,7 +10,7 @@ import { useProgramItemForm } from "./use-program-item-form";
 
 export type ProgramItemFormProps = {
   data: ProgramFormData;
-  bookingId: string;
+  ticketId: string;
   startsAt: Date;
   programItem?: ProgramItemDto | undefined;
   onDone: () => void;

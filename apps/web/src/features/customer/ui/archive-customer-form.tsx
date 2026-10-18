@@ -5,14 +5,13 @@ import { useTranslations } from "next-intl";
 import { ROUTES } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { archiveCustomerAction } from "../actions";
-import { ArchiveBookingsField } from "./archive-bookings-field";
-import { ArchiveInquiriesField } from "./archive-inquiries-field";
+import { ArchiveTicketsField } from "./archive-tickets-field";
 import { useArchiveCustomerForm } from "./use-archive-customer-form";
 
 export type ArchiveCustomerFormProps = { customer: CustomerDto; onClose: () => void };
 
 /**
- * Bookings that are not archived block archiving the customer, whatever their status (#134):
+ * Tickets that are not archived block archiving the customer, whatever their status (#134):
  * the form says how many, and confirm stays disabled until the box to archive them too is
  * ticked. The count shown is bound to the input (#144). The detail page is gone afterwards, so
  * go back to the list.
@@ -21,28 +20,27 @@ export function ArchiveCustomerForm({ customer, onClose }: ArchiveCustomerFormPr
   const t = useTranslations("customer");
   const common = useTranslations("common");
   const router = useRouter();
-  const count = customer.bookingCount;
-  const form = useArchiveCustomerForm({ id: customer.id, bookingCount: count });
-  const blocked = count > 0 && !form.watch("archiveBookings");
+  const count = customer.ticketCount;
+  const form = useArchiveCustomerForm({ id: customer.id, ticketCount: count });
+  const blocked = count > 0 && !form.watch("archiveTickets");
   const { submit, pending } = useFormAction({
     form,
     action: ({ values }) => archiveCustomerAction({ values }),
     messages: {
       pending: t("archiving"),
-      success: count > 0 ? t("archivedWithBookings", { count }) : t("archived"),
+      success: count > 0 ? t("archivedWithTickets", { count }) : t("archived"),
     },
     onSuccess: () => {
       onClose();
       router.replace(ROUTES.customers);
     },
-    // A CONFLICT may mean the booking count changed since the dialog opened: reload the count.
+    // A CONFLICT may mean the ticket count changed since the dialog opened: reload the count.
     onError: () => router.refresh(),
   });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
-        {count > 0 ? <ArchiveBookingsField form={form} count={count} /> : null}
-        <ArchiveInquiriesField form={form} />
+        {count > 0 ? <ArchiveTicketsField form={form} count={count} /> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onClose}>
             {common("cancel")}

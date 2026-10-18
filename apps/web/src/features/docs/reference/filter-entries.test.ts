@@ -20,7 +20,7 @@ const entry = ({ id, group, summary }: EntryInput): ReferenceEntry => ({
 const ENTRIES = [
   entry({ id: "list", group: "venue", summary: "List venues" }),
   entry({ id: "get", group: "venue", summary: "Get one venue" }),
-  entry({ id: "list", group: "booking", summary: "List bookings" }),
+  entry({ id: "list", group: "ticket", summary: "List tickets" }),
 ];
 
 describe("filterEntries", () => {
@@ -28,13 +28,13 @@ describe("filterEntries", () => {
     const groups = filterEntries({ entries: ENTRIES, query: "" });
     expect(groups.map((group) => [group.group, group.entries.length])).toEqual([
       ["venue", 2],
-      ["booking", 1],
+      ["ticket", 1],
     ]);
   });
 
   it("matches case-insensitively and drops empty groups", () => {
-    const groups = filterEntries({ entries: ENTRIES, query: "BOOKING" });
+    const groups = filterEntries({ entries: ENTRIES, query: "TICKET" });
     expect(groups).toHaveLength(1);
-    expect(groups[0]?.group).toBe("booking");
+    expect(groups[0]?.group).toBe("ticket");
   });
 });

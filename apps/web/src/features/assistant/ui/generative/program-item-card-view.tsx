@@ -3,7 +3,7 @@
 import { Link } from "@okazi/i18n/navigation";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
-import { bookingRoute } from "@/lib/routes";
+import { ticketRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";
 import { occupancyPeriod } from "./occupancy-period";
@@ -14,7 +14,7 @@ export type ProgramItemCardViewProps = GenerativeProps<"program-item-card">;
 export function ProgramItemCardView({ programItem }: ProgramItemCardViewProps) {
   const t = useTranslations("assistant.ui.programItem");
   const format = useFormatter();
-  const href = bookingRoute({ id: programItem.bookingId });
+  const href = ticketRoute({ id: programItem.ticketId });
   const { quantity } = programItem;
   return (
     <Card data-slot="program-item-card" className="shadow-none">
@@ -30,7 +30,7 @@ export function ProgramItemCardView({ programItem }: ProgramItemCardViewProps) {
           <p key={line}>{line}</p>
         ))}
         <Link href={href} className="text-primary hover:underline">
-          {t("openBooking")}
+          {t("openTicket")}
         </Link>
       </CardContent>
     </Card>

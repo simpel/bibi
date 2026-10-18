@@ -4,22 +4,22 @@ import type { SheetRow } from "./schema";
 
 export type RequirementRowsInput = {
   context: Pick<OperationContext, "db">;
-  bookingId: string;
+  ticketId: string;
   definition: Pick<SheetDefinitionDto, "vocabularyIds">;
 };
 
 /**
- * One row per count on the booking or its program items for the included lists. The key is
+ * One row per count on the ticket or its program items for the included lists. The key is
  * the level plus the value (one active count per both), so a count keeps its row across versions.
  * Counts only, never a person (ADR 0021).
  */
 export async function requirementRows({
   context,
-  bookingId,
+  ticketId,
   definition,
 }: RequirementRowsInput): Promise<SheetRow[]> {
   const rows = await context.db.requirement.findMany({
-    where: { bookingId, vocabularyValue: { vocabularyId: { in: definition.vocabularyIds } } },
+    where: { ticketId, vocabularyValue: { vocabularyId: { in: definition.vocabularyIds } } },
     include: { vocabularyValue: { select: { name: true, vocabularyId: true } } },
     orderBy: [{ createdAt: "asc" }, { id: "asc" }],
   });
@@ -30,7 +30,7 @@ export async function requirementRows({
   const names = new Map(lists.map((list) => [list.id, list.name]));
   return rows.map((row) => ({
     kind: "REQUIREMENT",
-    key: `${row.programItemId ?? "booking"}:${row.vocabularyValueId}`,
+    key: `${row.programItemId ?? "ticket"}:${row.vocabularyValueId}`,
     parentKey: row.programItemId,
     label: row.vocabularyValue.name,
     itemName: null,

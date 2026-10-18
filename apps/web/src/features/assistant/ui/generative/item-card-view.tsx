@@ -46,7 +46,7 @@ function Behaviours({ item }: BehavioursProps) {
   return (
     <>
       <PricedDisplay title={t("sections.price")} price={price} />
-      <BookableDisplay title={t("sections.booking")} duration={duration} />
+      <BookableDisplay title={t("sections.bookable")} duration={duration} />
       <BehaviourDisplay
         behaviour="SETUPS"
         title={t("sections.setups")}

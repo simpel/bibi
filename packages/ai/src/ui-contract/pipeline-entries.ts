@@ -6,7 +6,11 @@ import { uiEntry } from "./ui-entry";
 /** JSON form of the pipeline board as tool results carry it (dates = ISO strings). */
 export const PipelineBoardWireSchema = PipelineBoardSchema.extend({
   cards: z.array(
-    PipelineCardSchema.extend({ startsAt: z.string().nullable(), endsAt: z.string().nullable() }),
+    PipelineCardSchema.extend({
+      startsAt: z.string().nullable(),
+      endsAt: z.string().nullable(),
+      phaseChangedAt: z.string(),
+    }),
   ),
 });
 
@@ -18,7 +22,7 @@ const pipelineBoard = uiEntry({
   toProps: ({ value }) => ({ board: value }),
 });
 
-/** Tool → component for the inquiry and booking pipeline (ADR 0041). */
+/** Tool → component for the ticket pipeline (ADR 0041, 0043). */
 export const PIPELINE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   pipeline_board: pipelineBoard,
 };

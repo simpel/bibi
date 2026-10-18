@@ -12,28 +12,28 @@ enum OptionStatus {
 /// is no longer `ACTIVE`. `sequence` is the order options were placed in and breaks ties.
 /// Each option holds one `OPTION` occupancy (`sourceType = "option"`).
 model Option {
-  id              String        @id @default(cuid(2))
+  id              String       @id @default(cuid(2))
   organizationId  String
   itemId          String
-  /// The inquiry the option was placed for (optional).
-  inquiryId       String?
+  /// The ticket the option was placed for (optional).
+  ticketId        String?
   startsAt        DateTime
   endsAt          DateTime
   expiresAt       DateTime
   rank            Int?
-  sequence        Int           @default(autoincrement())
-  optionStatus    OptionStatus  @default(ACTIVE)
-  statusChangedAt DateTime      @default(now())
+  sequence        Int          @default(autoincrement())
+  optionStatus    OptionStatus @default(ACTIVE)
+  statusChangedAt DateTime     @default(now())
   note            String?
-  status          RecordStatus  @default(ACTIVE)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  status          RecordStatus @default(ACTIVE)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
   createdBy       String?
-  item            Item          @relation(fields: [itemId, organizationId], references: [id, organizationId])
-  inquiry         Inquiry?      @relation(fields: [inquiryId, organizationId], references: [id, organizationId])
+  item            Item         @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  ticket          Ticket?      @relation(fields: [ticketId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, itemId, optionStatus, startsAt])
   @@index([organizationId, optionStatus, expiresAt])
-  @@index([organizationId, inquiryId])
+  @@index([organizationId, ticketId])
 }

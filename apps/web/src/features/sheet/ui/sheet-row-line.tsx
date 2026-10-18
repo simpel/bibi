@@ -10,7 +10,7 @@ export type SheetRowLineProps = {
   row: RowFacts;
   /** The marker when the row differs from the last sent version. */
   change?: SheetChange["change"];
-  /** REQUIREMENT: the program item it applies to; null = the whole booking. */
+  /** REQUIREMENT: the program item it applies to; null = the whole ticket. */
   parentKey?: string | null;
 };
 
@@ -38,12 +38,12 @@ function Period({ row }: { row: RowFacts }) {
 
 function Title({ row }: { row: RowFacts }) {
   const t = useTranslations("sheet");
-  if (row.kind === "BOOKING") return <>{t("booking", { reference: row.label })}</>;
+  if (row.kind === "TICKET") return <>{t("ticket", { reference: row.label })}</>;
   const count = row.kind === "REQUIREMENT" && row.quantity !== null ? ` × ${row.quantity}` : "";
   return <>{`${row.label}${count}`}</>;
 }
 
-/** One sheet row with its ★ marker: the booking, an item with its fields, or a count. */
+/** One sheet row with its ★ marker: the ticket, an item with its fields, or a count. */
 export function SheetRowLine({ row, change, parentKey }: SheetRowLineProps) {
   const t = useTranslations("sheet");
   const details = Object.values(row.values).filter((value) => value !== null && value !== "");
@@ -60,11 +60,11 @@ export function SheetRowLine({ row, change, parentKey }: SheetRowLineProps) {
       </span>
       {row.itemName ? <span className={muted}>{row.itemName}</span> : null}
       {row.kind === "ITEM" && row.quantity !== null ? <span>× {row.quantity}</span> : null}
-      {row.kind === "BOOKING" && row.quantity !== null ? (
+      {row.kind === "TICKET" && row.quantity !== null ? (
         <span>{t("headcount", { count: row.quantity })}</span>
       ) : null}
       {row.kind === "REQUIREMENT" ? (
-        <span className={muted}>{parentKey ? t("onProgramItem") : t("onBooking")}</span>
+        <span className={muted}>{parentKey ? t("onProgramItem") : t("onTicket")}</span>
       ) : null}
       <Period row={row} />
       {details.length > 0 ? <span className={muted}>{details.map(String).join(", ")}</span> : null}

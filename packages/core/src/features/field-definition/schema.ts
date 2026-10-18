@@ -36,7 +36,7 @@ const LinkTypeIdSchema = z
   .string()
   .min(1)
   .describe(
-    "Type a LINK field points to: an item, customer, contact or booking type (a requirement " +
+    "Type a LINK field points to: an item, customer, contact or ticket type (a requirement " +
       "type's fields never point to a customer or contact). Values are ids of active records " +
       "of that type in the organization",
   );

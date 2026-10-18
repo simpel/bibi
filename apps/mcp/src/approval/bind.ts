@@ -22,7 +22,7 @@ const asRecord = ({ value }: { value: unknown }): Record<string, unknown> | null
     : null;
 
 /**
- * Adds the tool's server-bound facts to a proposal before it is signed (#144), e.g. the booking
+ * Adds the tool's server-bound facts to a proposal before it is signed (#144), e.g. the ticket
  * count the approval card shows. The bound input is validated again, so the token only ever
  * carries input the operation accepts. A failed bind refuses the proposal.
  */

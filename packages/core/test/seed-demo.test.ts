@@ -84,21 +84,21 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       "Karin Wallin",
     ]);
     expect(nordkust?.priceLists.map((list) => Number(list.discountPercent))).toEqual([15]);
-    const statuses = await db.bookingStatus.count({
+    const statuses = await db.ticketPhase.count({
       where: { organizationId: lind?.organizationId },
     });
     expect(statuses).toBe(4);
-    const bookings = await db.booking.findMany({
+    const tickets = await db.ticket.findMany({
       where: { organizationId: lind?.organizationId },
       orderBy: { reference: "asc" },
     });
-    expect(bookings).toHaveLength(10);
+    expect(tickets).toHaveLength(10);
     const johan = await db.member.findFirst({
       where: { organizationId: lind?.organizationId, user: { name: "Johan Ek" } },
     });
-    expect(bookings[0]).toMatchObject({ reference: 1, estimatedHeadcount: 40 });
+    expect(tickets[0]).toMatchObject({ reference: 1, estimatedHeadcount: 40 });
     const main = await db.assignment.findFirst({
-      where: { subjectId: bookings[0]?.id, responsibilityId: null },
+      where: { subjectId: tickets[0]?.id, responsibilityId: null },
       include: { followers: true },
     });
     expect(main?.assigneeId).toBe(johan?.userId);

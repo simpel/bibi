@@ -12,7 +12,7 @@ describe("redactAuditImage (ADR 0032)", () => {
       customer: { id: "c1", email: "anna@example.com", phone: "+4670000000" },
       payments: [{ amountMinor: 1000, email: "x@example.com" }],
     };
-    expect(redactAuditImage({ value, entityType: "booking" })).toEqual({
+    expect(redactAuditImage({ value, entityType: "ticket" })).toEqual({
       id: "b1",
       reference: 7,
       startsAt: "2025-01-01T10:00:00.000Z",

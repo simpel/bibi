@@ -46,7 +46,7 @@ export async function ItemBehaviours({ item, data, locale }: ItemBehavioursProps
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       <PricedDisplay title={t("sections.price")} price={price} />
-      <BookableDisplay title={t("sections.booking")} duration={duration} />
+      <BookableDisplay title={t("sections.bookable")} duration={duration} />
       <SetupsDisplay title={t("sections.setups")} setups={setups} />
       <ComposableDisplay title={t("sections.components")} parts={parts} />
       <ChoicesDisplay title={t("sections.choices")} groups={groups} />

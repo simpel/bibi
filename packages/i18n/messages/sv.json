@@ -152,21 +152,20 @@
     "venues": "Anläggningar",
     "items": "Artiklar",
     "customers": "Kunder",
-    "inquiries": "Förfrågningar",
     "types": "Typer",
     "lists": "Listor",
     "setups": "Uppställningar",
     "responsibilities": "Ansvar",
     "sheets": "Blad",
     "calendar": "Kalender",
-    "bookings": "Bokningar",
+    "tickets": "Ärenden",
     "skills": "Färdigheter",
     "settings": "Inställningar",
     "openMenu": "Öppna meny",
     "commandBar": "Kommandofält",
     "members": "Medlemmar",
     "payments": "Betalningar",
-    "bookingStatuses": "Bokningsstatusar",
+    "ticketPhases": "Faser",
     "priceLists": "Prislistor",
     "assistant": "Assistent",
     "profile": "Profil",
@@ -285,7 +284,7 @@
     },
     "sections": {
       "price": "Pris",
-      "booking": "Bokning",
+      "bookable": "Bokning",
       "setups": "Uppställningar",
       "components": "Delar",
       "choices": "Valgrupper"
@@ -367,10 +366,9 @@
     "archive": "Arkivera kund",
     "archiveConfirm": "Vill du arkivera kunden {name}? Arkivera kontaktpersonerna först.",
     "archived": "Kunden har arkiverats.",
-    "archiveBlocked": "Kunden har {count, plural, one {# bokning} other {# bokningar}} som inte är {count, plural, one {arkiverad} other {arkiverade}}. Kunden kan inte arkiveras så länge {count, plural, one {den finns} other {de finns}} kvar.",
-    "archiveBookings": "Arkivera även {count, plural, one {kundens bokning} other {kundens alla # bokningar}}",
-    "archiveInquiries": "Arkivera även kundens aktiva förfrågningar, om det finns några",
-    "archivedWithBookings": "Kunden och {count, plural, one {# bokning} other {# bokningar}} har arkiverats.",
+    "archiveBlocked": "Kunden har {count, plural, one {# ärende} other {# ärenden}} som inte är {count, plural, one {arkiverat} other {arkiverade}}. Kunden kan inte arkiveras så länge {count, plural, one {det finns} other {de finns}} kvar.",
+    "archiveTickets": "Arkivera även {count, plural, one {kundens ärende} other {kundens alla # ärenden}}",
+    "archivedWithTickets": "Kunden och {count, plural, one {# ärende} other {# ärenden}} har arkiverats.",
     "created": "Kunden har skapats.",
     "updated": "Kunden har uppdaterats.",
     "empty": "Inga kunder ännu.",
@@ -428,63 +426,57 @@
       "phone": "Telefon"
     }
   },
-  "booking": {
-    "singular": "Bokning",
-    "plural": "Bokningar",
-    "listDescription": "Konferenser och evenemang med kund, tid, antal och status. Typen avgör vilka fält en bokning har.",
-    "reference": "Bokning {reference}",
-    "create": "Skapa bokning",
-    "edit": "Redigera bokning",
-    "createDescription": "Välj typ, kund och tid. Bokningen startar i standardstatusen för preliminära bokningar.",
-    "editDescription": "Ändra kund, tid, antal och typens fält. Status och ansvarig ändras separat.",
-    "created": "Bokningen har skapats.",
-    "createQuick": "Snabbbokning",
-    "quickDescription": "Boka ett litet möte i ett steg: kund, lokal, tid och antal. Ingen förfrågan eller offert behövs.",
-    "quickCreated": "Snabbbokningen är skapad.",
-    "quickOccupied": "Lokalen är redan upptagen under perioden eller dess ställtid.",
-    "quick": {
-      "bookingType": "Bokningstyp",
-      "programItemType": "Programpunktstyp",
-      "customer": "Kund",
-      "item": "Lokal eller artikel",
-      "quantity": "Antal",
-      "paymentMethod": "Betalning",
-      "invoice": "Faktura (bekräfta nu)",
-      "paymentLink": "Betallänk (bekräfta när betald)"
-    },
-    "updated": "Bokningen har uppdaterats.",
-    "changeStatus": "Byt status",
-    "changeStatusDescription": "Flytta bokningen till en av de statusar som organisationen tillåter från nuvarande status. En avbokning kräver en anledning och frigör bokningens rum och resurser.",
-    "statusChanged": "Statusen har ändrats.",
-    "phaseRuleRefused": "Ändringen bryter mot en bokningsregel: bekräftade och genomförda bokningar måste ha en ansvarig, och en bokning kan markeras som genomförd först när den har tagit slut.",
-    "reasonRequired": "Ange en anledning till avbokningen.",
-    "empty": "Inga bokningar ännu.",
-    "emptyDescription": "Skapa din första bokning.",
-    "noTypes": "Det finns inga bokningstyper ännu. Skapa en typ först.",
+  "ticket": {
+    "singular": "Ärende",
+    "plural": "Ärenden",
+    "listDescription": "Kundförfrågningar från första kontakt till genomfört event, var och ett i en av era faser. Typen avgör vilka fält ett ärende har.",
+    "reference": "Ärende {reference}",
+    "create": "Skapa ärende",
+    "edit": "Redigera ärende",
+    "createDescription": "Välj typ och kund; resten kan vänta. Ärendet startar i er startfas.",
+    "editDescription": "Ändra kund, kontaktperson, önskade datum, antal, budget och typens fält. Fas och ansvarig ändras separat.",
+    "created": "Ärendet har skapats.",
+    "updated": "Ärendet har uppdaterats.",
+    "changePhase": "Byt fas",
+    "changePhaseDescription": "Flytta ärendet till en av de faser som organisationen tillåter från nuvarande fas. Vissa faser kräver en anledning eller en ansvarig, och en avslutande fas frigör ärendets lokaler och resurser.",
+    "phaseChanged": "Fasen har ändrats.",
+    "transitionRefused": "Er organisation tillåter inte den här flytten.",
+    "assigneeRequired": "Fasen kräver en ansvarig. Tilldela en på ärendet först.",
+    "reasonRequired": "Fasen kräver en anledning.",
+    "export": "Exportera",
+    "exported": "Ärendet har exporterats.",
+    "empty": "Inga ärenden ännu.",
+    "emptyDescription": "Skapa ditt första ärende.",
+    "noTypes": "Det finns inga ärendetyper ännu. Skapa en typ först.",
     "goToTypes": "Gå till typer",
     "fields": {
       "type": "Typ",
       "customer": "Kund",
-      "startsAt": "Börjar",
-      "endsAt": "Slutar",
-      "when": "När",
-      "status": "Status",
+      "contact": "Kontaktperson",
+      "noContact": "Ingen kontaktperson",
+      "desiredStartsAt": "Önskad start",
+      "desiredEndsAt": "Önskat slut",
+      "when": "Önskade datum",
+      "quantity": "Antal",
       "estimatedHeadcount": "Beräknat antal",
       "guaranteedHeadcount": "Garanterat antal",
-      "newStatus": "Ny status",
-      "statusReason": "Anledning"
+      "budget": "Budget (kr)",
+      "phase": "Fas",
+      "newPhase": "Ny fas",
+      "phaseReason": "Anledning"
     },
     "columns": {
       "reference": "Nummer",
       "customer": "Kund",
       "type": "Typ",
-      "when": "När",
-      "status": "Status"
+      "phase": "Fas",
+      "when": "Önskade datum",
+      "quantity": "Antal"
     }
   },
   "calendar": {
     "title": "Kalender",
-    "description": "Beläggning per lokal, per dag eller vecka. Öppna ett block för att se bokningen.",
+    "description": "Beläggning per lokal, per dag eller vecka. Öppna ett block för att se ärendet.",
     "views": {
       "day": "Dag",
       "week": "Vecka"
@@ -509,62 +501,12 @@
     "emptyDay": "Inget bokat.",
     "keyboardHint": "Använd piltangenterna för att flytta mellan lokaler och tider."
   },
-  "inquiry": {
-    "singular": "Förfrågan",
-    "plural": "Förfrågningar",
-    "listDescription": "Förfrågningar från kunder på väg mot offert och bokning. Varje förfrågan går NY → KVALIFICERAD → OFFERERAD → VUNNEN, eller markeras som förlorad med en orsak.",
-    "title": "Förfrågan från {customer}",
-    "create": "Registrera förfrågan",
-    "edit": "Redigera förfrågan",
-    "createDescription": "Välj en typ och kunden. Förfrågan börjar som ny.",
-    "editDescription": "Ändra kund, kontaktperson, datum, antal, budget och typens fält. Status och ansvarig ändras separat.",
-    "created": "Förfrågan har registrerats.",
-    "updated": "Förfrågan har uppdaterats.",
-    "qualify": "Kvalificera",
-    "qualifyDescription": "En kvalificerad förfrågan behöver en ansvarig. Välj en bland medlemmarna eller behåll den nuvarande.",
-    "qualified": "Förfrågan har kvalificerats.",
-    "markLost": "Markera som förlorad",
-    "markLostDescription": "Ange varför förfrågan förlorades. En förlorad förfrågan kan inte öppnas igen.",
-    "markedLost": "Förfrågan har markerats som förlorad.",
-    "empty": "Inga förfrågningar än.",
-    "emptyDescription": "Registrera din första förfrågan.",
-    "noTypes": "Det finns inga förfrågningstyper än. Skapa en typ först.",
-    "goToTypes": "Gå till typer",
-    "statuses": {
-      "NEW": "Ny",
-      "QUALIFIED": "Kvalificerad",
-      "QUOTED": "Offererad",
-      "WON": "Vunnen",
-      "LOST": "Förlorad"
-    },
-    "fields": {
-      "type": "Typ",
-      "customer": "Kund",
-      "contact": "Kontaktperson",
-      "noContact": "Ingen kontaktperson",
-      "desiredStartsAt": "Önskad start",
-      "desiredEndsAt": "Önskat slut",
-      "when": "Önskade datum",
-      "quantity": "Antal",
-      "budget": "Budget (kr)",
-      "lossReason": "Orsak till förlust",
-      "assignee": "Ansvarig"
-    },
-    "columns": {
-      "customer": "Kund",
-      "type": "Typ",
-      "when": "Önskade datum",
-      "quantity": "Antal",
-      "status": "Status"
-    },
-    "keepAssignee": "Behåll nuvarande ansvarig"
-  },
   "quote": {
     "singular": "Offert",
     "plural": "Offerter",
     "title": "Offert, version {version}",
     "versionLabel": "Version {version}",
-    "backToInquiry": "Tillbaka till förfrågan",
+    "backToTicket": "Tillbaka till ärendet",
     "empty": "Ingen offert ännu.",
     "create": "Skapa offert",
     "edit": "Redigera offert",
@@ -581,7 +523,7 @@
     "revise": "Ny version",
     "revised": "En ny version har skapats.",
     "confirm": {
-      "send": "Markera version {version} som skickad till kunden? Den kan inte längre redigeras, förfrågan blir offererad och äldre skickade versioner går ut.",
+      "send": "Markera version {version} som skickad till kunden? Den kan inte längre redigeras och äldre skickade versioner går ut.",
       "decline": "Registrera att kunden avböjde version {version}?",
       "expire": "Låta version {version} gå ut? Kunden kan inte längre acceptera den."
     },
@@ -603,7 +545,7 @@
       "status": "Status",
       "validUntil": "Giltig till",
       "terms": "Villkor",
-      "salesOwner": "Säljare (från förfrågan)"
+      "salesOwner": "Säljare (från ärendet)"
     },
     "totals": {
       "exclVat": "Summa exkl. moms",
@@ -699,14 +641,14 @@
     "plural": "Program",
     "create": "Lägg till programpunkt",
     "edit": "Redigera programpunkt",
-    "createDescription": "Lägg till en rad i bokningens körschema. Med en lokal beläggs den under perioden, plus uppställningens ställtid.",
+    "createDescription": "Lägg till en rad i ärendets körschema. Med en lokal beläggs den under perioden, plus uppställningens ställtid.",
     "editDescription": "Ändra tid, plats, antal eller anteckning. Flyttas den flyttas också beläggningen.",
     "archive": "Ta bort programpunkt",
     "archiveConfirm": "Vill du ta bort \"{name}\" från programmet? Lokalen släpps.",
     "archived": "Programpunkten har tagits bort.",
     "created": "Programpunkten har lagts till.",
     "updated": "Programpunkten har uppdaterats.",
-    "empty": "Bokningen har inga programpunkter än.",
+    "empty": "Ärendet har inga programpunkter än.",
     "occupied": "Lokalen är redan belagd under perioden eller ställtiden.",
     "noItem": "Ingen lokal",
     "noSetup": "Ingen uppställning",
@@ -733,7 +675,7 @@
     "plural": "Behov",
     "create": "Lägg till behov",
     "edit": "Redigera behov",
-    "createDescription": "Räkna hur många som behöver ett värde från en av era listor, t.ex. Gluten × 3. På en programpunkt ersätter antalet bokningens för det värdet. Bara antal, aldrig namn.",
+    "createDescription": "Räkna hur många som behöver ett värde från en av era listor, t.ex. Gluten × 3. På en programpunkt ersätter antalet ärendets för det värdet. Bara antal, aldrig namn.",
     "editDescription": "Ändra antalet eller typens fält.",
     "archive": "Ta bort behov",
     "archiveConfirm": "Vill du ta bort antalet för \"{name}\"?",
@@ -741,8 +683,8 @@
     "created": "Behovet har lagts till.",
     "updated": "Behovet har uppdaterats.",
     "taken": "Det finns redan ett antal för det här värdet här. Redigera det i stället.",
-    "empty": "Bokningen har inga behov än.",
-    "wholeBooking": "Hela bokningen",
+    "empty": "Ärendet har inga behov än.",
+    "wholeTicket": "Hela ärendet",
     "fields": {
       "type": "Typ",
       "programItem": "Gäller",
@@ -761,7 +703,7 @@
     "plural": "Blad",
     "empty": "Inga blad är definierade än. Definiera dem under Inställningar.",
     "noVersion": "Ingen version har skapats än.",
-    "nothingIncluded": "Bokningen har inget som det här bladet innehåller än.",
+    "nothingIncluded": "Ärendet har inget som det här bladet innehåller än.",
     "generate": "Skapa version",
     "generating": "Skapar bladet…",
     "generated": "Version {version} av bladet är klar.",
@@ -771,9 +713,9 @@
     "notSent": "Inte skickad",
     "sentAt": "Skickad {when}",
     "changes": "{count, plural, =0 {Inga ändringar} one {# ändring} other {# ändringar}} sedan version {version}",
-    "booking": "Bokning {reference}",
+    "ticket": "Ärende {reference}",
     "headcount": "{count, plural, one {# gäst} other {# gäster}}",
-    "onBooking": "Hela bokningen",
+    "onTicket": "Hela ärendet",
     "onProgramItem": "En programpost",
     "change": {
       "ADDED": "Tillagd sedan senast skickade version",
@@ -790,7 +732,7 @@
   "entityType": {
     "singular": "Typ",
     "plural": "Typer",
-    "listDescription": "Typerna bestämmer vilka fält och beteenden artiklar, kunder och bokningar har i er organisation.",
+    "listDescription": "Typerna bestämmer vilka fält och beteenden artiklar, kunder och ärenden har i er organisation.",
     "create": "Skapa typ",
     "edit": "Redigera typ",
     "createDescription": "Välj vad typen gäller och namnge den.",
@@ -827,8 +769,7 @@
       "ITEM": "Artiklar",
       "CUSTOMER": "Kunder",
       "CONTACT": "Kontaktpersoner",
-      "INQUIRY": "Förfrågningar",
-      "BOOKING": "Bokningar",
+      "TICKET": "Ärenden",
       "REQUIREMENT": "Behov",
       "PROGRAM_ITEM": "Programpunkter"
     },
@@ -1070,7 +1011,7 @@
       "defaultFollowerIds": "Standardföljare"
     },
     "hints": {
-      "entityTypeIds": "En bokning med en rad av dessa typer får detta ansvar.",
+      "entityTypeIds": "Ett ärende med en rad av dessa typer får detta ansvar.",
       "defaultFollowerIds": "Medlemmar som hålls informerade som standard."
     },
     "none": {
@@ -1150,53 +1091,55 @@
       }
     }
   },
-  "bookingStatus": {
-    "singular": "Bokningsstatus",
-    "plural": "Bokningsstatusar",
-    "listDescription": "Era egna statusar för bokningar. Varje status hör till en fast fas som styr vad systemet tillåter; den första statusen i en fas är dess standard.",
-    "create": "Skapa status",
-    "edit": "Redigera status",
-    "createDescription": "Namnge statusen, välj en färg och vilken fas den hör till.",
-    "editDescription": "Ändra namn och färg. Fasen kan inte ändras.",
-    "archive": "Arkivera status",
-    "archiveConfirm": "Vill du arkivera statusen {name}? Dess övergångar tas bort.",
-    "archived": "Statusen har arkiverats.",
-    "created": "Statusen har skapats.",
-    "updated": "Statusen har uppdaterats.",
-    "empty": "Inga bokningsstatusar ännu.",
+  "ticketPhase": {
+    "singular": "Fas",
+    "plural": "Faser",
+    "listDescription": "Era egna faser för ärenden, i tavlans ordning. Flaggorna avgör vad systemet gör; inget annat om en fas är fast. Ni behöver en startfas och minst en fas som avslutar ärendet.",
+    "create": "Skapa fas",
+    "edit": "Redigera fas",
+    "createDescription": "Namnge fasen, välj en färg och vad den gör.",
+    "editDescription": "Byt namn eller färg eller ändra vad fasen gör.",
+    "archive": "Arkivera fas",
+    "archiveConfirm": "Vill du arkivera fasen {name}? Dess övergångar tas bort. Ärenden i den flyttas till den fas du väljer.",
+    "archived": "Fasen har arkiverats.",
+    "created": "Fasen har skapats.",
+    "updated": "Fasen har uppdaterats.",
+    "empty": "Inga faser ännu.",
     "emptyDescription": "Importera mallen för att komma igång.",
-    "saving": "Sparar status…",
-    "archiving": "Arkiverar status…",
+    "saving": "Sparar fas…",
+    "archiving": "Arkiverar fas…",
     "importTemplate": "Importera mallen Konferensgård",
-    "importing": "Importerar statusar…",
-    "imported": "{created} statusar skapades, {skipped} fanns redan.",
+    "importing": "Importerar faser…",
+    "imported": "{created} faser skapades, {skipped} fanns redan.",
     "editTransitions": "Redigera övergångar",
-    "transitionsDescription": "Välj vilka statusar en bokning med statusen {name} får gå till.",
+    "transitionsDescription": "Välj vilka faser ett ärende i {name} får gå till.",
     "transitionsSaved": "Övergångarna har sparats.",
     "noTransitions": "Inga",
-    "noTargets": "Det finns inga andra statusar att gå till.",
-    "moveUp": "Flytta upp",
-    "moveDown": "Flytta ned",
+    "noTargets": "Det finns inga andra faser att gå till.",
+    "noTarget": "Inga ärenden att flytta",
+    "moveUp": "Flytta vänster",
+    "moveDown": "Flytta höger",
     "reordering": "Sparar ordning…",
     "reordered": "Ordningen har sparats.",
-    "default": "Standard",
     "fields": {
       "name": "Namn",
       "color": "Färg",
-      "phase": "Fas",
-      "transitions": "Får gå till"
+      "transitions": "Får gå till",
+      "targetPhase": "Flytta dess ärenden till",
+      "reason": "Anledning för de flyttade ärendena"
     },
     "columns": {
       "name": "Namn",
-      "phase": "Fas",
+      "flags": "Gör",
       "transitions": "Får gå till",
       "order": "Ordning"
     },
-    "phases": {
-      "TENTATIVE": "Preliminär",
-      "CONFIRMED": "Bekräftad",
-      "COMPLETED": "Genomförd",
-      "CANCELLED": "Avbokad"
+    "flags": {
+      "entry": "Nya ärenden startar här",
+      "terminal": "Avslutar ärendet",
+      "requiresReason": "Kräver en anledning",
+      "requiresAssignee": "Kräver en ansvarig",
+      "invoiceable": "Kan faktureras"
     }
   },
   "assistant": {
@@ -1270,8 +1213,26 @@
         "invoiceCountry": "Fakturaland",
         "paymentTermsDays": "Betalningsvillkor (dagar)",
         "creditLimitMinor": "Kreditgräns (ören)",
-        "archiveBookings": "Arkivera även bokningar",
-        "archiveInquiries": "Arkivera även förfrågningar"
+        "archiveTickets": "Arkivera även ärenden",
+        "contactId": "Kontaktperson (id)",
+        "desiredStartsAt": "Önskad start",
+        "desiredEndsAt": "Önskat slut",
+        "quantity": "Antal",
+        "estimatedHeadcount": "Beräknat antal",
+        "guaranteedHeadcount": "Garanterat antal",
+        "budgetMinor": "Budget (ören)",
+        "ticketId": "Ärende (id)",
+        "phaseId": "Fas (id)",
+        "reason": "Anledning",
+        "color": "Färg",
+        "entry": "Nya ärenden startar här",
+        "terminal": "Avslutar ärendet",
+        "requiresReason": "Kräver en anledning",
+        "requiresAssignee": "Kräver en ansvarig",
+        "invoiceable": "Kan faktureras",
+        "targetPhaseId": "Flytta ärenden till (fas-id)",
+        "toPhaseIds": "Får gå till (fas-id:n)",
+        "ids": "Ordning (id:n)"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -1286,10 +1247,15 @@
         "contact_create": "Lägg till kontaktperson",
         "contact_update": "Uppdatera kontaktperson",
         "contact_archive": "Arkivera kontaktperson",
-        "booking_create": "Skapa bokning",
-        "booking_createQuick": "Skapa snabbbokning",
-        "booking_update": "Uppdatera bokning",
-        "booking_changeStatus": "Ändra bokningsstatus",
+        "ticket_create": "Skapa ärende",
+        "ticket_update": "Uppdatera ärende",
+        "ticket_changePhase": "Byt fas på ärende",
+        "ticketPhase_create": "Skapa fas",
+        "ticketPhase_update": "Uppdatera fas",
+        "ticketPhase_archive": "Arkivera fas",
+        "ticketPhase_reorder": "Ändra ordning på faser",
+        "ticketPhase_setTransitions": "Ange fasövergångar",
+        "ticketPhase_importTemplate": "Importera fasmall",
         "entityType_create": "Skapa typ",
         "entityType_update": "Ändra typ",
         "entityType_archive": "Arkivera typ",
@@ -1383,7 +1349,7 @@
         "choiceGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
         "sections": {
           "price": "Pris",
-          "booking": "Bokning",
+          "bookable": "Bokning",
           "setups": "Uppställningar",
           "components": "Delar",
           "choices": "Valgrupper"
@@ -1410,15 +1376,15 @@
           "phone": "Telefon"
         }
       },
-      "booking": {
-        "singular": "Bokning",
-        "empty": "Inga bokningar hittades.",
-        "open": "Öppna bokningen",
-        "reference": "Bokning {reference}",
+      "ticket": {
+        "singular": "Ärende",
+        "empty": "Inga ärenden hittades.",
+        "open": "Öppna ärendet",
+        "reference": "Ärende {reference}",
         "headcount": "{count, plural, one {# gäst} other {# gäster}}",
         "columns": {
           "reference": "Nummer",
-          "when": "När",
+          "when": "Önskade datum",
           "headcount": "Antal"
         }
       },
@@ -1429,21 +1395,8 @@
       },
       "pipeline": {
         "title": "Pipeline",
-        "empty": "Inga förfrågningar eller bokningar än.",
+        "empty": "Inga ärenden än.",
         "open": "Öppna pipelinen"
-      },
-      "inquiry": {
-        "title": "Förfrågan {date}",
-        "empty": "Inga förfrågningar hittades.",
-        "open": "Öppna förfrågan",
-        "quantity": "Antal: {count}",
-        "lossReason": "Förlorad: {reason}",
-        "columns": {
-          "created": "Registrerad",
-          "when": "Önskade datum",
-          "quantity": "Antal",
-          "status": "Status"
-        }
       },
       "quote": {
         "title": "Offert, version {version}",
@@ -1485,7 +1438,7 @@
         "empty": "Inga programpunkter hittades.",
         "quantity": "{count} deltar",
         "archived": "Borttagen från programmet",
-        "openBooking": "Öppna bokningen",
+        "openTicket": "Öppna ärendet",
         "columns": {
           "name": "Namn",
           "when": "När",
@@ -1496,10 +1449,10 @@
         "singular": "Behov",
         "empty": "Inga behov hittades.",
         "quantity": "Antal: {count}",
-        "onBooking": "Gäller hela bokningen",
+        "onTicket": "Gäller hela ärendet",
         "onProgramItem": "Gäller en programpunkt",
         "archived": "Borttaget",
-        "openBooking": "Öppna bokningen",
+        "openTicket": "Öppna ärendet",
         "columns": {
           "quantity": "Antal",
           "where": "Gäller"
@@ -1510,7 +1463,7 @@
         "empty": "Inga blad hittades.",
         "version": "Version {version}",
         "notSent": "Inte skickad",
-        "openBooking": "Öppna bokningen",
+        "openTicket": "Öppna ärendet",
         "columns": {
           "version": "Version",
           "changes": "Ändringar",
@@ -1531,8 +1484,7 @@
           "ITEM": "Artikel",
           "CUSTOMER": "Kund",
           "CONTACT": "Kontakt",
-          "INQUIRY": "Förfrågan",
-          "BOOKING": "Bokning",
+          "TICKET": "Ärende",
           "REQUIREMENT": "Behov",
           "PROGRAM_ITEM": "Programpunkt"
         },
@@ -1618,22 +1570,21 @@
           "contents": "Tar med"
         }
       },
-      "bookingStatus": {
-        "singular": "Bokningsstatus",
-        "empty": "Inga bokningsstatusar hittades.",
-        "open": "Öppna bokningsstatusar",
+      "ticketPhase": {
+        "singular": "Fas",
+        "empty": "Inga faser hittades.",
+        "open": "Öppna faserna",
         "archived": "Arkiverad",
         "transitions": "{count, plural, =0 {Inga övergångar} one {# övergång} other {# övergångar}}",
         "columns": {
           "name": "Namn",
-          "phase": "Fas",
+          "flags": "Gör",
           "transitions": "Övergångar"
         }
       },
       "assignment": {
         "subject": {
-          "INQUIRY": "Förfrågan",
-          "BOOKING": "Bokning",
+          "TICKET": "Ärende",
           "ITEM": "Artikel"
         },
         "main": "Huvudansvarig",
@@ -1810,7 +1761,7 @@
       "responsibilities": "Vad någon svarar för, till exempel kökschef, och vem det går till som standard.",
       "sheets": "Bladdefinitioner, till exempel köksbeställningen, och vem som får dem.",
       "priceLists": "Priser per kundgrupp eller säsong.",
-      "bookingStatuses": "De statusar en bokning går igenom.",
+      "ticketPhases": "De faser ett ärende går igenom.",
       "members": "Vem som har åtkomst och med vilken roll.",
       "payments": "Stripe-konto för kortbetalningar och fakturor.",
       "skills": "Återanvändbara instruktioner för assistenten.",
@@ -1944,8 +1895,8 @@
     "unknown": "Ingen åtkomst",
     "descriptions": {
       "viewer": "Läser allt, ändrar inget.",
-      "member": "Bokar också och hanterar kunder, förfrågningar, offerter, bokningar, betalningar och blad.",
-      "admin": "Sätter också upp typer, listor, statusar, blad, prislistor, medlemmar och API-nycklar.",
+      "member": "Hanterar också kunder, ärenden, offerter, betalningar och blad.",
+      "admin": "Sätter också upp typer, listor, faser, blad, prislistor, medlemmar och API-nycklar.",
       "owner": "Allt, även andra ägare och själva organisationen."
     }
   },
@@ -2031,7 +1982,7 @@
   "inboundEmail": {
     "title": "Mottagen e-post",
     "address": "Kunder svarar till <code>{address}</code> och deras e-post visas här.",
-    "noAddress": "Ingen inkommande adress är konfigurerad, så svar kan inte nå bokningen än.",
+    "noAddress": "Ingen inkommande adress är konfigurerad, så svar kan inte nå ärendet än.",
     "empty": "Ingen e-post har tagits emot än.",
     "noSubject": "(inget ämne)",
     "noBody": "(ingen text)",
@@ -2090,7 +2041,7 @@
       "cards": {
         "guide": {
           "title": "Guide",
-          "description": "Kom igång, boka möten, hantera förfrågningar, behov, blad och betalningar."
+          "description": "Kom igång, hantera ärenden, behov, blad och betalningar."
         },
         "developers": {
           "title": "Utvecklare",
@@ -2135,59 +2086,54 @@
         "introduction": {
           "title": "Introduktion",
           "lead": "Okazi är ett bokningssystem för konferens, mat och dryck på platser utan hotellsystem. Det är personalen som använder det. Gäster och kunder loggar aldrig in.",
-          "body": "# Vad Okazi är till för\n\nOkazi hjälper personalen på en anläggning att hantera bokningar från första förfrågan till genomfört event. Det är byggt för platser som upplevelsecenter, museer, konferensgårdar, herrgårdar och restauranger med enskilda rum.\n\nDe som använder systemet är säljare, koordinatorer, kökschefer och administratörer. Kunder och gäster använder aldrig appen. Den enda sida en kund ser är betalsidan som ni skickar.\n\n# Vad du kan göra\n\n- **Boka ett litet möte i ett steg.** En snabbbokning behöver en kund, en lokal, en tid och ett antal. Ingen förfrågan eller offert behövs. Kunden betalar med betallänk eller mot faktura. Se [Bokningar](/docs/guide/bookings).\n- **Följa förfrågningar.** Registrera vad en kund vill ha, kvalificera förfrågan och markera den som förlorad med en anledning om det inte blir något. Se [Förfrågningar](/docs/guide/inquiries).\n- **Planera programmet.** Lägg till programpunkter på en bokning, med lokal, uppställning och antal personer. Lokaler kan inte dubbelbokas.\n- **Registrera behov som antal.** Till exempel \"Gluten x 3\" eller \"Rullstol x 2\", aldrig kopplat till en namngiven person. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Skicka blad till dem som behöver dem.** Ett blad är en versionerad sammanställning, till exempel en köksorder, och Okazi markerar vad som ändrats sedan den version ni senast skickade.\n- **Ta betalt.** Kunden betalar via en länk eller en faktura, och pengarna går direkt till ert eget Stripe-konto. Se [Betalningar](/docs/guide/payments).\n- **Fråga assistenten.** Det mesta går att göra genom att chatta. Assistenten föreslår ändringar och du godkänner dem. Se [Assistenten](/docs/guide/assistant).\n\n# Er organisation bestämmer orden\n\nOkazi bestämmer inte vad ni kallar saker. Varje organisation definierar sina egna typer, fält, listor, statusar, blad och ansvar. En konferensgård kan ha \"Konferensrum\" och \"Rätt\". Ett museum kan ha \"Galleri\" och \"Guidad visning\". Den här guiden använder exempel som allergener och köksorder, men de är bara exempel. Vad du ser i ditt eget konto beror på hur det är uppsatt. Se [Konfiguration](/docs/guide/configuration).\n\n# Var du börjar\n\n1. Läs [Komma igång](/docs/guide/getting-started) för att logga in och hitta runt.\n2. Är du administratör: ställ först in era typer, listor och statusar.\n3. Prova en snabbbokning, antingen från Bokningar eller genom att be assistenten.\n\n# För utvecklare\n\nVill ni koppla ihop egna system finns [dokumentationen för utvecklare](/docs/developers/overview)."
+          "body": "# Vad Okazi är till för\n\nOkazi hjälper personalen på en anläggning att hantera ärenden från första kontakt till genomfört event. Det är byggt för platser som upplevelsecenter, museer, konferensgårdar, herrgårdar och restauranger med enskilda rum.\n\nDe som använder systemet är säljare, koordinatorer, kökschefer och administratörer. Kunder och gäster använder aldrig appen. Den enda sida en kund ser är betalsidan som ni skickar.\n\n# Vad du kan göra\n\n- **Följa varje förfrågan på ett ställe.** Ett ärende skapas så snart en kund hör av sig och går genom era egna faser tills det är klart eller förlorat. Se [Ärenden](/docs/guide/tickets).\n- **Planera programmet.** Lägg till programpunkter på ett ärende, med lokal, uppställning och antal personer. Lokaler kan inte dubbelbokas.\n- **Registrera behov som antal.** Till exempel \"Gluten x 3\" eller \"Rullstol x 2\", aldrig kopplat till en namngiven person. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Skicka blad till dem som behöver dem.** Ett blad är en versionerad sammanställning, till exempel en köksorder, och Okazi markerar vad som ändrats sedan den version ni senast skickade.\n- **Ta betalt.** Kunden betalar via en länk eller en faktura, och pengarna går direkt till ert eget Stripe-konto. Se [Betalningar](/docs/guide/payments).\n- **Fråga assistenten.** Det mesta går att göra genom att chatta. Assistenten föreslår ändringar och du godkänner dem. Se [Assistenten](/docs/guide/assistant).\n\n# Er organisation bestämmer orden\n\nOkazi bestämmer inte vad ni kallar saker. Varje organisation definierar sina egna typer, fält, listor, faser, blad och ansvar. En konferensgård kan ha \"Konferensrum\" och \"Rätt\". Ett museum kan ha \"Galleri\" och \"Guidad visning\". Den här guiden använder exempel som allergener och köksorder, men de är bara exempel. Vad du ser i ditt eget konto beror på hur det är uppsatt. Se [Konfiguration](/docs/guide/configuration).\n\n# Var du börjar\n\n1. Läs [Komma igång](/docs/guide/getting-started) för att logga in och hitta runt.\n2. Är du administratör: ställ först in era typer, listor och faser.\n3. Skapa ett ärende, antingen från Ärenden eller genom att be assistenten.\n\n# För utvecklare\n\nVill ni koppla ihop egna system finns [dokumentationen för utvecklare](/docs/developers/overview)."
         },
         "getting-started": {
           "title": "Komma igång",
           "lead": "Logga in, välj organisation och lär dig var du hittar saker i menyn.",
-          "body": "# Logga in\n\n1. Öppna Okazi och välj **Logga in**. Du kan använda lösenord, en **Inloggningslänk** som skickas med e-post eller en **Engångskod**.\n2. Är du ny, välj **Skapa konto**. Lösenordet ska vara minst 10 tecken.\n3. Har en kollega bjudit in dig: öppna länken i inbjudningsmejlet, logga in med den inbjudna e-postadressen och välj **Acceptera inbjudan**.\n\nTillhör du flera organisationer hamnar du på **Välj organisation**. Välj en, eller välj **Skapa organisation** för att starta en ny. Du kan byta senare från användarmenyn.\n\n# Startsidan är assistenten\n\nNär du loggat in landar du i en chatt. Det är assistenten, och det är det snabbaste sättet att hitta saker eller göra en ändring. Välj **Ny chatt** för att börja om. Tidigare konversationer listas i vänstermenyn under **Assistent**. Se [Assistenten](/docs/guide/assistant).\n\n# Vänstermenyn\n\nMenyn har tre delar.\n\n- **Assistent** överst: startsidan, **Ny chatt** och dina senaste konversationer.\n- **Arbete**: **Bokningar**, **Förfrågningar**, **Bokningsserier** och **Kunder**.\n- **Katalog**: **Artiklar** och **Anläggningar**.\n\nLängst ned till vänster finns **Inställningar** (bara för ägare och administratörer) och din användarmeny. Användarmenyn innehåller tema (ljust, mörkt eller system), språk (svenska eller engelska), byte av organisation, **Mina färdigheter** och **Logga ut**.\n\nUppe till höger finns ett kommandofält. Tryck Cmd+K (Ctrl+K i Windows) för att söka eller hoppa till en sida. Till vänster om det visar en brödsmula var du är. Assistenten finns på startsidan.\n\n# En första checklista\n\nÄr din organisation ny och du är administratör, gå igenom listan nedan. Varje steg länkar till en sida med detaljer.\n\n1. Skapa era typer under **Inställningar, Typer**, eller importera en mall. Se [Konfiguration](/docs/guide/configuration).\n2. Lägg till era listor, till exempel allergener, under **Inställningar, Listor**.\n3. Skapa era bokningsstatusar under **Inställningar, Bokningsstatusar**.\n4. Skapa en anläggning och lägg sedan till lokaler och andra artiklar. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n5. Bjud in kollegor under **Inställningar, Medlemmar**. Se [Medlemmar och roller](/docs/guide/members-and-roles).\n6. Koppla Stripe under **Inställningar, Betalningar** om kunderna ska kunna betala online. Se [Betalningar](/docs/guide/payments).\n7. Lägg till en kund och prova en snabbbokning. Se [Bokningar](/docs/guide/bookings).\n\nÄr du inte administratör ser du inte **Inställningar**. Be en administratör i din organisation ställa in det du behöver."
+          "body": "# Logga in\n\n1. Öppna Okazi och välj **Logga in**. Du kan använda lösenord, en **Inloggningslänk** som skickas med e-post eller en **Engångskod**.\n2. Är du ny, välj **Skapa konto**. Lösenordet ska vara minst 10 tecken.\n3. Har en kollega bjudit in dig: öppna länken i inbjudningsmejlet, logga in med den inbjudna e-postadressen och välj **Acceptera inbjudan**.\n\nTillhör du flera organisationer hamnar du på **Välj organisation**. Välj en, eller välj **Skapa organisation** för att starta en ny. Du kan byta senare från användarmenyn.\n\n# Startsidan är assistenten\n\nNär du loggat in landar du i en chatt. Det är assistenten, och det är det snabbaste sättet att hitta saker eller göra en ändring. Välj **Ny chatt** för att börja om. Tidigare konversationer listas i vänstermenyn under **Assistent**. Se [Assistenten](/docs/guide/assistant).\n\n# Vänstermenyn\n\nMenyn har tre delar.\n\n- **Assistent** överst: startsidan, **Ny chatt** och dina senaste konversationer.\n- **Arbete**: **Ärenden** och **Kunder**.\n- **Katalog**: **Artiklar** och **Anläggningar**.\n\nLängst ned till vänster finns **Inställningar** (bara för ägare och administratörer) och din användarmeny. Användarmenyn innehåller tema (ljust, mörkt eller system), språk (svenska eller engelska), byte av organisation, **Mina färdigheter** och **Logga ut**.\n\nUppe till höger finns ett kommandofält. Tryck Cmd+K (Ctrl+K i Windows) för att söka eller hoppa till en sida. Till vänster om det visar en brödsmula var du är. Assistenten finns på startsidan.\n\n# En första checklista\n\nÄr din organisation ny och du är administratör, gå igenom listan nedan. Varje steg länkar till en sida med detaljer.\n\n1. Skapa era typer under **Inställningar, Typer**, eller importera en mall. Se [Konfiguration](/docs/guide/configuration).\n2. Lägg till era listor, till exempel allergener, under **Inställningar, Listor**.\n3. Se över era faser under **Inställningar, Faser**.\n4. Skapa en anläggning och lägg sedan till lokaler och andra artiklar. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n5. Bjud in kollegor under **Inställningar, Medlemmar**. Se [Medlemmar och roller](/docs/guide/members-and-roles).\n6. Koppla Stripe under **Inställningar, Betalningar** om kunderna ska kunna betala online. Se [Betalningar](/docs/guide/payments).\n7. Lägg till en kund och skapa ett ärende. Se [Ärenden](/docs/guide/tickets).\n\nÄr du inte administratör ser du inte **Inställningar**. Be en administratör i din organisation ställa in det du behöver."
         },
         "assistant": {
           "title": "Assistenten",
           "lead": "Assistenten svarar på frågor och förbereder ändringar åt dig. Den ändrar aldrig något innan du godkänner.",
-          "body": "# Vad den kan göra\n\nAssistenten arbetar som du. Den kan bara se och göra det din egen roll tillåter, i din egen organisation. Använd den för att:\n\n- hitta bokningar, förfrågningar, kunder, artiklar och anläggningar\n- visa en bokning, ett blad eller en lista över upptagna lokaler\n- förbereda en ändring, till exempel att skapa en kund eller flytta en programpunkt\n\nProva frågor som \"Visa alla anläggningar\", \"Sök efter bokningsbara artiklar med plats för 50 personer\" eller \"Vilka färdigheter finns?\".\n\n# Var du hittar den\n\n- På startsidan fyller den hela sidan. Välj **Ny chatt** för en ny konversation.\n- Den finns bara på startsidan. En fråga från kommandofältet (Cmd+K) tar dig dit.\n- Dina senaste konversationer listas i vänstermenyn under **Assistent**. Du kan byta namn på eller arkivera en konversation från dess meny.\n- På mobil öppnas menyn som en låda från översta fältet.\n\n# Godkänna ändringar\n\nAssistenten sparar aldrig en ändring på egen hand. När den vill ändra något visas ett kort med rubriken **Godkänn åtgärd** som listar exakt vad som kommer att hända.\n\n1. Läs kortet. Kontrollera fält och värden.\n2. Välj **Godkänn** för att utföra ändringen, eller **Avslå** för att släppa den.\n3. Ett förslag går ut efter en kort stund. Ser du **Förslaget har gått ut**, fråga igen.\n\nVarje ändring sparas i historiken för bokningen eller kunden. Historiken visar om assistenten föreslog den och vem som godkände.\n\n# Färdigheter\n\nEn färdighet är en sparad uppsättning instruktioner som assistenten laddar när den passar uppgiften, till exempel \"så här skriver vi ett offertsvar\". Det finns tre sorter: systemfärdigheter som följer med Okazi, organisationens färdigheter som era administratörer delar, och personliga färdigheter som bara du ser.\n\n- Organisationens färdigheter finns under **Inställningar, Färdigheter** och dina egna under **Mina färdigheter** i användarmenyn.\n- Välj **Skapa färdighet**, beskriv när den ska användas och vad assistenten ska göra, och publicera den.\n- Du kan också importera en SKILL.md-fil. Den kommer in som utkast.\n\n# Bra att veta\n\n- Assistenten kan ha fel. Kontrollera godkännandekortet, inte bara chatttexten.\n- Den följer samma regler som du. Kan du inte ändra något kan inte heller den det.\n- Är assistenten otillgänglig har en administratör hos Okazi inte valt någon modell än. Resten av appen fungerar som vanligt.\n- Utvecklare kan koppla andra verktyg till samma funktioner. Se [MCP](/docs/developers/mcp) och [Godkännanden](/docs/developers/approvals)."
+          "body": "# Vad den kan göra\n\nAssistenten arbetar som du. Den kan bara se och göra det din egen roll tillåter, i din egen organisation. Använd den för att:\n\n- hitta ärenden, kunder, artiklar och anläggningar\n- visa ett ärende, ett blad eller en lista över upptagna lokaler\n- förbereda en ändring, till exempel att skapa en kund eller flytta en programpunkt\n\nProva frågor som \"Visa alla anläggningar\", \"Sök efter bokningsbara artiklar med plats för 50 personer\" eller \"Vilka färdigheter finns?\".\n\n# Var du hittar den\n\n- På startsidan fyller den hela sidan. Välj **Ny chatt** för en ny konversation.\n- Den finns bara på startsidan. En fråga från kommandofältet (Cmd+K) tar dig dit.\n- Dina senaste konversationer listas i vänstermenyn under **Assistent**. Du kan byta namn på eller arkivera en konversation från dess meny.\n- På mobil öppnas menyn som en låda från översta fältet.\n\n# Godkänna ändringar\n\nAssistenten sparar aldrig en ändring på egen hand. När den vill ändra något visas ett kort med rubriken **Godkänn åtgärd** som listar exakt vad som kommer att hända.\n\n1. Läs kortet. Kontrollera fält och värden.\n2. Välj **Godkänn** för att utföra ändringen, eller **Avslå** för att släppa den.\n3. Ett förslag går ut efter en kort stund. Ser du **Förslaget har gått ut**, fråga igen.\n\nVarje ändring sparas i historiken för ärendet eller kunden. Historiken visar om assistenten föreslog den och vem som godkände.\n\n# Färdigheter\n\nEn färdighet är en sparad uppsättning instruktioner som assistenten laddar när den passar uppgiften, till exempel \"så här skriver vi ett offertsvar\". Det finns tre sorter: systemfärdigheter som följer med Okazi, organisationens färdigheter som era administratörer delar, och personliga färdigheter som bara du ser.\n\n- Organisationens färdigheter finns under **Inställningar, Färdigheter** och dina egna under **Mina färdigheter** i användarmenyn.\n- Välj **Skapa färdighet**, beskriv när den ska användas och vad assistenten ska göra, och publicera den.\n- Du kan också importera en SKILL.md-fil. Den kommer in som utkast.\n\n# Bra att veta\n\n- Assistenten kan ha fel. Kontrollera godkännandekortet, inte bara chatttexten.\n- Den följer samma regler som du. Kan du inte ändra något kan inte heller den det.\n- Är assistenten otillgänglig har en administratör hos Okazi inte valt någon modell än. Resten av appen fungerar som vanligt.\n- Utvecklare kan koppla andra verktyg till samma funktioner. Se [MCP](/docs/developers/mcp) och [Godkännanden](/docs/developers/approvals)."
         },
-        "inquiries": {
-          "title": "Förfrågningar",
-          "lead": "En förfrågan är en kunds intresse innan något är bokat. Använd den för att hålla reda på vem som frågat efter vad, och vem som tar hand om den.",
-          "body": "# När du använder en förfrågan\n\nAnvänd en förfrågan när en kund ber om något som behöver följas upp innan ni kan boka det. För ett litet möte som ni kan boka direkt hoppar du över förfrågan och gör en snabbbokning i stället. Se [Bokningar](/docs/guide/bookings).\n\n# Registrera en förfrågan\n\n1. Öppna **Förfrågningar** i vänstermenyn och välj **Registrera förfrågan**.\n2. Välj förfrågningstyp. Typerna ställs in av era administratörer. Finns det inga än, välj **Gå till typer** och skapa en först.\n3. Välj kund, och gärna en kontaktperson som arbetar hos kunden.\n4. Fyll i önskade datum, antal (till exempel antal gäster), budget och eventuella fält som er organisation lagt till på typen.\n5. Spara. Förfrågan startar med statusen **Ny**.\n\nFinns kunden inte än, skapa den först under **Kunder**. En kund kan ha flera kontaktpersoner, och varje kontakt har namn, e-post och telefonnummer.\n\n# Flytta den framåt\n\nEn förfrågan följer en fast väg. Du kan inte sätta status genom att redigera förfrågan. Du använder en knapp på förfrågans sida.\n\n- **Kvalificera** flyttar den från **Ny** till **Kvalificerad**. En kvalificerad förfrågan behöver en ansvarig, så välj en bland medlemmarna när du kvalificerar den.\n- **Markera som förlorad** avslutar den. Du måste ange en anledning, vilket gör att ni senare kan se varför affärer faller bort. En förlorad förfrågan kan inte öppnas igen.\n\nStatusarna **Offererad** och **Vunnen** finns i statuslistan, men offerter är inte tillgängliga än. Kommer senare: att skicka en offert, låta kunden acceptera den och göra om den vunna förfrågan till en bokning automatiskt.\n\nTills dess skapar du bokningen själv under **Bokningar** när en förfrågan blir en riktig order, med samma kund och datum.\n\n# Håll koll på ditt eget arbete\n\n- Listan visar varje förfrågans kund, typ, önskade datum, antal och status. Välj **Tilldelade mig** eller **Följer** för att bara se dina egna.\n- Du kan byta ansvarig med **Byt ansvarig** och välja **Följ** för att hållas informerad.\n- Varje ändring sparas under **Historik** på förfrågans sida, med vem som gjorde den.\n- Kunder kan svara på bokningsmejl, och svaren samlas på bokningen. Se [Bokningar](/docs/guide/bookings).\n\n# Tips\n\n- Lägg samma fält på förfrågningstypen som ni vill ha på bokningen, så blir det lätt att föra över uppgifterna.\n- Be assistenten om en överblick, till exempel \"Vilka förfrågningar saknar ansvarig?\"."
-        },
-        "bookings": {
-          "title": "Bokningar",
-          "lead": "En bokning är hela eventet: vem, när, var och vad. Här ser du hur du skapar en, för den genom statusarna och avbokar den.",
-          "body": "# Snabbbokning för ett litet möte\n\nEn snabbbokning är det snabbaste sättet att boka. Det finns ingen förfrågan och ingen offert.\n\n1. Öppna **Bokningar** och välj **Snabbbokning**.\n2. Välj **Bokningstyp**, **Programpunktstyp** och **Kund**.\n3. Välj **Lokal eller artikel**, tid och **Antal**.\n4. Under **Betalning** väljer du **Faktura (bekräfta nu)** eller **Betallänk (bekräfta när betald)**.\n5. Spara.\n\nÄr lokalen eller dess ställtid redan upptagen får du ett meddelande och kan välja en annan tid. Med fakturaalternativet bekräftas bokningen direkt. Med betallänk förblir den preliminär tills kunden betalat. Se [Betalningar](/docs/guide/payments).\n\n# Skapa en vanlig bokning\n\n1. Välj **Skapa bokning**.\n2. Välj typ, kund och tid. Bokningen startar i er standardstatus för preliminära bokningar och får nästa nummer.\n3. Lägg till programpunkter, behov och betalningar från bokningens sida.\n\n# Bokningens sida\n\n- **Program**: dagens rader. Välj **Lägg till programpunkt** och ange namn, tid, lokal, uppställning och antal. Lokalen hålls för den tiden, och uppställningens ställtid blockeras precis före. Du kan inte boka en lokal som redan är belagd.\n- **Behov**: antal per listvärde. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Blad**: versioner som du kan skapa och skicka.\n- **Betalningar**: betalningsbegäranden för bokningen.\n- **Mottagen e-post**: kundens svar, när er organisation har inkommande e-post uppsatt.\n- **Historik**: varje ändring, med vem som gjorde den.\n\n# Byt status\n\nVälj **Byt status** och välj en av de statusar som era administratörer satt upp. Varje status hör till en av fyra faser, och fasen avgör reglerna.\n\n- **Preliminär**: lokalerna hålls. Blad kan inte skickas.\n- **Bekräftad**: bokningen behöver en ansvarig. Blad kan skickas.\n- **Genomförd**: behöver en ansvarig och är bara tillåten efter att bokningen slutat.\n- **Avbokad**: du måste ange en anledning. Lokalerna släpps. En avbokad bokning kan inte öppnas igen, så skapa en ny i stället.\n\nVilka byten som är tillåtna från varje status bestämmer också era administratörer. Använd **Byt ansvarig** på bokningssidan för att ange vem som ansvarar, och **Följ** för att hållas informerad. En snabbokning tilldelas dig.\n\n# Återkommande bokningar\n\nFör en kund som bokar samma lokal regelbundet använder du **Bokningsserier**. Skapa en serie med en upprepningsregel, så skapar Okazi varje tillfälle som en vanlig bokning. Krockar ett tillfälle med en annan bokning markeras det med **Krock**, och du väljer en annan lokal eller tid. Du kan ändra **Bara det här tillfället** eller **Det här och följande tillfällen**, eller välja **Avboka serien**.\n\n# Kommer senare\n\nOfferter, signering med BankID och fakturor som skapas i Okazi är beslutade men inte byggda än."
+        "tickets": {
+          "title": "Ärenden",
+          "lead": "Ett ärende är en kundförfrågan, från första kontakt till genomfört event. Här ser du hur du skapar ett och för det genom era faser.",
+          "body": "# Skapa ett ärende\n\n1. Öppna **Ärenden** och välj **Skapa ärende**.\n2. Välj typ och kund. Resten kan vänta: kontaktperson, önskade datum, antal, gästantal och budget kan läggas till nu eller senare.\n3. Spara. Ärendet får nästa nummer och startar i er startfas, till exempel **Lead**.\n\n# Ärendesidan\n\n- **Offerter**: versioner av offerten till kunden.\n- **Program**: ärendets rader. Välj **Lägg till programpunkt** och ange namn, tid, lokal, uppställning och antal. En lokal hålls under den tiden, och uppställningens ställtid blockeras precis före.\n- **Behov**: antal per listvärde. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Blad**: versioner som du kan skapa och skicka.\n- **Betalningar**: betalningsbegäranden för ärendet. Se [Betalningar](/docs/guide/payments).\n- **Mottagen e-post**: svar från kunden, när er organisation har inkommande e-post.\n- **Exportera**: laddar ner ärendet som en json-fil till någon utanför Okazi.\n\n# För det genom era faser\n\nEra administratörer bestämmer faserna, deras namn och ordning under **Inställningar, Faser**. Välj **Byt fas** på ärendesidan, eller dra kortet på tavlan **Pipeline**.\n\nVad en fas gör ställs in med några flaggor:\n\n- **Nya ärenden startar här**: startfasen.\n- **Kräver en anledning**: du måste ange varför, till exempel när ett ärende är förlorat.\n- **Kräver en ansvarig**: ärendet måste ha en ansvarig först.\n- **Avslutar ärendet**: inget lämnar fasen, och ärendets lokaler och resurser frigörs.\n- **Kan faktureras**: betalningar kan fortfarande begäras.\n\nVilka flyttar som är tillåtna från varje fas bestämmer också era administratörer. Nekas en flytt visar Okazi alla skäl på en gång och inget ändras. Använd **Byt ansvarig** för att välja vem som ansvarar för ärendet och **Följ** för att hållas informerad.\n\n# Kommer senare\n\nRadstatusar (preliminärt, bokat, beställt), färdiga ärenden för små möten och signering med BankID är beslutade men inte byggda än."
         },
         "items-and-venues": {
           "title": "Artiklar och anläggningar",
           "lead": "Anläggningar är era byggnader och platser. Artiklar är allt ni säljer eller bokar: lokaler, rätter, drycker, utrustning och paket.",
-          "body": "# Anläggningar\n\nEn anläggning är en byggnad eller plats. Artiklar hör till en anläggning.\n\n1. Öppna **Anläggningar** i vänstermenyn och välj **Skapa anläggning**.\n2. Ange namn, adress, kontaktuppgifter och öppettider.\n3. Spara. Anläggningens sida listar artiklarna på den anläggningen.\n\nArkiverar du en anläggning arkiveras också dess artiklar.\n\n# Artiklar\n\nEn artikel är allt som kan säljas eller bokas. Hur en artikel ser ut beror på dess **typ**, och era administratörer definierar typerna. En typ \"Konferensrum\" kan ha fält för våning och yta. En typ \"Rätt\" kan ha ett pris och en lista över allergener.\n\nSå här lägger du till en artikel:\n\n1. Öppna **Artiklar** och välj **Skapa artikel**.\n2. Välj typ och fyll sedan i namn, beskrivning, anläggning och typens fält.\n3. Spara.\n\nFinns inga typer än, välj **Gå till typer** och skapa en först. Använd typfiltret i listan för att hitta artiklar snabbt.\n\n# Vad en typ kan göra\n\nNär en typ skapas kan den slå på något av dessa beteenden. De är det enda Okazi har inbyggt. Allt annat är era egna namn.\n\n- **Prissatt**: artikeln har ett pris, en prisenhet (per person, per enhet, per timme eller fast pris) och moms.\n- **Sammansatt**: artikeln innehåller andra artiklar, med antal och tid. Ett paket är ett exempel.\n- **Val**: en sammansatt artikel kan erbjuda valgrupper, till exempel \"välj 1 av 3 varmrätter\".\n- **Bokningsbar**: artikeln kan beläggas i tid, och Okazi hindrar dubbelbokning. En lokal är ett exempel.\n- **Uppställningar**: en bokningsbar artikel har en kapacitet per uppställning, till exempel 80 personer i Teater och 40 i U-bord.\n\n# Uppställningar och ställtid\n\nUppställningar är era namngivna lokalupplägg, som Bio, U-bord eller Mingel. Varje uppställning har en ställtid, som Okazi blockerar precis före en bokning som använder den. Skapa dem under **Inställningar, Uppställningar** och ange kapacitet per uppställning på varje bokningsbar artikel.\n\n# Paket för en kund\n\nPå en kunds sida väljer du **Spara som paket** för att bygga ett paket av katalogartiklar. Paketet visas bara för den kunden och katalogen påverkas inte.\n\n# Innehållet i en artikel\n\nEn artikel som innehåller andra artiklar visar **Innehåll** med vad den **Innehåller** (obligatoriska delar) och vad den **Kan innehålla** (valfria delar och val). Det är detta Okazi jämför med de antal ni registrerar. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Blockera en artikel\n\nVill du ta en lokal ur bruk för underhåll eller internt bruk, öppna artikeln och välj **Blockera artikel**. Bokningar kan inte överlappa en blockering. Välj **Släpp blockering** för att öppna den igen.\n\n# Priser för en kund\n\nMed prislistor kan du ge en kund en generell rabatt eller särskilda priser per artikel. Se [Konfiguration](/docs/guide/configuration)."
+          "body": "# Anläggningar\n\nEn anläggning är en byggnad eller plats. Artiklar hör till en anläggning.\n\n1. Öppna **Anläggningar** i vänstermenyn och välj **Skapa anläggning**.\n2. Ange namn, adress, kontaktuppgifter och öppettider.\n3. Spara. Anläggningens sida listar artiklarna på den anläggningen.\n\nArkiverar du en anläggning arkiveras också dess artiklar.\n\n# Artiklar\n\nEn artikel är allt som kan säljas eller bokas. Hur en artikel ser ut beror på dess **typ**, och era administratörer definierar typerna. En typ \"Konferensrum\" kan ha fält för våning och yta. En typ \"Rätt\" kan ha ett pris och en lista över allergener.\n\nSå här lägger du till en artikel:\n\n1. Öppna **Artiklar** och välj **Skapa artikel**.\n2. Välj typ och fyll sedan i namn, beskrivning, anläggning och typens fält.\n3. Spara.\n\nFinns inga typer än, välj **Gå till typer** och skapa en först. Använd typfiltret i listan för att hitta artiklar snabbt.\n\n# Vad en typ kan göra\n\nNär en typ skapas kan den slå på något av dessa beteenden. De är det enda Okazi har inbyggt. Allt annat är era egna namn.\n\n- **Prissatt**: artikeln har ett pris, en prisenhet (per person, per enhet, per timme eller fast pris) och moms.\n- **Sammansatt**: artikeln innehåller andra artiklar, med antal och tid. Ett paket är ett exempel.\n- **Val**: en sammansatt artikel kan erbjuda valgrupper, till exempel \"välj 1 av 3 varmrätter\".\n- **Bokningsbar**: artikeln kan beläggas i tid, och Okazi hindrar dubbelbokning. En lokal är ett exempel.\n- **Uppställningar**: en bokningsbar artikel har en kapacitet per uppställning, till exempel 80 personer i Teater och 40 i U-bord.\n\n# Uppställningar och ställtid\n\nUppställningar är era namngivna lokalupplägg, som Bio, U-bord eller Mingel. Varje uppställning har en ställtid, som Okazi blockerar precis före en programpunkt som använder den. Skapa dem under **Inställningar, Uppställningar** och ange kapacitet per uppställning på varje bokningsbar artikel.\n\n# Paket för en kund\n\nPå en kunds sida väljer du **Spara som paket** för att bygga ett paket av katalogartiklar. Paketet visas bara för den kunden och katalogen påverkas inte.\n\n# Innehållet i en artikel\n\nEn artikel som innehåller andra artiklar visar **Innehåll** med vad den **Innehåller** (obligatoriska delar) och vad den **Kan innehålla** (valfria delar och val). Det är detta Okazi jämför med de antal ni registrerar. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Blockera en artikel\n\nVill du ta en lokal ur bruk för underhåll eller internt bruk, öppna artikeln och välj **Blockera artikel**. Bokningar kan inte överlappa en blockering. Välj **Släpp blockering** för att öppna den igen.\n\n# Priser för en kund\n\nMed prislistor kan du ge en kund en generell rabatt eller särskilda priser per artikel. Se [Konfiguration](/docs/guide/configuration)."
         },
         "needs-and-sheets": {
           "title": "Behov och blad",
-          "lead": "Registrera vad en bokning behöver som antal och skicka versionerade blad till dem som förbereder den. Inga personuppgifter om gäster sparas.",
-          "body": "# Behov är antal\n\nEtt behov är ett antal mot ett värde i en av era egna listor. Har er organisation till exempel en lista med allergener betyder \"Gluten x 3\" att tre gäster behöver glutenfri mat. \"Rullstol x 2\" fungerar likadant med en tillgänglighetslista.\n\nBehov kopplas aldrig till en namngiven person. Du anger aldrig en gästs namn eller hälsouppgifter.\n\n# Lägg till ett behov på en bokning\n\n1. Öppna bokningen och gå till **Behov**.\n2. Välj **Lägg till behov**.\n3. Välj listvärde och ange antal.\n4. Välj var det gäller: **Hela bokningen** eller en programpunkt.\n\nDu kan bara ha ett antal per listvärde på varje plats. Försöker du lägga till ett till får du uppmaningen att redigera det befintliga antalet. Ett antal på en programpunkt ersätter bokningens antal för den punkten, värde för värde. Antalet 0 på en programpunkt betyder \"inga här\".\n\nHar era administratörer gett behovstypen extra fält, till exempel allvarlighetsgrad, kan du fylla i dem också. Använd **Ta bort behov** om ett antal inte behövs längre.\n\n# Matchning mot artiklar\n\nOkazi jämför varje behov med de artiklar på bokningen som har samma listvärde. Resultatet visas som en av två sorters träffar.\n\n- **Innehåller**: artikeln, eller en obligatorisk del av den, är märkt med värdet.\n- **Kan innehålla**: bara valfria delar eller valalternativ har det.\n\nEn träff som **Innehåller** och saknar alternativ **blockerar** bladet. Bladet visar **Blockerad: kan inte skickas** tills du rättat bokningen, till exempel genom att välja ett alternativ.\n\n# Blad\n\nEtt blad är en sammanställning till ett ansvar, till exempel en köksorder till kökschefen. Era administratörer definierar vilka blad som finns, vad varje blad tar med och vem som tar emot det. Se [Konfiguration](/docs/guide/configuration).\n\n1. Öppna bokningen och gå till **Blad**.\n2. Välj **Skapa version**. Okazi tar en ögonblicksbild av bokningen med det bladet ska ta med.\n3. Granska raderna, antalen och eventuella träffar.\n4. Välj **Skicka**.\n\n# Versioner och ändringar\n\nVarje gång bokningen ändras kan du skapa en ny version. Okazi markerar vad som är **Tillagd**, **Ändrad** eller **Borttagen sedan senast skickade version**, så att köket ser vad som är nytt. En version redigeras eller tas aldrig bort, och varje version kan skickas en gång.\n\nBlad kan bara skickas när bokningen är i en bekräftad fas. I en preliminär bokning kan du skapa och kontrollera dem men inte skicka. Bara den senaste versionen kan skickas.\n\n# Kommer senare\n\nExport av ett blad som JSON, PDF eller CSV för överlämning utanför systemet är planerat men finns inte än."
+          "lead": "Registrera vad ett ärende behöver som antal och skicka versionerade blad till dem som förbereder den. Inga personuppgifter om gäster sparas.",
+          "body": "# Behov är antal\n\nEtt behov är ett antal mot ett värde i en av era egna listor. Har er organisation till exempel en lista med allergener betyder \"Gluten x 3\" att tre gäster behöver glutenfri mat. \"Rullstol x 2\" fungerar likadant med en tillgänglighetslista.\n\nBehov kopplas aldrig till en namngiven person. Du anger aldrig en gästs namn eller hälsouppgifter.\n\n# Lägg till ett behov på ett ärende\n\n1. Öppna ärendet och gå till **Behov**.\n2. Välj **Lägg till behov**.\n3. Välj listvärde och ange antal.\n4. Välj var det gäller: **Hela ärendet** eller en programpunkt.\n\nDu kan bara ha ett antal per listvärde på varje plats. Försöker du lägga till ett till får du uppmaningen att redigera det befintliga antalet. Ett antal på en programpunkt ersätter ärendets antal för den punkten, värde för värde. Antalet 0 på en programpunkt betyder \"inga här\".\n\nHar era administratörer gett behovstypen extra fält, till exempel allvarlighetsgrad, kan du fylla i dem också. Använd **Ta bort behov** om ett antal inte behövs längre.\n\n# Matchning mot artiklar\n\nOkazi jämför varje behov med de artiklar på ärendet som har samma listvärde. Resultatet visas som en av två sorters träffar.\n\n- **Innehåller**: artikeln, eller en obligatorisk del av den, är märkt med värdet.\n- **Kan innehålla**: bara valfria delar eller valalternativ har det.\n\nEn träff som **Innehåller** och saknar alternativ **blockerar** bladet. Bladet visar **Blockerad: kan inte skickas** tills du rättat ärendet, till exempel genom att välja ett alternativ.\n\n# Blad\n\nEtt blad är en sammanställning till ett ansvar, till exempel en köksorder till kökschefen. Era administratörer definierar vilka blad som finns, vad varje blad tar med och vem som tar emot det. Se [Konfiguration](/docs/guide/configuration).\n\n1. Öppna ärendet och gå till **Blad**.\n2. Välj **Skapa version**. Okazi tar en ögonblicksbild av ärendet med det bladet ska ta med.\n3. Granska raderna, antalen och eventuella träffar.\n4. Välj **Skicka**.\n\n# Versioner och ändringar\n\nVarje gång ärendet ändras kan du skapa en ny version. Okazi markerar vad som är **Tillagd**, **Ändrad** eller **Borttagen sedan senast skickade version**, så att köket ser vad som är nytt. En version redigeras eller tas aldrig bort, och varje version kan skickas en gång.\n\nBlad kan skickas medan ärendet är öppet. När det har nått en fas som avslutar det kan du fortfarande läsa bladen men inte skicka dem. Bara den senaste versionen kan skickas.\n\n# Kommer senare\n\nExport av ett blad som JSON, PDF eller CSV för överlämning utanför systemet är planerat men finns inte än."
         },
         "payments": {
           "title": "Betalningar",
           "lead": "Be en kund betala med kortlänk eller mot faktura. Pengarna går direkt till ert eget Stripe-konto, och Okazi håller dem aldrig.",
-          "body": "# Koppla Stripe först\n\nInnan du kan begära en betalning måste en administratör koppla er organisation till Stripe.\n\n1. Öppna **Inställningar** och välj **Betalningar**.\n2. Välj **Koppla till Stripe**. Du skickas till Stripe för att verifiera ert företag.\n3. När du kommer tillbaka väljer du **Uppdatera status**. Är registreringen inte klar, välj **Fortsätt registreringen**.\n\nStatusen visar **Inte kopplat**, **Registrering pågår**, **Aktivt** eller **Begränsat**. Betalningar fungerar när den är **Aktivt**. Är den **Begränsat** behöver Stripe fler uppgifter från er, så fortsätt registreringen.\n\nBetalningarna dras på ert eget anslutna konto, så ni är säljare och utbetalningen går till er.\n\n# Begär en betalning\n\n1. Öppna bokningen och hitta **Betalningar**.\n2. Välj **Begär betalning**.\n3. Välj metod och belopp.\n4. Spara.\n\nDet finns två metoder.\n\n- **Kort**: Okazi skapar en betallänk. Välj **Öppna betalningslänken** för att kopiera eller öppna den, och skicka den till kunden.\n- **Faktura**: Stripe mejlar en faktura till kunden. Kunden behöver en e-postadress på kundposten. Förfallodagen följer kundens betalningsvillkor, 30 dagar om inget är angivet.\n\nDu kan bara begära en betalning för en bokning som inte är avbokad.\n\n# Vad kunden ser\n\nKunden öppnar länken och kommer till en enkel sida med er organisations namn, bokningsnumret, beloppet och en knapp **Betala nu**. Stripe hanterar kortuppgifterna. Kunden behöver inget konto och ser aldrig Okazis app.\n\nHar länken gått ut säger sidan det och ber kunden kontakta er. Ni kan då begära en ny betalning.\n\n# Betalningsstatus\n\nVarje betalning har en status: **Väntar**, **Betald**, **Misslyckad**, **Avbruten** eller **Återbetald**. Statusen uppdateras av sig själv när Stripe rapporterar tillbaka. Du behöver inte markera något som betalt.\n\n# Betald betyder bekräftad\n\nNär en betalning är betald försöker Okazi flytta en preliminär bokning till er standardstatus för bekräftade bokningar. Det följer samma regler som en manuell ändring, till exempel att en bekräftad bokning behöver en ansvarig. Nekas flytten registreras betalningen ändå som betald, och ni bekräftar bokningen för hand.\n\nVid en snabbbokning kan du i stället välja **Faktura (bekräfta nu)**, som bekräftar bokningen direkt.\n\n# Kommer senare\n\nSwish för kunder, prislistor som tillämpas på fakturor och fakturor som skickas till Fortnox, Visma eller Peppol är beslutade men finns inte än."
+          "body": "# Koppla Stripe först\n\nInnan du kan begära en betalning måste en administratör koppla er organisation till Stripe.\n\n1. Öppna **Inställningar** och välj **Betalningar**.\n2. Välj **Koppla till Stripe**. Du skickas till Stripe för att verifiera ert företag.\n3. När du kommer tillbaka väljer du **Uppdatera status**. Är registreringen inte klar, välj **Fortsätt registreringen**.\n\nStatusen visar **Inte kopplat**, **Registrering pågår**, **Aktivt** eller **Begränsat**. Betalningar fungerar när den är **Aktivt**. Är den **Begränsat** behöver Stripe fler uppgifter från er, så fortsätt registreringen.\n\nBetalningarna dras på ert eget anslutna konto, så ni är säljare och utbetalningen går till er.\n\n# Begär en betalning\n\n1. Öppna ärendet och hitta **Betalningar**.\n2. Välj **Begär betalning**.\n3. Välj metod och belopp.\n4. Spara.\n\nDet finns två metoder.\n\n- **Kort**: Okazi skapar en betallänk. Välj **Öppna betalningslänken** för att kopiera eller öppna den, och skicka den till kunden.\n- **Faktura**: Stripe mejlar en faktura till kunden. Kunden behöver en e-postadress på kundposten. Förfallodagen följer kundens betalningsvillkor, 30 dagar om inget är angivet.\n\nDu kan begära en betalning för ett öppet ärende, eller för ett i en avslutande fas som kan faktureras.\n\n# Vad kunden ser\n\nKunden öppnar länken och kommer till en enkel sida med er organisations namn, bokningsnumret, beloppet och en knapp **Betala nu**. Stripe hanterar kortuppgifterna. Kunden behöver inget konto och ser aldrig Okazis app.\n\nHar länken gått ut säger sidan det och ber kunden kontakta er. Ni kan då begära en ny betalning.\n\n# Betalningsstatus\n\nVarje betalning har en status: **Väntar**, **Betald**, **Misslyckad**, **Avbruten** eller **Återbetald**. Statusen uppdateras av sig själv när Stripe rapporterar tillbaka. Du behöver inte markera något som betalt.\n\n# Betald flyttar inte ärendet\n\nEn betald betalning ändrar bara betalningens status. Ärendet stannar i sin fas, och du flyttar det själv när ni är redo.\n\n# Kommer senare\n\nSwish för kunder, prislistor som tillämpas på fakturor och fakturor som skickas till Fortnox, Visma eller Peppol är beslutade men finns inte än."
         },
         "configuration": {
           "title": "Konfiguration",
           "lead": "Ägare och administratörer ställer in vad saker heter och hur de fungerar i er organisation. Allt här är era egna data.",
-          "body": "# Vem kan konfigurera\n\nBara ägare och administratörer ser **Inställningar** i vänstermenyn. Den öppnar en sida som listar alla konfigurationsområden. Ändringar påverkar alla i organisationen.\n\n# Typer och fält\n\nUnder **Inställningar, Typer** definierar du vilka sorters poster ni arbetar med: artiklar, kunder, kontakter, förfrågningar, bokningar, behov och programpunkter. Till exempel \"Konferensrum\", \"Rätt\", \"Företag\" eller \"Konferens\".\n\n1. Välj **Skapa typ**, ange vad den gäller och namnge den.\n2. För en artikeltyp slår du på beteenden som **Prissatt**, **Bokningsbar** eller **Uppställningar**. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n3. Lägg till fält. Ett fält kan vara text, tal, ja/nej, datum, val, flerval eller en länk till en annan post. Markera det som obligatoriskt om det alltid måste fyllas i.\n\nEn typ kan inte arkiveras så länge den används, och ett fält kan inte byta sort när det har data.\n\n# Listor\n\nUnder **Inställningar, Listor** håller du era egna ordlistor, som allergener, kostval eller tillgänglighetsbehov. Fält och behov pekar på en lista. För att komma igång väljer du **Importera EU:s 14 allergener**. Du kan redigera listan efteråt. En lista eller ett värde kan inte arkiveras så länge ett fält använder det eller ett behov räknar det.\n\n# Uppställningar\n\nUnder **Inställningar, Uppställningar** namnger du era lokalupplägg och anger ställtid. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n\n# Bokningsstatusar\n\nUnder **Inställningar, Bokningsstatusar** bestämmer du vad era bokningar heter när de går framåt. Varje status har ett namn, en färg och en av fyra fasta faser: **Preliminär**, **Bekräftad**, **Genomförd** eller **Avbokad**. Fasen bär reglerna, som du inte kan stänga av. Se [Bokningar](/docs/guide/bookings).\n\n1. Välj **Skapa status**, eller **Importera mallen Konferensgård** för en färdig uppsättning.\n2. Använd **Redigera övergångar** för att välja vilka statusar en bokning får gå till från varje status.\n3. Ändra ordning med pilarna. Första statusen i en fas är standard för den fasen.\n\nEn status som används kan arkiveras men inte tas bort, och varje fas måste behålla minst en status.\n\n# Blad\n\nUnder **Inställningar, Blad** definierar du ett blad som \"Köksorder\": namnge det, välj vilka artikeltyper och fält det tar med, vilka listors behov det räknar och vilken roll som tar emot det. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Prislistor\n\nUnder **Inställningar, Prislistor** skapar du en lista för en kund eller för alla, med en giltighetstid. Välj antingen en generell rabatt i procent eller ett pris per artikel, inte båda. Nya orderrader använder listans priser, och en arkiverad lista gäller inte längre.\n\n# Betalningar och färdigheter\n\n**Inställningar, Betalningar** kopplar Stripe. Se [Betalningar](/docs/guide/payments). **Inställningar, Färdigheter** innehåller organisationens färdigheter för assistenten. Se [Assistenten](/docs/guide/assistant).\n\n# Mallar och assistenten\n\nMallar som startuppsättningen Konferensgård är valfria. De är bara data, så du kan ändra allt efteråt. Du kan också be assistenten föreslå en uppsättning, till exempel \"Vi är en herrgård med restaurang\". Du godkänner varje ändring."
+          "body": "# Vem kan konfigurera\n\nBara ägare och administratörer ser **Inställningar** i vänstermenyn. Den öppnar en sida som listar alla konfigurationsområden. Ändringar påverkar alla i organisationen.\n\n# Typer och fält\n\nUnder **Inställningar, Typer** definierar du vilka sorters poster ni arbetar med: artiklar, kunder, kontakter, ärenden, behov och programpunkter. Till exempel \"Konferensrum\", \"Rätt\", \"Företag\" eller \"Konferens\".\n\n1. Välj **Skapa typ**, ange vad den gäller och namnge den.\n2. För en artikeltyp slår du på beteenden som **Prissatt**, **Bokningsbar** eller **Uppställningar**. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n3. Lägg till fält. Ett fält kan vara text, tal, ja/nej, datum, val, flerval eller en länk till en annan post. Markera det som obligatoriskt om det alltid måste fyllas i.\n\nEn typ kan inte arkiveras så länge den används, och ett fält kan inte byta sort när det har data.\n\n# Listor\n\nUnder **Inställningar, Listor** håller du era egna ordlistor, som allergener, kostval eller tillgänglighetsbehov. Fält och behov pekar på en lista. För att komma igång väljer du **Importera EU:s 14 allergener**. Du kan redigera listan efteråt. En lista eller ett värde kan inte arkiveras så länge ett fält använder det eller ett behov räknar det.\n\n# Uppställningar\n\nUnder **Inställningar, Uppställningar** namnger du era lokalupplägg och anger ställtid. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n\n# Faser\n\nUnder **Inställningar, Faser** bestämmer du vilka faser era ärenden går igenom, vad de heter och i vilken ordning de visas på tavlan. Inget om en fas är fast: varje fas har ett namn, en färg och några flaggor som avgör vad Okazi gör. Ni behöver en startfas och minst en fas som avslutar ärendet. Se [Ärenden](/docs/guide/tickets).\n\n1. Välj **Skapa fas**, eller **Importera mallen Konferensgård** för en färdig uppsättning.\n2. Använd **Redigera övergångar** för att välja vilka faser ett ärende får gå till från varje fas.\n3. Ändra ordning med pilarna.\n\nEn fas arkiveras, den tas aldrig bort. Finns det ärenden i den väljer du vilken fas de flyttas till.\n\n# Blad\n\nUnder **Inställningar, Blad** definierar du ett blad som \"Köksorder\": namnge det, välj vilka artikeltyper och fält det tar med, vilka listors behov det räknar och vilken roll som tar emot det. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Prislistor\n\nUnder **Inställningar, Prislistor** skapar du en lista för en kund eller för alla, med en giltighetstid. Välj antingen en generell rabatt i procent eller ett pris per artikel, inte båda. Nya orderrader använder listans priser, och en arkiverad lista gäller inte längre.\n\n# Betalningar och färdigheter\n\n**Inställningar, Betalningar** kopplar Stripe. Se [Betalningar](/docs/guide/payments). **Inställningar, Färdigheter** innehåller organisationens färdigheter för assistenten. Se [Assistenten](/docs/guide/assistant).\n\n# Mallar och assistenten\n\nMallar som startuppsättningen Konferensgård är valfria. De är bara data, så du kan ändra allt efteråt. Du kan också be assistenten föreslå en uppsättning, till exempel \"Vi är en herrgård med restaurang\". Du godkänner varje ändring."
         },
         "members-and-roles": {
           "title": "Medlemmar och roller",
           "lead": "Bjud in kollegor, ge dem rätt behörighetsnivå och ta bort dem när de slutar.",
-          "body": "# Behörighetsnivåer\n\nVarje medlem har en åtkomstroll. Rollerna är fasta och går från minst till mest åtkomst.\n\n- **Läsare**: kan läsa allt men ändrar ingenting.\n- **Medlem**: kan också arbeta med den dagliga datan, som kunder, förfrågningar, bokningar, programpunkter, behov, betalningar och blad.\n- **Administratör**: allt en medlem kan, plus konfiguration (typer, listor, statusar, blad, prislistor), medlemmar och API-nycklar.\n- **Ägare**: allt, även andra ägare och själva organisationen. En organisation har alltid minst en ägare.\n\nBara ägare och administratörer ser **Inställningar**. Sidorna kontrollerar själva din behörighet, så att dölja menyn är bara en bekvämlighet.\n\n# Bjud in en kollega\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Bjud in medlem** och ange e-postadress och roll.\n3. Välj **Skicka inbjudan**.\n\nOkazi mejlar en länk. Personen loggar in eller skapar ett konto med samma e-postadress och väljer **Acceptera inbjudan**. Därefter går hen med i den inbjudna rollen. En inbjudan går ut efter 48 timmar.\n\nUnder **Väntande inbjudningar** ser du vem som inte svarat än. Välj **Återkalla** för att avbryta en inbjudan, så slutar länken fungera. Du kan inte ge någon mer åtkomst än du själv har, och en e-postadress som redan är medlem kan inte bjudas in igen.\n\n# Byt roll eller ta bort någon\n\nPå medlemssidan kan du byta en medlems roll. Ägare kan bara ändras av en annan ägare. För att ta bort någon väljer du **Ta bort**. Hen förlorar åtkomsten direkt, och det hen skapat finns kvar i historiken.\n\n# Vem som ansvarar för vad på en bokning\n\nÅtkomstrollerna avgör vad du får göra i appen. En separat idé avgör vem som ansvarar för en bokning.\n\n- Varje förfrågan och bokning har en ansvarig, som måste vara medlem. Andra medlemmar kan följa den för att hållas informerade.\n- En förfrågan behöver en ansvarig innan den kan kvalificeras, och en bekräftad bokning behöver en ansvarig.\n- Byt ansvarig med **Byt ansvarig** och välj **Följ** eller **Sluta följa** för dig själv. Listorna över förfrågningar och bokningar kan visa bara det som är **Tilldelade mig** eller det du **Följer**.\n\nAdministratörer definierar ansvar som \"Kökschef\" under **Inställningar, Ansvar**. Ett ansvar täcker vissa artikeltyper och har en standardperson och följare. Kommer senare: en bokning får automatiskt en ansvarig per ansvar utifrån sina artiklar, och de matchande bladen går till den personen och följarna.\n\n# Assistenten och API-åtkomst\n\nAssistenten agerar med din roll, så den kan aldrig göra mer än du. Kopplar ni andra verktyg använder de en roll som aldrig är över din. Se [Autentisering](/docs/developers/authentication)."
+          "body": "# Behörighetsnivåer\n\nVarje medlem har en åtkomstroll. Rollerna är fasta och går från minst till mest åtkomst.\n\n- **Läsare**: kan läsa allt men ändrar ingenting.\n- **Medlem**: kan också arbeta med den dagliga datan, som kunder, ärenden, programpunkter, behov, betalningar och blad.\n- **Administratör**: allt en medlem kan, plus konfiguration (typer, listor, faser, blad, prislistor), medlemmar och API-nycklar.\n- **Ägare**: allt, även andra ägare och själva organisationen. En organisation har alltid minst en ägare.\n\nBara ägare och administratörer ser **Inställningar**. Sidorna kontrollerar själva din behörighet, så att dölja menyn är bara en bekvämlighet.\n\n# Bjud in en kollega\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Bjud in medlem** och ange e-postadress och roll.\n3. Välj **Skicka inbjudan**.\n\nOkazi mejlar en länk. Personen loggar in eller skapar ett konto med samma e-postadress och väljer **Acceptera inbjudan**. Därefter går hen med i den inbjudna rollen. En inbjudan går ut efter 48 timmar.\n\nUnder **Väntande inbjudningar** ser du vem som inte svarat än. Välj **Återkalla** för att avbryta en inbjudan, så slutar länken fungera. Du kan inte ge någon mer åtkomst än du själv har, och en e-postadress som redan är medlem kan inte bjudas in igen.\n\n# Byt roll eller ta bort någon\n\nPå medlemssidan kan du byta en medlems roll. Ägare kan bara ändras av en annan ägare. För att ta bort någon väljer du **Ta bort**. Hen förlorar åtkomsten direkt, och det hen skapat finns kvar i historiken.\n\n# Vem som ansvarar för vad på ett ärende\n\nÅtkomstrollerna avgör vad du får göra i appen. En separat idé avgör vem som ansvarar för ett ärende.\n\n- Varje ärende har en ansvarig, som måste vara medlem. Andra medlemmar kan följa den för att hållas informerade.\n- Vissa faser kräver en ansvarig innan ett ärende kan gå in i dem, till exempel Bekräftad.\n- Byt ansvarig med **Byt ansvarig** och välj **Följ** eller **Sluta följa** för dig själv. Listan över ärenden kan visa bara det som är **Tilldelade mig** eller det du **Följer**.\n\nAdministratörer definierar ansvar som \"Kökschef\" under **Inställningar, Ansvar**. Ett ansvar täcker vissa artikeltyper och har en standardperson och följare. Kommer senare: ett ärende får automatiskt en ansvarig per ansvar utifrån sina artiklar, och de matchande bladen går till den personen och följarna.\n\n# Assistenten och API-åtkomst\n\nAssistenten agerar med din roll, så den kan aldrig göra mer än du. Kopplar ni andra verktyg använder de en roll som aldrig är över din. Se [Autentisering](/docs/developers/authentication)."
         }
       },
       "developers": {
         "overview": {
           "title": "Översikt för utvecklare",
           "lead": "Okazi har fyra ingångar: webbappen, ett REST-API, en GraphQL-graf och en MCP-server. Alla kör samma operationer med samma behörigheter.",
-          "body": "# En uppsättning operationer, fyra ytor\n\nVarje funktion i Okazi definieras en gång som en **kärnoperation**, till exempel `venue.create` eller `booking.list`. Varje operation har ett indataschema, ett utdataschema, en behörighet som krävs och en hanterare. Ytorna genereras från den listan:\n\n- **REST** på `{{webUrl}}/api/v1`, beskrivet av ett OpenAPI 3.1-dokument.\n- **GraphQL** på `{{webUrl}}/api/graphql`, för att läsa relaterad data i ett anrop.\n- **MCP** på `{{mcpUrl}}/mcp`, ett verktyg per operation, för AI-assistenter som Claude.\n- **Webbappen**, som personalen använder varje dag.\n\nEftersom allt kommer från samma operationer finns ett kommando som finns i webbappen också i REST och MCP, med samma validering och samma fel. Ett paritetstest i CI ser till att det förblir så.\n\n# Organisationer\n\nAll data tillhör en **organisation**. Varje inloggningsuppgift motsvarar en användare i en organisation, och varje operation är avgränsad till den organisationen. Du kan aldrig läsa eller ändra en annan organisations data, oavsett yta.\n\n# Granskning och loggning\n\nVarje kommando skriver en rad i historiken med aktör (`user` eller `ai`), yta och ett request-id. Ägare och administratörer kan läsa historiken i appen och via `auditLog.list`.\n\n# Vidare läsning\n\n- [Autentisering](/docs/developers/authentication): API-nycklar, sessioner och OAuth.\n- [REST-API](/docs/developers/rest-api) och [REST-referensen]({{webUrl}}/api/v1/docs).\n- [MCP-server](/docs/developers/mcp) och [MCP-verktygsreferensen](/docs/reference/mcp).\n- [AI-godkännanden](/docs/developers/approvals): varför AI-kommandon blir förslag.\n- [Fel och gränser](/docs/developers/errors).\n"
+          "body": "# En uppsättning operationer, fyra ytor\n\nVarje funktion i Okazi definieras en gång som en **kärnoperation**, till exempel `venue.create` eller `ticket.list`. Varje operation har ett indataschema, ett utdataschema, en behörighet som krävs och en hanterare. Ytorna genereras från den listan:\n\n- **REST** på `{{webUrl}}/api/v1`, beskrivet av ett OpenAPI 3.1-dokument.\n- **GraphQL** på `{{webUrl}}/api/graphql`, för att läsa relaterad data i ett anrop.\n- **MCP** på `{{mcpUrl}}/mcp`, ett verktyg per operation, för AI-assistenter som Claude.\n- **Webbappen**, som personalen använder varje dag.\n\nEftersom allt kommer från samma operationer finns ett kommando som finns i webbappen också i REST och MCP, med samma validering och samma fel. Ett paritetstest i CI ser till att det förblir så.\n\n# Organisationer\n\nAll data tillhör en **organisation**. Varje inloggningsuppgift motsvarar en användare i en organisation, och varje operation är avgränsad till den organisationen. Du kan aldrig läsa eller ändra en annan organisations data, oavsett yta.\n\n# Granskning och loggning\n\nVarje kommando skriver en rad i historiken med aktör (`user` eller `ai`), yta och ett request-id. Ägare och administratörer kan läsa historiken i appen och via `auditLog.list`.\n\n# Vidare läsning\n\n- [Autentisering](/docs/developers/authentication): API-nycklar, sessioner och OAuth.\n- [REST-API](/docs/developers/rest-api) och [REST-referensen]({{webUrl}}/api/v1/docs).\n- [MCP-server](/docs/developers/mcp) och [MCP-verktygsreferensen](/docs/reference/mcp).\n- [AI-godkännanden](/docs/developers/approvals): varför AI-kommandon blir förslag.\n- [Fel och gränser](/docs/developers/errors).\n"
         },
         "authentication": {
           "title": "Autentisering",
@@ -2201,7 +2147,7 @@
         },
         "graphql": {
           "title": "GraphQL",
-          "lead": "En graf för att läsa relaterad data i ett anrop, till exempel en bokning med program, behov och blad.",
+          "lead": "En graf för att läsa relaterad data i ett anrop, till exempel ett ärende med program, behov och blad.",
           "body": "# Endpoint\n\n`POST {{webUrl}}/api/graphql` med en JSON-kropp med `query`, `variables` och valfritt `operationName`. Autentisera som för REST (API-nyckel, OAuth-token eller session).\n\n```\ncurl -X POST \"{{webUrl}}/api/graphql\" \\\n  -H \"Authorization: Bearer okz_<din nyckel>\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"query\":\"{ venues { items { id name } } }\"}'\n```\n\n# Schema\n\nSchemat genereras från samma operationer och Zod-scheman som REST och MCP. Varje entitet kan läsas via grafen, och varje kommando finns också som mutation.\n\nIntrospektion är avstängd i produktion. Hämta schemat som SDL med MCP-verktyget `graphql_schema`, eller kör appen lokalt där GraphiQL och introspektion är påslagna.\n\n# Gränser\n\nFrågor kontrolleras för djup och kostnad innan de körs. En fråga som är för djup eller för dyr avvisas med ett valideringsfel. Dela upp den i mindre frågor eller använd paginering.\n\n# När GraphQL och när REST\n\n- Använd **GraphQL** för att läsa ett träd av relaterad data i ett anrop.\n- Använd **REST** för enkla integrationer, synkroniseringar och när en OpenAPI-klient är praktisk.\n"
         },
         "mcp": {
@@ -2212,7 +2158,7 @@
         "approvals": {
           "title": "AI-godkännanden",
           "lead": "AI föreslår, människor bestämmer. Kommandon som anropas av en AI blir förslag som en person måste godkänna i appen.",
-          "body": "# Så fungerar det\n\n1. Assistenten anropar ett kommando, till exempel `booking_create`.\n2. I stället för att köra det svarar MCP-servern med ett förslag:\n\n```\n{\n  \"status\": \"approval_required\",\n  \"operation\": \"booking.create\",\n  \"summary\": \"Skapa bokningen Styrelsemöte 5 nov för Acme AB\",\n  \"approvalToken\": \"...\",\n  \"expiresAt\": \"2026-11-04T10:10:00.000Z\"\n}\n```\n\n3. Appen visar förslaget som ett kort. Användaren läser sammanfattningen och klickar **Godkänn** eller **Avbryt**.\n4. Vid godkännande kör appen kommandot som användaren. Historiken loggar `actor=ai`, konversationen och vem som godkände.\n\nFörslag går ut efter 10 minuter. Assistenten får inte försöka igen med ett kommando som väntar på godkännande.\n\n# Vad som kräver godkännande\n\n- Varje kommando (allt som ändrar data) som anropas av en AI kräver som standard godkännande.\n- Frågor (läsningar) kräver aldrig godkännande.\n- Referensen markerar varje route och verktyg som kräver godkännande med en etikett.\n\n# Integrationer med API-nycklar\n\nAnrop med en API-nyckel eller av en person i appen är inte AI-anrop. De körs direkt, med nyckelns eller användarens behörigheter. Godkännande gäller bara AI.\n"
+          "body": "# Så fungerar det\n\n1. Assistenten anropar ett kommando, till exempel `ticket_create`.\n2. I stället för att köra det svarar MCP-servern med ett förslag:\n\n```\n{\n  \"status\": \"approval_required\",\n  \"operation\": \"ticket.create\",\n  \"summary\": \"Skapa ärendet Styrelsemöte 5 nov för Acme AB\",\n  \"approvalToken\": \"...\",\n  \"expiresAt\": \"2026-11-04T10:10:00.000Z\"\n}\n```\n\n3. Appen visar förslaget som ett kort. Användaren läser sammanfattningen och klickar **Godkänn** eller **Avbryt**.\n4. Vid godkännande kör appen kommandot som användaren. Historiken loggar `actor=ai`, konversationen och vem som godkände.\n\nFörslag går ut efter 10 minuter. Assistenten får inte försöka igen med ett kommando som väntar på godkännande.\n\n# Vad som kräver godkännande\n\n- Varje kommando (allt som ändrar data) som anropas av en AI kräver som standard godkännande.\n- Frågor (läsningar) kräver aldrig godkännande.\n- Referensen markerar varje route och verktyg som kräver godkännande med en etikett.\n\n# Integrationer med API-nycklar\n\nAnrop med en API-nyckel eller av en person i appen är inte AI-anrop. De körs direkt, med nyckelns eller användarens behörigheter. Godkännande gäller bara AI.\n"
         },
         "errors": {
           "title": "Fel och gränser",
@@ -2252,7 +2198,7 @@
     "assign": "Byt ansvarig",
     "assignDescription": "Välj den medlem som ansvarar för detta. Följare hålls informerade.",
     "assigned": "Ansvarig har uppdaterats.",
-    "required": "I nuvarande status måste det finnas en ansvarig.",
+    "required": "I nuvarande fas måste det finnas en ansvarig.",
     "follow": "Följ",
     "unfollow": "Sluta följa",
     "followed": "Du följer nu detta.",
@@ -2345,13 +2291,9 @@
       "settings": "Inställningar"
     },
     "items": {
-      "booking": {
-        "title": "Bokning",
-        "description": "En konferens eller ett evenemang med kund, tid och antal personer."
-      },
-      "inquiry": {
-        "title": "Förfrågan",
-        "description": "En förfrågan från en kund, innan den är kvalificerad."
+      "ticket": {
+        "title": "Ärende",
+        "description": "En kundförfrågan, från första kontakt till genomfört event."
       },
       "customer": {
         "title": "Kund",
@@ -2363,7 +2305,7 @@
       },
       "venue": {
         "title": "Anläggning",
-        "description": "En plats där bokningar sker."
+        "description": "En plats där event sker."
       },
       "priceList": {
         "title": "Prislista",
@@ -2375,7 +2317,7 @@
       },
       "type": {
         "title": "Typ",
-        "description": "En sorts artikel, bokning eller förfrågan och dess fält."
+        "description": "En sorts artikel, ärende eller kund och dess fält."
       },
       "list": {
         "title": "Lista",
@@ -2393,9 +2335,9 @@
         "title": "Underlag",
         "description": "Ett underlag som köksordern, och vem som får det."
       },
-      "bookingStatus": {
-        "title": "Bokningsstatus",
-        "description": "Ett steg som en bokning går igenom."
+      "ticketPhase": {
+        "title": "Fas",
+        "description": "Ett steg som ett ärende går igenom."
       },
       "member": {
         "title": "Medlem",

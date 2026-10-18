@@ -16,16 +16,16 @@ export const listRequirements = defineOperation({
   name: "requirement.list",
   kind: "query",
   description:
-    "List requirements: counts against list values (e.g. Gluten × 3) on bookings and program " +
-    "items. programItemId null = the whole booking; a program item's own count for a value " +
-    "replaces the booking's there. Filter by booking, program item or list value.",
+    "List requirements: counts against list values (e.g. Gluten × 3) on tickets and program " +
+    "items. programItemId null = the whole ticket; a program item's own count for a value " +
+    "replaces the ticket's there. Filter by ticket, program item or list value.",
   input: RequirementListInputSchema,
   output: RequirementListOutputSchema,
   permission: "requirement:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.requirement.findMany({
       where: {
-        ...(input.bookingId ? { bookingId: input.bookingId } : {}),
+        ...(input.ticketId ? { ticketId: input.ticketId } : {}),
         ...(input.programItemId ? { programItemId: input.programItemId } : {}),
         ...(input.vocabularyValueId ? { vocabularyValueId: input.vocabularyValueId } : {}),
       },

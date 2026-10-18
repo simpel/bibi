@@ -20,7 +20,7 @@ export const paymentAccountEntity: ParityEntity = {
   },
 };
 
-/** A card payment on the booking: the account is synced to ACTIVE and the PSP kept in memory. */
+/** A card payment on the ticket: the account is synced to ACTIVE and the PSP kept in memory. */
 export function paymentEntity(): ParityEntity {
   const reads = byId({
     name: "payment",
@@ -35,7 +35,7 @@ export function paymentEntity(): ParityEntity {
       installFakeStripe({ status: "ACTIVE" });
       setPaymentProvider({ provider: createMemoryPaymentProvider() });
       await tool({ mcp, name: "paymentAccount_sync", args: {} });
-      const args = { bookingId: made.booking.id, method: "CARD", amountMinor: 50_000 };
+      const args = { ticketId: made.ticket.id, method: "CARD", amountMinor: 50_000 };
       return tool({ mcp, name: "payment_create", args });
     },
   };

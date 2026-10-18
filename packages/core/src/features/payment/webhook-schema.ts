@@ -13,7 +13,7 @@ export type PaymentSignal = z.infer<typeof PaymentSignalSchema>;
 
 export const PaymentSignalResultSchema = z.object({
   paymentId: z.string(),
-  bookingId: z.string(),
+  ticketId: z.string(),
   status: z.enum(["PENDING", "SUCCEEDED", "FAILED", "CANCELLED", "REFUNDED"]),
   changed: z.boolean(),
 });

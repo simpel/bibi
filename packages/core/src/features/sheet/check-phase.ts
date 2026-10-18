@@ -2,22 +2,18 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
 
-export type CheckPhaseInput = { context: Pick<OperationContext, "db">; bookingId: string };
+export type CheckPhaseInput = { context: Pick<OperationContext, "db">; ticketId: string };
 
 /**
- * Sheets go out only from the `CONFIRMED` phase (ADR 0022): a `TENTATIVE` booking holds items
- * but nothing is ordered yet, and after that phase the booking is over or cancelled.
+ * Sheets go out only while the ticket is open (ADR 0043): a ticket in a terminal phase is over,
+ * its lines are released and nothing is sent for it any more.
  */
-export async function checkPhase({ context, bookingId }: CheckPhaseInput): Promise<Result<true>> {
-  const booking = await context.db.booking.findFirst({
-    where: { id: bookingId },
-    select: { bookingStatus: { select: { phase: true, name: true } } },
+export async function checkPhase({ context, ticketId }: CheckPhaseInput): Promise<Result<true>> {
+  const ticket = await context.db.ticket.findFirst({
+    where: { id: ticketId },
+    select: { phase: { select: { terminal: true, name: true } } },
   });
-  const { phase, name } = booking?.bookingStatus ?? { phase: "CANCELLED", name: "unknown" };
-  if (phase === "CONFIRMED") return ok({ value: true });
-  const why =
-    phase === "TENTATIVE"
-      ? "Sheets cannot be sent while the booking is tentative"
-      : "Sheets can only be sent while the booking is confirmed";
-  return conflict({ message: `${why} (status "${name}")` });
+  if (ticket && !ticket.phase.terminal) return ok({ value: true });
+  const name = ticket?.phase.name ?? "unknown";
+  return conflict({ message: `Sheets cannot be sent for a closed ticket (phase "${name}")` });
 }

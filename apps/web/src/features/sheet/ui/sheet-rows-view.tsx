@@ -6,7 +6,7 @@ export type SheetRowsViewProps = { content: SheetContent; changes: readonly Shee
 
 /**
  * A sheet version's rows, with ★ on every row added or changed since the last sent version.
- * Removed rows come last, struck through. Shared by the booking page and the assistant's card.
+ * Removed rows come last, struck through. Shared by the ticket page and the assistant's card.
  */
 export function SheetRowsView({ content, changes }: SheetRowsViewProps) {
   const t = useTranslations("sheet");

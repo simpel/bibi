@@ -24,14 +24,14 @@ export const listSheets = defineOperation({
   description:
     "List generated sheet versions (e.g. kitchen orders), newest first: version, receiving " +
     "role, the rows of the snapshot, the changes marked ★ since the last sent version and " +
-    "when it was sent. Filter by booking or sheet definition.",
+    "when it was sent. Filter by ticket or sheet definition.",
   input: SheetListInputSchema,
   output: SheetListOutputSchema,
   permission: "sheet:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.sheet.findMany({
       where: {
-        ...(input.bookingId ? { bookingId: input.bookingId } : {}),
+        ...(input.ticketId ? { ticketId: input.ticketId } : {}),
         ...(input.sheetDefinitionId ? { sheetDefinitionId: input.sheetDefinitionId } : {}),
       },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
@@ -60,27 +60,27 @@ export const generateSheet = defineOperation({
   name: "sheet.generate",
   kind: "command",
   description:
-    "Generate the sheet of a booking from a sheet definition (e.g. the kitchen order): a " +
-    "snapshot of the booking's items and counts that the definition includes. A changed " +
-    "booking gives the next version, with the changed rows marked ★ against the last SENT " +
-    "version; an unchanged booking returns the latest version. Sending is a separate step " +
+    "Generate the sheet of a ticket from a sheet definition (e.g. the kitchen order): a " +
+    "snapshot of the ticket's items and counts that the definition includes. A changed " +
+    "ticket gives the next version, with the changed rows marked ★ against the last SENT " +
+    "version; an unchanged ticket returns the latest version. Sending is a separate step " +
     "(sheet.send).",
   input: SheetGenerateInputSchema,
   output: SheetSchema,
   permission: "sheet:write",
-  handler: async ({ input: { bookingId, sheetDefinitionId }, context }) => {
-    const sources = await loadSources({ context, bookingId, sheetDefinitionId });
+  handler: async ({ input: { ticketId, sheetDefinitionId }, context }) => {
+    const sources = await loadSources({ context, ticketId, sheetDefinitionId });
     if (!sources.ok) return sources;
-    const { booking, definition } = sources.value;
-    const { latest, sent } = await findVersions({ context, bookingId, sheetDefinitionId });
-    const content = await buildSheetContent({ context, booking, definition });
-    const matches = await loadMatches({ context, bookingId, definition });
+    const { ticket, definition } = sources.value;
+    const { latest, sent } = await findVersions({ context, ticketId, sheetDefinitionId });
+    const content = await buildSheetContent({ context, ticket, definition });
+    const matches = await loadMatches({ context, ticketId, definition });
     if (latest && sameAsLatest({ latest, content, matches, definition })) {
       return ok({ value: toSheetDto({ row: latest }) });
     }
     const row = await createVersion({
       context,
-      booking,
+      ticket,
       definition,
       content,
       matches,
@@ -98,8 +98,8 @@ export const sendSheet = defineOperation({
   kind: "command",
   description:
     "Send a sheet version to its receiving role: marks the version as sent, which is the " +
-    "baseline the next version's ★ changes are measured against. Only from the CONFIRMED " +
-    "phase (TENTATIVE gives CONFLICT), only the latest version, and a version once. A blocked " +
+    "baseline the next version's ★ changes are measured against. Not for a ticket in a " +
+    "terminal phase (CONFLICT), only the latest version, and a version once. A blocked " +
     "sheet (`blocked`: a count matches an item that contains it, see `matches`) gives CONFLICT.",
   input: SheetIdInputSchema,
   output: SheetSchema,
@@ -108,14 +108,14 @@ export const sendSheet = defineOperation({
     const before = await context.db.sheet.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Sheet" });
     if (before.sentAt) return conflict({ message: `Version ${before.version} is already sent` });
-    const { bookingId, sheetDefinitionId, version } = before;
+    const { ticketId, sheetDefinitionId, version } = before;
     const newer = await context.db.sheet.count({
-      where: { bookingId, sheetDefinitionId, version: { gt: version } },
+      where: { ticketId, sheetDefinitionId, version: { gt: version } },
     });
     if (newer > 0) return conflict({ message: "A newer version exists; send that one instead" });
     const unblocked = checkNotBlocked({ sheet: toSheetDto({ row: before }) });
     if (!unblocked.ok) return unblocked;
-    const phase = await checkPhase({ context, bookingId });
+    const phase = await checkPhase({ context, ticketId });
     if (!phase.ok) return phase;
     const row = await context.db.sheet.update({
       where: { id },

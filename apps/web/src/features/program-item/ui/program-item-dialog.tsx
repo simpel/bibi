@@ -6,7 +6,7 @@ import { ProgramItemForm } from "./program-item-form";
 
 export type ProgramItemDialogProps = {
   data: ProgramFormData;
-  bookingId: string;
+  ticketId: string;
   startsAt: Date;
   /** Present = edit mode, absent = create mode. */
   programItem?: ProgramItemDto | undefined;

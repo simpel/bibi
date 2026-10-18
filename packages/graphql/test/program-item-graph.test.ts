@@ -4,12 +4,12 @@ import { createClient, testContext } from "./helpers";
 
 const TYPE = `mutation($i: EntityTypeCreateInput!) { entityTypeCreate(input: $i) { id } }`;
 const CUSTOMER = `mutation($i: CustomerCreateInput!) { customerCreate(input: $i) { id } }`;
-const BOOKING = `mutation($i: BookingCreateInput!) { bookingCreate(input: $i) { id } }`;
+const TICKET = `mutation($i: TicketCreateInput!) { ticketCreate(input: $i) { id } }`;
 const ITEM = `mutation($i: ItemCreateInput!) { itemCreate(input: $i) { id } }`;
 const ADD = `mutation($i: ProgramItemCreateInput!) { programItemCreate(input: $i) { id } }`;
 
 describe("program item graph (ADR 0022)", () => {
-  it("resolves booking { programItems } and maps a double booking to CONFLICT", async () => {
+  it("resolves ticket { programItems } and maps a double booking to CONFLICT", async () => {
     const context = testContext();
     expect((await provisionOrganization({ organizationId: context.organizationId })).ok).toBe(true);
     const gql = createClient({ context });
@@ -20,25 +20,28 @@ describe("program item graph (ADR 0022)", () => {
       query: CUSTOMER,
       variables: { i: { entityTypeId: await type({ base: "CUSTOMER" }), name: "Kvarnby AB" } },
     });
-    const period = { startsAt: "2026-11-03T08:00:00.000Z", endsAt: "2026-11-03T16:00:00.000Z" };
-    const booking = await gql({
-      query: BOOKING,
+    const period = {
+      desiredStartsAt: "2026-11-03T08:00:00.000Z",
+      desiredEndsAt: "2026-11-03T16:00:00.000Z",
+    };
+    const ticket = await gql({
+      query: TICKET,
       variables: {
         i: {
-          entityTypeId: await type({ base: "BOOKING" }),
+          entityTypeId: await type({ base: "TICKET" }),
           customerId: customer.body.data.customerCreate.id,
           ...period,
         },
       },
     });
-    const bookingId = booking.body.data.bookingCreate.id;
+    const ticketId = ticket.body.data.ticketCreate.id;
     const roomType = await type({ base: "ITEM", behaviours: ["BOOKABLE"] });
     const room = await gql({
       query: ITEM,
       variables: { i: { entityTypeId: roomType, name: "Ek" } },
     });
     const add = {
-      bookingId,
+      ticketId,
       entityTypeId: await type({ base: "PROGRAM_ITEM" }),
       name: "Opening",
       itemId: room.body.data.itemCreate.id,
@@ -50,11 +53,11 @@ describe("program item graph (ADR 0022)", () => {
     const clash = await gql({ query: ADD, variables: { i: { ...add, name: "Clash" } } });
     expect(clash.body.errors?.[0]?.extensions?.code).toBe("CONFLICT");
     const res = await gql({
-      query: `query($id: String!) { booking(id: $id) { programItems { name entityType { base } } } }`,
-      variables: { id: bookingId },
+      query: `query($id: String!) { ticket(id: $id) { programItems { name entityType { base } } } }`,
+      variables: { id: ticketId },
     });
     expect(res.body.errors).toBeUndefined();
-    expect(res.body.data.booking.programItems).toEqual([
+    expect(res.body.data.ticket.programItems).toEqual([
       { name: "Opening", entityType: { base: "PROGRAM_ITEM" } },
     ]);
   });

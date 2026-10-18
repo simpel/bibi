@@ -51,7 +51,7 @@ function AssignForm({ subject, assigneeId, members, onDone }: AssignFormProps) {
   );
 }
 
-/** Change who answers for an inquiry or a booking (`assignment.assign`, ADR 0034). */
+/** Change who answers for a ticket (`assignment.assign`, ADR 0034). */
 export function AssignDialog({ open, onOpenChange, ...props }: AssignDialogProps) {
   const t = useTranslations("assignment");
   return (

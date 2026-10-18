@@ -9,7 +9,7 @@ export const PROGRAM_ITEM_SOURCE = "programItem";
 export const ProgramItemSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  bookingId: z.string(),
+  ticketId: z.string(),
   entityTypeId: z.string(),
   name: z.string(),
   startsAt: z.date(),
@@ -44,7 +44,7 @@ const ProgramItemDetailsShape = {
 };
 
 export const ProgramItemCreateInputSchema = z.object({
-  bookingId: z.string().min(1).describe("Id of the booking (booking.list)"),
+  ticketId: z.string().min(1).describe("Id of the ticket (ticket.list)"),
   entityTypeId: z
     .string()
     .min(1)
@@ -66,7 +66,7 @@ export const ProgramItemUpdateInputSchema = z
 export const ProgramItemIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const ProgramItemListInputSchema = z.object({
-  bookingId: z.string().optional().describe("Only the program of this booking"),
+  ticketId: z.string().optional().describe("Only the program of this ticket"),
   itemId: z.string().optional().describe("Only program items held in this item"),
   from: z.coerce.date().optional().describe("Only program items that end after this time"),
   to: z.coerce.date().optional().describe("Only program items that start before this time"),

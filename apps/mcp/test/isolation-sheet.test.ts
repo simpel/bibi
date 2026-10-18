@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { call, connect, type Json, testContext } from "./helpers";
-import { seedBooking } from "./seed-booking";
+import { seedTicket } from "./seed-ticket";
 
 type Client = Awaited<ReturnType<typeof connect>>;
 type SeedInput = { client: Client };
 
 async function seedSheet({ client }: SeedInput): Promise<Json> {
-  const booking = await seedBooking({ client });
+  const ticket = await seedTicket({ client });
   const type = await call({
     client,
     name: "entityType_create",
@@ -21,23 +21,23 @@ async function seedSheet({ client }: SeedInput): Promise<Json> {
   const sheet = await call({
     client,
     name: "sheet_generate",
-    args: { bookingId: booking.id, sheetDefinitionId: definition.data.id },
+    args: { ticketId: ticket.id, sheetDefinitionId: definition.data.id },
   });
   expect(sheet.isError, JSON.stringify(sheet.data)).toBe(false);
-  return { booking, definition: definition.data, sheet: sheet.data };
+  return { ticket, definition: definition.data, sheet: sheet.data };
 }
 
 describe("cross-organization isolation: sheets and sheet definitions", () => {
   it("refuses sheet and sheet definition operations on another organization's rows", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
-    const { booking, definition, sheet } = await seedSheet({ client: a });
+    const { ticket, definition, sheet } = await seedSheet({ client: a });
     const mine = await seedSheet({ client: b });
     const cases = [
       ["sheet_get", { id: sheet.id }],
       ["sheet_send", { id: sheet.id }],
-      ["sheet_generate", { bookingId: booking.id, sheetDefinitionId: mine.definition.id }],
-      ["sheet_generate", { bookingId: mine.booking.id, sheetDefinitionId: definition.id }],
+      ["sheet_generate", { ticketId: ticket.id, sheetDefinitionId: mine.definition.id }],
+      ["sheet_generate", { ticketId: mine.ticket.id, sheetDefinitionId: definition.id }],
       ["sheetDefinition_update", { id: definition.id, name: "Hacked" }],
       ["sheetDefinition_archive", { id: definition.id }],
     ] as const;
@@ -48,7 +48,7 @@ describe("cross-organization isolation: sheets and sheet definitions", () => {
     }
     const sheets = await call({ client: b, name: "sheet_list" });
     expect(sheets.data.items.map((item: { id: string }) => item.id)).toEqual([mine.sheet.id]);
-    const filtered = await call({ client: b, name: "sheet_list", args: { bookingId: booking.id } });
+    const filtered = await call({ client: b, name: "sheet_list", args: { ticketId: ticket.id } });
     expect(filtered.data.items).toEqual([]);
     const definitions = await call({ client: b, name: "sheetDefinition_list" });
     const ids = definitions.data.items.map((item: { id: string }) => item.id);

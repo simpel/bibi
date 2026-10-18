@@ -1,6 +1,6 @@
 import type { EntityTypeDto } from "@okazi/core";
 import type { UseFormReturn } from "react-hook-form";
-import { BookingSection } from "./booking-section";
+import { BookableSection } from "./bookable-section";
 import { ChoiceGroupsSection } from "./choice-groups-section";
 import { ComponentsSection } from "./components-section";
 import { hasBehaviour } from "./has-behaviour";
@@ -24,7 +24,7 @@ export function BehaviourSections({ form, type, data, itemId }: BehaviourSection
   return (
     <>
       {hasBehaviour({ type, behaviour: "PRICED" }) ? <PriceSection form={form} /> : null}
-      {hasBehaviour({ type, behaviour: "BOOKABLE" }) ? <BookingSection form={form} /> : null}
+      {hasBehaviour({ type, behaviour: "BOOKABLE" }) ? <BookableSection form={form} /> : null}
       {hasBehaviour({ type, behaviour: "SETUPS" }) ? (
         <SetupsSection form={form} setups={data.setups} />
       ) : null}

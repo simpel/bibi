@@ -3,32 +3,32 @@ import { createId } from "@paralleldrive/cuid2";
 import { expect } from "vitest";
 import { call, connect, testContext } from "./helpers";
 
-type AddBookingInput = { client: Client; entityTypeId: string; customerId: string };
+type AddTicketInput = { client: Client; entityTypeId: string; customerId: string };
 
-/** One booking of the customer, created by `client`. */
-export async function addArchiveBooking({ client, entityTypeId, customerId }: AddBookingInput) {
-  const booking = await call({
+/** One ticket of the customer, created by `client`. */
+export async function addArchiveTicket({ client, entityTypeId, customerId }: AddTicketInput) {
+  const ticket = await call({
     client,
-    name: "booking_create",
+    name: "ticket_create",
     args: {
       entityTypeId,
       customerId,
-      startsAt: "2026-11-03T08:00:00.000Z",
-      endsAt: "2026-11-03T16:00:00.000Z",
+      desiredStartsAt: "2026-11-03T08:00:00.000Z",
+      desiredEndsAt: "2026-11-03T16:00:00.000Z",
     },
   });
-  expect(booking.isError, JSON.stringify(booking.data)).toBe(false);
-  return booking.data.id as string;
+  expect(ticket.isError, JSON.stringify(ticket.data)).toBe(false);
+  return ticket.data.id as string;
 }
 
-type SeedInput = { client: Client; bookings: number };
+type SeedInput = { client: Client; tickets: number };
 
-/** A customer with `bookings` bookings in the client's organization; returns the customer id. */
-export async function seedArchiveCustomer({ client, bookings }: SeedInput): Promise<string> {
+/** A customer with `tickets` tickets in the client's organization; returns the customer id. */
+export async function seedArchiveCustomer({ client, tickets }: SeedInput): Promise<string> {
   const type = await call({
     client,
     name: "entityType_create",
-    args: { base: "BOOKING", name: "Conference" },
+    args: { base: "TICKET", name: "Conference" },
   });
   const customerType = await call({
     client,
@@ -40,10 +40,10 @@ export async function seedArchiveCustomer({ client, bookings }: SeedInput): Prom
     name: "customer_create",
     args: { entityTypeId: customerType.data.id, name: "Kvarnby Design AB" },
   });
-  const status = { name: "Tentative", color: "#22c55e", phase: "TENTATIVE" };
-  await call({ client, name: "bookingStatus_create", args: status });
-  for (let index = 0; index < bookings; index += 1)
-    await addArchiveBooking({ client, entityTypeId: type.data.id, customerId: customer.data.id });
+  const status = { name: "Lead", color: "#22c55e", entry: true };
+  await call({ client, name: "ticketPhase_create", args: status });
+  for (let index = 0; index < tickets; index += 1)
+    await addArchiveTicket({ client, entityTypeId: type.data.id, customerId: customer.data.id });
   return customer.data.id;
 }
 

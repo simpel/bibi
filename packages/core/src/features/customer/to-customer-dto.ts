@@ -4,14 +4,14 @@ import { asFieldValues } from "../field-definition/field-usage";
 import type { CustomerDto } from "./schema";
 
 /**
- * Prisma `include` for every customer read: counts the bookings that are not archived. The
+ * Prisma `include` for every customer read: counts the tickets that are not archived. The
  * composite foreign key (`customerId`, `organizationId`) keeps them in the customer's organization.
  */
 export const CUSTOMER_INCLUDE = {
-  _count: { select: { bookings: { where: { status: "ACTIVE" as const } } } },
+  _count: { select: { tickets: { where: { status: "ACTIVE" as const } } } },
 };
 
-export type CustomerRow = Customer & { _count: { bookings: number } };
+export type CustomerRow = Customer & { _count: { tickets: number } };
 
 export type ToCustomerDtoInput = { row: CustomerRow };
 
@@ -20,7 +20,7 @@ export const toCustomerDto = ({ row }: ToCustomerDtoInput): CustomerDto => {
   return {
     ...customer,
     fields: asFieldValues({ value: row.fields }),
-    bookingCount: _count.bookings,
+    ticketCount: _count.tickets,
   };
 };
 

@@ -13,18 +13,18 @@ function checkExpiry({ expiresAt }: { expiresAt: Date }): Result<true> {
   return invalid({ message, issues: [{ path: "expiresAt", message }] });
 }
 
-async function checkInquiry({
+async function checkTicket({
   context,
-  inquiryId,
+  ticketId,
 }: {
   context: Pick<OperationContext, "db">;
-  inquiryId?: string | null;
+  ticketId?: string | null;
 }): Promise<Result<true>> {
-  if (!inquiryId) return ok({ value: true });
-  const inquiry = await context.db.inquiry.findFirst({ where: { id: inquiryId } });
-  if (inquiry) return ok({ value: true });
-  const message = "Unknown inquiry";
-  return invalid({ message, issues: [{ path: "inquiryId", message }] });
+  if (!ticketId) return ok({ value: true });
+  const ticket = await context.db.ticket.findFirst({ where: { id: ticketId } });
+  if (ticket) return ok({ value: true });
+  const message = "Unknown ticket";
+  return invalid({ message, issues: [{ path: "ticketId", message }] });
 }
 
 /** A new option holds an active `BOOKABLE` item for a real period until a future date. */
@@ -35,5 +35,5 @@ export async function checkNewOption({ context, input }: CheckOptionInput): Prom
   if (!period.ok) return period;
   const expiry = checkExpiry(input);
   if (!expiry.ok) return expiry;
-  return checkInquiry({ context, inquiryId: input.inquiryId });
+  return checkTicket({ context, ticketId: input.ticketId });
 }

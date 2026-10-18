@@ -1,8 +1,8 @@
 import type { DemoOrg } from "../../types";
-import { vingaledenBookings } from "./bookings";
 import { vingaledenBoats, vingaledenConfig } from "./config";
 import { vingaledenCustomers } from "./customers";
 import { vingaledenResponsibilities } from "./responsibilities";
+import { vingaledenTickets } from "./tickets";
 import { vingaledenTours } from "./tours";
 
 /**
@@ -32,5 +32,5 @@ export const vingaleden: DemoOrg = {
   },
   responsibilities: vingaledenResponsibilities,
   customers: vingaledenCustomers,
-  bookings: vingaledenBookings,
+  tickets: vingaledenTickets,
 };

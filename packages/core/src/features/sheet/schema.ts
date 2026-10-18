@@ -2,22 +2,22 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 
-export const SHEET_ROW_KINDS = ["BOOKING", "ITEM", "REQUIREMENT"] as const;
+export const SHEET_ROW_KINDS = ["TICKET", "ITEM", "REQUIREMENT"] as const;
 export const SheetRowKindSchema = z
   .enum(SHEET_ROW_KINDS)
-  .describe("BOOKING: the booking itself. ITEM: an item on the booking. REQUIREMENT: a count.");
+  .describe("TICKET: the ticket itself. ITEM: an item on the ticket. REQUIREMENT: a count.");
 
 /** One row of a sheet snapshot. `key` is stable across versions, so rows can be compared. */
 export const SheetRowSchema = z.object({
   kind: SheetRowKindSchema,
   key: z
     .string()
-    .describe("Stable id: booking id, program item id, or `<program item id|booking>:<value id>`"),
+    .describe("Stable id: ticket id, program item id, or `<program item id|ticket>:<value id>`"),
   parentKey: z
     .string()
     .nullable()
-    .describe("REQUIREMENT: the program item's key it applies to; null = the whole booking"),
-  label: z.string().describe("Booking reference, program item name or counted list value"),
+    .describe("REQUIREMENT: the program item's key it applies to; null = the whole ticket"),
+  label: z.string().describe("Ticket reference, program item name or counted list value"),
   itemName: z.string().nullable().describe("ITEM: the name of the item the program item uses"),
   quantity: z.number().int().nullable().describe("Headcount, item quantity or counted guests"),
   startsAt: z.string().nullable().describe("ISO time"),
@@ -26,7 +26,7 @@ export const SheetRowSchema = z.object({
 });
 
 export const SheetContentSchema = z.object({
-  rows: z.array(SheetRowSchema).describe("Booking first, then items by time, then counts"),
+  rows: z.array(SheetRowSchema).describe("Ticket first, then items by time, then counts"),
 });
 
 export const SHEET_CHANGE_KINDS = ["ADDED", "CHANGED", "REMOVED"] as const;
@@ -43,7 +43,7 @@ export const SheetChangeSchema = z.object({
 export const SHEET_MATCH_KINDS = ["CONTAINS", "MAY_CONTAIN"] as const;
 
 /**
- * A count compared with an item on the booking that carries the same list value (ADR 0021).
+ * A count compared with an item on the ticket that carries the same list value (ADR 0021).
  * `CONTAINS` (carried by the item or a mandatory part, no alternative) blocks the sheet;
  * `MAY_CONTAIN` (only optional parts or choice options) is flagged but does not block.
  */
@@ -63,18 +63,16 @@ export const SheetMatchSchema = z.object({
 export const SheetSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  bookingId: z.string(),
+  ticketId: z.string(),
   sheetDefinitionId: z.string(),
-  version: z.number().int().describe("1, 2, 3, … per booking and sheet definition"),
+  version: z.number().int().describe("1, 2, 3, … per ticket and sheet definition"),
   roleId: z
     .string()
     .describe("The receiving fixed role at generation (viewer, member, admin or owner)"),
   content: SheetContentSchema,
   changes: z.array(SheetChangeSchema).describe("Rows marked ★ since `baseVersion`"),
   blocked: z.boolean().describe("A count matches an item that contains it: sheet.send is refused"),
-  matches: z
-    .array(SheetMatchSchema)
-    .describe("Counts that hit the booking's items, blocking first"),
+  matches: z.array(SheetMatchSchema).describe("Counts that hit the ticket's items, blocking first"),
   baseVersion: z
     .number()
     .int()
@@ -88,7 +86,7 @@ export const SheetSchema = z.object({
 });
 
 export const SheetGenerateInputSchema = z.object({
-  bookingId: z.string().min(1).describe("Id of the booking (booking.list)"),
+  ticketId: z.string().min(1).describe("Id of the ticket (ticket.list)"),
   sheetDefinitionId: z
     .string()
     .min(1)
@@ -98,7 +96,7 @@ export const SheetGenerateInputSchema = z.object({
 export const SheetIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const SheetListInputSchema = z.object({
-  bookingId: z.string().optional().describe("Only sheets of this booking"),
+  ticketId: z.string().optional().describe("Only sheets of this ticket"),
   sheetDefinitionId: z.string().optional().describe("Only versions of this sheet definition"),
   ...PageInputShape,
 });

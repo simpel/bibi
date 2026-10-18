@@ -80,7 +80,7 @@ describe("option queue (ADR 0022)", () => {
     expect(placed.map((option) => option.rank).sort()).toEqual([1, 2, 3]);
   });
 
-  it("validates the item, period, expiry and inquiry", async () => {
+  it("validates the item, period, expiry and ticket", async () => {
     const context = testContext();
     const item = await createBookableItem({ context });
     const valid = {
@@ -92,7 +92,7 @@ describe("option queue (ADR 0022)", () => {
       { ...valid, itemId: "missing" },
       { ...valid, ...hours({ from: 12, to: 8 }) },
       { ...valid, expiresAt: new Date(Date.now() - 1000) },
-      { ...valid, inquiryId: "missing" },
+      { ...valid, ticketId: "missing" },
     ];
     for (const input of cases) {
       const result = await execute({ operation: createOption, input, context });

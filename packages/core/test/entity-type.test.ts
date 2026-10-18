@@ -46,7 +46,7 @@ describe("entity types and behaviours (ADR 0021)", () => {
     unwrap({
       result: await execute({
         operation: createEntityType,
-        input: { base: "BOOKING", name: "Konferensrum" },
+        input: { base: "TICKET", name: "Konferensrum" },
         context,
       }),
     });

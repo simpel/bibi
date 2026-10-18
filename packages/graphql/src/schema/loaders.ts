@@ -1,10 +1,10 @@
 import {
-  type BookingStatusDto,
   CUSTOMER_INCLUDE,
   type CustomerDto,
   type EntityTypeDto,
-  toBookingStatusDto,
+  type TicketPhaseDto,
   toCustomerDto,
+  toTicketPhaseDto,
   type VocabularyDto,
   type VocabularyValueDto,
   WITH_TRANSITIONS,
@@ -20,7 +20,7 @@ export type Loaders = {
   venue: BatchLoader<VenueRow>;
   setup: BatchLoader<SetupRow>;
   customer: BatchLoader<CustomerDto>;
-  bookingStatus: BatchLoader<BookingStatusDto>;
+  ticketPhase: BatchLoader<TicketPhaseDto>;
   entityType: BatchLoader<EntityTypeDto>;
   vocabulary: BatchLoader<VocabularyDto>;
   vocabularyValue: BatchLoader<VocabularyValueDto>;
@@ -59,13 +59,13 @@ async function loadVocabularies({ db, ids }: DbInput & Ids) {
   return byId({ rows: dtos });
 }
 
-/** Statuses by id, archived ones included: a booking keeps a status that has been archived. */
-async function loadBookingStatuses({ db, ids }: DbInput & Ids) {
-  const rows = await db.bookingStatus.findMany({
+/** Statuses by id, archived ones included: a ticket keeps a status that has been archived. */
+async function loadTicketPhases({ db, ids }: DbInput & Ids) {
+  const rows = await db.ticketPhase.findMany({
     where: { id: { in: [...ids] }, status: { in: ["ACTIVE", "ARCHIVED"] } },
     include: WITH_TRANSITIONS,
   });
-  return byId({ rows: rows.map((row) => toBookingStatusDto({ row })) });
+  return byId({ rows: rows.map((row) => toTicketPhaseDto({ row })) });
 }
 
 /** One set per request. Entities with per-user visibility are not here: they use operations. */
@@ -86,7 +86,7 @@ export function createLoaders({ db }: DbInput): Loaders {
         return byId({ rows: rows.map((row) => toCustomerDto({ row })) });
       },
     }),
-    bookingStatus: createBatchLoader({ batch: (ids) => loadBookingStatuses({ db, ids }) }),
+    ticketPhase: createBatchLoader({ batch: (ids) => loadTicketPhases({ db, ids }) }),
     entityType: createBatchLoader({ batch: (ids) => loadEntityTypes({ db, ids }) }),
     vocabulary: createBatchLoader({ batch: (ids) => loadVocabularies({ db, ids }) }),
     vocabularyValue: createBatchLoader({

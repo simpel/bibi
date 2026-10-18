@@ -6,18 +6,18 @@ import type { z } from "zod";
 import { formSchema } from "@/lib/form-schema";
 import { useZodMessages } from "@/lib/use-zod-messages";
 
-export type ArchiveCustomerValues = { archiveBookings: boolean; archiveInquiries: boolean };
+export type ArchiveCustomerValues = { archiveTickets: boolean };
 export type ArchiveCustomerInput = z.infer<typeof CustomerArchiveInputSchema>;
 
-/** `bookingCount` is the count the dialog shows; it is sent as `expectedBookingCount` (#144). */
-export type UseArchiveCustomerFormInput = { id: string; bookingCount: number };
+/** `ticketCount` is the count the dialog shows; it is sent as `expectedTicketCount` (#144). */
+export type UseArchiveCustomerFormInput = { id: string; ticketCount: number };
 
 /**
  * react-hook-form wired to core's `customer.archive` schema; the cascade box starts unticked.
  * With the box ticked the count the user saw is bound to the input, so core refuses with
- * CONFLICT instead of archiving bookings added after the dialog opened.
+ * CONFLICT instead of archiving tickets added after the dialog opened.
  */
-export function useArchiveCustomerForm({ id, bookingCount }: UseArchiveCustomerFormInput) {
+export function useArchiveCustomerForm({ id, ticketCount }: UseArchiveCustomerFormInput) {
   const messages = useZodMessages();
   const schema = useMemo(
     () =>
@@ -25,15 +25,14 @@ export function useArchiveCustomerForm({ id, bookingCount }: UseArchiveCustomerF
         schema: CustomerArchiveInputSchema,
         toInput: ({ values }: { values: ArchiveCustomerValues }) => ({
           id,
-          archiveBookings: values.archiveBookings,
-          archiveInquiries: values.archiveInquiries,
-          ...(values.archiveBookings ? { expectedBookingCount: bookingCount } : {}),
+          archiveTickets: values.archiveTickets,
+          ...(values.archiveTickets ? { expectedTicketCount: ticketCount } : {}),
         }),
       }),
-    [id, bookingCount],
+    [id, ticketCount],
   );
   return useForm<ArchiveCustomerValues, unknown, ArchiveCustomerInput>({
     resolver: zodResolver(schema, messages),
-    defaultValues: { archiveBookings: false, archiveInquiries: false },
+    defaultValues: { archiveTickets: false },
   });
 }

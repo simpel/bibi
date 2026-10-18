@@ -8,11 +8,9 @@ import {
   execute,
   type ItemCreateInput,
   type QuoteCreateInput,
-  qualifyInquiry,
 } from "../src/index";
-import { memberUser } from "./booking-helpers";
 import { unwrap } from "./helpers";
-import { createTestInquiry, inquirySetup } from "./inquiry-helpers";
+import { createTestTicket, memberUser, ticketSetup } from "./ticket-helpers";
 
 type Ctx = { context: ExecuteContext };
 
@@ -62,24 +60,19 @@ async function createDishes({ context }: Ctx) {
   return { lunch, coffee, unpriced, gluten };
 }
 
-/** A provisioned org with a QUALIFIED inquiry (salesperson Erik) and priced dishes. */
+/** A provisioned org with a ticket for 20 people (salesperson Erik assigned) and priced dishes. */
 export async function quoteSetup() {
-  const setup = await inquirySetup();
+  const setup = await ticketSetup();
   const { context } = setup;
   const erik = await memberUser({ context, name: "Erik Lund" });
-  const created = await createTestInquiry({
+  const ticket = await createTestTicket({
     context,
     entityTypeId: setup.type.id,
     customerId: setup.customer.id,
+    assigneeId: erik,
+    quantity: 20,
   });
-  const inquiry = unwrap({
-    result: await execute({
-      operation: qualifyInquiry,
-      input: { id: created.id, assigneeId: erik },
-      context,
-    }),
-  });
-  return { ...setup, erik, inquiry, ...(await createDishes({ context })) };
+  return { ...setup, erik, ticket, ...(await createDishes({ context })) };
 }
 
 export type CreateTestQuoteInput = Ctx &

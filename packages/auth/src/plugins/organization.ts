@@ -20,7 +20,7 @@ export function organizationPlugin() {
     creatorRole: OWNER_ROLE,
     // Fixed roles only (ADR 0034): no `organizationRole` table, no dynamic access control.
     organizationHooks: {
-      // Default booking statuses etc. are created by core as SYSTEM (ADR 0022).
+      // Default ticket phases etc. are created by core as SYSTEM (ADR 0043).
       afterCreateOrganization: provisionOrganizationHook,
       beforeAddMember: async ({ member }) => {
         assertFixedRole({ role: member.role });

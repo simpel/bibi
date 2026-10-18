@@ -81,7 +81,7 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
   const params = readCalendarParams({ raw, now, timeZone: TIME_ZONE });
   const today = readCalendarParams({ raw: {}, now, timeZone: TIME_ZONE }).date;
   const range = calendarRange({ params, timeZone: TIME_ZONE });
-  const [result, { bookingWrite }] = await Promise.all([
+  const [result, { ticketWrite }] = await Promise.all([
     loadCalendar({ ...range, venueId: params.venueId, typeId: params.typeId }),
     getCallerAbilities(),
   ]);
@@ -107,7 +107,7 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
         params={params}
         data={result.value}
         timeZone={TIME_ZONE}
-        canBook={bookingWrite}
+        canBook={ticketWrite}
       />
     </CalendarLayout>
   );

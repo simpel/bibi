@@ -26,7 +26,7 @@ export const UserPreferenceKeySchema = z
   .max(200)
   .regex(USER_PREFERENCE_KEY_PATTERN)
   .describe(
-    "Preference key: lowercase letters, digits, '.', '_' and '-', e.g. table.columns.bookings",
+    "Preference key: lowercase letters, digits, '.', '_' and '-', e.g. table.columns.tickets",
   );
 
 export const UserPreferenceValueSchema = JsonValueSchema.refine(

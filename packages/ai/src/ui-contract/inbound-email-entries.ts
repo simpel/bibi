@@ -15,7 +15,7 @@ export const InboundEmailListWireSchema = z.object({
 
 export type InboundEmailWire = z.infer<typeof InboundEmailWireSchema>;
 
-/** Tool → component for mails received on a booking's inbound address (ADR 0012). */
+/** Tool → component for mails received on a ticket's inbound address (ADR 0012). */
 export const INBOUND_EMAIL_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   inboundEmail_list: uiEntry({
     component: "inbound-email-table",

@@ -1,31 +1,28 @@
 /**
- * Inbound address scheme (ADR 0012): every booking has its own address on the inbound subdomain,
- * `booking-<bookingId>@<domain>`. Booking ids are random cuid2 strings, so an address cannot be
+ * Inbound address scheme (ADR 0012): every ticket has its own address on the inbound subdomain,
+ * `ticket-<ticketId>@<domain>`. Ticket ids are random cuid2 strings, so an address cannot be
  * guessed from another one, and the id alone resolves the organization.
  */
-const PREFIX = "booking-";
+const PREFIX = "ticket-";
 
 /** Lowercase letters and digits only: the cuid2 alphabet. */
 const ID_PATTERN = /^[a-z0-9]{1,64}$/;
 
-export type BookingInboundAddressInput = { bookingId: string; domain: string };
+export type TicketInboundAddressInput = { ticketId: string; domain: string };
 
-/** The address a customer replies to so the mail lands on this booking. */
-export function bookingInboundAddress({ bookingId, domain }: BookingInboundAddressInput): string {
-  return `${PREFIX}${bookingId}@${domain.toLowerCase()}`;
+/** The address a customer replies to so the mail lands on this ticket. */
+export function ticketInboundAddress({ ticketId, domain }: TicketInboundAddressInput): string {
+  return `${PREFIX}${ticketId}@${domain.toLowerCase()}`;
 }
 
-export type BookingReplyAddressInput = { bookingId: string; domain: string | undefined };
+export type TicketReplyAddressInput = { ticketId: string; domain: string | undefined };
 
 /**
- * The booking's reply address, or null when no inbound domain is configured (`MAIL_INBOUND_DOMAIN`
- * unset): carried as `Booking.inboundAddress` and used as reply-to on booking mail.
+ * The ticket's reply address, or null when no inbound domain is configured (`MAIL_INBOUND_DOMAIN`
+ * unset): carried as `Ticket.inboundAddress` and used as reply-to on ticket mail.
  */
-export function bookingReplyAddress({
-  bookingId,
-  domain,
-}: BookingReplyAddressInput): string | null {
-  return domain ? bookingInboundAddress({ bookingId, domain }) : null;
+export function ticketReplyAddress({ ticketId, domain }: TicketReplyAddressInput): string | null {
+  return domain ? ticketInboundAddress({ ticketId, domain }) : null;
 }
 
 /** `Name <a@b>` → `a@b`; a bare address is returned trimmed. */
@@ -34,13 +31,10 @@ export function bareAddress({ address }: { address: string }): string {
   return (angled?.[1] ?? address).trim();
 }
 
-export type BookingIdFromAddressInput = { address: string; domain: string };
+export type TicketIdFromAddressInput = { address: string; domain: string };
 
-/** The booking id of an inbound address on `domain`, or null for any other address. */
-export function bookingIdFromAddress({
-  address,
-  domain,
-}: BookingIdFromAddressInput): string | null {
+/** The ticket id of an inbound address on `domain`, or null for any other address. */
+export function ticketIdFromAddress({ address, domain }: TicketIdFromAddressInput): string | null {
   const bare = bareAddress({ address }).toLowerCase();
   const at = bare.lastIndexOf("@");
   if (at < 0 || bare.slice(at + 1) !== domain.toLowerCase()) return null;

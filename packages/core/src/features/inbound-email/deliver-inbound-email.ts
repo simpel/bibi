@@ -7,18 +7,18 @@ import { grantAll } from "../../permissions/permission-set";
 import { bareAddress } from "./address";
 import { clampInboundMail } from "./clamp-inbound-mail";
 import { receiveInboundEmail } from "./receive-operation";
-import { resolveInboundBooking } from "./resolve-booking";
+import { resolveInboundTicket } from "./resolve-ticket";
 import type { InboundEmailDto, InboundEmailReceiveInput } from "./schema";
 import { toInboundEmailDto } from "./to-inbound-email-dto";
 
-export type InboundMailContent = Omit<InboundEmailReceiveInput, "bookingId"> & {
+export type InboundMailContent = Omit<InboundEmailReceiveInput, "ticketId"> & {
   /** Every address the mail was delivered to (to, cc, received-for); matched in order. */
   recipients: readonly string[];
 };
 
 export type DeliverInboundEmailInput = {
   mail: InboundMailContent;
-  /** The inbound subdomain the booking addresses live on (`MAIL_INBOUND_DOMAIN`). */
+  /** The inbound subdomain the ticket addresses live on (`MAIL_INBOUND_DOMAIN`). */
   domain: string;
   db?: Db;
 };
@@ -37,8 +37,8 @@ const systemContext = ({ db, organizationId }: { db: Db; organizationId: string 
   });
 
 /**
- * Stores a verified received mail on the booking its address names (ADR 0012), as SYSTEM in that
- * booking's organization. Mail to no known booking is logged (`mail.unmatched`) and dropped.
+ * Stores a verified received mail on the ticket its address names (ADR 0012), as SYSTEM in that
+ * ticket's organization. Mail to no known ticket is logged (`mail.unmatched`) and dropped.
  * Logs `mail.received` with the sender masked; never the body.
  */
 export async function deliverInboundEmail({
@@ -48,7 +48,7 @@ export async function deliverInboundEmail({
 }: DeliverInboundEmailInput): Promise<Result<DeliverInboundEmailOutput>> {
   const sender = maskEmail({ email: bareAddress({ address: mail.fromAddress }) });
   const fields = { providerEmailId: mail.providerEmailId, sender };
-  const ref = await resolveInboundBooking({ db, recipients, domain });
+  const ref = await resolveInboundTicket({ db, recipients, domain });
   if (!ref) {
     getLogger().warn({ event: "mail.unmatched", ...fields });
     return ok({ value: { status: "unmatched" } });
@@ -60,7 +60,7 @@ export async function deliverInboundEmail({
     ? ok({ value: toInboundEmailDto({ row: known }) })
     : await execute({
         operation: receiveInboundEmail,
-        input: { ...clampInboundMail({ mail }), bookingId: ref.bookingId },
+        input: { ...clampInboundMail({ mail }), ticketId: ref.ticketId },
         context,
       });
   if (!stored.ok) return stored;

@@ -1,33 +1,33 @@
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 
-const SECRET_STATUS = { name: "Secret status", color: "#22c55e", phase: "TENTATIVE" } as const;
+const SECRET_PHASE = { name: "Secret phase", color: "#22c55e", entry: true } as const;
 
-describe("cross-organization isolation: booking statuses", () => {
-  it("hides one organization's statuses and refuses them as transition targets", async () => {
+describe("cross-organization isolation: ticket phases", () => {
+  it("hides one organization's phases and refuses them as transition targets", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
-    const secret = await call({ client: a, name: "bookingStatus_create", args: SECRET_STATUS });
+    const secret = await call({ client: a, name: "ticketPhase_create", args: SECRET_PHASE });
     const own = await call({
       client: b,
-      name: "bookingStatus_create",
-      args: { ...SECRET_STATUS, name: "Own status" },
+      name: "ticketPhase_create",
+      args: { ...SECRET_PHASE, name: "Own phase" },
     });
-    const listed = await call({ client: b, name: "bookingStatus_list" });
+    const listed = await call({ client: b, name: "ticketPhase_list" });
     expect(listed.data.items.map((item: { id: string }) => item.id)).not.toContain(secret.data.id);
-    const get = await call({ client: b, name: "bookingStatus_get", args: { id: secret.data.id } });
+    const get = await call({ client: b, name: "ticketPhase_get", args: { id: secret.data.id } });
     expect(get.data.code).toBe("NOT_FOUND");
     const transitions = await call({
       client: b,
-      name: "bookingStatus_setTransitions",
-      args: { id: own.data.id, toStatusIds: [secret.data.id] },
+      name: "ticketPhase_setTransitions",
+      args: { id: own.data.id, toPhaseIds: [secret.data.id] },
     });
     expect(transitions.isError).toBe(true);
     expect(["NOT_FOUND", "VALIDATION"]).toContain(transitions.data.code);
     const from = await call({
       client: b,
-      name: "bookingStatus_setTransitions",
-      args: { id: secret.data.id, toStatusIds: [own.data.id] },
+      name: "ticketPhase_setTransitions",
+      args: { id: secret.data.id, toPhaseIds: [own.data.id] },
     });
     expect(from.data.code).toBe("NOT_FOUND");
   });

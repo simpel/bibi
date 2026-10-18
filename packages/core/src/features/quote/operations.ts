@@ -19,15 +19,15 @@ export const listQuotes = defineOperation({
   name: "quote.list",
   kind: "query",
   description:
-    "List the organization's quotes, newest first, with their lines. Filter by inquiry (its " +
+    "List the organization's quotes, newest first, with their lines. Filter by ticket (its " +
     "versions) or status (DRAFT, SENT, ACCEPTED, DECLINED, EXPIRED).",
   input: QuoteListInputSchema,
   output: QuoteListOutputSchema,
   permission: "quote:read",
   handler: async ({ input, context }) => {
-    const { inquiryId, quoteStatus } = input;
+    const { ticketId, quoteStatus } = input;
     const rows = await context.db.quote.findMany({
-      where: { ...(inquiryId ? { inquiryId } : {}), ...(quoteStatus ? { quoteStatus } : {}) },
+      where: { ...(ticketId ? { ticketId } : {}), ...(quoteStatus ? { quoteStatus } : {}) },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       include: QUOTE_INCLUDE,
       ...pageArgs(input),
@@ -42,9 +42,9 @@ export const getQuote = defineOperation({
   name: "quote.get",
   kind: "query",
   description:
-    "Get one quote version by id: inquiry, version, status, validity, terms, totals and " +
+    "Get one quote version by id: ticket, version, status, validity, terms, totals and " +
     "its order lines (snapshots) marked against the previous version, with the lines it " +
-    "removed. The quote has no owner of its own: it uses the inquiry's.",
+    "removed. The quote has no owner of its own: it uses the ticket's.",
   input: QuoteIdInputSchema,
   output: QuoteSchema,
   permission: "quote:read",

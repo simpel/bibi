@@ -11,17 +11,16 @@ export type CallerAbilities = {
   skillAdmin: boolean;
   memberAdmin: boolean;
   configurationWrite: boolean;
-  bookingStatusAdmin: boolean;
+  ticketPhaseAdmin: boolean;
   itemWrite: boolean;
   customerWrite: boolean;
   contactWrite: boolean;
   priceListWrite: boolean;
   occupancyWrite: boolean;
-  bookingWrite: boolean;
+  ticketWrite: boolean;
   programItemWrite: boolean;
   assignmentWrite: boolean;
   requirementWrite: boolean;
-  inquiryWrite: boolean;
   optionWrite: boolean;
   quoteWrite: boolean;
   paymentAdmin: boolean;
@@ -36,17 +35,16 @@ const NONE: CallerAbilities = {
   skillAdmin: false,
   memberAdmin: false,
   configurationWrite: false,
-  bookingStatusAdmin: false,
+  ticketPhaseAdmin: false,
   itemWrite: false,
   customerWrite: false,
   contactWrite: false,
   priceListWrite: false,
   occupancyWrite: false,
-  bookingWrite: false,
+  ticketWrite: false,
   programItemWrite: false,
   assignmentWrite: false,
   requirementWrite: false,
-  inquiryWrite: false,
   optionWrite: false,
   quoteWrite: false,
   paymentAdmin: false,
@@ -70,17 +68,16 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     skillAdmin: hasPermission({ permissions, permission: "skill:admin" }),
     memberAdmin: hasPermission({ permissions, permission: "member:admin" }),
     configurationWrite: hasPermission({ permissions, permission: "configuration:write" }),
-    bookingStatusAdmin: hasPermission({ permissions, permission: "bookingStatus:admin" }),
+    ticketPhaseAdmin: hasPermission({ permissions, permission: "ticketPhase:admin" }),
     itemWrite: hasPermission({ permissions, permission: "item:write" }),
     customerWrite: hasPermission({ permissions, permission: "customer:write" }),
     contactWrite: hasPermission({ permissions, permission: "contact:write" }),
     priceListWrite: hasPermission({ permissions, permission: "priceList:write" }),
     occupancyWrite: hasPermission({ permissions, permission: "occupancy:write" }),
-    bookingWrite: hasPermission({ permissions, permission: "booking:write" }),
+    ticketWrite: hasPermission({ permissions, permission: "ticket:write" }),
     programItemWrite: hasPermission({ permissions, permission: "programItem:write" }),
     assignmentWrite: hasPermission({ permissions, permission: "assignment:write" }),
     requirementWrite: hasPermission({ permissions, permission: "requirement:write" }),
-    inquiryWrite: hasPermission({ permissions, permission: "inquiry:write" }),
     optionWrite: hasPermission({ permissions, permission: "option:write" }),
     quoteWrite: hasPermission({ permissions, permission: "quote:write" }),
     paymentAdmin: hasPermission({ permissions, permission: "payment:admin" }),

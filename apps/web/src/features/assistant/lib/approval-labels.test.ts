@@ -5,13 +5,13 @@ import { describe, expect, it } from "vitest";
 import { FIELD_KEYS, fieldKey, OPERATION_KEYS, operationKey } from "./approval-labels";
 
 const embed: EmbedFn = async ({ texts }) => ({ model: "none", embeddings: texts.map(() => []) });
-const ENTITIES = ["customer", "contact", "booking"];
+const ENTITIES = ["customer", "contact", "ticket", "ticketPhase"];
 
 describe("approval labels", () => {
   it("finds known fields and operations", () => {
     expect(fieldKey({ key: "priceMinor" })).toBe("priceMinor");
     expect(operationKey({ operation: "venue.create" })).toBe("venue_create");
-    expect(operationKey({ operation: "booking.create" })).toBe("booking_create");
+    expect(operationKey({ operation: "ticket.create" })).toBe("ticket_create");
   });
 
   it("returns null for unknown names so the raw name is shown", () => {
@@ -35,7 +35,7 @@ describe("approval labels", () => {
     expect(labelled).toEqual([...OPERATION_KEYS].sort());
   });
 
-  it("labels every write operation of customer, contact and booking", () => {
+  it("labels every write operation of customer, contact, ticket and ticket phase", () => {
     const writes = createCoreOperations({ embed })
       .filter((op) => op.kind === "command" && ENTITIES.includes(op.name.split(".")[0] ?? ""))
       .map((op) => op.name);

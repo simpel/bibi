@@ -15,10 +15,10 @@ export const assignAssignment = defineOperation({
   name: "assignment.assign",
   kind: "command",
   description:
-    "Set who answers for an inquiry, a booking or an item (ADR 0034): its main assignee, or, " +
-    "with `responsibilityId`, the assignee for that responsibility on a booking. The assignee " +
+    "Set who answers for a ticket or an item (ADR 0034): its main assignee, or, " +
+    "with `responsibilityId`, the assignee for that responsibility on a ticket. The assignee " +
     "must be a member (member.list userId). null removes the assignee, which is refused " +
-    "(CONFLICT) for the main assignee of a booking from CONFIRMED or an inquiry from QUALIFIED.",
+    "(CONFLICT) for the main assignee of a ticket in a phase that requires one.",
   input: AssignmentAssignInputSchema,
   output: AssignmentSchema,
   permission: "assignment:write",
@@ -39,8 +39,8 @@ export const followAssignment = defineOperation({
   name: "assignment.follow",
   kind: "command",
   description:
-    "Add a follower to an inquiry, a booking or an item (or, with `responsibilityId`, to that " +
-    "part of a booking). Followers stay informed and see it in Following; they are never " +
+    "Add a follower to a ticket or an item (or, with `responsibilityId`, to that " +
+    "part of a ticket). Followers stay informed and see it in Following; they are never " +
     "required by rules. The user must be a member. Following twice changes nothing.",
   input: AssignmentFollowInputSchema,
   output: AssignmentSchema,
@@ -58,8 +58,8 @@ export const unfollowAssignment = defineOperation({
   name: "assignment.unfollow",
   kind: "command",
   description:
-    "Remove a follower from an inquiry, a booking or an item (or from that responsibility on a " +
-    "booking). Removing someone who does not follow changes nothing; NOT_FOUND when the " +
+    "Remove a follower from a ticket or an item (or from that responsibility on a " +
+    "ticket). Removing someone who does not follow changes nothing; NOT_FOUND when the " +
     "subject has no such assignment.",
   input: AssignmentFollowInputSchema,
   output: AssignmentSchema,

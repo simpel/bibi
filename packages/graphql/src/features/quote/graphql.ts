@@ -3,7 +3,6 @@ import {
   declineQuote,
   expireQuote,
   getQuote,
-  type InquiryDto,
   listQuotes,
   type OrderLineDto,
   OrderLineSchema,
@@ -13,6 +12,7 @@ import {
   QuoteSchema,
   reviseQuote,
   sendQuote,
+  type TicketDto,
   updateQuote,
 } from "@okazi/core";
 import { builder } from "../../schema/builder";
@@ -20,7 +20,7 @@ import { fieldFromOperation, mutationFromOperation } from "../../schema/from-ope
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
 import { runOperation } from "../../schema/run-operation";
-import { InquiryRef } from "../inquiry/graphql";
+import { TicketRef } from "../ticket/graphql";
 
 const QuoteLineRef = objectFromSchema<QuoteLineDto>({
   name: "QuoteLine",
@@ -41,8 +41,8 @@ export const QuoteRef = objectFromSchema<QuoteDto>({
   schema: QuoteSchema,
   omit: ["organizationId", "lines", "removedLines"],
   description:
-    "Quote – a versioned proposal to an inquiry with order lines, terms and totals; fixed status " +
-    "DRAFT → SENT → ACCEPTED, DECLINED or EXPIRED. It uses the inquiry's owner, none of its own.",
+    "Quote – a versioned proposal to an ticket with order lines, terms and totals; fixed status " +
+    "DRAFT → SENT → ACCEPTED, DECLINED or EXPIRED. It uses the ticket's owner, none of its own.",
 });
 const QuotePageRef = pageType({ name: "QuotePage", item: QuoteRef });
 
@@ -72,14 +72,14 @@ for (const operation of [
   mutationFromOperation({ operation, type: QuoteRef });
 }
 
-builder.objectField(InquiryRef, "quotes", (t) =>
+builder.objectField(TicketRef, "quotes", (t) =>
   t.field({
     type: [QuoteRef],
-    description: "Every version of the inquiry's quote, newest first.",
-    resolve: async (inquiry: InquiryDto, _args, ctx) => {
+    description: "Every version of the ticket's quote, newest first.",
+    resolve: async (ticket: TicketDto, _args, ctx) => {
       const page = (await runOperation({
         operation: listQuotes,
-        input: { inquiryId: inquiry.id, limit: 100 },
+        input: { ticketId: ticket.id, limit: 100 },
         ctx,
       })) as { items: QuoteDto[] };
       return page.items;

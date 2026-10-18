@@ -28,10 +28,10 @@ describe("option queue", () => {
   });
 
   it("ignores everything that is not an option", () => {
-    const booking = {
+    const ticket = {
       ...option({ id: "x", itemId: "room", start: 9, end: 12, created: 0 }),
       type: "BOOKING" as const,
     };
-    expect(optionQueuePositions({ occupancies: [booking] }).size).toBe(0);
+    expect(optionQueuePositions({ occupancies: [ticket] }).size).toBe(0);
   });
 });

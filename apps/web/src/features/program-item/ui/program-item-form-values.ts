@@ -19,7 +19,7 @@ export type ProgramItemFormValues = {
 export type ProgramItemDefaultsInput = {
   type: EntityTypeDto | undefined;
   programItem?: ProgramItemDto | undefined;
-  /** Where a new program item starts: the booking's start. */
+  /** Where a new program item starts: the ticket's start. */
   startsAt: Date;
 };
 

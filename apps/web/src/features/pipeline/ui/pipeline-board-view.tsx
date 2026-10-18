@@ -2,7 +2,6 @@
 
 import type { PipelineBoard } from "@okazi/core";
 import { KanbanBoard } from "@okazi/ui";
-import { useTranslations } from "next-intl";
 import { canMoveCard } from "../lib/move-rules";
 import { PipelineCardContent } from "./pipeline-card";
 import { useMoveCard } from "./use-move-card";
@@ -13,15 +12,14 @@ export type PipelineBoardViewProps = {
   transitions: Readonly<Record<string, readonly string[]>>;
 };
 
-/** The kanban board of inquiries and bookings; drops run the existing commands. */
+/** The kanban board of tickets by phase; a drop runs `ticket.changePhase`. */
 export function PipelineBoardView({ board, transitions }: PipelineBoardViewProps) {
-  const statuses = useTranslations("inquiry.statuses");
   const labels = usePipelineLabels();
   const moveCard = useMoveCard();
   const columns = board.columns.map((column) => ({
     id: column.id,
-    title: column.inquiryStatus ? statuses(column.inquiryStatus) : column.title,
-    ...(column.color ? { color: column.color } : {}),
+    title: column.title,
+    color: column.color,
   }));
   const cards = board.cards.map((card) => ({ ...card, title: card.customerName }));
   const column = ({ id }: { id: string }) => board.columns.find((c) => c.id === id);

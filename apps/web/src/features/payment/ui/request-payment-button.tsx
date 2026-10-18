@@ -17,12 +17,12 @@ import { TextField } from "@/components/form/text-field";
 import { PaymentMethodField } from "./payment-method-field";
 import { useRequestPaymentForm } from "./use-request-payment-form";
 
-type RequestPaymentFormProps = { bookingId: string; onDone: () => void };
+type RequestPaymentFormProps = { ticketId: string; onDone: () => void };
 
-function RequestPaymentForm({ bookingId, onDone }: RequestPaymentFormProps) {
+function RequestPaymentForm({ ticketId, onDone }: RequestPaymentFormProps) {
   const common = useTranslations("common");
   const t = useTranslations("payment");
-  const { form, submit, pending } = useRequestPaymentForm({ bookingId, onDone });
+  const { form, submit, pending } = useRequestPaymentForm({ ticketId, onDone });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
@@ -49,8 +49,8 @@ function RequestPaymentForm({ bookingId, onDone }: RequestPaymentFormProps) {
   );
 }
 
-/** Opens the dialog that requests a payment from the booking's customer (`payment.create`). */
-export function RequestPaymentButton({ bookingId }: { bookingId: string }) {
+/** Opens the dialog that requests a payment from the ticket's customer (`payment.create`). */
+export function RequestPaymentButton({ ticketId }: { ticketId: string }) {
   const t = useTranslations("payment");
   const [open, setOpen] = useState(false);
   return (
@@ -65,7 +65,7 @@ export function RequestPaymentButton({ bookingId }: { bookingId: string }) {
             <DialogTitle>{t("request")}</DialogTitle>
             <DialogDescription>{t("requestDescription")}</DialogDescription>
           </DialogHeader>
-          <RequestPaymentForm bookingId={bookingId} onDone={() => setOpen(false)} />
+          <RequestPaymentForm ticketId={ticketId} onDone={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
     </>

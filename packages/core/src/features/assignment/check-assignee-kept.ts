@@ -1,34 +1,22 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
-import { ASSIGNEE_REQUIRED_PHASES } from "../booking/phase-rules";
-import { ASSIGNEE_REQUIRED_STATUSES } from "../inquiry/transitions";
 import type { AssignmentSlot } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-async function bookingNeedsAssignee({ context, subjectId }: Db & { subjectId: string }) {
-  const booking = await context.db.booking.findFirst({
+/** The name of the ticket's phase when that phase requires a main assignee, else null. */
+async function ticketNeedsAssignee({ context, subjectId }: Db & { subjectId: string }) {
+  const ticket = await context.db.ticket.findFirst({
     where: { id: subjectId },
-    select: { bookingStatus: { select: { phase: true, name: true } } },
+    select: { phase: { select: { requiresAssignee: true, name: true } } },
   });
-  const status = booking?.bookingStatus;
-  return status && ASSIGNEE_REQUIRED_PHASES.includes(status.phase) ? status.name : null;
-}
-
-async function inquiryNeedsAssignee({ context, subjectId }: Db & { subjectId: string }) {
-  const inquiry = await context.db.inquiry.findFirst({
-    where: { id: subjectId },
-    select: { inquiryStatus: true },
-  });
-  const status = inquiry?.inquiryStatus;
-  return status && ASSIGNEE_REQUIRED_STATUSES.includes(status) ? status : null;
+  return ticket?.phase.requiresAssignee ? ticket.phase.name : null;
 }
 
 /**
- * The main assignee cannot be removed while the subject's phase requires one (ADR 0034): a
- * booking from `CONFIRMED`, an inquiry from `QUALIFIED`. Responsibility assignments are never
- * required.
+ * The main assignee cannot be removed while the ticket's phase requires one (ADR 0034, 0043:
+ * `requiresAssignee`). Responsibility assignments are never required.
  */
 export async function checkAssigneeKept({
   context,
@@ -36,13 +24,8 @@ export async function checkAssigneeKept({
   subjectId,
   responsibilityId,
 }: Db & AssignmentSlot): Promise<Result<true>> {
-  if (responsibilityId) return ok({ value: true });
-  const needs =
-    subjectType === "BOOKING"
-      ? await bookingNeedsAssignee({ context, subjectId })
-      : subjectType === "INQUIRY"
-        ? await inquiryNeedsAssignee({ context, subjectId })
-        : null;
+  if (responsibilityId || subjectType !== "TICKET") return ok({ value: true });
+  const needs = await ticketNeedsAssignee({ context, subjectId });
   if (!needs) return ok({ value: true });
-  return conflict({ message: `A ${subjectType.toLowerCase()} in "${needs}" requires an assignee` });
+  return conflict({ message: `A ticket in "${needs}" requires an assignee` });
 }

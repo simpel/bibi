@@ -4,30 +4,30 @@ import {
   declineQuote,
   execute,
   expireQuote,
-  getInquiry,
   getQuote,
+  getTicket,
   reviseQuote,
   sendQuote,
   updateQuote,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { createTestInquiry } from "./inquiry-helpers";
 import { createTestQuote, quoteSetup } from "./quote-helpers";
+import { createTestTicket, moveToPhase } from "./ticket-helpers";
 
 async function draft() {
   const setup = await quoteSetup();
   const lines = [{ itemId: setup.lunch.id, quantity: 20 }];
   const quote = await createTestQuote({
     context: setup.context,
-    inquiryId: setup.inquiry.id,
+    ticketId: setup.ticket.id,
     lines,
   });
   return { ...setup, quote };
 }
 
 describe("quote.send (ADR 0022)", () => {
-  it("needs lines and a future validity, then sends and moves the inquiry to QUOTED", async () => {
-    const { context, inquiry, quote } = await draft();
+  it("needs lines and a future validity, then sends without moving the ticket", async () => {
+    const { context, ticket, quote } = await draft();
     const { id } = quote;
     const past = new Date(Date.now() - 1000);
     unwrap({
@@ -49,26 +49,28 @@ describe("quote.send (ADR 0022)", () => {
     });
     expect(sent).toMatchObject({ quoteStatus: "SENT" });
     const after = unwrap({
-      result: await execute({ operation: getInquiry, input: { id: inquiry.id }, context }),
+      result: await execute({ operation: getTicket, input: { id: ticket.id }, context }),
     });
-    expect(after.inquiryStatus).toBe("QUOTED");
+    expect(after.phaseId).toBe(ticket.phaseId);
     const twice = await execute({ operation: sendQuote, input: { id }, context });
     expect(errorCode({ result: twice })).toBe("CONFLICT");
     const edit = await execute({ operation: updateQuote, input: { id, terms: "x" }, context });
     expect(errorCode({ result: edit })).toBe("CONFLICT");
-    const audit = await getDb().auditLog.findMany({ where: { entityId: inquiry.id } });
-    expect(audit.find((row) => row.operation === "quote.send")?.entityType).toBe("inquiry");
+    const audit = await getDb().auditLog.findMany({ where: { entityId: ticket.id } });
+    expect(audit.find((row) => row.operation === "quote.send")).toBeUndefined();
   });
 
-  it("refuses a NEW inquiry and rolls everything back", async () => {
+  it("refuses a ticket in a terminal phase and rolls everything back", async () => {
     const { context, type, customer, lunch } = await quoteSetup();
-    const fresh = await createTestInquiry({
+    const fresh = await createTestTicket({
       context,
       entityTypeId: type.id,
       customerId: customer.id,
     });
     const lines = [{ itemId: lunch.id, quantity: 1 }];
-    const quote = await createTestQuote({ context, inquiryId: fresh.id, lines });
+    const quote = await createTestQuote({ context, ticketId: fresh.id, lines });
+    const lost = { context, ticketId: fresh.id, name: "Lost", reason: "Price" };
+    unwrap({ result: await moveToPhase(lost) });
     const sent = await execute({ operation: sendQuote, input: { id: quote.id }, context });
     expect(errorCode({ result: sent })).toBe("CONFLICT");
     const kept = unwrap({

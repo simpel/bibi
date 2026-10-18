@@ -13,17 +13,16 @@ import { objectFromSchema } from "../../schema/object-from-schema";
 const PipelineColumnRef = objectFromSchema<PipelineColumn>({
   name: "PipelineColumn",
   schema: PipelineColumnSchema,
-  description:
-    "A lane of the pipeline board: an inquiry stage or one of the organization's booking statuses.",
+  description: "A lane of the pipeline board: one of the organization's ticket phases.",
 });
 const PipelineCardRef = objectFromSchema<PipelineCard>({
   name: "PipelineCard",
   schema: PipelineCardSchema,
-  description: "An inquiry or booking on the pipeline board, with the lane it sits in.",
+  description: "A ticket on the pipeline board, with the lane (phase) it sits in.",
 });
 
 const PipelineBoardRef = builder.objectRef<PipelineBoard>("PipelineBoard").implement({
-  description: "The pipeline board: lanes left to right and one card per inquiry or booking.",
+  description: "The pipeline board: lanes left to right and one card per ticket.",
   fields: (t) => ({
     columns: t.field({ type: [PipelineColumnRef], resolve: (board) => board.columns }),
     cards: t.field({ type: [PipelineCardRef], resolve: (board) => board.cards }),

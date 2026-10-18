@@ -7,16 +7,16 @@ enum QuoteStatus {
   EXPIRED
 }
 
-/// Quote – a versioned proposal to an inquiry (ADR 0022). `quoteStatus` follows a fixed state
+/// Quote – a versioned proposal to a ticket (ADR 0022). `quoteStatus` follows a fixed state
 /// machine (`DRAFT → SENT → ACCEPTED | DECLINED | EXPIRED`) and is never set by `quote.update`.
 /// A new version copies the previous one (`previousId`); only a DRAFT can be edited. The totals
-/// are the sum of the lines. It has no owner of its own: it uses the inquiry's (ADR 0034).
+/// are the sum of the lines. It has no owner of its own: it uses the ticket's (ADR 0034).
 /// `status` is the soft-delete flag (ADR 0006).
 model Quote {
   id                String       @id @default(cuid(2))
   organizationId    String
-  inquiryId         String
-  /// 1 for the first quote of the inquiry, then one higher per new version.
+  ticketId          String
+  /// 1 for the first quote of the ticket, then one higher per new version.
   version           Int
   /// The version this one was made from; the lines' change markers compare against it.
   previousId        String?
@@ -31,15 +31,15 @@ model Quote {
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
   createdBy         String?
-  inquiry           Inquiry      @relation(fields: [inquiryId, organizationId], references: [id, organizationId])
+  ticket            Ticket       @relation(fields: [ticketId, organizationId], references: [id, organizationId])
   previous          Quote?       @relation("QuoteVersions", fields: [previousId, organizationId], references: [id, organizationId])
   next              Quote[]      @relation("QuoteVersions")
   lines             OrderLine[]
 
   @@unique([id, organizationId])
-  @@unique([inquiryId, version])
+  @@unique([ticketId, version])
   @@index([organizationId, status, quoteStatus])
-  @@index([organizationId, inquiryId])
+  @@index([organizationId, ticketId])
 }
 
 /// Order line – what is charged (ADR 0021, 0022). A snapshot of the item's name, price, VAT and

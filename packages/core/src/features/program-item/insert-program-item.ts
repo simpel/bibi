@@ -4,7 +4,7 @@ import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
 import { checkPeriod } from "../occupancy/occupancy-rules";
-import { checkBooking, checkPlace } from "./program-item-rules";
+import { checkPlace, checkTicket } from "./program-item-rules";
 import { reserveProgramItem } from "./reserve";
 import type { ProgramItemCreateInput, ProgramItemDto } from "./schema";
 import { toProgramItemDto } from "./to-program-item-dto";
@@ -16,7 +16,7 @@ export type InsertProgramItemInput = {
 
 /**
  * Creates a program item, occupies its bookable item and records the change. Shared by
- * `programItem.create` and `booking.createQuick`.
+ * `programItem.create`.
  */
 export async function insertProgramItem({
   context,
@@ -26,9 +26,9 @@ export async function insertProgramItem({
   const setupId = data.setupId ?? null;
   for (const check of [
     await loadTypeOfBase({ context, entityTypeId, base: "PROGRAM_ITEM" }),
-    await checkBooking({ context, bookingId: data.bookingId }),
+    await checkTicket({ context, ticketId: data.ticketId }),
     checkPeriod(data),
-    await checkPlace({ context, bookingId: data.bookingId, itemId, setupId }),
+    await checkPlace({ context, ticketId: data.ticketId, itemId, setupId }),
   ]) {
     if (!check.ok) return check;
   }

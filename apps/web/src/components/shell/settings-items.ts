@@ -21,7 +21,7 @@ export type SettingsKey =
   | "responsibilities"
   | "sheets"
   | "priceLists"
-  | "bookingStatuses"
+  | "ticketPhases"
   | "members"
   | "payments"
   | "integrations"
@@ -37,7 +37,7 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
   { href: ROUTES.settingsResponsibilities, key: "responsibilities", icon: UserCheckIcon },
   { href: ROUTES.settingsSheets, key: "sheets", icon: ClipboardListIcon },
   { href: ROUTES.settingsPriceLists, key: "priceLists", icon: TagIcon },
-  { href: ROUTES.settingsBookingStatuses, key: "bookingStatuses", icon: CircleDotIcon },
+  { href: ROUTES.settingsPipeline, key: "ticketPhases", icon: CircleDotIcon },
   { href: ROUTES.settingsMembers, key: "members", icon: UsersIcon },
   { href: ROUTES.settingsPayments, key: "payments", icon: CreditCardIcon },
   { href: ROUTES.settingsIntegrations, key: "integrations", icon: PlugIcon },

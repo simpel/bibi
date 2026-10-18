@@ -1,11 +1,11 @@
-/// A mail received on a booking's inbound address (ADR 0012). Written only by the inbound webhook
+/// A mail received on a ticket's inbound address (ADR 0012). Written only by the inbound webhook
 /// (SYSTEM actor), never edited: append-only. `providerEmailId` is the provider's id (Resend);
 /// unique per organization so a redelivered webhook never stores the same mail twice.
 /// `attachments` holds metadata only (`{ id, filename, contentType, size }[]`), not the bytes.
 model InboundEmail {
   id              String   @id @default(cuid(2))
   organizationId  String
-  bookingId       String
+  ticketId        String
   providerEmailId String
   /// The `Message-ID` header, for threading.
   messageId       String?
@@ -18,9 +18,9 @@ model InboundEmail {
   receivedAt      DateTime
   createdAt       DateTime @default(now())
   createdBy       String?
-  booking         Booking  @relation(fields: [bookingId, organizationId], references: [id, organizationId])
+  ticket          Ticket   @relation(fields: [ticketId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@unique([organizationId, providerEmailId])
-  @@index([organizationId, bookingId, receivedAt])
+  @@index([organizationId, ticketId, receivedAt])
 }

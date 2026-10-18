@@ -54,7 +54,7 @@ async function copyItem({
 
 export type SnapshotLinesInput = Db & {
   lines: readonly OrderLineInput[];
-  /** The inquiry's customer: customer-specific packages of other customers are refused. */
+  /** The ticket's customer: customer-specific packages of other customers are refused. */
   customerId: string;
   /** The draft's current lines; a line given by `lineId` keeps its snapshot. */
   existing: readonly OrderLineDto[];

@@ -1,4 +1,4 @@
-import { bookingRoute } from "@/lib/routes";
+import { ticketRoute } from "@/lib/routes";
 import { blockLabel, type CalendarLabels, type GridBlock } from "./calendar-grid-model";
 import type { CalendarColumn } from "./calendar-layout";
 import type { CalendarData } from "./load-calendar";
@@ -21,7 +21,7 @@ export function buildListModel({ days, data, labels }: BuildListInput): ListDay[
       .filter((block) => block.startsAt < day.end && block.endsAt > day.start)
       .map((block) => ({
         id: block.id,
-        href: block.bookingId ? bookingRoute({ id: block.bookingId }) : null,
+        href: block.ticketId ? ticketRoute({ id: block.ticketId }) : null,
         type: block.type,
         label: blockLabel({ block, labels }),
         time: labels.time({ block }),

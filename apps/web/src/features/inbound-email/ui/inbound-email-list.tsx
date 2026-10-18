@@ -3,7 +3,7 @@ import { InboundEmailEntry, type InboundEmailValue } from "./inbound-email-entry
 
 export type InboundEmailListProps = { emails: readonly InboundEmailValue[] };
 
-/** Received mails, newest first; shared by the booking page and the assistant's tool card. */
+/** Received mails, newest first; shared by the ticket page and the assistant's tool card. */
 export function InboundEmailList({ emails }: InboundEmailListProps) {
   const t = useTranslations("inboundEmail");
   if (emails.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;

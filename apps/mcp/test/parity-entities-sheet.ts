@@ -23,13 +23,13 @@ export const sheetDefinition: ParityEntity = {
     }),
 };
 
-/** The first version of the parity booking's sheet (ADR 0021), from the definition above. */
+/** The first version of the parity ticket's sheet (ADR 0021), from the definition above. */
 export const sheet = (): ParityEntity => ({
   ...byId({ name: "sheet", field: "sheet", list: "sheets", createTool: "", args: {} }),
   create: ({ mcp, made }) =>
     tool({
       mcp,
       name: "sheet_generate",
-      args: { bookingId: made.booking.id, sheetDefinitionId: made.sheetDefinition.id },
+      args: { ticketId: made.ticket.id, sheetDefinitionId: made.sheetDefinition.id },
     }),
 });

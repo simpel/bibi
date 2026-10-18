@@ -20,8 +20,8 @@ export async function followAs({ context, ...input }: Context & AssignmentFollow
   return unwrap({ result: await execute({ operation: followAssignment, input, context }) });
 }
 
-/** The main assignment slot of a booking. */
-export const bookingSubject = ({ id }: { id: string }) => ({
-  subjectType: "BOOKING" as const,
+/** The main assignment slot of a ticket. */
+export const ticketSubject = ({ id }: { id: string }) => ({
+  subjectType: "TICKET" as const,
   subjectId: id,
 });

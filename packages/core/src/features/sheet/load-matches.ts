@@ -7,18 +7,18 @@ import type { SheetMatch } from "./schema";
 
 export type LoadMatchesInput = {
   context: Pick<OperationContext, "db">;
-  bookingId: string;
+  ticketId: string;
   definition: Pick<SheetDefinitionDto, "entityTypeIds" | "vocabularyIds">;
 };
 
-/** The booking's program items whose item is of an included type, each with its resolved tags. */
+/** The ticket's program items whose item is of an included type, each with its resolved tags. */
 async function loadProgramItems({
   context,
-  bookingId,
+  ticketId,
   definition,
 }: LoadMatchesInput): Promise<MatchedProgramItem[]> {
   const rows = await context.db.programItem.findMany({
-    where: { bookingId, item: { entityTypeId: { in: definition.entityTypeIds } } },
+    where: { ticketId, item: { entityTypeId: { in: definition.entityTypeIds } } },
     select: { id: true, name: true, itemId: true },
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
   });
@@ -33,15 +33,15 @@ async function loadProgramItems({
   return found;
 }
 
-/** The counts of the included lists that hit the booking's included items (`SheetMatch`). */
+/** The counts of the included lists that hit the ticket's included items (`SheetMatch`). */
 export async function loadMatches({
   context,
-  bookingId,
+  ticketId,
   definition,
 }: LoadMatchesInput): Promise<SheetMatch[]> {
   const [programItems, effective] = await Promise.all([
-    loadProgramItems({ context, bookingId, definition }),
-    effectiveRequirements({ context, bookingId }),
+    loadProgramItems({ context, ticketId, definition }),
+    effectiveRequirements({ context, ticketId }),
   ]);
   const { vocabularyIds } = definition;
   return matchRequirements({ programItems, effective, vocabularyIds });

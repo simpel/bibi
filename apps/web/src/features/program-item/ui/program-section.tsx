@@ -1,4 +1,4 @@
-import { type BookingDto, listProgramItems } from "@okazi/core";
+import { listProgramItems, type TicketDto } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
@@ -9,14 +9,14 @@ import { loadProgramData } from "../load-program-data";
 import { CreateProgramItemButton } from "./create-program-item-button";
 import { ProgramTable } from "./program-table";
 
-export type ProgramSectionProps = { locale: Locale; booking: BookingDto };
+export type ProgramSectionProps = { locale: Locale; ticket: TicketDto };
 
-/** The booking's run schedule (ADR 0022): program items in time order, edited inline. */
-export async function ProgramSection({ locale, booking }: ProgramSectionProps) {
+/** The ticket's run schedule (ADR 0022): program items in time order, edited inline. */
+export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
   const t = await getTranslations("programItem");
   const { programItemWrite } = await getCallerAbilities();
   const [programItems, data] = await Promise.all([
-    runOperation({ operation: listProgramItems, input: { bookingId: booking.id, limit: 100 } }),
+    runOperation({ operation: listProgramItems, input: { ticketId: ticket.id, limit: 100 } }),
     loadProgramData(),
   ]);
   if (!programItems.ok) {
@@ -31,8 +31,8 @@ export async function ProgramSection({ locale, booking }: ProgramSectionProps) {
         {programItemWrite ? (
           <CreateProgramItemButton
             data={data.value}
-            bookingId={booking.id}
-            startsAt={booking.startsAt}
+            ticketId={ticket.id}
+            startsAt={ticket.desiredStartsAt ?? new Date()}
           />
         ) : null}
       </div>

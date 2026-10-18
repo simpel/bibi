@@ -7,10 +7,10 @@ import { useState } from "react";
 import type { NamedOption } from "@/components/form/named-option";
 import { QuoteDialog } from "./quote-dialog";
 
-export type CreateQuoteButtonProps = { inquiryId: string; items: readonly NamedOption[] };
+export type CreateQuoteButtonProps = { ticketId: string; items: readonly NamedOption[] };
 
-/** Opens the quote form for the inquiry's first quote; the new draft opens on save. */
-export function CreateQuoteButton({ inquiryId, items }: CreateQuoteButtonProps) {
+/** Opens the quote form for the ticket's first quote; the new draft opens on save. */
+export function CreateQuoteButton({ ticketId, items }: CreateQuoteButtonProps) {
   const t = useTranslations("quote");
   const [open, setOpen] = useState(false);
   return (
@@ -19,7 +19,7 @@ export function CreateQuoteButton({ inquiryId, items }: CreateQuoteButtonProps) 
         <PlusIcon />
         {t("create")}
       </Button>
-      <QuoteDialog target={{ inquiryId }} items={items} open={open} onOpenChange={setOpen} />
+      <QuoteDialog target={{ ticketId }} items={items} open={open} onOpenChange={setOpen} />
     </>
   );
 }

@@ -6,7 +6,7 @@ import {
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";
-import { seedBooking } from "./seed-booking";
+import { seedTicket } from "./seed-ticket";
 
 afterEach(() => {
   setPaymentProvider({ provider: undefined });
@@ -14,21 +14,21 @@ afterEach(() => {
 });
 
 describe("cross-organization isolation: payments", () => {
-  it("hides one organization's payments from another and refuses to charge its booking", async () => {
+  it("hides one organization's payments from another and refuses to charge its ticket", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
-    const { id: bookingId } = await seedBooking({ client: a });
+    const { id: ticketId } = await seedTicket({ client: a });
     installFakeStripe({ status: "ACTIVE" });
     setPaymentProvider({ provider: createMemoryPaymentProvider() });
     await call({ client: a, name: "paymentAccount_startOnboarding" });
     await call({ client: a, name: "paymentAccount_sync" });
-    const args = { bookingId, method: "CARD", amountMinor: 50_000 };
+    const args = { ticketId, method: "CARD", amountMinor: 50_000 };
     const payment = await call({ client: a, name: "payment_create", args });
     expect(payment.isError, JSON.stringify(payment.data)).toBe(false);
 
     const get = await call({ client: b, name: "payment_get", args: { id: payment.data.id } });
     expect(get.data.code).toBe("NOT_FOUND");
-    const listed = await call({ client: b, name: "payment_list", args: { bookingId } });
+    const listed = await call({ client: b, name: "payment_list", args: { ticketId } });
     expect(listed.data.items).toEqual([]);
     const created = await call({ client: b, name: "payment_create", args });
     expect(created.data.code).toBe("NOT_FOUND");
@@ -36,12 +36,12 @@ describe("cross-organization isolation: payments", () => {
       client: b,
       name: "graphql_query",
       args: {
-        query: "query($id: String!) { payments(bookingId: $id) { items { id } } }",
-        variables: { id: bookingId },
+        query: "query($id: String!) { payments(ticketId: $id) { items { id } } }",
+        variables: { id: ticketId },
       },
     });
     expect(graph.data.data.payments.items).toEqual([]);
-    const own = await call({ client: a, name: "payment_list", args: { bookingId } });
+    const own = await call({ client: a, name: "payment_list", args: { ticketId } });
     expect(own.data.items).toHaveLength(1);
   });
 });

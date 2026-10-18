@@ -27,7 +27,7 @@ export type TypedWizardProps<V extends TypedValues, O> = {
   cancelHref: string;
 };
 
-/** Create a typed record (booking, inquiry, …) one step at a time: type, details, own fields. */
+/** Create a typed record (ticket, customer, …) one step at a time: type, details, own fields. */
 export function TypedWizard<V extends TypedValues, O>(props: TypedWizardProps<V, O>) {
   const { form, data, typeOf, core, typeLabel, cancelHref } = props;
   const t = useTranslations("wizard");

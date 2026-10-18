@@ -11,7 +11,7 @@ export type SubjectFilterInput = {
 };
 
 /**
- * The `id` filter for a list of subjects by assignment (e.g. `booking.list({ assigneeId })`), or
+ * The `id` filter for a list of subjects by assignment (e.g. `ticket.list({ assigneeId })`), or
  * `{}` when neither filter is given.
  */
 export async function subjectIdFilter({

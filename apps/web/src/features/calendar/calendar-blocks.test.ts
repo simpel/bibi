@@ -1,8 +1,8 @@
-import type { BookingDto, OccupancyDto, ProgramItemDto } from "@okazi/core/schemas";
+import type { OccupancyDto, ProgramItemDto, TicketDto } from "@okazi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { toCalendarBlocks } from "./calendar-blocks";
 
-const SOURCES = { booking: "booking", programItem: "programItem" };
+const SOURCES = { ticket: "ticket", programItem: "programItem" };
 const day = new Date("2026-10-15T08:00:00Z");
 
 const occupancy = ({ overrides }: { overrides: Partial<OccupancyDto> }): OccupancyDto => ({
@@ -22,33 +22,33 @@ const occupancy = ({ overrides }: { overrides: Partial<OccupancyDto> }): Occupan
   ...overrides,
 });
 
-const programItem = { id: "p1", bookingId: "b1", name: "Lunch" } as ProgramItemDto;
-const booking = { id: "b1", reference: 12 } as BookingDto;
+const programItem = { id: "p1", ticketId: "b1", name: "Lunch" } as ProgramItemDto;
+const ticket = { id: "b1", reference: 12 } as TicketDto;
 
 describe("calendar blocks", () => {
-  it("links a program item's rows to its booking", () => {
+  it("links a program item's rows to its ticket", () => {
     const [block] = toCalendarBlocks({
       occupancies: [occupancy({ overrides: { sourceType: "programItem", sourceId: "p1" } })],
       programItems: [programItem],
-      bookings: [booking],
+      tickets: [ticket],
       sources: SOURCES,
     });
-    expect(block).toMatchObject({ bookingId: "b1", reference: 12, title: "Lunch" });
+    expect(block).toMatchObject({ ticketId: "b1", reference: 12, title: "Lunch" });
   });
 
-  it("links a booking's own rows and leaves manual blocks unlinked", () => {
+  it("links a ticket's own rows and leaves manual blocks unlinked", () => {
     const blocks = toCalendarBlocks({
       occupancies: [
-        occupancy({ overrides: { id: "own", sourceType: "booking", sourceId: "b1" } }),
+        occupancy({ overrides: { id: "own", sourceType: "ticket", sourceId: "b1" } }),
         occupancy({ overrides: { id: "manual", type: "MAINTENANCE", note: "Paint" } }),
       ],
       programItems: [],
-      bookings: [booking],
+      tickets: [ticket],
       sources: SOURCES,
     });
-    expect(blocks.map(({ bookingId, title }) => ({ bookingId, title }))).toEqual([
-      { bookingId: "b1", title: null },
-      { bookingId: null, title: "Paint" },
+    expect(blocks.map(({ ticketId, title }) => ({ ticketId, title }))).toEqual([
+      { ticketId: "b1", title: null },
+      { ticketId: null, title: "Paint" },
     ]);
   });
 });

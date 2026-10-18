@@ -11,11 +11,11 @@ export const PaymentStatusSchema = z.enum([
   "REFUNDED",
 ]);
 
-/** A payment requested from the customer for a booking (ADR 0028, 0029). */
+/** A payment requested from the customer for a ticket (ADR 0028, 0029). */
 export const PaymentSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
-  bookingId: z.string(),
+  ticketId: z.string(),
   method: PaymentMethodSchema,
   status: PaymentStatusSchema,
   amountMinor: z.number().int().describe("Amount in minor units (öre for SEK)"),
@@ -33,7 +33,7 @@ export const PaymentSchema = z.object({
 
 export const PaymentListInputSchema = z.object({
   ...PageInputShape,
-  bookingId: z.string().min(1).describe("Id of the booking whose payments to list"),
+  ticketId: z.string().min(1).describe("Id of the ticket whose payments to list"),
 });
 
 export const PaymentListOutputSchema = z.object({
@@ -47,7 +47,7 @@ export const PaymentIdInputSchema = z.object({ id: z.string().min(1) });
 export const PAYMENT_AMOUNT_MAX_MINOR = 1_000_000_000;
 
 export const PaymentCreateInputSchema = z.object({
-  bookingId: z.string().min(1).describe("Id of the booking the customer pays for"),
+  ticketId: z.string().min(1).describe("Id of the ticket the customer pays for"),
   method: PaymentMethodSchema.describe(
     "CARD: a hosted card checkout link. INVOICE: a Stripe invoice emailed to the customer.",
   ),
@@ -70,7 +70,7 @@ export const PaymentCreateInputSchema = z.object({
     .max(200)
     .optional()
     .describe(
-      "Text the customer sees on the checkout or invoice line; defaults to the booking reference",
+      "Text the customer sees on the checkout or invoice line; defaults to the ticket reference",
     ),
 });
 
@@ -84,10 +84,10 @@ export const PublicPaymentInputSchema = z.object({
   token: PublicTokenSchema.describe("Token from the public payment page URL"),
 });
 
-/** What the customer sees on the public page: no customer or booking details (ADR 0028). */
+/** What the customer sees on the public page: no customer or ticket details (ADR 0028). */
 export const PublicPaymentSchema = z.object({
   organizationName: z.string(),
-  bookingReference: z.number().int(),
+  ticketReference: z.number().int(),
   method: PaymentMethodSchema,
   /** `EXPIRED` is derived: still `PENDING` but past `expiresAt`. */
   status: z.enum([...PaymentStatusSchema.options, "EXPIRED"]),

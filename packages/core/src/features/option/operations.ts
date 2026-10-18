@@ -18,17 +18,17 @@ export const listOptions = defineOperation({
   kind: "query",
   description:
     "List options (preliminary holds) in queue order: by item, then start, then rank " +
-    "(1 = first option). Filter by item, inquiry, status (ACTIVE, CONVERTED, EXPIRED, RELEASED) " +
+    "(1 = first option). Filter by item, ticket, status (ACTIVE, CONVERTED, EXPIRED, RELEASED) " +
     "and a time window (from/to).",
   input: OptionListInputSchema,
   output: OptionListOutputSchema,
   permission: "option:read",
   handler: async ({ input, context }) => {
-    const { itemId, inquiryId, optionStatus, from, to } = input;
+    const { itemId, ticketId, optionStatus, from, to } = input;
     const rows = await context.db.option.findMany({
       where: {
         ...(itemId ? { itemId } : {}),
-        ...(inquiryId ? { inquiryId } : {}),
+        ...(ticketId ? { ticketId } : {}),
         ...(optionStatus ? { optionStatus } : {}),
         ...(from ? { endsAt: { gt: from } } : {}),
         ...(to ? { startsAt: { lt: to } } : {}),
@@ -52,7 +52,7 @@ export const getOption = defineOperation({
   kind: "query",
   description:
     "Get one option by id: bookable item, period, expiry date, rank in the queue, status and " +
-    "the inquiry it was placed for.",
+    "the ticket it was placed for.",
   input: OptionIdInputSchema,
   output: OptionSchema,
   permission: "option:read",

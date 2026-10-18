@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { SheetMatches } from "@/features/sheet/ui/sheet-matches";
 import { SheetRowsView } from "@/features/sheet/ui/sheet-rows-view";
 import { SheetStatus } from "@/features/sheet/ui/sheet-status";
-import { bookingRoute } from "@/lib/routes";
+import { ticketRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 
 export type SheetCardViewProps = GenerativeProps<"sheet-card">;
@@ -24,10 +24,10 @@ export function SheetCardView({ sheet }: SheetCardViewProps) {
         <SheetMatches matches={sheet.matches} />
         <SheetRowsView content={sheet.content} changes={sheet.changes} />
         <Link
-          href={bookingRoute({ id: sheet.bookingId })}
+          href={ticketRoute({ id: sheet.ticketId })}
           className="text-sm text-primary hover:underline"
         >
-          {t("openBooking")}
+          {t("openTicket")}
         </Link>
       </CardContent>
     </Card>

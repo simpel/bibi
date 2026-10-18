@@ -4,7 +4,6 @@ import {
   CalendarIcon,
   CalendarRangeIcon,
   ContactIcon,
-  InboxIcon,
   KanbanIcon,
   LayoutDashboardIcon,
   type LucideIcon,
@@ -17,8 +16,7 @@ export type NavLabelKey =
   | "dashboard"
   | "pipeline"
   | "calendar"
-  | "bookings"
-  | "inquiries"
+  | "tickets"
   | "customers"
   | "items"
   | "venues"
@@ -53,8 +51,7 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
   ],
   work: [
     { href: ROUTES.calendar, labelKey: "calendar", icon: CalendarRangeIcon, audience: "everyone" },
-    { href: ROUTES.bookings, labelKey: "bookings", icon: CalendarIcon, audience: "everyone" },
-    { href: ROUTES.inquiries, labelKey: "inquiries", icon: InboxIcon, audience: "everyone" },
+    { href: ROUTES.tickets, labelKey: "tickets", icon: CalendarIcon, audience: "everyone" },
   ],
   catalog: [
     { href: ROUTES.customers, labelKey: "customers", icon: ContactIcon, audience: "everyone" },

@@ -5,8 +5,8 @@ import { useTranslations } from "next-intl";
 export type SheetMatchesProps = { matches: readonly SheetMatch[] };
 
 /**
- * The counts that hit the booking's items (ADR 0021): "contains" blocks the sheet, "may contain"
- * is a warning. Shared by the booking page and the assistant's card.
+ * The counts that hit the ticket's items (ADR 0021): "contains" blocks the sheet, "may contain"
+ * is a warning. Shared by the ticket page and the assistant's card.
  */
 export function SheetMatches({ matches }: SheetMatchesProps) {
   const t = useTranslations("sheet.matches");

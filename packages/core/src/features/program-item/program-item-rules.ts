@@ -5,34 +5,34 @@ import { checkBookable } from "../occupancy/occupancy-rules";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-export type CheckBookingInput = Db & { bookingId: string };
+export type CheckTicketInput = Db & { ticketId: string };
 
-/** A program item belongs to an active booking of the organization. */
-export async function checkBooking({ context, bookingId }: CheckBookingInput) {
-  const found = await context.db.booking.count({ where: { id: bookingId } });
+/** A program item belongs to an active ticket of the organization. */
+export async function checkTicket({ context, ticketId }: CheckTicketInput) {
+  const found = await context.db.ticket.count({ where: { id: ticketId } });
   if (found > 0) return ok({ value: true });
-  const message = "Unknown booking";
-  return invalid({ message, issues: [{ path: "bookingId", message }] });
+  const message = "Unknown ticket";
+  return invalid({ message, issues: [{ path: "ticketId", message }] });
 }
 
 export type CheckPlaceInput = Db & {
-  bookingId: string;
+  ticketId: string;
   itemId: string | null;
   setupId: string | null;
 };
 
 /**
  * Where a program item is held: no item at all, or a `BOOKABLE` item, optionally with one of the
- * item's own setups. The item is general or the booking customer's own package. A setup without an item is a `VALIDATION` issue on `setupId`.
+ * item's own setups. The item is general or the ticket customer's own package. A setup without an item is a `VALIDATION` issue on `setupId`.
  */
-export async function checkPlace({ context, bookingId, itemId, setupId }: CheckPlaceInput) {
+export async function checkPlace({ context, ticketId, itemId, setupId }: CheckPlaceInput) {
   if (!itemId) {
     if (!setupId) return ok({ value: true });
     const message = "A setup needs a bookable item";
     return invalid({ message, issues: [{ path: "setupId", message }] });
   }
-  const booking = await context.db.booking.findFirst({ where: { id: bookingId } });
-  const bookable = await checkBookable({ context, itemId, customerId: booking?.customerId });
+  const ticket = await context.db.ticket.findFirst({ where: { id: ticketId } });
+  const bookable = await checkBookable({ context, itemId, customerId: ticket?.customerId });
   if (!bookable.ok || !setupId) return bookable;
   const found = await context.db.itemSetup.count({ where: { itemId, setupId } });
   if (found > 0) return ok({ value: true });

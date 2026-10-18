@@ -27,7 +27,7 @@ const sheetCard = uiEntry({
   toProps: ({ value }) => ({ sheet: value }),
 });
 
-/** Tool → component for a booking's versioned sheets with their ★ change markers (ADR 0021). */
+/** Tool → component for a ticket's versioned sheets with their ★ change markers (ADR 0021). */
 export const SHEET_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   sheet_list: sheetTable,
   sheet_get: sheetCard,

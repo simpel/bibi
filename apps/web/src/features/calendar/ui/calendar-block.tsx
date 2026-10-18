@@ -28,7 +28,7 @@ export type CalendarBlockViewProps = {
   positioned: boolean;
 };
 
-/** A block: a link to its booking, or plain text for a manual block without one. */
+/** A block: a link to its ticket, or plain text for a manual block without one. */
 export function CalendarBlockView({ block, row, col, first, positioned }: CalendarBlockViewProps) {
   const text = [block.time, block.label].filter(Boolean).join(" · ");
   const style = positioned

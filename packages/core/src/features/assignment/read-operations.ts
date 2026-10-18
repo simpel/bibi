@@ -16,8 +16,8 @@ export const listAssignments = defineOperation({
   name: "assignment.list",
   kind: "query",
   description:
-    "List who answers for an inquiry, a booking or an item and who follows it: the main " +
-    "assignment (responsibilityId null) first, then one per responsibility on a booking.",
+    "List who answers for a ticket or an item and who follows it: the main " +
+    "assignment (responsibilityId null) first, then one per responsibility on a ticket.",
   input: AssignmentListInputSchema,
   output: AssignmentListOutputSchema,
   permission: "assignment:read",

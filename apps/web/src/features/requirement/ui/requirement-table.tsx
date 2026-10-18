@@ -12,7 +12,7 @@ export type RequirementTableProps = {
   canWrite: boolean;
 };
 
-/** The booking's counts: list value, where it applies, the requirement type and how many. */
+/** The ticket's counts: list value, where it applies, the requirement type and how many. */
 export function RequirementTable({ requirements, data, canWrite }: RequirementTableProps) {
   const t = useTranslations("requirement");
   const columns = useRequirementColumns({ data, canWrite });
