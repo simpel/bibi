@@ -6,11 +6,11 @@
 - Main competitor: Lega Online (Multinet Interactive AB). See `docs/market/`.
 
 ## Differentiators (drive prioritisation)
-- Quick booking for smaller meetings: staff book directly without an inquiry and quote, and the customer pays via a Swish or card link or by invoice. Okazi is an internal tool for staff. Guests and customers never use the app; they only see the payment page.
+- Predefined tickets for smaller meetings: staff create a ticket with its lines in one step without a quote, and the customer pays via a Swish or card link or by invoice. Okazi is an internal tool for staff. Guests and customers never use the app; they only see the payment page.
 - Needs as counts against the organization's own lists (e.g. the EU's 14 allergens as an importable template), matched against items and compiled into sheets. No personal data about guests.
 - Versioned sheets (e.g. kitchen order) sent to a responsibility (e.g. head of kitchen), plus export (json, pdf, csv) for handover outside the system.
 - Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses fixed roles: owner, admin, member, viewer.
-- Options with a queue (1st/2nd option) and automatic expiry.
+- A ticket moves through the organization's own phases, and each line (room, food, activity) has a state per phase set in a grid: soft holds with a held-since date and one expiry date per ticket, hard holds that block (ADR 0043, 0044).
 - Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Fortnox, Visma and Peppol deferred, ADR 0028 and 0029).
 - Okazi's own prices are published and venues can sign up without talking to sales.
 
@@ -37,7 +37,7 @@
 - UI: Tailwind v4 (CSS-first tokens), cva, shadcn primitives, Storybook for `packages/ui`.
 - i18n: next-intl, Swedish and English.
 - Tooling: Biome (lint + format), Vitest (unit/service layer against real Postgres), Playwright (e2e).
-- Email: `@okazi/mail` with a `MailProvider` interface (`send`, `parseInbound`, `fetchInbound`). Adapters: Resend (production, outbound and inbound) and SMTP (Mailpit in dev), selected by `MAIL_PROVIDER` (`smtp` default, `resend` needs `RESEND_API_KEY`; inbound needs `RESEND_WEBHOOK_SECRET` and `MAIL_INBOUND_DOMAIN`). Inbound replies arrive at `POST /api/webhooks/resend` and are stored as `InboundEmail` on the booking whose address (`booking-<id>@<domain>`) they were sent to. See `docs/decisions/0012-email-provider.md`.
+- Email: `@okazi/mail` with a `MailProvider` interface (`send`, `parseInbound`, `fetchInbound`). Adapters: Resend (production, outbound and inbound) and SMTP (Mailpit in dev), selected by `MAIL_PROVIDER` (`smtp` default, `resend` needs `RESEND_API_KEY`; inbound needs `RESEND_WEBHOOK_SECRET` and `MAIL_INBOUND_DOMAIN`). Inbound replies arrive at `POST /api/webhooks/resend` and are stored as `InboundEmail` on the ticket whose address (`ticket-<id>@<domain>`) they were sent to. See `docs/decisions/0012-email-provider.md`.
 - Stripe webhook: `POST /api/webhooks/stripe`, signed with `STRIPE_WEBHOOK_SECRET`, runs SYSTEM-only `payment.applySignal` and `paymentAccount.applySignal`. See `docs/decisions/0028-payments-with-stripe.md`.
 - Jobs: pg-boss in `apps/worker` (queue and cron in Postgres). Jobs call core operations as SYSTEM. See `docs/decisions/0027-job-scheduler.md`.
 - Logging: pino via `@okazi/logger`, JSON to stdout and the `SystemLog` table, request context with `AsyncLocalStorage`. See `docs/decisions/0014-system-logging.md`.
@@ -55,7 +55,7 @@
   - Searchable entities implement `Embeddable`.
   - Reusable AI behaviour lives as skills (System / Organization / Personal), not as ad hoc prompts.
   - See `docs/decisions/0007-ai-first-ux.md` and `docs/decisions/0008-semantic-search-and-skills.md`.
-- **Configurable domain.** No domain words in code. The organization defines types, fields, lists, booking statuses and responsibilities as data. Every inquiry, booking and item has one assignee plus followers (ADR 0034). Code owns only generic behaviours (`PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS`) and fixed phases. Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
+- **Configurable domain.** No domain words in code. The organization defines types, fields, lists, ticket phases, item states and responsibilities as data. Every ticket and item has one assignee plus followers (ADR 0034). Code owns only generic behaviours (`PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS`) and flags on phases and states (ADR 0043, 0044). Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
 - **Multi-tenant.** Everything is scoped by `organizationId`. Every mutation is logged in `AuditLog`. See `docs/decisions/0004-multi-tenancy.md` and `docs/decisions/0006-database-conventions.md`.
 - **Everything is logged.** Core `execute` writes one system log row per operation (succeeded, rejected or failed). Every entry point opens a request context with `requestId` and `surface`, which also end up on `AuditLog`. See `docs/decisions/0014-system-logging.md`.
 
@@ -160,7 +160,7 @@
 - `pnpm --filter @okazi/web test:e2e`: Playwright with a scripted model (`E2E_MOCK_MODEL`), see `apps/web/CLAUDE.md`.
 
 ## Open questions
-- Pricing model (per venue, per room, per booking) not decided.
+- Pricing model (per venue, per room, per ticket) not decided.
 - Claude Design export (tokens) for `packages/ui` not delivered. Placeholder tokens are used until then.
 - Staging: production only until the first paying venue (ADR 0031). Hosting per `docs/decisions/0013-hosting-and-deploy.md` (Hetzner + Coolify, accepted; runbook `docs/runbooks/deploy.md`).
 - Payments (Stripe) and invoicing (Stripe) decided in `docs/decisions/0028-payments-with-stripe.md` and `0029-invoicing-via-stripe.md`. Swish, Fortnox, Visma and Peppol are deferred.

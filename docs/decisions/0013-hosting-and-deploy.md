@@ -29,7 +29,6 @@
 ## Open
 - Control plane on its own small server (blast radius) or on the same server as the app? Starts on the same server with a locked-down UI.
 - Staging: a second, small server, or only production at first?
-- ~~Scheduler for option expiry and kitchen orders~~: decided in ADR 0027 (pg-boss in `apps/worker`, one more container).
 - Arm (CAX) requires multi-arch images. Assume x86 for now.
 - Server size and exact prices must be verified against Hetzner's price list.
 

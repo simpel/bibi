@@ -4,7 +4,7 @@
 - **Status:** Accepted
 
 ## Context
-Users at venues (sales staff, coordinators, kitchen) work through many steps between inquiry, quote, booking and sheet. An AI assistant that only answers questions is not enough. The assistant must be able to perform actions, but never without the user's approval, and it must follow the same permissions as the user.
+Users at venues (sales staff, coordinators, kitchen) work through many steps between first contact, quote, delivery and sheet. An AI assistant that only answers questions is not enough. The assistant must be able to perform actions, but never without the user's approval, and it must follow the same permissions as the user.
 
 ## Decision
 - The Vercel AI SDK drives the UI for chat and tool calls. Models are reached through Vercel AI Gateway. The provider is replaceable, and the model is chosen per feature in configuration. Claude is the default.

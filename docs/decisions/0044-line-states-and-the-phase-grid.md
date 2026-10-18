@@ -2,13 +2,12 @@
 
 - **Date:** 2026-10-18
 - **Status:** Accepted
-- **Related:** 0021 (configurable items), 0043 (ticket and phases), 0022 (occupancy and options, partly superseded), 0036 (calendar view)
-- **Supersedes:** `Option` and the occupancy types `BOOKING`/`OPTION` in 0022
+- **Related:** 0021 (configurable items), 0043 (ticket and phases), 0022 (occupancy), 0027 (job scheduler), 0036 (calendar view)
 
 ## Context
 - A ticket allocates things: rooms, food, activities. What "allocated" means changes during the ticket's life. In a lead, a room is only held softly ("prebooked"). After the deal it is "booked". After a cancellation it is released. Food is "estimated", then "ordered", then "locked" at the final count.
 - Organizations need to see and control that flow, because it changes as lines are added, removed and changed. Staff also need to see each line's state in the calendar.
-- ADR 0022 handles this with a separate `Option` entity and fixed occupancy types. It cannot express "ordered" for food or any organization-specific state.
+- The states must be the organization's own: "ordered" for food, "prebooked" for a room, whatever the venue calls them.
 
 ## Decision
 
@@ -21,7 +20,7 @@
   | `hold` | `NONE`, `SOFT` or `HARD`. Only for types with `BOOKABLE` (ADR 0021). `SOFT` reserves the item without blocking others. `HARD` blocks it. |
   | `inSheets` | Lines in this state are included in generated sheets. |
   | `released` | Final state. The hold is dropped. Nothing leaves it. |
-  | `expires` | Lines in this state fall to the type's `expiryStateId` when the ticket's `holdsUntil` date passes (replaces option expiry, ADR 0027). |
+  | `expires` | Lines in this state fall to the type's `expiryStateId` when the ticket's `holdsUntil` date passes. |
 
 - Types without `BOOKABLE` use `hold = NONE` and the other flags only. Food, drinks and activities get their own state lists, usually short.
 - State transitions between states of one type are data (`ItemStateTransition`) with the default "every forward move and to released".
@@ -53,7 +52,7 @@
 - The initial state cannot be archived until another is chosen. A type keeps at least one state.
 
 ### Guided setup
-- A wizard at `/onboarding/pipeline` (built on `components/wizard`, ADR memory: step pages) leads an admin through the order that makes the grid easy:
+- A wizard at `/onboarding/pipeline` (built on `components/wizard`) leads an admin through the order that makes the grid easy:
   1. **Item types** – which types the organization uses (rooms, food, activities). Reuses `entityType.*`.
   2. **States per type** – start from the template for the type's behavior (bookable: Prebooked, Booked, Released; food: Estimated, Ordered, Locked, Released; other: Planned, Confirmed, Released) or one state "Active".
   3. **Phases** – a template list with the flags shown as plain choices (does this phase end the ticket? does it need a reason?).
@@ -67,12 +66,12 @@
 - All operations on all four surfaces. AI proposes, the user approves (ADR 0007). AI can suggest a full setup from a description of the organization.
 
 ## Consequences
-- `Option` and its operations are removed. `option.expireDue` becomes `ticket.expireHolds` (job, ADR 0027): for every ticket whose `holdsUntil` has passed, lines in an `expires` state move to their type's `expiryStateId`, audited per line. The ticket's phase does not change. Soft holds are plain lines with a `heldAt` date; there is no rank.
-- `OccupancyType` loses `BOOKING` and `OPTION` for `HOLD` with a `holdKind` (`SOFT`/`HARD`) plus a link to the line's state.
-- `ProgramItem` gets `stateId`, `stateOverridden`, `heldAt`; `Ticket` gets `holdsUntil`. It may be renamed `TicketLine` in a follow-up; not decided here.
+- A soft hold is a line in a state with `hold = SOFT`. There is no separate option record, no queue and no rank.
+- `ticket.expireHolds` is a job (ADR 0027): for every ticket whose `holdsUntil` has passed, lines in an `expires` state move to their type's `expiryStateId`, audited per line. The ticket's phase does not change.
+- `OccupancyType` is `HOLD` (with `holdKind` `SOFT` or `HARD`, linked to the line's state), `SETUP`, `MAINTENANCE` or `INTERNAL`.
+- `ProgramItem` has `stateId`, `stateOverridden` and `heldAt`; `Ticket` has `holdsUntil`.
 - Sheets use `inSheets` to choose lines, so a sheet only contains what the organization has marked as sendable.
-- The domain model, ER diagram and glossary change: Inquiry, Booking and Option are removed, Ticket, TicketPhase, ItemState and PhaseStateRule are added (`docs/domain-model.md` and `docs/artifacts/domain-model.html` together).
-- The demo seed gets per-organization phases, states and grids (ADR 0025).
+- The demo seed creates phases, states and grids per organization (ADR 0025).
 
 ## Open questions
 - Should a state change on a line notify the line's responsibility (ADR 0034), e.g. the head of kitchen when a food line becomes "Ordered"? Deferred until notifications exist.

@@ -1,15 +1,15 @@
-# 0024 – Booking export instead of a partner entity
+# 0024 – Ticket export instead of a partner entity
 
 - **Date:** 2026-10-14
 - **Status:** Accepted
 
 ## Context
 - Partner (an external restaurant operator who receives kitchen orders across company boundaries) came from World of Volvo's setup. It is a special case and not a general need.
-- The general need is to hand over a booking or a sheet (ADR 0021) to someone outside the system: an external chef, AV supplier, shipping company or carrier.
+- The general need is to hand over a ticket or a sheet (ADR 0021) to someone outside the system: an external chef, AV supplier, shipping company or carrier.
 
 ## Decision
 - Partner is dropped from the MVP. Sheets go to a role in the organization (ADR 0020, 0021).
-- The operation `booking.export` (`booking:read`) provides a booking in the formats:
+- The operation `ticket.export` (`ticket:read`) provides a ticket in the formats:
   - `json`: versioned, stable schema for integrations. The organization's fields are included with their definitions.
   - `pdf`: program, setups, items with the choices made, and requirements.
   - `csv`: program and order lines.

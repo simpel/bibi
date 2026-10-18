@@ -4,16 +4,16 @@
 - **Status:** Accepted
 
 ## Context
-- A quick booking is paid by the customer through a payment link, or against invoice (ADR 0022). The customer only sees the payment page and never uses the app.
-- The booking moves to `CONFIRMED` when payment is complete.
+- A ticket created from a ticket template is paid by the customer through a payment link, or against invoice (ADR 0022, 0043). The customer only sees the payment page and never uses the app.
+- A payment attaches to the ticket and records its own status. Payments do not move the ticket between phases.
 - No provider was chosen (issue #16).
 
 ## Decision
 - **Stripe** is the payment provider. Cards first; Stripe's Swish support may be enabled later without a new provider.
 - **Swish Handel direct is deferred.** It needs per-venue onboarding with a bank and is not required for the first venues.
 - **Public payment page:** a route outside login, addressed by an unguessable token. It shows the amount and a Stripe-hosted or embedded checkout. No personal data beyond what Stripe needs.
-- **Webhook:** Stripe's signed webhook is verified (Zod at the boundary) and runs as a core operation per ADR 0003 that calls `booking.changeStatus` as SYSTEM.
-- **Idempotency:** events are deduplicated on the Stripe event id. A repeated event never changes a booking twice.
+- **Webhook:** Stripe's signed webhook is verified (Zod at the boundary) and runs as a core operation per ADR 0003 that updates the payment as SYSTEM.
+- **Idempotency:** events are deduplicated on the Stripe event id. A repeated event never applies a payment twice.
 - **Stripe Connect, one connected account per organization.** Venues get paid directly. Okazi never holds venue funds and can take an application fee later.
   - Platform account: set via `@okazi/config`, never hard-coded.
   - Connected accounts are created with Stripe's Accounts v2 API (capabilities, responsibilities and dashboard properties), not the legacy Standard/Express/Custom types.
@@ -32,10 +32,10 @@
 - The event is reduced to a signal and applied by SYSTEM-only operations (`payment.applySignal`, `paymentAccount.applySignal`), like `inboundEmail.receive` (ADR 0012): no adapters, so no surface can mark a payment paid. The organization comes from the connected account the event happened on, the one cross-organization lookup (ADR 0004); the payment must belong to that account.
 - Events handled: `checkout.session.completed` (paid), `checkout.session.async_payment_succeeded|failed`, `checkout.session.expired`, `invoice.paid`, `invoice.voided`, `charge.refunded`, `account.updated` and Accounts v2 `v2.core.account*` events. Other events are acknowledged and ignored. `invoice.payment_failed` is ignored on purpose: Stripe retries the invoice.
 - Idempotency: the Stripe event id is claimed in the platform table `StripeWebhookEvent` before the event is applied and released again on a failure, so Stripe's retry is processed. A payment never moves backwards.
-- A paid payment confirms a tentative booking through `booking.changeStatus` to the organization's default `CONFIRMED` status, so its transitions and the coordinator rule still apply. If that is refused the payment stays `SUCCEEDED`, the refusal is logged and staff confirm by hand.
+- A paid payment only sets the payment to `SUCCEEDED`. The ticket's phase is changed by staff.
 
-## Addendum: public payment page
+## Public payment page
 - The page is `/pay/<token>` (locale-prefixed by next-intl), outside the signed-in app. The token is `Payment.publicToken`: 32 random bytes, base64url, unique. It is not the payment id, so ids that staff see (audit log, MCP, GraphQL) never open the page. It is never part of the payment DTO and never logged.
 - It is read through the SYSTEM-only operation `payment.getPublic` (no adapters, like `payment.applySignal`): the customer has no session and no surface may read a payment by token. One cross-organization lookup (token to organization, ADR 0004) pins the SYSTEM context. An unknown or malformed token is `NOT_FOUND`.
-- The page shows organization name, booking reference, amount, status and the Stripe-hosted checkout link. No customer or booking details. A `PENDING` payment past `expiresAt` shows as expired without a pay link. Stripe returns to the same page, with `?checkout=success` after paying. The status comes from the webhook, so while it is still `PENDING` that return shows a "processing" state (no pay button) that refreshes itself every 3 seconds, up to 20 times, until the payment is `SUCCEEDED`.
+- The page shows organization name, ticket reference, amount, status and the Stripe-hosted checkout link. No customer or ticket details. A `PENDING` payment past `expiresAt` shows as expired without a pay link. Stripe returns to the same page, with `?checkout=success` after paying. The status comes from the webhook, so while it is still `PENDING` that return shows a "processing" state (no pay button) that refreshes itself every 3 seconds, up to 20 times, until the payment is `SUCCEEDED`.
 - A Next page is not a `Request` handler, so `withRequestLogging` does not apply; the request context is opened with `runWithLogContext` (surface `web`, ADR 0014).

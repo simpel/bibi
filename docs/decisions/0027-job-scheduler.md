@@ -5,8 +5,7 @@
 
 ## Context
 - Several decisions require jobs outside a request:
-  - `option.expireDue` expires passed options and moves up the queue (ADR 0022).
-  - Series must be generated further ahead than 12 months (ADR 0023).
+  - `ticket.expireHolds` moves lines in an `expires` state to their type's expiry state when the ticket's `holdsUntil` date has passed (ADR 0044).
   - Embeddings must be computed asynchronously (ADR 0008, issue #11).
   - Outgoing email needs retries (ADR 0012).
 - ADR 0013 leaves the choice open: a cron container or a job queue in Postgres. The requirements are one server, no extra infrastructure and configuration in git.
@@ -27,15 +26,14 @@
 
   | Job | Schedule |
   |---|---|
-  | `option.expireDue` | every 15 minutes |
-  | Series horizon (generation beyond 12 months) | nightly 03:00 |
+  | `ticket.expireHolds` | every 15 minutes |
   | Embeddings | queued on change |
   | Outgoing email with retries | queued on send |
-- **Idempotency:** jobs must tolerate being run again. `option.expireDue` expires only options that are still `ACTIVE`.
+- **Idempotency:** jobs must tolerate being run again. `ticket.expireHolds` touches only lines that are still in an `expires` state.
 - **Configuration:** `DATABASE_URL` is read through `@okazi/config` as in the other apps. No new secrets.
 
 ## Consequences
 - One more container in `docker-compose.prod.yml`, but no new infrastructure (no Redis).
 - The `pgboss` schema lives outside Prisma. The migration check and the backup (`pg_dump`) must include it.
-- Manual execution remains: `option.expireDue` is an ordinary operation that can also be called from web, GraphQL, REST and MCP (ADR 0003).
-- Resolves the open question about a scheduler in ADR 0013, 0022 and 0023 and in `CLAUDE.md`.
+- Manual execution remains: `ticket.expireHolds` is an ordinary operation that can also be called from web, GraphQL, REST and MCP (ADR 0003).
+- Resolves the open question about a scheduler in ADR 0013 and in `CLAUDE.md`.

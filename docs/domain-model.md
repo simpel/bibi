@@ -6,8 +6,6 @@ Interactive view: [artifacts/domain-model.html](artifacts/domain-model.html).
 
 The model is configurable (see [ADR 0021](decisions/0021-configurable-items.md)). The code contains no domain words such as dish, allergen, room or kitchen order. Each organization sets up its own types, fields, vocabularies, setups, ticket phases, item states, sheets and responsibilities. The code only owns generic behaviors and flags.
 
-> **Target model.** [ADR 0043](decisions/0043-ticket-and-configurable-phases.md) and [ADR 0044](decisions/0044-line-states-and-the-phase-grid.md) (Accepted 2026-10-18) merge Inquiry and Booking into one **Ticket** and replace Option and booking statuses with organization-defined phases and item states. The sections below describe that target. Code still has the old entities until #267 and #268 land. In prose, "booking" informally means a ticket in a confirmed phase. See the Configuration section.
-
 ## Core flow
 
 Ticket (moves through the organization's phases) → Lines with states (prebooked → booked …) → Quote → Signing (later) → Requirements → Sheets → Delivery → Invoice → Fortnox / Visma
@@ -78,13 +76,15 @@ erDiagram
   TicketPhase ||--o{ PhaseStateRule : "sets"
   EntityType ||--o{ PhaseStateRule : "is set by"
   ItemState ||--o{ PhaseStateRule : "is the result of"
+  TicketTemplate }o--|| TicketPhase : "starts in"
+  TicketTemplate ||--o{ ProgramItem : "prepares lines like"
 ```
 
 ## Configuration
 
 *MVP* · What the organization sets up itself. Everything is data per organization and is created through regular operations ([ADR 0021](decisions/0021-configurable-items.md)).
 
-A new organization starts with the fixed access roles (`viewer`, `member`, `admin`, `owner`; [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)) and no responsibilities. Nothing else is preinstalled, except one booking status per phase so that bookings work right away. Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with behaviours and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
+A new organization starts with the fixed access roles (`viewer`, `member`, `admin`, `owner`; [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)) and no responsibilities. Nothing else is preinstalled, except the default ticket phases, item states and grid so that tickets work right away (ADR 0044). Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with behaviours and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
 
 ### EntityType (`EntityType`)
 
@@ -111,7 +111,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - field type (`TEXT | NUMBER | BOOLEAN | DATE | CHOICE | MULTI_CHOICE | LINK`)
 - required
 - vocabulary OR own options (`options`) for choice/multi-choice — exactly one source
-- target type (`linkTypeId`) for LINK — an item, customer, contact or booking type; the value is the id of an active record of that type in the same organization
+- target type (`linkTypeId`) for LINK — an item, customer, contact or ticket type; the value is the id of an active record of that type in the same organization
 - order (`position`)
 
 **Relations**
@@ -188,7 +188,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 **Attributes**
 - name (unique among the organization's active phases), color, order (`position`)
-- flags: `entry` (new tickets start here, exactly one default), `terminal` (nothing leaves it; all lines are released on entry), `requiresReason`, `requiresAssignee`, `invoiceable` (only after the last line has ended), `event` (`QUOTE_SENT` / `QUOTE_ACCEPTED` / `PAYMENT_COMPLETED`, at most one phase per event; such a phase is entered by the event, not by hand)
+- flags: `entry` (new tickets start here, exactly one default), `terminal` (nothing leaves it; all lines are released on entry), `requiresReason`, `requiresAssignee`, `invoiceable` (only after the last line has ended), `event` (`QUOTE_SENT` / `QUOTE_ACCEPTED`, at most one phase per event; such a phase is entered by the quote event, not by hand)
 - archived (a phase that holds tickets is archived only with a chosen target phase)
 
 **Relations**
@@ -215,7 +215,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` is from/to in → Transition (`ItemStateTransition`)
 - `1:N` is the result of → PhaseStateRule
 
-> A state in use is archived only with a chosen target state of the same type. `hold = SOFT` reserves the item without blocking others, like the former Option, but with no queue: overlapping soft holds are listed by `heldAt` and staff decide who gets the item; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
+> A state in use is archived only with a chosen target state of the same type. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by `heldAt` and staff decide who gets the item; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
 
 ### PhaseStateRule (`PhaseStateRule`) – the phase grid
 
@@ -228,6 +228,20 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `N:1` TicketPhase sets this; `N:1` EntityType is set by this; `N:1` ItemState is the result
 
 > Cells are optional: no cell means "keep the state". A new line gets the cell for the ticket's current phase, else the type's initial state. Terminal phases ignore the grid and release every line. Entering a phase is atomic: any blocker (a hard-hold collision, a disallowed state transition, a missing assignee) refuses the move and lists every blocking line. A line set by hand (`stateOverridden`) is skipped by phase moves until `line.followPhase`. Operations: `phaseGrid.get|setCell|importTemplate`, `pipelineSetup.preview|activate`.
+
+### TicketTemplate (`TicketTemplate`) – predefined ticket
+
+*MVP* · A ticket the organization has prepared, so a small repeatable request is created in one step ([ADR 0043](decisions/0043-ticket-and-configurable-phases.md)).
+
+**Attributes**
+- name (unique among the organization's active templates), ticket type, start phase (`phaseId`), default own-field values
+- lines: item, optional setup, offset and duration from the ticket start, quantity (fixed or per headcount)
+- status (active / archived)
+
+**Relations**
+- `N:1` TicketType (EntityType), `N:1` TicketPhase; `N:M` Item through its lines
+
+> Operations (`ticketTemplate:admin` to change, `ticketTemplate:read` to read): `ticketTemplate.list|get|create|update|archive` and `ticket.createFromTemplate({ templateId, customerId, startsAt, quantity })`. The new ticket's lines get their states from the grid for the template's phase; a hard-hold collision refuses the whole creation and lists the blocking lines.
 
 ### Responsibility (`Responsibility`)
 
@@ -249,7 +263,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 ### Assignment (`Assignment`)
 
-*MVP* · [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md). Says who answers for a subject: one assignee plus followers. Replaces `salesOwnerId`, `coordinatorId` and `responsibleId` ([ADR 0022](decisions/0022-sales-pipeline-and-booking-states.md) addendum).
+*MVP* · [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md). Says who answers for a subject: one assignee plus followers.
 
 **Attributes**
 - subject (`subjectType` `TICKET` / `ITEM` and `subjectId`, the same pattern as `Occupancy.sourceType` / `sourceId`; core checks that the subject belongs to the organization)
@@ -263,7 +277,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `N:1` User is the assignee
 - `1:N` has → AssignmentFollower
 
-> Unique on (subject, responsibility); a partial index keeps the main assignment unique per subject. Planned (#250): a booking gets one assignment per responsibility derived from its lines' item entity types, with the default assignee and followers; an existing assignment is never overwritten, and it is archived when no line of the covered types remains. Operations (resource `assignment`, written by `member` and up), all audited, AI needs approval, on every surface: `assignment.assign` (null removes the assignee, refused for the main assignee from a booking's `CONFIRMED` phase and an inquiry's `QUALIFIED`), `assignment.follow`, `assignment.unfollow`, `assignment.list({ subjectType, subjectId })` and `assignment.listMine({ kind: ASSIGNED | FOLLOWING })`. Assignee and followers must be members (`VALIDATION`); a subject of another organization is `NOT_FOUND`. `inquiry.list` and `booking.list` filter by `assigneeId` and `followerId`; the web lists show All, Assigned to me and Following. `inquiry.create`, `booking.create` and `bookingSeries.create` take an optional `assigneeId`; `booking.createQuick` defaults it to the member who books.
+> Unique on (subject, responsibility); a partial index keeps the main assignment unique per subject. Planned (#250): a ticket gets one assignment per responsibility derived from its lines' item entity types, with the default assignee and followers; an existing assignment is never overwritten, and it is archived when no line of the covered types remains. Operations (resource `assignment`, written by `member` and up), all audited, AI needs approval, on every surface: `assignment.assign` (null removes the assignee, refused for the main assignee while the ticket is in a phase with `requiresAssignee`), `assignment.follow`, `assignment.unfollow`, `assignment.list({ subjectType, subjectId })` and `assignment.listMine({ kind: ASSIGNED | FOLLOWING })`. Assignee and followers must be members (`VALIDATION`); a subject of another organization is `NOT_FOUND`. `ticket.list` filters by `assigneeId` and `followerId`; the web list shows All, Assigned to me and Following. `ticket.create` and `ticket.createFromTemplate` take an optional `assigneeId`, which defaults to the creating member.
 
 ## Sales & customer
 
@@ -279,7 +293,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - price lists (`PriceList.customerId`; archiving the customer is denied while it has an active price list)
 - payment terms in days (`paymentTermsDays`, null = the organization's default)
 - credit limit (`creditLimitMinor` in minor units, null = no limit set)
-- booking count (`bookingCount`, derived: the customer's bookings that are not archived)
+- ticket count (`ticketCount`, derived: the customer's tickets that are not archived)
 
 **Relations**
 - `1:N` has → Contact
@@ -302,11 +316,11 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `N:1` Customer (organization) has this
 - `1:N` is contact for → Ticket
 
-> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts or active price lists (`CONFLICT`; archive the price lists first), and a contact can only be created at an active customer. Every booking of the customer that is not archived also blocks archiving it, whatever its status phase, terminal and cancelled included (`CONFLICT` naming the number of bookings, issue path `archiveBookings`). With `archiveBookings: true` (needs `booking:write` as well) `customer.archive` archives those bookings and the customer in one transaction, with one audit row per booking plus the customer; the approval text names the number of bookings. That number is bound to the input as `expectedBookingCount`: for an assistant proposal the MCP server reads it from the database before signing (replacing any value the assistant sent, and refusing the proposal if the customer cannot be read), and the web dialog sends the count it shows. Unless exactly that many bookings are archived, `customer.archive` is refused with `CONFLICT` (issue path `expectedBookingCount`) and nothing is archived (#144). Archiving a booking this way goes through one shared `archiveBooking` (booking archive has no operation of its own yet): its program items are archived and the occupancy they or the booking hold is released, so no room stays blocked. Active inquiries block archiving the same way (issue path `archiveInquiries`; `archiveInquiries: true` needs `inquiry:write` and audits each inquiry), and the customer's own packages (items with its `customerId`) are archived with it (needs `item:write`). `item.archive` and `setup.archive` are refused (`CONFLICT`) while an active program item uses them.
+> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts or active price lists (`CONFLICT`; archive the price lists first), and a contact can only be created at an active customer. Every ticket of the customer that is not archived also blocks archiving it, whatever its phase, terminal phases included (`CONFLICT` naming the number of tickets, issue path `archiveTickets`). With `archiveTickets: true` (needs `ticket:write` as well) `customer.archive` archives those tickets and the customer in one transaction, with one audit row per ticket plus the customer; the approval text names the number of tickets. That number is bound to the input as `expectedTicketCount`: for an assistant proposal the MCP server reads it from the database before signing (replacing any value the assistant sent, and refusing the proposal if the customer cannot be read), and the web dialog sends the count it shows. Unless exactly that many tickets are archived, `customer.archive` is refused with `CONFLICT` (issue path `expectedTicketCount`) and nothing is archived (#144). Archiving a ticket this way goes through one shared `archiveTicket`: its lines are archived and the occupancy they hold is released, so no room stays blocked. The customer's own packages (items with its `customerId`) are archived with it (needs `item:write`). `item.archive` and `setup.archive` are refused (`CONFLICT`) while an active program item uses them.
 
 ### Ticket ★
 
-*MVP* · One customer request from first contact to the delivered event, replacing Inquiry and Booking ([ADR 0043](decisions/0043-ticket-and-configurable-phases.md)). It lives in the organization's phases and never turns into another record. Lines, quotes, requirements, sheets, payments and mail attach to it.
+*MVP* · One customer request from first contact to the delivered event ([ADR 0043](decisions/0043-ticket-and-configurable-phases.md)). It lives in the organization's phases and never turns into another record. Lines, quotes, requirements, sheets, payments and mail attach to it.
 
 **Attributes**
 - reference number (`reference`, sequential per organization)
@@ -317,7 +331,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - quantity (e.g. the number of guests), estimated and guaranteed headcount, budget (`budgetMinor`, minor units)
 - phase (`phaseId`), `phaseChangedAt`, reason of the last phase change (required by phases with `requiresReason`)
 - main assignment and responsibility assignments (see Assignment; the main assignee is required by phases with `requiresAssignee`)
-- inbound address (`inboundAddress`, derived: `booking-<id>@<MAIL_INBOUND_DOMAIN>` (address format unchanged by ADR 0043), null when inbound mail is not configured)
+- inbound address (`inboundAddress`, derived: `ticket-<id>@<MAIL_INBOUND_DOMAIN>`, null when inbound mail is not configured)
 - channel (form, email, phone, Venuu) – *later*
 
 **Relations**
@@ -332,7 +346,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 > ★ A pipeline the organization draws itself, with line states that follow it. Phase changes only through `ticket.changePhase({ ticketId, phaseId, reason? })`, never through `update`; `quote.send`, `quote.accept` and a completed payment move the ticket through the phase with the matching `event`.
 
-> Operations (`ticket:write` to change, `ticket:read` to read): `ticket.list|get|create|update|changePhase|export`. `create` gives the next reference number and puts the ticket in the default `entry` phase, or in the organization's quick-booking phase for a quick booking (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` replaces `booking.export` ([ADR 0024](decisions/0024-booking-export-instead-of-partner.md)). Every change is audited; phase history comes from `AuditLog`.
+> Operations (`ticket:write` to change, `ticket:read` to read): `ticket.list|get|create|createFromTemplate|update|changePhase|export`. `create` gives the next reference number and puts the ticket in the default `entry` phase; `createFromTemplate` creates it in the predefined ticket's phase with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` gives json, pdf or csv ([ADR 0024](decisions/0024-ticket-export-instead-of-partner.md)). Every change is audited; phase history comes from `AuditLog`.
 
 ### Quote ★
 
@@ -355,9 +369,9 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - fires on accept → the `QUOTE_ACCEPTED` phase event (no second record is created)
 - `1:N` contains → OrderLine
 
-> ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by item in order, and the lines the version dropped are listed as removed. `quote.accept` sets the inquiry to `WON`, converts the options (`CONVERTED`) and creates the booking. A quote can cover a whole series. A quote can also be built directly from items, and "Save as package" then creates a customer-specific item.
+> ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by item in order, and the lines the version dropped are listed as removed. `quote.accept` stores the acceptance and fires the `QUOTE_ACCEPTED` phase event. A quote can also be built directly from items, and "Save as package" then creates a customer-specific item.
 
-> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open ticket that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the inquiry moves `QUALIFIED → QUOTED` and older `SENT` versions expire), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`.
+> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open ticket that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the ticket moves into the phase with the `QUOTE_SENT` event, if there is one, and older `SENT` versions expire), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`.
 
 ### Agreement & signing
 
@@ -400,14 +414,14 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` requires → Task
 - `1:N` AccessCode opens for this
 
-> Operations (resource `programItem`): `programItem.list|get|create|update|archive`. Who answers for a program item comes from the booking's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state), and with a setup also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = programItem`). An overlap is refused (`CONFLICT`) and nothing is saved. `update` moves the occupancy when item, setup or time change; `archive` releases it. Every change is audited.
+> Operations (resource `programItem`): `programItem.list|get|create|update|archive`. Who answers for a program item comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state), and with a setup also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = programItem`). An overlap is refused (`CONFLICT`) and nothing is saved. `update` moves the occupancy when item, setup or time change; `archive` releases it. Every change is audited.
 
 ### Requirement ★ (`Requirement`)
 
-*MVP* · A count per vocabulary value on a booking or a program item, e.g. Gluten × 3 or Wheelchair × 2. Never tied to a person. There is no personal data about individual guests ([ADR 0021](decisions/0021-configurable-items.md)).
+*MVP* · A count per vocabulary value on a ticket or a program item, e.g. Gluten × 3 or Wheelchair × 2. Never tied to a person. There is no personal data about individual guests ([ADR 0021](decisions/0021-configurable-items.md)).
 
 **Attributes**
-- booking (`bookingId`) and optionally one of its program items (`programItemId`; null = the whole booking)
+- ticket (`ticketId`) and optionally one of its program items (`programItemId`; null = the whole ticket)
 - vocabulary value (`vocabularyValueId`; an active value of an active list in the organization)
 - count (`quantity`, 0 or more; 0 on a program item means "none here")
 - type (the organization's own, base `REQUIREMENT`) and custom fields (e.g. severity); a requirement type's LINK fields never point to a customer or contact type
@@ -417,9 +431,9 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `N:0..1` ProgramItem adjusts with this
 - `N:1` refers to → VocabularyValue
 
-> Operations (resource `requirement`): `requirement.list|get|create|update|archive` ([ADR 0021](decisions/0021-configurable-items.md)). One active count per vocabulary value and level (the booking, or one program item); a second is refused (`CONFLICT`). `update` changes only the count and fields. The program item must belong to the booking (`VALIDATION`). A vocabulary value, or a whole vocabulary, cannot be archived while a requirement counts it (`CONFLICT`). Every change is audited.
+> Operations (resource `requirement`): `requirement.list|get|create|update|archive` ([ADR 0021](decisions/0021-configurable-items.md)). One active count per vocabulary value and level (the ticket, or one program item); a second is refused (`CONFLICT`). `update` changes only the count and fields. The program item must belong to the ticket (`VALIDATION`). A vocabulary value, or a whole vocabulary, cannot be archived while a requirement counts it (`CONFLICT`). Every change is audited.
 
-> ★ A row on the program item replaces the booking's count there, value by value; the core helper `effectiveRequirements` (`resolveEffective`) computes the effective count per program item. Matching: the requirement is compared with the items on the booking that are tagged with the same vocabulary value. A hit on a required component without an alternative is flagged and blocks the sheet. `item.resolve` computes inherited tags and is the only place for that.
+> ★ A row on the program item replaces the ticket's count there, value by value; the core helper `effectiveRequirements` (`resolveEffective`) computes the effective count per program item. Matching: the requirement is compared with the items on the ticket that are tagged with the same vocabulary value. A hit on a required component without an alternative is flagged and blocks the sheet. `item.resolve` computes inherited tags and is the only place for that.
 
 ### CancellationTerms
 
@@ -432,7 +446,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - applies to customer or venue
 
 **Relations**
-- `1:N` Booking follows this
+- `1:N` Ticket follows this
 
 ## Spaces & resources
 
@@ -474,7 +488,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 ### Item (`Item`)
 
-*MVP* · Everything that can be sold or booked: dish, drink, venue space, equipment, guide, package. Replaces the old Item, Menu, Conference package, Room, Furnishing and Equipment.
+*MVP* · Everything that can be sold or booked: dish, drink, venue space, equipment, guide, package.
 
 **Attributes**
 - type (the organization's own) and custom fields (`fields` as JSON)
@@ -502,7 +516,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` OrderLine refers to this
 - `1:N` PriceListItem refers to this
 
-> Room = item with `BOOKABLE` + `SETUPS` (often also `PRICED`). A behavior cannot be turned off on the type as long as any active item of the type has data for it (`CONFLICT`). Inherited tags (`item.resolve`, the only place they are computed): the item and required components at every level give "contains"; optional components and choice-group options give "may contain" per alternative. An option in a group that must pick all of its options has no alternative and counts as required. On expansion onto a booking: core creates program items, occupancy and order lines, which copy name, price, VAT and tags (snapshot).
+> Room = item with `BOOKABLE` + `SETUPS` (often also `PRICED`). A behavior cannot be turned off on the type as long as any active item of the type has data for it (`CONFLICT`). Inherited tags (`item.resolve`, the only place they are computed): the item and required components at every level give "contains"; optional components and choice-group options give "may contain" per alternative. An option in a group that must pick all of its options has no alternative and counts as required. On expansion onto a ticket: core creates program items, occupancy and order lines, which copy name, price, VAT and tags (snapshot).
 
 ### ItemComponent (`ItemComponent`)
 
@@ -543,24 +557,24 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 ### Sheet ★ (`Sheet`)
 
-*MVP* · A compilation for a responsibility, e.g. kitchen order, brewing order or guide brief. Created from a sheet definition. Replaces Kitchen order.
+*MVP* · A compilation for a responsibility, e.g. kitchen order, brewing order or guide brief. Created from a sheet definition.
 
 **Attributes**
-- booking
+- ticket
 - sheet definition
-- version (1, 2, 3, … per booking and sheet definition)
-- content: a snapshot of the booking's rows (`BOOKING`, `ITEM`, `REQUIREMENT`) as the definition includes them: the booking itself, the program items that use an item of an included type with the included fields, and the counts of the included lists (never names)
+- version (1, 2, 3, … per ticket and sheet definition)
+- content: a snapshot of the ticket's rows (`TICKET`, `ITEM`, `REQUIREMENT`) as the definition includes them: the ticket itself, the program items that use an item of an included type with the included fields, and the counts of the included lists (never names)
 - changes (★): the rows added, changed or removed since the last sent version (`baseVersion`)
-- receiving responsibility (a copy of the definition's responsibility at generation; the sheet goes to that responsibility's assignee and followers on the booking)
+- receiving responsibility (a copy of the definition's responsibility at generation; the sheet goes to that responsibility's assignee and followers on the ticket)
 - sent (`sentAt`, `sentBy`)
-- matches: the counts that hit the booking's items (program items whose item is of an included type): the count, the list value, the program item, the carrying items and `CONTAINS` (carried by the item or a mandatory part) or `MAY_CONTAIN` (only optional parts or choice options)
+- matches: the counts that hit the ticket's items (program items whose item is of an included type): the count, the list value, the program item, the carrying items and `CONTAINS` (carried by the item or a mandatory part) or `MAY_CONTAIN` (only optional parts or choice options)
 - blocked (yes/no): true when a match is `CONTAINS`
 
 **Relations**
 - `N:1` Ticket produces this
 - `N:1` SheetDefinition produces this version
 
-> Operations (resource `sheet`): `sheet.list|get|generate|send`. `sheet.generate` snapshots the booking for a definition; a changed booking gives the next version with the changed rows marked ★ against the last *sent* version, an unchanged booking returns the latest version. `sheet.send` marks a version as sent: only from the `CONFIRMED` phase (`CONFLICT` otherwise), only the latest version, and a version once. A `blocked` sheet is refused with `CONFLICT`. A version is never edited or removed. The core function `diffContent` is the only place the markers are computed; `matchRequirements` (over `item.resolve`) is the only place matches are computed. A change in matches gives a new version.
+> Operations (resource `sheet`): `sheet.list|get|generate|send`. `sheet.generate` snapshots the ticket for a definition; a changed ticket gives the next version with the changed rows marked ★ against the last *sent* version, an unchanged ticket returns the latest version. `sheet.send` marks a version as sent: only from the `CONFIRMED` phase (`CONFLICT` otherwise), only the latest version, and a version once. A `blocked` sheet is refused with `CONFLICT`. A version is never edited or removed. The core function `diffContent` is the only place the markers are computed; `matchRequirements` (over `item.resolve`) is the only place matches are computed. A change in matches gives a new version.
 
 > ★ Versioned, with changes marked since the last dispatch. Cannot be sent in the `TENTATIVE` phase. `sheet.export` gives a single sheet as json, pdf or csv, always with the latest version and the version number. This is how a sheet is handed to someone outside the system.
 
@@ -568,7 +582,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 ### PriceList
 
-*MVP* · Customer prices ([ADR 0023](decisions/0023-recurring-bookings-and-customer-pricing.md)). Built: `priceList.list/get/create/update/setItems/archive` (resource `priceList`; admins manage price lists, members read).
+*MVP* · Customer prices ([ADR 0023](decisions/0023-customer-pricing.md)). Built: `priceList.list/get/create/update/setItems/archive` (resource `priceList`; admins manage price lists, members read).
 
 **Attributes**
 - name
@@ -641,7 +655,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### Payment ★ (`Payment`)
 
-*MVP* · A payment requested from the booking's customer: a card checkout or a Stripe invoice ([ADR 0028](decisions/0028-payments-with-stripe.md), [ADR 0029](decisions/0029-invoicing-via-stripe.md)). Every payment is a direct charge on the organization's connected account (`PaymentAccount`), so the venue is the merchant and Okazi never holds its funds.
+*MVP* · A payment requested from the ticket's customer: a card checkout or a Stripe invoice ([ADR 0028](decisions/0028-payments-with-stripe.md), [ADR 0029](decisions/0029-invoicing-via-stripe.md)). Every payment is a direct charge on the organization's connected account (`PaymentAccount`), so the venue is the merchant and Okazi never holds its funds.
 
 **Attributes**
 - method: `CARD` (hosted checkout link) or `INVOICE` (Stripe invoice emailed to the customer); Swish comes later through Stripe
@@ -659,13 +673,13 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` Deposit is paid with this (not built yet)
 - `N:1` Invoice is settled with this (not built yet)
 
-> Operations: `payment.list` (per ticket, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ ticketId, method, amountMinor, currency?, description? })` (`payment:write`), on every surface (GraphQL also as `Booking.payments`; web on the booking page). `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), a booking that is not cancelled, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` and the booking moves from its tentative phase to the default `CONFIRMED` status through `booking.changeStatus` (a refusal, e.g. no main assignee, is logged `payment.webhook.confirm_failed` and never undoes the payment), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, booking reference, amount, status, pay link); an unknown or malformed token is `NOT_FOUND`.
+> Operations: `payment.list` (per ticket, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ ticketId, method, amountMinor, currency?, description? })` (`payment:write`), on every surface (GraphQL also as `Ticket.payments`; web on the ticket page). `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), a ticket that is not in a `terminal` phase, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` (a payment never moves a ticket's phase), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, ticket reference, amount, status, pay link); an unknown or malformed token is `NOT_FOUND`.
 
-> ★ Swish and card directly in the booking. Lega shows no online payment.
+> ★ Swish and card directly in the ticket. Lega shows no online payment.
 
 ### Invoice
 
-*MVP* · The final invoice after delivery. The booking can be invoiced only in the `COMPLETED` phase.
+*MVP* · The final invoice after delivery. A ticket can be invoiced only in a phase with the `invoiceable` flag.
 
 **Attributes**
 - invoice number
@@ -702,7 +716,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 | Role | Can |
 |---|---|
 | `viewer` | read everything |
-| `member` | read everything, write operational data (customers, inquiries, quotes, bookings, program items, requirements, payments, sheets) |
+| `member` | read everything, write operational data (customers, tickets, quotes, program items, requirements, payments, sheets) |
 | `admin` | everything a member can, plus configuration (types, fields, lists, setups, statuses, responsibilities, sheet definitions, price lists), members and API keys |
 | `owner` | everything, incl. other owners and the organization itself |
 
@@ -787,7 +801,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### InboundEmail (`InboundEmail`)
 
-*MVP* · A mail received on a booking's own inbound address, `booking-<bookingId>@<MAIL_INBOUND_DOMAIN>` (a customer reply, [ADR 0012](decisions/0012-email-provider.md)). Append-only. Stored only by the inbound webhook, as SYSTEM, in the booking's organization.
+*MVP* · A mail received on a ticket's own inbound address, `ticket-<ticketId>@<MAIL_INBOUND_DOMAIN>` (a customer reply, [ADR 0012](decisions/0012-email-provider.md)). Append-only. Stored only by the inbound webhook, as SYSTEM, in the ticket's organization.
 
 **Attributes**
 - provider email id (unique per organization: a redelivered webhook is stored once)
@@ -800,7 +814,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Relations**
 - `N:1` is a reply on → Ticket
 
-> Operations: `inboundEmail.list` (per ticket, newest first) and `inboundEmail.get`, permission `ticket:read`, on every surface (GraphQL also as `Booking.inboundEmails`). `inboundEmail.receive` is SYSTEM only and deliberately has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received mail.
+> Operations: `inboundEmail.list` (per ticket, newest first) and `inboundEmail.get`, permission `ticket:read`, on every surface (GraphQL also as `Ticket.inboundEmails`). `inboundEmail.receive` is SYSTEM only and deliberately has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received mail.
 
 ### PaymentAccount (`PaymentAccount`)
 
@@ -820,7 +834,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - channel
 - direction (in / out)
 - subject
-- linked inquiry / booking
+- linked ticket
 - change log
 
 **Relations**
@@ -918,6 +932,7 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | ItemState | Radstatus |
 | ItemStateTransition | Radövergång |
 | PhaseStateRule | Fasregel |
+| TicketTemplate | Färdigt ärende |
 | Quote | Offert |
 | Agreement | Avtal |
 | ProgramItem | Programpunkt |
