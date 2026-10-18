@@ -42,6 +42,8 @@ export async function getCalendarLabels({
     reference: ({ reference }) => ticket("reference", { reference }),
     heldSince: ({ heldAt }) =>
       t("heldSince", { date: format.dateTime(heldAt, { ...DAY, timeZone }) }),
+    expires: ({ expiresAt }) =>
+      t("expires", { date: format.dateTime(expiresAt, { ...DAY, timeZone }) }),
     time: ({ block }) =>
       format.dateTimeRange(block.startsAt, block.endsAt, rangeOptions({ block, timeZone })),
     column: ({ column }) =>

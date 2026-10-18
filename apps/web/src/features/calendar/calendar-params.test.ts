@@ -17,6 +17,9 @@ describe("calendar params", () => {
       date: { year: 2026, month: 10, day: 15 },
       venueId: undefined,
       typeId: undefined,
+      stateId: undefined,
+      phaseId: undefined,
+      ticketId: undefined,
     });
     const invalid = readCalendarParams({ raw: { date: "2026-02-31" }, now, timeZone: TZ });
     expect(invalid.date).toEqual({ year: 2026, month: 10, day: 15 });
@@ -24,8 +27,11 @@ describe("calendar params", () => {
 
   it("round-trips the query", () => {
     const raw = { view: "week", date: "2026-10-14", venue: "v1", type: "t1" };
+    const filters = { state: "s1", phase: "p1", ticket: "k1" };
     const params = readCalendarParams({ raw, now, timeZone: TZ });
     expect(calendarQuery({ params })).toEqual(raw);
+    const filtered = readCalendarParams({ raw: { ...raw, ...filters }, now, timeZone: TZ });
+    expect(calendarQuery({ params: filtered })).toEqual({ ...raw, ...filters });
   });
 
   it("shows Monday to Sunday in the week view and shifts by a week", () => {

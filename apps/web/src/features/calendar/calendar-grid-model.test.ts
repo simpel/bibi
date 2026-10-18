@@ -6,6 +6,7 @@ const labels = {
   type: ({ type }) => type,
   reference: ({ reference }) => `Ticket ${reference}`,
   heldSince: ({ heldAt }) => `Held since ${heldAt.toISOString().slice(0, 10)}`,
+  expires: ({ expiresAt }) => `Expires ${expiresAt.toISOString().slice(0, 10)}`,
 } as CalendarLabels;
 
 const base: CalendarBlock = {
@@ -19,6 +20,11 @@ const base: CalendarBlock = {
   title: "Lunch",
   soft: false,
   heldAt: null,
+  stateId: null,
+  stateName: null,
+  stateColor: null,
+  phaseId: null,
+  expiresAt: null,
 };
 
 describe("block label", () => {
@@ -31,6 +37,19 @@ describe("block label", () => {
     expect(blockLabel({ block: soft, labels })).toBe("Held since 2026-10-03 · Ticket 12 · Lunch");
     expect(blockLabel({ block: { ...base, type: "SETUP" }, labels })).toBe(
       "SETUP · Ticket 12 · Lunch",
+    );
+  });
+
+  it("names the line's state in text and adds the expiry of a soft hold", () => {
+    const soft = {
+      ...base,
+      soft: true,
+      stateName: "Prebooked",
+      heldAt: new Date("2026-10-03T09:00:00Z"),
+      expiresAt: new Date("2026-11-01T00:00:00Z"),
+    };
+    expect(blockLabel({ block: soft, labels })).toBe(
+      "Prebooked · Held since 2026-10-03 · Expires 2026-11-01 · Ticket 12 · Lunch",
     );
   });
 

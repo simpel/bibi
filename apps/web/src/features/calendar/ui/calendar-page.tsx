@@ -12,11 +12,21 @@ import { handleLoadError } from "@/server/load-error";
 import { calendarRange, type RawCalendarParams, readCalendarParams } from "../calendar-params";
 import { loadCalendar } from "../load-calendar";
 import { CalendarBody } from "./calendar-body";
+import { CalendarLegend } from "./calendar-legend";
 import { CalendarToolbar } from "./calendar-toolbar";
 
 export type CalendarPageProps = { locale: Locale; raw: RawCalendarParams };
 
 const TIME_ZONE = DEFAULT_TIME_ZONE;
+
+/** The URL filters the loader narrows by. */
+const filtersOf = ({ params }: { params: ReturnType<typeof readCalendarParams> }) => ({
+  venueId: params.venueId,
+  typeId: params.typeId,
+  stateId: params.stateId,
+  phaseId: params.phaseId,
+  ticketId: params.ticketId,
+});
 
 /** No bookable item yet: point to the items page, where a bookable type's items are created. */
 async function NoSpaces({ header }: { header: ReactNode }) {
@@ -82,7 +92,7 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
   const today = readCalendarParams({ raw: {}, now, timeZone: TIME_ZONE }).date;
   const range = calendarRange({ params, timeZone: TIME_ZONE });
   const [result, { ticketWrite }] = await Promise.all([
-    loadCalendar({ ...range, venueId: params.venueId, typeId: params.typeId }),
+    loadCalendar({ ...range, ...filtersOf({ params }) }),
     getCallerAbilities(),
   ]);
   if (!result.ok) return <LoadError errorKey={handleLoadError({ error: result.error, locale })} />;
@@ -93,16 +103,12 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
     <CalendarLayout
       header={header}
       toolbar={
-        <CalendarToolbar
-          params={params}
-          today={today}
-          period={period}
-          venues={result.value.venues}
-          types={result.value.types}
-          typeId={result.value.typeId}
-        />
+        <CalendarToolbar params={params} today={today} period={period} data={result.value} />
       }
     >
+      <div className="mb-3">
+        <CalendarLegend states={result.value.legend} />
+      </div>
       <CalendarBody
         params={params}
         data={result.value}

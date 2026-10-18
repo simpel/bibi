@@ -1,9 +1,11 @@
 import "server-only";
 import {
   listEntityTypes,
+  listItemStates,
   listItems,
   listOccupancies,
   listProgramItems,
+  listTicketPhases,
   listTickets,
   listVenues,
   ok,
@@ -13,8 +15,19 @@ import {
   type VenueDto,
 } from "@okazi/core";
 import { listAll } from "@/server/list-all";
-import { type CalendarBlock, toCalendarBlocks } from "./calendar-blocks";
-import { type SpaceRow, selectSpaces, type TypeOption } from "./calendar-types";
+import { type FilterBlocksInput, filterBlocks } from "./calendar-block-filter";
+import {
+  type CalendarBlock,
+  type ToCalendarBlocksInput,
+  toCalendarBlocks,
+} from "./calendar-blocks";
+import { buildLegend, type LegendState } from "./calendar-legend";
+import {
+  type SelectedSpaces,
+  type SpaceRow,
+  selectSpaces,
+  type TypeOption,
+} from "./calendar-types";
 
 export type CalendarData = {
   venues: Pick<VenueDto, "id" | "name">[];
@@ -23,6 +36,11 @@ export type CalendarData = {
   typeId: string | undefined;
   spaces: SpaceRow[];
   blocks: CalendarBlock[];
+  /** The organization's states that draw a block, for the legend and the state filter. */
+  legend: LegendState[];
+  phases: { id: string; name: string }[];
+  /** Tickets with a block in the period, for the ticket filter (label: the reference). */
+  tickets: { id: string; reference: number }[];
 };
 
 export type LoadCalendarInput = {
@@ -30,6 +48,9 @@ export type LoadCalendarInput = {
   to: Date;
   venueId?: string | undefined;
   typeId?: string | undefined;
+  stateId?: string | undefined;
+  phaseId?: string | undefined;
+  ticketId?: string | undefined;
 };
 
 /** Setup time sits right before a program item, so its program item can start after `to`. */
@@ -45,7 +66,46 @@ function loadSources({ from, to, venueId }: LoadCalendarInput) {
     listAll({ operation: listOccupancies, input: { from, to }, maxPages: 20 }),
     listAll({ operation: listProgramItems, input: programWindow, maxPages: 20 }),
     listAll({ operation: listTickets, input: programWindow, maxPages: 20 }),
+    listAll({ operation: listItemStates, input: {} }),
+    listAll({ operation: listTicketPhases, input: {} }),
   ]);
+}
+
+const pickName = ({ id, name }: { id: string; name: string }) => ({ id, name });
+
+const pickReference = ({ id, reference }: { id: string; reference: number }) => ({
+  id,
+  reference,
+});
+
+type ToCalendarDataInput = Pick<
+  ToCalendarBlocksInput,
+  "occupancies" | "programItems" | "tickets" | "states"
+> & {
+  selected: SelectedSpaces;
+  venues: { id: string; name: string }[];
+  phases: { id: string; name: string }[];
+  filters: FilterBlocksInput["params"];
+};
+
+/** Joins the reads into blocks, narrows them by the filters and derives the legend options. */
+function toCalendarData({ selected, venues, phases, filters, ...rest }: ToCalendarDataInput) {
+  const spaceIds = new Set(selected.spaces.map(({ id }) => id));
+  const all = toCalendarBlocks({
+    ...rest,
+    occupancies: rest.occupancies.filter(({ itemId }) => spaceIds.has(itemId)),
+    sources: { ticket: TICKET_OCCUPANCY_SOURCE, programItem: PROGRAM_ITEM_SOURCE },
+  });
+  const typeIds = new Set(selected.spaces.map(({ entityTypeId }) => entityTypeId));
+  const shownTickets = new Set(all.map((block) => block.ticketId));
+  return {
+    venues: venues.map(pickName),
+    ...selected,
+    blocks: filterBlocks({ blocks: all, params: filters }),
+    legend: buildLegend({ states: rest.states, typeIds, types: selected.types }),
+    phases: phases.map(pickName),
+    tickets: rest.tickets.filter(({ id }) => shownTickets.has(id)).map(pickReference),
+  };
 }
 
 /**
@@ -55,32 +115,33 @@ function loadSources({ from, to, venueId }: LoadCalendarInput) {
  */
 export async function loadCalendar({
   typeId,
+  stateId,
+  phaseId,
+  ticketId,
   ...window
 }: LoadCalendarInput): Promise<Result<CalendarData>> {
-  const [venues, items, types, occupancies, programItems, tickets] = await loadSources(window);
+  const [venues, items, types, occupancies, programItems, tickets, states, phases] =
+    await loadSources(window);
   if (!venues.ok) return venues;
   if (!items.ok) return items;
   if (!types.ok) return types;
   if (!occupancies.ok) return occupancies;
   if (!programItems.ok) return programItems;
   if (!tickets.ok) return tickets;
+  if (!states.ok) return states;
+  if (!phases.ok) return phases;
   const selected = selectSpaces({
     spaces: items.value.map(({ id, name, venueId, entityTypeId }) => ({
-      id,
-      name,
-      venueId,
-      entityTypeId,
+      ...{ id, name, venueId, entityTypeId },
     })),
-    types: types.value.map(({ id, name }) => ({ id, name })),
+    types: types.value.map(pickName),
     typeId,
   });
-  const spaceIds = new Set(selected.spaces.map(({ id }) => id));
-  const blocks = toCalendarBlocks({
-    occupancies: occupancies.value.filter(({ itemId }) => spaceIds.has(itemId)),
-    programItems: programItems.value,
-    tickets: tickets.value,
-    sources: { ticket: TICKET_OCCUPANCY_SOURCE, programItem: PROGRAM_ITEM_SOURCE },
+  return ok({
+    value: toCalendarData({
+      ...{ occupancies: occupancies.value, programItems: programItems.value },
+      ...{ tickets: tickets.value, states: states.value, selected },
+      ...{ venues: venues.value, phases: phases.value, filters: { stateId, phaseId, ticketId } },
+    }),
   });
-  const venueRows = venues.value.map(({ id, name }) => ({ id, name }));
-  return ok({ value: { venues: venueRows, ...selected, blocks } });
 }

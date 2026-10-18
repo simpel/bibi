@@ -1,4 +1,4 @@
-import type { OccupancyDto, ProgramItemDto, TicketDto } from "@okazi/core/schemas";
+import type { ItemStateDto, OccupancyDto, ProgramItemDto, TicketDto } from "@okazi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { toCalendarBlocks } from "./calendar-blocks";
 
@@ -32,6 +32,7 @@ describe("calendar blocks", () => {
       occupancies: [occupancy({ overrides: { sourceType: "programItem", sourceId: "p1" } })],
       programItems: [programItem],
       tickets: [ticket],
+      states: [],
       sources: SOURCES,
     });
     expect(block).toMatchObject({ ticketId: "b1", reference: 12, title: "Lunch", soft: false });
@@ -45,9 +46,30 @@ describe("calendar blocks", () => {
       ],
       programItems: [{ ...programItem, heldAt }],
       tickets: [ticket],
+      states: [],
       sources: SOURCES,
     });
     expect(block).toMatchObject({ soft: true, heldAt });
+  });
+
+  it("carries the line's state name and color and the ticket's expiry on a soft hold", () => {
+    const holdsUntil = new Date("2026-11-01T00:00:00Z");
+    const state = { id: "s1", name: "Prebooked", color: "#22c55e", expires: true } as ItemStateDto;
+    const [block] = toCalendarBlocks({
+      occupancies: [
+        occupancy({ overrides: { holdKind: "SOFT", sourceType: "programItem", sourceId: "p1" } }),
+      ],
+      programItems: [{ ...programItem, stateId: "s1" }],
+      tickets: [{ ...ticket, phaseId: "ph1", holdsUntil }],
+      states: [state],
+      sources: SOURCES,
+    });
+    expect(block).toMatchObject({
+      stateName: "Prebooked",
+      stateColor: "#22c55e",
+      phaseId: "ph1",
+      expiresAt: holdsUntil,
+    });
   });
 
   it("links a ticket's own rows and leaves manual blocks unlinked", () => {
@@ -58,6 +80,7 @@ describe("calendar blocks", () => {
       ],
       programItems: [],
       tickets: [ticket],
+      states: [],
       sources: SOURCES,
     });
     expect(blocks.map(({ ticketId, title }) => ({ ticketId, title }))).toEqual([

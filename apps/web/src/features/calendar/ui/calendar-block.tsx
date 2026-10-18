@@ -3,6 +3,7 @@ import { Link } from "@okazi/i18n/navigation";
 import { cn } from "@okazi/ui";
 import type { GridBlock } from "../calendar-grid-model";
 import { GRID_ITEM } from "./grid-keys";
+import { stateStyle } from "./state-style";
 
 /** Height of one lane in the day view, in rem; a row is as tall as its lanes. */
 export const LANE_REM = 2.25;
@@ -33,17 +34,19 @@ export type CalendarBlockViewProps = {
 /** A block: a link to its ticket, or plain text for a manual block without one. */
 export function CalendarBlockView({ block, row, col, first, positioned }: CalendarBlockViewProps) {
   const text = [block.time, block.label].filter(Boolean).join(" · ");
+  const look = block.color ? stateStyle({ color: block.color, soft: block.soft }) : undefined;
   const style = positioned
     ? {
+        ...look,
         left: `${block.offset * 100}%`,
         width: `calc(${block.span * 100}% - 2px)`,
         top: `${block.lane * LANE_REM + 0.25}rem`,
         height: `${LANE_REM - 0.25}rem`,
       }
-    : undefined;
+    : look;
   const className = cn(
     BASE,
-    block.soft ? SOFT_CLASS : TYPE_CLASS[block.type],
+    block.color ? "hover:opacity-90" : block.soft ? SOFT_CLASS : TYPE_CLASS[block.type],
     positioned ? "absolute z-10" : "relative z-10",
   );
   const focus = { [GRID_ITEM]: "", "data-row": row, "data-col": col, tabIndex: first ? 0 : -1 };

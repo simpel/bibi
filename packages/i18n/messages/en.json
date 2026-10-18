@@ -523,7 +523,17 @@
     "goToItems": "Go to items",
     "emptyDay": "Nothing booked.",
     "keyboardHint": "Use the arrow keys to move between spaces and times.",
-    "heldSince": "Held since {date}"
+    "heldSince": "Held since {date}",
+    "expires": "Expires {date}",
+    "state": "State",
+    "allStates": "All states",
+    "phase": "Phase",
+    "allPhases": "All phases",
+    "ticket": "Ticket",
+    "allTickets": "All tickets",
+    "legend": "Legend",
+    "softHold": "soft hold, hatched",
+    "hardHold": "hard hold, solid"
   },
   "quote": {
     "singular": "Quote",

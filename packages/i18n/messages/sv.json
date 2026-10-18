@@ -523,7 +523,17 @@
     "goToItems": "Gå till artiklar",
     "emptyDay": "Inget bokat.",
     "keyboardHint": "Använd piltangenterna för att flytta mellan lokaler och tider.",
-    "heldSince": "Reserverad sedan {date}"
+    "heldSince": "Reserverad sedan {date}",
+    "expires": "Går ut {date}",
+    "state": "Status",
+    "allStates": "Alla statusar",
+    "phase": "Fas",
+    "allPhases": "Alla faser",
+    "ticket": "Ärende",
+    "allTickets": "Alla ärenden",
+    "legend": "Förklaring",
+    "softHold": "mjuk reservation, streckad",
+    "hardHold": "hård reservation, ifylld"
   },
   "quote": {
     "singular": "Offert",

@@ -13,6 +13,8 @@ export type GridBlock = {
   type: OccupancyType;
   /** A soft hold: drawn hatched, may overlap other soft holds (ADR 0044). */
   soft: boolean;
+  /** The line's state color (hex), or null for blocks without a state. */
+  color: string | null;
   label: string;
   time: string;
   offset: number;
@@ -37,6 +39,7 @@ export type CalendarLabels = {
   type: (input: { type: OccupancyType }) => string;
   reference: (input: { reference: number }) => string;
   heldSince: (input: { heldAt: Date }) => string;
+  expires: (input: { expiresAt: Date }) => string;
   time: (input: { block: CalendarBlock }) => string;
   column: (input: { column: CalendarColumn }) => string;
   slot: (input: { space: string; column: CalendarColumn }) => { label: string; prompt: string };
@@ -44,7 +47,7 @@ export type CalendarLabels = {
 
 type LabelInput = { block: CalendarBlock; labels: CalendarLabels };
 
-/** "Held since 3 Oct · Ticket 12 · Lunch"; a hard hold shows its reference and program item. */
+/** "Prebooked · Held since 3 Oct · Expires 28 Feb · Ticket 12 · Lunch": the state is always text. */
 export function blockLabel({ block, labels }: LabelInput): string {
   const kind = block.heldAt
     ? labels.heldSince({ heldAt: block.heldAt })
@@ -53,7 +56,10 @@ export function blockLabel({ block, labels }: LabelInput): string {
       : labels.type({ type: block.type });
   const reference =
     block.reference !== null ? labels.reference({ reference: block.reference }) : null;
-  const parts = [kind, reference, block.title].filter((part): part is string => Boolean(part));
+  const expires = block.expiresAt ? labels.expires({ expiresAt: block.expiresAt }) : null;
+  const parts = [block.stateName, kind, expires, reference, block.title].filter(
+    (part): part is string => Boolean(part),
+  );
   return parts.length > 0 ? parts.join(" · ") : labels.type({ type: block.type });
 }
 
@@ -66,6 +72,7 @@ function toGridBlock({ placed, lane, labels }: ToGridBlockInput): GridBlock {
     href: block.ticketId ? ticketRoute({ id: block.ticketId }) : null,
     type: block.type,
     soft: block.soft,
+    color: block.stateColor,
     label: blockLabel({ block, labels }),
     time: labels.time({ block }),
     offset,

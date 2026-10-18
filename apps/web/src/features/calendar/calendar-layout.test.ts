@@ -20,6 +20,11 @@ const block = ({ id, start, end }: BlockInput): CalendarBlock => ({
   title: null,
   soft: false,
   heldAt: null,
+  stateId: null,
+  stateName: null,
+  stateColor: null,
+  phaseId: null,
+  expiresAt: null,
 });
 
 describe("calendar layout", () => {

@@ -9,7 +9,7 @@ import {
   calendarQuery,
   shiftCalendar,
 } from "../calendar-params";
-import type { TypeOption } from "../calendar-types";
+import type { CalendarData } from "../load-calendar";
 import { CalendarFilters } from "./calendar-filters";
 
 export type CalendarToolbarProps = {
@@ -18,9 +18,7 @@ export type CalendarToolbarProps = {
   today: CalendarParams["date"];
   /** The shown period, e.g. "Mon 12 Oct – Sun 18 Oct". */
   period: string;
-  venues: { id: string; name: string }[];
-  types: TypeOption[];
-  typeId: string | undefined;
+  data: CalendarData;
 };
 
 const href = ({ params }: { params: CalendarParams }) => ({
@@ -53,14 +51,7 @@ async function ViewSwitch({ params, label }: ViewSwitchProps) {
 }
 
 /** Previous / today / next, the shown period, day or week, and the type and venue filters. */
-export async function CalendarToolbar({
-  params,
-  today,
-  period,
-  venues,
-  types,
-  typeId,
-}: CalendarToolbarProps) {
+export async function CalendarToolbar({ params, today, period, data }: CalendarToolbarProps) {
   const t = await getTranslations("calendar");
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -82,7 +73,15 @@ export async function CalendarToolbar({
       </Button>
       <h2 className="min-w-0 flex-1 text-base font-medium">{period}</h2>
       <ViewSwitch params={params} label={t("view")} />
-      <CalendarFilters params={params} venues={venues} types={types} typeId={typeId} />
+      <CalendarFilters
+        params={params}
+        venues={data.venues}
+        types={data.types}
+        typeId={data.typeId}
+        states={data.legend}
+        phases={data.phases}
+        tickets={data.tickets}
+      />
     </div>
   );
 }

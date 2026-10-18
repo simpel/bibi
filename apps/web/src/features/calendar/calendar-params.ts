@@ -11,12 +11,16 @@ import {
 export const CALENDAR_VIEWS = ["day", "week"] as const;
 export type CalendarView = (typeof CALENDAR_VIEWS)[number];
 
-/** The calendar's URL state: `?view=day|week&date=YYYY-MM-DD&venue=<id>&type=<id>|all`, shareable. */
+/** The calendar's URL state: `?view=day|week&date=YYYY-MM-DD&venue=<id>&type=<id>|all&state=<id>&phase=<id>&ticket=<id>`, shareable. */
 export type CalendarParams = {
   view: CalendarView;
   date: PlainDate;
   venueId?: string | undefined;
   typeId?: string | undefined;
+  /** Filters on the line's state, the ticket's phase and the ticket itself. */
+  stateId?: string | undefined;
+  phaseId?: string | undefined;
+  ticketId?: string | undefined;
 };
 
 export type RawCalendarParams = Record<string, string | string[] | undefined>;
@@ -45,7 +49,15 @@ export function readCalendarParams({
   const view = first({ value: raw.view }) === "week" ? "week" : "day";
   const value = first({ value: raw.date });
   const date = readDate({ now, timeZone, ...(value ? { value } : {}) });
-  return { view, date, venueId: first({ value: raw.venue }), typeId: first({ value: raw.type }) };
+  return {
+    view,
+    date,
+    venueId: first({ value: raw.venue }),
+    typeId: first({ value: raw.type }),
+    stateId: first({ value: raw.state }),
+    phaseId: first({ value: raw.phase }),
+    ticketId: first({ value: raw.ticket }),
+  };
 }
 
 /** The query string values for `params` (the inverse of `readCalendarParams`). */
@@ -56,6 +68,9 @@ export function calendarQuery({ params }: { params: CalendarParams }): Record<st
   };
   if (params.venueId) query.venue = params.venueId;
   if (params.typeId) query.type = params.typeId;
+  if (params.stateId) query.state = params.stateId;
+  if (params.phaseId) query.phase = params.phaseId;
+  if (params.ticketId) query.ticket = params.ticketId;
   return query;
 }
 
