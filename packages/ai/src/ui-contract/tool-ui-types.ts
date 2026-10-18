@@ -2,7 +2,7 @@ import type { ApprovalRequired } from "../approval/approval-schema";
 import type { AssignmentWire } from "./assignment-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
 import type { ItemResolutionWire } from "./item-resolution-entries";
-import type { OptionWire } from "./option-entries";
+import type { ItemStateWire } from "./item-state-entries";
 import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire } from "./payment-entries";
 import type { PipelineBoardWire } from "./pipeline-entries";
@@ -53,6 +53,8 @@ export type ToolUiProps = {
   "price-list-card": { priceList: PriceListWire };
   "ticket-phase-table": { items: TicketPhaseWire[]; nextCursor: string | null };
   "ticket-phase-card": { phase: TicketPhaseWire };
+  "item-state-table": { items: ItemStateWire[]; nextCursor: string | null };
+  "item-state-card": { state: ItemStateWire };
   "ticket-table": { items: TicketWire[]; nextCursor: string | null };
   "ticket-card": { ticket: TicketWire };
   "program-item-table": { items: ProgramItemWire[]; nextCursor: string | null };
@@ -60,8 +62,6 @@ export type ToolUiProps = {
   "requirement-table": { items: RequirementWire[]; nextCursor: string | null };
   "requirement-card": { requirement: RequirementWire };
   "pipeline-board": { board: PipelineBoardWire };
-  "option-card": { option: OptionWire };
-  "option-queue": { items: OptionWire[]; nextCursor: string | null };
   "quote-card": { quote: QuoteWire };
   "quote-table": { items: QuoteWire[]; nextCursor: string | null };
   "inbound-email-table": { items: InboundEmailWire[]; nextCursor: string | null };

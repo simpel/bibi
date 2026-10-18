@@ -5,19 +5,20 @@ import { blockLabel, type CalendarLabels } from "./calendar-grid-model";
 const labels = {
   type: ({ type }) => type,
   reference: ({ reference }) => `Ticket ${reference}`,
-  option: ({ position }) => `Option ${position}`,
+  heldSince: ({ heldAt }) => `Held since ${heldAt.toISOString().slice(0, 10)}`,
 } as CalendarLabels;
 
 const base: CalendarBlock = {
   id: "a",
   itemId: "room",
-  type: "BOOKING",
+  type: "HOLD",
   startsAt: new Date(0),
   endsAt: new Date(1),
   ticketId: "b1",
   reference: 12,
   title: "Lunch",
-  queuePosition: null,
+  soft: false,
+  heldAt: null,
 };
 
 describe("block label", () => {
@@ -25,10 +26,9 @@ describe("block label", () => {
     expect(blockLabel({ block: base, labels })).toBe("Ticket 12 · Lunch");
   });
 
-  it("leads with the queue position of an option and the type of other rows", () => {
-    expect(blockLabel({ block: { ...base, type: "OPTION", queuePosition: 2 }, labels })).toBe(
-      "Option 2 · Ticket 12 · Lunch",
-    );
+  it("leads with the held-since date of a soft hold and the type of other rows", () => {
+    const soft = { ...base, soft: true, heldAt: new Date("2026-10-03T09:00:00Z") };
+    expect(blockLabel({ block: soft, labels })).toBe("Held since 2026-10-03 · Ticket 12 · Lunch");
     expect(blockLabel({ block: { ...base, type: "SETUP" }, labels })).toBe(
       "SETUP · Ticket 12 · Lunch",
     );

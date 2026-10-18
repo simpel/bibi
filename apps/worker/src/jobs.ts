@@ -1,6 +1,6 @@
 import type { JobDefinition } from "./job-definition";
-import { expireDueOptionsJob } from "./jobs/expire-due-options";
+import { expireTicketHoldsJob } from "./jobs/expire-ticket-holds";
 import { pseudonymiseAuditLogJob } from "./jobs/pseudonymise-audit-log";
 
 /** Every job the worker runs. Add new jobs here. */
-export const JOBS: readonly JobDefinition[] = [expireDueOptionsJob, pseudonymiseAuditLogJob];
+export const JOBS: readonly JobDefinition[] = [expireTicketHoldsJob, pseudonymiseAuditLogJob];

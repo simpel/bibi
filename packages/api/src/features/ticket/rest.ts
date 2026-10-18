@@ -11,4 +11,5 @@ export const ticketRoutes = [
     path: "/tickets/{ticketId}/phase",
   }),
   restRoute({ operation: "ticket.export", method: "GET", path: "/tickets/{id}/export" }),
+  restRoute({ operation: "ticket.expireHolds", method: "POST", path: "/tickets/expire-holds" }),
 ];

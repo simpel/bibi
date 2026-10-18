@@ -15,7 +15,14 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.programItem.deleteMany({ where }),
   db.orderLine.deleteMany({ where }),
   db.quote.deleteMany({ where }),
-  db.option.deleteMany({ where }),
+];
+
+/** Item states and their transitions (ADR 0044); deleted after the lines that use them. */
+const itemStates = ({ db, where }: ScopeInput) => [
+  // A type's expiry state points back at its states: cut that link before deleting either.
+  db.entityType.updateMany({ where, data: { expiryStateId: null } }),
+  db.itemStateTransition.deleteMany({ where }),
+  db.itemState.deleteMany({ where }),
 ];
 
 /**
@@ -31,6 +38,7 @@ export async function resetDemoOrg({ db, org }: ResetDemoOrgInput): Promise<void
       db.message.deleteMany({ where }),
       db.conversation.deleteMany({ where }),
       ...ticketChildren({ db, where }),
+      ...itemStates({ db, where }),
       db.priceListItem.deleteMany({ where }),
       db.priceList.deleteMany({ where }),
       db.itemComponent.deleteMany({ where }),

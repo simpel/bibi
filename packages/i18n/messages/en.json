@@ -463,7 +463,8 @@
       "budget": "Budget (SEK)",
       "phase": "Phase",
       "newPhase": "New phase",
-      "phaseReason": "Reason"
+      "phaseReason": "Reason",
+      "holdsUntil": "Hold until"
     },
     "columns": {
       "reference": "Reference",
@@ -472,7 +473,10 @@
       "phase": "Phase",
       "when": "Desired dates",
       "quantity": "Quantity"
-    }
+    },
+    "expireHolds": "Expire overdue holds",
+    "expireHoldsConfirm": "Move every line in an expiring state, on tickets whose hold date has passed, to its expiry state? This also runs automatically every 15 minutes.",
+    "holdsExpired": "Overdue holds expired"
   },
   "calendar": {
     "title": "Calendar",
@@ -491,7 +495,6 @@
     "allTypes": "All types",
     "spaces": "Spaces",
     "gridLabel": "Occupancy per space",
-    "option": "{position, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} option",
     "bookSlot": "Book {space}, {when}, with the assistant",
     "bookPromptTime": "Book {space} on {date} at {time}.",
     "bookPromptDay": "Book {space} on {date}.",
@@ -499,7 +502,8 @@
     "noSpacesDescription": "Items whose type is bookable show up here as rows.",
     "goToItems": "Go to items",
     "emptyDay": "Nothing booked.",
-    "keyboardHint": "Use the arrow keys to move between spaces and times."
+    "keyboardHint": "Use the arrow keys to move between spaces and times.",
+    "heldSince": "Held since {date}"
   },
   "quote": {
     "singular": "Quote",
@@ -582,8 +586,7 @@
     "overlap": "The item is already occupied during this period.",
     "releasing": "Releasing block…",
     "types": {
-      "BOOKING": "Booking",
-      "OPTION": "Option",
+      "HOLD": "Hold",
       "SETUP": "Setup time",
       "MAINTENANCE": "Maintenance",
       "INTERNAL": "Internal use"
@@ -598,41 +601,6 @@
       "type": "Type",
       "startsAt": "Starts",
       "endsAt": "Ends",
-      "note": "Note"
-    }
-  },
-  "option": {
-    "singular": "Option",
-    "plural": "Options",
-    "create": "Place option",
-    "formDescription": "Hold the item for a period until the expiry date. The rank in the queue is set automatically.",
-    "empty": "No active options on the item.",
-    "created": "The option has been placed.",
-    "release": "Release option",
-    "releaseConfirm": "Do you want to release the option? The options behind it move up.",
-    "releasing": "Releasing option…",
-    "released": "The option has been released.",
-    "expireDue": "Expire overdue",
-    "expireDueConfirm": "Expire every active option whose expiry date has passed? This also runs automatically every 15 minutes.",
-    "expired": "Overdue options have expired.",
-    "rank": "{rank, selectordinal, one {#st} two {#nd} few {#rd} other {#th}} option",
-    "statuses": {
-      "ACTIVE": "Active",
-      "CONVERTED": "Converted",
-      "EXPIRED": "Expired",
-      "RELEASED": "Released"
-    },
-    "fields": {
-      "startsAt": "Starts",
-      "endsAt": "Ends",
-      "expiresAt": "Expires",
-      "note": "Note"
-    },
-    "columns": {
-      "rank": "Rank",
-      "startsAt": "Starts",
-      "endsAt": "Ends",
-      "expiresAt": "Expires",
       "note": "Note"
     }
   },
@@ -1142,6 +1110,19 @@
       "invoiceable": "Can be invoiced"
     }
   },
+  "itemState": {
+    "flags": {
+      "initial": "Initial",
+      "inSheets": "In sheets",
+      "released": "Released",
+      "expires": "Expires"
+    },
+    "holds": {
+      "NONE": "No hold",
+      "SOFT": "Soft hold",
+      "HARD": "Hard hold"
+    }
+  },
   "assistant": {
     "title": "Assistant",
     "placeholder": "Ask something or request help...",
@@ -1232,7 +1213,18 @@
         "invoiceable": "Can be invoiced",
         "targetPhaseId": "Move tickets to (phase id)",
         "toPhaseIds": "May move to (phase ids)",
-        "ids": "Order (ids)"
+        "ids": "Order (ids)",
+        "initial": "New lines start here",
+        "hold": "Hold",
+        "inSheets": "In sheets",
+        "released": "Released (final)",
+        "expires": "Expires",
+        "targetStateId": "Move lines to (state id)",
+        "toStateIds": "May move to (state ids)",
+        "lineId": "Line (id)",
+        "stateId": "State (id)",
+        "holdsUntil": "Hold until",
+        "expiryStateId": "Expiry state (id)"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -1288,7 +1280,14 @@
         "conversation_archive": "Archive conversation",
         "assignment_assign": "Change assignee",
         "assignment_follow": "Follow",
-        "assignment_unfollow": "Unfollow"
+        "assignment_unfollow": "Unfollow",
+        "itemState_create": "Create item state",
+        "itemState_update": "Update item state",
+        "itemState_archive": "Archive item state",
+        "itemState_reorder": "Reorder item states",
+        "itemState_setTransitions": "Set state transitions",
+        "line_changeState": "Change line state",
+        "ticket_expireHolds": "Expire overdue holds"
       }
     },
     "description": "Chat with the assistant about venues, items and skills.",
@@ -1421,16 +1420,6 @@
           "type": "Type",
           "period": "Period",
           "note": "Note"
-        }
-      },
-      "option": {
-        "empty": "No options found.",
-        "expires": "Expires {date}",
-        "openItem": "Open the item",
-        "columns": {
-          "rank": "Rank",
-          "period": "Period",
-          "expiresAt": "Expires"
         }
       },
       "programItem": {
@@ -1574,6 +1563,18 @@
         "singular": "Phase",
         "empty": "No phases found.",
         "open": "Open the phases",
+        "archived": "Archived",
+        "transitions": "{count, plural, =0 {No transitions} one {# transition} other {# transitions}}",
+        "columns": {
+          "name": "Name",
+          "flags": "Does",
+          "transitions": "Transitions"
+        }
+      },
+      "itemState": {
+        "singular": "State",
+        "empty": "No states found.",
+        "openType": "Open the item type",
         "archived": "Archived",
         "transitions": "{count, plural, =0 {No transitions} one {# transition} other {# transitions}}",
         "columns": {

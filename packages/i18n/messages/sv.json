@@ -463,7 +463,8 @@
       "budget": "Budget (kr)",
       "phase": "Fas",
       "newPhase": "Ny fas",
-      "phaseReason": "Anledning"
+      "phaseReason": "Anledning",
+      "holdsUntil": "Håll till"
     },
     "columns": {
       "reference": "Nummer",
@@ -472,7 +473,10 @@
       "phase": "Fas",
       "when": "Önskade datum",
       "quantity": "Antal"
-    }
+    },
+    "expireHolds": "Släpp förfallna reservationer",
+    "expireHoldsConfirm": "Flytta alla rader i ett läge som förfaller, på ärenden vars håll-datum har passerat, till sitt utgångsläge? Det sker också automatiskt var 15:e minut.",
+    "holdsExpired": "Förfallna reservationer släppta"
   },
   "calendar": {
     "title": "Kalender",
@@ -491,7 +495,6 @@
     "allTypes": "Alla typer",
     "spaces": "Lokaler",
     "gridLabel": "Beläggning per lokal",
-    "option": "{position, selectordinal, one {#:a} other {#:e}} option",
     "bookSlot": "Boka {space}, {when}, med assistenten",
     "bookPromptTime": "Boka {space} den {date} kl. {time}.",
     "bookPromptDay": "Boka {space} den {date}.",
@@ -499,7 +502,8 @@
     "noSpacesDescription": "Artiklar vars typ är bokningsbar visas här som rader.",
     "goToItems": "Gå till artiklar",
     "emptyDay": "Inget bokat.",
-    "keyboardHint": "Använd piltangenterna för att flytta mellan lokaler och tider."
+    "keyboardHint": "Använd piltangenterna för att flytta mellan lokaler och tider.",
+    "heldSince": "Reserverad sedan {date}"
   },
   "quote": {
     "singular": "Offert",
@@ -582,8 +586,7 @@
     "overlap": "Artikeln är redan belagd under den här perioden.",
     "releasing": "Släpper blockering…",
     "types": {
-      "BOOKING": "Bokning",
-      "OPTION": "Option",
+      "HOLD": "Reservation",
       "SETUP": "Ställtid",
       "MAINTENANCE": "Underhåll",
       "INTERNAL": "Internt bruk"
@@ -598,41 +601,6 @@
       "type": "Typ",
       "startsAt": "Börjar",
       "endsAt": "Slutar",
-      "note": "Anteckning"
-    }
-  },
-  "option": {
-    "singular": "Option",
-    "plural": "Optioner",
-    "create": "Lägg option",
-    "formDescription": "Håll artikeln för en period fram till förfallodatumet. Platsen i kön sätts automatiskt.",
-    "empty": "Inga aktiva optioner på artikeln.",
-    "created": "Optionen har lagts.",
-    "release": "Släpp option",
-    "releaseConfirm": "Vill du släppa optionen? Optionerna bakom flyttas upp.",
-    "releasing": "Släpper option…",
-    "released": "Optionen har släppts.",
-    "expireDue": "Avsluta förfallna",
-    "expireDueConfirm": "Vill du avsluta alla aktiva optioner vars förfallodatum har passerat? Det sker också automatiskt var 15:e minut.",
-    "expired": "Förfallna optioner har avslutats.",
-    "rank": "{rank, selectordinal, one {#:a} other {#:e}} option",
-    "statuses": {
-      "ACTIVE": "Aktiv",
-      "CONVERTED": "Konverterad",
-      "EXPIRED": "Förfallen",
-      "RELEASED": "Släppt"
-    },
-    "fields": {
-      "startsAt": "Börjar",
-      "endsAt": "Slutar",
-      "expiresAt": "Förfaller",
-      "note": "Anteckning"
-    },
-    "columns": {
-      "rank": "Plats",
-      "startsAt": "Börjar",
-      "endsAt": "Slutar",
-      "expiresAt": "Förfaller",
       "note": "Anteckning"
     }
   },
@@ -1142,6 +1110,19 @@
       "invoiceable": "Kan faktureras"
     }
   },
+  "itemState": {
+    "flags": {
+      "initial": "Startläge",
+      "inSheets": "Med i blad",
+      "released": "Släppt",
+      "expires": "Förfaller"
+    },
+    "holds": {
+      "NONE": "Ingen reservation",
+      "SOFT": "Preliminär reservation",
+      "HARD": "Fast reservation"
+    }
+  },
   "assistant": {
     "title": "Assistent",
     "placeholder": "Fråga något eller be om hjälp...",
@@ -1232,7 +1213,18 @@
         "invoiceable": "Kan faktureras",
         "targetPhaseId": "Flytta ärenden till (fas-id)",
         "toPhaseIds": "Får gå till (fas-id:n)",
-        "ids": "Ordning (id:n)"
+        "ids": "Ordning (id:n)",
+        "initial": "Nya rader startar här",
+        "hold": "Reservation",
+        "inSheets": "Med i blad",
+        "released": "Släppt (slutläge)",
+        "expires": "Förfaller",
+        "targetStateId": "Flytta rader till (läges-id)",
+        "toStateIds": "Får gå till (läges-id:n)",
+        "lineId": "Rad (id)",
+        "stateId": "Läge (id)",
+        "holdsUntil": "Håll till",
+        "expiryStateId": "Utgångsläge (id)"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -1288,7 +1280,14 @@
         "conversation_archive": "Arkivera konversation",
         "assignment_assign": "Byt ansvarig",
         "assignment_follow": "Följ",
-        "assignment_unfollow": "Sluta följa"
+        "assignment_unfollow": "Sluta följa",
+        "itemState_create": "Skapa läge",
+        "itemState_update": "Uppdatera läge",
+        "itemState_archive": "Arkivera läge",
+        "itemState_reorder": "Ändra ordning på lägen",
+        "itemState_setTransitions": "Ange lägesövergångar",
+        "line_changeState": "Byt läge på rad",
+        "ticket_expireHolds": "Släpp förfallna reservationer"
       }
     },
     "description": "Chatta med assistenten om anläggningar, artiklar och färdigheter.",
@@ -1421,16 +1420,6 @@
           "type": "Typ",
           "period": "Period",
           "note": "Anteckning"
-        }
-      },
-      "option": {
-        "empty": "Inga optioner hittades.",
-        "expires": "Förfaller {date}",
-        "openItem": "Öppna artikeln",
-        "columns": {
-          "rank": "Plats",
-          "period": "Period",
-          "expiresAt": "Förfaller"
         }
       },
       "programItem": {
@@ -1575,6 +1564,18 @@
         "empty": "Inga faser hittades.",
         "open": "Öppna faserna",
         "archived": "Arkiverad",
+        "transitions": "{count, plural, =0 {Inga övergångar} one {# övergång} other {# övergångar}}",
+        "columns": {
+          "name": "Namn",
+          "flags": "Gör",
+          "transitions": "Övergångar"
+        }
+      },
+      "itemState": {
+        "singular": "Läge",
+        "empty": "Inga lägen hittades.",
+        "openType": "Öppna typen",
+        "archived": "Arkiverat",
         "transitions": "{count, plural, =0 {Inga övergångar} one {# övergång} other {# övergångar}}",
         "columns": {
           "name": "Namn",

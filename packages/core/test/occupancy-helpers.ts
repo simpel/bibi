@@ -18,15 +18,17 @@ export const hours = ({ from, to }: { from: number; to: number }) => ({
 export type RawOccupancyInput = {
   context: ExecuteContext;
   itemId: string;
-  type: "BOOKING" | "OPTION";
+  /** A hard hold blocks, a soft hold may overlap (ADR 0044). */
+  hold: "HARD" | "SOFT";
   from: number;
   to: number;
 };
 
-/**
- * Writes a ticket or option row directly: their own commands come with later slices of ADR 0025.
- */
-export const insertRaw = ({ context, itemId, type, from, to }: RawOccupancyInput) =>
+/** Writes a hold row directly, without a line behind it, to test the overlap rules. */
+export const insertRaw = ({ context, itemId, hold, from, to }: RawOccupancyInput) =>
   context.db.occupancy.create({
-    data: { organizationId: context.organizationId, itemId, type, ...hours({ from, to }) },
+    data: {
+      ...{ organizationId: context.organizationId, itemId, type: "HOLD", holdKind: hold },
+      ...hours({ from, to }),
+    },
   });

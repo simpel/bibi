@@ -5,7 +5,7 @@ import { accessEntities } from "./parity-entities-access";
 import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
 import { integrationEntities } from "./parity-entities-integration";
-import { optionEntities } from "./parity-entities-option";
+import { itemStateEntities } from "./parity-entities-item-state";
 import { paymentAccountEntity, paymentEntity } from "./parity-entities-payment";
 import { quoteEntity } from "./parity-entities-quote";
 import { sheet } from "./parity-entities-sheet";
@@ -114,7 +114,7 @@ export const ENTITIES: ParityEntity[] = [
     args: { name: "Parity phase", color: "#22c55e", entry: true },
   }),
   ...ticketEntities(),
-  ...optionEntities(),
+  ...itemStateEntities(),
   quoteEntity(),
   sheet(),
   byId({

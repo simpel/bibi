@@ -23,4 +23,10 @@ export const programItemMcpTools = [
     idempotent: true,
     summary: ({ input }) => `Remove program item ${text({ value: input.id })} from the schedule`,
   }),
+  mcpTool({
+    operation: "line.changeState",
+    idempotent: true,
+    summary: ({ input }) =>
+      `Set line ${text({ value: input.lineId })} to state ${text({ value: input.stateId })}`,
+  }),
 ];

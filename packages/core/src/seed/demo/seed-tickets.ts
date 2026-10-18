@@ -8,6 +8,7 @@ import { addDays } from "../../recurrence/plain-date";
 import { fromZonedParts, toZonedParts } from "../../recurrence/zoned-time";
 import type { DemoRefs } from "./demo-refs";
 import { missing, resolveFields } from "./seed-fields";
+import { seedDemoLines } from "./seed-lines";
 import type { DemoTicket } from "./ticket-types";
 import type { DemoUserIds } from "./users";
 
@@ -30,6 +31,21 @@ function at({ now, day, time }: AtInput): Date {
   const today = toZonedParts({ instant: now, timeZone: TIME_ZONE }).date;
   const date = addDays({ date: today, days: day });
   return fromZonedParts({ date, time: { hour, minute, second: 0 }, timeZone: TIME_ZONE });
+}
+
+type PeriodInput = { ticket: DemoTicket; now: Date };
+
+/** The desired period on the ticket's day and, for leads with soft holds, `holdsUntil`. */
+function periodOf({ ticket, now }: PeriodInput) {
+  const holdsUntil =
+    ticket.holdsUntilDay === undefined
+      ? {}
+      : { holdsUntil: at({ now, day: ticket.holdsUntilDay, time: "23:59" }) };
+  return {
+    desiredStartsAt: at({ now, day: ticket.day, time: ticket.from }),
+    desiredEndsAt: at({ now, day: ticket.day, time: ticket.to }),
+    ...holdsUntil,
+  };
 }
 
 type PeopleInput = { userIds: DemoUserIds; ticket: DemoTicket };
@@ -60,12 +76,8 @@ async function seedTicket({ context, refs, userIds, ticket, now }: TicketInput) 
   const fields = resolveFields({ fields: ticket.fields, type });
   if (!fields.ok) return fields;
   const input = {
-    entityTypeId: type.id,
-    customerId: customer.id,
-    desiredStartsAt: at({ now, day: ticket.day, time: ticket.from }),
-    desiredEndsAt: at({ now, day: ticket.day, time: ticket.to }),
-    estimatedHeadcount: ticket.headcount,
-    assigneeId: people.value.assigneeId,
+    ...{ entityTypeId: type.id, customerId: customer.id, ...periodOf({ ticket, now }) },
+    ...{ estimatedHeadcount: ticket.headcount, assigneeId: people.value.assigneeId },
     fields: fields.value,
   };
   const created = await execute({ operation: createTicket, input, context });
@@ -79,6 +91,13 @@ async function seedTicket({ context, refs, userIds, ticket, now }: TicketInput) 
     });
     if (!followed.ok) return followed;
   }
+  const lines = await seedDemoLines({
+    context,
+    ticketId: created.value.id,
+    lines: ticket.lines ?? [],
+    at: ({ time }) => at({ now, day: ticket.day, time }),
+  });
+  if (!lines.ok) return lines;
   return movePhase({ context, ticket, ticketId: created.value.id });
 }
 

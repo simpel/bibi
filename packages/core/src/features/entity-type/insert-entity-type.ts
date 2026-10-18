@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
+import { insertItemState } from "../item-state/insert-item-state";
 import type { EntityBase, ItemBehaviour } from "./behaviour-kinds";
 import { checkBehaviours } from "./behaviours";
 import { toEntityTypeDto } from "./load-entity-type";
@@ -12,6 +13,24 @@ export type InsertEntityTypeInput = {
   name: string;
   behaviours?: readonly ItemBehaviour[];
 };
+
+type DefaultStateInput = { context: OperationContext; type: EntityTypeDto };
+
+/**
+ * Every item type has at least one state (ADR 0044): a new one starts with the initial state
+ * "Active", which holds a bookable item hard (as a booking) and is included in sheets. The
+ * organization renames it or adds its own states with `itemState.*`.
+ */
+const insertDefaultState = ({ context, type }: DefaultStateInput) =>
+  insertItemState({
+    context,
+    entityTypeId: type.id,
+    name: "Active",
+    color: "#64748b",
+    initial: true,
+    hold: type.behaviours.includes("BOOKABLE") ? "HARD" : "NONE",
+    inSheets: true,
+  });
 
 /** Shared by `entityType.create` and `configuration.importTemplate`: check, insert, record. */
 export async function insertEntityType({
@@ -33,5 +52,7 @@ export async function insertEntityType({
   });
   const type = await toEntityTypeDto({ context, row });
   context.recordChange({ entityId: row.id, after: type });
-  return ok({ value: type });
+  if (base !== "ITEM") return ok({ value: type });
+  const state = await insertDefaultState({ context, type });
+  return state.ok ? ok({ value: type }) : state;
 }

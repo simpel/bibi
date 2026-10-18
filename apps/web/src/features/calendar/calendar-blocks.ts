@@ -1,5 +1,4 @@
 import type { OccupancyDto, OccupancyType, ProgramItemDto, TicketDto } from "@okazi/core/schemas";
-import { optionQueuePositions } from "./option-queue";
 
 /** One occupancy on the calendar, with the ticket it belongs to (when it has one). */
 export type CalendarBlock = {
@@ -12,8 +11,10 @@ export type CalendarBlock = {
   reference: number | null;
   /** The program item's name, or the note of a manual block. */
   title: string | null;
-  /** 1 = first option, 2 = second… Only for `OPTION`. */
-  queuePosition: number | null;
+  /** A soft hold (ADR 0044): may overlap other soft holds; drawn hatched. */
+  soft: boolean;
+  /** Soft holds: when the line entered its state ("held since"), so staff see who held first. */
+  heldAt: Date | null;
 };
 
 export type ToCalendarBlocksInput = {
@@ -36,7 +37,6 @@ export function toCalendarBlocks({
 }: ToCalendarBlocksInput): CalendarBlock[] {
   const programById = new Map(programItems.map((item) => [item.id, item]));
   const ticketById = new Map(tickets.map((ticket) => [ticket.id, ticket]));
-  const queue = optionQueuePositions({ occupancies });
   return occupancies.map((occupancy) => {
     const program =
       occupancy.sourceType === sources.programItem && occupancy.sourceId
@@ -54,7 +54,8 @@ export function toCalendarBlocks({
       ticketId,
       reference: ticket?.reference ?? null,
       title: program?.name ?? occupancy.note,
-      queuePosition: queue.get(occupancy.id) ?? null,
+      soft: occupancy.holdKind === "SOFT",
+      heldAt: occupancy.holdKind === "SOFT" ? (program?.heldAt ?? null) : null,
     };
   });
 }

@@ -45,11 +45,12 @@ type DetailInput = {
     | "desiredEndsAt"
     | "quantity"
     | "estimatedHeadcount"
-    | "guaranteedHeadcount";
+    | "guaranteedHeadcount"
+    | "holdsUntil";
   type: "datetime-local" | "number";
 };
 
-/** The desired period, the counts and the budget; all optional. */
+/** The desired period, the counts, the budget and when soft holds expire; all optional. */
 function DetailFields({ form }: { form: Form }) {
   const t = useTranslations("ticket.fields");
   const field = ({ name, type }: DetailInput) => (
@@ -66,7 +67,10 @@ function DetailFields({ form }: { form: Form }) {
         {field({ name: "estimatedHeadcount", type: "number" })}
         {field({ name: "guaranteedHeadcount", type: "number" })}
       </div>
-      <TextField form={form} name="budget" label={t("budget")} type="number" step="0.01" />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <TextField form={form} name="budget" label={t("budget")} type="number" step="0.01" />
+        {field({ name: "holdsUntil", type: "datetime-local" })}
+      </div>
     </>
   );
 }

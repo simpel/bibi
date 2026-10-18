@@ -9,7 +9,8 @@ const occupancy = ({ overrides }: { overrides: Partial<OccupancyDto> }): Occupan
   id: "o1",
   organizationId: "org",
   itemId: "room",
-  type: "BOOKING",
+  type: "HOLD",
+  holdKind: "HARD",
   startsAt: day,
   endsAt: new Date("2026-10-15T10:00:00Z"),
   sourceType: null,
@@ -33,7 +34,20 @@ describe("calendar blocks", () => {
       tickets: [ticket],
       sources: SOURCES,
     });
-    expect(block).toMatchObject({ ticketId: "b1", reference: 12, title: "Lunch" });
+    expect(block).toMatchObject({ ticketId: "b1", reference: 12, title: "Lunch", soft: false });
+  });
+
+  it("shows when a soft hold's line was held (ADR 0044)", () => {
+    const heldAt = new Date("2026-10-03T09:00:00Z");
+    const [block] = toCalendarBlocks({
+      occupancies: [
+        occupancy({ overrides: { holdKind: "SOFT", sourceType: "programItem", sourceId: "p1" } }),
+      ],
+      programItems: [{ ...programItem, heldAt }],
+      tickets: [ticket],
+      sources: SOURCES,
+    });
+    expect(block).toMatchObject({ soft: true, heldAt });
   });
 
   it("links a ticket's own rows and leaves manual blocks unlinked", () => {

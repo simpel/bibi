@@ -92,7 +92,8 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       where: { organizationId: lind?.organizationId },
       orderBy: { reference: "asc" },
     });
-    expect(tickets).toHaveLength(10);
+    // L1–L10 and the leads F2, F3 and F6 with their room lines (ADR 0044).
+    expect(tickets).toHaveLength(13);
     const johan = await db.member.findFirst({
       where: { organizationId: lind?.organizationId, user: { name: "Johan Ek" } },
     });
@@ -103,6 +104,16 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     });
     expect(main?.assigneeId).toBe(johan?.userId);
     expect(main?.followers).toHaveLength(1);
+    const lines = await db.programItem.findMany({
+      where: { organizationId: lind?.organizationId },
+      include: { state: true },
+      orderBy: { heldAt: "asc" },
+    });
+    expect(lines.map((line) => [line.name, line.state?.name])).toEqual([
+      ["Kickoff", "Prebooked"],
+      ["Product launch", "Prebooked"],
+      ["Team day", "Released"],
+    ]);
   });
 
   it("re-seeds an organization that has occupancy rows", async () => {

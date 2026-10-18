@@ -8,6 +8,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Conference room",
+    states: "bookable",
     behaviours: ["BOOKABLE", "SETUPS", "PRICED"],
     fields: [
       { name: "Floor", kind: "NUMBER" },
@@ -20,6 +21,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Dish",
+    states: "food",
     fields: [
       { name: "Allergens", kind: "MULTI_CHOICE", list: "Allergens" },
       { name: "Diet", kind: "MULTI_CHOICE", list: "Diet" },
@@ -28,6 +30,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Drink",
+    states: "food",
     behaviours: ["PRICED"],
     fields: [
       { name: "Allergens", kind: "MULTI_CHOICE", list: "Allergens" },
@@ -37,6 +40,7 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Meal",
+    states: "food",
     behaviours: ["PRICED", "COMPOSABLE", "CHOICES"],
     fields: [
       { name: "Service style", kind: "CHOICE", options: ["Buffet", "Plated", "Finger food"] },
@@ -45,18 +49,21 @@ export const lindholmenTypes: readonly DemoType[] = [
   {
     base: "ITEM",
     name: "Tour",
+    states: "other",
     behaviours: ["PRICED", "COMPOSABLE", "CHOICES", "BOOKABLE"],
     fields: [{ name: "Language", kind: "MULTI_CHOICE", options: languages }],
   },
   {
     base: "ITEM",
     name: "Guide",
+    states: "other",
     behaviours: ["BOOKABLE"],
     fields: [{ name: "Language", kind: "MULTI_CHOICE", options: languages }],
   },
   {
     base: "ITEM",
     name: "Equipment",
+    states: "bookable",
     behaviours: ["BOOKABLE", "PRICED"],
     fields: [{ name: "Inventory number", kind: "TEXT" }],
   },
@@ -66,6 +73,7 @@ export const lindholmenTypes: readonly DemoType[] = [
     behaviours: ["PRICED", "COMPOSABLE", "CHOICES"],
     fields: [{ name: "Minimum quantity", kind: "NUMBER" }],
   },
+  { base: "PROGRAM_ITEM", name: "Line" },
   {
     base: "CUSTOMER",
     name: "Company",

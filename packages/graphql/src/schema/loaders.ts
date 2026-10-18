@@ -2,11 +2,14 @@ import {
   CUSTOMER_INCLUDE,
   type CustomerDto,
   type EntityTypeDto,
+  type ItemStateDto,
   type TicketPhaseDto,
   toCustomerDto,
+  toItemStateDto,
   toTicketPhaseDto,
   type VocabularyDto,
   type VocabularyValueDto,
+  WITH_STATE_TRANSITIONS,
   WITH_TRANSITIONS,
 } from "@okazi/core";
 import type { ScopedDb } from "@okazi/db";
@@ -21,6 +24,7 @@ export type Loaders = {
   setup: BatchLoader<SetupRow>;
   customer: BatchLoader<CustomerDto>;
   ticketPhase: BatchLoader<TicketPhaseDto>;
+  itemState: BatchLoader<ItemStateDto>;
   entityType: BatchLoader<EntityTypeDto>;
   vocabulary: BatchLoader<VocabularyDto>;
   vocabularyValue: BatchLoader<VocabularyValueDto>;
@@ -68,6 +72,15 @@ async function loadTicketPhases({ db, ids }: DbInput & Ids) {
   return byId({ rows: rows.map((row) => toTicketPhaseDto({ row })) });
 }
 
+/** States by id, archived ones included: an archived line keeps the state it had. */
+async function loadItemStates({ db, ids }: DbInput & Ids) {
+  const rows = await db.itemState.findMany({
+    where: { id: { in: [...ids] }, status: { in: ["ACTIVE", "ARCHIVED"] } },
+    include: WITH_STATE_TRANSITIONS,
+  });
+  return byId({ rows: rows.map((row) => toItemStateDto({ row })) });
+}
+
 /** One set per request. Entities with per-user visibility are not here: they use operations. */
 export function createLoaders({ db }: DbInput): Loaders {
   return {
@@ -87,6 +100,7 @@ export function createLoaders({ db }: DbInput): Loaders {
       },
     }),
     ticketPhase: createBatchLoader({ batch: (ids) => loadTicketPhases({ db, ids }) }),
+    itemState: createBatchLoader({ batch: (ids) => loadItemStates({ db, ids }) }),
     entityType: createBatchLoader({ batch: (ids) => loadEntityTypes({ db, ids }) }),
     vocabulary: createBatchLoader({ batch: (ids) => loadVocabularies({ db, ids }) }),
     vocabularyValue: createBatchLoader({

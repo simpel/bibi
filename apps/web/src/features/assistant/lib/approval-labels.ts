@@ -1,3 +1,5 @@
+import { PIPELINE_FIELD_KEYS, PIPELINE_OPERATION_KEYS } from "./approval-pipeline-keys";
+
 /** Field names with a localized label in `assistant.approval.fields`. */
 export const FIELD_KEYS = [
   "id",
@@ -64,15 +66,7 @@ export const FIELD_KEYS = [
   "ticketId",
   "phaseId",
   "reason",
-  "color",
-  "entry",
-  "terminal",
-  "requiresReason",
-  "requiresAssignee",
-  "invoiceable",
-  "targetPhaseId",
-  "toPhaseIds",
-  "ids",
+  ...PIPELINE_FIELD_KEYS,
 ] as const;
 
 /** Operations with a localized label in `assistant.approval.operations` (`.` → `_`). */
@@ -92,12 +86,7 @@ export const OPERATION_KEYS = [
   "ticket_create",
   "ticket_update",
   "ticket_changePhase",
-  "ticketPhase_create",
-  "ticketPhase_update",
-  "ticketPhase_archive",
-  "ticketPhase_reorder",
-  "ticketPhase_setTransitions",
-  "ticketPhase_importTemplate",
+  ...PIPELINE_OPERATION_KEYS,
   "assignment_assign",
   "assignment_follow",
   "assignment_unfollow",

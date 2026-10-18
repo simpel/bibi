@@ -3,12 +3,15 @@ import type { DemoTicket } from "../../ticket-types";
 const hisingen = "Hisingen Energi AB";
 const kvarnby = "Kvarnby Design AB";
 const gota = "Göta Advokatbyrå KB";
+const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
 
 /**
  * Lindholmen's tickets (`docs/demo-seed.md`, Tickets) with a main assignee (the coordinator, or
  * the salesperson) and the salesperson as follower (ADR 0034). Until the organization's own
  * phases are seeded (#271), the phases are those of the default template (Lead, Confirmed,
- * Completed, Lost): open tickets after the deal are Confirmed, a cancelled one is Lost.
+ * Completed, Lost): open tickets after the deal are Confirmed, a cancelled one is Lost. The leads
+ * F2, F3 and F6 stay in the entry phase with a room line in its initial state, Prebooked (a soft
+ * hold, ADR 0044): F2 and F3 hold Vinga at the same time, F6's holdsUntil has passed.
  */
 export const lindholmenTickets: readonly DemoTicket[] = [
   {
@@ -74,5 +77,23 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   {
     ...{ ref: "L10", customer: hisingen, type: "Conference", day: 4, from: "13:00", to: "16:00" },
     ...{ phase: "Confirmed", headcount: 6, assignee: "Johan Ek", followers: ["Erik Lund"] },
+  },
+  {
+    ...{ ref: "F2", customer: hisingen, type: "Conference", day: 45, from: "09:00", to: "17:00" },
+    ...{ headcount: 100, assignee: "Erik Lund", holdsUntilDay: 5 },
+    fields: { Purpose: "Kickoff" },
+    lines: [{ ...vinga, name: "Kickoff" }],
+  },
+  {
+    ...{ ref: "F3", customer: kvarnby, type: "Conference", day: 45, from: "09:00", to: "17:00" },
+    ...{ headcount: 80, assignee: "Sara Nilsson", holdsUntilDay: 5 },
+    fields: { Purpose: "Product launch" },
+    lines: [{ ...vinga, name: "Product launch" }],
+  },
+  {
+    ...{ ref: "F6", customer: "Älvstrand Tech AB", type: "Conference", day: 12, from: "09:00" },
+    ...{ to: "16:00", headcount: 20, holdsUntilDay: -1 },
+    fields: { Purpose: "Team day" },
+    lines: [{ item: "Hönö", name: "Team day", from: "09:00", to: "16:00" }],
   },
 ];

@@ -1,6 +1,8 @@
 import {
   archiveProgramItem,
+  changeLineState,
   createProgramItem,
+  expireTicketHolds,
   getProgramItem,
   listProgramItems,
   type ProgramItemDto,
@@ -22,8 +24,8 @@ export const ProgramItemRef = objectFromSchema<ProgramItemDto>({
   schema: ProgramItemSchema,
   omit: ["organizationId"],
   description:
-    "Program item – a row in a ticket's run schedule: type and fields, time, the bookable " +
-    "item and setup it occupies, quantity and a note.",
+    "Program item (a line) – a row in a ticket's run schedule: type and fields, time, the " +
+    "item and setup it uses, its state (ADR 0044), quantity and a note.",
 });
 const ProgramItemPageRef = pageType({ name: "ProgramItemPage", item: ProgramItemRef });
 
@@ -32,6 +34,16 @@ fieldFromOperation({ operation: getProgramItem, type: ProgramItemRef, name: "pro
 mutationFromOperation({ operation: createProgramItem, type: ProgramItemRef });
 mutationFromOperation({ operation: updateProgramItem, type: ProgramItemRef });
 mutationFromOperation({ operation: archiveProgramItem, type: ProgramItemRef });
+mutationFromOperation({ operation: changeLineState, type: ProgramItemRef });
+
+const ExpireHoldsRef = builder.objectRef<{ items: ProgramItemDto[] }>("TicketExpireHoldsResult");
+ExpireHoldsRef.implement({
+  description: "The lines `ticket.expireHolds` moved to their type's expiry state.",
+  fields: (t) => ({
+    items: t.field({ type: [ProgramItemRef], resolve: (result) => result.items }),
+  }),
+});
+mutationFromOperation({ operation: expireTicketHolds, type: ExpireHoldsRef });
 
 builder.objectField(ProgramItemRef, "entityType", (t) =>
   t.field({

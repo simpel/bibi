@@ -10,6 +10,8 @@ export const EntityTypeSchema = z.object({
   base: EntityBaseSchema,
   name: z.string(),
   behaviours: z.array(ItemBehaviourSchema),
+  /** Item types: the state lines in an `expires` state fall to when `holdsUntil` passes. */
+  expiryStateId: z.string().nullable(),
   /** Active fields of the type, in display order. */
   fields: z.array(FieldDefinitionSchema),
   status: RecordStatusSchema,
@@ -37,6 +39,15 @@ export const EntityTypeUpdateInputSchema = z.object({
   behaviours: ItemBehavioursSchema.optional().describe(
     "Replaces all behaviours. Switching one off while items have data for it is refused.",
   ),
+  expiryStateId: z
+    .string()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe(
+      "Item types: the state (itemState.list) lines in an expiring state fall to when the " +
+        "ticket's holdsUntil date passes; null clears it",
+    ),
 });
 
 export const EntityTypeIdInputSchema = z.object({ id: z.string().min(1) });

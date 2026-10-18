@@ -3,6 +3,7 @@ import type { Locale } from "@okazi/i18n";
 import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { getTranslations } from "next-intl/server";
+import type { ReactNode } from "react";
 import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
@@ -18,6 +19,7 @@ import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadTicketData } from "../load-ticket-data";
 import { CreateTicketButton } from "./create-ticket-button";
+import { ExpireHoldsButton } from "./expire-holds-button";
 import { TicketListTable } from "./ticket-list-table";
 
 export type TicketListProps = {
@@ -35,6 +37,14 @@ const GoToTypes = ({ label }: { label: string }) => (
   </Button>
 );
 
+/** Expire overdue holds (ADR 0044) and create, for members who write tickets. */
+const HeaderActions = ({ create }: { create: ReactNode }) => (
+  <>
+    <ExpireHoldsButton />
+    {create}
+  </>
+);
+
 /** Tickets page body: header with create, the table (or an empty state) and pagination. */
 export async function TicketList({ locale, cursor, mine }: TicketListProps) {
   const t = await getTranslations("ticket");
@@ -50,10 +60,11 @@ export async function TicketList({ locale, cursor, mine }: TicketListProps) {
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const noTypes = data.value.types.length === 0;
   const create = ticketWrite && !noTypes ? <CreateTicketButton /> : undefined;
+  const actions = ticketWrite ? <HeaderActions create={create} /> : undefined;
   const page: { items: TicketDto[]; nextCursor: string | null } = result.value;
   return (
     <div className="grid gap-6">
-      <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
+      <PageHeader title={t("plural")} description={t("listDescription")} actions={actions} />
       <MineFilterLinks pathname={ROUTES.tickets} mine={mine} />
       {page.items.length === 0 && !cursor && !mine ? (
         <EmptyState

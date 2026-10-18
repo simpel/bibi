@@ -17,6 +17,12 @@ export const ticketMcpTools = [
         .join(", ")}`,
   }),
   mcpTool({
+    operation: "ticket.expireHolds",
+    destructive: true,
+    idempotent: true,
+    summary: () => "Expire the soft holds of every ticket whose holdsUntil date has passed",
+  }),
+  mcpTool({
     operation: "ticket.changePhase",
     summary: ({ input }) =>
       `Move ticket ${text({ value: input.ticketId })} to phase ${text({

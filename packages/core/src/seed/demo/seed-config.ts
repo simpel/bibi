@@ -11,6 +11,7 @@ import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoConfig, DemoField, DemoType } from "./config-types";
 import type { DemoRefs, FieldRef, TypeRef } from "./demo-refs";
+import { seedItemStates } from "./seed-item-states";
 
 export type SeedConfigInput = { context: ExecuteContext; config: DemoConfig };
 
@@ -64,6 +65,15 @@ async function seedType({ context, refs, type }: TypeInput): Promise<Result<Type
     const list = field.list ? refs.lists.get(field.list) : undefined;
     const values = list ? new Map(list.values.map((value) => [value.name, value.id])) : undefined;
     fields.set(field.name, { key: result.value.key, ...(values ? { values } : {}) });
+  }
+  if (type.states) {
+    const states = await seedItemStates({
+      context,
+      entityTypeId: created.value.id,
+      template: type.states,
+      bookable: type.behaviours?.includes("BOOKABLE") ?? false,
+    });
+    if (!states.ok) return states;
   }
   return ok({ value: { id: created.value.id, fields } });
 }

@@ -21,14 +21,14 @@ import { InvitationCardView } from "./invitation-card-view";
 import { InvitationTableView } from "./invitation-table-view";
 import { ItemCardView } from "./item-card-view";
 import { ItemResolutionCardView } from "./item-resolution-card-view";
+import { ItemStateCardView } from "./item-state-card-view";
+import { ItemStateTableView } from "./item-state-table-view";
 import { ItemTableView } from "./item-table-view";
 import { JsonView } from "./json-view";
 import { MemberCardView } from "./member-card-view";
 import { MemberTableView } from "./member-table-view";
 import { OccupancyCardView } from "./occupancy-card-view";
 import { OccupancyTableView } from "./occupancy-table-view";
-import { OptionCardView } from "./option-card-view";
-import { OptionQueueView } from "./option-queue-view";
 import { PaymentAccountCardView } from "./payment-account-card-view";
 import { PaymentCardView } from "./payment-card-view";
 import { PaymentTableView } from "./payment-table-view";
@@ -82,6 +82,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "price-list-card": PriceListCardView,
   "ticket-phase-table": TicketPhaseTableView,
   "ticket-phase-card": TicketPhaseCardView,
+  "item-state-table": ItemStateTableView,
+  "item-state-card": ItemStateCardView,
   "ticket-table": TicketTableView,
   "ticket-card": TicketCardView,
   "program-item-table": ProgramItemTableView,
@@ -89,8 +91,6 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "requirement-table": RequirementTableView,
   "requirement-card": RequirementCardView,
   "pipeline-board": PipelineBoardView,
-  "option-card": OptionCardView,
-  "option-queue": OptionQueueView,
   "quote-card": QuoteCardView,
   "quote-table": QuoteTableView,
   "inbound-email-table": InboundEmailTableView,

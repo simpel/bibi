@@ -37,6 +37,7 @@ export function ticketFormSchema({ type, vocabularies }: TicketSchemaInput) {
       estimatedHeadcount: numberOrNull({ value: values.estimatedHeadcount }),
       guaranteedHeadcount: numberOrNull({ value: values.guaranteedHeadcount }),
       budgetMinor: minor({ value: values.budget }),
+      holdsUntil: fromLocalInputValue({ value: values.holdsUntil }) ?? null,
       fields: fieldsToInput({ values, specs }),
     }),
   });

@@ -4,7 +4,7 @@ import { toOccupancyDto } from "./to-occupancy-dto";
 
 export type ReleaseBySourceInput = {
   context: Pick<OperationContext, "db" | "recordChange">;
-  /** The record that holds the occupancy, e.g. a ticket, program item or option. */
+  /** The record that holds the occupancy, e.g. a program item. */
   sourceType: string;
   sourceId: string;
 };

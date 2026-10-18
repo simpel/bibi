@@ -1,8 +1,44 @@
 /** An operation deliberately without UI, and why. */
 export type UiExempt = { operation: string; reason: string };
 
+const ITEM_STATES_PAGE =
+  "The settings page /settings/item-states (#269) edits item states; until then the assistant and the APIs do.";
+
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
+  {
+    operation: "itemState.list",
+    reason: ITEM_STATES_PAGE,
+  },
+  {
+    operation: "itemState.get",
+    reason: ITEM_STATES_PAGE,
+  },
+  {
+    operation: "itemState.create",
+    reason: ITEM_STATES_PAGE,
+  },
+  {
+    operation: "itemState.update",
+    reason: ITEM_STATES_PAGE,
+  },
+  {
+    operation: "itemState.archive",
+    reason: ITEM_STATES_PAGE,
+  },
+  {
+    operation: "itemState.reorder",
+    reason: ITEM_STATES_PAGE,
+  },
+  {
+    operation: "itemState.setTransitions",
+    reason: ITEM_STATES_PAGE,
+  },
+  {
+    operation: "line.changeState",
+    reason:
+      "The state control on the ticket's lines ships with the phase grid (#272) together with line.followPhase; until then the assistant and the APIs change a line's state.",
+  },
   {
     operation: "assignment.listMine",
     reason:
@@ -12,11 +48,6 @@ export const UI_EXEMPT: readonly UiExempt[] = [
     operation: "occupancy.get",
     reason:
       "An occupancy has no page of its own: the item page lists them with occupancy.list and edits blocks inline.",
-  },
-  {
-    operation: "option.get",
-    reason:
-      "An option has no page of its own: the item page shows the queue with option.list and releases options inline.",
   },
   {
     operation: "programItem.get",

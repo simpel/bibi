@@ -1,0 +1,43 @@
+/**
+ * Approval label keys of the pipeline (ADR 0043, 0044): phases, item states and line states, kept
+ * apart so `approval-labels.ts` stays within the size limit.
+ */
+export const PIPELINE_FIELD_KEYS = [
+  "color",
+  "entry",
+  "terminal",
+  "requiresReason",
+  "requiresAssignee",
+  "invoiceable",
+  "targetPhaseId",
+  "toPhaseIds",
+  "ids",
+  "initial",
+  "hold",
+  "inSheets",
+  "released",
+  "expires",
+  "targetStateId",
+  "toStateIds",
+  "lineId",
+  "stateId",
+  "holdsUntil",
+  "expiryStateId",
+] as const;
+
+/** Pipeline operations with a localized label in `assistant.approval.operations`. */
+export const PIPELINE_OPERATION_KEYS = [
+  "ticketPhase_create",
+  "ticketPhase_update",
+  "ticketPhase_archive",
+  "ticketPhase_reorder",
+  "ticketPhase_setTransitions",
+  "ticketPhase_importTemplate",
+  "itemState_create",
+  "itemState_update",
+  "itemState_archive",
+  "itemState_reorder",
+  "itemState_setTransitions",
+  "line_changeState",
+  "ticket_expireHolds",
+] as const;

@@ -5,8 +5,9 @@ import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
 import { checkPeriod } from "../occupancy/occupancy-rules";
 import { insertProgramItem } from "./insert-program-item";
+import { stateAfterMove } from "./line-state";
 import { checkPlace, placeChanged } from "./program-item-rules";
-import { releaseProgramItem, reserveProgramItem } from "./reserve";
+import { rederiveProgramItem, releaseProgramItem } from "./reserve";
 import {
   ProgramItemCreateInputSchema,
   ProgramItemIdInputSchema,
@@ -16,8 +17,10 @@ import {
 import { loadProgramItem, toProgramItemDto } from "./to-program-item-dto";
 
 const OCCUPY_NOTE =
-  "With a bookable item it occupies the item for the period, and a setup adds its changeover " +
-  "time right before; an overlap with another booking, setup time or block gives CONFLICT.";
+  "A line with an item starts in the item type's initial state (itemState.list). With a " +
+  "bookable item it holds the item for the period as its state says (SOFT holds may overlap, " +
+  "HARD holds block), and a setup adds its changeover time right before a hard hold; an " +
+  "overlap with another hard hold, setup time or block gives CONFLICT.";
 
 export const createProgramItem = defineOperation({
   name: "programItem.create",
@@ -62,15 +65,16 @@ export const updateProgramItem = defineOperation({
       if (!checked.ok) return checked;
       json = toJson({ value: checked.value });
     }
+    const state = await stateAfterMove({ context, before, itemId });
     const row = await context.db.programItem.update({
       where: { id },
-      data: { ...data, itemId, setupId, ...(json ? { fields: json } : {}) },
+      data: { ...data, itemId, setupId, ...state, ...(json ? { fields: json } : {}) },
     });
     const programItem = toProgramItemDto({ row });
     context.recordChange({ entityId: id, before, after: programItem });
-    if (!placeChanged({ before, after })) return ok({ value: programItem });
-    await releaseProgramItem({ context, id });
-    const reserved = await reserveProgramItem({ context, programItem });
+    const moved = placeChanged({ before, after }) || "stateId" in state;
+    if (!moved) return ok({ value: programItem });
+    const reserved = await rederiveProgramItem({ context, programItem });
     return reserved.ok ? ok({ value: programItem }) : reserved;
   },
 });

@@ -11,6 +11,8 @@ export type TicketFactsProps = { ticket: TicketDto; data: TicketFormData };
 
 const count = ({ value }: { value: number | null }) => (value === null ? "–" : String(value));
 
+const HOLDS_UNTIL = { dateStyle: "medium", timeStyle: "short" } as const;
+
 /** Description list of a ticket: customer, contact, period, counts, budget, phase and fields. */
 export async function TicketFacts({ ticket, data }: TicketFactsProps) {
   const t = await getTranslations("ticket.fields");
@@ -31,6 +33,9 @@ export async function TicketFacts({ ticket, data }: TicketFactsProps) {
     { label: t("estimatedHeadcount"), value: count({ value: ticket.estimatedHeadcount }) },
     { label: t("guaranteedHeadcount"), value: count({ value: ticket.guaranteedHeadcount }) },
     { label: t("budget"), value: budget === null ? "–" : formatKr({ minor: budget, locale }) },
+    ...(ticket.holdsUntil
+      ? [{ label: t("holdsUntil"), value: format.dateTime(ticket.holdsUntil, HOLDS_UNTIL) }]
+      : []),
     ...ownFieldFacts({
       type,
       stored: ticket.fields,

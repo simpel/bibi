@@ -18,6 +18,7 @@ export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "checks"> = 
     {
       base: "ITEM",
       name: "Boat",
+      states: "bookable",
       behaviours: ["BOOKABLE", "SETUPS", "PRICED"],
       fields: [
         { name: "Registration number", kind: "TEXT" },
@@ -28,19 +29,21 @@ export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "checks"> = 
     {
       base: "ITEM",
       name: "Skipper",
+      states: "bookable",
       behaviours: ["BOOKABLE"],
       fields: [{ name: "Certification", kind: "CHOICE", list: "Certification" }],
     },
     {
       base: "ITEM",
       name: "Tour",
+      states: "other",
       behaviours: ["PRICED", "COMPOSABLE", "CHOICES"],
       fields: [
         { name: "Departure harbor", kind: "CHOICE", list: "Harbor" },
         { name: "Distance nm", kind: "NUMBER" },
       ],
     },
-    { base: "ITEM", name: "Add-on", behaviours: ["PRICED"] },
+    { base: "ITEM", name: "Add-on", behaviours: ["PRICED"], states: "other" },
     { base: "CUSTOMER", name: "Company", fields: [{ name: "Org no.", kind: "TEXT" }] },
     { base: "CUSTOMER", name: "Private" },
     { base: "CONTACT", name: "Contact person" },

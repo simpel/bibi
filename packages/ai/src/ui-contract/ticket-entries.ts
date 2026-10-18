@@ -7,6 +7,7 @@ import { uiEntry } from "./ui-entry";
 export const TicketWireSchema = TicketSchema.extend({
   desiredStartsAt: z.string().nullable(),
   desiredEndsAt: z.string().nullable(),
+  holdsUntil: z.string().nullable(),
   phaseChangedAt: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),

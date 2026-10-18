@@ -1,8 +1,8 @@
-/// Why a bookable item is occupied (ADR 0022). Every type except `OPTION` is collision-free per
-/// item: an exclusion constraint (`btree_gist`) rejects overlapping active rows.
+/// Why a bookable item is occupied (ADR 0022, 0044). `HOLD` comes from a line's state, with its
+/// `holdKind`. Every row except a `SOFT` hold is collision-free per item: an exclusion constraint
+/// (`btree_gist`) rejects overlapping active rows. Soft holds may overlap.
 enum OccupancyType {
-  BOOKING
-  OPTION
+  HOLD
   SETUP
   MAINTENANCE
   INTERNAL
@@ -15,6 +15,8 @@ model Occupancy {
   organizationId String
   itemId         String
   type           OccupancyType
+  /// `HOLD` only: `SOFT` (may overlap) or `HARD` (blocks), from the line's state.
+  holdKind       HoldKind?
   startsAt       DateTime
   endsAt         DateTime
   sourceType     String?

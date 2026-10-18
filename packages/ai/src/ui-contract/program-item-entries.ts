@@ -7,6 +7,7 @@ import { uiEntry } from "./ui-entry";
 export const ProgramItemWireSchema = ProgramItemSchema.extend({
   startsAt: z.string(),
   endsAt: z.string(),
+  heldAt: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -28,11 +29,18 @@ const programItemCard = uiEntry({
   toProps: ({ value }) => ({ programItem: value }),
 });
 
-/** Tool → component for a ticket's run schedule (ADR 0022). */
+/** Tool → component for a ticket's run schedule and its line states (ADR 0022, 0044). */
 export const PROGRAM_ITEM_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   programItem_list: programItemTable,
   programItem_get: programItemCard,
   programItem_create: programItemCard,
   programItem_update: programItemCard,
   programItem_archive: programItemCard,
+  line_changeState: programItemCard,
+  // The lines `ticket.expireHolds` moved to their expiry state (ADR 0044).
+  ticket_expireHolds: uiEntry({
+    component: "program-item-table",
+    schema: z.object({ items: z.array(ProgramItemWireSchema) }),
+    toProps: ({ value }) => ({ items: value.items, nextCursor: null }),
+  }),
 };

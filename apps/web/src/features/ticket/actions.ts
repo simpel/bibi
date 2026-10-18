@@ -3,7 +3,9 @@
 import {
   changeTicketPhase,
   createTicket,
+  expireTicketHolds,
   exportTicket,
+  type ProgramItemDto,
   type TicketChangePhaseInput,
   type TicketCreateInput,
   type TicketDto,
@@ -44,4 +46,13 @@ export async function exportTicketAction({
   id,
 }: ExportTicketActionInput): Promise<ActionResult<TicketExport>> {
   return toActionResult({ result: await runOperation({ operation: exportTicket, input: { id } }) });
+}
+
+/** Runs `ticket.expireHolds` by hand; the scheduler otherwise does it every 15 minutes. */
+export async function expireTicketHoldsAction(): Promise<
+  ActionResult<{ items: ProgramItemDto[] }>
+> {
+  return toActionResult({
+    result: await runOperation({ operation: expireTicketHolds, input: {} }),
+  });
 }

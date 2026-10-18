@@ -1,9 +1,13 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
+import { HoldKindSchema } from "../item-state/hold-kind";
 
-/** Why a bookable item is occupied (ADR 0022). Every type except `OPTION` is collision-free. */
-export const OCCUPANCY_TYPES = ["BOOKING", "OPTION", "SETUP", "MAINTENANCE", "INTERNAL"] as const;
+/**
+ * Why a bookable item is occupied (ADR 0022, 0044). `HOLD` comes from a line's state; every row
+ * except a `SOFT` hold is collision-free.
+ */
+export const OCCUPANCY_TYPES = ["HOLD", "SETUP", "MAINTENANCE", "INTERNAL"] as const;
 export const OccupancyTypeSchema = z.enum(OCCUPANCY_TYPES);
 export type OccupancyType = z.infer<typeof OccupancyTypeSchema>;
 
@@ -16,6 +20,8 @@ export const OccupancySchema = z.object({
   organizationId: z.string(),
   itemId: z.string(),
   type: OccupancyTypeSchema,
+  /** `HOLD` only: `SOFT` (may overlap) or `HARD` (blocks), from the line's state. */
+  holdKind: HoldKindSchema.nullable(),
   startsAt: z.date(),
   endsAt: z.date(),
   sourceType: z.string().nullable(),

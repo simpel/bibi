@@ -9,11 +9,11 @@ import { entityTypeRoutes } from "./features/entity-type/rest";
 import { fieldDefinitionRoutes } from "./features/field-definition/rest";
 import { inboundEmailRoutes } from "./features/inbound-email/rest";
 import { itemRoutes } from "./features/item/rest";
+import { itemStateRoutes } from "./features/item-state/rest";
 import { memberRoutes } from "./features/member/rest";
 import { messageRoutes } from "./features/message/rest";
 import { oauthGrantRoutes } from "./features/oauth-grant/rest";
 import { occupancyRoutes } from "./features/occupancy/rest";
-import { optionRoutes } from "./features/option/rest";
 import { paymentRoutes } from "./features/payment/rest";
 import { paymentAccountRoutes } from "./features/payment-account/rest";
 import { pipelineRoutes } from "./features/pipeline/rest";
@@ -52,12 +52,12 @@ export function listRestRoutes(): RestRoute[] {
     ...contactRoutes,
     ...occupancyRoutes,
     ...ticketPhaseRoutes,
+    ...itemStateRoutes,
     ...ticketRoutes,
     ...programItemRoutes,
     ...requirementRoutes,
     ...sheetRoutes,
     ...pipelineRoutes,
-    ...optionRoutes,
     ...quoteRoutes,
     ...inboundEmailRoutes,
     ...paymentAccountRoutes,

@@ -5,7 +5,7 @@ import { hours } from "./occupancy-helpers";
 import { activeOccupancies, addProgramItem, programSetup } from "./program-item-helpers";
 
 describe("program item occupancy (ADR 0022)", () => {
-  it("occupies the item with BOOKING plus SETUP changeover time", async () => {
+  it("holds the item HARD (default state) plus SETUP changeover time", async () => {
     const { context, ticket, type, room, setup } = await programSetup();
     const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
     const item = unwrap({
@@ -14,7 +14,7 @@ describe("program item occupancy (ADR 0022)", () => {
     const rows = await activeOccupancies({ context, sourceId: item.id });
     expect(rows.map(({ type: kind, startsAt, endsAt }) => ({ kind, startsAt, endsAt }))).toEqual([
       { kind: "SETUP", ...hours({ from: 9, to: 10 }) },
-      { kind: "BOOKING", ...hours({ from: 10, to: 12 }) },
+      { kind: "HOLD", ...hours({ from: 10, to: 12 }) },
     ]);
   });
 

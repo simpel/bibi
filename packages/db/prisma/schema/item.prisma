@@ -41,8 +41,6 @@ model Item {
   choiceGroups           ItemChoiceGroup[]
   /// BOOKABLE: the periods the item is held (ADR 0022).
   occupancies            Occupancy[]
-  /// BOOKABLE: the options queued on the item (ADR 0022).
-  options                Option[]
   /// BOOKABLE: the program items held in this item.
   programItems           ProgramItem[]
   /// Agreed prices on price lists (ADR 0023).

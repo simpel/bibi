@@ -18,7 +18,7 @@ export type AddChangeoverInput = {
 /**
  * Occupies the item with a `SETUP` period of the setup's changeover time right before
  * `startsAt` (ADR 0022). Returns null when the setup needs no changeover. An overlap with another
- * non-option occupancy is rejected by the database and surfaces as `CONFLICT`.
+ * occupancy other than a soft hold is rejected by the database and surfaces as `CONFLICT`.
  */
 export async function addChangeover({
   context,

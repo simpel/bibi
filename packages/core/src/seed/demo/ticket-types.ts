@@ -23,4 +23,11 @@ export type DemoTicket = {
   /** Members who follow the ticket, by user name. */
   followers?: readonly string[];
   fields?: DemoFieldValues;
+  /** `holdsUntil` (ADR 0044) as an offset in days from the day of the run, at the end of that day. */
+  holdsUntilDay?: number;
+  /** The ticket's lines, on the ticket's day. */
+  lines?: readonly DemoLine[];
 };
+
+/** A line (ADR 0044): an item by name, what it is for and local times on the ticket's day. */
+export type DemoLine = { item: string; name: string; from: string; to: string };

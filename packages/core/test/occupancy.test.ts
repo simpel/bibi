@@ -27,7 +27,7 @@ describe("occupancy (ADR 0022)", () => {
     const after = { ...overlap, ...hours({ from: 12, to: 13 }) };
     const adjacent = await execute({ operation: createOccupancy, input: after, context });
     expect(errorCode({ result: adjacent })).toBeNull();
-    const ticket = insertRaw({ context, itemId: item.id, type: "BOOKING", from: 9, to: 10 });
+    const ticket = insertRaw({ context, itemId: item.id, hold: "HARD", from: 9, to: 10 });
     await expect(ticket).rejects.toThrow();
   });
 
@@ -36,8 +36,8 @@ describe("occupancy (ADR 0022)", () => {
     const item = await createBookableItem({ context });
     const input = { itemId: item.id, type: "INTERNAL" as const, ...hours({ from: 8, to: 12 }) };
     unwrap({ result: await execute({ operation: createOccupancy, input, context }) });
-    await insertRaw({ context, itemId: item.id, type: "OPTION", from: 9, to: 11 });
-    await insertRaw({ context, itemId: item.id, type: "OPTION", from: 10, to: 14 });
+    await insertRaw({ context, itemId: item.id, hold: "SOFT", from: 9, to: 11 });
+    await insertRaw({ context, itemId: item.id, hold: "SOFT", from: 10, to: 14 });
     const list = unwrap({
       result: await execute({
         operation: listOccupancies,
@@ -45,7 +45,7 @@ describe("occupancy (ADR 0022)", () => {
         context,
       }),
     });
-    expect(list.items.map((row) => row.type)).toEqual(["INTERNAL", "OPTION", "OPTION"]);
+    expect(list.items.map((row) => row.type)).toEqual(["INTERNAL", "HOLD", "HOLD"]);
   });
 
   it("saves only one of several concurrent overlapping blocks", async () => {
@@ -82,7 +82,7 @@ describe("occupancy (ADR 0022)", () => {
     unwrap({ result: await execute({ operation: archiveOccupancy, input: block, context }) });
     const gone = await execute({ operation: getOccupancy, input: block, context });
     expect(errorCode({ result: gone })).toBe("NOT_FOUND");
-    const ticket = await insertRaw({ context, itemId: item.id, type: "BOOKING", from: 8, to: 9 });
+    const ticket = await insertRaw({ context, itemId: item.id, hold: "HARD", from: 8, to: 9 });
     const locked = await execute({ operation: archiveOccupancy, input: ticket, context });
     expect(errorCode({ result: locked })).toBe("CONFLICT");
   });

@@ -38,6 +38,8 @@ model EntityType {
   base           EntityBase
   name           String
   behaviours     ItemBehaviour[]
+  /// Item types: where lines in an `expires` state fall when the ticket's `holdsUntil` passes.
+  expiryStateId  String?
   status         RecordStatus      @default(ACTIVE)
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
@@ -50,6 +52,8 @@ model EntityType {
   tickets        Ticket[]
   programItems   ProgramItem[]
   requirements   Requirement[]
+  itemStates     ItemState[]       @relation("ItemStateType")
+  expiryState    ItemState?        @relation("ExpiryState", fields: [expiryStateId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, base, status])

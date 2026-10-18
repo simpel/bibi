@@ -1,7 +1,7 @@
 type Timed = { id: string; startsAt: Date; endsAt: Date };
 
 /**
- * Greedy lanes for overlapping blocks of one space (only options overlap, ADR 0022): each block
+ * Greedy lanes for overlapping blocks of one space (only soft holds overlap, ADR 0044): each block
  * takes the first lane that is free at its start. `count` is the number of lanes the row needs.
  */
 export function assignLanes({ blocks }: { blocks: readonly Timed[] }) {

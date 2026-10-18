@@ -1,0 +1,59 @@
+// Item states per item type (ADR 0044): the organization's own states for lines of a type, in its
+// own order. Behaviour comes only from the generic state flags. Transitions between states are data.
+
+/// What a line in a state does to its bookable item (ADR 0044). `SOFT` reserves without blocking,
+/// `HARD` blocks. Types without `BOOKABLE` only use `NONE`.
+enum HoldKind {
+  NONE
+  SOFT
+  HARD
+}
+
+/// Item state – an organization's own state of a line of one item type (base `ITEM`), e.g.
+/// Prebooked, Booked or Ordered. Exactly one active state per type is `initial`.
+model ItemState {
+  id              String                @id @default(cuid(2))
+  organizationId  String
+  entityTypeId    String
+  name            String
+  color           String
+  position        Int                   @default(0)
+  /// New lines of the type start here.
+  initial         Boolean               @default(false)
+  hold            HoldKind              @default(NONE)
+  /// Lines in this state are included in generated sheets.
+  inSheets        Boolean               @default(false)
+  /// Final state: the hold is dropped and nothing leaves it.
+  released        Boolean               @default(false)
+  /// Lines in this state fall to the type's `expiryStateId` when the ticket's `holdsUntil` passes.
+  expires         Boolean               @default(false)
+  status          RecordStatus          @default(ACTIVE)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  createdBy       String?
+  entityType      EntityType            @relation("ItemStateType", fields: [entityTypeId, organizationId], references: [id, organizationId])
+  expiryOf        EntityType[]          @relation("ExpiryState")
+  transitionsFrom ItemStateTransition[] @relation("StateTransitionFrom")
+  transitionsTo   ItemStateTransition[] @relation("StateTransitionTo")
+  programItems    ProgramItem[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, entityTypeId, status, position])
+}
+
+/// Item state transition – an allowed move of a line from one state to another of the same type.
+/// Replaced as a set per `from` state by `itemState.setTransitions`.
+model ItemStateTransition {
+  id             String    @id @default(cuid(2))
+  organizationId String
+  fromStateId    String
+  toStateId      String
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  createdBy      String?
+  fromState      ItemState @relation("StateTransitionFrom", fields: [fromStateId, organizationId], references: [id, organizationId])
+  toState        ItemState @relation("StateTransitionTo", fields: [toStateId, organizationId], references: [id, organizationId])
+
+  @@unique([fromStateId, toStateId])
+  @@index([organizationId, fromStateId])
+}

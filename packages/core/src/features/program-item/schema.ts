@@ -19,6 +19,12 @@ export const ProgramItemSchema = z.object({
   quantity: z.number().int().nullable(),
   note: z.string().nullable(),
   fields: FieldValuesSchema,
+  /** The line's state (one of its item type's states, ADR 0044); null without an item. */
+  stateId: z.string().nullable(),
+  /** Set by `line.changeState`: phase moves skip the line. */
+  stateOverridden: z.boolean(),
+  /** When the line entered its current state ("held since"). */
+  heldAt: z.date(),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -33,7 +39,10 @@ const ProgramItemDetailsShape = {
     .string()
     .min(1)
     .nullish()
-    .describe("Id of the bookable item it is held in (item.list behaviour BOOKABLE); occupies it"),
+    .describe(
+      "Id of the item (item.list), e.g. a room or a dish. It starts in the item type's initial " +
+        "state; a bookable item is held as that state says",
+    ),
   setupId: z
     .string()
     .min(1)
@@ -63,11 +72,20 @@ export const ProgramItemUpdateInputSchema = z
     ),
   });
 
+export const LineChangeStateInputSchema = z.object({
+  lineId: z.string().min(1).describe("Id of the line (programItem.list)"),
+  stateId: z
+    .string()
+    .min(1)
+    .describe("Id of a state of the line's item type (itemState.list entityTypeId)"),
+});
+
 export const ProgramItemIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const ProgramItemListInputSchema = z.object({
   ticketId: z.string().optional().describe("Only the program of this ticket"),
   itemId: z.string().optional().describe("Only program items held in this item"),
+  stateId: z.string().optional().describe("Only lines in this item state (itemState.list)"),
   from: z.coerce.date().optional().describe("Only program items that end after this time"),
   to: z.coerce.date().optional().describe("Only program items that start before this time"),
   ...PageInputShape,

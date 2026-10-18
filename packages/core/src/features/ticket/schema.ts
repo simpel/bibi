@@ -2,6 +2,7 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
+import { ProgramItemSchema } from "../program-item/schema";
 
 export const TicketSchema = z.object({
   id: z.string(),
@@ -19,6 +20,8 @@ export const TicketSchema = z.object({
   estimatedHeadcount: z.number().int().nullable(),
   guaranteedHeadcount: z.number().int().nullable(),
   budgetMinor: z.number().int().nullable(),
+  /** Lines in an expiring state fall to their type's expiry state after this date (ADR 0044). */
+  holdsUntil: z.date().nullable(),
   phaseChangedAt: z.date(),
   /** The reason given with the last phase change. */
   phaseReason: z.string().nullable(),
@@ -61,6 +64,13 @@ const TicketDetailsShape = {
     .min(0)
     .nullish()
     .describe("Budget in minor units (1/100 of the currency)"),
+  holdsUntil: z.coerce
+    .date()
+    .nullish()
+    .describe(
+      "We hold the ticket's soft holds until this date, ISO 8601. Lines in an expiring state " +
+        "fall to their type's expiry state after it (ticket.expireHolds); null: nothing expires",
+    ),
 };
 
 export const TicketCreateInputSchema = z.object({
@@ -98,6 +108,13 @@ export const TicketChangePhaseInputSchema = z.object({
     .max(1000)
     .optional()
     .describe("Why the phase changes; required when the new phase requires a reason"),
+});
+
+export const TicketExpireHoldsInputSchema = z.object({});
+
+export const TicketExpireHoldsOutputSchema = z.object({
+  /** The lines that moved to their type's expiry state. */
+  items: z.array(ProgramItemSchema),
 });
 
 export const TicketIdInputSchema = z.object({ id: z.string().min(1) });

@@ -6,6 +6,7 @@ import { countRecordsOfType } from "../field-definition/field-usage";
 import { checkNotOnSheets } from "../sheet-definition/usage";
 import type { EntityBase } from "./behaviour-kinds";
 import { checkBehaviours, checkBehavioursRemovable } from "./behaviours";
+import { checkExpiryState } from "./expiry-state";
 import { insertEntityType } from "./insert-entity-type";
 import { toEntityTypeDto } from "./load-entity-type";
 import {
@@ -47,7 +48,8 @@ export const updateEntityType = defineOperation({
   name: "entityType.update",
   kind: "command",
   description:
-    "Rename a type or replace its behaviours. Switching a behaviour off while items of the " +
+    "Rename a type, replace its behaviours or set an item type's expiry state (where lines in " +
+    "an expiring state fall when the ticket's holdsUntil passes). Switching a behaviour off while items of the " +
     "type have data for it (e.g. prices for PRICED) is refused with CONFLICT.",
   input: EntityTypeUpdateInputSchema,
   output: EntityTypeSchema,
@@ -61,6 +63,12 @@ export const updateEntityType = defineOperation({
     const removed = before.behaviours.filter((behaviour) => !behaviours.includes(behaviour));
     const removable = await checkBehavioursRemovable({ context, entityTypeId: id, removed });
     if (!removable.ok) return removable;
+    const expiry = await checkExpiryState({
+      context,
+      type: before,
+      expiryStateId: data.expiryStateId,
+    });
+    if (!expiry.ok) return expiry;
     if (data.name && (await nameTaken({ context, base: before.base, name: data.name, id }))) {
       return taken({ name: data.name });
     }

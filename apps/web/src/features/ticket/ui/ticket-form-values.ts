@@ -16,6 +16,8 @@ export type TicketFormValues = {
   guaranteedHeadcount: string;
   /** The budget in whole currency units (stored in minor units). */
   budget: string;
+  /** Soft holds expire after this time (ADR 0044); empty: they never do. */
+  holdsUntil: string;
   fields: Record<string, RawFieldValue>;
 };
 
@@ -42,6 +44,7 @@ export function ticketFormDefaults({ type, ticket }: TicketDefaultsInput): Ticke
     estimatedHeadcount: text({ value: ticket?.estimatedHeadcount }),
     guaranteedHeadcount: text({ value: ticket?.guaranteedHeadcount }),
     budget: text({ value: budget === null || budget === undefined ? budget : budget / 100 }),
+    holdsUntil: local({ date: ticket?.holdsUntil }),
     fields: rawFields({ type, stored: ticket?.fields ?? {} }),
   };
 }

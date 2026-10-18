@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { changeLineState } from "./change-state-operation";
 import {
   ProgramItemIdInputSchema,
   ProgramItemListInputSchema,
@@ -17,7 +18,8 @@ export const listProgramItems = defineOperation({
   kind: "query",
   description:
     "List program items (the run schedule: sessions, breaks, meals, activities), earliest " +
-    "first. Filter by ticket, bookable item and a time window (from/to).",
+    "first (lines on one item and start: the oldest held-since date first). Filter by ticket, " +
+    "item, item state and a time window (from/to).",
   input: ProgramItemListInputSchema,
   output: ProgramItemListOutputSchema,
   permission: "programItem:read",
@@ -26,10 +28,12 @@ export const listProgramItems = defineOperation({
       where: {
         ...(input.ticketId ? { ticketId: input.ticketId } : {}),
         ...(input.itemId ? { itemId: input.itemId } : {}),
+        ...(input.stateId ? { stateId: input.stateId } : {}),
         ...(input.from ? { endsAt: { gt: input.from } } : {}),
         ...(input.to ? { startsAt: { lt: input.to } } : {}),
       },
-      orderBy: [{ startsAt: "asc" }, { id: "asc" }],
+      // Overlapping holders of one item: the oldest `heldAt` first (ADR 0044, no rank or queue).
+      orderBy: [{ startsAt: "asc" }, { heldAt: "asc" }, { id: "asc" }],
       ...pageArgs(input),
     });
     const page = paginate({ rows, limit: input.limit });
@@ -57,4 +61,5 @@ export const programItemOperations = [
   createProgramItem,
   updateProgramItem,
   archiveProgramItem,
+  changeLineState,
 ];

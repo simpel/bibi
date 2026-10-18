@@ -25,6 +25,8 @@ model Ticket {
   phaseChangedAt      DateTime       @default(now())
   /// Why the phase last changed (`ticket.changePhase` reason); required by `requiresReason` phases.
   phaseReason         String?
+  /// Lines in an `expires` state fall to their type's `expiryStateId` after this date (ADR 0044).
+  holdsUntil          DateTime?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
   fields              Json           @default("{}")
   status              RecordStatus   @default(ACTIVE)
@@ -36,7 +38,6 @@ model Ticket {
   contact             Contact?       @relation(fields: [contactId, organizationId], references: [id, organizationId])
   phase               TicketPhase    @relation(fields: [phaseId, organizationId], references: [id, organizationId])
   inboundEmails       InboundEmail[]
-  options             Option[]
   payments            Payment[]
   programItems        ProgramItem[]
   quotes              Quote[]
@@ -48,4 +49,5 @@ model Ticket {
   @@index([organizationId, status, desiredStartsAt])
   @@index([organizationId, customerId])
   @@index([organizationId, phaseId])
+  @@index([organizationId, holdsUntil])
 }

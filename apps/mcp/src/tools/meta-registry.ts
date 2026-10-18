@@ -9,11 +9,11 @@ import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { inboundEmailMcpTools } from "../features/inbound-email/mcp";
 import { itemMcpTools } from "../features/item/mcp";
+import { itemStateMcpTools } from "../features/item-state/mcp";
 import { memberMcpTools } from "../features/member/mcp";
 import { messageMcpTools } from "../features/message/mcp";
 import { oauthGrantMcpTools } from "../features/oauth-grant/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
-import { optionMcpTools } from "../features/option/mcp";
 import { paymentMcpTools } from "../features/payment/mcp";
 import { paymentAccountMcpTools } from "../features/payment-account/mcp";
 import { pipelineMcpTools } from "../features/pipeline/mcp";
@@ -51,13 +51,13 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...contactMcpTools,
     ...occupancyMcpTools,
     ...ticketPhaseMcpTools,
+    ...itemStateMcpTools,
     ...ticketMcpTools,
     ...assignmentMcpTools,
     ...programItemMcpTools,
     ...requirementMcpTools,
     ...sheetMcpTools,
     ...pipelineMcpTools,
-    ...optionMcpTools,
     ...quoteMcpTools,
     ...inboundEmailMcpTools,
     ...paymentAccountMcpTools,

@@ -1,6 +1,7 @@
 import type { EntityBase, ItemBehaviour } from "../../features/entity-type/behaviour-kinds";
 import type { FieldKind } from "../../features/field-definition/field-kinds";
 import type { PRICE_UNITS } from "../../features/item/schema";
+import type { ItemStateTemplateKey } from "../../templates/item-states/item-state-templates";
 import type { VocabularyTemplateKey } from "../../templates/vocabularies/vocabulary-templates";
 
 /** A field on a demo type. `list` is the name of one of the org's lists. */
@@ -16,6 +17,8 @@ export type DemoType = {
   name: string;
   behaviours?: readonly ItemBehaviour[];
   fields?: readonly DemoField[];
+  /** Item types: the states the type gets from a template (ADR 0044); default one "Active". */
+  states?: ItemStateTemplateKey;
 };
 
 /** A part of a COMPOSABLE demo item, by the name of an item seeded before it. */

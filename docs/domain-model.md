@@ -215,7 +215,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` is from/to in → Transition (`ItemStateTransition`)
 - `1:N` is the result of → PhaseStateRule
 
-> A state in use is archived only with a chosen target state of the same type. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by `heldAt` and staff decide who gets the item; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
+> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in sheets), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state, all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by `heldAt` and staff decide who gets the item; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
 
 ### PhaseStateRule (`PhaseStateRule`) – the phase grid
 
@@ -346,7 +346,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 > ★ A pipeline the organization draws itself, with line states that follow it. Phase changes only through `ticket.changePhase({ ticketId, phaseId, reason? })`, never through `update`; `quote.send` and `quote.accept` move the ticket into the phase with the matching `event`; payments and invoices never move a ticket.
 
-> Operations (`ticket:write` to change, `ticket:read` to read): `ticket.list|get|create|createFromTemplate|update|changePhase|export`. `create` gives the next reference number and puts the ticket in the default `entry` phase; `createFromTemplate` creates it in the predefined ticket's phase with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` gives json, pdf or csv ([ADR 0024](decisions/0024-ticket-export-instead-of-partner.md)); today it gives a versioned json document with the ticket and its phase, the full schema and csv follow (#63). Every change is audited; phase history comes from `AuditLog`.
+> Operations (`ticket:write` to change, `ticket:read` to read): `ticket.list|get|create|createFromTemplate|update|changePhase|export|expireHolds`. `ticket.expireHolds` runs every 15 minutes in the worker (and by hand from the ticket list): lines in an `expires` state on tickets whose `holdsUntil` has passed move to their type's expiry state, each audited. `create` gives the next reference number and puts the ticket in the default `entry` phase; `createFromTemplate` creates it in the predefined ticket's phase with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` gives json, pdf or csv ([ADR 0024](decisions/0024-ticket-export-instead-of-partner.md)); today it gives a versioned json document with the ticket and its phase, the full schema and csv follow (#63). Every change is audited; phase history comes from `AuditLog`.
 
 ### Quote ★
 
@@ -396,10 +396,10 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 **Attributes**
 - name and type (the organization's own, base `PROGRAM_ITEM`) and custom fields
 - start – end (`startsAt`, `endsAt`; `[start, end)`)
-- bookable item (`itemId`, optional; an item whose type is `BOOKABLE`, e.g. a venue space)
+- item (`itemId`, optional; any active item, e.g. a venue space or a dish; only a `BOOKABLE` item is held)
 - setup (`setupId`, optional; one of the item's setups, requires the item)
 - quantity (`quantity`, e.g. the headcount)
-- state (`stateId`, an `ItemState` of the item's type), `stateOverridden` (set by hand, skipped by phase moves)
+- state (`stateId`, an `ItemState` of the item's type; null for a line without an item), `stateOverridden` (set by hand, skipped by phase moves)
 - held since (`heldAt`, when the line entered its current state; shown oldest first where soft holds overlap, no queue or rank); the line has no expiry of its own, see Ticket `holdsUntil`
 - internal note
 
@@ -414,7 +414,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` requires → Task
 - `1:N` AccessCode opens for this
 
-> Operations (resource `programItem`): `programItem.list|get|create|update|archive`. Who answers for a program item comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state), and with a setup also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = programItem`). An overlap is refused (`CONFLICT`) and nothing is saved. `update` moves the occupancy when item, setup or time change; `archive` releases it. Every change is audited.
+> Operations (resource `programItem`): `programItem.list|get|create|update|archive` and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`). A new line starts in its item type's initial state; a line moved to an item of another type starts over in that type's initial state. Who answers for a program item comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = programItem`). An overlap with a hard hold, setup time or block is refused (`CONFLICT`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change; `archive` releases it. Every change is audited.
 
 ### Requirement ★ (`Requirement`)
 

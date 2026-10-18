@@ -12,13 +12,14 @@ type BlockInput = { id: string; start: string; end: string };
 const block = ({ id, start, end }: BlockInput): CalendarBlock => ({
   id,
   itemId: "room",
-  type: "BOOKING",
+  type: "HOLD",
   startsAt: new Date(start),
   endsAt: new Date(end),
   ticketId: null,
   reference: null,
   title: null,
-  queuePosition: null,
+  soft: false,
+  heldAt: null,
 });
 
 describe("calendar layout", () => {

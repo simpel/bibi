@@ -59,7 +59,9 @@ describe("programItem (ADR 0022)", () => {
     const cases = [
       [{ entityTypeId: ticketType.type.id }, "entityTypeId"],
       [{ ticketId: "missing" }, "ticketId"],
-      [{ itemId: plain.id }, "itemId"],
+      [{ itemId: "missing" }, "itemId"],
+      // Any item can be a line's item, but only a bookable one has setups.
+      [{ itemId: plain.id, setupId: setup.id }, "itemId"],
       [{ setupId: setup.id }, "setupId"],
       [{ itemId: room.id, setupId: other.id }, "setupId"],
     ] as const;

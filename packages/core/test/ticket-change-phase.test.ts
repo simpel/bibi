@@ -85,7 +85,7 @@ describe("ticket.changePhase (ADR 0043)", () => {
   it("releases the ticket's occupancy when it enters a terminal phase", async () => {
     const { context, ticket } = await leadSetup();
     const item = await createBookableItem({ context });
-    const raw = await insertRaw({ context, itemId: item.id, type: "BOOKING", from: 9, to: 12 });
+    const raw = await insertRaw({ context, itemId: item.id, hold: "HARD", from: 9, to: 12 });
     const held = await context.db.occupancy.update({
       where: { id: raw.id },
       data: { sourceType: "ticket", sourceId: ticket.id },
@@ -93,7 +93,7 @@ describe("ticket.changePhase (ADR 0043)", () => {
     const unrelated = await insertRaw({
       context,
       itemId: item.id,
-      type: "OPTION",
+      hold: "SOFT",
       from: 9,
       to: 12,
     });

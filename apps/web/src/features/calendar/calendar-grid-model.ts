@@ -11,11 +11,13 @@ export type GridBlock = {
   id: string;
   href: string | null;
   type: OccupancyType;
+  /** A soft hold: drawn hatched, may overlap other soft holds (ADR 0044). */
+  soft: boolean;
   label: string;
   time: string;
   offset: number;
   span: number;
-  /** Day view: which of the row's lanes the block sits in (overlapping options). */
+  /** Day view: which of the row's lanes the block sits in (overlapping soft holds). */
   lane: number;
 };
 export type GridCell = {
@@ -34,7 +36,7 @@ export type GridModel = {
 export type CalendarLabels = {
   type: (input: { type: OccupancyType }) => string;
   reference: (input: { reference: number }) => string;
-  option: (input: { position: number }) => string;
+  heldSince: (input: { heldAt: Date }) => string;
   time: (input: { block: CalendarBlock }) => string;
   column: (input: { column: CalendarColumn }) => string;
   slot: (input: { space: string; column: CalendarColumn }) => { label: string; prompt: string };
@@ -42,14 +44,13 @@ export type CalendarLabels = {
 
 type LabelInput = { block: CalendarBlock; labels: CalendarLabels };
 
-/** "2nd option · Ticket 12 · Lunch"; a plain ticket shows its reference and program item. */
+/** "Held since 3 Oct · Ticket 12 · Lunch"; a hard hold shows its reference and program item. */
 export function blockLabel({ block, labels }: LabelInput): string {
-  const kind =
-    block.queuePosition !== null
-      ? labels.option({ position: block.queuePosition })
-      : block.type === "BOOKING" && block.ticketId
-        ? null
-        : labels.type({ type: block.type });
+  const kind = block.heldAt
+    ? labels.heldSince({ heldAt: block.heldAt })
+    : block.type === "HOLD" && block.ticketId
+      ? null
+      : labels.type({ type: block.type });
   const reference =
     block.reference !== null ? labels.reference({ reference: block.reference }) : null;
   const parts = [kind, reference, block.title].filter((part): part is string => Boolean(part));
@@ -64,6 +65,7 @@ function toGridBlock({ placed, lane, labels }: ToGridBlockInput): GridBlock {
     id: block.id,
     href: block.ticketId ? ticketRoute({ id: block.ticketId }) : null,
     type: block.type,
+    soft: block.soft,
     label: blockLabel({ block, labels }),
     time: labels.time({ block }),
     offset,

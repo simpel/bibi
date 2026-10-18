@@ -6,6 +6,9 @@ const TYPE = `mutation($i: EntityTypeCreateInput!) { entityTypeCreate(input: $i)
 const CUSTOMER = `mutation($i: CustomerCreateInput!) { customerCreate(input: $i) { id } }`;
 const TICKET = `mutation($i: TicketCreateInput!) { ticketCreate(input: $i) { id } }`;
 const ITEM = `mutation($i: ItemCreateInput!) { itemCreate(input: $i) { id } }`;
+const LINES =
+  "query($id: String!) { ticket(id: $id) { programItems " +
+  "{ name entityType { base } state { name hold } } } }";
 const ADD = `mutation($i: ProgramItemCreateInput!) { programItemCreate(input: $i) { id } }`;
 
 describe("program item graph (ADR 0022)", () => {
@@ -53,12 +56,17 @@ describe("program item graph (ADR 0022)", () => {
     const clash = await gql({ query: ADD, variables: { i: { ...add, name: "Clash" } } });
     expect(clash.body.errors?.[0]?.extensions?.code).toBe("CONFLICT");
     const res = await gql({
-      query: `query($id: String!) { ticket(id: $id) { programItems { name entityType { base } } } }`,
+      query: LINES,
       variables: { id: ticketId },
     });
     expect(res.body.errors).toBeUndefined();
     expect(res.body.data.ticket.programItems).toEqual([
-      { name: "Opening", entityType: { base: "PROGRAM_ITEM" } },
+      // A new item type starts with one hard-holding state (ADR 0044).
+      {
+        name: "Opening",
+        entityType: { base: "PROGRAM_ITEM" },
+        state: { name: "Active", hold: "HARD" },
+      },
     ]);
   });
 });

@@ -10,7 +10,6 @@ import {
 const OPERATIONAL: readonly Resource[] = [
   "customer",
   "contact",
-  "option",
   "quote",
   "ticket",
   "programItem",

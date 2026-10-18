@@ -40,7 +40,8 @@ export async function getCalendarLabels({
   return {
     type: ({ type }) => occupancy(`types.${type}`),
     reference: ({ reference }) => ticket("reference", { reference }),
-    option: ({ position }) => t("option", { position }),
+    heldSince: ({ heldAt }) =>
+      t("heldSince", { date: format.dateTime(heldAt, { ...DAY, timeZone }) }),
     time: ({ block }) =>
       format.dateTimeRange(block.startsAt, block.endsAt, rangeOptions({ block, timeZone })),
     column: ({ column }) =>

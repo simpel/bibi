@@ -18,7 +18,12 @@ async function loadProgramItems({
   definition,
 }: LoadMatchesInput): Promise<MatchedProgramItem[]> {
   const rows = await context.db.programItem.findMany({
-    where: { ticketId, item: { entityTypeId: { in: definition.entityTypeIds } } },
+    where: {
+      ticketId,
+      item: { entityTypeId: { in: definition.entityTypeIds } },
+      // Only lines whose state the organization marked as sendable (ADR 0044).
+      state: { inSheets: true },
+    },
     select: { id: true, name: true, itemId: true },
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
   });

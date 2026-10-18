@@ -4,8 +4,8 @@ import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
 import { INBOUND_EMAIL_UI_ENTRIES } from "./inbound-email-entries";
 import { ITEM_RESOLUTION_UI_ENTRIES } from "./item-resolution-entries";
+import { ITEM_STATE_UI_ENTRIES } from "./item-state-entries";
 import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
-import { OPTION_UI_ENTRIES } from "./option-entries";
 import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
 import { PIPELINE_UI_ENTRIES } from "./pipeline-entries";
@@ -61,12 +61,12 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...OCCUPANCY_UI_ENTRIES,
   ...PRICE_LIST_UI_ENTRIES,
   ...TICKET_PHASE_UI_ENTRIES,
+  ...ITEM_STATE_UI_ENTRIES,
   ...TICKET_UI_ENTRIES,
   ...PROGRAM_ITEM_UI_ENTRIES,
   ...ASSIGNMENT_UI_ENTRIES,
   ...REQUIREMENT_UI_ENTRIES,
   ...PIPELINE_UI_ENTRIES,
-  ...OPTION_UI_ENTRIES,
   ...QUOTE_UI_ENTRIES,
   ...INBOUND_EMAIL_UI_ENTRIES,
   ...PAYMENT_ACCOUNT_UI_ENTRIES,

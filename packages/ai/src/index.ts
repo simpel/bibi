@@ -67,7 +67,7 @@ export { LOCAL_SKILL_TOOLS } from "./skills/create-skill-tools";
 export type { AssignmentWire } from "./ui-contract/assignment-entries";
 export type { InboundEmailWire } from "./ui-contract/inbound-email-entries";
 export type { ItemResolutionWire } from "./ui-contract/item-resolution-entries";
-export type { OptionWire } from "./ui-contract/option-entries";
+export type { ItemStateWire } from "./ui-contract/item-state-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire } from "./ui-contract/payment-entries";
 export type { PipelineBoardWire } from "./ui-contract/pipeline-entries";

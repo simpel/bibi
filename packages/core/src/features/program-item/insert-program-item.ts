@@ -4,6 +4,7 @@ import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
 import { checkPeriod } from "../occupancy/occupancy-rules";
+import { initialStateOf } from "./line-state";
 import { checkPlace, checkTicket } from "./program-item-rules";
 import { reserveProgramItem } from "./reserve";
 import type { ProgramItemCreateInput, ProgramItemDto } from "./schema";
@@ -15,7 +16,8 @@ export type InsertProgramItemInput = {
 };
 
 /**
- * Creates a program item, occupies its bookable item and records the change. Shared by
+ * Creates a program item in its item type's initial state, holds its bookable item as the state
+ * says and records the change. Shared by
  * `programItem.create`.
  */
 export async function insertProgramItem({
@@ -38,6 +40,7 @@ export async function insertProgramItem({
     data: {
       ...data,
       entityTypeId,
+      stateId: await initialStateOf({ context, itemId }),
       fields: toJson({ value: checked.value }) ?? {},
       organizationId: context.organizationId,
     },

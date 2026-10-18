@@ -9,11 +9,11 @@ import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
 import { inboundEmailOperations } from "./features/inbound-email/operations";
 import { itemOperations } from "./features/item/operations";
+import { itemStateOperations } from "./features/item-state/operations";
 import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
 import { oauthGrantOperations } from "./features/oauth-grant/operations";
 import { occupancyOperations } from "./features/occupancy/operations";
-import { optionOperations } from "./features/option/operations";
 import { paymentOperations } from "./features/payment/operations";
 import { paymentAccountOperations } from "./features/payment-account/operations";
 import { pipelineOperations } from "./features/pipeline/operations";
@@ -54,13 +54,13 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...priceListOperations,
     ...occupancyOperations,
     ...ticketPhaseOperations,
+    ...itemStateOperations,
     ...ticketOperations,
     ...programItemOperations,
     ...assignmentOperations,
     ...requirementOperations,
     ...sheetOperations,
     ...pipelineOperations,
-    ...optionOperations,
     ...quoteOperations,
     ...inboundEmailOperations,
     ...paymentAccountOperations,

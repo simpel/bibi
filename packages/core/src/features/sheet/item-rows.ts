@@ -10,8 +10,8 @@ export type ItemRowsInput = {
 };
 
 /**
- * One row per program item of the ticket that uses an item of an included type, with the
- * included fields of that item's type, earliest first.
+ * One row per program item of the ticket that uses an item of an included type and is in a state
+ * with `inSheets` (ADR 0044), with the included fields of that item's type, earliest first.
  */
 export async function itemRows({
   context,
@@ -25,7 +25,12 @@ export async function itemRows({
       orderBy: [{ position: "asc" }, { id: "asc" }],
     }),
     context.db.programItem.findMany({
-      where: { ticketId, item: { entityTypeId: { in: definition.entityTypeIds } } },
+      where: {
+        ticketId,
+        item: { entityTypeId: { in: definition.entityTypeIds } },
+        // Only lines whose state the organization marked as sendable (ADR 0044).
+        state: { inSheets: true },
+      },
       include: { item: true },
       orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     }),

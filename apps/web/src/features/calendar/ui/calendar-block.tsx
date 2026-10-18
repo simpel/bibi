@@ -10,14 +10,16 @@ export const LANE_REM = 2.25;
 const BASE =
   "block min-w-0 truncate rounded-md border px-2 py-1 text-left text-xs outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-/** One look per occupancy type; options are dashed because they may overlap (ADR 0022). */
+/** One look per occupancy type; a hold is solid when hard (ADR 0044). */
 const TYPE_CLASS: Record<OccupancyType, string> = {
-  BOOKING: "border-primary bg-primary text-primary-foreground hover:opacity-90",
-  OPTION: "border-dashed border-primary bg-primary/10 text-foreground hover:bg-primary/20",
+  HOLD: "border-primary bg-primary text-primary-foreground hover:opacity-90",
   SETUP: "border-border bg-muted text-muted-foreground",
   MAINTENANCE: "border-warning bg-warning/20 text-foreground",
   INTERNAL: "border-border bg-secondary text-secondary-foreground",
 };
+
+/** Soft holds are dashed because they may overlap (ADR 0044). */
+const SOFT_CLASS = "border-dashed border-primary bg-primary/10 text-foreground hover:bg-primary/20";
 
 export type CalendarBlockViewProps = {
   block: GridBlock;
@@ -41,7 +43,7 @@ export function CalendarBlockView({ block, row, col, first, positioned }: Calend
     : undefined;
   const className = cn(
     BASE,
-    TYPE_CLASS[block.type],
+    block.soft ? SOFT_CLASS : TYPE_CLASS[block.type],
     positioned ? "absolute z-10" : "relative z-10",
   );
   const focus = { [GRID_ITEM]: "", "data-row": row, "data-col": col, tabIndex: first ? 0 : -1 };
