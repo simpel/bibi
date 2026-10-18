@@ -7,11 +7,12 @@ import { checkDemoConfig } from "./config-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
 import { checkDemoPipeline } from "./pipeline-checks";
+import { checkDemoSetupNeed } from "./setup-need-checks";
 import { checkDemoTemplates } from "./template-checks";
 import { checkDemoTickets } from "./ticket-checks";
 import type { DemoOrg } from "./types";
 
-export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg };
+export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPipeline?: boolean };
 
 /**
  * The checks in `docs/demo-seed.md` that slices 1–5 can verify: the member count, everyone
@@ -22,7 +23,11 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg };
  * moves the grid drives (`checkDemoGrid`), and every write
  * was audited as SYSTEM. Returns failure messages.
  */
-export async function checkDemoOrg({ context, org }: CheckDemoOrgInput): Promise<string[]> {
+export async function checkDemoOrg({
+  context,
+  org,
+  skipPipeline = false,
+}: CheckDemoOrgInput): Promise<string[]> {
   const failures: string[] = [];
   const members = await execute({ operation: listMembers, input: { limit: 100 }, context });
   if (!members.ok) return [`${org.slug}: could not read members`];
@@ -37,7 +42,9 @@ export async function checkDemoOrg({ context, org }: CheckDemoOrgInput): Promise
       failures.push(`${org.slug}: ${user.name} has ${member ? member.role : "no member"}`);
     }
   }
-  failures.push(...(await checkDemoConfig({ context, org })));
+  failures.push(...(await checkDemoConfig({ context, org, skipPipeline })));
+  failures.push(...(await checkDemoSetupNeed({ context, org, skipPipeline })));
+  if (skipPipeline) return [...failures, ...(await auditFailures({ context, org }))];
   failures.push(...(await checkDemoPipeline({ context, org })));
   failures.push(...(await checkDemoTemplates({ context, org })));
   failures.push(...(await checkDemoTickets({ context, org })));
@@ -45,12 +52,13 @@ export async function checkDemoOrg({ context, org }: CheckDemoOrgInput): Promise
   failures.push(...(await checkDemoAssignments({ context, org })));
   failures.push(...(await checkDemoHolds({ context, org })));
   failures.push(...(await checkDemoGrid({ context, org })));
+  return [...failures, ...(await auditFailures({ context, org }))];
+}
 
-  // Check 7 (ADR 0025): every write (organization-scoped) must have an audit row as SYSTEM.
+/** Check 7 (ADR 0025): every write (organization-scoped) must have an audit row as SYSTEM. */
+async function auditFailures({ context, org }: CheckDemoOrgInput): Promise<string[]> {
   const notSystem = await context.db.auditLog.count({
     where: { organizationId: context.organizationId, actorType: { not: "SYSTEM" } },
   });
-  if (notSystem > 0) failures.push(`${org.slug}: ${notSystem} audit rows not by SYSTEM`);
-
-  return failures;
+  return notSystem > 0 ? [`${org.slug}: ${notSystem} audit rows not by SYSTEM`] : [];
 }

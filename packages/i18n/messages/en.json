@@ -205,7 +205,8 @@
     },
     "integrations": "Integrations",
     "itemStates": "Item states",
-    "ticketTemplates": "Predefined tickets"
+    "ticketTemplates": "Predefined tickets",
+    "onboarding": "Guided setup"
   },
   "venue": {
     "singular": "Venue",
@@ -1320,7 +1321,10 @@
         "expiryStateId": "Expiry state (id)",
         "templateId": "Predefined ticket (id)",
         "lines": "Lines",
-        "startsAt": "Starts"
+        "startsAt": "Starts",
+        "itemTypes": "Item types",
+        "phases": "Phases",
+        "cells": "Grid cells"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -1390,7 +1394,8 @@
         "ticket_createFromTemplate": "Create ticket from a predefined ticket",
         "ticketTemplate_create": "Create predefined ticket",
         "ticketTemplate_update": "Update predefined ticket",
-        "ticketTemplate_archive": "Archive predefined ticket"
+        "ticketTemplate_archive": "Archive predefined ticket",
+        "pipelineSetup_activate": "Set up the pipeline"
       }
     },
     "description": "Chat with the assistant about venues, items and skills.",
@@ -2525,6 +2530,128 @@
       "ticketType": "Ticket type",
       "phase": "Starts in",
       "lines": "Lines"
+    }
+  },
+  "pipelineSetup": {
+    "title": "Set up the pipeline",
+    "description": "A guided setup of item types, their states, ticket phases and the grid. Nothing is saved until the last step.",
+    "open": "Guided setup",
+    "progress": "Steps",
+    "activated": "The pipeline has been set up.",
+    "steps": {
+      "types": "Item types",
+      "states": "States",
+      "phases": "Phases",
+      "grid": "The grid",
+      "preview": "Preview",
+      "activate": "Activate"
+    },
+    "descriptions": {
+      "types": "Which item types do your tickets have lines for? Pick existing types or add new ones.",
+      "states": "What can a line of each type be? Start from a template and change it as you like.",
+      "phases": "Which phases does a ticket go through, in order? Answer the questions for each phase.",
+      "grid": "When a ticket enters a phase, which state do its lines move to? Keep leaves them as they are.",
+      "preview": "A simulated ticket with one line per item type goes through every phase. Check that it behaves as you expect.",
+      "activate": "Saving creates everything in one go. You can change it later in the settings."
+    },
+    "types": {
+      "none": "No item types yet. Add one below.",
+      "newType": "New item type",
+      "name": "Name",
+      "isBookable": "Can be booked (holds the item, like a room)",
+      "bookable": "Bookable",
+      "remove": "Remove",
+      "addExisting": "Add an existing type",
+      "addNew": "Add a new type"
+    },
+    "states": {
+      "noTypes": "Add an item type in the first step.",
+      "template": "Start from",
+      "templates": {
+        "bookable": "Bookable: prebooked, booked, released",
+        "food": "Food: estimated, ordered, locked, released",
+        "other": "Other: planned, confirmed, released",
+        "single": "One state: active"
+      },
+      "name": "State name",
+      "color": "Color",
+      "hold": "Hold",
+      "holds": {
+        "NONE": "No hold",
+        "SOFT": "Soft hold (does not block)",
+        "HARD": "Hard hold (blocks)"
+      },
+      "initial": "New lines start in this state",
+      "inSheets": "Include lines in this state in sheets",
+      "released": "This state ends the line (nothing is held)",
+      "expires": "Falls back when the ticket's hold date passes",
+      "remove": "Remove state",
+      "add": "Add state",
+      "newStateName": "New state",
+      "expiryState": "Expiring lines fall to",
+      "noExpiry": "No expiry"
+    },
+    "phases": {
+      "template": "Start from",
+      "templates": {
+        "conference-estate": "Conference estate",
+        "default": "Default"
+      },
+      "name": "Phase name",
+      "color": "Color",
+      "questions": {
+        "entry": "Do new tickets start in this phase?",
+        "terminal": "Does this phase end the ticket?",
+        "requiresReason": "Is a reason needed to enter it?",
+        "requiresAssignee": "Does the ticket need an assignee to enter it?",
+        "invoiceable": "Can invoices be created in this phase?"
+      },
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "remove": "Remove phase",
+      "add": "Add phase",
+      "newPhaseName": "New phase"
+    },
+    "preview": {
+      "loading": "Preparing the preview…",
+      "invalid": "Some fields are missing or wrong. Go back and fix them to see the preview.",
+      "ready": "Ready to activate.",
+      "notReady": "Fix the errors below before you activate.",
+      "severity": {
+        "error": "Error",
+        "warning": "Warning"
+      },
+      "problems": {
+        "NO_ENTRY_PHASE": "No phase where new tickets start",
+        "MANY_ENTRY_PHASES": "More than one phase where new tickets start",
+        "NO_TERMINAL_PHASE": "No phase that ends the ticket",
+        "INVALID_PHASE_FLAGS": "A phase cannot both start and end a ticket",
+        "DUPLICATE_NAME": "The same name is used twice",
+        "NO_INITIAL_STATE": "An item type has no state that new lines start in",
+        "MANY_INITIAL_STATES": "An item type has more than one state that new lines start in",
+        "INVALID_STATE_FLAGS": "A state's choices contradict each other or the type",
+        "UNKNOWN_EXPIRY_STATE": "The expiry state is not one of the type's states",
+        "UNKNOWN_CELL": "A grid cell names a phase, type or state that does not exist",
+        "TERMINAL_CELL": "A phase that ends the ticket cannot have grid cells",
+        "STATE_CANNOT_LEAVE": "Lines in this state can never move on",
+        "LINE_BLOCKED": "A line cannot move to the state the grid sets"
+      },
+      "calendar": "Holds over the ticket's life",
+      "slot": "{phase}: {state}",
+      "legend": "Solid: hard hold. Hatched: soft hold. Outline: no hold.",
+      "phase": "Phase",
+      "empty": "No phases.",
+      "released": "Released",
+      "holds": {
+        "NONE": "No hold",
+        "SOFT": "Soft hold",
+        "HARD": "Hard hold"
+      },
+      "blocked": "Cannot move as the grid says"
+    },
+    "activate": {
+      "summary": "Saving sets up {phases} phases and {types} item types.",
+      "replaces": "Phases and states that are not in the setup are archived. Their tickets and lines move to the first phase and state."
     }
   }
 }

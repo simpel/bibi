@@ -13,7 +13,12 @@ import type { DemoConfig, DemoField, DemoType } from "./config-types";
 import type { DemoRefs, FieldRef, TypeRef } from "./demo-refs";
 import { seedItemStates } from "./seed-item-states";
 
-export type SeedConfigInput = { context: ExecuteContext; config: DemoConfig };
+export type SeedConfigInput = {
+  context: ExecuteContext;
+  config: DemoConfig;
+  /** `--skip-pipeline`: item types keep their one default state for the guided setup. */
+  skipStates?: boolean;
+};
 
 type ListResult = { id: string; name: string; values: { id: string; name: string }[] };
 
@@ -52,9 +57,9 @@ async function seedField({ context, refs, typeId, field }: FieldInput) {
   return execute({ operation: createFieldDefinition, input, context });
 }
 
-type TypeInput = { context: ExecuteContext; refs: DemoRefs; type: DemoType };
+type TypeInput = { context: ExecuteContext; refs: DemoRefs; type: DemoType; skipStates: boolean };
 
-async function seedType({ context, refs, type }: TypeInput): Promise<Result<TypeRef>> {
+async function seedType({ context, refs, type, skipStates }: TypeInput): Promise<Result<TypeRef>> {
   const input = { base: type.base, name: type.name, behaviours: [...(type.behaviours ?? [])] };
   const created = await execute({ operation: createEntityType, input, context });
   if (!created.ok) return created;
@@ -66,7 +71,7 @@ async function seedType({ context, refs, type }: TypeInput): Promise<Result<Type
     const values = list ? new Map(list.values.map((value) => [value.name, value.id])) : undefined;
     fields.set(field.name, { key: result.value.key, ...(values ? { values } : {}) });
   }
-  if (type.states) {
+  if (type.states && !skipStates) {
     const states = await seedItemStates({
       context,
       entityTypeId: created.value.id,
@@ -82,6 +87,7 @@ async function seedType({ context, refs, type }: TypeInput): Promise<Result<Type
 export async function seedDemoConfig({
   context,
   config,
+  skipStates = false,
 }: SeedConfigInput): Promise<Result<DemoRefs>> {
   const lists = await seedLists({ context, config });
   if (!lists.ok) return lists;
@@ -99,7 +105,7 @@ export async function seedDemoConfig({
     refs.setups.set(setup.name, result.value.id);
   }
   for (const type of config.types) {
-    const result = await seedType({ context, refs, type });
+    const result = await seedType({ context, refs, type, skipStates });
     if (!result.ok) return result;
     const byBase = {
       ITEM: refs.itemTypes,

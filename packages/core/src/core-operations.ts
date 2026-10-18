@@ -18,6 +18,7 @@ import { paymentOperations } from "./features/payment/operations";
 import { paymentAccountOperations } from "./features/payment-account/operations";
 import { phaseGridOperations } from "./features/phase-grid/operations";
 import { pipelineOperations } from "./features/pipeline/operations";
+import { pipelineSetupOperations } from "./features/pipeline-setup/operations";
 import { priceListOperations } from "./features/price-list/operations";
 import { programItemOperations } from "./features/program-item/operations";
 import { quoteOperations } from "./features/quote/operations";
@@ -38,6 +39,8 @@ import type { EmbedFn } from "./search/embed";
 import { createSearchOperation } from "./search/search-operation";
 
 export type CreateCoreOperationsInput = { embed: EmbedFn };
+
+const pipelineGroupOperations = [...pipelineOperations, ...pipelineSetupOperations];
 
 /** Every operation core ships; adapters register this list so surfaces stay in parity. */
 export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyOperation[] {
@@ -64,7 +67,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...assignmentOperations,
     ...requirementOperations,
     ...sheetOperations,
-    ...pipelineOperations,
+    ...pipelineGroupOperations,
     ...quoteOperations,
     ...inboundEmailOperations,
     ...paymentAccountOperations,

@@ -4,7 +4,10 @@ import type { ExecuteContext } from "./context";
 import { hasPermission } from "./permission";
 import type { AnyOperation } from "./types";
 
-export type AuthorizeInput = { operation: AnyOperation; context: ExecuteContext };
+export type AuthorizeInput = {
+  operation: AnyOperation;
+  context: Pick<ExecuteContext, "actor" | "permissions">;
+};
 
 /**
  * System actors are trusted; users and AI (acting for a user) need the operation's permission.

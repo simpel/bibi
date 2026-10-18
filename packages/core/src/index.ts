@@ -55,6 +55,7 @@ export * from "./features/payment-account/gateway-registry";
 export * from "./features/payment-account/operations";
 export * from "./features/phase-grid/operations";
 export * from "./features/pipeline/operations";
+export * from "./features/pipeline-setup/operations";
 export * from "./features/price-list/operations";
 export * from "./features/price-list/write-operations";
 export * from "./features/program-item/change-state-operation";
@@ -90,10 +91,7 @@ export * from "./features/ticket/operations";
 export * from "./features/ticket/write-operations";
 export * from "./features/ticket-phase/archive-operation";
 export * from "./features/ticket-phase/import-template-operation";
-export {
-  toTicketPhaseDto,
-  WITH_TRANSITIONS,
-} from "./features/ticket-phase/load-ticket-phase";
+export { toTicketPhaseDto, WITH_TRANSITIONS } from "./features/ticket-phase/load-ticket-phase";
 export * from "./features/ticket-phase/order-operations";
 export * from "./features/ticket-phase/read-operations";
 export * from "./features/ticket-phase/write-operations";

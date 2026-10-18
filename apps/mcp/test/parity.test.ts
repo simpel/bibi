@@ -79,8 +79,11 @@ function withoutOrg({ value }: { value: Json }): Json {
   );
 }
 
-/** Read-only views over other entities: no rows of their own to create and read back through each surface. */
-const VIEWS = new Set(["search", "pipeline"]);
+/**
+ * Read-only views over other entities, and the guided pipeline setup (a preview and a batch of
+ * other entities' commands): no rows of their own to create and read back through each surface.
+ */
+const VIEWS = new Set(["search", "pipeline", "pipelineSetup"]);
 
 function coreEntityTypes(): string[] {
   return [

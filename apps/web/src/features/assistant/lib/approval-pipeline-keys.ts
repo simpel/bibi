@@ -26,6 +26,9 @@ export const PIPELINE_FIELD_KEYS = [
   "templateId",
   "lines",
   "startsAt",
+  "itemTypes",
+  "phases",
+  "cells",
 ] as const;
 
 /** Pipeline operations with a localized label in `assistant.approval.operations`. */
@@ -50,4 +53,5 @@ export const PIPELINE_OPERATION_KEYS = [
   "ticketTemplate_create",
   "ticketTemplate_update",
   "ticketTemplate_archive",
+  "pipelineSetup_activate",
 ] as const;

@@ -72,6 +72,7 @@ export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire } from "./ui-contract/payment-entries";
 export type { PhaseGridCellWire } from "./ui-contract/phase-grid-entries";
 export type { PipelineBoardWire } from "./ui-contract/pipeline-entries";
+export type { PipelinePreviewWire } from "./ui-contract/pipeline-setup-entries";
 export type { PriceListWire } from "./ui-contract/price-list-entries";
 export type { ProgramItemWire } from "./ui-contract/program-item-entries";
 export type { QuoteWire } from "./ui-contract/quote-entries";

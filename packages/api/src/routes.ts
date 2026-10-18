@@ -18,6 +18,7 @@ import { paymentRoutes } from "./features/payment/rest";
 import { paymentAccountRoutes } from "./features/payment-account/rest";
 import { phaseGridRoutes } from "./features/phase-grid/rest";
 import { pipelineRoutes } from "./features/pipeline/rest";
+import { pipelineSetupRoutes } from "./features/pipeline-setup/rest";
 import { priceListRoutes } from "./features/price-list/rest";
 import { programItemRoutes } from "./features/program-item/rest";
 import { quoteRoutes } from "./features/quote/rest";
@@ -35,6 +36,8 @@ import { venueRoutes } from "./features/venue/rest";
 import { vocabularyRoutes } from "./features/vocabulary/rest";
 import type { RestRoute } from "./rest-route";
 import { searchRoutes } from "./search-rest";
+
+const gridAndSetupRoutes = [...phaseGridRoutes, ...pipelineSetupRoutes];
 
 /** Every declared REST route; add a feature's routes here when it gets a `rest.ts`. */
 export function listRestRoutes(): RestRoute[] {
@@ -56,7 +59,7 @@ export function listRestRoutes(): RestRoute[] {
     ...ticketPhaseRoutes,
     ...ticketTemplateRoutes,
     ...itemStateRoutes,
-    ...phaseGridRoutes,
+    ...gridAndSetupRoutes,
     ...ticketRoutes,
     ...programItemRoutes,
     ...requirementRoutes,

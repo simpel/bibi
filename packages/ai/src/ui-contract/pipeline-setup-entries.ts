@@ -1,0 +1,23 @@
+import { PipelinePreviewSchema } from "@okazi/core/schemas";
+import { z } from "zod";
+import { PhaseGridWireSchema } from "./phase-grid-entries";
+import type { ToolUiEntry } from "./tool-ui-types";
+import { uiEntry } from "./ui-entry";
+
+/** The preview as tool results carry it (it has no dates). */
+export type PipelinePreviewWire = z.infer<typeof PipelinePreviewSchema>;
+
+/** Tool → component for the guided pipeline setup (ADR 0044). */
+export const PIPELINE_SETUP_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
+  pipelineSetup_preview: uiEntry({
+    component: "pipeline-preview",
+    schema: PipelinePreviewSchema,
+    toProps: ({ value }) => ({ preview: value }),
+  }),
+  // The activated pipeline is shown by its grid; phases and states have their own tools.
+  pipelineSetup_activate: uiEntry({
+    component: "phase-grid-table",
+    schema: z.object({ grid: PhaseGridWireSchema }),
+    toProps: ({ value }) => value.grid,
+  }),
+};

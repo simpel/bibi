@@ -18,6 +18,7 @@ import { paymentMcpTools } from "../features/payment/mcp";
 import { paymentAccountMcpTools } from "../features/payment-account/mcp";
 import { phaseGridMcpTools } from "../features/phase-grid/mcp";
 import { pipelineMcpTools } from "../features/pipeline/mcp";
+import { pipelineSetupMcpTools } from "../features/pipeline-setup/mcp";
 import { priceListMcpTools } from "../features/price-list/mcp";
 import { programItemMcpTools } from "../features/program-item/mcp";
 import { quoteMcpTools } from "../features/quote/mcp";
@@ -35,6 +36,8 @@ import { venueMcpTools } from "../features/venue/mcp";
 import { vocabularyMcpTools } from "../features/vocabulary/mcp";
 import { searchMcpTools } from "../search-mcp";
 import type { McpToolMeta } from "./meta";
+
+const gridAndSetupMcpTools = [...phaseGridMcpTools, ...pipelineSetupMcpTools];
 
 /** Every declared operation tool; add a feature's tools here when it gets an `mcp.ts`. */
 export function listMcpToolMetas(): McpToolMeta[] {
@@ -55,7 +58,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...ticketPhaseMcpTools,
     ...ticketTemplateMcpTools,
     ...itemStateMcpTools,
-    ...phaseGridMcpTools,
+    ...gridAndSetupMcpTools,
     ...ticketMcpTools,
     ...assignmentMcpTools,
     ...programItemMcpTools,

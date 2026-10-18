@@ -14,6 +14,8 @@ export type SeedDemoSalesInput = {
   refs: DemoRefs;
   catalog: DemoCatalog;
   userIds: DemoUserIds;
+  /** No phases yet (`--skip-pipeline`): the customers only. */
+  skipPipeline?: boolean;
 };
 
 /**
@@ -26,9 +28,11 @@ export async function seedDemoSales({
   refs,
   catalog,
   userIds,
+  skipPipeline = false,
 }: SeedDemoSalesInput): Promise<Result<true>> {
   const customers = await seedDemoCustomers({ context, customers: org.customers, refs, catalog });
   if (!customers.ok) return customers;
+  if (skipPipeline) return ok({ value: true });
   const templates = await seedDemoTemplates({ context, templates: org.templates, refs });
   if (!templates.ok) return templates;
   const tickets = await seedDemoTickets({ context, tickets: org.tickets, refs, userIds });

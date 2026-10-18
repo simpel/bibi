@@ -8,6 +8,7 @@ export type CrumbLabelKey =
   | "quotes"
   | "chats"
   | "new"
+  | "onboarding"
   | "edit"
   | "detail";
 
@@ -36,6 +37,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   "item-states": "itemStates",
   "ticket-templates": "ticketTemplates",
   new: "new",
+  onboarding: "onboarding",
   edit: "edit",
   update: "edit",
 };

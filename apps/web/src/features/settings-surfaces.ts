@@ -23,6 +23,9 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "phaseGrid.get", route: "/settings/pipeline" },
   { operation: "phaseGrid.setCell", route: "/settings/pipeline" },
   { operation: "phaseGrid.importTemplate", route: "/settings/pipeline" },
+  // The guided setup (ADR 0044), linked from /settings/pipeline.
+  { operation: "pipelineSetup.preview", route: "/onboarding/pipeline" },
+  { operation: "pipelineSetup.activate", route: "/onboarding/pipeline" },
   { operation: "itemState.list", route: "/settings/item-states" },
   { operation: "itemState.get", route: "/settings/item-states" },
   { operation: "itemState.create", route: "/new/item-state" },

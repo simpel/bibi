@@ -10,6 +10,7 @@ import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
 import { PHASE_GRID_UI_ENTRIES } from "./phase-grid-entries";
 import { PIPELINE_UI_ENTRIES } from "./pipeline-entries";
+import { PIPELINE_SETUP_UI_ENTRIES } from "./pipeline-setup-entries";
 import { PRICE_LIST_UI_ENTRIES } from "./price-list-entries";
 import { PROGRAM_ITEM_UI_ENTRIES } from "./program-item-entries";
 import { QUOTE_UI_ENTRIES } from "./quote-entries";
@@ -71,6 +72,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...ASSIGNMENT_UI_ENTRIES,
   ...REQUIREMENT_UI_ENTRIES,
   ...PIPELINE_UI_ENTRIES,
+  ...PIPELINE_SETUP_UI_ENTRIES,
   ...QUOTE_UI_ENTRIES,
   ...INBOUND_EMAIL_UI_ENTRIES,
   ...PAYMENT_ACCOUNT_UI_ENTRIES,

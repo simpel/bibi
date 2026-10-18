@@ -24,7 +24,7 @@ export const PhaseGridCellRef = objectFromSchema<PhaseGridCellDto>({
     "the item type to the state. A missing cell means the lines keep their state.",
 });
 
-const PhaseGridRef = builder.objectRef<PhaseGridDto>("PhaseGrid");
+export const PhaseGridRef = builder.objectRef<PhaseGridDto>("PhaseGrid");
 PhaseGridRef.implement({
   description: "The phase grid: phases × item types, only the cells that are set.",
   fields: (t) => ({

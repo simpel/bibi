@@ -3,12 +3,21 @@ import type { DemoItem } from "./config-types";
 import { getTemplateListSize } from "./template-size";
 import type { DemoOrg } from "./types";
 
-export type CheckDemoConfigInput = { context: ExecuteContext; org: DemoOrg };
+export type CheckDemoConfigInput = {
+  context: ExecuteContext;
+  org: DemoOrg;
+  /** `--skip-pipeline`: no tickets are expected. */
+  skipPipeline?: boolean;
+};
 
 type Count = { what: string; actual: number; expected: number };
 
 /** Slices 4–5: customers, their contact persons and the tickets. */
-async function customerCounts({ context, org }: CheckDemoConfigInput): Promise<Count[]> {
+async function customerCounts({
+  context,
+  org,
+  skipPipeline,
+}: CheckDemoConfigInput): Promise<Count[]> {
   const contacts = org.customers.reduce((sum, customer) => sum + customer.contacts.length, 0);
   return [
     {
@@ -17,7 +26,11 @@ async function customerCounts({ context, org }: CheckDemoConfigInput): Promise<C
       expected: org.customers.length,
     },
     { what: "contacts", actual: await context.db.contact.count(), expected: contacts },
-    { what: "tickets", actual: await context.db.ticket.count(), expected: org.tickets.length },
+    {
+      what: "tickets",
+      actual: await context.db.ticket.count(),
+      expected: skipPipeline ? 0 : org.tickets.length,
+    },
   ];
 }
 
@@ -92,11 +105,15 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
  * Slices 2–5 checks: row counts per entity match the data files, lists that must not exist do
  * not (check 2: Vingaleden has no "Allergens"), and imported lists have their values.
  */
-export async function checkDemoConfig({ context, org }: CheckDemoConfigInput): Promise<string[]> {
+export async function checkDemoConfig({
+  context,
+  org,
+  skipPipeline = false,
+}: CheckDemoConfigInput): Promise<string[]> {
   const all = [
     ...(await counts({ context, org })),
     ...(await catalogCounts({ context, org })),
-    ...(await customerCounts({ context, org })),
+    ...(await customerCounts({ context, org, skipPipeline })),
   ];
   const failures = all
     .filter((count) => count.actual !== count.expected)

@@ -7,6 +7,7 @@ import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire } from "./payment-entries";
 import type { PhaseGridCellWire } from "./phase-grid-entries";
 import type { PipelineBoardWire } from "./pipeline-entries";
+import type { PipelinePreviewWire } from "./pipeline-setup-entries";
 import type { PriceListWire } from "./price-list-entries";
 import type { ProgramItemWire } from "./program-item-entries";
 import type { QuoteWire } from "./quote-entries";
@@ -67,6 +68,7 @@ export type ToolUiProps = {
   "requirement-table": { items: RequirementWire[]; nextCursor: string | null };
   "requirement-card": { requirement: RequirementWire };
   "pipeline-board": { board: PipelineBoardWire };
+  "pipeline-preview": { preview: PipelinePreviewWire };
   "quote-card": { quote: QuoteWire };
   "quote-table": { items: QuoteWire[]; nextCursor: string | null };
   "inbound-email-table": { items: InboundEmailWire[]; nextCursor: string | null };
