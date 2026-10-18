@@ -3,7 +3,4 @@
  * isolation step yet. The list may only shrink: cover an operation in `isolation-<area>.test.ts`
  * and delete its line. A new operation never goes here.
  */
-export const ISOLATION_GAPS: string[] = [
-  // Series operations exist on main only; the ticket-model branch removes them, delete this line then.
-  "bookingSeries.updateOccurrences",
-];
+export const ISOLATION_GAPS: string[] = [];
