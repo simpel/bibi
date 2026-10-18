@@ -5,8 +5,8 @@ import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ArchiveTicketPhaseDialog } from "./archive-ticket-phase-dialog";
+import { EditTicketPhaseItem } from "./edit-ticket-phase-item";
 import { MoveItems } from "./move-items";
-import { TicketPhaseDialog } from "./ticket-phase-dialog";
 import { TransitionsDialog } from "./transitions-dialog";
 
 export type TicketPhaseRowActionsProps = {
@@ -15,9 +15,9 @@ export type TicketPhaseRowActionsProps = {
   phases: readonly TicketPhaseDto[];
 };
 
-type Dialog = "edit" | "transitions" | "archive";
+type Dialog = "transitions" | "archive";
 
-/** Edit / transitions / move / archive for one phase. */
+/** Edit (page) / transitions / move / archive for one phase. */
 export function TicketPhaseRowActions({ phase, index, phases }: TicketPhaseRowActionsProps) {
   const t = useTranslations("ticketPhase");
   const common = useTranslations("common");
@@ -25,7 +25,7 @@ export function TicketPhaseRowActions({ phase, index, phases }: TicketPhaseRowAc
   return (
     <>
       <DataTableRowActions label={common("actions")}>
-        <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
+        <EditTicketPhaseItem id={phase.id} />
         <DropdownMenuItem onSelect={() => setDialog("transitions")}>
           {t("editTransitions")}
         </DropdownMenuItem>
@@ -34,11 +34,6 @@ export function TicketPhaseRowActions({ phase, index, phases }: TicketPhaseRowAc
           {t("archive")}
         </DropdownMenuItem>
       </DataTableRowActions>
-      <TicketPhaseDialog
-        phase={phase}
-        open={dialog === "edit"}
-        onOpenChange={(open) => !open && setDialog(null)}
-      />
       {dialog === "transitions" ? (
         <TransitionsDialog
           phase={phase}

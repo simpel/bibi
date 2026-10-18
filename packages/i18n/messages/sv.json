@@ -185,7 +185,8 @@
       "catalog": "Katalog",
       "admin": "Administration"
     },
-    "integrations": "Integrationer"
+    "integrations": "Integrationer",
+    "itemStates": "Artikelstatusar"
   },
   "venue": {
     "singular": "Anläggning",
@@ -1127,6 +1128,53 @@
       "NONE": "Ingen reservation",
       "SOFT": "Preliminär reservation",
       "HARD": "Fast reservation"
+    },
+    "singular": "Status",
+    "plural": "Artikelstatusar",
+    "listDescription": "De statusar en rad kan ha, per artikeltyp. Flaggorna styr vad systemet gör; inget annat om en status är fast. Varje typ behöver en startstatus.",
+    "create": "Skapa status",
+    "edit": "Redigera status",
+    "createDescription": "Lägg till en status för {type}: namnge den, välj färg och bestäm vad den gör.",
+    "editDescription": "Byt namn, färg eller vad statusen gör.",
+    "archive": "Arkivera status",
+    "archiveConfirm": "Vill du arkivera statusen {name}? Rader i den, rutnätsceller och utgångsstatusen flyttas till den status du väljer.",
+    "archiveInitialConfirm": "{name} är startstatus. Gör en annan status till startstatus innan du arkiverar den. Rader i den flyttas till den status du väljer.",
+    "archived": "Statusen har arkiverats.",
+    "created": "Statusen har skapats.",
+    "updated": "Statusen har uppdaterats.",
+    "empty": "Inga statusar ännu.",
+    "noTypes": "Inga artikeltyper ännu.",
+    "noTypesDescription": "Skapa först en artikeltyp. Dess statusar ställs in här.",
+    "saving": "Sparar status…",
+    "archiving": "Arkiverar status…",
+    "editTransitions": "Redigera övergångar",
+    "transitionsDescription": "Välj vilka statusar en rad i {name} får flyttas till.",
+    "releasedTransitions": "{name} är en släppt status: den är slutgiltig och inget lämnar den.",
+    "transitionsSaved": "Övergångarna har sparats.",
+    "noTransitions": "Inga",
+    "noTargets": "Det finns inga andra statusar att flytta till.",
+    "noTarget": "Inga rader att flytta",
+    "moveUp": "Flytta upp",
+    "moveDown": "Flytta ner",
+    "reordering": "Sparar ordning…",
+    "reordered": "Ordningen har sparats.",
+    "fields": {
+      "name": "Namn",
+      "color": "Färg",
+      "hold": "Vad den gör med artikeln",
+      "transitions": "Får flyttas till",
+      "targetState": "Flytta dess rader till"
+    },
+    "columns": {
+      "name": "Namn",
+      "flags": "Gör",
+      "transitions": "Får flyttas till"
+    },
+    "flagChoices": {
+      "initial": "Nya rader börjar här",
+      "inSheets": "Rader tas med i blad",
+      "released": "Slutgiltig: reservationen släpps och inget lämnar den",
+      "expires": "Går över till utgångsstatusen när ärendets reservationsdatum passerat"
     }
   },
   "assistant": {
@@ -1782,7 +1830,8 @@
       "members": "Vem som har åtkomst och med vilken roll.",
       "payments": "Stripe-konto för kortbetalningar och fakturor.",
       "skills": "Återanvändbara instruktioner för assistenten.",
-      "integrations": "API-nycklar för andra system som använder REST-API:t."
+      "integrations": "API-nycklar för andra system som använder REST-API:t.",
+      "itemStates": "De statusar en rad kan ha, per artikeltyp."
     }
   },
   "commandBar": {
@@ -2361,5 +2410,18 @@
         "description": "Bjud in någon till din organisation."
       }
     }
+  },
+  "phaseGrid": {
+    "title": "Rutnätet",
+    "description": "Vad som händer med varje artikeltyps rader när ett ärende går in i en fas. Välj en status, eller behåll för att lämna raderna som de är.",
+    "phase": "Fas",
+    "keep": "Behåll",
+    "terminal": "Släpper alla rader",
+    "empty": "Inga faser ännu.",
+    "saving": "Sparar cell…",
+    "saved": "Cellen har sparats.",
+    "cellLabel": "{phase}: {type}",
+    "cellSets": "När ett ärende går in i {phase} flyttas rader av {type} till {state}.",
+    "cellKeeps": "Rader av {type} behåller sin status."
   }
 }

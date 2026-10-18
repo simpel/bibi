@@ -1,22 +1,18 @@
-"use client";
-
+import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { PlusIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { TicketPhaseDialog } from "./ticket-phase-dialog";
+import { getTranslations } from "next-intl/server";
+import { ROUTES } from "@/lib/routes";
 
-/** Opens the create-phase dialog. */
-export function CreateTicketPhaseButton() {
-  const t = useTranslations("ticketPhase");
-  const [open, setOpen] = useState(false);
+/** Link to the create-phase page. */
+export async function CreateTicketPhaseButton() {
+  const t = await getTranslations("ticketPhase");
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>
+    <Button asChild>
+      <Link href={ROUTES.ticketPhaseNew}>
         <PlusIcon />
         {t("create")}
-      </Button>
-      <TicketPhaseDialog open={open} onOpenChange={setOpen} />
-    </>
+      </Link>
+    </Button>
   );
 }

@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { PhaseGridEditor } from "@/features/phase-grid/ui/phase-grid-editor";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -51,6 +52,7 @@ export async function TicketPhaseList({ locale }: TicketPhaseListProps) {
       ) : (
         <TicketPhaseTable phases={items} canAdmin={ticketPhaseAdmin} />
       )}
+      <PhaseGridEditor locale={locale} />
     </div>
   );
 }

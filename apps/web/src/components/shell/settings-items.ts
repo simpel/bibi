@@ -4,6 +4,7 @@ import {
   ClipboardListIcon,
   CreditCardIcon,
   LayoutGridIcon,
+  ListChecksIcon,
   ListIcon,
   type LucideIcon,
   PlugIcon,
@@ -22,6 +23,7 @@ export type SettingsKey =
   | "sheets"
   | "priceLists"
   | "ticketPhases"
+  | "itemStates"
   | "members"
   | "payments"
   | "integrations"
@@ -38,6 +40,7 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
   { href: ROUTES.settingsSheets, key: "sheets", icon: ClipboardListIcon },
   { href: ROUTES.settingsPriceLists, key: "priceLists", icon: TagIcon },
   { href: ROUTES.settingsPipeline, key: "ticketPhases", icon: CircleDotIcon },
+  { href: ROUTES.settingsItemStates, key: "itemStates", icon: ListChecksIcon },
   { href: ROUTES.settingsMembers, key: "members", icon: UsersIcon },
   { href: ROUTES.settingsPayments, key: "payments", icon: CreditCardIcon },
   { href: ROUTES.settingsIntegrations, key: "integrations", icon: PlugIcon },

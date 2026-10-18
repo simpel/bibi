@@ -185,7 +185,8 @@
       "catalog": "Catalog",
       "admin": "Administration"
     },
-    "integrations": "Integrations"
+    "integrations": "Integrations",
+    "itemStates": "Item states"
   },
   "venue": {
     "singular": "Venue",
@@ -1127,6 +1128,53 @@
       "NONE": "No hold",
       "SOFT": "Soft hold",
       "HARD": "Hard hold"
+    },
+    "singular": "State",
+    "plural": "Item states",
+    "listDescription": "The states a line can be in, per item type. The flags decide what the system does; nothing else about a state is fixed. Every type needs one initial state.",
+    "create": "Create state",
+    "edit": "Edit state",
+    "createDescription": "Add a state to {type}: name it, pick a color and choose what it does.",
+    "editDescription": "Rename, recolor or change what the state does.",
+    "archive": "Archive state",
+    "archiveConfirm": "Do you want to archive the state {name}? Lines in it, grid cells and the expiry state move to the state you choose.",
+    "archiveInitialConfirm": "{name} is the initial state. Make another state initial before archiving it. Lines in it move to the state you choose.",
+    "archived": "The state has been archived.",
+    "created": "The state has been created.",
+    "updated": "The state has been updated.",
+    "empty": "No states yet.",
+    "noTypes": "No item types yet.",
+    "noTypesDescription": "Create an item type first. Its states are set up here.",
+    "saving": "Saving state…",
+    "archiving": "Archiving state…",
+    "editTransitions": "Edit transitions",
+    "transitionsDescription": "Choose which states a line in {name} may move to.",
+    "releasedTransitions": "{name} is a released state: it is final and nothing leaves it.",
+    "transitionsSaved": "The transitions have been saved.",
+    "noTransitions": "None",
+    "noTargets": "There are no other states to move to.",
+    "noTarget": "No lines to move",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "reordering": "Saving order…",
+    "reordered": "The order has been saved.",
+    "fields": {
+      "name": "Name",
+      "color": "Color",
+      "hold": "What it does to the item",
+      "transitions": "May move to",
+      "targetState": "Move its lines to"
+    },
+    "columns": {
+      "name": "Name",
+      "flags": "Does",
+      "transitions": "May move to"
+    },
+    "flagChoices": {
+      "initial": "New lines start here",
+      "inSheets": "Lines are included in sheets",
+      "released": "Final: the hold is dropped and nothing leaves it",
+      "expires": "Falls to the expiry state when the ticket's hold date passes"
     }
   },
   "assistant": {
@@ -1782,7 +1830,8 @@
       "members": "Who has access and with which role.",
       "payments": "Stripe account for card payments and invoices.",
       "skills": "Reusable instructions for the assistant.",
-      "integrations": "API keys for other systems that use the REST API."
+      "integrations": "API keys for other systems that use the REST API.",
+      "itemStates": "The states a line can be in, per item type."
     }
   },
   "commandBar": {
@@ -2361,5 +2410,18 @@
         "description": "Invite someone to your organization."
       }
     }
+  },
+  "phaseGrid": {
+    "title": "The grid",
+    "description": "What happens to each item type's lines when a ticket enters a phase. Choose a state, or keep to leave the lines as they are.",
+    "phase": "Phase",
+    "keep": "Keep",
+    "terminal": "Releases every line",
+    "empty": "No phases yet.",
+    "saving": "Saving cell…",
+    "saved": "The cell has been saved.",
+    "cellLabel": "{phase}: {type}",
+    "cellSets": "When a ticket enters {phase}, lines of {type} move to {state}.",
+    "cellKeeps": "Lines of {type} keep their state."
   }
 }

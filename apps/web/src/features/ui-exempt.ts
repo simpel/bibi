@@ -1,50 +1,8 @@
 /** An operation deliberately without UI, and why. */
 export type UiExempt = { operation: string; reason: string };
 
-const ITEM_STATES_PAGE =
-  "The settings page /settings/item-states (#269) edits item states; until then the assistant and the APIs do.";
-
-const GRID_EDITOR =
-  "The grid editor on /settings/pipeline (#269) edits the phase grid; until then the assistant and the APIs do.";
-
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
-  {
-    operation: "itemState.list",
-    reason: ITEM_STATES_PAGE,
-  },
-  {
-    operation: "itemState.get",
-    reason: ITEM_STATES_PAGE,
-  },
-  {
-    operation: "itemState.create",
-    reason: ITEM_STATES_PAGE,
-  },
-  {
-    operation: "itemState.update",
-    reason: ITEM_STATES_PAGE,
-  },
-  {
-    operation: "itemState.archive",
-    reason: ITEM_STATES_PAGE,
-  },
-  {
-    operation: "itemState.reorder",
-    reason: ITEM_STATES_PAGE,
-  },
-  {
-    operation: "itemState.setTransitions",
-    reason: ITEM_STATES_PAGE,
-  },
-  {
-    operation: "phaseGrid.get",
-    reason: GRID_EDITOR,
-  },
-  {
-    operation: "phaseGrid.setCell",
-    reason: GRID_EDITOR,
-  },
   {
     operation: "assignment.listMine",
     reason:
