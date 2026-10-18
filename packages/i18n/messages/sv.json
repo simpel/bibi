@@ -139,12 +139,30 @@
       "movedOver": "{card} är över {column}.",
       "dropped": "{card} släpptes i {column}.",
       "cancelled": "Flytten av {card} avbröts."
+    },
+    "moving": "Flyttar…",
+    "inPhase": "I fasen {time}",
+    "heldLines": "{count, plural, one {# rad reserverad} other {# rader reserverade}}",
+    "bookedLines": "{count, plural, one {# rad bokad} other {# rader bokade}}",
+    "reason": {
+      "title": "Flytta till {column}",
+      "description": "Den här fasen kräver en anledning.",
+      "label": "Anledning",
+      "confirm": "Flytta"
+    },
+    "blockers": {
+      "title": "Kan inte flytta till {column}",
+      "description": "Åtgärda dessa först och försök igen.",
+      "close": "Stäng"
     }
   },
   "dashboard": {
     "title": "Översikt",
     "description": "Aktuellt läge i verksamheten.",
-    "comingSoon": "Översikten kommer snart."
+    "openTickets": "Öppna ärenden",
+    "closedTickets": "Nyligen stängda",
+    "byPhase": "Ärenden per fas",
+    "empty": "Inga ärenden ännu."
   },
   "nav": {
     "dashboard": "Översikt",

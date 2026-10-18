@@ -15,7 +15,7 @@ export type PipelineBoardViewProps = {
 /** The kanban board of tickets by phase; a drop runs `ticket.changePhase`. */
 export function PipelineBoardView({ board, transitions }: PipelineBoardViewProps) {
   const labels = usePipelineLabels();
-  const moveCard = useMoveCard();
+  const { move, dialog } = useMoveCard();
   const columns = board.columns.map((column) => ({
     id: column.id,
     title: column.title,
@@ -25,23 +25,25 @@ export function PipelineBoardView({ board, transitions }: PipelineBoardViewProps
   const column = ({ id }: { id: string }) => board.columns.find((c) => c.id === id);
 
   return (
-    <KanbanBoard
-      columns={columns}
-      cards={cards}
-      labels={labels}
-      renderCard={(card) => <PipelineCardContent card={card} />}
-      canDrop={({ cardId, fromColumnId, toColumnId }) => {
-        const card = board.cards.find((c) => c.id === cardId);
-        const from = column({ id: fromColumnId });
-        const to = column({ id: toColumnId });
-        return !!card && !!from && !!to && canMoveCard({ card, from, to, transitions });
-      }}
-      onMove={({ cardId, toColumnId }) => {
-        const card = board.cards.find((c) => c.id === cardId);
-        const to = column({ id: toColumnId });
-        const toTitle = columns.find((c) => c.id === toColumnId)?.title ?? "";
-        if (card && to) moveCard({ card, to, toTitle });
-      }}
-    />
+    <>
+      <KanbanBoard
+        columns={columns}
+        cards={cards}
+        labels={labels}
+        renderCard={(card) => <PipelineCardContent card={card} />}
+        canDrop={({ cardId, fromColumnId, toColumnId }) => {
+          const card = board.cards.find((c) => c.id === cardId);
+          const from = column({ id: fromColumnId });
+          const to = column({ id: toColumnId });
+          return !!card && !!from && !!to && canMoveCard({ card, from, to, transitions });
+        }}
+        onMove={({ cardId, toColumnId }) => {
+          const card = board.cards.find((c) => c.id === cardId);
+          const to = column({ id: toColumnId });
+          if (card && to) move({ card, to });
+        }}
+      />
+      {dialog}
+    </>
   );
 }

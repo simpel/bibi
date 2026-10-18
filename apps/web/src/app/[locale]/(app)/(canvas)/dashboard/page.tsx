@@ -5,6 +5,7 @@ import { DashboardPage } from "@/features/dashboard/ui/dashboard-page";
 type DashboardRouteProps = { params: Promise<{ locale: string }> };
 
 export default async function DashboardRoute({ params }: DashboardRouteProps) {
-  setRequestLocale(resolveLocale({ value: (await params).locale }));
-  return <DashboardPage />;
+  const locale = resolveLocale({ value: (await params).locale });
+  setRequestLocale(locale);
+  return <DashboardPage locale={locale} />;
 }

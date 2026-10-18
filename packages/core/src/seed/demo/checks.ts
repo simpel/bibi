@@ -2,6 +2,7 @@ import { listMembers } from "../../features/member/operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { checkDemoAssignments } from "./assignment-checks";
+import { checkDemoBoard } from "./board-checks";
 import { checkDemoConfig } from "./config-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
@@ -35,6 +36,7 @@ export async function checkDemoOrg({ context, org }: CheckDemoOrgInput): Promise
   }
   failures.push(...(await checkDemoConfig({ context, org })));
   failures.push(...(await checkDemoTickets({ context, org })));
+  failures.push(...(await checkDemoBoard({ context, org })));
   failures.push(...(await checkDemoAssignments({ context, org })));
   failures.push(...(await checkDemoHolds({ context, org })));
   failures.push(...(await checkDemoGrid({ context, org })));

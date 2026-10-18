@@ -1,5 +1,5 @@
 import type { PipelineCard } from "@okazi/core";
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useNow, useTranslations } from "next-intl";
 
 export type PipelineCardContentProps = { card: PipelineCard };
 
@@ -7,6 +7,7 @@ export type PipelineCardContentProps = { card: PipelineCard };
 export function PipelineCardContent({ card }: PipelineCardContentProps) {
   const t = useTranslations("pipeline");
   const format = useFormatter();
+  const since = useNow();
   const heading = `#${card.reference} · ${card.typeName}`;
   return (
     <div className="grid gap-0.5 text-sm">
@@ -15,6 +16,11 @@ export function PipelineCardContent({ card }: PipelineCardContentProps) {
       <span className="text-xs text-muted-foreground">
         {card.startsAt ? format.dateTime(card.startsAt, { dateStyle: "medium" }) : t("noDate")}
         {card.quantity === null ? "" : ` · ${t("quantity", { count: card.quantity })}`}
+      </span>
+      <span className="text-xs text-muted-foreground">
+        {t("inPhase", { time: format.relativeTime(card.phaseChangedAt, since) })}
+        {card.heldLines > 0 ? ` · ${t("heldLines", { count: card.heldLines })}` : ""}
+        {card.bookedLines > 0 ? ` · ${t("bookedLines", { count: card.bookedLines })}` : ""}
       </span>
     </div>
   );

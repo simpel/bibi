@@ -16,6 +16,24 @@ async function mainAssignees({ context, ids }: { context: Db; ids: string[] }) {
   return new Map(rows.map((row) => [row.subjectId, row.assigneeId]));
 }
 
+type Counts = { heldLines: number; bookedLines: number };
+
+/** Per ticket: how many lines are in a soft-hold and in a hard-hold state (ADR 0044). */
+async function lineCounts({ context, ids }: { context: Db; ids: string[] }) {
+  const lines = await context.db.programItem.findMany({
+    where: { ticketId: { in: ids }, status: "ACTIVE", state: { hold: { in: ["SOFT", "HARD"] } } },
+    select: { ticketId: true, state: { select: { hold: true } } },
+  });
+  const counts = new Map<string, Counts>();
+  for (const line of lines) {
+    const current = counts.get(line.ticketId) ?? { heldLines: 0, bookedLines: 0 };
+    if (line.state?.hold === "SOFT") current.heldLines += 1;
+    else current.bookedLines += 1;
+    counts.set(line.ticketId, current);
+  }
+  return counts;
+}
+
 /** Tickets in open phases, plus those that entered a terminal phase since `since`. */
 export async function loadTicketCards({
   context,
@@ -38,7 +56,9 @@ export async function loadTicketCards({
     take: CARD_LIMIT,
   });
   const owners = await mainAssignees({ context, ids: rows.map((row) => row.id) });
+  const lines = await lineCounts({ context, ids: rows.map((row) => row.id) });
   return rows.map((row) => ({
+    ...(lines.get(row.id) ?? { heldLines: 0, bookedLines: 0 }),
     id: row.id,
     columnId: row.phaseId,
     reference: row.reference,

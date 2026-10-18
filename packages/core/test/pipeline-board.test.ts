@@ -51,6 +51,13 @@ describe("pipeline.board (ADR 0043)", () => {
     expect(recent.cards).toHaveLength(1);
   });
 
+  it("counts lines held and booked per card", async () => {
+    const { context, type, customer } = await ticketSetup();
+    await createTestTicket({ context, entityTypeId: type.id, customerId: customer.id });
+    const { cards } = await board({ context });
+    expect(cards[0]).toMatchObject({ heldLines: 0, bookedLines: 0 });
+  });
+
   it("filters by assignee", async () => {
     const { context, type, customer } = await ticketSetup();
     const sara = await memberUser({ context, name: "Sara" });

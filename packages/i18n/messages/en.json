@@ -139,12 +139,30 @@
       "movedOver": "{card} is over {column}.",
       "dropped": "{card} dropped in {column}.",
       "cancelled": "Moving {card} was cancelled."
+    },
+    "moving": "Moving…",
+    "inPhase": "In phase {time}",
+    "heldLines": "{count, plural, one {# line held} other {# lines held}}",
+    "bookedLines": "{count, plural, one {# line booked} other {# lines booked}}",
+    "reason": {
+      "title": "Move to {column}",
+      "description": "This phase needs a reason.",
+      "label": "Reason",
+      "confirm": "Move"
+    },
+    "blockers": {
+      "title": "Cannot move to {column}",
+      "description": "Fix these first, then try again.",
+      "close": "Close"
     }
   },
   "dashboard": {
     "title": "Dashboard",
     "description": "The current state of your business.",
-    "comingSoon": "The dashboard is coming soon."
+    "openTickets": "Open tickets",
+    "closedTickets": "Closed recently",
+    "byPhase": "Tickets by phase",
+    "empty": "No tickets yet."
   },
   "nav": {
     "dashboard": "Dashboard",
