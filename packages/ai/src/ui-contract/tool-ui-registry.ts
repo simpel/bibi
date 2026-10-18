@@ -1,7 +1,6 @@
 import { ACCESS_UI_ENTRIES } from "./access-entries";
 import { ASSIGNMENT_UI_ENTRIES } from "./assignment-entries";
 import { BOOKING_UI_ENTRIES } from "./booking-entries";
-import { BOOKING_SERIES_UI_ENTRIES } from "./booking-series-entries";
 import { BOOKING_STATUS_UI_ENTRIES } from "./booking-status-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
@@ -12,6 +11,7 @@ import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
 import { OPTION_UI_ENTRIES } from "./option-entries";
 import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
+import { PIPELINE_UI_ENTRIES } from "./pipeline-entries";
 import { PRICE_LIST_UI_ENTRIES } from "./price-list-entries";
 import { PROGRAM_ITEM_UI_ENTRIES } from "./program-item-entries";
 import { QUOTE_UI_ENTRIES } from "./quote-entries";
@@ -63,11 +63,11 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...PRICE_LIST_UI_ENTRIES,
   ...BOOKING_STATUS_UI_ENTRIES,
   ...BOOKING_UI_ENTRIES,
-  ...BOOKING_SERIES_UI_ENTRIES,
   ...PROGRAM_ITEM_UI_ENTRIES,
   ...ASSIGNMENT_UI_ENTRIES,
   ...REQUIREMENT_UI_ENTRIES,
   ...INQUIRY_UI_ENTRIES,
+  ...PIPELINE_UI_ENTRIES,
   ...OPTION_UI_ENTRIES,
   ...QUOTE_UI_ENTRIES,
   ...INBOUND_EMAIL_UI_ENTRIES,

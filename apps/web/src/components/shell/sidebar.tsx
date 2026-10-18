@@ -16,6 +16,7 @@ export function Sidebar({ organizationId, user, access }: SidebarProps) {
     <div className="flex h-full flex-col gap-6 p-4">
       <span className="px-3 font-serif text-xl font-semibold">{t("appName")}</span>
       <AssistantNav />
+      <SidebarNav groups={["primary"]} label="mainNavigation" access={access} headings={false} />
       <SidebarNav groups={["work", "catalog"]} label="mainNavigation" access={access} headings />
       <div className="mt-auto grid gap-2 border-t pt-4">
         <SidebarNav groups={["admin"]} label="adminNavigation" access={access} headings={false} />

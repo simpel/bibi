@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { FIELD_KEYS, fieldKey, OPERATION_KEYS, operationKey } from "./approval-labels";
 
 const embed: EmbedFn = async ({ texts }) => ({ model: "none", embeddings: texts.map(() => []) });
-const ENTITIES = ["customer", "contact", "booking", "bookingSeries"];
+const ENTITIES = ["customer", "contact", "booking"];
 
 describe("approval labels", () => {
   it("finds known fields and operations", () => {
@@ -35,7 +35,7 @@ describe("approval labels", () => {
     expect(labelled).toEqual([...OPERATION_KEYS].sort());
   });
 
-  it("labels every write operation of customer, contact, booking and series", () => {
+  it("labels every write operation of customer, contact and booking", () => {
     const writes = createCoreOperations({ embed })
       .filter((op) => op.kind === "command" && ENTITIES.includes(op.name.split(".")[0] ?? ""))
       .map((op) => op.name);

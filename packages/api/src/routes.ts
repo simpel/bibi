@@ -2,7 +2,6 @@ import { apiKeyRoutes } from "./features/api-key/rest";
 import { assignmentRoutes } from "./features/assignment/rest";
 import { auditLogRoutes } from "./features/audit-log/rest";
 import { bookingRoutes } from "./features/booking/rest";
-import { bookingSeriesRoutes } from "./features/booking-series/rest";
 import { bookingStatusRoutes } from "./features/booking-status/rest";
 import { configurationRoutes } from "./features/configuration/rest";
 import { contactRoutes } from "./features/contact/rest";
@@ -20,6 +19,7 @@ import { occupancyRoutes } from "./features/occupancy/rest";
 import { optionRoutes } from "./features/option/rest";
 import { paymentRoutes } from "./features/payment/rest";
 import { paymentAccountRoutes } from "./features/payment-account/rest";
+import { pipelineRoutes } from "./features/pipeline/rest";
 import { priceListRoutes } from "./features/price-list/rest";
 import { programItemRoutes } from "./features/program-item/rest";
 import { quoteRoutes } from "./features/quote/rest";
@@ -54,11 +54,11 @@ export function listRestRoutes(): RestRoute[] {
     ...occupancyRoutes,
     ...bookingStatusRoutes,
     ...bookingRoutes,
-    ...bookingSeriesRoutes,
     ...programItemRoutes,
     ...requirementRoutes,
     ...sheetRoutes,
     ...inquiryRoutes,
+    ...pipelineRoutes,
     ...optionRoutes,
     ...quoteRoutes,
     ...inboundEmailRoutes,

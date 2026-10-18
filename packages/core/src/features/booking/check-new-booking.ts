@@ -14,8 +14,7 @@ export type CheckNewBookingInput = {
 };
 
 /**
- * The checks every new booking passes, alone (`booking.create`) or as an occurrence of a series
- * (`bookingSeries.create`): a `BOOKING` type, an active customer, an assignee who is a member and
+ * The checks every new booking passes (`booking.create`): a `BOOKING` type, an active customer, an assignee who is a member and
  * field values that match the type. Returns the validated field values.
  */
 export async function checkNewBooking({

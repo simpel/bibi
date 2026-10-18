@@ -126,8 +126,29 @@
     "consentDenying": "Denying access…",
     "consentDenied": "Access has been denied."
   },
+  "pipeline": {
+    "title": "Pipeline",
+    "clash": "Time clash",
+    "noDate": "No date",
+    "quantity": "{count, plural, one {# person} other {# people}}",
+    "moved": "Moved to {column}.",
+    "kanban": {
+      "dragInstructions": "Press space to lift the card, the arrow keys to move it between lanes and space to drop it.",
+      "emptyColumn": "Nothing here",
+      "pickedUp": "Picked up {card}.",
+      "movedOver": "{card} is over {column}.",
+      "dropped": "{card} dropped in {column}.",
+      "cancelled": "Moving {card} was cancelled."
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "The current state of your business.",
+    "comingSoon": "The dashboard is coming soon."
+  },
   "nav": {
     "dashboard": "Dashboard",
+    "pipeline": "Pipeline",
     "venues": "Venues",
     "items": "Items",
     "customers": "Customers",
@@ -139,7 +160,6 @@
     "sheets": "Sheets",
     "calendar": "Calendar",
     "bookings": "Bookings",
-    "bookingSeries": "Booking series",
     "skills": "Skills",
     "settings": "Settings",
     "openMenu": "Open menu",
@@ -161,6 +181,7 @@
     "showMore": "Show more",
     "platformAdmin": "Platform admin",
     "groups": {
+      "primary": "Overview",
       "work": "Work",
       "catalog": "Catalog",
       "admin": "Administration"
@@ -205,7 +226,20 @@
       "contact": "Contact",
       "status": "Status"
     },
-    "itemsEmpty": "No items at this venue yet."
+    "itemsEmpty": "No items at this venue yet.",
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "identity": "Name",
+        "address": "Address",
+        "contact": "Contact and VAT"
+      },
+      "descriptions": {
+        "identity": "Name the venue.",
+        "address": "Where the venue is.",
+        "contact": "How to reach the venue, when it is open and its default VAT."
+      }
+    }
   },
   "item": {
     "singular": "Item",
@@ -307,6 +341,19 @@
       "part": "{quantity} × {name}",
       "optional": "optional",
       "option": "option in {group}"
+    },
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "type": "Type",
+        "details": "Details",
+        "setup": "Price and setup"
+      },
+      "descriptions": {
+        "type": "Pick the item type. It decides which fields the item has.",
+        "details": "Name the item and fill in the fields of its type.",
+        "setup": "Set the price, booking, setups and contents."
+      }
     }
   },
   "customer": {
@@ -380,67 +427,6 @@
       "email": "Email",
       "phone": "Phone"
     }
-  },
-  "bookingSeries": {
-    "singular": "Booking series",
-    "plural": "Booking series",
-    "listDescription": "Recurring bookings, e.g. a meeting room on the first Tuesday of every month. Every occurrence is an ordinary booking.",
-    "create": "Create series",
-    "createDescription": "Pick a type, the customer, the recurrence and the room. Occurrences are created up to 12 months or 52 times ahead, each in the default tentative status.",
-    "created": "The series has been created.",
-    "empty": "No booking series yet.",
-    "emptyDescription": "Create a series for a customer who books the same thing regularly.",
-    "occurrence": "{index}/{total}",
-    "marker": "Series {index}/{total}",
-    "markerNoTotal": "Series {index}",
-    "clash": "Clash",
-    "clashCount": "{count, plural, one {# clash} other {# clashes}}",
-    "clashNotice": "{count, plural, one {# occurrence clashes} other {# occurrences clash}} with another booking or a blocked time. It is created without the room; pick another room or time for it.",
-    "truncated": "The rule continues after the last occurrence shown; later occurrences are created further on.",
-    "fields": {
-      "type": "Type",
-      "customer": "Customer",
-      "rule": "Recurrence",
-      "ruleHint": "RRULE, e.g. FREQ=MONTHLY;BYDAY=1TU;COUNT=10 (first Tuesday of the month, 10 times) or FREQ=WEEKLY;BYDAY=TH;UNTIL=20270630.",
-      "startsAt": "First occurrence starts",
-      "durationMinutes": "Length (minutes)",
-      "timeZone": "Time zone",
-      "room": "Room",
-      "noRoom": "No room",
-      "setup": "Setup",
-      "noSetup": "No setup",
-      "estimatedHeadcount": "Estimated headcount",
-      "scope": "Applies to",
-      "occurrenceStartsAt": "Starts",
-      "keepRoom": "Keep the current room",
-      "cancelReason": "Reason"
-    },
-    "columns": {
-      "rule": "Recurrence",
-      "customer": "Customer",
-      "startsAt": "Starts",
-      "occurrences": "Occurrences",
-      "clashes": "Clashes",
-      "occurrence": "Occurrence",
-      "booking": "Booking",
-      "when": "When",
-      "status": "Status",
-      "clash": "Clash",
-      "actions": "Actions"
-    },
-    "occurrencesUpdated": "The occurrences have been changed.",
-    "itemsTaken": "The room is already taken at that time. Pick another room or time.",
-    "scope": {
-      "this": "Only this occurrence",
-      "following": "This and following occurrences"
-    },
-    "editOccurrence": "Change occurrence {index}/{total}",
-    "noOccurrences": "This series has no occurrences.",
-    "editOccurrenceDescription": "Move the occurrence to another time or room. \"This and following\" moves every later occurrence by the same amount and changes the series going forward.",
-    "cancelSeries": "Cancel series",
-    "cancelSeriesDescription": "Every upcoming occurrence is cancelled with the reason and its room is released. Occurrences that have already started or ended are not changed.",
-    "cancelled": "The series has been cancelled.",
-    "cancelledNotice": "The series is cancelled: {reason}"
   },
   "booking": {
     "singular": "Booking",
@@ -859,6 +845,17 @@
       "CHOICES": "Choice groups among the parts.",
       "BOOKABLE": "Occupies time and has a default length.",
       "SETUPS": "Capacity per setup."
+    },
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "base": "Name",
+        "behaviours": "Behaviours"
+      },
+      "descriptions": {
+        "base": "Choose what the type is for and name it.",
+        "behaviours": "Pick what items of this type can do. You add its fields next."
+      }
     }
   },
   "fieldDefinition": {
@@ -1035,6 +1032,17 @@
       "add": "Add item",
       "remove": "Remove item",
       "saved": "The item prices have been saved."
+    },
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "identity": "Name",
+        "terms": "Terms"
+      },
+      "descriptions": {
+        "identity": "Name the price list and pick the customer it is for, if any.",
+        "terms": "Set when it is valid and a general discount."
+      }
     }
   },
   "responsibility": {
@@ -1074,6 +1082,17 @@
       "types": "Covered item types",
       "assignee": "Default assignee",
       "followers": "Default followers"
+    },
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "scope": "Scope",
+        "people": "People"
+      },
+      "descriptions": {
+        "scope": "Name the responsibility and pick the types it covers.",
+        "people": "Pick who it goes to by default and who follows."
+      }
     }
   },
   "sheetDefinition": {
@@ -1116,6 +1135,19 @@
       "types": "Item types",
       "lists": "Lists",
       "role": "Receiving role"
+    },
+    "wizard": {
+      "progress": "Steps",
+      "steps": {
+        "name": "Name",
+        "content": "Content",
+        "receiver": "Receiver"
+      },
+      "descriptions": {
+        "name": "Name the sheet, e.g. Kitchen order.",
+        "content": "Pick the item types, their fields and the lists the sheet is compiled from.",
+        "receiver": "Pick the role that receives the sheet."
+      }
     }
   },
   "bookingStatus": {
@@ -1258,9 +1290,6 @@
         "booking_createQuick": "Create quick booking",
         "booking_update": "Update booking",
         "booking_changeStatus": "Change booking status",
-        "bookingSeries_create": "Create booking series",
-        "bookingSeries_updateOccurrences": "Update series occurrences",
-        "bookingSeries_cancel": "Cancel booking series",
         "entityType_create": "Create type",
         "entityType_update": "Update type",
         "entityType_archive": "Archive type",
@@ -1398,20 +1427,10 @@
         "onboardingLink": "Continue on Stripe",
         "open": "Open payment settings"
       },
-      "bookingSeries": {
-        "singular": "Booking series",
-        "empty": "No booking series found.",
-        "open": "Open the series",
-        "occurrences": "{count, plural, one {# occurrence} other {# occurrences}}",
-        "noClashes": "No clashes",
-        "clash": "Clash",
-        "occurrence": "Occurrence {index}/{total}",
-        "columns": {
-          "rule": "Recurrence",
-          "occurrences": "Occurrences",
-          "clashes": "Clashes"
-        },
-        "cancelled": "Cancelled"
+      "pipeline": {
+        "title": "Pipeline",
+        "empty": "No inquiries or bookings yet.",
+        "open": "Open the pipeline"
       },
       "inquiry": {
         "title": "Inquiry of {date}",
@@ -1455,7 +1474,11 @@
         "empty": "No options found.",
         "expires": "Expires {date}",
         "openItem": "Open the item",
-        "columns": { "rank": "Rank", "period": "Period", "expiresAt": "Expires" }
+        "columns": {
+          "rank": "Rank",
+          "period": "Period",
+          "expiresAt": "Expires"
+        }
       },
       "programItem": {
         "singular": "Program item",
@@ -2297,6 +2320,86 @@
         "client": "App",
         "scopes": "Access",
         "connected": "Connected"
+      }
+    }
+  },
+  "wizard": {
+    "progress": "Steps",
+    "steps": {
+      "type": "Type",
+      "details": "Details",
+      "fields": "Type fields"
+    },
+    "descriptions": {
+      "type": "Pick the type. It decides which own fields there are.",
+      "details": "Fill in the details.",
+      "fields": "Fill in the fields of this type."
+    }
+  },
+  "createHub": {
+    "title": "Create",
+    "description": "Everything you can create. Pick one to start.",
+    "groups": {
+      "work": "Work",
+      "catalog": "Catalog",
+      "settings": "Setup"
+    },
+    "items": {
+      "booking": {
+        "title": "Booking",
+        "description": "A conference or event with customer, time and headcount."
+      },
+      "inquiry": {
+        "title": "Inquiry",
+        "description": "A request from a customer, before it is qualified."
+      },
+      "customer": {
+        "title": "Customer",
+        "description": "A company or person you book for."
+      },
+      "item": {
+        "title": "Item",
+        "description": "Something you sell or book, such as a room, a dish or equipment."
+      },
+      "venue": {
+        "title": "Venue",
+        "description": "A place where bookings happen."
+      },
+      "priceList": {
+        "title": "Price list",
+        "description": "Prices that override the item prices."
+      },
+      "skill": {
+        "title": "Skill",
+        "description": "Reusable behaviour for the assistant."
+      },
+      "type": {
+        "title": "Type",
+        "description": "A kind of item, booking or inquiry and its fields."
+      },
+      "list": {
+        "title": "List",
+        "description": "A value list, such as allergens or equipment."
+      },
+      "setup": {
+        "title": "Setup",
+        "description": "A room layout such as theatre or boardroom."
+      },
+      "responsibility": {
+        "title": "Responsibility",
+        "description": "What someone answers for, and who it defaults to."
+      },
+      "sheet": {
+        "title": "Sheet",
+        "description": "A sheet such as the kitchen order, and who gets it."
+      },
+      "bookingStatus": {
+        "title": "Booking status",
+        "description": "A step a booking passes through."
+      },
+      "member": {
+        "title": "Member",
+        "description": "Invite someone to your organization."
       }
     }
   }

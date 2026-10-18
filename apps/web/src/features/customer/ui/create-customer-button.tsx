@@ -1,36 +1,18 @@
-"use client";
-
-import { usePathname, useRouter } from "@okazi/i18n/navigation";
+import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { PlusIcon } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
-import { CustomerDialog } from "./customer-dialog";
+import { getTranslations } from "next-intl/server";
+import { ROUTES } from "@/lib/routes";
 
-export type CreateCustomerButtonProps = { data: TypedFormData };
-
-/** Opens the create-customer dialog; also opens on `?create=1`. */
-export function CreateCustomerButton({ data }: CreateCustomerButtonProps) {
-  const t = useTranslations("customer");
-  const router = useRouter();
-  const pathname = usePathname();
-  const [open, setOpen] = useState(useSearchParams().get("create") === "1");
+/** Link to the step-by-step create page. */
+export async function CreateCustomerButton() {
+  const t = await getTranslations("customer");
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>
+    <Button asChild>
+      <Link href={ROUTES.customerNew}>
         <PlusIcon />
         {t("create")}
-      </Button>
-      <CustomerDialog
-        data={data}
-        open={open}
-        onOpenChange={(next) => {
-          setOpen(next);
-          if (!next) router.replace(pathname);
-        }}
-      />
-    </>
+      </Link>
+    </Button>
   );
 }

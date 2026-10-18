@@ -20,12 +20,6 @@ model Booking {
   statusReason        String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
   fields              Json          @default("{}")
-  /// The series that generated this booking (ADR 0023), with its 1-based position in it.
-  seriesId            String?
-  occurrenceIndex     Int?
-  /// Set when the series could not occupy its template's items for this occurrence (another
-  /// booking, setup time or block overlaps). The user then picks another item or time.
-  clash               Boolean       @default(false)
   status              RecordStatus  @default(ACTIVE)
   createdAt           DateTime      @default(now())
   updatedAt           DateTime      @updatedAt
@@ -33,7 +27,6 @@ model Booking {
   entityType          EntityType    @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   customer            Customer      @relation(fields: [customerId, organizationId], references: [id, organizationId])
   bookingStatus       BookingStatus @relation(fields: [bookingStatusId, organizationId], references: [id, organizationId])
-  series              BookingSeries? @relation(fields: [seriesId, organizationId], references: [id, organizationId])
   inboundEmails       InboundEmail[]
   payments            Payment[]
   programItems        ProgramItem[]
@@ -42,7 +35,6 @@ model Booking {
 
   @@unique([id, organizationId])
   @@unique([organizationId, reference])
-  @@unique([seriesId, occurrenceIndex])
   @@index([organizationId, status, startsAt])
   @@index([organizationId, customerId])
   @@index([organizationId, bookingStatusId])

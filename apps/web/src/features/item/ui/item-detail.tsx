@@ -30,7 +30,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const data = await loadItemFormData({ customerId: item.value.customerId });
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const type = data.value.types.find((candidate) => candidate.id === item.value.entityTypeId);
-  const actions = itemWrite ? <ItemActions item={item.value} data={data.value} /> : undefined;
+  const actions = itemWrite ? <ItemActions item={item.value} /> : undefined;
   return (
     <div className="grid gap-6">
       <Link

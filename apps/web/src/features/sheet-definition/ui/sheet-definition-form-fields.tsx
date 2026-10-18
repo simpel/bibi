@@ -56,9 +56,9 @@ function IdsField({ form, name, options, onPick }: IdsFieldProps) {
   );
 }
 
-type RoleFieldProps = { form: SheetForm; roles: readonly SheetOption[] };
+export type SheetRoleFieldProps = { form: SheetForm; roles: readonly SheetOption[] };
 
-function RoleField({ form, roles }: RoleFieldProps) {
+export function SheetRoleField({ form, roles }: SheetRoleFieldProps) {
   const t = useTranslations("sheetDefinition");
   return (
     <FormController
@@ -85,10 +85,10 @@ function RoleField({ form, roles }: RoleFieldProps) {
   );
 }
 
-export type SheetDefinitionFormFieldsProps = { form: SheetForm; options: SheetOptions };
+export type SheetContentFieldsProps = { form: SheetForm; options: SheetOptions };
 
-/** Item types, their fields, lists and the receiving role. Unpicking a type drops its fields. */
-export function SheetDefinitionFormFields({ form, options }: SheetDefinitionFormFieldsProps) {
+/** Item types, their fields and lists. Unpicking a type drops its fields. */
+export function SheetContentFields({ form, options }: SheetContentFieldsProps) {
   const typeIds = form.watch("entityTypeIds");
   const fields = fieldsOfTypes({ types: options.types, typeIds });
   const pruneFields = ({ ids }: { ids: string[] }) => {
@@ -103,7 +103,18 @@ export function SheetDefinitionFormFields({ form, options }: SheetDefinitionForm
       <IdsField form={form} name="entityTypeIds" options={options.types} onPick={pruneFields} />
       <IdsField form={form} name="fieldIds" options={fields} />
       <IdsField form={form} name="vocabularyIds" options={options.lists} />
-      <RoleField form={form} roles={options.roles} />
+    </>
+  );
+}
+
+export type SheetDefinitionFormFieldsProps = { form: SheetForm; options: SheetOptions };
+
+/** Content and receiving role in one form (the update page); create splits them into steps. */
+export function SheetDefinitionFormFields({ form, options }: SheetDefinitionFormFieldsProps) {
+  return (
+    <>
+      <SheetContentFields form={form} options={options} />
+      <SheetRoleField form={form} roles={options.roles} />
     </>
   );
 }

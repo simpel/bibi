@@ -23,14 +23,14 @@ type ResponsibilityForm = UseFormReturn<
 const toChoices = ({ options }: { options: readonly ResponsibilityOption[] }) =>
   options.map(({ id, name }) => ({ value: id, label: name }));
 
-type IdsFieldProps = {
+export type ResponsibilityIdsFieldProps = {
   form: ResponsibilityForm;
   name: "entityTypeIds" | "defaultFollowerIds";
   options: readonly ResponsibilityOption[];
 };
 
 /** Checkboxes for one of the responsibility's id sets. */
-function IdsField({ form, name, options }: IdsFieldProps) {
+export function ResponsibilityIdsField({ form, name, options }: ResponsibilityIdsFieldProps) {
   const t = useTranslations("responsibility");
   return (
     <FormController
@@ -55,9 +55,12 @@ function IdsField({ form, name, options }: IdsFieldProps) {
   );
 }
 
-type AssigneeFieldProps = { form: ResponsibilityForm; people: readonly ResponsibilityOption[] };
+export type ResponsibilityAssigneeFieldProps = {
+  form: ResponsibilityForm;
+  people: readonly ResponsibilityOption[];
+};
 
-function AssigneeField({ form, people }: AssigneeFieldProps) {
+export function ResponsibilityAssigneeField({ form, people }: ResponsibilityAssigneeFieldProps) {
   const t = useTranslations("responsibility");
   return (
     <FormController
@@ -93,9 +96,9 @@ export type ResponsibilityFormFieldsProps = {
 export function ResponsibilityFormFields({ form, options }: ResponsibilityFormFieldsProps) {
   return (
     <>
-      <IdsField form={form} name="entityTypeIds" options={options.types} />
-      <AssigneeField form={form} people={options.people} />
-      <IdsField form={form} name="defaultFollowerIds" options={options.people} />
+      <ResponsibilityIdsField form={form} name="entityTypeIds" options={options.types} />
+      <ResponsibilityAssigneeField form={form} people={options.people} />
+      <ResponsibilityIdsField form={form} name="defaultFollowerIds" options={options.people} />
     </>
   );
 }

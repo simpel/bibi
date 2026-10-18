@@ -2,7 +2,6 @@ import { apiKeyMcpTools } from "../features/api-key/mcp";
 import { assignmentMcpTools } from "../features/assignment/mcp";
 import { auditLogMcpTools } from "../features/audit-log/mcp";
 import { bookingMcpTools } from "../features/booking/mcp";
-import { bookingSeriesMcpTools } from "../features/booking-series/mcp";
 import { bookingStatusMcpTools } from "../features/booking-status/mcp";
 import { configurationMcpTools } from "../features/configuration/mcp";
 import { contactMcpTools } from "../features/contact/mcp";
@@ -20,6 +19,7 @@ import { occupancyMcpTools } from "../features/occupancy/mcp";
 import { optionMcpTools } from "../features/option/mcp";
 import { paymentMcpTools } from "../features/payment/mcp";
 import { paymentAccountMcpTools } from "../features/payment-account/mcp";
+import { pipelineMcpTools } from "../features/pipeline/mcp";
 import { priceListMcpTools } from "../features/price-list/mcp";
 import { programItemMcpTools } from "../features/program-item/mcp";
 import { quoteMcpTools } from "../features/quote/mcp";
@@ -53,12 +53,12 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...occupancyMcpTools,
     ...bookingStatusMcpTools,
     ...bookingMcpTools,
-    ...bookingSeriesMcpTools,
     ...assignmentMcpTools,
     ...programItemMcpTools,
     ...requirementMcpTools,
     ...sheetMcpTools,
     ...inquiryMcpTools,
+    ...pipelineMcpTools,
     ...optionMcpTools,
     ...quoteMcpTools,
     ...inboundEmailMcpTools,

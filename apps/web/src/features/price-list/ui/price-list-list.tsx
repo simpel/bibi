@@ -32,7 +32,7 @@ export async function PriceListList({ locale, cursor }: PriceListListProps) {
   const t = await getTranslations("priceList");
   const { priceListWrite } = await getCallerAbilities();
   const [result, data] = await load({ cursor });
-  const create = priceListWrite ? <CreatePriceListButton data={data} /> : undefined;
+  const create = priceListWrite ? <CreatePriceListButton /> : undefined;
   const header = (
     <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
   );

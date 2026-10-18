@@ -1,41 +1,25 @@
-"use client";
-
 import type { ItemDto } from "@okazi/core";
+import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
-import { ArchiveIcon, PencilIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { ArchiveItemDialog } from "./archive-item-dialog";
-import { ItemDialog } from "./item-dialog";
-import type { ItemFormData } from "./item-form-data";
+import { PencilIcon } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { itemRoute, updateRoute } from "@/lib/routes";
+import { ArchiveItemButton } from "./archive-item-button";
 
-export type ItemActionsProps = { item: ItemDto; data: ItemFormData };
+export type ItemActionsProps = { item: ItemDto };
 
-/** Edit and archive buttons of the item detail page. */
-export function ItemActions({ item, data }: ItemActionsProps) {
-  const t = useTranslations("item");
-  const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
+/** Edit (its own page) and archive buttons of the item detail page. */
+export async function ItemActions({ item }: ItemActionsProps) {
+  const t = await getTranslations("item");
   return (
     <>
-      <Button variant="outline" onClick={() => setDialog("edit")}>
-        <PencilIcon />
-        {t("edit")}
+      <Button asChild variant="outline">
+        <Link href={updateRoute({ detail: itemRoute({ id: item.id }) })}>
+          <PencilIcon />
+          {t("edit")}
+        </Link>
       </Button>
-      <Button variant="outline" onClick={() => setDialog("archive")}>
-        <ArchiveIcon />
-        {t("archive")}
-      </Button>
-      <ItemDialog
-        data={data}
-        item={item}
-        open={dialog === "edit"}
-        onOpenChange={(open) => !open && setDialog(null)}
-      />
-      <ArchiveItemDialog
-        item={item}
-        open={dialog === "archive"}
-        onOpenChange={(open) => !open && setDialog(null)}
-      />
+      <ArchiveItemButton item={item} />
     </>
   );
 }

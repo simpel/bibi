@@ -9,7 +9,7 @@ import { SkillForm } from "./skill-form";
 
 export type SkillEditProps = { locale: Locale; id: string };
 
-/** `/skills/[id]/edit`: the edit form for a skill the user may change. */
+/** `/skills/[id]/update`: the edit form for a skill the user may change. */
 export async function SkillEdit({ locale, id }: SkillEditProps) {
   const t = await getTranslations("skills");
   const result = await runOperation({ operation: getSkill, input: { id } });

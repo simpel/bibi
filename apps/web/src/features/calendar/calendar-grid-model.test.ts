@@ -16,8 +16,6 @@ const base: CalendarBlock = {
   endsAt: new Date(1),
   bookingId: "b1",
   reference: 12,
-  seriesId: null,
-  occurrenceIndex: null,
   title: "Lunch",
   queuePosition: null,
 };

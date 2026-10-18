@@ -39,7 +39,7 @@ export async function CustomerList({ locale, cursor }: CustomerListProps) {
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const noTypes = data.value.types.length === 0;
-  const create = customerWrite && !noTypes ? <CreateCustomerButton data={data.value} /> : undefined;
+  const create = customerWrite && !noTypes ? <CreateCustomerButton /> : undefined;
   const page: { items: CustomerDto[]; nextCursor: string | null } = result.value;
   return (
     <div className="grid gap-6">

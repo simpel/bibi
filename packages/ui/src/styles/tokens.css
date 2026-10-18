@@ -17,6 +17,11 @@
   --popover-foreground: oklch(0.24 0.012 60);
   --primary: oklch(0.62 0.13 40);
   --primary-foreground: oklch(0.98 0.01 85);
+  --chart-1: oklch(0.62 0.13 40);
+  --chart-2: oklch(0.55 0.1 220);
+  --chart-3: oklch(0.65 0.12 150);
+  --chart-4: oklch(0.7 0.13 85);
+  --chart-5: oklch(0.5 0.12 310);
   --secondary: oklch(0.94 0.012 80);
   --secondary-foreground: oklch(0.3 0.012 60);
   --muted: oklch(0.945 0.01 80);
@@ -53,6 +58,11 @@
   --popover-foreground: oklch(0.94 0.01 85);
   --primary: oklch(0.7 0.13 42);
   --primary-foreground: oklch(0.2 0.02 50);
+  --chart-1: oklch(0.7 0.13 42);
+  --chart-2: oklch(0.7 0.1 220);
+  --chart-3: oklch(0.72 0.12 150);
+  --chart-4: oklch(0.78 0.13 85);
+  --chart-5: oklch(0.68 0.12 310);
   --secondary: oklch(0.3 0.01 60);
   --secondary-foreground: oklch(0.94 0.01 85);
   --muted: oklch(0.28 0.01 60);
@@ -87,6 +97,11 @@
   --color-card-foreground: var(--card-foreground);
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);

@@ -57,7 +57,7 @@ test("create a personal skill, export it and import it back", async ({ page }) =
 
 test("edit, publish, filter and archive a skill; English strings", async ({ page }) => {
   await signUpWithOrganization({ page, name: "Skills Two AB" });
-  await page.goto("/en/skills/new");
+  await page.goto("/en/new/skill");
   await page.getByLabel(/^Name/).fill("Greeting");
   await page.getByLabel(/^When should it be used\?/).fill("When a guest arrives");
   await page.getByLabel(/^Instructions \(markdown\)/).fill("Say hello.");

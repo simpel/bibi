@@ -1,11 +1,12 @@
 "use client";
 
 import type { VenueDto } from "@okazi/core";
+import { Link } from "@okazi/i18n/navigation";
 import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { updateRoute, venueRoute } from "@/lib/routes";
 import { ArchiveVenueDialog } from "./archive-venue-dialog";
-import { VenueDialog } from "./venue-dialog";
 
 export type VenueRowActionsProps = { venue: VenueDto; redirectToList?: boolean };
 
@@ -13,24 +14,21 @@ export type VenueRowActionsProps = { venue: VenueDto; redirectToList?: boolean }
 export function VenueRowActions({ venue, redirectToList = false }: VenueRowActionsProps) {
   const t = useTranslations("venue");
   const common = useTranslations("common");
-  const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
+  const [archiving, setArchiving] = useState(false);
   return (
     <>
       <DataTableRowActions label={common("actions")}>
-        <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
-        <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
+        <DropdownMenuItem asChild>
+          <Link href={updateRoute({ detail: venueRoute({ id: venue.id }) })}>{t("edit")}</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem destructive onSelect={() => setArchiving(true)}>
           {t("archive")}
         </DropdownMenuItem>
       </DataTableRowActions>
-      <VenueDialog
-        venue={venue}
-        open={dialog === "edit"}
-        onOpenChange={(open) => !open && setDialog(null)}
-      />
       <ArchiveVenueDialog
         venue={venue}
-        open={dialog === "archive"}
-        onOpenChange={(open) => !open && setDialog(null)}
+        open={archiving}
+        onOpenChange={setArchiving}
         redirectToList={redirectToList}
       />
     </>

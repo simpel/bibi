@@ -15,7 +15,6 @@ import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { BookingSeriesMarker } from "../../booking-series/ui/booking-series-marker";
 import { loadBookingData } from "../load-booking-data";
 import { BookingActions } from "./booking-actions";
 import { BookingFacts } from "./booking-facts";
@@ -53,10 +52,6 @@ export async function BookingDetail({ locale, id }: BookingDetailProps) {
       <PageHeader
         title={t("reference", { reference: booking.value.reference })}
         actions={actions}
-      />
-      <BookingSeriesMarker
-        seriesId={booking.value.seriesId}
-        index={booking.value.occurrenceIndex}
       />
       <BookingFacts booking={booking.value} data={data.value} />
       <AssignmentSection

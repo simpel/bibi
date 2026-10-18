@@ -16,10 +16,8 @@ import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { loadSeriesTotals } from "../../booking-series/load-series-totals";
 import { loadBookingData } from "../load-booking-data";
 import { loadQuickBookingData } from "../load-quick-booking-data";
-import type { BookingFormData } from "./booking-form-data";
 import { BookingListTable } from "./booking-list-table";
 import { CreateBookingButton } from "./create-booking-button";
 import { QuickBookingButton } from "./quick-booking-button";
@@ -40,12 +38,12 @@ const GoToTypes = ({ label }: { label: string }) => (
 );
 
 /** Quick booking and create buttons; the quick form's data is read only for staff who book. */
-async function BookingActions({ data }: { data: BookingFormData }) {
+async function BookingActions() {
   const quick = await loadQuickBookingData();
   return (
     <div className="flex gap-2">
       {quick.ok ? <QuickBookingButton data={quick.value} /> : null}
-      <CreateBookingButton data={data} />
+      <CreateBookingButton />
     </div>
   );
 }
@@ -54,9 +52,8 @@ async function BookingActions({ data }: { data: BookingFormData }) {
 export async function BookingList({ locale, cursor, mine }: BookingListProps) {
   const t = await getTranslations("booking");
   const { bookingWrite, userId } = await getCallerAbilities();
-  const [data, seriesTotals, result] = await Promise.all([
+  const [data, result] = await Promise.all([
     loadBookingData(),
-    loadSeriesTotals(),
     runOperation({
       operation: listBookings,
       input: minePageInput({ limit: PAGE_SIZE, cursor, mine, userId }),
@@ -65,7 +62,7 @@ export async function BookingList({ locale, cursor, mine }: BookingListProps) {
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const noTypes = data.value.types.length === 0;
-  const create = bookingWrite && !noTypes ? <BookingActions data={data.value} /> : undefined;
+  const create = bookingWrite && !noTypes ? <BookingActions /> : undefined;
   const page: { items: BookingDto[]; nextCursor: string | null } = result.value;
   return (
     <div className="grid gap-6">
@@ -79,7 +76,7 @@ export async function BookingList({ locale, cursor, mine }: BookingListProps) {
         />
       ) : (
         <>
-          <BookingListTable bookings={page.items} data={data.value} seriesTotals={seriesTotals} />
+          <BookingListTable bookings={page.items} data={data.value} />
           <CursorPagination
             pathname={ROUTES.bookings}
             cursor={cursor}

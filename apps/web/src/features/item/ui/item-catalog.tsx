@@ -26,8 +26,7 @@ export async function ItemCatalog(props: ItemCatalogProps) {
   const { locale, data, page, canWrite, typeId, cursor } = props;
   const t = await getTranslations("item");
   const noTypes = data.types.length === 0;
-  const create =
-    canWrite && !noTypes ? <CreateItemButton data={data} typeId={typeId} /> : undefined;
+  const create = canWrite && !noTypes ? <CreateItemButton typeId={typeId} /> : undefined;
   const toTypes = (
     <Button asChild variant="outline">
       <Link href={ROUTES.settingsTypes}>{t("goToTypes")}</Link>

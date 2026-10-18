@@ -48,7 +48,7 @@ export function useResponsibilityColumns({
       ...data,
       actionsColumn<ResponsibilityDto>({
         label: common("actions"),
-        cell: (r) => <ResponsibilityRowActions responsibility={r} options={options} />,
+        cell: (r) => <ResponsibilityRowActions responsibility={r} />,
       }),
     ];
   }, [t, common, options, canWrite]);

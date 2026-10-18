@@ -25,7 +25,6 @@ model Customer {
   entityType           EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   contacts             Contact[]
   bookings             Booking[]
-  bookingSeries        BookingSeries[]
   /// Customer-specific packages (`Item.customerId`, ADR 0021).
   items                Item[]
   inquiries            Inquiry[]

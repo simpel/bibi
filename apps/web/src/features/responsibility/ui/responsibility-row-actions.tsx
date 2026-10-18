@@ -1,44 +1,43 @@
 "use client";
 
 import type { ResponsibilityDto } from "@okazi/core";
+import { Link } from "@okazi/i18n/navigation";
 import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
 import { ArchiveResponsibilityDialog } from "./archive-responsibility-dialog";
-import { ResponsibilityDialog } from "./responsibility-dialog";
-import type { ResponsibilityOptions } from "./responsibility-options";
 
-export type ResponsibilityRowActionsProps = {
-  responsibility: ResponsibilityDto;
-  options: ResponsibilityOptions;
-};
+export type ResponsibilityRowActionsProps = { responsibility: ResponsibilityDto };
 
 /** Edit / archive menu for one responsibility. */
-export function ResponsibilityRowActions({
-  responsibility,
-  options,
-}: ResponsibilityRowActionsProps) {
+export function ResponsibilityRowActions({ responsibility }: ResponsibilityRowActionsProps) {
   const t = useTranslations("responsibility");
   const common = useTranslations("common");
-  const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
+  const [archiving, setArchiving] = useState(false);
   return (
     <>
       <DataTableRowActions label={common("actions")}>
-        <DropdownMenuItem onSelect={() => setDialog("edit")}>{t("edit")}</DropdownMenuItem>
-        <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
+        <DropdownMenuItem asChild>
+          <Link
+            href={updateRoute({
+              detail: listItemRoute({
+                list: ROUTES.settingsResponsibilities,
+                id: responsibility.id,
+              }),
+            })}
+          >
+            {t("edit")}
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem destructive onSelect={() => setArchiving(true)}>
           {t("archive")}
         </DropdownMenuItem>
       </DataTableRowActions>
-      <ResponsibilityDialog
-        responsibility={responsibility}
-        options={options}
-        open={dialog === "edit"}
-        onOpenChange={(open) => !open && setDialog(null)}
-      />
       <ArchiveResponsibilityDialog
         responsibility={responsibility}
-        open={dialog === "archive"}
-        onOpenChange={(open) => !open && setDialog(null)}
+        open={archiving}
+        onOpenChange={setArchiving}
       />
     </>
   );

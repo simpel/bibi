@@ -49,7 +49,6 @@ model EntityType {
   customers      Customer[]
   contacts       Contact[]
   bookings       Booking[]
-  bookingSeries  BookingSeries[]
   programItems   ProgramItem[]
   requirements   Requirement[]
   inquiries      Inquiry[]

@@ -91,6 +91,7 @@
 - Every form is a shadcn form: `Form`, `FormController` (shadcn's `FormField`), `FormItem`, `FormLabel`, `FormControl` and `FormMessage` from `@okazi/ui`, with react-hook-form and `zodResolver` with localised messages (`useZodMessages`). The schema comes from core (`@okazi/core/schemas`, via `formSchema({ schema, toInput })` when needed), never a hand-written duplicate schema.
 - Fields: `TextField` and `CheckField` (`apps/web/src/components/form/`) are shadcn fields and require `<Form {...form}>` around the form. Other controls (select etc.) are built with `FormController` directly.
 - Validation is shown the shadcn way: field errors in `FormMessage` under the field. Server field errors (`AppError.issues`, `path` = field name) are set on the fields with `form.setError`.
+- **Create and update are pages, not dialogs** (except tiny actions: archive, rename, assign, confirm). Create lives at `/new/<thing>` (`/new/skill`, `/new/item`), update at `/<things>/<id>/update`. Multi-step creates use `components/wizard/` (`useWizard`, `WizardProgress`, `WizardFooter`, `TypedWizard`, `CreatePageShell`); add the thing to `NEW_PARENTS` in `breadcrumb-model.ts`.
 - **Forms that change data** are **always** submitted via a server action (`features/<entity>/actions.ts` → `runOperation`/`runPlatformOperation` → `toActionResult`). No `fetch` calls from forms.
 - The toast flow is owned by the helpers, never by the component:
   - Forms: `useFormAction({ form, action, messages, onSuccess?, onError? })` (`lib/use-form-action.ts`).

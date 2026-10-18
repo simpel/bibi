@@ -49,6 +49,16 @@ describe("cross-organization isolation: booking creation", () => {
     expect((await call({ client: b, name: "booking_list" })).data.items).toEqual([]);
     expect((await call({ client: a, name: "booking_list" })).data.items).toHaveLength(1);
   });
+
+  it("keeps the pipeline board of one organization free of another's cards", async () => {
+    const a = await connect({ context: testContext() });
+    const b = await connect({ context: testContext() });
+    const { id } = await seedBooking({ client: a });
+    const boardB = await call({ client: b, name: "pipeline_board" });
+    expect(boardB.data.cards).toEqual([]);
+    const boardA = await call({ client: a, name: "pipeline_board" });
+    expect(boardA.data.cards.map((card: { id: string }) => card.id)).toContain(id);
+  });
 });
 
 describe("cross-organization isolation: booking statuses and audit log", () => {

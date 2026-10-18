@@ -1,25 +1,18 @@
-"use client";
-
+import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { PlusIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { ResponsibilityDialog } from "./responsibility-dialog";
-import type { ResponsibilityOptions } from "./responsibility-options";
+import { getTranslations } from "next-intl/server";
+import { ROUTES } from "@/lib/routes";
 
-export type CreateResponsibilityButtonProps = { options: ResponsibilityOptions };
-
-/** Opens the create-responsibility dialog. */
-export function CreateResponsibilityButton({ options }: CreateResponsibilityButtonProps) {
-  const t = useTranslations("responsibility");
-  const [open, setOpen] = useState(false);
+/** Link to the step-by-step create page. */
+export async function CreateResponsibilityButton() {
+  const t = await getTranslations("responsibility");
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>
+    <Button asChild>
+      <Link href={ROUTES.responsibilityNew}>
         <PlusIcon />
         {t("create")}
-      </Button>
-      <ResponsibilityDialog options={options} open={open} onOpenChange={setOpen} />
-    </>
+      </Link>
+    </Button>
   );
 }

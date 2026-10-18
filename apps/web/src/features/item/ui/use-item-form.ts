@@ -61,7 +61,7 @@ export function useItemForm({ data, item, typeId, customerId, onDone }: UseItemF
     },
     defaultValues: itemFormDefaults({ type: initial, item }),
   });
-  const { submit, pending } = useFormAction({
+  const { submit, run, pending } = useFormAction({
     form,
     action: ({ values }) =>
       item
@@ -75,5 +75,5 @@ export function useItemForm({ data, item, typeId, customerId, onDone }: UseItemF
       onDone();
     },
   });
-  return { form, submit, pending, typeOf };
+  return { form, run, submit, pending, typeOf };
 }

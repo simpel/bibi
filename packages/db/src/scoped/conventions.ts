@@ -52,7 +52,6 @@ export const CREATED_BY_MODELS = new Set<string>([
   "BookingStatus",
   "BookingStatusTransition",
   "Booking",
-  "BookingSeries",
   "ProgramItem",
   "Requirement",
   "Sheet",

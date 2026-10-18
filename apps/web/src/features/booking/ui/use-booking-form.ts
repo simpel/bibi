@@ -32,7 +32,7 @@ export function useBookingForm({ data, booking, onDone }: UseBookingFormInput) {
     resolver,
     defaultValues: bookingFormDefaults({ type: initial, booking }),
   });
-  const { submit, pending } = useFormAction({
+  const { submit, run, pending } = useFormAction({
     form,
     action: ({ values }) =>
       booking
@@ -47,5 +47,5 @@ export function useBookingForm({ data, booking, onDone }: UseBookingFormInput) {
       else router.push(bookingRoute({ id: value.id }));
     },
   });
-  return { form, submit, pending, typeOf };
+  return { form, submit, run, pending, typeOf };
 }

@@ -1,36 +1,18 @@
-"use client";
-
-import { usePathname, useRouter } from "@okazi/i18n/navigation";
+import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { PlusIcon } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { InquiryDialog } from "./inquiry-dialog";
-import type { InquiryFormData } from "./inquiry-form-data";
+import { getTranslations } from "next-intl/server";
+import { ROUTES } from "@/lib/routes";
 
-export type CreateInquiryButtonProps = { data: InquiryFormData };
-
-/** Opens the create-inquiry dialog; also opens on `?create=1`. */
-export function CreateInquiryButton({ data }: CreateInquiryButtonProps) {
-  const t = useTranslations("inquiry");
-  const router = useRouter();
-  const pathname = usePathname();
-  const [open, setOpen] = useState(useSearchParams().get("create") === "1");
+/** Link to the step-by-step create page. */
+export async function CreateInquiryButton() {
+  const t = await getTranslations("inquiry");
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>
+    <Button asChild>
+      <Link href={ROUTES.inquiryNew}>
         <PlusIcon />
         {t("create")}
-      </Button>
-      <InquiryDialog
-        data={data}
-        open={open}
-        onOpenChange={(next) => {
-          setOpen(next);
-          if (!next) router.replace(pathname);
-        }}
-      />
-    </>
+      </Link>
+    </Button>
   );
 }

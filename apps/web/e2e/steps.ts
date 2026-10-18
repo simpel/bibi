@@ -73,15 +73,17 @@ export async function addItem({
   venue,
 }: PageInput & { type: string; name: string; numberField: string; value: string; venue: string }) {
   await page.goto("/sv/items");
-  await page.getByRole("button", { name: "Skapa artikel" }).first().click();
-  const dialog = page.getByRole("dialog");
-  await dialog.getByLabel("Typ", { exact: true }).click();
+  await page.getByRole("link", { name: "Skapa artikel" }).first().click();
+  await page.getByLabel("Typ", { exact: true }).click();
   await page.getByRole("option", { name: type }).click();
-  await dialog.getByLabel("Namn").fill(name);
-  await dialog.getByLabel(numberField).fill(value);
-  await dialog.getByLabel("Anläggning").click();
+  await page.getByRole("button", { name: "Nästa" }).click();
+  await page.getByLabel("Namn").fill(name);
+  await page.getByLabel(numberField).fill(value);
+  await page.getByLabel("Anläggning").click();
   await page.getByRole("option", { name: venue }).click();
-  await dialog.getByRole("button", { name: "Spara" }).click();
+  const next = page.getByRole("button", { name: "Nästa" });
+  if (await next.isVisible()) await next.click();
+  await page.getByRole("button", { name: "Spara" }).click();
   await expect(page.getByRole("link", { name })).toBeVisible();
 }
 

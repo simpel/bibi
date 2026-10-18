@@ -13,7 +13,6 @@ export type GridBlock = {
   type: OccupancyType;
   label: string;
   time: string;
-  series: string | null;
   offset: number;
   span: number;
   /** Day view: which of the row's lanes the block sits in (overlapping options). */
@@ -36,7 +35,6 @@ export type CalendarLabels = {
   type: (input: { type: OccupancyType }) => string;
   reference: (input: { reference: number }) => string;
   option: (input: { position: number }) => string;
-  series: (input: { index: number }) => string;
   time: (input: { block: CalendarBlock }) => string;
   column: (input: { column: CalendarColumn }) => string;
   slot: (input: { space: string; column: CalendarColumn }) => { label: string; prompt: string };
@@ -62,14 +60,12 @@ type ToGridBlockInput = { placed: PlacedBlock; lane: number; labels: CalendarLab
 
 function toGridBlock({ placed, lane, labels }: ToGridBlockInput): GridBlock {
   const { block, offset, span } = placed;
-  const index = block.seriesId ? block.occurrenceIndex : null;
   return {
     id: block.id,
     href: block.bookingId ? bookingRoute({ id: block.bookingId }) : null,
     type: block.type,
     label: blockLabel({ block, labels }),
     time: labels.time({ block }),
-    series: index !== null ? labels.series({ index }) : null,
     offset,
     span,
     lane,

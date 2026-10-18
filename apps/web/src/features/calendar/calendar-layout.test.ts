@@ -17,8 +17,6 @@ const block = ({ id, start, end }: BlockInput): CalendarBlock => ({
   endsAt: new Date(end),
   bookingId: null,
   reference: null,
-  seriesId: null,
-  occurrenceIndex: null,
   title: null,
   queuePosition: null,
 });

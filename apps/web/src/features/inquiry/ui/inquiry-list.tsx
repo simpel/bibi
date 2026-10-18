@@ -49,7 +49,7 @@ export async function InquiryList({ locale, cursor, mine }: InquiryListProps) {
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const noTypes = data.value.types.length === 0;
-  const create = inquiryWrite && !noTypes ? <CreateInquiryButton data={data.value} /> : undefined;
+  const create = inquiryWrite && !noTypes ? <CreateInquiryButton /> : undefined;
   const page: { items: InquiryDto[]; nextCursor: string | null } = result.value;
   return (
     <div className="grid gap-6">

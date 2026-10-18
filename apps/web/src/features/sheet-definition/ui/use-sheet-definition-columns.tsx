@@ -47,7 +47,7 @@ export function useSheetDefinitionColumns({
       ...data,
       actionsColumn<SheetDefinitionDto>({
         label: common("actions"),
-        cell: (sheet) => <SheetDefinitionRowActions sheet={sheet} options={options} />,
+        cell: (sheet) => <SheetDefinitionRowActions sheet={sheet} />,
       }),
     ];
   }, [t, common, options, canWrite]);

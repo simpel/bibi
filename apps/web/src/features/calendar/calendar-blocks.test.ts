@@ -23,7 +23,7 @@ const occupancy = ({ overrides }: { overrides: Partial<OccupancyDto> }): Occupan
 });
 
 const programItem = { id: "p1", bookingId: "b1", name: "Lunch" } as ProgramItemDto;
-const booking = { id: "b1", reference: 12, seriesId: "s1", occurrenceIndex: 3 } as BookingDto;
+const booking = { id: "b1", reference: 12 } as BookingDto;
 
 describe("calendar blocks", () => {
   it("links a program item's rows to its booking", () => {
@@ -33,7 +33,7 @@ describe("calendar blocks", () => {
       bookings: [booking],
       sources: SOURCES,
     });
-    expect(block).toMatchObject({ bookingId: "b1", reference: 12, title: "Lunch", seriesId: "s1" });
+    expect(block).toMatchObject({ bookingId: "b1", reference: 12, title: "Lunch" });
   });
 
   it("links a booking's own rows and leaves manual blocks unlinked", () => {

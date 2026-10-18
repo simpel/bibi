@@ -67,8 +67,7 @@ export async function SheetDefinitionList({ locale, cursor }: SheetDefinitionLis
   const { configurationWrite } = await getCallerAbilities();
   const result = await loadPage({ cursor });
   const options = result.ok ? result.value.options : undefined;
-  const create =
-    configurationWrite && options ? <CreateSheetDefinitionButton options={options} /> : undefined;
+  const create = configurationWrite && options ? <CreateSheetDefinitionButton /> : undefined;
   const header = (
     <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
   );

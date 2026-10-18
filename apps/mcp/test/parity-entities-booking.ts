@@ -30,32 +30,6 @@ const booking = (): ParityEntity => ({
   },
 });
 
-const OCCURRENCE = "{ bookingId reference occurrenceIndex startsAt endsAt bookingStatusId clash }";
-
-/** A recurring booking (ADR 0023) for the same customer and type as the booking above. */
-const bookingSeries = (): ParityEntity => ({
-  ...byId({
-    name: "bookingSeries",
-    field: "bookingSeries",
-    list: "booking-series",
-    createTool: "",
-    args: {},
-    nested: { occurrences: OCCURRENCE, clashes: OCCURRENCE },
-  }),
-  create: ({ mcp, made }) =>
-    tool({
-      mcp,
-      name: "bookingSeries_create",
-      args: {
-        entityTypeId: made.booking.entityTypeId,
-        customerId: made.customer.id,
-        rule: "FREQ=WEEKLY;BYDAY=TU;COUNT=3",
-        startsAt: "2026-11-03T08:00:00.000Z",
-        durationMinutes: 240,
-      },
-    }),
-});
-
 /** A program item (ADR 0022) on the booking, held in the bookable item with its setup. */
 const programItem = (): ParityEntity => ({
   ...byId({
@@ -145,5 +119,5 @@ const inboundEmail = (): ParityEntity => ({
 /** Bookings, inquiries and assignments; a function so the parity-entities import cycle resolves. */
 export function bookingEntities(): ParityEntity[] {
   const sales = [inboundEmail(), inquiry(), assignment()];
-  return [booking(), bookingSeries(), programItem(), requirement(), ...sales];
+  return [booking(), programItem(), requirement(), ...sales];
 }

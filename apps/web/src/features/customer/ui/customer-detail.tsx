@@ -30,9 +30,7 @@ export async function CustomerDetail({ locale, id }: CustomerDetailProps) {
   }
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const type = data.value.types.find(({ id: typeId }) => typeId === customer.value.entityTypeId);
-  const actions = customerWrite ? (
-    <CustomerActions customer={customer.value} data={data.value} />
-  ) : undefined;
+  const actions = customerWrite ? <CustomerActions customer={customer.value} /> : undefined;
   return (
     <div className="grid gap-6">
       <Link

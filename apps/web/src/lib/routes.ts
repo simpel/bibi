@@ -1,18 +1,29 @@
 export const ROUTES = {
   home: "/",
   chats: "/chats",
+  pipeline: "/pipeline",
+  dashboard: "/dashboard",
   login: "/login",
   signUp: "/sign-up",
   selectOrganization: "/select-organization",
   venues: "/venues",
   profile: "/profile",
   skills: "/skills",
-  skillNew: "/skills/new",
+  skillNew: "/new/skill",
   items: "/items",
+  create: "/new",
+  itemNew: "/new/item",
+  typeNew: "/new/type",
+  venueNew: "/new/venue",
+  customerNew: "/new/customer",
+  sheetNew: "/new/sheet",
+  responsibilityNew: "/new/responsibility",
+  priceListNew: "/new/price-list",
+  bookingNew: "/new/booking",
+  inquiryNew: "/new/inquiry",
   customers: "/customers",
   bookings: "/bookings",
   calendar: "/calendar",
-  bookingSeries: "/booking-series",
   inquiries: "/inquiries",
   quotes: "/quotes",
   settings: "/settings",
@@ -31,6 +42,26 @@ export const ROUTES = {
   adminAiModels: "/admin/ai-models",
 } as const;
 
+export type ItemRouteInput = { id: string };
+
+export function itemRoute({ id }: ItemRouteInput): string {
+  return `${ROUTES.items}/${encodeURIComponent(id)}`;
+}
+
+export type ListItemRouteInput = { list: string; id: string };
+
+/** Detail path of a record under a list page, e.g. `/settings/sheets/<id>`. */
+export function listItemRoute({ list, id }: ListItemRouteInput): string {
+  return `${list}/${encodeURIComponent(id)}`;
+}
+
+export type UpdateRouteInput = { detail: string };
+
+/** Update pages live under the detail page: `/<things>/<id>/update`. */
+export function updateRoute({ detail }: UpdateRouteInput): string {
+  return `${detail}/update`;
+}
+
 export type VenueRouteInput = { id: string };
 
 export function venueRoute({ id }: VenueRouteInput): string {
@@ -47,12 +78,6 @@ export type BookingRouteInput = { id: string };
 
 export function bookingRoute({ id }: BookingRouteInput): string {
   return `${ROUTES.bookings}/${encodeURIComponent(id)}`;
-}
-
-export type BookingSeriesRouteInput = { id: string };
-
-export function bookingSeriesRoute({ id }: BookingSeriesRouteInput): string {
-  return `${ROUTES.bookingSeries}/${encodeURIComponent(id)}`;
 }
 
 export type InquiryRouteInput = { id: string };

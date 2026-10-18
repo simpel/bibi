@@ -6,8 +6,6 @@ import { AssignmentTableView } from "./assignment-table-view";
 import { AuditLogCardView } from "./audit-log-card-view";
 import { AuditLogTableView } from "./audit-log-table-view";
 import { BookingCardView } from "./booking-card-view";
-import { BookingSeriesCardView } from "./booking-series-card-view";
-import { BookingSeriesTableView } from "./booking-series-table-view";
 import { BookingStatusCardView } from "./booking-status-card-view";
 import { BookingStatusTableView } from "./booking-status-table-view";
 import { BookingTableView } from "./booking-table-view";
@@ -40,6 +38,7 @@ import { OptionQueueView } from "./option-queue-view";
 import { PaymentAccountCardView } from "./payment-account-card-view";
 import { PaymentCardView } from "./payment-card-view";
 import { PaymentTableView } from "./payment-table-view";
+import { PipelineBoardView } from "./pipeline-board-view";
 import { PriceListCardView } from "./price-list-card-view";
 import { PriceListTableView } from "./price-list-table-view";
 import { ProgramItemCardView } from "./program-item-card-view";
@@ -87,14 +86,13 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "booking-status-card": BookingStatusCardView,
   "booking-table": BookingTableView,
   "booking-card": BookingCardView,
-  "booking-series-table": BookingSeriesTableView,
-  "booking-series-card": BookingSeriesCardView,
   "program-item-table": ProgramItemTableView,
   "program-item-card": ProgramItemCardView,
   "requirement-table": RequirementTableView,
   "requirement-card": RequirementCardView,
   "inquiry-table": InquiryTableView,
   "inquiry-card": InquiryCardView,
+  "pipeline-board": PipelineBoardView,
   "option-card": OptionCardView,
   "option-queue": OptionQueueView,
   "quote-card": QuoteCardView,

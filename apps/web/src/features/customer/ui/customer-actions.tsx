@@ -1,41 +1,33 @@
 "use client";
 
 import type { CustomerDto } from "@okazi/core";
+import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { ArchiveIcon, PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
+import { customerRoute, updateRoute } from "@/lib/routes";
 import { ArchiveCustomerDialog } from "./archive-customer-dialog";
-import { CustomerDialog } from "./customer-dialog";
 
-export type CustomerActionsProps = { customer: CustomerDto; data: TypedFormData };
+export type CustomerActionsProps = { customer: CustomerDto };
 
-/** Edit and archive buttons of the customer detail page. */
-export function CustomerActions({ customer, data }: CustomerActionsProps) {
+/** Edit (its own page) and archive buttons of the customer detail page. */
+export function CustomerActions({ customer }: CustomerActionsProps) {
   const t = useTranslations("customer");
-  const [dialog, setDialog] = useState<"edit" | "archive" | null>(null);
+  const [archiving, setArchiving] = useState(false);
   return (
     <>
-      <Button variant="outline" onClick={() => setDialog("edit")}>
-        <PencilIcon />
-        {t("edit")}
+      <Button asChild variant="outline">
+        <Link href={updateRoute({ detail: customerRoute({ id: customer.id }) })}>
+          <PencilIcon />
+          {t("edit")}
+        </Link>
       </Button>
-      <Button variant="outline" onClick={() => setDialog("archive")}>
+      <Button variant="outline" onClick={() => setArchiving(true)}>
         <ArchiveIcon />
         {t("archive")}
       </Button>
-      <CustomerDialog
-        data={data}
-        customer={customer}
-        open={dialog === "edit"}
-        onOpenChange={(open) => !open && setDialog(null)}
-      />
-      <ArchiveCustomerDialog
-        customer={customer}
-        open={dialog === "archive"}
-        onOpenChange={(open) => !open && setDialog(null)}
-      />
+      <ArchiveCustomerDialog customer={customer} open={archiving} onOpenChange={setArchiving} />
     </>
   );
 }

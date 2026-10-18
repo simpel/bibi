@@ -35,7 +35,7 @@ export type TransitionBookingInput = {
 /**
  * Moves one booking to a status (ADR 0022): the organization's transition, the fixed phase rules
  * and, for the `CANCELLED` phase, the cancellation (released occupancy and hooks). Audited.
- * Shared by `booking.changeStatus` and `bookingSeries.cancel`.
+ * Shared by `booking.changeStatus`.
  */
 export async function transitionBooking({
   context,

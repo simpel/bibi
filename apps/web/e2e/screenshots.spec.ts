@@ -69,7 +69,7 @@ async function skillShots({ page, mode }: { page: Page; mode: Mode }) {
   await page.getByRole("link", { name: "Round trip" }).click();
   await expect(page.getByRole("heading", { name: "Round trip", level: 1 })).toBeVisible();
   await shot({ page, mode, name: "skill-detail" });
-  await page.goto("/sv/skills/new");
+  await page.goto("/sv/new/skill");
   await shot({ page, mode, name: "skill-form" });
 }
 

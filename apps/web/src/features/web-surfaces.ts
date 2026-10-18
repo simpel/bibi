@@ -23,6 +23,8 @@ export type WebSurface = {
 const PANEL = { route: "/" } as const;
 
 export const WEB_SURFACES: readonly WebSurface[] = [
+  // The pipeline board: inquiries and bookings by stage, moved by drag (ADR 0041).
+  { operation: "pipeline.board", route: "/pipeline" },
   { operation: "venue.list", route: "/venues" },
   { operation: "venue.get", route: "/venues/[id]" },
   { operation: "venue.create", route: "/venues" },
@@ -32,8 +34,8 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "item.get", route: "/items/[id]" },
   // The expanded parts and inherited list values of a composed item (ADR 0021).
   { operation: "item.resolve", route: "/items/[id]" },
-  { operation: "item.create", route: "/items" },
-  { operation: "item.update", route: "/items/[id]" },
+  { operation: "item.create", route: "/new/item" },
+  { operation: "item.update", route: "/items/[id]/update" },
   { operation: "item.archive", route: "/items/[id]" },
   // A bookable item's occupancy is listed and its manual blocks edited on the item page.
   { operation: "occupancy.list", route: "/items/[id]" },
@@ -54,19 +56,14 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "contact.update", route: "/customers/[id]" },
   { operation: "contact.archive", route: "/customers/[id]" },
   { operation: "booking.list", route: "/bookings" },
-  { operation: "booking.create", route: "/bookings" },
+  { operation: "booking.create", route: "/new/booking" },
   { operation: "booking.createQuick", route: "/bookings" },
   { operation: "booking.get", route: "/bookings/[id]" },
-  { operation: "booking.update", route: "/bookings/[id]" },
+  { operation: "booking.update", route: "/bookings/[id]/update" },
   { operation: "booking.changeStatus", route: "/bookings/[id]" },
   { operation: "inboundEmail.list", route: "/bookings/[id]" },
   { operation: "payment.list", route: "/bookings/[id]" },
   { operation: "payment.create", route: "/bookings/[id]" },
-  { operation: "bookingSeries.list", route: "/booking-series" },
-  { operation: "bookingSeries.create", route: "/booking-series" },
-  { operation: "bookingSeries.get", route: "/booking-series/[id]" },
-  { operation: "bookingSeries.updateOccurrences", route: "/booking-series/[id]" },
-  { operation: "bookingSeries.cancel", route: "/booking-series/[id]" },
   // The run schedule (program items) is listed and edited on the booking page.
   { operation: "programItem.list", route: "/bookings/[id]" },
   { operation: "programItem.create", route: "/bookings/[id]" },
@@ -82,7 +79,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   ...SALES_SURFACES,
   ...SETTINGS_SURFACES,
   { operation: "entityType.list", route: "/settings/types" },
-  { operation: "entityType.create", route: "/settings/types" },
+  { operation: "entityType.create", route: "/new/type" },
   { operation: "configuration.importTemplate", route: "/settings/types" },
   { operation: "entityType.get", route: "/settings/types/[id]" },
   { operation: "entityType.update", route: "/settings/types/[id]" },
@@ -127,8 +124,8 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "search", route: "/venues" },
   { operation: "skill.list", route: "/skills" },
   { operation: "skill.get", route: "/skills/[id]" },
-  { operation: "skill.create", route: "/skills/new" },
-  { operation: "skill.update", route: "/skills/[id]/edit" },
+  { operation: "skill.create", route: "/new/skill" },
+  { operation: "skill.update", route: "/skills/[id]/update" },
   { operation: "skill.publish", route: "/skills/[id]" },
   { operation: "skill.archive", route: "/skills/[id]" },
   { operation: "skill.share", route: "/skills/[id]" },

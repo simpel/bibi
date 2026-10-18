@@ -2,7 +2,6 @@ import { apiKeyOperations } from "./features/api-key/operations";
 import { assignmentOperations } from "./features/assignment/operations";
 import { auditLogOperations } from "./features/audit-log/operations";
 import { bookingOperations } from "./features/booking/operations";
-import { bookingSeriesOperations } from "./features/booking-series/operations";
 import { bookingStatusOperations } from "./features/booking-status/operations";
 import { configurationOperations } from "./features/configuration/operations";
 import { contactOperations } from "./features/contact/operations";
@@ -20,6 +19,7 @@ import { occupancyOperations } from "./features/occupancy/operations";
 import { optionOperations } from "./features/option/operations";
 import { paymentOperations } from "./features/payment/operations";
 import { paymentAccountOperations } from "./features/payment-account/operations";
+import { pipelineOperations } from "./features/pipeline/operations";
 import { priceListOperations } from "./features/price-list/operations";
 import { programItemOperations } from "./features/program-item/operations";
 import { quoteOperations } from "./features/quote/operations";
@@ -56,12 +56,12 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...occupancyOperations,
     ...bookingStatusOperations,
     ...bookingOperations,
-    ...bookingSeriesOperations,
     ...programItemOperations,
     ...assignmentOperations,
     ...requirementOperations,
     ...sheetOperations,
     ...inquiryOperations,
+    ...pipelineOperations,
     ...optionOperations,
     ...quoteOperations,
     ...inboundEmailOperations,

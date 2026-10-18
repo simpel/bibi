@@ -1,22 +1,18 @@
-"use client";
-
+import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { PlusIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { EntityTypeDialog } from "./entity-type-dialog";
+import { getTranslations } from "next-intl/server";
+import { ROUTES } from "@/lib/routes";
 
-/** Opens the create-type dialog. */
-export function CreateEntityTypeButton() {
-  const t = useTranslations("entityType");
-  const [open, setOpen] = useState(false);
+/** Link to the step-by-step create page. */
+export async function CreateEntityTypeButton() {
+  const t = await getTranslations("entityType");
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>
+    <Button asChild>
+      <Link href={ROUTES.typeNew}>
         <PlusIcon />
         {t("create")}
-      </Button>
-      <EntityTypeDialog open={open} onOpenChange={setOpen} />
-    </>
+      </Link>
+    </Button>
   );
 }

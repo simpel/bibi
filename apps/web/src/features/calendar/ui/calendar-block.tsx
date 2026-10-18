@@ -30,7 +30,7 @@ export type CalendarBlockViewProps = {
 
 /** A block: a link to its booking, or plain text for a manual block without one. */
 export function CalendarBlockView({ block, row, col, first, positioned }: CalendarBlockViewProps) {
-  const text = [block.time, block.label, block.series].filter(Boolean).join(" · ");
+  const text = [block.time, block.label].filter(Boolean).join(" · ");
   const style = positioned
     ? {
         left: `${block.offset * 100}%`,
@@ -55,7 +55,6 @@ export function CalendarBlockView({ block, row, col, first, positioned }: Calend
   return (
     <Link href={block.href} className={className} style={style} title={text} {...focus}>
       <span className="font-medium">{block.label}</span> {block.time}
-      {block.series ? <span className="ml-1 opacity-80">{block.series}</span> : null}
     </Link>
   );
 }

@@ -15,7 +15,7 @@ describe("buildPageContext", () => {
       type: "skill",
       id: "s1",
     });
-    expect(buildPageContext({ pathname: "/en/skills/new", locale: "en" }).entity).toBeUndefined();
+    expect(buildPageContext({ pathname: "/en/new/skill", locale: "en" }).entity).toBeUndefined();
   });
 
   it("has no entity on list pages", () => {

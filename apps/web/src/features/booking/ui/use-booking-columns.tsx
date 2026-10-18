@@ -18,12 +18,11 @@ export type BookingLookups = {
   customers: NamedOption[];
   types: NamedOption[];
   statuses: BookingStatusDto[];
-  seriesTotals: Record<string, number>;
 };
 
-type ReferenceInput = { t: Translate; seriesTotals: Record<string, number> };
+type ReferenceInput = { t: Translate };
 
-const referenceColumn = ({ t, seriesTotals }: ReferenceInput): Column => ({
+const referenceColumn = ({ t }: ReferenceInput): Column => ({
   id: "reference",
   header: t("columns.reference"),
   accessorFn: (booking) => booking.reference,
@@ -31,7 +30,6 @@ const referenceColumn = ({ t, seriesTotals }: ReferenceInput): Column => ({
     <BookingReferenceCell
       booking={booking}
       reference={t("reference", { reference: booking.reference })}
-      total={booking.seriesId ? seriesTotals[booking.seriesId] : undefined}
     />
   ),
 });
@@ -68,21 +66,16 @@ const namedColumns = ({ t, customers, types }: NamedInput): Column[] => [
 ];
 
 /** Reference (link), customer, type, status and time of a booking. */
-export function useBookingColumns({
-  seriesTotals,
-  statuses,
-  customers,
-  types,
-}: BookingLookups): Column[] {
+export function useBookingColumns({ statuses, customers, types }: BookingLookups): Column[] {
   const t = useTranslations("booking");
   const format = useFormatter();
   return useMemo<Column[]>(
     () => [
-      referenceColumn({ t, seriesTotals }),
+      referenceColumn({ t }),
       ...namedColumns({ t, customers, types }),
       statusColumn({ t, statuses }),
       whenColumn({ t, format }),
     ],
-    [t, format, customers, types, statuses, seriesTotals],
+    [t, format, customers, types, statuses],
   );
 }

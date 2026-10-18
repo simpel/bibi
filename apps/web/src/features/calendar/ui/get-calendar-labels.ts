@@ -24,11 +24,10 @@ export async function getCalendarLabels({
 }: {
   timeZone: string;
 }): Promise<CalendarLabels> {
-  const [t, occupancy, booking, series, format] = await Promise.all([
+  const [t, occupancy, booking, format] = await Promise.all([
     getTranslations("calendar"),
     getTranslations("occupancy"),
     getTranslations("booking"),
-    getTranslations("bookingSeries"),
     getFormatter(),
   ]);
   const at = ({ column }: { column: CalendarColumn }) =>
@@ -42,7 +41,6 @@ export async function getCalendarLabels({
     type: ({ type }) => occupancy(`types.${type}`),
     reference: ({ reference }) => booking("reference", { reference }),
     option: ({ position }) => t("option", { position }),
-    series: ({ index }) => series("markerNoTotal", { index }),
     time: ({ block }) =>
       format.dateTimeRange(block.startsAt, block.endsAt, rangeOptions({ block, timeZone })),
     column: ({ column }) =>

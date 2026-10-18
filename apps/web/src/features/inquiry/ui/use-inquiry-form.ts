@@ -32,7 +32,7 @@ export function useInquiryForm({ data, inquiry, onDone }: UseInquiryFormInput) {
     resolver,
     defaultValues: inquiryFormDefaults({ type: initial, inquiry }),
   });
-  const { submit, pending } = useFormAction({
+  const { submit, run, pending } = useFormAction({
     form,
     action: ({ values }) =>
       inquiry
@@ -47,5 +47,5 @@ export function useInquiryForm({ data, inquiry, onDone }: UseInquiryFormInput) {
       else router.push(inquiryRoute({ id: value.id }));
     },
   });
-  return { form, submit, pending, typeOf };
+  return { form, submit, run, pending, typeOf };
 }

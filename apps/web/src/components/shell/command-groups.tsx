@@ -35,7 +35,7 @@ export function CommandGroups({ venues, onDone }: CommandGroupsProps) {
           <PlusIcon />
           {t("createVenue")}
         </CommandItem>
-        <CommandItem onSelect={() => go({ href: `${ROUTES.items}?create=1` })}>
+        <CommandItem onSelect={() => go({ href: ROUTES.itemNew })}>
           <PlusIcon />
           {t("createItem")}
         </CommandItem>

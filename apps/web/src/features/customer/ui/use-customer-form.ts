@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
 import { useTypedResolver } from "@/components/typed-fields/use-typed-resolver";
+import { customerRoute } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { createCustomerAction, updateCustomerAction } from "../actions";
 import {
@@ -34,7 +35,7 @@ export function useCustomerForm({ data, customer, onDone }: UseCustomerFormInput
     resolver,
     defaultValues: customerFormDefaults({ type: initial, customer }),
   });
-  const { submit, pending } = useFormAction({
+  const { submit, run, pending } = useFormAction({
     form,
     action: ({ values }) =>
       customer
@@ -47,10 +48,11 @@ export function useCustomerForm({ data, customer, onDone }: UseCustomerFormInput
           })
         : createCustomerAction({ input: values }),
     messages: { pending: t("saving"), success: t(customer ? "updated" : "created") },
-    onSuccess: () => {
+    onSuccess: ({ value }) => {
       router.refresh();
-      onDone();
+      if (customer) onDone();
+      else router.push(customerRoute({ id: value.id }));
     },
   });
-  return { form, submit, pending, typeOf };
+  return { form, submit, run, pending, typeOf };
 }

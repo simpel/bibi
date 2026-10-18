@@ -126,8 +126,29 @@
     "consentDenying": "Nekar åtkomst…",
     "consentDenied": "Åtkomst har nekats."
   },
+  "pipeline": {
+    "title": "Pipeline",
+    "clash": "Tidskrock",
+    "noDate": "Inget datum",
+    "quantity": "{count, plural, one {# person} other {# personer}}",
+    "moved": "Flyttad till {column}.",
+    "kanban": {
+      "dragInstructions": "Tryck mellanslag för att lyfta kortet, piltangenterna för att flytta det mellan kolumner och mellanslag för att släppa det.",
+      "emptyColumn": "Inget här",
+      "pickedUp": "Lyfte {card}.",
+      "movedOver": "{card} är över {column}.",
+      "dropped": "{card} släpptes i {column}.",
+      "cancelled": "Flytten av {card} avbröts."
+    }
+  },
+  "dashboard": {
+    "title": "Översikt",
+    "description": "Aktuellt läge i verksamheten.",
+    "comingSoon": "Översikten kommer snart."
+  },
   "nav": {
     "dashboard": "Översikt",
+    "pipeline": "Pipeline",
     "venues": "Anläggningar",
     "items": "Artiklar",
     "customers": "Kunder",
@@ -139,7 +160,6 @@
     "sheets": "Blad",
     "calendar": "Kalender",
     "bookings": "Bokningar",
-    "bookingSeries": "Bokningsserier",
     "skills": "Färdigheter",
     "settings": "Inställningar",
     "openMenu": "Öppna meny",
@@ -161,6 +181,7 @@
     "showMore": "Visa fler",
     "platformAdmin": "Plattformsadmin",
     "groups": {
+      "primary": "Översikt",
       "work": "Arbete",
       "catalog": "Katalog",
       "admin": "Administration"
@@ -205,7 +226,20 @@
       "contact": "Kontakt",
       "status": "Status"
     },
-    "itemsEmpty": "Inga artiklar på den här anläggningen ännu."
+    "itemsEmpty": "Inga artiklar på den här anläggningen ännu.",
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "identity": "Namn",
+        "address": "Adress",
+        "contact": "Kontakt och moms"
+      },
+      "descriptions": {
+        "identity": "Namnge anläggningen.",
+        "address": "Var anläggningen ligger.",
+        "contact": "Hur man når anläggningen, när den har öppet och standardmoms."
+      }
+    }
   },
   "item": {
     "singular": "Artikel",
@@ -307,6 +341,19 @@
       "part": "{quantity} × {name}",
       "optional": "valfri",
       "option": "alternativ i {group}"
+    },
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "type": "Typ",
+        "details": "Uppgifter",
+        "setup": "Pris och upplägg"
+      },
+      "descriptions": {
+        "type": "Välj artikeltyp. Typen avgör vilka fält artikeln har.",
+        "details": "Namnge artikeln och fyll i typens fält.",
+        "setup": "Ange pris, bokning, upplägg och innehåll."
+      }
     }
   },
   "customer": {
@@ -380,67 +427,6 @@
       "email": "E-post",
       "phone": "Telefon"
     }
-  },
-  "bookingSeries": {
-    "singular": "Bokningsserie",
-    "plural": "Bokningsserier",
-    "listDescription": "Återkommande bokningar, t.ex. ett mötesrum första tisdagen varje månad. Varje tillfälle är en vanlig bokning.",
-    "create": "Skapa serie",
-    "createDescription": "Välj typ, kund, upprepning och rum. Tillfällen skapas upp till 12 månader eller 52 gånger framåt, var och en i standardstatusen för preliminära bokningar.",
-    "created": "Serien har skapats.",
-    "empty": "Inga bokningsserier ännu.",
-    "emptyDescription": "Skapa en serie för en kund som bokar samma sak regelbundet.",
-    "occurrence": "{index}/{total}",
-    "marker": "Serie {index}/{total}",
-    "markerNoTotal": "Serie {index}",
-    "clash": "Krock",
-    "clashCount": "{count, plural, one {# krock} other {# krockar}}",
-    "clashNotice": "{count, plural, one {# tillfälle krockar} other {# tillfällen krockar}} med en annan bokning eller en spärrad tid. Det skapas utan rummet; välj ett annat rum eller en annan tid för det.",
-    "truncated": "Regeln fortsätter efter det sista tillfället som visas; senare tillfällen skapas längre fram.",
-    "fields": {
-      "type": "Typ",
-      "customer": "Kund",
-      "rule": "Upprepning",
-      "ruleHint": "RRULE, t.ex. FREQ=MONTHLY;BYDAY=1TU;COUNT=10 (första tisdagen i månaden, 10 gånger) eller FREQ=WEEKLY;BYDAY=TH;UNTIL=20270630.",
-      "startsAt": "Första tillfället börjar",
-      "durationMinutes": "Längd (minuter)",
-      "timeZone": "Tidszon",
-      "room": "Rum",
-      "noRoom": "Inget rum",
-      "setup": "Uppställning",
-      "noSetup": "Ingen uppställning",
-      "estimatedHeadcount": "Beräknat antal",
-      "scope": "Gäller",
-      "occurrenceStartsAt": "Börjar",
-      "keepRoom": "Behåll nuvarande rum",
-      "cancelReason": "Orsak"
-    },
-    "columns": {
-      "rule": "Upprepning",
-      "customer": "Kund",
-      "startsAt": "Börjar",
-      "occurrences": "Tillfällen",
-      "clashes": "Krockar",
-      "occurrence": "Tillfälle",
-      "booking": "Bokning",
-      "when": "När",
-      "status": "Status",
-      "clash": "Krock",
-      "actions": "Åtgärder"
-    },
-    "occurrencesUpdated": "Tillfällena har ändrats.",
-    "itemsTaken": "Rummet är redan upptaget vid den tiden. Välj ett annat rum eller en annan tid.",
-    "scope": {
-      "this": "Bara det här tillfället",
-      "following": "Det här och följande tillfällen"
-    },
-    "editOccurrence": "Ändra tillfälle {index}/{total}",
-    "noOccurrences": "Serien har inga tillfällen.",
-    "editOccurrenceDescription": "Flytta tillfället till en annan tid eller ett annat rum. \"Det här och följande\" flyttar alla senare tillfällen lika mycket och ändrar serien framåt.",
-    "cancelSeries": "Avboka serien",
-    "cancelSeriesDescription": "Alla kommande tillfällen avbokas med orsaken och deras rum frigörs. Tillfällen som redan har börjat eller är slut ändras inte.",
-    "cancelled": "Serien har avbokats.",
-    "cancelledNotice": "Serien är avbokad: {reason}"
   },
   "booking": {
     "singular": "Bokning",
@@ -859,6 +845,17 @@
       "CHOICES": "Valgrupper bland delarna.",
       "BOOKABLE": "Upptar tid och har standardlängd.",
       "SETUPS": "Kapacitet per uppställning."
+    },
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "base": "Namn",
+        "behaviours": "Beteenden"
+      },
+      "descriptions": {
+        "base": "Välj vad typen är till för och namnge den.",
+        "behaviours": "Välj vad artiklar av typen kan göra. Fälten lägger du till härnäst."
+      }
     }
   },
   "fieldDefinition": {
@@ -1035,6 +1032,17 @@
       "add": "Lägg till artikel",
       "remove": "Ta bort artikel",
       "saved": "Artikelpriserna har sparats."
+    },
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "identity": "Namn",
+        "terms": "Villkor"
+      },
+      "descriptions": {
+        "identity": "Namnge prislistan och välj kunden den gäller, om någon.",
+        "terms": "Ange när den gäller och en generell rabatt."
+      }
     }
   },
   "responsibility": {
@@ -1074,6 +1082,17 @@
       "types": "Täckta artikeltyper",
       "assignee": "Standardansvarig",
       "followers": "Standardföljare"
+    },
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "scope": "Omfattning",
+        "people": "Personer"
+      },
+      "descriptions": {
+        "scope": "Namnge ansvaret och välj vilka typer det gäller.",
+        "people": "Välj vem det går till som standard och vilka som följer."
+      }
     }
   },
   "sheetDefinition": {
@@ -1116,6 +1135,19 @@
       "types": "Artikeltyper",
       "lists": "Listor",
       "role": "Mottagande roll"
+    },
+    "wizard": {
+      "progress": "Steg",
+      "steps": {
+        "name": "Namn",
+        "content": "Innehåll",
+        "receiver": "Mottagare"
+      },
+      "descriptions": {
+        "name": "Namnge underlaget, till exempel Köksorder.",
+        "content": "Välj artikeltyper, deras fält och de listor underlaget sammanställs från.",
+        "receiver": "Välj den roll som får underlaget."
+      }
     }
   },
   "bookingStatus": {
@@ -1258,9 +1290,6 @@
         "booking_createQuick": "Skapa snabbbokning",
         "booking_update": "Uppdatera bokning",
         "booking_changeStatus": "Ändra bokningsstatus",
-        "bookingSeries_create": "Skapa bokningsserie",
-        "bookingSeries_updateOccurrences": "Uppdatera seriens tillfällen",
-        "bookingSeries_cancel": "Avboka bokningsserie",
         "entityType_create": "Skapa typ",
         "entityType_update": "Ändra typ",
         "entityType_archive": "Arkivera typ",
@@ -1398,20 +1427,10 @@
         "onboardingLink": "Fortsätt hos Stripe",
         "open": "Öppna betalningsinställningar"
       },
-      "bookingSeries": {
-        "singular": "Bokningsserie",
-        "empty": "Inga bokningsserier hittades.",
-        "open": "Öppna serien",
-        "occurrences": "{count, plural, one {# tillfälle} other {# tillfällen}}",
-        "noClashes": "Inga krockar",
-        "clash": "Krock",
-        "occurrence": "Tillfälle {index}/{total}",
-        "columns": {
-          "rule": "Upprepning",
-          "occurrences": "Tillfällen",
-          "clashes": "Krockar"
-        },
-        "cancelled": "Avbokad"
+      "pipeline": {
+        "title": "Pipeline",
+        "empty": "Inga förfrågningar eller bokningar än.",
+        "open": "Öppna pipelinen"
       },
       "inquiry": {
         "title": "Förfrågan {date}",
@@ -1455,7 +1474,11 @@
         "empty": "Inga optioner hittades.",
         "expires": "Förfaller {date}",
         "openItem": "Öppna artikeln",
-        "columns": { "rank": "Plats", "period": "Period", "expiresAt": "Förfaller" }
+        "columns": {
+          "rank": "Plats",
+          "period": "Period",
+          "expiresAt": "Förfaller"
+        }
       },
       "programItem": {
         "singular": "Programpunkt",
@@ -2297,6 +2320,86 @@
         "client": "App",
         "scopes": "Åtkomst",
         "connected": "Ansluten"
+      }
+    }
+  },
+  "wizard": {
+    "progress": "Steg",
+    "steps": {
+      "type": "Typ",
+      "details": "Uppgifter",
+      "fields": "Typens fält"
+    },
+    "descriptions": {
+      "type": "Välj typ. Typen avgör vilka egna fält som finns.",
+      "details": "Fyll i uppgifterna.",
+      "fields": "Fyll i typens fält."
+    }
+  },
+  "createHub": {
+    "title": "Skapa",
+    "description": "Allt du kan skapa. Välj något för att börja.",
+    "groups": {
+      "work": "Arbete",
+      "catalog": "Katalog",
+      "settings": "Inställningar"
+    },
+    "items": {
+      "booking": {
+        "title": "Bokning",
+        "description": "En konferens eller ett evenemang med kund, tid och antal personer."
+      },
+      "inquiry": {
+        "title": "Förfrågan",
+        "description": "En förfrågan från en kund, innan den är kvalificerad."
+      },
+      "customer": {
+        "title": "Kund",
+        "description": "Ett företag eller en person du bokar åt."
+      },
+      "item": {
+        "title": "Artikel",
+        "description": "Något du säljer eller bokar, som ett rum, en rätt eller utrustning."
+      },
+      "venue": {
+        "title": "Anläggning",
+        "description": "En plats där bokningar sker."
+      },
+      "priceList": {
+        "title": "Prislista",
+        "description": "Priser som går före artiklarnas priser."
+      },
+      "skill": {
+        "title": "Skill",
+        "description": "Återanvändbart beteende för assistenten."
+      },
+      "type": {
+        "title": "Typ",
+        "description": "En sorts artikel, bokning eller förfrågan och dess fält."
+      },
+      "list": {
+        "title": "Lista",
+        "description": "En värdelista, till exempel allergener eller utrustning."
+      },
+      "setup": {
+        "title": "Upplägg",
+        "description": "En rumsuppställning som teater eller styrelserum."
+      },
+      "responsibility": {
+        "title": "Ansvar",
+        "description": "Vad någon svarar för, och vem det går till som standard."
+      },
+      "sheet": {
+        "title": "Underlag",
+        "description": "Ett underlag som köksordern, och vem som får det."
+      },
+      "bookingStatus": {
+        "title": "Bokningsstatus",
+        "description": "Ett steg som en bokning går igenom."
+      },
+      "member": {
+        "title": "Medlem",
+        "description": "Bjud in någon till din organisation."
       }
     }
   }

@@ -31,7 +31,7 @@ export function usePriceListForm({ priceList, onDone }: UsePriceListFormInput) {
     resolver: zodResolver(priceListFormSchema, useZodMessages()),
     defaultValues: priceListFormDefaults({ priceList }),
   });
-  const { submit, pending } = useFormAction({
+  const { submit, run, pending } = useFormAction({
     form,
     action: ({ values }) => save({ priceList, values }),
     messages: { pending: common("saving"), success: t(priceList ? "updated" : "created") },
@@ -40,5 +40,5 @@ export function usePriceListForm({ priceList, onDone }: UsePriceListFormInput) {
       onDone();
     },
   });
-  return { form, submit, pending };
+  return { form, submit, run, pending };
 }

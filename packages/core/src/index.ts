@@ -16,8 +16,6 @@ export { BOOKING_OCCUPANCY_SOURCE } from "./features/booking/cancellation";
 export * from "./features/booking/change-status-operation";
 export * from "./features/booking/operations";
 export * from "./features/booking/write-operations";
-export * from "./features/booking-series/operations";
-export * from "./features/booking-series/write-operations";
 export * from "./features/booking-status/import-template-operation";
 export {
   toBookingStatusDto,
@@ -70,6 +68,7 @@ export * from "./features/payment/operations";
 export * from "./features/payment/provider-registry";
 export * from "./features/payment-account/gateway-registry";
 export * from "./features/payment-account/operations";
+export * from "./features/pipeline/operations";
 export * from "./features/price-list/operations";
 export * from "./features/price-list/write-operations";
 export * from "./features/program-item/operations";
@@ -134,7 +133,6 @@ export { type ExecutePlatformInput, executePlatform } from "./platform/execute-p
 export * from "./platform/platform-operations";
 export * from "./platform/system-log/schema";
 export type * from "./platform/types";
-export * from "./recurrence/expand-occurrences";
 export * from "./schemas";
 export type { EmbedFn, EmbedInput, EmbedOutput } from "./search/embed";
 export type { Embeddable, LoadInput, SearchViewer, ToTextInput } from "./search/embeddable";

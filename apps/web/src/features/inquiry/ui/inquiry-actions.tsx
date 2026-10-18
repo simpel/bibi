@@ -1,10 +1,12 @@
 "use client";
 
 import type { InquiryDto } from "@okazi/core";
+import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { BadgeCheckIcon, PencilIcon, XCircleIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { inquiryRoute, updateRoute } from "@/lib/routes";
 import { type InquiryActionDialog, InquiryActionDialogs } from "./inquiry-action-dialogs";
 import type { InquiryFormData } from "./inquiry-form-data";
 
@@ -28,9 +30,11 @@ export function InquiryActions({ inquiry, data, can }: InquiryActionsProps) {
           {t("qualify")}
         </Button>
       ) : null}
-      <Button variant="outline" onClick={() => setDialog("edit")}>
-        <PencilIcon />
-        {t("edit")}
+      <Button asChild variant="outline">
+        <Link href={updateRoute({ detail: inquiryRoute({ id: inquiry.id }) })}>
+          <PencilIcon />
+          {t("edit")}
+        </Link>
       </Button>
       {can.markLost ? (
         <Button variant="outline" onClick={() => setDialog("lost")}>

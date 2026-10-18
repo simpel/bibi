@@ -20,11 +20,6 @@ export const BookingSchema = z.object({
   /** The reason given with the last status change; always set in the `CANCELLED` phase. */
   statusReason: z.string().nullable(),
   fields: FieldValuesSchema,
-  /** The series that generated the booking (ADR 0023), with its 1-based position in it. */
-  seriesId: z.string().nullable(),
-  occurrenceIndex: z.number().int().nullable(),
-  /** The series could not occupy its items for this occurrence; pick another item or time. */
-  clash: z.boolean(),
   /**
    * Derived, not stored (ADR 0012): `booking-<id>@<MAIL_INBOUND_DOMAIN>`, the reply-to of booking
    * mail. Null when inbound mail is not configured.

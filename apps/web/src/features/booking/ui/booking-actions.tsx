@@ -1,28 +1,26 @@
-"use client";
-
 import type { BookingDto } from "@okazi/core";
+import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { PencilIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { BookingDialog } from "./booking-dialog";
+import { getTranslations } from "next-intl/server";
+import { bookingRoute, updateRoute } from "@/lib/routes";
 import type { BookingFormData } from "./booking-form-data";
 import { ChangeStatusButton } from "./change-status-button";
 
 export type BookingActionsProps = { booking: BookingDto; data: BookingFormData };
 
-/** Edit and change-status buttons of the booking detail page. */
-export function BookingActions({ booking, data }: BookingActionsProps) {
-  const t = useTranslations("booking");
-  const [editing, setEditing] = useState(false);
+/** Edit (its own page) and change-status buttons of the booking detail page. */
+export async function BookingActions({ booking, data }: BookingActionsProps) {
+  const t = await getTranslations("booking");
   return (
     <>
-      <Button variant="outline" onClick={() => setEditing(true)}>
-        <PencilIcon />
-        {t("edit")}
+      <Button asChild variant="outline">
+        <Link href={updateRoute({ detail: bookingRoute({ id: booking.id }) })}>
+          <PencilIcon />
+          {t("edit")}
+        </Link>
       </Button>
       <ChangeStatusButton booking={booking} statuses={data.statuses} />
-      <BookingDialog data={data} booking={booking} open={editing} onOpenChange={setEditing} />
     </>
   );
 }

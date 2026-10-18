@@ -13,4 +13,11 @@ describe("buildCrumbs", () => {
       { href: "/settings/price-lists/abc", labelKey: "detail" },
     ]);
   });
+
+  it("puts a /new/<thing> page under the thing's list", () => {
+    expect(buildCrumbs({ pathname: "/new/item" })).toEqual([
+      { href: "/items", labelKey: "items" },
+      { href: "/new/item", labelKey: "new" },
+    ]);
+  });
 });

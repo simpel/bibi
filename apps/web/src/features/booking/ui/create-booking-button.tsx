@@ -1,36 +1,18 @@
-"use client";
-
-import { usePathname, useRouter } from "@okazi/i18n/navigation";
+import { Link } from "@okazi/i18n/navigation";
 import { Button } from "@okazi/ui";
 import { PlusIcon } from "lucide-react";
-import { useSearchParams } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { BookingDialog } from "./booking-dialog";
-import type { BookingFormData } from "./booking-form-data";
+import { getTranslations } from "next-intl/server";
+import { ROUTES } from "@/lib/routes";
 
-export type CreateBookingButtonProps = { data: BookingFormData };
-
-/** Opens the create-booking dialog; also opens on `?create=1`. */
-export function CreateBookingButton({ data }: CreateBookingButtonProps) {
-  const t = useTranslations("booking");
-  const router = useRouter();
-  const pathname = usePathname();
-  const [open, setOpen] = useState(useSearchParams().get("create") === "1");
+/** Link to the step-by-step create page. */
+export async function CreateBookingButton() {
+  const t = await getTranslations("booking");
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>
+    <Button asChild>
+      <Link href={ROUTES.bookingNew}>
         <PlusIcon />
         {t("create")}
-      </Button>
-      <BookingDialog
-        data={data}
-        open={open}
-        onOpenChange={(next) => {
-          setOpen(next);
-          if (!next) router.replace(pathname);
-        }}
-      />
-    </>
+      </Link>
+    </Button>
   );
 }

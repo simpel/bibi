@@ -10,8 +10,6 @@ export type CalendarBlock = {
   endsAt: Date;
   bookingId: string | null;
   reference: number | null;
-  seriesId: string | null;
-  occurrenceIndex: number | null;
   /** The program item's name, or the note of a manual block. */
   title: string | null;
   /** 1 = first option, 2 = second… Only for `OPTION`. */
@@ -28,7 +26,7 @@ export type ToCalendarBlocksInput = {
 
 /**
  * Joins occupancies with their source: a program item's rows (and its setup time) belong to
- * the program item's booking, a booking's own rows (series occurrences) to that booking.
+ * the program item's booking, a booking's own rows to that booking.
  */
 export function toCalendarBlocks({
   occupancies,
@@ -55,8 +53,6 @@ export function toCalendarBlocks({
       endsAt: occupancy.endsAt,
       bookingId,
       reference: booking?.reference ?? null,
-      seriesId: booking?.seriesId ?? null,
-      occurrenceIndex: booking?.occurrenceIndex ?? null,
       title: program?.name ?? occupancy.note,
       queuePosition: queue.get(occupancy.id) ?? null,
     };
