@@ -29,4 +29,10 @@ export const programItemMcpTools = [
     summary: ({ input }) =>
       `Set line ${text({ value: input.lineId })} to state ${text({ value: input.stateId })}`,
   }),
+  mcpTool({
+    operation: "line.followPhase",
+    idempotent: true,
+    summary: ({ input }) =>
+      `Let line ${text({ value: input.lineId })} follow the ticket's phase again`,
+  }),
 ];

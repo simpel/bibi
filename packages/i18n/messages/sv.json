@@ -441,6 +441,7 @@
     "changePhaseDescription": "Flytta ärendet till en av de faser som organisationen tillåter från nuvarande fas. Vissa faser kräver en anledning eller en ansvarig, och en avslutande fas frigör ärendets lokaler och resurser.",
     "phaseChanged": "Fasen har ändrats.",
     "transitionRefused": "Er organisation tillåter inte den här flytten.",
+    "linesBlocked": "{count, plural, one {# rad kan inte flyttas: en reservation krockar eller lägesbytet är inte tillåtet.} other {# rader kan inte flyttas: en reservation krockar eller lägesbytet är inte tillåtet.}}",
     "assigneeRequired": "Fasen kräver en ansvarig. Tilldela en på ärendet först.",
     "reasonRequired": "Fasen kräver en anledning.",
     "export": "Exportera",
@@ -616,6 +617,10 @@
     "archived": "Programpunkten har tagits bort.",
     "created": "Programpunkten har lagts till.",
     "updated": "Programpunkten har uppdaterats.",
+    "changeState": "Byt läge",
+    "followPhase": "Följ fasen igen",
+    "stateChanged": "Radens läge har ändrats.",
+    "overridden": "(manuellt)",
     "empty": "Ärendet har inga programpunkter än.",
     "occupied": "Lokalen är redan belagd under perioden eller ställtiden.",
     "noItem": "Ingen lokal",
@@ -635,6 +640,7 @@
       "name": "Namn",
       "type": "Typ",
       "where": "Var",
+      "state": "Läge",
       "quantity": "Antal"
     }
   },
@@ -1286,7 +1292,9 @@
         "itemState_archive": "Arkivera läge",
         "itemState_reorder": "Ändra ordning på lägen",
         "itemState_setTransitions": "Ange lägesövergångar",
+        "phaseGrid_setCell": "Ange cell i fasrutnätet",
         "line_changeState": "Byt läge på rad",
+        "line_followPhase": "Låt raden följa fasen",
         "ticket_expireHolds": "Släpp förfallna reservationer"
       }
     },
@@ -1581,6 +1589,14 @@
           "name": "Namn",
           "flags": "Gör",
           "transitions": "Övergångar"
+        }
+      },
+      "phaseGrid": {
+        "empty": "Inga celler är satta: raderna behåller sitt läge när fasen byts.",
+        "columns": {
+          "phase": "Fas",
+          "type": "Artikeltyp",
+          "state": "Raderna flyttas till"
         }
       },
       "assignment": {

@@ -52,6 +52,7 @@ export {
   type PaymentAccount,
   PaymentMethod,
   PaymentStatus,
+  type PhaseStateRule,
   type PriceList,
   type PriceListItem,
   PriceUnit,

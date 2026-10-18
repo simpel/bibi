@@ -11,7 +11,10 @@ const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
  * phases are seeded (#271), the phases are those of the default template (Lead, Confirmed,
  * Completed, Lost): open tickets after the deal are Confirmed, a cancelled one is Lost. The leads
  * F2, F3 and F6 stay in the entry phase with a room line in its initial state, Prebooked (a soft
- * hold, ADR 0044): F2 and F3 hold Vinga at the same time, F6's holdsUntil has passed.
+ * hold, ADR 0044): F2 and F3 hold Vinga at the same time, F6's holdsUntil has passed. L4's
+ * Styrsö line is Booked by the grid when L4 is confirmed. L11 stays in Lead with its lunch
+ * overridden to Locked; L12 soft-holds Styrsö inside L4's booking, so its move to Confirmed is
+ * blocked (both used by `checkDemoGrid`).
  */
 export const lindholmenTickets: readonly DemoTicket[] = [
   {
@@ -39,6 +42,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   {
     ...{ ref: "L4", customer: gota, type: "Conference", day: 5, from: "09:00", to: "13:00" },
     ...{ phase: "Confirmed", headcount: 12, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
+    lines: [{ item: "Styrsö", name: "Half-day conference", from: "09:00", to: "13:00" }],
   },
   {
     ...{ ref: "L5", customer: "Älvstrand Tech AB", type: "Event", day: 14, from: "18:00" },
@@ -77,6 +81,27 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   {
     ...{ ref: "L10", customer: hisingen, type: "Conference", day: 4, from: "13:00", to: "16:00" },
     ...{ phase: "Confirmed", headcount: 6, assignee: "Johan Ek", followers: ["Erik Lund"] },
+  },
+  {
+    ...{ ref: "L11", customer: gota, type: "Conference", day: 6, from: "09:00", to: "13:00" },
+    ...{ headcount: 10, assignee: "Maria Holm", checkMove: { to: "Confirmed", blocked: false } },
+    fields: { Purpose: "Board meeting" },
+    lines: [
+      { item: "Styrsö", name: "Board meeting", from: "09:00", to: "12:00" },
+      {
+        item: "Conference lunch",
+        name: "Board lunch",
+        from: "12:00",
+        to: "13:00",
+        state: "Locked",
+      },
+    ],
+  },
+  {
+    ...{ ref: "L12", customer: hisingen, type: "Conference", day: 5, from: "10:00", to: "12:00" },
+    ...{ headcount: 8, assignee: "Erik Lund", checkMove: { to: "Confirmed", blocked: true } },
+    fields: { Purpose: "Strategy meeting" },
+    lines: [{ item: "Styrsö", name: "Strategy meeting", from: "10:00", to: "12:00" }],
   },
   {
     ...{ ref: "F2", customer: hisingen, type: "Conference", day: 45, from: "09:00", to: "17:00" },

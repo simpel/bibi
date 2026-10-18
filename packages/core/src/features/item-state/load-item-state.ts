@@ -47,3 +47,16 @@ export async function loadStatesOfType({ context, entityTypeId }: LoadStatesOfTy
   });
   return rows.map((row) => toItemStateDto({ row }));
 }
+
+export type LoadStatesByIdInput = Db & { ids: readonly string[] };
+
+/** Active states by id with their transitions (one query); archived or unknown ids are absent. */
+export async function loadStatesById({ context, ids }: LoadStatesByIdInput) {
+  const unique = [...new Set(ids)];
+  if (unique.length === 0) return new Map<string, ItemStateDto>();
+  const rows = await context.db.itemState.findMany({
+    where: { id: { in: unique } },
+    include: WITH_STATE_TRANSITIONS,
+  });
+  return new Map(rows.map((row) => [row.id, toItemStateDto({ row })]));
+}

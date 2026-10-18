@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
+import { handCellsOver } from "../phase-grid/cell-lifecycle";
 import { moveLinesToState } from "./lines-in-state";
 import { loadItemState, toItemStateDto } from "./load-item-state";
 import { ItemStateArchiveInputSchema, type ItemStateDto, ItemStateSchema } from "./schema";
@@ -19,7 +20,10 @@ async function loadTarget({ context, state, targetStateId }: TargetInput) {
   return invalid({ message, issues: [{ path: "targetStateId", message }] });
 }
 
-/** Lines move to the target; the type's expiry state follows or is cleared (ADR 0044). */
+/**
+ * Lines move to the target; the type's expiry state and the grid cells that use the state follow
+ * it or are cleared (ADR 0044).
+ */
 async function handOver({ context, state, targetStateId }: TargetInput): Promise<Result<true>> {
   const used = await context.db.programItem.count({ where: { stateId: state.id } });
   const target =
@@ -30,6 +34,7 @@ async function handOver({ context, state, targetStateId }: TargetInput): Promise
     const moved = await moveLinesToState({ context, fromStateId: state.id, toStateId });
     if (!moved.ok) return moved;
   }
+  await handCellsOver({ context, fromStateId: state.id, toStateId });
   const types = await context.db.entityType.findMany({ where: { expiryStateId: state.id } });
   for (const before of types) {
     const after = await context.db.entityType.update({
@@ -68,7 +73,8 @@ export const archiveItemState = defineOperation({
   description:
     "Archive an item state (states are never deleted). When lines use it, `targetStateId` (a " +
     "state of the same type) is required: the lines move there with their holds, all or none. " +
-    "A type whose expiry state it was gets the target (or none). Its transitions are removed. " +
+    "A type whose expiry state it was and the phase grid cells that use it get the target (or " +
+    "are cleared). Its transitions are removed. " +
     "The initial state cannot be archived until another state is initial (CONFLICT).",
   input: ItemStateArchiveInputSchema,
   output: ItemStateSchema,

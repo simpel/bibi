@@ -16,6 +16,7 @@ import { oauthGrantRoutes } from "./features/oauth-grant/rest";
 import { occupancyRoutes } from "./features/occupancy/rest";
 import { paymentRoutes } from "./features/payment/rest";
 import { paymentAccountRoutes } from "./features/payment-account/rest";
+import { phaseGridRoutes } from "./features/phase-grid/rest";
 import { pipelineRoutes } from "./features/pipeline/rest";
 import { priceListRoutes } from "./features/price-list/rest";
 import { programItemRoutes } from "./features/program-item/rest";
@@ -53,6 +54,7 @@ export function listRestRoutes(): RestRoute[] {
     ...occupancyRoutes,
     ...ticketPhaseRoutes,
     ...itemStateRoutes,
+    ...phaseGridRoutes,
     ...ticketRoutes,
     ...programItemRoutes,
     ...requirementRoutes,

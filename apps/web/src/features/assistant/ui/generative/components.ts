@@ -32,6 +32,7 @@ import { OccupancyTableView } from "./occupancy-table-view";
 import { PaymentAccountCardView } from "./payment-account-card-view";
 import { PaymentCardView } from "./payment-card-view";
 import { PaymentTableView } from "./payment-table-view";
+import { PhaseGridTableView } from "./phase-grid-table-view";
 import { PipelineBoardView } from "./pipeline-board-view";
 import { PriceListCardView } from "./price-list-card-view";
 import { PriceListTableView } from "./price-list-table-view";
@@ -84,6 +85,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "ticket-phase-card": TicketPhaseCardView,
   "item-state-table": ItemStateTableView,
   "item-state-card": ItemStateCardView,
+  "phase-grid-table": PhaseGridTableView,
   "ticket-table": TicketTableView,
   "ticket-card": TicketCardView,
   "program-item-table": ProgramItemTableView,

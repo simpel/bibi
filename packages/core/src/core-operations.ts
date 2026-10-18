@@ -16,6 +16,7 @@ import { oauthGrantOperations } from "./features/oauth-grant/operations";
 import { occupancyOperations } from "./features/occupancy/operations";
 import { paymentOperations } from "./features/payment/operations";
 import { paymentAccountOperations } from "./features/payment-account/operations";
+import { phaseGridOperations } from "./features/phase-grid/operations";
 import { pipelineOperations } from "./features/pipeline/operations";
 import { priceListOperations } from "./features/price-list/operations";
 import { programItemOperations } from "./features/program-item/operations";
@@ -55,6 +56,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...occupancyOperations,
     ...ticketPhaseOperations,
     ...itemStateOperations,
+    ...phaseGridOperations,
     ...ticketOperations,
     ...programItemOperations,
     ...assignmentOperations,

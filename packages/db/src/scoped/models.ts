@@ -23,6 +23,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "TicketPhaseTransition",
   "ItemState",
   "ItemStateTransition",
+  "PhaseStateRule",
   "Ticket",
   "ProgramItem",
   "Requirement",

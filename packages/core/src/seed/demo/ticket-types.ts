@@ -27,7 +27,15 @@ export type DemoTicket = {
   holdsUntilDay?: number;
   /** The ticket's lines, on the ticket's day. */
   lines?: readonly DemoLine[];
+  /**
+   * A phase move `checkDemoGrid` makes after seeding (ADR 0044): `blocked` moves must be refused
+   * and change nothing; the others must move the lines as the grid says, skipping overrides.
+   */
+  checkMove?: { to: string; blocked: boolean };
 };
 
-/** A line (ADR 0044): an item by name, what it is for and local times on the ticket's day. */
-export type DemoLine = { item: string; name: string; from: string; to: string };
+/**
+ * A line (ADR 0044): an item by name, what it is for and local times on the ticket's day.
+ * `state` overrides the line's state by name (`line.changeState`) right after it is created.
+ */
+export type DemoLine = { item: string; name: string; from: string; to: string; state?: string };

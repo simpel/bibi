@@ -3,6 +3,7 @@ import {
   changeLineState,
   createProgramItem,
   expireTicketHolds,
+  followLinePhase,
   getProgramItem,
   listProgramItems,
   type ProgramItemDto,
@@ -35,6 +36,7 @@ mutationFromOperation({ operation: createProgramItem, type: ProgramItemRef });
 mutationFromOperation({ operation: updateProgramItem, type: ProgramItemRef });
 mutationFromOperation({ operation: archiveProgramItem, type: ProgramItemRef });
 mutationFromOperation({ operation: changeLineState, type: ProgramItemRef });
+mutationFromOperation({ operation: followLinePhase, type: ProgramItemRef });
 
 const ExpireHoldsRef = builder.objectRef<{ items: ProgramItemDto[] }>("TicketExpireHoldsResult");
 ExpireHoldsRef.implement({

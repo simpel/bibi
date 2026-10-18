@@ -17,6 +17,12 @@ export type DemoResponsibility = {
   followers?: readonly string[];
 };
 
+/**
+ * One cell of the phase grid (ADR 0044) by name: entering `phase` moves lines of item type
+ * `type` to `state`. Cells that are not listed keep the state.
+ */
+export type DemoGridCell = { phase: string; type: string; state: string };
+
 /** Everything ADR 0025 seeds for one organization so far (`docs/demo-seed.md`). */
 export type DemoOrg = {
   slug: string;
@@ -27,6 +33,8 @@ export type DemoOrg = {
   responsibilities: readonly DemoResponsibility[];
   /** Slice 4: customers with their contact persons. */
   customers: readonly DemoCustomer[];
+  /** Slice 5: the phase grid, set before the tickets so their lines follow it. */
+  pipeline: readonly DemoGridCell[];
   /** Slice 5: tickets with their assignee and followers. */
   tickets: readonly DemoTicket[];
 };

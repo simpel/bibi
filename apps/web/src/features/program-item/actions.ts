@@ -2,7 +2,9 @@
 
 import {
   archiveProgramItem,
+  changeLineState,
   createProgramItem,
+  followLinePhase,
   type ProgramItemCreateInput,
   type ProgramItemDto,
   type ProgramItemUpdateInput,
@@ -33,5 +35,28 @@ export async function archiveProgramItemAction({
 }: ArchiveProgramItemActionInput): Promise<ActionResult<ProgramItemDto>> {
   return toActionResult({
     result: await runOperation({ operation: archiveProgramItem, input: { id } }),
+  });
+}
+
+export type ChangeLineStateActionInput = { lineId: string; stateId: string };
+
+/** Overrides one line's state (ADR 0044). */
+export async function changeLineStateAction({
+  lineId,
+  stateId,
+}: ChangeLineStateActionInput): Promise<ActionResult<ProgramItemDto>> {
+  return toActionResult({
+    result: await runOperation({ operation: changeLineState, input: { lineId, stateId } }),
+  });
+}
+
+export type FollowLinePhaseActionInput = { lineId: string };
+
+/** Lets an overridden line follow the ticket's phase again (ADR 0044). */
+export async function followLinePhaseAction({
+  lineId,
+}: FollowLinePhaseActionInput): Promise<ActionResult<ProgramItemDto>> {
+  return toActionResult({
+    result: await runOperation({ operation: followLinePhase, input: { lineId } }),
   });
 }

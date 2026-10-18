@@ -69,6 +69,9 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "programItem.create", route: "/tickets/[id]" },
   { operation: "programItem.update", route: "/tickets/[id]" },
   { operation: "programItem.archive", route: "/tickets/[id]" },
+  // A line's state is changed (override) or set to follow the phase from its row (ADR 0044).
+  { operation: "line.changeState", route: "/tickets/[id]" },
+  { operation: "line.followPhase", route: "/tickets/[id]" },
   { operation: "requirement.list", route: "/tickets/[id]" },
   { operation: "requirement.create", route: "/tickets/[id]" },
   { operation: "requirement.update", route: "/tickets/[id]" },

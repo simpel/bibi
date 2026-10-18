@@ -26,6 +26,7 @@ model TicketPhase {
   transitionsFrom  TicketPhaseTransition[] @relation("TransitionFrom")
   transitionsTo    TicketPhaseTransition[] @relation("TransitionTo")
   tickets          Ticket[]
+  stateRules       PhaseStateRule[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status, position])

@@ -1,20 +1,24 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { cellOfTicket } from "../phase-grid/load-grid";
 import { rederiveProgramItem } from "./reserve";
 import type { ProgramItemDto } from "./schema";
 import { toProgramItemDto } from "./to-program-item-dto";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-export type InitialStateInput = Db & { itemId: string | null };
+export type InitialStateInput = Db & { ticketId: string; itemId: string | null };
 
 /**
- * The state a new line starts in (ADR 0044): its item type's initial state. A line without an
- * item has no state. The phase grid (ADR 0044) refines this per phase.
+ * The state a new line starts in (ADR 0044): the phase grid's cell of the ticket's current phase
+ * for its item type, or the type's initial state when the cell is empty. A line without an item
+ * has no state.
  */
-export async function initialStateOf({ context, itemId }: InitialStateInput) {
+export async function initialStateOf({ context, ticketId, itemId }: InitialStateInput) {
   const entityTypeId = await itemTypeOf({ context, itemId });
   if (!entityTypeId) return null;
+  const cell = await cellOfTicket({ context, ticketId, entityTypeId });
+  if (cell) return cell;
   const state = await context.db.itemState.findFirst({
     where: { entityTypeId, initial: true },
     select: { id: true },
@@ -38,7 +42,7 @@ export type StateAfterMoveInput = Db & { before: ProgramItemDto; itemId: string 
 
 /**
  * A line moved to an item of another type (or to no item) leaves its state: it starts over in
- * the new type's initial state. Empty when the type is unchanged.
+ * the new type's state for the ticket's phase (grid cell or initial state). Empty when the type is unchanged.
  */
 export async function stateAfterMove({ context, before, itemId }: StateAfterMoveInput) {
   if (itemId === before.itemId) return {};
@@ -47,7 +51,7 @@ export async function stateAfterMove({ context, before, itemId }: StateAfterMove
     itemTypeOf({ context, itemId }),
   ]);
   if (from === to && before.stateId) return {};
-  const stateId = await initialStateOf({ context, itemId });
+  const stateId = await initialStateOf({ context, ticketId: before.ticketId, itemId });
   return { stateId, heldAt: new Date(), stateOverridden: false };
 }
 

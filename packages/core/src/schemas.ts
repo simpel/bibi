@@ -29,6 +29,7 @@ export * from "./features/oauth-grant/schema";
 export * from "./features/occupancy/schema";
 export * from "./features/payment/schema";
 export * from "./features/payment-account/schema";
+export * from "./features/phase-grid/schema";
 export * from "./features/pipeline/schema";
 export * from "./features/price-list/schema";
 export * from "./features/program-item/schema";

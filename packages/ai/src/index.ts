@@ -70,6 +70,7 @@ export type { ItemResolutionWire } from "./ui-contract/item-resolution-entries";
 export type { ItemStateWire } from "./ui-contract/item-state-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire } from "./ui-contract/payment-entries";
+export type { PhaseGridCellWire } from "./ui-contract/phase-grid-entries";
 export type { PipelineBoardWire } from "./ui-contract/pipeline-entries";
 export type { PriceListWire } from "./ui-contract/price-list-entries";
 export type { ProgramItemWire } from "./ui-contract/program-item-entries";

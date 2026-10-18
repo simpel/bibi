@@ -16,6 +16,7 @@ import { oauthGrantMcpTools } from "../features/oauth-grant/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
 import { paymentMcpTools } from "../features/payment/mcp";
 import { paymentAccountMcpTools } from "../features/payment-account/mcp";
+import { phaseGridMcpTools } from "../features/phase-grid/mcp";
 import { pipelineMcpTools } from "../features/pipeline/mcp";
 import { priceListMcpTools } from "../features/price-list/mcp";
 import { programItemMcpTools } from "../features/program-item/mcp";
@@ -52,6 +53,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...occupancyMcpTools,
     ...ticketPhaseMcpTools,
     ...itemStateMcpTools,
+    ...phaseGridMcpTools,
     ...ticketMcpTools,
     ...assignmentMcpTools,
     ...programItemMcpTools,

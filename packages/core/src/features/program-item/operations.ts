@@ -4,6 +4,7 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { changeLineState } from "./change-state-operation";
+import { followLinePhase } from "./follow-phase-operation";
 import {
   ProgramItemIdInputSchema,
   ProgramItemListInputSchema,
@@ -62,4 +63,5 @@ export const programItemOperations = [
   updateProgramItem,
   archiveProgramItem,
   changeLineState,
+  followLinePhase,
 ];

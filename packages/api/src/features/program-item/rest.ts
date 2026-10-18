@@ -17,4 +17,9 @@ export const programItemRoutes = [
     method: "PUT",
     path: "/program-items/{lineId}/state",
   }),
+  restRoute({
+    operation: "line.followPhase",
+    method: "POST",
+    path: "/program-items/{lineId}/follow-phase",
+  }),
 ];

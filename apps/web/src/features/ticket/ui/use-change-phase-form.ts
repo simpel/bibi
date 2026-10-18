@@ -21,7 +21,10 @@ const MESSAGE_OF = {
   assigneeId: "assigneeRequired",
 } as const;
 
-/** Change-phase form state; each blocker of a refused move is shown on its field. */
+/**
+ * Change-phase form state; each blocker of a refused move is shown on its field, blocked lines
+ * on the phase.
+ */
 export function useChangePhaseForm({ ticket, onDone }: UseChangePhaseFormInput) {
   const t = useTranslations("ticket");
   const common = useTranslations("common");
@@ -44,6 +47,9 @@ export function useChangePhaseForm({ ticket, onDone }: UseChangePhaseFormInput) 
         const key = path as keyof typeof FIELD_OF;
         form.setError(FIELD_OF[key], { message: t(MESSAGE_OF[key]) });
       }
+      // Lines whose state move is refused (ADR 0044): a hold collides or a transition is not allowed.
+      const lines = error.issues.filter(({ path }) => path.startsWith("lines.")).length;
+      if (lines > 0) form.setError("phaseId", { message: t("linesBlocked", { count: lines }) });
     },
   });
   return { form, submit, pending };

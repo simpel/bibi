@@ -92,8 +92,8 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       where: { organizationId: lind?.organizationId },
       orderBy: { reference: "asc" },
     });
-    // L1–L10 and the leads F2, F3 and F6 with their room lines (ADR 0044).
-    expect(tickets).toHaveLength(13);
+    // L1–L12 and the leads F2, F3 and F6 with their room lines (ADR 0044).
+    expect(tickets).toHaveLength(15);
     const johan = await db.member.findFirst({
       where: { organizationId: lind?.organizationId, user: { name: "Johan Ek" } },
     });
@@ -107,12 +107,17 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     const lines = await db.programItem.findMany({
       where: { organizationId: lind?.organizationId },
       include: { state: true },
-      orderBy: { heldAt: "asc" },
+      orderBy: { name: "asc" },
     });
-    expect(lines.map((line) => [line.name, line.state?.name])).toEqual([
-      ["Kickoff", "Prebooked"],
-      ["Product launch", "Prebooked"],
-      ["Team day", "Released"],
+    // After the checks: F6 expired, L11 moved to Confirmed (its lunch override kept), L12 blocked.
+    expect(lines.map((line) => [line.name, line.state?.name, line.stateOverridden])).toEqual([
+      ["Board lunch", "Locked", true],
+      ["Board meeting", "Booked", false],
+      ["Half-day conference", "Booked", false],
+      ["Kickoff", "Prebooked", false],
+      ["Product launch", "Prebooked", false],
+      ["Strategy meeting", "Prebooked", false],
+      ["Team day", "Released", false],
     ]);
   });
 

@@ -3,6 +3,7 @@ import { actionsColumn, type ColumnDef } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";
+import { LineStateCell, stateOf } from "./line-state-cell";
 import { placeOf } from "./place-of";
 import type { ProgramFormData } from "./program-form-data";
 import { ProgramRowActions } from "./program-row-actions";
@@ -30,6 +31,12 @@ function dataColumns({ data, t, format }: DataInput): Column[] {
       accessorFn: (item) => placeOf({ programItem: item, data }),
     },
     {
+      id: "state",
+      header: t("columns.state"),
+      accessorFn: (item) => stateOf({ item, data })?.name,
+      cell: ({ row: { original } }) => <LineStateCell programItem={original} data={data} />,
+    },
+    {
       id: "time",
       header: t("columns.time"),
       accessorFn: (item) => item.startsAt,
@@ -51,7 +58,7 @@ function dataColumns({ data, t, format }: DataInput): Column[] {
   ];
 }
 
-/** Name · type · where · time · quantity, plus the row actions when writable. */
+/** Name · type · where · state · time · quantity, plus the row actions when writable. */
 export function useProgramColumns({ data, canWrite }: UseProgramColumnsInput): Column[] {
   const t = useTranslations("programItem");
   const common = useTranslations("common");

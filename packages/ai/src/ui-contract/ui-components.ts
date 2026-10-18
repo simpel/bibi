@@ -19,6 +19,7 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "ticket-phase-card",
   "item-state-table",
   "item-state-card",
+  "phase-grid-table",
   "ticket-table",
   "ticket-card",
   "program-item-table",

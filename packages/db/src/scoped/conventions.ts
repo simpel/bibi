@@ -52,6 +52,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "TicketPhaseTransition",
   "ItemState",
   "ItemStateTransition",
+  "PhaseStateRule",
   "Ticket",
   "ProgramItem",
   "Requirement",
@@ -76,7 +77,7 @@ export const APP_ID_MODELS = new Set<string>(["Member", "Invitation", "Apikey", 
 /**
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:
  * replacement sets owned by a parent (ItemSetup, ItemComponent, ItemChoiceGroup; audited on the
- * item; TicketPhaseTransition, audited on its from-phase; ItemStateTransition, audited on its from-state; PriceListItem, audited on its price
+ * item; TicketPhaseTransition, audited on its from-phase; ItemStateTransition, audited on its from-state; PhaseStateRule, a phase grid cell audited on itself; PriceListItem, audited on its price
  * list; OrderLine, audited on its quote), the derived
  * search index (Embedding) and Better Auth membership rows (Member is deleted on removal,
  * Invitation has its own `status` lifecycle; core audits both) and the payout account
@@ -93,6 +94,7 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "ItemChoiceGroup",
   "TicketPhaseTransition",
   "ItemStateTransition",
+  "PhaseStateRule",
   "PriceListItem",
   "OrderLine",
   "Embedding",

@@ -4,6 +4,7 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
+import { clearPhaseCells } from "../phase-grid/cell-lifecycle";
 import { moveTicket } from "../ticket/move-ticket";
 import { toTicketDto } from "../ticket/to-ticket-dto";
 import { checkMinimumConfiguration, serializePhaseChanges } from "./flag-rules";
@@ -76,7 +77,7 @@ export const archiveTicketPhase = defineOperation({
     "Archive a ticket phase (phases are never deleted). A phase that holds tickets needs " +
     "`targetPhaseId`: its tickets move there through the normal move checks (transition and " +
     "flags), all or none. Its transitions are removed. The last entry or terminal phase cannot " +
-    "be archived (CONFLICT).",
+    "be archived (CONFLICT). Its phase grid cells are cleared.",
   input: TicketPhaseArchiveInputSchema,
   output: TicketPhaseSchema,
   permission: "ticketPhase:admin",
@@ -91,6 +92,7 @@ export const archiveTicketPhase = defineOperation({
     if (!moved.ok) return moved;
     await detachIncoming({ context, id });
     await context.db.ticketPhaseTransition.deleteMany({ where: { fromPhaseId: id } });
+    await clearPhaseCells({ context, phaseId: id });
     const row = await context.db.ticketPhase.update({
       where: { id },
       data: { status: "ARCHIVED" },

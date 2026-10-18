@@ -6,7 +6,8 @@ import type { DemoOrg } from "./types";
 
 export type CheckDemoHoldsInput = { context: ExecuteContext; org: DemoOrg };
 
-type Expected = DemoLine & { expired: boolean };
+/** `initial`: the line should still be in its type's initial state (a lead without override). */
+type Expected = DemoLine & { expired: boolean; initial: boolean };
 
 const SELECT = {
   id: true,
@@ -48,21 +49,26 @@ async function checkOverlaps({ context, loaded }: { context: ExecuteContext; loa
 }
 
 /**
- * Checks 5 and 6 of `docs/demo-seed.md` (ADR 0044): every seeded line starts in its type's
- * initial state, overlapping lines are soft holds ordered by `heldAt`, and after
+ * Checks 5 and 6 of `docs/demo-seed.md` (ADR 0044): every seeded line of a lead without an
+ * override starts in its type's initial state, overlapping lines are soft holds ordered by `heldAt`, and after
  * `ticket.expireHolds` the lines of tickets whose holdsUntil has passed are released while the
  * others keep their state. Returns failure messages.
  */
 export async function checkDemoHolds({ context, org }: CheckDemoHoldsInput): Promise<string[]> {
   const lines = org.tickets.flatMap((ticket) =>
-    (ticket.lines ?? []).map((line) => ({ ...line, expired: (ticket.holdsUntilDay ?? 0) < 0 })),
+    (ticket.lines ?? []).map((line) => ({
+      ...line,
+      expired: (ticket.holdsUntilDay ?? 0) < 0,
+      initial: !ticket.phase && !line.state,
+    })),
   );
   if (lines.length === 0) return [];
   const failures: string[] = [];
   const before = await loadLines({ context, lines });
   for (const { line, row } of before) {
-    if (!row?.state?.initial)
+    if (line.initial && !row?.state?.initial) {
       failures.push(`${org.slug}: ${line.name} is not in its initial state`);
+    }
   }
   failures.push(...(await checkOverlaps({ context, loaded: before })));
   const run = await execute({ operation: expireTicketHolds, input: {}, context });

@@ -4,6 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
 import { loadItemState } from "../item-state/load-item-state";
 import type { ItemStateDto } from "../item-state/schema";
+import { lineMoveBlockers } from "./line-move-check";
 import { applyLineState, itemTypeOf } from "./line-state";
 import { LineChangeStateInputSchema, type ProgramItemDto, ProgramItemSchema } from "./schema";
 import { loadProgramItem, toProgramItemDto } from "./to-program-item-dto";
@@ -23,24 +24,15 @@ async function loadTarget({ context, line, id }: TargetInput): Promise<Result<It
   return invalid({ message, issues: [{ path: "stateId", message }] });
 }
 
-type AllowedInput = { context: Pick<OperationContext, "db">; fromId: string | null; to: string };
-
-/** The type's transitions allow the move; nothing leaves a released state (ADR 0044). */
-async function checkAllowed({ context, fromId, to }: AllowedInput): Promise<Result<true>> {
-  const from = fromId ? await loadItemState({ context, id: fromId }) : null;
-  if (!from || from.transitionsTo.includes(to)) return ok({ value: true });
-  const why = from.released ? "a released state is final" : "the type's transitions forbid it";
-  return conflict({ message: `The line cannot leave ${from.name}: ${why}` });
-}
-
 export const changeLineState = defineOperation({
   name: "line.changeState",
   kind: "command",
   description:
     "Set one line (program item with an item) to a state of its item type, e.g. order a drink " +
     "while the ticket is still a lead (ADR 0044). The move must be allowed by the type's " +
-    "transitions (CONFLICT otherwise). The line becomes overridden: phase moves skip it. Its hold " +
-    "follows the new state; a collision with a hard hold gives CONFLICT.",
+    "transitions (CONFLICT otherwise). The line becomes overridden: phase moves skip it until " +
+    "line.followPhase. Its hold follows the new state; a collision with a hard hold gives " +
+    "CONFLICT naming the blocker.",
   input: LineChangeStateInputSchema,
   output: ProgramItemSchema,
   permission: "programItem:write",
@@ -59,8 +51,11 @@ export const changeLineState = defineOperation({
       context.recordChange({ entityId: lineId, before: line, after });
       return ok({ value: after });
     }
-    const allowed = await checkAllowed({ context, fromId: line.stateId, to: stateId });
-    if (!allowed.ok) return allowed;
+    const from = line.stateId ? await loadItemState({ context, id: line.stateId }) : null;
+    const issues = await lineMoveBlockers({ context, move: { line, from, to: target.value } });
+    if (issues.length > 0) {
+      return conflict({ message: `"${line.name}" cannot move to ${target.value.name}`, issues });
+    }
     return applyLineState({ context, before: line, stateId, overridden: true });
   },
 });

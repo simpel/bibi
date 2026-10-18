@@ -1,18 +1,23 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { releaseLineStates } from "./release-line-states";
 import { releaseProgramItem } from "./reserve";
 import { toProgramItemDto } from "./to-program-item-dto";
 
 export type ReleaseForTicketInput = { context: OperationContext; ticketId: string };
 
 /**
- * Releases the occupancy of every active program item of the ticket, so a closed ticket no
- * longer blocks the items its run schedule held. The program items themselves stay as history.
+ * Releases every active line of the ticket when it enters a terminal phase (ADR 0044): each line
+ * with a state moves to its item type's released state (ignoring the grid, overrides and
+ * transitions), and the occupancy of every line is released, so a closed ticket no longer blocks
+ * the items it held. The lines themselves stay as history.
  */
 export async function releaseProgramItemsOfTicket({
   context,
   ticketId,
 }: ReleaseForTicketInput): Promise<Result<true>> {
+  const states = await releaseLineStates({ context, ticketId });
+  if (!states.ok) return states;
   const rows = await context.db.programItem.findMany({
     where: { ticketId },
     select: { id: true },

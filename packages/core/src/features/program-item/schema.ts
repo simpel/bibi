@@ -80,6 +80,10 @@ export const LineChangeStateInputSchema = z.object({
     .describe("Id of a state of the line's item type (itemState.list entityTypeId)"),
 });
 
+export const LineFollowPhaseInputSchema = z.object({
+  lineId: z.string().min(1).describe("Id of the line (programItem.list)"),
+});
+
 export const ProgramItemIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const ProgramItemListInputSchema = z.object({

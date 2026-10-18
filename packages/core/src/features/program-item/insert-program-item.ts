@@ -16,9 +16,9 @@ export type InsertProgramItemInput = {
 };
 
 /**
- * Creates a program item in its item type's initial state, holds its bookable item as the state
- * says and records the change. Shared by
- * `programItem.create`.
+ * Creates a program item in the state the phase grid gives it for the ticket's phase (else its
+ * type's initial state), holds its bookable item as the state says and records the change.
+ * Shared by `programItem.create`.
  */
 export async function insertProgramItem({
   context,
@@ -40,7 +40,7 @@ export async function insertProgramItem({
     data: {
       ...data,
       entityTypeId,
-      stateId: await initialStateOf({ context, itemId }),
+      stateId: await initialStateOf({ context, ticketId: data.ticketId, itemId }),
       fields: toJson({ value: checked.value }) ?? {},
       organizationId: context.organizationId,
     },

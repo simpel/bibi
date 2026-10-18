@@ -5,6 +5,7 @@ import type { ItemResolutionWire } from "./item-resolution-entries";
 import type { ItemStateWire } from "./item-state-entries";
 import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire } from "./payment-entries";
+import type { PhaseGridCellWire } from "./phase-grid-entries";
 import type { PipelineBoardWire } from "./pipeline-entries";
 import type { PriceListWire } from "./price-list-entries";
 import type { ProgramItemWire } from "./program-item-entries";
@@ -55,6 +56,7 @@ export type ToolUiProps = {
   "ticket-phase-card": { phase: TicketPhaseWire };
   "item-state-table": { items: ItemStateWire[]; nextCursor: string | null };
   "item-state-card": { state: ItemStateWire };
+  "phase-grid-table": { cells: PhaseGridCellWire[] };
   "ticket-table": { items: TicketWire[]; nextCursor: string | null };
   "ticket-card": { ticket: TicketWire };
   "program-item-table": { items: ProgramItemWire[]; nextCursor: string | null };

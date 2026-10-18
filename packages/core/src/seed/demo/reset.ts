@@ -17,8 +17,9 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.quote.deleteMany({ where }),
 ];
 
-/** Item states and their transitions (ADR 0044); deleted after the lines that use them. */
+/** Item states, their transitions and the phase grid (ADR 0044); after the lines that use them. */
 const itemStates = ({ db, where }: ScopeInput) => [
+  db.phaseStateRule.deleteMany({ where }),
   // A type's expiry state points back at its states: cut that link before deleting either.
   db.entityType.updateMany({ where, data: { expiryStateId: null } }),
   db.itemStateTransition.deleteMany({ where }),

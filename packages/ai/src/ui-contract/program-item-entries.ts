@@ -37,6 +37,7 @@ export const PROGRAM_ITEM_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   programItem_update: programItemCard,
   programItem_archive: programItemCard,
   line_changeState: programItemCard,
+  line_followPhase: programItemCard,
   // The lines `ticket.expireHolds` moved to their expiry state (ADR 0044).
   ticket_expireHolds: uiEntry({
     component: "program-item-table",

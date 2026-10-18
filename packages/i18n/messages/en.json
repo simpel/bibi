@@ -441,6 +441,7 @@
     "changePhaseDescription": "Move the ticket to one of the phases your organization allows from its current phase. Some phases need a reason or an assignee, and a closing phase releases the ticket's rooms and resources.",
     "phaseChanged": "The phase has been changed.",
     "transitionRefused": "Your organization does not allow this move.",
+    "linesBlocked": "{count, plural, one {# line cannot move: a hold collides or its state change is not allowed.} other {# lines cannot move: a hold collides or their state change is not allowed.}}",
     "assigneeRequired": "This phase needs an assignee. Assign one on the ticket first.",
     "reasonRequired": "This phase needs a reason.",
     "export": "Export",
@@ -616,6 +617,10 @@
     "archived": "The program item has been removed.",
     "created": "The program item has been added.",
     "updated": "The program item has been updated.",
+    "changeState": "Change state",
+    "followPhase": "Follow the phase again",
+    "stateChanged": "The line's state has been changed.",
+    "overridden": "(overridden)",
     "empty": "The ticket has no program items yet.",
     "occupied": "The room is already occupied during this period or its changeover time.",
     "noItem": "No room",
@@ -635,6 +640,7 @@
       "name": "Name",
       "type": "Type",
       "where": "Where",
+      "state": "State",
       "quantity": "Quantity"
     }
   },
@@ -1286,7 +1292,9 @@
         "itemState_archive": "Archive item state",
         "itemState_reorder": "Reorder item states",
         "itemState_setTransitions": "Set state transitions",
+        "phaseGrid_setCell": "Set phase grid cell",
         "line_changeState": "Change line state",
+        "line_followPhase": "Let line follow the phase",
         "ticket_expireHolds": "Expire overdue holds"
       }
     },
@@ -1581,6 +1589,14 @@
           "name": "Name",
           "flags": "Does",
           "transitions": "Transitions"
+        }
+      },
+      "phaseGrid": {
+        "empty": "No grid cells are set: lines keep their state on phase moves.",
+        "columns": {
+          "phase": "Phase",
+          "type": "Item type",
+          "state": "Lines move to"
         }
       },
       "assignment": {

@@ -16,6 +16,7 @@ export const RESOURCES = [
   "configuration",
   "ticketPhase",
   "itemState",
+  "phaseGrid",
   "ticket",
   "programItem",
   "assignment",
