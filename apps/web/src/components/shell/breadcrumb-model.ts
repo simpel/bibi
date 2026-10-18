@@ -34,6 +34,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   members: "members",
   payments: "payments",
   "item-states": "itemStates",
+  "ticket-templates": "ticketTemplates",
   new: "new",
   edit: "edit",
   update: "edit",
@@ -52,6 +53,7 @@ const NEW_PARENTS: Record<string, string> = {
   "price-list": "settings/price-lists",
   "ticket-phase": "settings/pipeline",
   "item-state": "settings/item-states",
+  "ticket-template": "settings/ticket-templates",
 };
 
 export type Crumb = { href: string; labelKey: CrumbLabelKey };

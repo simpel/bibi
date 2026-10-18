@@ -2,6 +2,7 @@ import type { FixedRole } from "../../permissions/fixed-roles";
 import type { TicketPhaseTemplate } from "../../templates/ticket-phases/ticket-phase-template";
 import type { DemoConfig } from "./config-types";
 import type { DemoCustomer } from "./customer-types";
+import type { DemoTicketTemplate } from "./template-types";
 import type { DemoTicket } from "./ticket-types";
 
 /** One demo staff member with their fixed access role (ADR 0034). */
@@ -42,6 +43,8 @@ export type DemoOrg = {
   customers: readonly DemoCustomer[];
   /** Slice 5: the phases and the phase grid, set before the tickets so their lines follow it. */
   pipeline: DemoPipeline;
+  /** Slice 5: predefined tickets (ADR 0043), created after the pipeline, before the tickets. */
+  templates: readonly DemoTicketTemplate[];
   /** Slice 5: tickets with their assignee and followers. */
   tickets: readonly DemoTicket[];
 };

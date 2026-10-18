@@ -83,6 +83,7 @@ export * from "./features/skill/transfer-operations";
 export * from "./features/skill/write-operations";
 export { TICKET_OCCUPANCY_SOURCE } from "./features/ticket/cancellation";
 export * from "./features/ticket/change-phase-operation";
+export * from "./features/ticket/create-from-template-operation";
 export * from "./features/ticket/expire-holds-operation";
 export * from "./features/ticket/export-operation";
 export * from "./features/ticket/operations";
@@ -96,6 +97,7 @@ export {
 export * from "./features/ticket-phase/order-operations";
 export * from "./features/ticket-phase/read-operations";
 export * from "./features/ticket-phase/write-operations";
+export * from "./features/ticket-template/operations";
 export * from "./features/user-preference/operations";
 export { venueEmbeddable } from "./features/venue/embeddable";
 export * from "./features/venue/operations";

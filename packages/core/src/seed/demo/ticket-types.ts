@@ -14,6 +14,12 @@ export type DemoTicket = {
   from: string;
   to: string;
   headcount: number;
+  /**
+   * A predefined ticket (`templates.ts`) the ticket is created from with `ticket.createFromTemplate`
+   * (ADR 0043): its lines and start phase come from it, so `phase` must be the template's phase
+   * and `to` the end of its last line.
+   */
+  template?: string;
   /** The phase the ticket is moved to after it is created (ADR 0043); default: the entry phase. */
   phase?: string;
   /** The reason of that move, for phases that require one. */

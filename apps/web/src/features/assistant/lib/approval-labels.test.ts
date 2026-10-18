@@ -5,7 +5,15 @@ import { describe, expect, it } from "vitest";
 import { FIELD_KEYS, fieldKey, OPERATION_KEYS, operationKey } from "./approval-labels";
 
 const embed: EmbedFn = async ({ texts }) => ({ model: "none", embeddings: texts.map(() => []) });
-const ENTITIES = ["customer", "contact", "ticket", "ticketPhase", "itemState", "line"];
+const ENTITIES = [
+  "customer",
+  "contact",
+  "ticket",
+  "ticketPhase",
+  "itemState",
+  "line",
+  "ticketTemplate",
+];
 
 describe("approval labels", () => {
   it("finds known fields and operations", () => {

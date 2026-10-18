@@ -57,6 +57,8 @@ import { TicketCardView } from "./ticket-card-view";
 import { TicketPhaseCardView } from "./ticket-phase-card-view";
 import { TicketPhaseTableView } from "./ticket-phase-table-view";
 import { TicketTableView } from "./ticket-table-view";
+import { TicketTemplateCardView } from "./ticket-template-card-view";
+import { TicketTemplateTableView } from "./ticket-template-table-view";
 import { VenueCardView } from "./venue-card-view";
 import { VenueTableView } from "./venue-table-view";
 import { VocabularyCardView } from "./vocabulary-card-view";
@@ -83,6 +85,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "price-list-card": PriceListCardView,
   "ticket-phase-table": TicketPhaseTableView,
   "ticket-phase-card": TicketPhaseCardView,
+  "ticket-template-table": TicketTemplateTableView,
+  "ticket-template-card": TicketTemplateCardView,
   "item-state-table": ItemStateTableView,
   "item-state-card": ItemStateCardView,
   "phase-grid-table": PhaseGridTableView,

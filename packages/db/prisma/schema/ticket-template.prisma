@@ -1,0 +1,60 @@
+/// How a template line's quantity is read: as is, or per guest (times the headcount).
+enum TemplateQuantityBasis {
+  FIXED
+  PER_HEADCOUNT
+}
+
+/// Ticket template – an organization's predefined ticket (ADR 0043): a ticket type, the phase the
+/// ticket starts in, default own-field values and lines. `ticket.createFromTemplate` makes a
+/// ticket from it in one step. `status` is the soft-delete flag (ADR 0006).
+model TicketTemplate {
+  id             String               @id @default(cuid(2))
+  organizationId String
+  name           String
+  entityTypeId   String
+  /// The phase created tickets start in (not terminal).
+  phaseId        String
+  /// Default values of the ticket type's own fields, keyed by `FieldDefinition.key`.
+  fields         Json                 @default("{}")
+  status         RecordStatus         @default(ACTIVE)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  createdBy      String?
+  entityType     EntityType           @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  phase          TicketPhase          @relation(fields: [phaseId, organizationId], references: [id, organizationId])
+  lines          TicketTemplateLine[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, phaseId])
+}
+
+/// Ticket template line – a line (program item) the ticket gets, timed from the ticket's start.
+/// Replaced as a set by `ticketTemplate.update`.
+model TicketTemplateLine {
+  id              String                @id @default(cuid(2))
+  organizationId  String
+  templateId      String
+  position        Int                   @default(0)
+  /// The program item type (base `PROGRAM_ITEM`) of the created line.
+  entityTypeId    String
+  name            String
+  itemId          String?
+  setupId         String?
+  /// Minutes from the ticket's start to the line's start.
+  offsetMinutes   Int
+  durationMinutes Int
+  quantity        Int?
+  quantityBasis   TemplateQuantityBasis @default(FIXED)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+  createdBy       String?
+  template        TicketTemplate        @relation(fields: [templateId, organizationId], references: [id, organizationId])
+  entityType      EntityType            @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  item            Item?                 @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  setup           Setup?                @relation(fields: [setupId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@index([organizationId, templateId, position])
+  @@index([organizationId, itemId])
+}

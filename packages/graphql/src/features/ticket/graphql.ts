@@ -1,6 +1,7 @@
 import {
   changeTicketPhase,
   createTicket,
+  createTicketFromTemplate,
   exportTicket,
   getTicket,
   listTickets,
@@ -40,6 +41,7 @@ fieldFromOperation({ operation: listTickets, type: TicketPageRef, name: "tickets
 fieldFromOperation({ operation: getTicket, type: TicketRef, name: "ticket" });
 fieldFromOperation({ operation: exportTicket, type: TicketExportRef, name: "ticketExport" });
 mutationFromOperation({ operation: createTicket, type: TicketRef });
+mutationFromOperation({ operation: createTicketFromTemplate, type: TicketRef });
 mutationFromOperation({ operation: updateTicket, type: TicketRef });
 mutationFromOperation({ operation: changeTicketPhase, type: TicketRef });
 

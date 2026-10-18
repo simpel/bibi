@@ -11,7 +11,8 @@ export const archiveItem = defineOperation({
   kind: "command",
   description:
     "Archive (soft-delete) an item. Archived items are hidden from lists and search. Refused " +
-    "while another record's LINK field points to it or an active program item occupies it.",
+    "while another record's LINK field points to it, an active program item occupies it or a " +
+    "predefined ticket has a line with it.",
   input: ItemIdInputSchema,
   output: ItemSchema,
   permission: "item:write",
@@ -25,6 +26,14 @@ export const archiveItem = defineOperation({
     const scheduled = await context.db.programItem.count({ where: { itemId: id } });
     if (scheduled > 0) {
       return conflict({ message: `${before.name} is used by ${scheduled} active program items` });
+    }
+    const templated = await context.db.ticketTemplateLine.count({
+      where: { itemId: id, template: { status: "ACTIVE" } },
+    });
+    if (templated > 0) {
+      return conflict({
+        message: `${before.name} is used by ${templated} predefined ticket lines`,
+      });
     }
     const row = await context.db.item.update({ where: { id }, data: { status: "ARCHIVED" } });
     const [item] = await toItemDtos({ context, rows: [row] });

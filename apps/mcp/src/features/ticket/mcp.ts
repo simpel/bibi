@@ -9,6 +9,12 @@ export const ticketMcpTools = [
     summary: ({ input }) => `Create a ticket for customer ${text({ value: input.customerId })}`,
   }),
   mcpTool({
+    operation: "ticket.createFromTemplate",
+    summary: ({ input }) =>
+      `Create a ticket for customer ${text({ value: input.customerId })} from predefined ticket ` +
+      `${text({ value: input.templateId })} starting ${text({ value: input.startsAt })}`,
+  }),
+  mcpTool({
     operation: "ticket.update",
     idempotent: true,
     summary: ({ input }) =>

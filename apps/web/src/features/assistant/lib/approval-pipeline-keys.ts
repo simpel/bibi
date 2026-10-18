@@ -23,6 +23,9 @@ export const PIPELINE_FIELD_KEYS = [
   "stateId",
   "holdsUntil",
   "expiryStateId",
+  "templateId",
+  "lines",
+  "startsAt",
 ] as const;
 
 /** Pipeline operations with a localized label in `assistant.approval.operations`. */
@@ -43,4 +46,8 @@ export const PIPELINE_OPERATION_KEYS = [
   "phaseGrid_setCell",
   "phaseGrid_importTemplate",
   "ticket_expireHolds",
+  "ticket_createFromTemplate",
+  "ticketTemplate_create",
+  "ticketTemplate_update",
+  "ticketTemplate_archive",
 ] as const;

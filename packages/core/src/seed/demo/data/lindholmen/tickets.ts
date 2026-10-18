@@ -60,7 +60,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   },
   {
     ...{ ref: "L7", customer: gota, type: "Conference", day: 1, from: "10:00", to: "12:00" },
-    ...{ phase: "Confirmed", headcount: 4, assignee: "Sara Nilsson" },
+    ...{ template: "Small meeting", phase: "Confirmed", headcount: 4, assignee: "Sara Nilsson" },
   },
   {
     ...{ ref: "L8", customer: "Göteborgs Seglarsällskap", type: "Tour", day: 2, from: "14:00" },
@@ -79,7 +79,8 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   },
   {
     ...{ ref: "L10", customer: hisingen, type: "Conference", day: 4, from: "13:00", to: "16:00" },
-    ...{ phase: "Confirmed", headcount: 6, assignee: "Johan Ek", followers: ["Erik Lund"] },
+    ...{ template: "Afternoon break", phase: "Confirmed", headcount: 6, assignee: "Johan Ek" },
+    followers: ["Erik Lund"],
   },
   {
     ...{ ref: "L11", customer: gota, type: "Conference", day: 6, from: "09:00", to: "13:00" },

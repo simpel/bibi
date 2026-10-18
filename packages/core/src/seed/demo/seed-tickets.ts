@@ -9,6 +9,7 @@ import { fromZonedParts, toZonedParts } from "../../recurrence/zoned-time";
 import type { DemoRefs } from "./demo-refs";
 import { missing, resolveFields } from "./seed-fields";
 import { seedDemoLines } from "./seed-lines";
+import { createDemoTicketFromTemplate } from "./seed-ticket-from-template";
 import type { DemoTicket } from "./ticket-types";
 import type { DemoUserIds } from "./users";
 
@@ -61,6 +62,18 @@ function resolvePeople({ userIds, ticket }: PeopleInput) {
   return ok({ value: { assigneeId, followerIds } });
 }
 
+type FollowInput = { context: ExecuteContext; ticketId: string; userIds: readonly string[] };
+
+/** Each user follows the ticket (ADR 0034). */
+async function follow({ context, ticketId, userIds }: FollowInput): Promise<Result<true>> {
+  for (const userId of userIds) {
+    const input = { subjectType: "TICKET" as const, subjectId: ticketId, userId };
+    const followed = await execute({ operation: followAssignment, input, context });
+    if (!followed.ok) return followed;
+  }
+  return ok({ value: true });
+}
+
 type TicketInput = Omit<SeedTicketsInput, "tickets" | "now"> & {
   ticket: DemoTicket;
   now: Date;
@@ -75,22 +88,28 @@ async function seedTicket({ context, refs, userIds, ticket, now }: TicketInput) 
   if (!people.ok) return people;
   const fields = resolveFields({ fields: ticket.fields, type });
   if (!fields.ok) return fields;
-  const input = {
-    ...{ entityTypeId: type.id, customerId: customer.id, ...periodOf({ ticket, now }) },
-    ...{ estimatedHeadcount: ticket.headcount, assigneeId: people.value.assigneeId },
-    fields: fields.value,
-  };
-  const created = await execute({ operation: createTicket, input, context });
+  const created = ticket.template
+    ? await createDemoTicketFromTemplate({
+        ...{ context, template: ticket.template, customerId: customer.id },
+        ...{ startsAt: at({ now, day: ticket.day, time: ticket.from }) },
+        ...{ headcount: ticket.headcount, assigneeId: people.value.assigneeId },
+      })
+    : await execute({
+        operation: createTicket,
+        input: {
+          ...{ entityTypeId: type.id, customerId: customer.id, ...periodOf({ ticket, now }) },
+          ...{ estimatedHeadcount: ticket.headcount, assigneeId: people.value.assigneeId },
+          fields: fields.value,
+        },
+        context,
+      });
   if (!created.ok) return created;
-  for (const userId of people.value.followerIds) {
-    const subject = { subjectType: "TICKET" as const, subjectId: created.value.id };
-    const followed = await execute({
-      operation: followAssignment,
-      input: { ...subject, userId },
-      context,
-    });
-    if (!followed.ok) return followed;
-  }
+  const followed = await follow({
+    context,
+    ticketId: created.value.id,
+    userIds: people.value.followerIds,
+  });
+  if (!followed.ok) return followed;
   const lines = await seedDemoLines({
     context,
     ticketId: created.value.id,
@@ -105,7 +124,8 @@ type MoveInput = { context: ExecuteContext; ticket: DemoTicket; ticketId: string
 
 /** Moves the new ticket to its phase in the spec through `ticket.changePhase` (ADR 0043). */
 async function movePhase({ context, ticket, ticketId }: MoveInput) {
-  if (!ticket.phase) return ok({ value: true });
+  // A ticket made from a predefined ticket already starts in its phase.
+  if (!ticket.phase || ticket.template) return ok({ value: true });
   const phase = await context.db.ticketPhase.findFirst({ where: { name: ticket.phase } });
   if (!phase) return missing({ what: `ticket phase ${ticket.phase}` });
   const input = { ticketId, phaseId: phase.id, reason: ticket.reason };

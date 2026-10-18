@@ -9,6 +9,7 @@ import { lindholmenPackages } from "./packages";
 import { lindholmenPipeline } from "./pipeline";
 import { lindholmenResponsibilities } from "./responsibilities";
 import { lindholmenRooms } from "./rooms";
+import { lindholmenTemplates } from "./templates";
 import { lindholmenTickets } from "./tickets";
 import { lindholmenTypes } from "./types";
 
@@ -52,5 +53,6 @@ export const lindholmen: DemoOrg = {
   responsibilities: lindholmenResponsibilities,
   customers: lindholmenCustomers,
   pipeline: lindholmenPipeline,
+  templates: lindholmenTemplates,
   tickets: lindholmenTickets,
 };

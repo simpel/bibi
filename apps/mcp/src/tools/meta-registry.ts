@@ -29,6 +29,7 @@ import { sheetDefinitionMcpTools } from "../features/sheet-definition/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
 import { ticketMcpTools } from "../features/ticket/mcp";
 import { ticketPhaseMcpTools } from "../features/ticket-phase/mcp";
+import { ticketTemplateMcpTools } from "../features/ticket-template/mcp";
 import { userPreferenceMcpTools } from "../features/user-preference/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
 import { vocabularyMcpTools } from "../features/vocabulary/mcp";
@@ -52,6 +53,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...contactMcpTools,
     ...occupancyMcpTools,
     ...ticketPhaseMcpTools,
+    ...ticketTemplateMcpTools,
     ...itemStateMcpTools,
     ...phaseGridMcpTools,
     ...ticketMcpTools,

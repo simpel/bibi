@@ -29,6 +29,7 @@ import { sheetDefinitionOperations } from "./features/sheet-definition/operation
 import { skillOperations } from "./features/skill/operations";
 import { ticketOperations } from "./features/ticket/operations";
 import { ticketPhaseOperations } from "./features/ticket-phase/operations";
+import { ticketTemplateOperations } from "./features/ticket-template/operations";
 import { userPreferenceOperations } from "./features/user-preference/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
@@ -55,6 +56,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...priceListOperations,
     ...occupancyOperations,
     ...ticketPhaseOperations,
+    ...ticketTemplateOperations,
     ...itemStateOperations,
     ...phaseGridOperations,
     ...ticketOperations,

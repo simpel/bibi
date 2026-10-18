@@ -63,6 +63,43 @@ const programItem = (): ParityEntity => ({
   },
 });
 
+/** A predefined ticket (ADR 0043): its own types, the phase made earlier and the item as a line. */
+const ticketTemplate = (): ParityEntity => ({
+  ...byId({
+    name: "ticketTemplate",
+    field: "ticketTemplate",
+    list: "ticket-templates",
+    createTool: "",
+    args: {},
+  }),
+  create: async ({ mcp, made }) => {
+    const typeOf = ({ base, name }: { base: string; name: string }) =>
+      tool({ mcp, name: "entityType_create", args: { base, name } });
+    const ticketType = await typeOf({ base: "TICKET", name: "Parity small meeting" });
+    const lineType = await typeOf({ base: "PROGRAM_ITEM", name: "Parity template line" });
+    return tool({
+      mcp,
+      name: "ticketTemplate_create",
+      args: {
+        name: "Parity template",
+        entityTypeId: ticketType.id,
+        phaseId: made.ticketPhase.id,
+        lines: [
+          {
+            entityTypeId: lineType.id,
+            name: "Coffee",
+            itemId: made.item.id,
+            offsetMinutes: 30,
+            durationMinutes: 15,
+            quantity: 1,
+            quantityBasis: "PER_HEADCOUNT",
+          },
+        ],
+      },
+    });
+  },
+});
+
 const domain = "in.parity.test";
 
 /**
@@ -102,5 +139,5 @@ const inboundEmail = (): ParityEntity => ({
 /** Tickets and what hangs off them; a function so the parity-entities import cycle resolves. */
 export function ticketEntities(): ParityEntity[] {
   const sales = [inboundEmail(), assignment()];
-  return [ticket(), programItem(), requirement(), ...sales];
+  return [ticket(), ticketTemplate(), programItem(), requirement(), ...sales];
 }

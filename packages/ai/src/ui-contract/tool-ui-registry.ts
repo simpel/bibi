@@ -19,6 +19,7 @@ import { SHEET_DEFINITION_UI_ENTRIES } from "./sheet-definition-entries";
 import { SHEET_UI_ENTRIES } from "./sheet-entries";
 import { TICKET_UI_ENTRIES } from "./ticket-entries";
 import { TICKET_PHASE_UI_ENTRIES } from "./ticket-phase-entries";
+import { TICKET_TEMPLATE_UI_ENTRIES } from "./ticket-template-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 import {
@@ -62,6 +63,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...OCCUPANCY_UI_ENTRIES,
   ...PRICE_LIST_UI_ENTRIES,
   ...TICKET_PHASE_UI_ENTRIES,
+  ...TICKET_TEMPLATE_UI_ENTRIES,
   ...ITEM_STATE_UI_ENTRIES,
   ...PHASE_GRID_UI_ENTRIES,
   ...TICKET_UI_ENTRIES,

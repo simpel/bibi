@@ -33,28 +33,30 @@ enum FieldKind {
 
 /// Type – an organization's own type for a base entity, e.g. Conference room, Dish or Boat.
 model EntityType {
-  id             String            @id @default(cuid(2))
-  organizationId String
-  base           EntityBase
-  name           String
-  behaviours     ItemBehaviour[]
+  id              String               @id @default(cuid(2))
+  organizationId  String
+  base            EntityBase
+  name            String
+  behaviours      ItemBehaviour[]
   /// Item types: where lines in an `expires` state fall when the ticket's `holdsUntil` passes.
-  expiryStateId  String?
-  status         RecordStatus      @default(ACTIVE)
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  createdBy      String?
-  fields         FieldDefinition[]
-  linkedBy       FieldDefinition[] @relation("FieldLinkType")
-  items          Item[]
-  customers      Customer[]
-  contacts       Contact[]
-  tickets        Ticket[]
-  programItems   ProgramItem[]
-  requirements   Requirement[]
-  itemStates     ItemState[]       @relation("ItemStateType")
-  phaseRules     PhaseStateRule[]
-  expiryState    ItemState?        @relation("ExpiryState", fields: [expiryStateId, organizationId], references: [id, organizationId])
+  expiryStateId   String?
+  status          RecordStatus         @default(ACTIVE)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  createdBy       String?
+  fields          FieldDefinition[]
+  linkedBy        FieldDefinition[]    @relation("FieldLinkType")
+  items           Item[]
+  customers       Customer[]
+  contacts        Contact[]
+  tickets         Ticket[]
+  programItems    ProgramItem[]
+  requirements    Requirement[]
+  itemStates      ItemState[]          @relation("ItemStateType")
+  phaseRules      PhaseStateRule[]
+  ticketTemplates TicketTemplate[]
+  templateLines   TicketTemplateLine[]
+  expiryState     ItemState?           @relation("ExpiryState", fields: [expiryStateId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, base, status])
@@ -123,16 +125,17 @@ model VocabularyValue {
 
 /// Setup – an organization's own setup with changeover time, e.g. Theatre or U-shape.
 model Setup {
-  id                String        @id @default(cuid(2))
+  id                String               @id @default(cuid(2))
   organizationId    String
   name              String
-  changeoverMinutes Int           @default(0)
-  status            RecordStatus  @default(ACTIVE)
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  changeoverMinutes Int                  @default(0)
+  status            RecordStatus         @default(ACTIVE)
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
   createdBy         String?
   items             ItemSetup[]
   programItems      ProgramItem[]
+  templateLines     TicketTemplateLine[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

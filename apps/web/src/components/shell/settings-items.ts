@@ -2,6 +2,7 @@ import {
   BookOpenIcon,
   CircleDotIcon,
   ClipboardListIcon,
+  CopyPlusIcon,
   CreditCardIcon,
   LayoutGridIcon,
   ListChecksIcon,
@@ -24,6 +25,7 @@ export type SettingsKey =
   | "priceLists"
   | "ticketPhases"
   | "itemStates"
+  | "ticketTemplates"
   | "members"
   | "payments"
   | "integrations"
@@ -41,6 +43,7 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
   { href: ROUTES.settingsPriceLists, key: "priceLists", icon: TagIcon },
   { href: ROUTES.settingsPipeline, key: "ticketPhases", icon: CircleDotIcon },
   { href: ROUTES.settingsItemStates, key: "itemStates", icon: ListChecksIcon },
+  { href: ROUTES.settingsTicketTemplates, key: "ticketTemplates", icon: CopyPlusIcon },
   { href: ROUTES.settingsMembers, key: "members", icon: UsersIcon },
   { href: ROUTES.settingsPayments, key: "payments", icon: CreditCardIcon },
   { href: ROUTES.settingsIntegrations, key: "integrations", icon: PlugIcon },

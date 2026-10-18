@@ -77,7 +77,7 @@ export const archiveTicketPhase = defineOperation({
     "Archive a ticket phase (phases are never deleted). A phase that holds tickets needs " +
     "`targetPhaseId`: its tickets move there through the normal move checks (transition and " +
     "flags), all or none. Its transitions are removed. The last entry or terminal phase cannot " +
-    "be archived (CONFLICT). Its phase grid cells are cleared.",
+    "be archived (CONFLICT), nor a phase predefined tickets start in. Its phase grid cells are cleared.",
   input: TicketPhaseArchiveInputSchema,
   output: TicketPhaseSchema,
   permission: "ticketPhase:admin",
@@ -85,6 +85,10 @@ export const archiveTicketPhase = defineOperation({
     await serializePhaseChanges({ context });
     const before = await loadTicketPhase({ context, id });
     if (!before) return notFound({ entity: "Ticket phase" });
+    const templates = await context.db.ticketTemplate.count({ where: { phaseId: id } });
+    if (templates > 0) {
+      return conflict({ message: `${templates} predefined tickets start in this phase` });
+    }
     const phases = await loadAllTicketPhases({ context });
     const minimum = checkMinimumConfiguration({ phases, id, after: null });
     if (!minimum.ok) return minimum;

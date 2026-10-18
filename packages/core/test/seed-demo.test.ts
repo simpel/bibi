@@ -109,13 +109,17 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       include: { state: true },
       orderBy: { name: "asc" },
     });
-    // After the checks: F6 expired, L11 moved to Confirmed (its lunch override kept), L12 blocked.
+    // F6 expired, L11 confirmed (lunch override kept), L12 blocked; L7, L10 from templates (ADR 0043).
     expect(lines.map((line) => [line.name, line.state?.name, line.stateOverridden])).toEqual([
+      ["Afternoon break buffet", "Ordered", false],
+      ["Afternoon break room", "Booked", false],
       ["Board lunch", "Locked", true],
       ["Board meeting", "Booked", false],
+      ["Coffee and tea", "Estimated", false],
       ["Half-day conference", "Booked", false],
       ["Kickoff", "Prebooked", false],
       ["Product launch", "Prebooked", false],
+      ["Small meeting room", "Booked", false],
       ["Strategy meeting", "Prebooked", false],
       ["Team day", "Released", false],
     ]);

@@ -35,6 +35,7 @@ export const TICKET_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   ticket_list: ticketTable,
   ticket_get: ticketCard,
   ticket_create: ticketCard,
+  ticket_createFromTemplate: ticketCard,
   ticket_update: ticketCard,
   ticket_changePhase: ticketCard,
 };

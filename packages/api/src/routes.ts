@@ -29,6 +29,7 @@ import { sheetDefinitionRoutes } from "./features/sheet-definition/rest";
 import { skillRoutes } from "./features/skill/rest";
 import { ticketRoutes } from "./features/ticket/rest";
 import { ticketPhaseRoutes } from "./features/ticket-phase/rest";
+import { ticketTemplateRoutes } from "./features/ticket-template/rest";
 import { userPreferenceRoutes } from "./features/user-preference/rest";
 import { venueRoutes } from "./features/venue/rest";
 import { vocabularyRoutes } from "./features/vocabulary/rest";
@@ -53,6 +54,7 @@ export function listRestRoutes(): RestRoute[] {
     ...contactRoutes,
     ...occupancyRoutes,
     ...ticketPhaseRoutes,
+    ...ticketTemplateRoutes,
     ...itemStateRoutes,
     ...phaseGridRoutes,
     ...ticketRoutes,

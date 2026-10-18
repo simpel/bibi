@@ -204,7 +204,8 @@
       "admin": "Administration"
     },
     "integrations": "Integrationer",
-    "itemStates": "Artikelstatusar"
+    "itemStates": "Artikelstatusar",
+    "ticketTemplates": "Fördefinierade ärenden"
   },
   "venue": {
     "singular": "Anläggning",
@@ -484,7 +485,11 @@
       "phase": "Fas",
       "newPhase": "Ny fas",
       "phaseReason": "Anledning",
-      "holdsUntil": "Håll till"
+      "holdsUntil": "Håll till",
+      "template": "Fördefinierat ärende",
+      "startsAt": "Startar",
+      "headcount": "Antal gäster",
+      "assignee": "Ansvarig"
     },
     "columns": {
       "reference": "Nummer",
@@ -496,7 +501,13 @@
     },
     "expireHolds": "Släpp förfallna reservationer",
     "expireHoldsConfirm": "Flytta alla rader i ett läge som förfaller, på ärenden vars håll-datum har passerat, till sitt utgångsläge? Det sker också automatiskt var 15:e minut.",
-    "holdsExpired": "Förfallna reservationer släppta"
+    "holdsExpired": "Förfallna reservationer släppta",
+    "createFromTemplate": "Skapa ärende",
+    "createFromTemplateDescription": "Välj ett fördefinierat ärende, kunden, starttid och antal gäster. Raderna skapas åt dig.",
+    "buildStepByStep": "Bygg det steg för steg",
+    "useTemplate": "Använd ett fördefinierat ärende i stället",
+    "templateBlocked": "{count, plural, one {# rad är blockerad: en reservation krockar.} other {# rader är blockerade: reservationer krockar.}}",
+    "noAssignee": "Ingen ännu"
   },
   "calendar": {
     "title": "Kalender",
@@ -1306,7 +1317,10 @@
         "lineId": "Rad (id)",
         "stateId": "Läge (id)",
         "holdsUntil": "Håll till",
-        "expiryStateId": "Utgångsläge (id)"
+        "expiryStateId": "Utgångsläge (id)",
+        "templateId": "Fördefinierat ärende (id)",
+        "lines": "Rader",
+        "startsAt": "Startar"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -1372,7 +1386,11 @@
         "phaseGrid_setCell": "Ange cell i fasrutnätet",
         "line_changeState": "Byt läge på rad",
         "line_followPhase": "Låt raden följa fasen",
-        "ticket_expireHolds": "Släpp förfallna reservationer"
+        "ticket_expireHolds": "Släpp förfallna reservationer",
+        "ticket_createFromTemplate": "Skapa ärende från fördefinierat ärende",
+        "ticketTemplate_create": "Skapa fördefinierat ärende",
+        "ticketTemplate_update": "Uppdatera fördefinierat ärende",
+        "ticketTemplate_archive": "Arkivera fördefinierat ärende"
       }
     },
     "description": "Chatta med assistenten om anläggningar, artiklar och färdigheter.",
@@ -1692,6 +1710,17 @@
           "assignee": "Ansvarig",
           "followers": "Följare"
         }
+      },
+      "ticketTemplate": {
+        "singular": "Fördefinierat ärende",
+        "empty": "Inga fördefinierade ärenden hittades.",
+        "open": "Öppna de fördefinierade ärendena",
+        "archived": "Arkiverat",
+        "lines": "{count, plural, =0 {Inga rader} one {# rad} other {# rader}}",
+        "columns": {
+          "name": "Namn",
+          "lines": "Rader"
+        }
       }
     }
   },
@@ -1860,7 +1889,8 @@
       "payments": "Stripe-konto för kortbetalningar och fakturor.",
       "skills": "Återanvändbara instruktioner för assistenten.",
       "integrations": "API-nycklar för andra system som använder REST-API:t.",
-      "itemStates": "De statusar en rad kan ha, per artikeltyp."
+      "itemStates": "De statusar en rad kan ha, per artikeltyp.",
+      "ticketTemplates": "Färdiga ärenden som personalen skapar ett ärende från i ett steg."
     }
   },
   "commandBar": {
@@ -2452,5 +2482,49 @@
     "cellLabel": "{phase}: {type}",
     "cellSets": "När ett ärende går in i {phase} flyttas rader av {type} till {state}.",
     "cellKeeps": "Rader av {type} behåller sin status."
+  },
+  "ticketTemplate": {
+    "singular": "Fördefinierat ärende",
+    "plural": "Fördefinierade ärenden",
+    "listDescription": "Färdiga ärenden: personalen skapar ett ärende med sina rader i ett steg.",
+    "create": "Nytt fördefinierat ärende",
+    "edit": "Redigera fördefinierat ärende",
+    "createDescription": "Ge det ett namn, välj ärendetyp och startfas och lägg sedan till raderna.",
+    "editDescription": "Ändra det fördefinierade ärendet. Ärenden som redan skapats från det ändras inte.",
+    "archive": "Arkivera",
+    "archiveConfirm": "Arkivera \"{name}\"? Ärenden som redan skapats från det ändras inte.",
+    "archived": "Fördefinierat ärende arkiverat",
+    "created": "Fördefinierat ärende skapat",
+    "updated": "Fördefinierat ärende sparat",
+    "empty": "Inga fördefinierade ärenden hittades.",
+    "emptyDescription": "Skapa ett så att personalen kan göra små ärenden i ett steg.",
+    "saving": "Sparar…",
+    "lines": "Rader",
+    "lineNumber": "Rad {number}",
+    "addLine": "Lägg till rad",
+    "removeLine": "Ta bort rad",
+    "noItem": "Ingen artikel",
+    "fields": {
+      "name": "Namn",
+      "ticketType": "Ärendetyp",
+      "phase": "Startar i fas",
+      "lineName": "Namn",
+      "lineType": "Radtyp",
+      "item": "Artikel",
+      "offset": "Börjar (minuter efter ärendets start)",
+      "duration": "Längd (minuter)",
+      "quantity": "Antal",
+      "basis": "Antalet gäller"
+    },
+    "basis": {
+      "FIXED": "Som angivet",
+      "PER_HEADCOUNT": "Per gäst"
+    },
+    "columns": {
+      "name": "Namn",
+      "ticketType": "Ärendetyp",
+      "phase": "Startar i",
+      "lines": "Rader"
+    }
   }
 }

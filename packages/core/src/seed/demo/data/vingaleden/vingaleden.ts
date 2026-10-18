@@ -3,6 +3,7 @@ import { vingaledenBoats, vingaledenConfig } from "./config";
 import { vingaledenCustomers } from "./customers";
 import { vingaledenPipeline } from "./pipeline";
 import { vingaledenResponsibilities } from "./responsibilities";
+import { vingaledenTemplates } from "./templates";
 import { vingaledenTickets } from "./tickets";
 import { vingaledenTours } from "./tours";
 
@@ -34,5 +35,6 @@ export const vingaleden: DemoOrg = {
   responsibilities: vingaledenResponsibilities,
   customers: vingaledenCustomers,
   pipeline: vingaledenPipeline,
+  templates: vingaledenTemplates,
   tickets: vingaledenTickets,
 };

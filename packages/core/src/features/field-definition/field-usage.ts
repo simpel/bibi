@@ -20,6 +20,7 @@ export async function fieldValuesOfType({
     ...(await context.db.customer.findMany(query)),
     ...(await context.db.contact.findMany(query)),
     ...(await context.db.ticket.findMany(query)),
+    ...(await context.db.ticketTemplate.findMany(query)),
     ...(await context.db.programItem.findMany(query)),
     ...(await context.db.requirement.findMany(query)),
   ];
@@ -28,14 +29,21 @@ export async function fieldValuesOfType({
 
 export type CountRecordsOfTypeInput = FieldValuesOfTypeInput & { id?: string };
 
-/** Active records (items, customers, contacts, tickets, program items, requirements) that have the type, optionally one id. */
+/** Active records (items, customers, contacts, tickets, predefined tickets and their lines, program items, requirements) that have the type, optionally one id. */
 export async function countRecordsOfType({
   context,
   entityTypeId,
   id,
 }: CountRecordsOfTypeInput): Promise<number> {
   const where = { entityTypeId, ...(id ? { id } : {}) };
+  const templateLines = id
+    ? 0
+    : await context.db.ticketTemplateLine.count({
+        where: { entityTypeId, template: { status: "ACTIVE" } },
+      });
   return (
+    templateLines +
+    (await context.db.ticketTemplate.count({ where })) +
     (await context.db.item.count({ where })) +
     (await context.db.customer.count({ where })) +
     (await context.db.contact.count({ where })) +

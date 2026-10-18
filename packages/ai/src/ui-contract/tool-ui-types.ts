@@ -16,6 +16,7 @@ import type { SheetDefinitionWire } from "./sheet-definition-entries";
 import type { SheetWire } from "./sheet-entries";
 import type { TicketWire } from "./ticket-entries";
 import type { TicketPhaseWire } from "./ticket-phase-entries";
+import type { TicketTemplateWire } from "./ticket-template-entries";
 import type {
   AuditLogWire,
   ContactWire,
@@ -54,6 +55,8 @@ export type ToolUiProps = {
   "price-list-card": { priceList: PriceListWire };
   "ticket-phase-table": { items: TicketPhaseWire[]; nextCursor: string | null };
   "ticket-phase-card": { phase: TicketPhaseWire };
+  "ticket-template-table": { items: TicketTemplateWire[]; nextCursor: string | null };
+  "ticket-template-card": { template: TicketTemplateWire };
   "item-state-table": { items: ItemStateWire[]; nextCursor: string | null };
   "item-state-card": { state: ItemStateWire };
   "phase-grid-table": { cells: PhaseGridCellWire[] };

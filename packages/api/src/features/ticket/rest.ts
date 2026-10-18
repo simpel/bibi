@@ -4,6 +4,11 @@ export const ticketRoutes = [
   restRoute({ operation: "ticket.list", method: "GET", path: "/tickets" }),
   restRoute({ operation: "ticket.get", method: "GET", path: "/tickets/{id}" }),
   restRoute({ operation: "ticket.create", method: "POST", path: "/tickets" }),
+  restRoute({
+    operation: "ticket.createFromTemplate",
+    method: "POST",
+    path: "/tickets/from-template",
+  }),
   restRoute({ operation: "ticket.update", method: "PATCH", path: "/tickets/{id}" }),
   restRoute({
     operation: "ticket.changePhase",

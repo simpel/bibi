@@ -30,6 +30,11 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "itemState.archive", route: "/settings/item-states" },
   { operation: "itemState.reorder", route: "/settings/item-states" },
   { operation: "itemState.setTransitions", route: "/settings/item-states" },
+  { operation: "ticketTemplate.list", route: "/settings/ticket-templates" },
+  { operation: "ticketTemplate.get", route: "/settings/ticket-templates" },
+  { operation: "ticketTemplate.create", route: "/new/ticket-template" },
+  { operation: "ticketTemplate.update", route: "/settings/ticket-templates/[id]/update" },
+  { operation: "ticketTemplate.archive", route: "/settings/ticket-templates" },
   // Every user's own connected OAuth/MCP clients.
   { operation: "oauthGrant.list", route: "/profile" },
   { operation: "oauthGrant.revoke", route: "/profile" },

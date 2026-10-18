@@ -235,13 +235,13 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 **Attributes**
 - name (unique among the organization's active templates), ticket type, start phase (`phaseId`), default own-field values
-- lines: item, optional setup, offset and duration from the ticket start, quantity (fixed or per headcount)
+- lines (`TicketTemplateLine`, replaced as a set): program item type (base `PROGRAM_ITEM`), name, optional general item and setup, offset and duration in minutes from the ticket start, quantity (`FIXED`, or `PER_HEADCOUNT`: times the headcount)
 - status (active / archived)
 
 **Relations**
 - `N:1` TicketType (EntityType), `N:1` TicketPhase; `N:M` Item through its lines
 
-> Operations (`ticketTemplate:admin` to change, `ticketTemplate:read` to read): `ticketTemplate.list|get|create|update|archive` and `ticket.createFromTemplate({ templateId, customerId, startsAt, quantity })`. The new ticket's lines get their states from the grid for the template's phase; a hard-hold collision refuses the whole creation and lists the blocking lines.
+> Operations (`ticketTemplate:admin` to change, `ticketTemplate:read` to read): `ticketTemplate.list|get|create|update|archive` and `ticket.createFromTemplate({ templateId, customerId, startsAt, quantity, assigneeId? })` (`ticket:write`; the caller also needs `ticketTemplate:read` and `customer:read`). The start phase cannot be terminal, the name is unique among the active templates, and an item, a phase or a type that an active template uses cannot be archived. The ticket gets `quantity` and the estimated headcount from `quantity` and a desired period from `startsAt` to the end of the last line; the assignee is required when the start phase requires one. The new ticket's lines get their states from the grid for the template's phase; a hard-hold collision refuses the whole creation and lists the blocking lines.
 
 ### Responsibility (`Responsibility`)
 

@@ -6,13 +6,18 @@ export type ResetDemoOrgInput = { db: Db; org: DemoOrg };
 
 type ScopeInput = { db: Db; where: { organizationId: string } };
 
-/** What hangs off a ticket (ADR 0043), children first; deleted before the items they use. */
+/**
+ * What hangs off a ticket (ADR 0043), children first; deleted before the items they use. The
+ * predefined tickets use items, setups and types, so they go here too.
+ */
 const ticketChildren = ({ db, where }: ScopeInput) => [
   db.inboundEmail.deleteMany({ where }),
   db.payment.deleteMany({ where }),
   db.sheet.deleteMany({ where }),
   db.requirement.deleteMany({ where }),
   db.programItem.deleteMany({ where }),
+  db.ticketTemplateLine.deleteMany({ where }),
+  db.ticketTemplate.deleteMany({ where }),
   db.orderLine.deleteMany({ where }),
   db.quote.deleteMany({ where }),
 ];

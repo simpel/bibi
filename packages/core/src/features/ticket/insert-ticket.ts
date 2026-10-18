@@ -8,16 +8,29 @@ import type { TicketCreateInput, TicketDto } from "./schema";
 import { entryPhaseId, nextReference } from "./ticket-defaults";
 import { toTicketDto } from "./to-ticket-dto";
 
-export type InsertTicketInput = { context: OperationContext; input: TicketCreateInput };
+export type InsertTicketInput = {
+  context: OperationContext;
+  input: TicketCreateInput;
+  /** Start phase; the organization's entry phase when omitted (`ticket.createFromTemplate` sets it). */
+  phaseId?: string;
+};
 
-type EntryInput = { context: OperationContext; assigneeId: string | null | undefined };
+type EntryInput = {
+  context: OperationContext;
+  assigneeId: string | null | undefined;
+  phaseId: string | undefined;
+};
 
-/** The entry phase; when it requires an assignee (ADR 0043), the new ticket must get one. */
-async function loadEntryPhase({ context, assigneeId }: EntryInput): Promise<Result<string>> {
-  const phaseId = await entryPhaseId({ context });
-  if (!phaseId.ok || assigneeId) return phaseId;
-  const phase = await context.db.ticketPhase.findFirst({ where: { id: phaseId.value } });
-  if (!phase?.requiresAssignee) return phaseId;
+/** The start phase; when it requires an assignee (ADR 0043), the new ticket must get one. */
+async function loadStartPhase({
+  context,
+  assigneeId,
+  phaseId,
+}: EntryInput): Promise<Result<string>> {
+  const start = phaseId ? ok({ value: phaseId }) : await entryPhaseId({ context });
+  if (!start.ok || assigneeId) return start;
+  const phase = await context.db.ticketPhase.findFirst({ where: { id: start.value } });
+  if (!phase?.requiresAssignee) return start;
   return conflict({
     message: `A ticket in "${phase.name}" requires an assignee`,
     issues: [{ path: "assigneeId", message: "Required by the entry phase" }],
@@ -25,17 +38,18 @@ async function loadEntryPhase({ context, assigneeId }: EntryInput): Promise<Resu
 }
 
 /**
- * Creates a ticket in the organization's entry phase with the next reference number and records
+ * Creates a ticket in the start phase (default: the organization's entry phase) with the next reference number and records
  * the change, with its main assignment when an assignee is given (ADR 0043).
  */
 export async function insertTicket({
   context,
   input,
+  phaseId: startPhaseId,
 }: InsertTicketInput): Promise<Result<TicketDto>> {
   const checked = await checkNewTicket({ context, input });
   if (!checked.ok) return checked;
   const { entityTypeId, fields: _fields, assigneeId, ...data } = input;
-  const phaseId = await loadEntryPhase({ context, assigneeId });
+  const phaseId = await loadStartPhase({ context, assigneeId, phaseId: startPhaseId });
   if (!phaseId.ok) return phaseId;
   const row = await context.db.ticket.create({
     data: {

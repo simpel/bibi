@@ -72,6 +72,8 @@ export {
   type Ticket,
   type TicketPhase,
   type TicketPhaseTransition,
+  type TicketTemplate,
+  type TicketTemplateLine,
   type Venue,
   type Vocabulary,
   type VocabularyValue,

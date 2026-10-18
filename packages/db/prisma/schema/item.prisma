@@ -9,7 +9,7 @@ enum PriceUnit {
 /// Artikel – anything that can be sold or booked (ADR 0021). Its type decides the behaviours;
 /// the behaviour columns are null unless the type has the behaviour.
 model Item {
-  id                     String            @id @default(cuid(2))
+  id                     String               @id @default(cuid(2))
   organizationId         String
   entityTypeId           String
   venueId                String?
@@ -18,31 +18,33 @@ model Item {
   name                   String
   description            String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
-  fields                 Json              @default("{}")
+  fields                 Json                 @default("{}")
   /// PRICED: price in minor units (1/100 kr), unit and VAT (null = the venue's default).
   priceMinor             Int?
   priceUnit              PriceUnit?
   vatRatePercent         Int?
   /// BOOKABLE: default length of a booking.
   defaultDurationMinutes Int?
-  status                 RecordStatus      @default(ACTIVE)
-  createdAt              DateTime          @default(now())
-  updatedAt              DateTime          @updatedAt
+  status                 RecordStatus         @default(ACTIVE)
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
   createdBy              String?
-  entityType             EntityType        @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  venue                  Venue?            @relation(fields: [venueId, organizationId], references: [id, organizationId])
-  customer               Customer?         @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  entityType             EntityType           @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  venue                  Venue?               @relation(fields: [venueId, organizationId], references: [id, organizationId])
+  customer               Customer?            @relation(fields: [customerId, organizationId], references: [id, organizationId])
   setups                 ItemSetup[]
   /// COMPOSABLE: the parts this item contains.
-  components             ItemComponent[]   @relation("ItemComponentParent")
+  components             ItemComponent[]      @relation("ItemComponentParent")
   /// The composed items this item is a part of.
-  partOf                 ItemComponent[]   @relation("ItemComponentPart")
+  partOf                 ItemComponent[]      @relation("ItemComponentPart")
   /// CHOICES: choice groups among the parts.
   choiceGroups           ItemChoiceGroup[]
   /// BOOKABLE: the periods the item is held (ADR 0022).
   occupancies            Occupancy[]
   /// BOOKABLE: the program items held in this item.
   programItems           ProgramItem[]
+  /// Lines of predefined tickets that use this item.
+  templateLines          TicketTemplateLine[]
   /// Agreed prices on price lists (ADR 0023).
   priceListItems         PriceListItem[]
   /// Order lines that copied this item (snapshot).
