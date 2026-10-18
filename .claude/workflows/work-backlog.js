@@ -34,7 +34,8 @@ const moveCard = (t, status) => `Move the issue's board card to "${status}" with
 const CO_AUTHOR = 'Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>'
 const wtName = (t) => `t-${t.number}`
 const wtDir = (t) => `${REPO}-worktrees/${wtName(t)}` // where pnpm wt:new puts it
-const CHECKS = 'pnpm db:migrate, pnpm lint, pnpm typecheck, pnpm check:structure, pnpm test'
+// Cheapest first: a lint, structure or type error is known in seconds, before the slow test run starts.
+const CHECKS = 'pnpm lint, pnpm check:structure, pnpm typecheck, pnpm db:migrate, pnpm test'
 
 // ---- Model choice (deterministic, from labels) ----------------------------
 function pickModel(t) {
@@ -171,7 +172,7 @@ It prints one JSON object { ok, problem?, tickets }. Return it unchanged. If the
 
 // The final checks run inside the implementing agent: a separate verify agent re-paid the whole base context
 // just to run commands, and the land step re-runs them anyway.
-const RUN_CHECKS = `Run the full checks: first docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres, then in order ${CHECKS}, piping long output through tail or grep. Report them in checks: green=true only if every command passed; for each failure keep a short excerpt (<60 lines).`
+const RUN_CHECKS = `Run the full checks: first docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres, then in order ${CHECKS}, piping long output through tail or grep. Run the first three even if one fails and report every failure; if any of them failed, skip db:migrate and pnpm test (they would only repeat the problem) and report green=false. Report them in checks: green=true only if every command passed; for each failure keep a short excerpt (<60 lines).`
 
 const implPrompt = (t, dir) => `Implement GitHub issue #${t.number} ("${t.title}").
 Setup (run exactly these two commands first):
@@ -182,7 +183,7 @@ Then work only in the worktree:
 ${inWorktree(dir)}
 - Read the issue: gh issue view ${t.number} -R simpel/okazi. Its "To do" and "Done when" sections are the spec. Read the linked ADR in docs/decisions/.
 - Start with the new-feature skill: it fixes the order of work and the gates (isolation test, referenced-id checks, read permission, lifecycle, concurrency, approval labels) that belong to this ticket. Then use the skill it names for each step (new-entity, new-core-operation, db-migration, i18n-strings, new-ui-component, structure-fix). Migrations are fine: your database is yours alone.
-- While working, run targeted checks (pnpm test for the packages you touch). Pipe long output through tail or grep.
+- While working, run the cheap checks after every coherent group of edits: pnpm lint and pnpm check:structure (seconds), pnpm --filter <package> typecheck for the package you touched, and the targeted pnpm test for it. A structure or type error found now costs one edit; found at the end it costs a whole fix round. Pipe long output through tail or grep.
 - ${READING_RULES}
 - Do NOT run git add/commit/push/rebase/stash/checkout/reset. The landing step commits.
 - If the spec needs a human decision or is blocked by missing work, stop and return status=blocked with the reason in notes.
@@ -210,7 +211,7 @@ ${CO_AUTHOR}
    - For each conflicted file, read both sides (git diff, git log -p origin/main -3 -- <file>) and keep the intent of BOTH: main's change and this ticket's. Never drop main's lines to make the conflict go away.
    - git add the file, then git rebase --continue (GIT_EDITOR=true). Repeat for every conflicting commit.
    - Only if a conflict is a real semantic clash you cannot reconcile with confidence: git rebase --abort and return landed=false, reason "rebase conflict: <files>: <why it could not be resolved>".
-3. Ensure Postgres is up (docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres), then always run ${CHECKS}. This is the independent check before main. If a failure comes from a conflict you resolved, fix it, fold it into the ticket's commit (git add -A, git commit --amend --no-edit) and re-run (at most 2 tries). On any remaining failure return landed=false, reason "red before push" plus a short excerpt.
+3. Ensure Postgres is up (docker compose -p okazi -f ${REPO}/docker-compose.yml up -d --wait postgres). Before the rebase, compare git merge-base HEAD origin/main with git rev-parse origin/main. If they are equal, origin/main has not moved since this branch was cut, the rebase changes nothing and the implementer's green checks ran on this exact tree: skip the checks. If they differ, run ${CHECKS} after the rebase. This is the independent check before main. If a failure comes from a conflict you resolved, fix it, fold it into the ticket's commit (git add -A, git commit --amend --no-edit) and re-run (at most 2 tries). On any remaining failure return landed=false, reason "red before push" plus a short excerpt.
 4. git push origin HEAD:main. Never force-push. If rejected because origin moved, go back to step 2 (at most 3 tries in total).
 5. ${moveCard(t, 'Done')}
 6. From ${REPO}: pnpm wt:rm ${wtName(t)} --delete-branch, then tools/backlog/release.sh ${t.number} (releases the ticket lock).
