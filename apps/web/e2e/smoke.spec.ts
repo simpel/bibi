@@ -43,7 +43,7 @@ test("sign up, create org, venue, type and item, search, switch locale, archive"
   await page.getByRole("menuitem", { name: "Språk" }).click();
   await page.getByRole("menuitem", { name: "English" }).click();
   await expect(page).toHaveURL(/\/en\/venues/);
-  await expect(page.getByRole("button", { name: "Create venue" }).first()).toBeVisible();
+  await expect(page.getByRole("link", { name: "Create venue" }).first()).toBeVisible();
 
   await page.getByRole("button", { name: "Actions" }).click();
   await page.getByRole("menuitem", { name: "Archive venue" }).click();
@@ -61,10 +61,9 @@ test("theme toggle, localized validation messages and mapped sign-in errors", as
   await page.getByRole("menuitem", { name: "Mörkt" }).click();
   await expect(page.locator("html")).toHaveClass(/dark/);
 
-  await page.getByRole("button", { name: "Skapa anläggning" }).first().click();
-  await page.getByRole("button", { name: "Spara" }).click();
+  await page.getByRole("link", { name: "Skapa anläggning" }).first().click();
+  await page.getByRole("button", { name: "Nästa" }).click();
   await expect(page.getByText("Fältet är obligatoriskt.")).toBeVisible();
-  await page.keyboard.press("Escape");
 
   await page.getByRole("button", { name: "Användarmeny" }).click();
   await page.getByRole("menuitem", { name: "Logga ut" }).click();

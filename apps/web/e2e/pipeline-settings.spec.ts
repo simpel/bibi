@@ -19,7 +19,7 @@ async function createPhase({
   if (flag) await page.getByRole("checkbox", { name: flag }).click();
   await page.getByRole("button", { name: "Spara" }).click();
   await expect(page).toHaveURL(/\/sv\/settings\/pipeline$/);
-  await expect(page.getByRole("cell", { name })).toBeVisible();
+  await expect(page.getByRole("cell", { name }).first()).toBeVisible();
 }
 
 async function rowAction({
@@ -32,7 +32,7 @@ async function rowAction({
   item: string;
 }) {
   await page
-    .getByRole("row", { name: new RegExp(row) })
+    .getByRole("row", { name: new RegExp(`^${row}`) })
     .getByRole("button", { name: "Åtgärder" })
     .click();
   await page.getByRole("menuitem", { name: item }).click();
@@ -42,27 +42,27 @@ test("an admin edits phases and the grid on step pages", async ({ page }) => {
   await signUpWithOrganization({ page, name: "Pipeline AB" });
   await createItemType({ page, name: "Conference room", numberField: "Max guests" });
 
-  await createPhase({ page, name: "Lead", flag: "Nya ärenden startar här" });
-  await createPhase({ page, name: "Lost", flag: "Avslutar ärendet" });
+  // A new organization already has the default phases (Lead, Confirmed, Completed, Lost).
+  await createPhase({ page, name: "Cancelled", flag: "Avslutar ärendet" });
   await createPhase({ page, name: "Booked" });
   await createPhase({ page, name: "Spare" });
 
   await rowAction({ page, row: "Booked", item: "Redigera fas" });
   await expect(page).toHaveURL(/\/sv\/settings\/pipeline\/[^/]+\/update$/);
-  await page.getByLabel("Namn").fill("Confirmed");
+  await page.getByLabel("Namn").fill("Reserved");
   await page.getByRole("button", { name: "Spara" }).click();
-  await expect(page.getByRole("cell", { name: "Confirmed" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "Reserved" }).first()).toBeVisible();
 
   await rowAction({ page, row: "Spare", item: "Flytta vänster" });
   await expect(page.getByText("Ordningen har sparats.")).toBeVisible();
 
   await expect(page.getByRole("heading", { name: "Rutnätet" })).toBeVisible();
-  await expect(page.getByText("Släpper alla rader")).toBeVisible();
-  await page.getByRole("combobox", { name: "Confirmed: Conference room" }).click();
+  await expect(page.getByText("Släpper alla rader").first()).toBeVisible();
+  await page.getByRole("combobox", { name: "Reserved: Conference room" }).click();
   await page.getByRole("option", { name: "Active" }).click();
   await expect(
     page.getByText(
-      "När ett ärende går in i Confirmed flyttas rader av Conference room till Active.",
+      "När ett ärende går in i Reserved flyttas rader av Conference room till Active.",
     ),
   ).toBeVisible();
 
@@ -77,27 +77,25 @@ test("an admin edits item states on step pages", async ({ page }) => {
 
   await page.goto("/sv/settings/item-states");
   await expect(page.getByRole("heading", { name: "Artikelstatusar", level: 1 })).toBeVisible();
-  await expect(page.getByRole("cell", { name: "Active" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "Active" }).first()).toBeVisible();
 
   await page.getByRole("link", { name: "Skapa status" }).click();
   await expect(page).toHaveURL(/\/sv\/new\/item-state\?type=/);
   await page.getByLabel("Namn").fill("Prebooked");
-  await page.getByLabel("Vad den gör med artikeln").click();
-  await page.getByRole("option", { name: "Preliminär reservation" }).click();
   await page.getByRole("button", { name: "Spara" }).click();
   await expect(page).toHaveURL(/\/sv\/settings\/item-states$/);
-  await expect(page.getByRole("cell", { name: "Prebooked" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "Prebooked" }).first()).toBeVisible();
 
   await rowAction({ page, row: "Prebooked", item: "Redigera status" });
   await expect(page).toHaveURL(/\/sv\/settings\/item-states\/[^/]+\/update$/);
   await page.getByLabel("Namn").fill("Tentative");
   await page.getByRole("button", { name: "Spara" }).click();
-  await expect(page.getByRole("cell", { name: "Tentative" })).toBeVisible();
+  await expect(page.getByRole("cell", { name: "Tentative" }).first()).toBeVisible();
 
   await rowAction({ page, row: "Tentative", item: "Redigera övergångar" });
   await page.getByRole("dialog").getByRole("checkbox", { name: "Active" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Spara" }).click();
-  await expect(page.getByRole("row", { name: /Tentative/ })).toContainText("Active");
+  await expect(page.getByRole("row", { name: /^Tentative/ })).toContainText("Active");
 
   await rowAction({ page, row: "Tentative", item: "Arkivera status" });
   await page.getByRole("dialog").getByRole("button", { name: "Arkivera status" }).click();

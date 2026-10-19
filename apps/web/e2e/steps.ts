@@ -40,10 +40,15 @@ export async function createVenue({
   name,
   city,
 }: PageInput & { name: string; city: string }) {
-  await page.getByRole("button", { name: "Skapa anläggning" }).first().click();
+  // Create is a step page (/new/venue): name, address, then contact details.
+  await page.getByRole("link", { name: "Skapa anläggning" }).first().click();
   await page.getByLabel("Namn").fill(name);
+  await page.getByRole("button", { name: "Nästa" }).click();
   await page.getByLabel("Ort").fill(city);
+  await page.getByRole("button", { name: "Nästa" }).click();
   await page.getByRole("button", { name: "Spara" }).click();
+  await expect(page.getByRole("heading", { name, level: 1 })).toBeVisible();
+  await page.goto("/sv/venues");
   await expect(page.getByRole("link", { name })).toBeVisible();
 }
 
@@ -54,11 +59,13 @@ export async function createItemType({
   numberField,
 }: PageInput & { name: string; numberField: string }) {
   await page.goto("/sv/settings/types");
-  await page.getByRole("button", { name: "Skapa typ" }).first().click();
+  // Create is a step page (/new/type): base and name, then behaviours; it opens the new type.
+  await page.getByRole("link", { name: "Skapa typ" }).first().click();
   await page.getByLabel("Namn").fill(name);
+  await page.getByRole("button", { name: "Nästa" }).click();
   await page.getByRole("checkbox", { name: "Bokningsbar" }).click();
   await page.getByRole("button", { name: "Spara" }).click();
-  await page.getByRole("link", { name }).click();
+  await expect(page.getByRole("heading", { name, level: 1 })).toBeVisible();
   await page.getByRole("button", { name: "Lägg till fält" }).click();
   await page.getByRole("dialog").getByLabel("Namn").fill(numberField);
   await page.getByRole("dialog").getByLabel("Värdetyp").click();
@@ -85,6 +92,8 @@ export async function addItem({
   await page.getByLabel(numberField).fill(value);
   await page.getByLabel("Anläggning").click();
   await page.getByRole("option", { name: venue }).click();
+  // A click while the select is still closing lands on its overlay instead of the button.
+  await expect(page.getByRole("listbox")).toBeHidden();
   const next = page.getByRole("button", { name: "Nästa" });
   if (await next.isVisible()) await next.click();
   await page.getByRole("button", { name: "Spara" }).click();

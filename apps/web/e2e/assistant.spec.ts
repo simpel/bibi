@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { listVenueNames, openAssistant, PANEL, sendChat, signUpWithOrganization } from "./steps";
 
+const HISTORY_ROW = '[data-slot="conversation-row"]';
+
 // Runs against the scripted mock model (E2E_MOCK_MODEL=1, see playwright.config.ts): "create venue
 // <name>" proposes `venue_create`, "list venues" calls `venue_list`. Everything else is real:
 // the chat route, the MCP server, the approval endpoint and the database.
@@ -38,10 +40,13 @@ test("a proposed venue needs approval: nothing is created until the user approve
   // The decision is stored: reopening the conversation shows the card as approved, not pending.
   await page.goto("/");
   const panel = page.locator(PANEL);
-  await panel.getByRole("button", { name: "Ny konversation" }).first().click();
+  await page
+    .getByRole("navigation", { name: "Assistent" })
+    .getByRole("button", { name: "Ny chatt" })
+    .click();
   await expect(card).toHaveCount(0);
-  await panel.getByRole("button", { name: "Tidigare konversationer" }).click();
-  await panel.locator('[data-slot="conversation-row"]').first().getByRole("button").first().click();
+  await page.goto("/sv/chats");
+  await page.locator(HISTORY_ROW).first().getByRole("button").first().click();
   const restored = panel.locator('[data-slot="approval-card"]');
   await expect(restored).toHaveAttribute("data-state", "approved");
   await expect(restored.locator('[data-slot="venue-card"]').getByText("Test Hall")).toBeVisible();
@@ -72,24 +77,25 @@ test("a read tool renders as a venue table with links; history keeps the convers
   await expect(page).toHaveURL(/\/sv\/venues\/[^/]+$/);
   await expect(page.getByRole("heading", { name: "The Hall" })).toBeVisible();
 
-  const panel = page.locator(PANEL);
-  await panel.getByRole("button", { name: "Tidigare konversationer" }).click();
-  await expect(panel.locator('[data-slot="conversation-row"]')).toHaveCount(1);
-  await panel.getByRole("button", { name: "Byt namn" }).click();
-  await panel.getByLabel("Konversationens namn").fill("My venues");
-  await panel.getByRole("button", { name: "Spara" }).click();
-  await expect(panel.getByText("My venues")).toBeVisible();
+  // The full history is its own page (/chats): open, rename, archive or start a new one.
+  const history = page.locator('[data-slot="assistant-history"]');
+  await page.goto("/sv/chats");
+  await expect(history.locator(HISTORY_ROW)).toHaveCount(1);
+  await history.getByRole("button", { name: "Byt namn" }).click();
+  await history.getByLabel("Konversationens namn").fill("My venues");
+  await history.getByRole("button", { name: "Spara" }).click();
+  await expect(history.getByText("My venues")).toBeVisible();
 
-  await panel.getByRole("button", { name: "Ny konversation" }).first().click();
+  await history.getByRole("button", { name: "Ny konversation" }).click();
   await expect(page.getByText("Vad kan jag hjälpa dig med?")).toBeVisible();
-  await panel.getByRole("button", { name: "Tidigare konversationer" }).click();
-  await panel.getByText("My venues").click();
-  await expect(panel.locator('[data-slot="venue-table"]')).toBeVisible();
+  await page.goto("/sv/chats");
+  await history.getByText("My venues").click();
+  await expect(page.locator(PANEL).locator('[data-slot="venue-table"]')).toBeVisible();
 
-  await panel.getByRole("button", { name: "Tidigare konversationer" }).click();
-  await panel.getByRole("button", { name: "Arkivera konversation" }).click();
+  await page.goto("/sv/chats");
+  await history.getByRole("button", { name: "Arkivera konversation" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Arkivera konversation" }).click();
-  await expect(panel.getByText("Inga konversationer ännu.")).toBeVisible();
+  await expect(history.getByText("Inga konversationer ännu.")).toBeVisible();
 });
 
 test("⌘K asks the assistant a one-shot question and opens the panel on it", async ({ page }) => {
