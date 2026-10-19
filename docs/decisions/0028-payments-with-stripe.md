@@ -42,3 +42,9 @@
 
 ## Stripe after the commit (ADR 0058)
 - `payment.create` inserts the `PENDING` row first and calls Stripe in its `external` step, after the commit, with the row id as idempotency key. A change preview of an AI proposal therefore never creates a checkout or sends an invoice. A refused charge leaves the row `FAILED`.
+
+## Addendum 2026-10-19 – single source of truth (ADR 0051, 0057)
+- A payment settles exactly one receivable: a sent quote, a deposit request or an invoice (`quoteId`, `depositId` or `invoiceId`). `payment.create` takes the receivable instead of a free amount; the amount defaults to the open balance and may be lower.
+- Balances and receivable progress (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`) are derived from `SUCCEEDED` payments minus refunds. Nothing stores a balance.
+- `status`, `paidAt` and `refundedMinor` stay a mirror of Stripe, written only by `payment.applySignal`.
+- The application fee is shown to the venue on every payment and in the published price list.

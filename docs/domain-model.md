@@ -10,6 +10,25 @@ The model is configurable (see [ADR 0021](decisions/0021-configurable-items.md))
 
 Ticket (moves through the organization's phases) → Lines with states (prebooked → booked …) → Quote → Signing (later) → Requirements → Sheets → Delivery → Invoice → Fortnox / Visma
 
+## Target model: single source of truth (ADR 0051–0057)
+
+*Accepted, not built yet.* The entity sections below describe the model as built; a **Target** note on an entity says how it changes. Every attribute is one of four kinds ([ADR 0051](decisions/0051-single-source-of-truth.md)):
+
+| Kind | Meaning | Examples in the target model |
+|---|---|---|
+| Owned | The fact itself, in one place | `Line` price overrides, `TicketPhaseChange`, manual `Occupancy` blocks, explicit `Assignment` |
+| Derived | Computed on read, never stored | a draft quote, balances, which responsibilities apply, effective price and VAT |
+| Projection | Stored for a constraint or index, written only by the database | line holds in `Occupancy` (ADR 0053), `Ticket.phaseId` and `Line.stateId` (ADR 0054) |
+| Snapshot | Frozen copy at a moment that matters | sent quote lines, invoices, sent sheets and their recipients |
+
+What changes:
+- **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `ProgramItem` is renamed `Line`; it may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup`. A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`. `Ticket.quantity` goes; lines inherit the headcount.
+- **Holds are a projection** ([ADR 0053](decisions/0053-holds-are-a-projection.md)), written by triggers through `sync_line_occupancy`. Only lines that have not ended are re-derived.
+- **History is owned data** ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)): `TicketPhaseChange` and `LineStateChange`. `phaseChangedAt`, `phaseReason` and `heldAt` go. Phases may require facts (`requiresAcceptedQuote`) but never store them.
+- **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
+- **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. Link values move to `RecordLink`; id lists become join tables; polymorphic pairs point at `Record`.
+- **Money is derived** ([ADR 0057](decisions/0057-money-balance-is-derived.md)): a payment settles one receivable (sent quote, deposit or invoice); no balance is stored. External calls run after commit (ADR 0058).
+
 ## ER diagram (MVP)
 
 ```mermaid
@@ -106,6 +125,8 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · A custom field on a type.
 
+> **Target (ADR 0056):** values live in `Record.fields` (GIN index); `LINK` values in `RecordLink` with foreign keys.
+
 **Attributes**
 - name
 - key (`key`) — generated from the name (e.g. "Area m²" → `area_m2`), never changes, unique per type even among archived
@@ -168,6 +189,8 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 ### SheetDefinition (`SheetDefinition`)
 
 *MVP* · What a sheet looks like, e.g. "Kitchen order" or "Brewing order".
+
+> **Target (ADR 0056):** id lists become join tables; `roleId` becomes `responsibilityId` with a foreign key.
 
 **Attributes**
 - name (unique)
@@ -248,6 +271,8 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · Decided in [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md). What someone answers for, e.g. "Head of kitchen" or "Head of exhibits". Organization data managed by admins. It carries no permissions: access comes from the fixed member roles (see User).
 
+> **Target (ADR 0056):** `entityTypeIds` and `defaultFollowerIds` become join tables with foreign keys.
+
 **Attributes**
 - name (unique among the organization's active responsibilities)
 - covered item entity types (`entityTypeIds`: the item types it covers, e.g. "Food & drink")
@@ -265,6 +290,8 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 ### Assignment (`Assignment`)
 
 *MVP* · [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md). Says who answers for a subject: one assignee plus followers.
+
+> **Target (ADR 0055, 0056):** rows are explicit choices only; applicable responsibilities and default assignees and followers are derived. `subjectType` / `subjectId` becomes `recordId`. Followers get `effect` (`FOLLOW` / `UNFOLLOW`).
 
 **Attributes**
 - subject (`subjectType` `TICKET` / `ITEM` and `subjectId`, the same pattern as `Occupancy.sourceType` / `sourceId`; core checks that the subject belongs to the organization)
@@ -323,6 +350,8 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · One customer request from first contact to the delivered event ([ADR 0043](decisions/0043-ticket-and-configurable-phases.md)). It lives in the organization's phases and never turns into another record. Lines, quotes, requirements, sheets, payments and mail attach to it.
 
+> **Target (ADR 0052, 0054):** `quantity`, `phaseChangedAt` and `phaseReason` go. `phaseId` is projected from `TicketPhaseChange`. Phase flags may require facts (`requiresAcceptedQuote`).
+
 **Attributes**
 - reference number (`reference`, sequential per organization)
 - type (the organization's own, base `TICKET`) and custom fields
@@ -352,6 +381,8 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 ### Quote ★
 
 *MVP* · A versioned proposal with lines and terms. Fixed state machine; `quote.send` and `quote.accept` fire phase events on the ticket (ADR 0043).
+
+> **Target (ADR 0052, 0054):** a `DRAFT` stores no lines; it is a live view of the ticket's priced lines. Totals are part of the sent snapshot. Change markers pair by `lineId`.
 
 **Attributes**
 - version number (`version`, 1 for the ticket's first quote, then +1) and the version it was made from (`previousId`)
@@ -393,6 +424,8 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 ### ProgramItem (the ticket's line)
 
 *MVP* · A line on a ticket: a room, a meal, an activity or a break, with its own time and state ([ADR 0044](decisions/0044-line-states-and-the-phase-grid.md)). Created, among other cases, when a composite item is added to the ticket.
+
+> **Target (ADR 0052–0054):** renamed `Line`. Times optional; price, discount and VAT overrides (`null` = inherit); `quantity` `null` = the ticket's headcount; `alternativeGroupId`. `stateId` is set from `LineStateChange`; `heldAt` goes. Holds are written by triggers.
 
 **Attributes**
 - name and type (the organization's own, base `PROGRAM_ITEM`) and custom fields
@@ -470,6 +503,8 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 ### Occupancy ★
 
 *MVP* · A time block on a bookable item. The basis for conflict checking.
+
+> **Target (ADR 0053):** line holds and their setup buffers are a projection with `lineId` (FK), written only by triggers; `sourceType` / `sourceId` go. Manual blocks stay owned.
 
 **Attributes**
 - item (with the `BOOKABLE` behavior)
@@ -617,6 +652,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · What is actually charged. Copies (snapshot) of the item's name, price, VAT and tags.
 
+> **Target (ADR 0052):** a frozen snapshot of one line, written only by `quote.send` (and invoicing), with a required `lineId`. No editing path of its own.
+
 **Attributes**
 - item
 - position
@@ -643,6 +680,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · A partial payment at confirmation. Can be sent only in the `CONFIRMED` phase.
 
+> **Target (ADR 0057):** a frozen receivable; `status` holds only its lifecycle, payment progress is derived.
+
 **Attributes**
 - amount
 - due date
@@ -657,6 +696,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 ### Payment ★ (`Payment`)
 
 *MVP* · A payment requested from the ticket's customer: a card checkout or a Stripe invoice ([ADR 0028](decisions/0028-payments-with-stripe.md), [ADR 0029](decisions/0029-invoicing-via-stripe.md)). Every payment is a direct charge on the organization's connected account (`PaymentAccount`), so the venue is the merchant and Okazi never holds its funds.
+
+> **Target (ADR 0057, 0058):** settles exactly one receivable (`quoteId`, `depositId` or `invoiceId`); balances are derived. The provider call runs after commit.
 
 **Attributes**
 - method: `CARD` (hosted checkout link) or `INVOICE` (Stripe invoice emailed to the customer); Swish comes later through Stripe
@@ -681,6 +722,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 ### Invoice
 
 *MVP* · The final invoice after delivery. A ticket can be invoiced only in a phase with the `invoiceable` flag.
+
+> **Target (ADR 0052, 0057):** a snapshot of the lines at invoicing; payment progress is derived.
 
 **Attributes**
 - invoice number
@@ -858,6 +901,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 ### AuditLog
 
 *MVP* · Organization data. One row per change made by a command, written by core in the same transaction ([ADR 0006](decisions/0006-database-conventions.md), [ADR 0014](decisions/0014-system-logging.md)). Read with `auditLog.list|get` (permission `audit:read`) on every surface and shown as the history tab on detail pages. Changes to private entities (conversations, messages, skills) are only visible to the user who made them; `conversation:admin` also sees conversation changes. After `AUDIT_LOG_PSEUDONYMISE_AFTER_DAYS` (default 365) a nightly worker job replaces personal values in the before and after images with `[redacted]`; rows are kept ([ADR 0032](decisions/0032-audit-log-retention.md)).
+
+> **Target (ADR 0054):** evidence only; no feature reads domain history from it.
 
 **Attributes**
 - actor (user / AI / system) and, for AI proposals, who approved
