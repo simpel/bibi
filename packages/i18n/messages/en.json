@@ -2677,6 +2677,10 @@
     "skip": "Skip for now",
     "welcomeTitle": "Let's set up your first version",
     "welcomeDescription": "Tell me a little about your place and I will sketch a starting point.",
-    "panelEmpty": "Your first version appears here as we talk"
+    "panelEmpty": "Your first version appears here as we talk",
+    "panelSell": "What you sell",
+    "panelPath": "How a request moves",
+    "panelNote": "A starting point. You can change anything later.",
+    "panelUnsaved": "Nothing is saved yet"
   }
 }

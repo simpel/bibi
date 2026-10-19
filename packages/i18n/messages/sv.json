@@ -2677,6 +2677,10 @@
     "skip": "Hoppa över just nu",
     "welcomeTitle": "Vi sätter upp din första version",
     "welcomeDescription": "Berätta lite om er verksamhet så skissar jag ett första förslag.",
-    "panelEmpty": "Din första version dyker upp här medan vi pratar"
+    "panelEmpty": "Din första version dyker upp här medan vi pratar",
+    "panelSell": "Det ni säljer",
+    "panelPath": "Så går en förfrågan",
+    "panelNote": "En startpunkt. Du kan ändra allt senare.",
+    "panelUnsaved": "Inget är sparat än"
   }
 }

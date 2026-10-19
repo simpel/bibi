@@ -87,6 +87,8 @@ export {
   SelectValue,
 } from "./components/select/select";
 export { Separator, type SeparatorProps } from "./components/separator/separator";
+export * from "./components/setup-panel/phase-path";
+export * from "./components/setup-panel/setup-panel";
 export {
   Sheet,
   SheetClose,

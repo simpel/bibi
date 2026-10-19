@@ -1,16 +1,26 @@
-import { Card, CardContent } from "@okazi/ui";
-import { useTranslations } from "next-intl";
+"use client";
 
-/** Panel slot for the first version; empty until the assistant has a draft. */
+import { SetupPanel } from "@okazi/ui";
+import { useTranslations } from "next-intl";
+import { useAssistant } from "@/features/assistant/state/assistant-context";
+import { latestSetupDraft } from "../lib/setup-draft";
+
+/** The first version, following the latest draft the assistant previewed in the chat. */
 export function OnboardingPanel() {
   const t = useTranslations("onboarding");
+  const { messages } = useAssistant().session.chat;
+  const draft = latestSetupDraft({ messages });
   return (
-    <div className="flex h-full items-center justify-center p-8">
-      <Card className="max-w-sm border-dashed">
-        <CardContent className="p-6 text-center text-sm text-muted-foreground">
-          {t("panelEmpty")}
-        </CardContent>
-      </Card>
-    </div>
+    <SetupPanel
+      itemTypes={draft?.itemTypes ?? null}
+      phases={draft?.phases ?? []}
+      labels={{
+        empty: t("panelEmpty"),
+        note: t("panelNote"),
+        unsaved: t("panelUnsaved"),
+        sell: t("panelSell"),
+        path: t("panelPath"),
+      }}
+    />
   );
 }
