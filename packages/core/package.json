@@ -8,7 +8,8 @@
     "./schemas": "./src/schemas.ts",
     "./seed": "./src/skills/seed-system-skills.ts",
     "./seed/demo": "./src/seed/demo/seed-demo.ts",
-    "./pipeline-setup-templates": "./src/features/pipeline-setup/draft-from-templates.ts"
+    "./pipeline-setup-templates": "./src/features/pipeline-setup/draft-from-templates.ts",
+    "./setup-presets": "./src/templates/setup-presets/setup-presets.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
