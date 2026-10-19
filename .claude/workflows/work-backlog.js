@@ -90,7 +90,7 @@ const TICKETS = {
           status: { type: 'string' },
           openBlockers: { type: 'array', items: { type: 'number' } },
         },
-        required: ['number', 'title', 'labels', 'itemId', 'priority', 'openBlockers'],
+        required: ['number', 'title', 'labels', 'itemId', 'priority', 'status', 'openBlockers'],
       },
     },
   },
