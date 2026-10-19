@@ -4,10 +4,15 @@ import type { DemoOrg } from "./types";
 
 export type CheckDemoQuoteSnapshotsInput = { context: ExecuteContext; org: DemoOrg };
 
-/** Every order line prices a line of its own quote's ticket (ADR 0052). */
+/** Every order line prices a line of its own quote's or invoice's ticket (ADR 0052). */
 async function checkLineIds({ context, org }: CheckDemoQuoteSnapshotsInput): Promise<string[]> {
   const rows = await context.db.orderLine.findMany({
-    select: { id: true, lineId: true, quote: { select: { ticketId: true } } },
+    select: {
+      id: true,
+      lineId: true,
+      quote: { select: { ticketId: true } },
+      invoice: { select: { ticketId: true } },
+    },
   });
   const lineIds = [...new Set(rows.map((row) => row.lineId))];
   const lines = await context.db.line.findMany({
@@ -16,8 +21,8 @@ async function checkLineIds({ context, org }: CheckDemoQuoteSnapshotsInput): Pro
   });
   const ticketOf = new Map(lines.map((line) => [line.id, line.ticketId]));
   return rows
-    .filter((row) => ticketOf.get(row.lineId) !== row.quote.ticketId)
-    .map((row) => `${org.slug}: order line ${row.id} prices no line of its quote's ticket`);
+    .filter((row) => ticketOf.get(row.lineId) !== (row.quote ?? row.invoice)?.ticketId)
+    .map((row) => `${org.slug}: order line ${row.id} prices no line of its owner's ticket`);
 }
 
 /**

@@ -1,6 +1,7 @@
 import type { PaymentDto } from "@okazi/core/schemas";
 import { useFormatter, useTranslations } from "next-intl";
 import { PaymentStatusBadge } from "./payment-status-badge";
+import { useMoney } from "./use-money";
 
 /** A payment as the server (Date) or a tool result (ISO string) carries it. */
 export type PaymentValue = Omit<PaymentDto, "createdAt" | "updatedAt" | "expiresAt" | "paidAt"> & {
@@ -10,24 +11,37 @@ export type PaymentValue = Omit<PaymentDto, "createdAt" | "updatedAt" | "expires
 
 export type PaymentEntryProps = { payment: PaymentValue };
 
-/** One requested payment: method, amount, status, when it was requested or paid, and its link. */
+/** What a payment settles: a quote, a deposit request or an invoice (ADR 0057). */
+const settles = ({ payment }: PaymentEntryProps) =>
+  payment.depositId ? "DEPOSIT" : payment.invoiceId ? "INVOICE" : "QUOTE";
+
+/**
+ * One requested payment: method, amount, what it settles, status, when it was requested or paid,
+ * Okazi's application fee on it and its link.
+ */
 export function PaymentEntry({ payment }: PaymentEntryProps) {
   const t = useTranslations("payment");
   const format = useFormatter();
+  const money = useMoney();
   const when = new Date(payment.paidAt ?? payment.createdAt);
+  const fee = payment.applicationFeeMinor;
   return (
     <article data-slot="payment-entry" className="flex flex-wrap items-center gap-2 py-3 text-sm">
       <span className="font-medium">
-        {format.number(payment.amountMinor / 100, {
-          style: "currency",
-          currency: payment.currency,
-        })}
+        {money({ minor: payment.amountMinor, currency: payment.currency })}
       </span>
-      <span className="text-muted-foreground">{t(`method.${payment.method}`)}</span>
+      <span className="text-muted-foreground">
+        {t(`method.${payment.method}`)} · {t(`for.${settles({ payment })}`)}
+      </span>
       <PaymentStatusBadge status={payment.status} />
       <time className="text-xs text-muted-foreground" dateTime={when.toISOString()}>
         {format.dateTime(when, { dateStyle: "medium", timeStyle: "short" })}
       </time>
+      {fee === null ? null : (
+        <span className="text-xs text-muted-foreground">
+          {t("fee", { amount: money({ minor: fee, currency: payment.currency }) })}
+        </span>
+      )}
       {payment.paymentUrl && payment.status === "PENDING" ? (
         <a
           href={payment.paymentUrl}

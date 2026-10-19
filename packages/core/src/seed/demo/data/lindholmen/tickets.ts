@@ -33,6 +33,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   {
     ...quoted,
     ...{ ref: "L3", customer: "Västra Sjukvårdsregionen", type: "Conference", day: 3 },
+    money: { deposit: { description: "Advance at confirmation", amountKr: 5_000 } },
     ...{
       from: "08:30",
       to: "23:00",
@@ -54,6 +55,8 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   {
     ...quoted,
     ...{ ref: "L5", customer: "Älvstrand Tech AB", type: "Event", day: 14, from: "18:00" },
+    // ADR 0057: 10 000 kr of the accepted quote is paid; the rest is the balance.
+    money: { paidKr: 10_000 },
     ...{
       to: "23:30",
       phase: "Confirmed",

@@ -7,7 +7,7 @@ import {
   setTicketPhaseTransitions,
 } from "../src/index";
 import { unwrap } from "./helpers";
-import { paymentSetup } from "./payment-helpers";
+import { paymentSetup, sentDeposit } from "./payment-helpers";
 import { createTestTicket, memberUser } from "./ticket-helpers";
 import { phaseByName } from "./ticket-phase-helpers";
 
@@ -87,10 +87,11 @@ export async function pendingPayment({ coordinated }: SetupInput) {
         })
       ).id
     : setup.ticketId;
+  const depositId = coordinated ? (await sentDeposit({ context, ticketId })).id : setup.depositId;
   const payment = unwrap({
     result: await execute({
       operation: createPayment,
-      input: { ticketId, method: "CARD", amountMinor: 125_000 },
+      input: { depositId, method: "CARD", amountMinor: 125_000 },
       context,
     }),
   });

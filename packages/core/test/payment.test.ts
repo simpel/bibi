@@ -11,7 +11,7 @@ import {
   updateCustomer,
 } from "../src/index";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
-import { paymentSetup } from "./payment-helpers";
+import { paymentSetup, sentDeposit } from "./payment-helpers";
 import { createTestTicket, ticketSetup } from "./ticket-helpers";
 
 afterEach(() => {
@@ -19,20 +19,23 @@ afterEach(() => {
   setStripeConnectGateway({ gateway: undefined });
 });
 
-type CreateInput = { context: ExecuteContext; ticketId: string; method?: "CARD" | "INVOICE" };
-const create = ({ context, ticketId, method = "CARD" }: CreateInput) =>
+type CreateInput = { context: ExecuteContext; depositId: string; method?: "CARD" | "INVOICE" };
+const create = ({ context, depositId, method = "CARD" }: CreateInput) =>
   execute({
     operation: createPayment,
-    input: { ticketId, method, amountMinor: 125_000 },
+    input: { depositId, method, amountMinor: 125_000 },
     context,
   });
 
 describe("payment", () => {
   it("creates a card checkout as a direct charge on the connected account", async () => {
-    const { context, ticketId, account, provider } = await paymentSetup();
-    const payment = unwrap({ result: await create({ context, ticketId }) });
+    const { context, ticketId, depositId, account, provider } = await paymentSetup();
+    const payment = unwrap({ result: await create({ context, depositId }) });
     expect(payment).toMatchObject({
       ticketId,
+      depositId,
+      quoteId: null,
+      invoiceId: null,
       method: "CARD",
       status: "PENDING",
       amountMinor: 125_000,
@@ -61,9 +64,9 @@ describe("payment", () => {
   });
 
   it("lists and gets payments of a ticket", async () => {
-    const { context, ticketId } = await paymentSetup();
-    const first = unwrap({ result: await create({ context, ticketId }) });
-    const second = unwrap({ result: await create({ context, ticketId }) });
+    const { context, ticketId, depositId } = await paymentSetup();
+    const first = unwrap({ result: await create({ context, depositId }) });
+    const second = unwrap({ result: await create({ context, depositId }) });
     const page = unwrap({
       result: await execute({ operation: listPayments, input: { ticketId }, context }),
     });
@@ -76,12 +79,12 @@ describe("payment", () => {
   });
 
   it("sends an invoice only to a customer with an email", async () => {
-    const { context, ticketId, customerId, provider } = await paymentSetup();
-    const refused = await create({ context, ticketId, method: "INVOICE" });
+    const { context, depositId, customerId, provider } = await paymentSetup();
+    const refused = await create({ context, depositId, method: "INVOICE" });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     const input = { id: customerId, email: "billing@example.com", paymentTermsDays: 15 };
     unwrap({ result: await execute({ operation: updateCustomer, input, context }) });
-    const payment = unwrap({ result: await create({ context, ticketId, method: "INVOICE" }) });
+    const payment = unwrap({ result: await create({ context, depositId, method: "INVOICE" }) });
     expect(payment).toMatchObject({ method: "INVOICE", status: "PENDING", expiresAt: null });
     expect(provider.charges.at(-1)).toMatchObject({
       kind: "invoice",
@@ -97,13 +100,14 @@ describe("payment", () => {
       entityTypeId: type.id,
       customerId: customer.id,
     });
-    const result = await create({ context, ticketId: ticket.id });
+    const { id: depositId } = await sentDeposit({ context, ticketId: ticket.id });
+    const result = await create({ context, depositId });
     expect(errorCode({ result })).toBe("CONFLICT");
   });
 
   it("keeps payments per organization and needs payment:write to create", async () => {
-    const { context, ticketId } = await paymentSetup();
-    const payment = unwrap({ result: await create({ context, ticketId }) });
+    const { context, ticketId, depositId } = await paymentSetup();
+    const payment = unwrap({ result: await create({ context, depositId }) });
     const stranger = testContext();
     const read = await execute({
       operation: getPayment,
@@ -115,8 +119,8 @@ describe("payment", () => {
       result: await execute({ operation: listPayments, input: { ticketId }, context: stranger }),
     });
     expect(page.items).toEqual([]);
-    expect(errorCode({ result: await create({ context: stranger, ticketId }) })).toBe("NOT_FOUND");
+    expect(errorCode({ result: await create({ context: stranger, depositId }) })).toBe("NOT_FOUND");
     const reader = peer({ of: context, access: "read" });
-    expect(errorCode({ result: await create({ context: reader, ticketId }) })).toBe("FORBIDDEN");
+    expect(errorCode({ result: await create({ context: reader, depositId }) })).toBe("FORBIDDEN");
   });
 });

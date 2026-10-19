@@ -1355,7 +1355,13 @@
         "startsAt": "Starts",
         "itemTypes": "Item types",
         "phases": "Phases",
-        "cells": "Grid cells"
+        "cells": "Grid cells",
+        "amountMinor": "Amount (öre)",
+        "dueDate": "Due date",
+        "method": "Method",
+        "quoteId": "Quote",
+        "depositId": "Deposit request",
+        "invoiceId": "Invoice"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -1429,7 +1435,14 @@
         "ticketTemplate_create": "Create predefined ticket",
         "ticketTemplate_update": "Update predefined ticket",
         "ticketTemplate_archive": "Archive predefined ticket",
-        "pipelineSetup_activate": "Set up the pipeline"
+        "pipelineSetup_activate": "Set up the pipeline",
+        "deposit_create": "Create deposit request",
+        "deposit_send": "Mark deposit request as sent",
+        "deposit_void": "Void deposit request",
+        "invoice_create": "Create invoice",
+        "invoice_send": "Mark invoice as sent",
+        "invoice_void": "Void invoice",
+        "payment_create": "Request payment"
       },
       "setup": {
         "title": "Create my first version",
@@ -2152,7 +2165,72 @@
       "FAILED": "Failed",
       "CANCELLED": "Cancelled",
       "REFUNDED": "Refunded"
+    },
+    "fee": "Okazi fee {amount}",
+    "for": {
+      "QUOTE": "Quote",
+      "DEPOSIT": "Deposit",
+      "INVOICE": "Invoice"
+    },
+    "requestFor": "Request payment",
+    "amountHint": "Leave empty to request the open balance of {open}.",
+    "progress": {
+      "OPEN": "Open",
+      "PARTLY_PAID": "Partly paid",
+      "PAID": "Paid",
+      "OVERPAID": "Overpaid"
+    },
+    "receivableStatus": {
+      "DRAFT": "Draft",
+      "SENT": "Sent",
+      "VOID": "Void"
+    },
+    "paidOf": "{paid} paid of {amount}",
+    "receivables": "What the customer pays for",
+    "noReceivables": "Nothing to pay for yet: send a quote, request a deposit or create an invoice.",
+    "quoteVersion": "Quote",
+    "balance": {
+      "title": "Balance",
+      "billed": "Billed",
+      "paid": "Paid",
+      "balance": "Left to pay",
+      "billedFrom": {
+        "INVOICE": "From the sent invoice",
+        "QUOTE": "From the accepted quote",
+        "NONE": "Nothing billed yet"
+      }
     }
+  },
+  "deposit": {
+    "singular": "Deposit request",
+    "plural": "Deposit requests",
+    "create": "Request deposit",
+    "createDescription": "A fixed amount the customer pays in advance. Send it before you request a payment against it.",
+    "created": "The deposit request has been created.",
+    "send": "Mark as sent",
+    "sent": "The deposit request is marked as sent.",
+    "void": "Void",
+    "voidConfirm": "Void the deposit request \"{description}\"? It is no longer owed.",
+    "voided": "The deposit request has been voided.",
+    "fields": {
+      "description": "What the customer pays for",
+      "amount": "Amount (SEK)",
+      "dueDate": "Due date"
+    }
+  },
+  "invoice": {
+    "singular": "Invoice",
+    "plural": "Invoices",
+    "create": "Create invoice",
+    "createConfirm": "Freeze the ticket's priced lines as an invoice? Later line changes do not change it.",
+    "created": "The invoice has been created.",
+    "number": "Invoice #{number}",
+    "due": "Due {date}",
+    "send": "Mark as sent",
+    "sent": "The invoice is marked as sent.",
+    "void": "Void",
+    "voidConfirm": "Void invoice #{number}? It is no longer owed and the ticket can be invoiced again.",
+    "voided": "The invoice has been voided."
   },
   "paymentAccount": {
     "title": "Payments",

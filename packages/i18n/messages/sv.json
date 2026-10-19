@@ -1355,7 +1355,13 @@
         "startsAt": "Startar",
         "itemTypes": "Artikeltyper",
         "phases": "Faser",
-        "cells": "Rutor i rutnätet"
+        "cells": "Rutor i rutnätet",
+        "amountMinor": "Belopp (öre)",
+        "dueDate": "Förfallodag",
+        "method": "Betalsätt",
+        "quoteId": "Offert",
+        "depositId": "Förskott",
+        "invoiceId": "Faktura"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -1429,7 +1435,14 @@
         "ticketTemplate_create": "Skapa fördefinierat ärende",
         "ticketTemplate_update": "Uppdatera fördefinierat ärende",
         "ticketTemplate_archive": "Arkivera fördefinierat ärende",
-        "pipelineSetup_activate": "Sätt upp pipelinen"
+        "pipelineSetup_activate": "Sätt upp pipelinen",
+        "deposit_create": "Skapa förskott",
+        "deposit_send": "Markera förskott som skickat",
+        "deposit_void": "Makulera förskott",
+        "invoice_create": "Skapa faktura",
+        "invoice_send": "Markera faktura som skickad",
+        "invoice_void": "Makulera faktura",
+        "payment_create": "Begär betalning"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -2152,7 +2165,72 @@
       "FAILED": "Misslyckad",
       "CANCELLED": "Avbruten",
       "REFUNDED": "Återbetald"
+    },
+    "fee": "Okazis avgift {amount}",
+    "for": {
+      "QUOTE": "Offert",
+      "DEPOSIT": "Förskott",
+      "INVOICE": "Faktura"
+    },
+    "requestFor": "Begär betalning",
+    "amountHint": "Lämna tomt för att begära det som återstår, {open}.",
+    "progress": {
+      "OPEN": "Obetald",
+      "PARTLY_PAID": "Delvis betald",
+      "PAID": "Betald",
+      "OVERPAID": "Överbetald"
+    },
+    "receivableStatus": {
+      "DRAFT": "Utkast",
+      "SENT": "Skickad",
+      "VOID": "Makulerad"
+    },
+    "paidOf": "{paid} betalt av {amount}",
+    "receivables": "Det kunden betalar för",
+    "noReceivables": "Inget att betala för ännu: skicka en offert, begär förskott eller skapa en faktura.",
+    "quoteVersion": "Offert",
+    "balance": {
+      "title": "Saldo",
+      "billed": "Debiterat",
+      "paid": "Betalt",
+      "balance": "Kvar att betala",
+      "billedFrom": {
+        "INVOICE": "Från den skickade fakturan",
+        "QUOTE": "Från den accepterade offerten",
+        "NONE": "Inget debiterat ännu"
+      }
     }
+  },
+  "deposit": {
+    "singular": "Förskott",
+    "plural": "Förskott",
+    "create": "Begär förskott",
+    "createDescription": "Ett fast belopp som kunden betalar i förväg. Skicka det innan du begär en betalning mot det.",
+    "created": "Förskottet har skapats.",
+    "send": "Markera som skickat",
+    "sent": "Förskottet är markerat som skickat.",
+    "void": "Makulera",
+    "voidConfirm": "Makulera förskottet \"{description}\"? Det är då inte längre skyldigt.",
+    "voided": "Förskottet har makulerats.",
+    "fields": {
+      "description": "Vad kunden betalar för",
+      "amount": "Belopp (kr)",
+      "dueDate": "Förfallodag"
+    }
+  },
+  "invoice": {
+    "singular": "Faktura",
+    "plural": "Fakturor",
+    "create": "Skapa faktura",
+    "createConfirm": "Frys ärendets prissatta rader som en faktura? Senare ändringar av raderna ändrar den inte.",
+    "created": "Fakturan har skapats.",
+    "number": "Faktura nr {number}",
+    "due": "Förfaller {date}",
+    "send": "Markera som skickad",
+    "sent": "Fakturan är markerad som skickad.",
+    "void": "Makulera",
+    "voidConfirm": "Makulera faktura nr {number}? Den är då inte längre skyldig och ärendet kan faktureras igen.",
+    "voided": "Fakturan har makulerats."
   },
   "paymentAccount": {
     "title": "Betalningar",

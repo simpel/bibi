@@ -71,6 +71,8 @@ export const CREATED_BY_MODELS = new Set<string>([
   "InboundEmail",
   "PaymentAccount",
   "Payment",
+  "Deposit",
+  "Invoice",
   "Conversation",
   "Message",
   "Skill",
@@ -104,7 +106,8 @@ export const APP_ID_MODELS = new Set<string>([
  * search index (Embedding) and Better Auth membership rows (Member is deleted on removal,
  * Invitation has its own `status` lifecycle; core audits both) and the payout account
  * (PaymentAccount: one row per organization with its own `status` lifecycle, never removed) and
- * payments (Payment: its own `status` lifecycle, never removed) and sheet versions (Sheet:
+ * payments and the receivables they settle (Payment, Deposit, Invoice: their own `status`
+ * lifecycle, never removed, ADR 0057) and sheet versions (Sheet:
  * history, `sentAt` is its lifecycle, never removed), followers (AssignmentFollower: removed on
  * unfollow, audited on its assignment) and credentials (Apikey: `enabled` is its lifecycle,
  * revoked keys stay; OauthGrantRevocation: one row per user and client, updated on every revoke,
@@ -127,6 +130,8 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "Invitation",
   "PaymentAccount",
   "Payment",
+  "Deposit",
+  "Invoice",
   "Sheet",
   "AssignmentFollower",
   "Apikey",

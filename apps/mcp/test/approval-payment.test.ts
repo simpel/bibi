@@ -31,17 +31,21 @@ async function setup() {
   await call({ client: user, name: "paymentAccount_sync" });
   const provider = createMemoryPaymentProvider();
   setPaymentProvider({ provider });
-  return { base, user, assistant: await connect({ context: ai }), ticketId, provider };
+  const args = { ticketId, description: "Advance", amountMinor: 100_000 };
+  const draft = await call({ client: user, name: "deposit_create", args });
+  await call({ client: user, name: "deposit_send", args: { id: draft.data.id } });
+  const depositId: string = draft.data.id;
+  return { base, user, assistant: await connect({ context: ai }), depositId, provider };
 }
 
 describe("approval flow: payments (ADR 0058)", () => {
   it("never calls the payment provider for a proposal, only after approval", async () => {
-    const { base, user, assistant, ticketId, provider } = await setup();
+    const { base, user, assistant, depositId, provider } = await setup();
     for (const method of ["INVOICE", "CARD"]) {
       const proposal = await call({
         client: assistant,
         name: "payment_create",
-        args: { ticketId, method, amountMinor: 50_000 },
+        args: { depositId, method, amountMinor: 50_000 },
       });
       expect(proposal.data.status, JSON.stringify(proposal.data)).toBe("approval_required");
     }
@@ -51,7 +55,7 @@ describe("approval flow: payments (ADR 0058)", () => {
     const proposal = await call({
       client: assistant,
       name: "payment_create",
-      args: { ticketId, method: "INVOICE", amountMinor: 50_000 },
+      args: { depositId, method: "INVOICE", amountMinor: 50_000 },
     });
     const confirmed = await call({
       client: user,

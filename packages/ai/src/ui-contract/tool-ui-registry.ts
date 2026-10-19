@@ -15,6 +15,7 @@ import { PIPELINE_SETUP_UI_ENTRIES } from "./pipeline-setup-entries";
 import { PRICE_LIST_UI_ENTRIES } from "./price-list-entries";
 import { QUESTION_UI_ENTRIES } from "./question-entries";
 import { QUOTE_UI_ENTRIES } from "./quote-entries";
+import { RECEIVABLE_UI_ENTRIES } from "./receivable-entries";
 import { REQUIREMENT_UI_ENTRIES } from "./requirement-entries";
 import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
 import { SHEET_DEFINITION_UI_ENTRIES } from "./sheet-definition-entries";
@@ -78,6 +79,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...INBOUND_EMAIL_UI_ENTRIES,
   ...PAYMENT_ACCOUNT_UI_ENTRIES,
   ...PAYMENT_UI_ENTRIES,
+  ...RECEIVABLE_UI_ENTRIES,
   ...RESPONSIBILITY_UI_ENTRIES,
   ...SHEET_DEFINITION_UI_ENTRIES,
   ...SHEET_UI_ENTRIES,

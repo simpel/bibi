@@ -87,6 +87,7 @@ erDiagram
   User ||--o{ UserPreference : "saves"
   User ||--o| UserSettings : "has"
   Deposit ||--o{ Payment : "is paid with"
+  Quote ||--o{ Payment : "is paid with"
   Invoice ||--o{ Payment : "is settled with"
   Invoice ||--o{ OrderLine : "invoices"
   Invoice ||--o{ Deposit : "offsets"
@@ -660,7 +661,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### OrderLine
 
-*MVP* · What is actually charged: a frozen snapshot of one priced line ([ADR 0052](decisions/0052-the-line-is-the-booking.md)), written only by `quote.send` (invoicing later), with a required `lineId`. No editing path of its own.
+*MVP* · What is actually charged: a frozen snapshot of one priced line ([ADR 0052](decisions/0052-the-line-is-the-booking.md)), written only by `quote.send` and `invoice.create`, with a required `lineId`. It belongs to exactly one quote or invoice (check constraint). No editing path of its own.
 
 **Attributes**
 - line (`lineId`, required) and its item (`itemId`, optional)
@@ -676,41 +677,42 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - invoiced (yes/no) – *later*
 
 **Relations**
-- `N:1` Quote contains this
+- `N:1` Quote contains this (or)
+- `N:1` Invoice invoices this
 - `N:1` Line is charged via this
 - `N:1` refers to → Item
-- `N:1` Invoice invoices this
 
 > Written once when the quote is sent and audited on the quote. A later change to the line, the item or the price list never touches it; an accepted quote shows the difference instead.
 
-### Deposit
+### Deposit (`Deposit`)
 
-*MVP* · A partial payment at confirmation. Can be sent only in the `CONFIRMED` phase.
+*MVP* · A deposit request: a fixed amount the customer pays in advance, with its own description ([ADR 0057](decisions/0057-money-balance-is-derived.md)). A payment for "something else" is a deposit request too.
 
-> **Target (ADR 0057):** a frozen receivable; `status` holds only its lifecycle, payment progress is derived.
+> **Ownership:** owned `description`, `amountMinor`, `currency`, `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`); derived `paidMinor`, `openMinor`, `progress` (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`, from its payments; never stored).
 
 **Attributes**
-- amount
-- due date
-- status
-- linked agreement
+- description, amount (fixed, set once), currency, due date
+- status: `DRAFT → SENT → VOID` (a DRAFT may be voided too; VOID is final)
 
 **Relations**
 - `N:1` Ticket requires this
 - `1:N` is paid with → Payment
-- `N:1` Invoice offsets this
+- `N:1` Invoice offsets this – *later*
+
+> Operations (`payment:read` to read, `payment:write` to change): `deposit.list` (per ticket, newest first), `deposit.get`, `deposit.create({ ticketId, description, amountMinor, dueDate? })` (a DRAFT; the ticket must be chargeable: not in a `terminal` phase unless it is `invoiceable`), `deposit.send` (DRAFT → SENT; only a SENT deposit can be paid) and `deposit.void` (refused with `CONFLICT` while a payment against it is PENDING or anything paid has not been refunded). Every move claims the row on its current status, so a concurrent move or payment request gets `CONFLICT` instead of a lost update. On every surface; web on the ticket page (create at `/new/deposit?ticket=<id>`).
 
 ### Payment ★ (`Payment`)
 
 *MVP* · A payment requested from the ticket's customer: a card checkout or a Stripe invoice ([ADR 0028](decisions/0028-payments-with-stripe.md), [ADR 0029](decisions/0029-invoicing-via-stripe.md)). Every payment is a direct charge on the organization's connected account (`PaymentAccount`), so the venue is the merchant and Okazi never holds its funds.
 
-> **Target (ADR 0057, 0058):** settles exactly one receivable (`quoteId`, `depositId` or `invoiceId`); balances are derived. The provider call runs after commit.
+> **Ownership:** owned `method`, `amountMinor`, `currency`, `applicationFeeMinor` (agreed at charge time) and the receivable it settles; mirror of Stripe `status`, `paidAt`, `refundedMinor`, `providerReference`, `paymentUrl` (written only by `payment.applySignal` and the after-commit charge).
 
 **Attributes**
 - method: `CARD` (hosted checkout link) or `INVOICE` (Stripe invoice emailed to the customer); Swish comes later through Stripe
 - status: `PENDING`, `SUCCEEDED`, `FAILED`, `CANCELLED` or `REFUNDED`
 - amount and currency (`amountMinor` in minor units, ISO 4217)
-- application fee (`applicationFeeMinor`, null = none; from `STRIPE_APPLICATION_FEE_BPS`)
+- application fee (`applicationFeeMinor`, null = none; from `STRIPE_APPLICATION_FEE_BPS`), shown on each payment on the ticket page
+- the receivable it settles: exactly one of `quoteId`, `depositId`, `invoiceId` (check constraint)
 - PSP reference (`providerReference`: the Checkout Session or Invoice id, unique; null until Stripe has created it)
 - payment link (`paymentUrl`) and, for a checkout, when it expires
 - public token (`publicToken`, unique, 256 random bits): addresses the customer's payment page `/pay/<token>`; never in the DTO
@@ -719,32 +721,37 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Relations**
 - `N:1` Ticket is paid with this
-- `N:1` Deposit is paid with this (not built yet)
-- `N:1` Invoice is settled with this (not built yet)
+- `N:1` Quote is paid with this (a SENT or ACCEPTED one)
+- `N:1` Deposit is paid with this
+- `N:1` Invoice is settled with this
 
-> Operations: `payment.list` (per ticket, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ ticketId, method, amountMinor, currency?, description? })` (`payment:write`), on every surface (GraphQL also as `Ticket.payments`; web on the ticket page). `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), a ticket that is not in a `terminal` phase unless that phase is `invoiceable`, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The row is inserted `PENDING` first and Stripe is called only after the commit (`external`, [ADR 0058](decisions/0058-external-effects-after-commit.md)), so an AI proposal never charges; a refused charge leaves the row `FAILED`. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` (a payment never moves a ticket's phase), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, ticket reference, amount, status, pay link); an unknown or malformed token is `NOT_FOUND`.
+> Operations: `payment.list` (per ticket, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ quoteId | depositId | invoiceId, method, amountMinor?, description? })` (`payment:write`), on every surface (GraphQL also as `Ticket.payments`; web on the ticket page). `create` takes exactly one receivable (`VALIDATION` otherwise): a SENT or ACCEPTED quote (needs `quote:read`), a SENT deposit or a SENT invoice (`CONFLICT` otherwise); the ticket and currency are the receivable's. The amount defaults to the receivable's open balance and may be lower (partial payment), never higher (`VALIDATION`); nothing open is `CONFLICT`. A deposit or invoice row is claimed for the transaction, so a concurrent void waits and then sees the new payment. `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), a ticket that is not in a `terminal` phase unless that phase is `invoiceable`, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The row is inserted `PENDING` first and Stripe is called only after the commit (`external`, [ADR 0058](decisions/0058-external-effects-after-commit.md)), so an AI proposal never charges; a refused charge leaves the row `FAILED`. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` (a payment never moves a ticket's phase), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, ticket reference, amount, status, pay link); an unknown or malformed token is `NOT_FOUND`.
+
+> **Balance (ADR 0057):** `payment.balance({ ticketId })` (`payment:read`) derives what the ticket owes in `packages/core/src/features/payment/settlement.ts` and `ticket-balance.ts`, the one module that computes money: paid per receivable = SUCCEEDED and REFUNDED payments minus `refundedMinor`; progress `OPEN`, `PARTLY_PAID`, `PAID` or `OVERPAID`; billed = the SENT invoices once invoiced, else the ACCEPTED quote; balance = billed minus everything paid on the ticket. Quotes are left out for a caller without `quote:read`. Nothing is stored. GraphQL `ticketBalance`, REST `GET /tickets/{ticketId}/balance`.
 
 > ★ Swish and card directly in the ticket. Lega shows no online payment.
 
-### Invoice
+### Invoice (`Invoice`)
 
-*MVP* · The final invoice after delivery. A ticket can be invoiced only in a phase with the `invoiceable` flag.
+*MVP* · The invoice after delivery: a snapshot of the ticket's priced lines, like a sent quote ([ADR 0052](decisions/0052-the-line-is-the-booking.md), [ADR 0057](decisions/0057-money-balance-is-derived.md)). A ticket can be invoiced only in a phase with the `invoiceable` flag.
 
-> **Target (ADR 0052, 0057):** a snapshot of the lines at invoicing; payment progress is derived.
+> **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`); snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments).
 
 **Attributes**
-- invoice number
-- due date
-- status
-- offset deposit
-- export status (Fortnox / Visma)
-- e-invoice
+- invoice number, due date (given, else after the customer's payment terms, default 30 days)
+- status: `DRAFT → SENT → VOID` (VOID is final)
+- totals of the frozen lines
+- offset deposit – *later*
+- export status (Fortnox / Visma) – *later*
+- e-invoice – *later*
 
 **Relations**
 - `N:1` Ticket is invoiced via this
 - `1:N` is settled with → Payment
 - `1:N` invoices → OrderLine
-- `1:N` offsets → Deposit
+- `1:N` offsets → Deposit – *later*
+
+> Operations (`payment:read` to read, `payment:write` to change): `invoice.list` (per ticket, newest first), `invoice.get`, `invoice.create({ ticketId, dueDate? })` (needs `line:read`, since it copies the lines; an `invoiceable` phase; at least one priced line with quantity and VAT; and no other invoice of the ticket that is not VOID, held by a partial unique index so a concurrent second create is `CONFLICT`), `invoice.send` and `invoice.void` (as for a deposit; voiding lets the ticket be invoiced again). On every surface; web on the ticket page.
 
 ## Operations & system
 

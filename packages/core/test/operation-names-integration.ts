@@ -1,4 +1,4 @@
-import { SALES_NAMES } from "./operation-names-sales";
+import { MONEY_NAMES, SALES_NAMES } from "./operation-names-sales";
 
 /** API key and OAuth grant operations (ADR 0005), kept apart so `operation-names.ts` fits. */
 export const INTEGRATION_NAMES = [
@@ -13,4 +13,4 @@ export const INTEGRATION_NAMES = [
 export const AI_FORBIDDEN_NAMES = ["apiKey.create"];
 
 /** Every name kept outside `operation-names.ts`. */
-export const EXTRA_NAMES = [...SALES_NAMES, ...INTEGRATION_NAMES];
+export const EXTRA_NAMES = [...SALES_NAMES, ...MONEY_NAMES, ...INTEGRATION_NAMES];

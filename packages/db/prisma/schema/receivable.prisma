@@ -1,0 +1,68 @@
+/// Lifecycle of a deposit request or an invoice (ADR 0057): only the owned facts. How much of it
+/// is paid is never stored; it is derived from its payments (`OPEN` … `OVERPAID`).
+enum ReceivableStatus {
+  /// Created, not sent to the customer yet; no payment can be requested.
+  DRAFT
+  /// Sent to the customer; payments can be requested against it.
+  SENT
+  /// Cancelled; it is no longer owed.
+  VOID
+}
+
+/// Deposit – a frozen receivable (ADR 0057): an amount requested from the ticket's customer before
+/// delivery, with its own description. Owned: amount, currency, description, due date and the
+/// lifecycle `status`. Derived: what is paid and its progress (from `Payment`). Never deleted:
+/// `status` is its lifecycle.
+model Deposit {
+  id              String           @id @default(cuid(2))
+  organizationId  String
+  ticketId        String
+  /// What the customer pays for; shown on the payment.
+  description     String
+  /// Fixed amount in minor units, set once at create.
+  amountMinor     Int
+  /// ISO 4217, upper case.
+  currency        String           @default("SEK")
+  dueDate         DateTime?
+  status          ReceivableStatus @default(DRAFT)
+  statusChangedAt DateTime         @default(now())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  createdBy       String?
+  ticket          Ticket           @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  payments        Payment[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, ticketId])
+}
+
+/// Invoice – a frozen receivable (ADR 0052, 0057): the ticket's priced lines snapshotted as
+/// `OrderLine` rows when it is created, like a sent quote, with their totals. Owned: number, due
+/// date, lifecycle `status`. Snapshot: lines and totals. Derived: what is paid and its progress.
+/// At most one invoice per ticket is not VOID (partial unique index in the migration). Never
+/// deleted: `status` is its lifecycle.
+model Invoice {
+  id                String           @id @default(cuid(2))
+  organizationId    String
+  ticketId          String
+  /// Per organization, highest + 1; the unique index refuses a concurrent duplicate.
+  number            Int
+  /// ISO 4217, upper case.
+  currency          String           @default("SEK")
+  dueDate           DateTime?
+  status            ReceivableStatus @default(DRAFT)
+  statusChangedAt   DateTime         @default(now())
+  /// Sums of the frozen lines in minor units (snapshot).
+  totalExclVatMinor Int
+  totalInclVatMinor Int
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  createdBy         String?
+  ticket            Ticket           @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  lines             OrderLine[]
+  payments          Payment[]
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, number])
+  @@index([organizationId, ticketId])
+}

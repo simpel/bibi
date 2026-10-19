@@ -3,7 +3,7 @@ import { err, ok, type Result } from "../../errors/result";
 import type { ChargeTarget } from "./payment-preconditions";
 import type { ChargeBase } from "./provider";
 import { getPaymentProvider } from "./provider-registry";
-import type { PaymentCreateInput } from "./schema";
+import type { PaymentMethod } from "./schema";
 
 /** Days until a Stripe invoice is due when the customer has no own payment terms. */
 export const DEFAULT_INVOICE_DAYS = 30;
@@ -19,11 +19,19 @@ export function applicationFee({ amountMinor }: ApplicationFeeInput): number | u
 
 export type ChargeOutcome = { providerReference: string; url: string; expiresAt: Date | null };
 
+/** What is charged, as stored on the PENDING payment row. */
+export type ChargeRequest = {
+  method: PaymentMethod;
+  amountMinor: number;
+  currency: string;
+  description: string | undefined;
+};
+
 export type RequestChargeInput = {
   paymentId: string;
   publicToken: string;
   organizationId: string;
-  input: PaymentCreateInput;
+  input: ChargeRequest;
   target: ChargeTarget;
   applicationFeeMinor: number | undefined;
 };

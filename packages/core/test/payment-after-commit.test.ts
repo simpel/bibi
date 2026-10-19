@@ -12,8 +12,8 @@ afterEach(() => {
   setStripeConnectGateway({ gateway: undefined });
 });
 
-const input = ({ ticketId }: { ticketId: string }) => ({
-  ticketId,
+const input = ({ depositId }: { depositId: string }) => ({
+  depositId,
   method: "CARD" as const,
   amountMinor: 125_000,
   currency: "SEK",
@@ -21,19 +21,19 @@ const input = ({ ticketId }: { ticketId: string }) => ({
 
 describe("payment.create calls Stripe only after the commit (ADR 0058)", () => {
   it("makes no provider call when the handler runs in a rolled-back transaction", async () => {
-    const { context, ticketId, provider } = await paymentSetup();
-    const dry = await runDryRun({ operation: createPayment, input: input({ ticketId }), context });
+    const { context, depositId, provider } = await paymentSetup();
+    const dry = await runDryRun({ operation: createPayment, input: input({ depositId }), context });
     expect(dry.ok).toBe(true);
     expect(provider.charges).toEqual([]);
     expect(await context.db.payment.count()).toBe(0);
   });
 
   it("refuses to run nested, where the charge would run before the batch commits", async () => {
-    const { context, ticketId, provider } = await paymentSetup();
+    const { context, depositId, provider } = await paymentSetup();
     const nested = await context.db.$transaction((tx) =>
       runNested({
         operation: createPayment,
-        input: input({ ticketId }),
+        input: input({ depositId }),
         context: { ...context, db: tx, recordChange: () => undefined },
       }),
     );
@@ -42,12 +42,16 @@ describe("payment.create calls Stripe only after the commit (ADR 0058)", () => {
   });
 
   it("keeps the row FAILED and audited when Stripe refuses the charge", async () => {
-    const { context, ticketId } = await paymentSetup();
+    const { context, depositId } = await paymentSetup();
     const refused = err({ error: appError({ code: "UNAVAILABLE", message: "Stripe is down" }) });
     setPaymentProvider({
       provider: { createCheckout: async () => refused, createInvoice: async () => refused },
     });
-    const result = await execute({ operation: createPayment, input: input({ ticketId }), context });
+    const result = await execute({
+      operation: createPayment,
+      input: input({ depositId }),
+      context,
+    });
     expect(errorCode({ result })).toBe("UNAVAILABLE");
     const rows = await context.db.payment.findMany();
     expect(rows).toHaveLength(1);

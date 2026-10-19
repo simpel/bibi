@@ -1,11 +1,18 @@
 /// A payment requested from the customer for a ticket (ADR 0028, 0029): a card checkout or a
 /// Stripe invoice, charged directly on the organization's connected account (direct charge, the
 /// venue is the merchant). Created by `payment.create`; the status follows the provider (webhook).
-/// Never deleted: `status` is its lifecycle. Deposit and Invoice link here once they exist.
+/// It settles exactly one receivable (ADR 0057): a sent quote, a deposit or an invoice (check
+/// constraint in the migration). `status`, `paidAt` and `refundedMinor` mirror Stripe and are
+/// written only by `payment.applySignal`; what a receivable or ticket has paid is derived from them.
+/// Never deleted: `status` is its lifecycle.
 model Payment {
   id                  String        @id @default(cuid(2))
   organizationId      String
   ticketId            String
+  /// The receivable this payment settles: exactly one of these three is set.
+  quoteId             String?
+  depositId           String?
+  invoiceId           String?
   method              PaymentMethod
   status              PaymentStatus @default(PENDING)
   /// Amount in minor units (öre for SEK).
@@ -33,10 +40,16 @@ model Payment {
   updatedAt           DateTime      @updatedAt
   createdBy           String?
   ticket              Ticket        @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  quote               Quote?        @relation(fields: [quoteId, organizationId], references: [id, organizationId])
+  deposit             Deposit?      @relation(fields: [depositId, organizationId], references: [id, organizationId])
+  invoice             Invoice?      @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@unique([providerReference])
   @@index([organizationId, ticketId])
+  @@index([organizationId, quoteId])
+  @@index([organizationId, depositId])
+  @@index([organizationId, invoiceId])
 }
 
 enum PaymentMethod {

@@ -43,6 +43,15 @@ export const UI_EXEMPT: readonly UiExempt[] = [
       "The ticket page shows every payment in full from payment.list; one payment has no page",
   },
   {
+    operation: "deposit.get",
+    reason:
+      "The ticket page shows every deposit request in full from deposit.list; one has no page",
+  },
+  {
+    operation: "invoice.get",
+    reason: "The ticket page shows every invoice from invoice.list; one invoice has no page yet",
+  },
+  {
     operation: "auditLog.get",
     reason: "The history tab shows every entry in full from auditLog.list; one entry has no page",
   },

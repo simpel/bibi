@@ -12,11 +12,14 @@ type ScopeInput = { db: Db; where: { organizationId: string } };
  */
 const ticketChildren = ({ db, where }: ScopeInput) => [
   db.inboundEmail.deleteMany({ where }),
+  // Payments settle quotes, deposits and invoices (ADR 0057): before all three.
   db.payment.deleteMany({ where }),
+  db.deposit.deleteMany({ where }),
   db.sheet.deleteMany({ where }),
   db.requirement.deleteMany({ where }),
-  // Order lines point at the lines they froze (ADR 0052).
+  // Order lines point at the lines they froze and at their quote or invoice (ADR 0052).
   db.orderLine.deleteMany({ where }),
+  db.invoice.deleteMany({ where }),
   db.quote.deleteMany({ where }),
   db.line.deleteMany({ where }),
   db.ticketTemplateLine.deleteMany({ where }),

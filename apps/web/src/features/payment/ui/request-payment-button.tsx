@@ -15,26 +15,24 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { TextField } from "@/components/form/text-field";
 import { PaymentMethodField } from "./payment-method-field";
-import { useRequestPaymentForm } from "./use-request-payment-form";
+import { useMoney } from "./use-money";
+import { type ReceivableTarget, useRequestPaymentForm } from "./use-request-payment-form";
 
-type RequestPaymentFormProps = { ticketId: string; onDone: () => void };
+type RequestPaymentFormProps = { target: ReceivableTarget; openMinor: number; onDone: () => void };
 
-function RequestPaymentForm({ ticketId, onDone }: RequestPaymentFormProps) {
+function RequestPaymentForm({ target, openMinor, onDone }: RequestPaymentFormProps) {
   const common = useTranslations("common");
   const t = useTranslations("payment");
-  const { form, submit, pending } = useRequestPaymentForm({ ticketId, onDone });
+  const money = useMoney();
+  const { form, submit, pending } = useRequestPaymentForm({ target, onDone });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
         <PaymentMethodField form={form} />
-        <TextField
-          form={form}
-          name="amount"
-          label={t("fields.amount")}
-          type="number"
-          step="0.01"
-          required
-        />
+        <TextField form={form} name="amount" label={t("fields.amount")} type="number" step="0.01" />
+        <p className="-mt-2 text-xs text-muted-foreground">
+          {t("amountHint", { open: money({ minor: openMinor }) })}
+        </p>
         <TextField form={form} name="description" label={t("fields.description")} />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>
@@ -49,13 +47,15 @@ function RequestPaymentForm({ ticketId, onDone }: RequestPaymentFormProps) {
   );
 }
 
-/** Opens the dialog that requests a payment from the ticket's customer (`payment.create`). */
-export function RequestPaymentButton({ ticketId }: { ticketId: string }) {
+export type RequestPaymentButtonProps = { target: ReceivableTarget; openMinor: number };
+
+/** Opens the dialog that requests a payment against one receivable (`payment.create`). */
+export function RequestPaymentButton({ target, openMinor }: RequestPaymentButtonProps) {
   const t = useTranslations("payment");
   const [open, setOpen] = useState(false);
   return (
     <>
-      <Button variant="outline" onClick={() => setOpen(true)}>
+      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
         <CreditCardIcon />
         {t("request")}
       </Button>
@@ -65,7 +65,7 @@ export function RequestPaymentButton({ ticketId }: { ticketId: string }) {
             <DialogTitle>{t("request")}</DialogTitle>
             <DialogDescription>{t("requestDescription")}</DialogDescription>
           </DialogHeader>
-          <RequestPaymentForm ticketId={ticketId} onDone={() => setOpen(false)} />
+          <RequestPaymentForm target={target} openMinor={openMinor} onDone={() => setOpen(false)} />
         </DialogContent>
       </Dialog>
     </>

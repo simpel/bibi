@@ -30,11 +30,9 @@ import { LineCardView } from "./line-card-view";
 import { LineTableView } from "./line-table-view";
 import { MemberCardView } from "./member-card-view";
 import { MemberTableView } from "./member-table-view";
+import { MONEY_COMPONENTS } from "./money-components";
 import { OccupancyCardView } from "./occupancy-card-view";
 import { OccupancyTableView } from "./occupancy-table-view";
-import { PaymentAccountCardView } from "./payment-account-card-view";
-import { PaymentCardView } from "./payment-card-view";
-import { PaymentTableView } from "./payment-table-view";
 import { PhaseGridTableView } from "./phase-grid-table-view";
 import { PipelineBoardView } from "./pipeline-board-view";
 import { PipelineDraftCardView } from "./pipeline-draft-card-view";
@@ -109,9 +107,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "quote-table": QuoteTableView,
   "inbound-email-table": InboundEmailTableView,
   "inbound-email-card": InboundEmailCardView,
-  "payment-account-card": PaymentAccountCardView,
-  "payment-table": PaymentTableView,
-  "payment-card": PaymentCardView,
+  ...MONEY_COMPONENTS,
   "entity-type-table": EntityTypeTableView,
   "entity-type-card": EntityTypeCardView,
   "field-definition-table": FieldDefinitionTableView,

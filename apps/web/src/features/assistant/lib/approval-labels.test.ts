@@ -13,6 +13,8 @@ const ENTITIES = [
   "itemState",
   "line",
   "ticketTemplate",
+  "deposit",
+  "invoice",
 ];
 
 describe("approval labels", () => {

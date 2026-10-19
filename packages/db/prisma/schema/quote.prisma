@@ -19,32 +19,33 @@ enum AcceptanceMethod {
 /// DRAFT. It has no owner of its own: it uses the ticket's (ADR 0034).
 /// `status` is the soft-delete flag (ADR 0006).
 model Quote {
-  id                String       @id @default(cuid(2))
+  id                String            @id @default(cuid(2))
   organizationId    String
   ticketId          String
   /// 1 for the first quote of the ticket, then one higher per new version.
   version           Int
   /// The version this one was made from; the lines' change markers compare against it.
   previousId        String?
-  quoteStatus       QuoteStatus  @default(DRAFT)
+  quoteStatus       QuoteStatus       @default(DRAFT)
   validUntil        DateTime?
   terms             String?
   /// Sums of the frozen lines in minor units (1/100 kr), set by `quote.send`; 0 on a DRAFT.
-  totalExclVatMinor Int          @default(0)
-  totalInclVatMinor Int          @default(0)
-  statusChangedAt   DateTime     @default(now())
+  totalExclVatMinor Int               @default(0)
+  totalInclVatMinor Int               @default(0)
+  statusChangedAt   DateTime          @default(now())
   /// Set by `quote.accept` only: the staff user who recorded the acceptance, when, and how.
   acceptedBy        String?
   acceptedAt        DateTime?
   acceptanceMethod  AcceptanceMethod?
-  status            RecordStatus @default(ACTIVE)
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
+  status            RecordStatus      @default(ACTIVE)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
   createdBy         String?
-  ticket            Ticket       @relation(fields: [ticketId, organizationId], references: [id, organizationId])
-  previous          Quote?       @relation("QuoteVersions", fields: [previousId, organizationId], references: [id, organizationId])
-  next              Quote[]      @relation("QuoteVersions")
+  ticket            Ticket            @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  previous          Quote?            @relation("QuoteVersions", fields: [previousId, organizationId], references: [id, organizationId])
+  next              Quote[]           @relation("QuoteVersions")
   lines             OrderLine[]
+  payments          Payment[]
 
   @@unique([id, organizationId])
   @@unique([ticketId, version])
@@ -53,12 +54,14 @@ model Quote {
 }
 
 /// Order line – a frozen snapshot of one priced ticket line (ADR 0052): its name, effective price,
-/// VAT, the item's inherited tags and the totals when the quote was sent. Written only by
-/// `quote.send` and never changed afterwards; audited on the quote.
+/// VAT, the item's inherited tags and the totals when the quote was sent or the invoice created.
+/// Belongs to exactly one quote or invoice (check constraint in the migration). Written only by
+/// `quote.send` and `invoice.create` and never changed afterwards; audited on its owner.
 model OrderLine {
   id                String     @id @default(cuid(2))
   organizationId    String
-  quoteId           String
+  quoteId           String?
+  invoiceId         String?
   /// The ticket line this snapshot was taken from; pairs versions' lines (ADR 0052).
   lineId            String
   itemId            String?
@@ -78,11 +81,13 @@ model OrderLine {
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
   createdBy         String?
-  quote             Quote      @relation(fields: [quoteId, organizationId], references: [id, organizationId])
+  quote             Quote?     @relation(fields: [quoteId, organizationId], references: [id, organizationId])
+  invoice           Invoice?   @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
   line              Line       @relation(fields: [lineId, organizationId], references: [id, organizationId])
   item              Item?      @relation(fields: [itemId, organizationId], references: [id, organizationId])
 
   @@index([organizationId, quoteId])
+  @@index([organizationId, invoiceId])
   @@index([organizationId, lineId])
   @@index([organizationId, itemId])
 }

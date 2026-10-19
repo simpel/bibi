@@ -4,6 +4,10 @@ import { byId, type ParityEntity, tool } from "./parity-entities";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
+const LINE =
+  "id lineId itemId position name quantity unitPriceMinor priceUnit discountPercent vatRatePercent " +
+  "tags totalExclVatMinor vatMinor";
+
 /** The singleton payout account: onboarding creates it, then every surface reads it back. */
 export const paymentAccountEntity: ParityEntity = {
   name: "paymentAccount",
@@ -20,7 +24,34 @@ export const paymentAccountEntity: ParityEntity = {
   },
 };
 
-/** A card payment on the ticket: the account is synced to ACTIVE and the PSP kept in memory. */
+/** A SENT deposit request (ADR 0057) on the ticket made earlier. */
+export const depositEntity = (): ParityEntity => ({
+  ...byId({ name: "deposit", field: "deposit", list: "deposits", createTool: "", args: {} }),
+  create: async ({ mcp, made }) => {
+    const args = { ticketId: made.ticket.id, description: "Parity advance", amountMinor: 100_000 };
+    const draft = await tool({ mcp, name: "deposit_create", args });
+    return tool({ mcp, name: "deposit_send", args: { id: draft.id } });
+  },
+});
+
+/** An invoice of the ticket's priced lines (ADR 0052), once its phase is invoiceable. */
+export const invoiceEntity = (): ParityEntity => ({
+  ...byId({
+    name: "invoice",
+    field: "invoice",
+    list: "invoices",
+    createTool: "",
+    args: {},
+    nested: { lines: `{ ${LINE} }` },
+  }),
+  create: async ({ mcp, made }) => {
+    const phase = { id: made.ticket.phaseId, invoiceable: true };
+    await tool({ mcp, name: "ticketPhase_update", args: phase });
+    return tool({ mcp, name: "invoice_create", args: { ticketId: made.ticket.id } });
+  },
+});
+
+/** A card payment against the deposit: the account is synced to ACTIVE and the PSP in memory. */
 export function paymentEntity(): ParityEntity {
   const reads = byId({
     name: "payment",
@@ -35,8 +66,16 @@ export function paymentEntity(): ParityEntity {
       installFakeStripe({ status: "ACTIVE" });
       setPaymentProvider({ provider: createMemoryPaymentProvider() });
       await tool({ mcp, name: "paymentAccount_sync", args: {} });
-      const args = { ticketId: made.ticket.id, method: "CARD", amountMinor: 50_000 };
+      const args = { depositId: made.deposit.id, method: "CARD", amountMinor: 50_000 };
       return tool({ mcp, name: "payment_create", args });
     },
   };
 }
+
+/** Money entities in creation order: account, receivables, then a payment against one. */
+export const moneyEntities = (): ParityEntity[] => [
+  paymentAccountEntity,
+  depositEntity(),
+  invoiceEntity(),
+  paymentEntity(),
+];

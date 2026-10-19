@@ -1,0 +1,16 @@
+"use client";
+
+import { Card } from "@okazi/ui";
+import { DepositEntry } from "@/features/payment/ui/deposit-entry";
+import type { GenerativeProps } from "./generative-props";
+
+export type DepositCardViewProps = GenerativeProps<"deposit-card">;
+
+/** One deposit request: what it is for, what is paid of it, status and progress. */
+export function DepositCardView({ deposit }: DepositCardViewProps) {
+  return (
+    <Card data-slot="deposit-card" className="px-4 shadow-none">
+      <DepositEntry deposit={deposit} />
+    </Card>
+  );
+}

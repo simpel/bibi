@@ -11,16 +11,23 @@ export const PaymentStatusSchema = z.enum([
   "REFUNDED",
 ]);
 
-/** A payment requested from the customer for a ticket (ADR 0028, 0029). */
+/** A payment requested from the customer that settles one receivable (ADR 0028, 0029, 0057). */
 export const PaymentSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   ticketId: z.string(),
+  quoteId: z.string().nullable().describe("The sent quote this payment settles, if any"),
+  depositId: z.string().nullable().describe("The deposit request this payment settles, if any"),
+  invoiceId: z.string().nullable().describe("The invoice this payment settles, if any"),
   method: PaymentMethodSchema,
   status: PaymentStatusSchema,
   amountMinor: z.number().int().describe("Amount in minor units (öre for SEK)"),
   currency: z.string(),
-  applicationFeeMinor: z.number().int().nullable(),
+  applicationFeeMinor: z
+    .number()
+    .int()
+    .nullable()
+    .describe("Okazi's application fee on this charge in minor units, agreed at charge time"),
   providerReference: z
     .string()
     .nullable()
@@ -49,8 +56,14 @@ export const PaymentIdInputSchema = z.object({ id: z.string().min(1) });
 /** Largest amount one payment may request (minor units), a guard against typos. */
 export const PAYMENT_AMOUNT_MAX_MINOR = 1_000_000_000;
 
+const receivableId = ({ what }: { what: string }) =>
+  z.string().min(1).optional().describe(`Id of the ${what} this payment settles`);
+
+/** Exactly one of `quoteId`, `depositId` and `invoiceId` (checked by the handler). */
 export const PaymentCreateInputSchema = z.object({
-  ticketId: z.string().min(1).describe("Id of the ticket the customer pays for"),
+  quoteId: receivableId({ what: "SENT or ACCEPTED quote (quote.list)" }),
+  depositId: receivableId({ what: "SENT deposit request (deposit.list)" }),
+  invoiceId: receivableId({ what: "SENT invoice (invoice.list)" }),
   method: PaymentMethodSchema.describe(
     "CARD: a hosted card checkout link. INVOICE: a Stripe invoice emailed to the customer.",
   ),
@@ -59,13 +72,11 @@ export const PaymentCreateInputSchema = z.object({
     .int()
     .min(100)
     .max(PAYMENT_AMOUNT_MAX_MINOR)
-    .describe("Amount in minor units (öre for SEK), at least 100"),
-  currency: z
-    .string()
-    .regex(/^[A-Za-z]{3}$/)
-    .toUpperCase()
-    .default("SEK")
-    .describe("ISO 4217 currency code"),
+    .optional()
+    .describe(
+      "Amount in minor units (öre for SEK), at least 100; defaults to the receivable's open " +
+        "balance and may be lower for a partial payment, never higher",
+    ),
   description: z
     .string()
     .trim()
@@ -73,7 +84,7 @@ export const PaymentCreateInputSchema = z.object({
     .max(200)
     .optional()
     .describe(
-      "Text the customer sees on the checkout or invoice line; defaults to the ticket reference",
+      "Text the customer sees on the checkout or invoice line; defaults to the receivable's",
     ),
 });
 

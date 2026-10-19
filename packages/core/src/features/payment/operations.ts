@@ -3,9 +3,11 @@ import { ok, type Result } from "../../errors/result";
 import { createExecuteContext } from "../../operations/context";
 import { defineOperation } from "../../operations/define-operation";
 import { execute } from "../../operations/execute";
+import { hasPermission } from "../../operations/permission";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { TicketBalanceInputSchema, TicketBalanceSchema } from "./balance-schema";
 import { createPayment } from "./create-operation";
 import { getPublicPaymentOperation } from "./public-operation";
 import { PublicTokenSchema } from "./public-token";
@@ -16,6 +18,7 @@ import {
   PaymentSchema,
   type PublicPaymentDto,
 } from "./schema";
+import { ticketBalance } from "./ticket-balance";
 import { toPaymentDto } from "./to-payment-dto";
 
 export const listPayments = defineOperation({
@@ -53,6 +56,28 @@ export const getPayment = defineOperation({
   },
 });
 
+export const getTicketBalance = defineOperation({
+  name: "payment.balance",
+  kind: "query",
+  description:
+    "What a ticket owes, derived and never stored (ADR 0057): billed (SENT invoices once " +
+    "invoiced, else the ACCEPTED quote) minus SUCCEEDED payments less refunds, and each " +
+    "receivable (quote, deposit, invoice) with its amount, paid, open and progress (OPEN, " +
+    "PARTLY_PAID, PAID, OVERPAID). Quotes are left out for a caller who may not read them.",
+  input: TicketBalanceInputSchema,
+  output: TicketBalanceSchema,
+  permission: "payment:read",
+  handler: async ({ input: { ticketId }, context }) => {
+    const ticket = await context.db.ticket.count({ where: { id: ticketId } });
+    if (ticket === 0) return notFound({ entity: "Ticket" });
+    const withQuotes = hasPermission({
+      permissions: context.permissions,
+      permission: "quote:read",
+    });
+    return ok({ value: await ticketBalance({ context, ticketId, withQuotes }) });
+  },
+});
+
 export { createPayment };
 
 export type GetPublicPaymentInput = { token: string; db?: Db };
@@ -83,4 +108,4 @@ export async function getPublicPayment({
 }
 
 /** Payments requested from customers, charged on the venue's connected account (ADR 0028, 0029). */
-export const paymentOperations = [listPayments, getPayment, createPayment];
+export const paymentOperations = [listPayments, getPayment, createPayment, getTicketBalance];

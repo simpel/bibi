@@ -5,7 +5,7 @@ import { useRouter } from "@okazi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
-import { blankToUndefined, numberOrNull } from "@/lib/blank";
+import { blankToUndefined, minorOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
@@ -18,30 +18,33 @@ export type RequestPaymentFormValues = {
 };
 export type RequestPaymentFormOutput = z.infer<typeof PaymentCreateInputSchema>;
 
-/** Core's `payment.create` schema; the amount is typed in kronor and sent in öre. */
-const requestPaymentFormSchema = ({ ticketId }: { ticketId: string }) =>
+/** The one receivable the payment settles (ADR 0057). */
+export type ReceivableTarget = { quoteId: string } | { depositId: string } | { invoiceId: string };
+
+/**
+ * Core's `payment.create` schema; the amount is typed in kronor and sent in öre. Empty means the
+ * receivable's open balance.
+ */
+const requestPaymentFormSchema = ({ target }: { target: ReceivableTarget }) =>
   formSchema({
     schema: PaymentCreateInputSchema,
-    toInput: ({ values }: { values: RequestPaymentFormValues }) => {
-      const kr = numberOrNull({ value: values.amount });
-      return {
-        ticketId,
-        method: values.method,
-        amountMinor: kr === null ? undefined : Math.round(kr * 100),
-        description: blankToUndefined({ value: values.description }),
-      };
-    },
+    toInput: ({ values }: { values: RequestPaymentFormValues }) => ({
+      ...target,
+      method: values.method,
+      amountMinor: minorOrNull({ value: values.amount }) ?? undefined,
+      description: blankToUndefined({ value: values.description }),
+    }),
   });
 
-export type UseRequestPaymentFormInput = { ticketId: string; onDone: () => void };
+export type UseRequestPaymentFormInput = { target: ReceivableTarget; onDone: () => void };
 
-/** Request-payment form state: method, amount and the text the customer sees. */
-export function useRequestPaymentForm({ ticketId, onDone }: UseRequestPaymentFormInput) {
+/** Request-payment form state: method, amount (open balance by default) and the text. */
+export function useRequestPaymentForm({ target, onDone }: UseRequestPaymentFormInput) {
   const t = useTranslations("payment");
   const common = useTranslations("common");
   const router = useRouter();
   const form = useForm<RequestPaymentFormValues, unknown, RequestPaymentFormOutput>({
-    resolver: zodResolver(requestPaymentFormSchema({ ticketId }), useZodMessages()),
+    resolver: zodResolver(requestPaymentFormSchema({ target }), useZodMessages()),
     defaultValues: { method: "CARD", amount: "", description: "" },
   });
   const { submit, pending } = useFormAction({

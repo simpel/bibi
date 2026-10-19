@@ -47,6 +47,7 @@ const NEW_PARENTS: Record<string, string> = {
   item: "items",
   skill: "skills",
   ticket: "tickets",
+  deposit: "tickets",
   type: "settings/types",
   venue: "venues",
   customer: "customers",

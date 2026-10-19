@@ -22,7 +22,10 @@ describe("cross-organization isolation: payments", () => {
     setPaymentProvider({ provider: createMemoryPaymentProvider() });
     await call({ client: a, name: "paymentAccount_startOnboarding" });
     await call({ client: a, name: "paymentAccount_sync" });
-    const args = { ticketId, method: "CARD", amountMinor: 50_000 };
+    const depositArgs = { ticketId, description: "Advance", amountMinor: 100_000 };
+    const draft = await call({ client: a, name: "deposit_create", args: depositArgs });
+    await call({ client: a, name: "deposit_send", args: { id: draft.data.id } });
+    const args = { depositId: draft.data.id, method: "CARD", amountMinor: 50_000 };
     const payment = await call({ client: a, name: "payment_create", args });
     expect(payment.isError, JSON.stringify(payment.data)).toBe(false);
 

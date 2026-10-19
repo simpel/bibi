@@ -1,4 +1,4 @@
-import { PaymentSchema } from "@okazi/core/schemas";
+import { PaymentSchema, TicketBalanceSchema } from "@okazi/core/schemas";
 import { z } from "zod";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
@@ -16,6 +16,7 @@ export const PaymentListWireSchema = z.object({
 });
 
 export type PaymentWire = z.infer<typeof PaymentWireSchema>;
+export type TicketBalanceWire = z.infer<typeof TicketBalanceSchema>;
 
 const paymentCard = uiEntry({
   component: "payment-card",
@@ -32,4 +33,9 @@ export const PAYMENT_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   }),
   payment_get: paymentCard,
   payment_create: paymentCard,
+  payment_balance: uiEntry({
+    component: "ticket-balance-card",
+    schema: TicketBalanceSchema,
+    toProps: ({ value }) => ({ balance: value }),
+  }),
 };

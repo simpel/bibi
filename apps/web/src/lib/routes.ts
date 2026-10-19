@@ -23,6 +23,7 @@ export const ROUTES = {
   itemStateNew: "/new/item-state",
   ticketTemplateNew: "/new/ticket-template",
   ticketNew: "/new/ticket",
+  depositNew: "/new/deposit",
   customers: "/customers",
   tickets: "/tickets",
   calendar: "/calendar",
@@ -82,6 +83,13 @@ export type TicketRouteInput = { id: string };
 
 export function ticketRoute({ id }: TicketRouteInput): string {
   return `${ROUTES.tickets}/${encodeURIComponent(id)}`;
+}
+
+export type DepositNewRouteInput = { ticketId: string };
+
+/** `/new/deposit?ticket=<id>`: a deposit request on that ticket. */
+export function depositNewRoute({ ticketId }: DepositNewRouteInput): string {
+  return `${ROUTES.depositNew}?ticket=${encodeURIComponent(ticketId)}`;
 }
 
 export type QuoteRouteInput = { id: string };

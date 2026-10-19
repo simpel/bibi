@@ -20,6 +20,7 @@ export * from "./features/customer/archive-operation";
 export * from "./features/customer/operations";
 export { CUSTOMER_INCLUDE, toCustomerDto } from "./features/customer/to-customer-dto";
 export * from "./features/customer/write-operations";
+export * from "./features/deposit/operations";
 export * from "./features/entity-type/read-operations";
 export * from "./features/entity-type/write-operations";
 export * from "./features/field-definition/read-operations";
@@ -28,6 +29,7 @@ export * from "./features/inbound-email/address";
 export * from "./features/inbound-email/deliver-inbound-email";
 export * from "./features/inbound-email/operations";
 export { receiveInboundEmail } from "./features/inbound-email/receive-operation";
+export * from "./features/invoice/operations";
 export { itemEmbeddable } from "./features/item/embeddable";
 export * from "./features/item/lifecycle-operations";
 export * from "./features/item/package-operations";
@@ -123,12 +125,7 @@ export {
   unionPermissions,
 } from "./permissions/permission-set";
 export * from "./permissions/resources";
-export {
-  AI_FEATURE_IDS,
-  AI_FEATURES,
-  type AiFeatureId,
-  aiFeature,
-} from "./platform/ai-settings/ai-features";
+export * from "./platform/ai-settings/ai-features";
 export * from "./platform/ai-settings/resolve-ai-model";
 export * from "./platform/ai-settings/schema";
 export { type CreatePlatformContextInput, createPlatformContext } from "./platform/context";

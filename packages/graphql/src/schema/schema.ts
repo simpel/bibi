@@ -27,6 +27,8 @@ import "../features/quote/graphql";
 import "../features/assignment/graphql";
 import "../features/inbound-email/graphql";
 import "../features/payment/graphql";
+import "../features/deposit/graphql";
+import "../features/invoice/graphql";
 import "../features/payment-account/graphql";
 import "../features/conversation/graphql";
 import "../features/message/graphql";

@@ -5,9 +5,11 @@ import { configurationOperations } from "./features/configuration/operations";
 import { contactOperations } from "./features/contact/operations";
 import { conversationOperations } from "./features/conversation/operations";
 import { customerOperations } from "./features/customer/operations";
+import { depositOperations } from "./features/deposit/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
 import { inboundEmailOperations } from "./features/inbound-email/operations";
+import { invoiceOperations } from "./features/invoice/operations";
 import { itemOperations } from "./features/item/operations";
 import { itemStateOperations } from "./features/item-state/operations";
 import { lineOperations } from "./features/line/operations";
@@ -42,6 +44,14 @@ export type CreateCoreOperationsInput = { embed: EmbedFn };
 
 const pipelineGroupOperations = [...pipelineOperations, ...pipelineSetupOperations];
 
+/** Payments, the receivables they settle (ADR 0057) and the payout account. */
+const moneyOperations = [
+  ...paymentAccountOperations,
+  ...paymentOperations,
+  ...depositOperations,
+  ...invoiceOperations,
+];
+
 /** Every operation core ships; adapters register this list so surfaces stay in parity. */
 export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyOperation[] {
   return [
@@ -70,8 +80,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...pipelineGroupOperations,
     ...quoteOperations,
     ...inboundEmailOperations,
-    ...paymentAccountOperations,
-    ...paymentOperations,
+    ...moneyOperations,
     ...conversationOperations,
     ...messageOperations,
     ...skillOperations,

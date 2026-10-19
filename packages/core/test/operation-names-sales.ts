@@ -30,3 +30,18 @@ export const SALES_NAMES = [
   "quote.update",
   "ticket.expireHolds",
 ];
+
+/** Receivables and the derived balance (ADR 0057). */
+export const MONEY_NAMES = [
+  "deposit.create",
+  "deposit.get",
+  "deposit.list",
+  "deposit.send",
+  "deposit.void",
+  "invoice.create",
+  "invoice.get",
+  "invoice.list",
+  "invoice.send",
+  "invoice.void",
+  "payment.balance",
+];

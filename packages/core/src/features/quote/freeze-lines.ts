@@ -13,7 +13,7 @@ export type FreezeLinesInput = {
 };
 
 /**
- * The only writer of `OrderLine` (ADR 0052): freezes a DRAFT's derived lines and totals as the
+ * Freezes a DRAFT's derived lines and totals as the
  * quote's snapshot. The draft is claimed first, so a concurrent send of the same quote waits and
  * then gets `CONFLICT` instead of a second snapshot.
  */
@@ -27,13 +27,25 @@ export async function freezeLines({
     data: quoteTotals({ lines }),
   });
   if (claimed.count === 0) return conflict({ message: "The quote is no longer a DRAFT" });
+  await writeOrderLines({ context, owner: { quoteId }, lines });
+  return ok({ value: true });
+}
+
+export type WriteOrderLinesInput = {
+  context: Pick<OperationContext, "db" | "organizationId">;
+  /** The snapshot the lines belong to: exactly one quote or invoice (check constraint). */
+  owner: { quoteId: string } | { invoiceId: string };
+  lines: readonly OrderLineDto[];
+};
+
+/** The only writer of `OrderLine` rows (ADR 0052), for a sent quote or a new invoice. */
+export async function writeOrderLines({ context, owner, lines }: WriteOrderLinesInput) {
   await context.db.orderLine.createMany({
     data: lines.map(({ id: _id, tags, ...line }) => ({
       ...line,
+      ...owner,
       tags: toJson({ value: tags }) ?? [],
-      quoteId,
       organizationId: context.organizationId,
     })),
   });
-  return ok({ value: true });
 }

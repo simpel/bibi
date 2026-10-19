@@ -1,3 +1,4 @@
+import { MONEY_FIELD_KEYS, MONEY_OPERATION_KEYS } from "./approval-money-keys";
 import { PIPELINE_FIELD_KEYS, PIPELINE_OPERATION_KEYS } from "./approval-pipeline-keys";
 
 /** Field names with a localized label in `assistant.approval.fields`. */
@@ -70,6 +71,7 @@ export const FIELD_KEYS = [
   "phaseId",
   "reason",
   ...PIPELINE_FIELD_KEYS,
+  ...MONEY_FIELD_KEYS,
 ] as const;
 
 /** Operations with a localized label in `assistant.approval.operations` (`.` → `_`). */
@@ -93,6 +95,7 @@ export const OPERATION_KEYS = [
   "line_update",
   "line_archive",
   ...PIPELINE_OPERATION_KEYS,
+  ...MONEY_OPERATION_KEYS,
   "assignment_assign",
   "assignment_follow",
   "assignment_unfollow",

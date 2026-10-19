@@ -5,9 +5,11 @@ import { configurationRoutes } from "./features/configuration/rest";
 import { contactRoutes } from "./features/contact/rest";
 import { conversationRoutes } from "./features/conversation/rest";
 import { customerRoutes } from "./features/customer/rest";
+import { depositRoutes } from "./features/deposit/rest";
 import { entityTypeRoutes } from "./features/entity-type/rest";
 import { fieldDefinitionRoutes } from "./features/field-definition/rest";
 import { inboundEmailRoutes } from "./features/inbound-email/rest";
+import { invoiceRoutes } from "./features/invoice/rest";
 import { itemRoutes } from "./features/item/rest";
 import { itemStateRoutes } from "./features/item-state/rest";
 import { lineRoutes } from "./features/line/rest";
@@ -39,6 +41,9 @@ import { searchRoutes } from "./search-rest";
 
 const gridAndSetupRoutes = [...phaseGridRoutes, ...pipelineSetupRoutes];
 
+/** Payments, the receivables they settle (ADR 0057) and the payout account. */
+const moneyRoutes = [...paymentAccountRoutes, ...paymentRoutes, ...depositRoutes, ...invoiceRoutes];
+
 /** Every declared REST route; add a feature's routes here when it gets a `rest.ts`. */
 export function listRestRoutes(): RestRoute[] {
   return [
@@ -67,8 +72,7 @@ export function listRestRoutes(): RestRoute[] {
     ...pipelineRoutes,
     ...quoteRoutes,
     ...inboundEmailRoutes,
-    ...paymentAccountRoutes,
-    ...paymentRoutes,
+    ...moneyRoutes,
     ...conversationRoutes,
     ...messageRoutes,
     ...skillRoutes,

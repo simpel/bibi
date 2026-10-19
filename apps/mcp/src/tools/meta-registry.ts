@@ -5,9 +5,11 @@ import { configurationMcpTools } from "../features/configuration/mcp";
 import { contactMcpTools } from "../features/contact/mcp";
 import { conversationMcpTools } from "../features/conversation/mcp";
 import { customerMcpTools } from "../features/customer/mcp";
+import { depositMcpTools } from "../features/deposit/mcp";
 import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { inboundEmailMcpTools } from "../features/inbound-email/mcp";
+import { invoiceMcpTools } from "../features/invoice/mcp";
 import { itemMcpTools } from "../features/item/mcp";
 import { itemStateMcpTools } from "../features/item-state/mcp";
 import { lineMcpTools } from "../features/line/mcp";
@@ -39,6 +41,14 @@ import type { McpToolMeta } from "./meta";
 
 const gridAndSetupMcpTools = [...phaseGridMcpTools, ...pipelineSetupMcpTools];
 
+/** Payments, the receivables they settle (ADR 0057) and the payout account. */
+const moneyMcpTools = [
+  ...paymentAccountMcpTools,
+  ...paymentMcpTools,
+  ...depositMcpTools,
+  ...invoiceMcpTools,
+];
+
 /** Every declared operation tool; add a feature's tools here when it gets an `mcp.ts`. */
 export function listMcpToolMetas(): McpToolMeta[] {
   return [
@@ -67,8 +77,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...pipelineMcpTools,
     ...quoteMcpTools,
     ...inboundEmailMcpTools,
-    ...paymentAccountMcpTools,
-    ...paymentMcpTools,
+    ...moneyMcpTools,
     ...conversationMcpTools,
     ...messageMcpTools,
     ...skillMcpTools,

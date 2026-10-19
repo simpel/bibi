@@ -28,6 +28,11 @@ export type DemoTicket = {
    * that is sent, and for the accepted event accepted (ADR 0043, 0052).
    */
   quote?: string;
+  /**
+   * Money (ADR 0057): a SENT deposit request, and a SUCCEEDED card payment of `paidKr` against
+   * the accepted quote (the ticket's `phase` must accept it).
+   */
+  money?: { deposit?: { description: string; amountKr: number }; paidKr?: number };
   /** A line (by name) whose quantity changes after the quote, so it differs from it (ADR 0052). */
   changeAfterQuote?: { line: string; quantity: number };
   /** The reason of that move, for phases that require one. */

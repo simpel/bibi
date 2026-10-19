@@ -6,7 +6,7 @@ import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
 import { integrationEntities } from "./parity-entities-integration";
 import { itemStateEntities } from "./parity-entities-item-state";
-import { paymentAccountEntity, paymentEntity } from "./parity-entities-payment";
+import { moneyEntities } from "./parity-entities-payment";
 import { quoteEntity } from "./parity-entities-quote";
 import { sheet } from "./parity-entities-sheet";
 import { ticketEntities } from "./parity-entities-ticket";
@@ -140,8 +140,7 @@ export const ENTITIES: ParityEntity[] = [
     },
   }),
   ...accessEntities(),
-  paymentAccountEntity,
-  paymentEntity(),
+  ...moneyEntities(),
   ...integrationEntities(),
   userPreferenceEntity,
   userSettingsEntity,

@@ -1,3 +1,4 @@
+import { MONEY_SURFACES } from "./money-surfaces";
 import { SALES_SURFACES } from "./sales-surfaces";
 import { SETTINGS_SURFACES } from "./settings-surfaces";
 
@@ -63,8 +64,6 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "ticket.changePhase", route: "/tickets/[id]" },
   { operation: "ticket.export", route: "/tickets/[id]" },
   { operation: "inboundEmail.list", route: "/tickets/[id]" },
-  { operation: "payment.list", route: "/tickets/[id]" },
-  { operation: "payment.create", route: "/tickets/[id]" },
   // The run schedule (lines) is listed and edited on the ticket page.
   { operation: "line.list", route: "/tickets/[id]" },
   { operation: "line.create", route: "/tickets/[id]" },
@@ -81,6 +80,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "sheet.generate", route: "/tickets/[id]" },
   { operation: "sheet.send", route: "/tickets/[id]" },
   ...SALES_SURFACES,
+  ...MONEY_SURFACES,
   ...SETTINGS_SURFACES,
   { operation: "entityType.list", route: "/settings/types" },
   { operation: "entityType.create", route: "/new/type" },

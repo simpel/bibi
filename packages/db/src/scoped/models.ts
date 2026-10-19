@@ -42,6 +42,8 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "InboundEmail",
   "PaymentAccount",
   "Payment",
+  "Deposit",
+  "Invoice",
   "AuditLog",
   "Embedding",
   "Conversation",
@@ -77,9 +79,8 @@ export const GLOBAL_MODELS = new Set<string>([
 export const PLATFORM_MODELS = new Set<string>(["SystemLog", "AiSetting", "StripeWebhookEvent"]);
 
 /**
- * User-scoped tables (ADR 0039): rows belong to one user (`userId`) across organizations, e.g.
- * UI preferences and settings. `scopedDb` pins every query to its `actorId` instead of the organization and
- * refuses them for the system actor. No `organizationId`, `status` or `createdBy`.
+ * User-scoped tables (ADR 0039), e.g. UI preferences: rows belong to one user across organizations.
+ * `scopedDb` pins every query to its `actorId` and refuses the system actor. No `organizationId`.
  */
 export const USER_SCOPED_MODELS = new Set<string>(["UserPreference", "UserSettings"]);
 
@@ -125,9 +126,8 @@ export const SOFT_DELETE_MODELS = new Set<string>(SOFT_DELETE_DEFAULTS.keys());
 export const APPEND_ONLY_MODELS = new Set<string>(["AuditLog", "Message", "InboundEmail"]);
 
 /**
- * Models with global rows (`organizationId` null, e.g. SYSTEM skills). Reads through `scopedDb`
- * see the org's rows plus the global rows; writes stay pinned to the org, so global rows can
- * never be created, updated or deleted through `scopedDb` (only by dedicated system code).
+ * Models with global rows (`organizationId` null, e.g. SYSTEM skills). `scopedDb` reads the org's
+ * rows plus the global rows; writes stay pinned to the org (global rows only by system code).
  */
 export const GLOBAL_READ_MODELS = new Set<string>(["Skill"]);
 

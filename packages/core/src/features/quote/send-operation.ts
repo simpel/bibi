@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { invalid, notFound } from "../../shared/errors";
+import { checkPricedLines } from "./check-priced-lines";
 import { type DerivedLine, deriveTicketLines } from "./derive-lines";
 import { freezeLines } from "./freeze-lines";
 import { moveOnQuoteEvent } from "./move-on-event";
@@ -13,25 +14,12 @@ import { checkQuoteTransition } from "./transitions";
 
 type Context = Pick<OperationContext, "db" | "recordChange">;
 
-const MISSING = {
-  quantity: "has no quantity: set its own or the ticket's headcount",
-  vatRatePercent: "has no VAT rate: set it on the line, the item or the venue",
-} as const;
-
 type SendableInput = { quote: QuoteDto; lines: readonly DerivedLine[] };
 
 /** Sent with at least one priced line, each with a quantity and VAT, and a future validity. */
 function checkSendable({ quote, lines }: SendableInput): Result<true> {
-  if (lines.length === 0) {
-    const message = "A quote needs at least one priced line on the ticket to be sent";
-    return invalid({ message, issues: [{ path: "lines", message }] });
-  }
-  for (const [at, { line, missing }] of lines.entries()) {
-    const [field] = missing;
-    if (!field) continue;
-    const message = `Line "${line.name}" ${MISSING[field]}`;
-    return invalid({ message, issues: [{ path: `lines.${at}.${field}`, message }] });
-  }
+  const priced = checkPricedLines({ lines, what: "A quote" });
+  if (!priced.ok) return priced;
   if (!quote.validUntil || quote.validUntil <= new Date()) {
     const message = "A quote needs a validity date in the future to be sent";
     return invalid({ message, issues: [{ path: "validUntil", message }] });

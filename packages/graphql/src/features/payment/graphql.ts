@@ -1,9 +1,14 @@
 import {
   createPayment,
   getPayment,
+  getTicketBalance,
   listPayments,
   type PaymentDto,
   PaymentSchema,
+  type ReceivableSettlement,
+  ReceivableSettlementSchema,
+  type TicketBalanceDto,
+  TicketBalanceSchema,
 } from "@okazi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
@@ -25,6 +30,29 @@ const PaymentPageRef = pageType({ name: "PaymentPage", item: PaymentRef });
 fieldFromOperation({ operation: listPayments, type: PaymentPageRef, name: "payments" });
 fieldFromOperation({ operation: getPayment, type: PaymentRef, name: "payment" });
 mutationFromOperation({ operation: createPayment, type: PaymentRef });
+
+const ReceivableSettlementRef = objectFromSchema<ReceivableSettlement>({
+  name: "ReceivableSettlement",
+  schema: ReceivableSettlementSchema,
+  description: "A quote, deposit or invoice with what is paid against it (derived, ADR 0057).",
+});
+
+const TicketBalanceRef = objectFromSchema<TicketBalanceDto>({
+  name: "TicketBalance",
+  schema: TicketBalanceSchema,
+  omit: ["receivables"],
+  description: "What a ticket owes, derived from its receivables and payments (ADR 0057).",
+});
+
+builder.objectField(TicketBalanceRef, "receivables", (t) =>
+  t.field({
+    type: [ReceivableSettlementRef],
+    description: "Each receivable with its amount, paid, open and progress.",
+    resolve: (balance) => balance.receivables,
+  }),
+);
+
+fieldFromOperation({ operation: getTicketBalance, type: TicketBalanceRef, name: "ticketBalance" });
 
 // Graph edge. Goes through `payment.list`, so its permission applies here too.
 builder.objectField(TicketRef, "payments", (t) =>
