@@ -7,7 +7,8 @@ import type { Modifier } from "@dnd-kit/core";
  */
 export const restrictToMovableColumns: Modifier = ({ activatorEvent, transform }) => {
   const target = activatorEvent?.target;
-  if (!(target instanceof Element)) return transform;
+  // dnd-kit also runs modifiers while rendering on the server, where there is no `Element`.
+  if (typeof Element === "undefined" || !(target instanceof Element)) return transform;
   const dragged = target.closest<HTMLElement>("th");
   const movable = [
     ...(dragged?.closest("tr")?.querySelectorAll<HTMLElement>("th:not([data-column-pinned])") ??
