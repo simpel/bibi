@@ -2,7 +2,11 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
 import { checkResponsibilityContents } from "./check-contents";
-import type { ResponsibilityCreateInput, ResponsibilityDto } from "./schema";
+import {
+  type ResponsibilityCreateInput,
+  type ResponsibilityDto,
+  ResponsibilitySchema,
+} from "./schema";
 
 export type InsertResponsibilityInput = { context: OperationContext } & ResponsibilityCreateInput;
 
@@ -23,6 +27,7 @@ export async function insertResponsibility({
   const row = await context.db.responsibility.create({
     data: { name, ...contents.value, organizationId: context.organizationId },
   });
-  context.recordChange({ entityId: row.id, after: row });
-  return ok({ value: row });
+  const responsibility = ResponsibilitySchema.parse(row);
+  context.recordChange({ entityId: row.id, after: responsibility });
+  return ok({ value: responsibility });
 }

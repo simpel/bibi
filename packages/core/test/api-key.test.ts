@@ -4,8 +4,10 @@ import {
   createApiKey,
   type ExecuteContext,
   execute,
+  getApiKey,
   hashApiKey,
   listApiKeys,
+  PRESET_PERMISSIONS,
   revokeApiKey,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
@@ -19,7 +21,7 @@ const session = ({ context }: { context: ExecuteContext }): ExecuteContext => ({
 
 type CreateInput = { context: ExecuteContext; role?: string };
 
-const create = ({ context, role = "member" }: CreateInput) =>
+const create = ({ context, role = "manager" }: CreateInput) =>
   execute({ operation: createApiKey, input: { name: "CRM", role }, context: session({ context }) });
 
 describe("apiKey operations (ADR 0005)", () => {
@@ -27,7 +29,7 @@ describe("apiKey operations (ADR 0005)", () => {
     const context = await testOrg();
     const created = unwrap({ result: await create({ context }) });
     expect(created.secret).toMatch(/^okz_[a-zA-Z]{64}$/);
-    expect(created.apiKey).toMatchObject({ name: "CRM", role: "member" });
+    expect(created.apiKey).toMatchObject({ name: "CRM", role: "manager" });
     expect(created.apiKey.start).toBe(created.secret.slice(0, 6));
     const row = await getDb().apikey.findUniqueOrThrow({ where: { id: created.apiKey.id } });
     expect(row.organizationId).toBe(context.organizationId);
@@ -52,19 +54,35 @@ describe("apiKey operations (ADR 0005)", () => {
     expect(errorCode({ result: again })).toBe("NOT_FOUND");
   });
 
-  it("refuses owner and unknown roles, and roles above the caller's own on the role field", async () => {
+  it("reads one enabled key, and not after revoke or from another organization", async () => {
+    const context = await testOrg();
+    const { apiKey } = unwrap({ result: await create({ context }) });
+    const get = ({ context: ctx }: { context: ExecuteContext }) =>
+      execute({ operation: getApiKey, input: { id: apiKey.id }, context: ctx });
+    expect(unwrap({ result: await get({ context }) })).toMatchObject({
+      id: apiKey.id,
+      name: "CRM",
+      role: "manager",
+    });
+    expect(errorCode({ result: await get({ context: await testOrg() }) })).toBe("NOT_FOUND");
+    unwrap({
+      result: await execute({ operation: revokeApiKey, input: { id: apiKey.id }, context }),
+    });
+    expect(errorCode({ result: await get({ context }) })).toBe("NOT_FOUND");
+  });
+
+  it("refuses unknown presets, and callers without apiKey:create", async () => {
     const owner = await testOrg();
     const admin = { ...owner, roles: ["admin"] };
     for (const role of ["owner", "Sales"]) {
       expect(errorCode({ result: await create({ context: admin, role }) })).toBe("VALIDATION");
     }
     expect(errorCode({ result: await create({ context: admin, role: "admin" }) })).toBeNull();
-    // A member given `integration:admin` by hand still cannot mint an admin key.
-    const member = { ...owner, roles: ["member"] };
-    const above = await create({ context: member, role: "admin" });
-    expect(errorCode({ result: above })).toBe("FORBIDDEN");
-    if (!above.ok) expect(above.error.issues.map((issue) => issue.path)).toEqual(["role"]);
-    expect(errorCode({ result: await create({ context: member, role: "viewer" }) })).toBeNull();
+    // API keys are admin-only (ADR 0050): the manager preset has no apiKey:create.
+    const manager = { ...owner, roles: ["manager"], permissions: PRESET_PERMISSIONS.manager };
+    expect(errorCode({ result: await create({ context: manager, role: "member" }) })).toBe(
+      "FORBIDDEN",
+    );
   });
 
   it("needs integration:admin and stays inside the organization", async () => {
@@ -98,7 +116,7 @@ describe("apiKey.create callers (#88, #90)", () => {
     });
     const result = await execute({
       operation: createApiKey,
-      input: { name: "x", role: "viewer" },
+      input: { name: "x", role: "member" },
       context: ai,
     });
     expect(errorCode({ result })).toBe("FORBIDDEN");
@@ -108,7 +126,7 @@ describe("apiKey.create callers (#88, #90)", () => {
     const context = await testOrg();
     for (const credential of ["accessToken", "apiKey", undefined] as const) {
       const caller = { ...context, ...(credential ? { credential } : {}) };
-      const input = { name: "x", role: "viewer" };
+      const input = { name: "x", role: "member" };
       const result = await execute({ operation: createApiKey, input, context: caller });
       expect(errorCode({ result }), String(credential)).toBe("FORBIDDEN");
     }

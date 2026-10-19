@@ -50,6 +50,7 @@ async function buildModelInput({
     organizationId: user.organizationId,
     locale,
     skills: prepared.promptSkills,
+    access: { roles: user.roles, permissions: user.permissions },
     ...(page ? { page } : {}),
   });
   return { messages, instructions };

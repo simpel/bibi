@@ -1,20 +1,11 @@
 import "server-only";
 import {
-  listEntityTypes,
-  listItemStates,
-  listItems,
-  listOccupancies,
-  listProgramItems,
-  listTicketPhases,
-  listTickets,
-  listVenues,
   ok,
   PROGRAM_ITEM_SOURCE,
   type Result,
   TICKET_OCCUPANCY_SOURCE,
   type VenueDto,
 } from "@okazi/core";
-import { listAll } from "@/server/list-all";
 import { type FilterBlocksInput, filterBlocks } from "./calendar-block-filter";
 import {
   type CalendarBlock,
@@ -22,6 +13,7 @@ import {
   toCalendarBlocks,
 } from "./calendar-blocks";
 import { buildLegend, type LegendState } from "./calendar-legend";
+import { loadSources, orEmpty } from "./calendar-sources";
 import {
   type SelectedSpaces,
   type SpaceRow,
@@ -52,24 +44,6 @@ export type LoadCalendarInput = {
   phaseId?: string | undefined;
   ticketId?: string | undefined;
 };
-
-/** Setup time sits right before a program item, so its program item can start after `to`. */
-const PROGRAM_SLACK_MS = 7 * 86_400_000;
-
-function loadSources({ from, to, venueId }: LoadCalendarInput) {
-  const spaceFilter = { behaviour: "BOOKABLE" as const, ...(venueId ? { venueId } : {}) };
-  const programWindow = { from, to: new Date(to.getTime() + PROGRAM_SLACK_MS) };
-  return Promise.all([
-    listAll({ operation: listVenues, input: {} }),
-    listAll({ operation: listItems, input: spaceFilter }),
-    listAll({ operation: listEntityTypes, input: { base: "ITEM" as const } }),
-    listAll({ operation: listOccupancies, input: { from, to }, maxPages: 20 }),
-    listAll({ operation: listProgramItems, input: programWindow, maxPages: 20 }),
-    listAll({ operation: listTickets, input: programWindow, maxPages: 20 }),
-    listAll({ operation: listItemStates, input: {} }),
-    listAll({ operation: listTicketPhases, input: {} }),
-  ]);
-}
 
 const pickName = ({ id, name }: { id: string; name: string }) => ({ id, name });
 
@@ -120,8 +94,12 @@ export async function loadCalendar({
   ticketId,
   ...window
 }: LoadCalendarInput): Promise<Result<CalendarData>> {
-  const [venues, items, types, occupancies, programItems, tickets, states, phases] =
-    await loadSources(window);
+  const sources = await loadSources(window);
+  const [occupancies, tickets, states, phases] = [sources[3], sources[5], sources[6], sources[7]];
+  const venues = orEmpty({ result: sources[0] });
+  const items = orEmpty({ result: sources[1] });
+  const types = orEmpty({ result: sources[2] });
+  const programItems = orEmpty({ result: sources[4] });
   if (!venues.ok) return venues;
   if (!items.ok) return items;
   if (!types.ok) return types;

@@ -11,11 +11,11 @@ describe("sheet definition form schema", () => {
     const values = {
       ...sheetDefinitionFormDefaults({}),
       name: " Kitchen order ",
-      roleId: "member",
+      roleId: "manager",
     };
     expect(sheetDefinitionFormToInput({ values })).toMatchObject({
       name: "Kitchen order",
-      roleId: "member",
+      roleId: "manager",
     });
   });
 
@@ -26,7 +26,7 @@ describe("sheet definition form schema", () => {
     const ok = sheetDefinitionFormSchema.safeParse({
       ...sheetDefinitionFormDefaults({}),
       name: "Kitchen order",
-      roleId: "owner",
+      roleId: "admin",
     });
     expect(ok.success).toBe(true);
     const custom = sheetDefinitionFormSchema.safeParse({

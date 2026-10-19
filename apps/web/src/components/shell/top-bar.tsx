@@ -12,7 +12,7 @@ export function TopBar(props: TopBarProps) {
       <div className="flex min-w-0 flex-1 items-center">
         <Breadcrumb />
       </div>
-      <CommandBar />
+      <CommandBar permissions={props.access.permissions} />
     </header>
   );
 }

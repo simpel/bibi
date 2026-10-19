@@ -98,7 +98,7 @@ describe("customer.archive with the customer's tickets (#134)", () => {
 
   it("needs ticket:write to archive the tickets and then changes nothing", async () => {
     const { context, customer, ids } = await setupWithTickets();
-    const permissions = { ...grantAll({ upTo: "admin" }), ticket: ["read" as const] };
+    const permissions = { ...grantAll({}), ticket: ["view" as const] };
     const reader = testContext({ organizationId: context.organizationId, permissions });
     const refused = await execute({
       operation: archiveCustomer,

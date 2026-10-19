@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { ROUTES } from "@/lib/routes";
+import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { CreateVenueButton } from "./create-venue-button";
@@ -19,16 +20,14 @@ const PAGE_SIZE = 20;
 /** Venue list page body: header, semantic search, table with cursor pagination. */
 export async function VenueList({ locale, cursor }: VenueListProps) {
   const t = await getTranslations("venue");
+  const abilities = await getCallerAbilities();
+  const create = can({ abilities, permission: "venue:create" }) ? <CreateVenueButton /> : undefined;
   const result = await runOperation({
     operation: listVenues,
     input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
   });
   const header = (
-    <PageHeader
-      title={t("plural")}
-      description={t("listDescription")}
-      actions={<CreateVenueButton />}
-    />
+    <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
   );
   if (!result.ok) {
     const errorKey = handleLoadError({ error: result.error, locale });
@@ -37,14 +36,10 @@ export async function VenueList({ locale, cursor }: VenueListProps) {
   const { items, nextCursor } = result.value;
   const body =
     items.length === 0 && !cursor ? (
-      <EmptyState
-        title={t("empty")}
-        description={t("emptyDescription")}
-        action={<CreateVenueButton />}
-      />
+      <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />
     ) : (
       <>
-        <VenueTable venues={items} />
+        <VenueTable venues={items} access={rowAccess({ abilities, feature: "venue" })} />
         <CursorPagination pathname={ROUTES.venues} cursor={cursor} nextCursor={nextCursor} />
       </>
     );

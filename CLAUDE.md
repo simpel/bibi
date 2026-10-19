@@ -9,7 +9,7 @@
 - Predefined tickets for smaller meetings: staff create a ticket with its lines in one step without a quote, and the customer pays via a Swish or card link or by invoice. Okazi is an internal tool for staff. Guests and customers never use the app; they only see the payment page.
 - Needs as counts against the organization's own lists (e.g. the EU's 14 allergens as an importable template), matched against items and compiled into sheets. No personal data about guests.
 - Versioned sheets (e.g. kitchen order) sent to a responsibility (e.g. head of kitchen), plus export (json, pdf, csv) for handover outside the system.
-- Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses fixed roles: owner, admin, member, viewer.
+- Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses three fixed roles as presets (member, manager, admin) of `<feature>:<action>` permissions, which admins fine-tune per member or API key with allow/deny overrides (ADR 0034, 0050).
 - A ticket moves through the organization's own phases, and each line (room, food, activity) has a state per phase set in a grid: soft holds with a held-since date and one expiry date per ticket, hard holds that block (ADR 0043, 0044).
 - Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Fortnox, Visma and Peppol deferred, ADR 0028 and 0029).
 - Okazi's own prices are published and venues can sign up without talking to sales.
@@ -31,7 +31,7 @@
 - Monorepo: pnpm workspaces + Turborepo, TypeScript (strict).
 - Web: Next.js (App Router), React.
 - Data: Prisma on Postgres with pgvector (Docker image `pgvector/pgvector`).
-- Auth: Better Auth with the organization plugin (multi-tenancy), API key plugin (REST) and OAuth plugin (MCP).
+- Auth: Better Auth with the organization plugin (multi-tenancy), API key plugin (REST, keys belong to the organization, ADR 0050) and OAuth plugin (MCP).
 - APIs: GraphQL via Pothos (Zod-derived types, no Prisma plugin), REST `/api/v1` with OpenAPI generated from operations, MCP server (`apps/mcp`).
 - AI: Vercel AI SDK via AI Gateway, provider-agnostic, Claude by default.
 - UI: Tailwind v4 (CSS-first tokens), cva, shadcn primitives and shadcn AI Elements (chat, message, prompt input, suggestion, confirmation, questionnaire), React Flow for the onboarding path (ADR 0045), Storybook for `packages/ui`.
@@ -46,7 +46,7 @@
 
 ## Architecture principles
 - **Harmonisation and patterns first.** Look for existing patterns and reuse them before introducing anything new. Propose harmonisation rather than a new pattern. Extract shared code at the second duplicate, not the third.
-- **1:1 parity.** Every command exists in web, GraphQL, REST and MCP. Every entity can be read via graph, REST and MCP. A parity test in CI verifies this. See `docs/decisions/0003-parity-architecture.md`. The only exception is platform operations (`packages/core/src/platform/`, ADR 0015): they exist only in the web app's `/admin`, for platform admins.
+- **1:1 parity.** Every command exists in web, GraphQL, REST and MCP. Every entity can be read via graph, REST and MCP. A parity test in CI verifies this. See `docs/decisions/0003-parity-architecture.md`. The only exception is platform operations (`packages/core/src/platform/`, ADR 0015): they exist only in the web app's `/admin`, for superadmins.
 - **New capability = new core operation first.** The operation is defined once in `packages/core` (Zod in/out, permission, handler). The adapters then expose it in the same change.
 - **AI-first.**
   - The assistant uses the app's own MCP server as the signed-in user. It gets no special path into the service layer.
@@ -56,6 +56,8 @@
   - Reusable AI behaviour lives as skills (System / Organization / Personal), not as ad hoc prompts.
   - See `docs/decisions/0007-ai-first-ux.md` and `docs/decisions/0008-semantic-search-and-skills.md`.
 - **Configurable domain.** No domain words in code. The organization defines types, fields, lists, ticket phases, item states and responsibilities as data. Every ticket and item has one assignee plus followers (ADR 0034). Code owns only generic behaviours (`PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS`) and flags on phases and states (ADR 0043, 0044). Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
+- **Permissions.** A permission is `<feature>:<action>` (`FEATURE_SPECS` in `packages/core/src/permissions/`). A core operation names one in `permission`. The roles are presets (`PRESET_PERMISSIONS`); admins add per-member and per-API-key overrides (`PermissionOverride`, `permission.get|update`). Pages, navigation and the assistant follow the effective permissions. See `docs/decisions/0050-permission-presets-and-overrides.md`.
+- **Feature scope: no cross-feature data.** An operation returns only data of its own feature (owner map `ENTITY_FEATURE`); another feature's record is an id, resolved through that feature's own operation. Inputs that reference another feature's id are checked with `checkReadable(<feature>:view)`, and errors never describe records the caller cannot view. Snapshots copied from another feature need its `view` at copy time. Audit, search text and approval previews only show what the caller may view. Pages show a denied piece as hidden instead of failing. If a feature needs another feature's data in its output, the scope is wrong: fix the scope (ADR 0050, "Feature scope").
 - **Multi-tenant.** Everything is scoped by `organizationId`. Every mutation is logged in `AuditLog`. See `docs/decisions/0004-multi-tenancy.md` and `docs/decisions/0006-database-conventions.md`.
 - **Everything is logged.** Core `execute` writes one system log row per operation (succeeded, rejected or failed). Every entry point opens a request context with `requestId` and `surface`, which also end up on `AuditLog`. See `docs/decisions/0014-system-logging.md`.
 
@@ -124,8 +126,8 @@
 - `packages/mail`: `MailProvider` with SMTP and Resend adapters, `sendMail` (logs `mail.sent`/`mail.failed`) and `createMemoryMailProvider` for tests.
 - `packages/logger`: the system log (pino), request context, `withRequestLogging` and the test helper `captureLogs`.
 
-## Platform admin
-- `/admin` in the web app: system log and AI model per feature. Only for `user.role = admin`, granted with `pnpm --filter @okazi/auth grant-admin <email>`. See `docs/decisions/0015-platform-admin.md`.
+## Superadmin
+- `/admin` in the web app: system log and AI model per feature. Only for `user.role = "superadmin"`, granted with `pnpm --filter @okazi/auth grant-superadmin <email>`. See `docs/decisions/0015-platform-admin.md`.
 - AI models (chat and embedding) are controlled **only** in `/admin/ai-models`, never via env. No model selected = the feature returns `UNAVAILABLE` and logs an error.
 - New AI feature: an entry in `AI_FEATURES` (core), `resolveAiModel({ feature })` where it runs, and texts in `admin.aiModels.features`.
 

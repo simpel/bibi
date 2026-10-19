@@ -31,7 +31,7 @@ export const listSkills = defineOperation({
     "your personal ones. Filter by scope, status (e.g. PUBLISHED) and text.",
   input: SkillListInputSchema,
   output: SkillListOutputSchema,
-  permission: "skill:read",
+  permission: "self:view",
   handler: async ({ input, context }) => {
     const rows = await context.db.skill.findMany({
       where: {
@@ -54,7 +54,7 @@ export const getSkill = defineOperation({
   description: "Get one skill by id, including its instructions, allowed tools and resources.",
   input: SkillIdInputSchema,
   output: SkillSchema,
-  permission: "skill:read",
+  permission: "self:view",
   handler: async ({ input, context }) => {
     const skill = await findVisibleSkill({ context, id: input.id });
     return skill ? ok({ value: toSkillDto({ skill }) }) : skillNotFound();
@@ -67,7 +67,7 @@ export const exportSkill = defineOperation({
   description: "Export a skill as a SKILL.md document (YAML frontmatter + markdown).",
   input: SkillIdInputSchema,
   output: SkillExportOutputSchema,
-  permission: "skill:read",
+  permission: "self:view",
   handler: async ({ input, context }) => {
     const skill = await findVisibleSkill({ context, id: input.id });
     if (!skill) return skillNotFound();

@@ -37,6 +37,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Setup",
   "SheetDefinition",
   "Responsibility",
+  "PermissionOverride",
   "Assignment",
   "AssignmentFollower",
   "Item",

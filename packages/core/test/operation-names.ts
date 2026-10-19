@@ -4,6 +4,7 @@ import { EXTRA_NAMES } from "./operation-names-integration";
 const NAMES = [
   "auditLog.get",
   "auditLog.list",
+  "changeSet.apply",
   "ticket.changePhase",
   "ticket.create",
   "ticket.createFromTemplate",
@@ -62,6 +63,7 @@ const NAMES = [
   "item.update",
   "member.assignRole",
   "member.cancelInvitation",
+  "member.get",
   "member.invite",
   "member.list",
   "member.listInvitations",

@@ -52,7 +52,7 @@ builder.objectField(ProgramItemRef, "entityType", (t) =>
     type: EntityTypeRef,
     description: "The program item type, with its fields.",
     resolve: (programItem, _args, ctx) => {
-      requirePermission({ ctx, permission: "configuration:read" });
+      requirePermission({ ctx, permission: "configuration:view" });
       return ctx.loaders.entityType.load({ id: programItem.entityTypeId }) as never;
     },
   }),
@@ -65,7 +65,7 @@ builder.objectField(ProgramItemRef, "setup", (t) =>
     description: "How the item is set up (null without a setup or if archived).",
     resolve: (programItem, _args, ctx) => {
       if (!programItem.setupId) return null;
-      requirePermission({ ctx, permission: "configuration:read" });
+      requirePermission({ ctx, permission: "configuration:view" });
       return ctx.loaders.setup.load({ id: programItem.setupId });
     },
   }),

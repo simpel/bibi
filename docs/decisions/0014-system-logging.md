@@ -28,7 +28,7 @@
 - **Process errors.** Next `onRequestError` and Node `uncaughtException`/`unhandledRejection` are logged as `process.*`/`http.unhandledError`.
 
 ## Addendum 2026-10-14
-- The system log is also stored in Postgres (`SystemLog`) for the platform admin's view, with retention through `SYSTEM_LOG_RETENTION_DAYS`. See ADR 0015.
+- The system log is also stored in Postgres (`SystemLog`) for the superadmin's view, with retention through `SYSTEM_LOG_RETENTION_DAYS`. See ADR 0015.
 
 ## Addendum 2026-10-15
 - `AuditLog` is read through the core operations `auditLog.list|get` (permission `audit:read`), exposed on GraphQL, REST, MCP and as the history tab on venue and item pages. Filters: entity, actor, conversation, `requestId` and time range.

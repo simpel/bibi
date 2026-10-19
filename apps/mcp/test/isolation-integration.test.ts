@@ -10,7 +10,7 @@ import { call, connect, testContext } from "./helpers";
 async function seedKey({ context }: { context: ExecuteContext }): Promise<string> {
   const created = await execute({
     operation: createApiKey,
-    input: { name: "Secret sync", role: "viewer" },
+    input: { name: "Secret sync", role: "member" },
     context: { ...context, credential: "session" },
   });
   if (!created.ok) throw created.error;
@@ -50,6 +50,9 @@ describe("cross-organization isolation: API keys and OAuth grants", () => {
     const a = await connect({ context: contextA });
     const b = await connect({ context: testContext() });
     expect((await call({ client: b, name: "apiKey_list" })).data.items).toEqual([]);
+    const get = await call({ client: b, name: "apiKey_get", args: { id } });
+    expect(get.data.code).toBe("NOT_FOUND");
+    expect((await call({ client: a, name: "apiKey_get", args: { id } })).data.id).toBe(id);
     const revoke = await call({ client: b, name: "apiKey_revoke", args: { id } });
     expect(revoke.data.code).toBe("NOT_FOUND");
     expect(ids({ items: (await call({ client: a, name: "apiKey_list" })).data.items })).toEqual([
@@ -89,7 +92,7 @@ describe("apiKey_create over MCP (#88, #90)", () => {
     const proposed = await call({
       client: ai,
       name: "apiKey_create",
-      args: { name: "x", role: "viewer" },
+      args: { name: "x", role: "member" },
     });
     expect(proposed.data.code).toBe("NOT_FOUND");
     const user = {
@@ -100,7 +103,7 @@ describe("apiKey_create over MCP (#88, #90)", () => {
     const created = await call({
       client,
       name: "apiKey_create",
-      args: { name: "x", role: "viewer" },
+      args: { name: "x", role: "member" },
     });
     expect(created.data.code).toBe("FORBIDDEN");
     expect(await getDb().apikey.count({ where: { organizationId: user.organizationId } })).toBe(0);
@@ -114,7 +117,7 @@ describe("apiKey_create over MCP (#88, #90)", () => {
     };
     const { token } = signApprovalToken({
       operation: "apiKey.create",
-      input: { name: "x", role: "viewer" },
+      input: { name: "x", role: "member" },
       organizationId: context.organizationId,
       userId,
       secret: getEnv().BETTER_AUTH_SECRET,

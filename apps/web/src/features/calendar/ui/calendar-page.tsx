@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { calendarRange, type RawCalendarParams, readCalendarParams } from "../calendar-params";
 import { loadCalendar } from "../load-calendar";
@@ -91,7 +91,7 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
   const params = readCalendarParams({ raw, now, timeZone: TIME_ZONE });
   const today = readCalendarParams({ raw: {}, now, timeZone: TIME_ZONE }).date;
   const range = calendarRange({ params, timeZone: TIME_ZONE });
-  const [result, { ticketWrite }] = await Promise.all([
+  const [result, abilities] = await Promise.all([
     loadCalendar({ ...range, ...filtersOf({ params }) }),
     getCallerAbilities(),
   ]);
@@ -113,7 +113,7 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
         params={params}
         data={result.value}
         timeZone={TIME_ZONE}
-        canBook={ticketWrite}
+        canBook={can({ abilities, permission: "ticket:create" })}
       />
     </CalendarLayout>
   );

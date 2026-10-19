@@ -18,6 +18,7 @@ export async function TicketPayments({ locale, ticketId, canRequest }: TicketPay
     operation: listPayments,
     input: { ticketId, limit: LIMIT },
   });
+  if (!result.ok && result.error.code === "FORBIDDEN") return null;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
     <section data-slot="ticket-payments" className="grid gap-3">

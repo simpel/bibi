@@ -16,17 +16,17 @@ export type ItemCatalogProps = {
   locale: Locale;
   data: ItemFormData;
   page: { items: ItemDto[]; nextCursor: string | null };
-  canWrite: boolean;
+  canCreate: boolean;
   typeId?: string | undefined;
   cursor?: string | undefined;
 };
 
 /** The catalog: header with create, type filter, and the table (or an empty state). */
 export async function ItemCatalog(props: ItemCatalogProps) {
-  const { locale, data, page, canWrite, typeId, cursor } = props;
+  const { locale, data, page, canCreate, typeId, cursor } = props;
   const t = await getTranslations("item");
   const noTypes = data.types.length === 0;
-  const create = canWrite && !noTypes ? <CreateItemButton typeId={typeId} /> : undefined;
+  const create = canCreate && !noTypes ? <CreateItemButton typeId={typeId} /> : undefined;
   const toTypes = (
     <Button asChild variant="outline">
       <Link href={ROUTES.settingsTypes}>{t("goToTypes")}</Link>
@@ -44,7 +44,13 @@ export async function ItemCatalog(props: ItemCatalogProps) {
         />
       ) : (
         <>
-          <ItemTable items={page.items} types={data.types} venues={data.venues} locale={locale} />
+          <ItemTable
+            items={page.items}
+            types={data.types}
+            venues={data.venues}
+            venuesHidden={data.venuesHidden}
+            locale={locale}
+          />
           <CursorPagination
             pathname={ROUTES.items}
             cursor={cursor}

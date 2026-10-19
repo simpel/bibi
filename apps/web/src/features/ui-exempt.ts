@@ -4,6 +4,11 @@ export type UiExempt = { operation: string; reason: string };
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
   {
+    operation: "changeSet.apply",
+    reason:
+      "The assistant proposes change sets for requests that need several commands (ADR 0049); every step has its own page in the app.",
+  },
+  {
     operation: "assignment.listMine",
     reason:
       "The My work page (#253) shows it; until then the ticket list filters by Assigned to me and Following with its own list operation.",

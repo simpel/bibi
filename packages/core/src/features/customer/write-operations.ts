@@ -16,7 +16,7 @@ export const createCustomer = defineOperation({
     "type's own fields (e.g. org number).",
   input: CustomerCreateInputSchema,
   output: CustomerSchema,
-  permission: "customer:write",
+  permission: "customer:create",
   embeddable: customerEmbeddable,
   handler: async ({ input: { entityTypeId, fields, ...data }, context }) => {
     const type = await loadTypeOfBase({ context, entityTypeId, base: "CUSTOMER" });
@@ -32,7 +32,7 @@ export const createCustomer = defineOperation({
       },
       include: CUSTOMER_INCLUDE,
     });
-    const customer = toCustomerDto({ row });
+    const customer = toCustomerDto({ row, context });
     context.recordChange({ entityId: row.id, after: customer });
     return ok({ value: customer });
   },
@@ -46,7 +46,7 @@ export const updateCustomer = defineOperation({
     "clears a value). The type cannot be changed.",
   input: CustomerUpdateInputSchema,
   output: CustomerSchema,
-  permission: "customer:write",
+  permission: "customer:edit",
   embeddable: customerEmbeddable,
   handler: async ({ input: { id, fields: patch, ...data }, context }) => {
     const before = await loadCustomer({ context, id });
@@ -64,7 +64,7 @@ export const updateCustomer = defineOperation({
       data: { ...data, ...(json ? { fields: json } : {}) },
       include: CUSTOMER_INCLUDE,
     });
-    const customer = toCustomerDto({ row });
+    const customer = toCustomerDto({ row, context });
     context.recordChange({ entityId: id, before, after: customer });
     return ok({ value: customer });
   },

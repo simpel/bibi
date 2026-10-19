@@ -49,7 +49,7 @@ describe("customer and contact search (ADR 0008, 0022)", () => {
     expect(hits.find((hit) => hit.entityType === "customer")?.entityId).toBe(customer.id);
     const kitchen = testContext({
       organizationId: context.organizationId,
-      permissions: { search: ["read"], item: ["read"] },
+      permissions: { item: ["view"] },
     });
     const hidden = unwrap({
       result: await execute({ operation: search, input: { query: "Nordkust" }, context: kitchen }),

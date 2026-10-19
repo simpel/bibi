@@ -3,8 +3,10 @@ import {
   type ApiKeyDto,
   ApiKeySchema,
   createApiKey,
+  getApiKey,
   listApiKeys,
   revokeApiKey,
+  updateApiKey,
 } from "@okazi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
@@ -28,5 +30,7 @@ const ApiKeyCreatedRef = builder.objectRef<ApiKeyCreated>("ApiKeyCreated").imple
 });
 
 fieldFromOperation({ operation: listApiKeys, type: ApiKeyPageRef, name: "apiKeys" });
+fieldFromOperation({ operation: getApiKey, type: ApiKeyRef, name: "apiKey" });
 mutationFromOperation({ operation: createApiKey, type: ApiKeyCreatedRef });
 mutationFromOperation({ operation: revokeApiKey, type: ApiKeyRef });
+mutationFromOperation({ operation: updateApiKey, type: ApiKeyRef });

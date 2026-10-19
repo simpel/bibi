@@ -25,9 +25,9 @@ export async function checkNewTicket({
   const { entityTypeId, customerId, assigneeId } = input;
   for (const check of [
     checkDesiredPeriod(input),
-    checkReadable({ context, permission: "customer:read", path: "customerId" }),
+    checkReadable({ context, permission: "customer:view", path: "customerId" }),
     input.contactId
-      ? checkReadable({ context, permission: "contact:read", path: "contactId" })
+      ? checkReadable({ context, permission: "customer:view", path: "contactId" })
       : PASSED,
     await loadTypeOfBase({ context, entityTypeId, base: "TICKET" }),
     await checkCustomer({ context, customerId }),

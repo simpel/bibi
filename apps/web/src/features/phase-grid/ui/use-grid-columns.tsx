@@ -6,10 +6,10 @@ import type { TypeStates } from "@/features/item-state/load-item-state-data";
 import { GridCell } from "./grid-cell";
 import type { GridRow } from "./grid-rows";
 
-export type GridColumnsInput = { types: readonly TypeStates[]; canAdmin: boolean };
+export type GridColumnsInput = { types: readonly TypeStates[]; canEdit: boolean };
 
 /** The phase down the side and one column per item type, each cell a state dropdown. */
-export function useGridColumns({ types, canAdmin }: GridColumnsInput): ColumnDef<GridRow>[] {
+export function useGridColumns({ types, canEdit }: GridColumnsInput): ColumnDef<GridRow>[] {
   const t = useTranslations("phaseGrid");
   return useMemo(() => {
     const phase: ColumnDef<GridRow> = {
@@ -38,11 +38,11 @@ export function useGridColumns({ types, canAdmin }: GridColumnsInput): ColumnDef
               type={type}
               states={states}
               stateId={row.cells[type.id] ?? null}
-              canAdmin={canAdmin}
+              canEdit={canEdit}
             />
           ),
       }),
     );
     return [phase, ...perType];
-  }, [t, types, canAdmin]);
+  }, [t, types, canEdit]);
 }

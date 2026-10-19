@@ -17,7 +17,7 @@ export const reviseQuote = defineOperation({
     "ACCEPTED quote or a closed ticket.",
   input: QuoteIdInputSchema,
   output: QuoteSchema,
-  permission: "quote:write",
+  permission: "quote:edit",
   handler: async ({ input: { id }, context }) => {
     const source = await loadQuote({ context, id });
     if (!source) return notFound({ entity: "Quote" });

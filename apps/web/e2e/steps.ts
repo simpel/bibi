@@ -24,10 +24,13 @@ export async function signUp({ page, credentials }: PageInput & { credentials: C
 export async function createOrganization({ page, name }: PageInput & { name: string }) {
   await page.getByLabel("Organisationens namn").fill(name);
   await page.getByRole("button", { name: "Skapa organisation" }).click();
-  // A new organization continues to the first setup (ADR 0045); the steps that follow start
-  // from the venue list.
+  // A new organization continues to the first setup (ADR 0045). The app sends a user with a
+  // pending first setup back there (ADR 0046), so skip it; the steps that follow start from the
+  // venue list.
   await expect(page).toHaveURL(/\/sv\/onboarding$/);
   await expect(page.locator('[data-slot="assistant-chat"]')).toBeVisible();
+  await page.getByRole("button", { name: "Hoppa över just nu" }).click();
+  await expect(page).not.toHaveURL(/\/onboarding/);
   await page.goto("/sv/venues");
   await expect(page.getByText("Inga anläggningar ännu.")).toBeVisible();
 }

@@ -1,10 +1,10 @@
 import { z } from "zod";
 import type { ApiKeyDto } from "./schema";
 
-/** `apikey.metadata` (JSON text): the owning user and the key's role. */
+/** `apikey.metadata` (JSON text): the key's preset and the admin who created it (ADR 0050). */
 export const ApiKeyMetadataSchema = z.object({
-  userId: z.string().min(1),
   role: z.string().min(1),
+  createdBy: z.string().min(1),
 });
 
 export type ApiKeyMetadata = z.infer<typeof ApiKeyMetadataSchema>;
@@ -34,7 +34,7 @@ export type ApiKeyRow = {
 
 export type ParseKeyMetadataInput = { metadata: string | null };
 
-/** `null` for keys without a valid owner and role (they grant nothing, see packages/auth). */
+/** `null` for keys without valid metadata (they grant nothing, see packages/auth). */
 export function parseKeyMetadata({ metadata }: ParseKeyMetadataInput): ApiKeyMetadata | null {
   if (!metadata) return null;
   try {
@@ -45,9 +45,9 @@ export function parseKeyMetadata({ metadata }: ParseKeyMetadataInput): ApiKeyMet
   }
 }
 
-export type ToApiKeyDtoInput = { row: ApiKeyRow; ownerName: string | null };
+export type ToApiKeyDtoInput = { row: ApiKeyRow; createdByName: string | null };
 
-export function toApiKeyDto({ row, ownerName }: ToApiKeyDtoInput): ApiKeyDto {
+export function toApiKeyDto({ row, createdByName }: ToApiKeyDtoInput): ApiKeyDto {
   const metadata = parseKeyMetadata({ metadata: row.metadata });
   return {
     id: row.id,
@@ -55,8 +55,8 @@ export function toApiKeyDto({ row, ownerName }: ToApiKeyDtoInput): ApiKeyDto {
     name: row.name ?? "",
     start: row.start,
     role: metadata?.role ?? "",
-    userId: metadata?.userId ?? "",
-    ownerName,
+    createdBy: metadata?.createdBy ?? "",
+    createdByName,
     createdAt: row.createdAt,
     expiresAt: row.expiresAt,
     lastUsedAt: row.lastRequest,

@@ -1,11 +1,13 @@
 import {
   type AnyOperation,
   appError,
+  type ChangePreview,
   type ExecuteContext,
   err,
   fromZodError,
   hasPermission,
   ok,
+  previewChange,
   type Result,
 } from "@okazi/core";
 import type { McpToolMeta } from "../tools/meta";
@@ -34,6 +36,22 @@ async function summarize({ meta, operation, input, context }: SummaryInput): Pro
   return `${operation.name} ${JSON.stringify(input)}`;
 }
 
+type CheckInput = Pick<ProposeInput, "operation" | "args" | "context">;
+
+/** The signed-in user and the parsed input, or why the proposal is refused before anything. */
+function checkProposal({ operation, args, context }: CheckInput) {
+  const userId = context.actor.userId;
+  if (!userId)
+    return err({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
+  const parsed = operation.input.safeParse(args);
+  if (!parsed.success) return err({ error: fromZodError({ error: parsed.error }) });
+  if (!hasPermission({ permissions: context.permissions, permission: operation.permission })) {
+    const message = `Missing permission ${operation.permission}`;
+    return err({ error: appError({ code: "FORBIDDEN", message }) });
+  }
+  return ok({ value: { userId, input: parsed.data as unknown } });
+}
+
 /**
  * Turns an AI-proposed command into an `approval_required` result without executing it. Input
  * and permission are checked first so the user is never asked to approve something that fails.
@@ -46,18 +64,14 @@ export async function proposeApproval({
   context,
   secret,
 }: ProposeInput): Promise<Result<ApprovalRequired>> {
-  const userId = context.actor.userId;
-  if (!userId)
-    return err({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
-  const parsed = operation.input.safeParse(args);
-  if (!parsed.success) return err({ error: fromZodError({ error: parsed.error }) });
-  if (!hasPermission({ permissions: context.permissions, permission: operation.permission })) {
-    return err({
-      error: appError({ code: "FORBIDDEN", message: `Missing permission ${operation.permission}` }),
-    });
-  }
-  const bound = await bindProposal({ meta, operation, input: parsed.data, context });
+  const checked = checkProposal({ operation, args, context });
+  if (!checked.ok) return checked;
+  const { userId } = checked.value;
+  const bound = await bindProposal({ meta, operation, input: checked.value.input, context });
   if (!bound.ok) return bound;
+  // ADR 0049: the card shows what core computes, and a proposal that would fail is never shown.
+  const preview = await previewChange({ operation, input: bound.value, context });
+  if (!preview.ok) return preview;
   const input = toJsonValue({ value: bound.value });
   const { token, claims } = signApprovalToken({
     operation: operation.name,
@@ -76,6 +90,7 @@ export async function proposeApproval({
       summary,
       approvalToken: token,
       expiresAt: new Date(claims.exp * 1000).toISOString(),
+      preview: toJsonValue({ value: preview.value }) as ChangePreview,
     },
   });
 }

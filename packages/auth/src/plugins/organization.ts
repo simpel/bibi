@@ -1,4 +1,4 @@
-import { OWNER_ROLE } from "@okazi/core";
+import { ADMIN_ROLE } from "@okazi/core";
 import { APIError } from "better-auth/api";
 import { organization } from "better-auth/plugins";
 import { accessControl, orgRoles } from "../permissions";
@@ -17,7 +17,7 @@ export function organizationPlugin() {
   return organization({
     ac: accessControl,
     roles: orgRoles,
-    creatorRole: OWNER_ROLE,
+    creatorRole: ADMIN_ROLE,
     // Fixed roles only (ADR 0034): no `organizationRole` table, no dynamic access control.
     organizationHooks: {
       // Default ticket phases etc. are created by core as SYSTEM (ADR 0043).
@@ -25,7 +25,7 @@ export function organizationPlugin() {
       beforeAddMember: async ({ member }) => {
         assertFixedRole({ role: member.role });
       },
-      // Better Auth lets the creator (owner) bypass its own `member:update` check here, so the
+      // Better Auth lets the creator bypass its own `member:update` check here, so the
       // endpoint is closed outright: roles are assigned via core `member.assignRole` (audited).
       beforeUpdateMemberRole: async () => closed({ operation: "member.assignRole" }),
       // Invitations and removals go through core `member.*` (authorized and audited there);

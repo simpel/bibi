@@ -16,7 +16,7 @@ export const getPublicPaymentOperation = defineOperation({
   description: "Read a payment by its public token for the customer's payment page.",
   input: PublicPaymentInputSchema,
   output: PublicPaymentSchema,
-  permission: "payment:read",
+  permission: "payment:view",
   approval: false,
   handler: async ({ input, context }) => {
     const payment = await context.db.payment.findFirst({ where: { publicToken: input.token } });

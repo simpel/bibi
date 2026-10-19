@@ -10,7 +10,7 @@ import { configuredLanguageModel } from "./language-model";
 
 export type CreateChatHandlerInput = AssistantServerOptions & {
   /**
-   * Test/E2E seam only (`MockLanguageModelV4`). Without it the model is the one a platform admin
+   * Test/E2E seam only (`MockLanguageModelV4`). Without it the model is the one a superadmin
    * chose for `assistant.chat` (ADR 0015); unconfigured → 503 UNAVAILABLE.
    */
   model?: LanguageModel;

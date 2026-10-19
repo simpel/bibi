@@ -1,5 +1,6 @@
 "use client";
 
+import type { PermissionSet } from "@okazi/core";
 import { CommandDialog, CommandEmpty, CommandInput, CommandList } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
@@ -10,11 +11,14 @@ import { CommandGroups } from "./command-groups";
 import { useCommandShortcut } from "./use-command-shortcut";
 import { useVenueShortcuts } from "./use-venue-shortcuts";
 
+export type CommandBarProps = { permissions: PermissionSet };
+
 /**
- * ⌘K command bar: navigation and venue and item quick actions plus "Ask assistant" for natural
- * language (ADR 0007). Free text + Enter hands a one-shot question to the assistant on the start page.
+ * ⌘K command bar: navigation and quick actions the caller's `permissions` allow, plus "Ask
+ * assistant" for natural language (ADR 0007). Free text + Enter hands a one-shot question to the
+ * assistant on the start page.
  */
-export function CommandBar() {
+export function CommandBar({ permissions }: CommandBarProps) {
   const t = useTranslations("commandBar");
   const { ask, goHome } = useAssistant();
   const [open, setOpen] = useState(false);
@@ -29,7 +33,7 @@ export function CommandBar() {
     setLoaded(true);
   }, []);
   useCommandShortcut({ onToggle: toggle });
-  const venues = useVenueShortcuts({ enabled: loaded });
+  const venues = useVenueShortcuts({ enabled: loaded, permissions });
   const onAsk = ({ text }: { text: string }) => {
     if (text) ask({ text });
     else goHome();
@@ -48,7 +52,7 @@ export function CommandBar() {
         <CommandList>
           {query.trim() ? null : <CommandEmpty>{t("empty")}</CommandEmpty>}
           <AskAssistantGroup query={query} onAsk={onAsk} />
-          <CommandGroups venues={venues} onDone={close} />
+          <CommandGroups venues={venues} permissions={permissions} onDone={close} />
         </CommandList>
       </CommandDialog>
     </>

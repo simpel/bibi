@@ -17,7 +17,7 @@ const closeQuote = ({ name, to, description }: CloseInput) =>
     description,
     input: QuoteIdInputSchema,
     output: QuoteSchema,
-    permission: "quote:write",
+    permission: "quote:edit",
     handler: async ({ input: { id }, context }) => {
       const before = await loadQuote({ context, id });
       if (!before) return notFound({ entity: "Quote" });
@@ -53,7 +53,7 @@ export const acceptQuote = defineOperation({
     "move fails the accept without any change. Any other starting status is a CONFLICT.",
   input: QuoteIdInputSchema,
   output: QuoteSchema,
-  permission: "quote:write",
+  permission: "quote:edit",
   handler: async ({ input: { id }, context }) => {
     const before = await loadQuote({ context, id });
     if (!before) return notFound({ entity: "Quote" });

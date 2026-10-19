@@ -21,14 +21,27 @@ export const lindholmen: DemoOrg = {
   slug: "lindholmen-demo",
   name: "Lindholmen Experience Center",
   users: [
-    { name: "Anna Berg", role: "owner" },
-    { name: "Erik Lund", role: "member" },
-    { name: "Sara Nilsson", role: "member" },
+    { name: "Anna Berg", role: "admin" },
+    { name: "Erik Lund", role: "manager" },
+    { name: "Sara Nilsson", role: "manager" },
     { name: "Johan Ek", role: "admin" },
-    { name: "Maria Holm", role: "member" },
-    { name: "Ali Karimi", role: "member" },
-    { name: "Peter Sjoberg", role: "viewer" },
-    { name: "Lena Strand", role: "member" },
+    // Handles bookings but not money (ADR 0050).
+    {
+      name: "Maria Holm",
+      role: "manager",
+      overrides: [{ feature: "payment", action: "view", effect: "deny" }],
+    },
+    { name: "Ali Karimi", role: "manager" },
+    // Reads everything and also keeps the catalogue up to date.
+    {
+      name: "Peter Sjoberg",
+      role: "member",
+      overrides: [
+        { feature: "item", action: "create", effect: "allow" },
+        { feature: "item", action: "edit", effect: "allow" },
+      ],
+    },
+    { name: "Lena Strand", role: "manager" },
   ],
   config: {
     ...lindholmenLists,

@@ -1,5 +1,6 @@
 {
   "common": {
+    "hidden": "Dold",
     "appName": "Okazi",
     "save": "Spara",
     "cancel": "Avbryt",
@@ -196,7 +197,7 @@
     "recent": "Senaste",
     "chats": "Chattar",
     "showMore": "Visa fler",
-    "platformAdmin": "Plattformsadmin",
+    "platformAdmin": "Superadmin",
     "groups": {
       "primary": "Översikt",
       "work": "Arbete",
@@ -206,7 +207,9 @@
     "integrations": "Integrationer",
     "itemStates": "Artikelstatusar",
     "ticketTemplates": "Fördefinierade ärenden",
-    "onboarding": "Guidad uppsättning"
+    "onboarding": "Guidad uppsättning",
+    "apiKeys": "API-nycklar",
+    "permissions": "Behörigheter"
   },
   "venue": {
     "singular": "Anläggning",
@@ -1242,13 +1245,13 @@
     "thinking": "Tänker...",
     "newConversation": "Ny konversation",
     "approval": {
-      "title": "Godkänn åtgärd",
+      "title": "Bekräfta ändring",
       "description": "Assistenten vill utföra följande ändring.",
-      "approve": "Godkänn",
-      "reject": "Avslå",
-      "approving": "Godkänner...",
-      "approved": "Godkänd",
-      "rejected": "Avslagen",
+      "approve": "Bekräfta",
+      "reject": "Avbryt",
+      "approving": "Bekräftar...",
+      "approved": "Bekräftad",
+      "rejected": "Avbruten",
       "expired": "Förslaget har gått ut",
       "expiresIn": "Gäller i {time}",
       "approvedToast": "Åtgärden är utförd.",
@@ -1343,7 +1346,11 @@
         "startsAt": "Startar",
         "itemTypes": "Artikeltyper",
         "phases": "Faser",
-        "cells": "Rutor i rutnätet"
+        "cells": "Rutor i rutnätet",
+        "capacity": "Kapacitet",
+        "setupId": "Uppställning",
+        "status": "Status",
+        "price": "Pris"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -1426,6 +1433,26 @@
         "creating": "Skapar...",
         "change": "Ändra något",
         "changeMessage": "Jag vill ändra något."
+      },
+      "needsAdmin": "Kräver admin",
+      "changes": {
+        "record": "Post",
+        "field": "Fält",
+        "before": "Före",
+        "after": "Efter",
+        "empty": "–",
+        "none": "Inget ändras."
+      },
+      "consequences": {
+        "title": "Vad det här påverkar",
+        "understand": "Jag förstår vad det här påverkar",
+        "other": "Ändringen påverkar även annat.",
+        "items": {
+          "priceKeptOnQuotes": "{lines, plural, one {# rad} other {# rader}} i {quotes, plural, one {# offert} other {# offerter}} behåller det gamla priset. Det nya priset gäller rader som läggs till senare.",
+          "ticketsMove": "{count, plural, one {# ärende flyttas} other {# ärenden flyttas}} till {target}.",
+          "linesMove": "{count, plural, one {# rad flyttas} other {# rader flyttas}} till {target}.",
+          "gridCellsCleared": "{count, plural, one {# cell i rutnätet} other {# celler i rutnätet}} töms."
+        }
       }
     },
     "description": "Chatta med assistenten om anläggningar, artiklar och färdigheter.",
@@ -1908,7 +1935,7 @@
     "resetOnboarding": "Återställ introduktionen",
     "resettingOnboarding": "Återställer introduktionen…",
     "onboardingReset": "Introduktionen är återställd för {name}. Den visas vid nästa sidvisning.",
-    "platformAdmin": "Plattformsadmin"
+    "platformAdmin": "Superadmin"
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",
@@ -2070,16 +2097,14 @@
     }
   },
   "role": {
-    "viewer": "Läsare",
     "member": "Medlem",
+    "manager": "Bokningsansvarig",
     "admin": "Administratör",
-    "owner": "Ägare",
     "unknown": "Ingen åtkomst",
     "descriptions": {
-      "viewer": "Läser allt, ändrar inget.",
-      "member": "Hanterar också kunder, ärenden, offerter, betalningar och blad.",
-      "admin": "Sätter också upp typer, listor, faser, blad, prislistor, medlemmar och API-nycklar.",
-      "owner": "Allt, även andra ägare och själva organisationen."
+      "member": "Ser allt utom granskningsloggen och assistentens organisationsinställningar; ändrar inget.",
+      "manager": "Hanterar också bokningar och försäljning: ärenden, program, kunder, offerter, betalningar och blad.",
+      "admin": "Allt i organisationen: även inställningar, medlemmar, API-nycklar, betalkonto och behörigheter."
     }
   },
   "auditLog": {
@@ -2093,7 +2118,8 @@
     "actor": {
       "USER": "Okänd användare",
       "AI": "Assistenten",
-      "SYSTEM": "Systemet"
+      "SYSTEM": "Systemet",
+      "API_KEY": "API-nyckel"
     }
   },
   "payment": {
@@ -2176,8 +2202,9 @@
     "plural": "Medlemmar",
     "listDescription": "Personalen i organisationen och deras åtkomstroll.",
     "empty": "Inga medlemmar.",
-    "assignRoles": "Byt roll",
-    "assignDescription": "Välj roll för {name}.",
+    "roleOf": "Roll för {name}",
+    "memberSince": "Medlem sedan",
+    "detailDescription": "Kontaktuppgifter och behörighet för medlemmen.",
     "updated": "Rollen har uppdaterats.",
     "columns": {
       "name": "Namn",
@@ -2205,7 +2232,8 @@
     },
     "remove": "Ta bort",
     "removeConfirm": "Ta bort {name} från organisationen? Hen förlorar åtkomsten direkt.",
-    "removed": "Medlemmen har tagits bort."
+    "removed": "Medlemmen har tagits bort.",
+    "permissions": "Behörigheter"
   },
   "docs": {
     "title": "Okazi Docs",
@@ -2273,7 +2301,7 @@
         "getting-started": {
           "title": "Komma igång",
           "lead": "Logga in, välj organisation och lär dig var du hittar saker i menyn.",
-          "body": "# Logga in\n\n1. Öppna Okazi och välj **Logga in**. Du kan använda lösenord, en **Inloggningslänk** som skickas med e-post eller en **Engångskod**.\n2. Är du ny, välj **Skapa konto**. Lösenordet ska vara minst 10 tecken.\n3. Har en kollega bjudit in dig: öppna länken i inbjudningsmejlet, logga in med den inbjudna e-postadressen och välj **Acceptera inbjudan**.\n\nTillhör du flera organisationer hamnar du på **Välj organisation**. Välj en, eller välj **Skapa organisation** för att starta en ny. Du kan byta senare från användarmenyn.\n\n# Startsidan är assistenten\n\nNär du loggat in landar du i en chatt. Det är assistenten, och det är det snabbaste sättet att hitta saker eller göra en ändring. Välj **Ny chatt** för att börja om. Tidigare konversationer listas i vänstermenyn under **Assistent**. Se [Assistenten](/docs/guide/assistant).\n\n# Vänstermenyn\n\nMenyn har tre delar.\n\n- **Assistent** överst: startsidan, **Ny chatt** och dina senaste konversationer.\n- **Arbete**: **Ärenden** och **Kunder**.\n- **Katalog**: **Artiklar** och **Anläggningar**.\n\nLängst ned till vänster finns **Inställningar** (bara för ägare och administratörer) och din användarmeny. Användarmenyn innehåller tema (ljust, mörkt eller system), språk (svenska eller engelska), byte av organisation, **Mina färdigheter** och **Logga ut**.\n\nUppe till höger finns ett kommandofält. Tryck Cmd+K (Ctrl+K i Windows) för att söka eller hoppa till en sida. Till vänster om det visar en brödsmula var du är. Assistenten finns på startsidan.\n\n# En första checklista\n\nÄr din organisation ny och du är administratör, gå igenom listan nedan. Varje steg länkar till en sida med detaljer.\n\n1. Skapa era typer under **Inställningar, Typer**, eller importera en mall. Se [Konfiguration](/docs/guide/configuration).\n2. Lägg till era listor, till exempel allergener, under **Inställningar, Listor**.\n3. Se över era faser under **Inställningar, Faser**.\n4. Skapa en anläggning och lägg sedan till lokaler och andra artiklar. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n5. Bjud in kollegor under **Inställningar, Medlemmar**. Se [Medlemmar och roller](/docs/guide/members-and-roles).\n6. Koppla Stripe under **Inställningar, Betalningar** om kunderna ska kunna betala online. Se [Betalningar](/docs/guide/payments).\n7. Lägg till en kund och skapa ett ärende. Se [Ärenden](/docs/guide/tickets).\n\nÄr du inte administratör ser du inte **Inställningar**. Be en administratör i din organisation ställa in det du behöver."
+          "body": "# Logga in\n\n1. Öppna Okazi och välj **Logga in**. Du kan använda lösenord, en **Inloggningslänk** som skickas med e-post eller en **Engångskod**.\n2. Är du ny, välj **Skapa konto**. Lösenordet ska vara minst 10 tecken.\n3. Har en kollega bjudit in dig: öppna länken i inbjudningsmejlet, logga in med den inbjudna e-postadressen och välj **Acceptera inbjudan**.\n\nTillhör du flera organisationer hamnar du på **Välj organisation**. Välj en, eller välj **Skapa organisation** för att starta en ny. Du kan byta senare från användarmenyn.\n\n# Startsidan är assistenten\n\nNär du loggat in landar du i en chatt. Det är assistenten, och det är det snabbaste sättet att hitta saker eller göra en ändring. Välj **Ny chatt** för att börja om. Tidigare konversationer listas i vänstermenyn under **Assistent**. Se [Assistenten](/docs/guide/assistant).\n\n# Vänstermenyn\n\nMenyn har tre delar.\n\n- **Assistent** överst: startsidan, **Ny chatt** och dina senaste konversationer.\n- **Arbete**: **Ärenden** och **Kunder**.\n- **Katalog**: **Artiklar** och **Anläggningar**.\n\nLängst ned till vänster finns **Inställningar** (bara för administratörer) och din användarmeny. Användarmenyn innehåller tema (ljust, mörkt eller system), språk (svenska eller engelska), byte av organisation, **Mina färdigheter** och **Logga ut**.\n\nUppe till höger finns ett kommandofält. Tryck Cmd+K (Ctrl+K i Windows) för att söka eller hoppa till en sida. Till vänster om det visar en brödsmula var du är. Assistenten finns på startsidan.\n\n# En första checklista\n\nÄr din organisation ny och du är administratör, gå igenom listan nedan. Varje steg länkar till en sida med detaljer.\n\n1. Skapa era typer under **Inställningar, Typer**, eller importera en mall. Se [Konfiguration](/docs/guide/configuration).\n2. Lägg till era listor, till exempel allergener, under **Inställningar, Listor**.\n3. Se över era faser under **Inställningar, Faser**.\n4. Skapa en anläggning och lägg sedan till lokaler och andra artiklar. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n5. Bjud in kollegor under **Inställningar, Medlemmar**. Se [Medlemmar och roller](/docs/guide/members-and-roles).\n6. Koppla Stripe under **Inställningar, Betalningar** om kunderna ska kunna betala online. Se [Betalningar](/docs/guide/payments).\n7. Lägg till en kund och skapa ett ärende. Se [Ärenden](/docs/guide/tickets).\n\nÄr du inte administratör ser du inte **Inställningar**. Be en administratör i din organisation ställa in det du behöver."
         },
         "assistant": {
           "title": "Assistenten",
@@ -2302,25 +2330,25 @@
         },
         "configuration": {
           "title": "Konfiguration",
-          "lead": "Ägare och administratörer ställer in vad saker heter och hur de fungerar i er organisation. Allt här är era egna data.",
-          "body": "# Vem kan konfigurera\n\nBara ägare och administratörer ser **Inställningar** i vänstermenyn. Den öppnar en sida som listar alla konfigurationsområden. Ändringar påverkar alla i organisationen.\n\n# Typer och fält\n\nUnder **Inställningar, Typer** definierar du vilka sorters poster ni arbetar med: artiklar, kunder, kontakter, ärenden, behov och programpunkter. Till exempel \"Konferensrum\", \"Rätt\", \"Företag\" eller \"Konferens\".\n\n1. Välj **Skapa typ**, ange vad den gäller och namnge den.\n2. För en artikeltyp slår du på beteenden som **Prissatt**, **Bokningsbar** eller **Uppställningar**. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n3. Lägg till fält. Ett fält kan vara text, tal, ja/nej, datum, val, flerval eller en länk till en annan post. Markera det som obligatoriskt om det alltid måste fyllas i.\n\nEn typ kan inte arkiveras så länge den används, och ett fält kan inte byta sort när det har data.\n\n# Listor\n\nUnder **Inställningar, Listor** håller du era egna ordlistor, som allergener, kostval eller tillgänglighetsbehov. Fält och behov pekar på en lista. För att komma igång väljer du **Importera EU:s 14 allergener**. Du kan redigera listan efteråt. En lista eller ett värde kan inte arkiveras så länge ett fält använder det eller ett behov räknar det.\n\n# Uppställningar\n\nUnder **Inställningar, Uppställningar** namnger du era lokalupplägg och anger ställtid. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n\n# Faser\n\nUnder **Inställningar, Faser** bestämmer du vilka faser era ärenden går igenom, vad de heter och i vilken ordning de visas på tavlan. Inget om en fas är fast: varje fas har ett namn, en färg och några flaggor som avgör vad Okazi gör. Ni behöver en startfas och minst en fas som avslutar ärendet. Se [Ärenden](/docs/guide/tickets).\n\n1. Välj **Skapa fas**, eller **Importera mallen Konferensgård** för en färdig uppsättning.\n2. Använd **Redigera övergångar** för att välja vilka faser ett ärende får gå till från varje fas.\n3. Ändra ordning med pilarna.\n\nEn fas arkiveras, den tas aldrig bort. Finns det ärenden i den väljer du vilken fas de flyttas till.\n\n# Blad\n\nUnder **Inställningar, Blad** definierar du ett blad som \"Köksorder\": namnge det, välj vilka artikeltyper och fält det tar med, vilka listors behov det räknar och vilken roll som tar emot det. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Prislistor\n\nUnder **Inställningar, Prislistor** skapar du en lista för en kund eller för alla, med en giltighetstid. Välj antingen en generell rabatt i procent eller ett pris per artikel, inte båda. Nya orderrader använder listans priser, och en arkiverad lista gäller inte längre.\n\n# Betalningar och färdigheter\n\n**Inställningar, Betalningar** kopplar Stripe. Se [Betalningar](/docs/guide/payments). **Inställningar, Färdigheter** innehåller organisationens färdigheter för assistenten. Se [Assistenten](/docs/guide/assistant).\n\n# Mallar och assistenten\n\nMallar som startuppsättningen Konferensgård är valfria. De är bara data, så du kan ändra allt efteråt. Du kan också be assistenten föreslå en uppsättning, till exempel \"Vi är en herrgård med restaurang\". Du godkänner varje ändring."
+          "lead": "Administratörer ställer in vad saker heter och hur de fungerar i er organisation. Allt här är era egna data.",
+          "body": "# Vem kan konfigurera\n\nBara administratörer ser **Inställningar** i vänstermenyn. Den öppnar en sida som listar alla konfigurationsområden. Ändringar påverkar alla i organisationen.\n\n# Typer och fält\n\nUnder **Inställningar, Typer** definierar du vilka sorters poster ni arbetar med: artiklar, kunder, kontakter, ärenden, behov och programpunkter. Till exempel \"Konferensrum\", \"Rätt\", \"Företag\" eller \"Konferens\".\n\n1. Välj **Skapa typ**, ange vad den gäller och namnge den.\n2. För en artikeltyp slår du på beteenden som **Prissatt**, **Bokningsbar** eller **Uppställningar**. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n3. Lägg till fält. Ett fält kan vara text, tal, ja/nej, datum, val, flerval eller en länk till en annan post. Markera det som obligatoriskt om det alltid måste fyllas i.\n\nEn typ kan inte arkiveras så länge den används, och ett fält kan inte byta sort när det har data.\n\n# Listor\n\nUnder **Inställningar, Listor** håller du era egna ordlistor, som allergener, kostval eller tillgänglighetsbehov. Fält och behov pekar på en lista. För att komma igång väljer du **Importera EU:s 14 allergener**. Du kan redigera listan efteråt. En lista eller ett värde kan inte arkiveras så länge ett fält använder det eller ett behov räknar det.\n\n# Uppställningar\n\nUnder **Inställningar, Uppställningar** namnger du era lokalupplägg och anger ställtid. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n\n# Faser\n\nUnder **Inställningar, Faser** bestämmer du vilka faser era ärenden går igenom, vad de heter och i vilken ordning de visas på tavlan. Inget om en fas är fast: varje fas har ett namn, en färg och några flaggor som avgör vad Okazi gör. Ni behöver en startfas och minst en fas som avslutar ärendet. Se [Ärenden](/docs/guide/tickets).\n\n1. Välj **Skapa fas**, eller **Importera mallen Konferensgård** för en färdig uppsättning.\n2. Använd **Redigera övergångar** för att välja vilka faser ett ärende får gå till från varje fas.\n3. Ändra ordning med pilarna.\n\nEn fas arkiveras, den tas aldrig bort. Finns det ärenden i den väljer du vilken fas de flyttas till.\n\n# Blad\n\nUnder **Inställningar, Blad** definierar du ett blad som \"Köksorder\": namnge det, välj vilka artikeltyper och fält det tar med, vilka listors behov det räknar och vilken roll som tar emot det. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Prislistor\n\nUnder **Inställningar, Prislistor** skapar du en lista för en kund eller för alla, med en giltighetstid. Välj antingen en generell rabatt i procent eller ett pris per artikel, inte båda. Nya orderrader använder listans priser, och en arkiverad lista gäller inte längre.\n\n# Betalningar och färdigheter\n\n**Inställningar, Betalningar** kopplar Stripe. Se [Betalningar](/docs/guide/payments). **Inställningar, Färdigheter** innehåller organisationens färdigheter för assistenten. Se [Assistenten](/docs/guide/assistant).\n\n# Mallar och assistenten\n\nMallar som startuppsättningen Konferensgård är valfria. De är bara data, så du kan ändra allt efteråt. Du kan också be assistenten föreslå en uppsättning, till exempel \"Vi är en herrgård med restaurang\". Du godkänner varje ändring."
         },
         "members-and-roles": {
           "title": "Medlemmar och roller",
           "lead": "Bjud in kollegor, ge dem rätt behörighetsnivå och ta bort dem när de slutar.",
-          "body": "# Behörighetsnivåer\n\nVarje medlem har en åtkomstroll. Rollerna är fasta och går från minst till mest åtkomst.\n\n- **Läsare**: kan läsa allt men ändrar ingenting.\n- **Medlem**: kan också arbeta med den dagliga datan, som kunder, ärenden, programpunkter, behov, betalningar och blad.\n- **Administratör**: allt en medlem kan, plus konfiguration (typer, listor, faser, blad, prislistor), medlemmar och API-nycklar.\n- **Ägare**: allt, även andra ägare och själva organisationen. En organisation har alltid minst en ägare.\n\nBara ägare och administratörer ser **Inställningar**. Sidorna kontrollerar själva din behörighet, så att dölja menyn är bara en bekvämlighet.\n\n# Bjud in en kollega\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Bjud in medlem** och ange e-postadress och roll.\n3. Välj **Skicka inbjudan**.\n\nOkazi mejlar en länk. Personen loggar in eller skapar ett konto med samma e-postadress och väljer **Acceptera inbjudan**. Därefter går hen med i den inbjudna rollen. En inbjudan går ut efter 48 timmar.\n\nUnder **Väntande inbjudningar** ser du vem som inte svarat än. Välj **Återkalla** för att avbryta en inbjudan, så slutar länken fungera. Du kan inte ge någon mer åtkomst än du själv har, och en e-postadress som redan är medlem kan inte bjudas in igen.\n\n# Byt roll eller ta bort någon\n\nPå medlemssidan kan du byta en medlems roll. Ägare kan bara ändras av en annan ägare. För att ta bort någon väljer du **Ta bort**. Hen förlorar åtkomsten direkt, och det hen skapat finns kvar i historiken.\n\n# Vem som ansvarar för vad på ett ärende\n\nÅtkomstrollerna avgör vad du får göra i appen. En separat idé avgör vem som ansvarar för ett ärende.\n\n- Varje ärende har en ansvarig, som måste vara medlem. Andra medlemmar kan följa den för att hållas informerade.\n- Vissa faser kräver en ansvarig innan ett ärende kan gå in i dem, till exempel Bekräftad.\n- Byt ansvarig med **Byt ansvarig** och välj **Följ** eller **Sluta följa** för dig själv. Listan över ärenden kan visa bara det som är **Tilldelade mig** eller det du **Följer**.\n\nAdministratörer definierar ansvar som \"Kökschef\" under **Inställningar, Ansvar**. Ett ansvar täcker vissa artikeltyper och har en standardperson och följare. Kommer senare: ett ärende får automatiskt en ansvarig per ansvar utifrån sina artiklar, och de matchande bladen går till den personen och följarna.\n\n# Assistenten och API-åtkomst\n\nAssistenten agerar med din roll, så den kan aldrig göra mer än du. Kopplar ni andra verktyg använder de en roll som aldrig är över din. Se [Autentisering](/docs/developers/authentication)."
+          "body": "# Behörighetsnivåer\n\nVarje medlem har en förinställning som en administratör kan finjustera per person. Förinställningarna är fasta och går från minst till mest åtkomst.\n\n- **Medlem**: kan läsa allt men ändrar ingenting.\n- **Bokningsansvarig**: kan också hantera bokningar och den dagliga datan, som kunder, ärenden, programpunkter, behov, betalningar och blad.\n- **Administratör**: allt i organisationen: konfiguration (typer, listor, faser, blad, prislistor), medlemmar, API-nycklar och själva organisationen. En organisation har alltid minst en administratör.\n\n# Finjustera för en person\n\nEn administratör kan ge en person mer eller mindre än förinställningen, per del av appen.\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Behörigheter** på personens rad.\n3. Slå på eller av åtgärder, till exempel låt en medlem också redigera artiklar, eller dölj betalningar för en bokningsansvarig. Stänger du av **Visa** döljs den delen av appen för personen.\n4. Välj **Spara**.\n\nÄndrade celler markeras, och **Återställ** går tillbaka till förinställningen. Att hantera medlemmar, API-nycklar och betalkontot ligger alltid kvar hos administratörer.\n\nDu ser bara de delar av appen du får visa. Sidorna kontrollerar själva din behörighet, så att dölja menyn är bara en bekvämlighet.\n\n# Bjud in en kollega\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Bjud in medlem** och ange e-postadress och roll.\n3. Välj **Skicka inbjudan**.\n\nOkazi mejlar en länk. Personen loggar in eller skapar ett konto med samma e-postadress och väljer **Acceptera inbjudan**. Därefter går hen med i den inbjudna rollen. En inbjudan går ut efter 48 timmar.\n\nUnder **Väntande inbjudningar** ser du vem som inte svarat än. Välj **Återkalla** för att avbryta en inbjudan, så slutar länken fungera. Du kan inte ge någon mer åtkomst än du själv har, och en e-postadress som redan är medlem kan inte bjudas in igen.\n\n# Byt roll eller ta bort någon\n\nPå medlemssidan kan du byta en medlems roll. Du kan inte ändra eller ta bort någon vars roll är över din egen. För att ta bort någon väljer du **Ta bort**. Hen förlorar åtkomsten direkt, och det hen skapat finns kvar i historiken.\n\n# Vem som ansvarar för vad på ett ärende\n\nÅtkomstrollerna avgör vad du får göra i appen. En separat idé avgör vem som ansvarar för ett ärende.\n\n- Varje ärende har en ansvarig, som måste vara medlem. Andra medlemmar kan följa den för att hållas informerade.\n- Vissa faser kräver en ansvarig innan ett ärende kan gå in i dem, till exempel Bekräftad.\n- Byt ansvarig med **Byt ansvarig** och välj **Följ** eller **Sluta följa** för dig själv. Listan över ärenden kan visa bara det som är **Tilldelade mig** eller det du **Följer**.\n\nAdministratörer definierar ansvar som \"Kökschef\" under **Inställningar, Ansvar**. Ett ansvar täcker vissa artikeltyper och har en standardperson och följare. Kommer senare: ett ärende får automatiskt en ansvarig per ansvar utifrån sina artiklar, och de matchande bladen går till den personen och följarna.\n\n# Assistenten och API-åtkomst\n\nAssistenten agerar med dina behörigheter, så den kan aldrig göra mer än du. Verktyg ni kopplar med OAuth agerar också som du. API-nycklar tillhör organisationen och har egna behörigheter som en administratör sätter. Se [Autentisering](/docs/developers/authentication)."
         }
       },
       "developers": {
         "overview": {
           "title": "Översikt för utvecklare",
           "lead": "Okazi har fyra ingångar: webbappen, ett REST-API, en GraphQL-graf och en MCP-server. Alla kör samma operationer med samma behörigheter.",
-          "body": "# En uppsättning operationer, fyra ytor\n\nVarje funktion i Okazi definieras en gång som en **kärnoperation**, till exempel `venue.create` eller `ticket.list`. Varje operation har ett indataschema, ett utdataschema, en behörighet som krävs och en hanterare. Ytorna genereras från den listan:\n\n- **REST** på `{{webUrl}}/api/v1`, beskrivet av ett OpenAPI 3.1-dokument.\n- **GraphQL** på `{{webUrl}}/api/graphql`, för att läsa relaterad data i ett anrop.\n- **MCP** på `{{mcpUrl}}/mcp`, ett verktyg per operation, för AI-assistenter som Claude.\n- **Webbappen**, som personalen använder varje dag.\n\nEftersom allt kommer från samma operationer finns ett kommando som finns i webbappen också i REST och MCP, med samma validering och samma fel. Ett paritetstest i CI ser till att det förblir så.\n\n# Organisationer\n\nAll data tillhör en **organisation**. Varje inloggningsuppgift motsvarar en användare i en organisation, och varje operation är avgränsad till den organisationen. Du kan aldrig läsa eller ändra en annan organisations data, oavsett yta.\n\n# Granskning och loggning\n\nVarje kommando skriver en rad i historiken med aktör (`user` eller `ai`), yta och ett request-id. Ägare och administratörer kan läsa historiken i appen och via `auditLog.list`.\n\n# Vidare läsning\n\n- [Autentisering](/docs/developers/authentication): API-nycklar, sessioner och OAuth.\n- [REST-API](/docs/developers/rest-api) och [REST-referensen]({{webUrl}}/api/v1/docs).\n- [MCP-server](/docs/developers/mcp) och [MCP-verktygsreferensen](/docs/reference/mcp).\n- [AI-godkännanden](/docs/developers/approvals): varför AI-kommandon blir förslag.\n- [Fel och gränser](/docs/developers/errors).\n"
+          "body": "# En uppsättning operationer, fyra ytor\n\nVarje funktion i Okazi definieras en gång som en **kärnoperation**, till exempel `venue.create` eller `ticket.list`. Varje operation har ett indataschema, ett utdataschema, en behörighet som krävs och en hanterare. Ytorna genereras från den listan:\n\n- **REST** på `{{webUrl}}/api/v1`, beskrivet av ett OpenAPI 3.1-dokument.\n- **GraphQL** på `{{webUrl}}/api/graphql`, för att läsa relaterad data i ett anrop.\n- **MCP** på `{{mcpUrl}}/mcp`, ett verktyg per operation, för AI-assistenter som Claude.\n- **Webbappen**, som personalen använder varje dag.\n\nEftersom allt kommer från samma operationer finns ett kommando som finns i webbappen också i REST och MCP, med samma validering och samma fel. Ett paritetstest i CI ser till att det förblir så.\n\n# Organisationer\n\nAll data tillhör en **organisation**. Varje inloggningsuppgift motsvarar en användare i en organisation, och varje operation är avgränsad till den organisationen. Du kan aldrig läsa eller ändra en annan organisations data, oavsett yta.\n\n# Granskning och loggning\n\nVarje kommando skriver en rad i historiken med aktör (`user` eller `ai`), yta och ett request-id. Administratörer kan läsa historiken i appen och via `auditLog.list`.\n\n# Vidare läsning\n\n- [Autentisering](/docs/developers/authentication): API-nycklar, sessioner och OAuth.\n- [REST-API](/docs/developers/rest-api) och [REST-referensen]({{webUrl}}/api/v1/docs).\n- [MCP-server](/docs/developers/mcp) och [MCP-verktygsreferensen](/docs/reference/mcp).\n- [AI-godkännanden](/docs/developers/approvals): varför AI-kommandon blir förslag.\n- [Fel och gränser](/docs/developers/errors).\n"
         },
         "authentication": {
           "title": "Autentisering",
           "lead": "Varje anrop görs som en användare i en organisation. Använd en API-nyckel för integrationer mellan system och OAuth för MCP-klienter och tredjepartsappar.",
-          "body": "# API-nycklar (REST och GraphQL)\n\nEn API-nyckel tillhör en användare och är knuten till en organisation. Behörigheten kommer från rollen nyckeln skapades med. Skicka den som bearer-token:\n\n```\nAuthorization: Bearer okz_<din nyckel>\n```\n\nHeadern `x-api-key: okz_<din nyckel>` fungerar också. Nycklar börjar alltid med `okz_`.\n\n- Nycklar är begränsade till 600 anrop per minut.\n- Ägarens medlemskap kontrolleras vid varje anrop. Lämnar användaren organisationen slutar nyckeln att fungera.\n- Behandla en nyckel som ett lösenord. Lägg den aldrig i frontendkod eller i ett publikt repo.\n\nAPI-nycklar utfärdas av en ägare eller administratör i organisationen. Självbetjäning för nycklar under Inställningar kommer senare.\n\n# OAuth 2.1 (MCP-klienter och appar)\n\nMCP-klienter som Claude Desktop loggar in med OAuth. Klienten skickas till Okazis inloggningssida, användaren loggar in och väljer organisation, och klienten får en åtkomsttoken som agerar som den användaren.\n\n- Discovery: `{{webUrl}}/.well-known/oauth-authorization-server`\n- Metadata för MCP-resursen: `{{mcpUrl}}/.well-known/oauth-protected-resource`\n- Auktorisering: `{{webUrl}}/api/auth/oauth2/authorize`\n- Token: `{{webUrl}}/api/auth/oauth2/token`\n- Scopes: `okazi:read` och `okazi:write`\n\nDe flesta MCP-klienter sköter allt detta åt dig när du lägger till serverns URL.\n\n# Sessionscookie\n\nWebbappen använder en sessionscookie. Anrop från en inloggad webbläsare till `/api/v1` och `/api/graphql` autentiseras på samma sätt. Det är tänkt för appen själv, inte för integrationer.\n\n# Behörigheter\n\nVarje medlem har en av fyra fasta roller: **ägare**, **administratör**, **medlem** eller **läsare**. Varje operation anger vilken behörighet den kräver, till exempel `venue:create`. Referensen visar behörigheten för varje route och verktyg. Ett anrop utan den misslyckas med `FORBIDDEN`.\n"
+          "body": "# API-nycklar (REST och GraphQL)\n\nEn API-nyckel tillhör organisationen, inte en person. Den har en förinställning (medlem, bokningsansvarig eller administratör) som en administratör kan finjustera på nyckelns sida **Behörigheter**. Skicka den som bearer-token:\n\n```\nAuthorization: Bearer okz_<din nyckel>\n```\n\nHeadern `x-api-key: okz_<din nyckel>` fungerar också. Nycklar börjar alltid med `okz_`.\n\n- Nycklar är begränsade till 600 anrop per minut.\n- Nyckeln fortsätter att fungera när administratören som skapade den slutar. Återkalla den under **Inställningar** när den inte behövs längre.\n- Behandla en nyckel som ett lösenord. Lägg den aldrig i frontendkod eller i ett publikt repo.\n\nBara administratörer skapar, ändrar och återkallar API-nycklar, under **Inställningar, Integrationer**.\n\n# OAuth 2.1 (MCP-klienter och appar)\n\nMCP-klienter som Claude Desktop loggar in med OAuth. Klienten skickas till Okazis inloggningssida, användaren loggar in och väljer organisation, och klienten får en åtkomsttoken som agerar som den användaren.\n\n- Discovery: `{{webUrl}}/.well-known/oauth-authorization-server`\n- Metadata för MCP-resursen: `{{mcpUrl}}/.well-known/oauth-protected-resource`\n- Auktorisering: `{{webUrl}}/api/auth/oauth2/authorize`\n- Token: `{{webUrl}}/api/auth/oauth2/token`\n- Scopes: `okazi:read` och `okazi:write`\n\nDe flesta MCP-klienter sköter allt detta åt dig när du lägger till serverns URL.\n\n# Sessionscookie\n\nWebbappen använder en sessionscookie. Anrop från en inloggad webbläsare till `/api/v1` och `/api/graphql` autentiseras på samma sätt. Det är tänkt för appen själv, inte för integrationer.\n\n# Behörigheter\n\nVarje medlem har en av tre fasta roller: **medlem**, **bokningsansvarig** eller **administratör**. Varje operation anger vilken behörighet den kräver, till exempel `venue:create`. Referensen visar behörigheten för varje route och verktyg. Ett anrop utan den misslyckas med `FORBIDDEN`.\n"
         },
         "rest-api": {
           "title": "REST-API",
@@ -2397,10 +2425,10 @@
     "description": "Nycklar som låter andra system använda REST-API:t för organisationens räkning.",
     "apiKeys": {
       "title": "API-nycklar",
-      "description": "Nycklar för REST-API:t. Varje nyckel agerar med en roll och aldrig med mer än dess ägare får göra. När en medlem tas bort återkallas medlemmens nycklar.",
+      "description": "Nycklar för REST-API:t. En nyckel tillhör organisationen och agerar med sitt eget förval och sina egna behörigheter, så den fortsätter fungera när personen som skapade den slutar. Bara administratörer hanterar nycklar.",
       "empty": "Inga API-nycklar.",
       "create": "Skapa API-nyckel",
-      "createDescription": "Nyckeln agerar med den roll du väljer: läsare, medlem eller administratör. Du kan inte välja en roll över din egen.",
+      "createDescription": "Nyckeln agerar med det förval du väljer: medlem, bokningsansvarig eller administratör. Finjustera behörigheterna efteråt.",
       "creating": "Skapar API-nyckel…",
       "created": "API-nyckeln har skapats.",
       "secretTitle": "Kopiera din API-nyckel",
@@ -2414,7 +2442,6 @@
       "revoking": "Återkallar API-nyckel…",
       "revoked": "API-nyckeln har återkallats.",
       "never": "Aldrig",
-      "unknownOwner": "Tidigare medlem",
       "fields": {
         "name": "Namn",
         "role": "Roll",
@@ -2431,10 +2458,15 @@
         "name": "Namn",
         "key": "Nyckel",
         "role": "Roll",
-        "owner": "Ägare",
         "expires": "Upphör",
-        "lastUsed": "Senast använd"
-      }
+        "lastUsed": "Senast använd",
+        "createdBy": "Skapad av"
+      },
+      "edit": "Redigera API-nyckel",
+      "editDescription": "Byt namn på nyckeln eller ändra dess förval. Dess behörighetsundantag finns kvar.",
+      "updated": "API-nyckeln har uppdaterats.",
+      "permissions": "Behörigheter",
+      "unknownCreator": "Tidigare medlem"
     },
     "oauthGrants": {
       "title": "Anslutna appar",
@@ -2640,6 +2672,108 @@
       "changeSell": "Jag vill ändra vad vi säljer",
       "changeMoves": "Jag vill ändra hur en förfrågan rör sig"
     },
-    "skipped": "Du kan ställa in allt senare genom att fråga assistenten, eller under Inställningar."
+    "skipped": "Du kan ställa in allt senare genom att fråga assistenten, eller under Inställningar.",
+    "panelHint": "Klicka på en fas eller något ni säljer för att säga vad som ska ändras.",
+    "comment": {
+      "title": {
+        "phase": "Fas: {name}",
+        "itemType": "Det ni säljer: {name}"
+      },
+      "placeholder": "Vad ska ändras?",
+      "send": "Skicka",
+      "message": {
+        "phase": "Om fasen ”{name}”: {instruction}",
+        "itemType": "Om ”{name}” i det vi säljer: {instruction}"
+      }
+    }
+  },
+  "permissions": {
+    "title": "Behörigheter för {name}",
+    "memberDescription": "Vad medlemmen får se och göra. Förvalet ger utgångspunkten; slå på eller av enskilda behörigheter ovanpå det.",
+    "apiKeyDescription": "Vad API-nyckeln får se och göra. Förvalet ger utgångspunkten; slå på eller av enskilda behörigheter ovanpå det.",
+    "preset": "Förval",
+    "presetPlaceholder": "Välj förval",
+    "presetSaved": "Förvalet har ändrats till {preset}.",
+    "changePresetTitle": "Byta förval till {preset}?",
+    "changePresetDescription": "Alla behörigheter för {name} ersätts med det som {preset} ger. Behörigheter som slagits på eller av på den här sidan tas bort.",
+    "changePresetConfirm": "Byt förval",
+    "saved": "Behörigheterna har sparats.",
+    "lockedHint": "Styrs av förvalet. Bara Administratör kan hantera medlemmar, API-nycklar och betalkontot.",
+    "alwaysVisible": "Alla kan se detta, eftersom namn och etiketter härifrån visas i hela appen.",
+    "empty": "Inga funktioner.",
+    "columns": {
+      "feature": "Funktion",
+      "group": "Grupp"
+    },
+    "groups": {
+      "bookings": "Bokningar",
+      "selling": "Försäljning och pengar",
+      "catalog": "Katalog",
+      "setup": "Inställningar",
+      "organization": "Organisation"
+    },
+    "actions": {
+      "view": "Visa",
+      "create": "Skapa",
+      "edit": "Ändra",
+      "remove": "Arkivera",
+      "changePhase": "Byta fas",
+      "export": "Exportera",
+      "send": "Skicka"
+    },
+    "features": {
+      "ticket": "Ärenden",
+      "program": "Program",
+      "customer": "Kunder",
+      "quote": "Offerter",
+      "payment": "Betalningar",
+      "sheet": "Blad",
+      "item": "Artiklar",
+      "venue": "Lokaler",
+      "priceList": "Prislistor",
+      "configuration": "Typer, fält och listor",
+      "pipeline": "Faser och tillstånd",
+      "template": "Mallar",
+      "responsibility": "Ansvar",
+      "member": "Medlemmar",
+      "apiKey": "API-nycklar",
+      "paymentAccount": "Betalkonto",
+      "audit": "Granskningslogg",
+      "assistant": "Assistent och organisationens färdigheter"
+    },
+    "featureDescriptions": {
+      "ticket": "Bokningar med sina rader (rum, mat, aktiviteter), faser och reservationer.",
+      "program": "Bokningens schema: vad som händer när, och var.",
+      "customer": "Företag och personer som bokar, med sina kontaktpersoner.",
+      "quote": "Erbjudanden med priser som skickas till kunder.",
+      "payment": "Betallänkar och betalningar för bokningar.",
+      "sheet": "Versionerade blad, till exempel en köksbeställning, som skickas till ett ansvar.",
+      "item": "Det ni säljer: rum, mat, dryck, aktiviteter och paket.",
+      "venue": "Era lokaler och de utrymmen i dem som går att boka.",
+      "priceList": "Prislistor med priserna för era artiklar.",
+      "configuration": "Era egna typer, fält och listor, till exempel allergener.",
+      "pipeline": "Faserna en bokning går igenom och lägena för dess rader.",
+      "template": "Färdiga bokningar att utgå från när ni skapar nya.",
+      "responsibility": "Vem som ansvarar för vilka artiklar, till exempel köksansvarig.",
+      "member": "Personalen i organisationen, deras förval och behörigheter.",
+      "apiKey": "Nycklar som låter andra system använda Okazis API.",
+      "paymentAccount": "Organisationens konto för att ta emot betalningar.",
+      "audit": "Loggen över vem som ändrade vad, och när.",
+      "assistant": "Allas samtal med assistenten och organisationens gemensamma färdigheter."
+    },
+    "card": {
+      "allowed": "Tillåtet utöver förinställningen",
+      "denied": "Inte tillåtet",
+      "noOverrides": "Inga ändringar från förinställningen.",
+      "effective": "Kan använda",
+      "hidden": "Dolt",
+      "open": "Öppna behörigheter"
+    },
+    "explanation": "Varje åtgärd kräver också visa, så att stänga av visa döljer hela funktionen. Gråa celler kommer från förinställningen och kan inte ändras här.",
+    "overridden": "Ändrad",
+    "reset": "Återställ",
+    "resetAll": "Återställ allt till förinställningen",
+    "changePresetMember": "Byt roll",
+    "changePresetApiKey": "Byt förinställning"
   }
 }

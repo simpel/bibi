@@ -2,6 +2,7 @@ import { mcpTool, text } from "../../tools/meta";
 
 export const memberMcpTools = [
   mcpTool({ operation: "member.list" }),
+  mcpTool({ operation: "member.get" }),
   mcpTool({
     operation: "member.assignRole",
     idempotent: true,

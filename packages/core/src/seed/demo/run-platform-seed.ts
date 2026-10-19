@@ -9,7 +9,7 @@ import { seedMegaAdmin } from "./seed-mega-admin";
 export type RunPlatformSeedInput = { db: Db; organizationIds: readonly string[] };
 
 /**
- * The platform side of the demo seed: the mega admin (owner of every given organization) and a
+ * The platform side of the demo seed: the mega admin (admin of every given organization) and a
  * model for each AI feature, set by the mega admin. Then checks both; failures are an error.
  */
 export async function runPlatformSeed({

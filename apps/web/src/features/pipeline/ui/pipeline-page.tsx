@@ -12,7 +12,11 @@ export async function PipelinePage({ locale }: PipelinePageProps) {
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   return (
     <div className="min-h-0 flex-1 p-3">
-      <PipelineBoardView board={data.value.board} transitions={data.value.transitions} />
+      <PipelineBoardView
+        board={data.value.board}
+        transitions={data.value.transitions}
+        customerNames={data.value.customerNames}
+      />
     </div>
   );
 }

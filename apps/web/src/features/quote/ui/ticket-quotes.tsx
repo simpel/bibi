@@ -2,7 +2,7 @@ import { listQuotes, type TicketDto, type TicketPhaseDto } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadQuoteItems } from "../load-quote-items";
@@ -21,7 +21,7 @@ export type TicketQuotesProps = {
  */
 export async function TicketQuotes({ locale, ticket, phases }: TicketQuotesProps) {
   const t = await getTranslations("quote");
-  const { quoteWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const quotes = await runOperation({
     operation: listQuotes,
     input: { ticketId: ticket.id, limit: 100 },
@@ -32,7 +32,7 @@ export async function TicketQuotes({ locale, ticket, phases }: TicketQuotesProps
   }
   const items = quotes.value.items;
   const open = !phases.find(({ id }) => id === ticket.phaseId)?.terminal;
-  const canCreate = quoteWrite && open && items.length === 0;
+  const canCreate = can({ abilities, permission: "quote:create" }) && open && items.length === 0;
   return (
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">

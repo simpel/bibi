@@ -1,4 +1,4 @@
-import { FIXED_ROLES, type FixedRole, OWNER_ROLE } from "@okazi/core";
+import { ADMIN_ROLE, FIXED_ROLES, type FixedRole } from "@okazi/core";
 import { createAccessControl } from "better-auth/plugins/access";
 import { defaultStatements, ownerAc } from "better-auth/plugins/organization/access";
 
@@ -6,12 +6,12 @@ import { defaultStatements, ownerAc } from "better-auth/plugins/organization/acc
 export const accessControl = createAccessControl(defaultStatements);
 
 /**
- * Better Auth's own statements for `owner`, minus `ac` (role CRUD), `member:update`/`delete`
+ * Better Auth's own `owner` statements, given to `admin`, minus `ac` (role CRUD), `member:update`/`delete`
  * (role assignment, removal) and `invitation` (invite, cancel): those go through core
  * `member.*` so they are authorized and audited there. Better Auth's endpoints for them are
  * therefore closed to everyone.
  */
-const ownerAuthStatements = {
+const adminAuthStatements = {
   ...ownerAc.statements,
   ac: [],
   invitation: [],
@@ -21,12 +21,12 @@ const ownerAuthStatements = {
 type OrgRoles = Record<FixedRole, ReturnType<typeof accessControl.newRole>>;
 
 /**
- * The fixed roles as Better Auth roles. Only `owner` keeps Better Auth statements (updating or
- * deleting the organization itself); every Okazi permission comes from `ROLE_PERMISSIONS`.
+ * The fixed roles as Better Auth roles. Only `admin` gets Better Auth statements (updating or
+ * deleting the organization itself); every Okazi permission comes from the presets and overrides in core (ADR 0050).
  */
 export const orgRoles = Object.fromEntries(
   FIXED_ROLES.map((role) => [
     role,
-    accessControl.newRole(role === OWNER_ROLE ? ownerAuthStatements : {}),
+    accessControl.newRole(role === ADMIN_ROLE ? adminAuthStatements : {}),
   ]),
 ) as OrgRoles;

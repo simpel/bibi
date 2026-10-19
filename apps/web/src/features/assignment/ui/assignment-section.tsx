@@ -4,7 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { type NamedOption, nameOf } from "@/components/form/named-option";
 import { ErrorState } from "@/components/states/error-state";
 import { FactList } from "@/components/typed-fields/fact-list";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import type { AssignSubject } from "./assign-form-schema";
@@ -20,8 +20,10 @@ export type AssignmentSectionProps = {
 /** Who answers for the subject and who follows it (ADR 0034), with assign and follow. */
 export async function AssignmentSection({ locale, subject, members }: AssignmentSectionProps) {
   const t = await getTranslations("assignment");
-  const { assignmentWrite, userId } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
+  const { userId } = abilities;
   const result = await runOperation({ operation: listAssignments, input: subject });
+  if (!result.ok && result.error.code === "FORBIDDEN") return null;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const main = result.value.items.find((assignment) => assignment.responsibilityId === null);
   const assigneeId = main?.assigneeId ?? null;
@@ -35,7 +37,7 @@ export async function AssignmentSection({ locale, subject, members }: Assignment
     <section className="grid gap-3">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("title")}</h2>
-        {assignmentWrite ? (
+        {can({ abilities, permission: "ticket:edit" }) ? (
           <AssignmentActions
             subject={subject}
             assigneeId={assigneeId}

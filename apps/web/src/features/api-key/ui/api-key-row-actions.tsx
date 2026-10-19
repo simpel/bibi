@@ -1,15 +1,17 @@
 "use client";
 
 import type { ApiKeyDto } from "@okazi/core";
+import { Link } from "@okazi/i18n/navigation";
 import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ConfirmActionDialog } from "@/components/confirm-action-dialog";
+import { apiKeyPermissionsRoute, apiKeyUpdateRoute } from "@/lib/routes";
 import { revokeApiKeyAction } from "../actions";
 
 export type ApiKeyRowActionsProps = { apiKey: ApiKeyDto };
 
-/** Revoke menu; requests with the key fail as soon as it succeeds. */
+/** Edit, permissions and revoke; requests with the key fail as soon as a revoke succeeds. */
 export function ApiKeyRowActions({ apiKey }: ApiKeyRowActionsProps) {
   const t = useTranslations("integration.apiKeys");
   const common = useTranslations("common");
@@ -17,6 +19,12 @@ export function ApiKeyRowActions({ apiKey }: ApiKeyRowActionsProps) {
   return (
     <>
       <DataTableRowActions label={common("actions")}>
+        <DropdownMenuItem asChild>
+          <Link href={apiKeyUpdateRoute({ id: apiKey.id })}>{t("edit")}</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href={apiKeyPermissionsRoute({ id: apiKey.id })}>{t("permissions")}</Link>
+        </DropdownMenuItem>
         <DropdownMenuItem destructive onSelect={() => setOpen(true)}>
           {t("revoke")}
         </DropdownMenuItem>

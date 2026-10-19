@@ -22,7 +22,7 @@ export const listAuditLogs = defineOperation({
     "(entityType + entityId), actor, conversation, request or time range.",
   input: AuditLogListInputSchema,
   output: AuditLogListOutputSchema,
-  permission: "audit:read",
+  permission: "audit:view",
   handler: async ({ input: { limit, cursor, ...filters }, context }) => {
     const rows = await context.db.auditLog.findMany({
       where: { AND: [auditLogWhere({ filters }), visibleAuditWhere({ context })] },
@@ -40,7 +40,7 @@ export const getAuditLog = defineOperation({
   description: "Get one audit log entry by id, with its full before and after image.",
   input: AuditLogIdInputSchema,
   output: AuditLogSchema,
-  permission: "audit:read",
+  permission: "audit:view",
   handler: async ({ input, context }) => {
     const row = await context.db.auditLog.findFirst({
       where: { AND: [{ id: input.id }, visibleAuditWhere({ context })] },

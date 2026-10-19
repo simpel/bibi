@@ -51,7 +51,7 @@ export const sendQuote = defineOperation({
     "CONFLICT.",
   input: QuoteIdInputSchema,
   output: QuoteSchema,
-  permission: "quote:write",
+  permission: "quote:send",
   handler: async ({ input: { id }, context }) => {
     const before = await loadQuote({ context, id });
     if (!before) return notFound({ entity: "Quote" });

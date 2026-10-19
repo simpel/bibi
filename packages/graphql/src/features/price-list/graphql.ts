@@ -57,7 +57,7 @@ builder.objectField(PriceListRef, "customer", (t) =>
     nullable: true,
     description: "The customer the prices apply to (null for a general list or if archived).",
     resolve: (priceList, _args, ctx) => {
-      requirePermission({ ctx, permission: "customer:read" });
+      requirePermission({ ctx, permission: "customer:view" });
       return priceList.customerId ? ctx.loaders.customer.load({ id: priceList.customerId }) : null;
     },
   }),

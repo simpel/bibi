@@ -23,7 +23,7 @@ export const createRequirement = defineOperation({
     "Never about a person: no names or guest details, only counts.",
   input: RequirementCreateInputSchema,
   output: RequirementSchema,
-  permission: "requirement:write",
+  permission: "program:create",
   handler: async ({ input: { entityTypeId, fields, ...data }, context }) => {
     const level = { ticketId: data.ticketId, programItemId: data.programItemId ?? null };
     const { vocabularyValueId } = data;
@@ -60,7 +60,7 @@ export const updateRequirement = defineOperation({
     "value). The ticket, program item, value and type never change; archive and create anew.",
   input: RequirementUpdateInputSchema,
   output: RequirementSchema,
-  permission: "requirement:write",
+  permission: "program:edit",
   handler: async ({ input: { id, quantity, fields: patch }, context }) => {
     const before = await loadRequirement({ context, id });
     if (!before) return notFound({ entity: "Requirement" });
@@ -89,7 +89,7 @@ export const archiveRequirement = defineOperation({
     "applies there again.",
   input: RequirementIdInputSchema,
   output: RequirementSchema,
-  permission: "requirement:write",
+  permission: "program:remove",
   handler: async ({ input: { id }, context }) => {
     const before = await loadRequirement({ context, id });
     if (!before) return notFound({ entity: "Requirement" });

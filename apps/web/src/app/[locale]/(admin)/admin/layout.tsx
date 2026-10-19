@@ -9,7 +9,7 @@ import { requirePlatformAdmin } from "@/server/platform-guard";
 
 type AdminLayoutProps = { children: ReactNode; params: Promise<{ locale: string }> };
 
-/** Platform admin area (ADR 0015): platform admins only, everyone else gets a 404. */
+/** Superadmin area (ADR 0015): Superadmins only, everyone else gets a 404. */
 export default async function AdminLayout({ children, params }: AdminLayoutProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);

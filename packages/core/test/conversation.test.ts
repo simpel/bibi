@@ -99,10 +99,10 @@ describe("conversation operations", () => {
     expect(errorCode({ result: archiveAsAdmin })).toBeNull();
   });
 
-  it("requires conversation permissions and a user owner", async () => {
-    const viewer = testContext({ access: "read" });
-    const denied = await execute({ operation: createConversation, input: {}, context: viewer });
-    expect(errorCode({ result: denied })).toBe("FORBIDDEN");
+  it("lets every member keep their own conversations, but needs a user owner", async () => {
+    const member = testContext({ access: "read" });
+    const own = await execute({ operation: createConversation, input: {}, context: member });
+    expect(errorCode({ result: own })).toBeNull();
     const system = testContext({ actor: { type: "system", userId: null } });
     const ownerless = await execute({ operation: createConversation, input: {}, context: system });
     expect(errorCode({ result: ownerless })).toBe("VALIDATION");

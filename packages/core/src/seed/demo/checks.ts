@@ -7,6 +7,7 @@ import { checkDemoBoard } from "./board-checks";
 import { checkDemoConfig } from "./config-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
+import { checkDemoPermissions } from "./permission-checks";
 import { checkDemoPipeline } from "./pipeline-checks";
 import { checkDemoQuoteEvents } from "./quote-event-checks";
 import { checkDemoSetupNeed } from "./setup-need-checks";
@@ -46,6 +47,8 @@ export async function checkDemoOrg({
       failures.push(`${org.slug}: ${user.name} has ${member ? member.role : "no member"}`);
     }
   }
+  const listed = members.value.items;
+  failures.push(...(await checkDemoPermissions({ context, org, members: listed })));
   failures.push(...(await checkDemoConfig({ context, org, skipPipeline })));
   failures.push(...(await checkDemoSetupNeed({ context, org, skipPipeline })));
   if (skipPipeline) return [...failures, ...(await auditFailures({ context, org }))];

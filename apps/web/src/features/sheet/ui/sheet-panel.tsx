@@ -11,22 +11,31 @@ export type SheetPanelProps = {
   definition: { id: string; name: string };
   /** The newest version for the ticket, or null before the first one. */
   sheet: SheetDto | null;
-  canWrite: boolean;
+  canGenerate: boolean;
+  canSend: boolean;
 };
 
 /** One sheet definition on the ticket page: its newest version and the way to the next. */
-export async function SheetPanel({ ticketId, definition, sheet, canWrite }: SheetPanelProps) {
+export async function SheetPanel({
+  ticketId,
+  definition,
+  sheet,
+  canGenerate,
+  canSend,
+}: SheetPanelProps) {
   const t = await getTranslations("sheet");
   return (
     <article data-slot="sheet-panel" className="grid gap-3 rounded-lg border p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="font-medium">{definition.name}</h3>
-        {canWrite ? (
-          <div className="flex gap-2">
+        <div className="flex gap-2">
+          {canGenerate ? (
             <GenerateSheetButton ticketId={ticketId} sheetDefinitionId={definition.id} />
-            {sheet && !sheet.sentAt && !sheet.blocked ? <SendSheetButton id={sheet.id} /> : null}
-          </div>
-        ) : null}
+          ) : null}
+          {canSend && sheet && !sheet.sentAt && !sheet.blocked ? (
+            <SendSheetButton id={sheet.id} />
+          ) : null}
+        </div>
       </div>
       {sheet ? (
         <>

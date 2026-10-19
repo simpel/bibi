@@ -20,7 +20,7 @@ export const importConfigurationTemplate = defineOperation({
     "exists is skipped and left untouched, so it is safe to run again.",
   input: ConfigurationImportTemplateInputSchema,
   output: ConfigurationImportTemplateOutputSchema,
-  permission: "configuration:write",
+  permission: "configuration:create",
   // Not an entity of its own: rows are audited per kind created; the no-op row as a type change.
   entityType: "entityType",
   handler: async ({ input, context }) => {

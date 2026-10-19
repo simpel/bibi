@@ -14,7 +14,7 @@ export const resolveItem = defineOperation({
     "carry them). Use this, never your own reasoning over item_get, to tell what an item contains.",
   input: ItemResolveInputSchema,
   output: ItemResolutionSchema,
-  permission: "item:read",
+  permission: "item:view",
   handler: async ({ input, context }) => {
     const resolution = await resolveItemTags({ context, id: input.id });
     return resolution ? ok({ value: resolution }) : notFound({ entity: "Item" });

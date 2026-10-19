@@ -1,5 +1,6 @@
 import type { Locale } from "@okazi/i18n";
 import type { ReactNode } from "react";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { EntityHistory } from "./entity-history";
 import { HistoryTabs } from "./history-tabs";
 
@@ -10,8 +11,9 @@ export type WithHistoryProps = {
   children: ReactNode;
 };
 
-/** Wraps a detail page body in details/history tabs (every role reads the audit log, ADR 0034). */
+/** Wraps a detail page body in details/history tabs (only with `audit:view`; without it just the body, ADR 0050). */
 export async function WithHistory({ locale, entityType, entityId, children }: WithHistoryProps) {
+  if (!can({ abilities: await getCallerAbilities(), permission: "audit:view" })) return children;
   const history = <EntityHistory locale={locale} entityType={entityType} entityId={entityId} />;
   return <HistoryTabs details={children} history={history} />;
 }

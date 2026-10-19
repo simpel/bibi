@@ -28,7 +28,7 @@ export async function provisionOrganization({
   const context = createExecuteContext({
     organizationId,
     roles: [],
-    permissions: grantAll({ upTo: "admin" }),
+    permissions: grantAll({}),
     actor: { type: "system", userId: null },
     ...(db ? { db } : {}),
   });

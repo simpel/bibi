@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { AddValueButton } from "./add-value-button";
@@ -20,16 +20,21 @@ export type VocabularyDetailProps = { locale: Locale; id: string };
 export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
   const t = await getTranslations("vocabulary");
   const common = await getTranslations("common");
-  const { configurationWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
+  const access = rowAccess({ abilities, feature: "configuration" });
   const result = await runOperation({ operation: getVocabulary, input: { id } });
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const vocabulary = result.value;
-  const actions = configurationWrite ? (
+  const actions = (
     <>
-      <VocabularyRowActions vocabulary={vocabulary} redirectToList />
-      <AddValueButton vocabularyId={vocabulary.id} />
+      {access.canEdit || access.canRemove ? (
+        <VocabularyRowActions vocabulary={vocabulary} redirectToList access={access} />
+      ) : null}
+      {can({ abilities, permission: "configuration:create" }) ? (
+        <AddValueButton vocabularyId={vocabulary.id} />
+      ) : null}
     </>
-  ) : undefined;
+  );
   return (
     <div className="grid gap-6">
       <Link
@@ -43,7 +48,7 @@ export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
       {vocabulary.values.length === 0 ? (
         <EmptyState title={t("value.empty")} />
       ) : (
-        <ValueTable vocabulary={vocabulary} canWrite={configurationWrite} />
+        <ValueTable vocabulary={vocabulary} access={access} />
       )}
     </div>
   );

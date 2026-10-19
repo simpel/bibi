@@ -44,7 +44,7 @@ export const expireTicketHolds = defineOperation({
     "Returns the lines that expired.",
   input: TicketExpireHoldsInputSchema,
   output: TicketExpireHoldsOutputSchema,
-  permission: "ticket:write",
+  permission: "program:edit",
   entityType: "programItem",
   handler: async ({ context }) => {
     const items: ProgramItemDto[] = [];

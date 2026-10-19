@@ -40,6 +40,7 @@ function LineWhatFields({ form, data, index }: LineFieldsProps) {
           name={lineName({ index, key: "itemId" })}
           label={t("fields.item")}
           options={data.items}
+          hidden={data.itemsHidden}
           noneLabel={t("noItem")}
           onChange={() => form.setValue(lineName({ index, key: "setupId" }), "" as never)}
         />

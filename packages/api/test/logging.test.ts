@@ -39,8 +39,8 @@ describe("REST request logging (ADR 0014)", () => {
     const actor = { type: "user" as const, userId: `user_${org}` };
     const { db } = createExecuteContext({
       organizationId: org,
-      roles: ["owner"],
-      permissions: grantAll({ upTo: "admin" }),
+      roles: ["admin"],
+      permissions: grantAll({}),
       actor,
     });
     const [row] = await db.auditLog.findMany();

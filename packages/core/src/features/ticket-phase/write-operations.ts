@@ -34,7 +34,7 @@ export const createTicketPhase = defineOperation({
     "with ticketPhase.setTransitions.",
   input: TicketPhaseCreateInputSchema,
   output: TicketPhaseSchema,
-  permission: "ticketPhase:admin",
+  permission: "pipeline:create",
   handler: ({ input, context }) => insertTicketPhase({ context, ...input }),
 });
 
@@ -75,7 +75,7 @@ export const updateTicketPhase = defineOperation({
     "entry or a terminal phase is a CONFLICT.",
   input: TicketPhaseUpdateInputSchema,
   output: TicketPhaseSchema,
-  permission: "ticketPhase:admin",
+  permission: "pipeline:edit",
   handler: async ({ input: { id, ...data }, context }) => {
     await serializePhaseChanges({ context });
     const before = await loadTicketPhase({ context, id });

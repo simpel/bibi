@@ -6,7 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import { runOperation } from "@/server/run-operation";
@@ -20,7 +20,7 @@ export type CustomerDetailProps = { locale: Locale; id: string };
 /** Customer detail page body: facts with edit and archive, contact persons and packages. */
 export async function CustomerDetail({ locale, id }: CustomerDetailProps) {
   const common = await getTranslations("common");
-  const { customerWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const [customer, data] = await Promise.all([
     runOperation({ operation: getCustomer, input: { id } }),
     loadTypedFormData({ base: "CUSTOMER" }),
@@ -30,7 +30,12 @@ export async function CustomerDetail({ locale, id }: CustomerDetailProps) {
   }
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const type = data.value.types.find(({ id: typeId }) => typeId === customer.value.entityTypeId);
-  const actions = customerWrite ? <CustomerActions customer={customer.value} /> : undefined;
+  const canEdit = can({ abilities, permission: "customer:edit" });
+  const canArchive = can({ abilities, permission: "customer:remove" });
+  const actions =
+    canEdit || canArchive ? (
+      <CustomerActions customer={customer.value} canEdit={canEdit} canArchive={canArchive} />
+    ) : undefined;
   return (
     <div className="grid gap-6">
       <Link

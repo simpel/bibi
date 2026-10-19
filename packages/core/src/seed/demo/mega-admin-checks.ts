@@ -1,4 +1,5 @@
 import type { Db } from "@okazi/db";
+import { SUPERADMIN_ROLE } from "../../permissions/fixed-roles";
 import { MEGA_ADMIN_EMAIL } from "./seed-mega-admin";
 
 export type CheckMegaAdminInput = {
@@ -7,7 +8,7 @@ export type CheckMegaAdminInput = {
   email?: string;
 };
 
-/** The mega admin is a platform admin and the owner of every given organization. */
+/** The mega admin is a superadmin and an admin of every given organization. */
 export async function checkDemoMegaAdmin({
   db,
   organizationIds,
@@ -15,10 +16,10 @@ export async function checkDemoMegaAdmin({
 }: CheckMegaAdminInput): Promise<string[]> {
   const user = await db.user.findUnique({ where: { email } });
   if (!user) return [`${email}: not seeded`];
-  const failures = user.role === "admin" ? [] : [`${email}: not a platform admin`];
+  const failures = user.role === SUPERADMIN_ROLE ? [] : [`${email}: not a superadmin`];
   for (const organizationId of organizationIds) {
     const member = await db.member.findFirst({ where: { organizationId, userId: user.id } });
-    if (member?.role !== "owner") failures.push(`${email}: not owner of ${organizationId}`);
+    if (member?.role !== "admin") failures.push(`${email}: not admin of ${organizationId}`);
   }
   return failures;
 }

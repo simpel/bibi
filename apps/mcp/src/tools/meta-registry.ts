@@ -1,6 +1,7 @@
 import { apiKeyMcpTools } from "../features/api-key/mcp";
 import { assignmentMcpTools } from "../features/assignment/mcp";
 import { auditLogMcpTools } from "../features/audit-log/mcp";
+import { changeSetMcpTools } from "../features/change-set/mcp";
 import { configurationMcpTools } from "../features/configuration/mcp";
 import { contactMcpTools } from "../features/contact/mcp";
 import { conversationMcpTools } from "../features/conversation/mcp";
@@ -16,6 +17,7 @@ import { oauthGrantMcpTools } from "../features/oauth-grant/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
 import { paymentMcpTools } from "../features/payment/mcp";
 import { paymentAccountMcpTools } from "../features/payment-account/mcp";
+import { permissionMcpTools } from "../features/permission/mcp";
 import { phaseGridMcpTools } from "../features/phase-grid/mcp";
 import { pipelineMcpTools } from "../features/pipeline/mcp";
 import { pipelineSetupMcpTools } from "../features/pipeline-setup/mcp";
@@ -37,7 +39,8 @@ import { vocabularyMcpTools } from "../features/vocabulary/mcp";
 import { searchMcpTools } from "../search-mcp";
 import type { McpToolMeta } from "./meta";
 
-const gridAndSetupMcpTools = [...phaseGridMcpTools, ...pipelineSetupMcpTools];
+const accessMcpTools = [...memberMcpTools, ...apiKeyMcpTools, ...permissionMcpTools];
+const gridAndSetupMcpTools = [...phaseGridMcpTools, ...pipelineSetupMcpTools, ...changeSetMcpTools];
 
 /** Every declared operation tool; add a feature's tools here when it gets an `mcp.ts`. */
 export function listMcpToolMetas(): McpToolMeta[] {
@@ -72,9 +75,8 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...conversationMcpTools,
     ...messageMcpTools,
     ...skillMcpTools,
-    ...memberMcpTools,
     ...auditLogMcpTools,
-    ...apiKeyMcpTools,
+    ...accessMcpTools,
     ...oauthGrantMcpTools,
     ...userPreferenceMcpTools,
     ...searchMcpTools,

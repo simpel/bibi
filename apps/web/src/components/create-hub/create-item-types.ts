@@ -1,5 +1,5 @@
+import type { Permission } from "@okazi/core";
 import type { LucideIcon } from "lucide-react";
-import type { CallerAbilities } from "@/server/caller-abilities";
 
 export type CreateGroup = "work" | "catalog" | "settings";
 
@@ -23,6 +23,6 @@ export type CreateItem = {
   group: CreateGroup;
   href: string;
   icon: LucideIcon;
-  /** The ability that allows creating it; `null` = every member. */
-  ability: keyof CallerAbilities | null;
+  /** The permission that allows creating it (ADR 0050). */
+  permission: Permission;
 };

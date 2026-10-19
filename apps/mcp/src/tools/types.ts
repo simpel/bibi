@@ -1,4 +1,4 @@
-import type { ExecuteContext } from "@okazi/core";
+import type { AnyOperation, ExecuteContext } from "@okazi/core";
 
 /** Wire shape of an MCP tool result (`CallToolResult`), kept local so adapters stay SDK-free. */
 export type ToolResult = {
@@ -31,5 +31,7 @@ export type McpTool = {
   _meta?: Record<string, unknown>;
   /** Hidden from `tools/list` (and refused) when the caller is the AI actor. */
   humanOnly?: boolean;
+  /** A command's permission: the tool is left out of `tools/list` for callers without it. */
+  writePermission?: AnyOperation["permission"];
   run(input: RunToolInput): Promise<ToolResult>;
 };

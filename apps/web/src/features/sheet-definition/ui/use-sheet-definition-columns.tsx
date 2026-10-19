@@ -2,12 +2,13 @@ import type { SheetDefinitionDto } from "@okazi/core";
 import { actionsColumn, type ColumnDef } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import type { RowAccess } from "@/lib/can";
 import { SheetDefinitionRowActions } from "./sheet-definition-row-actions";
 import { namesOf, type SheetOptions } from "./sheet-options";
 
 type Column = ColumnDef<SheetDefinitionDto>;
 
-export type UseSheetDefinitionColumnsInput = { options: SheetOptions; canWrite: boolean };
+export type UseSheetDefinitionColumnsInput = { options: SheetOptions; access: RowAccess };
 
 type NamesInput = { ids: readonly string[]; options: SheetOptions[keyof SheetOptions] };
 
@@ -19,7 +20,7 @@ const names = ({ ids, options }: NamesInput) => {
 /** Name · types · lists · role, plus the row actions when the caller can write. */
 export function useSheetDefinitionColumns({
   options,
-  canWrite,
+  access,
 }: UseSheetDefinitionColumnsInput): Column[] {
   const t = useTranslations("sheetDefinition");
   const common = useTranslations("common");
@@ -42,13 +43,13 @@ export function useSheetDefinitionColumns({
         accessorFn: (sheet) => names({ ids: [sheet.roleId], options: options.roles }),
       },
     ];
-    if (!canWrite) return data;
+    if (!access.canEdit && !access.canRemove) return data;
     return [
       ...data,
       actionsColumn<SheetDefinitionDto>({
         label: common("actions"),
-        cell: (sheet) => <SheetDefinitionRowActions sheet={sheet} />,
+        cell: (sheet) => <SheetDefinitionRowActions sheet={sheet} access={access} />,
       }),
     ];
-  }, [t, common, options, canWrite]);
+  }, [t, common, options, access]);
 }

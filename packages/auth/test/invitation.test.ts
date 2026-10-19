@@ -18,8 +18,8 @@ afterEach(() => uninstallFakeMail());
 const ownerContext = ({ organizationId, owner }: { organizationId: string; owner: TestUser }) =>
   createExecuteContext({
     organizationId,
-    roles: ["owner"],
-    permissions: grantAll({ upTo: "admin" }),
+    roles: ["admin"],
+    permissions: grantAll({}),
     actor: { type: "user", userId: owner.userId },
   });
 
@@ -29,7 +29,7 @@ const inviteAs = async ({ invitee }: { invitee: TestUser }) => {
   const context = ownerContext({ organizationId, owner });
   const result = await execute({
     operation: inviteMember,
-    input: { email: invitee.email, role: "viewer" as const },
+    input: { email: invitee.email, role: "member" as const },
     context,
     afterCommit: [invitationMailHook],
   });
@@ -52,7 +52,7 @@ describe("invitations (core member.invite + Better Auth acceptance)", () => {
     const member = await getDb().member.findFirstOrThrow({
       where: { organizationId, userId: invitee.userId },
     });
-    expect(member.role).toBe("viewer");
+    expect(member.role).toBe("member");
   });
 
   it("makes a revoked invitation unusable", async () => {
@@ -79,7 +79,7 @@ describe("invitations (core member.invite + Better Auth acceptance)", () => {
     const api = getAuth().api;
     const invite = api.createInvitation({
       headers: owner.headers,
-      body: { organizationId, email: "backdoor@example.test", role: "viewer" },
+      body: { organizationId, email: "backdoor@example.test", role: "member" },
     });
     await expect(invite).rejects.toThrow(/not allowed/i);
     const cancel = api.cancelInvitation({
@@ -88,7 +88,7 @@ describe("invitations (core member.invite + Better Auth acceptance)", () => {
     });
     await expect(cancel).rejects.toThrow(/not allowed/i);
     const staff = await signUp();
-    await addMember({ organizationId, userId: staff.userId, role: "viewer" });
+    await addMember({ organizationId, userId: staff.userId, role: "member" });
     const remove = api.removeMember({
       headers: owner.headers,
       body: { memberIdOrEmail: staff.email, organizationId },

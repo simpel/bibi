@@ -34,7 +34,7 @@ async function provisionedOrg() {
   return createExecuteContext({
     organizationId,
     roles: ["admin"],
-    permissions: grantAll({ upTo: "admin" }),
+    permissions: grantAll({}),
     actor: { type: "user", userId: `user_${createId()}` },
   });
 }

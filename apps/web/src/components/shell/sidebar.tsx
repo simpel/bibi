@@ -8,7 +8,7 @@ export type SidebarProps = { organizationId: string; user: ShellUser; access: Sh
 
 /**
  * Sidebar content, shared by the desktop rail and the mobile sheet (ADR 0036): the assistant
- * on top, daily work in the middle, settings, platform admin and the account bottom-left.
+ * on top, daily work in the middle, settings, superadmin and the account bottom-left.
  */
 export function Sidebar({ organizationId, user, access }: SidebarProps) {
   const t = useTranslations("common");

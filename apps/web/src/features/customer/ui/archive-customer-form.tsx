@@ -20,7 +20,8 @@ export function ArchiveCustomerForm({ customer, onClose }: ArchiveCustomerFormPr
   const t = useTranslations("customer");
   const common = useTranslations("common");
   const router = useRouter();
-  const count = customer.ticketCount;
+  // `null`: the caller may not view tickets, so no count is shown and none is bound (ADR 0050).
+  const count = customer.ticketCount ?? 0;
   const form = useArchiveCustomerForm({ id: customer.id, ticketCount: count });
   const blocked = count > 0 && !form.watch("archiveTickets");
   const { submit, pending } = useFormAction({

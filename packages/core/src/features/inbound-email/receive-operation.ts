@@ -19,7 +19,7 @@ export const receiveInboundEmail = defineOperation({
   description: "Store a mail received on a ticket's inbound address (inbound webhook only).",
   input: InboundEmailReceiveInputSchema,
   output: InboundEmailSchema,
-  permission: "ticket:write",
+  permission: "ticket:edit",
   approval: false,
   handler: async ({ input, context }) => {
     if (context.actor.type !== "system") {

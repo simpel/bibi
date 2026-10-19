@@ -21,7 +21,7 @@ const resolve = async ({ headers }: { headers: Headers }): Promise<ExecuteContex
 };
 
 /** A member with `role` plus the owner, both resolved the way every surface resolves them. */
-const setup = async ({ role }: { role: "viewer" | "member" | "admin" }) => {
+const setup = async ({ role }: { role: "member" | "manager" | "admin" }) => {
   const session = await memberSession({ role });
   const owner = await resolve({ headers: session.owner.headers });
   const caller = await resolve({ headers: session.headers });
@@ -47,7 +47,7 @@ const newType = ({ context }: { context: ExecuteContext }) =>
 
 describe("fixed roles on core operations (ADR 0034)", () => {
   it("lets a viewer read everything but write nothing except its own assistant chats", async () => {
-    const { caller, customerTypeId } = await setup({ role: "viewer" });
+    const { caller, customerTypeId } = await setup({ role: "member" });
     expect(
       codeOf({ result: await execute({ operation: listVenues, input: {}, context: caller }) }),
     ).toBe("OK");
@@ -63,29 +63,33 @@ describe("fixed roles on core operations (ADR 0034)", () => {
   });
 
   it("lets a member write operational data but not change configuration", async () => {
-    const { caller, customerTypeId } = await setup({ role: "member" });
+    const { caller, customerTypeId } = await setup({ role: "manager" });
     expect(
       codeOf({ result: await newCustomer({ context: caller, entityTypeId: customerTypeId }) }),
     ).toBe("OK");
     expect(codeOf({ result: await newType({ context: caller }) })).toBe("FORBIDDEN");
   });
 
-  it("lets an admin configure and manage members, but never remove an owner", async () => {
+  it("lets an admin configure and manage members, but never remove the last admin", async () => {
     const { caller, organizationId } = await setup({ role: "admin" });
     expect(codeOf({ result: await newType({ context: caller }) })).toBe("OK");
     const second = await signUp();
-    await addMember({ organizationId, userId: second.userId, role: "owner" });
-    const owners = await getDb().member.findMany({ where: { organizationId, role: "owner" } });
-    for (const owner of owners) {
+    await addMember({ organizationId, userId: second.userId, role: "admin" });
+    const admins = await getDb().member.findMany({ where: { organizationId, role: "admin" } });
+    const codes: string[] = [];
+    for (const admin of admins) {
       const result = await execute({
         operation: removeMember,
-        input: { id: owner.id },
+        input: { id: admin.id },
         context: caller,
       });
-      expect(codeOf({ result })).toBe("FORBIDDEN");
+      codes.push(codeOf({ result }));
     }
+    // Every admin but the last one goes; the last one stays (ADR 0034).
+    expect(codes.at(-1)).toBe("CONFLICT");
+    expect(codes.slice(0, -1).every((code) => code === "OK")).toBe(true);
     const viewer = await signUp();
-    await addMember({ organizationId, userId: viewer.userId, role: "viewer" });
+    await addMember({ organizationId, userId: viewer.userId, role: "member" });
     const row = await getDb().member.findFirstOrThrow({
       where: { organizationId, userId: viewer.userId },
     });

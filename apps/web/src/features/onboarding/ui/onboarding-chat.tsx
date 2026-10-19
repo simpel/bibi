@@ -10,8 +10,13 @@ type Send = (input: { text: string }) => void;
 
 const STARTERS = ["start", "conference", "restaurant"] as const;
 
-/** The skill's instructions and the technical preview stay out of sight; the panel shows the result. */
-const QUIET_TOOLS = ["load_skill", "skill_search", "pipelineSetup_preview"] as const;
+/** The skill's instructions and the drafts stay out of the chat; the panel shows the result. */
+const QUIET_TOOLS = [
+  "load_skill",
+  "skill_search",
+  "pipelineSetup_presetDraft",
+  "pipelineSetup_preview",
+] as const;
 
 /** The welcome, with one-click ways to start the first setup. */
 function Welcome({ send }: { send: Send }) {

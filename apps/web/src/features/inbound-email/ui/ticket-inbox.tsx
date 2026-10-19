@@ -22,6 +22,7 @@ export async function TicketInbox({ locale, ticketId, address }: TicketInboxProp
     operation: listInboundEmails,
     input: { ticketId, limit: LIMIT },
   });
+  if (!result.ok && result.error.code === "FORBIDDEN") return null;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
     <section data-slot="ticket-inbox" className="grid gap-3">

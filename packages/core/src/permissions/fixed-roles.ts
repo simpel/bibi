@@ -1,23 +1,26 @@
 import { z } from "zod";
 
 /**
- * The fixed access roles, weakest first (ADR 0034). What each grants is a constant in
- * `packages/auth`; core only compares them (anti-escalation, owner rules).
+ * The fixed organization roles, weakest first (ADR 0034). Not configurable. What each grants is
+ * a constant in `packages/auth`; core only compares them (anti-escalation, the last admin).
  */
-export const FIXED_ROLES = ["viewer", "member", "admin", "owner"] as const;
+export const FIXED_ROLES = ["member", "manager", "admin"] as const;
 export type FixedRole = (typeof FIXED_ROLES)[number];
 
-/** Roles that invitations and API keys may carry: never `owner`. */
-export const GRANTABLE_ROLES = ["viewer", "member", "admin"] as const;
-export type GrantableRole = (typeof GRANTABLE_ROLES)[number];
+/** The organization role with every permission. Every organization keeps at least one. */
+export const ADMIN_ROLE = "admin" satisfies FixedRole;
+
+/**
+ * `user.role` of a superadmin (ADR 0015): runs the whole platform (`/admin`). A platform role,
+ * not an organization role; it grants nothing inside an organization by itself.
+ */
+export const SUPERADMIN_ROLE = "superadmin";
 
 export const FixedRoleSchema = z
   .enum(FIXED_ROLES)
-  .describe("viewer reads, member also writes operational data, admin also configures, owner all");
-
-export const GrantableRoleSchema = z
-  .enum(GRANTABLE_ROLES)
-  .describe("viewer reads, member also writes operational data, admin also configures");
+  .describe(
+    "member reads, manager also handles bookings and other operational data, admin everything",
+  );
 
 export type ParseFixedRoleInput = { role: string | null | undefined };
 
@@ -34,7 +37,7 @@ export function isFixedRole({ role }: IsFixedRoleInput): boolean {
 
 export type RoleRankInput = { role: string };
 
-/** Position in `FIXED_ROLES`; -1 for anything else (an unknown name ranks below viewer). */
+/** Position in `FIXED_ROLES`; -1 for anything else (an unknown name ranks below member). */
 export function roleRank({ role }: RoleRankInput): number {
   return (FIXED_ROLES as readonly string[]).indexOf(role);
 }

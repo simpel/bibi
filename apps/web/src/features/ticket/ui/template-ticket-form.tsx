@@ -23,6 +23,7 @@ export function TemplateTicketForm({ data }: TemplateTicketFormProps) {
           name="customerId"
           label={t("customer")}
           options={data.customers}
+          hidden={data.customersHidden}
         />
         <OptionSelectField
           control={form.control}

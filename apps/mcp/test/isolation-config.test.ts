@@ -51,7 +51,7 @@ describe("cross-organization isolation: sheets, setups and fields", () => {
     const sheet = await call({
       client: a,
       name: "sheetDefinition_create",
-      args: { name: "Secret sheet", entityTypeIds: [type.data.id], roleId: "owner" },
+      args: { name: "Secret sheet", entityTypeIds: [type.data.id], roleId: "admin" },
     });
     expect(sheet.isError, JSON.stringify(sheet.data)).toBe(false);
     const cases = [

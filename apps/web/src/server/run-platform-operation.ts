@@ -13,7 +13,7 @@ export type RunPlatformOperationInput<I extends z.ZodType, O extends z.ZodType> 
 
 /**
  * The admin view's data-access layer (ADR 0015), the platform twin of `runOperation`: the
- * caller must be a platform admin with a browser session (`resolvePlatformContext`), then core
+ * caller must be a superadmin with a browser session (`resolvePlatformContext`), then core
  * `executePlatform` validates, authorizes, audits and logs.
  */
 export async function runPlatformOperation<I extends z.ZodType, O extends z.ZodType>({

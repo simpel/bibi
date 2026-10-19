@@ -1,11 +1,10 @@
+import { SUPERADMIN_ROLE } from "@okazi/core";
 import { admin } from "better-auth/plugins";
-
-/** `user.role` value that makes someone a platform (product) admin (ADR 0015). */
-export const PLATFORM_ADMIN_ROLE = "admin";
+import { adminAc, userAc } from "better-auth/plugins/admin/access";
 
 /**
  * Every HTTP endpoint the admin plugin adds. All are disabled: the plugin is used only for the
- * `user.role` field and ban enforcement. Roles are granted with the `grant-admin` CLI, so no
+ * `user.role` field and ban enforcement. Roles are granted with the `grant-superadmin` CLI, so no
  * browser request can ever impersonate, ban or promote anyone.
  */
 export const DISABLED_ADMIN_PATHS = [
@@ -26,5 +25,10 @@ export const DISABLED_ADMIN_PATHS = [
   "/admin/update-user",
 ];
 
-/** Platform-level user role (`user`/`admin`), separate from organization roles (ADR 0004). */
-export const adminPlugin = () => admin({ defaultRole: "user", adminRoles: [PLATFORM_ADMIN_ROLE] });
+/** Platform-level user role (`user`/`superadmin`), separate from organization roles (ADR 0004). */
+export const adminPlugin = () =>
+  admin({
+    roles: { user: userAc, [SUPERADMIN_ROLE]: adminAc },
+    defaultRole: "user",
+    adminRoles: [SUPERADMIN_ROLE],
+  });

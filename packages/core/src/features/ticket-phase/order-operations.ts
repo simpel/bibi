@@ -20,7 +20,7 @@ export const reorderTicketPhases = defineOperation({
     "active phase id once, in the new order.",
   input: TicketPhaseReorderInputSchema,
   output: TicketPhaseListOutputSchema,
-  permission: "ticketPhase:admin",
+  permission: "pipeline:edit",
   // Each moved phase is audited as a ticketPhase change.
   entityType: "ticketPhase",
   handler: async ({ input: { ids }, context }) => {
@@ -52,7 +52,7 @@ export const setTicketPhaseTransitions = defineOperation({
     "The phase flags still apply to every allowed move.",
   input: TicketPhaseSetTransitionsInputSchema,
   output: TicketPhaseSchema,
-  permission: "ticketPhase:admin",
+  permission: "pipeline:edit",
   handler: async ({ input: { id, toPhaseIds }, context }) => {
     const before = await loadTicketPhase({ context, id });
     if (!before) return notFound({ entity: "Ticket phase" });

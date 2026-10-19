@@ -1,5 +1,6 @@
 import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
+import { ACTOR_TYPE } from "../../operations/audit-rows";
 import { defineOperation } from "../../operations/define-operation";
 import { paginate } from "../../shared/paginate";
 import { toJson } from "../../shared/to-json";
@@ -13,8 +14,6 @@ import {
 } from "./schema";
 import { toMessageDto } from "./to-message-dto";
 
-const ACTOR_TYPE = { user: "USER", ai: "AI", system: "SYSTEM" } as const;
-
 const notFound = () =>
   err({ error: new AppError({ code: "NOT_FOUND", message: "Conversation not found" }) });
 
@@ -26,7 +25,7 @@ export const listMessages = defineOperation({
     "AI SDK UIMessage parts shape.",
   input: MessageListInputSchema,
   output: MessageListOutputSchema,
-  permission: "conversation:read",
+  permission: "self:view",
   handler: async ({ input, context }) => {
     const id = input.conversationId;
     if (!(await findConversation({ context, id, access: "read" }))) return notFound();
@@ -49,7 +48,7 @@ export const appendMessage = defineOperation({
     "only append ASSISTANT or TOOL messages to its own conversation.",
   input: MessageAppendInputSchema,
   output: MessageSchema,
-  permission: "conversation:write",
+  permission: "self:edit",
   // Chat persistence, owner-only and append-only: no approval card for every turn.
   approval: false,
   handler: async ({ input, context }) => {

@@ -1,5 +1,6 @@
 {
   "common": {
+    "hidden": "Hidden",
     "appName": "Okazi",
     "save": "Save",
     "cancel": "Cancel",
@@ -196,7 +197,7 @@
     "recent": "Recent",
     "chats": "Chats",
     "showMore": "Show more",
-    "platformAdmin": "Platform admin",
+    "platformAdmin": "Superadmin",
     "groups": {
       "primary": "Overview",
       "work": "Work",
@@ -206,7 +207,9 @@
     "integrations": "Integrations",
     "itemStates": "Item states",
     "ticketTemplates": "Predefined tickets",
-    "onboarding": "Guided setup"
+    "onboarding": "Guided setup",
+    "apiKeys": "API keys",
+    "permissions": "Permissions"
   },
   "venue": {
     "singular": "Venue",
@@ -1242,13 +1245,13 @@
     "thinking": "Thinking...",
     "newConversation": "New conversation",
     "approval": {
-      "title": "Approve action",
+      "title": "Confirm change",
       "description": "The assistant wants to make the following change.",
-      "approve": "Approve",
-      "reject": "Reject",
-      "approving": "Approving...",
-      "approved": "Approved",
-      "rejected": "Rejected",
+      "approve": "Confirm",
+      "reject": "Cancel",
+      "approving": "Confirming...",
+      "approved": "Confirmed",
+      "rejected": "Cancelled",
       "expired": "The proposal has expired",
       "expiresIn": "Valid for {time}",
       "approvedToast": "The action was carried out.",
@@ -1343,7 +1346,11 @@
         "startsAt": "Starts",
         "itemTypes": "Item types",
         "phases": "Phases",
-        "cells": "Grid cells"
+        "cells": "Grid cells",
+        "capacity": "Capacity",
+        "setupId": "Setup",
+        "status": "Status",
+        "price": "Price"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -1426,6 +1433,26 @@
         "creating": "Creating...",
         "change": "Change something",
         "changeMessage": "I want to change something."
+      },
+      "needsAdmin": "Needs admin",
+      "changes": {
+        "record": "Record",
+        "field": "Field",
+        "before": "Before",
+        "after": "After",
+        "empty": "–",
+        "none": "Nothing changes."
+      },
+      "consequences": {
+        "title": "What this affects",
+        "understand": "I understand what this affects",
+        "other": "This change has other effects.",
+        "items": {
+          "priceKeptOnQuotes": "{lines, plural, one {# line} other {# lines}} on {quotes, plural, one {# quote} other {# quotes}} keep the old price. The new price applies to lines added later.",
+          "ticketsMove": "{count, plural, one {# ticket moves} other {# tickets move}} to {target}.",
+          "linesMove": "{count, plural, one {# line moves} other {# lines move}} to {target}.",
+          "gridCellsCleared": "{count, plural, one {# grid cell is} other {# grid cells are}} cleared."
+        }
       }
     },
     "description": "Chat with the assistant about venues, items and skills.",
@@ -1908,7 +1935,7 @@
     "resetOnboarding": "Reset onboarding",
     "resettingOnboarding": "Resetting onboarding…",
     "onboardingReset": "Onboarding reset for {name}. They see it on their next page.",
-    "platformAdmin": "Platform admin"
+    "platformAdmin": "Superadmin"
   },
   "shell": {
     "mainNavigation": "Main navigation",
@@ -2070,16 +2097,14 @@
     }
   },
   "role": {
-    "viewer": "Viewer",
     "member": "Member",
+    "manager": "Manager",
     "admin": "Admin",
-    "owner": "Owner",
     "unknown": "No access",
     "descriptions": {
-      "viewer": "Reads everything, changes nothing.",
-      "member": "Also handles customers, tickets, quotes, payments and sheets.",
-      "admin": "Also sets up types, lists, phases, sheets, price lists, members and API keys.",
-      "owner": "Everything, including other owners and the organization itself."
+      "member": "Sees everything except the audit log and the assistant's organization settings; changes nothing.",
+      "manager": "Also handles bookings and selling: tickets, program, customers, quotes, payments and sheets.",
+      "admin": "Everything in the organization: also setup, members, API keys, the payment account and permissions."
     }
   },
   "auditLog": {
@@ -2093,7 +2118,8 @@
     "actor": {
       "USER": "Unknown user",
       "AI": "Assistant",
-      "SYSTEM": "System"
+      "SYSTEM": "System",
+      "API_KEY": "API key"
     }
   },
   "payment": {
@@ -2176,8 +2202,9 @@
     "plural": "Members",
     "listDescription": "Staff in the organization and their access role.",
     "empty": "No members.",
-    "assignRoles": "Change role",
-    "assignDescription": "Choose the role for {name}.",
+    "roleOf": "Role for {name}",
+    "memberSince": "Member since",
+    "detailDescription": "Contact details and access for this member.",
     "updated": "The role has been updated.",
     "columns": {
       "name": "Name",
@@ -2205,7 +2232,8 @@
     },
     "remove": "Remove",
     "removeConfirm": "Remove {name} from the organization? They lose access immediately.",
-    "removed": "The member has been removed."
+    "removed": "The member has been removed.",
+    "permissions": "Permissions"
   },
   "docs": {
     "title": "Okazi Docs",
@@ -2273,7 +2301,7 @@
         "getting-started": {
           "title": "Getting started",
           "lead": "Sign in, pick your organization and learn where things are in the menu.",
-          "body": "# Sign in\n\n1. Open Okazi and choose **Sign in**. You can use your password, a **Sign-in link** sent by email, or a **One-time code**.\n2. If you are new, choose **Create account**. The password needs at least 10 characters.\n3. If a colleague invited you, open the link in the invitation email, sign in with the invited email address and choose **Accept invitation**.\n\nIf you belong to several organizations, you land on **Choose organization**. Pick one, or choose **Create organization** to start a new one. You can switch later from the user menu.\n\n# The start page is the assistant\n\nAfter you sign in you land on a chat. This is the assistant, and it is the quickest way to find things or make a change. Choose **New chat** to start over. Earlier conversations are listed in the left menu under **Assistant**. See [The assistant](/docs/guide/assistant).\n\n# The left menu\n\nThe menu has three parts.\n\n- **Assistant** at the top: the home page, **New chat** and your recent conversations.\n- **Work**: **Tickets** and **Customers**.\n- **Catalog**: **Items** and **Venues**.\n\nAt the bottom left you find **Settings** (only for owners and administrators) and your user menu. The user menu holds theme (light, dark or system), language (Swedish or English), switching organization, **My skills** and **Sign out**.\n\nAt the top right there is a command bar. Press Cmd+K (Ctrl+K on Windows) to search or jump to a page. To the left of it a breadcrumb shows where you are. The assistant lives on the start page.\n\n# A first checklist\n\nIf your organization is new and you are an administrator, work through this list. Each step links to a page with details.\n\n1. Create your types under **Settings, Types**, or import a template. See [Configuration](/docs/guide/configuration).\n2. Add your lists, for example allergens, under **Settings, Lists**.\n3. Review your phases under **Settings, Phases**.\n4. Create a venue, then add your rooms and other items. See [Items and venues](/docs/guide/items-and-venues).\n5. Invite your colleagues under **Settings, Members**. See [Members and roles](/docs/guide/members-and-roles).\n6. Connect Stripe under **Settings, Payments** if you want customers to pay online. See [Payments](/docs/guide/payments).\n7. Add a customer, then create a ticket. See [Tickets](/docs/guide/tickets).\n\nIf you are not an administrator, you will not see **Settings**. Ask an administrator in your organization to set up what you need."
+          "body": "# Sign in\n\n1. Open Okazi and choose **Sign in**. You can use your password, a **Sign-in link** sent by email, or a **One-time code**.\n2. If you are new, choose **Create account**. The password needs at least 10 characters.\n3. If a colleague invited you, open the link in the invitation email, sign in with the invited email address and choose **Accept invitation**.\n\nIf you belong to several organizations, you land on **Choose organization**. Pick one, or choose **Create organization** to start a new one. You can switch later from the user menu.\n\n# The start page is the assistant\n\nAfter you sign in you land on a chat. This is the assistant, and it is the quickest way to find things or make a change. Choose **New chat** to start over. Earlier conversations are listed in the left menu under **Assistant**. See [The assistant](/docs/guide/assistant).\n\n# The left menu\n\nThe menu has three parts.\n\n- **Assistant** at the top: the home page, **New chat** and your recent conversations.\n- **Work**: **Tickets** and **Customers**.\n- **Catalog**: **Items** and **Venues**.\n\nAt the bottom left you find **Settings** (only for admins) and your user menu. The user menu holds theme (light, dark or system), language (Swedish or English), switching organization, **My skills** and **Sign out**.\n\nAt the top right there is a command bar. Press Cmd+K (Ctrl+K on Windows) to search or jump to a page. To the left of it a breadcrumb shows where you are. The assistant lives on the start page.\n\n# A first checklist\n\nIf your organization is new and you are an administrator, work through this list. Each step links to a page with details.\n\n1. Create your types under **Settings, Types**, or import a template. See [Configuration](/docs/guide/configuration).\n2. Add your lists, for example allergens, under **Settings, Lists**.\n3. Review your phases under **Settings, Phases**.\n4. Create a venue, then add your rooms and other items. See [Items and venues](/docs/guide/items-and-venues).\n5. Invite your colleagues under **Settings, Members**. See [Members and roles](/docs/guide/members-and-roles).\n6. Connect Stripe under **Settings, Payments** if you want customers to pay online. See [Payments](/docs/guide/payments).\n7. Add a customer, then create a ticket. See [Tickets](/docs/guide/tickets).\n\nIf you are not an administrator, you will not see **Settings**. Ask an administrator in your organization to set up what you need."
         },
         "assistant": {
           "title": "The assistant",
@@ -2302,25 +2330,25 @@
         },
         "configuration": {
           "title": "Configuration",
-          "lead": "Owners and administrators set up what things are called and how they work in your organization. Everything here is your own data.",
-          "body": "# Who can configure\n\nOnly owners and administrators see **Settings** in the left menu. It opens a page that lists every configuration area. Changes affect everyone in the organization.\n\n# Types and fields\n\nUnder **Settings, Types** you define the kinds of records you work with: items, customers, contacts, tickets, requirements and program items. For example \"Conference room\", \"Dish\", \"Company\" or \"Conference\".\n\n1. Choose **Create type**, say what it is for and name it.\n2. For an item type, switch on behaviours such as **Priced**, **Bookable** or **Setups**. See [Items and venues](/docs/guide/items-and-venues).\n3. Add fields. A field can be text, number, yes/no, date, choice, multiple choice or a link to another record. Mark it required if it must always be filled in.\n\nA type cannot be archived while it is in use, and a field cannot change kind once it has data.\n\n# Lists\n\nUnder **Settings, Lists** you keep your own word lists, such as allergens, diets or accessibility needs. Fields and needs point to a list. To get started, choose **Import the EU's 14 allergens**. You can edit the list afterwards. A list or a value cannot be archived while a field uses it or a need counts it.\n\n# Setups\n\nUnder **Settings, Setups** you name your room layouts and set the changeover time. See [Items and venues](/docs/guide/items-and-venues).\n\n# Phases\n\nUnder **Settings, Phases** you decide which phases your tickets move through, what they are called and in which order they appear on the pipeline board. Nothing about a phase is fixed: each has a name, a colour and a few flags that decide what Okazi does. You need one entry phase and at least one phase that ends the ticket. See [Tickets](/docs/guide/tickets).\n\n1. Choose **Create phase**, or **Import conference venue template** for a ready set.\n2. Use **Edit transitions** to choose which phases a ticket may move to from each one.\n3. Reorder with the arrows.\n\nA phase is archived, never deleted. If tickets are in it, you choose the phase they move to.\n\n# Sheets\n\nUnder **Settings, Sheets** you define a sheet such as \"Kitchen order\": name it, choose which item types and fields it includes, which lists' needs it counts, and which role receives it. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Price lists\n\nUnder **Settings, Price lists** you create a list for a customer or for everyone, with a validity period. Choose either a general discount in percent, or a price per item, not both. New order lines use the list's prices, and an archived list no longer applies.\n\n# Payments and skills\n\n**Settings, Payments** connects Stripe. See [Payments](/docs/guide/payments). **Settings, Skills** holds organization skills for the assistant. See [The assistant](/docs/guide/assistant).\n\n# Templates and the assistant\n\nTemplates such as the conference venue starter set are optional. They are only data, so you can change everything afterwards. You can also ask the assistant to propose a setup, for example \"We are a manor with a restaurant\". You approve each change."
+          "lead": "Admins set up what things are called and how they work in your organization. Everything here is your own data.",
+          "body": "# Who can configure\n\nOnly admins see **Settings** in the left menu. It opens a page that lists every configuration area. Changes affect everyone in the organization.\n\n# Types and fields\n\nUnder **Settings, Types** you define the kinds of records you work with: items, customers, contacts, tickets, requirements and program items. For example \"Conference room\", \"Dish\", \"Company\" or \"Conference\".\n\n1. Choose **Create type**, say what it is for and name it.\n2. For an item type, switch on behaviours such as **Priced**, **Bookable** or **Setups**. See [Items and venues](/docs/guide/items-and-venues).\n3. Add fields. A field can be text, number, yes/no, date, choice, multiple choice or a link to another record. Mark it required if it must always be filled in.\n\nA type cannot be archived while it is in use, and a field cannot change kind once it has data.\n\n# Lists\n\nUnder **Settings, Lists** you keep your own word lists, such as allergens, diets or accessibility needs. Fields and needs point to a list. To get started, choose **Import the EU's 14 allergens**. You can edit the list afterwards. A list or a value cannot be archived while a field uses it or a need counts it.\n\n# Setups\n\nUnder **Settings, Setups** you name your room layouts and set the changeover time. See [Items and venues](/docs/guide/items-and-venues).\n\n# Phases\n\nUnder **Settings, Phases** you decide which phases your tickets move through, what they are called and in which order they appear on the pipeline board. Nothing about a phase is fixed: each has a name, a colour and a few flags that decide what Okazi does. You need one entry phase and at least one phase that ends the ticket. See [Tickets](/docs/guide/tickets).\n\n1. Choose **Create phase**, or **Import conference venue template** for a ready set.\n2. Use **Edit transitions** to choose which phases a ticket may move to from each one.\n3. Reorder with the arrows.\n\nA phase is archived, never deleted. If tickets are in it, you choose the phase they move to.\n\n# Sheets\n\nUnder **Settings, Sheets** you define a sheet such as \"Kitchen order\": name it, choose which item types and fields it includes, which lists' needs it counts, and which role receives it. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Price lists\n\nUnder **Settings, Price lists** you create a list for a customer or for everyone, with a validity period. Choose either a general discount in percent, or a price per item, not both. New order lines use the list's prices, and an archived list no longer applies.\n\n# Payments and skills\n\n**Settings, Payments** connects Stripe. See [Payments](/docs/guide/payments). **Settings, Skills** holds organization skills for the assistant. See [The assistant](/docs/guide/assistant).\n\n# Templates and the assistant\n\nTemplates such as the conference venue starter set are optional. They are only data, so you can change everything afterwards. You can also ask the assistant to propose a setup, for example \"We are a manor with a restaurant\". You approve each change."
         },
         "members-and-roles": {
           "title": "Members and roles",
           "lead": "Invite colleagues, give them the right access level and remove them when they leave.",
-          "body": "# Access levels\n\nEvery member has one access role. The roles are fixed and go from least to most access.\n\n- **Viewer**: can read everything, and changes nothing.\n- **Member**: can also work with day-to-day data such as customers, tickets, program items, needs, payments and sheets.\n- **Admin**: everything a member can do, plus configuration (types, lists, phases, sheets, price lists), members and API keys.\n- **Owner**: everything, including other owners and the organization itself. An organization always keeps at least one owner.\n\nOnly owners and admins see **Settings**. The pages check your access themselves, so hiding the menu is only a convenience.\n\n# Invite a colleague\n\n1. Open **Settings** and choose **Members**.\n2. Choose **Invite member** and enter the email address and role.\n3. Choose **Send invitation**.\n\nOkazi emails a link. The person signs in or creates an account with that same email address and chooses **Accept invitation**. They then join with the invited role. An invitation expires after 48 hours.\n\nUnder **Pending invitations** you can see who has not answered yet. Choose **Revoke** to cancel an invitation, and the link stops working. You cannot give someone more access than you have yourself, and an email address that is already a member cannot be invited again.\n\n# Change a role or remove someone\n\nOn the members page you can change a member's role. Owners can only be changed by another owner. To remove someone, choose **Remove**. They lose access immediately, and what they created stays in the history.\n\n# Who does what on a ticket\n\nAccess roles decide what you may do in the app. A separate idea decides who answers for a ticket.\n\n- Every ticket has one assignee, who must be a member. Other members can follow it to stay informed.\n- Some phases need an assignee before a ticket can enter them, for example Confirmed.\n- Change the assignee with **Change assignee**, and choose **Follow** or **Unfollow** for yourself. The ticket list can show only what is **Assigned to me** or what you are **Following**.\n\nAdministrators define responsibilities such as \"Head of kitchen\" under **Settings, Responsibilities**. A responsibility covers certain item types and has a default person and followers. Coming later: a ticket gets an assignee per responsibility automatically from its items, and the matching sheets go to that person and the followers.\n\n# The assistant and API access\n\nThe assistant acts with your role, so it can never do more than you can. If you connect other tools, they use a role that is never above yours. See [Authentication](/docs/developers/authentication)."
+          "body": "# Access levels\n\nEvery member has one preset, which an admin can fine-tune per person. The presets are fixed and go from least to most access.\n\n- **Member**: can read everything, and changes nothing.\n- **Manager**: can also handle bookings and day-to-day data such as customers, tickets, program items, needs, payments and sheets.\n- **Admin**: everything in the organization: configuration (types, lists, phases, sheets, price lists), members, API keys and the organization itself. An organization always keeps at least one admin.\n\n# Fine-tune one person\n\nAn admin can give one person more or less than their preset, per part of the app.\n\n1. Open **Settings** and choose **Members**.\n2. On the person's row, choose **Permissions**.\n3. Turn actions on or off, for example let a member also edit items, or hide payments from a manager. Turning off **View** hides that part of the app for them.\n4. Choose **Save**.\n\nChanged cells are marked, and **Reset** puts them back to the preset. Managing members, API keys and the payment account always stays with admins.\n\nYou only see the parts of the app you may view. The pages check your access themselves, so hiding the menu is only a convenience.\n\n# Invite a colleague\n\n1. Open **Settings** and choose **Members**.\n2. Choose **Invite member** and enter the email address and role.\n3. Choose **Send invitation**.\n\nOkazi emails a link. The person signs in or creates an account with that same email address and chooses **Accept invitation**. They then join with the invited role. An invitation expires after 48 hours.\n\nUnder **Pending invitations** you can see who has not answered yet. Choose **Revoke** to cancel an invitation, and the link stops working. You cannot give someone more access than you have yourself, and an email address that is already a member cannot be invited again.\n\n# Change a role or remove someone\n\nOn the members page you can change a member's role. You cannot change or remove someone whose role is above your own. To remove someone, choose **Remove**. They lose access immediately, and what they created stays in the history.\n\n# Who does what on a ticket\n\nAccess roles decide what you may do in the app. A separate idea decides who answers for a ticket.\n\n- Every ticket has one assignee, who must be a member. Other members can follow it to stay informed.\n- Some phases need an assignee before a ticket can enter them, for example Confirmed.\n- Change the assignee with **Change assignee**, and choose **Follow** or **Unfollow** for yourself. The ticket list can show only what is **Assigned to me** or what you are **Following**.\n\nAdministrators define responsibilities such as \"Head of kitchen\" under **Settings, Responsibilities**. A responsibility covers certain item types and has a default person and followers. Coming later: a ticket gets an assignee per responsibility automatically from its items, and the matching sheets go to that person and the followers.\n\n# The assistant and API access\n\nThe assistant acts with your permissions, so it can never do more than you can. Tools you connect with OAuth act as you too. API keys belong to the organization and have their own permissions, set by an admin. See [Authentication](/docs/developers/authentication)."
         }
       },
       "developers": {
         "overview": {
           "title": "Developer overview",
           "lead": "Okazi has four ways in: the web app, a REST API, a GraphQL graph and an MCP server. They all run the same operations with the same permissions.",
-          "body": "# One set of operations, four surfaces\n\nEvery capability in Okazi is defined once as a **core operation**, for example `venue.create` or `ticket.list`. Each operation has an input schema, an output schema, a required permission and a handler. The surfaces are generated from that list:\n\n- **REST** at `{{webUrl}}/api/v1`, described by an OpenAPI 3.1 document.\n- **GraphQL** at `{{webUrl}}/api/graphql`, for reading related data in one request.\n- **MCP** at `{{mcpUrl}}/mcp`, one tool per operation, for AI assistants such as Claude.\n- **The web app**, which staff use every day.\n\nBecause everything comes from the same operations, a command that exists in the web app also exists in REST and MCP, with the same validation and the same errors. A parity test in CI keeps it that way.\n\n# Tenancy\n\nAll data belongs to an **organization**. Every credential resolves to one user in one organization, and every operation is scoped to that organization. You can never read or change another organization's data, whichever surface you use.\n\n# Audit and logging\n\nEvery command writes an audit log entry with the actor (`user` or `ai`), the surface and a request id. Organization owners and admins can read the history in the app and through `auditLog.list`.\n\n# Where to go next\n\n- [Authentication](/docs/developers/authentication): API keys, sessions and OAuth.\n- [REST API](/docs/developers/rest-api) and the [REST reference]({{webUrl}}/api/v1/docs).\n- [MCP server](/docs/developers/mcp) and the [MCP tool reference](/docs/reference/mcp).\n- [AI approvals](/docs/developers/approvals): why AI commands become proposals.\n- [Errors and limits](/docs/developers/errors).\n"
+          "body": "# One set of operations, four surfaces\n\nEvery capability in Okazi is defined once as a **core operation**, for example `venue.create` or `ticket.list`. Each operation has an input schema, an output schema, a required permission and a handler. The surfaces are generated from that list:\n\n- **REST** at `{{webUrl}}/api/v1`, described by an OpenAPI 3.1 document.\n- **GraphQL** at `{{webUrl}}/api/graphql`, for reading related data in one request.\n- **MCP** at `{{mcpUrl}}/mcp`, one tool per operation, for AI assistants such as Claude.\n- **The web app**, which staff use every day.\n\nBecause everything comes from the same operations, a command that exists in the web app also exists in REST and MCP, with the same validation and the same errors. A parity test in CI keeps it that way.\n\n# Tenancy\n\nAll data belongs to an **organization**. Every credential resolves to one user in one organization, and every operation is scoped to that organization. You can never read or change another organization's data, whichever surface you use.\n\n# Audit and logging\n\nEvery command writes an audit log entry with the actor (`user` or `ai`), the surface and a request id. Organization admins can read the history in the app and through `auditLog.list`.\n\n# Where to go next\n\n- [Authentication](/docs/developers/authentication): API keys, sessions and OAuth.\n- [REST API](/docs/developers/rest-api) and the [REST reference]({{webUrl}}/api/v1/docs).\n- [MCP server](/docs/developers/mcp) and the [MCP tool reference](/docs/reference/mcp).\n- [AI approvals](/docs/developers/approvals): why AI commands become proposals.\n- [Errors and limits](/docs/developers/errors).\n"
         },
         "authentication": {
           "title": "Authentication",
           "lead": "Every request is made as a user in one organization. Use an API key for server-to-server integrations and OAuth for MCP clients and third-party apps.",
-          "body": "# API keys (REST and GraphQL)\n\nAn API key belongs to a user and is bound to one organization. Its access comes from the role it was issued with. Send it as a bearer token:\n\n```\nAuthorization: Bearer okz_<your key>\n```\n\nThe `x-api-key: okz_<your key>` header works too. Keys always start with `okz_`.\n\n- Keys are rate limited to 600 requests per minute.\n- The owner's membership is checked on every request. If the user leaves the organization, the key stops working.\n- Treat a key like a password. Never put it in front-end code or a public repository.\n\nAPI keys are issued by an owner or admin of the organization. Self-service key management in Settings is coming.\n\n# OAuth 2.1 (MCP clients and apps)\n\nMCP clients such as Claude Desktop sign in with OAuth. The client is sent to the Okazi sign-in page, the user signs in and picks an organization, and the client receives an access token that acts as that user.\n\n- Discovery: `{{webUrl}}/.well-known/oauth-authorization-server`\n- Protected resource metadata for MCP: `{{mcpUrl}}/.well-known/oauth-protected-resource`\n- Authorization endpoint: `{{webUrl}}/api/auth/oauth2/authorize`\n- Token endpoint: `{{webUrl}}/api/auth/oauth2/token`\n- Scopes: `okazi:read` and `okazi:write`\n\nMost MCP clients do all of this for you when you add the server URL.\n\n# Session cookie\n\nThe web app uses a session cookie. Requests from a signed-in browser to `/api/v1` and `/api/graphql` are authenticated the same way. This is meant for the app itself, not for integrations.\n\n# Permissions\n\nEach member has one of four fixed roles: **owner**, **admin**, **member** or **viewer**. Every operation names the permission it needs, for example `venue:create`. The reference lists the permission for each route and tool. A call without it fails with `FORBIDDEN`.\n"
+          "body": "# API keys (REST and GraphQL)\n\nAn API key belongs to the organization, not to a person. It has a preset (member, manager or admin), which an admin can fine-tune on the key's **Permissions** page. Send it as a bearer token:\n\n```\nAuthorization: Bearer okz_<your key>\n```\n\nThe `x-api-key: okz_<your key>` header works too. Keys always start with `okz_`.\n\n- Keys are rate limited to 600 requests per minute.\n- The key keeps working when the admin who created it leaves. Revoke it in **Settings** when it is no longer needed.\n- Treat a key like a password. Never put it in front-end code or a public repository.\n\nOnly admins create, change and revoke API keys, under **Settings, Integrations**.\n\n# OAuth 2.1 (MCP clients and apps)\n\nMCP clients such as Claude Desktop sign in with OAuth. The client is sent to the Okazi sign-in page, the user signs in and picks an organization, and the client receives an access token that acts as that user.\n\n- Discovery: `{{webUrl}}/.well-known/oauth-authorization-server`\n- Protected resource metadata for MCP: `{{mcpUrl}}/.well-known/oauth-protected-resource`\n- Authorization endpoint: `{{webUrl}}/api/auth/oauth2/authorize`\n- Token endpoint: `{{webUrl}}/api/auth/oauth2/token`\n- Scopes: `okazi:read` and `okazi:write`\n\nMost MCP clients do all of this for you when you add the server URL.\n\n# Session cookie\n\nThe web app uses a session cookie. Requests from a signed-in browser to `/api/v1` and `/api/graphql` are authenticated the same way. This is meant for the app itself, not for integrations.\n\n# Permissions\n\nEach member has one of three fixed roles: **member**, **manager** or **admin**. Every operation names the permission it needs, for example `venue:create`. The reference lists the permission for each route and tool. A call without it fails with `FORBIDDEN`.\n"
         },
         "rest-api": {
           "title": "REST API",
@@ -2397,10 +2425,10 @@
     "description": "Keys that let other systems use the REST API on behalf of the organization.",
     "apiKeys": {
       "title": "API keys",
-      "description": "Keys for the REST API. Each key acts with one role and never more than its owner may do. Removing a member revokes their keys.",
+      "description": "Keys for the REST API. A key belongs to the organization and acts with its own preset and permissions, so it keeps working when the person who created it leaves. Only admins manage keys.",
       "empty": "No API keys.",
       "create": "Create API key",
-      "createDescription": "The key acts with the role you choose: viewer, member or admin. You cannot choose a role above your own.",
+      "createDescription": "The key acts with the preset you choose: member, manager or admin. Fine-tune its permissions afterwards.",
       "creating": "Creating API key…",
       "created": "The API key has been created.",
       "secretTitle": "Copy your API key",
@@ -2414,7 +2442,6 @@
       "revoking": "Revoking API key…",
       "revoked": "The API key has been revoked.",
       "never": "Never",
-      "unknownOwner": "Former member",
       "fields": {
         "name": "Name",
         "role": "Role",
@@ -2431,10 +2458,15 @@
         "name": "Name",
         "key": "Key",
         "role": "Role",
-        "owner": "Owner",
         "expires": "Expires",
-        "lastUsed": "Last used"
-      }
+        "lastUsed": "Last used",
+        "createdBy": "Created by"
+      },
+      "edit": "Edit API key",
+      "editDescription": "Rename the key or change its preset. Its permission overrides stay.",
+      "updated": "The API key has been updated.",
+      "permissions": "Permissions",
+      "unknownCreator": "Former member"
     },
     "oauthGrants": {
       "title": "Connected apps",
@@ -2640,6 +2672,108 @@
       "changeSell": "I want to change what we sell",
       "changeMoves": "I want to change how a request moves"
     },
-    "skipped": "You can set things up later by asking the assistant, or in Settings."
+    "skipped": "You can set things up later by asking the assistant, or in Settings.",
+    "panelHint": "Click a phase or something you sell to tell me what to change.",
+    "comment": {
+      "title": {
+        "phase": "Phase: {name}",
+        "itemType": "What you sell: {name}"
+      },
+      "placeholder": "What should change?",
+      "send": "Send",
+      "message": {
+        "phase": "About the phase “{name}”: {instruction}",
+        "itemType": "About “{name}” in what we sell: {instruction}"
+      }
+    }
+  },
+  "permissions": {
+    "title": "Permissions for {name}",
+    "memberDescription": "What this member may see and do. The preset gives the starting point; switch single permissions on or off on top of it.",
+    "apiKeyDescription": "What this API key may see and do. The preset gives the starting point; switch single permissions on or off on top of it.",
+    "preset": "Preset",
+    "presetPlaceholder": "Choose a preset",
+    "presetSaved": "The preset has been changed to {preset}.",
+    "changePresetTitle": "Change the preset to {preset}?",
+    "changePresetDescription": "All permissions for {name} are replaced by what {preset} grants. Permissions switched on or off on this page are removed.",
+    "changePresetConfirm": "Change preset",
+    "saved": "The permissions have been saved.",
+    "lockedHint": "Set by the preset. Only Administrator can manage members, API keys and the payment account.",
+    "alwaysVisible": "Everyone can see this, since its names and labels appear across the app.",
+    "empty": "No features.",
+    "columns": {
+      "feature": "Feature",
+      "group": "Group"
+    },
+    "groups": {
+      "bookings": "Bookings",
+      "selling": "Selling and money",
+      "catalog": "Catalog",
+      "setup": "Setup",
+      "organization": "Organization"
+    },
+    "actions": {
+      "view": "View",
+      "create": "Create",
+      "edit": "Edit",
+      "remove": "Archive",
+      "changePhase": "Change phase",
+      "export": "Export",
+      "send": "Send"
+    },
+    "features": {
+      "ticket": "Tickets",
+      "program": "Program",
+      "customer": "Customers",
+      "quote": "Quotes",
+      "payment": "Payments",
+      "sheet": "Sheets",
+      "item": "Items",
+      "venue": "Venues",
+      "priceList": "Price lists",
+      "configuration": "Types, fields and lists",
+      "pipeline": "Phases and states",
+      "template": "Templates",
+      "responsibility": "Responsibilities",
+      "member": "Members",
+      "apiKey": "API keys",
+      "paymentAccount": "Payment account",
+      "audit": "Audit log",
+      "assistant": "Assistant and organization skills"
+    },
+    "featureDescriptions": {
+      "ticket": "Bookings with their lines (rooms, food, activities), phases and holds.",
+      "program": "The schedule of a booking: what happens when, and where.",
+      "customer": "Companies and people who book, with their contact persons.",
+      "quote": "Offers with prices that are sent to customers.",
+      "payment": "Payment links and payments for bookings.",
+      "sheet": "Versioned sheets, such as a kitchen order, sent to a responsibility.",
+      "item": "What you sell: rooms, food, drinks, activities and packages.",
+      "venue": "Your venues and the spaces in them that can be booked.",
+      "priceList": "Price lists with the prices of your items.",
+      "configuration": "Your own types, fields and lists, such as allergens.",
+      "pipeline": "The phases a booking moves through and the states of its lines.",
+      "template": "Ready-made bookings to start new ones from.",
+      "responsibility": "Who is responsible for which items, such as the head of kitchen.",
+      "member": "Staff in the organization, their presets and permissions.",
+      "apiKey": "Keys that let other systems use Okazi's API.",
+      "paymentAccount": "The organization's account for receiving payments.",
+      "audit": "The log of who changed what, and when.",
+      "assistant": "Everyone's assistant conversations and the organization's shared skills."
+    },
+    "card": {
+      "allowed": "Allowed on top of the preset",
+      "denied": "Not allowed",
+      "noOverrides": "No changes from the preset.",
+      "effective": "Can use",
+      "hidden": "Hidden",
+      "open": "Open permissions"
+    },
+    "explanation": "Every action also needs view, so turning view off hides the whole feature. Greyed-out cells come from the preset and cannot be changed here.",
+    "overridden": "Changed",
+    "reset": "Reset",
+    "resetAll": "Reset all to preset",
+    "changePresetMember": "Change role",
+    "changePresetApiKey": "Change preset"
   }
 }

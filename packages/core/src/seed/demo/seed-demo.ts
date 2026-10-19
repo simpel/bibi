@@ -27,7 +27,7 @@ export type SeedDemoInput = {
   orgs?: readonly DemoOrg[];
   /** `--skip-pipeline`: item types without phases, states or grid, for the first setup. */
   skipPipeline?: boolean;
-  /** The mega admin (platform admin, owner of every org); on by default for the demo orgs only. */
+  /** The mega admin (superadmin, admin of every org); on by default for the demo orgs only. */
   megaAdmin?: boolean;
 };
 
@@ -105,7 +105,7 @@ async function seedOne({ db, org, skipPipeline }: SeedOneInput): Promise<Result<
   const context = createExecuteContext({
     organizationId,
     roles: [],
-    permissions: grantAll({ upTo: "admin" }),
+    permissions: grantAll({}),
     actor: { type: "system", userId: null },
     db,
   });

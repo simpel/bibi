@@ -1,11 +1,9 @@
 import { getResponsibility } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
-import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadResponsibilityOptions } from "../load-responsibility-options";
@@ -16,7 +14,6 @@ export type ResponsibilityUpdateProps = { locale: Locale; id: string };
 /** `/settings/responsibilities/[id]/update`: edit on a page of its own. */
 export async function ResponsibilityUpdate({ locale, id }: ResponsibilityUpdateProps) {
   const t = await getTranslations("responsibility");
-  if (!(await getCallerAbilities()).configurationWrite) notFound();
   const [responsibility, options] = await Promise.all([
     runOperation({ operation: getResponsibility, input: { id } }),
     loadResponsibilityOptions(),

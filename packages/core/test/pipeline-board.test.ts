@@ -38,7 +38,7 @@ describe("pipeline.board (ADR 0043)", () => {
         id: ticket.id,
         columnId: ticket.phaseId,
         reference: ticket.reference,
-        customerName: customer.name,
+        customerId: customer.id,
         quantity: 20,
         assigneeId: null,
       }),

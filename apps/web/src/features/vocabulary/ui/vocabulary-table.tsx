@@ -3,14 +3,15 @@
 import type { VocabularyDto } from "@okazi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
+import type { RowAccess } from "@/lib/can";
 import { useVocabularyColumns } from "./use-vocabulary-columns";
 
-export type VocabularyTableProps = { vocabularies: VocabularyDto[]; canWrite: boolean };
+export type VocabularyTableProps = { vocabularies: VocabularyDto[]; access: RowAccess };
 
 /** Lists of the organization with their value counts; names link to the detail page. */
-export function VocabularyTable({ vocabularies, canWrite }: VocabularyTableProps) {
+export function VocabularyTable({ vocabularies, access }: VocabularyTableProps) {
   const t = useTranslations("vocabulary");
-  const columns = useVocabularyColumns({ canWrite });
+  const columns = useVocabularyColumns({ access });
   return (
     <PersistedDataTable
       tableId="vocabulary.list"

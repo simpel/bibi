@@ -15,6 +15,8 @@ type Format = ReturnType<typeof useFormatter>;
 
 export type TicketLookups = {
   customers: NamedOption[];
+  /** The caller may not view customers: the column shows "Hidden". */
+  customersHidden?: boolean;
   types: NamedOption[];
   phases: TicketPhaseDto[];
 };
@@ -53,13 +55,17 @@ const quantityColumn = ({ t }: { t: Translate }): Column => ({
   cell: ({ getValue }) => (getValue() as number | null) ?? "–",
 });
 
-type NamedInput = Pick<TicketLookups, "customers" | "types"> & { t: Translate };
+type NamedInput = Pick<TicketLookups, "customers" | "types"> & {
+  t: Translate;
+  hidden: string | undefined;
+};
 
-const namedColumns = ({ t, customers, types }: NamedInput): Column[] => [
+const namedColumns = ({ t, customers, types, hidden }: NamedInput): Column[] => [
   namedOptionColumn({
     id: "customer",
     header: t("columns.customer"),
     options: customers,
+    hidden,
     pick: (ticket: TicketDto) => ticket.customerId,
   }),
   namedOptionColumn({
@@ -71,17 +77,24 @@ const namedColumns = ({ t, customers, types }: NamedInput): Column[] => [
 ];
 
 /** Reference (link), customer, type, phase, desired period and quantity of a ticket. */
-export function useTicketColumns({ phases, customers, types }: TicketLookups): Column[] {
+export function useTicketColumns({
+  phases,
+  customers,
+  customersHidden,
+  types,
+}: TicketLookups): Column[] {
   const t = useTranslations("ticket");
+  const common = useTranslations("common");
+  const shown = customersHidden ? common("hidden") : undefined;
   const format = useFormatter();
   return useMemo<Column[]>(
     () => [
       referenceColumn({ t }),
-      ...namedColumns({ t, customers, types }),
+      ...namedColumns({ t, customers, types, hidden: shown }),
       phaseColumn({ t, phases }),
       whenColumn({ t, format }),
       quantityColumn({ t }),
     ],
-    [t, format, customers, types, phases],
+    [t, format, customers, types, phases, shown],
   );
 }

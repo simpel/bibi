@@ -2,7 +2,7 @@ import { listItems } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadItemFormData } from "../load-item-form-data";
@@ -15,12 +15,18 @@ export type CustomerPackagesSectionProps = { locale: Locale; customerId: string 
  * The customer's own packages (customer-specific items, ADR 0021) and "Save as package", which
  * offers only COMPOSABLE types and parts from the catalog or the customer's own packages.
  */
-export async function CustomerPackagesSection({
+export async function CustomerPackagesSection(props: CustomerPackagesSectionProps) {
+  const abilities = await getCallerAbilities();
+  if (!can({ abilities, permission: "item:view" })) return null;
+  return <PackagesBody {...props} abilities={abilities} />;
+}
+
+async function PackagesBody({
   locale,
   customerId,
-}: CustomerPackagesSectionProps) {
+  abilities,
+}: CustomerPackagesSectionProps & { abilities: CallerAbilities }) {
   const t = await getTranslations("item");
-  const { itemWrite } = await getCallerAbilities();
   const [packages, data] = await Promise.all([
     runOperation({ operation: listItems, input: { customerId, onlyCustomer: true, limit: 100 } }),
     loadItemFormData({ customerId }),
@@ -35,7 +41,7 @@ export async function CustomerPackagesSection({
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("packages")}</h2>
-        {itemWrite && types.length > 0 ? (
+        {can({ abilities, permission: "item:create" }) && types.length > 0 ? (
           <SavePackageButton customerId={customerId} data={{ ...data.value, types }} />
         ) : null}
       </div>
@@ -48,6 +54,7 @@ export async function CustomerPackagesSection({
           items={items}
           types={data.value.types}
           venues={data.value.venues}
+          venuesHidden={data.value.venuesHidden}
           locale={locale}
         />
       )}

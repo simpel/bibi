@@ -22,4 +22,18 @@ describe("answerText", () => {
   it("is empty when nothing was given", () => {
     expect(answerText({ question, values: ["", "  "] })).toBe("");
   });
+
+  it("sends every ticked label in the question's order for several answers", () => {
+    const several = { ...question, multiple: true };
+    expect(answerText({ question: several, values: ["both", "rooms"] })).toBe("Rooms, Both");
+  });
+
+  it("adds the user's own words after the ticked labels", () => {
+    const several = { ...question, multiple: true };
+    expect(answerText({ question: several, values: ["rooms", " a café "] })).toBe("Rooms, a café");
+  });
+
+  it("is empty for several answers when nothing was ticked", () => {
+    expect(answerText({ question: { ...question, multiple: true }, values: [""] })).toBe("");
+  });
 });

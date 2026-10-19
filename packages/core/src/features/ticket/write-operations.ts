@@ -18,7 +18,7 @@ export const createTicket = defineOperation({
     "member) becomes the main assignee. `fields` must match the type's own fields.",
   input: TicketCreateInputSchema,
   output: TicketSchema,
-  permission: "ticket:write",
+  permission: "ticket:create",
   handler: async ({ input, context }) => insertTicket({ context, input }),
 });
 
@@ -33,7 +33,7 @@ export const updateTicket = defineOperation({
     "assignee with assignment.assign.",
   input: TicketUpdateInputSchema,
   output: TicketSchema,
-  permission: "ticket:write",
+  permission: "ticket:edit",
   handler: async ({ input: { id, fields: patch, ...data }, context }) => {
     const before = await loadTicket({ context, id });
     if (!before) return notFound({ entity: "Ticket" });

@@ -51,7 +51,7 @@ async function createKitchenOrder({ context, entityTypeId, fieldId, listId }: De
     entityTypeIds: [entityTypeId],
     fieldIds: [fieldId],
     vocabularyIds: [listId],
-    roleId: "owner",
+    roleId: "admin",
   };
   return unwrap({ result: await execute({ operation: createSheetDefinition, input, context }) });
 }

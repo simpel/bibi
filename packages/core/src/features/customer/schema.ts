@@ -20,7 +20,11 @@ export const CustomerSchema = z.object({
   ticketCount: z
     .number()
     .int()
-    .describe("Number of the customer's tickets that are not archived; each blocks archiving it"),
+    .nullable()
+    .describe(
+      "Number of the customer's tickets that are not archived; each blocks archiving it. " +
+        "Null when the caller may not view tickets",
+    ),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -89,6 +93,11 @@ export const CustomerArchiveInputSchema = z.object({
 });
 
 export const CustomerListInputSchema = z.object({
+  ids: z
+    .array(z.string().min(1))
+    .max(100)
+    .optional()
+    .describe("Only these customers (e.g. to name the customers of tickets on a board)"),
   entityTypeId: z.string().optional().describe("Only customers of this type"),
   query: z.string().trim().max(200).optional().describe("Only customers whose name contains this"),
   ...PageInputShape,

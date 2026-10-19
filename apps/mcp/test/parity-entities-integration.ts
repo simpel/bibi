@@ -72,7 +72,7 @@ async function connectClient({ context, mcp }: CreateInput): Promise<Json> {
  * core as a session caller, then read it back through every surface.
  */
 async function createKey({ context }: CreateInput): Promise<Json> {
-  const input = { name: "Parity", role: "member" };
+  const input = { name: "Parity", role: "manager" };
   const created = await execute({
     operation: createApiKey,
     input,
@@ -82,15 +82,23 @@ async function createKey({ context }: CreateInput): Promise<Json> {
   return JSON.parse(JSON.stringify(created.value.apiKey));
 }
 
+/** API keys have a `get` on every surface; read back by id. */
+const apiKey: ParityEntity = {
+  name: "apiKey",
+  create: createKey,
+  viaMcp: ({ mcp, created }) => tool({ mcp, name: "apiKey_get", args: { id: created.id } }),
+  viaRest: ({ context, created }) =>
+    createRestClient({ context }).get({ path: `/api-keys/${created.id}` }),
+  viaGraph: async ({ context, created, keys }) => {
+    const query = `query($id: String!) { apiKey(id: $id) { ${keys.join(" ")} } }`;
+    return (await gqlQuery({ context, query, variables: { id: created.id } })).apiKey;
+  },
+};
+
 /** API keys and OAuth grants (ADR 0005). */
 export function integrationEntities(): ParityEntity[] {
   return [
-    listed({
-      name: "apiKey",
-      path: "/api-keys",
-      field: "apiKeys",
-      create: createKey,
-    }),
+    apiKey,
     listed({
       name: "oauthGrant",
       path: "/oauth-grants",

@@ -12,6 +12,6 @@ export type CreateExecuteContextInput = Omit<ExecuteContext, "db"> & {
 /** Builds an execute context with a db pinned to `organizationId` that stamps the actor as author. */
 export function createExecuteContext({ db, ...rest }: CreateExecuteContextInput): ExecuteContext {
   const { organizationId, actor } = rest;
-  const actorId = actor.userId ?? SYSTEM_ACTOR_ID;
+  const actorId = actor.userId ?? actor.apiKeyId ?? SYSTEM_ACTOR_ID;
   return { ...rest, db: scopedDb({ organizationId, actorId, ...(db ? { db } : {}) }) };
 }

@@ -1,4 +1,3 @@
-import type { ApiKeyCreateInput } from "@okazi/core";
 import {
   FormControl,
   FormController,
@@ -11,25 +10,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@okazi/ui";
-import type { Control } from "react-hook-form";
-import type { ApiKeyFormValues } from "./api-key-form-schema";
+import type { Control, FieldValues, Path } from "react-hook-form";
 
-export type ApiKeySelectFieldProps = {
-  control: Control<ApiKeyFormValues, unknown, ApiKeyCreateInput>;
-  name: "role" | "expires";
+export type ApiKeySelectFieldProps<V extends FieldValues, O> = {
+  control: Control<V, unknown, O>;
+  name: Path<V>;
   label: string;
   placeholder?: string;
   options: readonly { value: string; label: string }[];
 };
 
-/** A select in the create form (the key's role or its expiry). */
-export function ApiKeySelectField({
+/** A select in the create and update forms (the key's role or its expiry). */
+export function ApiKeySelectField<V extends FieldValues, O>({
   control,
   name,
   label,
   placeholder,
   options,
-}: ApiKeySelectFieldProps) {
+}: ApiKeySelectFieldProps<V, O>) {
   return (
     <FormController
       control={control}

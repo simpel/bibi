@@ -9,6 +9,8 @@ import type { DecisionState } from "./use-approval-decision";
 export type ApprovalActionsProps = {
   state: DecisionState;
   expired: boolean;
+  /** Confirm stays disabled until the user acknowledged the warnings (ADR 0049). */
+  blocked?: boolean;
   onDecide: (input: { decision: Decision }) => void;
 };
 
@@ -18,8 +20,13 @@ const isLocked = ({ state }: { state: DecisionState }): boolean =>
   state.phase === "rejected" ||
   (state.phase === "error" && state.final);
 
-/** Reject / Approve; both are disabled while sending and after a final decision. */
-export function ApprovalActions({ state, expired, onDecide }: ApprovalActionsProps) {
+/** Cancel / Confirm; both are disabled while sending and after a final decision. */
+export function ApprovalActions({
+  state,
+  expired,
+  blocked = false,
+  onDecide,
+}: ApprovalActionsProps) {
   const t = useTranslations("assistant.approval");
   const locked = isLocked({ state });
   const pending = state.phase === "pending";
@@ -36,7 +43,7 @@ export function ApprovalActions({ state, expired, onDecide }: ApprovalActionsPro
       </Button>
       <Button
         size="sm"
-        disabled={locked || expired}
+        disabled={locked || expired || blocked}
         onClick={() => onDecide({ decision: "approve" })}
       >
         <CheckIcon />

@@ -5,7 +5,7 @@ import { AdminSidebar } from "./admin-sidebar";
 
 export type AdminShellProps = { email: string; children: ReactNode };
 
-/** Platform admin layout (ADR 0015): shadcn sidebar + inset content, separate from the app shell. */
+/** Superadmin layout (ADR 0015): shadcn sidebar + inset content, separate from the app shell. */
 export function AdminShell({ email, children }: AdminShellProps) {
   const t = useTranslations("admin");
   return (

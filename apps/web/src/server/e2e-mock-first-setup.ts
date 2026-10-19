@@ -22,9 +22,10 @@ const QUESTIONS = [
   },
   {
     question: "What do you sell?",
+    multiple: true,
     choices: [
       { value: "rooms", label: "Rooms" },
-      { value: "both", label: "Rooms, food and drink" },
+      { value: "food", label: "Food and drink" },
     ],
   },
   {

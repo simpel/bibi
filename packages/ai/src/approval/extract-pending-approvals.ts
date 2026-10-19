@@ -31,10 +31,19 @@ export function extractPendingApprovals({ message }: ExtractPendingApprovalsInpu
     if (!part.success) continue;
     const approval = readApproval({ output: part.data.output });
     if (!approval) continue;
-    const { operation, input, summary, approvalToken, expiresAt } = approval;
+    const { operation, input, summary, approvalToken, expiresAt, preview } = approval;
     const toolName = toolNameOf({ type: part.data.type, toolName: part.data.toolName });
     const toolCallId = part.data.toolCallId;
-    approvals.push({ toolCallId, toolName, operation, input, summary, approvalToken, expiresAt });
+    approvals.push({
+      toolCallId,
+      toolName,
+      operation,
+      input,
+      summary,
+      approvalToken,
+      expiresAt,
+      ...(preview ? { preview } : {}),
+    });
   }
   return approvals;
 }

@@ -11,7 +11,7 @@ export const getPaymentAccount = defineOperation({
     "RESTRICTED. Reads the stored status; use paymentAccount.sync to refresh it from Stripe.",
   input: PaymentAccountGetInputSchema,
   output: PaymentAccountSchema,
-  permission: "payment:read",
+  permission: "paymentAccount:view",
   entityType: "paymentAccount",
   handler: async ({ context }) => {
     const row = await context.db.paymentAccount.findFirst({});

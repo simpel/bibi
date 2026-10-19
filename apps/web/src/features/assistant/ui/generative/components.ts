@@ -33,6 +33,7 @@ import { OccupancyTableView } from "./occupancy-table-view";
 import { PaymentAccountCardView } from "./payment-account-card-view";
 import { PaymentCardView } from "./payment-card-view";
 import { PaymentTableView } from "./payment-table-view";
+import { PermissionProfileCardView } from "./permission-profile-card-view";
 import { PhaseGridTableView } from "./phase-grid-table-view";
 import { PipelineBoardView } from "./pipeline-board-view";
 import { PipelineDraftCardView } from "./pipeline-draft-card-view";
@@ -130,6 +131,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "sheet-card": SheetCardView,
   "member-table": MemberTableView,
   "member-card": MemberCardView,
+  "permission-profile-card": PermissionProfileCardView,
   "invitation-table": InvitationTableView,
   "invitation-card": InvitationCardView,
   "audit-log-table": AuditLogTableView,

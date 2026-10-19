@@ -21,7 +21,7 @@ export const assignAssignment = defineOperation({
     "(CONFLICT) for the main assignee of a ticket in a phase that requires one.",
   input: AssignmentAssignInputSchema,
   output: AssignmentSchema,
-  permission: "assignment:write",
+  permission: "ticket:edit",
   handler: async ({ input: { assigneeId, ...slot }, context }) => {
     const valid = await checkSlot({ context, ...slot });
     if (!valid.ok) return valid;
@@ -44,7 +44,7 @@ export const followAssignment = defineOperation({
     "required by rules. The user must be a member. Following twice changes nothing.",
   input: AssignmentFollowInputSchema,
   output: AssignmentSchema,
-  permission: "assignment:write",
+  permission: "ticket:edit",
   handler: async ({ input: { userId, ...slot }, context }) => {
     const valid = await checkSlot({ context, ...slot });
     if (!valid.ok) return valid;
@@ -63,7 +63,7 @@ export const unfollowAssignment = defineOperation({
     "subject has no such assignment.",
   input: AssignmentFollowInputSchema,
   output: AssignmentSchema,
-  permission: "assignment:write",
+  permission: "ticket:edit",
   handler: async ({ input: { userId, ...slot }, context }) => {
     const valid = await checkSlot({ context, ...slot });
     if (!valid.ok) return valid;

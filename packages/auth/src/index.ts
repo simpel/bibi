@@ -23,7 +23,7 @@ export {
   resolvePlatformContext,
 } from "./platform/resolve-platform-context";
 export { type SetPlatformAdminInput, setPlatformAdmin } from "./platform/set-platform-admin";
-export { DISABLED_ADMIN_PATHS, PLATFORM_ADMIN_ROLE } from "./plugins/admin";
+export { DISABLED_ADMIN_PATHS } from "./plugins/admin";
 export { ORG_CLAIM } from "./plugins/mcp";
 export { type AuthSession, type RequireSessionInput, requireSession } from "./require-session";
 export { ACTOR_HEADER, CONVERSATION_HEADER } from "./resolve/ai-actor";
@@ -31,9 +31,4 @@ export {
   type ResolveExecuteContextInput,
   resolveExecuteContext,
 } from "./resolve/resolve-execute-context";
-export {
-  ROLE_PERMISSIONS,
-  type RolePermissionsInput,
-  rolePermissions,
-} from "./roles/role-permissions";
 export { AUTH_BASE_PATH, MCP_PATH, mcpResourceUrl } from "./urls";

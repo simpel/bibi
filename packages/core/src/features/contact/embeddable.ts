@@ -16,7 +16,7 @@ export type IndexedContact = Contact & {
 
 export const contactEmbeddable: Embeddable<IndexedContact> = {
   entityType: "contact",
-  readPermission: "contact:read",
+  readPermission: "customer:view",
   toText: ({ entity }) =>
     [
       entity.name,

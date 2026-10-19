@@ -11,5 +11,7 @@ export type ItemFormData = {
   links: LinkTargets;
   setups: SetupDto[];
   venues: { id: string; name: string }[];
+  /** The caller may not view venues: show them as hidden and disable the picker. */
+  venuesHidden: boolean;
   parts: { id: string; name: string }[];
 };

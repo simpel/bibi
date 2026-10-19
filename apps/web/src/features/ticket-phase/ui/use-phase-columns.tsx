@@ -2,6 +2,7 @@ import type { TicketPhaseDto } from "@okazi/core/schemas";
 import { actionsColumn, Badge, ColorSwatch, type ColumnDef } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import type { RowAccess } from "@/lib/can";
 import type { PhaseRow } from "./phase-rows";
 import { TicketPhaseRowActions } from "./ticket-phase-row-actions";
 
@@ -25,10 +26,10 @@ const flagsColumn = ({ t }: { t: Translate }): Column => ({
   ),
 });
 
-export type PhaseColumnsInput = { phases: TicketPhaseDto[]; canAdmin: boolean };
+export type PhaseColumnsInput = { phases: TicketPhaseDto[]; access: RowAccess };
 
 /** Name (with color), flags and allowed transitions; admins also get the row actions. */
-export function usePhaseColumns({ phases, canAdmin }: PhaseColumnsInput): Column[] {
+export function usePhaseColumns({ phases, access }: PhaseColumnsInput): Column[] {
   const t = useTranslations("ticketPhase");
   const common = useTranslations("common");
   return useMemo<Column[]>(() => {
@@ -51,13 +52,13 @@ export function usePhaseColumns({ phases, canAdmin }: PhaseColumnsInput): Column
         accessorFn: (row) => row.targets.join(", ") || t("noTransitions"),
       },
     ];
-    if (!canAdmin) return columns;
+    if (!access.canEdit && !access.canRemove) return columns;
     const actions = actionsColumn<PhaseRow>({
       label: common("actions"),
       cell: ({ phase, index }) => (
-        <TicketPhaseRowActions phase={phase} index={index} phases={phases} />
+        <TicketPhaseRowActions phase={phase} index={index} phases={phases} access={access} />
       ),
     });
     return [...columns, actions];
-  }, [t, common, phases, canAdmin]);
+  }, [t, common, phases, access]);
 }

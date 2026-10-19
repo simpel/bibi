@@ -1,4 +1,6 @@
 import { defineOperation } from "../../operations/define-operation";
+import { archiveConsequences } from "../../shared/archive-consequences";
+import { canView } from "../../shared/can-view";
 import { archivePhase } from "./archive-phase";
 import { TicketPhaseArchiveInputSchema, TicketPhaseSchema } from "./schema";
 
@@ -12,6 +14,17 @@ export const archiveTicketPhase = defineOperation({
     "be archived (CONFLICT), nor a phase predefined tickets start in. Its phase grid cells are cleared.",
   input: TicketPhaseArchiveInputSchema,
   output: TicketPhaseSchema,
-  permission: "ticketPhase:admin",
+  permission: "pipeline:remove",
   handler: ({ input, context }) => archivePhase({ context, input }),
+  consequences: async ({ input, context }) => {
+    // Only counted for a caller who may view them (ADR 0050, feature scope).
+    const moving = canView({ context, feature: "ticket" })
+      ? await context.db.ticket.count({ where: { phaseId: input.id } })
+      : 0;
+    const cells = await context.db.phaseStateRule.count({ where: { phaseId: input.id } });
+    const target = input.targetPhaseId
+      ? await context.db.ticketPhase.findFirst({ where: { id: input.targetPhaseId } })
+      : null;
+    return archiveConsequences({ moving, cells, target: target?.name ?? null, rows: "tickets" });
+  },
 });

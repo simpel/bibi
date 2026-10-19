@@ -1,12 +1,13 @@
 import type { FixedRole } from "../../permissions/fixed-roles";
+import type { PermissionOverride } from "../../permissions/overrides";
 import type { TicketPhaseTemplate } from "../../templates/ticket-phases/ticket-phase-template";
 import type { DemoConfig } from "./config-types";
 import type { DemoCustomer } from "./customer-types";
 import type { DemoTicketTemplate } from "./template-types";
 import type { DemoTicket } from "./ticket-types";
 
-/** One demo staff member with their fixed access role (ADR 0034). */
-export type DemoUser = { name: string; role: FixedRole };
+/** One demo staff member with their preset and optional overrides (ADR 0034, 0050). */
+export type DemoUser = { name: string; role: FixedRole; overrides?: readonly PermissionOverride[] };
 
 /**
  * A responsibility (ADR 0034): the item types it covers by name, and the default assignee and

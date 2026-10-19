@@ -20,7 +20,7 @@ export const listAssignments = defineOperation({
     "assignment (responsibilityId null) first, then one per responsibility on a ticket.",
   input: AssignmentListInputSchema,
   output: AssignmentListOutputSchema,
-  permission: "assignment:read",
+  permission: "ticket:view",
   handler: async ({ input, context }) => {
     const subject = await checkSubject({ context, ...input });
     if (!subject.ok) return subject;
@@ -41,7 +41,7 @@ export const listMyAssignments = defineOperation({
     "FOLLOWING (what they follow). Each row names its subject (subjectType, subjectId).",
   input: AssignmentListMineInputSchema,
   output: AssignmentListMineOutputSchema,
-  permission: "assignment:read",
+  permission: "ticket:view",
   handler: async ({ input: { kind, subjectType, ...page }, context }) => {
     const userId = context.actor.userId;
     if (!userId) return invalid({ message: "assignment.listMine needs a signed-in member" });

@@ -1,11 +1,12 @@
 import type { ScopedDbClient } from "@okazi/db";
 import type { z } from "zod";
+import type { Consequence } from "../change-preview/schema";
 import type { Result } from "../errors/result";
 import type { PermissionSet } from "../permissions/permission-set";
 import type { Embeddable } from "../search/embeddable";
 import type { Permission } from "./permission";
 
-export type ActorKind = "user" | "ai" | "system";
+export type ActorKind = "user" | "ai" | "system" | "apiKey";
 
 /** How the caller signed in (`packages/auth`); absent for system jobs and internal callers. */
 export type CredentialKind = "session" | "accessToken" | "apiKey";
@@ -13,16 +14,21 @@ export type CredentialKind = "session" | "accessToken" | "apiKey";
 /**
  * Who is executing. AI acts on behalf of `userId`; `conversationId` links the AI chat.
  * `approvedBy` is set (by the approval flow only) to the user who confirmed an AI proposal.
+ * An API key belongs to the organization, not a user (ADR 0050): `userId` is null and
+ * `apiKeyId` names the key.
  */
 export type Actor = {
   type: ActorKind;
   userId: string | null;
+  apiKeyId?: string;
   conversationId?: string;
   approvedBy?: string;
 };
 
 /** One entity change recorded by a command handler; becomes an AuditLog row. */
 export type RecordedChange = {
+  /** The operation that made it, when it differs from the command's (a change set step). */
+  operation?: string;
   entityType?: string;
   entityId: string;
   before?: unknown;
@@ -71,6 +77,11 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
    * can report what the command would do (and what would block it) without changing anything.
    */
   dryRun?: boolean;
+  /**
+   * What the command affects beyond its own fields, read before it runs (ADR 0049), e.g. quote
+   * lines that keep an old price. Shown on the approval card; method syntax as for `handler`.
+   */
+  consequences?(args: HandlerInput<z.infer<I>>): Promise<Consequence[]>;
   /** Entity re-indexed for search after a successful command (reads `output.id`). */
   embeddable?: Embeddable;
   /** Entity type for audit rows; defaults to the name prefix. */

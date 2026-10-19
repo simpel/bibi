@@ -15,7 +15,7 @@ type PhaseInput = { context: Context; phaseId: string };
 /** An active, non-terminal phase the caller may read (terminal phases ignore the grid). */
 async function checkPhase({ context, phaseId }: PhaseInput): Promise<Result<true>> {
   const path = "phaseId";
-  const readable = checkReadable({ context, permission: "ticketPhase:read", path });
+  const readable = checkReadable({ context, permission: "pipeline:view", path });
   if (!readable.ok) return readable;
   const phase = await context.db.ticketPhase.findFirst({ where: { id: phaseId } });
   if (!phase) return problem({ path, message: "Unknown or archived phase" });
@@ -31,7 +31,7 @@ type StateInput = { context: Context; entityTypeId: string; stateId: string | nu
 async function checkState({ context, entityTypeId, stateId }: StateInput): Promise<Result<true>> {
   if (stateId === null) return ok({ value: true });
   const path = "stateId";
-  const readable = checkReadable({ context, permission: "itemState:read", path });
+  const readable = checkReadable({ context, permission: "pipeline:view", path });
   if (!readable.ok) return readable;
   const found = await context.db.itemState.count({ where: { id: stateId, entityTypeId } });
   if (found > 0) return ok({ value: true });
@@ -50,7 +50,7 @@ export async function checkCell({ context, input }: CheckCellInput): Promise<Res
   const phase = await checkPhase({ context, phaseId });
   if (!phase.ok) return phase;
   const path = "entityTypeId";
-  const readable = checkReadable({ context, permission: "configuration:read", path });
+  const readable = checkReadable({ context, permission: "configuration:view", path });
   if (!readable.ok) return readable;
   const type = await loadTypeOfBase({ context, entityTypeId, base: "ITEM" });
   if (!type.ok) return type;

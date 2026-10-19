@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type GrantableRole, MemberInviteInputSchema } from "@okazi/core/schemas";
+import { type FixedRole, MemberInviteInputSchema } from "@okazi/core/schemas";
 import { useRouter } from "@okazi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
@@ -7,7 +7,7 @@ import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { inviteMemberAction } from "../actions";
 
-export type InviteMemberValues = { email: string; role: GrantableRole };
+export type InviteMemberValues = { email: string; role: FixedRole };
 
 export type UseInviteMemberFormInput = { onDone: () => void };
 
@@ -18,7 +18,7 @@ export function useInviteMemberForm({ onDone }: UseInviteMemberFormInput) {
   const router = useRouter();
   const form = useForm<InviteMemberValues>({
     resolver: zodResolver(MemberInviteInputSchema, useZodMessages()),
-    defaultValues: { email: "", role: "member" },
+    defaultValues: { email: "", role: "manager" },
   });
   const { submit, pending } = useFormAction({
     form,

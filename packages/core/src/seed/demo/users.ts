@@ -1,6 +1,6 @@
 import type { Db } from "@okazi/db";
 import { createId } from "@paralleldrive/cuid2";
-import { OWNER_ROLE } from "../../permissions/resources";
+import { ADMIN_ROLE } from "../../permissions/fixed-roles";
 import type { DemoOrg, DemoUser } from "./types";
 
 export type DemoEmailDomainInput = { org: DemoOrg };
@@ -35,7 +35,7 @@ export type DemoUserIds = Map<string, string>;
 /**
  * The documented exception to "everything via execute" (ADR 0025, `docs/demo-seed.md`): the
  * organization, users and memberships are Better Auth's rows, written as its signup and
- * `addMember` would. Owners get `owner`; everyone else starts without roles until the seed
+ * `addMember` would. Admins get `admin`; everyone else starts without roles until the seed
  * assigns them through `member.assignRole`.
  */
 export async function bootstrapDemoOrg({ db, org }: BootstrapDemoOrgInput) {
@@ -50,7 +50,7 @@ export async function bootstrapDemoOrg({ db, org }: BootstrapDemoOrgInput) {
     const userId = createId();
     const email = demoEmail({ org, user });
     await db.user.create({ data: { id: userId, name: user.name, email, emailVerified: true } });
-    const role = user.role === OWNER_ROLE ? OWNER_ROLE : "";
+    const role = user.role === ADMIN_ROLE ? ADMIN_ROLE : "";
     const memberId = createId();
     await db.member.create({ data: { id: memberId, organizationId, userId, role, createdAt } });
     members.set(user.name, memberId);

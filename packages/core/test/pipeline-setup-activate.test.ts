@@ -79,7 +79,7 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
     const room = await roomType({ context });
     const input = estateDraft({ roomTypeId: room.id });
     const all = context.permissions;
-    const noPhases = { ...context, permissions: { ...all, ticketPhase: ["read" as const] } };
+    const noPhases = { ...context, permissions: { ...all, pipeline: ["view" as const] } };
     const refused = await execute({ operation: activatePipelineSetup, input, context: noPhases });
     expect(errorCode({ result: refused })).toBe("FORBIDDEN");
     expect(await context.db.ticketPhase.count()).toBe(0);

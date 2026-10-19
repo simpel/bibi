@@ -6,8 +6,9 @@ import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import type { RowAccess } from "@/lib/can";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadSheetOptions } from "../load-sheet-options";
@@ -41,17 +42,17 @@ type SheetDefinitionPageProps = {
   page: SheetDefinitionListOutput & { options: SheetOptions };
   cursor: string | undefined;
   create: ReactNode;
-  canWrite: boolean;
+  access: RowAccess;
 };
 
-async function SheetDefinitionPage({ page, cursor, create, canWrite }: SheetDefinitionPageProps) {
+async function SheetDefinitionPage({ page, cursor, create, access }: SheetDefinitionPageProps) {
   const t = await getTranslations("sheetDefinition");
   if (page.items.length === 0 && !cursor) {
     return <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />;
   }
   return (
     <>
-      <SheetDefinitionTable sheets={page.items} options={page.options} canWrite={canWrite} />
+      <SheetDefinitionTable sheets={page.items} options={page.options} access={access} />
       <CursorPagination
         pathname={ROUTES.settingsSheets}
         cursor={cursor}
@@ -64,10 +65,13 @@ async function SheetDefinitionPage({ page, cursor, create, canWrite }: SheetDefi
 /** Sheets page body: header with create, table, cursor pagination. */
 export async function SheetDefinitionList({ locale, cursor }: SheetDefinitionListProps) {
   const t = await getTranslations("sheetDefinition");
-  const { configurationWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const result = await loadPage({ cursor });
   const options = result.ok ? result.value.options : undefined;
-  const create = configurationWrite && options ? <CreateSheetDefinitionButton /> : undefined;
+  const create =
+    can({ abilities, permission: "template:create" }) && options ? (
+      <CreateSheetDefinitionButton />
+    ) : undefined;
   const header = (
     <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
   );
@@ -87,7 +91,7 @@ export async function SheetDefinitionList({ locale, cursor }: SheetDefinitionLis
         page={result.value}
         cursor={cursor}
         create={create}
-        canWrite={configurationWrite}
+        access={rowAccess({ abilities, feature: "template" })}
       />
     </div>
   );

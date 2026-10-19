@@ -2,10 +2,11 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import { resolveItemTags } from "../item/resolve-item";
+import { checkReadable } from "../ticket/ticket-rules";
 import { lineAmounts } from "./line-totals";
 import type { OrderLineDto, OrderLineInput } from "./order-line-schema";
 
-type Db = { context: Pick<OperationContext, "db"> };
+type Db = { context: Pick<OperationContext, "db" | "permissions"> };
 
 /** An order line to write: everything but its id. */
 export type LineData = Omit<OrderLineDto, "id">;
@@ -20,20 +21,27 @@ const lineIssue = ({ at, field, message }: { at: number; field: string; message:
 
 type CopyItemInput = Db & { itemId: string; customerId: string; at: number };
 
-/** A fresh snapshot of an active item: name, price, VAT (else the venue's) and contained tags. */
+/** One text for a missing item, another customer's package or no `item:view` (no oracle). */
+const ITEM_UNAVAILABLE = "Item not found or not allowed";
+
+/**
+ * A fresh snapshot of an active item: name, price, VAT (else the venue's) and contained tags.
+ * A snapshot copies item data, so it needs `item:view` at copy time (ADR 0050).
+ */
 async function copyItem({
   context,
   itemId,
   customerId,
   at,
 }: CopyItemInput): Promise<Result<Snapshot>> {
+  const readable = checkReadable({ context, permission: "item:view", path: `lines.${at}.itemId` });
+  if (!readable.ok) return lineIssue({ at, field: "itemId", message: ITEM_UNAVAILABLE });
   const item = await context.db.item.findFirst({
     where: { id: itemId },
     include: { venue: { select: { defaultVatRatePercent: true } } },
   });
-  if (!item) return lineIssue({ at, field: "itemId", message: "Unknown item" });
-  if (item.customerId && item.customerId !== customerId) {
-    return lineIssue({ at, field: "itemId", message: "The item belongs to another customer" });
+  if (!item || (item.customerId && item.customerId !== customerId)) {
+    return lineIssue({ at, field: "itemId", message: ITEM_UNAVAILABLE });
   }
   const vatRatePercent = item.vatRatePercent ?? item.venue?.defaultVatRatePercent ?? null;
   if (vatRatePercent === null) {

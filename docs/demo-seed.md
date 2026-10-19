@@ -22,6 +22,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 
 The checks that run today:
 - **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
+- **Permission overrides (ADR 0050):** `checkDemoPermissions` (`permission-checks.ts`) asserts that every documented override is stored for its member (via `permission.get`). Lindholmen has two: Maria Holm (`manager`) has `payment:view` denied, so she handles bookings but does not see money; Peter Sjoberg (`member`) has `item:create` and `item:edit` allowed, so he reads everything and also keeps the catalogue up to date. Seeded with `permission.update` in `seed-roles.ts` from the `overrides` of the user in `data/lindholmen/lindholmen.ts`.
 - **Part 2 (configuration):**
   - The number of rows per organization matches for venue, vocabularies, vocabulary values, setups, responsibilities, types, fields, items and capacities (point 1 for what exists).
   - Vingaleden has no vocabulary "Allergens" (the first half of point 2).
@@ -40,11 +41,11 @@ The checks that run today:
 
 ## Exceptions and sign-in
 
-- The organization, the users and the memberships are Better Auth tables. They are written directly (`seed/demo/users.ts`), the same way sign-up and `addMember` do. Everything else goes through `execute` as `SYSTEM`. The owner gets `owner` directly, the others get their role via `member.assignRole`. Right after, `provisionOrganization` gives each organization its defaults (a minimal set of ticket phases, ADR 0043) as SYSTEM, the same way Better Auth's `afterCreateOrganization` hook does for a real sign-up.
+- The organization, the users and the memberships are Better Auth tables. They are written directly (`seed/demo/users.ts`), the same way sign-up and `addMember` do. Everything else goes through `execute` as `SYSTEM`. Admins get `admin` directly, the others get their role via `member.assignRole`. Right after, `provisionOrganization` gives each organization its defaults (a minimal set of ticket phases, ADR 0043) as SYSTEM, the same way Better Auth's `afterCreateOrganization` hook does for a real sign-up.
 - The users' email is `firstname.lastname@<slug>.okazi.test`, e.g. `anna.berg@lindholmen-demo.okazi.test`. Sign in with a magic link or a one-time code; the email ends up in Mailpit.
-- **Mega admin (development):** when `seed:demo` runs for the demo organizations, it also creates `mega.admin@admin.okazi.test` ("Mega Admin"): a platform admin (`user.role = admin`, ADR 0015) and the `owner` of every demo organization, written directly like the other users (`seed-mega-admin.ts`). It is created once and kept across reseeds (same id), only its memberships are rebuilt. It is not part of any organization's member count (the checks run before it is added), and tests that pass their own `orgs` do not create it. `checkDemoMegaAdmin` (`mega-admin-checks.ts`, run by `run-mega-admin.ts`) asserts the role and the ownership. The dev user switcher lists it as a top-level entry above the organizations.
-- **AI models (development):** the same platform step gives every AI feature that has no model yet its demo model (`data`-style list in `ai-models.ts`: Claude Sonnet for `assistant.chat` and `onboarding`, a 1536-dimension embedding model for `search.embedding`), written as `AiSetting` rows updated by the mega admin (`seed-ai-models.ts`), so the assistant and the onboarding work right after `seed:demo`. A model a platform admin already chose in `/admin/ai-models` is never overwritten. `checkDemoAiModels` (`ai-model-checks.ts`) asserts every feature in `AI_FEATURES` has one. The ids are Vercel AI Gateway ids and can be changed in `/admin/ai-models`; the embedding feature needs a reindex when its model changes.
-- Access uses the fixed roles (ADR 0034): `viewer` reads everything, `member` also writes operational data (customers, tickets, program items, requirements, payments, sheets), `admin` also configures and manages members, `owner` can do everything. What each person answers for (sales, coordinator, kitchen, caretaker) comes with responsibilities, not roles.
+- **Mega admin (development):** when `seed:demo` runs for the demo organizations, it also creates `mega.admin@admin.okazi.test` ("Mega Admin"): a superadmin (`user.role = "superadmin"`, ADR 0015) and the `admin` of every demo organization, written directly like the other users (`seed-mega-admin.ts`). It is created once and kept across reseeds (same id), only its memberships are rebuilt. It is not part of any organization's member count (the checks run before it is added), and tests that pass their own `orgs` do not create it. `checkDemoMegaAdmin` (`mega-admin-checks.ts`, run by `run-mega-admin.ts`) asserts the superadmin role and the `admin` membership. The dev user switcher lists it as a top-level entry above the organizations.
+- **AI models (development):** the same platform step gives every AI feature that has no model yet its demo model (`data`-style list in `ai-models.ts`: Claude Sonnet for `assistant.chat` and `onboarding`, a 1536-dimension embedding model for `search.embedding`), written as `AiSetting` rows updated by the mega admin (`seed-ai-models.ts`), so the assistant and the onboarding work right after `seed:demo`. A model a superadmin already chose in `/admin/ai-models` is never overwritten. `checkDemoAiModels` (`ai-model-checks.ts`) asserts every feature in `AI_FEATURES` has one. The ids are Vercel AI Gateway ids and can be changed in `/admin/ai-models`; the embedding feature needs a reindex when its model changes.
+- Access uses the fixed roles as presets (ADR 0034, 0050): `member` views everything except audit, assistant and API keys and changes nothing, `manager` also works in bookings and selling (customers, tickets, program items, quotes, payments, sheets), `admin` can do everything, including configuration and members. Admins add per-member overrides (Maria Holm and Peter Sjoberg in Lindholmen show both directions). What each person answers for (sales, coordinator, kitchen, caretaker) comes with responsibilities, not roles.
 - Part 2 seeds the configuration and the bookable spaces: Lindholmen's 10 conference rooms and Vingaleden's 3 boats, each in the organization's venue. Part 3 seeds the rest of the catalog (dishes, drinks, meals, guides, tours, equipment, packages, skippers, trips and add-ons) in the same venue. A part has no setup of its own, so "Knippla in the Cabaret setup" and "The View, Banquet" are seeded as the room only; the setup is chosen on the line. Tour group sizes ("max 25 people") are not seeded, since Tour has no `SETUPS`. The requirement types under "Other types" come in part 5, because they point to vocabularies via `requirement.*`.
 
 ---
@@ -60,14 +61,14 @@ Fixed roles (ADR 0034). The function in parentheses is what the person answers f
 
 | User | Role |
 |---|---|
-| Anna Berg | owner |
-| Erik Lund (sales) | member |
-| Sara Nilsson (sales) | member |
+| Anna Berg | admin |
+| Erik Lund (sales) | manager |
+| Sara Nilsson (sales) | manager |
 | Johan Ek (coordinator) | admin |
-| Maria Holm (coordinator) | member |
-| Ali Karimi (kitchen) | member |
-| Peter Sjoberg (caretaker) | viewer |
-| Lena Strand (finance) | member |
+| Maria Holm (coordinator) | manager |
+| Ali Karimi (kitchen) | manager |
+| Peter Sjoberg (caretaker) | member |
+| Lena Strand (finance) | manager |
 
 ### Responsibilities
 Seeded in part 2 via `responsibility.create` as SYSTEM, after the item types. Followers are optional.
@@ -297,10 +298,10 @@ Fixed roles (ADR 0034).
 
 | User | Role |
 |---|---|
-| Per Vinga | owner |
-| Stina Holm (tour desk) | member |
-| Kalle Ek (skipper) | viewer |
-| Jonna Sand (skipper) | viewer |
+| Per Vinga | admin |
+| Stina Holm (tour desk) | manager |
+| Kalle Ek (skipper) | member |
+| Jonna Sand (skipper) | member |
 
 ### Responsibilities
 | Responsibility | Covers (item types) | Default assignee | Default followers |

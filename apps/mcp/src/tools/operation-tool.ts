@@ -31,6 +31,7 @@ const APPROVAL_SCHEMA = {
     summary: { type: "string" },
     approvalToken: { type: "string" },
     expiresAt: { type: "string", format: "date-time" },
+    preview: { type: "object", description: "What it would change: records, fields, consequences" },
   },
   required: ["status", "operation", "summary", "approvalToken"],
 };
@@ -61,6 +62,8 @@ export function createOperationTool({
     ...(operation.untrustedOutput && { _meta: { [UNTRUSTED_OUTPUT_META_KEY]: true } }),
     // `aiAllowed: false` (#88): the assistant never sees the tool, so it can never propose it.
     ...(!operation.aiAllowed && { humanOnly: true }),
+    // ADR 0048: a caller only sees the commands they may run; queries stay visible.
+    ...(operation.kind === "command" && { writePermission: operation.permission }),
     async run({ args, context }: RunToolInput) {
       if (requiresApproval({ operation, actor: context.actor })) {
         const proposal = await proposeApproval({ operation, meta, args, context, secret });

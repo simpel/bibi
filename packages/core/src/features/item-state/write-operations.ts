@@ -25,7 +25,7 @@ export const createItemState = defineOperation({
     "move to every released state; change that with itemState.setTransitions.",
   input: ItemStateCreateInputSchema,
   output: ItemStateSchema,
-  permission: "itemState:admin",
+  permission: "pipeline:create",
   handler: ({ input, context }) => insertItemState({ context, ...input }),
 });
 
@@ -61,7 +61,7 @@ export const updateItemState = defineOperation({
     "line in the state; a collision with a hard hold gives CONFLICT and changes nothing.",
   input: ItemStateUpdateInputSchema,
   output: ItemStateSchema,
-  permission: "itemState:admin",
+  permission: "pipeline:edit",
   handler: async ({ input: { id, ...data }, context }) => {
     const found = await loadItemState({ context, id });
     if (!found) return notFound({ entity: "Item state" });

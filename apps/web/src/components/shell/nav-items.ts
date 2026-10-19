@@ -1,3 +1,4 @@
+import type { Permission } from "@okazi/core";
 import {
   BoxIcon,
   BuildingIcon,
@@ -23,7 +24,7 @@ export type NavLabelKey =
   | "settings"
   | "platformAdmin";
 
-/** Who sees an entry: everyone, members who can configure, or platform admins (ADR 0036). */
+/** Who sees an entry: everyone (subject to its permission), settings viewers, or superadmins. */
 export type NavAudience = "everyone" | "configure" | "platformAdmin";
 
 export type NavItem = {
@@ -31,6 +32,8 @@ export type NavItem = {
   labelKey: NavLabelKey;
   icon: LucideIcon;
   audience: NavAudience;
+  /** The view permission an entry needs (ADR 0050); absent = no permission needed. */
+  permission?: Permission;
 };
 
 export type NavGroupId = "primary" | "work" | "catalog" | "admin";
@@ -41,22 +44,59 @@ export type NavGroupId = "primary" | "work" | "catalog" | "admin";
  */
 export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
   primary: [
-    { href: ROUTES.pipeline, labelKey: "pipeline", icon: KanbanIcon, audience: "everyone" },
+    {
+      href: ROUTES.pipeline,
+      labelKey: "pipeline",
+      icon: KanbanIcon,
+      audience: "everyone",
+      permission: "ticket:view",
+    },
     {
       href: ROUTES.dashboard,
       labelKey: "dashboard",
       icon: LayoutDashboardIcon,
       audience: "everyone",
+      permission: "ticket:view",
     },
   ],
   work: [
-    { href: ROUTES.calendar, labelKey: "calendar", icon: CalendarRangeIcon, audience: "everyone" },
-    { href: ROUTES.tickets, labelKey: "tickets", icon: CalendarIcon, audience: "everyone" },
+    {
+      href: ROUTES.calendar,
+      labelKey: "calendar",
+      icon: CalendarRangeIcon,
+      audience: "everyone",
+      permission: "ticket:view",
+    },
+    {
+      href: ROUTES.tickets,
+      labelKey: "tickets",
+      icon: CalendarIcon,
+      audience: "everyone",
+      permission: "ticket:view",
+    },
   ],
   catalog: [
-    { href: ROUTES.customers, labelKey: "customers", icon: ContactIcon, audience: "everyone" },
-    { href: ROUTES.items, labelKey: "items", icon: BoxIcon, audience: "everyone" },
-    { href: ROUTES.venues, labelKey: "venues", icon: BuildingIcon, audience: "everyone" },
+    {
+      href: ROUTES.customers,
+      labelKey: "customers",
+      icon: ContactIcon,
+      audience: "everyone",
+      permission: "customer:view",
+    },
+    {
+      href: ROUTES.items,
+      labelKey: "items",
+      icon: BoxIcon,
+      audience: "everyone",
+      permission: "item:view",
+    },
+    {
+      href: ROUTES.venues,
+      labelKey: "venues",
+      icon: BuildingIcon,
+      audience: "everyone",
+      permission: "venue:view",
+    },
   ],
   admin: [
     { href: ROUTES.settings, labelKey: "settings", icon: SettingsIcon, audience: "configure" },

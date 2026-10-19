@@ -69,7 +69,7 @@ describe("entity generator", () => {
   it("uses the PascalCase schema names and camelCase operation names of the real features", () => {
     const operations = readGenerated({ rel: `${FEATURE_DIR}/operations.ts` });
     expect(operations).toContain('name: "genProbeThing.list"');
-    expect(operations).toContain('permission: "genProbeThing:write"');
+    expect(operations).toContain('permission: "genProbeThing:create"');
     expect(operations).toContain("GenProbeThingCreateInputSchema");
     expect(operations).toContain('kind: "command"');
     expect(operations).not.toMatch(/\bthrow new\b|\bctx\b|kind: "mutation"|gen-probe-thing\./);

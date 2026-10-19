@@ -10,6 +10,39 @@
         "dev"
       ],
       "port": 3000
+    },
+    {
+      "name": "storybook",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@okazi/ui",
+        "storybook",
+        "--no-open"
+      ],
+      "port": 6006
+    },
+    {
+      "name": "mcp",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "@okazi/mcp",
+        "dev"
+      ],
+      "port": 3001
+    },
+    {
+      "name": "web-e2e",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "E2E_MOCK_MODEL=1",
+        "pnpm",
+        "--filter",
+        "@okazi/web",
+        "dev"
+      ],
+      "port": 3000
     }
   ]
 }

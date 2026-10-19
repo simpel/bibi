@@ -18,13 +18,14 @@ export const listCustomers = defineOperation({
   kind: "query",
   description:
     "List the organization's customers: the companies, agencies, associations or private " +
-    "persons that buy. Filter by customer type or by part of the name.",
+    "persons that buy. Filter by ids, customer type or part of the name.",
   input: CustomerListInputSchema,
   output: CustomerListOutputSchema,
-  permission: "customer:read",
+  permission: "customer:view",
   handler: async ({ input, context }) => {
     const rows = await context.db.customer.findMany({
       where: {
+        ...(input.ids ? { id: { in: input.ids } } : {}),
         ...(input.entityTypeId ? { entityTypeId: input.entityTypeId } : {}),
         ...(input.query ? { name: { contains: input.query, mode: "insensitive" as const } } : {}),
       },
@@ -33,7 +34,7 @@ export const listCustomers = defineOperation({
       ...pageArgs(input),
     });
     const page = paginate({ rows, limit: input.limit });
-    const items = page.items.map((row) => toCustomerDto({ row }));
+    const items = page.items.map((row) => toCustomerDto({ row, context }));
     return ok({ value: { items, nextCursor: page.nextCursor } });
   },
 });
@@ -44,7 +45,7 @@ export const getCustomer = defineOperation({
   description: "Get one customer by id, with invoice details and the type's field values.",
   input: CustomerIdInputSchema,
   output: CustomerSchema,
-  permission: "customer:read",
+  permission: "customer:view",
   handler: async ({ input, context }) => {
     const customer = await loadCustomer({ context, id: input.id });
     return customer ? ok({ value: customer }) : notFound({ entity: "Customer" });

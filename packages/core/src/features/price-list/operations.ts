@@ -25,7 +25,7 @@ export const listPriceLists = defineOperation({
     "a general discount in percent or agreed prices per item, and an optional validity.",
   input: PriceListListInputSchema,
   output: PriceListListOutputSchema,
-  permission: "priceList:read",
+  permission: "priceList:view",
   handler: async ({ input, context }) => {
     const rows = await context.db.priceList.findMany({
       where: input.customerId ? { customerId: input.customerId } : {},
@@ -44,7 +44,7 @@ export const getPriceList = defineOperation({
   description: "Get one price list by id, with its item prices.",
   input: PriceListIdInputSchema,
   output: PriceListSchema,
-  permission: "priceList:read",
+  permission: "priceList:view",
   handler: async ({ input, context }) => {
     const priceList = await loadPriceList({ context, id: input.id });
     return priceList ? ok({ value: priceList }) : notFound({ entity: "Price list" });

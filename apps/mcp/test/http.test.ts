@@ -22,8 +22,8 @@ async function resolveContext({ headers }: ResolveInput) {
   return ok({
     value: createExecuteContext({
       organizationId,
-      roles: ["owner"],
-      permissions: grantAll({ upTo: "admin" }),
+      roles: ["admin"],
+      permissions: grantAll({}),
       actor,
     }),
   });

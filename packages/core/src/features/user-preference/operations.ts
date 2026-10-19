@@ -41,7 +41,7 @@ export const listUserPreferences = defineOperation({
     "keys starting with `prefix`. Never returns anyone else's.",
   input: UserPreferenceListInputSchema,
   output: UserPreferenceListOutputSchema,
-  permission: "self:read",
+  permission: "self:view",
   handler: async ({ input, context }) => {
     const user = requireUser({ context });
     if (!user.ok) return user;
@@ -64,7 +64,7 @@ export const setUserPreference = defineOperation({
     "Keys look like table.columns.<tableId>; the value is any JSON up to 10 KB.",
   input: UserPreferenceSetInputSchema,
   output: UserPreferenceSchema,
-  permission: "self:write",
+  permission: "self:edit",
   handler: async ({ input: { key, value }, context }) => {
     const user = requireUser({ context });
     if (!user.ok) return user;
@@ -93,7 +93,7 @@ export const getUserSettings = defineOperation({
     "pending, completed or skipped. `onboardingStatus` is null when it never applied.",
   input: UserSettingsGetInputSchema,
   output: UserSettingsSchema,
-  permission: "self:read",
+  permission: "self:view",
   handler: async ({ context }) => {
     const user = requireUser({ context });
     if (!user.ok) return user;
@@ -113,7 +113,7 @@ export const updateUserSettings = defineOperation({
     "COMPLETED or SKIPPED.",
   input: UserSettingsUpdateInputSchema,
   output: UserSettingsSchema,
-  permission: "self:write",
+  permission: "self:edit",
   handler: async ({ input, context }) => {
     const user = requireUser({ context });
     if (!user.ok) return user;

@@ -8,7 +8,7 @@ import {
   type Result,
 } from "@okazi/core";
 import type { NamedOption } from "@/components/form/named-option";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { runOperation } from "@/server/run-operation";
 import { loadQuoteItems } from "./load-quote-items";
 import { quoteAbilities } from "./ui/quote-abilities";
@@ -30,7 +30,7 @@ export async function loadQuotePage({ id }: { id: string }): Promise<Result<Quot
   const loaded = await runOperation({ operation: getQuote, input: { id } });
   if (!loaded.ok) return loaded;
   const quote = loaded.value;
-  const [versions, assignments, members, items, { quoteWrite }] = await Promise.all([
+  const [versions, assignments, members, items, abilities] = await Promise.all([
     runOperation({ operation: listQuotes, input: { ticketId: quote.ticketId, limit: 100 } }),
     runOperation({
       operation: listAssignments,
@@ -54,7 +54,12 @@ export async function loadQuotePage({ id }: { id: string }): Promise<Result<Quot
       ownerId: main?.assigneeId ?? null,
       members: people.map(({ userId, name }) => ({ id: userId, name })),
       items,
-      can: quoteAbilities({ quote, latestVersion, canWrite: quoteWrite }),
+      can: quoteAbilities({
+        quote,
+        latestVersion,
+        canEdit: can({ abilities, permission: "quote:edit" }),
+        canSend: can({ abilities, permission: "quote:send" }),
+      }),
     },
   };
 }

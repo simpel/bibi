@@ -1,3 +1,4 @@
+import { ChangePreviewSchema } from "@okazi/core/schemas";
 import { z } from "zod";
 
 /** `structuredContent` of an MCP command the AI actor proposed (apps/mcp approval flow). */
@@ -8,6 +9,8 @@ export const ApprovalRequiredSchema = z.object({
   summary: z.string(),
   approvalToken: z.string().min(1),
   expiresAt: z.iso.datetime({ offset: true }),
+  /** Core's preview of the change (ADR 0049); missing on proposals stored before it existed. */
+  preview: ChangePreviewSchema.optional(),
 });
 
 export type ApprovalRequired = z.infer<typeof ApprovalRequiredSchema>;
@@ -26,6 +29,8 @@ export type Approval = {
   /** Opaque; send back unchanged to the approval endpoint. Valid 10 minutes, single use. */
   approvalToken: string;
   expiresAt: string;
+  /** What it would change, computed by core (ADR 0049); absent on older proposals. */
+  preview?: ApprovalRequired["preview"];
 };
 
 const McpOutputSchema = z.looseObject({ structuredContent: z.unknown() });

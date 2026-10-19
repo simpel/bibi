@@ -50,7 +50,7 @@ builder.objectField(TicketRef, "entityType", (t) =>
     type: EntityTypeRef,
     description: "The ticket type, with its fields.",
     resolve: (ticket, _args, ctx) => {
-      requirePermission({ ctx, permission: "configuration:read" });
+      requirePermission({ ctx, permission: "configuration:view" });
       return ctx.loaders.entityType.load({ id: ticket.entityTypeId }) as never;
     },
   }),
@@ -62,7 +62,7 @@ builder.objectField(TicketRef, "customer", (t) =>
     nullable: true,
     description: "The customer who orders (null if archived).",
     resolve: (ticket, _args, ctx) => {
-      requirePermission({ ctx, permission: "customer:read" });
+      requirePermission({ ctx, permission: "customer:view" });
       return ctx.loaders.customer.load({ id: ticket.customerId });
     },
   }),
@@ -73,7 +73,7 @@ builder.objectField(TicketRef, "phase", (t) =>
     type: TicketPhaseRef,
     description: "The ticket's phase, with its flags (archived phases included).",
     resolve: (ticket, _args, ctx) => {
-      requirePermission({ ctx, permission: "ticketPhase:read" });
+      requirePermission({ ctx, permission: "pipeline:view" });
       return ctx.loaders.ticketPhase.load({ id: ticket.phaseId }) as never;
     },
   }),

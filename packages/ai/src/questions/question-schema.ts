@@ -14,13 +14,18 @@ export const QuestionChoiceSchema = z.object({
 });
 
 /**
- * A question for the user (`ask_question`): single choice, plus a free-text answer when
- * `allowOther` is on. The answer comes back as the user's next chat message.
+ * A question for the user (`ask_question`): one answer (radio buttons), or several when
+ * `multiple` is on (checkboxes), plus a free-text answer when `allowOther` is on. The answer
+ * comes back as the user's next chat message.
  */
 export const QuestionSchema = z.object({
   question: z.string().trim().min(1).max(200).describe("The question, in plain words"),
   description: z.string().trim().max(300).optional().describe("One short line of help"),
   choices: z.array(QuestionChoiceSchema).min(2).max(6).describe("The answers to pick from"),
+  multiple: z
+    .boolean()
+    .default(false)
+    .describe("Let the user pick more than one answer when the answers are not exclusive"),
   allowOther: z
     .boolean()
     .default(true)
@@ -33,6 +38,8 @@ export type Question = z.infer<typeof QuestionSchema>;
 /** The question as the tool result carries it; the chat renders it as a questionnaire. */
 export const AskedQuestionSchema = QuestionSchema.extend({
   status: z.literal("asked"),
+  // Questions stored before checkboxes existed have no `multiple`: they were single choice.
+  multiple: z.boolean().default(false),
   allowOther: z.boolean(),
 });
 

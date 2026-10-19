@@ -90,14 +90,14 @@ describe("auditLog.list / auditLog.get", () => {
     const venue = await makeVenue({ context: owner, name: "Mine" });
     const noAudit = testContext({
       organizationId: owner.organizationId,
-      permissions: { venue: ["read"] },
+      permissions: { venue: ["view"] },
     });
     expect(
       errorCode({
         result: await execute({ operation: listAuditLogs, input: {}, context: noAudit }),
       }),
     ).toBe("FORBIDDEN");
-    const stranger = testContext({ permissions: { audit: ["read"] } });
+    const stranger = testContext({ permissions: { audit: ["view"] } });
     const theirs = await list({ context: stranger, input: { entityId: venue.id } });
     expect(theirs.items).toEqual([]);
     const id = (await list({ context: owner })).items[0]?.id ?? "";
@@ -110,11 +110,11 @@ describe("auditLog.list / auditLog.get", () => {
     await execute({ operation: createConversation, input: { title: "Private" }, context: owner });
     const peer = testContext({
       organizationId: owner.organizationId,
-      permissions: { audit: ["read"], conversation: ["write"] },
+      permissions: { audit: ["view"] },
     });
     const admin = testContext({
       organizationId: owner.organizationId,
-      permissions: { audit: ["read"], conversation: ["admin"] },
+      permissions: { audit: ["view"], assistant: ["view"] },
     });
     const filter = { entityType: "conversation" };
     expect((await list({ context: peer, input: filter })).items).toEqual([]);
@@ -125,15 +125,15 @@ describe("auditLog.list / auditLog.get", () => {
   it("hides pending invitations' audit rows unless member:admin", async () => {
     const inviter = await withInviter();
     unwrap({
-      result: await invite({ context: inviter, email: "secret@example.test", role: "viewer" }),
+      result: await invite({ context: inviter, email: "secret@example.test", role: "member" }),
     });
     const peer = testContext({
       organizationId: inviter.organizationId,
-      permissions: { audit: ["read"], member: ["read"] },
+      permissions: { audit: ["view"], member: ["view"] },
     });
     const admin = testContext({
       organizationId: inviter.organizationId,
-      permissions: { audit: ["read"], member: ["admin"] },
+      permissions: { audit: ["view"], member: ["view", "create", "edit", "remove"] },
     });
     const filter = { entityType: "invitation" };
     expect((await list({ context: peer, input: filter })).items).toEqual([]);

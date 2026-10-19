@@ -40,7 +40,7 @@ export const createEntityType = defineOperation({
     "with fieldDefinition.create.",
   input: EntityTypeCreateInputSchema,
   output: EntityTypeSchema,
-  permission: "configuration:write",
+  permission: "configuration:create",
   handler: ({ input, context }) => insertEntityType({ context, ...input }),
 });
 
@@ -53,7 +53,7 @@ export const updateEntityType = defineOperation({
     "type have data for it (e.g. prices for PRICED) is refused with CONFLICT.",
   input: EntityTypeUpdateInputSchema,
   output: EntityTypeSchema,
-  permission: "configuration:write",
+  permission: "configuration:edit",
   handler: async ({ input: { id, ...data }, context }) => {
     const before = await context.db.entityType.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Type" });
@@ -88,7 +88,7 @@ export const archiveEntityType = defineOperation({
     "type, a LINK field points to it, or a sheet definition includes it.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,
-  permission: "configuration:write",
+  permission: "configuration:remove",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.entityType.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Type" });

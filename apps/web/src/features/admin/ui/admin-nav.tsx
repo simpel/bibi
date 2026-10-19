@@ -17,7 +17,7 @@ const ITEMS = [
   { href: ROUTES.adminAiModels, labelKey: "aiModels", icon: BotIcon },
 ] as const;
 
-/** Sections of the platform admin area. */
+/** Sections of the superadmin area. */
 export function AdminNav() {
   const t = useTranslations("admin.nav");
   const pathname = usePathname();

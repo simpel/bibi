@@ -7,7 +7,7 @@ import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { WithHistory } from "@/features/audit-log/ui/with-history";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { OccupancySection } from "../../occupancy/ui/occupancy-section";
@@ -23,13 +23,13 @@ export type ItemDetailProps = { locale: Locale; id: string };
 /** Item detail page body: facts with edit and archive, contents, occupancy and history. */
 export async function ItemDetail({ locale, id }: ItemDetailProps) {
   const common = await getTranslations("common");
-  const { itemWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const item = await runOperation({ operation: getItem, input: { id } });
   if (!item.ok) return <ErrorState errorKey={handleLoadError({ error: item.error, locale })} />;
   const data = await loadItemFormData({ customerId: item.value.customerId });
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const type = data.value.types.find((candidate) => candidate.id === item.value.entityTypeId);
-  const actions = itemWrite ? <ItemActions item={item.value} /> : undefined;
+  const actions = <ItemActions item={item.value} abilities={abilities} />;
   return (
     <div className="grid gap-6">
       <Link
@@ -51,7 +51,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         {type?.behaviours.includes("COMPOSABLE") ? (
           <ItemResolutionSection locale={locale} itemId={item.value.id} />
         ) : null}
-        {type?.behaviours.includes("BOOKABLE") ? (
+        {type?.behaviours.includes("BOOKABLE") && can({ abilities, permission: "ticket:view" }) ? (
           <OccupancySection locale={locale} itemId={item.value.id} />
         ) : null}
       </WithHistory>

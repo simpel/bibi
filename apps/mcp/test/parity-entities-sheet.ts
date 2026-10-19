@@ -18,7 +18,7 @@ export const sheetDefinition: ParityEntity = {
         entityTypeIds: [made.entityType.id],
         fieldIds: [made.fieldDefinition.id],
         vocabularyIds: [made.vocabulary.id],
-        roleId: "owner",
+        roleId: "admin",
       },
     }),
 };

@@ -19,7 +19,7 @@ import { useDevSwitcherActions } from "./use-dev-switcher-actions";
 
 export type DevUserSwitcherProps = {
   users: DevUser[];
-  /** Seeded platform admins, shown above the organizations. */
+  /** Seeded superadmins, shown above the organizations. */
   admins: DevUser[];
   services: DevService[];
   currentUserId: string | null;

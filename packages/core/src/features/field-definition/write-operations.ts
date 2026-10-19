@@ -22,7 +22,7 @@ export const createFieldDefinition = defineOperation({
     "contact type) on Customer.",
   input: FieldDefinitionCreateInputSchema,
   output: FieldDefinitionSchema,
-  permission: "configuration:write",
+  permission: "configuration:create",
   handler: ({ input, context }) => insertField({ context, input }),
 });
 
@@ -34,7 +34,7 @@ export const updateFieldDefinition = defineOperation({
     "options or making it required while records lack a value is refused (CONFLICT).",
   input: FieldDefinitionUpdateInputSchema,
   output: FieldDefinitionSchema,
-  permission: "configuration:write",
+  permission: "configuration:edit",
   handler: async ({ input: { id, ...data }, context }) => {
     const before = await context.db.fieldDefinition.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Field" });
@@ -65,7 +65,7 @@ export const archiveFieldDefinition = defineOperation({
     "definition includes it.",
   input: FieldDefinitionIdInputSchema,
   output: FieldDefinitionSchema,
-  permission: "configuration:write",
+  permission: "configuration:remove",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.fieldDefinition.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Field" });

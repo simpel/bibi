@@ -5,7 +5,7 @@ import { DEMO_AI_MODELS } from "./ai-models";
 export type SeedAiModelsInput = { db: Db; updatedBy: string };
 
 /**
- * Gives every AI feature that has no model yet its demo model. A model a platform admin already
+ * Gives every AI feature that has no model yet its demo model. A model a superadmin already
  * chose is left alone, so reseeding never undoes `/admin/ai-models`.
  */
 export async function seedAiModels({ db, updatedBy }: SeedAiModelsInput): Promise<void> {

@@ -3,15 +3,16 @@ import { actionsColumn, type ColumnDef } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";
+import type { RowAccess } from "@/lib/can";
 import type { RequirementFormData } from "./requirement-form-data";
 import { RequirementRowActions } from "./requirement-row-actions";
 
 type Column = ColumnDef<RequirementDto>;
 
-export type UseRequirementColumnsInput = { data: RequirementFormData; canWrite: boolean };
+export type UseRequirementColumnsInput = { data: RequirementFormData; access: RowAccess };
 
 /** Value · where · type · quantity, plus the row actions when the caller can write. */
-export function useRequirementColumns({ data, canWrite }: UseRequirementColumnsInput): Column[] {
+export function useRequirementColumns({ data, access }: UseRequirementColumnsInput): Column[] {
   const t = useTranslations("requirement");
   const common = useTranslations("common");
   return useMemo<Column[]>(() => {
@@ -36,13 +37,13 @@ export function useRequirementColumns({ data, canWrite }: UseRequirementColumnsI
       },
       { id: "quantity", header: t("columns.quantity"), accessorFn: (row) => row.quantity },
     ];
-    if (!canWrite) return columns;
+    if (!access.canEdit && !access.canRemove) return columns;
     return [
       ...columns,
       actionsColumn<RequirementDto>({
         label: common("actions"),
-        cell: (row) => <RequirementRowActions requirement={row} data={data} />,
+        cell: (row) => <RequirementRowActions requirement={row} data={data} access={access} />,
       }),
     ];
-  }, [t, common, data, canWrite]);
+  }, [t, common, data, access]);
 }

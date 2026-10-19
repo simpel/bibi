@@ -17,7 +17,7 @@ export const createPayment = defineOperation({
     "The payment starts PENDING and is updated when Stripe reports it paid.",
   input: PaymentCreateInputSchema,
   output: PaymentSchema,
-  permission: "payment:write",
+  permission: "payment:create",
   handler: async ({ input, context }) => {
     const target = await loadChargeTarget({ input, context });
     if (!target.ok) return err({ error: target.error });
@@ -50,7 +50,9 @@ export const createPayment = defineOperation({
         createdBy: context.actor.userId,
       },
     });
-    context.recordChange({ entityId: row.id, after: row });
-    return ok({ value: toPaymentDto({ row }) });
+    const payment = toPaymentDto({ row });
+    // Audit images are DTOs: the public token and the connected account id never enter them.
+    context.recordChange({ entityId: row.id, after: payment });
+    return ok({ value: payment });
   },
 });

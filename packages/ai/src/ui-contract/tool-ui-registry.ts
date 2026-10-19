@@ -8,6 +8,7 @@ import { ITEM_STATE_UI_ENTRIES } from "./item-state-entries";
 import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
 import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
+import { PERMISSION_UI_ENTRIES } from "./permission-entries";
 import { PHASE_GRID_UI_ENTRIES } from "./phase-grid-entries";
 import { PIPELINE_UI_ENTRIES } from "./pipeline-entries";
 import { PIPELINE_SETUP_UI_ENTRIES } from "./pipeline-setup-entries";
@@ -82,6 +83,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...SHEET_DEFINITION_UI_ENTRIES,
   ...SHEET_UI_ENTRIES,
   ...ACCESS_UI_ENTRIES,
+  ...PERMISSION_UI_ENTRIES,
   ...QUESTION_UI_ENTRIES,
   search: uiEntry({
     component: "search-results",
@@ -113,6 +115,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
  * bookkeeping is shown by the chat itself; GraphQL results have no fixed shape.
  */
 export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
+  changeSet_apply: "the approval card shows every step's changes before Confirm (ADR 0049)",
   conversation_list: "chat history UI, not a tool card",
   conversation_get: "chat history UI, not a tool card",
   conversation_create: "chat bookkeeping",
@@ -127,6 +130,8 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   apiKey_list: "credentials are managed on /settings/integrations, not in chat",
   apiKey_create: "never offered to the assistant (aiAllowed: false): the secret stays out of chat",
   apiKey_revoke: "credentials are managed on /settings/integrations, not in chat",
+  apiKey_get: "credentials are managed on /settings/integrations, not in chat",
+  apiKey_update: "credentials are managed on /settings/integrations, not in chat",
   oauthGrant_list: "connected apps are managed on /profile, not in chat",
   oauthGrant_revoke: "connected apps are managed on /profile, not in chat",
   userPreference_list: "UI preference bookkeeping (e.g. table column order), not a tool card",

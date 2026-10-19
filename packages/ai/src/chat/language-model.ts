@@ -14,7 +14,7 @@ export type ChosenModel = { model: LanguageModel; modelId: string };
 export type ConfiguredLanguageModelInput = { feature: AiFeatureId };
 
 /**
- * The model a platform admin chose for the feature, e.g. `assistant.chat` (ADR 0015). No
+ * The model a superadmin chose for the feature, e.g. `assistant.chat` (ADR 0015). No
  * fallback: unconfigured → UNAVAILABLE (logged as `ai.modelNotConfigured` by core).
  */
 export async function configuredLanguageModel({

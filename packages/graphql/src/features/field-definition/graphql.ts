@@ -43,7 +43,7 @@ builder.objectField(FieldDefinitionRef, "vocabulary", (t) =>
     nullable: true,
     description: "The list the field's choices come from, if any.",
     resolve: (field, _args, ctx) => {
-      requirePermission({ ctx, permission: "configuration:read" });
+      requirePermission({ ctx, permission: "configuration:view" });
       return field.vocabularyId
         ? (ctx.loaders.vocabulary.load({ id: field.vocabularyId }) as never)
         : null;

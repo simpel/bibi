@@ -15,6 +15,6 @@ export async function ItemFacts({ item, type, data }: ItemFactsProps) {
   const t = await getTranslations("item");
   const common = await getTranslations("common");
   const yesNo = { yes: common("yes"), no: common("no") };
-  const facts = itemFacts({ item, type, data, t, yesNo });
+  const facts = itemFacts({ item, type, data, t, yesNo, hidden: common("hidden") });
   return <FactList facts={facts} />;
 }

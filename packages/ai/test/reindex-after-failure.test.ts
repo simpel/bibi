@@ -21,8 +21,8 @@ describe("reindexAll after search.index_failed (ADR 0030)", () => {
     const organizationId = `org_${createId()}`;
     const context = createExecuteContext({
       organizationId,
-      roles: ["owner"],
-      permissions: grantAll({ upTo: "admin" }),
+      roles: ["admin"],
+      permissions: grantAll({}),
       actor: { type: "user", userId: `user_${createId()}` },
     });
     const embed = createEmbed({ apiKey: null, nodeEnv: "test" });

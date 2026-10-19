@@ -22,11 +22,11 @@ afterAll(async () => {
 });
 
 describe("seeded mega admin", () => {
-  it("is a platform admin and owner of every org, keeps its id across reseeds", async () => {
+  it("is a superadmin and admin of every org, keeps its id across reseeds", async () => {
     const first = await newOrg();
     const second = await newOrg();
     const user = await seedMegaAdmin({ db, organizationIds: [first], email });
-    expect((await db.user.findUniqueOrThrow({ where: { email } })).role).toBe("admin");
+    expect((await db.user.findUniqueOrThrow({ where: { email } })).role).toBe("superadmin");
     await seedMegaAdmin({ db, organizationIds: [first, second], email });
     expect((await db.user.findUniqueOrThrow({ where: { email } })).id).toBe(user.id);
     expect(await db.member.count({ where: { userId: user.id } })).toBe(2);

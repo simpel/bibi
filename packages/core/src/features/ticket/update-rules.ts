@@ -26,7 +26,7 @@ export async function checkTicketDetails({
   if (!period.ok) return period;
   const customerId = change.customerId ?? before.customerId;
   if (customerId !== before.customerId) {
-    const readable = checkReadable({ context, permission: "customer:read", path: "customerId" });
+    const readable = checkReadable({ context, permission: "customer:view", path: "customerId" });
     if (!readable.ok) return readable;
     const customer = await checkCustomer({ context, customerId });
     if (!customer.ok) return customer;
@@ -37,7 +37,7 @@ export async function checkTicketDetails({
     return ok({ value: true });
   }
   if (contactId) {
-    const readable = checkReadable({ context, permission: "contact:read", path: "contactId" });
+    const readable = checkReadable({ context, permission: "customer:view", path: "contactId" });
     if (!readable.ok) return readable;
   }
   const contact = await checkContact({ context, contactId, customerId });

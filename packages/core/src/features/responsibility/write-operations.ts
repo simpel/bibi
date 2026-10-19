@@ -30,7 +30,7 @@ export const createResponsibility = defineOperation({
     "active item type and the people must be members (else VALIDATION).",
   input: ResponsibilityCreateInputSchema,
   output: ResponsibilitySchema,
-  permission: "configuration:write",
+  permission: "responsibility:create",
   handler: ({ input, context }) => insertResponsibility({ context, ...input }),
 });
 
@@ -49,7 +49,7 @@ export const updateResponsibility = defineOperation({
     "followers. Omitted fields are unchanged.",
   input: ResponsibilityUpdateInputSchema,
   output: ResponsibilitySchema,
-  permission: "configuration:write",
+  permission: "responsibility:edit",
   handler: async ({ input: { id, name, ...changes }, context }) => {
     const before = await context.db.responsibility.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Responsibility" });
@@ -67,7 +67,11 @@ export const updateResponsibility = defineOperation({
       where: { id },
       data: { ...(name ? { name } : {}), ...contents.value },
     });
-    context.recordChange({ entityId: id, before, after: row });
+    context.recordChange({
+      entityId: id,
+      before: ResponsibilitySchema.parse(before),
+      after: ResponsibilitySchema.parse(row),
+    });
     return ok({ value: row });
   },
 });
@@ -78,7 +82,7 @@ export const archiveResponsibility = defineOperation({
   description: "Archive a responsibility. Its name can then be reused.",
   input: ResponsibilityIdInputSchema,
   output: ResponsibilitySchema,
-  permission: "configuration:write",
+  permission: "responsibility:remove",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.responsibility.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Responsibility" });
@@ -86,7 +90,11 @@ export const archiveResponsibility = defineOperation({
       where: { id },
       data: { status: "ARCHIVED" },
     });
-    context.recordChange({ entityId: id, before, after: row });
+    context.recordChange({
+      entityId: id,
+      before: ResponsibilitySchema.parse(before),
+      after: ResponsibilitySchema.parse(row),
+    });
     return ok({ value: row });
   },
 });

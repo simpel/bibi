@@ -53,7 +53,7 @@ builder.objectField(ContactRef, "customer", (t) =>
     nullable: true,
     description: "The customer the person works for (null if archived).",
     resolve: (contact, _args, ctx) => {
-      requirePermission({ ctx, permission: "customer:read" });
+      requirePermission({ ctx, permission: "customer:view" });
       return ctx.loaders.customer.load({ id: contact.customerId });
     },
   }),
@@ -64,7 +64,7 @@ builder.objectField(ContactRef, "entityType", (t) =>
     type: EntityTypeRef,
     description: "The contact type, with its fields.",
     resolve: (contact, _args, ctx) => {
-      requirePermission({ ctx, permission: "configuration:read" });
+      requirePermission({ ctx, permission: "configuration:view" });
       return ctx.loaders.entityType.load({ id: contact.entityTypeId }) as never;
     },
   }),

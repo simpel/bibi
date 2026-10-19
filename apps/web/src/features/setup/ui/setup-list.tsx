@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { CreateSetupButton } from "./create-setup-button";
@@ -15,16 +15,17 @@ import { SetupTable } from "./setup-table";
 export type SetupListProps = { locale: Locale; cursor?: string | undefined };
 
 const PAGE_SIZE = 50;
+const CREATE = "configuration:create";
 
 /** Setups page body: header with create, table, cursor pagination. */
 export async function SetupList({ locale, cursor }: SetupListProps) {
   const t = await getTranslations("setup");
-  const { configurationWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const result = await runOperation({
     operation: listSetups,
     input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
   });
-  const create = configurationWrite ? <CreateSetupButton /> : undefined;
+  const create = can({ abilities, permission: CREATE }) ? <CreateSetupButton /> : undefined;
   const header = (
     <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
   );
@@ -45,7 +46,7 @@ export async function SetupList({ locale, cursor }: SetupListProps) {
         <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />
       ) : (
         <>
-          <SetupTable setups={items} canWrite={configurationWrite} />
+          <SetupTable setups={items} access={rowAccess({ abilities, feature: "configuration" })} />
           <CursorPagination
             pathname={ROUTES.settingsSetups}
             cursor={cursor}

@@ -52,7 +52,7 @@ describe("scoping, errors and limits", () => {
 
   it("enforces permissions: viewer can read but not write", async () => {
     const owner = testContext();
-    const viewer = createClient({ context: { ...owner, permissions: grantAll({ upTo: "read" }) } });
+    const viewer = createClient({ context: { ...owner, permissions: grantAll({ only: "view" }) } });
     const write = await viewer({ query: CREATE, variables: { i: { name: "Nej" } } });
     expect(write.body.errors?.[0]?.extensions.code).toBe("FORBIDDEN");
     const read = await viewer({ query: "{ venues { items { id } } }" });

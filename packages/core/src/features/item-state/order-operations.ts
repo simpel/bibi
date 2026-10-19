@@ -20,7 +20,7 @@ export const reorderItemStates = defineOperation({
     "the new order. The order changes no transitions.",
   input: ItemStateReorderInputSchema,
   output: ItemStateListOutputSchema,
-  permission: "itemState:admin",
+  permission: "pipeline:edit",
   // Each moved state is audited as an itemState change.
   entityType: "itemState",
   handler: async ({ input: { entityTypeId, ids }, context }) => {
@@ -53,7 +53,7 @@ export const setItemStateTransitions = defineOperation({
     "always a dead end (ADR 0044).",
   input: ItemStateSetTransitionsInputSchema,
   output: ItemStateSchema,
-  permission: "itemState:admin",
+  permission: "pipeline:edit",
   handler: async ({ input: { id, toStateIds }, context }) => {
     const before = await loadItemState({ context, id });
     if (!before) return notFound({ entity: "Item state" });

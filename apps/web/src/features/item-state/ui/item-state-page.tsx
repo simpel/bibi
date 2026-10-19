@@ -1,11 +1,9 @@
 import { getEntityType, getItemState } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
-import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { ItemStateForm } from "./item-state-form";
@@ -19,7 +17,6 @@ export type ItemStatePageProps = {
 /** `/new/item-state` and `/settings/item-states/[id]/update`: the form on a page of its own. */
 export async function ItemStatePage({ locale, mode }: ItemStatePageProps) {
   const t = await getTranslations("itemState");
-  if (!(await getCallerAbilities()).itemStateAdmin) notFound();
   const state =
     "update" in mode
       ? await runOperation({ operation: getItemState, input: { id: mode.update } })

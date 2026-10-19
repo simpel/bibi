@@ -4,7 +4,6 @@ import {
   assignMemberRole,
   cancelInvitation,
   type FixedRole,
-  type GrantableRole,
   type InvitationDto,
   inviteMember,
   type MemberDto,
@@ -33,7 +32,7 @@ export async function removeMemberAction({
   return toActionResult({ result: await runOperation({ operation: removeMember, input: { id } }) });
 }
 
-export type InviteMemberActionInput = { email: string; role: GrantableRole };
+export type InviteMemberActionInput = { email: string; role: FixedRole };
 
 export async function inviteMemberAction({
   email,

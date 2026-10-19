@@ -13,6 +13,8 @@ export type ContactOption = NamedOption & { customerId: string };
 export type TicketFormData = TypedFormData & {
   customers: NamedOption[];
   contacts: ContactOption[];
+  /** The caller may not view customers: show them as hidden and disable the pickers. */
+  customersHidden: boolean;
   members: NamedOption[];
   phases: TicketPhaseDto[];
 };

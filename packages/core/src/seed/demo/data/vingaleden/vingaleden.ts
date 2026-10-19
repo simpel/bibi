@@ -15,10 +15,10 @@ export const vingaleden: DemoOrg = {
   slug: "vingaleden-demo",
   name: "Vingaleden Archipelago Tours",
   users: [
-    { name: "Per Vinga", role: "owner" },
-    { name: "Stina Holm", role: "member" },
-    { name: "Kalle Ek", role: "viewer" },
-    { name: "Jonna Sand", role: "viewer" },
+    { name: "Per Vinga", role: "admin" },
+    { name: "Stina Holm", role: "manager" },
+    { name: "Kalle Ek", role: "member" },
+    { name: "Jonna Sand", role: "member" },
   ],
   config: {
     ...vingaledenConfig,

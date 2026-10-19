@@ -45,21 +45,15 @@ describe("cross-organization isolation: search", () => {
     const organizationId = `org_search_perm_${Date.now()}`;
     const { itemId } = await seedItem({ organizationId });
     const withRead = await connect({
-      context: testContext({ organizationId, permissions: { search: ["read"], item: ["read"] } }),
+      context: testContext({ organizationId, permissions: { item: ["view"] } }),
     });
     const withoutRead = await connect({
-      context: testContext({ organizationId, permissions: { search: ["read"] } }),
+      context: testContext({ organizationId, permissions: { venue: ["view"] } }),
     });
     const visible = await call({ client: withRead, name: "search", args: { query: WORD } });
     expect(visible.data.hits.map((hit: Hit) => hit.entityId)).toContain(itemId);
     const hidden = await call({ client: withoutRead, name: "search", args: { query: WORD } });
     expect(hidden.isError, JSON.stringify(hidden.data)).toBe(false);
     expect(hidden.data.hits.map((hit: Hit) => hit.entityId)).not.toContain(itemId);
-  });
-
-  it("refuses a caller without search permission", async () => {
-    const b = await connect({ context: testContext({ permissions: { item: ["read"] } }) });
-    const result = await call({ client: b, name: "search", args: { query: WORD } });
-    expect(result.data.code).toBe("FORBIDDEN");
   });
 });

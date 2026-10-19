@@ -15,7 +15,7 @@ async function seedSheet({ client }: SeedInput): Promise<Json> {
   const definition = await call({
     client,
     name: "sheetDefinition_create",
-    args: { name: "Secret sheet", entityTypeIds: [type.data.id], roleId: "owner" },
+    args: { name: "Secret sheet", entityTypeIds: [type.data.id], roleId: "admin" },
   });
   expect(definition.isError, JSON.stringify(definition.data)).toBe(false);
   const sheet = await call({

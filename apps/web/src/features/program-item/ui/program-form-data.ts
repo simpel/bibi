@@ -11,6 +11,8 @@ export type BookableOption = NamedOption & { setupIds: string[] };
  */
 export type ProgramFormData = TypedFormData & {
   items: BookableOption[];
+  /** The caller may not view items: their names show as hidden and the picker is disabled. */
+  itemsHidden: boolean;
   setups: NamedOption[];
   /** Every item state, so a line shows its state and the states it may move to. */
   states: LineStateOption[];

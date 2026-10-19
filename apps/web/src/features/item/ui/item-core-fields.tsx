@@ -20,11 +20,14 @@ import { type ItemFormValues, NO_VENUE } from "./item-form-values";
 export type ItemCoreFieldsProps = {
   form: UseFormReturn<ItemFormValues, unknown, ItemFormOutput>;
   venues: ItemFormData["venues"];
+  /** The caller may not view venues: the select is disabled and reads "Hidden". */
+  venuesHidden: boolean;
 };
 
 /** Name, description and the optional venue select (the type select lives in `ItemTypeField`). */
-export function ItemCoreFields({ form, venues }: ItemCoreFieldsProps) {
+export function ItemCoreFields({ form, venues, venuesHidden }: ItemCoreFieldsProps) {
   const t = useTranslations("item.fields");
+  const common = useTranslations("common");
   return (
     <>
       <TextField form={form} name="name" label={t("name")} required />
@@ -35,10 +38,10 @@ export function ItemCoreFields({ form, venues }: ItemCoreFieldsProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>{t("venue")}</FormLabel>
-            <Select value={field.value} onValueChange={field.onChange}>
+            <Select value={field.value} onValueChange={field.onChange} disabled={venuesHidden}>
               <FormControl>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder={venuesHidden ? common("hidden") : undefined} />
                 </SelectTrigger>
               </FormControl>
               <SelectContent>

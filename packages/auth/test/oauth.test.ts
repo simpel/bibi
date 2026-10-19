@@ -23,7 +23,7 @@ describe("resolveExecuteContext – OAuth access tokens (MCP)", () => {
     const result = await resolveExecuteContext({ headers: bearer({ token }) });
     if (!result.ok) throw result.error;
     expect(result.value.organizationId).toBe(organizationId);
-    expect(result.value.roles).toEqual(["owner"]);
+    expect(result.value.roles).toEqual(["admin"]);
     expect(result.value.actor).toEqual({ type: "user", userId: user.userId });
   });
 

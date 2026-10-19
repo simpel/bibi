@@ -7,8 +7,8 @@ import {
 } from "../src/index";
 import { signUp } from "./helpers";
 
-describe("platform admin (ADR 0015)", () => {
-  it("new users are not platform admins", async () => {
+describe("superadmin (ADR 0015)", () => {
+  it("new users are not superadmins", async () => {
     const user = await signUp();
     const result = await resolvePlatformContext({ headers: user.headers });
     expect(result.ok ? null : result.error.code).toBe("FORBIDDEN");
@@ -18,7 +18,7 @@ describe("platform admin (ADR 0015)", () => {
     const user = await signUp();
     await setPlatformAdmin({ email: user.email, admin: true });
     const granted = await resolvePlatformContext({ headers: user.headers });
-    expect(granted.ok && granted.value.platformRole).toBe("admin");
+    expect(granted.ok && granted.value.platformRole).toBe("superadmin");
     await setPlatformAdmin({ email: user.email, admin: false });
     const revoked = await resolvePlatformContext({ headers: user.headers });
     expect(revoked.ok).toBe(false);

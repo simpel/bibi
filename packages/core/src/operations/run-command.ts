@@ -16,8 +16,8 @@ export async function runCommand({
   try {
     const value = await context.db.$transaction(async (tx) => {
       const changes: RecordedChange[] = [];
-      const recordChange = ({ entityType, entityId, before, after }: RecordedChange) => {
-        changes.push({ entityType, entityId, before, after });
+      const recordChange = ({ operation, entityType, entityId, before, after }: RecordedChange) => {
+        changes.push({ operation, entityType, entityId, before, after });
       };
       const result = await operation.handler({
         input,

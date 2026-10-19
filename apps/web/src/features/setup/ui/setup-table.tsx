@@ -3,14 +3,15 @@
 import type { SetupDto } from "@okazi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
+import type { RowAccess } from "@/lib/can";
 import { useSetupColumns } from "./use-setup-columns";
 
-export type SetupTableProps = { setups: SetupDto[]; canWrite: boolean };
+export type SetupTableProps = { setups: SetupDto[]; access: RowAccess };
 
 /** Setups of the organization with their changeover time. */
-export function SetupTable({ setups, canWrite }: SetupTableProps) {
+export function SetupTable({ setups, access }: SetupTableProps) {
   const t = useTranslations("setup");
-  const columns = useSetupColumns({ canWrite });
+  const columns = useSetupColumns({ access });
   return (
     <PersistedDataTable
       tableId="setup.list"

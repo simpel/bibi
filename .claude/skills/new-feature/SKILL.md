@@ -15,7 +15,7 @@ One order, one definition of done. Core first, adapters in the same change (ADR 
 
 ## Gates (each one was a follow-up bug before)
 - **Isolation (enforced):** every new operation has a step in `apps/mcp/test/isolation-<area>.test.ts` where organization B calls the tool with organization A's ids and gets `NOT_FOUND`. `isolation-coverage.test.ts` fails otherwise. It scans for literal tool names (`"skill_get"`), so never build them with template strings. `ISOLATION_GAPS` is empty: never add to it.
-- **Referenced ids:** every id in the input that points at another record (customer, package, base, owner, LINK target) is checked for organization and for `<resource>:read` on the target. Test with another organization's id and with a caller who lacks the permission.
+- **Referenced ids:** every id in the input that points at another record (customer, package, base, owner, LINK target) is checked for organization and for `<feature>:view` on the target. Test with another organization's id and with a caller who lacks the permission.
 - **Read permission everywhere:** the `embeddable` sets `readPermission`. Search hits, lists, nav items and UI sections are gated by the same permission. Search text has no raw ids, no names the viewer may not read, and no Swedish literals.
 - **Lifecycle:** state what links to this record and what happens when it is archived, renamed, removed or changes phase (cascade, block, or reindex). Cover each with a test. Removing a member cleans up their assignments, follows and keys.
 - **Concurrency:** a unique key or count-then-write can race. Return `CONFLICT` (never `INTERNAL`) and make check-and-write atomic.

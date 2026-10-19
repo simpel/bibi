@@ -74,11 +74,11 @@ export const createTicketFromTemplate = defineOperation({
     "collide, nothing is created and CONFLICT lists every blocking line in `issues`.",
   input: TicketCreateFromTemplateInputSchema,
   output: TicketSchema,
-  permission: "ticket:write",
+  permission: "ticket:create",
   handler: async ({ input, context }) => {
     const readable = checkReadable({
       context,
-      permission: "ticketTemplate:read",
+      permission: "template:view",
       path: "templateId",
     });
     if (!readable.ok) return readable;

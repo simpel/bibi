@@ -30,7 +30,7 @@ export const createSheetDefinition = defineOperation({
     "types or a list (else VALIDATION).",
   input: SheetDefinitionCreateInputSchema,
   output: SheetDefinitionSchema,
-  permission: "configuration:write",
+  permission: "template:create",
   handler: async ({ input: { name, ...given }, context }) => {
     if (await nameTaken({ context, name })) return taken({ name });
     const contents = await checkSheetContents({ context, contents: given });
@@ -38,7 +38,7 @@ export const createSheetDefinition = defineOperation({
     const row = await context.db.sheetDefinition.create({
       data: { name, ...contents.value, organizationId: context.organizationId },
     });
-    context.recordChange({ entityId: row.id, after: row });
+    context.recordChange({ entityId: row.id, after: SheetDefinitionSchema.parse(row) });
     return ok({ value: row });
   },
 });
@@ -51,7 +51,7 @@ export const updateSheetDefinition = defineOperation({
     "Omitted fields are unchanged. Fields must belong to the resulting item types.",
   input: SheetDefinitionUpdateInputSchema,
   output: SheetDefinitionSchema,
-  permission: "configuration:write",
+  permission: "template:edit",
   handler: async ({ input: { id, name, ...changes }, context }) => {
     const before = await context.db.sheetDefinition.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Sheet" });
@@ -69,7 +69,11 @@ export const updateSheetDefinition = defineOperation({
       where: { id },
       data: { ...(name ? { name } : {}), ...contents.value },
     });
-    context.recordChange({ entityId: id, before, after: row });
+    context.recordChange({
+      entityId: id,
+      before: SheetDefinitionSchema.parse(before),
+      after: SheetDefinitionSchema.parse(row),
+    });
     return ok({ value: row });
   },
 });
@@ -87,7 +91,7 @@ export const archiveSheetDefinition = defineOperation({
   description: "Archive a sheet definition. Its name can then be reused.",
   input: SheetDefinitionIdInputSchema,
   output: SheetDefinitionSchema,
-  permission: "configuration:write",
+  permission: "template:remove",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.sheetDefinition.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Sheet" });
@@ -95,7 +99,11 @@ export const archiveSheetDefinition = defineOperation({
       where: { id },
       data: { status: "ARCHIVED" },
     });
-    context.recordChange({ entityId: id, before, after: row });
+    context.recordChange({
+      entityId: id,
+      before: SheetDefinitionSchema.parse(before),
+      after: SheetDefinitionSchema.parse(row),
+    });
     return ok({ value: row });
   },
 });

@@ -85,7 +85,7 @@ erDiagram
 
 *MVP* · What the organization sets up itself. Everything is data per organization and is created through regular operations ([ADR 0021](decisions/0021-configurable-items.md)).
 
-A new organization starts with the fixed access roles (`viewer`, `member`, `admin`, `owner`; [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)) and no responsibilities. Nothing else is preinstalled, except the default ticket phases, item states and grid so that tickets work right away (ADR 0044). Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with behaviours and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
+A new organization starts with the fixed access roles (`member`, `manager`, `admin`; [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)) and no responsibilities. Nothing else is preinstalled, except the default ticket phases, item states and grid so that tickets work right away (ADR 0044). Templates can be imported, for example the vocabulary "EU's 14 allergens" or the starter pack "Conference venue" (`configuration.importTemplate`: lists, setups, and types with behaviours and fields; idempotent, existing names are skipped). A template is only data and can be changed freely afterwards. The AI assistant can propose a configuration, and the user approves.
 
 ### EntityType (`EntityType`)
 
@@ -199,7 +199,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 > Minimum configuration, checked on every change (`CONFLICT`): one `entry` and one `terminal` phase. The default transitions are every forward move and a move to any terminal phase. Reports group by flag, never by phase name.
 
-> Operations (`ticketPhase:admin` to change, `ticketPhase:read` to read): `ticketPhase.list|get|create|update|archive|reorder|setTransitions|importTemplate`. Settings page `/settings/pipeline`; first-time setup is the assistant onboarding at `/onboarding` ([ADR 0045](decisions/0045-soft-landing-onboarding.md), building on [ADR 0044](decisions/0044-line-states-and-the-phase-grid.md)).
+> Operations (`pipeline:create|edit|remove` to change, `pipeline:view` to read): `ticketPhase.list|get|create|update|archive|reorder|setTransitions|importTemplate`. Settings page `/settings/pipeline`; first-time setup is the assistant onboarding at `/onboarding` ([ADR 0045](decisions/0045-soft-landing-onboarding.md), building on [ADR 0044](decisions/0044-line-states-and-the-phase-grid.md)).
 
 ### ItemState (`ItemState`) with flags and transitions
 
@@ -216,7 +216,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` is from/to in → Transition (`ItemStateTransition`)
 - `1:N` is the result of → PhaseStateRule
 
-> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in sheets), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state, all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by `heldAt` and staff decide who gets the item; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
+> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in sheets), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state, all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by `heldAt` and staff decide who gets the item; `HARD` blocks the item. Operations (`pipeline:view|create|edit|remove`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
 
 ### PhaseStateRule (`PhaseStateRule`) – the phase grid
 
@@ -228,7 +228,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 **Relations**
 - `N:1` TicketPhase sets this; `N:1` EntityType is set by this; `N:1` ItemState is the result
 
-> Cells are optional: no cell means "keep the state". A new line gets the cell for the ticket's current phase, else the type's initial state. Terminal phases ignore the grid and release every line. Entering a phase is atomic: any blocker (a hard-hold collision, a disallowed state transition, a missing assignee) refuses the move and lists every blocking line. A line set by hand (`stateOverridden`) is skipped by phase moves until `line.followPhase`. A phase move never changes `holdsUntil`. Terminal phases have no cells (`setCell` refuses them). Archiving a state moves its cells to the target state (or clears them); archiving a phase clears its cells. Operations (`phaseGrid:read|admin`): `phaseGrid.get` (the set cells with names, optionally of one phase) and `phaseGrid.setCell({ phaseId, entityTypeId, stateId | null })` (null clears the cell), audited per cell; `phaseGrid.importTemplate({ template })` (`default`, `conference-estate`) fills the empty cells by state name and keeps cells that are set. The first setup (the assistant onboarding at `/onboarding`, ADR 0045, started from a preset in `@okazi/core/setup-presets`) works on a draft by name (item types with their states, phases in order, grid cells): `pipelineSetup.presetDraft({ key })` (`phaseGrid:read`, no writes) returns a whole draft from a preset, keeping the organization's active item types by id (only for a caller with `configuration:read`) and adding the preset's missing ones; `pipelineSetup.preview` (`phaseGrid:read`, no writes) lists the configuration problems (errors: no or several entry phases, no terminal phase, a type without exactly one initial state, contradicting flags, unknown cells, a line the grid cannot move; warning: a state nothing can leave) and steps a simulated ticket with one line per type through every phase; `pipelineSetup.activate` (`phaseGrid:admin`, plus admin on every part it changes) refuses a draft with errors and otherwise runs the normal `entityType.*`, `itemState.*`, `ticketPhase.*` and `phaseGrid.setCell` commands in one transaction, all audited under `pipelineSetup.activate`: states and phases are matched by name, the types' other states and the other phases are archived (lines move to the initial state, tickets to the entry phase), and the default transitions are set.
+> Cells are optional: no cell means "keep the state". A new line gets the cell for the ticket's current phase, else the type's initial state. Terminal phases ignore the grid and release every line. Entering a phase is atomic: any blocker (a hard-hold collision, a disallowed state transition, a missing assignee) refuses the move and lists every blocking line. A line set by hand (`stateOverridden`) is skipped by phase moves until `line.followPhase`. A phase move never changes `holdsUntil`. Terminal phases have no cells (`setCell` refuses them). Archiving a state moves its cells to the target state (or clears them); archiving a phase clears its cells. Operations (`pipeline:view|create|edit`): `phaseGrid.get` (the set cells with names, optionally of one phase) and `phaseGrid.setCell({ phaseId, entityTypeId, stateId | null })` (null clears the cell), audited per cell; `phaseGrid.importTemplate({ template })` (`default`, `conference-estate`) fills the empty cells by state name and keeps cells that are set. The first setup (the assistant onboarding at `/onboarding`, ADR 0045, started from a preset in `@okazi/core/setup-presets`) works on a draft by name (item types with their states, phases in order, grid cells): `pipelineSetup.presetDraft({ key })` (`pipeline:view`, no writes) returns a whole draft from a preset, keeping the organization's active item types by id (only for a caller with `configuration:view`) and adding the preset's missing ones; `pipelineSetup.preview` (`pipeline:view`, no writes) lists the configuration problems (errors: no or several entry phases, no terminal phase, a type without exactly one initial state, contradicting flags, unknown cells, a line the grid cannot move; warning: a state nothing can leave) and steps a simulated ticket with one line per type through every phase; `pipelineSetup.activate` (`pipeline:edit`, plus the edit permission on every part it changes) refuses a draft with errors and otherwise runs the normal `entityType.*`, `itemState.*`, `ticketPhase.*` and `phaseGrid.setCell` commands in one transaction, all audited under `pipelineSetup.activate`: states and phases are matched by name, the types' other states and the other phases are archived (lines move to the initial state, tickets to the entry phase), and the default transitions are set.
 
 ### TicketTemplate (`TicketTemplate`) – predefined ticket
 
@@ -242,7 +242,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 **Relations**
 - `N:1` TicketType (EntityType), `N:1` TicketPhase; `N:M` Item through its lines
 
-> Operations (`ticketTemplate:admin` to change, `ticketTemplate:read` to read): `ticketTemplate.list|get|create|update|archive` and `ticket.createFromTemplate({ templateId, customerId, startsAt, quantity, assigneeId? })` (`ticket:write`; the caller also needs `ticketTemplate:read` and `customer:read`). The start phase cannot be terminal, the name is unique among the active templates, and an item, a phase or a type that an active template uses cannot be archived. The ticket gets `quantity` and the estimated headcount from `quantity` and a desired period from `startsAt` to the end of the last line; the assignee is required when the start phase requires one. The new ticket's lines get their states from the grid for the template's phase; a hard-hold collision refuses the whole creation and lists the blocking lines.
+> Operations (`template:create|edit|remove` to change, `template:view` to read): `ticketTemplate.list|get|create|update|archive` and `ticket.createFromTemplate({ templateId, customerId, startsAt, quantity, assigneeId? })` (`ticket:create`; the caller also needs `template:view` and `customer:view`). The start phase cannot be terminal, the name is unique among the active templates, and an item, a phase or a type that an active template uses cannot be archived. The ticket gets `quantity` and the estimated headcount from `quantity` and a desired period from `startsAt` to the end of the last line; the assignee is required when the start phase requires one. The new ticket's lines get their states from the grid for the template's phase; a hard-hold collision refuses the whole creation and lists the blocking lines.
 
 ### Responsibility (`Responsibility`)
 
@@ -260,7 +260,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` scopes → Assignment
 - `1:N` SheetDefinition goes to this
 
-> Operations: `responsibility.list|get|create|update|archive` under the resource `configuration` (`configuration:write`, held by `admin` and `owner`, to change). The covered types and people are stored as id lists and checked by core: every covered type must be an active item type of the organization and the default assignee and followers must be members (`VALIDATION`); the assignee is not repeated among the followers. Names are unique among active responsibilities (`CONFLICT`). Settings page: `/settings/responsibilities`. The "Conference venue" template ships Sales (Package), Coordinator (Conference room, Equipment) and Head of kitchen (Dish, Drink, Meal) as optional data; `configuration.importTemplate` makes the importing member their default assignee and creates none when the caller is not a member (e.g. SYSTEM). Archiving is refused with `CONFLICT` while an active sheet definition uses the responsibility, once sheets go to a responsibility.
+> Operations: `responsibility.list|get|create|update|archive` under the resource `configuration` (`responsibility:create|edit|remove`, held by `admin`, to change). The covered types and people are stored as id lists and checked by core: every covered type must be an active item type of the organization and the default assignee and followers must be members (`VALIDATION`); the assignee is not repeated among the followers. Names are unique among active responsibilities (`CONFLICT`). Settings page: `/settings/responsibilities`. The "Conference venue" template ships Sales (Package), Coordinator (Conference room, Equipment) and Head of kitchen (Dish, Drink, Meal) as optional data; `configuration.importTemplate` makes the importing member their default assignee and creates none when the caller is not a member (e.g. SYSTEM). Archiving is refused with `CONFLICT` while an active sheet definition uses the responsibility, once sheets go to a responsibility.
 
 ### Assignment (`Assignment`)
 
@@ -317,7 +317,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `N:1` Customer (organization) has this
 - `1:N` is contact for → Ticket
 
-> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts or active price lists (`CONFLICT`; archive the price lists first), and a contact can only be created at an active customer. Every ticket of the customer that is not archived also blocks archiving it, whatever its phase, terminal phases included (`CONFLICT` naming the number of tickets, issue path `archiveTickets`). With `archiveTickets: true` (needs `ticket:write` as well) `customer.archive` archives those tickets and the customer in one transaction, with one audit row per ticket plus the customer; the approval text names the number of tickets. That number is bound to the input as `expectedTicketCount`: for an assistant proposal the MCP server reads it from the database before signing (replacing any value the assistant sent, and refusing the proposal if the customer cannot be read), and the web dialog sends the count it shows. Unless exactly that many tickets are archived, `customer.archive` is refused with `CONFLICT` (issue path `expectedTicketCount`) and nothing is archived (#144). Archiving a ticket this way goes through one shared `archiveTicket`: its lines are archived and the occupancy they hold is released, so no room stays blocked. The customer's own packages (items with its `customerId`) are archived with it (needs `item:write`). `item.archive` and `setup.archive` are refused (`CONFLICT`) while an active program item uses them.
+> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts or active price lists (`CONFLICT`; archive the price lists first), and a contact can only be created at an active customer. Every ticket of the customer that is not archived also blocks archiving it, whatever its phase, terminal phases included (`CONFLICT` naming the number of tickets, issue path `archiveTickets`). With `archiveTickets: true` (needs `ticket:edit` as well) `customer.archive` archives those tickets and the customer in one transaction, with one audit row per ticket plus the customer; the approval text names the number of tickets. That number is bound to the input as `expectedTicketCount`: for an assistant proposal the MCP server reads it from the database before signing (replacing any value the assistant sent, and refusing the proposal if the customer cannot be read), and the web dialog sends the count it shows. Unless exactly that many tickets are archived, `customer.archive` is refused with `CONFLICT` (issue path `expectedTicketCount`) and nothing is archived (#144). Archiving a ticket this way goes through one shared `archiveTicket`: its lines are archived and the occupancy they hold is released, so no room stays blocked. The customer's own packages (items with its `customerId`) are archived with it (needs `item:edit`). `item.archive` and `setup.archive` are refused (`CONFLICT`) while an active program item uses them.
 
 ### Ticket ★
 
@@ -347,7 +347,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 > ★ A pipeline the organization draws itself, with line states that follow it. Phase changes only through `ticket.changePhase({ ticketId, phaseId, reason? })`, never through `update`; `quote.send` and `quote.accept` move the ticket into the phase with the matching `event`; payments and invoices never move a ticket.
 
-> Operations (`ticket:write` to change, `ticket:read` to read): `ticket.list|get|create|createFromTemplate|update|changePhase|export|expireHolds`. `ticket.expireHolds` runs every 15 minutes in the worker (and by hand from the ticket list): lines in an `expires` state on tickets whose `holdsUntil` has passed move to their type's expiry state, each audited. `create` gives the next reference number and puts the ticket in the default `entry` phase; `createFromTemplate` creates it in the predefined ticket's phase with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` gives json, pdf or csv ([ADR 0024](decisions/0024-ticket-export-instead-of-partner.md)); today it gives a versioned json document with the ticket and its phase, the full schema and csv follow (#63). Every change is audited; phase history comes from `AuditLog`.
+> Operations (`ticket:create|edit|changePhase|export` to change, `ticket:view` to read): `ticket.list|get|create|createFromTemplate|update|changePhase|export|expireHolds`. `ticket.expireHolds` runs every 15 minutes in the worker (and by hand from the ticket list): lines in an `expires` state on tickets whose `holdsUntil` has passed move to their type's expiry state, each audited. `create` gives the next reference number and puts the ticket in the default `entry` phase; `createFromTemplate` creates it in the predefined ticket's phase with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` gives json, pdf or csv ([ADR 0024](decisions/0024-ticket-export-instead-of-partner.md)); today it gives a versioned json document with the ticket and its phase, the full schema and csv follow (#63). Every change is audited; phase history comes from `AuditLog`.
 
 ### Quote ★
 
@@ -372,7 +372,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 > ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by item in order, and the lines the version dropped are listed as removed. `quote.accept` stores the acceptance and fires the `QUOTE_ACCEPTED` phase event. A quote can also be built directly from items, and "Save as package" then creates a customer-specific item.
 
-> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open ticket that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the ticket moves into the phase with the `QUOTE_SENT` event, and older `SENT` versions expire), `quote.accept` (from `SENT`; stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` `MANUAL`, creates no other record; the ticket moves into the phase with the `QUOTE_ACCEPTED` event), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`. A quote event moves the ticket as the acting user (`ticket:write` is needed), only when the organization has an active phase with that `event` and allows the move from the ticket's phase; a blocked move (reason, assignee, line collision) fails the send or accept without any change. A phase with an `event` cannot be entered by `ticket.changePhase` or as the target of a phase archive. Archiving a phase clears its `event`; importing a template never takes an event from a phase that has it.
+> Operations (`quote:create|edit|send` to change, `quote:view` to read): `quote.list|get`, `quote.create` (version 1 of an open ticket that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the ticket moves into the phase with the `QUOTE_SENT` event, and older `SENT` versions expire), `quote.accept` (from `SENT`; stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` `MANUAL`, creates no other record; the ticket moves into the phase with the `QUOTE_ACCEPTED` event), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`. A quote event moves the ticket as the acting user (`ticket:edit` is needed), only when the organization has an active phase with that `event` and allows the move from the ticket's phase; a blocked move (reason, assignee, line collision) fails the send or accept without any change. A phase with an `event` cannot be entered by `ticket.changePhase` or as the target of a phase archive. Archiving a phase clears its `event`; importing a template never takes an event from a phase that has it.
 
 ### Agreement & signing
 
@@ -674,7 +674,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` Deposit is paid with this (not built yet)
 - `N:1` Invoice is settled with this (not built yet)
 
-> Operations: `payment.list` (per ticket, newest first) and `payment.get` (permission `payment:read`), and `payment.create({ ticketId, method, amountMinor, currency?, description? })` (`payment:write`), on every surface (GraphQL also as `Ticket.payments`; web on the ticket page). `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), a ticket that is not in a `terminal` phase unless that phase is `invoiceable`, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` (a payment never moves a ticket's phase), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, ticket reference, amount, status, pay link); an unknown or malformed token is `NOT_FOUND`.
+> Operations: `payment.list` (per ticket, newest first) and `payment.get` (permission `payment:view`), and `payment.create({ ticketId, method, amountMinor, currency?, description? })` (`payment:create`), on every surface (GraphQL also as `Ticket.payments`; web on the ticket page). `create` needs an `ACTIVE` payment account (`CONFLICT` otherwise), a ticket that is not in a `terminal` phase unless that phase is `invoiceable`, and for `INVOICE` a customer email (due after the customer's payment terms, default 30 days). Stripe is reached through the `PaymentProvider` interface (`createCheckout`, `createInvoice`), like `MailProvider`; the Stripe adapter sends `Stripe-Account` on every call and uses the payment id as idempotency key. The status is updated by the Stripe webhook `POST /api/webhooks/stripe` (signature verified with `STRIPE_WEBHOOK_SECRET`), which runs the SYSTEM-only `payment.applySignal` (no user, AI or API surface): `paid` -> `SUCCEEDED` (a payment never moves a ticket's phase), expired -> `CANCELLED`, failed checkout -> `FAILED`, refunds update `refundedMinor` (`REFUNDED` when full). A payment never moves backwards. Events are deduplicated on the Stripe event id in the platform table `StripeWebhookEvent`. The customer's payment page `/pay/<token>` (no sign-in) is read through the SYSTEM-only `payment.getPublic`, which has no adapters and returns no personal data (organization name, ticket reference, amount, status, pay link); an unknown or malformed token is `NOT_FOUND`.
 
 > ★ Swish and card directly in the ticket. Lega shows no online payment.
 
@@ -700,13 +700,13 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### User
 
-*MVP* · A member of the organization. Access comes from one of the fixed roles ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)).
+*MVP* · A member of the organization. Access comes from one of the fixed roles, which are presets, plus the admin's per-member overrides ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md), [ADR 0050](decisions/0050-permission-presets-and-overrides.md)).
 
 **Attributes**
 - name
-- role (one of `viewer < member < admin < owner`, see the table below)
+- role (the preset: one of `member < manager < admin`, see the table below)
 - venues
-- platform role (`user` / `admin`): Okazi's own staff only, gives `/admin` ([ADR 0015](decisions/0015-platform-admin.md))
+- platform role (`user` / `superadmin`): Okazi's own staff only, gives `/admin` ([ADR 0015](decisions/0015-platform-admin.md))
 
 **Relations**
 - `1:N` is assignee of → Assignment
@@ -715,16 +715,17 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `1:N` saves → UserPreference
 - `1:1` has → UserSettings (optional)
 
-| Role | Can |
+| Preset | Can |
 |---|---|
-| `viewer` | read everything |
-| `member` | read everything, write operational data (customers, tickets, quotes, program items, requirements, payments, sheets) |
-| `admin` | everything a member can, plus configuration (types, fields, lists, setups, statuses, responsibilities, sheet definitions, price lists), members and API keys |
-| `owner` | everything, incl. other owners and the organization itself |
+| `member` | view every feature except `audit`, `assistant` and `apiKey`; change only their own conversations, personal skills and connections (`self`, always on) |
+| `manager` | everything a member can, plus every action on bookings and selling: `ticket`, `program`, `customer`, `quote`, `payment`, `sheet` |
+| `admin` | every action on every feature: also catalog, setup (configuration, pipeline, templates, responsibilities), members, API keys, the payment account, audit and the assistant's organization data. The organization always keeps at least one admin |
 
-> Core does not look up permissions per role; it only compares role ranks (nobody gives a role above their own, only an owner changes an owner, the last owner stays). `packages/auth` resolves the member's role to permissions once per call with a constant role → permission map (`<resource>:read|write|admin`); there is no role table. `member.assignRole` takes one of the fixed roles. API keys are issued with a fixed role, never `owner`, and never above the member's own.
+> Permissions (ADR 0050) are `<feature>:<action>`. Features are defined once in `FEATURE_SPECS` (core) and grouped as bookings (`ticket`, `program`), selling (`customer`, `quote`, `payment`, `sheet`), catalog (`item`, `venue`, `priceList`), setup (`configuration`, `pipeline`, `template`, `responsibility`) and organization (`member`, `apiKey`, `paymentAccount`, `audit`, `assistant`). Actions are `view`, `create`, `edit`, `remove` plus `changePhase`, `export` and `send` where they matter; every action implies `view`. `self` (own conversations, skills, preferences, settings, connected apps) and search are always on.
 
-> Members join only by invitation and leave with `member.remove`. The organization always keeps an owner: the last owner cannot be removed, and only an owner removes another owner.
+> The presets are constants in `packages/core` (`PRESET_PERMISSIONS`), not configurable per organization. Core does not look up permissions per role; it compares role ranks for anti-escalation (nobody gives a role above their own or changes or removes a member above them, the last admin stays). `packages/auth` resolves preset plus overrides to `permissions` once per call (`applyOverrides`). `member.assignRole` takes one of the fixed roles. Invitations and API keys can carry any fixed role up to the caller's own. The assistant only sees the commands the user may run.
+
+> Members join only by invitation and leave with `member.remove`, which archives the member's overrides (API keys are not affected). The organization always keeps an admin: the last admin cannot be removed or demoted.
 
 ### Invitation
 
@@ -732,7 +733,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Attributes**
 - email
-- role (one of the fixed roles, never `owner`)
+- role (one of the fixed roles, up to the inviter's own)
 - status (pending / accepted / rejected / canceled)
 - inviter
 - expires (48 hours after it was sent)
@@ -744,19 +745,35 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### ApiKey
 
-*MVP* · A key for the REST API, for another system such as a CRM ([ADR 0005](decisions/0005-authentication.md)). Created, listed and revoked in `/settings/integrations` by admins and owners (`integration:admin`). Only a signed-in web session can create one, and the assistant never can. The secret is shown once; only its hash is stored.
+*MVP* · A key for the REST API, for another system such as a CRM ([ADR 0005](decisions/0005-authentication.md), [ADR 0050](decisions/0050-permission-presets-and-overrides.md)). Created, listed, updated and revoked in `/settings/integrations` and `/settings/api-keys` by admins (`apiKey:*`, admin preset only). Only a signed-in web session can create one, and the assistant never can. The secret is shown once; only its hash is stored.
 
 **Attributes**
 - name
-- role (one fixed role: `viewer`, `member` or `admin`; never `owner` and never above the creating member's own)
-- owner (the member who created it)
+- preset (one fixed role: `member`, `manager` or `admin`, stored as `metadata.role`)
+- created by (`metadata.createdBy`: the admin who made it, for the record only)
 - expiry (optional)
 - last used
 
 **Relations**
-- `N:1` User owns this
+- `N:1` belongs to → Organization
+- `1:N` has → PermissionOverride
 
-> The key acts with the weaker of its role and its owner's live role ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). A revoked or expired key is rejected at once, and removing the owner from the organization revokes their keys.
+> The key belongs to the organization, not to a user, and acts with its own preset plus its own overrides. It keeps working when its creator leaves the organization. A revoked or expired key is rejected at once. A request made with a key has the actor `{ type: "apiKey", userId: null, apiKeyId }` and is audited as `API_KEY`. A key cannot run `self:*` operations. `apiKey.update` changes its name and preset.
+
+### PermissionOverride
+
+*MVP* · Organization data ([ADR 0050](decisions/0050-permission-presets-and-overrides.md)). One `feature:action` that an admin adds to (`ALLOW`) or takes from (`DENY`) the preset of one member or API key. Only the differences are stored, so a change to a preset reaches everyone on it. Read with `permission.get` and changed with `permission.update` (permission `member:edit`, admins), edited in `/settings/members/<id>/permissions` and `/settings/api-keys/<id>/permissions`.
+
+**Attributes**
+- subject type (`MEMBER` or `API_KEY`) and subject id (`Member.id` or the key id)
+- feature and action (e.g. `item` and `edit`)
+- effect (`ALLOW` or `DENY`)
+- status (resetting to the preset archives the row)
+
+**Relations**
+- `N:1` fine-tunes → User (as a member) or ApiKey
+
+> Effective permissions = preset, plus `allow`, minus `deny`. `view` can be denied on any feature, which hides it (pages, navigation, tools, the assistant). Every action except `view` on `member`, `apiKey` and `paymentAccount` is locked to the `admin` preset: overrides on them are refused (`VALIDATION`) and stale rows are ignored. `permission.update` takes the complete list; anything left out goes back to the preset. Changes are audited.
 
 ### OauthGrant
 
@@ -784,7 +801,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Relations**
 - `N:1` belongs to → User
 
-> Operations (`self:read|write`, which every member has): `userPreference.list({ prefix? })` lists the caller's own preferences, `userPreference.set({ key, value })` saves one (upsert, audited). The data layer pins every row to the acting user (`USER_SCOPED_MODELS`).
+> Operations (`self:view|edit`, which every member has): `userPreference.list({ prefix? })` lists the caller's own preferences, `userPreference.set({ key, value })` saves one (upsert, audited). The data layer pins every row to the acting user (`USER_SCOPED_MODELS`).
 
 ### UserSettings (`UserSettings`)
 
@@ -797,7 +814,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Relations**
 - `1:1` belongs to → User
 
-> Operations (`self:read|write`): `userSettings.get` and `userSettings.update({ onboardingStatus })` (upsert, audited). Creating an organization sets `PENDING`; the app layout sends a pending user to `/onboarding`; skipping sets `SKIPPED`, approving the first setup `COMPLETED` ([ADR 0045](decisions/0045-soft-landing-onboarding.md)).
+> Operations (`self:view|edit`): `userSettings.get` and `userSettings.update({ onboardingStatus })` (upsert, audited). Creating an organization sets `PENDING`; the app layout sends a pending user to `/onboarding`; skipping sets `SKIPPED`, approving the first setup `COMPLETED` ([ADR 0045](decisions/0045-soft-landing-onboarding.md)).
 
 ### Task
 
@@ -829,7 +846,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Relations**
 - `N:1` is a reply on → Ticket
 
-> Operations: `inboundEmail.list` (per ticket, newest first) and `inboundEmail.get`, permission `ticket:read`, on every surface (GraphQL also as `Ticket.inboundEmails`). `inboundEmail.receive` is SYSTEM only and deliberately has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received mail.
+> Operations: `inboundEmail.list` (per ticket, newest first) and `inboundEmail.get`, permission `ticket:view`, on every surface (GraphQL also as `Ticket.inboundEmails`). `inboundEmail.receive` is SYSTEM only and deliberately has no web, GraphQL, REST or MCP surface: no user or AI can fabricate a received mail.
 
 ### PaymentAccount (`PaymentAccount`)
 
@@ -839,7 +856,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - Stripe account id (unique)
 - status: onboarding, active or restricted (mirrors the card payments capability; shown as not connected when there is no row)
 
-> Operations: `paymentAccount.get` (permission `payment:read`), `paymentAccount.startOnboarding` (`payment:admin`) and `paymentAccount.sync` (`payment:write`, refreshes the status from Stripe), on every surface. The webhook also refreshes the status on `account.updated` through the SYSTEM-only `paymentAccount.applySignal`, which reads the status back from Stripe instead of trusting the payload. The web app offers them under Settings, Payments. The platform account id and secret key come from `@okazi/config` (`STRIPE_PLATFORM_ACCOUNT_ID`, `STRIPE_SECRET_KEY`).
+> Operations: `paymentAccount.get` (permission `paymentAccount:view`), `paymentAccount.startOnboarding` (`paymentAccount:edit`) and `paymentAccount.sync` (`paymentAccount:edit`, refreshes the status from Stripe), on every surface. The webhook also refreshes the status on `account.updated` through the SYSTEM-only `paymentAccount.applySignal`, which reads the status back from Stripe instead of trusting the payload. The web app offers them under Settings, Payments. The platform account id and secret key come from `@okazi/config` (`STRIPE_PLATFORM_ACCOUNT_ID`, `STRIPE_SECRET_KEY`).
 
 ### Communication & log
 
@@ -857,10 +874,10 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### AuditLog
 
-*MVP* · Organization data. One row per change made by a command, written by core in the same transaction ([ADR 0006](decisions/0006-database-conventions.md), [ADR 0014](decisions/0014-system-logging.md)). Read with `auditLog.list|get` (permission `audit:read`) on every surface and shown as the history tab on detail pages. Changes to private entities (conversations, messages, skills) are only visible to the user who made them; `conversation:admin` also sees conversation changes. After `AUDIT_LOG_PSEUDONYMISE_AFTER_DAYS` (default 365) a nightly worker job replaces personal values in the before and after images with `[redacted]`; rows are kept ([ADR 0032](decisions/0032-audit-log-retention.md)).
+*MVP* · Organization data. One row per change made by a command, written by core in the same transaction ([ADR 0006](decisions/0006-database-conventions.md), [ADR 0014](decisions/0014-system-logging.md)). Read with `auditLog.list|get` (permission `audit:view`) on every surface and shown as the history tab on detail pages. Changes to private entities (conversations, messages, skills) are only visible to the user who made them; `assistant:view` also sees conversation changes. After `AUDIT_LOG_PSEUDONYMISE_AFTER_DAYS` (default 365) a nightly worker job replaces personal values in the before and after images with `[redacted]`; rows are kept ([ADR 0032](decisions/0032-audit-log-retention.md)).
 
 **Attributes**
-- actor (user / AI / system) and, for AI proposals, who approved
+- actor (user / AI / system / API key) and, for AI proposals, who approved
 - assistant conversation the change was proposed in
 - operation, entity type and entity id
 - before and after image
@@ -868,13 +885,15 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - time
 - pseudonymised at (when personal values in the images were redacted, ADR 0032)
 
+> The same before and after images feed the approval card ([ADR 0049](decisions/0049-conversational-change-layer.md)): `previewChange` runs a command in a rolled-back transaction and shows its recorded changes field by field, with consequences and the feature group, before the user confirms. `changeSet.apply` runs several commands as one change; each audit row names the step's own operation.
+
 **Relations**
 - `N:0..1` made by → User
 - shares request id with the system log (`SystemLog`)
 
 ### SystemLog
 
-*MVP* · Platform data, not customer data. Every event in the system (operation, request, login, email, error), stored for platform admins ([ADR 0014](decisions/0014-system-logging.md), [ADR 0015](decisions/0015-platform-admin.md)).
+*MVP* · Platform data, not customer data. Every event in the system (operation, request, login, email, error), stored for superadmins ([ADR 0014](decisions/0014-system-logging.md), [ADR 0015](decisions/0015-platform-admin.md)).
 
 **Attributes**
 - time, level, event (`event`)
@@ -889,7 +908,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### AiSetting
 
-*MVP* · Platform data. Which model each AI function uses, chosen by a platform admin. No default models: without a choice the function does not work.
+*MVP* · Platform data. Which model each AI function uses, chosen by a superadmin. No default models: without a choice the function does not work.
 
 **Attributes**
 - AI function (`assistant.chat`, `search.embedding`)

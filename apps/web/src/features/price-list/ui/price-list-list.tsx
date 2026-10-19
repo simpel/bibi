@@ -6,7 +6,12 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import {
+  type CallerAbilities,
+  can,
+  getCallerAbilities,
+  rowAccess,
+} from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { CreatePriceListButton } from "./create-price-list-button";
@@ -27,12 +32,15 @@ const load = ({ cursor }: { cursor?: string | undefined }) =>
     loadPriceListFormData(),
   ]);
 
+const createAction = ({ abilities }: { abilities: CallerAbilities }) =>
+  can({ abilities, permission: "priceList:create" }) ? <CreatePriceListButton /> : undefined;
+
 /** Price lists page body (ADR 0023): header with create, table, cursor pagination. */
 export async function PriceListList({ locale, cursor }: PriceListListProps) {
   const t = await getTranslations("priceList");
-  const { priceListWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const [result, data] = await load({ cursor });
-  const create = priceListWrite ? <CreatePriceListButton /> : undefined;
+  const create = createAction({ abilities });
   const header = (
     <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
   );
@@ -53,7 +61,11 @@ export async function PriceListList({ locale, cursor }: PriceListListProps) {
         <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />
       ) : (
         <>
-          <PriceListTable priceLists={items} data={data} canWrite={priceListWrite} />
+          <PriceListTable
+            priceLists={items}
+            data={data}
+            access={rowAccess({ abilities, feature: "priceList" })}
+          />
           <CursorPagination
             pathname={ROUTES.settingsPriceLists}
             cursor={cursor}

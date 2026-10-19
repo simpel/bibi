@@ -3,12 +3,13 @@ import { actionsColumn, type ColumnDef } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { namesOf } from "@/features/sheet-definition/ui/sheet-options";
+import type { RowAccess } from "@/lib/can";
 import type { ResponsibilityOption, ResponsibilityOptions } from "./responsibility-options";
 import { ResponsibilityRowActions } from "./responsibility-row-actions";
 
 type Column = ColumnDef<ResponsibilityDto>;
 
-export type UseResponsibilityColumnsInput = { options: ResponsibilityOptions; canWrite: boolean };
+export type UseResponsibilityColumnsInput = { options: ResponsibilityOptions; access: RowAccess };
 
 type NamesInput = { ids: readonly string[]; options: readonly ResponsibilityOption[] };
 
@@ -20,7 +21,7 @@ const names = ({ ids, options }: NamesInput) => {
 /** Name · types · default assignee · default followers, plus the row actions when writable. */
 export function useResponsibilityColumns({
   options,
-  canWrite,
+  access,
 }: UseResponsibilityColumnsInput): Column[] {
   const t = useTranslations("responsibility");
   const common = useTranslations("common");
@@ -43,13 +44,13 @@ export function useResponsibilityColumns({
         accessorFn: (r) => names({ ids: r.defaultFollowerIds, options: options.people }),
       },
     ];
-    if (!canWrite) return data;
+    if (!access.canEdit && !access.canRemove) return data;
     return [
       ...data,
       actionsColumn<ResponsibilityDto>({
         label: common("actions"),
-        cell: (r) => <ResponsibilityRowActions responsibility={r} />,
+        cell: (r) => <ResponsibilityRowActions responsibility={r} access={access} />,
       }),
     ];
-  }, [t, common, options, canWrite]);
+  }, [t, common, options, access]);
 }

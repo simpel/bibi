@@ -38,7 +38,7 @@ builder.objectField(CustomerRef, "entityType", (t) =>
     type: EntityTypeRef,
     description: "The customer type, with its fields.",
     resolve: (customer, _args, ctx) => {
-      requirePermission({ ctx, permission: "configuration:read" });
+      requirePermission({ ctx, permission: "configuration:view" });
       return ctx.loaders.entityType.load({ id: customer.entityTypeId }) as never;
     },
   }),
@@ -68,7 +68,7 @@ builder.objectField(ItemRef, "customer", (t) =>
     nullable: true,
     description: "The customer a package belongs to (null for catalog items or if archived).",
     resolve: (item, _args, ctx) => {
-      requirePermission({ ctx, permission: "customer:read" });
+      requirePermission({ ctx, permission: "customer:view" });
       return item.customerId ? ctx.loaders.customer.load({ id: item.customerId }) : null;
     },
   }),

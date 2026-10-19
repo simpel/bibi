@@ -1,6 +1,6 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import type { EmbedFn, ExecuteContext } from "@okazi/core";
+import { type EmbedFn, type ExecuteContext, hasPermission } from "@okazi/core";
 import { withOrgDescriptions } from "../tools/org-tool-descriptions";
 import type { McpTool, ToolResult } from "../tools/types";
 import { callTool } from "./call-tool";
@@ -18,6 +18,17 @@ function visibleTools({ tools, context }: VisibleInput): McpTool[] {
 }
 
 /**
+ * The tools in `tools/list` (ADR 0048): commands the caller has no permission for are left out,
+ * so the assistant never proposes them. A direct call still reaches `execute` and gets FORBIDDEN.
+ */
+function listedTools({ tools, context }: VisibleInput): McpTool[] {
+  return tools.filter(
+    ({ writePermission: permission }) =>
+      !permission || hasPermission({ permissions: context.permissions, permission }),
+  );
+}
+
+/**
  * MCP server bound to one caller. Built per request in HTTP (stateless) and once for stdio.
  * Uses the low-level `Server` so tool schemas come from Zod via `z.toJSONSchema` (dates as ISO
  * strings) and input validation is done once, by core's `execute`.
@@ -26,8 +37,9 @@ export function createMcpServer({ context, embed }: CreateMcpServerInput): Serve
   const tools = visibleTools({ tools: createTools({ embed }), context });
   const server = new Server(SERVER_INFO, { capabilities: { tools: {} } });
   server.setRequestHandler(ListToolsRequestSchema, async () => ({
-    tools: (await withOrgDescriptions({ tools, context })).map(
-      ({ run: _run, humanOnly: _humanOnly, ...descriptor }) => descriptor,
+    tools: (await withOrgDescriptions({ tools: listedTools({ tools, context }), context })).map(
+      ({ run: _run, humanOnly: _humanOnly, writePermission: _permission, ...descriptor }) =>
+        descriptor,
     ),
   }));
   server.setRequestHandler(

@@ -2,7 +2,7 @@ import { listSheetDefinitions, listSheets, type TicketDto } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { SheetPanel } from "./sheet-panel";
@@ -14,13 +14,14 @@ export type SheetSectionProps = { locale: Locale; ticket: TicketDto };
  * changed since the last sent one. Versions go out only from the confirmed phase (`sheet.send`).
  */
 export async function SheetSection({ locale, ticket }: SheetSectionProps) {
-  const { sheetWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const t = await getTranslations("sheet");
   const [definitions, sheets] = await Promise.all([
     runOperation({ operation: listSheetDefinitions, input: { limit: 100 } }),
     runOperation({ operation: listSheets, input: { ticketId: ticket.id, limit: 100 } }),
   ]);
   for (const result of [definitions, sheets]) {
+    if (!result.ok && result.error.code === "FORBIDDEN") return null;
     if (!result.ok)
       return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   }
@@ -39,7 +40,8 @@ export async function SheetSection({ locale, ticket }: SheetSectionProps) {
             sheet={
               sheets.value.items.find((sheet) => sheet.sheetDefinitionId === definition.id) ?? null
             }
-            canWrite={sheetWrite}
+            canGenerate={can({ abilities, permission: "sheet:create" })}
+            canSend={can({ abilities, permission: "sheet:send" })}
           />
         ))
       )}

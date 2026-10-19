@@ -39,7 +39,7 @@ builder.objectField(RequirementRef, "entityType", (t) =>
     type: EntityTypeRef,
     description: "The requirement type, with its fields.",
     resolve: (requirement, _args, ctx) => {
-      requirePermission({ ctx, permission: "configuration:read" });
+      requirePermission({ ctx, permission: "configuration:view" });
       return ctx.loaders.entityType.load({ id: requirement.entityTypeId }) as never;
     },
   }),
@@ -51,7 +51,7 @@ builder.objectField(RequirementRef, "vocabularyValue", (t) =>
     nullable: true,
     description: "The list value counted, e.g. Gluten.",
     resolve: (requirement, _args, ctx) => {
-      requirePermission({ ctx, permission: "configuration:read" });
+      requirePermission({ ctx, permission: "configuration:view" });
       return ctx.loaders.vocabularyValue.load({ id: requirement.vocabularyValueId });
     },
   }),

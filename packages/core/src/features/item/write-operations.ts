@@ -11,6 +11,7 @@ import { loadItemType } from "./item-rules";
 import { replaceSetups } from "./item-setups";
 import { ItemCreateInputSchema, ItemSchema, ItemUpdateInputSchema } from "./schema";
 import { loadItem } from "./to-item-dto";
+import { itemUpdateConsequences } from "./update-consequences";
 
 export const createItem = defineOperation({
   name: "item.create",
@@ -22,7 +23,7 @@ export const createItem = defineOperation({
     "item.saveAsPackage for a customer-specific package.",
   input: ItemCreateInputSchema,
   output: ItemSchema,
-  permission: "item:write",
+  permission: "item:create",
   embeddable: itemEmbeddable,
   handler: ({ input, context }) => insertItem({ context, input, customerId: null }),
 });
@@ -36,8 +37,9 @@ export const updateItem = defineOperation({
     "are kept when only parts change). The type cannot be changed.",
   input: ItemUpdateInputSchema,
   output: ItemSchema,
-  permission: "item:write",
+  permission: "item:edit",
   embeddable: itemEmbeddable,
+  consequences: itemUpdateConsequences,
   handler: async ({ input, context }) => {
     const { id, fields: patch, setups, components, choiceGroups, ...data } = input;
     const before = await loadItem({ context, id });

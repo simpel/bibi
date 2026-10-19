@@ -57,7 +57,7 @@ describe("sheet definitions (ADR 0021)", () => {
       input: { base: "CUSTOMER", name: "Company" },
       context,
     });
-    const custom = { ...input, name: "Bar order", roleId: "Kitchen" as "member" };
+    const custom = { ...input, name: "Bar order", roleId: "Kitchen" as "manager" };
     const bad = await execute({ operation: createSheetDefinition, input: custom, context });
     expect(bad.ok ? [] : bad.error.issues.map((issue) => issue.path)).toEqual(["roleId"]);
     const unknownType = await execute({
@@ -71,7 +71,7 @@ describe("sheet definitions (ADR 0021)", () => {
     ]);
     const empty = await execute({
       operation: createSheetDefinition,
-      input: { name: "Empty", roleId: "owner" },
+      input: { name: "Empty", roleId: "admin" },
       context,
     });
     expect(errorCode({ result: empty })).toBe("VALIDATION");
@@ -89,10 +89,10 @@ describe("sheet definitions (ADR 0021)", () => {
     });
     const renamed = await execute({
       operation: updateSheetDefinition,
-      input: { id: sheet.id, name: "Brewing order", roleId: "owner" },
+      input: { id: sheet.id, name: "Brewing order", roleId: "admin" },
       context,
     });
-    expect(unwrap({ result: renamed })).toMatchObject({ name: "Brewing order", roleId: "owner" });
+    expect(unwrap({ result: renamed })).toMatchObject({ name: "Brewing order", roleId: "admin" });
     const orphaned = await execute({
       operation: updateSheetDefinition,
       input: { id: sheet.id, entityTypeIds: [] },
@@ -135,7 +135,7 @@ describe("sheet definitions (ADR 0021)", () => {
   it("never refers to another organization's configuration", async () => {
     const theirs = await createSheetSetup({ context: await testOrg() });
     const context = await testOrg();
-    const input = { ...kitchenOrder(theirs), roleId: "owner" };
+    const input = { ...kitchenOrder(theirs), roleId: "admin" };
     const result = await execute({ operation: createSheetDefinition, input, context });
     expect(errorCode({ result })).toBe("VALIDATION");
   });

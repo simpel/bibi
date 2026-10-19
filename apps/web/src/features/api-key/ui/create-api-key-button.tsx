@@ -1,6 +1,6 @@
 "use client";
 
-import type { ApiKeyCreated, GrantableRole } from "@okazi/core";
+import type { ApiKeyCreated, FixedRole } from "@okazi/core";
 import {
   Button,
   Dialog,
@@ -15,7 +15,7 @@ import { useState } from "react";
 import { ApiKeyForm } from "./api-key-form";
 import { ApiKeySecret } from "./api-key-secret";
 
-export type CreateApiKeyButtonProps = { roles: readonly GrantableRole[] };
+export type CreateApiKeyButtonProps = { roles: readonly FixedRole[] };
 
 /** Create dialog: the form, then the secret once. Closing forgets the secret. */
 export function CreateApiKeyButton({ roles }: CreateApiKeyButtonProps) {

@@ -41,7 +41,7 @@ async function sheetSources({ gql }: { gql: Gql }) {
       i: {
         name: "Kitchen order",
         vocabularyIds: [list.body.data.vocabularyCreate.id],
-        roleId: "owner",
+        roleId: "admin",
       },
     },
   });
@@ -61,7 +61,7 @@ describe("sheet graph (ADR 0021)", () => {
     expect(made.body.errors).toBeUndefined();
     expect(made.body.data.sheetGenerate).toMatchObject({ version: 1, changes: [] });
     const read = await gql({ query: READ, variables: { id: input.ticketId } });
-    expect(read.body.data.ticket.sheets).toEqual([{ version: 1, roleId: "owner", sentAt: null }]);
+    expect(read.body.data.ticket.sheets).toEqual([{ version: 1, roleId: "admin", sentAt: null }]);
     const send = await gql({ query: SEND, variables: { id: made.body.data.sheetGenerate.id } });
     expect(send.body.errors).toBeUndefined();
   });

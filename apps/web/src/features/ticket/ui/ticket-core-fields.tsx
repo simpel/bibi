@@ -11,12 +11,17 @@ type Form = UseFormReturn<TicketFormValues, unknown, TicketFormOutput>;
 
 export type TicketCoreFieldsProps = {
   form: Form;
-  customers: readonly NamedOption[];
-  contacts: readonly ContactOption[];
+  data: {
+    customers: readonly NamedOption[];
+    contacts: readonly ContactOption[];
+    /** The caller may not view customers (and their contacts): both pickers are disabled. */
+    customersHidden: boolean;
+  };
 };
 
 /** Customer and a contact person who works there (the list follows the customer). */
-function CustomerFields({ form, customers, contacts }: TicketCoreFieldsProps) {
+function CustomerFields({ form, data }: TicketCoreFieldsProps) {
+  const { customers, contacts, customersHidden: hidden } = data;
   const t = useTranslations("ticket.fields");
   const ofCustomer = contacts.filter(({ customerId }) => customerId === form.watch("customerId"));
   return (
@@ -26,6 +31,7 @@ function CustomerFields({ form, customers, contacts }: TicketCoreFieldsProps) {
         name="customerId"
         label={t("customer")}
         options={customers}
+        hidden={hidden}
         onChange={() => form.setValue("contactId", NONE)}
       />
       <OptionSelectField
@@ -33,6 +39,7 @@ function CustomerFields({ form, customers, contacts }: TicketCoreFieldsProps) {
         name="contactId"
         label={t("contact")}
         options={ofCustomer}
+        hidden={hidden}
         noneLabel={t("noContact")}
       />
     </>

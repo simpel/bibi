@@ -12,7 +12,10 @@ export type LoadItemFormDataInput = {
   customerId?: string | null | undefined;
 };
 
-/** Everything the item form needs to render a type's fields and behaviours (one page each). */
+/**
+ * Everything the item form needs to render a type's fields and behaviours (one page each).
+ * Without `venue:view` the venues are hidden (ADR 0050 feature scope), not an error.
+ */
 export async function loadItemFormData({
   customerId,
 }: LoadItemFormDataInput = {}): Promise<Result<ItemFormData>> {
@@ -29,7 +32,7 @@ export async function loadItemFormData({
   if (!types.ok) return types;
   if (!vocabularies.ok) return vocabularies;
   if (!setups.ok) return setups;
-  if (!venues.ok) return venues;
+  if (!venues.ok && venues.error.code !== "FORBIDDEN") return venues;
   if (!parts.ok) return parts;
   const links = await loadLinkTargets({ types: types.value.items });
   return {
@@ -39,7 +42,8 @@ export async function loadItemFormData({
       vocabularies: vocabularies.value.items,
       links,
       setups: setups.value.items,
-      venues: venues.value.items.map(({ id, name }) => ({ id, name })),
+      venues: venues.ok ? venues.value.items.map(({ id, name }) => ({ id, name })) : [],
+      venuesHidden: !venues.ok,
       parts: parts.value.items.map(({ id, name }) => ({ id, name })),
     },
   };

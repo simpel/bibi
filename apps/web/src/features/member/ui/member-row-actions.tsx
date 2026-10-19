@@ -1,38 +1,36 @@
 "use client";
 
-import type { FixedRole, MemberDto } from "@okazi/core";
+import type { MemberDto } from "@okazi/core";
+import { Link } from "@okazi/i18n/navigation";
 import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { AssignRoleDialog } from "./assign-role-dialog";
+import type { RowAccess } from "@/lib/can";
+import { memberPermissionsRoute } from "@/lib/routes";
 import { RemoveMemberDialog } from "./remove-member-dialog";
 
-export type MemberRowActionsProps = { member: MemberDto; roles: FixedRole[] };
+export type MemberRowActionsProps = { member: MemberDto; access: RowAccess };
 
-/** Assign role / remove menu for one member. */
-export function MemberRowActions({ member, roles }: MemberRowActionsProps) {
+/** Permissions and remove menu for one member; the role is changed in its own column. */
+export function MemberRowActions({ member, access }: MemberRowActionsProps) {
   const t = useTranslations("member");
   const common = useTranslations("common");
-  const [dialog, setDialog] = useState<"assign" | "remove" | null>(null);
+  const [removing, setRemoving] = useState(false);
   return (
     <>
       <DataTableRowActions label={common("actions")}>
-        <DropdownMenuItem onSelect={() => setDialog("assign")}>{t("assignRoles")}</DropdownMenuItem>
-        <DropdownMenuItem destructive onSelect={() => setDialog("remove")}>
-          {t("remove")}
-        </DropdownMenuItem>
+        {access.canEdit ? (
+          <DropdownMenuItem asChild>
+            <Link href={memberPermissionsRoute({ id: member.id })}>{t("permissions")}</Link>
+          </DropdownMenuItem>
+        ) : null}
+        {access.canRemove ? (
+          <DropdownMenuItem destructive onSelect={() => setRemoving(true)}>
+            {t("remove")}
+          </DropdownMenuItem>
+        ) : null}
       </DataTableRowActions>
-      <AssignRoleDialog
-        member={member}
-        roles={roles}
-        open={dialog === "assign"}
-        onOpenChange={(open) => !open && setDialog(null)}
-      />
-      <RemoveMemberDialog
-        member={member}
-        open={dialog === "remove"}
-        onOpenChange={(open) => !open && setDialog(null)}
-      />
+      <RemoveMemberDialog member={member} open={removing} onOpenChange={setRemoving} />
     </>
   );
 }

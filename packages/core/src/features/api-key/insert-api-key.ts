@@ -42,7 +42,7 @@ export async function insertApiKey({
       rateLimitMax: API_KEY_RATE_LIMIT.maxRequests,
       requestCount: 0,
       expiresAt: expiresInDays ? new Date(now.getTime() + expiresInDays * DAY_MS) : null,
-      metadata: JSON.stringify({ userId, role }),
+      metadata: JSON.stringify({ role, createdBy: userId }),
       createdAt: now,
       updatedAt: now,
     },

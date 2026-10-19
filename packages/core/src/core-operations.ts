@@ -1,6 +1,7 @@
 import { apiKeyOperations } from "./features/api-key/operations";
 import { assignmentOperations } from "./features/assignment/operations";
 import { auditLogOperations } from "./features/audit-log/operations";
+import { changeSetOperations } from "./features/change-set/operations";
 import { configurationOperations } from "./features/configuration/operations";
 import { contactOperations } from "./features/contact/operations";
 import { conversationOperations } from "./features/conversation/operations";
@@ -16,6 +17,7 @@ import { oauthGrantOperations } from "./features/oauth-grant/operations";
 import { occupancyOperations } from "./features/occupancy/operations";
 import { paymentOperations } from "./features/payment/operations";
 import { paymentAccountOperations } from "./features/payment-account/operations";
+import { permissionOperations } from "./features/permission/operations";
 import { phaseGridOperations } from "./features/phase-grid/operations";
 import { pipelineOperations } from "./features/pipeline/operations";
 import { pipelineSetupOperations } from "./features/pipeline-setup/operations";
@@ -40,16 +42,21 @@ import { createSearchOperation } from "./search/search-operation";
 
 export type CreateCoreOperationsInput = { embed: EmbedFn };
 
-const pipelineGroupOperations = [...pipelineOperations, ...pipelineSetupOperations];
+const pipelineGroupOperations = [
+  ...pipelineOperations,
+  ...pipelineSetupOperations,
+  ...changeSetOperations,
+];
 
-/** Every operation core ships; adapters register this list so surfaces stay in parity. */
-export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyOperation[] {
+/** Every operation that does not depend on the app's `embed` (all but `search`). */
+function staticOperations(): AnyOperation[] {
   return [
     ...venueOperations,
     ...entityTypeOperations,
     ...fieldDefinitionOperations,
     ...vocabularyOperations,
     ...setupOperations,
+    ...permissionOperations,
     ...responsibilityOperations,
     ...sheetDefinitionOperations,
     ...configurationOperations,
@@ -80,6 +87,18 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...apiKeyOperations,
     ...oauthGrantOperations,
     ...userPreferenceOperations,
-    createSearchOperation({ embed }),
   ];
+}
+
+let byName: Map<string, AnyOperation> | undefined;
+
+/** A static operation by name, e.g. a change set step (ADR 0049); the same on every surface. */
+export function findStaticOperation({ name }: { name: string }): AnyOperation | undefined {
+  byName ??= new Map(staticOperations().map((operation) => [operation.name, operation]));
+  return byName.get(name);
+}
+
+/** Every operation core ships; adapters register this list so surfaces stay in parity. */
+export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyOperation[] {
+  return [...staticOperations(), createSearchOperation({ embed })];
 }

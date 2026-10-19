@@ -36,7 +36,7 @@ describe("field values in search text", () => {
     expect(await textOf({ context, id: item.id })).not.toContain("Smoking");
   });
 
-  it("writes a LINK value as the linked record's name, not its id", async () => {
+  it("keeps a linked record's name out of the text (ADR 0050, feature scope)", async () => {
     const context = testContext();
     const room = await createRoomType({ context });
     const customer = await createTestCustomer({ context, name: "Volvo AB" });
@@ -61,7 +61,7 @@ describe("field values in search text", () => {
       }),
     });
     const text = await textOf({ context, id: item.id });
-    expect(text).toContain("Owner: Volvo AB");
-    expect(text).not.toContain(customer.id);
+    expect(text).toContain("Vinga");
+    expect(text).not.toContain("Volvo AB");
   });
 });

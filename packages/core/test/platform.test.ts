@@ -37,7 +37,7 @@ const ops = createPlatformOperations({
 });
 const admin = createPlatformContext({
   actor: { type: "user", userId: `admin_${createId()}` },
-  platformRole: "admin",
+  platformRole: "superadmin",
 });
 const nonAdmin = createPlatformContext({
   actor: { type: "user", userId: `user_${createId()}` },
@@ -63,7 +63,7 @@ describe("platform operations (ADR 0015)", () => {
     expect(dims).toEqual([EMBEDDING_DIMENSIONS]);
   });
 
-  it("refuses callers without the platform admin role", async () => {
+  it("refuses callers without the superadmin role", async () => {
     const result = await executePlatform({
       operation: ops.listAiFeatures,
       input: {},

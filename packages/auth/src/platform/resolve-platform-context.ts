@@ -1,4 +1,10 @@
-import { createPlatformContext, ok, type PlatformContext, type Result } from "@okazi/core";
+import {
+  createPlatformContext,
+  ok,
+  type PlatformContext,
+  type Result,
+  SUPERADMIN_ROLE,
+} from "@okazi/core";
 import { addToLogContext, getLogger } from "@okazi/logger";
 import { getAuth } from "../get-auth";
 import { forbidden, unauthenticated } from "../resolve/errors";
@@ -9,7 +15,7 @@ export type ResolvePlatformContextInput = { headers: Headers };
 
 const deny = ({ reason, userId }: { reason: string; userId?: string }) => {
   getLogger().warn({ event: "auth.platformDenied", reason, userId });
-  return forbidden({ message: "Platform admins only" });
+  return forbidden({ message: "Superadmins only" });
 };
 
 /**
@@ -29,6 +35,9 @@ export async function resolvePlatformContext({
   if (!(await isPlatformAdmin({ userId }))) return deny({ reason: "notAdmin", userId });
   addToLogContext({ fields: { userId, actorType: "user" } });
   return ok({
-    value: createPlatformContext({ actor: { type: "user", userId }, platformRole: "admin" }),
+    value: createPlatformContext({
+      actor: { type: "user", userId },
+      platformRole: SUPERADMIN_ROLE,
+    }),
   });
 }

@@ -20,7 +20,7 @@ export const startPaymentOnboarding = defineOperation({
     "browser; call again for a fresh link if it expired).",
   input: PaymentAccountStartOnboardingInputSchema,
   output: PaymentAccountOnboardingSchema,
-  permission: "payment:admin",
+  permission: "paymentAccount:edit",
   entityType: "paymentAccount",
   handler: async ({ input, context }) => {
     const account = await ensurePaymentAccount({ input, context });
@@ -46,7 +46,7 @@ export const syncPaymentAccount = defineOperation({
     "Run it after the venue returns from the onboarding page.",
   input: PaymentAccountSyncInputSchema,
   output: PaymentAccountSchema,
-  permission: "payment:write",
+  permission: "paymentAccount:edit",
   entityType: "paymentAccount",
   approval: false,
   handler: async ({ context }) => {
@@ -65,7 +65,12 @@ export const syncPaymentAccount = defineOperation({
       where: { id: before.id },
       data: { status: fetched.value.status },
     });
-    context.recordChange({ entityId: row.id, before, after: row });
+    const { organizationId } = context;
+    context.recordChange({
+      entityId: row.id,
+      before: toPaymentAccountDto({ row: before, organizationId }),
+      after: toPaymentAccountDto({ row, organizationId }),
+    });
     return ok({ value: toPaymentAccountDto({ row, organizationId: context.organizationId }) });
   },
 });

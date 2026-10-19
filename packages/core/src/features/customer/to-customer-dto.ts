@@ -1,4 +1,5 @@
 import type { Customer } from "@okazi/db";
+import { hasPermission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { asFieldValues } from "../field-definition/field-usage";
 import type { CustomerDto } from "./schema";
@@ -13,18 +14,27 @@ export const CUSTOMER_INCLUDE = {
 
 export type CustomerRow = Customer & { _count: { tickets: number } };
 
-export type ToCustomerDtoInput = { row: CustomerRow };
+export type ToCustomerDtoInput = {
+  row: CustomerRow;
+  /** The caller: `ticketCount` is only filled when it may view tickets (ADR 0050). */
+  context: Pick<OperationContext, "permissions">;
+};
 
-export const toCustomerDto = ({ row }: ToCustomerDtoInput): CustomerDto => {
+export const toCustomerDto = ({ row, context }: ToCustomerDtoInput): CustomerDto => {
   const { _count, ...customer } = row;
+  const { permissions } = context;
+  const ticketsVisible = hasPermission({ permissions, permission: "ticket:view" });
   return {
     ...customer,
     fields: asFieldValues({ value: row.fields }),
-    ticketCount: _count.tickets,
+    ticketCount: ticketsVisible ? _count.tickets : null,
   };
 };
 
-export type LoadCustomerInput = { context: Pick<OperationContext, "db">; id: string };
+export type LoadCustomerInput = {
+  context: Pick<OperationContext, "db" | "permissions">;
+  id: string;
+};
 
 /** The active customer, or null when missing, archived or in another organization. */
 export async function loadCustomer({
@@ -32,5 +42,5 @@ export async function loadCustomer({
   id,
 }: LoadCustomerInput): Promise<CustomerDto | null> {
   const row = await context.db.customer.findFirst({ where: { id }, include: CUSTOMER_INCLUDE });
-  return row ? toCustomerDto({ row }) : null;
+  return row ? toCustomerDto({ row, context }) : null;
 }

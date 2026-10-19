@@ -13,7 +13,7 @@ function systemContext({ db, organizationId }: { db: Db; organizationId: string 
   return createExecuteContext({
     organizationId,
     roles: [],
-    permissions: grantAll({ upTo: "admin" }),
+    permissions: grantAll({}),
     actor: { type: "system", userId: null },
     db,
   });

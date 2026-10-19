@@ -7,7 +7,7 @@ import { DEFAULT_EMBED_BATCH_SIZE, embedTexts } from "./embed-texts";
 import { hashEmbedding, PLACEHOLDER_EMBEDDING_MODEL } from "./hash-embedding";
 
 export type CreateEmbedInput = {
-  /** Test seam (`MockEmbeddingModelV4`). Default: the model a platform admin chose (ADR 0015). */
+  /** Test seam (`MockEmbeddingModelV4`). Default: the model a superadmin chose (ADR 0015). */
   model?: Exclude<EmbeddingModel, string>;
   /** Stored model id with an explicit `model`; default `model.modelId`. */
   modelId?: string;
@@ -58,7 +58,7 @@ const missingKeyEmbed: EmbedFn = async () => {
 
 /**
  * The embedder injected into core (`search`, indexing hook, reindex): AI SDK `embedMany` via the
- * AI Gateway with the model a platform admin chose for `search.embedding` (1536 dimensions).
+ * AI Gateway with the model a superadmin chose for `search.embedding` (1536 dimensions).
  * Without `AI_GATEWAY_API_KEY`: deterministic placeholder outside production, failing embedder in
  * it. No model chosen → every call fails with UNAVAILABLE (and an error log line).
  */

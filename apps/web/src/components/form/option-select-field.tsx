@@ -26,11 +26,13 @@ export type OptionSelectFieldProps<V extends FieldValues, O> = {
   noneLabel?: string;
   /** Called after the field changes, e.g. to reset a dependent field. */
   onChange?: (value: string) => void;
+  /** The caller may not view these records: the select is disabled and reads "Hidden". */
+  hidden?: boolean;
 };
 
 /** A shadcn select of named options (customers, members) bound to one form field. */
 export function OptionSelectField<V extends FieldValues, O>(props: OptionSelectFieldProps<V, O>) {
-  const { control, name, label, options, noneLabel, onChange } = props;
+  const { control, name, label, options, noneLabel, onChange, hidden = false } = props;
   const t = useTranslations("common");
   return (
     <FormController
@@ -41,6 +43,7 @@ export function OptionSelectField<V extends FieldValues, O>(props: OptionSelectF
           <FormLabel>{label}</FormLabel>
           <Select
             value={String(field.value ?? "")}
+            disabled={hidden}
             onValueChange={(value) => {
               field.onChange(value);
               onChange?.(value);
@@ -48,7 +51,7 @@ export function OptionSelectField<V extends FieldValues, O>(props: OptionSelectF
           >
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder={t("select")} />
+                <SelectValue placeholder={hidden ? t("hidden") : t("select")} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>

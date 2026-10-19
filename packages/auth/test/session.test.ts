@@ -26,7 +26,7 @@ describe("resolveExecuteContext – session cookie", () => {
     const result = await resolveExecuteContext({ headers: user.headers });
     if (!result.ok) throw result.error;
     expect(result.value.organizationId).toBe(organizationId);
-    expect(result.value.roles).toEqual(["owner"]);
+    expect(result.value.roles).toEqual(["admin"]);
     expect(result.value.actor).toEqual({ type: "user", userId: user.userId });
   });
 

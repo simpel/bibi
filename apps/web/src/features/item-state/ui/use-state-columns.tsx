@@ -2,6 +2,7 @@ import type { ItemStateDto } from "@okazi/core/schemas";
 import { actionsColumn, Badge, ColorSwatch, type ColumnDef } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import type { RowAccess } from "@/lib/can";
 import { ItemStateRowActions } from "./item-state-row-actions";
 import type { StateRow } from "./state-rows";
 
@@ -25,10 +26,10 @@ const nameColumn = ({ t }: { t: Translate }): Column => ({
   ),
 });
 
-export type StateColumnsInput = { states: readonly ItemStateDto[]; canAdmin: boolean };
+export type StateColumnsInput = { states: readonly ItemStateDto[]; access: RowAccess };
 
 /** Name (with color), what the state does, and where a line may go next; admins get row actions. */
-export function useStateColumns({ states, canAdmin }: StateColumnsInput): Column[] {
+export function useStateColumns({ states, access }: StateColumnsInput): Column[] {
   const t = useTranslations("itemState");
   const common = useTranslations("common");
   return useMemo<Column[]>(() => {
@@ -54,13 +55,13 @@ export function useStateColumns({ states, canAdmin }: StateColumnsInput): Column
         accessorFn: (row) => row.targets.join(", ") || t("noTransitions"),
       },
     ];
-    if (!canAdmin) return columns;
+    if (!access.canEdit && !access.canRemove) return columns;
     const actions = actionsColumn<StateRow>({
       label: common("actions"),
       cell: ({ state, index }) => (
-        <ItemStateRowActions state={state} index={index} states={states} />
+        <ItemStateRowActions state={state} index={index} states={states} access={access} />
       ),
     });
     return [...columns, actions];
-  }, [t, common, states, canAdmin]);
+  }, [t, common, states, access]);
 }

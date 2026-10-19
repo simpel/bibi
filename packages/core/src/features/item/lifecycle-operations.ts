@@ -1,6 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { conflict, notFound } from "../../shared/errors";
+import { inUseConflict } from "../../shared/in-use";
 import { checkNotLinked } from "../field-definition/link-usage";
 import { itemEmbeddable } from "./embeddable";
 import { ItemIdInputSchema, ItemSchema } from "./schema";
@@ -15,7 +16,7 @@ export const archiveItem = defineOperation({
     "predefined ticket has a line with it.",
   input: ItemIdInputSchema,
   output: ItemSchema,
-  permission: "item:write",
+  permission: "item:remove",
   embeddable: itemEmbeddable,
   handler: async ({ input: { id }, context }) => {
     const before = await loadItem({ context, id });
@@ -25,7 +26,8 @@ export const archiveItem = defineOperation({
     if (!linked.ok) return linked;
     const scheduled = await context.db.programItem.count({ where: { itemId: id } });
     if (scheduled > 0) {
-      return conflict({ message: `${before.name} is used by ${scheduled} active program items` });
+      const message = `${before.name} is used by ${scheduled} active program items`;
+      return inUseConflict({ context, feature: "program", message });
     }
     const templated = await context.db.ticketTemplateLine.count({
       where: { itemId: id, template: { status: "ACTIVE" } },

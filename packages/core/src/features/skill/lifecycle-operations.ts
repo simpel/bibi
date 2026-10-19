@@ -16,8 +16,9 @@ async function setStatus({ input: { id }, context, status }: SetStatusInput) {
   const allowed = checkCanManageSkill({ context, skill: before });
   if (!allowed.ok) return allowed;
   const skill = await context.db.skill.update({ where: { id }, data: { status } });
-  context.recordChange({ entityId: id, before, after: skill });
-  return ok({ value: toSkillDto({ skill }) });
+  const dto = toSkillDto({ skill });
+  context.recordChange({ entityId: id, before: toSkillDto({ skill: before }), after: dto });
+  return ok({ value: dto });
 }
 
 export const publishSkill = defineOperation({
@@ -28,7 +29,7 @@ export const publishSkill = defineOperation({
     "personal skills are published by their owner.",
   input: SkillIdInputSchema,
   output: SkillSchema,
-  permission: "skill:write",
+  permission: "self:edit",
   embeddable: skillEmbeddable,
   handler: ({ input, context }) => setStatus({ input, context, status: "PUBLISHED" }),
 });
@@ -39,7 +40,7 @@ export const archiveSkill = defineOperation({
   description: "Archive (soft-delete) a skill. Archived skills are hidden and free their slug.",
   input: SkillIdInputSchema,
   output: SkillSchema,
-  permission: "skill:write",
+  permission: "self:edit",
   embeddable: skillEmbeddable,
   handler: ({ input, context }) => setStatus({ input, context, status: "ARCHIVED" }),
 });

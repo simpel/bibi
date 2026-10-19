@@ -9,4 +9,6 @@ export type TicketTemplateFormData = {
   phases: NamedOption[];
   /** The catalog's items (not a customer's own packages). */
   items: NamedOption[];
+  /** The caller may not view items: the picker is disabled and reads "Hidden". */
+  itemsHidden: boolean;
 };

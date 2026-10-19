@@ -19,15 +19,16 @@ export const createSkill = defineOperation({
     "ORGANIZATION skills need an org admin.",
   input: SkillCreateInputSchema,
   output: SkillSchema,
-  permission: "skill:write",
+  permission: "self:edit",
   embeddable: skillEmbeddable,
   handler: async ({ input: { scope, slug, ...rest }, context }) => {
     const allowed = checkCanCreateSkill({ context, scope });
     if (!allowed.ok) return allowed;
     const content = { ...rest, slug: slug ?? slugify({ text: rest.name }) };
     const skill = await insertSkill({ context, scope, content, source: null });
-    context.recordChange({ entityId: skill.id, after: skill });
-    return ok({ value: toSkillDto({ skill }) });
+    const dto = toSkillDto({ skill });
+    context.recordChange({ entityId: skill.id, after: dto });
+    return ok({ value: dto });
   },
 });
 
@@ -39,7 +40,7 @@ export const updateSkill = defineOperation({
     "SYSTEM skills are read-only.",
   input: SkillUpdateInputSchema,
   output: SkillSchema,
-  permission: "skill:write",
+  permission: "self:edit",
   embeddable: skillEmbeddable,
   handler: async ({ input: { id, ...changes }, context }) => {
     const before = await findVisibleSkill({ context, id });
@@ -59,7 +60,8 @@ export const updateSkill = defineOperation({
         version: changed ? before.version + 1 : before.version,
       },
     });
-    context.recordChange({ entityId: id, before, after: skill });
-    return ok({ value: toSkillDto({ skill }) });
+    const dto = toSkillDto({ skill });
+    context.recordChange({ entityId: id, before: toSkillDto({ skill: before }), after: dto });
+    return ok({ value: dto });
   },
 });

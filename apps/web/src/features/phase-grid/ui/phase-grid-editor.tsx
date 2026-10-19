@@ -1,7 +1,7 @@
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { loadGridData } from "../load-grid-data";
 import { PhaseGridTable } from "./phase-grid-table";
@@ -11,7 +11,7 @@ export type PhaseGridEditorProps = { locale: Locale };
 /** The grid editor under the phases on `/settings/pipeline` (ADR 0044). */
 export async function PhaseGridEditor({ locale }: PhaseGridEditorProps) {
   const t = await getTranslations("phaseGrid");
-  const { phaseGridAdmin } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const data = await loadGridData();
   if (!data.ok) {
     return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
@@ -25,7 +25,7 @@ export async function PhaseGridEditor({ locale }: PhaseGridEditorProps) {
         </h2>
         <p className="text-sm text-muted-foreground">{t("description")}</p>
       </div>
-      <PhaseGridTable {...data.value} canAdmin={phaseGridAdmin} />
+      <PhaseGridTable {...data.value} canEdit={can({ abilities, permission: "pipeline:edit" })} />
     </section>
   );
 }

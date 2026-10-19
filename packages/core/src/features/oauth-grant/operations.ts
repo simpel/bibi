@@ -28,7 +28,7 @@ export const listOauthGrants = defineOperation({
     "List the OAuth/MCP clients you have connected to this organization (your own only).",
   input: OauthGrantListInputSchema,
   output: OauthGrantListOutputSchema,
-  permission: "integration:read",
+  permission: "self:view",
   // Client names come from dynamic client registration, i.e. from third parties.
   untrustedOutput: true,
   handler: async ({ context }) => {
@@ -47,7 +47,7 @@ export const revokeOauthGrant = defineOperation({
     "at once and it has to ask for access again.",
   input: OauthGrantRevokeInputSchema,
   output: OauthGrantSchema,
-  permission: "integration:write",
+  permission: "self:edit",
   untrustedOutput: true,
   handler: async ({ input, context }) => {
     const userId = context.actor.userId;

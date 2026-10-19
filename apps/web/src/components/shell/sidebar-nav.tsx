@@ -2,7 +2,8 @@
 
 import { usePathname } from "@okazi/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { NAV_GROUPS, type NavAudience, type NavGroupId } from "./nav-items";
+import { canPermission } from "@/lib/can";
+import { NAV_GROUPS, type NavAudience, type NavGroupId, type NavItem } from "./nav-items";
 import type { ShellAccess } from "./shell-types";
 import { isActive, SidebarLink } from "./sidebar-link";
 
@@ -20,6 +21,16 @@ const VISIBLE: Record<NavAudience, (access: ShellAccess) => boolean> = {
   platformAdmin: (access) => access.platformAdmin,
 };
 
+type IsVisibleInput = { item: NavItem; access: ShellAccess };
+
+function isVisible({ item, access }: IsVisibleInput): boolean {
+  if (!VISIBLE[item.audience](access)) return false;
+  return (
+    !item.permission ||
+    canPermission({ permissions: access.permissions, permission: item.permission })
+  );
+}
+
 /** One sidebar zone: its groups, filtered by what the member may see (ADR 0036). */
 export function SidebarNav({ groups, label, access, headings }: SidebarNavProps) {
   const t = useTranslations("nav");
@@ -28,7 +39,7 @@ export function SidebarNav({ groups, label, access, headings }: SidebarNavProps)
   const visible = groups
     .map((group) => ({
       group,
-      items: NAV_GROUPS[group].filter((i) => VISIBLE[i.audience](access)),
+      items: NAV_GROUPS[group].filter((item) => isVisible({ item, access })),
     }))
     .filter(({ items }) => items.length > 0);
   if (visible.length === 0) return null;

@@ -28,5 +28,5 @@ export async function createSheetSetup({ context }: SheetSetupInput) {
   const list = unwrap({
     result: await execute({ operation: createVocabulary, input: { name: "Allergens" }, context }),
   });
-  return { dish, field, list, role: "member" as const };
+  return { dish, field, list, role: "manager" as const };
 }

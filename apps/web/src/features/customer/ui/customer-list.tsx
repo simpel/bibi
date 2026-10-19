@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import { runOperation } from "@/server/run-operation";
@@ -28,7 +28,7 @@ const GoToTypes = ({ label }: { label: string }) => (
 /** Customers page body: header with create, the table (or an empty state) and pagination. */
 export async function CustomerList({ locale, cursor }: CustomerListProps) {
   const t = await getTranslations("customer");
-  const { customerWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const [data, result] = await Promise.all([
     loadTypedFormData({ base: "CUSTOMER" }),
     runOperation({
@@ -39,7 +39,10 @@ export async function CustomerList({ locale, cursor }: CustomerListProps) {
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const noTypes = data.value.types.length === 0;
-  const create = customerWrite && !noTypes ? <CreateCustomerButton /> : undefined;
+  const create =
+    can({ abilities, permission: "customer:create" }) && !noTypes ? (
+      <CreateCustomerButton />
+    ) : undefined;
   const page: { items: CustomerDto[]; nextCursor: string | null } = result.value;
   return (
     <div className="grid gap-6">

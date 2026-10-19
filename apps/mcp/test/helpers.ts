@@ -4,18 +4,21 @@ import {
   type Actor,
   createExecuteContext,
   type ExecuteContext,
-  grantAll,
-  type PermissionAction,
   type PermissionSet,
+  PRESET_PERMISSIONS,
 } from "@okazi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { createMcpServer } from "../src/server/create-mcp-server";
 import { fakeEmbed } from "./fake-embed";
 
+/** Shorthand for a preset (ADR 0050): read → member, write → manager, admin → admin. */
+const PRESET_FOR_ACCESS = { read: "member", write: "manager", admin: "admin" } as const;
+export type TestAccess = keyof typeof PRESET_FOR_ACCESS;
+
 export type TestContextInput = {
   organizationId?: string;
-  /** Every resource up to this action (default `admin`), or explicit `permissions`. */
-  access?: PermissionAction;
+  /** The preset's permissions (default `admin`), or explicit `permissions`. */
+  access?: TestAccess;
   permissions?: PermissionSet;
   actor?: Actor;
 };
@@ -24,10 +27,15 @@ export type TestContextInput = {
 export function testContext({
   organizationId = `org_${createId()}`,
   access = "admin",
-  permissions = grantAll({ upTo: access }),
+  permissions = PRESET_PERMISSIONS[PRESET_FOR_ACCESS[access]],
   actor = { type: "user", userId: `user_${createId()}` },
 }: TestContextInput = {}): ExecuteContext {
-  return createExecuteContext({ organizationId, roles: [access], permissions, actor });
+  return createExecuteContext({
+    organizationId,
+    roles: [PRESET_FOR_ACCESS[access]],
+    permissions,
+    actor,
+  });
 }
 
 export type ConnectInput = { context: ExecuteContext };

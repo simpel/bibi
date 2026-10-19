@@ -72,7 +72,7 @@ export async function matchSetup() {
         entityTypeIds: [type.id],
         fieldIds: [],
         vocabularyIds: [list.id],
-        roleId: "owner",
+        roleId: "admin",
       },
       context,
     }),

@@ -10,9 +10,9 @@ export type ImportPhaseGridInput = { context: OperationContext; template: PhaseG
 type Target = { phaseId: string; entityTypeId: string; stateId: string };
 
 const READS = [
-  ["ticketPhase:read", "phaseId"],
-  ["itemState:read", "stateId"],
-  ["configuration:read", "entityTypeId"],
+  ["pipeline:view", "phaseId"],
+  ["pipeline:view", "stateId"],
+  ["configuration:view", "entityTypeId"],
 ] as const;
 
 /** The template's cells for the organization's active phases and item types, by name. */

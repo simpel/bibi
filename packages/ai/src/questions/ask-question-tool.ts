@@ -13,6 +13,7 @@ export function createAskQuestionTool() {
     description:
       "Ask the user one short question with 2 to 6 answers to click, and an optional free-text " +
       "answer. Use it instead of asking in plain text when the answers are known in advance. " +
+      "Set `multiple` when the user may pick several answers (checkboxes), not one of them. " +
       "Ask one question per call. Your turn ends with the call: the user's answer arrives as " +
       "the next message.",
     inputSchema: QuestionSchema,
