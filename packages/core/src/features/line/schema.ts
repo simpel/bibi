@@ -2,21 +2,29 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
+import { LineEffectiveShape } from "./effective-schema";
 
 /** `Occupancy.sourceType` of the occupancies a line holds. */
 export const LINE_SOURCE = "line";
 
-export const LineSchema = z.object({
+/** A line as stored: its own values, with `null` overrides meaning "inherit". */
+export const LineRecordSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   ticketId: z.string(),
   entityTypeId: z.string(),
   name: z.string(),
-  startsAt: z.date(),
-  endsAt: z.date(),
+  /** Null on an untimed line (a fee), which never holds and is not on the calendar. */
+  startsAt: z.date().nullable(),
+  endsAt: z.date().nullable(),
   itemId: z.string().nullable(),
   setupId: z.string().nullable(),
+  /** Null = the ticket's headcount. */
   quantity: z.number().int().nullable(),
+  /** Overrides; null = inherit (see the effective values). */
+  unitPriceMinor: z.number().int().nullable(),
+  discountPercent: z.number().nullable(),
+  vatRatePercent: z.number().int().nullable(),
   note: z.string().nullable(),
   fields: FieldValuesSchema,
   /** The line's state (one of its item type's states, ADR 0044); null without an item. */
@@ -31,10 +39,19 @@ export const LineSchema = z.object({
   createdBy: z.string().nullable(),
 });
 
+/** A line with its effective quantity, price, discount and VAT and where each comes from. */
+export const LineSchema = LineRecordSchema.extend(LineEffectiveShape);
+
 const LineDetailsShape = {
   name: z.string().trim().min(1).max(200).describe("What happens, e.g. Morning session or Lunch"),
-  startsAt: z.coerce.date().describe("Start, ISO 8601"),
-  endsAt: z.coerce.date().describe("End (after the start, exclusive), ISO 8601"),
+  startsAt: z.coerce
+    .date()
+    .nullish()
+    .describe("Start, ISO 8601; leave out (or null) with endsAt for an untimed line, e.g. a fee"),
+  endsAt: z.coerce
+    .date()
+    .nullish()
+    .describe("End (after the start, exclusive), ISO 8601; null with startsAt = untimed"),
   itemId: z
     .string()
     .min(1)
@@ -48,7 +65,34 @@ const LineDetailsShape = {
     .min(1)
     .nullish()
     .describe("Id of one of the item's setups (needs itemId); adds its changeover time before"),
-  quantity: z.number().int().min(0).max(100_000).nullish().describe("How many take part"),
+  quantity: z
+    .number()
+    .int()
+    .min(0)
+    .max(100_000)
+    .nullish()
+    .describe("How many; null = the ticket's headcount (guaranteed if set, else estimated)"),
+  unitPriceMinor: z
+    .number()
+    .int()
+    .min(0)
+    .max(1_000_000_000)
+    .nullish()
+    .describe("Unit price override in minor units (1/100 kr); null = the price list or item"),
+  discountPercent: z
+    .number()
+    .min(0)
+    .max(100)
+    .multipleOf(0.01)
+    .nullish()
+    .describe("Discount override in percent, e.g. 10; null = the customer's price list"),
+  vatRatePercent: z
+    .number()
+    .int()
+    .min(0)
+    .max(100)
+    .nullish()
+    .describe("VAT rate override in percent; null = the item's, else the venue's default"),
   note: z.string().trim().max(1000).nullish().describe("Internal note"),
 };
 
@@ -97,6 +141,7 @@ export const LineListOutputSchema = z.object({
   nextCursor: z.string().nullable(),
 });
 
+export type LineRecord = z.infer<typeof LineRecordSchema>;
 export type LineDto = z.infer<typeof LineSchema>;
 export type LineCreateInput = z.infer<typeof LineCreateInputSchema>;
 export type LineUpdateInput = z.infer<typeof LineUpdateInputSchema>;

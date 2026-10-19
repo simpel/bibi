@@ -25,6 +25,6 @@ export async function createDemoTicketFromTemplate({
 }: DemoTicketFromTemplateInput) {
   const found = await context.db.ticketTemplate.findFirst({ where: { name: template } });
   if (!found) return missing({ what: `ticket template ${template}` });
-  const input = { templateId: found.id, quantity: headcount, ...rest };
+  const input = { templateId: found.id, headcount, ...rest };
   return execute({ operation: createTicketFromTemplate, input, context });
 }

@@ -46,7 +46,7 @@ export const getTicket = defineOperation({
   kind: "query",
   description:
     "Get one ticket by id: reference number, type and its field values, customer, contact, " +
-    "desired period, quantity, headcount, budget and phase (with the reason of the last move). " +
+    "desired period, headcount, budget and phase (with the reason of the last move). " +
     "Who answers for it: assignment.list.",
   input: TicketIdInputSchema,
   output: TicketSchema,

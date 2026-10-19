@@ -109,7 +109,7 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       include: { state: true },
       orderBy: { name: "asc" },
     });
-    // F6 expired, L11 confirmed (lunch override kept), L12 blocked; L7, L10 from templates (ADR 0043).
+    // F6 expired, L11 confirmed (lunch override kept), L12 blocked; L7, L10 from templates.
     expect(lines.map((line) => [line.name, line.state?.name, line.stateOverridden])).toEqual([
       ["Afternoon break buffet", "Ordered", false],
       ["Afternoon break room", "Booked", false],
@@ -119,12 +119,12 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       ["Half-day conference", "Booked", false],
       ["Kickoff", "Prebooked", false],
       ["Product launch", "Prebooked", false],
+      ["Projector hire", "Booked", false],
       ["Small meeting room", "Booked", false],
       ["Strategy meeting", "Prebooked", false],
       ["Team day", "Released", false],
     ]);
   });
-
   it("re-seeds an organization that has occupancy rows", async () => {
     const orgs = testOrgs();
     const first = await seedDemo({ orgs });

@@ -28,7 +28,7 @@ export function ProgramRowActions({ line, data }: ProgramRowActionsProps) {
       <LineDialog
         data={data}
         ticketId={line.ticketId}
-        startsAt={line.startsAt}
+        startsAt={line.startsAt ?? new Date()}
         line={line}
         open={dialog === "edit"}
         onOpenChange={(open) => !open && setDialog(null)}

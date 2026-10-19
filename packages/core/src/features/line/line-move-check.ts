@@ -2,11 +2,11 @@ import type { AppErrorIssue } from "../../errors/app-error";
 import type { OperationContext } from "../../operations/types";
 import type { ItemStateDto } from "../item-state/schema";
 import { holdCollisions } from "./hold-collisions";
-import type { LineDto } from "./schema";
+import type { LineRecord } from "./schema";
 
 /** One line moving from its state to another state of its item type (ADR 0044). */
 export type LineMove = {
-  line: LineDto;
+  line: LineRecord;
   /** The line's current state; null when it has none yet. */
   from: ItemStateDto | null;
   to: ItemStateDto;

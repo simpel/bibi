@@ -20,7 +20,6 @@ export const toTicketTemplateDto = ({ row }: ToTicketTemplateDtoInput): TicketTe
     offsetMinutes: rest.offsetMinutes,
     durationMinutes: rest.durationMinutes,
     quantity: rest.quantity,
-    quantityBasis: rest.quantityBasis,
   })),
 });
 

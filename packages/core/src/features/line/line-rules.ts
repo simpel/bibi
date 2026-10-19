@@ -1,7 +1,7 @@
 import { ok } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
-import { checkBookable } from "../occupancy/occupancy-rules";
+import { checkBookable, checkPeriod } from "../occupancy/occupancy-rules";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -55,14 +55,29 @@ async function checkItem({ context, itemId, customerId }: CheckItemInput) {
   return invalid({ message, issues: [{ path: "itemId", message }] });
 }
 
+export type LinePeriod = { startsAt: Date | null; endsAt: Date | null };
+
+/** ADR 0052: a line is timed (both set, the end after the start) or untimed (both null). */
+export function checkLinePeriod({ startsAt, endsAt }: LinePeriod) {
+  if (startsAt && endsAt) return checkPeriod({ startsAt, endsAt });
+  if (!startsAt && !endsAt) return ok({ value: true });
+  const path = startsAt ? "endsAt" : "startsAt";
+  const message = "Give both a start and an end, or neither for an untimed line";
+  return invalid({ message, issues: [{ path, message }] });
+}
+
 export type PlaceChanged = {
-  before: { itemId: string | null; setupId: string | null; startsAt: Date; endsAt: Date };
+  before: { itemId: string | null; setupId: string | null } & LinePeriod;
   after: PlaceChanged["before"];
 };
+
+type SameTimeInput = { a: Date | null; b: Date | null };
+
+const sameTime = ({ a, b }: SameTimeInput) => (a?.getTime() ?? null) === (b?.getTime() ?? null);
 
 /** True when the occupancy a line holds must be moved (item, setup or time changed). */
 export const placeChanged = ({ before, after }: PlaceChanged): boolean =>
   before.itemId !== after.itemId ||
   before.setupId !== after.setupId ||
-  before.startsAt.getTime() !== after.startsAt.getTime() ||
-  before.endsAt.getTime() !== after.endsAt.getTime();
+  !sameTime({ a: before.startsAt, b: after.startsAt }) ||
+  !sameTime({ a: before.endsAt, b: after.endsAt });

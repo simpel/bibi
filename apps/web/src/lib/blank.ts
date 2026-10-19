@@ -22,3 +22,9 @@ export function numberOrNull({ value }: BlankInput): number | null {
 export function numberOrUndefined({ value }: BlankInput): number | undefined {
   return numberOrNull({ value }) ?? undefined;
 }
+
+/** An amount in whole currency units → minor units (1/100); empty → null, NaN kept for validation. */
+export function minorOrNull({ value }: BlankInput): number | null {
+  const amount = numberOrNull({ value });
+  return amount === null ? null : Math.round(amount * 100);
+}

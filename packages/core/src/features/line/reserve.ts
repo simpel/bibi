@@ -4,19 +4,20 @@ import type { HoldKind } from "../item-state/hold-kind";
 import { addChangeover } from "../occupancy/add-changeover";
 import { releaseOccupancyBySource } from "../occupancy/release-by-source";
 import { toOccupancyDto } from "../occupancy/to-occupancy-dto";
-import { LINE_SOURCE, type LineDto } from "./schema";
+import { LINE_SOURCE, type LineRecord } from "./schema";
 
-export type ReserveInput = { context: OperationContext; line: LineDto };
+export type ReserveInput = { context: OperationContext; line: LineRecord };
 
-type HoldOfInput = { context: Pick<OperationContext, "db">; line: LineDto };
+type HoldOfInput = { context: Pick<OperationContext, "db">; line: LineRecord };
 
 /**
  * The hold a line's state gives its item (ADR 0044): the state's `hold` when the item is
- * `BOOKABLE` and the state is not released, otherwise `NONE`.
+ * `BOOKABLE`, the line is timed and the state is not released, otherwise `NONE`.
  */
 export async function holdOfLine({ context, line }: HoldOfInput): Promise<HoldKind> {
-  const { itemId, stateId } = line;
-  if (!itemId || !stateId) return "NONE";
+  const { itemId, stateId, startsAt, endsAt } = line;
+  // ADR 0052: an untimed line never holds.
+  if (!itemId || !stateId || !startsAt || !endsAt) return "NONE";
   const [state, bookable] = await Promise.all([
     context.db.itemState.findFirst({
       where: { id: stateId },
@@ -39,7 +40,7 @@ export async function holdOfLine({ context, line }: HoldOfInput): Promise<HoldKi
 export async function reserveLine({ context, line }: ReserveInput) {
   const { id, itemId, setupId, startsAt, endsAt } = line;
   const holdKind = await holdOfLine({ context, line });
-  if (!itemId || holdKind === "NONE") return ok({ value: true });
+  if (!itemId || !startsAt || !endsAt || holdKind === "NONE") return ok({ value: true });
   const source = { sourceType: LINE_SOURCE, sourceId: id };
   const row = await context.db.occupancy.create({
     data: {

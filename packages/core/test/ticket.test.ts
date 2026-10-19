@@ -25,7 +25,7 @@ describe("tickets (ADR 0043)", () => {
           entityTypeId: type.id,
           customerId: customer.id,
           contactId: contact.id,
-          quantity: 40,
+          estimatedHeadcount: 40,
           budgetMinor: 5_000_000,
           fields: { [key]: "Kickoff" },
         },
@@ -38,7 +38,7 @@ describe("tickets (ADR 0043)", () => {
       phaseId: lead.id,
       contactId: contact.id,
       desiredStartsAt: null,
-      quantity: 40,
+      estimatedHeadcount: 40,
       phaseReason: null,
       fields: { [key]: "Kickoff" },
     });

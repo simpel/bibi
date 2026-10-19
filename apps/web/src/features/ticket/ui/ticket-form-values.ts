@@ -11,7 +11,6 @@ export type TicketFormValues = {
   contactId: string;
   desiredStartsAt: string;
   desiredEndsAt: string;
-  quantity: string;
   estimatedHeadcount: string;
   guaranteedHeadcount: string;
   /** The budget in whole currency units (stored in minor units). */
@@ -40,7 +39,6 @@ export function ticketFormDefaults({ type, ticket }: TicketDefaultsInput): Ticke
     contactId: ticket?.contactId ?? NONE,
     desiredStartsAt: local({ date: ticket?.desiredStartsAt }),
     desiredEndsAt: local({ date: ticket?.desiredEndsAt }),
-    quantity: text({ value: ticket?.quantity }),
     estimatedHeadcount: text({ value: ticket?.estimatedHeadcount }),
     guaranteedHeadcount: text({ value: ticket?.guaranteedHeadcount }),
     budget: text({ value: budget === null || budget === undefined ? budget : budget / 100 }),

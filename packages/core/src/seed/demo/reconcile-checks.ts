@@ -24,9 +24,19 @@ async function rebuildLineHolds({ context }: ReconcileContext): Promise<HoldRow[
       state: { select: { hold: true } },
     },
   });
-  return lines.flatMap((line) =>
-    line.itemId && line.state
-      ? [{ ...line, lineId: line.id, itemId: line.itemId, holdKind: line.state.hold }]
+  return lines.flatMap(({ startsAt, endsAt, ...line }) =>
+    // ADR 0052: an untimed line holds nothing.
+    line.itemId && line.state && startsAt && endsAt
+      ? [
+          {
+            ...line,
+            startsAt,
+            endsAt,
+            lineId: line.id,
+            itemId: line.itemId,
+            holdKind: line.state.hold,
+          },
+        ]
       : [],
   );
 }

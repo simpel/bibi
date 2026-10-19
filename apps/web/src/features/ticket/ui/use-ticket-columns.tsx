@@ -48,8 +48,7 @@ const whenColumn = ({ t, format }: { t: Translate; format: Format }): Column => 
 const quantityColumn = ({ t }: { t: Translate }): Column => ({
   id: "quantity",
   header: t("columns.quantity"),
-  accessorFn: (ticket) =>
-    ticket.guaranteedHeadcount ?? ticket.estimatedHeadcount ?? ticket.quantity,
+  accessorFn: (ticket) => ticket.guaranteedHeadcount ?? ticket.estimatedHeadcount,
   cell: ({ getValue }) => (getValue() as number | null) ?? "–",
 });
 

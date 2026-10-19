@@ -35,7 +35,8 @@ async function overrideState({ context, line, lineId, item }: OverrideInput) {
 /**
  * The ticket's lines (ADR 0044) via `line.create` as SYSTEM, in the organization's line
  * type: each starts in the entry phase's cell of the phase grid (else its type's initial state), so a room
- * line is a soft hold, and a line with `state` is then overridden to it.
+ * line is a soft hold, and a line with `state` is then overridden to it. A line without times is
+ * untimed and holds nothing; its own quantity and price are set only when the data gives them.
  */
 export async function seedDemoLines({
   context,
@@ -51,7 +52,11 @@ export async function seedDemoLines({
     if (!item) return missing({ what: `item ${line.item}` });
     const input = {
       ...{ ticketId, entityTypeId: type.id, itemId: item.id, name: line.name },
-      ...{ startsAt: at({ time: line.from }), endsAt: at({ time: line.to }) },
+      ...(line.from && line.to
+        ? { startsAt: at({ time: line.from }), endsAt: at({ time: line.to }) }
+        : {}),
+      ...(line.quantity === undefined ? {} : { quantity: line.quantity }),
+      ...(line.unitPriceKr === undefined ? {} : { unitPriceMinor: line.unitPriceKr * 100 }),
     };
     const created = await execute({ operation: createLine, input, context });
     if (!created.ok) return created;

@@ -1,12 +1,12 @@
 import type { AppErrorIssue } from "../../errors/app-error";
 import type { OperationContext } from "../../operations/types";
 import type { ItemStateFlags } from "../item-state/schema";
-import { LINE_SOURCE, type LineDto } from "./schema";
+import { LINE_SOURCE, type LineRecord } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
 export type HoldCollisionsInput = Db & {
-  line: LineDto;
+  line: LineRecord;
   /** The state the line would move to. */
   to: Pick<ItemStateFlags, "hold" | "released">;
 };
@@ -14,13 +14,15 @@ export type HoldCollisionsInput = Db & {
 const day = ({ at }: { at: Date }) => at.toISOString().slice(0, 10);
 
 /** The period the line would block: its own, plus its setup's changeover time right before. */
-async function blockedPeriod({ context, line }: Db & { line: LineDto }) {
+async function blockedPeriod({ context, line }: Db & { line: TimedLine }) {
   const setup = line.setupId
     ? await context.db.setup.findFirst({ where: { id: line.setupId } })
     : null;
   const before = (setup?.changeoverMinutes ?? 0) * 60_000;
   return { startsAt: new Date(line.startsAt.getTime() - before), endsAt: line.endsAt };
 }
+
+type TimedLine = LineRecord & { startsAt: Date; endsAt: Date };
 
 type Holder = { sourceType: string | null; sourceId: string | null };
 
@@ -48,12 +50,15 @@ export async function holdCollisions({
   to,
 }: HoldCollisionsInput): Promise<AppErrorIssue[]> {
   if (!line.itemId || to.released || to.hold !== "HARD") return [];
+  const { startsAt, endsAt } = line;
+  // ADR 0052: an untimed line never holds, so it cannot collide.
+  if (!startsAt || !endsAt) return [];
   const item = await context.db.item.findFirst({
     where: { id: line.itemId, entityType: { behaviours: { has: "BOOKABLE" } } },
     select: { name: true },
   });
   if (!item) return [];
-  const period = await blockedPeriod({ context, line });
+  const period = await blockedPeriod({ context, line: { ...line, startsAt, endsAt } });
   const holders = await context.db.occupancy.findMany({
     where: {
       itemId: line.itemId,

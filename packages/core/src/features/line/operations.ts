@@ -6,7 +6,8 @@ import { paginate } from "../../shared/paginate";
 import { changeLineState } from "./change-state-operation";
 import { followLinePhase } from "./follow-phase-operation";
 import { LineIdInputSchema, LineListInputSchema, LineListOutputSchema, LineSchema } from "./schema";
-import { loadLine, toLineDto } from "./to-line-dto";
+import { loadLine, toLineRecord } from "./to-line-record";
+import { withEffective, withEffectiveOne } from "./with-effective";
 import { archiveLine, createLine, updateLine } from "./write-operations";
 
 export const listLines = defineOperation({
@@ -33,7 +34,8 @@ export const listLines = defineOperation({
       ...pageArgs(input),
     });
     const page = paginate({ rows, limit: input.limit });
-    const items = page.items.map((row) => toLineDto({ row }));
+    const records = page.items.map((row) => toLineRecord({ row }));
+    const items = await withEffective({ context, lines: records });
     return ok({ value: { items, nextCursor: page.nextCursor } });
   },
 });
@@ -41,13 +43,16 @@ export const listLines = defineOperation({
 export const getLine = defineOperation({
   name: "line.get",
   kind: "query",
-  description: "Get one line by id, with the type's field values.",
+  description:
+    "Get one line by id, with the type's field values and its effective quantity, price, " +
+    "discount and VAT (each with its source: the line's own override or inherited).",
   input: LineIdInputSchema,
   output: LineSchema,
   permission: "line:read",
   handler: async ({ input, context }) => {
     const line = await loadLine({ context, id: input.id });
-    return line ? ok({ value: line }) : notFound({ entity: "Line" });
+    if (!line) return notFound({ entity: "Line" });
+    return ok({ value: await withEffectiveOne({ context, line }) });
   },
 });
 

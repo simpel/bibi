@@ -2,20 +2,22 @@
 
 import { Link } from "@okazi/i18n/navigation";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { ticketRoute } from "@/lib/routes";
+import { formatKr } from "../../../item/ui/format-price";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";
-import { occupancyPeriod } from "./occupancy-period";
+import { linePeriod } from "./occupancy-period";
 
 export type LineCardViewProps = GenerativeProps<"line-card">;
 
-/** One line: name, time, quantity and own fields. */
+/** One line: name, time (or none), effective quantity and unit price, and own fields. */
 export function LineCardView({ line }: LineCardViewProps) {
   const t = useTranslations("assistant.ui.line");
   const format = useFormatter();
   const href = ticketRoute({ id: line.ticketId });
-  const { quantity } = line;
+  const locale = useLocale();
+  const { effectiveQuantity: quantity, effectiveUnitPriceMinor: price } = line;
   return (
     <Card data-slot="line-card" className="shadow-none">
       <CardHeader className="flex-row items-start justify-between gap-2 p-4 pb-2">
@@ -23,8 +25,11 @@ export function LineCardView({ line }: LineCardViewProps) {
         <Badge variant="secondary">{t("singular")}</Badge>
       </CardHeader>
       <CardContent className="grid gap-1 p-4 pt-0 text-sm text-muted-foreground">
-        <p>{occupancyPeriod({ format, ...line })}</p>
+        <p>{linePeriod({ format, ...line }) ?? t("untimed")}</p>
         {quantity === null ? null : <p>{t("quantity", { count: quantity })}</p>}
+        {price === null ? null : (
+          <p>{t("unitPrice", { price: formatKr({ minor: price, locale }) })}</p>
+        )}
         {line.status === "ARCHIVED" ? <p>{t("archived")}</p> : null}
         {fieldLines({ fields: line.fields }).map((text) => (
           <p key={text}>{text}</p>

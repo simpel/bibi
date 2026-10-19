@@ -6,8 +6,9 @@ import { loadItemState } from "../item-state/load-item-state";
 import { cellsOfPhase } from "../phase-grid/load-grid";
 import { lineMoveBlockers } from "./line-move-check";
 import { applyLineState, itemTypeOf } from "./line-state";
-import { type LineDto, LineFollowPhaseInputSchema, LineSchema } from "./schema";
-import { loadLine, toLineDto } from "./to-line-dto";
+import { LineFollowPhaseInputSchema, type LineRecord, LineSchema } from "./schema";
+import { loadLine, toLineRecord } from "./to-line-record";
+import { effectiveHandler } from "./with-effective";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -15,7 +16,7 @@ type Db = { context: Pick<OperationContext, "db"> };
  * The state the current phase's cell gives the line, or null when it keeps its state: no item,
  * an empty cell, or a terminal phase (which already released the line).
  */
-async function cellStateOf({ context, line }: Db & { line: LineDto }) {
+async function cellStateOf({ context, line }: Db & { line: LineRecord }) {
   const entityTypeId = await itemTypeOf({ context, itemId: line.itemId });
   if (!entityTypeId) return null;
   const ticket = await context.db.ticket.findFirst({
@@ -31,16 +32,16 @@ async function cellStateOf({ context, line }: Db & { line: LineDto }) {
   return cells.get(entityTypeId) ?? null;
 }
 
-type ClearInput = { context: OperationContext; line: LineDto };
+type ClearInput = { context: OperationContext; line: LineRecord };
 
 /** Clears the override and keeps the state. */
-async function clearOverride({ context, line }: ClearInput): Promise<Result<LineDto>> {
+async function clearOverride({ context, line }: ClearInput): Promise<Result<LineRecord>> {
   if (!line.stateOverridden) return ok({ value: line });
   const row = await context.db.line.update({
     where: { id: line.id },
     data: { stateOverridden: false },
   });
-  const after = toLineDto({ row });
+  const after = toLineRecord({ row });
   context.recordChange({ entityId: line.id, before: line, after });
   return ok({ value: after });
 }
@@ -57,18 +58,23 @@ export const followLinePhase = defineOperation({
   output: LineSchema,
   permission: "line:write",
   entityType: "line",
-  handler: async ({ input: { lineId }, context }) => {
-    const line = await loadLine({ context, id: lineId });
-    if (!line) return notFound({ entity: "Line" });
-    const stateId = await cellStateOf({ context, line });
-    if (!stateId || stateId === line.stateId) return clearOverride({ context, line });
-    const to = await loadItemState({ context, id: stateId });
-    if (!to) return clearOverride({ context, line });
-    const from = line.stateId ? await loadItemState({ context, id: line.stateId }) : null;
-    const issues = await lineMoveBlockers({ context, move: { line, from, to } });
-    if (issues.length > 0) {
-      return conflict({ message: `"${line.name}" cannot follow the phase to ${to.name}`, issues });
-    }
-    return applyLineState({ context, before: line, stateId, overridden: false });
-  },
+  handler: effectiveHandler({
+    handler: async ({ input: { lineId }, context }) => {
+      const line = await loadLine({ context, id: lineId });
+      if (!line) return notFound({ entity: "Line" });
+      const stateId = await cellStateOf({ context, line });
+      if (!stateId || stateId === line.stateId) return clearOverride({ context, line });
+      const to = await loadItemState({ context, id: stateId });
+      if (!to) return clearOverride({ context, line });
+      const from = line.stateId ? await loadItemState({ context, id: line.stateId }) : null;
+      const issues = await lineMoveBlockers({ context, move: { line, from, to } });
+      if (issues.length > 0) {
+        return conflict({
+          message: `"${line.name}" cannot follow the phase to ${to.name}`,
+          issues,
+        });
+      }
+      return applyLineState({ context, before: line, stateId, overridden: false });
+    },
+  }),
 });

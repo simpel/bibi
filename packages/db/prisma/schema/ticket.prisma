@@ -15,10 +15,9 @@ model Ticket {
   /// The period the customer asked for; each line has its own time.
   desiredStartsAt     DateTime?
   desiredEndsAt       DateTime?
-  /// The requested quantity, e.g. the number of guests.
-  quantity            Int?
+  /// The expected number of guests; lines with no quantity inherit it (ADR 0052).
   estimatedHeadcount  Int?
-  /// Locked some days before the event.
+  /// Locked some days before the event; wins over the estimate when set.
   guaranteedHeadcount Int?
   /// Budget in minor units (1/100 kr).
   budgetMinor         Int?

@@ -4,7 +4,7 @@ import type { z } from "zod";
 import { NONE } from "@/components/form/option-select-field";
 import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsPatch, fieldsToInput } from "@/components/typed-fields/raw-fields";
-import { blankToNull, numberOrNull } from "@/lib/blank";
+import { blankToNull, minorOrNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 import type { LineFormValues } from "./line-form-values";
@@ -31,11 +31,15 @@ export function lineFormSchema({ ticketId, type, vocabularies }: LineSchemaInput
         ticketId,
         entityTypeId: values.entityTypeId,
         name: values.name,
-        startsAt: fromLocalInputValue({ value: values.startsAt }),
-        endsAt: fromLocalInputValue({ value: values.endsAt }),
+        // Both empty = an untimed line (ADR 0052).
+        startsAt: fromLocalInputValue({ value: values.startsAt }) ?? null,
+        endsAt: fromLocalInputValue({ value: values.endsAt }) ?? null,
         itemId,
         setupId: itemId ? picked({ value: values.setupId }) : null,
         quantity: numberOrNull({ value: values.quantity }),
+        unitPriceMinor: minorOrNull({ value: values.unitPrice }),
+        discountPercent: numberOrNull({ value: values.discountPercent }),
+        vatRatePercent: numberOrNull({ value: values.vatRatePercent }),
         note: blankToNull({ value: values.note }),
         fields: fieldsToInput({ values, specs }),
       };

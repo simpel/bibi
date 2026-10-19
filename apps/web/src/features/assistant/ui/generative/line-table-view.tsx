@@ -8,7 +8,7 @@ import { PersistedDataTable } from "@/components/data-table/persisted-data-table
 import { ticketRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
-import { occupancyPeriod } from "./occupancy-period";
+import { linePeriod } from "./occupancy-period";
 
 export type LineTableViewProps = GenerativeProps<"line-table">;
 
@@ -35,14 +35,14 @@ function useLineColumns(): ColumnDef<Row>[] {
       {
         id: "when",
         header: t("columns.when"),
-        accessorFn: (item) => new Date(item.startsAt),
-        cell: ({ row }) => occupancyPeriod({ format, ...row.original }),
+        accessorFn: (item) => (item.startsAt ? new Date(item.startsAt) : undefined),
+        cell: ({ row }) => linePeriod({ format, ...row.original }) ?? t("untimed"),
       },
       {
         id: "quantity",
         header: t("columns.quantity"),
-        accessorFn: (item) => item.quantity ?? undefined,
-        cell: ({ row }) => row.original.quantity ?? "–",
+        accessorFn: (item) => item.effectiveQuantity ?? undefined,
+        cell: ({ row }) => row.original.effectiveQuantity ?? "–",
       },
     ],
     [t, format],

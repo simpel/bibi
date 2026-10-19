@@ -57,6 +57,8 @@ const line = (): ParityEntity => ({
         itemId: made.item.id,
         setupId: made.setup.id,
         quantity: 40,
+        unitPriceMinor: 120_000,
+        discountPercent: 10,
         note: "Projector",
       },
     });
@@ -91,8 +93,6 @@ const ticketTemplate = (): ParityEntity => ({
             itemId: made.item.id,
             offsetMinutes: 30,
             durationMinutes: 15,
-            quantity: 1,
-            quantityBasis: "PER_HEADCOUNT",
           },
         ],
       },

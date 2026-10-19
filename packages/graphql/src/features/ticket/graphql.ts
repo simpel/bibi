@@ -27,7 +27,7 @@ export const TicketRef = objectFromSchema<TicketDto>({
   omit: ["organizationId"],
   description:
     "Ticket – one customer request from first contact to the delivered event (ADR 0043): type " +
-    "and fields, customer and contact, desired period, quantity, headcount, budget, the " +
+    "and fields, customer and contact, desired period, headcount, budget, the " +
     "organization's own phase and who answers for it (assignments).",
 });
 const TicketPageRef = pageType({ name: "TicketPage", item: TicketRef });

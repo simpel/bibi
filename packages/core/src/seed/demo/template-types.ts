@@ -1,6 +1,6 @@
 /**
  * A line of a predefined ticket (ADR 0043) in the demo data: an item by name, an optional setup
- * by name, minutes from the ticket's start, and a quantity (`perHeadcount`: times the headcount).
+ * by name, minutes from the ticket's start, and a quantity (none: the ticket's headcount, ADR 0052).
  */
 export type DemoTemplateLine = {
   item: string;
@@ -9,7 +9,6 @@ export type DemoTemplateLine = {
   offsetMinutes: number;
   durationMinutes: number;
   quantity?: number;
-  perHeadcount?: boolean;
 };
 
 /**

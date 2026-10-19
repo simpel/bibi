@@ -101,7 +101,9 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     },
     fields: { Purpose: "Board meeting" },
     lines: [
-      { item: "Styrsö", name: "Board meeting", from: "09:00", to: "12:00" },
+      // ADR 0052: an agreed room price (950 kr in the item) and a flat fee without a time.
+      { item: "Styrsö", name: "Board meeting", from: "09:00", to: "12:00", unitPriceKr: 800 },
+      { item: "Projector", name: "Projector hire", quantity: 1 },
       {
         item: "Conference lunch",
         name: "Board lunch",

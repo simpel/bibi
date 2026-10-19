@@ -6,12 +6,12 @@ export const TicketCreateFromTemplateInputSchema = z.object({
   startsAt: z.coerce
     .date()
     .describe("When the ticket starts, ISO 8601; each line is timed from here"),
-  quantity: z
+  headcount: z
     .number()
     .int()
     .min(0)
     .max(100_000)
-    .describe("The headcount: the ticket's quantity and what PER_HEADCOUNT lines multiply"),
+    .describe("The estimated headcount; template lines without a quantity count it"),
   assigneeId: z
     .string()
     .min(1)

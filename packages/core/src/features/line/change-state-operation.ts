@@ -6,10 +6,11 @@ import { loadItemState } from "../item-state/load-item-state";
 import type { ItemStateDto } from "../item-state/schema";
 import { lineMoveBlockers } from "./line-move-check";
 import { applyLineState, itemTypeOf } from "./line-state";
-import { LineChangeStateInputSchema, type LineDto, LineSchema } from "./schema";
-import { loadLine, toLineDto } from "./to-line-dto";
+import { LineChangeStateInputSchema, type LineRecord, LineSchema } from "./schema";
+import { loadLine, toLineRecord } from "./to-line-record";
+import { effectiveHandler } from "./with-effective";
 
-type TargetInput = { context: Pick<OperationContext, "db">; line: LineDto; id: string };
+type TargetInput = { context: Pick<OperationContext, "db">; line: LineRecord; id: string };
 
 /** The target state: an active state of the line's item type (`VALIDATION` otherwise). */
 async function loadTarget({ context, line, id }: TargetInput): Promise<Result<ItemStateDto>> {
@@ -37,25 +38,27 @@ export const changeLineState = defineOperation({
   output: LineSchema,
   permission: "line:write",
   entityType: "line",
-  handler: async ({ input: { lineId, stateId }, context }) => {
-    const line = await loadLine({ context, id: lineId });
-    if (!line) return notFound({ entity: "Line" });
-    const target = await loadTarget({ context, line, id: stateId });
-    if (!target.ok) return target;
-    if (line.stateId === stateId) {
-      const row = await context.db.line.update({
-        where: { id: lineId },
-        data: { stateOverridden: true },
-      });
-      const after = toLineDto({ row });
-      context.recordChange({ entityId: lineId, before: line, after });
-      return ok({ value: after });
-    }
-    const from = line.stateId ? await loadItemState({ context, id: line.stateId }) : null;
-    const issues = await lineMoveBlockers({ context, move: { line, from, to: target.value } });
-    if (issues.length > 0) {
-      return conflict({ message: `"${line.name}" cannot move to ${target.value.name}`, issues });
-    }
-    return applyLineState({ context, before: line, stateId, overridden: true });
-  },
+  handler: effectiveHandler({
+    handler: async ({ input: { lineId, stateId }, context }) => {
+      const line = await loadLine({ context, id: lineId });
+      if (!line) return notFound({ entity: "Line" });
+      const target = await loadTarget({ context, line, id: stateId });
+      if (!target.ok) return target;
+      if (line.stateId === stateId) {
+        const row = await context.db.line.update({
+          where: { id: lineId },
+          data: { stateOverridden: true },
+        });
+        const after = toLineRecord({ row });
+        context.recordChange({ entityId: lineId, before: line, after });
+        return ok({ value: after });
+      }
+      const from = line.stateId ? await loadItemState({ context, id: line.stateId }) : null;
+      const issues = await lineMoveBlockers({ context, move: { line, from, to: target.value } });
+      if (issues.length > 0) {
+        return conflict({ message: `"${line.name}" cannot move to ${target.value.name}`, issues });
+      }
+      return applyLineState({ context, before: line, stateId, overridden: true });
+    },
+  }),
 });

@@ -10,11 +10,11 @@ export const vingaledenTemplates: readonly DemoTicketTemplate[] = [
     lines: [
       {
         ...{ item: "Lighthouse tour to Vinga", name: "Lighthouse tour" },
-        ...{ offsetMinutes: 0, durationMinutes: 90, quantity: 1, perHeadcount: true },
+        ...{ offsetMinutes: 0, durationMinutes: 90 },
       },
       {
         ...{ item: "Blankets and rain gear", name: "Blankets and rain gear" },
-        ...{ offsetMinutes: 0, durationMinutes: 90, quantity: 1, perHeadcount: true },
+        ...{ offsetMinutes: 0, durationMinutes: 90 },
       },
     ],
   },

@@ -3,11 +3,6 @@ import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 
-export const QUANTITY_BASES = ["FIXED", "PER_HEADCOUNT"] as const;
-export const QuantityBasisSchema = z
-  .enum(QUANTITY_BASES)
-  .describe("FIXED: the quantity as given. PER_HEADCOUNT: the quantity times the headcount");
-
 export const TicketTemplateLineSchema = z.object({
   id: z.string(),
   position: z.number().int(),
@@ -17,8 +12,8 @@ export const TicketTemplateLineSchema = z.object({
   setupId: z.string().nullable(),
   offsetMinutes: z.number().int(),
   durationMinutes: z.number().int(),
+  /** Null = the line counts the ticket's headcount (ADR 0052). */
   quantity: z.number().int().nullable(),
-  quantityBasis: QuantityBasisSchema,
 });
 
 export const TicketTemplateSchema = z.object({
@@ -52,8 +47,13 @@ export const TicketTemplateLineInputSchema = z.object({
   setupId: z.string().min(1).nullish().describe("One of the item's setups (needs itemId)"),
   offsetMinutes: MinutesSchema.describe("Minutes from the ticket's start to the line's start"),
   durationMinutes: MinutesSchema.min(1).describe("How long the line lasts, in minutes"),
-  quantity: z.number().int().min(0).max(100_000).nullish().describe("The line's quantity"),
-  quantityBasis: QuantityBasisSchema.optional(),
+  quantity: z
+    .number()
+    .int()
+    .min(0)
+    .max(100_000)
+    .nullish()
+    .describe("The line's quantity; null = the ticket's headcount"),
 });
 
 const DetailsShape = {

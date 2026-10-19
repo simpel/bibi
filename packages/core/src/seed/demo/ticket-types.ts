@@ -46,7 +46,17 @@ export type DemoTicket = {
 };
 
 /**
- * A line (ADR 0044): an item by name, what it is for and local times on the ticket's day.
- * `state` overrides the line's state by name (`line.changeState`) right after it is created.
+ * A line (ADR 0044): an item by name, what it is for and local times on the ticket's day; no
+ * times = an untimed line, e.g. a fee (ADR 0052). `state` overrides the line's state by name
+ * (`line.changeState`) right after it is created. `quantity` and `unitPriceKr` are the line's own
+ * values; left out, the line counts the ticket's headcount and inherits the price.
  */
-export type DemoLine = { item: string; name: string; from: string; to: string; state?: string };
+export type DemoLine = {
+  item: string;
+  name: string;
+  from?: string;
+  to?: string;
+  state?: string;
+  quantity?: number;
+  unitPriceKr?: number;
+};

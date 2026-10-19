@@ -5,8 +5,8 @@ import { uiEntry } from "./ui-entry";
 
 /** JSON form of a line as tool results carry it (dates = ISO strings). */
 export const LineWireSchema = LineSchema.extend({
-  startsAt: z.string(),
-  endsAt: z.string(),
+  startsAt: z.string().nullable(),
+  endsAt: z.string().nullable(),
   heldAt: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),

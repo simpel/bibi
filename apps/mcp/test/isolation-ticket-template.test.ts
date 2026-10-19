@@ -40,7 +40,7 @@ describe("cross-organization isolation: predefined tickets", () => {
       ["ticketTemplate_archive", { id: secret.id }],
       [
         "ticket_createFromTemplate",
-        { templateId: secret.id, customerId: own.customerId, startsAt: START, quantity: 4 },
+        { templateId: secret.id, customerId: own.customerId, startsAt: START, headcount: 4 },
       ],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");
@@ -65,7 +65,7 @@ describe("cross-organization isolation: predefined tickets", () => {
     const foreignCustomer = await call({
       client: b,
       name: "ticket_createFromTemplate",
-      args: { templateId: own.id, customerId: secret.customerId, startsAt: START, quantity: 4 },
+      args: { templateId: own.id, customerId: secret.customerId, startsAt: START, headcount: 4 },
     });
     expect(foreignCustomer.data.code).toBe("VALIDATION");
     const listed = await call({ client: b, name: "ticketTemplate_list" });

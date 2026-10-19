@@ -1,8 +1,8 @@
 import type { OperationContext } from "../../operations/types";
-import type { LineDto } from "./schema";
-import { toLineDto } from "./to-line-dto";
+import type { LineRecord } from "./schema";
+import { toLineRecord } from "./to-line-record";
 
-export type TypedLine = { line: LineDto; entityTypeId: string };
+export type TypedLine = { line: LineRecord; entityTypeId: string };
 
 export type LinesOfTicketInput = {
   context: Pick<OperationContext, "db">;
@@ -37,6 +37,6 @@ export async function linesOfTicket({
   const typeOf = new Map(items.map((item) => [item.id, item.entityTypeId]));
   return rows.flatMap((row) => {
     const entityTypeId = row.itemId ? typeOf.get(row.itemId) : undefined;
-    return entityTypeId ? [{ line: toLineDto({ row }), entityTypeId }] : [];
+    return entityTypeId ? [{ line: toLineRecord({ row }), entityTypeId }] : [];
   });
 }

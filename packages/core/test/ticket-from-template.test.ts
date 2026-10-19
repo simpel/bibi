@@ -18,21 +18,25 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
     const ticket = unwrap({
       result: await execute({
         operation: createTicketFromTemplate,
-        input: { templateId: template.id, customerId, startsAt, quantity: 8, assigneeId },
+        input: { templateId: template.id, customerId, startsAt, headcount: 8, assigneeId },
         context,
       }),
     });
-    expect(ticket).toMatchObject({ phaseId: setup.confirmed.id, quantity: 8, customerId });
+    expect(ticket).toMatchObject({
+      phaseId: setup.confirmed.id,
+      estimatedHeadcount: 8,
+      customerId,
+    });
     expect(ticket.desiredEndsAt?.toISOString()).toBe("2026-11-01T11:00:00.000Z");
     const lines = await context.db.line.findMany({
       where: { ticketId: ticket.id },
       orderBy: { startsAt: "asc" },
     });
     expect(lines.map((line) => [line.name, line.stateId, line.quantity])).toEqual([
-      ["Meeting room", roomState.booked.id, null],
-      ["Coffee", food.locked.id, 8],
+      ["Meeting room", roomState.booked.id, 1],
+      ["Coffee", food.locked.id, null],
     ]);
-    expect(lines[1]?.startsAt.toISOString()).toBe("2026-11-01T09:30:00.000Z");
+    expect(lines[1]?.startsAt?.toISOString()).toBe("2026-11-01T09:30:00.000Z");
     expect(room.id).toBe(lines[0]?.itemId);
   });
 
@@ -51,7 +55,7 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
         templateId: template.id,
         customerId: other.customerId,
         startsAt,
-        quantity: 8,
+        headcount: 8,
         assigneeId,
       },
       context,
@@ -71,7 +75,7 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
     const before = await context.db.ticket.count();
     const refused = await execute({
       operation: createTicketFromTemplate,
-      input: { templateId: template.id, customerId, startsAt, quantity: 8 },
+      input: { templateId: template.id, customerId, startsAt, headcount: 8 },
       context,
     });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
@@ -89,7 +93,7 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
     });
     const refused = await execute({
       operation: createTicketFromTemplate,
-      input: { templateId: template.id, customerId, startsAt, quantity: 8 },
+      input: { templateId: template.id, customerId, startsAt, headcount: 8 },
       context: writer,
     });
     expect(errorCode({ result: refused })).toBe("VALIDATION");

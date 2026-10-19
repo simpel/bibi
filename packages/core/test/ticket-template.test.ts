@@ -18,7 +18,7 @@ describe("ticket templates (ADR 0043)", () => {
     const { context } = setup;
     const made = unwrap({ result: await makeTemplate({ context, setup }) });
     expect(made.lines.map((line) => line.name)).toEqual(["Meeting room", "Coffee"]);
-    expect(made.lines[1]).toMatchObject({ quantityBasis: "PER_HEADCOUNT", offsetMinutes: 30 });
+    expect(made.lines[1]).toMatchObject({ quantity: null, offsetMinutes: 30 });
     const got = unwrap({
       result: await execute({ operation: getTicketTemplate, input: { id: made.id }, context }),
     });

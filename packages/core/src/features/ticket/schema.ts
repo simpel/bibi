@@ -16,7 +16,6 @@ export const TicketSchema = z.object({
   phaseId: z.string(),
   desiredStartsAt: z.date().nullable(),
   desiredEndsAt: z.date().nullable(),
-  quantity: z.number().int().nullable(),
   estimatedHeadcount: z.number().int().nullable(),
   guaranteedHeadcount: z.number().int().nullable(),
   budgetMinor: z.number().int().nullable(),
@@ -53,10 +52,11 @@ const TicketDetailsShape = {
     .describe("Id of a contact person at the customer (contact.list)"),
   desiredStartsAt: z.coerce.date().nullish().describe("Desired start, ISO 8601"),
   desiredEndsAt: z.coerce.date().nullish().describe("Desired end (after the start), ISO 8601"),
-  quantity: CountSchema.nullish().describe("Requested quantity, e.g. the number of guests"),
-  estimatedHeadcount: CountSchema.nullish().describe("Estimated number of guests"),
+  estimatedHeadcount: CountSchema.nullish().describe(
+    "Estimated number of guests; lines without a quantity count it unless guaranteed is set",
+  ),
   guaranteedHeadcount: CountSchema.nullish().describe(
-    "Guaranteed number of guests (locked some days before)",
+    "Guaranteed number of guests (locked some days before); wins over the estimate for lines",
   ),
   budgetMinor: z
     .number()

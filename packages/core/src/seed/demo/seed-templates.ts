@@ -30,7 +30,6 @@ async function toLineInput({ context, line, typeId, refs }: LineInput) {
     ...{ entityTypeId: typeId, name: line.name, itemId: item.id, setupId: setupId ?? null },
     ...{ offsetMinutes: line.offsetMinutes, durationMinutes: line.durationMinutes },
     quantity: line.quantity ?? null,
-    quantityBasis: line.perHeadcount ? "PER_HEADCOUNT" : "FIXED",
   };
   return ok({ value: input });
 }

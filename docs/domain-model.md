@@ -26,7 +26,7 @@ Ticket (moves through the organization's phases) → Lines with states (prebooke
 > **Ownership:** owned `name`, `startsAt`; derived `effectiveVatPercent`; projection `holdKind` (check `line-holds`); snapshot `unitPrice` (from the item, taken at send).
 
 What changes:
-- **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `Line` (formerly the program item, renamed in the first slice) may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup`. A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`. `Ticket.quantity` goes; lines inherit the headcount.
+- **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `Line` (formerly the program item, renamed in the first slice) may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup`. A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`. `Ticket.quantity` is gone; lines inherit the headcount (second slice, done).
 - **Holds are a projection** ([ADR 0053](decisions/0053-holds-are-a-projection.md)), written by triggers through `sync_line_occupancy`. Only lines that have not ended are re-derived.
 - **History is owned data** ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)): `TicketPhaseChange` and `LineStateChange`. `phaseChangedAt`, `phaseReason` and `heldAt` go. Phases may require facts (`requiresAcceptedQuote`) but never store them.
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
@@ -263,13 +263,13 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 **Attributes**
 - name (unique among the organization's active templates), ticket type, start phase (`phaseId`), default own-field values
-- lines (`TicketTemplateLine`, replaced as a set): line type (base `LINE`), name, optional general item and setup, offset and duration in minutes from the ticket start, quantity (`FIXED`, or `PER_HEADCOUNT`: times the headcount)
+- lines (`TicketTemplateLine`, replaced as a set): line type (base `LINE`), name, optional general item and setup, offset and duration in minutes from the ticket start, quantity (null = the ticket's headcount, ADR 0052)
 - status (active / archived)
 
 **Relations**
 - `N:1` TicketType (EntityType), `N:1` TicketPhase; `N:M` Item through its lines
 
-> Operations (`ticketTemplate:admin` to change, `ticketTemplate:read` to read): `ticketTemplate.list|get|create|update|archive` and `ticket.createFromTemplate({ templateId, customerId, startsAt, quantity, assigneeId? })` (`ticket:write`; the caller also needs `ticketTemplate:read` and `customer:read`). The start phase cannot be terminal, the name is unique among the active templates, and an item, a phase or a type that an active template uses cannot be archived. The ticket gets `quantity` and the estimated headcount from `quantity` and a desired period from `startsAt` to the end of the last line; the assignee is required when the start phase requires one. The new ticket's lines get their states from the grid for the template's phase; a hard-hold collision refuses the whole creation and lists the blocking lines.
+> Operations (`ticketTemplate:admin` to change, `ticketTemplate:read` to read): `ticketTemplate.list|get|create|update|archive` and `ticket.createFromTemplate({ templateId, customerId, startsAt, headcount, assigneeId? })` (`ticket:write`; the caller also needs `ticketTemplate:read` and `customer:read`). The start phase cannot be terminal, the name is unique among the active templates, and an item, a phase or a type that an active template uses cannot be archived. The ticket gets its estimated headcount from `headcount` and a desired period from `startsAt` to the end of the last line; the assignee is required when the start phase requires one. The new ticket's lines get their states from the grid for the template's phase; a hard-hold collision refuses the whole creation and lists the blocking lines.
 
 ### Responsibility (`Responsibility`)
 
@@ -355,7 +355,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · One customer request from first contact to the delivered event ([ADR 0043](decisions/0043-ticket-and-configurable-phases.md)). It lives in the organization's phases and never turns into another record. Lines, quotes, requirements, sheets, payments and mail attach to it.
 
-> **Target (ADR 0052, 0054):** `quantity`, `phaseChangedAt` and `phaseReason` go. `phaseId` is projected from `TicketPhaseChange`. Phase flags may require facts (`requiresAcceptedQuote`).
+> **Target (ADR 0054):** `phaseChangedAt` and `phaseReason` go (`quantity` went in ADR 0052's second slice). `phaseId` is projected from `TicketPhaseChange`. Phase flags may require facts (`requiresAcceptedQuote`).
 
 **Attributes**
 - reference number (`reference`, sequential per organization)
@@ -363,7 +363,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - customer and contact person (optional; must work at the customer)
 - desired period (`desiredStartsAt`, `desiredEndsAt`, optional) – what the customer asked for; each line has its own time
 - holds until (`holdsUntil`, optional): one date for the whole ticket ("we hold this until 28 Feb"). When it passes, every line in an `expires` state falls to its type's expiry state; other lines and the phase are unchanged ([ADR 0044](decisions/0044-line-states-and-the-phase-grid.md))
-- quantity (e.g. the number of guests), estimated and guaranteed headcount, budget (`budgetMinor`, minor units)
+- estimated and guaranteed headcount (`estimatedHeadcount`, `guaranteedHeadcount`): the ticket's one headcount; a line without its own quantity counts the guaranteed one if set, else the estimate ([ADR 0052](decisions/0052-the-line-is-the-booking.md)); budget (`budgetMinor`, minor units)
 - phase (`phaseId`), `phaseChangedAt`, reason of the last phase change (required by phases with `requiresReason`)
 - main assignment and responsibility assignments (see Assignment; the main assignee is required by phases with `requiresAssignee`)
 - inbound address (`inboundAddress`, derived: `ticket-<id>@<MAIL_INBOUND_DOMAIN>`, null when inbound mail is not configured)
@@ -430,14 +430,17 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · A line on a ticket: a room, a meal, an activity or a break, with its own time and state ([ADR 0044](decisions/0044-line-states-and-the-phase-grid.md)). Created, among other cases, when a composite item is added to the ticket.
 
-> **Target (ADR 0052–0054):** times optional; price, discount and VAT overrides (`null` = inherit); `quantity` `null` = the ticket's headcount; `alternativeGroupId`. `stateId` is set from `LineStateChange`; `heldAt` goes. Holds are written by triggers.
+> **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`; derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
+
+> **Target (ADR 0052–0054):** `alternativeGroupId`. `stateId` is set from `LineStateChange`; `heldAt` goes. Holds are written by triggers.
 
 **Attributes**
 - name and type (the organization's own, base `LINE`) and custom fields
-- start – end (`startsAt`, `endsAt`; `[start, end)`)
-- item (`itemId`, optional; any active item, e.g. a venue space or a dish; only a `BOOKABLE` item is held)
+- start – end (`startsAt`, `endsAt`; `[start, end)`; both or neither: an untimed line, e.g. a fee, never holds and is not on the calendar, [ADR 0052](decisions/0052-the-line-is-the-booking.md))
+- item (`itemId`, optional; any active item, e.g. a venue space or a dish; only a `BOOKABLE` item on a timed line is held)
 - setup (`setupId`, optional; one of the item's setups, requires the item)
-- quantity (`quantity`, e.g. the headcount)
+- quantity (`quantity`; null = the ticket's headcount, guaranteed if set, else estimated)
+- commercial overrides (`unitPriceMinor`, `discountPercent`, `vatRatePercent`; null = inherit). Derived on every read, never stored: the unit price is the line's own, else the customer's price list valid on the line's day (else the ticket's desired start, else today; the newest start wins) with an agreed price for the item, else the item's price; the discount is the line's own, else that price list's general discount on the item's price, else 0; VAT is the line's own, else the item's, else the item's venue default. Each effective value comes with its source (`LINE` = own, anything else = inherited), so a changed price list or headcount shows on the line at once
 - state (`stateId`, an `ItemState` of the item's type; null for a line without an item), `stateOverridden` (set by hand, skipped by phase moves)
 - held since (`heldAt`, when the line entered its current state; shown oldest first where soft holds overlap, no queue or rank); the line has no expiry of its own, see Ticket `holdsUntil`
 - internal note
@@ -453,7 +456,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` requires → Task
 - `1:N` AccessCode opens for this
 
-> Operations (resource `line`): `line.list|get|create|update|archive` and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followPhase({ lineId })` (clears the override and applies the current phase's grid cell). A new line starts in the grid cell of the ticket's phase for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `ticket.changePhase` moves the lines that are not overridden to the target phase's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A terminal phase moves every line to its type's released state. Who answers for a line comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = line`). An overlap with a hard hold, setup time or block is refused (`CONFLICT`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change; `archive` releases it. Every change is audited.
+> Operations (resource `line`): `line.list|get|create|update|archive` and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followPhase({ lineId })` (clears the override and applies the current phase's grid cell). A new line starts in the grid cell of the ticket's phase for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `ticket.changePhase` moves the lines that are not overridden to the target phase's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A terminal phase moves every line to its type's released state. Who answers for a line comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = line`). An overlap with a hard hold, setup time or block is refused (`CONFLICT`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change (clearing both times releases it); `archive` releases it. Every change is audited. Every line read on every surface carries the effective quantity, price, discount and VAT with their sources.
 
 ### Requirement ★ (`Requirement`)
 

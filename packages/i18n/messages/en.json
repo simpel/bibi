@@ -479,7 +479,6 @@
       "desiredStartsAt": "Desired start",
       "desiredEndsAt": "Desired end",
       "when": "Desired dates",
-      "quantity": "Quantity",
       "estimatedHeadcount": "Estimated headcount",
       "guaranteedHeadcount": "Guaranteed headcount",
       "budget": "Budget (SEK)",
@@ -654,8 +653,8 @@
     "plural": "Program",
     "create": "Add line",
     "edit": "Edit line",
-    "createDescription": "Add a row to the ticket's run schedule. With a room it is occupied for the period, plus the setup's changeover time.",
-    "editDescription": "Change time, place, quantity or note. Moving it moves the occupancy.",
+    "createDescription": "Add a row to the ticket's run schedule. With a room it is occupied for the period, plus the setup's changeover time. Leave the times empty for a line without time, e.g. a fee; empty quantity and price inherit the ticket's headcount and the price list or item.",
+    "editDescription": "Change time, place, quantity, price or note. Moving it moves the occupancy. Leave the times empty for a line without time, e.g. a fee; leave quantity, price, discount and VAT empty to inherit the headcount, price list and item.",
     "archive": "Remove line",
     "archiveConfirm": "Do you want to remove \"{name}\" from the program? The room is released.",
     "archived": "The line has been removed.",
@@ -677,7 +676,10 @@
       "item": "Room or bookable item",
       "setup": "Setup",
       "quantity": "Quantity",
-      "note": "Internal note"
+      "note": "Internal note",
+      "unitPrice": "Own unit price (kr)",
+      "discountPercent": "Own discount (%)",
+      "vatRatePercent": "Own VAT (%)"
     },
     "columns": {
       "time": "Time",
@@ -685,8 +687,11 @@
       "type": "Type",
       "where": "Where",
       "state": "State",
-      "quantity": "Quantity"
-    }
+      "quantity": "Quantity",
+      "unitPrice": "Unit price"
+    },
+    "untimed": "No time",
+    "inherited": "(inherited)"
   },
   "requirement": {
     "singular": "Requirement",
@@ -1313,6 +1318,9 @@
         "quantity": "Quantity",
         "estimatedHeadcount": "Estimated headcount",
         "guaranteedHeadcount": "Guaranteed headcount",
+        "headcount": "Headcount",
+        "unitPriceMinor": "Unit price (minor units)",
+        "discountPercent": "Discount (%)",
         "budgetMinor": "Budget (minor units)",
         "ticketId": "Ticket (id)",
         "phaseId": "Phase (id)",
@@ -1573,7 +1581,9 @@
           "name": "Name",
           "when": "When",
           "quantity": "Quantity"
-        }
+        },
+        "untimed": "No time",
+        "unitPrice": "Unit price {price}"
       },
       "requirement": {
         "singular": "Requirement",
@@ -2573,12 +2583,7 @@
       "item": "Item",
       "offset": "Starts (minutes after the ticket start)",
       "duration": "Duration (minutes)",
-      "quantity": "Quantity",
-      "basis": "Quantity applies"
-    },
-    "basis": {
-      "FIXED": "As given",
-      "PER_HEADCOUNT": "Per guest"
+      "quantity": "Quantity (empty: the headcount)"
     },
     "columns": {
       "name": "Name",

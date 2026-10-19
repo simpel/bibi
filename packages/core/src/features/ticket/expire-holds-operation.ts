@@ -2,8 +2,9 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { applyLineState } from "../line/line-state";
-import type { LineDto } from "../line/schema";
-import { toLineDto } from "../line/to-line-dto";
+import type { LineRecord } from "../line/schema";
+import { toLineRecord } from "../line/to-line-record";
+import { withEffective } from "../line/with-effective";
 import { TicketExpireHoldsInputSchema, TicketExpireHoldsOutputSchema } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
@@ -47,16 +48,16 @@ export const expireTicketHolds = defineOperation({
   permission: "ticket:write",
   entityType: "line",
   handler: async ({ context }) => {
-    const items: LineDto[] = [];
+    const items: LineRecord[] = [];
     for (const { item, ...row } of await loadDueLines({ context })) {
       const target = item?.entityType.expiryStateId;
       if (!target || !row.stateId || target === row.stateId) continue;
       if (!(await claim({ context, id: row.id, stateId: row.stateId }))) continue;
-      const before = toLineDto({ row });
+      const before = toLineRecord({ row });
       const moved = await applyLineState({ context, before, stateId: target });
       if (!moved.ok) return moved;
       items.push(moved.value);
     }
-    return ok({ value: { items } });
+    return ok({ value: { items: await withEffective({ context, lines: items }) } });
   },
 });

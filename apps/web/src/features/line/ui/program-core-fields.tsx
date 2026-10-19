@@ -5,16 +5,17 @@ import type { LineFormOutput } from "./line-form-schema";
 import type { LineFormValues } from "./line-form-values";
 import type { ProgramFormData } from "./program-form-data";
 import { ProgramPlaceFields } from "./program-place-fields";
+import { ProgramPriceFields } from "./program-price-fields";
 
 export type ProgramCoreFieldsProps = {
   form: UseFormReturn<LineFormValues, unknown, LineFormOutput>;
   data: ProgramFormData;
 };
 
-/** Name, time, where, quantity and the note. */
+/** Name, time (both empty: untimed), where, quantity, price overrides and the note. */
 export function ProgramCoreFields({ form, data }: ProgramCoreFieldsProps) {
   const t = useTranslations("line");
-  const time = { form, type: "datetime-local", required: true } as const;
+  const time = { form, type: "datetime-local" } as const;
   return (
     <>
       <TextField form={form} name="name" label={t("fields.name")} required />
@@ -24,6 +25,7 @@ export function ProgramCoreFields({ form, data }: ProgramCoreFieldsProps) {
       </div>
       <ProgramPlaceFields form={form} data={data} />
       <TextField form={form} name="quantity" label={t("fields.quantity")} type="number" />
+      <ProgramPriceFields form={form} />
       <TextField form={form} name="note" label={t("fields.note")} multiline />
     </>
   );

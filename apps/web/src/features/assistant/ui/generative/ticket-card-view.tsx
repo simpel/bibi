@@ -15,7 +15,7 @@ export function TicketCardView({ ticket }: TicketCardViewProps) {
   const t = useTranslations("assistant.ui.ticket");
   const format = useFormatter();
   const href = ticketRoute({ id: ticket.id });
-  const headcount = ticket.guaranteedHeadcount ?? ticket.estimatedHeadcount ?? ticket.quantity;
+  const headcount = ticket.guaranteedHeadcount ?? ticket.estimatedHeadcount;
   return (
     <Card data-slot="ticket-card" className="shadow-none">
       <CardHeader className="flex-row items-start justify-between gap-2 p-4 pb-2">

@@ -26,7 +26,6 @@ export function TicketWizard({ data }: TicketWizardProps) {
         "contactId",
         "desiredStartsAt",
         "desiredEndsAt",
-        "quantity",
         "estimatedHeadcount",
         "guaranteedHeadcount",
         "budget",

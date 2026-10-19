@@ -2,8 +2,8 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { cellOfTicket } from "../phase-grid/load-grid";
 import { rederiveLine } from "./reserve";
-import type { LineDto } from "./schema";
-import { toLineDto } from "./to-line-dto";
+import type { LineRecord } from "./schema";
+import { toLineRecord } from "./to-line-record";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -38,7 +38,7 @@ export async function itemTypeOf({ context, itemId }: ItemTypeOfInput) {
   return item?.entityTypeId ?? null;
 }
 
-export type StateAfterMoveInput = Db & { before: LineDto; itemId: string | null };
+export type StateAfterMoveInput = Db & { before: LineRecord; itemId: string | null };
 
 /**
  * A line moved to an item of another type (or to no item) leaves its state: it starts over in
@@ -57,7 +57,7 @@ export async function stateAfterMove({ context, before, itemId }: StateAfterMove
 
 export type ApplyLineStateInput = {
   context: OperationContext;
-  before: LineDto;
+  before: LineRecord;
   stateId: string;
   /** Set or clear `stateOverridden`; omitted keeps it. */
   overridden?: boolean;
@@ -72,7 +72,7 @@ export async function applyLineState({
   before,
   stateId,
   overridden,
-}: ApplyLineStateInput): Promise<Result<LineDto>> {
+}: ApplyLineStateInput): Promise<Result<LineRecord>> {
   const row = await context.db.line.update({
     where: { id: before.id },
     data: {
@@ -81,7 +81,7 @@ export async function applyLineState({
       ...(overridden === undefined ? {} : { stateOverridden: overridden }),
     },
   });
-  const after = toLineDto({ row });
+  const after = toLineRecord({ row });
   context.recordChange({ entityType: "line", entityId: before.id, before, after });
   const held = await rederiveLine({ context, line: after });
   return held.ok ? ok({ value: after }) : held;

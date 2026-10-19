@@ -30,7 +30,7 @@ export async function buildSheetContent({
     parentKey: null,
     label: String(ticket.reference),
     itemName: null,
-    quantity: ticket.guaranteedHeadcount ?? ticket.estimatedHeadcount ?? ticket.quantity,
+    quantity: ticket.guaranteedHeadcount ?? ticket.estimatedHeadcount,
     startsAt: ticket.desiredStartsAt?.toISOString() ?? null,
     endsAt: ticket.desiredEndsAt?.toISOString() ?? null,
     values: {},

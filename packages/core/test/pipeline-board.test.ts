@@ -30,7 +30,7 @@ describe("pipeline.board (ADR 0043)", () => {
       context,
       entityTypeId: type.id,
       customerId: customer.id,
-      quantity: 20,
+      estimatedHeadcount: 20,
     });
     const first = await board({ context });
     expect(first.cards).toEqual([

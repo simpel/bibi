@@ -3,7 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { releaseLineStates } from "./release-line-states";
 import { releaseLine } from "./reserve";
-import { toLineDto } from "./to-line-dto";
+import { toLineRecord } from "./to-line-record";
 
 export type ReleaseForTicketInput = { context: OperationContext; ticketId: string };
 
@@ -48,8 +48,8 @@ export async function archiveLinesOfTicket({
     context.recordChange({
       entityType: "line",
       entityId: row.id,
-      before: toLineDto({ row }),
-      after: toLineDto({ row: archived }),
+      before: toLineRecord({ row }),
+      after: toLineRecord({ row: archived }),
     });
     const released = await releaseLine({ context, id: row.id });
     if (!released.ok) return released;

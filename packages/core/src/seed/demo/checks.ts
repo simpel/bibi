@@ -8,6 +8,7 @@ import { checkDemoConfig } from "./config-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
 import { checkDemoPipeline } from "./pipeline-checks";
+import { checkDemoPrices } from "./price-checks";
 import { checkDemoQuoteEvents } from "./quote-event-checks";
 import { reconcileProjections } from "./reconcile-checks";
 import { checkDemoRecords } from "./record-checks";
@@ -27,7 +28,8 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPip
  * (`checkDemoAssignments`), that removing a populated phase or state with a target is allowed
  * (`checkDemoArchive`, run before the grid checks move tickets), the lines' soft holds and their expiry (`checkDemoHolds`), the phase
  * quote events that moved the tickets (`checkDemoQuoteEvents`), the phase
- * moves the grid drives (`checkDemoGrid`), every projection against its owned data
+ * moves the grid drives (`checkDemoGrid`), every line's effective price and inherited quantity
+ * (`checkDemoPrices`, ADR 0052), every projection against its owned data
  * (`reconcileProjections`, ADR 0051), and every write
  * was audited as SYSTEM. Returns failure messages.
  */
@@ -64,6 +66,7 @@ export async function checkDemoOrg({
   failures.push(...(await checkDemoArchive({ context, org })));
   failures.push(...(await checkDemoQuoteEvents({ context, org })));
   failures.push(...(await checkDemoGrid({ context, org })));
+  failures.push(...(await checkDemoPrices({ context, org })));
   failures.push(...(await reconcileProjections({ context })));
   return [...failures, ...(await auditFailures({ context, org }))];
 }

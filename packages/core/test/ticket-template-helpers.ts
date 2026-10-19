@@ -32,6 +32,7 @@ export const roomAndDish = ({ setup }: TemplateLinesInput): TicketTemplateLineIn
     itemId: setup.room.id,
     offsetMinutes: 0,
     durationMinutes: 120,
+    quantity: 1,
   },
   {
     entityTypeId: setup.lineType.id,
@@ -39,8 +40,6 @@ export const roomAndDish = ({ setup }: TemplateLinesInput): TicketTemplateLineIn
     itemId: setup.food.dish.id,
     offsetMinutes: 30,
     durationMinutes: 15,
-    quantity: 1,
-    quantityBasis: "PER_HEADCOUNT",
   },
 ];
 

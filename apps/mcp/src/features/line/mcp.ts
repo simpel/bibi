@@ -7,7 +7,9 @@ export const lineMcpTools = [
     operation: "line.create",
     summary: ({ input }) =>
       `Add "${text({ value: input.name })}" to ticket ${text({ value: input.ticketId })} ` +
-      `from ${text({ value: input.startsAt })} to ${text({ value: input.endsAt })}`,
+      (input.startsAt && input.endsAt
+        ? `from ${text({ value: input.startsAt })} to ${text({ value: input.endsAt })}`
+        : "without a time"),
   }),
   mcpTool({
     operation: "line.update",

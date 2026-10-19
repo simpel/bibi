@@ -2,21 +2,30 @@
 /// Its type (base `LINE`) decides its own fields. A line with an item has a state of the
 /// item's type (ADR 0044). With a bookable item in a `SOFT` or `HARD` state it holds a `HOLD`
 /// occupancy for `[startsAt, endsAt)`, and with a setup also a `SETUP` occupancy for the
-/// changeover right before; both have `sourceType = "line"` and follow the row.
+/// changeover right before; both have `sourceType = "line"` and follow the row. An untimed line
+/// (no `startsAt`/`endsAt`, e.g. a fee) never holds and is not drawn on the calendar (ADR 0052).
+/// The price columns are overrides: null = inherit (price list, then item; VAT: item, then venue).
 model Line {
   id              String        @id
   organizationId  String
   ticketId        String
   entityTypeId    String
   name            String
-  startsAt        DateTime
-  endsAt          DateTime
+  /// Both set or both null (untimed).
+  startsAt        DateTime?
+  endsAt          DateTime?
   /// The bookable item (`BOOKABLE`) the line is held in, if any.
   itemId          String?
   /// How the item is set up; one of the item's setups. Requires `itemId`.
   setupId         String?
-  /// How many take part, e.g. the headcount.
+  /// How many; null = the ticket's headcount (guaranteed if set, else estimated).
   quantity        Int?
+  /// Override of the unit price in minor units (1/100 kr); null = inherit.
+  unitPriceMinor  Int?
+  /// Override of the discount in percent, e.g. 10.00; null = inherit.
+  discountPercent Decimal?      @db.Decimal(5, 2)
+  /// Override of the VAT rate in percent; null = inherit.
+  vatRatePercent  Int?
   /// Internal note.
   note            String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.

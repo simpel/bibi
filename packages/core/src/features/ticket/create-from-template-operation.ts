@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
-import { conflict, invalid, notFound } from "../../shared/errors";
+import { conflict, notFound } from "../../shared/errors";
 import { insertLine } from "../line/insert-line";
 import { loadTicketTemplate } from "../ticket-template/load-ticket-template";
 import type { TicketTemplateDto } from "../ticket-template/schema";
@@ -28,10 +28,8 @@ async function checkStartPhase({ context, template }: Omit<CreateInput, "input">
 }
 
 async function create({ context, template, input }: CreateInput): Promise<Result<TicketDto>> {
-  const { startsAt, quantity, customerId, assigneeId } = input;
-  const plan = planTemplateLines({ template, startsAt, quantity });
-  if (plan.issues.length > 0)
-    return invalid({ message: "A line quantity is too large", issues: plan.issues });
+  const { startsAt, headcount, customerId, assigneeId } = input;
+  const plan = planTemplateLines({ template, startsAt });
   const phased = await checkStartPhase({ context, template });
   if (!phased.ok) return phased;
   const blockers = await templateCollisions({
@@ -48,7 +46,7 @@ async function create({ context, template, input }: CreateInput): Promise<Result
     phaseId: template.phaseId,
     input: {
       ...{ entityTypeId: template.entityTypeId, customerId, assigneeId, fields: template.fields },
-      ...{ quantity, estimatedHeadcount: quantity },
+      estimatedHeadcount: headcount,
       ...{ desiredStartsAt: startsAt, desiredEndsAt: plan.endsAt },
     },
   });
@@ -69,7 +67,8 @@ export const createTicketFromTemplate = defineOperation({
   description:
     "Create a ticket from one of the organization's predefined tickets in one step (ADR 0043): " +
     "the template's ticket type, default fields and start phase, for a customer, starting at " +
-    "`startsAt` with `quantity` as the headcount. Its lines are created timed from the start, " +
+    "`startsAt` with `headcount` as the estimated headcount. Its lines are created timed from " +
+    "the start (a line without a quantity counts the headcount), " +
     "in the states the phase grid gives for the start phase. If any line's hard hold would " +
     "collide, nothing is created and CONFLICT lists every blocking line in `issues`.",
   input: TicketCreateFromTemplateInputSchema,

@@ -2,7 +2,7 @@ import type { AppErrorIssue } from "../../errors/app-error";
 import type { OperationContext } from "../../operations/types";
 import { loadStatesById } from "../item-state/load-item-state";
 import { holdCollisions } from "../line/hold-collisions";
-import type { LineDto } from "../line/schema";
+import type { LineRecord } from "../line/schema";
 import { cellsOfPhase } from "../phase-grid/load-grid";
 import type { PlannedLine } from "./plan-template-lines";
 
@@ -17,11 +17,12 @@ const unique = ({ ids }: { ids: readonly (string | null | undefined)[] }) => [
 ];
 
 /** A planned line as the line it will become, for the collision check (id = its index in the template). */
-const asLine = ({ line, index }: { line: PlannedLine; index: number }): LineDto => ({
+const asLine = ({ line, index }: { line: PlannedLine; index: number }): LineRecord => ({
   ...{ id: String(index), organizationId: "", ticketId: "", status: "ACTIVE", createdBy: null },
   ...{ entityTypeId: line.entityTypeId, name: line.name, fields: {}, note: null },
   ...{ startsAt: line.startsAt, endsAt: line.endsAt, quantity: line.quantity ?? null },
   ...{ itemId: line.itemId ?? null, setupId: line.setupId ?? null },
+  ...{ unitPriceMinor: null, discountPercent: null, vatRatePercent: null },
   ...{
     stateId: null,
     stateOverridden: false,

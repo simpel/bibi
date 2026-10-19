@@ -27,7 +27,7 @@ export const updateTicket = defineOperation({
   name: "ticket.update",
   kind: "command",
   description:
-    "Update a ticket's customer, contact, desired period, quantity, headcount, budget, " +
+    "Update a ticket's customer, contact, desired period, headcount, budget, " +
     "holdsUntil (when its soft holds expire) or own " +
     "fields. Omitted properties are unchanged; `fields` is merged by key (null clears a value). " +
     "The type cannot be changed, the phase changes only with ticket.changePhase and the " +

@@ -15,7 +15,7 @@ export const lindholmenTemplates: readonly DemoTicketTemplate[] = [
       },
       {
         ...{ item: "Coffee and tea", name: "Coffee and tea" },
-        ...{ offsetMinutes: 0, durationMinutes: 120, quantity: 1, perHeadcount: true },
+        ...{ offsetMinutes: 0, durationMinutes: 120 },
       },
     ],
   },
@@ -28,7 +28,7 @@ export const lindholmenTemplates: readonly DemoTicketTemplate[] = [
       },
       {
         ...{ item: "Afternoon break", name: "Afternoon break buffet" },
-        ...{ offsetMinutes: 60, durationMinutes: 30, quantity: 1, perHeadcount: true },
+        ...{ offsetMinutes: 60, durationMinutes: 30 },
       },
     ],
   },

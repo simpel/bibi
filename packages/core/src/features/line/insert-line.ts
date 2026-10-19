@@ -4,12 +4,11 @@ import { createRecord } from "../../records/create-record";
 import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
-import { checkPeriod } from "../occupancy/occupancy-rules";
-import { checkPlace, checkTicket } from "./line-rules";
+import { checkLinePeriod, checkPlace, checkTicket } from "./line-rules";
 import { initialStateOf } from "./line-state";
 import { reserveLine } from "./reserve";
-import type { LineCreateInput, LineDto } from "./schema";
-import { toLineDto } from "./to-line-dto";
+import type { LineCreateInput, LineRecord } from "./schema";
+import { toLineRecord } from "./to-line-record";
 
 export type InsertLineInput = {
   context: OperationContext;
@@ -24,14 +23,14 @@ export type InsertLineInput = {
 export async function insertLine({
   context,
   input: { entityTypeId, fields, ...data },
-}: InsertLineInput): Promise<Result<LineDto>> {
+}: InsertLineInput): Promise<Result<LineRecord>> {
   const itemId = data.itemId ?? null;
-  const setupId = data.setupId ?? null;
+  const period = { startsAt: data.startsAt ?? null, endsAt: data.endsAt ?? null };
   for (const check of [
     await loadTypeOfBase({ context, entityTypeId, base: "LINE" }),
     await checkTicket({ context, ticketId: data.ticketId }),
-    checkPeriod(data),
-    await checkPlace({ context, ticketId: data.ticketId, itemId, setupId }),
+    checkLinePeriod(period),
+    await checkPlace({ context, ticketId: data.ticketId, itemId, setupId: data.setupId ?? null }),
   ]) {
     if (!check.ok) return check;
   }
@@ -48,6 +47,7 @@ export async function insertLine({
         data: {
           id,
           ...data,
+          ...period,
           entityTypeId,
           stateId,
           fields: toJson({ value: checked.value }) ?? {},
@@ -55,7 +55,7 @@ export async function insertLine({
         },
       }),
   });
-  const line = toLineDto({ row });
+  const line = toLineRecord({ row });
   context.recordChange({ entityId: row.id, after: line });
   const reserved = await reserveLine({ context, line });
   return reserved.ok ? ok({ value: line }) : reserved;

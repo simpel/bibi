@@ -2,7 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { applyLineState } from "../line/line-state";
 import { rederiveLine } from "../line/reserve";
-import { toLineDto } from "../line/to-line-dto";
+import { toLineRecord } from "../line/to-line-record";
 
 export type RederiveInput = { context: OperationContext; stateId: string };
 
@@ -10,7 +10,7 @@ export type RederiveInput = { context: OperationContext; stateId: string };
 export async function rederiveLinesInState({ context, stateId }: RederiveInput) {
   const rows = await context.db.line.findMany({ where: { stateId } });
   for (const row of rows) {
-    const held = await rederiveLine({ context, line: toLineDto({ row }) });
+    const held = await rederiveLine({ context, line: toLineRecord({ row }) });
     if (!held.ok) return held;
   }
   return ok({ value: true });
@@ -29,7 +29,7 @@ export async function moveLinesToState({
 }: MoveLinesInput): Promise<Result<number>> {
   const rows = await context.db.line.findMany({ where: { stateId: fromStateId } });
   for (const row of rows) {
-    const before = toLineDto({ row });
+    const before = toLineRecord({ row });
     const moved = await applyLineState({ context, before, stateId: toStateId });
     if (!moved.ok) return moved;
   }

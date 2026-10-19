@@ -12,6 +12,10 @@ export type LineFormValues = {
   itemId: string;
   setupId: string;
   quantity: string;
+  /** Overrides; empty = inherit (price list or item, item or venue). */
+  unitPrice: string;
+  discountPercent: string;
+  vatRatePercent: string;
   note: string;
   fields: Record<string, RawFieldValue>;
 };
@@ -23,17 +27,23 @@ export type LineDefaultsInput = {
   startsAt: Date;
 };
 
-const local = ({ date }: { date: Date }) => toLocalInputValue({ date });
+const local = ({ date }: { date: Date | null }) => (date ? toLocalInputValue({ date }) : "");
+const text = ({ value }: { value: number | null | undefined }) =>
+  value === null || value === undefined ? "" : String(value);
 
 export function lineFormDefaults({ type, line, startsAt }: LineDefaultsInput): LineFormValues {
   return {
     entityTypeId: type?.id ?? "",
     name: line?.name ?? "",
-    startsAt: local({ date: line?.startsAt ?? startsAt }),
-    endsAt: local({ date: line?.endsAt ?? new Date(startsAt.getTime() + 3_600_000) }),
+    // An untimed line (ADR 0052) keeps its empty times.
+    startsAt: local({ date: line ? line.startsAt : startsAt }),
+    endsAt: local({ date: line ? line.endsAt : new Date(startsAt.getTime() + 3_600_000) }),
     itemId: line?.itemId ?? NONE,
     setupId: line?.setupId ?? NONE,
-    quantity: line?.quantity === null ? "" : String(line?.quantity ?? ""),
+    quantity: text({ value: line?.quantity }),
+    unitPrice: text({ value: line?.unitPriceMinor == null ? null : line.unitPriceMinor / 100 }),
+    discountPercent: text({ value: line?.discountPercent }),
+    vatRatePercent: text({ value: line?.vatRatePercent }),
     note: line?.note ?? "",
     fields: rawFields({ type, stored: line?.fields ?? {} }),
   };

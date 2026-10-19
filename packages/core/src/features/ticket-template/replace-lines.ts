@@ -16,7 +16,6 @@ export async function replaceLines({ context, templateId, lines }: ReplaceLinesI
       itemId: line.itemId ?? null,
       setupId: line.setupId ?? null,
       quantity: line.quantity ?? null,
-      quantityBasis: line.quantityBasis ?? "FIXED",
       position,
       templateId,
       organizationId: context.organizationId,

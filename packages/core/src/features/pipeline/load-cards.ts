@@ -66,7 +66,7 @@ export async function loadTicketCards({
     customerName: row.customer.name,
     startsAt: row.desiredStartsAt,
     endsAt: row.desiredEndsAt,
-    quantity: row.guaranteedHeadcount ?? row.estimatedHeadcount ?? row.quantity,
+    quantity: row.guaranteedHeadcount ?? row.estimatedHeadcount,
     phaseChangedAt: row.phaseChangedAt,
     assigneeId: owners.get(row.id) ?? null,
   }));

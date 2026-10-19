@@ -1,4 +1,4 @@
-import { QUANTITY_BASES, type TicketTemplateCreateInput } from "@okazi/core/schemas";
+import type { TicketTemplateCreateInput } from "@okazi/core/schemas";
 import { Button } from "@okazi/ui";
 import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -51,7 +51,6 @@ function LineWhatFields({ form, data, index }: LineFieldsProps) {
 /** When the line happens (from the ticket's start) and how many. */
 function LineWhenFields({ form, index }: Omit<LineFieldsProps, "data">) {
   const t = useTranslations("ticketTemplate");
-  const bases = QUANTITY_BASES.map((id) => ({ id, name: t(`basis.${id}`) }));
   const number = ({ key, label }: { key: string; label: string }) => (
     <TextField form={form} name={lineName({ index, key })} label={label} type="number" />
   );
@@ -61,15 +60,7 @@ function LineWhenFields({ form, index }: Omit<LineFieldsProps, "data">) {
         {number({ key: "offsetMinutes", label: t("fields.offset") })}
         {number({ key: "durationMinutes", label: t("fields.duration") })}
       </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {number({ key: "quantity", label: t("fields.quantity") })}
-        <OptionSelectField
-          control={form.control}
-          name={lineName({ index, key: "quantityBasis" })}
-          label={t("fields.basis")}
-          options={bases}
-        />
-      </div>
+      {number({ key: "quantity", label: t("fields.quantity") })}
     </>
   );
 }

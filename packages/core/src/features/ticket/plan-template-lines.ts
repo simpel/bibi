@@ -1,43 +1,26 @@
-import type { AppErrorIssue } from "../../errors/app-error";
 import type { LineCreateInput } from "../line/schema";
 import type { TicketTemplateDto } from "../ticket-template/schema";
 
 const MINUTE = 60_000;
-const MAX_QUANTITY = 100_000;
 
-/** A line to create: the line input without its ticket. */
-export type PlannedLine = Omit<LineCreateInput, "ticketId">;
-
-export type PlanTemplateLinesInput = {
-  template: TicketTemplateDto;
+/** A line to create: the line input without its ticket, always timed. */
+export type PlannedLine = Omit<LineCreateInput, "ticketId" | "startsAt" | "endsAt"> & {
   startsAt: Date;
-  quantity: number;
+  endsAt: Date;
 };
 
-export type TemplatePlan = { lines: PlannedLine[]; endsAt: Date; issues: AppErrorIssue[] };
+export type PlanTemplateLinesInput = { template: TicketTemplateDto; startsAt: Date };
+
+export type TemplatePlan = { lines: PlannedLine[]; endsAt: Date };
 
 /**
  * The lines a ticket made from the template gets: each starts `offsetMinutes` after the ticket's
- * start and lasts `durationMinutes`; a PER_HEADCOUNT line's quantity is its quantity (1 when
- * empty) times the headcount. `endsAt` is when the last line ends. A quantity over the limit is
- * an issue on that line.
+ * start and lasts `durationMinutes`. The quantity is copied; an empty one stays empty, so the
+ * line counts the ticket's headcount (ADR 0052). `endsAt` is when the last line ends.
  */
-export function planTemplateLines({
-  template,
-  startsAt,
-  quantity,
-}: PlanTemplateLinesInput): TemplatePlan {
-  const issues: AppErrorIssue[] = [];
-  const lines = template.lines.map((line, index): PlannedLine => {
+export function planTemplateLines({ template, startsAt }: PlanTemplateLinesInput): TemplatePlan {
+  const lines = template.lines.map((line): PlannedLine => {
     const start = new Date(startsAt.getTime() + line.offsetMinutes * MINUTE);
-    const lineQuantity =
-      line.quantityBasis === "PER_HEADCOUNT" ? (line.quantity ?? 1) * quantity : line.quantity;
-    if (lineQuantity !== null && lineQuantity > MAX_QUANTITY) {
-      issues.push({
-        path: `lines.${index}.quantity`,
-        message: `"${line.name}" is over ${MAX_QUANTITY}`,
-      });
-    }
     return {
       entityTypeId: line.entityTypeId,
       name: line.name,
@@ -45,9 +28,9 @@ export function planTemplateLines({
       endsAt: new Date(start.getTime() + line.durationMinutes * MINUTE),
       itemId: line.itemId,
       setupId: line.setupId,
-      quantity: lineQuantity,
+      quantity: line.quantity,
     };
   });
   const ends = lines.map((line) => line.endsAt.getTime());
-  return { lines, endsAt: new Date(Math.max(startsAt.getTime(), ...ends)), issues };
+  return { lines, endsAt: new Date(Math.max(startsAt.getTime(), ...ends)) };
 }

@@ -479,7 +479,6 @@
       "desiredStartsAt": "Önskad start",
       "desiredEndsAt": "Önskat slut",
       "when": "Önskade datum",
-      "quantity": "Antal",
       "estimatedHeadcount": "Beräknat antal",
       "guaranteedHeadcount": "Garanterat antal",
       "budget": "Budget (kr)",
@@ -654,8 +653,8 @@
     "plural": "Program",
     "create": "Lägg till programpunkt",
     "edit": "Redigera programpunkt",
-    "createDescription": "Lägg till en rad i ärendets körschema. Med en lokal beläggs den under perioden, plus uppställningens ställtid.",
-    "editDescription": "Ändra tid, plats, antal eller anteckning. Flyttas den flyttas också beläggningen.",
+    "createDescription": "Lägg till en rad i ärendets körschema. Med en lokal beläggs den under perioden, plus uppställningens ställtid. Lämna tiderna tomma för en rad utan tid, t.ex. en avgift; tomt antal och pris ärver ärendets antal gäster och prislistan eller artikeln.",
+    "editDescription": "Ändra tid, plats, antal, pris eller anteckning. Flyttas den flyttas också beläggningen. Lämna tiderna tomma för en rad utan tid, t.ex. en avgift; lämna antal, pris, rabatt och moms tomma för att ärva antal gäster, prislista och artikel.",
     "archive": "Ta bort programpunkt",
     "archiveConfirm": "Vill du ta bort \"{name}\" från programmet? Lokalen släpps.",
     "archived": "Programpunkten har tagits bort.",
@@ -677,7 +676,10 @@
       "item": "Lokal eller bokningsbar artikel",
       "setup": "Uppställning",
       "quantity": "Antal",
-      "note": "Intern anteckning"
+      "note": "Intern anteckning",
+      "unitPrice": "Eget styckpris (kr)",
+      "discountPercent": "Egen rabatt (%)",
+      "vatRatePercent": "Egen moms (%)"
     },
     "columns": {
       "time": "Tid",
@@ -685,8 +687,11 @@
       "type": "Typ",
       "where": "Var",
       "state": "Läge",
-      "quantity": "Antal"
-    }
+      "quantity": "Antal",
+      "unitPrice": "Styckpris"
+    },
+    "untimed": "Ingen tid",
+    "inherited": "(ärvt)"
   },
   "requirement": {
     "singular": "Behov",
@@ -1313,6 +1318,9 @@
         "quantity": "Antal",
         "estimatedHeadcount": "Beräknat antal",
         "guaranteedHeadcount": "Garanterat antal",
+        "headcount": "Antal gäster",
+        "unitPriceMinor": "Styckpris (öre)",
+        "discountPercent": "Rabatt (%)",
         "budgetMinor": "Budget (ören)",
         "ticketId": "Ärende (id)",
         "phaseId": "Fas (id)",
@@ -1573,7 +1581,9 @@
           "name": "Namn",
           "when": "När",
           "quantity": "Antal"
-        }
+        },
+        "untimed": "Ingen tid",
+        "unitPrice": "Styckpris {price}"
       },
       "requirement": {
         "singular": "Behov",
@@ -2573,12 +2583,7 @@
       "item": "Artikel",
       "offset": "Börjar (minuter efter ärendets start)",
       "duration": "Längd (minuter)",
-      "quantity": "Antal",
-      "basis": "Antalet gäller"
-    },
-    "basis": {
-      "FIXED": "Som angivet",
-      "PER_HEADCOUNT": "Per gäst"
+      "quantity": "Antal (tomt: antalet gäster)"
     },
     "columns": {
       "name": "Namn",

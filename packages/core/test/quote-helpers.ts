@@ -70,7 +70,7 @@ export async function quoteSetup() {
     entityTypeId: setup.type.id,
     customerId: setup.customer.id,
     assigneeId: erik,
-    quantity: 20,
+    estimatedHeadcount: 20,
   });
   return { ...setup, erik, ticket, ...(await createDishes({ context })) };
 }

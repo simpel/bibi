@@ -32,7 +32,7 @@ export function TemplateTicketForm({ data }: TemplateTicketFormProps) {
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <TextField form={form} name="startsAt" label={t("startsAt")} type="datetime-local" />
-          <TextField form={form} name="quantity" label={t("headcount")} type="number" />
+          <TextField form={form} name="headcount" label={t("headcount")} type="number" />
         </div>
         {data.members.length > 0 ? (
           <OptionSelectField

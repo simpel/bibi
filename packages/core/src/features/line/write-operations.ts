@@ -4,9 +4,8 @@ import { archiveRecords, updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
-import { checkPeriod } from "../occupancy/occupancy-rules";
 import { insertLine } from "./insert-line";
-import { checkPlace, placeChanged } from "./line-rules";
+import { checkLinePeriod, checkPlace, placeChanged } from "./line-rules";
 import { stateAfterMove } from "./line-state";
 import { rederiveLine, releaseLine } from "./reserve";
 import {
@@ -15,7 +14,8 @@ import {
   LineSchema,
   LineUpdateInputSchema,
 } from "./schema";
-import { loadLine, toLineDto } from "./to-line-dto";
+import { loadLine, toLineRecord } from "./to-line-record";
+import { effectiveHandler } from "./with-effective";
 
 const OCCUPY_NOTE =
   "A line with an item starts in the item type's initial state (itemState.list). With a " +
@@ -32,53 +32,62 @@ export const createLine = defineOperation({
   input: LineCreateInputSchema,
   output: LineSchema,
   permission: "line:write",
-  handler: async ({ input, context }) => insertLine({ context, input }),
+  handler: effectiveHandler({ handler: ({ input, context }) => insertLine({ context, input }) }),
 });
 
 export const updateLine = defineOperation({
   name: "line.update",
   kind: "command",
   description:
-    "Change a line: name, time, item, setup, quantity or note. Omitted properties are " +
-    "unchanged; `fields` is merged by key (null clears a value). Moving it moves its " +
+    "Change a line: name, time, item, setup, quantity, price, discount, VAT or note. Omitted " +
+    "properties are unchanged and null clears an override (the line inherits again); `fields` " +
+    "is merged by key (null clears a value). Clearing both times makes the line untimed, which " +
+    "releases its hold. Moving it moves its " +
     `occupancy. ${OCCUPY_NOTE}`,
   input: LineUpdateInputSchema,
   output: LineSchema,
   permission: "line:write",
-  handler: async ({ input: { id, fields: patch, ...data }, context }) => {
-    const before = await loadLine({ context, id });
-    if (!before) return notFound({ entity: "Line" });
-    const itemId = data.itemId === undefined ? before.itemId : data.itemId;
-    // A line that leaves its item cannot keep that item's setup.
-    const setupId = data.setupId === undefined ? (itemId ? before.setupId : null) : data.setupId;
-    const place = { itemId, setupId, startsAt: data.startsAt ?? before.startsAt };
-    const after = { ...place, endsAt: data.endsAt ?? before.endsAt };
-    for (const check of [
-      checkPeriod(after),
-      await checkPlace({ context, ticketId: before.ticketId, itemId, setupId }),
-    ]) {
-      if (!check.ok) return check;
-    }
-    let json: ReturnType<typeof toJson>;
-    if (patch) {
-      const values = mergeFields({ before: before.fields, patch });
-      const checked = await validateFields({ context, entityTypeId: before.entityTypeId, values });
-      if (!checked.ok) return checked;
-      json = toJson({ value: checked.value });
-    }
-    const state = await stateAfterMove({ context, before, itemId });
-    const row = await context.db.line.update({
-      where: { id },
-      data: { ...data, itemId, setupId, ...state, ...(json ? { fields: json } : {}) },
-    });
-    await updateRecord({ context, id, change: { fields: json } });
-    const line = toLineDto({ row });
-    context.recordChange({ entityId: id, before, after: line });
-    const moved = placeChanged({ before, after }) || "stateId" in state;
-    if (!moved) return ok({ value: line });
-    const reserved = await rederiveLine({ context, line });
-    return reserved.ok ? ok({ value: line }) : reserved;
-  },
+  handler: effectiveHandler({
+    handler: async ({ input: { id, fields: patch, ...data }, context }) => {
+      const before = await loadLine({ context, id });
+      if (!before) return notFound({ entity: "Line" });
+      const itemId = data.itemId === undefined ? before.itemId : data.itemId;
+      // A line that leaves its item cannot keep that item's setup.
+      const setupId = data.setupId === undefined ? (itemId ? before.setupId : null) : data.setupId;
+      const startsAt = data.startsAt === undefined ? before.startsAt : data.startsAt;
+      const endsAt = data.endsAt === undefined ? before.endsAt : data.endsAt;
+      const after = { itemId, setupId, startsAt, endsAt };
+      for (const check of [
+        checkLinePeriod(after),
+        await checkPlace({ context, ticketId: before.ticketId, itemId, setupId }),
+      ]) {
+        if (!check.ok) return check;
+      }
+      let json: ReturnType<typeof toJson>;
+      if (patch) {
+        const values = mergeFields({ before: before.fields, patch });
+        const checked = await validateFields({
+          context,
+          entityTypeId: before.entityTypeId,
+          values,
+        });
+        if (!checked.ok) return checked;
+        json = toJson({ value: checked.value });
+      }
+      const state = await stateAfterMove({ context, before, itemId });
+      const row = await context.db.line.update({
+        where: { id },
+        data: { ...data, ...after, ...state, ...(json ? { fields: json } : {}) },
+      });
+      await updateRecord({ context, id, change: { fields: json } });
+      const line = toLineRecord({ row });
+      context.recordChange({ entityId: id, before, after: line });
+      const moved = placeChanged({ before, after }) || "stateId" in state;
+      if (!moved) return ok({ value: line });
+      const reserved = await rederiveLine({ context, line });
+      return reserved.ok ? ok({ value: line }) : reserved;
+    },
+  }),
 });
 
 export const archiveLine = defineOperation({
@@ -88,17 +97,19 @@ export const archiveLine = defineOperation({
   input: LineIdInputSchema,
   output: LineSchema,
   permission: "line:write",
-  handler: async ({ input: { id }, context }) => {
-    const before = await loadLine({ context, id });
-    if (!before) return notFound({ entity: "Line" });
-    const row = await context.db.line.update({
-      where: { id },
-      data: { status: "ARCHIVED" },
-    });
-    await archiveRecords({ context, ids: [id] });
-    const line = toLineDto({ row });
-    context.recordChange({ entityId: id, before, after: line });
-    await releaseLine({ context, id });
-    return ok({ value: line });
-  },
+  handler: effectiveHandler({
+    handler: async ({ input: { id }, context }) => {
+      const before = await loadLine({ context, id });
+      if (!before) return notFound({ entity: "Line" });
+      const row = await context.db.line.update({
+        where: { id },
+        data: { status: "ARCHIVED" },
+      });
+      await archiveRecords({ context, ids: [id] });
+      const line = toLineRecord({ row });
+      context.recordChange({ entityId: id, before, after: line });
+      await releaseLine({ context, id });
+      return ok({ value: line });
+    },
+  }),
 });

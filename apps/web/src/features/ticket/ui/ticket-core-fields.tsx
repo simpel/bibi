@@ -43,7 +43,6 @@ type DetailInput = {
   name:
     | "desiredStartsAt"
     | "desiredEndsAt"
-    | "quantity"
     | "estimatedHeadcount"
     | "guaranteedHeadcount"
     | "holdsUntil";
@@ -62,8 +61,7 @@ function DetailFields({ form }: { form: Form }) {
         {field({ name: "desiredStartsAt", type: "datetime-local" })}
         {field({ name: "desiredEndsAt", type: "datetime-local" })}
       </div>
-      <div className="grid gap-4 sm:grid-cols-3">
-        {field({ name: "quantity", type: "number" })}
+      <div className="grid gap-4 sm:grid-cols-2">
         {field({ name: "estimatedHeadcount", type: "number" })}
         {field({ name: "guaranteedHeadcount", type: "number" })}
       </div>

@@ -38,7 +38,7 @@ export type CreateTestTicketInput = {
   contactId?: string;
   desiredStartsAt?: Date;
   desiredEndsAt?: Date;
-  quantity?: number;
+  estimatedHeadcount?: number;
 };
 
 /** A ticket desired tomorrow, three hours long, unless a period is given. */

@@ -9,7 +9,7 @@ export type TemplateTicketFormValues = {
   templateId: string;
   customerId: string;
   startsAt: string;
-  quantity: string;
+  headcount: string;
   assigneeId: string;
 };
 
@@ -19,7 +19,7 @@ export const templateTicketFormSchema = formSchema({
     templateId: values.templateId,
     customerId: values.customerId,
     startsAt: fromLocalInputValue({ value: values.startsAt }),
-    quantity: numberOrNull({ value: values.quantity }),
+    headcount: numberOrNull({ value: values.headcount }),
     assigneeId: values.assigneeId === NONE || values.assigneeId === "" ? null : values.assigneeId,
   }),
 });
@@ -28,6 +28,6 @@ export const templateTicketDefaults: TemplateTicketFormValues = {
   templateId: "",
   customerId: "",
   startsAt: "",
-  quantity: "",
+  headcount: "",
   assigneeId: NONE,
 };

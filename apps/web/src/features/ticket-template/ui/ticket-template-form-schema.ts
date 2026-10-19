@@ -1,10 +1,8 @@
 import type { TicketTemplateDto } from "@okazi/core/schemas";
-import { type QUANTITY_BASES, TicketTemplateCreateInputSchema } from "@okazi/core/schemas";
+import { TicketTemplateCreateInputSchema } from "@okazi/core/schemas";
 import { NONE } from "@/components/form/option-select-field";
 import { numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
-
-export type QuantityBasis = (typeof QUANTITY_BASES)[number];
 
 /** Raw values of one line row; the setup is carried over unseen and dropped with the item. */
 export type TemplateLineValues = {
@@ -14,8 +12,8 @@ export type TemplateLineValues = {
   setupId: string;
   offsetMinutes: string;
   durationMinutes: string;
+  /** Empty: the line counts the ticket's headcount (ADR 0052). */
   quantity: string;
-  quantityBasis: QuantityBasis;
 };
 
 /** Raw values of the predefined ticket form. */
@@ -54,7 +52,6 @@ export const emptyLine = ({ entityTypeId }: { entityTypeId: string }): TemplateL
   offsetMinutes: "0",
   durationMinutes: "60",
   quantity: "",
-  quantityBasis: "FIXED",
 });
 
 export type FormDefaultsInput = {
@@ -78,7 +75,6 @@ export function ticketTemplateFormDefaults({
       offsetMinutes: String(line.offsetMinutes),
       durationMinutes: String(line.durationMinutes),
       quantity: line.quantity === null ? "" : String(line.quantity),
-      quantityBasis: line.quantityBasis,
     })),
   };
 }

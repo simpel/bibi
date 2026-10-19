@@ -13,3 +13,13 @@ export function occupancyPeriod({ format, startsAt, endsAt }: OccupancyPeriodInp
     timeStyle: "short",
   });
 }
+
+export type LinePeriodInput = Omit<OccupancyPeriodInput, "startsAt" | "endsAt"> & {
+  startsAt: string | null;
+  endsAt: string | null;
+};
+
+/** A line's period, or null for an untimed line (ADR 0052). */
+export function linePeriod({ format, startsAt, endsAt }: LinePeriodInput): string | null {
+  return startsAt && endsAt ? occupancyPeriod({ format, startsAt, endsAt }) : null;
+}
