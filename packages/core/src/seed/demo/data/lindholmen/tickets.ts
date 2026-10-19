@@ -12,8 +12,9 @@ const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
  * organization's own (`pipeline.ts`): open tickets after the deal are Confirmed, a lost one is
  * Lost. The leads F2, F3 and F6 stay before the quote with a room line in its initial state,
  * Prebooked (a soft hold, ADR 0044): F2 and F3 hold Vinga at the same time, F6's holdsUntil has passed. L4's
- * tickets in Quote sent and Confirmed get a quote that is sent and, for Confirmed, accepted: the
- * quote events of the phases move them (ADR 0043). L4's
+ * tickets in Quote sent and Confirmed get a Conference lunch line (unless they have one) and a
+ * quote of their priced lines that is sent and, for Confirmed, accepted: the quote events of the
+ * phases move them (ADR 0043, 0052). L4's lunch changes after its quote was accepted. L4's
  * Styrsö line is Booked by the grid when L4 is confirmed. L11 waits in Quote sent with its lunch
  * overridden to Locked; L12 soft-holds Styrsö inside L4's booking, so its move to Confirmed is
  * blocked (both used by `checkDemoGrid`).
@@ -47,6 +48,8 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     ...{ ref: "L4", customer: gota, type: "Conference", day: 5, from: "09:00", to: "13:00" },
     ...{ phase: "Confirmed", headcount: 12, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
     lines: [{ item: "Styrsö", name: "Half-day conference", from: "09:00", to: "13:00" }],
+    // ADR 0052: two more for lunch after the customer accepted; the accepted quote shows it.
+    changeAfterQuote: { line: "Conference lunch", quantity: 14 },
   },
   {
     ...quoted,

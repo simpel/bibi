@@ -49,6 +49,7 @@ model Line {
   state           ItemState?    @relation(fields: [stateId, organizationId], references: [id, organizationId])
   requirements    Requirement[]
   occupancies     Occupancy[]
+  orderLines      OrderLine[]
   /// The supertable row this record extends (ADR 0056).
   record          Record        @relation(fields: [id, organizationId], references: [id, organizationId])
 

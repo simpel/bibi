@@ -1,12 +1,12 @@
 import { byId, type ParityEntity, tool } from "./parity-entities";
 
 const LINE =
-  "id itemId position name quantity unitPriceMinor priceUnit discountPercent vatRatePercent " +
+  "id lineId itemId position name quantity unitPriceMinor priceUnit discountPercent vatRatePercent " +
   "tags totalExclVatMinor vatMinor";
 
 /**
- * A quote (ADR 0022) to the ticket created earlier, with a line that copies the room; a
- * function so the import cycle with `parity-entities.ts` resolves first.
+ * A quote (ADR 0022, 0052) to the ticket created earlier: a DRAFT that shows the ticket's priced
+ * lines live; a function so the import cycle with `parity-entities.ts` resolves first.
  */
 export const quoteEntity = (): ParityEntity => ({
   ...byId({
@@ -15,7 +15,12 @@ export const quoteEntity = (): ParityEntity => ({
     list: "quotes",
     createTool: "",
     args: {},
-    nested: { lines: `{ ${LINE} change changedFields }`, removedLines: `{ ${LINE} }` },
+    nested: {
+      lines: `{ ${LINE} change changedFields }`,
+      removedLines: `{ ${LINE} }`,
+      ticketChanges: `{ ${LINE} change changedFields }`,
+      ticketRemovedLines: `{ ${LINE} }`,
+    },
   }),
   create: ({ mcp, made }) =>
     tool({
@@ -25,7 +30,6 @@ export const quoteEntity = (): ParityEntity => ({
         ticketId: made.ticket.id,
         validUntil: "2026-12-01T00:00:00.000Z",
         terms: "Net 30",
-        lines: [{ itemId: made.item.id, quantity: 2, discountPercent: 10 }],
       },
     }),
 });

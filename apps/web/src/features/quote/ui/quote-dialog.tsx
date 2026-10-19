@@ -10,20 +10,17 @@ import {
   Form,
 } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import type { NamedOption } from "@/components/form/named-option";
 import { TextField } from "@/components/form/text-field";
 import type { QuoteFormTarget } from "./quote-form-schema";
-import { QuoteLineRows } from "./quote-line-rows";
 import { useQuoteForm } from "./use-quote-form";
 
 type QuoteFormProps = {
   target: QuoteFormTarget;
   quote?: QuoteDto;
-  items: readonly NamedOption[];
   onDone: () => void;
 };
 
-function QuoteForm({ target, quote, items, onDone }: QuoteFormProps) {
+function QuoteForm({ target, quote, onDone }: QuoteFormProps) {
   const t = useTranslations("quote.fields");
   const common = useTranslations("common");
   const { form, submit, pending } = useQuoteForm({ target, onDone, ...(quote ? { quote } : {}) });
@@ -32,7 +29,6 @@ function QuoteForm({ target, quote, items, onDone }: QuoteFormProps) {
       <form onSubmit={submit} noValidate className="grid gap-4">
         <TextField form={form} name="validUntil" label={t("validUntil")} type="date" />
         <TextField form={form} name="terms" label={t("terms")} multiline />
-        <QuoteLineRows form={form} items={items} />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>
             {common("cancel")}
@@ -51,7 +47,7 @@ export type QuoteDialogProps = Omit<QuoteFormProps, "onDone"> & {
   onOpenChange: (open: boolean) => void;
 };
 
-/** Create a quote for a ticket, or edit a draft: validity, terms and order lines. */
+/** Create a quote for a ticket, or edit a draft: validity and terms (the lines are the ticket's). */
 export function QuoteDialog({ open, onOpenChange, ...props }: QuoteDialogProps) {
   const t = useTranslations("quote");
   return (

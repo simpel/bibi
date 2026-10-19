@@ -1,0 +1,387 @@
+# Demo data
+
+Specification for `pnpm --filter @okazi/core seed:demo` (ADR 0025). Two fictional organizations set up completely differently with the same code, to show the configurable domain (ADR 0021).
+
+- **Lindholmen Experience Center**: conferences, exhibition and restaurant. Uses everything: vocabularies with allergens, sheets to the kitchen, packages, item states and a phase grid.
+- **Vingaleden Archipelago Tours**: boat tours in the Gothenburg archipelago. No food, no allergens, other phases and other requirements.
+
+All dates are relative to the day of the run: `D` = today, `D+3` = in three days. Times are local time (Europe/Stockholm).
+
+## Checks after seeding (CI)
+
+The script ends with checks that make CI fail if the demo does not show what it should:
+
+1. The number of rows per entity and organization matches the tables below.
+2. Vingaleden has no vocabulary called "Allergens", and none of its sheets include food.
+3. Lindholmen's kitchen order for ticket L5 is **blocked**: anaphylaxis to crustaceans against a mandatory dish.
+4. Lindholmen's kitchen order for ticket L3 is **not** blocked: the nut allergy has an alternative in the choice group.
+5. Tickets F2 and F3 hold the same room and time with soft holds. Both lines are `Prebooked`, F2's `heldAt` is earlier than F3's (no queue).
+6. Ticket F6's `holdsUntil` has passed and its line is still `Prebooked` until `ticket.expireHolds` runs.
+7. Every write has a row in `AuditLog` with actor `SYSTEM`.
+8. Lindholmen's phase grid drives phase moves: moving L11 to Confirmed books its room line and skips its overridden lunch line, and moving L12 to Confirmed is refused because L4 has a hard hold on the same room, and nothing changes.
+9. Every projection matches what is rebuilt from owned data (ADR 0051): `reconcile-checks.ts` registers a `rebuild` query and a `compare` function per projection (`reconcile.ts`), and `checks.ts` runs them all and fails with the first differing rows. Today: line holds in `Occupancy` (`HOLD` and `SETUP` with `lineId`, written only by the database trigger `sync_line_occupancy`, ADR 0053) against the lines that have not ended (same item, kind and period; a hard hold with a setup also its changeover buffer), and the `Record` supertable rows against the seven tables that extend them (same base, type, status and fields, ADR 0056). Vitest calls the same `reconcileProjections`.
+
+
+The checks that run today:
+- **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
+- **Part 2 (configuration):**
+  - The number of rows per organization matches for venue, vocabularies, vocabulary values, setups, responsibilities, types, fields, items and capacities (point 1 for what exists).
+  - Each responsibility covers the item types and has the default followers of the table below, in order (its join rows, ADR 0056).
+  - Archiving a field that records have values for is refused with `CONFLICT`, and the refusal lists the blocking records in `issues` (`checkDemoRecords`, `record-checks.ts`, ADR 0056). Nothing changes.
+  - `LINK` values are `RecordLink` rows (ADR 0056, `checkDemoLinks`, `link-checks.ts`, run from `config-checks.ts`): as many rows as the data files give (Lindholmen: L1 Host Mats Olsson, L3 Host Eva Sund; Vingaleden none), each pointing at an active record, no LINK field key in any `Record.fields`, and archiving a linked contact is refused with `CONFLICT` and leaves it active.
+  - Vingaleden has no vocabulary "Allergens" (the first half of point 2).
+  - Lindholmen's imported vocabulary "Allergens" has 14 values.
+  - The number of item parts (`ItemComponent`) per organization matches the data files.
+- **Part 3 (catalog):** the whole catalog of both organizations is seeded via `item.create` as SYSTEM, parts after the items they contain, and Nordkust management team via `item.saveAsPackage` right after its customer. The checks compare with the data files per organization: the number of items (Lindholmen 61, Vingaleden 9), customer-specific packages (Lindholmen 1), item parts (`ItemComponent`, choice options included) and choice groups (`ItemChoiceGroup`). The test also verifies that the Three-course dinner has the groups Starter, Main course and Dessert over 8 parts, and that Nordkust management team belongs to Nordkust Logistik. Every choice group in the tables is "choose 1" (`minPick` = `maxPick` = 1).
+- **Part 2 (configuration), item states:** every item type with states in the data files gets them from a template (ADR 0044) through `itemState.create`, initial state first; the type's default state "Active" is archived and the template's Released state becomes the type's expiry state (`entityType.update` `expiryStateId`). Templates: bookable (Prebooked `SOFT` `expires`, Booked `HARD` `inSheets`, Released), food (Estimated, Ordered, Locked `inSheets`, Released) and other (Planned, Confirmed `inSheets`, Released; on a `BOOKABLE` type Planned holds `SOFT` and Confirmed `HARD`). Lindholmen: Conference room and Equipment bookable, Dish, Drink and Meal food, Tour and Guide other; Package keeps "Active". Vingaleden: Boat and Skipper bookable, Tour and Add-on other. Lindholmen also has the line type Line (base `LINE`).
+- **Part 4 (customers), started:** the number of customers and contact persons per organization matches the data files, and Nordkust Logistik has its price list with a general discount of 15 %. Ticket phases and the phase grid follow when those operations exist.
+- **Part 5 (tickets), started:** the number of tickets per organization matches the data files, each with its customer, type, desired period, headcount, own fields, main assignee and 0–2 followers by name (ADR 0034; `checkDemoAssignments` compares the counts). Each ticket is created through `ticket.create` in the entry phase and then moved to its phase. A phase with a quote event (Lindholmen's Quote sent and Confirmed) is reached through the ticket's quote (ADR 0052): the ticket gets an untimed line of the item named in its `quote` (`line.create`, counting the headcount) unless one of its lines already has that item, then `quote.create` (valid 30 days, a live view of the priced lines) and `quote.send`, which freezes every priced line as an order line, and for Confirmed also `quote.accept`. L4's Conference lunch line is changed to 14 after its quote was accepted (`changeAfterQuote`), so L4 differs from its accepted quote; any other phase (all of Vingaleden's, and Completed, Lost) through `ticket.changePhase` (`checkDemoTickets` compares the number of tickets per phase and checks the minimum configuration: one entry and one terminal phase). The phases are the organization's own (see Ticket phases and the pipeline part below): open tickets after the deal are Confirmed, L1, L2 and V1 Completed, L6 ("Budget") Lost, V2 ("Weather") Called off – weather, V3 Weather OK and V4 Weather hold. Requirements and the other lines follow.
+- **Part 5, predefined tickets (ADR 0043):** each organization has its predefined tickets from `data/<org>/templates.ts` (Lindholmen 2, Vingaleden 1), created with `ticketTemplate.create` after the pipeline. L7 (Small meeting) and L10 (Afternoon break) are created with `ticket.createFromTemplate`, not by hand, and start in the template's phase, Confirmed. `checkDemoTemplates` asserts the template and line counts against the data files and that each ticket made from a template has one line per template line, each in the state the phase grid gives its item type for the template's phase (the room Booked, the meal Ordered).
+<<<<<<< HEAD
+- **Part 5, holds (checks 5 and 6):** the leads F2, F3 and F6 stay before the quote (New) and each gets one room line through `line.create`, which starts in Prebooked, a soft hold. F2 (Kickoff) and F3 (Product launch) hold Vinga (auditorium) on D+45 09–17 with `holdsUntil` D+5; F6 (Team day) holds Hönö on D+12 with `holdsUntil` D−1. `checkDemoHolds` verifies that every seeded line of a lead without an override starts in its initial state, that F2 and F3 are two overlapping lines in a `SOFT` state with F2's `heldAt` before F3's, then runs `ticket.expireHolds` once: F6's line is Released and F2's and F3's lines are still Prebooked. The holds themselves are not checked by hand: the `line-holds` reconciliation (check 9) runs right after the expiry and compares every stored hold with what the lines say. The seed never writes `Occupancy` for a line; the holds appear by trigger when `line.create`, `line.changeState` and the phase moves change the lines. `reset.ts` deletes the lines before the items, and their holds go with them (`ON DELETE CASCADE`), so the triggers need no special handling. After seeding, F6's line is therefore already Released.
+- **Part 5, pipeline and phase grid (checks 8 and 10):** after the item types and states and before any ticket, `seed-pipeline.ts` gives each organization its own pipeline from `data/<org>/pipeline.ts`: the phases are created with `ticketPhase.create` and their transitions set with `ticketPhase.setTransitions` (the organization is provisioned with `pipeline: "none"`, so the default phases of ADR 0043 are not created), then the grid is set with `phaseGrid.setCell`. Lindholmen uses the conference-estate set (the phase table above). Its grid: New, Site visit and Quote sent set Conference room to Prebooked and Tour and Guide to Planned; Confirmed sets Conference room and Equipment to Booked, Dish and Meal to Ordered and Tour and Guide to Confirmed. Cells left out keep the state (food and equipment before the deal, Drink throughout). Vingaleden uses its own tour-company set (below): Request and Weather hold set Boat and Skipper to Prebooked and Tour to Planned, Confirmed and Weather OK set them to Booked and Confirmed; Add-on has no cells. `checkDemoPipeline` (check 10) asserts per organization the number of phases, transitions, item states and grid cells against the data files, one entry and one terminal phase, and exactly one initial state per item type. The same templates ship for every organization: `ticketPhase.importTemplate` and `phaseGrid.importTemplate` with `default` and `conference-estate`, and `provisionOrganization` applies `default`. The grid template matches by state name, so it fills the cells of every type that has a state of that name. The `event` flags of the phase table come from the conference-estate template (`QUOTE_SENT` on Quote sent, `QUOTE_ACCEPTED` on Confirmed); Vingaleden's phases have none, so both cases are covered. `checkDemoQuoteEvents` (`quote-event-checks.ts`) asserts that each ticket made through a quote sits in its event phase with one quote that is `SENT` (Quote sent) or `ACCEPTED` with `acceptedAt` and method `MANUAL` (Confirmed, accepted by SYSTEM so `acceptedBy` is empty), that tickets made from a predefined ticket (L7, L10) have no quote, and that an organization without event phases has no quotes. New lines start in their entry phase's cell. L4 gets a Styrsö line (D+5 09–13), which the grid moves to Booked (a hard hold) when the seed confirms L4. L11 (Göta, D+6, Lead) has a Styrsö line (Board meeting, with its own unit price of 800 kr, ADR 0052), a Conference lunch line overridden to Locked with `line.changeState` and an untimed Projector hire line (quantity 1, no time, so it holds nothing and is not on the calendar). The other seeded lines have no quantity of their own and count the ticket's headcount (guaranteed if set, else estimated). L12 (Hisingen, D+5 10–12, Lead) soft-holds Styrsö inside L4's booking. `checkDemoGrid` then moves L11 to Confirmed (by accepting its quote; a phase with an event cannot be entered with `ticket.changePhase`) (its Styrsö line becomes Booked, the overridden lunch stays Locked) and tries to move L12 to Confirmed (it makes and sends a quote first, which moves L12 to Quote sent), which must be refused with `CONFLICT` naming the L12 line and leave L12 and its line unchanged. After seeding, L11 is therefore already Confirmed. `checkDemoArchive` (`archive-checks.ts`, run before `checkDemoGrid` so L11 is still in Quote sent) previews removing a populated phase that no predefined ticket starts in (Quote sent, with a transition to a phase without an event or a required reason as the target, since no ticket can be moved into an event phase and the preview gives no reason) and a non-initial item state that lines use (with the type's initial state as the target), through `ticketPhase.archivePreview` and `itemState.archivePreview`: every ticket or line moves and nothing blocks. The preview rolls back, so the seeded data is unchanged.
+=======
+- **Part 5, holds (checks 5 and 6):** the leads F2, F3 and F6 stay before the quote (New) and each gets one room line through `line.create`, which starts in Prebooked, a soft hold. F2 (Kickoff) and F3 (Product launch) hold Vinga (auditorium) on D+45 09–17 with `holdsUntil` D+5; F6 (Team day) holds Hönö on D+12 with `holdsUntil` D−1. `checkDemoHolds` verifies that every seeded line of a lead without an override starts in its initial state, that F2 and F3 are two overlapping `SOFT` holds with F2's `heldAt` before F3's, then runs `ticket.expireHolds` once: F6's line is Released (its hold dropped) and F2's and F3's lines are still Prebooked. After seeding, F6's line is therefore already Released.
+- **Part 5, pipeline and phase grid (checks 8 and 10):** after the item types and states and before any ticket, `seed-pipeline.ts` gives each organization its own pipeline from `data/<org>/pipeline.ts`: the phases are created with `ticketPhase.create` and their transitions set with `ticketPhase.setTransitions` (the organization is provisioned with `pipeline: "none"`, so the default phases of ADR 0043 are not created), then the grid is set with `phaseGrid.setCell`. Lindholmen uses the conference-estate set (the phase table above). Its grid: New, Site visit and Quote sent set Conference room to Prebooked and Tour and Guide to Planned; Confirmed sets Conference room and Equipment to Booked, Dish and Meal to Ordered and Tour and Guide to Confirmed. Cells left out keep the state (food and equipment before the deal, Drink throughout). Vingaleden uses its own tour-company set (below): Request and Weather hold set Boat and Skipper to Prebooked and Tour to Planned, Confirmed and Weather OK set them to Booked and Confirmed; Add-on has no cells. `checkDemoPipeline` (check 10) asserts per organization the number of phases, transitions, item states and grid cells against the data files, one entry and one terminal phase, and exactly one initial state per item type. The same templates ship for every organization: `ticketPhase.importTemplate` and `phaseGrid.importTemplate` with `default` and `conference-estate`, and `provisionOrganization` applies `default`. The grid template matches by state name, so it fills the cells of every type that has a state of that name. The `event` flags of the phase table come from the conference-estate template (`QUOTE_SENT` on Quote sent, `QUOTE_ACCEPTED` on Confirmed); Vingaleden's phases have none, so both cases are covered. `checkDemoQuoteEvents` (`quote-event-checks.ts`) asserts that every order line has a `lineId` of a line on its quote's ticket, that exactly the accepted quotes of tickets with `changeAfterQuote` (L4) differ from their tickets, each flagging only that line's quantity, that each ticket made through a quote sits in its event phase with one quote that is `SENT` (Quote sent) or `ACCEPTED` with `acceptedAt` and method `MANUAL` (Confirmed, accepted by SYSTEM so `acceptedBy` is empty), that tickets made from a predefined ticket (L7, L10) have no quote, and that an organization without event phases has no quotes. New lines start in their entry phase's cell. L4 gets a Styrsö line (D+5 09–13), which the grid moves to Booked (a hard hold) when the seed confirms L4. L11 (Göta, D+6, Lead) has a Styrsö line (Board meeting, with its own unit price of 800 kr, ADR 0052), a Conference lunch line overridden to Locked with `line.changeState` and an untimed Projector hire line (quantity 1, no time, so it holds nothing and is not on the calendar). The other seeded lines have no quantity of their own and count the ticket's headcount (guaranteed if set, else estimated). L12 (Hisingen, D+5 10–12, Lead) soft-holds Styrsö inside L4's booking. `checkDemoGrid` then moves L11 to Confirmed (by accepting its quote; a phase with an event cannot be entered with `ticket.changePhase`) (its Styrsö line becomes Booked, the overridden lunch stays Locked) and tries to move L12 to Confirmed (it makes and sends a quote first, which moves L12 to Quote sent), which must be refused with `CONFLICT` naming the L12 line and leave L12 and its line unchanged. After seeding, L11 is therefore already Confirmed. `checkDemoArchive` (`archive-checks.ts`, run before `checkDemoGrid` so L11 is still in Quote sent) previews removing a populated phase that no predefined ticket starts in (Quote sent, with a transition to a phase without an event or a required reason as the target, since no ticket can be moved into an event phase and the preview gives no reason) and a non-initial item state that lines use (with the type's initial state as the target), through `ticketPhase.archivePreview` and `itemState.archivePreview`: every ticket or line moves and nothing blocks. The preview rolls back, so the seeded data is unchanged.
+>>>>>>> 4ecff5ea (Quote as a snapshot of lines (ADR 0052))
+- **Pipeline board (check 9):** `checkDemoBoard` runs `pipeline.board` and asserts one column per seeded phase, every seeded ticket on exactly one card in a known column (the terminal tickets of the retention window sit in the Closed lane). Cards also carry the held and booked line counts. No new data: the existing tickets already cover every phase.
+- **All parts:** point 7.
+- **Without a pipeline (`seed:demo -- --skip-pipeline`, ADR 0044):** the same organizations with roles, configuration, catalog and customers, but no ticket phases, no grid and no tickets, and every item type keeps its one default state "Active" (the state templates are not applied). This is the empty state of the first setup with the assistant (ADR 0045). `checkDemoSetupNeed` asserts that such an organization is detected as needing the setup (`ticketPhase.list` is empty, the way the web app decides), has no grid cells and one state per item type; on a normal run it asserts the opposite. The customer and ticket counts expect no tickets. `guard.ts` is unaffected: production is refused either way.
+
+## Exceptions and sign-in
+
+- The organization, the users and the memberships are Better Auth tables. They are written directly (`seed/demo/users.ts`), the same way sign-up and `addMember` do. Everything else goes through `execute` as `SYSTEM`. The owner gets `owner` directly, the others get their role via `member.assignRole`. Right after, `provisionOrganization` gives each organization its defaults (a minimal set of ticket phases, ADR 0043) as SYSTEM, the same way Better Auth's `afterCreateOrganization` hook does for a real sign-up.
+- The users' email is `firstname.lastname@<slug>.okazi.test`, e.g. `anna.berg@lindholmen-demo.okazi.test`. Sign in with a magic link or a one-time code; the email ends up in Mailpit.
+- **Mega admin (development):** when `seed:demo` runs for the demo organizations, it also creates `mega.admin@admin.okazi.test` ("Mega Admin"): a platform admin (`user.role = admin`, ADR 0015) and the `owner` of every demo organization, written directly like the other users (`seed-mega-admin.ts`). It is created once and kept across reseeds (same id), only its memberships are rebuilt. It is not part of any organization's member count (the checks run before it is added), and tests that pass their own `orgs` do not create it. `checkDemoMegaAdmin` (`mega-admin-checks.ts`, run by `run-mega-admin.ts`) asserts the role and the ownership. The dev user switcher lists it as a top-level entry above the organizations.
+- **AI models (development):** the same platform step gives every AI feature that has no model yet its demo model (`data`-style list in `ai-models.ts`: Claude Sonnet for `assistant.chat` and `onboarding`, a 1536-dimension embedding model for `search.embedding`), written as `AiSetting` rows updated by the mega admin (`seed-ai-models.ts`), so the assistant and the onboarding work right after `seed:demo`. A model a platform admin already chose in `/admin/ai-models` is never overwritten. `checkDemoAiModels` (`ai-model-checks.ts`) asserts every feature in `AI_FEATURES` has one. The ids are Vercel AI Gateway ids and can be changed in `/admin/ai-models`; the embedding feature needs a reindex when its model changes.
+- Access uses the fixed roles (ADR 0034): `viewer` reads everything, `member` also writes operational data (customers, tickets, lines, requirements, payments, sheets), `admin` also configures and manages members, `owner` can do everything. What each person answers for (sales, coordinator, kitchen, caretaker) comes with responsibilities, not roles.
+- Part 2 seeds the configuration and the bookable spaces: Lindholmen's 10 conference rooms and Vingaleden's 3 boats, each in the organization's venue. Part 3 seeds the rest of the catalog (dishes, drinks, meals, guides, tours, equipment, packages, skippers, trips and add-ons) in the same venue. A part has no setup of its own, so "Knippla in the Cabaret setup" and "The View, Banquet" are seeded as the room only; the setup is chosen on the line. Tour group sizes ("max 25 people") are not seeded, since Tour has no `SETUPS`. The requirement types under "Other types" come in part 5, because they point to vocabularies via `requirement.*`.
+
+---
+
+# Lindholmen Experience Center
+
+Slug `lindholmen-demo`. Venue: Lindholmspiren 1, 417 56 Göteborg.
+
+## Configuration
+
+### Roles
+Fixed roles (ADR 0034). The function in parentheses is what the person answers for; see Responsibilities below.
+
+| User | Role |
+|---|---|
+| Anna Berg | owner |
+| Erik Lund (sales) | member |
+| Sara Nilsson (sales) | member |
+| Johan Ek (coordinator) | admin |
+| Maria Holm (coordinator) | member |
+| Ali Karimi (kitchen) | member |
+| Peter Sjoberg (caretaker) | viewer |
+| Lena Strand (finance) | member |
+
+### Responsibilities
+Seeded in part 2 via `responsibility.create` as SYSTEM, after the item types. Followers are optional.
+
+| Responsibility | Covers (item types) | Default assignee | Default followers |
+|---|---|---|---|
+| Sales | Package | Erik Lund | Sara Nilsson |
+| Coordinator | Conference room, Equipment, Tour, Guide | Johan Ek | Maria Holm |
+| Head of kitchen | Dish, Drink, Meal | Ali Karimi | – |
+
+### Vocabularies
+| Vocabulary | Values |
+|---|---|
+| Allergens | Imported template "EU 14 allergens": Gluten, Crustaceans, Eggs, Fish, Peanuts, Soy, Milk, Tree nuts, Celery, Mustard, Sesame, Sulphur dioxide/sulphites, Lupin, Molluscs |
+| Diet | Vegetarian, Vegan, Halal, Pork-free |
+| Severity | Intolerance, Allergy, Anaphylaxis |
+| Accessibility | Wheelchair, Hearing loop, Guide dog |
+| View | River, Courtyard, None |
+| Dresscode | Casual, Blazer, Dark suit |
+
+### Setups
+Theatre (15 min), Classroom (30), U-shape (30), Boardroom (20), Cabaret (40), Banquet (60), Reception (15).
+
+### Item types
+| Type | Behaviours | Own fields |
+|---|---|---|
+| Conference room | `BOOKABLE`, `SETUPS`, `PRICED` | Floor (number), Area m² (number), Ceiling height m (number), Daylight (yes/no), View (choice: View) |
+| Dish | – | Allergens (multi-choice: Allergens), Diet (multi-choice: Diet) |
+| Drink | `PRICED` | Allergens (multi-choice), Alcoholic (yes/no) |
+| Meal | `PRICED`, `COMPOSABLE`, `CHOICES` | Service style (choice: Buffet, Plated, Finger food) |
+| Tour | `PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE` | Language (multi-choice: Swedish, English, German) |
+| Guide | `BOOKABLE` | Language (multi-choice) |
+| Equipment | `BOOKABLE`, `PRICED` | Inventory number (text) |
+| Package | `PRICED`, `COMPOSABLE`, `CHOICES` | Minimum quantity (number) |
+
+### Other types
+| Base entity | Types and fields |
+|---|---|
+| Customer | Company (Org no., Framework agreement yes/no) · Public sector (Org no., Peppol-ID, Requires case number yes/no) · Association (Org no.) |
+| Contact | Contact person (Role: choice Orderer, Invoice recipient, Organizer) |
+| Ticket | Conference (Purpose, Host: link to a Contact person) · Event (Dresscode: choice Dresscode, Speaker/entertainment) · Tour (School class yes/no) |
+| Requirement | Dietary requirement (vocabulary Allergens or Diet, field Severity) · Accessibility (vocabulary Accessibility) |
+
+### Ticket phases (ADR 0043)
+| Phase | Flags |
+|---|---|
+| New | `entry` |
+| Site visit | – |
+| Quote sent | `event` `QUOTE_SENT` |
+| Confirmed | `event` `QUOTE_ACCEPTED`, `requiresAssignee` |
+| Final count locked | `requiresAssignee` |
+| Completed | `terminal`, `requiresAssignee`, `invoiceable` |
+| Lost | `terminal`, `requiresReason` |
+| Cancelled | `terminal`, `requiresReason` |
+
+### Item states and the phase grid (ADR 0044)
+| Item type | States (initial first) |
+|---|---|
+| Conference room, Equipment (`BOOKABLE`) | Prebooked (`SOFT`, `expires`), Booked (`HARD`), Released |
+| Dish, Drink, Meal | Estimated, Ordered, Locked (`inSheets`), Released |
+| Tour, Guide | Planned, Confirmed, Released |
+
+| Phase | Rooms and equipment | Food | Tours and guides |
+|---|---|---|---|
+| New, Site visit, Quote sent | Prebooked | Estimated | Planned |
+| Confirmed | Booked | Ordered | Confirmed |
+| Final count locked | keep | Locked | keep |
+| Completed, Lost, Cancelled | Released | Released | Released |
+
+### Ticket templates
+| Template | Type | Phase | Lines (offset from the ticket start, length) |
+|---|---|---|---|
+| Small meeting | Conference | Confirmed | Asperö (Boardroom) 0 min, 2 hours; Coffee and tea 0 min, 2 hours, no quantity (the headcount) |
+| Afternoon break | Conference | Confirmed | Donsö (Boardroom) 0 min, 3 hours; Afternoon break 60 min, 30 min, no quantity (the headcount) |
+
+L7 and L10 are created with `ticket.createFromTemplate` from these (see Tickets). Both start in Confirmed, so the grid books the room (Booked) and orders the meal (Ordered); Coffee and tea is a drink and keeps its initial state.
+
+### Sheets
+| Sheet | Item types | Requirements | To (responsibility, ADR 0034) |
+|---|---|---|---|
+| Kitchen order | Dish, Drink, Meal | Allergens, Diet | Kitchen |
+| Setup order | Conference room, Equipment | Accessibility | Caretaker |
+| Guide brief | Tour, Guide | Accessibility | Coordinator |
+
+## Catalog
+
+### Conference rooms (10)
+Price per hour excl. VAT. Capacity per setup.
+
+| Room | Floor | m² | Daylight | View | Capacity | SEK/h |
+|---|---|---|---|---|---|---|
+| Vinga (auditorium) | 1 | 260 | yes | River | Theatre 220, Classroom 120, Banquet 160, Reception 250 | 4,500 |
+| Hönö | 2 | 90 | yes | River | Theatre 70, Classroom 40, U-shape 28, Cabaret 48, Banquet 56 | 1,900 |
+| Öckerö | 2 | 70 | yes | Courtyard | Theatre 50, Classroom 30, U-shape 22, Cabaret 36 | 1,500 |
+| Styrsö | 3 | 45 | yes | River | Boardroom 16, U-shape 14 | 950 |
+| Vrångö | 3 | 45 | yes | Courtyard | Boardroom 14, U-shape 12 | 900 |
+| Donsö | 3 | 32 | yes | River | Boardroom 10 | 700 |
+| Brännö | 3 | 32 | yes | Courtyard | Boardroom 10 | 650 |
+| Asperö | 3 | 20 | no | None | Boardroom 6 | 450 |
+| Knippla (workshop) | 1 | 120 | yes | Courtyard | Classroom 50, Cabaret 60, Reception 100 | 2,200 |
+| The View (roof terrace) | 5 | 150 | yes | River | Banquet 90, Reception 150 | 3,800 |
+
+### Dishes (24)
+| Dish | Allergens | Diet |
+|---|---|---|
+| Sourdough bread with butter | Gluten, Milk | Vegetarian |
+| Yoghurt with granola | Milk, Gluten, Tree nuts | Vegetarian |
+| Scrambled eggs | Eggs, Milk | Vegetarian |
+| Fresh fruit | – | Vegan |
+| Cinnamon bun | Gluten, Milk, Eggs | Vegetarian |
+| Carrot cake | Gluten, Eggs, Milk, Tree nuts | Vegetarian |
+| Oat ball | Gluten | Vegan |
+| Oven-baked cod loin, browned butter | Fish, Milk | Pork-free |
+| Veal roast with red wine sauce | Milk, Celery, Sulphur dioxide/sulphites | Pork-free |
+| Mushroom risotto | Milk | Vegetarian |
+| Lentil stew with coconut rice | Celery | Vegan |
+| Green salad and bread | Gluten | Vegan |
+| Skagen shrimp salad on rye bread | Crustaceans, Eggs, Gluten, Mustard | – |
+| Beetroot carpaccio with chèvre | Milk, Tree nuts | Vegetarian |
+| Venison fillet, celeriac purée | Milk, Celery, Sulphur dioxide/sulphites | Pork-free |
+| Pan-fried pike-perch, mussel sauce | Fish, Molluscs, Milk, Sulphur dioxide/sulphites | Pork-free |
+| Celeriac steak, mustard vinaigrette | Celery, Mustard | Vegan |
+| Chocolate fondant with hazelnut | Tree nuts, Eggs, Milk, Gluten | Vegetarian |
+| Cloudberry parfait | Eggs, Milk | Vegetarian |
+| Lemon sorbet | – | Vegan |
+| Toast Skagen | Crustaceans, Gluten, Eggs | – |
+| Charcuterie and cheese | Milk, Mustard, Sulphur dioxide/sulphites | – |
+| Hummus with vegetable sticks | Sesame | Vegan |
+| Spiced nuts | Tree nuts, Peanuts | Vegan |
+
+### Drinks (6)
+| Drink | Price | Allergens | Alcohol |
+|---|---|---|---|
+| Coffee and tea | SEK 35/pp | – | no |
+| Mineral water | SEK 25/each | – | no |
+| Sparkling welcome drink | SEK 95/pp | Sulphur dioxide/sulphites | yes |
+| Alcohol-free bubbly | SEK 65/pp | – | no |
+| Lager from Göteborg | SEK 85/each | Gluten | yes |
+| Wine package (2 glasses) | SEK 225/pp | Sulphur dioxide/sulphites | yes |
+
+### Meals (6)
+Parts without a choice group are mandatory.
+
+| Meal | Price/pp | Parts |
+|---|---|---|
+| Conference breakfast | 125 | Sourdough bread, Yoghurt with granola, Scrambled eggs, Fresh fruit, Coffee and tea |
+| Morning break | 65 | Coffee and tea + **choose 1:** Cinnamon bun, Oat ball, Fresh fruit |
+| Afternoon break | 65 | Coffee and tea + **choose 1:** Carrot cake, Oat ball, Fresh fruit |
+| Conference lunch | 245 | Green salad and bread, Mineral water + **main course, choose 1:** Cod loin, Veal roast, Mushroom risotto, Lentil stew |
+| Three-course dinner | 595 | **Starter, choose 1:** Skagen shrimp salad, Beetroot carpaccio · **Main course, choose 1:** Venison fillet, Pike-perch, Celeriac steak · **Dessert, choose 1:** Chocolate fondant, Cloudberry parfait, Lemon sorbet |
+| Reception buffet | 245 | Toast Skagen, Charcuterie and cheese, Hummus with vegetable sticks, Spiced nuts (all mandatory) |
+
+### Guides and tours
+- Guides (`BOOKABLE`): Emma Lind (Swedish, English), Oskar Ahl (Swedish, German), Nora Falk (Swedish, English).
+- Exhibition tour: 60 min, max 25 people, SEK 1,450 per group. **Choose 1 guide.**
+- Evening tour: 90 min, max 25 people, SEK 2,200 per group. **Choose 1 guide.** Shows that something bookable can sit in a choice group.
+- Design workshop: 120 min in Knippla, SEK 395/pp. Contains the room Knippla in the Cabaret setup.
+
+### Equipment
+Projector (SEK 450), Mobile sound system (SEK 900), Extra whiteboard (SEK 150), Hearing loop (SEK 0).
+
+### Packages (4 in the catalog + 1 customer-specific)
+| Package | Price/pp | Contents (offset from start) |
+|---|---|---|
+| Half-day conference | 545 | **Room, choose 1:** Hönö, Öckerö, Styrsö, Vrångö (+0:00, 4 h) · Morning break (+1:30) · Conference lunch (+3:30) |
+| Full-day conference | 795 | **Room, choose 1:** Hönö, Öckerö, Styrsö, Vrångö (+0:00, 8 h) · Morning break (+1:30) · Conference lunch (+3:30) · Afternoon break (+6:00) |
+| Day + evening | 1,016 | Sparkling welcome drink (+0:00) · **Room, choose 1:** Hönö, Öckerö (+0:15, 7 h) · Morning break (+1:30) · Conference lunch (+3:00) · Evening tour (+8:00) · Reception buffet (+9:30) |
+| Evening event | 1,290 | Evening tour (+0:00) · Sparkling welcome drink (+1:30) · The View, Banquet (+1:30, 5 h) · Three-course dinner (+2:00) · Wine package (+2:00) |
+| Nordkust management team *(customer: Nordkust Logistik)* | 595 | Styrsö, Boardroom (+0:00, 4 h) · Morning break (+0:30) · Conference lunch (+3:00) |
+
+## Customers
+
+Contact persons have the type Contact person; the role in parentheses is its Role field. Contacts without a role in the table are Orderer, except Eva Sund (Organizer), Ekonomienheten (Invoice recipient) and Ulla Berg (Organizer).
+
+| Customer | Type | Contacts | Price list |
+|---|---|---|---|
+| Nordkust Logistik AB | Company (framework agreement) | Karin Wallin (orderer), Fakturor Nordkust (invoice recipient) | Nordkust framework agreement: −15% on everything |
+| Hisingen Energi AB | Company | Mats Olsson | – |
+| Västra Sjukvårdsregionen | Public sector (Peppol, case number) | Eva Sund, Ekonomienheten | – |
+| Kvarnby Design AB | Company | Linnea Kvist | – |
+| Göta Advokatbyrå KB | Company | Henrik Strand | – |
+| Älvstrand Tech AB | Company | Amir Haddad | – |
+| Göteborgs Seglarsällskap | Association | Ulla Berg | – |
+
+## Tickets
+
+The main assignee (A) and followers (F) are given by first name (ADR 0034): the coordinator answers for a ticket and the salesperson follows it.
+
+### Leads, holds and quotes
+| # | Customer | What | Phase | Shows |
+|---|---|---|---|---|
+| F1 | Göteborgs Seglarsällskap | Anniversary party, 150 people, D+60 | New, no assignee yet | the inbox |
+| F2 | Hisingen Energi | Kickoff, 100 people, D+45 in Vinga | Site visit, A Erik. Vinga D+45 09–17 `Prebooked`, `holdsUntil` D+5 | a soft hold |
+| F3 | Kvarnby Design | Product launch, 80 people, D+45 in Vinga | Site visit, A Sara. Vinga on the same time `Prebooked` (held later than F2) | overlapping soft holds, "held since" |
+| F4 | Västra Sjukvårdsregionen | Workshop, 30 people, D+40 | Quote sent. Quote v1 (40 people) replaced by **v2 (30 people) `SENT`**, valid until D+10 | quote versions |
+| F5 | Göta Advokatbyrå | Evening event, 40 people, D+20 | Lost, reason "Price". Quote v1 `DECLINED` | loss reason |
+| F6 | Älvstrand Tech | Team day, 20 people, D+12 | Site visit. `holdsUntil` D−1, room line `Prebooked` until `ticket.expireHolds` runs | expiry |
+
+### Tickets after the deal
+| # | Customer · type | When | Count | Contents | Phase | A / F | Shows |
+|---|---|---|---|---|---|---|---|
+| L1 | Hisingen Energi · Conference | D−21 | 40 | Full-day conference in Hönö (U-shape) | Completed | Johan / Erik | history |
+| L2 | Kvarnby Design · Event | D−10 | 80 | Evening event | Completed | Maria / Sara | history |
+| L3 | Västra Sjukvårdsregionen · Conference | D+3 | 60 | Day + evening in Hönö (Theatre) + Projector. In the evening the Reception buffet is replaced by the Three-course dinner. | Final count locked | Johan / Erik, Maria | **Requirements:** Gluten × 4 (Allergy), Tree nuts × 1 (Anaphylaxis), Vegetarian × 8, Wheelchair × 1. The nuts give "may contain" without blocking. See note below. |
+| L4 | Göta Advokatbyrå · Conference | D+5 09–13 | 12 | Half-day conference, Styrsö (Boardroom), Booked by the grid, + Conference lunch (14 after the quote was accepted) | Confirmed | Maria / Sara | simple ticket, the hard hold that blocks L12, a ticket that differs from its accepted quote |
+| L5 | Älvstrand Tech · Event | D+14 | 120 | Vinga (Reception) + Reception buffet + Wine package | Confirmed, invoice not yet paid | Maria / Erik | **Blocked kitchen order:** Crustaceans × 2 (Anaphylaxis) against Toast Skagen, which is mandatory |
+| L6 | Hisingen Energi · Conference | D+30 | 25 | Full-day conference | Cancelled, reason "Budget" | Erik / – | cancellation |
+| L7 | Göta Advokatbyrå · Conference | D+1 10–12 | 4 | Asperö (Boardroom) + Coffee and tea | Confirmed, payment link sent | Sara / – | ticket from the Small meeting template, payment pending |
+| L10 | Hisingen Energi · Conference | D+4 13–16 | 6 | Donsö (Boardroom) + Afternoon break | Confirmed, on invoice | Johan / Erik | ticket from the Afternoon break template, invoice |
+| L8 | Göteborgs Seglarsällskap · Tour | D+2 14:00 | 22 | Exhibition tour with guide Oskar (German) | Confirmed | Johan / Sara | Tour type, bookable guide |
+| L9 | Kvarnby Design · Conference | D+8 | 18 | Design workshop + Conference lunch | Confirmed | Maria / Sara | activity that contains a room |
+| L11 | Göta Advokatbyrå · Conference | D+6 09–13 | 10 | Styrsö (Boardroom, own price 800 kr) + Conference lunch, the lunch line overridden to Locked, + Projector hire without a time | Quote sent (check 8 moves it to Confirmed) | Maria / – | a line state override that survives a phase move |
+| L12 | Hisingen Energi · Conference | D+5 10–12 | 8 | Styrsö, a soft hold inside L4's booking | Lead | Erik / – | a phase move blocked by a hard hold (check 8, e2e) |
+
+**Note on L3:** the nut allergy hits Chocolate fondant, which has the alternatives Cloudberry parfait and Lemon sorbet. The result is "may contain" and no blocking (check 4). The replacement is made on the ticket's copy of the package, so the catalog package is not changed (snapshot, ADR 0021). L3 thus also shows that a package can be adapted for a single occasion.
+
+---
+
+# Vingaleden Archipelago Tours
+
+Slug `vingaleden-demo`. Venue: Saltholmen, 426 76 Västra Frölunda. No food and no allergens. The same code, another world.
+
+## Configuration
+
+### Roles
+Fixed roles (ADR 0034).
+
+| User | Role |
+|---|---|
+| Per Vinga | owner |
+| Stina Holm (tour desk) | member |
+| Kalle Ek (skipper) | viewer |
+| Jonna Sand (skipper) | viewer |
+
+### Responsibilities
+| Responsibility | Covers (item types) | Default assignee | Default followers |
+|---|---|---|---|
+| Tour desk | Tour, Add-on | Stina Holm | – |
+| Skipper | Boat, Skipper | Kalle Ek | Jonna Sand |
+
+### Vocabularies
+| Vocabulary | Values |
+|---|---|
+| Harbor | Saltholmen, Lilla Bommen, Styrsö Bratten, Vrångö |
+| Accessibility | Wheelchair, Walker, Stroller |
+| Life jacket | Child under 15 kg, Child 15–40 kg |
+| Certification | Ship officer class VIII, Boat license |
+
+### Setups
+Seated (10 min), Standing (5 min), Deck reception (20 min).
+
+### Item types
+| Type | Behaviours | Own fields |
+|---|---|---|
+| Boat | `BOOKABLE`, `SETUPS`, `PRICED` | Registration number (text), Toilet on board (yes/no), Max knots (number) |
+| Skipper | `BOOKABLE` | Certification (choice: Certification) |
+| Tour | `PRICED`, `COMPOSABLE`, `CHOICES` | Departure harbor (choice: Harbor), Distance nm (number) |
+| Add-on | `PRICED` | – |
+
+### Other types, phases, item states and sheets
+- Customer: Company (Org no.) · Private (no fields).
+- Contact: Contact person (no fields).
+- Ticket: Charter · Round trip.
+- Requirement: Accessibility (vocabulary Accessibility) · Life jacket (vocabulary Life jacket).
+- Ticket phases (no `event` flags: its tickets move by `ticket.changePhase`): Request (`entry`), Weather hold, Confirmed, Weather OK, Completed (`terminal`, `invoiceable`), Called off – weather (`terminal`, `requiresReason`), Cancelled (`terminal`, `requiresReason`).
+- Item states: Boat and Skipper (`BOOKABLE`): Prebooked (`SOFT`), Booked (`HARD`), Released. Tour and Add-on: Planned, Confirmed, Released. The grid sets Prebooked and Planned in Request and Weather hold, Booked and Confirmed from Confirmed on, and Released in the terminal phases.
+- Sheets: **Pier order** to Skipper with the item types Boat, Skipper and Add-on and the requirements Accessibility and Life jacket.
+- Ticket templates: **Lighthouse tour with blankets** (Round trip, starts in Request): the Lighthouse tour to Vinga for 90 minutes and Blankets and rain gear, both without a quantity, so they count the headcount (ADR 0052). No ticket is made from it; it shows a template in an organization without conference rooms. Line type: Line (base `LINE`).
+
+## Catalog
+| Item | Type | Details | Price |
+|---|---|---|---|
+| M/S Kajan | Boat | Seated 48, Standing 80, Deck reception 60, toilet | SEK 3,200/h |
+| M/S Tern | Boat | Seated 24, Standing 40, toilet | SEK 2,100/h |
+| RIB Snabben | Boat | Seated 12, 40 knots | SEK 2,600/h |
+| Kalle Ek | Skipper | Ship officer class VIII | – |
+| Jonna Sand | Skipper | Boat license | – |
+| Sunset tour | Tour | Saltholmen, 18 nm. **Boat, choose 1:** Kajan, Tern · **Skipper, choose 1** · 2.5 h | SEK 495/pp |
+| Lighthouse tour to Vinga | Tour | Saltholmen, 14 nm. RIB Snabben + skipper Jonna · 1.5 h | SEK 650/pp |
+| Blankets and rain gear | Add-on | – | SEK 40/pp |
+| Coffee on board | Add-on | Shows that food can exist without allergen vocabularies | SEK 35/pp |
+
+## Customers and tickets
+Customers: Hisingen Energi AB (Company, the same name as at Lindholmen but a completely separate row in another organization; contact Mats Olsson), Familjen Rask (Private; contact Johan Rask), Kvarnby Design AB (Company; contact Linnea Kvist).
+
+Per Vinga is the main assignee of V1–V3 and Stina Holm follows them; V4 is assigned to Stina Holm.
+
+| # | Customer · type | When | Count | Contents | Phase | Shows |
+|---|---|---|---|---|---|---|
+| V1 | Hisingen Energi · Charter | D−7 | 40 | Sunset tour with Kajan, Standing | Completed | history |
+| V2 | Kvarnby Design · Charter | D−2 | 20 | Sunset tour with Tern | Called off – weather | an organization-defined terminal phase |
+| V3 | Familjen Rask · Round trip | D+2 | 9 | Lighthouse tour to Vinga + Blankets | Weather OK | **Requirements:** Wheelchair × 1, Life jacket child under 15 kg × 2 → Pier order |
+| V4 | Hisingen Energi · Charter | D+10 | 60 | Sunset tour with Kajan, Deck reception + Coffee on board | Weather hold | an organization-defined phase with soft holds on the boat |
+
+---
+
+## Structure in the code
+
+- `packages/core/src/seed/demo/data/` has one folder per organization (`lindholmen/`, `vingaleden/`). The files are pure data, split so that no file goes over 150 lines, e.g. `lindholmen.ts` (roles and users), `config.ts`, `types.ts`, `rooms.ts`, `dishes.ts`, `drinks.ts`, `meals.ts`, `activities.ts` (guides, tours, equipment), `packages.ts`, `customers.ts` and `tickets.ts`; Vingaleden's skippers, trips and add-ons are in `tours.ts`. `pipeline.ts` holds the phases and the phase grid.
+- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-responsibilities.ts`, `seed-items.ts`, `seed-customers.ts`, `seed-pipeline.ts` (phases, then the grid in `seed-grid.ts`) and `seed-tickets.ts` (lines and their overrides in `seed-lines.ts`). Items with `parts` or `choices` come after the items they contain (`seed-item-input.ts` resolves them); a choice group's options become parts too. Contact persons, the price list and customer-specific packages are created right after their customer.
+  - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`. A `LINK` field names its target type (`linkType`) and its values name a record of that type (`Host: "Eva Sund"`, resolved by `resolveLinks` in `seed-fields.ts`).
+  - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
+- `seed-templates.ts` creates the predefined tickets from `data/<org>/templates.ts` through `ticketTemplate.create` (items, setups, ticket type and start phase by name), after the pipeline and before the tickets. A ticket with `template` in `tickets.ts` is created through `ticket.createFromTemplate` (`seed-ticket-from-template.ts`) and is not moved afterwards.
+- `reconcile.ts` (the harness) and `reconcile-checks.ts` (the registered projection checks, with `record-reconciliation.ts`) run from `checks.ts`.
+- Every record is created through core operations, which write its `Record` row first (`createRecord`, ADR 0056); `reset.ts` deletes the `RecordLink` rows first and the `Record` rows after the seven tables that extend them.
+- `checks.ts`, `template-checks.ts`, `config-checks.ts`, `ticket-checks.ts`, `assignment-checks.ts`, `hold-checks.ts`, `pipeline-checks.ts` and `grid-checks.ts` contain the checks above.
+- The seed is extended at the same pace as the parts in ADR 0025. A part that lacks operations is skipped with a clear log, so the demo can always be run.

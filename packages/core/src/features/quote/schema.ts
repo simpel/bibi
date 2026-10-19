@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
-import { OrderLineInputSchema, OrderLineSchema } from "./order-line-schema";
+import { OrderLineSchema } from "./order-line-schema";
 
 /** The quote's fixed status (ADR 0022); the allowed moves are in `transitions.ts`. */
 export const QUOTE_STATUSES = ["DRAFT", "SENT", "ACCEPTED", "DECLINED", "EXPIRED"] as const;
@@ -34,16 +34,31 @@ export const QuoteSchema = z.object({
   quoteStatus: QuoteStatusSchema,
   validUntil: z.date().nullable(),
   terms: z.string().nullable(),
-  totalExclVatMinor: z.number().int().describe("Sum of the lines excl. VAT, minor units"),
+  totalExclVatMinor: z
+    .number()
+    .int()
+    .describe("Sum of the lines excl. VAT, minor units; frozen when sent, live on a DRAFT"),
   totalInclVatMinor: z.number().int().describe("Sum of the lines incl. VAT, minor units"),
   statusChangedAt: z.date(),
   acceptedBy: z.string().nullable().describe("User id of who recorded the acceptance"),
   acceptedAt: z.date().nullable().describe("When the acceptance was recorded"),
   acceptanceMethod: AcceptanceMethodSchema.nullable().describe("How the acceptance was recorded"),
-  lines: z.array(QuoteLineSchema),
+  lines: z
+    .array(QuoteLineSchema)
+    .describe("A DRAFT: the ticket's priced lines now (live). Sent: the frozen snapshot"),
   removedLines: z
     .array(OrderLineSchema)
     .describe("Lines of the previous version that this version no longer has"),
+  differsFromTicket: z
+    .boolean()
+    .nullable()
+    .describe("ACCEPTED only: the ticket's priced lines differ from this snapshot; else null"),
+  ticketChanges: z
+    .array(QuoteLineSchema)
+    .describe("ACCEPTED only: the ticket's lines now that are ADDED or CHANGED against it"),
+  ticketRemovedLines: z
+    .array(OrderLineSchema)
+    .describe("ACCEPTED only: accepted lines the ticket no longer has (removed or unpriced)"),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -56,11 +71,6 @@ const QuoteTermsShape = {
     .nullish()
     .describe("Last day the customer can accept, ISO 8601; required to send"),
   terms: z.string().trim().max(10_000).nullish().describe("Terms text shown on the quote"),
-  lines: z
-    .array(OrderLineInputSchema)
-    .max(200)
-    .optional()
-    .describe("The order lines; replaces the whole current set. Needs at least one to send."),
 };
 
 export const QuoteCreateInputSchema = z.object({
@@ -68,7 +78,10 @@ export const QuoteCreateInputSchema = z.object({
   ...QuoteTermsShape,
 });
 
-/** Status is not here: it changes only through the quote's own commands. */
+/**
+ * Status is not here: it changes only through the quote's own commands. Lines are not here either:
+ * they are the ticket's lines (line.update), ADR 0052.
+ */
 export const QuoteUpdateInputSchema = z.object({ id: z.string().min(1), ...QuoteTermsShape });
 
 export const QuoteIdInputSchema = z.object({ id: z.string().min(1) });

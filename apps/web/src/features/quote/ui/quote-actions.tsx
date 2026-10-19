@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import type { NamedOption } from "@/components/form/named-option";
 import { QuoteCommand } from "./quote-command";
 import { QuoteDialog } from "./quote-dialog";
 
@@ -27,13 +26,12 @@ export type QuoteAbilities = {
 
 export type QuoteActionsProps = {
   quote: QuoteDto;
-  items: readonly NamedOption[];
   /** Which commands the state machine and the version rules allow now. */
   can: QuoteAbilities;
 };
 
 /** Edit (draft), send, accept, decline, expire and new-version buttons of the quote page. */
-export function QuoteActions({ quote, items, can }: QuoteActionsProps) {
+export function QuoteActions({ quote, can }: QuoteActionsProps) {
   const t = useTranslations("quote");
   const [editing, setEditing] = useState(false);
   return (
@@ -56,7 +54,6 @@ export function QuoteActions({ quote, items, can }: QuoteActionsProps) {
       <QuoteDialog
         target={{ id: quote.id }}
         quote={quote}
-        items={items}
         open={editing}
         onOpenChange={setEditing}
       />

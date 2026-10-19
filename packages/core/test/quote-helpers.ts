@@ -2,6 +2,7 @@ import {
   createEntityType,
   createFieldDefinition,
   createItem,
+  createLine,
   createQuote,
   createVocabulary,
   type ExecuteContext,
@@ -60,7 +61,10 @@ async function createDishes({ context }: Ctx) {
   return { lunch, coffee, unpriced, gluten };
 }
 
-/** A provisioned org with a ticket for 20 people (salesperson Erik assigned) and priced dishes. */
+/**
+ * A provisioned org with a ticket for 20 people (salesperson Erik assigned), priced dishes and a
+ * line type for the ticket's lines.
+ */
 export async function quoteSetup() {
   const setup = await ticketSetup();
   const { context } = setup;
@@ -72,7 +76,39 @@ export async function quoteSetup() {
     assigneeId: erik,
     estimatedHeadcount: 20,
   });
-  return { ...setup, erik, ticket, ...(await createDishes({ context })) };
+  const lineType = unwrap({
+    result: await execute({
+      operation: createEntityType,
+      input: { base: "LINE", name: "Program point" },
+      context,
+    }),
+  });
+  return { ...setup, erik, ticket, lineType, ...(await createDishes({ context })) };
+}
+
+/** An untimed line; quantity, price and discount are the line's own overrides when given. */
+export type TestLine = {
+  itemId: string;
+  name?: string;
+  quantity?: number | null;
+  unitPriceMinor?: number;
+  discountPercent?: number;
+};
+
+export type AddTestLinesInput = Ctx & {
+  ticketId: string;
+  lineTypeId: string;
+  lines: readonly TestLine[];
+};
+
+/** Adds the lines to the ticket in order (`line.create`) and returns them. */
+export async function addTestLines({ context, ticketId, lineTypeId, lines }: AddTestLinesInput) {
+  const created = [];
+  for (const { name = "Lunch", ...line } of lines) {
+    const input = { ticketId, entityTypeId: lineTypeId, name, ...line };
+    created.push(unwrap({ result: await execute({ operation: createLine, input, context }) }));
+  }
+  return created;
 }
 
 export type CreateTestQuoteInput = Ctx &
@@ -86,4 +122,16 @@ export async function createTestQuote({ context, ...input }: CreateTestQuoteInpu
   return unwrap({
     result: await execute({ operation: createQuote, input: { validUntil, ...input }, context }),
   });
+}
+
+/** A quote setup whose ticket has one lunch line (counting the headcount) and a DRAFT quote. */
+export async function draftQuote() {
+  const setup = await quoteSetup();
+  const { context, ticket, lineType } = setup;
+  const lines = [{ itemId: setup.lunch.id }];
+  const [line] = await addTestLines({
+    ...{ context, ticketId: ticket.id, lineTypeId: lineType.id, lines },
+  });
+  const quote = await createTestQuote({ context, ticketId: ticket.id });
+  return { ...setup, quote, lineId: line?.id ?? "" };
 }

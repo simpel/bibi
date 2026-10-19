@@ -26,7 +26,7 @@ Ticket (moves through the organization's phases) → Lines with states (prebooke
 > **Ownership:** owned `name`, `startsAt`; derived `effectiveVatPercent`; projection `holdKind` (check `line-holds`); snapshot `unitPrice` (from the item, taken at send).
 
 What changes:
-- **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `Line` (formerly the program item, renamed in the first slice) may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup`. A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`. `Ticket.quantity` is gone; lines inherit the headcount (second slice, done).
+- **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `Line` (formerly the program item, renamed in the first slice) may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup`. A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`; an accepted quote shows how the ticket's lines differ from it (third slice, done). `Ticket.quantity` is gone; lines inherit the headcount (second slice, done).
 - **Holds are a projection** ([ADR 0053](decisions/0053-holds-are-a-projection.md)), written by triggers through `sync_line_occupancy`. Only lines that have not ended are re-derived.
 - **History is owned data** ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)): `TicketPhaseChange` and `LineStateChange`. `phaseChangedAt`, `phaseReason` and `heldAt` go. Phases may require facts (`requiresAcceptedQuote`) but never store them.
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
@@ -387,14 +387,15 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · A versioned proposal with lines and terms. Fixed state machine; `quote.send` and `quote.accept` fire phase events on the ticket (ADR 0043).
 
-> **Target (ADR 0052, 0054):** a `DRAFT` stores no lines; it is a live view of the ticket's priced lines. Totals are part of the sent snapshot. Change markers pair by `lineId`.
+> **ADR 0052:** a `DRAFT` stores no lines; it is a live view of the ticket's priced lines (lines with an effective unit price) with derived totals. `quote.send` freezes them as `OrderLine` rows and stores the totals; a sent quote never changes. Change markers pair by `lineId`. An `ACCEPTED` quote carries `differsFromTicket` and the differences (`ticketChanges`, `ticketRemovedLines`): the ticket's lines now against the accepted snapshot, derived and never stored (GraphQL also gives `Ticket.differsFromAcceptedQuote`). Target (ADR 0054) still open.
 
 **Attributes**
 - version number (`version`, 1 for the ticket's first quote, then +1) and the version it was made from (`previousId`)
 - valid until (`validUntil`, required to send)
 - status (`quoteStatus`): `DRAFT → SENT → ACCEPTED`, `DECLINED` or `EXPIRED`; only a `DRAFT` can be edited
-- lines (order lines, snapshots)
-- total excl. and incl. VAT (`totalExclVatMinor`, `totalInclVatMinor`, the sums of the lines)
+- lines (a `DRAFT`: the ticket's priced lines, live; sent: the frozen order lines)
+- total excl. and incl. VAT (`totalExclVatMinor`, `totalInclVatMinor`, the sums of the lines; stored when sent)
+- differs from the ticket (`differsFromTicket`, `ACCEPTED` only, derived) with the changed and removed lines
 - terms text
 - assignment (the ticket's; the quote has none of its own)
 - statusChangedAt
@@ -406,7 +407,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - fires on accept → the `QUOTE_ACCEPTED` phase event (no second record is created)
 - `1:N` contains → OrderLine
 
-> ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by item in order, and the lines the version dropped are listed as removed. `quote.accept` stores the acceptance and fires the `QUOTE_ACCEPTED` phase event. A quote can also be built directly from items, and "Save as package" then creates a customer-specific item.
+> ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by the ticket line they price (`lineId`), and the lines the version dropped are listed as removed. `quote.update` changes validity and terms only; prices and quantities are changed on the lines (`line.update`). `quote.accept` stores the acceptance and fires the `QUOTE_ACCEPTED` phase event. A quote can also be built directly from items, and "Save as package" then creates a customer-specific item.
 
 > Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open ticket that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the ticket moves into the phase with the `QUOTE_SENT` event, and older `SENT` versions expire), `quote.accept` (from `SENT`; stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` `MANUAL`, creates no other record; the ticket moves into the phase with the `QUOTE_ACCEPTED` event), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`. A quote event moves the ticket as the acting user (`ticket:write` is needed), only when the organization has an active phase with that `event` and allows the move from the ticket's phase; a blocked move (reason, assignee, line collision) fails the send or accept without any change. A phase with an `event` cannot be entered by `ticket.changePhase` or as the target of a phase archive. Archiving a phase clears its `event`; importing a template never takes an event from a phase that has it.
 
@@ -655,25 +656,22 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` PriceList contains this
 - `N:1` refers to → Item
 
-> Order lines copy the price when they are created. A changed price list only affects new lines.
+> A draft quote shows the price list in effect now; sending freezes it. A changed price list never touches a sent quote.
 
 ### OrderLine
 
-*MVP* · What is actually charged. Copies (snapshot) of the item's name, price, VAT and tags.
-
-> **Target (ADR 0052):** a frozen snapshot of one line, written only by `quote.send` (and invoicing), with a required `lineId`. No editing path of its own.
+*MVP* · What is actually charged: a frozen snapshot of one priced line ([ADR 0052](decisions/0052-the-line-is-the-booking.md)), written only by `quote.send` (invoicing later), with a required `lineId`. No editing path of its own.
 
 **Attributes**
-- item
+- line (`lineId`, required) and its item (`itemId`, optional)
 - position
-- name (copied)
-- count (`quantity`)
-- unit price (`unitPriceMinor`, the item's price unless given) and price unit (copied)
-- discount (`discountPercent`)
-- VAT (`vatRatePercent`, the item's rate, else its venue's default)
+- name (the line's)
+- count (`quantity`, the line's effective quantity)
+- unit price (`unitPriceMinor`, the line's effective price) and price unit (the item's)
+- discount (`discountPercent`, effective, two decimals)
+- VAT (`vatRatePercent`, effective: line, else item, else the venue's default)
 - tags (the list values the item contains per `item.resolve`, copied)
 - total excl. VAT and VAT (`totalExclVatMinor`, `vatMinor`)
-- line – *later*
 - status (quoted / confirmed / delivered) – *later*
 - invoiced (yes/no) – *later*
 
@@ -683,7 +681,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` refers to → Item
 - `N:1` Invoice invoices this
 
-> Lines of a `DRAFT` quote are replaced as a set and audited on the quote. A later change to the item never touches an existing line.
+> Written once when the quote is sent and audited on the quote. A later change to the line, the item or the price list never touches it; an accepted quote shows the difference instead.
 
 ### Deposit
 

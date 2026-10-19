@@ -84,10 +84,7 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       "Karin Wallin",
     ]);
     expect(nordkust?.priceLists.map((list) => Number(list.discountPercent))).toEqual([15]);
-    const statuses = await db.ticketPhase.count({
-      where: { organizationId: lind?.organizationId },
-    });
-    expect(statuses).toBe(8);
+    expect(await db.ticketPhase.count({ where: { organizationId: lind?.organizationId } })).toBe(8);
     const tickets = await db.ticket.findMany({
       where: { organizationId: lind?.organizationId },
       orderBy: { reference: "asc" },
@@ -107,15 +104,17 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     const lines = await db.line.findMany({
       where: { organizationId: lind?.organizationId },
       include: { state: true },
-      orderBy: { name: "asc" },
+      orderBy: [{ name: "asc" }, { state: { name: "asc" } }],
     });
-    // F6 expired, L11 confirmed (lunch override kept), L12 blocked; L7, L10 from templates.
+    // F6 expired, L11 confirmed, L12 blocked; L7, L10 from templates; quoted tickets get lunch.
     expect(lines.map((line) => [line.name, line.state?.name, line.stateOverridden])).toEqual([
       ["Afternoon break buffet", "Ordered", false],
       ["Afternoon break room", "Booked", false],
       ["Board lunch", "Locked", true],
       ["Board meeting", "Booked", false],
       ["Coffee and tea", "Estimated", false],
+      ["Conference lunch", "Estimated", false],
+      ...Array.from({ length: 5 }, () => ["Conference lunch", "Ordered", false]),
       ["Half-day conference", "Booked", false],
       ["Kickoff", "Prebooked", false],
       ["Product launch", "Prebooked", false],

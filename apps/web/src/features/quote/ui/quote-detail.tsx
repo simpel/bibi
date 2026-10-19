@@ -10,6 +10,8 @@ import { ticketRoute } from "@/lib/routes";
 import { handleLoadError } from "@/server/load-error";
 import { loadQuotePage } from "../load-quote-page";
 import { QuoteActions } from "./quote-actions";
+import { QuoteDraftHint } from "./quote-draft-hint";
+import { QuoteDrift } from "./quote-drift";
 import { QuoteLinesTable } from "./quote-lines-table";
 import { QuoteStatusBadge } from "./quote-status-badge";
 import { QuoteTotals } from "./quote-totals";
@@ -17,13 +19,17 @@ import { QuoteVersions } from "./quote-versions";
 
 export type QuoteDetailProps = { locale: Locale; id: string };
 
-/** Quote page body: status, validity, terms, lines with change markers, totals and versions. */
+/**
+ * Quote page body, for review and send (ADR 0052): status, validity, terms, the lines with change
+ * markers (a DRAFT's are the ticket's lines, edited there), totals, how the ticket differs from an
+ * accepted quote, and the versions.
+ */
 export async function QuoteDetail({ locale, id }: QuoteDetailProps) {
   const t = await getTranslations("quote");
   const format = await getFormatter();
   const page = await loadQuotePage({ id });
   if (!page.ok) return <ErrorState errorKey={handleLoadError({ error: page.error, locale })} />;
-  const { quote, versions, ownerId, members, items, can } = page.value;
+  const { quote, versions, ownerId, members, can } = page.value;
   const validUntil = quote.validUntil;
   const facts = [
     {
@@ -44,12 +50,14 @@ export async function QuoteDetail({ locale, id }: QuoteDetailProps) {
       </Link>
       <PageHeader
         title={t("title", { version: quote.version })}
-        actions={<QuoteActions quote={quote} items={items} can={can} />}
+        actions={<QuoteActions quote={quote} can={can} />}
       />
       <QuoteStatusBadge status={quote.quoteStatus} />
       <FactList facts={facts} />
+      <QuoteDraftHint quote={quote} />
       <QuoteLinesTable lines={quote.lines} removedLines={quote.removedLines} />
       <QuoteTotals quote={quote} />
+      <QuoteDrift quote={quote} />
       {versions.length > 1 ? <QuoteVersions quotes={versions} currentId={quote.id} /> : null}
     </div>
   );

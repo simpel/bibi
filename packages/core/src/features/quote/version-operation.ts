@@ -4,16 +4,15 @@ import { conflict, notFound } from "../../shared/errors";
 import { loadOpenTicket, nextVersion } from "./quote-rules";
 import { QuoteIdInputSchema, QuoteSchema } from "./schema";
 import { loadQuote } from "./to-quote-dto";
-import { writeLines } from "./write-lines";
 
 export const reviseQuote = defineOperation({
   name: "quote.revise",
   kind: "command",
   description:
-    "Make a new version of the ticket's latest quote (ADR 0022): a DRAFT with the next version " +
-    "number that copies the validity, terms and lines (with their snapshots). Its lines are " +
-    "marked ADDED, CHANGED or UNCHANGED against the version it was made from, and removed lines " +
-    "are listed. Refused (CONFLICT) for an older version, a DRAFT (edit it instead), an " +
+    "Make a new version of the ticket's latest quote (ADR 0022, 0052): a DRAFT with the next " +
+    "version number that copies the validity and terms. Like every DRAFT it shows the ticket's " +
+    "priced lines live, marked ADDED, CHANGED or UNCHANGED against the version it was made " +
+    "from (paired by line), and lists the lines it removed. Refused (CONFLICT) for an older version, a DRAFT (edit it instead), an " +
     "ACCEPTED quote or a closed ticket.",
   input: QuoteIdInputSchema,
   output: QuoteSchema,
@@ -38,8 +37,6 @@ export const reviseQuote = defineOperation({
         organizationId: context.organizationId,
       },
     });
-    const lines = source.lines.map(({ id: _id, change: _c, changedFields: _f, ...line }) => line);
-    await writeLines({ context, quoteId: row.id, lines });
     const quote = await loadQuote({ context, id: row.id });
     if (!quote) return notFound({ entity: "Quote" });
     context.recordChange({ entityId: row.id, after: quote });

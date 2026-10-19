@@ -5,6 +5,7 @@ import type { OrderLineDto } from "../src/index";
 
 const line = ({ overrides = {} }: { overrides?: Partial<OrderLineDto> } = {}): OrderLineDto => ({
   id: "l",
+  lineId: "l",
   itemId: "lunch",
   position: 0,
   name: "Lunch",
@@ -44,39 +45,35 @@ describe("change markers against the previous version (ADR 0022)", () => {
     expect(marked.removedLines).toEqual([]);
   });
 
-  it("marks added, changed and unchanged lines and lists removed ones", () => {
+  it("pairs lines by lineId: added, changed, unchanged and removed", () => {
     const previous = [
-      line({ overrides: { id: "a" } }),
-      line({ overrides: { id: "b", itemId: "coffee", name: "Coffee" } }),
-      line({ overrides: { id: "c", itemId: "room", name: "Room" } }),
+      line({ overrides: { id: "a", lineId: "x" } }),
+      line({ overrides: { id: "b", lineId: "y", itemId: "coffee", name: "Coffee" } }),
+      line({ overrides: { id: "c", lineId: "z", itemId: "room", name: "Room" } }),
     ];
     const lines = [
-      line({ overrides: { id: "a2" } }),
+      line({ overrides: { id: "a2", lineId: "x" } }),
       line({
-        overrides: { id: "b2", itemId: "coffee", name: "Coffee", quantity: 25, discountPercent: 5 },
+        overrides: { id: "b2", lineId: "y", itemId: "coffee", name: "Coffee", quantity: 25 },
       }),
-      line({ overrides: { id: "d2", itemId: "cake", name: "Cake" } }),
+      line({ overrides: { id: "d2", lineId: "w", itemId: "cake", name: "Cake" } }),
     ];
     const marked = markLineChanges({ lines, previous });
     expect(marked.lines.map((l) => [l.change, l.changedFields])).toEqual([
       ["UNCHANGED", []],
-      ["CHANGED", ["quantity", "discountPercent"]],
+      ["CHANGED", ["quantity"]],
       ["ADDED", []],
     ]);
     expect(marked.removedLines.map((l) => l.id)).toEqual(["c"]);
   });
 
-  it("pairs repeated items in order", () => {
-    const previous = [
-      line({ overrides: { id: "a", quantity: 1 } }),
-      line({ overrides: { id: "b", quantity: 2 } }),
-    ];
+  it("never pairs two lines of the same item that are different lines", () => {
+    const previous = [line({ overrides: { id: "a", lineId: "x" } })];
     const lines = [
-      line({ overrides: { quantity: 1 } }),
-      line({ overrides: { quantity: 3 } }),
-      line({ overrides: { quantity: 4 } }),
+      line({ overrides: { lineId: "y" } }),
+      line({ overrides: { lineId: "x", discountPercent: 5 } }),
     ];
     const marked = markLineChanges({ lines, previous });
-    expect(marked.lines.map((l) => l.change)).toEqual(["UNCHANGED", "CHANGED", "ADDED"]);
+    expect(marked.lines.map((l) => l.change)).toEqual(["ADDED", "CHANGED"]);
   });
 });

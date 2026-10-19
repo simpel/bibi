@@ -15,11 +15,12 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.payment.deleteMany({ where }),
   db.sheet.deleteMany({ where }),
   db.requirement.deleteMany({ where }),
+  // Order lines point at the lines they froze (ADR 0052).
+  db.orderLine.deleteMany({ where }),
+  db.quote.deleteMany({ where }),
   db.line.deleteMany({ where }),
   db.ticketTemplateLine.deleteMany({ where }),
   db.ticketTemplate.deleteMany({ where }),
-  db.orderLine.deleteMany({ where }),
-  db.quote.deleteMany({ where }),
 ];
 
 /** Item states, their transitions and the phase grid (ADR 0044); after the lines that use them. */

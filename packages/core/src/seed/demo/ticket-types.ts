@@ -24,9 +24,12 @@ export type DemoTicket = {
   phase?: string;
   /**
    * The item (by name) the ticket's quote charges, for a `phase` that a quote event enters: the
-   * ticket gets a quote that is sent, and for the accepted event accepted (ADR 0043).
+   * ticket gets an untimed line of it (unless a line has it), then a quote of its priced lines
+   * that is sent, and for the accepted event accepted (ADR 0043, 0052).
    */
   quote?: string;
+  /** A line (by name) whose quantity changes after the quote, so it differs from it (ADR 0052). */
+  changeAfterQuote?: { line: string; quantity: number };
   /** The reason of that move, for phases that require one. */
   reason?: string;
   /** The main assignee (ADR 0034), by user name. */

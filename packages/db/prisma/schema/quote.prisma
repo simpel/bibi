@@ -14,8 +14,9 @@ enum AcceptanceMethod {
 
 /// Quote – a versioned proposal to a ticket (ADR 0022). `quoteStatus` follows a fixed state
 /// machine (`DRAFT → SENT → ACCEPTED | DECLINED | EXPIRED`) and is never set by `quote.update`.
-/// A new version copies the previous one (`previousId`); only a DRAFT can be edited. The totals
-/// are the sum of the lines. It has no owner of its own: it uses the ticket's (ADR 0034).
+/// A DRAFT stores no lines: it is a live view of the ticket's priced lines (ADR 0052). `quote.send`
+/// freezes them as `OrderLine` rows and stores the totals. A new version (`previousId`) is a new
+/// DRAFT. It has no owner of its own: it uses the ticket's (ADR 0034).
 /// `status` is the soft-delete flag (ADR 0006).
 model Quote {
   id                String       @id @default(cuid(2))
@@ -28,7 +29,7 @@ model Quote {
   quoteStatus       QuoteStatus  @default(DRAFT)
   validUntil        DateTime?
   terms             String?
-  /// Sums of the lines in minor units (1/100 kr).
+  /// Sums of the frozen lines in minor units (1/100 kr), set by `quote.send`; 0 on a DRAFT.
   totalExclVatMinor Int          @default(0)
   totalInclVatMinor Int          @default(0)
   statusChangedAt   DateTime     @default(now())
@@ -51,14 +52,16 @@ model Quote {
   @@index([organizationId, ticketId])
 }
 
-/// Order line – what is charged (ADR 0021, 0022). A snapshot of the item's name, price, VAT and
-/// inherited tags when the line was made; later changes to the item do not touch it. Replaced as a
-/// set on a DRAFT quote and audited on the quote.
+/// Order line – a frozen snapshot of one priced ticket line (ADR 0052): its name, effective price,
+/// VAT, the item's inherited tags and the totals when the quote was sent. Written only by
+/// `quote.send` and never changed afterwards; audited on the quote.
 model OrderLine {
   id                String     @id @default(cuid(2))
   organizationId    String
   quoteId           String
-  itemId            String
+  /// The ticket line this snapshot was taken from; pairs versions' lines (ADR 0052).
+  lineId            String
+  itemId            String?
   /// Order on the quote, from 0.
   position          Int
   name              String
@@ -66,7 +69,7 @@ model OrderLine {
   /// Price per unit in minor units (1/100 kr), in the item's price unit.
   unitPriceMinor    Int
   priceUnit         PriceUnit?
-  discountPercent   Int        @default(0)
+  discountPercent   Decimal    @default(0) @db.Decimal(5, 2)
   vatRatePercent    Int
   /// The list values the item contains (`item.resolve`): `[{ valueId, vocabularyId, name }]`.
   tags              Json       @default("[]")
@@ -76,8 +79,10 @@ model OrderLine {
   updatedAt         DateTime   @updatedAt
   createdBy         String?
   quote             Quote      @relation(fields: [quoteId, organizationId], references: [id, organizationId])
-  item              Item       @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  line              Line       @relation(fields: [lineId, organizationId], references: [id, organizationId])
+  item              Item?      @relation(fields: [itemId, organizationId], references: [id, organizationId])
 
   @@index([organizationId, quoteId])
+  @@index([organizationId, lineId])
   @@index([organizationId, itemId])
 }

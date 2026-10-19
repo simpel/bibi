@@ -555,7 +555,7 @@
     "empty": "No quote yet.",
     "create": "Create quote",
     "edit": "Edit quote",
-    "formDescription": "Set the validity, the terms and the order lines. Each line copies the item's name, price, VAT and allergens when it is added.",
+    "formDescription": "Set the validity and the terms. The lines are the ticket's own: add and price them on the ticket.",
     "created": "The quote has been created.",
     "saved": "The quote has been saved.",
     "amount": "{amount} kr",
@@ -570,7 +570,7 @@
     "revise": "New version",
     "revised": "A new version has been created.",
     "confirm": {
-      "send": "Mark version {version} as sent to the customer? It can no longer be edited and older sent versions expire.",
+      "send": "Mark version {version} as sent to the customer? The ticket's lines are frozen into it, it can no longer be edited and older sent versions expire.",
       "accept": "Record that the customer accepted version {version}? The ticket moves on if the pipeline has a phase for it.",
       "decline": "Record that the customer declined version {version}?",
       "expire": "Expire version {version}? The customer can no longer accept it."
@@ -602,17 +602,21 @@
     },
     "lines": {
       "title": "Order lines",
-      "none": "No order lines yet.",
-      "add": "Add line",
-      "remove": "Remove line",
+      "none": "No priced lines on the ticket yet.",
       "item": "Item",
       "quantity": "Quantity",
       "unitPrice": "Unit price (SEK)",
       "discount": "Discount %",
       "vat": "VAT",
       "total": "Total excl. VAT",
-      "change": "Change",
-      "priceHint": "Leave the unit price empty to use the item's price."
+      "change": "Change"
+    },
+    "draftLines": "A draft shows the ticket's priced lines as they are now; sending freezes them.",
+    "editLinesOnTicket": "Edit the lines on the ticket",
+    "drift": {
+      "title": "The ticket differs from accepted version {version}",
+      "badge": "Changed since accepted",
+      "description": "The ticket's lines have changed since the customer accepted. The accepted quote is unchanged; these are the differences."
     }
   },
   "occupancy": {

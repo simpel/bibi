@@ -5,8 +5,8 @@ import { ErrorState } from "@/components/states/error-state";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { loadQuoteItems } from "../load-quote-items";
 import { CreateQuoteButton } from "./create-quote-button";
+import { QuoteDrift } from "./quote-drift";
 import { QuoteVersions } from "./quote-versions";
 
 export type TicketQuotesProps = {
@@ -16,8 +16,9 @@ export type TicketQuotesProps = {
 };
 
 /**
- * The ticket's quote (ADR 0022, 0043): its versions, and "create quote" while the ticket is open
- * and has none. Hidden for callers who may not read quotes.
+ * The ticket's quote (ADR 0022, 0043): its versions, "create quote" while the ticket is open and
+ * has none, and how the ticket's lines differ from the accepted quote (ADR 0052). Hidden for
+ * callers who may not read quotes.
  */
 export async function TicketQuotes({ locale, ticket, phases }: TicketQuotesProps) {
   const t = await getTranslations("quote");
@@ -33,19 +34,19 @@ export async function TicketQuotes({ locale, ticket, phases }: TicketQuotesProps
   const items = quotes.value.items;
   const open = !phases.find(({ id }) => id === ticket.phaseId)?.terminal;
   const canCreate = quoteWrite && open && items.length === 0;
+  const accepted = items.find((quote) => quote.quoteStatus === "ACCEPTED");
   return (
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("plural")}</h2>
-        {canCreate ? (
-          <CreateQuoteButton ticketId={ticket.id} items={await loadQuoteItems()} />
-        ) : null}
+        {canCreate ? <CreateQuoteButton ticketId={ticket.id} /> : null}
       </div>
       {items.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("empty")}</p>
       ) : (
         <QuoteVersions quotes={items} />
       )}
+      {accepted ? <QuoteDrift quote={accepted} /> : null}
     </section>
   );
 }

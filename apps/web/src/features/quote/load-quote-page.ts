@@ -10,7 +10,6 @@ import {
 import type { NamedOption } from "@/components/form/named-option";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { runOperation } from "@/server/run-operation";
-import { loadQuoteItems } from "./load-quote-items";
 import { quoteAbilities } from "./ui/quote-abilities";
 import type { QuoteAbilities } from "./ui/quote-actions";
 
@@ -21,23 +20,21 @@ export type QuotePageData = {
   /** The ticket's salesperson: a quote has no owner of its own (ADR 0034). */
   ownerId: string | null;
   members: NamedOption[];
-  items: NamedOption[];
   can: QuoteAbilities;
 };
 
-/** The quote, its sibling versions, the ticket's salesperson and the items to pick. */
+/** The quote, its sibling versions and the ticket's salesperson. */
 export async function loadQuotePage({ id }: { id: string }): Promise<Result<QuotePageData>> {
   const loaded = await runOperation({ operation: getQuote, input: { id } });
   if (!loaded.ok) return loaded;
   const quote = loaded.value;
-  const [versions, assignments, members, items, { quoteWrite }] = await Promise.all([
+  const [versions, assignments, members, { quoteWrite }] = await Promise.all([
     runOperation({ operation: listQuotes, input: { ticketId: quote.ticketId, limit: 100 } }),
     runOperation({
       operation: listAssignments,
       input: { subjectType: "TICKET", subjectId: quote.ticketId },
     }),
     runOperation({ operation: listMembers, input: { limit: 100 } }),
-    loadQuoteItems(),
     getCallerAbilities(),
   ]);
   const siblings = versions.ok ? versions.value.items : [quote];
@@ -53,7 +50,6 @@ export async function loadQuotePage({ id }: { id: string }): Promise<Result<Quot
       versions: siblings,
       ownerId: main?.assigneeId ?? null,
       members: people.map(({ userId, name }) => ({ id: userId, name })),
-      items,
       can: quoteAbilities({ quote, latestVersion, canWrite: quoteWrite }),
     },
   };

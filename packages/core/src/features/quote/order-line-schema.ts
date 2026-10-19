@@ -8,16 +8,20 @@ export const OrderLineTagSchema = z.object({
   name: z.string(),
 });
 
-/** What is charged: a snapshot of the item's name, price, VAT and tags (ADR 0021, 0022). */
+/**
+ * What is charged for one priced ticket line (ADR 0052): its name, effective price, VAT and the
+ * item's tags. Frozen on a sent quote; on a DRAFT derived live from the line (`id` = `lineId`).
+ */
 export const OrderLineSchema = z.object({
   id: z.string(),
-  itemId: z.string(),
+  lineId: z.string().describe("The ticket line (line.get) this is the price of"),
+  itemId: z.string().nullable(),
   position: z.number().int().describe("Order on the quote, from 0"),
-  name: z.string().describe("The item's name when the line was made"),
-  quantity: z.number().int(),
+  name: z.string().describe("The line's name"),
+  quantity: z.number().int().describe("The line's effective quantity (0 while it has none)"),
   unitPriceMinor: z.number().int().describe("Price per unit in minor units (1/100 kr)"),
   priceUnit: PriceUnitSchema.nullable(),
-  discountPercent: z.number().int(),
+  discountPercent: z.number(),
   vatRatePercent: z.number().int(),
   tags: z
     .array(OrderLineTagSchema)
@@ -26,26 +30,5 @@ export const OrderLineSchema = z.object({
   vatMinor: z.number().int().describe("VAT on the line total, minor units"),
 });
 
-export const OrderLineInputSchema = z.object({
-  lineId: z
-    .string()
-    .min(1)
-    .optional()
-    .describe(
-      "Id of a line already on this draft to keep its snapshot (name, VAT, tags, price unless " +
-        "given); omit for a new line copied from the item",
-    ),
-  itemId: z.string().min(1).describe("Id of an active item (item.list) to charge"),
-  quantity: z.number().int().min(1).max(100_000).describe("How many, in the item's price unit"),
-  unitPriceMinor: z
-    .number()
-    .int()
-    .min(0)
-    .optional()
-    .describe("Price per unit in minor units; default the item's own price"),
-  discountPercent: z.number().int().min(0).max(100).optional().describe("Discount, default 0"),
-});
-
 export type OrderLineTag = z.infer<typeof OrderLineTagSchema>;
 export type OrderLineDto = z.infer<typeof OrderLineSchema>;
-export type OrderLineInput = z.infer<typeof OrderLineInputSchema>;

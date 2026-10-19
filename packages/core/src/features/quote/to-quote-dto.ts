@@ -1,56 +1,51 @@
-import type { OrderLine, Quote } from "@okazi/db";
 import type { OperationContext } from "../../operations/types";
-import { markLineChanges } from "./line-changes";
-import type { OrderLineDto, OrderLineTag } from "./order-line-schema";
+import { deriveTicketLines } from "./derive-lines";
+import { type QuoteRow, toOrderLineDto, toQuoteDto } from "./quote-view";
 import type { QuoteDto } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
 const LINE_ORDER = [{ position: "asc" as const }, { id: "asc" as const }];
 
-/** Prisma `include` for every quote read: its lines in order. */
+/** Prisma `include` for every quote read: its frozen lines in order. */
 export const QUOTE_INCLUDE = { lines: { orderBy: LINE_ORDER } };
-
-export type QuoteRow = Quote & { lines: OrderLine[] };
-
-const asTags = ({ value }: { value: unknown }): OrderLineTag[] =>
-  Array.isArray(value) ? (value as OrderLineTag[]) : [];
-
-export const toOrderLineDto = ({ row }: { row: OrderLine }): OrderLineDto => ({
-  id: row.id,
-  itemId: row.itemId,
-  position: row.position,
-  name: row.name,
-  quantity: row.quantity,
-  unitPriceMinor: row.unitPriceMinor,
-  priceUnit: row.priceUnit,
-  discountPercent: row.discountPercent,
-  vatRatePercent: row.vatRatePercent,
-  tags: asTags({ value: row.tags }),
-  totalExclVatMinor: row.totalExclVatMinor,
-  vatMinor: row.vatMinor,
-});
 
 export type ToQuoteDtosInput = Db & { rows: readonly QuoteRow[] };
 
-/** Quotes with their lines marked against each one's previous version (one extra query). */
-export async function toQuoteDtos({ context, rows }: ToQuoteDtosInput): Promise<QuoteDto[]> {
+/** The previous versions' frozen lines by quote id (one query). */
+async function previousLinesOf({ context, rows }: ToQuoteDtosInput) {
   const previousIds = rows.flatMap((row) => (row.previousId ? [row.previousId] : []));
-  const previousLines = previousIds.length
+  const found = previousIds.length
     ? await context.db.orderLine.findMany({
         where: { quoteId: { in: previousIds } },
         orderBy: LINE_ORDER,
       })
     : [];
-  return rows.map(({ lines, ...quote }) => {
-    const previous = quote.previousId
-      ? previousLines
-          .filter((line) => line.quoteId === quote.previousId)
-          .map((row) => toOrderLineDto({ row }))
-      : null;
-    const current = lines.map((row) => toOrderLineDto({ row }));
-    return { ...quote, ...markLineChanges({ lines: current, previous }) };
-  });
+  return ({ id }: { id: string | null }) =>
+    id ? found.filter((row) => row.quoteId === id).map((row) => toOrderLineDto({ row })) : null;
+}
+
+/**
+ * Quotes with their lines marked against each one's previous version; DRAFT and ACCEPTED quotes
+ * also read their tickets' priced lines (a fixed number of queries per page).
+ */
+export async function toQuoteDtos({ context, rows }: ToQuoteDtosInput): Promise<QuoteDto[]> {
+  const previousOf = await previousLinesOf({ context, rows });
+  const ticketIds = [
+    ...new Set(
+      rows
+        .filter((row) => row.quoteStatus === "DRAFT" || row.quoteStatus === "ACCEPTED")
+        .map((row) => row.ticketId),
+    ),
+  ];
+  const live = await deriveTicketLines({ context, ticketIds });
+  return rows.map((row) =>
+    toQuoteDto({
+      row,
+      previous: previousOf({ id: row.previousId }),
+      live: (live.get(row.ticketId) ?? []).map((derived) => derived.line),
+    }),
+  );
 }
 
 export type LoadQuoteInput = Db & { id: string };

@@ -13,7 +13,7 @@ import {
   updateTicketPhase,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { createTestQuote, quoteSetup } from "./quote-helpers";
+import { addTestLines, createTestQuote, quoteSetup } from "./quote-helpers";
 import { phaseByName } from "./ticket-phase-helpers";
 
 type Ctx = { context: ExecuteContext };
@@ -39,8 +39,10 @@ async function configure({ context }: Ctx) {
 
 async function sendable() {
   const setup = await quoteSetup();
-  const lines = [{ itemId: setup.lunch.id, quantity: 20 }];
-  const quote = await createTestQuote({ context: setup.context, ticketId: setup.ticket.id, lines });
+  const { context, ticket, lineType } = setup;
+  const lines = [{ itemId: setup.lunch.id }];
+  await addTestLines({ context, ticketId: ticket.id, lineTypeId: lineType.id, lines });
+  const quote = await createTestQuote({ context, ticketId: ticket.id });
   return { ...setup, quote };
 }
 

@@ -2,6 +2,8 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { invalid, notFound } from "../../shared/errors";
+import { type DerivedLine, deriveTicketLines } from "./derive-lines";
+import { freezeLines } from "./freeze-lines";
 import { moveOnQuoteEvent } from "./move-on-event";
 import { moveQuote } from "./move-quote";
 import { loadOpenTicket } from "./quote-rules";
@@ -11,11 +13,24 @@ import { checkQuoteTransition } from "./transitions";
 
 type Context = Pick<OperationContext, "db" | "recordChange">;
 
-/** A quote is sent with at least one line and a validity date that has not passed. */
-function checkSendable({ quote }: { quote: QuoteDto }): Result<true> {
-  if (quote.lines.length === 0) {
-    const message = "A quote needs at least one line to be sent";
+const MISSING = {
+  quantity: "has no quantity: set its own or the ticket's headcount",
+  vatRatePercent: "has no VAT rate: set it on the line, the item or the venue",
+} as const;
+
+type SendableInput = { quote: QuoteDto; lines: readonly DerivedLine[] };
+
+/** Sent with at least one priced line, each with a quantity and VAT, and a future validity. */
+function checkSendable({ quote, lines }: SendableInput): Result<true> {
+  if (lines.length === 0) {
+    const message = "A quote needs at least one priced line on the ticket to be sent";
     return invalid({ message, issues: [{ path: "lines", message }] });
+  }
+  for (const [at, { line, missing }] of lines.entries()) {
+    const [field] = missing;
+    if (!field) continue;
+    const message = `Line "${line.name}" ${MISSING[field]}`;
+    return invalid({ message, issues: [{ path: `lines.${at}.${field}`, message }] });
   }
   if (!quote.validUntil || quote.validUntil <= new Date()) {
     const message = "A quote needs a validity date in the future to be sent";
@@ -45,33 +60,33 @@ export const sendQuote = defineOperation({
   name: "quote.send",
   kind: "command",
   description:
-    "Mark a DRAFT quote as SENT to the customer (ADR 0022). It needs at least one line and a " +
-    "future `validUntil`, and the ticket must not be in a terminal phase. Older SENT versions " +
-    "of the quote expire. The ticket's phase does not change. Any other starting status is a " +
-    "CONFLICT.",
+    "Mark a DRAFT quote as SENT to the customer (ADR 0022, 0052). Freezes the ticket's priced " +
+    "lines as the quote's snapshot: one order line per line with its effective price, VAT, " +
+    "tags and totals; later line changes never touch it. It needs at least one priced line, " +
+    "each with a quantity and VAT, and a future `validUntil`, and the ticket must not be in a " +
+    "terminal phase. Older SENT versions expire. The ticket's phase does not change. Any other " +
+    "starting status is a CONFLICT.",
   input: QuoteIdInputSchema,
   output: QuoteSchema,
   permission: "quote:write",
   handler: async ({ input: { id }, context }) => {
     const before = await loadQuote({ context, id });
     if (!before) return notFound({ entity: "Quote" });
-    for (const check of [
-      checkQuoteTransition({ from: before.quoteStatus, to: "SENT" }),
-      checkSendable({ quote: before }),
-    ]) {
-      if (!check.ok) return check;
-    }
-    const ticket = await loadOpenTicket({ context, ticketId: before.ticketId });
+    const allowed = checkQuoteTransition({ from: before.quoteStatus, to: "SENT" });
+    if (!allowed.ok) return allowed;
+    const { ticketId } = before;
+    const lines = (await deriveTicketLines({ context, ticketIds: [ticketId] })).get(ticketId) ?? [];
+    const sendable = checkSendable({ quote: before, lines });
+    if (!sendable.ok) return sendable;
+    const ticket = await loadOpenTicket({ context, ticketId });
     if (!ticket.ok) return ticket;
     const superseded = await supersede({ context, quote: before });
     if (!superseded.ok) return superseded;
+    const frozen = await freezeLines({ context, quoteId: id, lines: lines.map((d) => d.line) });
+    if (!frozen.ok) return frozen;
     const sent = await moveQuote({ context, before, to: "SENT" });
     if (!sent.ok) return sent;
-    const moved = await moveOnQuoteEvent({
-      context,
-      ticketId: before.ticketId,
-      event: "QUOTE_SENT",
-    });
+    const moved = await moveOnQuoteEvent({ context, ticketId, event: "QUOTE_SENT" });
     return moved.ok ? sent : moved;
   },
 });

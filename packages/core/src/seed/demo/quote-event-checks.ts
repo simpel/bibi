@@ -1,4 +1,5 @@
 import type { ExecuteContext } from "../../operations/context";
+import { checkDemoQuoteSnapshots } from "./quote-snapshot-checks";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoQuoteEventsInput = { context: ExecuteContext; org: DemoOrg };
@@ -9,7 +10,8 @@ const STATUS = { QUOTE_SENT: "SENT", QUOTE_ACCEPTED: "ACCEPTED" } as const;
  * ADR 0043: a ticket in a phase with a quote event got there through its quote, which is SENT for
  * `QUOTE_SENT` and ACCEPTED, with its time and method, for `QUOTE_ACCEPTED`. Tickets made from a
  * predefined ticket start in their phase and have no quote. An organization without event
- * phases has no quotes. Returns failure messages.
+ * phases has no quotes, and the quotes are snapshots of the lines (ADR 0052). Returns failure
+ * messages.
  */
 export async function checkDemoQuoteEvents({
   context,
@@ -40,5 +42,6 @@ export async function checkDemoQuoteEvents({
       `${org.slug}: ${tickets.length} tickets by quote event, expected ${expected.length}`,
     );
   }
+  failures.push(...(await checkDemoQuoteSnapshots({ context, org })));
   return failures;
 }

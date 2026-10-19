@@ -555,7 +555,7 @@
     "empty": "Ingen offert ännu.",
     "create": "Skapa offert",
     "edit": "Redigera offert",
-    "formDescription": "Ange giltighet, villkor och orderrader. Varje rad kopierar artikelns namn, pris, moms och allergener när den läggs till.",
+    "formDescription": "Ange giltighet och villkor. Raderna hör till ärendet: lägg till och prissätt dem på ärendet.",
     "created": "Offerten har skapats.",
     "saved": "Offerten har sparats.",
     "amount": "{amount} kr",
@@ -570,7 +570,7 @@
     "revise": "Ny version",
     "revised": "En ny version har skapats.",
     "confirm": {
-      "send": "Markera version {version} som skickad till kunden? Den kan inte längre redigeras och äldre skickade versioner går ut.",
+      "send": "Markera version {version} som skickad till kunden? Ärendets rader fryses i den, den kan inte längre redigeras och äldre skickade versioner förfaller.",
       "accept": "Registrera att kunden godkände version {version}? Ärendet flyttas om pipelinen har en fas för det.",
       "decline": "Registrera att kunden avböjde version {version}?",
       "expire": "Låta version {version} gå ut? Kunden kan inte längre acceptera den."
@@ -602,17 +602,21 @@
     },
     "lines": {
       "title": "Orderrader",
-      "none": "Inga orderrader ännu.",
-      "add": "Lägg till rad",
-      "remove": "Ta bort rad",
+      "none": "Inga prissatta rader på ärendet än.",
       "item": "Artikel",
       "quantity": "Antal",
       "unitPrice": "À-pris (kr)",
       "discount": "Rabatt %",
       "vat": "Moms",
       "total": "Summa exkl. moms",
-      "change": "Ändring",
-      "priceHint": "Lämna à-priset tomt för att använda artikelns pris."
+      "change": "Ändring"
+    },
+    "draftLines": "Ett utkast visar ärendets prissatta rader som de är nu; när offerten skickas fryses de.",
+    "editLinesOnTicket": "Redigera raderna på ärendet",
+    "drift": {
+      "title": "Ärendet skiljer sig från accepterad version {version}",
+      "badge": "Ändrat sedan accepterad",
+      "description": "Ärendets rader har ändrats sedan kunden accepterade. Den accepterade offerten är oförändrad; här är skillnaderna."
     }
   },
   "occupancy": {

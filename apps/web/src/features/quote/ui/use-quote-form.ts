@@ -17,7 +17,7 @@ import {
 
 export type UseQuoteFormInput = { target: QuoteFormTarget; quote?: QuoteDto; onDone: () => void };
 
-/** `quote.create` (then opens the quote) or `quote.update` of a draft; lines replace the set. */
+/** `quote.create` (then opens the quote) or `quote.update` of a draft's validity and terms. */
 export function useQuoteForm({ target, quote, onDone }: UseQuoteFormInput) {
   const t = useTranslations("quote");
   const common = useTranslations("common");

@@ -1,18 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { execute, getQuote, listQuotes, updateItem, updateQuote } from "../src/index";
+import { execute, getQuote, listQuotes, updateItem, updateLine, updateQuote } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { testOrg } from "./org-helpers";
-import { createTestQuote, quoteSetup } from "./quote-helpers";
+import { addTestLines, createTestQuote, quoteSetup } from "./quote-helpers";
 import { createTestTicket, moveToPhase } from "./ticket-helpers";
 
-describe("quote.create (ADR 0022)", () => {
-  it("snapshots the items into lines, sums the totals and inherits the salesperson", async () => {
-    const { context, ticket, lunch, coffee, gluten } = await quoteSetup();
+describe("quote.create (ADR 0022, 0052)", () => {
+  it("shows the ticket's priced lines live, sums the totals and stores no lines", async () => {
+    const { context, ticket, lineType, lunch, coffee, unpriced, gluten } = await quoteSetup();
     const lines = [
-      { itemId: lunch.id, quantity: 20 },
-      { itemId: coffee.id, quantity: 20, unitPriceMinor: 3_500, discountPercent: 10 },
+      { itemId: lunch.id },
+      { itemId: coffee.id, name: "Coffee", unitPriceMinor: 3_500, discountPercent: 10 },
+      { itemId: unpriced.id, name: "Surprise" },
     ];
-    const quote = await createTestQuote({ context, ticketId: ticket.id, lines, terms: "Net 30" });
+    const [lunchLine] = await addTestLines({
+      ...{ context, ticketId: ticket.id, lineTypeId: lineType.id, lines },
+    });
+    const quote = await createTestQuote({ context, ticketId: ticket.id, terms: "Net 30" });
     expect(quote).toMatchObject({
       version: 1,
       previousId: null,
@@ -21,9 +25,13 @@ describe("quote.create (ADR 0022)", () => {
       totalExclVatMinor: 563_000,
       totalInclVatMinor: 630_560,
       removedLines: [],
+      differsFromTicket: null,
     });
+    expect(quote.lines).toHaveLength(2);
     expect(quote.lines[0]).toMatchObject({
+      lineId: lunchLine?.id,
       name: "Lunch",
+      quantity: 20,
       unitPriceMinor: 25_000,
       priceUnit: "PER_PERSON",
       vatRatePercent: 12,
@@ -31,46 +39,34 @@ describe("quote.create (ADR 0022)", () => {
       change: null,
     });
     expect(quote.lines[1]).toMatchObject({ unitPriceMinor: 3_500, totalExclVatMinor: 63_000 });
-    const again = await execute({
-      operation: getQuote,
-      input: { id: quote.id },
-      context,
-    });
+    const again = await execute({ operation: getQuote, input: { id: quote.id }, context });
     expect(unwrap({ result: again })).toEqual(quote);
+    expect(await context.db.orderLine.count({ where: { quoteId: quote.id } })).toBe(0);
   });
 
-  it("keeps the snapshot when the item changes afterwards", async () => {
-    const { context, ticket, lunch } = await quoteSetup();
-    const lines = [{ itemId: lunch.id, quantity: 10 }];
-    const quote = await createTestQuote({ context, ticketId: ticket.id, lines });
-    const input = { id: lunch.id, name: "Big lunch", priceMinor: 30_000 };
-    unwrap({ result: await execute({ operation: updateItem, input, context }) });
-    const kept = await execute({
-      operation: updateQuote,
-      input: {
-        id: quote.id,
-        lines: [{ lineId: quote.lines[0]?.id, itemId: lunch.id, quantity: 12 }],
-      },
+  it("follows the lines and the items while it is a draft", async () => {
+    const { context, ticket, lineType, lunch } = await quoteSetup();
+    const lines = [{ itemId: lunch.id }];
+    const [line] = await addTestLines({
       context,
+      ticketId: ticket.id,
+      lineTypeId: lineType.id,
+      lines,
     });
-    expect(unwrap({ result: kept }).lines[0]).toMatchObject({
-      name: "Lunch",
-      unitPriceMinor: 25_000,
-      quantity: 12,
+    const quote = await createTestQuote({ context, ticketId: ticket.id });
+    const item = { id: lunch.id, priceMinor: 30_000 };
+    unwrap({ result: await execute({ operation: updateItem, input: item, context }) });
+    const input = { id: line?.id ?? "", quantity: 12 };
+    unwrap({ result: await execute({ operation: updateLine, input, context }) });
+    const live = unwrap({
+      result: await execute({ operation: getQuote, input: { id: quote.id }, context }),
     });
-    const fresh = await execute({
-      operation: updateQuote,
-      input: { id: quote.id, lines: [{ itemId: lunch.id, quantity: 12 }] },
-      context,
-    });
-    expect(unwrap({ result: fresh }).lines[0]).toMatchObject({
-      name: "Big lunch",
-      unitPriceMinor: 30_000,
-    });
+    expect(live.lines[0]).toMatchObject({ unitPriceMinor: 30_000, quantity: 12 });
+    expect(live.totalExclVatMinor).toBe(360_000);
   });
 
-  it("refuses bad lines, a second quote and a closed ticket", async () => {
-    const { context, ticket, unpriced, type, customer } = await quoteSetup();
+  it("refuses a missing quote, a second quote and a closed ticket", async () => {
+    const { context, ticket, type, customer } = await quoteSetup();
     const missing = await execute({ operation: updateQuote, input: { id: "missing" }, context });
     expect(errorCode({ result: missing })).toBe("NOT_FOUND");
     await createTestQuote({ context, ticketId: ticket.id });
@@ -81,18 +77,6 @@ describe("quote.create (ADR 0022)", () => {
       entityTypeId: type.id,
       customerId: customer.id,
     });
-    const lines = [{ itemId: unpriced.id, quantity: 1 }];
-    const unpricedLine = await createTestQuote({ context, ticketId: other.id, lines }).catch(
-      (e) => e,
-    );
-    expect(unpricedLine).toMatchObject({ code: "VALIDATION" });
-    expect(unpricedLine.issues[0].path).toBe("lines.0.unitPriceMinor");
-    const unknown = await createTestQuote({
-      context,
-      ticketId: other.id,
-      lines: [{ itemId: "nope", quantity: 1 }],
-    }).catch((e) => e);
-    expect(unknown.issues[0].path).toBe("lines.0.itemId");
     const lost = { context, ticketId: other.id, name: "Lost", reason: "Too expensive" };
     unwrap({ result: await moveToPhase(lost) });
     const closed = await createTestQuote({ context, ticketId: other.id }).catch((e) => e);

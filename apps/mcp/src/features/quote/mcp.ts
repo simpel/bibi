@@ -1,15 +1,12 @@
 import { mcpTool, text } from "../../tools/meta";
 
-const lineCount = ({ lines }: { lines?: unknown[] }) =>
-  lines === undefined ? "" : ` with ${lines.length} line(s)`;
-
 export const quoteMcpTools = [
   mcpTool({ operation: "quote.list" }),
   mcpTool({ operation: "quote.get" }),
   mcpTool({
     operation: "quote.create",
     summary: ({ input }) =>
-      `Create a quote for ticket ${text({ value: input.ticketId })}${lineCount(input)}`,
+      `Create a quote of the lines of ticket ${text({ value: input.ticketId })}`,
   }),
   mcpTool({
     operation: "quote.update",
@@ -25,7 +22,8 @@ export const quoteMcpTools = [
   }),
   mcpTool({
     operation: "quote.send",
-    summary: ({ input }) => `Mark quote ${text({ value: input.id })} as sent`,
+    summary: ({ input }) =>
+      `Send quote ${text({ value: input.id })}, freezing the ticket's priced lines`,
   }),
   mcpTool({
     operation: "quote.accept",
