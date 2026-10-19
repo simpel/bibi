@@ -1,4 +1,4 @@
-import { type ApiKeyDto, parseFixedRole } from "@okazi/core";
+import { type ApiKeyDto, parseFixedRole } from "@okazi/core/schemas";
 import { actionsColumn, type ColumnDef } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";

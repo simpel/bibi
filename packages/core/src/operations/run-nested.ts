@@ -1,5 +1,6 @@
 import type { z } from "zod";
-import type { Result } from "../errors/result";
+import { AppError } from "../errors/app-error";
+import { err, type Result } from "../errors/result";
 import { authorize } from "./authorize";
 import { parseWith } from "./parse-with";
 import type { Operation, OperationContext } from "./types";
@@ -23,6 +24,11 @@ export async function runNested<I extends z.ZodType, O extends z.ZodType>({
   context,
 }: RunNestedInput<I, O>): Promise<Result<z.infer<O>>> {
   const op: Operation = operation;
+  if (op.external) {
+    // Its outside call would run before the batch commits, or never (ADR 0058).
+    const message = `${op.name} calls an external service and cannot run nested`;
+    return err({ error: new AppError({ code: "INTERNAL", message }) });
+  }
   const parsed = parseWith({ schema: op.input, data: input, side: "input" });
   if (!parsed.ok) return parsed;
   const allowed = authorize({ operation: op, context });

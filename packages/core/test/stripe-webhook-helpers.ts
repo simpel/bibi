@@ -95,7 +95,9 @@ export async function pendingPayment({ coordinated }: SetupInput) {
     }),
   });
   const account = setup.account.stripeAccountId ?? "";
-  return { ...setup, ticketId, payment, account };
+  // Executed, so Stripe has already been asked and the reference is set (ADR 0058).
+  const reference = payment.providerReference ?? "";
+  return { ...setup, ticketId, payment: { ...payment, providerReference: reference }, account };
 }
 
 export const paidEvent = ({ account, reference }: { account: string; reference: string }) =>

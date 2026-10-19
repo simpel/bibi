@@ -8,6 +8,7 @@ import { logOperation } from "./log-operation";
 import { parseWith } from "./parse-with";
 import { runAfterCommit } from "./run-after-commit";
 import { runCommand } from "./run-command";
+import { runExternal } from "./run-external";
 import { runQuery } from "./run-query";
 import type { Operation } from "./types";
 
@@ -39,8 +40,16 @@ async function attempt({
   if (!allowed.ok) return allowed;
   try {
     const run = operation.kind === "command" ? runCommand : runQuery;
-    const result = await run({ operation, input: parsed.value, context });
-    if (result.ok && operation.kind === "command") {
+    const committed = await run({ operation, input: parsed.value, context });
+    if (!committed.ok || operation.kind !== "command") return committed;
+    // Only here, after the commit: previews and dry runs never call the outside world (ADR 0058).
+    const result = await runExternal({
+      operation,
+      input: parsed.value,
+      output: committed.value,
+      context,
+    });
+    if (result.ok) {
       await runAfterCommit({ hooks: afterCommit, operation, output: result.value, context });
     }
     return result;

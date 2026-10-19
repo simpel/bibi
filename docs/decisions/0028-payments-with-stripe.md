@@ -40,6 +40,9 @@
 - The page shows organization name, ticket reference, amount, status and the Stripe-hosted checkout link. No customer or ticket details. A `PENDING` payment past `expiresAt` shows as expired without a pay link. Stripe returns to the same page, with `?checkout=success` after paying. The status comes from the webhook, so while it is still `PENDING` that return shows a "processing" state (no pay button) that refreshes itself every 3 seconds, up to 20 times, until the payment is `SUCCEEDED`.
 - A Next page is not a `Request` handler, so `withRequestLogging` does not apply; the request context is opened with `runWithLogContext` (surface `web`, ADR 0014).
 
+## Stripe after the commit (ADR 0058)
+- `payment.create` inserts the `PENDING` row first and calls Stripe in its `external` step, after the commit, with the row id as idempotency key. A change preview of an AI proposal therefore never creates a checkout or sends an invoice. A refused charge leaves the row `FAILED`.
+
 ## Addendum 2026-10-19 – single source of truth (ADR 0051, 0057)
 - A payment settles exactly one receivable: a sent quote, a deposit request or an invoice (`quoteId`, `depositId` or `invoiceId`). `payment.create` takes the receivable instead of a free amount; the amount defaults to the open balance and may be lower.
 - Balances and receivable progress (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`) are derived from `SUCCEEDED` payments minus refunds. Nothing stores a balance.

@@ -59,6 +59,7 @@ export {
   GRANTABLE_ROLES,
   type GrantableRole,
   GrantableRoleSchema,
+  parseFixedRole,
   roleRank,
 } from "./permissions/fixed-roles";
 export { type PermissionSet, PermissionSetSchema } from "./permissions/permission-set";

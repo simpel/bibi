@@ -19,12 +19,13 @@ export function WizardFooter({ first, last, pending, canSave, onBack, onNext }: 
       <Button type="button" variant="outline" onClick={onBack}>
         {first ? common("cancel") : common("back")}
       </Button>
+      {/* Separate keys: a reused node would turn Next into submit mid-click and save early. */}
       {last ? (
-        <Button type="submit" disabled={pending || !canSave}>
+        <Button key="save" type="submit" disabled={pending || !canSave}>
           {common("save")}
         </Button>
       ) : (
-        <Button type="button" onClick={onNext}>
+        <Button key="next" type="button" onClick={onNext}>
           {common("next")}
         </Button>
       )}
