@@ -8,13 +8,13 @@ export type AfterOrganizationInput = {
 
 /**
  * Continues after an organization is active: in an OAuth flow resume authorize (Better Auth's
- * client then redirects to consent / the client), otherwise open the app.
+ * client then redirects to consent / the client), otherwise open the onboarding (ADR 0045).
  */
 export async function afterOrganization({ router }: AfterOrganizationInput): Promise<void> {
   if (hasOAuthQuery({ search: window.location.search })) {
     await authClient.oauth2.continue({ postLogin: true });
     return;
   }
-  router.replace(ROUTES.home);
+  router.replace(ROUTES.onboarding);
   router.refresh();
 }

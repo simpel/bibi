@@ -3,6 +3,7 @@
 import { Conversation, ConversationScrollButton } from "@okazi/ui";
 import { Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import type { ReactNode } from "react";
 import { useAssistant } from "../state/assistant-context";
 import { Composer } from "./composer";
 import { MessageList } from "./message-list";
@@ -18,8 +19,13 @@ function LoadingConversation() {
   );
 }
 
+export type ChatViewProps = {
+  /** Replaces the default suggested prompts while the conversation is empty; receives a sender. */
+  renderEmpty?: (input: { send: (input: { text: string }) => void }) => ReactNode;
+};
+
 /** The conversation as AI Elements: scrolling transcript (or the empty state), error line and prompt box. */
-export function ChatView() {
+export function ChatView({ renderEmpty }: ChatViewProps) {
   const { session, draft } = useAssistant();
   const { chat, loading } = session;
   const { messages, status, error, sendMessage, stop, regenerate } = chat;
@@ -28,7 +34,7 @@ export function ChatView() {
   return (
     <div className="flex min-h-0 flex-1 flex-col" data-slot="assistant-chat">
       {loading ? <LoadingConversation /> : null}
-      {empty ? <SuggestedPrompts onPick={send} /> : null}
+      {empty ? (renderEmpty?.({ send }) ?? <SuggestedPrompts onPick={send} />) : null}
       {!loading && !empty ? (
         <Conversation>
           <MessageList

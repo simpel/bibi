@@ -2672,5 +2672,11 @@
       "summary": "Saving sets up {phases} phases and {types} item types.",
       "replaces": "Phases and states that are not in the setup are archived. Their tickets and lines move to the first phase and state."
     }
+  },
+  "onboarding": {
+    "skip": "Skip for now",
+    "welcomeTitle": "Let's set up your first version",
+    "welcomeDescription": "Tell me a little about your place and I will sketch a starting point.",
+    "panelEmpty": "Your first version appears here as we talk"
   }
 }

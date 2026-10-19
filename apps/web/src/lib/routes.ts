@@ -35,6 +35,7 @@ export const ROUTES = {
   settingsSheets: "/settings/sheets",
   settingsPriceLists: "/settings/price-lists",
   settingsPipeline: "/settings/pipeline",
+  onboarding: "/onboarding",
   onboardingPipeline: "/onboarding/pipeline",
   settingsItemStates: "/settings/item-states",
   settingsTicketTemplates: "/settings/ticket-templates",
