@@ -48,6 +48,9 @@ export type OperationKind = "command" | "query";
 
 export type HandlerInput<I> = { input: I; context: OperationContext };
 
+/** What `external` gets: the input, the committed output and a db outside any transaction. */
+export type ExternalInput<I, O> = { input: I; output: O; context: OperationContext };
+
 export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
   /** Dot-separated, `<entity>.<verb>`, e.g. `venue.create`. Stable across all surfaces. */
   name: string;
@@ -59,6 +62,14 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
   permission: Permission;
   /** Method syntax on purpose: keeps typed operations assignable to `AnyOperation`. */
   handler(args: HandlerInput<z.infer<I>>): Promise<Result<z.input<O>>>;
+  /**
+   * Calls to the outside world (a payment provider, anything that emails a customer) that must
+   * happen only once the command has committed (ADR 0058). `execute` runs it right after the
+   * commit with the committed output and returns what it returns; a change preview, a dry run
+   * and a nested run call only `handler`, so they never reach it. It is not in the handler's
+   * transaction: a failure never undoes the commit, so it leaves its record in a failure state.
+   */
+  external?(args: ExternalInput<z.infer<I>, z.output<O>>): Promise<Result<z.input<O>>>;
   /** Require human approval when an AI actor runs it. Defaults to true for commands. */
   approval?: boolean;
   /**

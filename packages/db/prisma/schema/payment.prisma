@@ -16,8 +16,9 @@ model Payment {
   applicationFeeMinor Int?
   /// Connected account the charge was made on (`acct_...`).
   providerAccountId   String
-  /// PSP reference: the Stripe Checkout Session (`cs_...`) or Invoice (`in_...`) id.
-  providerReference   String
+  /// PSP reference: the Stripe Checkout Session (`cs_...`) or Invoice (`in_...`) id. Null until
+  /// the provider call after the commit has succeeded (ADR 0058).
+  providerReference   String?
   /// Where the customer pays: the hosted checkout page or the hosted invoice page.
   paymentUrl          String?
   /// Unguessable token in the public payment page URL `/pay/<token>` (ADR 0028). Never in the DTO.

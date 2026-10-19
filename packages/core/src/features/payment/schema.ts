@@ -21,7 +21,10 @@ export const PaymentSchema = z.object({
   amountMinor: z.number().int().describe("Amount in minor units (öre for SEK)"),
   currency: z.string(),
   applicationFeeMinor: z.number().int().nullable(),
-  providerReference: z.string().describe("Stripe Checkout Session or Invoice id"),
+  providerReference: z
+    .string()
+    .nullable()
+    .describe("Stripe Checkout Session or Invoice id; null until Stripe has created it"),
   paymentUrl: z.string().nullable().describe("Hosted checkout or invoice page for the customer"),
   expiresAt: z.date().nullable(),
   paidAt: z.date().nullable(),
