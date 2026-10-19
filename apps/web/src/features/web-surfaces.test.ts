@@ -8,9 +8,11 @@ import { WEB_SURFACES } from "./web-surfaces";
 const stubEmbed = async () => ({ model: "stub", embeddings: [] });
 const operationNames = createCoreOperations({ embed: stubEmbed }).map(({ name }) => name);
 const srcDir = join(import.meta.dirname, "..");
-const appDirs = ["(contained)", "(canvas)"].map((group) =>
-  join(srcDir, "app", "[locale]", "(app)", group),
-);
+const appDirs = [
+  ...["(contained)", "(canvas)"].map((group) => join(srcDir, "app", "[locale]", "(app)", group)),
+  // The full-screen first setup (ADR 0045) has its own route group.
+  join(srcDir, "app", "[locale]", "(onboarding)"),
+];
 
 describe("web surfaces", () => {
   it("covers every core operation or lists it as uiExempt with a reason", () => {

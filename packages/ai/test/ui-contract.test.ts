@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { listMcpToolNames } from "../../../apps/mcp/src/list-mcp-tool-names";
-import { LOCAL_SKILL_TOOLS } from "../src/skills/create-skill-tools";
+import { LOCAL_TOOLS } from "../src/chat/local-tools";
 import { resolveToolUi } from "../src/ui-contract/resolve-tool-ui";
 import { GENERIC_UI_TOOLS, TOOL_UI_REGISTRY } from "../src/ui-contract/tool-ui-registry";
 
 /** Every tool the assistant can see: MCP operation tools + generic graph tools + local tools. */
-const ALL_TOOLS = [...listMcpToolNames(), "graphql_schema", "graphql_query", ...LOCAL_SKILL_TOOLS];
+const ALL_TOOLS = [...listMcpToolNames(), "graphql_schema", "graphql_query", ...LOCAL_TOOLS];
 
 const venue = {
   id: "v1",

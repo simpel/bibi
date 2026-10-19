@@ -25,6 +25,7 @@ export { ASSISTANT_LIMITS } from "./chat/assistant-limits";
 export { type ChatRequest, ChatRequestSchema, type ChatUIMessage } from "./chat/chat-request";
 export { type CreateChatHandlerInput, createChatHandler } from "./chat/create-chat-handler";
 export { conversationTitle } from "./chat/ensure-conversation";
+export { LOCAL_TOOLS } from "./chat/local-tools";
 export { HUMAN_ONLY_TOOLS } from "./chat/prepare-tools";
 export { CONVERSATION_DATA_PART, CONVERSATION_ID_HEADER } from "./chat/stream-chat";
 export {
@@ -61,6 +62,8 @@ export {
   type PageContext,
   PageContextSchema,
 } from "./prompt/page-context-schema";
+export { ASK_QUESTION_TOOL } from "./questions/ask-question-tool";
+export type { AskedQuestion, Question, QuestionChoice } from "./questions/question-schema";
 export type { ResolveContext } from "./server/resolve-user";
 export type { AssistantServerOptions } from "./server/server-options";
 export { LOCAL_SKILL_TOOLS } from "./skills/create-skill-tools";
@@ -72,7 +75,10 @@ export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire } from "./ui-contract/payment-entries";
 export type { PhaseGridCellWire } from "./ui-contract/phase-grid-entries";
 export type { PipelineBoardWire } from "./ui-contract/pipeline-entries";
-export type { PipelinePreviewWire } from "./ui-contract/pipeline-setup-entries";
+export type {
+  PipelinePreviewWire,
+  PipelineSetupDraftWire,
+} from "./ui-contract/pipeline-setup-entries";
 export type { PriceListWire } from "./ui-contract/price-list-entries";
 export type { ProgramItemWire } from "./ui-contract/program-item-entries";
 export type { QuoteWire } from "./ui-contract/quote-entries";

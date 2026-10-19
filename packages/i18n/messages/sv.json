@@ -1745,7 +1745,19 @@
           "name": "Namn",
           "lines": "Rader"
         }
+      },
+      "pipelineDraft": {
+        "title": "En första version",
+        "sell": "Det ni säljer",
+        "moves": "Så rör sig en förfrågan",
+        "ends": "Slutar som: {phases}",
+        "nothingYet": "Inget ännu"
       }
+    },
+    "questionnaire": {
+      "answer": "Svara",
+      "otherLabel": "Annat svar",
+      "otherPlaceholder": "Eller skriv ett eget svar…"
     }
   },
   "skills": {
@@ -2003,6 +2015,10 @@
         "assistantChat": {
           "name": "Assistenten",
           "description": "Språkmodellen som svarar i chatten och ⌘K."
+        },
+        "onboarding": {
+          "name": "Första uppsättningen",
+          "description": "Språkmodellen som intervjuar en ny organisation vid första uppsättningen och tar fram dess första version."
         },
         "searchEmbedding": {
           "name": "Semantisk sökning",
@@ -2681,6 +2697,16 @@
     "panelSell": "Det ni säljer",
     "panelPath": "Så går en förfrågan",
     "panelNote": "En startpunkt. Du kan ändra allt senare.",
-    "panelUnsaved": "Inget är sparat än"
+    "panelUnsaved": "Inget är sparat än",
+    "starters": {
+      "start": "Nu sätter vi igång",
+      "conference": "Vi driver en konferensanläggning",
+      "restaurant": "Vi driver en restaurang med privata rum"
+    },
+    "followUps": {
+      "looksGood": "Ser bra ut",
+      "changeSell": "Jag vill ändra vad vi säljer",
+      "changeMoves": "Jag vill ändra hur en förfrågan rör sig"
+    }
   }
 }

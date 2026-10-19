@@ -4,6 +4,7 @@ import type { DynamicToolUIPart, ToolUIPart } from "ai";
 import { getToolName } from "ai";
 import { Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useQuietTools } from "../state/quiet-tools-context";
 import { ErrorView } from "./generative/error-view";
 import { ToolResultView } from "./generative/tool-result-view";
 
@@ -13,6 +14,8 @@ export type ToolPartViewProps = { part: ToolUIPart | DynamicToolUIPart };
 export function ToolPartView({ part }: ToolPartViewProps) {
   const t = useTranslations("assistant.tool");
   const toolName = getToolName(part);
+  const quiet = useQuietTools().includes(toolName);
+  if (quiet) return null;
   if (part.state === "output-available") {
     return <ToolResultView toolName={toolName} output={part.output} toolCallId={part.toolCallId} />;
   }

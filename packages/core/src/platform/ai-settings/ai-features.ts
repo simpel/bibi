@@ -16,6 +16,13 @@ export const AI_FEATURES = [
     requires: { tags: ["tool-use"], dimensions: null },
   },
   {
+    // The first setup of a new organization (ADR 0045): the assistant on `/onboarding`.
+    id: "onboarding",
+    modelType: "language",
+    requiresReindex: false,
+    requires: { tags: ["tool-use"], dimensions: null },
+  },
+  {
     id: "search.embedding",
     modelType: "embedding",
     requiresReindex: true,

@@ -3,12 +3,14 @@ import {
   consumeStream,
   createUIMessageStream,
   createUIMessageStreamResponse,
+  hasToolCall,
   isStepCount,
   type LanguageModel,
   type ModelMessage,
   streamText,
   toUIMessageStream,
 } from "ai";
+import { ASK_QUESTION_TOOL } from "../questions/ask-question-tool";
 import { ASSISTANT_LIMITS } from "./assistant-limits";
 import type { PreparedTools } from "./prepare-tools";
 
@@ -41,7 +43,8 @@ function startModel({ model, instructions, messages, prepared }: StartModelInput
     instructions,
     messages,
     tools,
-    stopWhen: isStepCount(ASSISTANT_LIMITS.maxSteps),
+    // A question ends the turn: the user's answer is the next message.
+    stopWhen: [isStepCount(ASSISTANT_LIMITS.maxSteps), hasToolCall(ASK_QUESTION_TOOL)],
     maxOutputTokens: ASSISTANT_LIMITS.maxOutputTokens,
     timeout: { totalMs: ASSISTANT_LIMITS.totalTimeoutMs, stepMs: ASSISTANT_LIMITS.stepTimeoutMs },
     prepareStep: () => {

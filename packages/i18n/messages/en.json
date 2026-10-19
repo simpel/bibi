@@ -1745,7 +1745,19 @@
           "name": "Name",
           "lines": "Lines"
         }
+      },
+      "pipelineDraft": {
+        "title": "A first version",
+        "sell": "What you sell",
+        "moves": "How a request moves",
+        "ends": "Ends as: {phases}",
+        "nothingYet": "Nothing yet"
       }
+    },
+    "questionnaire": {
+      "answer": "Answer",
+      "otherLabel": "Another answer",
+      "otherPlaceholder": "Or write your own answer…"
     }
   },
   "skills": {
@@ -2003,6 +2015,10 @@
         "assistantChat": {
           "name": "Assistant",
           "description": "The language model answering in the chat and ⌘K."
+        },
+        "onboarding": {
+          "name": "First setup",
+          "description": "The language model that interviews a new organization on its first setup and drafts its first version."
         },
         "searchEmbedding": {
           "name": "Semantic search",
@@ -2681,6 +2697,16 @@
     "panelSell": "What you sell",
     "panelPath": "How a request moves",
     "panelNote": "A starting point. You can change anything later.",
-    "panelUnsaved": "Nothing is saved yet"
+    "panelUnsaved": "Nothing is saved yet",
+    "starters": {
+      "start": "Let's get started",
+      "conference": "We run a conference venue",
+      "restaurant": "We run a restaurant with private rooms"
+    },
+    "followUps": {
+      "looksGood": "Looks good",
+      "changeSell": "I want to change what we sell",
+      "changeMoves": "I want to change how a request moves"
+    }
   }
 }

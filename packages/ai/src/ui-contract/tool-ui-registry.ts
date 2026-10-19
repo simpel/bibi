@@ -13,6 +13,7 @@ import { PIPELINE_UI_ENTRIES } from "./pipeline-entries";
 import { PIPELINE_SETUP_UI_ENTRIES } from "./pipeline-setup-entries";
 import { PRICE_LIST_UI_ENTRIES } from "./price-list-entries";
 import { PROGRAM_ITEM_UI_ENTRIES } from "./program-item-entries";
+import { QUESTION_UI_ENTRIES } from "./question-entries";
 import { QUOTE_UI_ENTRIES } from "./quote-entries";
 import { REQUIREMENT_UI_ENTRIES } from "./requirement-entries";
 import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
@@ -81,6 +82,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...SHEET_DEFINITION_UI_ENTRIES,
   ...SHEET_UI_ENTRIES,
   ...ACCESS_UI_ENTRIES,
+  ...QUESTION_UI_ENTRIES,
   search: uiEntry({
     component: "search-results",
     schema: SearchWireSchema,

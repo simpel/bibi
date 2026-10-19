@@ -44,7 +44,7 @@
 - The seven-step wizard UI of ADR 0044 and its redirect on canvas pages are removed. The operations `pipelineSetup.preview` and `pipelineSetup.activate`, the templates and the settings pages stay as they are.
 
 ## Consequences
-- New capability: presets in core, `draftFromPreset`, the "First setup" system skill (`seed:skills`), a question tool with a `Questionnaire` result component, the `onboarding` AI feature, the `/onboarding` route group, the panel and the approval step. No new data model and no migration.
+- New capability: presets in core, `draftFromPreset` (exposed to the assistant as the query `pipelineSetup.presetDraft`), the "First setup" system skill (`seed:skills`), a question tool with a `Questionnaire` result component, the `onboarding` AI feature, the `/onboarding` route group, the panel and the approval step. No new data model and no migration.
 - `seed:demo` is unchanged. `--skip-pipeline` stays as the empty starting state; only wording in `docs/demo-seed.md` and the `checkDemoSetupNeed` comments changes.
 - Everything is reachable later by the assistant or Settings, so the onboarding can stay small. A new user cannot get stuck in a configuration they do not understand.
 - It depends on a configured AI model in production. That is acceptable because Okazi is AI-first and the model is a platform setting (ADR 0015).

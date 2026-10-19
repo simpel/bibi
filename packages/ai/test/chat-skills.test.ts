@@ -68,10 +68,20 @@ describe("skills in the assistant", () => {
       slug: "list-venues",
       instructions: expect.stringContaining("venue_list"),
     });
-    expect(loaded?.output.activeTools.sort()).toEqual(["load_skill", "skill_search", "venue_list"]);
+    expect(loaded?.output.activeTools.sort()).toEqual([
+      "ask_question",
+      "load_skill",
+      "skill_search",
+      "venue_list",
+    ]);
 
     expect(offeredTools({ model, call: 0 })).toContain("venue_create");
-    expect(offeredTools({ model, call: 1 })).toEqual(["load_skill", "skill_search", "venue_list"]);
+    expect(offeredTools({ model, call: 1 })).toEqual([
+      "ask_question",
+      "load_skill",
+      "skill_search",
+      "venue_list",
+    ]);
     // Outside the restriction the SDK refuses the call (not executed, no proposal).
     const forbidden = chunks.filter((chunk) => chunk.toolCallId === "call_forbidden");
     expect(forbidden.map((chunk) => chunk.type)).toContain("tool-output-error");

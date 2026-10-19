@@ -76,6 +76,9 @@ export type * from "./components/kanban/kanban-types";
 export { Label, type LabelProps } from "./components/label/label";
 export * from "./components/page-container/page-container";
 export * from "./components/popover/popover";
+export * from "./components/questionnaire/questionnaire";
+export * from "./components/questionnaire/questionnaire-actions";
+export * from "./components/questionnaire/questionnaire-choices";
 export {
   Select,
   SelectContent,
@@ -119,13 +122,7 @@ export {
   SidebarGroupContent,
   SidebarGroupLabel,
 } from "./components/sidebar/sidebar-group";
-export {
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarInput,
-  SidebarSeparator,
-} from "./components/sidebar/sidebar-layout";
+export * from "./components/sidebar/sidebar-layout";
 export { SidebarMenu, SidebarMenuBadge, SidebarMenuItem } from "./components/sidebar/sidebar-menu";
 export {
   SidebarMenuButton,
@@ -133,11 +130,7 @@ export {
   sidebarMenuButtonVariants,
 } from "./components/sidebar/sidebar-menu-button";
 export { SidebarMenuAction, SidebarMenuSkeleton } from "./components/sidebar/sidebar-menu-extras";
-export {
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-} from "./components/sidebar/sidebar-menu-sub";
+export * from "./components/sidebar/sidebar-menu-sub";
 export { Skeleton, type SkeletonProps } from "./components/skeleton/skeleton";
 export { Switch, type SwitchProps } from "./components/switch/switch";
 export * from "./components/table/table";

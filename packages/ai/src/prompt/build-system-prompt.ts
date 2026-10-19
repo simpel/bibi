@@ -1,4 +1,5 @@
 import type { PromptSkill } from "../skills/skill-wire";
+import { assistantMode, modeSection } from "./assistant-mode";
 import { assistantRules } from "./assistant-rules";
 import { contextSection, skillsSection } from "./context-sections";
 import type { AssistantLocale, PageContext } from "./page-context-schema";
@@ -12,7 +13,10 @@ export type BuildSystemPromptInput = {
   now?: Date;
 };
 
-/** System instructions for one run: product, rules, context (org/page) and skill catalogue. */
+/**
+ * System instructions for one run: product, rules, context (org/page), skill catalogue and, on
+ * `/onboarding`, the first setup.
+ */
 export function buildSystemPrompt({
   organizationId,
   locale,
@@ -21,10 +25,12 @@ export function buildSystemPrompt({
   now = new Date(),
 }: BuildSystemPromptInput): string {
   const rules = assistantRules({ locale }).map((rule) => `- ${rule}`);
+  const mode = modeSection({ mode: assistantMode({ page }) });
   return [
     PRODUCT_CONTEXT,
     ["## Rules", ...rules].join("\n"),
     contextSection({ organizationId, now, ...(page ? { page } : {}) }),
     skillsSection({ skills }),
+    ...(mode ? [mode] : []),
   ].join("\n\n");
 }

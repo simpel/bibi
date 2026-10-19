@@ -46,15 +46,26 @@ export function createHarness({ model, mcpUrl }: CreateHarnessInput): ChatHarnes
   return { handler, clients };
 }
 
-export type ChatRequestInput = { cookies: Headers; text: string; conversationId?: string };
+export type ChatRequestInput = {
+  cookies: Headers;
+  text: string;
+  conversationId?: string;
+  /** The page the user asks from; default `/sv/venues`. */
+  route?: string;
+};
 
-export function chatRequest({ cookies, text, conversationId }: ChatRequestInput): Request {
+export function chatRequest({
+  cookies,
+  text,
+  conversationId,
+  route = "/sv/venues",
+}: ChatRequestInput): Request {
   const headers = new Headers(cookies);
   headers.set("content-type", "application/json");
   const message = { id: "client-msg-1", role: "user", parts: [{ type: "text", text }] };
   const body = {
     messages: [message],
-    pageContext: { route: "/sv/venues", locale: "sv" },
+    pageContext: { route, locale: "sv" },
     conversationId,
   };
   return new Request("http://localhost:3000/api/assistant/chat", {

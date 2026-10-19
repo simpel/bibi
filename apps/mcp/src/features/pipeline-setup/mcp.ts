@@ -8,6 +8,7 @@ const names = ({ value }: { value: unknown }) =>
 
 export const pipelineSetupMcpTools = [
   mcpTool({ operation: "pipelineSetup.preview" }),
+  mcpTool({ operation: "pipelineSetup.presetDraft" }),
   mcpTool({
     operation: "pipelineSetup.activate",
     destructive: true,

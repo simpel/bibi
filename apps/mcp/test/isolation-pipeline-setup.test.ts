@@ -46,4 +46,25 @@ describe("cross-organization isolation: the guided pipeline setup", () => {
       "Released",
     ]);
   });
+
+  it("never puts another organization's item types into a preset draft", async () => {
+    const a = await connect({ context: testContext() });
+    const b = await connect({ context: testContext() });
+    const args = { base: "ITEM", name: "Secret room", behaviours: ["BOOKABLE"] };
+    const typeA = await call({ client: a, name: "entityType_create", args });
+    expect(typeA.isError, JSON.stringify(typeA.data)).toBe(false);
+    const draftB = await call({
+      client: b,
+      name: "pipelineSetup_presetDraft",
+      args: { key: "empty" },
+    });
+    expect(draftB.isError, JSON.stringify(draftB.data)).toBe(false);
+    expect(draftB.data.itemTypes).toEqual([]);
+    const draftA = await call({
+      client: a,
+      name: "pipelineSetup_presetDraft",
+      args: { key: "empty" },
+    });
+    expect(draftA.data.itemTypes.map((row: { name: string }) => row.name)).toEqual(["Secret room"]);
+  });
 });

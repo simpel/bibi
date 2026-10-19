@@ -1,4 +1,5 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
+import type { AskedQuestion } from "../questions/question-schema";
 import type { ArchivePreviewWire } from "./archive-preview-entry";
 import type { AssignmentWire } from "./assignment-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
@@ -8,7 +9,7 @@ import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire } from "./payment-entries";
 import type { PhaseGridCellWire } from "./phase-grid-entries";
 import type { PipelineBoardWire } from "./pipeline-entries";
-import type { PipelinePreviewWire } from "./pipeline-setup-entries";
+import type { PipelinePreviewWire, PipelineSetupDraftWire } from "./pipeline-setup-entries";
 import type { PriceListWire } from "./price-list-entries";
 import type { ProgramItemWire } from "./program-item-entries";
 import type { QuoteWire } from "./quote-entries";
@@ -71,6 +72,9 @@ export type ToolUiProps = {
   "requirement-card": { requirement: RequirementWire };
   "pipeline-board": { board: PipelineBoardWire };
   "pipeline-preview": { preview: PipelinePreviewWire };
+  "pipeline-draft-card": { draft: PipelineSetupDraftWire };
+  /** A question to the user (`ask_question`); the answer is the next chat message. */
+  questionnaire: { question: AskedQuestion };
   "quote-card": { quote: QuoteWire };
   "quote-table": { items: QuoteWire[]; nextCursor: string | null };
   "inbound-email-table": { items: InboundEmailWire[]; nextCursor: string | null };

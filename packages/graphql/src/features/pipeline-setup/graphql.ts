@@ -1,6 +1,10 @@
 import {
   activatePipelineSetup,
   type PipelineActivateOutput,
+  type PipelineCellDraft,
+  PipelineCellDraftSchema,
+  type PipelinePhaseDraft,
+  PipelinePhaseDraftSchema,
   type PipelinePreview,
   type PipelinePreviewLine,
   PipelinePreviewLineSchema,
@@ -8,6 +12,12 @@ import {
   PipelinePreviewStepSchema,
   type PipelineProblem,
   PipelineProblemSchema,
+  type PipelineSetupDraft,
+  type PipelineStateDraft,
+  PipelineStateDraftSchema,
+  type PipelineTypeDraft,
+  PipelineTypeDraftSchema,
+  presetDraftPipelineSetup,
   previewPipelineSetup,
 } from "@okazi/core";
 import { builder } from "../../schema/builder";
@@ -68,3 +78,47 @@ fieldFromOperation({
   name: "pipelineSetupPreview",
 });
 mutationFromOperation({ operation: activatePipelineSetup, type: ActivateRef });
+
+const StateDraftRef = objectFromSchema<PipelineStateDraft>({
+  name: "PipelineStateDraft",
+  schema: PipelineStateDraftSchema,
+  description: "One state of an item type in a pipeline setup draft.",
+});
+
+const TypeDraftRef = objectFromSchema<PipelineTypeDraft>({
+  name: "PipelineTypeDraft",
+  schema: PipelineTypeDraftSchema,
+  omit: ["states"],
+  description: "One item type in a pipeline setup draft: existing (entityTypeId) or new.",
+});
+builder.objectFields(TypeDraftRef, (t) => ({
+  states: t.field({ type: [StateDraftRef], resolve: (type) => type.states }),
+}));
+
+const PhaseDraftRef = objectFromSchema<PipelinePhaseDraft>({
+  name: "PipelinePhaseDraft",
+  schema: PipelinePhaseDraftSchema,
+  description: "One ticket phase in a pipeline setup draft.",
+});
+
+const CellDraftRef = objectFromSchema<PipelineCellDraft>({
+  name: "PipelineCellDraft",
+  schema: PipelineCellDraftSchema,
+  description: "One grid cell in a pipeline setup draft, by name.",
+});
+
+const DraftRef = builder.objectRef<PipelineSetupDraft>("PipelineSetupDraft");
+DraftRef.implement({
+  description: "A whole pipeline setup draft (ADR 0045); nothing is saved.",
+  fields: (t) => ({
+    itemTypes: t.field({ type: [TypeDraftRef], resolve: (draft) => draft.itemTypes }),
+    phases: t.field({ type: [PhaseDraftRef], resolve: (draft) => draft.phases }),
+    cells: t.field({ type: [CellDraftRef], resolve: (draft) => draft.cells }),
+  }),
+});
+
+fieldFromOperation({
+  operation: presetDraftPipelineSetup,
+  type: DraftRef,
+  name: "pipelineSetupPresetDraft",
+});

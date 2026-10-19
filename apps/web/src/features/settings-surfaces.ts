@@ -26,6 +26,8 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   // The guided setup (ADR 0044), linked from /settings/pipeline.
   { operation: "pipelineSetup.preview", route: "/onboarding/pipeline" },
   { operation: "pipelineSetup.activate", route: "/onboarding/pipeline" },
+  // The first setup (ADR 0045): the assistant on /onboarding starts from a preset.
+  { operation: "pipelineSetup.presetDraft", route: "/onboarding" },
   { operation: "itemState.list", route: "/settings/item-states" },
   { operation: "itemState.get", route: "/settings/item-states" },
   { operation: "itemState.create", route: "/new/item-state" },
