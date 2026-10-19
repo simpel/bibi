@@ -3,6 +3,7 @@
 import { draftFromPreset } from "@okazi/core/pipeline-setup-templates";
 import {
   lastToolResult,
+  lastUserText,
   type PromptInput,
   type StreamResult,
   systemText,
@@ -35,6 +36,9 @@ const QUESTIONS = [
   },
 ] as const;
 
+/** The one-click follow-up that accepts the first version, in both locales. */
+const APPROVE_TEXTS = ["Looks good", "Ser bra ut"];
+
 const ask = ({ index }: { index: number }) =>
   toolStep({ toolName: "ask_question", input: { ...QUESTIONS[index], allowOther: true } });
 
@@ -51,6 +55,10 @@ export function firstSetupStep({ prompt }: PromptInput): StreamResult {
     return toolStep({ toolName: "pipelineSetup_preview", input: draft });
   }
   if (tool !== null) return textStep({ text: "Here is a first version. Nothing is saved yet." });
+  if (APPROVE_TEXTS.includes(lastUserText({ prompt }))) {
+    const draft = draftFromPreset({ key: "conference-estate", existingTypes: [] });
+    return toolStep({ toolName: "pipelineSetup_activate", input: draft });
+  }
   const asked = toolCallCount({ prompt, toolName: "ask_question" });
   if (asked === 0) return toolStep({ toolName: "load_skill", input: { slug: "first-setup" } });
   if (asked < QUESTIONS.length) return ask({ index: asked });

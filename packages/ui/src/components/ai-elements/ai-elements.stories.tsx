@@ -1,5 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { SparklesIcon } from "lucide-react";
+import {
+  Confirmation,
+  ConfirmationAccepted,
+  ConfirmationAction,
+  ConfirmationActions,
+  ConfirmationRejected,
+  ConfirmationRequest,
+  ConfirmationTitle,
+} from "./confirmation";
 import { Conversation, ConversationContent, ConversationEmptyState } from "./conversation";
 import { Message, MessageContent, MessageResponse } from "./message";
 import {
@@ -61,4 +70,27 @@ export const Empty: Story = {
       </Suggestions>
     </ConversationEmptyState>
   ),
+};
+
+const ConfirmationExample = ({ state }: { state: "requested" | "accepted" | "rejected" }) => (
+  <Confirmation state={state} className="max-w-md">
+    <ConfirmationTitle>Create my first version</ConfirmationTitle>
+    <ConfirmationRequest>Nothing is saved until you approve.</ConfirmationRequest>
+    <ConfirmationAccepted>Your first version is saved.</ConfirmationAccepted>
+    <ConfirmationRejected>Not saved.</ConfirmationRejected>
+    <ConfirmationActions>
+      <ConfirmationAction>Create my first version</ConfirmationAction>
+      <ConfirmationAction variant="outline">Change something</ConfirmationAction>
+    </ConfirmationActions>
+  </Confirmation>
+);
+
+export const ConfirmationRequested: Story = {
+  render: () => <ConfirmationExample state="requested" />,
+};
+export const ConfirmationApproved: Story = {
+  render: () => <ConfirmationExample state="accepted" />,
+};
+export const ConfirmationDeclined: Story = {
+  render: () => <ConfirmationExample state="rejected" />,
 };

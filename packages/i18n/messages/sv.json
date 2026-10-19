@@ -1415,6 +1415,17 @@
         "ticketTemplate_update": "Uppdatera fördefinierat ärende",
         "ticketTemplate_archive": "Arkivera fördefinierat ärende",
         "pipelineSetup_activate": "Sätt upp pipelinen"
+      },
+      "setup": {
+        "title": "Skapa min första version",
+        "request": "Inget sparas förrän du godkänner. Du kan ändra allt senare genom att fråga assistenten, eller i Inställningar och Pipeline.",
+        "archiveNote": "Om du redan har faser eller tillstånd som inte finns i den här versionen arkiveras de, de tas inte bort.",
+        "accepted": "Din första version är sparad. Öppnar din tavla.",
+        "rejected": "Inte sparat. Berätta för assistenten vad som ska ändras.",
+        "approve": "Skapa min första version",
+        "creating": "Skapar...",
+        "change": "Ändra något",
+        "changeMessage": "Jag vill ändra något."
       }
     },
     "description": "Chatta med assistenten om anläggningar, artiklar och färdigheter.",

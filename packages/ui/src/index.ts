@@ -1,4 +1,5 @@
 export type { ColumnDef, SortingState } from "@tanstack/react-table";
+export * from "./components/ai-elements/confirmation";
 export * from "./components/ai-elements/conversation";
 export * from "./components/ai-elements/message";
 export * from "./components/ai-elements/prompt-input";

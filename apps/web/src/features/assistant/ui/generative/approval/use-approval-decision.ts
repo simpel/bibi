@@ -22,6 +22,8 @@ export type UseApprovalDecisionInput = {
   toolCallId: string | undefined;
   conversationId: string | null;
   stored: StoredDecision | undefined;
+  /** Runs once, right after the user's approval went through (not for a stored decision). */
+  onApproved?: () => void;
 };
 
 const fromStored = ({ stored }: { stored: StoredDecision | undefined }): DecisionState => {
@@ -37,6 +39,7 @@ export function useApprovalDecision({
   toolCallId,
   conversationId,
   stored,
+  onApproved,
 }: UseApprovalDecisionInput) {
   const t = useTranslations("assistant.approval");
   const router = useRouter();
@@ -60,6 +63,7 @@ export function useApprovalDecision({
       setState({ phase: "approved", result: outcome.result });
       toast.success(t("approvedToast"));
       router.refresh();
+      onApproved?.();
     }
   };
   return { state, decide };

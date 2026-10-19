@@ -39,3 +39,17 @@ test("three answered questions lead to a first version that is ready", async ({ 
   await expect(page.getByRole("button", { name: "Ser bra ut" })).toBeVisible();
   await expect(page.locator(OPEN_QUESTION)).toHaveCount(0);
 });
+
+test("approving the first version saves it and opens the board", async ({ page }) => {
+  await signUpWithOrganization({ page, name: "Andra AB" });
+  await page.goto("/sv/onboarding");
+  await page.getByRole("button", { name: "Nu sätter vi igång" }).click();
+  await answer({ page, choice: "A conference venue" });
+  await answer({ page, choice: "Rooms, food and drink" });
+  await answer({ page, choice: "Yes, a quote first" });
+  await page.getByRole("button", { name: "Ser bra ut" }).click();
+
+  const card = page.locator('[data-slot="setup-approval-card"]');
+  await card.getByRole("button", { name: "Skapa min första version" }).click();
+  await expect(page).toHaveURL(/\/pipeline$/);
+});

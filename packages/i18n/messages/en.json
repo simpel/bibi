@@ -1415,6 +1415,17 @@
         "ticketTemplate_update": "Update predefined ticket",
         "ticketTemplate_archive": "Archive predefined ticket",
         "pipelineSetup_activate": "Set up the pipeline"
+      },
+      "setup": {
+        "title": "Create my first version",
+        "request": "Nothing is saved until you approve. You can change all of it later by asking the assistant, or in Settings and Pipeline.",
+        "archiveNote": "If you already have phases or states that are not in this version, they are archived, not deleted.",
+        "accepted": "Your first version is saved. Opening your board.",
+        "rejected": "Not saved. Tell the assistant what to change.",
+        "approve": "Create my first version",
+        "creating": "Creating...",
+        "change": "Change something",
+        "changeMessage": "I want to change something."
       }
     },
     "description": "Chat with the assistant about venues, items and skills.",
