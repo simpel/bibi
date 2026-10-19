@@ -7,7 +7,7 @@ describe("assistantMode", () => {
   it("is the first setup on /onboarding only", () => {
     expect(assistantMode({ page: page({ route: "/sv/onboarding" }) })).toBe("first-setup");
     expect(assistantMode({ page: page({ route: "/onboarding/" }) })).toBe("first-setup");
-    expect(assistantMode({ page: page({ route: "/sv/onboarding/pipeline" }) })).toBe("assistant");
+    expect(assistantMode({ page: page({ route: "/sv/onboarding/other" }) })).toBe("assistant");
     expect(assistantMode({ page: page({ route: "/sv/venues" }) })).toBe("assistant");
     expect(assistantMode({})).toBe("assistant");
   });

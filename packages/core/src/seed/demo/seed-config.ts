@@ -16,7 +16,7 @@ import { seedItemStates } from "./seed-item-states";
 export type SeedConfigInput = {
   context: ExecuteContext;
   config: DemoConfig;
-  /** `--skip-pipeline`: item types keep their one default state for the guided setup. */
+  /** `--skip-pipeline`: item types keep their one default state for the first setup. */
   skipStates?: boolean;
 };
 

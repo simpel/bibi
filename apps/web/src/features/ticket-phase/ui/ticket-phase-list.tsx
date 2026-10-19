@@ -5,7 +5,6 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { PhaseGridEditor } from "@/features/phase-grid/ui/phase-grid-editor";
-import { GuidedSetupLink } from "@/features/pipeline-setup/ui/guided-setup-link";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
@@ -28,7 +27,6 @@ export async function TicketPhaseList({ locale }: TicketPhaseListProps) {
   });
   const actions = ticketPhaseAdmin ? (
     <>
-      <GuidedSetupLink />
       <ImportTicketPhaseTemplateButton />
       <CreateTicketPhaseButton />
     </>

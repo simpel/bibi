@@ -2579,88 +2579,7 @@
     }
   },
   "pipelineSetup": {
-    "title": "Sätt upp pipelinen",
-    "description": "En guidad uppsättning av artikeltyper, deras statusar, ärendefaser och rutnätet. Inget sparas förrän i sista steget.",
-    "open": "Guidad uppsättning",
-    "progress": "Steg",
-    "activated": "Pipelinen har satts upp.",
-    "steps": {
-      "types": "Artikeltyper",
-      "states": "Statusar",
-      "phases": "Faser",
-      "grid": "Rutnätet",
-      "preview": "Förhandsgranskning",
-      "activate": "Aktivera"
-    },
-    "descriptions": {
-      "types": "Vilka artikeltyper har era ärenden rader för? Välj befintliga typer eller lägg till nya.",
-      "states": "Vilka statusar kan en rad av varje typ ha? Utgå från en mall och ändra som ni vill.",
-      "phases": "Vilka faser går ett ärende igenom, i ordning? Svara på frågorna för varje fas.",
-      "grid": "När ett ärende går in i en fas, vilken status flyttas raderna till? Behåll lämnar dem som de är.",
-      "preview": "Ett simulerat ärende med en rad per artikeltyp går igenom varje fas. Kontrollera att det beter sig som ni väntar er.",
-      "activate": "När ni sparar skapas allt på en gång. Ni kan ändra det senare i inställningarna."
-    },
-    "types": {
-      "none": "Inga artikeltyper än. Lägg till en nedan.",
-      "newType": "Ny artikeltyp",
-      "name": "Namn",
-      "isBookable": "Kan bokas (håller artikeln, som en lokal)",
-      "bookable": "Bokningsbar",
-      "remove": "Ta bort",
-      "addExisting": "Lägg till en befintlig typ",
-      "addNew": "Lägg till en ny typ"
-    },
-    "states": {
-      "noTypes": "Lägg till en artikeltyp i första steget.",
-      "template": "Utgå från",
-      "templates": {
-        "bookable": "Bokningsbar: preliminärbokad, bokad, släppt",
-        "food": "Mat: uppskattad, beställd, låst, släppt",
-        "other": "Övrigt: planerad, bekräftad, släppt",
-        "single": "En status: aktiv"
-      },
-      "name": "Statusens namn",
-      "color": "Färg",
-      "hold": "Hållning",
-      "holds": {
-        "NONE": "Ingen hållning",
-        "SOFT": "Mjuk hållning (blockerar inte)",
-        "HARD": "Hård hållning (blockerar)"
-      },
-      "initial": "Nya rader börjar i den här statusen",
-      "inSheets": "Ta med rader i den här statusen i blad",
-      "released": "Statusen avslutar raden (inget hålls)",
-      "expires": "Faller tillbaka när ärendets hålldatum passeras",
-      "remove": "Ta bort status",
-      "add": "Lägg till status",
-      "newStateName": "Ny status",
-      "expiryState": "Förfallna rader faller till",
-      "noExpiry": "Inget förfall"
-    },
-    "phases": {
-      "template": "Utgå från",
-      "templates": {
-        "conference-estate": "Konferensgård",
-        "default": "Standard"
-      },
-      "name": "Fasens namn",
-      "color": "Färg",
-      "questions": {
-        "entry": "Börjar nya ärenden i den här fasen?",
-        "terminal": "Avslutar den här fasen ärendet?",
-        "requiresReason": "Krävs en anledning för att gå in i den?",
-        "requiresAssignee": "Behöver ärendet en ansvarig för att gå in i den?",
-        "invoiceable": "Kan fakturor skapas i den här fasen?"
-      },
-      "moveUp": "Flytta upp",
-      "moveDown": "Flytta ner",
-      "remove": "Ta bort fas",
-      "add": "Lägg till fas",
-      "newPhaseName": "Ny fas"
-    },
     "preview": {
-      "loading": "Förbereder förhandsgranskningen…",
-      "invalid": "Några fält saknas eller är fel. Gå tillbaka och rätta dem för att se förhandsgranskningen.",
       "ready": "Klart att aktivera.",
       "notReady": "Rätta felen nedan innan ni aktiverar.",
       "severity": {
@@ -2694,10 +2613,6 @@
         "HARD": "Hård hållning"
       },
       "blocked": "Kan inte flyttas som rutnätet anger"
-    },
-    "activate": {
-      "summary": "När ni sparar sätts {phases} faser och {types} artikeltyper upp.",
-      "replaces": "Faser och statusar som inte finns i uppsättningen arkiveras. Deras ärenden och rader flyttas till första fasen och statusen."
     }
   },
   "onboarding": {

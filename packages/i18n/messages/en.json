@@ -2579,88 +2579,7 @@
     }
   },
   "pipelineSetup": {
-    "title": "Set up the pipeline",
-    "description": "A guided setup of item types, their states, ticket phases and the grid. Nothing is saved until the last step.",
-    "open": "Guided setup",
-    "progress": "Steps",
-    "activated": "The pipeline has been set up.",
-    "steps": {
-      "types": "Item types",
-      "states": "States",
-      "phases": "Phases",
-      "grid": "The grid",
-      "preview": "Preview",
-      "activate": "Activate"
-    },
-    "descriptions": {
-      "types": "Which item types do your tickets have lines for? Pick existing types or add new ones.",
-      "states": "What can a line of each type be? Start from a template and change it as you like.",
-      "phases": "Which phases does a ticket go through, in order? Answer the questions for each phase.",
-      "grid": "When a ticket enters a phase, which state do its lines move to? Keep leaves them as they are.",
-      "preview": "A simulated ticket with one line per item type goes through every phase. Check that it behaves as you expect.",
-      "activate": "Saving creates everything in one go. You can change it later in the settings."
-    },
-    "types": {
-      "none": "No item types yet. Add one below.",
-      "newType": "New item type",
-      "name": "Name",
-      "isBookable": "Can be booked (holds the item, like a room)",
-      "bookable": "Bookable",
-      "remove": "Remove",
-      "addExisting": "Add an existing type",
-      "addNew": "Add a new type"
-    },
-    "states": {
-      "noTypes": "Add an item type in the first step.",
-      "template": "Start from",
-      "templates": {
-        "bookable": "Bookable: prebooked, booked, released",
-        "food": "Food: estimated, ordered, locked, released",
-        "other": "Other: planned, confirmed, released",
-        "single": "One state: active"
-      },
-      "name": "State name",
-      "color": "Color",
-      "hold": "Hold",
-      "holds": {
-        "NONE": "No hold",
-        "SOFT": "Soft hold (does not block)",
-        "HARD": "Hard hold (blocks)"
-      },
-      "initial": "New lines start in this state",
-      "inSheets": "Include lines in this state in sheets",
-      "released": "This state ends the line (nothing is held)",
-      "expires": "Falls back when the ticket's hold date passes",
-      "remove": "Remove state",
-      "add": "Add state",
-      "newStateName": "New state",
-      "expiryState": "Expiring lines fall to",
-      "noExpiry": "No expiry"
-    },
-    "phases": {
-      "template": "Start from",
-      "templates": {
-        "conference-estate": "Conference estate",
-        "default": "Default"
-      },
-      "name": "Phase name",
-      "color": "Color",
-      "questions": {
-        "entry": "Do new tickets start in this phase?",
-        "terminal": "Does this phase end the ticket?",
-        "requiresReason": "Is a reason needed to enter it?",
-        "requiresAssignee": "Does the ticket need an assignee to enter it?",
-        "invoiceable": "Can invoices be created in this phase?"
-      },
-      "moveUp": "Move up",
-      "moveDown": "Move down",
-      "remove": "Remove phase",
-      "add": "Add phase",
-      "newPhaseName": "New phase"
-    },
     "preview": {
-      "loading": "Preparing the preview…",
-      "invalid": "Some fields are missing or wrong. Go back and fix them to see the preview.",
       "ready": "Ready to activate.",
       "notReady": "Fix the errors below before you activate.",
       "severity": {
@@ -2694,10 +2613,6 @@
         "HARD": "Hard hold"
       },
       "blocked": "Cannot move as the grid says"
-    },
-    "activate": {
-      "summary": "Saving sets up {phases} phases and {types} item types.",
-      "replaces": "Phases and states that are not in the setup are archived. Their tickets and lines move to the first phase and state."
     }
   },
   "onboarding": {

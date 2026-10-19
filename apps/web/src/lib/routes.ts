@@ -36,7 +36,6 @@ export const ROUTES = {
   settingsPriceLists: "/settings/price-lists",
   settingsPipeline: "/settings/pipeline",
   onboarding: "/onboarding",
-  onboardingPipeline: "/onboarding/pipeline",
   settingsItemStates: "/settings/item-states",
   settingsTicketTemplates: "/settings/ticket-templates",
   settingsMembers: "/settings/members",

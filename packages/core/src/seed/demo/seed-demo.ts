@@ -24,7 +24,7 @@ export const DEMO_ORGS: readonly DemoOrg[] = [lindholmen, vingaleden];
 export type SeedDemoInput = {
   db?: Db;
   orgs?: readonly DemoOrg[];
-  /** `--skip-pipeline`: item types without phases, states or grid, for the guided setup. */
+  /** `--skip-pipeline`: item types without phases, states or grid, for the first setup. */
   skipPipeline?: boolean;
 };
 

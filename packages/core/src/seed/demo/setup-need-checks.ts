@@ -6,8 +6,8 @@ import type { DemoOrg } from "./types";
 export type CheckSetupNeedInput = { context: ExecuteContext; org: DemoOrg; skipPipeline: boolean };
 
 /**
- * The guided setup (ADR 0044) runs for an organization without phases, detected the way the web
- * app does (`ticketPhase.list` is empty). With `--skip-pipeline` the organization must need it,
+ * The first setup (ADR 0045) is for an organization without phases, detected as
+ * `ticketPhase.list` being empty. With `--skip-pipeline` the organization must need it,
  * with no grid cells and only each item type's default state; otherwise it must not.
  */
 export async function checkDemoSetupNeed({
