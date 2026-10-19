@@ -1,4 +1,4 @@
-import { listProgramItems, listRequirements, type TicketDto } from "@okazi/core";
+import { listLines, listRequirements, type TicketDto } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
@@ -13,22 +13,22 @@ export type RequirementSectionProps = { locale: Locale; ticket: TicketDto };
 
 /**
  * The ticket's requirements (ADR 0021): counts against list values for the whole ticket or a
- * program item, where they replace the ticket's count. Counts only, never people.
+ * line, where they replace the ticket's count. Counts only, never people.
  */
 export async function RequirementSection({ locale, ticket }: RequirementSectionProps) {
   const t = await getTranslations("requirement");
   const { requirementWrite } = await getCallerAbilities();
   const input = { ticketId: ticket.id, limit: 100 };
-  const [requirements, programItems] = await Promise.all([
+  const [requirements, lines] = await Promise.all([
     runOperation({ operation: listRequirements, input }),
-    runOperation({ operation: listProgramItems, input }),
+    runOperation({ operation: listLines, input }),
   ]);
-  for (const result of [requirements, programItems]) {
+  for (const result of [requirements, lines]) {
     if (!result.ok)
       return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   }
-  if (!requirements.ok || !programItems.ok) return null;
-  const data = await loadRequirementData({ programItems: programItems.value.items });
+  if (!requirements.ok || !lines.ok) return null;
+  const data = await loadRequirementData({ lines: lines.value.items });
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const rows = requirements.value.items;
   return (

@@ -12,7 +12,7 @@ const OPERATIONAL: readonly Resource[] = [
   "contact",
   "quote",
   "ticket",
-  "programItem",
+  "line",
   "assignment",
   "occupancy",
   "requirement",

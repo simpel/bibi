@@ -1,8 +1,8 @@
 import type {
   ItemStateDto,
+  LineDto,
   OccupancyDto,
   OccupancyType,
-  ProgramItemDto,
   TicketDto,
 } from "@okazi/core/schemas";
 
@@ -15,7 +15,7 @@ export type CalendarBlock = {
   endsAt: Date;
   ticketId: string | null;
   reference: number | null;
-  /** The program item's name, or the note of a manual block. */
+  /** The line's name, or the note of a manual block. */
   title: string | null;
   /** A soft hold (ADR 0044): may overlap other soft holds; drawn hatched. */
   soft: boolean;
@@ -32,30 +32,30 @@ export type CalendarBlock = {
 
 export type ToCalendarBlocksInput = {
   occupancies: OccupancyDto[];
-  programItems: ProgramItemDto[];
+  lines: LineDto[];
   tickets: TicketDto[];
   states: ItemStateDto[];
-  /** `Occupancy.sourceType` values: a ticket's own rows and a program item's rows. */
-  sources: { ticket: string; programItem: string };
+  /** `Occupancy.sourceType` values: a ticket's own rows and a line's rows. */
+  sources: { ticket: string; line: string };
 };
 
 /**
- * Joins occupancies with their source: a program item's rows (and its setup time) belong to
- * the program item's ticket, a ticket's own rows to that ticket.
+ * Joins occupancies with their source: a line's rows (and its setup time) belong to
+ * the line's ticket, a ticket's own rows to that ticket.
  */
 export function toCalendarBlocks({
   occupancies,
-  programItems,
+  lines,
   tickets,
   states,
   sources,
 }: ToCalendarBlocksInput): CalendarBlock[] {
-  const programById = new Map(programItems.map((item) => [item.id, item]));
+  const programById = new Map(lines.map((item) => [item.id, item]));
   const stateById = new Map(states.map((state) => [state.id, state]));
   const ticketById = new Map(tickets.map((ticket) => [ticket.id, ticket]));
   return occupancies.map((occupancy) => {
     const program =
-      occupancy.sourceType === sources.programItem && occupancy.sourceId
+      occupancy.sourceType === sources.line && occupancy.sourceId
         ? programById.get(occupancy.sourceId)
         : undefined;
     const ownTicket = occupancy.sourceType === sources.ticket ? occupancy.sourceId : null;

@@ -1,12 +1,12 @@
 import type { AppErrorIssue } from "../../errors/app-error";
-import type { ProgramItemCreateInput } from "../program-item/schema";
+import type { LineCreateInput } from "../line/schema";
 import type { TicketTemplateDto } from "../ticket-template/schema";
 
 const MINUTE = 60_000;
 const MAX_QUANTITY = 100_000;
 
-/** A line to create: the program item input without its ticket. */
-export type PlannedLine = Omit<ProgramItemCreateInput, "ticketId">;
+/** A line to create: the line input without its ticket. */
+export type PlannedLine = Omit<LineCreateInput, "ticketId">;
 
 export type PlanTemplateLinesInput = {
   template: TicketTemplateDto;

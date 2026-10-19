@@ -14,7 +14,7 @@ import { pageType } from "../../schema/page";
 import { requirePermission } from "../../schema/require-permission";
 import { runOperation } from "../../schema/run-operation";
 import { EntityTypeRef } from "../entity-type/graphql";
-import { ProgramItemRef } from "../program-item/graphql";
+import { LineRef } from "../line/graphql";
 import { TicketRef } from "../ticket/graphql";
 import { VocabularyValueRef } from "../vocabulary/graphql";
 
@@ -24,7 +24,7 @@ export const RequirementRef = objectFromSchema<RequirementDto>({
   omit: ["organizationId"],
   description:
     "Requirement – a count against a list value (e.g. Gluten × 3) on a ticket, or on one of " +
-    "its program items where it replaces the ticket's count. Never linked to a person.",
+    "its lines where it replaces the ticket's count. Never linked to a person.",
 });
 const RequirementPageRef = pageType({ name: "RequirementPage", item: RequirementRef });
 
@@ -57,19 +57,19 @@ builder.objectField(RequirementRef, "vocabularyValue", (t) =>
   }),
 );
 
-type ListByInput = { ticketId?: string; programItemId?: string; limit: number | null | undefined };
+type ListByInput = { ticketId?: string; lineId?: string; limit: number | null | undefined };
 
-/** Graph edges from the ticket and the program item; they read through `requirement.list`. */
+/** Graph edges from the ticket and the line; they read through `requirement.list`. */
 const listBy = ({ limit, ...where }: ListByInput) => ({
   ...where,
   limit: Math.min(Math.max(limit ?? 50, 1), 100),
 });
 
-// Graph edges. They live here so that ticket/ and program-item/graphql.ts need not import this.
+// Graph edges. They live here so that ticket/ and line/graphql.ts need not import this.
 builder.objectField(TicketRef, "requirements", (t) =>
   t.field({
     type: [RequirementRef],
-    description: "The ticket's requirements, both levels (programItemId null = the ticket).",
+    description: "The ticket's requirements, both levels (lineId null = the ticket).",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
     resolve: async (ticket, { limit }, ctx) => {
       const input = listBy({ ticketId: ticket.id, limit });
@@ -81,13 +81,13 @@ builder.objectField(TicketRef, "requirements", (t) =>
   }),
 );
 
-builder.objectField(ProgramItemRef, "requirements", (t) =>
+builder.objectField(LineRef, "requirements", (t) =>
   t.field({
     type: [RequirementRef],
-    description: "The program item's own counts; they replace the ticket's for their values.",
+    description: "The line's own counts; they replace the ticket's for their values.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
-    resolve: async (programItem, { limit }, ctx) => {
-      const input = listBy({ programItemId: programItem.id, limit });
+    resolve: async (line, { limit }, ctx) => {
+      const input = listBy({ lineId: line.id, limit });
       const page = (await runOperation({ operation: listRequirements, input, ctx })) as {
         items: RequirementDto[];
       };

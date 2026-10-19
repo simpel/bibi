@@ -1,16 +1,16 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { applyLineState } from "../program-item/line-state";
-import { rederiveProgramItem } from "../program-item/reserve";
-import { toProgramItemDto } from "../program-item/to-program-item-dto";
+import { applyLineState } from "../line/line-state";
+import { rederiveLine } from "../line/reserve";
+import { toLineDto } from "../line/to-line-dto";
 
 export type RederiveInput = { context: OperationContext; stateId: string };
 
 /** Derives the hold of every active line in the state again, after its hold flags changed. */
 export async function rederiveLinesInState({ context, stateId }: RederiveInput) {
-  const rows = await context.db.programItem.findMany({ where: { stateId } });
+  const rows = await context.db.line.findMany({ where: { stateId } });
   for (const row of rows) {
-    const held = await rederiveProgramItem({ context, programItem: toProgramItemDto({ row }) });
+    const held = await rederiveLine({ context, line: toLineDto({ row }) });
     if (!held.ok) return held;
   }
   return ok({ value: true });
@@ -27,9 +27,9 @@ export async function moveLinesToState({
   fromStateId,
   toStateId,
 }: MoveLinesInput): Promise<Result<number>> {
-  const rows = await context.db.programItem.findMany({ where: { stateId: fromStateId } });
+  const rows = await context.db.line.findMany({ where: { stateId: fromStateId } });
   for (const row of rows) {
-    const before = toProgramItemDto({ row });
+    const before = toLineDto({ row });
     const moved = await applyLineState({ context, before, stateId: toStateId });
     if (!moved.ok) return moved;
   }

@@ -15,7 +15,7 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.payment.deleteMany({ where }),
   db.sheet.deleteMany({ where }),
   db.requirement.deleteMany({ where }),
-  db.programItem.deleteMany({ where }),
+  db.line.deleteMany({ where }),
   db.ticketTemplateLine.deleteMany({ where }),
   db.ticketTemplate.deleteMany({ where }),
   db.orderLine.deleteMany({ where }),

@@ -17,7 +17,7 @@ type NameInput = { index: number; key: string };
 /** Form field name of one line's value, e.g. `lines.0.name`. */
 const lineName = ({ index, key }: NameInput) => `lines.${index}.${key}` as never;
 
-/** What the line is: its name, program item type and item. */
+/** What the line is: its name, line type and item. */
 function LineWhatFields({ form, data, index }: LineFieldsProps) {
   const t = useTranslations("ticketTemplate");
   return (

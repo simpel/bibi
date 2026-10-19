@@ -1,8 +1,8 @@
-import type { ItemStateDto, OccupancyDto, ProgramItemDto, TicketDto } from "@okazi/core/schemas";
+import type { ItemStateDto, LineDto, OccupancyDto, TicketDto } from "@okazi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { toCalendarBlocks } from "./calendar-blocks";
 
-const SOURCES = { ticket: "ticket", programItem: "programItem" };
+const SOURCES = { ticket: "ticket", line: "line" };
 const day = new Date("2026-10-15T08:00:00Z");
 
 const occupancy = ({ overrides }: { overrides: Partial<OccupancyDto> }): OccupancyDto => ({
@@ -23,14 +23,14 @@ const occupancy = ({ overrides }: { overrides: Partial<OccupancyDto> }): Occupan
   ...overrides,
 });
 
-const programItem = { id: "p1", ticketId: "b1", name: "Lunch" } as ProgramItemDto;
+const line = { id: "p1", ticketId: "b1", name: "Lunch" } as LineDto;
 const ticket = { id: "b1", reference: 12 } as TicketDto;
 
 describe("calendar blocks", () => {
-  it("links a program item's rows to its ticket", () => {
+  it("links a line's rows to its ticket", () => {
     const [block] = toCalendarBlocks({
-      occupancies: [occupancy({ overrides: { sourceType: "programItem", sourceId: "p1" } })],
-      programItems: [programItem],
+      occupancies: [occupancy({ overrides: { sourceType: "line", sourceId: "p1" } })],
+      lines: [line],
       tickets: [ticket],
       states: [],
       sources: SOURCES,
@@ -42,9 +42,9 @@ describe("calendar blocks", () => {
     const heldAt = new Date("2026-10-03T09:00:00Z");
     const [block] = toCalendarBlocks({
       occupancies: [
-        occupancy({ overrides: { holdKind: "SOFT", sourceType: "programItem", sourceId: "p1" } }),
+        occupancy({ overrides: { holdKind: "SOFT", sourceType: "line", sourceId: "p1" } }),
       ],
-      programItems: [{ ...programItem, heldAt }],
+      lines: [{ ...line, heldAt }],
       tickets: [ticket],
       states: [],
       sources: SOURCES,
@@ -57,9 +57,9 @@ describe("calendar blocks", () => {
     const state = { id: "s1", name: "Prebooked", color: "#22c55e", expires: true } as ItemStateDto;
     const [block] = toCalendarBlocks({
       occupancies: [
-        occupancy({ overrides: { holdKind: "SOFT", sourceType: "programItem", sourceId: "p1" } }),
+        occupancy({ overrides: { holdKind: "SOFT", sourceType: "line", sourceId: "p1" } }),
       ],
-      programItems: [{ ...programItem, stateId: "s1" }],
+      lines: [{ ...line, stateId: "s1" }],
       tickets: [{ ...ticket, phaseId: "ph1", holdsUntil }],
       states: [state],
       sources: SOURCES,
@@ -78,7 +78,7 @@ describe("calendar blocks", () => {
         occupancy({ overrides: { id: "own", sourceType: "ticket", sourceId: "b1" } }),
         occupancy({ overrides: { id: "manual", type: "MAINTENANCE", note: "Paint" } }),
       ],
-      programItems: [],
+      lines: [],
       tickets: [ticket],
       states: [],
       sources: SOURCES,

@@ -14,28 +14,28 @@ import { addRequirement, requirementSetup } from "./requirement-helpers";
 import { createTestTicket } from "./ticket-helpers";
 
 describe("requirement (ADR 0021)", () => {
-  it("registers counts on the ticket and on a program item, with own fields", async () => {
+  it("registers counts on the ticket and on a line, with own fields", async () => {
     const { context, ticket, morning, type, key, gluten } = await requirementSetup();
     const base = { context, ticketId: ticket.id, entityTypeId: type.id };
     const onTicket = unwrap({
       result: await addRequirement({ ...base, vocabularyValueId: gluten, quantity: 3 }),
     });
-    expect(onTicket).toMatchObject({ programItemId: null, quantity: 3, fields: {} });
+    expect(onTicket).toMatchObject({ lineId: null, quantity: 3, fields: {} });
     const onItem = unwrap({
       result: await addRequirement({
         ...base,
-        programItemId: morning.id,
+        lineId: morning.id,
         vocabularyValueId: gluten,
         quantity: 5,
         fields: { [key]: "Severe" },
       }),
     });
-    expect(onItem).toMatchObject({ programItemId: morning.id, fields: { [key]: "Severe" } });
+    expect(onItem).toMatchObject({ lineId: morning.id, fields: { [key]: "Severe" } });
     const all = unwrap({
       result: await execute({ operation: listRequirements, input: base, context }),
     });
     expect(all.items.map((row) => row.id)).toEqual([onTicket.id, onItem.id]);
-    const input = { programItemId: morning.id };
+    const input = { lineId: morning.id };
     const own = unwrap({ result: await execute({ operation: listRequirements, input, context }) });
     expect(own.items.map((row) => row.id)).toEqual([onItem.id]);
   });
@@ -64,7 +64,7 @@ describe("requirement (ADR 0021)", () => {
     unwrap({ result: await addRequirement({ ...base, vocabularyValueId: gluten }) });
     const twice = await addRequirement({ ...base, vocabularyValueId: gluten });
     expect(errorCode({ result: twice })).toBe("CONFLICT");
-    const onItem = { ...base, programItemId: morning.id, vocabularyValueId: gluten };
+    const onItem = { ...base, lineId: morning.id, vocabularyValueId: gluten };
     unwrap({ result: await addRequirement(onItem) });
     expect(errorCode({ result: await addRequirement(onItem) })).toBe("CONFLICT");
   });
@@ -104,7 +104,7 @@ describe("requirement (ADR 0021)", () => {
     const elsewhere = await addRequirement({
       ...base,
       ticketId: second.id,
-      programItemId: morning.id,
+      lineId: morning.id,
       vocabularyValueId: gluten,
     });
     expect(errorCode({ result: elsewhere })).toBe("VALIDATION");

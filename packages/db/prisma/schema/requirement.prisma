@@ -1,13 +1,13 @@
 /// Requirement – a count against a list value on a ticket (ADR 0021), e.g. Gluten × 3 or
-/// Wheelchair × 2. Without `programItemId` it applies to the whole ticket; with one it applies to
-/// that program item and replaces the ticket's count for the same value there. Its type (base
+/// Wheelchair × 2. Without `lineId` it applies to the whole ticket; with one it applies to
+/// that line and replaces the ticket's count for the same value there. Its type (base
 /// `REQUIREMENT`) decides its own fields, e.g. Severity. Never linked to a person: no guest data.
 model Requirement {
   id                String          @id @default(cuid(2))
   organizationId    String
   ticketId          String
-  /// The program item it applies to; null = the whole ticket.
-  programItemId     String?
+  /// The line it applies to; null = the whole ticket.
+  lineId            String?
   entityTypeId      String
   /// The list value counted, e.g. Gluten in the list Allergens.
   vocabularyValueId String
@@ -20,13 +20,13 @@ model Requirement {
   updatedAt         DateTime        @updatedAt
   createdBy         String?
   ticket            Ticket          @relation(fields: [ticketId, organizationId], references: [id, organizationId])
-  programItem       ProgramItem?    @relation(fields: [programItemId, organizationId], references: [id, organizationId])
+  line              Line?           @relation(fields: [lineId, organizationId], references: [id, organizationId])
   entityType        EntityType      @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   vocabularyValue   VocabularyValue @relation(fields: [vocabularyValueId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, ticketId, status])
-  @@index([organizationId, programItemId])
+  @@index([organizationId, lineId])
   @@index([organizationId, vocabularyValueId])
   @@index([organizationId, entityTypeId])
 }

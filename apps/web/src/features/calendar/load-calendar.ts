@@ -1,15 +1,15 @@
 import "server-only";
 import {
+  LINE_SOURCE,
   listEntityTypes,
   listItemStates,
   listItems,
+  listLines,
   listOccupancies,
-  listProgramItems,
   listTicketPhases,
   listTickets,
   listVenues,
   ok,
-  PROGRAM_ITEM_SOURCE,
   type Result,
   TICKET_OCCUPANCY_SOURCE,
   type VenueDto,
@@ -53,7 +53,7 @@ export type LoadCalendarInput = {
   ticketId?: string | undefined;
 };
 
-/** Setup time sits right before a program item, so its program item can start after `to`. */
+/** Setup time sits right before a line, so its line can start after `to`. */
 const PROGRAM_SLACK_MS = 7 * 86_400_000;
 
 function loadSources({ from, to, venueId }: LoadCalendarInput) {
@@ -64,7 +64,7 @@ function loadSources({ from, to, venueId }: LoadCalendarInput) {
     listAll({ operation: listItems, input: spaceFilter }),
     listAll({ operation: listEntityTypes, input: { base: "ITEM" as const } }),
     listAll({ operation: listOccupancies, input: { from, to }, maxPages: 20 }),
-    listAll({ operation: listProgramItems, input: programWindow, maxPages: 20 }),
+    listAll({ operation: listLines, input: programWindow, maxPages: 20 }),
     listAll({ operation: listTickets, input: programWindow, maxPages: 20 }),
     listAll({ operation: listItemStates, input: {} }),
     listAll({ operation: listTicketPhases, input: {} }),
@@ -80,7 +80,7 @@ const pickReference = ({ id, reference }: { id: string; reference: number }) => 
 
 type ToCalendarDataInput = Pick<
   ToCalendarBlocksInput,
-  "occupancies" | "programItems" | "tickets" | "states"
+  "occupancies" | "lines" | "tickets" | "states"
 > & {
   selected: SelectedSpaces;
   venues: { id: string; name: string }[];
@@ -94,7 +94,7 @@ function toCalendarData({ selected, venues, phases, filters, ...rest }: ToCalend
   const all = toCalendarBlocks({
     ...rest,
     occupancies: rest.occupancies.filter(({ itemId }) => spaceIds.has(itemId)),
-    sources: { ticket: TICKET_OCCUPANCY_SOURCE, programItem: PROGRAM_ITEM_SOURCE },
+    sources: { ticket: TICKET_OCCUPANCY_SOURCE, line: LINE_SOURCE },
   });
   const typeIds = new Set(selected.spaces.map(({ entityTypeId }) => entityTypeId));
   const shownTickets = new Set(all.map((block) => block.ticketId));
@@ -111,7 +111,7 @@ function toCalendarData({ selected, venues, phases, filters, ...rest }: ToCalend
 /**
  * The calendar's data from existing reads (no operation of its own): the bookable items
  * (spaces) of the venue, one type at a time (`selectSpaces`), their occupancies in `[from, to)`
- * and the program items and tickets those come from, so each block can open its ticket.
+ * and the lines and tickets those come from, so each block can open its ticket.
  */
 export async function loadCalendar({
   typeId,
@@ -120,13 +120,13 @@ export async function loadCalendar({
   ticketId,
   ...window
 }: LoadCalendarInput): Promise<Result<CalendarData>> {
-  const [venues, items, types, occupancies, programItems, tickets, states, phases] =
+  const [venues, items, types, occupancies, lines, tickets, states, phases] =
     await loadSources(window);
   if (!venues.ok) return venues;
   if (!items.ok) return items;
   if (!types.ok) return types;
   if (!occupancies.ok) return occupancies;
-  if (!programItems.ok) return programItems;
+  if (!lines.ok) return lines;
   if (!tickets.ok) return tickets;
   if (!states.ok) return states;
   if (!phases.ok) return phases;
@@ -139,7 +139,7 @@ export async function loadCalendar({
   });
   return ok({
     value: toCalendarData({
-      ...{ occupancies: occupancies.value, programItems: programItems.value },
+      ...{ occupancies: occupancies.value, lines: lines.value },
       ...{ tickets: tickets.value, states: states.value, selected },
       ...{ venues: venues.value, phases: phases.value, filters: { stateId, phaseId, ticketId } },
     }),

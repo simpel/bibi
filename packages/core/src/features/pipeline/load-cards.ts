@@ -20,7 +20,7 @@ type Counts = { heldLines: number; bookedLines: number };
 
 /** Per ticket: how many lines are in a soft-hold and in a hard-hold state (ADR 0044). */
 async function lineCounts({ context, ids }: { context: Db; ids: string[] }) {
-  const lines = await context.db.programItem.findMany({
+  const lines = await context.db.line.findMany({
     where: { ticketId: { in: ids }, status: "ACTIVE", state: { hold: { in: ["SOFT", "HARD"] } } },
     select: { ticketId: true, state: { select: { hold: true } } },
   });

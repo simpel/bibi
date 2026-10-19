@@ -38,7 +38,7 @@ async function stateFailures({ context, org }: CheckDemoArchiveInput): Promise<s
     where: { status: "ACTIVE", initial: false },
   });
   for (const state of states) {
-    const lines = await context.db.programItem.count({ where: { stateId: state.id } });
+    const lines = await context.db.line.count({ where: { stateId: state.id } });
     if (lines === 0) continue;
     const target = await context.db.itemState.findFirst({
       where: { entityTypeId: state.entityTypeId, initial: true },

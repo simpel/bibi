@@ -2,7 +2,7 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
-import { ProgramItemSchema } from "../program-item/schema";
+import { LineSchema } from "../line/schema";
 
 export const TicketSchema = z.object({
   id: z.string(),
@@ -114,7 +114,7 @@ export const TicketExpireHoldsInputSchema = z.object({});
 
 export const TicketExpireHoldsOutputSchema = z.object({
   /** The lines that moved to their type's expiry state. */
-  items: z.array(ProgramItemSchema),
+  items: z.array(LineSchema),
 });
 
 export const TicketIdInputSchema = z.object({ id: z.string().min(1) });

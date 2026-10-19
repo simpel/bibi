@@ -73,7 +73,7 @@ export const lindholmenTypes: readonly DemoType[] = [
     behaviours: ["PRICED", "COMPOSABLE", "CHOICES"],
     fields: [{ name: "Minimum quantity", kind: "NUMBER" }],
   },
-  { base: "PROGRAM_ITEM", name: "Line" },
+  { base: "LINE", name: "Line" },
   {
     base: "CUSTOMER",
     name: "Company",

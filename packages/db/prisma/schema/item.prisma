@@ -41,8 +41,8 @@ model Item {
   choiceGroups           ItemChoiceGroup[]
   /// BOOKABLE: the periods the item is held (ADR 0022).
   occupancies            Occupancy[]
-  /// BOOKABLE: the program items held in this item.
-  programItems           ProgramItem[]
+  /// BOOKABLE: the lines held in this item.
+  lines                  Line[]
   /// Lines of predefined tickets that use this item.
   templateLines          TicketTemplateLine[]
   /// Agreed prices on price lists (ADR 0023).

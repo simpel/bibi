@@ -26,6 +26,8 @@ import { ItemStateCardView } from "./item-state-card-view";
 import { ItemStateTableView } from "./item-state-table-view";
 import { ItemTableView } from "./item-table-view";
 import { JsonView } from "./json-view";
+import { LineCardView } from "./line-card-view";
+import { LineTableView } from "./line-table-view";
 import { MemberCardView } from "./member-card-view";
 import { MemberTableView } from "./member-table-view";
 import { OccupancyCardView } from "./occupancy-card-view";
@@ -39,8 +41,6 @@ import { PipelineDraftCardView } from "./pipeline-draft-card-view";
 import { PipelinePreviewView } from "./pipeline-preview-view";
 import { PriceListCardView } from "./price-list-card-view";
 import { PriceListTableView } from "./price-list-table-view";
-import { ProgramItemCardView } from "./program-item-card-view";
-import { ProgramItemTableView } from "./program-item-table-view";
 import { QuestionnaireView } from "./questionnaire-view";
 import { QuoteCardView } from "./quote-card-view";
 import { QuoteTableView } from "./quote-table-view";
@@ -100,8 +100,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   questionnaire: QuestionnaireView,
   "ticket-table": TicketTableView,
   "ticket-card": TicketCardView,
-  "program-item-table": ProgramItemTableView,
-  "program-item-card": ProgramItemCardView,
+  "line-table": LineTableView,
+  "line-card": LineCardView,
   "requirement-table": RequirementTableView,
   "requirement-card": RequirementCardView,
   "pipeline-board": PipelineBoardView,

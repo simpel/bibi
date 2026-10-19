@@ -10,6 +10,7 @@ import { fieldDefinitionOperations } from "./features/field-definition/operation
 import { inboundEmailOperations } from "./features/inbound-email/operations";
 import { itemOperations } from "./features/item/operations";
 import { itemStateOperations } from "./features/item-state/operations";
+import { lineOperations } from "./features/line/operations";
 import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
 import { oauthGrantOperations } from "./features/oauth-grant/operations";
@@ -20,7 +21,6 @@ import { phaseGridOperations } from "./features/phase-grid/operations";
 import { pipelineOperations } from "./features/pipeline/operations";
 import { pipelineSetupOperations } from "./features/pipeline-setup/operations";
 import { priceListOperations } from "./features/price-list/operations";
-import { programItemOperations } from "./features/program-item/operations";
 import { quoteOperations } from "./features/quote/operations";
 import { requirementOperations } from "./features/requirement/operations";
 import { responsibilityOperations } from "./features/responsibility/operations";
@@ -63,7 +63,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...itemStateOperations,
     ...phaseGridOperations,
     ...ticketOperations,
-    ...programItemOperations,
+    ...lineOperations,
     ...assignmentOperations,
     ...requirementOperations,
     ...sheetOperations,

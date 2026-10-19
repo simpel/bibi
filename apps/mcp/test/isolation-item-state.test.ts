@@ -23,7 +23,7 @@ describe("cross-organization isolation: item states and line states", () => {
     const b = await connect({ context: testContext() });
     const seedA = await seedStates({ client: a });
     const seedB = await seedStates({ client: b });
-    const { stateId: id, entityTypeId, ids, programItemId: lineId } = seedA;
+    const { stateId: id, entityTypeId, ids, lineId } = seedA;
     for (const [name, args] of [
       ["itemState_get", { id }],
       ["itemState_update", { id, name: "Hacked" }],
@@ -38,7 +38,7 @@ describe("cross-organization isolation: item states and line states", () => {
       ["itemState_create", { entityTypeId, ...STATE, name: "Intruder" }],
       ["itemState_reorder", { entityTypeId, ids }],
       ["itemState_setTransitions", { id: seedB.stateId, toStateIds: [id] }],
-      ["line_changeState", { lineId: seedB.programItemId, stateId: id }],
+      ["line_changeState", { lineId: seedB.lineId, stateId: id }],
       ["itemState_archive", { id: seedB.stateId, targetStateId: id }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("VALIDATION");

@@ -17,7 +17,7 @@ export const previewArchiveItemState = defineOperation({
   output: ArchivePreviewSchema,
   permission: "itemState:admin",
   handler: async ({ input, context }) => {
-    const moving = await context.db.programItem.count({ where: { stateId: input.id } });
+    const moving = await context.db.line.count({ where: { stateId: input.id } });
     const cells = await context.db.phaseStateRule.count({ where: { stateId: input.id } });
     const archived = await archiveState({ context, input });
     if (!archived.ok && archived.error.code === "NOT_FOUND") return archived;

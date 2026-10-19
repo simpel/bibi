@@ -10,7 +10,7 @@ export type ItemRowsInput = {
 };
 
 /**
- * One row per program item of the ticket that uses an item of an included type and is in a state
+ * One row per line of the ticket that uses an item of an included type and is in a state
  * with `inSheets` (ADR 0044), with the included fields of that item's type, earliest first.
  */
 export async function itemRows({
@@ -18,13 +18,13 @@ export async function itemRows({
   ticketId,
   definition,
 }: ItemRowsInput): Promise<SheetRow[]> {
-  const [fields, programItems] = await Promise.all([
+  const [fields, lines] = await Promise.all([
     context.db.fieldDefinition.findMany({
       where: { id: { in: definition.fieldIds } },
       select: { entityTypeId: true, key: true },
       orderBy: [{ position: "asc" }, { id: "asc" }],
     }),
-    context.db.programItem.findMany({
+    context.db.line.findMany({
       where: {
         ticketId,
         item: { entityTypeId: { in: definition.entityTypeIds } },
@@ -35,7 +35,7 @@ export async function itemRows({
       orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     }),
   ]);
-  return programItems.map(({ item, ...row }) => {
+  return lines.map(({ item, ...row }) => {
     const own = asFieldValues({ value: item?.fields });
     const keys = fields.filter((field) => field.entityTypeId === item?.entityTypeId);
     return {

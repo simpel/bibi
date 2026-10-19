@@ -10,15 +10,13 @@ export const SheetRowKindSchema = z
 /** One row of a sheet snapshot. `key` is stable across versions, so rows can be compared. */
 export const SheetRowSchema = z.object({
   kind: SheetRowKindSchema,
-  key: z
-    .string()
-    .describe("Stable id: ticket id, program item id, or `<program item id|ticket>:<value id>`"),
+  key: z.string().describe("Stable id: ticket id, line id, or `<line id|ticket>:<value id>`"),
   parentKey: z
     .string()
     .nullable()
-    .describe("REQUIREMENT: the program item's key it applies to; null = the whole ticket"),
-  label: z.string().describe("Ticket reference, program item name or counted list value"),
-  itemName: z.string().nullable().describe("ITEM: the name of the item the program item uses"),
+    .describe("REQUIREMENT: the line's key it applies to; null = the whole ticket"),
+  label: z.string().describe("Ticket reference, line name or counted list value"),
+  itemName: z.string().nullable().describe("ITEM: the name of the item the line uses"),
   quantity: z.number().int().nullable().describe("Headcount, item quantity or counted guests"),
   startsAt: z.string().nullable().describe("ISO time"),
   endsAt: z.string().nullable().describe("ISO time"),
@@ -48,13 +46,13 @@ export const SHEET_MATCH_KINDS = ["CONTAINS", "MAY_CONTAIN"] as const;
  * `MAY_CONTAIN` (only optional parts or choice options) is flagged but does not block.
  */
 export const SheetMatchSchema = z.object({
-  programItemKey: z.string().describe("The program item's row key in `content`"),
-  programItemName: z.string(),
-  itemId: z.string().describe("The item the program item uses"),
+  lineKey: z.string().describe("The line's row key in `content`"),
+  lineName: z.string(),
+  itemId: z.string().describe("The item the line uses"),
   itemName: z.string(),
   vocabularyValueId: z.string().describe("The counted list value"),
   name: z.string().describe("Name of the list value"),
-  quantity: z.number().int().describe("The effective count for the program item"),
+  quantity: z.number().int().describe("The effective count for the line"),
   kind: z.enum(SHEET_MATCH_KINDS),
   blocking: z.boolean().describe("true for CONTAINS: the sheet cannot be sent"),
   carriers: z.array(z.string()).describe("Names of the items or parts that carry the value"),

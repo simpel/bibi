@@ -15,7 +15,7 @@ export function SheetMatches({ matches }: SheetMatchesProps) {
     <ul data-slot="sheet-matches" className="grid gap-1.5 text-sm">
       {matches.map((match) => (
         <li
-          key={`${match.programItemKey}:${match.vocabularyValueId}`}
+          key={`${match.lineKey}:${match.vocabularyValueId}`}
           className="flex flex-wrap items-center gap-2"
         >
           <Badge variant={match.blocking ? "destructive" : "warning"}>{t(match.kind)}</Badge>
@@ -23,7 +23,7 @@ export function SheetMatches({ matches }: SheetMatchesProps) {
             {t("line", {
               count: match.quantity,
               name: match.name,
-              item: match.programItemName,
+              item: match.lineName,
               carriers: match.carriers.join(", "),
             })}
           </span>

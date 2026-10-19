@@ -42,8 +42,8 @@ async function seedTemplate({ context, refs, template }: TemplateInput): Promise
   if (!type) return missing({ what: `ticket type ${template.type}` });
   const phase = await context.db.ticketPhase.findFirst({ where: { name: template.phase } });
   if (!phase) return missing({ what: `ticket phase ${template.phase}` });
-  const lineType = await context.db.entityType.findFirst({ where: { base: "PROGRAM_ITEM" } });
-  if (!lineType) return missing({ what: "a line type (base PROGRAM_ITEM)" });
+  const lineType = await context.db.entityType.findFirst({ where: { base: "LINE" } });
+  if (!lineType) return missing({ what: "a line type (base LINE)" });
   const lines: TicketTemplateLineInput[] = [];
   for (const line of template.lines) {
     const input = await toLineInput({ context, line, typeId: lineType.id, refs });

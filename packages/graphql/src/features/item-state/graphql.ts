@@ -16,7 +16,7 @@ import { fieldFromOperation, mutationFromOperation } from "../../schema/from-ope
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";
 import { requirePermission } from "../../schema/require-permission";
-import { ProgramItemRef } from "../program-item/graphql";
+import { LineRef } from "../line/graphql";
 
 export const ItemStateRef = objectFromSchema<ItemStateDto>({
   name: "ItemState",
@@ -42,16 +42,16 @@ fieldFromOperation({
 mutationFromOperation({ operation: reorderItemStates, type: ItemStatePageRef });
 mutationFromOperation({ operation: setItemStateTransitions, type: ItemStateRef });
 
-// Graph edge. It lives here so that program-item/graphql.ts does not need to import this file.
-builder.objectField(ProgramItemRef, "state", (t) =>
+// Graph edge. It lives here so that line/graphql.ts does not need to import this file.
+builder.objectField(LineRef, "state", (t) =>
   t.field({
     type: ItemStateRef,
     nullable: true,
     description: "The line's state (null for a line without an item).",
-    resolve: (programItem, _args, ctx) => {
-      if (!programItem.stateId) return null;
+    resolve: (line, _args, ctx) => {
+      if (!line.stateId) return null;
       requirePermission({ ctx, permission: "itemState:read" });
-      return ctx.loaders.itemState.load({ id: programItem.stateId });
+      return ctx.loaders.itemState.load({ id: line.stateId });
     },
   }),
 );

@@ -24,7 +24,7 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
     });
     expect(ticket).toMatchObject({ phaseId: setup.confirmed.id, quantity: 8, customerId });
     expect(ticket.desiredEndsAt?.toISOString()).toBe("2026-11-01T11:00:00.000Z");
-    const lines = await context.db.programItem.findMany({
+    const lines = await context.db.line.findMany({
       where: { ticketId: ticket.id },
       orderBy: { startsAt: "asc" },
     });

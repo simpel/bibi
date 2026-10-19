@@ -104,7 +104,7 @@ describe("sheet matches (ADR 0021)", () => {
     expect(sheet.blocked).toBe(true);
   });
 
-  it("lets a program item's own count of 0 replace the ticket's count", async () => {
+  it("lets a line's own count of 0 replace the ticket's count", async () => {
     const setup = await matchSetup();
     const held = await serve({ setup, menu: "mandatory" });
     await countOnTicket({ setup, value: setup.gluten, quantity: 4 });
@@ -116,7 +116,7 @@ describe("sheet matches (ADR 0021)", () => {
     unwrap({
       result: await addRequirement({
         ...own,
-        programItemId: held.id,
+        lineId: held.id,
         vocabularyValueId: setup.gluten,
         quantity: 0,
       }),

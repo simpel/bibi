@@ -10,6 +10,7 @@ import { fieldDefinitionRoutes } from "./features/field-definition/rest";
 import { inboundEmailRoutes } from "./features/inbound-email/rest";
 import { itemRoutes } from "./features/item/rest";
 import { itemStateRoutes } from "./features/item-state/rest";
+import { lineRoutes } from "./features/line/rest";
 import { memberRoutes } from "./features/member/rest";
 import { messageRoutes } from "./features/message/rest";
 import { oauthGrantRoutes } from "./features/oauth-grant/rest";
@@ -20,7 +21,6 @@ import { phaseGridRoutes } from "./features/phase-grid/rest";
 import { pipelineRoutes } from "./features/pipeline/rest";
 import { pipelineSetupRoutes } from "./features/pipeline-setup/rest";
 import { priceListRoutes } from "./features/price-list/rest";
-import { programItemRoutes } from "./features/program-item/rest";
 import { quoteRoutes } from "./features/quote/rest";
 import { requirementRoutes } from "./features/requirement/rest";
 import { responsibilityRoutes } from "./features/responsibility/rest";
@@ -61,7 +61,7 @@ export function listRestRoutes(): RestRoute[] {
     ...itemStateRoutes,
     ...gridAndSetupRoutes,
     ...ticketRoutes,
-    ...programItemRoutes,
+    ...lineRoutes,
     ...requirementRoutes,
     ...sheetRoutes,
     ...pipelineRoutes,

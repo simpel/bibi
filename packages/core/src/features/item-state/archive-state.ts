@@ -24,7 +24,7 @@ async function loadTarget({ context, state, targetStateId }: TargetInput) {
  * it or are cleared (ADR 0044).
  */
 async function handOver({ context, state, targetStateId }: TargetInput): Promise<Result<true>> {
-  const used = await context.db.programItem.count({ where: { stateId: state.id } });
+  const used = await context.db.line.count({ where: { stateId: state.id } });
   const target =
     used > 0 || targetStateId ? await loadTarget({ context, state, targetStateId }) : null;
   if (target && !target.ok) return target;

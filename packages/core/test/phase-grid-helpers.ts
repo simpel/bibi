@@ -9,8 +9,8 @@ import { createTypeWithField } from "./customer-helpers";
 import { unwrap } from "./helpers";
 import { createTestItem } from "./item-helpers";
 import { addState, roomStates } from "./item-state-helpers";
+import { createTestLine } from "./line-helpers";
 import { createBookableItem } from "./occupancy-helpers";
-import { addProgramItem } from "./program-item-helpers";
 import { createTestTicket, memberUser, ticketSetup } from "./ticket-helpers";
 import { phaseByName } from "./ticket-phase-helpers";
 
@@ -48,7 +48,7 @@ export async function gridSetup() {
     });
   const { type: lineType } = await createTypeWithField({
     context,
-    base: "PROGRAM_ITEM",
+    base: "LINE",
     name: "Line",
   });
   const room = await createBookableItem({ context });
@@ -74,14 +74,14 @@ export type AddLineInput = { setup: GridSetup; ticketId: string; itemId: string;
 export async function addLine({ setup, ticketId, itemId, from = 9 }: AddLineInput) {
   const { context, lineType } = setup;
   const input = { context, ticketId, entityTypeId: lineType.id, itemId, from, to: from + 2 };
-  return unwrap({ result: await addProgramItem(input) });
+  return unwrap({ result: await createTestLine(input) });
 }
 
 export type LineInput = Ctx & { lineId: string };
 
 /** The line as stored now. */
 export const lineNow = ({ context, lineId }: LineInput) =>
-  context.db.programItem.findFirstOrThrow({ where: { id: lineId } });
+  context.db.line.findFirstOrThrow({ where: { id: lineId } });
 
 /** `line.followPhase`; returns the result. */
 export const follow = ({ context, lineId }: LineInput) =>

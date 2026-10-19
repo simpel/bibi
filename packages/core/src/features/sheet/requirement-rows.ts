@@ -9,7 +9,7 @@ export type RequirementRowsInput = {
 };
 
 /**
- * One row per count on the ticket or its program items for the included lists. The key is
+ * One row per count on the ticket or its lines for the included lists. The key is
  * the level plus the value (one active count per both), so a count keeps its row across versions.
  * Counts only, never a person (ADR 0021).
  */
@@ -30,8 +30,8 @@ export async function requirementRows({
   const names = new Map(lists.map((list) => [list.id, list.name]));
   return rows.map((row) => ({
     kind: "REQUIREMENT",
-    key: `${row.programItemId ?? "ticket"}:${row.vocabularyValueId}`,
-    parentKey: row.programItemId,
+    key: `${row.lineId ?? "ticket"}:${row.vocabularyValueId}`,
+    parentKey: row.lineId,
     label: row.vocabularyValue.name,
     itemName: null,
     quantity: row.quantity,

@@ -8,8 +8,8 @@ export const requirementMcpTools = [
     summary: ({ input }) =>
       `Count ${text({ value: input.quantity })} × list value ` +
       `${text({ value: input.vocabularyValueId })} on ` +
-      (input.programItemId
-        ? `program item ${text({ value: input.programItemId })}`
+      (input.lineId
+        ? `line ${text({ value: input.lineId })}`
         : `ticket ${text({ value: input.ticketId })}`),
   }),
   mcpTool({

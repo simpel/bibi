@@ -17,8 +17,8 @@ export const listRequirements = defineOperation({
   kind: "query",
   description:
     "List requirements: counts against list values (e.g. Gluten × 3) on tickets and program " +
-    "items. programItemId null = the whole ticket; a program item's own count for a value " +
-    "replaces the ticket's there. Filter by ticket, program item or list value.",
+    "items. lineId null = the whole ticket; a line's own count for a value " +
+    "replaces the ticket's there. Filter by ticket, line or list value.",
   input: RequirementListInputSchema,
   output: RequirementListOutputSchema,
   permission: "requirement:read",
@@ -26,7 +26,7 @@ export const listRequirements = defineOperation({
     const rows = await context.db.requirement.findMany({
       where: {
         ...(input.ticketId ? { ticketId: input.ticketId } : {}),
-        ...(input.programItemId ? { programItemId: input.programItemId } : {}),
+        ...(input.lineId ? { lineId: input.lineId } : {}),
         ...(input.vocabularyValueId ? { vocabularyValueId: input.vocabularyValueId } : {}),
       },
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],

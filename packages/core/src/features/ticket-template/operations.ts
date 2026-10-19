@@ -52,7 +52,7 @@ export const getTicketTemplate = defineOperation({
 });
 
 const LINE_NOTE =
-  "Each line is a program item the ticket gets: a program item type, a name, an optional " +
+  "Each line is a line the ticket gets: a line type, a name, an optional " +
   "general item and setup, minutes from the ticket's start and a duration, and a quantity " +
   "(FIXED, or PER_HEADCOUNT: times the headcount).";
 

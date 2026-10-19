@@ -2,7 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
-import { insertProgramItem } from "../program-item/insert-program-item";
+import { insertLine } from "../line/insert-line";
 import { loadTicketTemplate } from "../ticket-template/load-ticket-template";
 import type { TicketTemplateDto } from "../ticket-template/schema";
 import type { TicketCreateFromTemplateInput } from "./create-from-template-schema";
@@ -54,7 +54,7 @@ async function create({ context, template, input }: CreateInput): Promise<Result
   });
   if (!ticket.ok) return ticket;
   for (const line of plan.lines) {
-    const made = await insertProgramItem({
+    const made = await insertLine({
       context,
       input: { ...line, ticketId: ticket.value.id },
     });

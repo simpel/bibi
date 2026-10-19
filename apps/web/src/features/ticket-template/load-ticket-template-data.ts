@@ -6,14 +6,14 @@ import type { TicketTemplateFormData } from "./ui/ticket-template-form-data";
 const LIMIT = 100;
 
 /**
- * What the template form picks from: ticket types, program item types, the phases a ticket can
+ * What the template form picks from: ticket types, line types, the phases a ticket can
  * start in (not terminal) and the catalog's items. Items are optional: without read access
  * the lines have no item to pick.
  */
 export async function loadTicketTemplateData(): Promise<Result<TicketTemplateFormData>> {
   const [ticketTypes, lineTypes, phases, items] = await Promise.all([
     runOperation({ operation: listEntityTypes, input: { base: "TICKET", limit: LIMIT } }),
-    runOperation({ operation: listEntityTypes, input: { base: "PROGRAM_ITEM", limit: LIMIT } }),
+    runOperation({ operation: listEntityTypes, input: { base: "LINE", limit: LIMIT } }),
     runOperation({ operation: listTicketPhases, input: { limit: LIMIT } }),
     runOperation({ operation: listItems, input: { limit: LIMIT } }),
   ]);

@@ -649,7 +649,7 @@
       "note": "Anteckning"
     }
   },
-  "programItem": {
+  "line": {
     "singular": "Programpunkt",
     "plural": "Program",
     "create": "Lägg till programpunkt",
@@ -705,7 +705,7 @@
     "wholeTicket": "Hela ärendet",
     "fields": {
       "type": "Typ",
-      "programItem": "Gäller",
+      "line": "Gäller",
       "value": "Listvärde",
       "quantity": "Antal"
     },
@@ -734,7 +734,7 @@
     "ticket": "Ärende {reference}",
     "headcount": "{count, plural, one {# gäst} other {# gäster}}",
     "onTicket": "Hela ärendet",
-    "onProgramItem": "En programpost",
+    "onLine": "En programpost",
     "change": {
       "ADDED": "Tillagd sedan senast skickade version",
       "CHANGED": "Ändrad sedan senast skickade version",
@@ -789,7 +789,7 @@
       "CONTACT": "Kontaktpersoner",
       "TICKET": "Ärenden",
       "REQUIREMENT": "Behov",
-      "PROGRAM_ITEM": "Programpunkter"
+      "LINE": "Programpunkter"
     },
     "behaviours": {
       "PRICED": "Prissatt",
@@ -1407,6 +1407,9 @@
         "itemState_setTransitions": "Ange lägesövergångar",
         "phaseGrid_importTemplate": "Importera fasrutnätsmall",
         "phaseGrid_setCell": "Ange cell i fasrutnätet",
+        "line_create": "Lägg till rad",
+        "line_update": "Uppdatera rad",
+        "line_archive": "Ta bort rad",
         "line_changeState": "Byt läge på rad",
         "line_followPhase": "Låt raden följa fasen",
         "ticket_expireHolds": "Släpp förfallna reservationer",
@@ -1560,7 +1563,7 @@
           "note": "Anteckning"
         }
       },
-      "programItem": {
+      "line": {
         "singular": "Programpunkt",
         "empty": "Inga programpunkter hittades.",
         "quantity": "{count} deltar",
@@ -1577,7 +1580,7 @@
         "empty": "Inga behov hittades.",
         "quantity": "Antal: {count}",
         "onTicket": "Gäller hela ärendet",
-        "onProgramItem": "Gäller en programpunkt",
+        "onLine": "Gäller en programpunkt",
         "archived": "Borttaget",
         "openTicket": "Öppna ärendet",
         "columns": {
@@ -1613,7 +1616,7 @@
           "CONTACT": "Kontakt",
           "TICKET": "Ärende",
           "REQUIREMENT": "Behov",
-          "PROGRAM_ITEM": "Programpunkt"
+          "LINE": "Programpunkt"
         },
         "behaviour": {
           "PRICED": "Prissatt",

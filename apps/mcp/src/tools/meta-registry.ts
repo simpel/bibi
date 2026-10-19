@@ -10,6 +10,7 @@ import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { inboundEmailMcpTools } from "../features/inbound-email/mcp";
 import { itemMcpTools } from "../features/item/mcp";
 import { itemStateMcpTools } from "../features/item-state/mcp";
+import { lineMcpTools } from "../features/line/mcp";
 import { memberMcpTools } from "../features/member/mcp";
 import { messageMcpTools } from "../features/message/mcp";
 import { oauthGrantMcpTools } from "../features/oauth-grant/mcp";
@@ -20,7 +21,6 @@ import { phaseGridMcpTools } from "../features/phase-grid/mcp";
 import { pipelineMcpTools } from "../features/pipeline/mcp";
 import { pipelineSetupMcpTools } from "../features/pipeline-setup/mcp";
 import { priceListMcpTools } from "../features/price-list/mcp";
-import { programItemMcpTools } from "../features/program-item/mcp";
 import { quoteMcpTools } from "../features/quote/mcp";
 import { requirementMcpTools } from "../features/requirement/mcp";
 import { responsibilityMcpTools } from "../features/responsibility/mcp";
@@ -61,7 +61,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...gridAndSetupMcpTools,
     ...ticketMcpTools,
     ...assignmentMcpTools,
-    ...programItemMcpTools,
+    ...lineMcpTools,
     ...requirementMcpTools,
     ...sheetMcpTools,
     ...pipelineMcpTools,

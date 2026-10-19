@@ -2,7 +2,7 @@
 
 Booking system for businesses that sell conferences with food and drink: experience centers, museums, conference estates, manor houses and restaurants with private rooms (e.g. World of Volvo).
 
-Core flow: ticket (through the organization's own phases) → lines (program items) → quote → signing → needs → kitchen order and other sheets → delivery → invoice → Fortnox/Visma.
+Core flow: ticket (through the organization's own phases) → lines → quote → signing → needs → kitchen order and other sheets → delivery → invoice → Fortnox/Visma.
 
 ## Status
 

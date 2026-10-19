@@ -28,7 +28,7 @@ const base: CalendarBlock = {
 };
 
 describe("block label", () => {
-  it("names a ticket by reference and program item", () => {
+  it("names a ticket by reference and line", () => {
     expect(blockLabel({ block: base, labels })).toBe("Ticket 12 · Lunch");
   });
 

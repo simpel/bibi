@@ -26,7 +26,7 @@ const requirementCard = uiEntry({
   toProps: ({ value }) => ({ requirement: value }),
 });
 
-/** Tool → component for requirement counts on tickets and program items (ADR 0021). */
+/** Tool → component for requirement counts on tickets and lines (ADR 0021). */
 export const REQUIREMENT_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   requirement_list: requirementTable,
   requirement_get: requirementCard,

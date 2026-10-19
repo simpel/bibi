@@ -39,7 +39,7 @@ model Ticket {
   phase               TicketPhase    @relation(fields: [phaseId, organizationId], references: [id, organizationId])
   inboundEmails       InboundEmail[]
   payments            Payment[]
-  programItems        ProgramItem[]
+  lines               Line[]
   quotes              Quote[]
   requirements        Requirement[]
   sheets              Sheet[]

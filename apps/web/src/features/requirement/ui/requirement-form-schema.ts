@@ -29,7 +29,7 @@ export function requirementFormSchema({ ticketId, type, vocabularies }: Requirem
     schema: RequirementCreateInputSchema.extend({ fields: buildFieldsSchema({ specs }) }),
     toInput: ({ values }: { values: RequirementFormValues }) => ({
       ticketId,
-      programItemId: values.programItemId === NONE ? null : values.programItemId,
+      lineId: values.lineId === NONE ? null : values.lineId,
       entityTypeId: values.entityTypeId,
       vocabularyValueId: values.vocabularyValueId,
       quantity: numberOrNull({ value: values.quantity }),

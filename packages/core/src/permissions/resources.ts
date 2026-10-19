@@ -19,7 +19,7 @@ export const RESOURCES = [
   "phaseGrid",
   "ticket",
   "ticketTemplate",
-  "programItem",
+  "line",
   "assignment",
   "requirement",
   "sheet",

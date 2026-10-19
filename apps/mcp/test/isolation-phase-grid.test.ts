@@ -27,7 +27,7 @@ describe("cross-organization isolation: the phase grid and line overrides", () =
     const followed = await call({
       client: b,
       name: "line_followPhase",
-      args: { lineId: seedA.programItemId },
+      args: { lineId: seedA.lineId },
     });
     expect(followed.data.code).toBe("NOT_FOUND");
     const own = { phaseId: seedB.phaseId, entityTypeId: seedB.entityTypeId, stateId: null };

@@ -1,27 +1,27 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
-import { checkTicket } from "../program-item/program-item-rules";
+import { checkTicket } from "../line/line-rules";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-export type CheckLevelInput = Db & { ticketId: string; programItemId: string | null };
+export type CheckLevelInput = Db & { ticketId: string; lineId: string | null };
 
 /**
  * Where a requirement applies: an active ticket of the organization, optionally one of that
- * ticket's active program items. A program item of another ticket is a `VALIDATION` issue.
+ * ticket's active lines. A line of another ticket is a `VALIDATION` issue.
  */
 export async function checkLevel({
   context,
   ticketId,
-  programItemId,
+  lineId,
 }: CheckLevelInput): Promise<Result<boolean>> {
   const ticket = await checkTicket({ context, ticketId });
-  if (!ticket.ok || !programItemId) return ticket;
-  const found = await context.db.programItem.count({ where: { id: programItemId, ticketId } });
+  if (!ticket.ok || !lineId) return ticket;
+  const found = await context.db.line.count({ where: { id: lineId, ticketId } });
   if (found > 0) return ok({ value: true });
-  const message = "Not a program item of the ticket";
-  return invalid({ message, issues: [{ path: "programItemId", message }] });
+  const message = "Not a line of the ticket";
+  return invalid({ message, issues: [{ path: "lineId", message }] });
 }
 
 export type CheckValueInput = Db & { vocabularyValueId: string };
@@ -48,14 +48,14 @@ export type CheckFreeInput = CheckLevelInput & { vocabularyValueId: string };
 export async function checkFree({
   context,
   ticketId,
-  programItemId,
+  lineId,
   vocabularyValueId,
 }: CheckFreeInput): Promise<Result<true>> {
   const taken = await context.db.requirement.count({
-    where: { ticketId, programItemId, vocabularyValueId },
+    where: { ticketId, lineId, vocabularyValueId },
   });
   if (taken === 0) return ok({ value: true });
-  const where = programItemId ? "The program item" : "The ticket";
+  const where = lineId ? "The line" : "The ticket";
   const message = `${where} already has a count for the value; update it instead`;
   return conflict({ message, issues: [{ path: "vocabularyValueId", message }] });
 }

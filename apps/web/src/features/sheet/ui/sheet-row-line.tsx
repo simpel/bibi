@@ -10,7 +10,7 @@ export type SheetRowLineProps = {
   row: RowFacts;
   /** The marker when the row differs from the last sent version. */
   change?: SheetChange["change"];
-  /** REQUIREMENT: the program item it applies to; null = the whole ticket. */
+  /** REQUIREMENT: the line it applies to; null = the whole ticket. */
   parentKey?: string | null;
 };
 
@@ -64,7 +64,7 @@ export function SheetRowLine({ row, change, parentKey }: SheetRowLineProps) {
         <span>{t("headcount", { count: row.quantity })}</span>
       ) : null}
       {row.kind === "REQUIREMENT" ? (
-        <span className={muted}>{parentKey ? t("onProgramItem") : t("onTicket")}</span>
+        <span className={muted}>{parentKey ? t("onLine") : t("onTicket")}</span>
       ) : null}
       <Period row={row} />
       {details.length > 0 ? <span className={muted}>{details.map(String).join(", ")}</span> : null}

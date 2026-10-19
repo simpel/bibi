@@ -104,7 +104,7 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     });
     expect(main?.assigneeId).toBe(johan?.userId);
     expect(main?.followers).toHaveLength(1);
-    const lines = await db.programItem.findMany({
+    const lines = await db.line.findMany({
       where: { organizationId: lind?.organizationId },
       include: { state: true },
       orderBy: { name: "asc" },

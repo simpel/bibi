@@ -22,7 +22,7 @@ export function RequirementCardView({ requirement }: RequirementCardViewProps) {
         <Badge variant="secondary">{t("singular")}</Badge>
       </CardHeader>
       <CardContent className="grid gap-1 p-4 pt-0 text-sm text-muted-foreground">
-        <p>{requirement.programItemId ? t("onProgramItem") : t("onTicket")}</p>
+        <p>{requirement.lineId ? t("onLine") : t("onTicket")}</p>
         {requirement.status === "ARCHIVED" ? <p>{t("archived")}</p> : null}
         {fieldLines({ fields: requirement.fields }).map((line) => (
           <p key={line}>{line}</p>

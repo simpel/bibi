@@ -7,8 +7,8 @@ describe("cross-organization isolation: requirements", () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
     const seed = await seedProgram({ client: a });
-    const { ticketId, programItemId, requirementTypeId, valueId } = seed;
-    const args = { ticketId, programItemId, entityTypeId: requirementTypeId };
+    const { ticketId, lineId, requirementTypeId, valueId } = seed;
+    const args = { ticketId, lineId, entityTypeId: requirementTypeId };
     const made = await call({
       client: a,
       name: "requirement_create",
@@ -37,7 +37,7 @@ describe("cross-organization isolation: requirements", () => {
       const created = await call({ client: b, name: "requirement_create", args: input });
       expect(["NOT_FOUND", "VALIDATION"], JSON.stringify(input)).toContain(created.data.code);
     }
-    for (const input of [{}, { ticketId }, { programItemId }, { vocabularyValueId: valueId }]) {
+    for (const input of [{}, { ticketId }, { lineId }, { vocabularyValueId: valueId }]) {
       const listed = await call({ client: b, name: "requirement_list", args: input });
       expect(listed.data.items).toEqual([]);
     }

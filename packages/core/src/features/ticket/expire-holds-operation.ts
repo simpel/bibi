@@ -1,16 +1,16 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
-import { applyLineState } from "../program-item/line-state";
-import type { ProgramItemDto } from "../program-item/schema";
-import { toProgramItemDto } from "../program-item/to-program-item-dto";
+import { applyLineState } from "../line/line-state";
+import type { LineDto } from "../line/schema";
+import { toLineDto } from "../line/to-line-dto";
 import { TicketExpireHoldsInputSchema, TicketExpireHoldsOutputSchema } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
 /** Active lines in an expiring state on active tickets whose `holdsUntil` has passed. */
 const loadDueLines = ({ context }: Db) =>
-  context.db.programItem.findMany({
+  context.db.line.findMany({
     where: {
       ticket: { status: "ACTIVE", holdsUntil: { lte: new Date() } },
       state: { status: "ACTIVE", expires: true },
@@ -26,7 +26,7 @@ type ClaimInput = Db & { id: string; stateId: string };
  * never expire one line twice: the second waits for the first and then finds nothing to do.
  */
 async function claim({ context, id, stateId }: ClaimInput): Promise<boolean> {
-  const claimed = await context.db.programItem.updateMany({
+  const claimed = await context.db.line.updateMany({
     where: { id, stateId },
     data: { stateId },
   });
@@ -45,14 +45,14 @@ export const expireTicketHolds = defineOperation({
   input: TicketExpireHoldsInputSchema,
   output: TicketExpireHoldsOutputSchema,
   permission: "ticket:write",
-  entityType: "programItem",
+  entityType: "line",
   handler: async ({ context }) => {
-    const items: ProgramItemDto[] = [];
+    const items: LineDto[] = [];
     for (const { item, ...row } of await loadDueLines({ context })) {
       const target = item?.entityType.expiryStateId;
       if (!target || !row.stateId || target === row.stateId) continue;
       if (!(await claim({ context, id: row.id, stateId: row.stateId }))) continue;
-      const before = toProgramItemDto({ row });
+      const before = toLineDto({ row });
       const moved = await applyLineState({ context, before, stateId: target });
       if (!moved.ok) return moved;
       items.push(moved.value);

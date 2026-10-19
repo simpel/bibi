@@ -21,7 +21,7 @@ import type { CreateItem } from "./create-item-types";
 /**
  * Everything a member can create, one card each on `/new`. A thing with a step-by-step page
  * links to `/new/<thing>`; the others open their list with the create dialog (`?create=1`)
- * until they get their own page. Quotes, occupancies, options and program items are created
+ * until they get their own page. Quotes, occupancies, options and lines are created
  * from the ticket or item they belong to, so they are not listed.
  */
 export const CREATE_ITEMS: readonly CreateItem[] = [

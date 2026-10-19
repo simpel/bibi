@@ -9,7 +9,7 @@ export function checkNotBlocked({ sheet }: CheckNotBlockedInput): Result<true> {
   if (!sheet.blocked) return ok({ value: true });
   const hits = sheet.matches
     .filter((match) => match.blocking)
-    .map((match) => `${match.name} in ${match.programItemName}`);
+    .map((match) => `${match.name} in ${match.lineName}`);
   return conflict({
     message: `Version ${sheet.version} is blocked: ${hits.join(", ")} (see the sheet's matches)`,
   });

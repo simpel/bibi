@@ -1,4 +1,4 @@
-import { PROGRAM_ITEM_SOURCE } from "../../features/program-item/schema";
+import { LINE_SOURCE } from "../../features/line/schema";
 import { defineReconciliation, type ReconcileContext, runReconciliations } from "./reconcile";
 
 type HoldRow = { lineId: string; itemId: string; holdKind: string; startsAt: Date; endsAt: Date };
@@ -8,7 +8,7 @@ const describeHold = ({ itemId, holdKind, startsAt, endsAt }: HoldRow) =>
 
 /** What the lines say should be held (ADR 0044): the state's hold on a bookable item, until released. */
 async function rebuildLineHolds({ context }: ReconcileContext): Promise<HoldRow[]> {
-  const lines = await context.db.programItem.findMany({
+  const lines = await context.db.line.findMany({
     where: {
       status: "ACTIVE",
       ticket: { status: "ACTIVE" },
@@ -36,7 +36,7 @@ export const lineHoldsReconciliation = defineReconciliation({
   rebuild: rebuildLineHolds,
   compare: async ({ context, rebuilt }) => {
     const stored = await context.db.occupancy.findMany({
-      where: { status: "ACTIVE", type: "HOLD", sourceType: PROGRAM_ITEM_SOURCE },
+      where: { status: "ACTIVE", type: "HOLD", sourceType: LINE_SOURCE },
       select: { sourceId: true, itemId: true, holdKind: true, startsAt: true, endsAt: true },
     });
     const byLine = new Map(stored.map((row) => [row.sourceId, row]));

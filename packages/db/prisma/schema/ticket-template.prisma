@@ -29,14 +29,14 @@ model TicketTemplate {
   @@index([organizationId, phaseId])
 }
 
-/// Ticket template line – a line (program item) the ticket gets, timed from the ticket's start.
+/// Ticket template line – a line the ticket gets, timed from the ticket's start.
 /// Replaced as a set by `ticketTemplate.update`.
 model TicketTemplateLine {
   id              String                @id @default(cuid(2))
   organizationId  String
   templateId      String
   position        Int                   @default(0)
-  /// The program item type (base `PROGRAM_ITEM`) of the created line.
+  /// The line type (base `LINE`) of the created line.
   entityTypeId    String
   name            String
   itemId          String?

@@ -8,7 +8,7 @@ enum EntityBase {
   CONTACT
   TICKET
   REQUIREMENT
-  PROGRAM_ITEM
+  LINE
 }
 
 /// Generic behaviours an item type switches on (ADR 0021). No domain words.
@@ -50,7 +50,7 @@ model EntityType {
   customers       Customer[]
   contacts        Contact[]
   tickets         Ticket[]
-  programItems    ProgramItem[]
+  lines           Line[]
   requirements    Requirement[]
   itemStates      ItemState[]          @relation("ItemStateType")
   phaseRules      PhaseStateRule[]
@@ -134,7 +134,7 @@ model Setup {
   updatedAt         DateTime             @updatedAt
   createdBy         String?
   items             ItemSetup[]
-  programItems      ProgramItem[]
+  lines             Line[]
   templateLines     TicketTemplateLine[]
 
   @@unique([id, organizationId])

@@ -11,8 +11,8 @@ export const requirementRoutes = [
   restRoute({
     operation: "requirement.list",
     method: "GET",
-    path: "/program-items/{programItemId}/requirements",
-    operationId: "requirementListByProgramItem",
+    path: "/lines/{lineId}/requirements",
+    operationId: "requirementListByLine",
   }),
   restRoute({ operation: "requirement.get", method: "GET", path: "/requirements/{id}" }),
   restRoute({ operation: "requirement.create", method: "POST", path: "/requirements" }),

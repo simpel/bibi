@@ -84,7 +84,7 @@ export const archiveEntityType = defineOperation({
   kind: "command",
   description:
     "Archive a type. Refused while active records (items, customers, contacts, tickets, " +
-    "program items, requirements) still have the " +
+    "lines, requirements) still have the " +
     "type, a LINK field points to it, or a sheet definition includes it.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,

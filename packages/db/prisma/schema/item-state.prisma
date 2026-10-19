@@ -35,7 +35,7 @@ model ItemState {
   expiryOf        EntityType[]          @relation("ExpiryState")
   transitionsFrom ItemStateTransition[] @relation("StateTransitionFrom")
   transitionsTo   ItemStateTransition[] @relation("StateTransitionTo")
-  programItems    ProgramItem[]
+  lines           Line[]
   phaseRules      PhaseStateRule[]
 
   @@unique([id, organizationId])

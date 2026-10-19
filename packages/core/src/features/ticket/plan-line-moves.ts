@@ -2,10 +2,10 @@ import type { AppErrorIssue } from "../../errors/app-error";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { loadStatesById } from "../item-state/load-item-state";
+import { type LineMove, lineMoveBlockers } from "../line/line-move-check";
+import { applyLineState } from "../line/line-state";
+import { linesOfTicket } from "../line/lines-of-ticket";
 import { cellsOfPhase } from "../phase-grid/load-grid";
-import { type LineMove, lineMoveBlockers } from "../program-item/line-move-check";
-import { applyLineState } from "../program-item/line-state";
-import { linesOfTicket } from "../program-item/lines-of-ticket";
 
 export type LinePlan = { moves: LineMove[]; blockers: AppErrorIssue[] };
 

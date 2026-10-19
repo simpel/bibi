@@ -18,14 +18,14 @@ export const createRequirement = defineOperation({
   kind: "command",
   description:
     "Register a requirement: a count against a list value (e.g. Gluten × 3 from the list " +
-    "Allergens) on a ticket, or on one of its program items, where it replaces the ticket's " +
+    "Allergens) on a ticket, or on one of its lines, where it replaces the ticket's " +
     "count for that value. One count per value and level (CONFLICT otherwise; update it). " +
     "Never about a person: no names or guest details, only counts.",
   input: RequirementCreateInputSchema,
   output: RequirementSchema,
   permission: "requirement:write",
   handler: async ({ input: { entityTypeId, fields, ...data }, context }) => {
-    const level = { ticketId: data.ticketId, programItemId: data.programItemId ?? null };
+    const level = { ticketId: data.ticketId, lineId: data.lineId ?? null };
     const { vocabularyValueId } = data;
     for (const check of [
       await loadTypeOfBase({ context, entityTypeId, base: "REQUIREMENT" }),
@@ -57,7 +57,7 @@ export const updateRequirement = defineOperation({
   kind: "command",
   description:
     "Change a requirement's count or field values. `fields` is merged by key (null clears a " +
-    "value). The ticket, program item, value and type never change; archive and create anew.",
+    "value). The ticket, line, value and type never change; archive and create anew.",
   input: RequirementUpdateInputSchema,
   output: RequirementSchema,
   permission: "requirement:write",
@@ -85,7 +85,7 @@ export const archiveRequirement = defineOperation({
   name: "requirement.archive",
   kind: "command",
   description:
-    "Remove (archive) a requirement. On a program item the ticket's count for the value " +
+    "Remove (archive) a requirement. On a line the ticket's count for the value " +
     "applies there again.",
   input: RequirementIdInputSchema,
   output: RequirementSchema,

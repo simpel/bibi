@@ -12,7 +12,7 @@ type TicketInput = CheckDemoTemplatesInput & { ticket: DemoOrg["tickets"][number
 async function ticketFailures({ context, org, ticket }: TicketInput): Promise<string[]> {
   const template = org.templates.find((candidate) => candidate.name === ticket.template);
   if (!template) return [`${ticket.ref}: unknown template ${ticket.template}`];
-  const lines = await context.db.programItem.findMany({
+  const lines = await context.db.line.findMany({
     where: { name: { in: template.lines.map((line) => line.name) } },
     select: {
       name: true,

@@ -66,7 +66,7 @@ export const archiveCustomer = defineOperation({
     "Archive (soft-delete) a customer. Refused while the customer has active contacts or " +
     "active price lists (archive those first). Every ticket that is not archived, in any " +
     "phase, also blocks it, unless `archiveTickets` is true: then those tickets are " +
-    "archived with the customer, with their program items and room occupancy (needs " +
+    "archived with the customer, with their lines and room occupancy (needs " +
     "ticket:write). The customer's own packages are archived with it (needs item:write). " +
     "With `archiveTickets` and `expectedTicketCount` it is refused with CONFLICT, and nothing " +
     "is archived, unless exactly that many tickets would be archived. " +

@@ -19,7 +19,7 @@ async function loadKnown({ context, lines }: Db & Lines): Promise<Known> {
   const itemIds = unique({ ids: lines.map((line) => line.itemId) });
   const [types, items, setups] = await Promise.all([
     context.db.entityType.findMany({
-      where: { id: { in: typeIds }, base: "PROGRAM_ITEM" },
+      where: { id: { in: typeIds }, base: "LINE" },
       select: { id: true },
     }),
     context.db.item.findMany({
@@ -46,7 +46,7 @@ function lineIssues({ lines, known }: IssuesInput): AppErrorIssue[] {
   for (const [index, line] of lines.entries()) {
     const at = `lines.${index}`;
     if (!known.types.has(line.entityTypeId)) {
-      issues.push({ path: `${at}.entityTypeId`, message: "Unknown program item type" });
+      issues.push({ path: `${at}.entityTypeId`, message: "Unknown line type" });
     }
     if (line.itemId && !known.items.has(line.itemId)) {
       issues.push({ path: `${at}.itemId`, message: "Unknown item" });
@@ -65,7 +65,7 @@ function lineIssues({ lines, known }: IssuesInput): AppErrorIssue[] {
 export type CheckTemplateLinesInput = Db & Lines;
 
 /**
- * Every line of a template points at records that exist and fit: an active program item type, a
+ * Every line of a template points at records that exist and fit: an active line type, a
  * general item (a customer's own package belongs to that customer, not to a template) and, when
  * given, one of that item's setups.
  */

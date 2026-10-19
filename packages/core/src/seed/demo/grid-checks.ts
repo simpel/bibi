@@ -19,7 +19,7 @@ const SELECT = {
 
 /** The ticket's seeded lines by name, with state and item type. */
 const loadLines = ({ context, ticket }: Ctx & { ticket: DemoTicket }) =>
-  context.db.programItem.findMany({
+  context.db.line.findMany({
     where: { name: { in: (ticket.lines ?? []).map((line) => line.name) } },
     select: SELECT,
   });

@@ -42,7 +42,7 @@ export const TicketTemplateLineInputSchema = z.object({
   entityTypeId: z
     .string()
     .min(1)
-    .describe("Id of the program item type of the line (entityType.list base PROGRAM_ITEM)"),
+    .describe("Id of the line type of the line (entityType.list base LINE)"),
   name: z.string().trim().min(1).max(200).describe("What the line is, e.g. Coffee and a bun"),
   itemId: z
     .string()

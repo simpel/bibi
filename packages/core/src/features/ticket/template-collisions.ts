@@ -1,9 +1,9 @@
 import type { AppErrorIssue } from "../../errors/app-error";
 import type { OperationContext } from "../../operations/types";
 import { loadStatesById } from "../item-state/load-item-state";
+import { holdCollisions } from "../line/hold-collisions";
+import type { LineDto } from "../line/schema";
 import { cellsOfPhase } from "../phase-grid/load-grid";
-import { holdCollisions } from "../program-item/hold-collisions";
-import type { ProgramItemDto } from "../program-item/schema";
 import type { PlannedLine } from "./plan-template-lines";
 
 export type TemplateCollisionsInput = {
@@ -17,7 +17,7 @@ const unique = ({ ids }: { ids: readonly (string | null | undefined)[] }) => [
 ];
 
 /** A planned line as the line it will become, for the collision check (id = its index in the template). */
-const asLine = ({ line, index }: { line: PlannedLine; index: number }): ProgramItemDto => ({
+const asLine = ({ line, index }: { line: PlannedLine; index: number }): LineDto => ({
   ...{ id: String(index), organizationId: "", ticketId: "", status: "ACTIVE", createdBy: null },
   ...{ entityTypeId: line.entityTypeId, name: line.name, fields: {}, note: null },
   ...{ startsAt: line.startsAt, endsAt: line.endsAt, quantity: line.quantity ?? null },

@@ -49,7 +49,7 @@ export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "checks"> = 
     { base: "CONTACT", name: "Contact person" },
     { base: "TICKET", name: "Charter" },
     { base: "TICKET", name: "Round trip" },
-    { base: "PROGRAM_ITEM", name: "Line" },
+    { base: "LINE", name: "Line" },
   ],
 };
 

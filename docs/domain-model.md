@@ -26,7 +26,7 @@ Ticket (moves through the organization's phases) → Lines with states (prebooke
 > **Ownership:** owned `name`, `startsAt`; derived `effectiveVatPercent`; projection `holdKind` (check `line-holds`); snapshot `unitPrice` (from the item, taken at send).
 
 What changes:
-- **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `ProgramItem` is renamed `Line`; it may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup`. A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`. `Ticket.quantity` goes; lines inherit the headcount.
+- **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `Line` (formerly the program item, renamed in the first slice) may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup`. A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`. `Ticket.quantity` goes; lines inherit the headcount.
 - **Holds are a projection** ([ADR 0053](decisions/0053-holds-are-a-projection.md)), written by triggers through `sync_line_occupancy`. Only lines that have not ended are re-derived.
 - **History is owned data** ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)): `TicketPhaseChange` and `LineStateChange`. `phaseChangedAt`, `phaseReason` and `heldAt` go. Phases may require facts (`requiresAcceptedQuote`) but never store them.
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
@@ -46,9 +46,9 @@ erDiagram
   Ticket ||--o{ Quote : "is answered by"
   Quote |o--o{ Quote : "is revised as"
   Quote ||--o{ OrderLine : "contains"
-  Ticket ||--o{ ProgramItem : "has lines"
+  Ticket ||--o{ Line : "has lines"
   Ticket ||--o{ Requirement : "has"
-  ProgramItem ||--o{ Requirement : "adjusts"
+  Line ||--o{ Requirement : "adjusts"
   Requirement }o--|| VocabularyValue : "refers to"
   Ticket }o--|| CancellationTerms : "follows"
   Ticket ||--o{ Deposit : "requires"
@@ -68,8 +68,8 @@ erDiagram
   Vocabulary ||--o{ VocabularyValue : "has"
   FieldDefinition }o--o| Vocabulary : "selects from"
   FieldDefinition }o--o| EntityType : "links to records of"
-  ProgramItem ||--o{ OrderLine : "is charged via"
-  ProgramItem ||--o| Occupancy : "holds"
+  Line ||--o{ OrderLine : "is charged via"
+  Line ||--o| Occupancy : "holds"
   Venue ||--o{ Item : "has"
   Item ||--o{ ItemComponent : "contains"
   Item ||--o{ ItemComponent : "is part of"
@@ -96,12 +96,12 @@ erDiagram
   EntityType ||--o{ ItemState : "has"
   ItemState ||--o{ ItemStateTransition : "from"
   ItemState ||--o{ ItemStateTransition : "to"
-  ProgramItem }o--|| ItemState : "is in"
+  Line }o--|| ItemState : "is in"
   TicketPhase ||--o{ PhaseStateRule : "sets"
   EntityType ||--o{ PhaseStateRule : "is set by"
   ItemState ||--o{ PhaseStateRule : "is the result of"
   TicketTemplate }o--|| TicketPhase : "starts in"
-  TicketTemplate ||--o{ ProgramItem : "prepares lines like"
+  TicketTemplate ||--o{ Line : "prepares lines like"
 ```
 
 ## Configuration
@@ -112,10 +112,10 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 ### EntityType (`EntityType`)
 
-*MVP* · The organization's own type for a base entity: item, customer, contact, ticket, requirement or program item.
+*MVP* · The organization's own type for a base entity: item, customer, contact, ticket, requirement or line.
 
 **Attributes**
-- base entity (`ITEM | CUSTOMER | CONTACT | TICKET | REQUIREMENT | PROGRAM_ITEM`)
+- base entity (`ITEM | CUSTOMER | CONTACT | TICKET | REQUIREMENT | LINE`)
 - name (e.g. Conference room, Dish, Boat, Package, Company, Conference) — unique per base entity
 - behaviors (`ITEM` only): `PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE`, `SETUPS` — `CHOICES` requires `COMPOSABLE`, `SETUPS` requires `BOOKABLE` (otherwise `VALIDATION`)
 
@@ -239,7 +239,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 **Relations**
 - `N:1` EntityType has this
-- `1:N` ProgramItem is in this
+- `1:N` Line is in this
 - `1:N` is from/to in → Transition (`ItemStateTransition`)
 - `1:N` is the result of → PhaseStateRule
 
@@ -263,7 +263,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 **Attributes**
 - name (unique among the organization's active templates), ticket type, start phase (`phaseId`), default own-field values
-- lines (`TicketTemplateLine`, replaced as a set): program item type (base `PROGRAM_ITEM`), name, optional general item and setup, offset and duration in minutes from the ticket start, quantity (`FIXED`, or `PER_HEADCOUNT`: times the headcount)
+- lines (`TicketTemplateLine`, replaced as a set): line type (base `LINE`), name, optional general item and setup, offset and duration in minutes from the ticket start, quantity (`FIXED`, or `PER_HEADCOUNT`: times the headcount)
 - status (active / archived)
 
 **Relations**
@@ -348,7 +348,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `N:1` Customer (organization) has this
 - `1:N` is contact for → Ticket
 
-> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts or active price lists (`CONFLICT`; archive the price lists first), and a contact can only be created at an active customer. Every ticket of the customer that is not archived also blocks archiving it, whatever its phase, terminal phases included (`CONFLICT` naming the number of tickets, issue path `archiveTickets`). With `archiveTickets: true` (needs `ticket:write` as well) `customer.archive` archives those tickets and the customer in one transaction, with one audit row per ticket plus the customer; the approval text names the number of tickets. That number is bound to the input as `expectedTicketCount`: for an assistant proposal the MCP server reads it from the database before signing (replacing any value the assistant sent, and refusing the proposal if the customer cannot be read), and the web dialog sends the count it shows. Unless exactly that many tickets are archived, `customer.archive` is refused with `CONFLICT` (issue path `expectedTicketCount`) and nothing is archived (#144). Archiving a ticket this way goes through one shared `archiveTicket`: its lines are archived and the occupancy they hold is released, so no room stays blocked. The customer's own packages (items with its `customerId`) are archived with it (needs `item:write`). `item.archive` and `setup.archive` are refused (`CONFLICT`) while an active program item uses them.
+> `customer.*` and `contact.*` (list, get, create, update, archive; resources `customer` and `contact`). The type and, for a contact, the customer are set on create and cannot be changed. A customer cannot be archived while it has active contacts or active price lists (`CONFLICT`; archive the price lists first), and a contact can only be created at an active customer. Every ticket of the customer that is not archived also blocks archiving it, whatever its phase, terminal phases included (`CONFLICT` naming the number of tickets, issue path `archiveTickets`). With `archiveTickets: true` (needs `ticket:write` as well) `customer.archive` archives those tickets and the customer in one transaction, with one audit row per ticket plus the customer; the approval text names the number of tickets. That number is bound to the input as `expectedTicketCount`: for an assistant proposal the MCP server reads it from the database before signing (replacing any value the assistant sent, and refusing the proposal if the customer cannot be read), and the web dialog sends the count it shows. Unless exactly that many tickets are archived, `customer.archive` is refused with `CONFLICT` (issue path `expectedTicketCount`) and nothing is archived (#144). Archiving a ticket this way goes through one shared `archiveTicket`: its lines are archived and the occupancy they hold is released, so no room stays blocked. The customer's own packages (items with its `customerId`) are archived with it (needs `item:write`). `item.archive` and `setup.archive` are refused (`CONFLICT`) while an active line uses them.
 
 ### Ticket ★
 
@@ -372,7 +372,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `N:1` Customer (organization) sends this
 - `N:1` Contact is contact for this
 - `N:1` is in → TicketPhase
-- `1:N` has → Quote, ProgramItem (lines), Requirement, Sheet, Payment, Deposit, Invoice
+- `1:N` has → Quote, Line, Requirement, Sheet, Payment, Deposit, Invoice
 - `1:N` InboundEmail is a reply on this
 - `1:N` is answered for by → Assignment
 - `N:1` follows → CancellationTerms
@@ -425,14 +425,14 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 ## Lines & program
 
-### ProgramItem (the ticket's line)
+### Line (the ticket's line)
 
 *MVP* · A line on a ticket: a room, a meal, an activity or a break, with its own time and state ([ADR 0044](decisions/0044-line-states-and-the-phase-grid.md)). Created, among other cases, when a composite item is added to the ticket.
 
-> **Target (ADR 0052–0054):** renamed `Line`. Times optional; price, discount and VAT overrides (`null` = inherit); `quantity` `null` = the ticket's headcount; `alternativeGroupId`. `stateId` is set from `LineStateChange`; `heldAt` goes. Holds are written by triggers.
+> **Target (ADR 0052–0054):** times optional; price, discount and VAT overrides (`null` = inherit); `quantity` `null` = the ticket's headcount; `alternativeGroupId`. `stateId` is set from `LineStateChange`; `heldAt` goes. Holds are written by triggers.
 
 **Attributes**
-- name and type (the organization's own, base `PROGRAM_ITEM`) and custom fields
+- name and type (the organization's own, base `LINE`) and custom fields
 - start – end (`startsAt`, `endsAt`; `[start, end)`)
 - item (`itemId`, optional; any active item, e.g. a venue space or a dish; only a `BOOKABLE` item is held)
 - setup (`setupId`, optional; one of the item's setups, requires the item)
@@ -452,26 +452,26 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` requires → Task
 - `1:N` AccessCode opens for this
 
-> Operations (resource `programItem`): `programItem.list|get|create|update|archive` and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followPhase({ lineId })` (clears the override and applies the current phase's grid cell). A new line starts in the grid cell of the ticket's phase for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `ticket.changePhase` moves the lines that are not overridden to the target phase's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A terminal phase moves every line to its type's released state. Who answers for a program item comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = programItem`). An overlap with a hard hold, setup time or block is refused (`CONFLICT`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change; `archive` releases it. Every change is audited.
+> Operations (resource `line`): `line.list|get|create|update|archive` and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followPhase({ lineId })` (clears the override and applies the current phase's grid cell). A new line starts in the grid cell of the ticket's phase for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `ticket.changePhase` moves the lines that are not overridden to the target phase's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A terminal phase moves every line to its type's released state. Who answers for a line comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = line`). An overlap with a hard hold, setup time or block is refused (`CONFLICT`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change; `archive` releases it. Every change is audited.
 
 ### Requirement ★ (`Requirement`)
 
-*MVP* · A count per vocabulary value on a ticket or a program item, e.g. Gluten × 3 or Wheelchair × 2. Never tied to a person. There is no personal data about individual guests ([ADR 0021](decisions/0021-configurable-items.md)).
+*MVP* · A count per vocabulary value on a ticket or a line, e.g. Gluten × 3 or Wheelchair × 2. Never tied to a person. There is no personal data about individual guests ([ADR 0021](decisions/0021-configurable-items.md)).
 
 **Attributes**
-- ticket (`ticketId`) and optionally one of its program items (`programItemId`; null = the whole ticket)
+- ticket (`ticketId`) and optionally one of its lines (`lineId`; null = the whole ticket)
 - vocabulary value (`vocabularyValueId`; an active value of an active list in the organization)
-- count (`quantity`, 0 or more; 0 on a program item means "none here")
+- count (`quantity`, 0 or more; 0 on a line means "none here")
 - type (the organization's own, base `REQUIREMENT`) and custom fields (e.g. severity); a requirement type's LINK fields never point to a customer or contact type
 
 **Relations**
 - `N:1` Ticket has this
-- `N:0..1` ProgramItem adjusts with this
+- `N:0..1` Line adjusts with this
 - `N:1` refers to → VocabularyValue
 
-> Operations (resource `requirement`): `requirement.list|get|create|update|archive` ([ADR 0021](decisions/0021-configurable-items.md)). One active count per vocabulary value and level (the ticket, or one program item); a second is refused (`CONFLICT`). `update` changes only the count and fields. The program item must belong to the ticket (`VALIDATION`). A vocabulary value, or a whole vocabulary, cannot be archived while a requirement counts it (`CONFLICT`). Every change is audited.
+> Operations (resource `requirement`): `requirement.list|get|create|update|archive` ([ADR 0021](decisions/0021-configurable-items.md)). One active count per vocabulary value and level (the ticket, or one line); a second is refused (`CONFLICT`). `update` changes only the count and fields. The line must belong to the ticket (`VALIDATION`). A vocabulary value, or a whole vocabulary, cannot be archived while a requirement counts it (`CONFLICT`). Every change is audited.
 
-> ★ A row on the program item replaces the ticket's count there, value by value; the core helper `effectiveRequirements` (`resolveEffective`) computes the effective count per program item. Matching: the requirement is compared with the items on the ticket that are tagged with the same vocabulary value. A hit on a required component without an alternative is flagged and blocks the sheet. `item.resolve` computes inherited tags and is the only place for that.
+> ★ A row on the line replaces the ticket's count there, value by value; the core helper `effectiveRequirements` (`resolveEffective`) computes the effective count per line. Matching: the requirement is compared with the items on the ticket that are tagged with the same vocabulary value. A hit on a required component without an alternative is flagged and blocks the sheet. `item.resolve` computes inherited tags and is the only place for that.
 
 ### CancellationTerms
 
@@ -519,7 +519,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - status (active / archived = released; released rows no longer block)
 
 **Relations**
-- `1:1` ProgramItem reserves this
+- `1:1` Line reserves this
 - `N:1` Item has this
 
 > ★ Active rows of all types except soft holds may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`; the other types follow their source. Changeover time is added as `SETUP` right before the start, based on the setup's changeover time (`changeoverMinutes`).
@@ -556,7 +556,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` OrderLine refers to this
 - `1:N` PriceListItem refers to this
 
-> Room = item with `BOOKABLE` + `SETUPS` (often also `PRICED`). A behavior cannot be turned off on the type as long as any active item of the type has data for it (`CONFLICT`). Inherited tags (`item.resolve`, the only place they are computed): the item and required components at every level give "contains"; optional components and choice-group options give "may contain" per alternative. An option in a group that must pick all of its options has no alternative and counts as required. On expansion onto a ticket: core creates program items, occupancy and order lines, which copy name, price, VAT and tags (snapshot).
+> Room = item with `BOOKABLE` + `SETUPS` (often also `PRICED`). A behavior cannot be turned off on the type as long as any active item of the type has data for it (`CONFLICT`). Inherited tags (`item.resolve`, the only place they are computed): the item and required components at every level give "contains"; optional components and choice-group options give "may contain" per alternative. An option in a group that must pick all of its options has no alternative and counts as required. On expansion onto a ticket: core creates lines, occupancy and order lines, which copy name, price, VAT and tags (snapshot).
 
 ### ItemComponent (`ItemComponent`)
 
@@ -603,11 +603,11 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - ticket
 - sheet definition
 - version (1, 2, 3, … per ticket and sheet definition)
-- content: a snapshot of the ticket's rows (`TICKET`, `ITEM`, `REQUIREMENT`) as the definition includes them: the ticket itself, the program items that use an item of an included type with the included fields, and the counts of the included lists (never names)
+- content: a snapshot of the ticket's rows (`TICKET`, `ITEM`, `REQUIREMENT`) as the definition includes them: the ticket itself, the lines that use an item of an included type with the included fields, and the counts of the included lists (never names)
 - changes (★): the rows added, changed or removed since the last sent version (`baseVersion`)
 - receiving responsibility (a copy of the definition's responsibility at generation; the sheet goes to that responsibility's assignee and followers on the ticket)
 - sent (`sentAt`, `sentBy`)
-- matches: the counts that hit the ticket's items (program items whose item is of an included type): the count, the list value, the program item, the carrying items and `CONTAINS` (carried by the item or a mandatory part) or `MAY_CONTAIN` (only optional parts or choice options)
+- matches: the counts that hit the ticket's items (lines whose item is of an included type): the count, the list value, the line, the carrying items and `CONTAINS` (carried by the item or a mandatory part) or `MAY_CONTAIN` (only optional parts or choice options)
 - blocked (yes/no): true when a match is `CONTAINS`
 
 **Relations**
@@ -668,13 +668,13 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - VAT (`vatRatePercent`, the item's rate, else its venue's default)
 - tags (the list values the item contains per `item.resolve`, copied)
 - total excl. VAT and VAT (`totalExclVatMinor`, `vatMinor`)
-- program item – *later*
+- line – *later*
 - status (quoted / confirmed / delivered) – *later*
 - invoiced (yes/no) – *later*
 
 **Relations**
 - `N:1` Quote contains this
-- `N:1` ProgramItem is charged via this
+- `N:1` Line is charged via this
 - `N:1` refers to → Item
 - `N:1` Invoice invoices this
 
@@ -765,7 +765,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 | Role | Can |
 |---|---|
 | `viewer` | read everything |
-| `member` | read everything, write operational data (customers, tickets, quotes, program items, requirements, payments, sheets) |
+| `member` | read everything, write operational data (customers, tickets, quotes, lines, requirements, payments, sheets) |
 | `admin` | everything a member can, plus configuration (types, fields, lists, setups, statuses, responsibilities, sheet definitions, price lists), members and API keys |
 | `owner` | everything, incl. other owners and the organization itself |
 
@@ -851,7 +851,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 *Phase 2* · Set up room, AV test, cleaning.
 
 **Attributes**
-- linked program item
+- linked line
 - type
 - responsible
 - deadline
@@ -859,7 +859,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 **Relations**
 - `N:1` User is responsible for this
-- `N:1` ProgramItem requires this
+- `N:1` Line requires this
 
 ### InboundEmail (`InboundEmail`)
 
@@ -955,7 +955,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Attributes**
 - item (with the `BOOKABLE` behavior)
 - device
-- displayed program items
+- displayed lines
 
 **Relations**
 - `N:1` is placed at → Item
@@ -965,12 +965,12 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 *Phase 3* · A digital lock tied to the booked time.
 
 **Attributes**
-- program item / item
+- line / item
 - code or mobile key
 - valid from – to
 
 **Relations**
-- `N:1` opens for → ProgramItem
+- `N:1` opens for → Line
 
 ## Glossary
 
@@ -999,7 +999,7 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | TicketTemplate | Färdigt ärende |
 | Quote | Offert |
 | Agreement | Avtal |
-| ProgramItem | Programpunkt |
+| Line | Programpunkt |
 | Requirement | Behov |
 | Sheet | Blad |
 | SheetDefinition | Blad-definition |

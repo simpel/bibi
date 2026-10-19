@@ -46,7 +46,7 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 ## Roles and permissions (ADR 0034)
 - Fixed roles `viewer < member < admin < owner`, no `organizationRole` table and no `dynamicAccessControl`. `ROLE_PERMISSIONS` (`roles/role-permissions.ts`) is the only role → permission map:
   - `viewer`: `read` on every resource, plus `write` on its own `conversation` and personal `skill` (the assistant).
-  - `member`: viewer + `write` on operational data (`customer`, `contact`, `ticket`, `programItem`, `occupancy`, `requirement`, `payment`, `sheet`).
+  - `member`: viewer + `write` on operational data (`customer`, `contact`, `ticket`, `line`, `occupancy`, `requirement`, `payment`, `sheet`).
   - `admin` and `owner`: `admin` on everything. What only an owner may do (change or remove owners, keep the last owner, the organization itself) is checked by core `member.*` (rank in `FIXED_ROLES`) and Better Auth's owner statements.
 - Better Auth roles (`orgRoles` in `permissions.ts`): only `owner` keeps Better Auth statements; `admin`/`member`/`viewer` have none. `beforeAddMember` refuses anything but a fixed role.
 - Better Auth's own role paths are closed: `owner` has no `ac`, and `updateMemberRole` is blocked with `organizationHooks.beforeUpdateMemberRole` (the creator would otherwise bypass the check). Roles are assigned via `member.assignRole`.

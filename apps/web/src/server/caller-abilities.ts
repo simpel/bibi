@@ -21,7 +21,7 @@ export type CallerAbilities = {
   priceListWrite: boolean;
   occupancyWrite: boolean;
   ticketWrite: boolean;
-  programItemWrite: boolean;
+  lineWrite: boolean;
   assignmentWrite: boolean;
   requirementWrite: boolean;
   quoteWrite: boolean;
@@ -47,7 +47,7 @@ const NONE: CallerAbilities = {
   priceListWrite: false,
   occupancyWrite: false,
   ticketWrite: false,
-  programItemWrite: false,
+  lineWrite: false,
   assignmentWrite: false,
   requirementWrite: false,
   quoteWrite: false,
@@ -82,7 +82,7 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     priceListWrite: hasPermission({ permissions, permission: "priceList:write" }),
     occupancyWrite: hasPermission({ permissions, permission: "occupancy:write" }),
     ticketWrite: hasPermission({ permissions, permission: "ticket:write" }),
-    programItemWrite: hasPermission({ permissions, permission: "programItem:write" }),
+    lineWrite: hasPermission({ permissions, permission: "line:write" }),
     assignmentWrite: hasPermission({ permissions, permission: "assignment:write" }),
     requirementWrite: hasPermission({ permissions, permission: "requirement:write" }),
     quoteWrite: hasPermission({ permissions, permission: "quote:write" }),

@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { releaseLinesOfTicket } from "../line/release-for-ticket";
 import { releaseOccupancyBySource } from "../occupancy/release-by-source";
-import { releaseProgramItemsOfTicket } from "../program-item/release-for-ticket";
 import type { TicketDto } from "./schema";
 
 /** `Occupancy.sourceType` of the rows a ticket holds; `sourceId` is the ticket id. */
@@ -42,7 +42,7 @@ export async function applyTerminal({
 }: CancellationInput): Promise<Result<true>> {
   const released = await releaseTicketOccupancy({ context, ticketId: ticket.id });
   if (!released.ok) return released;
-  const program = await releaseProgramItemsOfTicket({ context, ticketId: ticket.id });
+  const program = await releaseLinesOfTicket({ context, ticketId: ticket.id });
   if (!program.ok) return program;
   for (const hook of CANCELLATION_HOOKS) {
     const result = await hook({ context, ticket, reason });

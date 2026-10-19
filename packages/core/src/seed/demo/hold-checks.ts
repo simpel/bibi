@@ -18,7 +18,7 @@ const SELECT = {
 
 /** The seeded lines by name, in data order, with their state. */
 async function loadLines({ context, lines }: { context: ExecuteContext; lines: Expected[] }) {
-  const rows = await context.db.programItem.findMany({
+  const rows = await context.db.line.findMany({
     where: { name: { in: lines.map((line) => line.name) } },
     select: SELECT,
   });

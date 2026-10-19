@@ -29,9 +29,9 @@ export function RequirementTargetFields({ form, data, typeOf }: RequirementTarge
       />
       <OptionSelectField
         control={form.control}
-        name="programItemId"
-        label={t("fields.programItem")}
-        options={data.programItems}
+        name="lineId"
+        label={t("fields.line")}
+        options={data.lines}
         noneLabel={t("wholeTicket")}
       />
       <OptionSelectField

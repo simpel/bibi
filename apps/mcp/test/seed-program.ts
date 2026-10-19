@@ -8,7 +8,7 @@ export type SeedProgramInput = { client: Client };
 export type SeededProgram = {
   ticketId: string;
   itemId: string;
-  programItemId: string;
+  lineId: string;
   programTypeId: string;
   requirementTypeId: string;
   valueId: string;
@@ -27,7 +27,7 @@ async function type({ client, ...args }: { client: Client; base: string; name: s
   return ok({ client, name: "entityType_create", args });
 }
 
-/** A ticket with a bookable item, a program item, and a list value to count requirements of. */
+/** A ticket with a bookable item, a line, and a list value to count requirements of. */
 export async function seedProgram({ client }: SeedProgramInput): Promise<SeededProgram> {
   const { id: ticketId } = await seedTicket({ client });
   const roomType = await ok({
@@ -40,11 +40,11 @@ export async function seedProgram({ client }: SeedProgramInput): Promise<SeededP
     name: "item_create",
     args: { entityTypeId: roomType.id, name: "Secret hall" },
   });
-  const programType = await type({ client, base: "PROGRAM_ITEM", name: "Secret session" });
+  const programType = await type({ client, base: "LINE", name: "Secret session" });
   const requirementType = await type({ client, base: "REQUIREMENT", name: "Secret need" });
-  const programItem = await ok({
+  const line = await ok({
     client,
-    name: "programItem_create",
+    name: "line_create",
     args: {
       ticketId,
       entityTypeId: programType.id,
@@ -62,7 +62,7 @@ export async function seedProgram({ client }: SeedProgramInput): Promise<SeededP
   return {
     ticketId,
     itemId: item.id,
-    programItemId: programItem.id,
+    lineId: line.id,
     programTypeId: programType.id,
     requirementTypeId: requirementType.id,
     valueId: list.values[0].id,

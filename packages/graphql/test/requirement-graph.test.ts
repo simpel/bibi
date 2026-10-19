@@ -8,7 +8,7 @@ const TICKET = `mutation($i: TicketCreateInput!) { ticketCreate(input: $i) { id 
 const LIST = `mutation($i: VocabularyCreateInput!) { vocabularyCreate(input: $i) { values { id } } }`;
 const ADD = `mutation($i: RequirementCreateInput!) { requirementCreate(input: $i) { id } }`;
 const READ =
-  "query($id: String!) { ticket(id: $id) { requirements { quantity programItemId vocabularyValue { name } } } }";
+  "query($id: String!) { ticket(id: $id) { requirements { quantity lineId vocabularyValue { name } } } }";
 
 type Gql = ReturnType<typeof createClient>;
 
@@ -55,7 +55,7 @@ describe("requirement graph (ADR 0021)", () => {
     const res = await gql({ query: READ, variables: { id: add.ticketId } });
     expect(res.body.errors).toBeUndefined();
     expect(res.body.data.ticket.requirements).toEqual([
-      { quantity: 3, programItemId: null, vocabularyValue: { name: "Gluten" } },
+      { quantity: 3, lineId: null, vocabularyValue: { name: "Gluten" } },
     ]);
   });
 });

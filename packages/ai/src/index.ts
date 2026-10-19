@@ -71,6 +71,7 @@ export type { AssignmentWire } from "./ui-contract/assignment-entries";
 export type { InboundEmailWire } from "./ui-contract/inbound-email-entries";
 export type { ItemResolutionWire } from "./ui-contract/item-resolution-entries";
 export type { ItemStateWire } from "./ui-contract/item-state-entries";
+export type { LineWire } from "./ui-contract/line-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire } from "./ui-contract/payment-entries";
 export type { PhaseGridCellWire } from "./ui-contract/phase-grid-entries";
@@ -80,7 +81,6 @@ export type {
   PipelineSetupDraftWire,
 } from "./ui-contract/pipeline-setup-entries";
 export type { PriceListWire } from "./ui-contract/price-list-entries";
-export type { ProgramItemWire } from "./ui-contract/program-item-entries";
 export type { QuoteWire } from "./ui-contract/quote-entries";
 export type { RequirementWire } from "./ui-contract/requirement-entries";
 export { type ResolveToolUiInput, resolveToolUi } from "./ui-contract/resolve-tool-ui";

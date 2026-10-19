@@ -7,10 +7,7 @@ export const RequirementSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   ticketId: z.string(),
-  programItemId: z
-    .string()
-    .nullable()
-    .describe("The program item it applies to; null = the whole ticket"),
+  lineId: z.string().nullable().describe("The line it applies to; null = the whole ticket"),
   entityTypeId: z.string(),
   vocabularyValueId: z.string().describe("The list value counted, e.g. Gluten"),
   quantity: z.number().int(),
@@ -27,17 +24,17 @@ const QuantitySchema = z
   .min(0)
   .max(100_000)
   .describe(
-    "How many, e.g. 3 guests. On a program item it replaces the ticket's count for the value " +
+    "How many, e.g. 3 guests. On a line it replaces the ticket's count for the value " +
       "there; 0 means none there.",
   );
 
 export const RequirementCreateInputSchema = z.object({
   ticketId: z.string().min(1).describe("Id of the ticket (ticket.list)"),
-  programItemId: z
+  lineId: z
     .string()
     .min(1)
     .nullish()
-    .describe("Id of one of the ticket's program items (programItem.list); omit for the ticket"),
+    .describe("Id of one of the ticket's lines (line.list); omit for the ticket"),
   entityTypeId: z
     .string()
     .min(1)
@@ -62,7 +59,7 @@ export const RequirementIdInputSchema = z.object({ id: z.string().min(1) });
 
 export const RequirementListInputSchema = z.object({
   ticketId: z.string().optional().describe("Only requirements on this ticket (both levels)"),
-  programItemId: z.string().optional().describe("Only requirements on this program item"),
+  lineId: z.string().optional().describe("Only requirements on this line"),
   vocabularyValueId: z.string().optional().describe("Only requirements for this list value"),
   ...PageInputShape,
 });

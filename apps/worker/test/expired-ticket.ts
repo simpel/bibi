@@ -5,7 +5,7 @@ import {
   createExecuteContext,
   createItem,
   createItemState,
-  createProgramItem,
+  createLine,
   createTicket,
   type ExecuteContext,
   execute,
@@ -70,7 +70,7 @@ export async function expiredTicket() {
   const holdsUntil = new Date(Date.now() - 60_000);
   const ticketInput = { entityTypeId: ticketType.id, customerId: customer.id, holdsUntil };
   const ticket = await run({ context, operation: createTicket, input: ticketInput });
-  const lineType = await typeOf({ base: "PROGRAM_ITEM" });
+  const lineType = await typeOf({ base: "LINE" });
   const item = await run({
     context,
     operation: createItem,
@@ -78,7 +78,7 @@ export async function expiredTicket() {
   });
   const line = await run({
     context,
-    operation: createProgramItem,
+    operation: createLine,
     input: {
       ...{ ticketId: ticket.id, entityTypeId: lineType.id, itemId: item.id, name: "Session" },
       ...{ startsAt: "2026-12-01T08:00:00Z", endsAt: "2026-12-01T12:00:00Z" },

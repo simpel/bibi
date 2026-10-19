@@ -33,8 +33,7 @@ function useRequirementColumns(): ColumnDef<Row>[] {
       {
         id: "where",
         header: t("columns.where"),
-        accessorFn: (requirement) =>
-          requirement.programItemId ? t("onProgramItem") : t("onTicket"),
+        accessorFn: (requirement) => (requirement.lineId ? t("onLine") : t("onTicket")),
       },
     ],
     [t],

@@ -1,6 +1,6 @@
 import { byId, type ParityEntity, tool } from "./parity-entities";
 
-/** A requirement (ADR 0021) counting the parity list value on the parity program item. */
+/** A requirement (ADR 0021) counting the parity list value on the parity line. */
 export const requirement = (): ParityEntity => ({
   ...byId({
     name: "requirement",
@@ -20,7 +20,7 @@ export const requirement = (): ParityEntity => ({
       name: "requirement_create",
       args: {
         ticketId: made.ticket.id,
-        programItemId: made.programItem.id,
+        lineId: made.line.id,
         entityTypeId: type.id,
         vocabularyValueId: made.vocabularyValue.id,
         quantity: 3,

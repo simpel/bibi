@@ -11,7 +11,7 @@ import {
 } from "../src/index";
 import { unwrap } from "./helpers";
 import { createTestItem } from "./item-helpers";
-import { addProgramItem } from "./program-item-helpers";
+import { createTestLine } from "./line-helpers";
 import { addRequirement, requirementSetup } from "./requirement-helpers";
 import { memberUser } from "./ticket-helpers";
 import { phaseByName } from "./ticket-phase-helpers";
@@ -57,7 +57,7 @@ async function createKitchenOrder({ context, entityTypeId, fieldId, listId }: De
 }
 
 /**
- * A tentative ticket with the room Älvsalen on a program item 14–15, 5 gluten-free guests on
+ * A tentative ticket with the room Älvsalen on a line 14–15, 5 gluten-free guests on
  * the ticket, and the sheet definition "Kitchen order" that includes both.
  */
 export async function sheetSetup() {
@@ -65,7 +65,7 @@ export async function sheetSetup() {
   const { context, ticket, morning, type, gluten, list } = setup;
   const { roomType, floor, room } = await createLounge({ context });
   const held = unwrap({
-    result: await addProgramItem({
+    result: await createTestLine({
       context,
       ticketId: ticket.id,
       entityTypeId: morning.entityTypeId,

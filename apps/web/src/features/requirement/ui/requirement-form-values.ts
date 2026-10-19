@@ -5,7 +5,7 @@ import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fie
 /** Raw values of the requirement form: inputs are strings, `NONE` = the whole ticket. */
 export type RequirementFormValues = {
   entityTypeId: string;
-  programItemId: string;
+  lineId: string;
   vocabularyValueId: string;
   quantity: string;
   fields: Record<string, RawFieldValue>;
@@ -22,7 +22,7 @@ export function requirementFormDefaults({
 }: RequirementDefaultsInput): RequirementFormValues {
   return {
     entityTypeId: type?.id ?? "",
-    programItemId: requirement?.programItemId ?? NONE,
+    lineId: requirement?.lineId ?? NONE,
     vocabularyValueId: requirement?.vocabularyValueId ?? "",
     quantity: requirement ? String(requirement.quantity) : "",
     fields: rawFields({ type, stored: requirement?.fields ?? {} }),

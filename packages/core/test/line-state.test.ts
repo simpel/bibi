@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { createEntityType, execute, listProgramItems, updateItemState } from "../src/index";
+import { createEntityType, execute, listLines, updateItemState } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { createTestItem } from "./item-helpers";
 import { addState, roomStates, toState } from "./item-state-helpers";
-import { activeOccupancies, addProgramItem, programSetup } from "./program-item-helpers";
+import { activeOccupancies, createTestLine, programSetup } from "./line-helpers";
 
 /** A ticket with a room of the bookable template (ADR 0044) and a base for its lines. */
 async function setup() {
@@ -19,13 +19,13 @@ const holdsOf = async ({ ...input }: Parameters<typeof activeOccupancies>[0]) =>
 describe("line states and derived holds (ADR 0044)", () => {
   it("lets soft holds overlap, oldest first, and lets only one line hold hard", async () => {
     const { context, room, states, base } = await setup();
-    const first = unwrap({ result: await addProgramItem({ ...base, from: 9, to: 12 }) });
-    const second = unwrap({ result: await addProgramItem({ ...base, from: 9, to: 12 }) });
+    const first = unwrap({ result: await createTestLine({ ...base, from: 9, to: 12 }) });
+    const second = unwrap({ result: await createTestLine({ ...base, from: 9, to: 12 }) });
     expect([first.stateId, second.stateId]).toEqual([states.prebooked.id, states.prebooked.id]);
     expect(await holdsOf({ context, sourceId: second.id })).toEqual(["HOLD:SOFT"]);
     const input = { itemId: room.id, limit: 50 };
     const listed = unwrap({
-      result: await execute({ operation: listProgramItems, input, context }),
+      result: await execute({ operation: listLines, input, context }),
     });
     expect(listed.items.map((line) => line.id)).toEqual([first.id, second.id]);
     const booked = unwrap({
@@ -40,7 +40,7 @@ describe("line states and derived holds (ADR 0044)", () => {
 
   it("follows the type's transitions and never leaves a released state", async () => {
     const { context, states, base } = await setup();
-    const line = unwrap({ result: await addProgramItem({ ...base, from: 9, to: 10 }) });
+    const line = unwrap({ result: await createTestLine({ ...base, from: 9, to: 10 }) });
     const released = unwrap({
       result: await toState({ context, lineId: line.id, stateId: states.released.id }),
     });
@@ -56,11 +56,11 @@ describe("line states and derived holds (ADR 0044)", () => {
     const other = unwrap({
       result: await addState({ context, entityTypeId: dish.id, name: "Ordered" }),
     });
-    const line = unwrap({ result: await addProgramItem({ ...base, from: 9, to: 10 }) });
+    const line = unwrap({ result: await createTestLine({ ...base, from: 9, to: 10 }) });
     const wrong = await toState({ context, lineId: line.id, stateId: other.id });
     expect(errorCode({ result: wrong })).toBe("VALIDATION");
     const { itemId: _item, ...free } = base;
-    const bare = unwrap({ result: await addProgramItem({ ...free, from: 9, to: 10 }) });
+    const bare = unwrap({ result: await createTestLine({ ...free, from: 9, to: 10 }) });
     expect(bare.stateId).toBeNull();
     const none = await toState({ context, lineId: bare.id, stateId: other.id });
     expect(errorCode({ result: none })).toBe("VALIDATION");
@@ -77,7 +77,7 @@ describe("line states and derived holds (ADR 0044)", () => {
     const locked = await add({ name: "Locked" });
     const food = await createTestItem({ context, entityTypeId: dish.id, name: "Fish stew" });
     const line = unwrap({
-      result: await addProgramItem({ ...base, itemId: food.id, from: 12, to: 13 }),
+      result: await createTestLine({ ...base, itemId: food.id, from: 12, to: 13 }),
     });
     expect(line.stateId).toBe(estimated.id);
     for (const state of [ordered, locked]) {
@@ -91,8 +91,8 @@ describe("line states and derived holds (ADR 0044)", () => {
 
   it("derives the holds again when a state's hold changes, all or nothing", async () => {
     const { context, states, base } = await setup();
-    const first = unwrap({ result: await addProgramItem({ ...base, from: 9, to: 12 }) });
-    unwrap({ result: await addProgramItem({ ...base, from: 10, to: 11 }) });
+    const first = unwrap({ result: await createTestLine({ ...base, from: 9, to: 12 }) });
+    unwrap({ result: await createTestLine({ ...base, from: 10, to: 11 }) });
     const hard = { id: states.prebooked.id, hold: "HARD" as const };
     const clash = await execute({ operation: updateItemState, input: hard, context });
     expect(errorCode({ result: clash })).toBe("CONFLICT");

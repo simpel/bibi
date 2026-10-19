@@ -65,11 +65,11 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "inboundEmail.list", route: "/tickets/[id]" },
   { operation: "payment.list", route: "/tickets/[id]" },
   { operation: "payment.create", route: "/tickets/[id]" },
-  // The run schedule (program items) is listed and edited on the ticket page.
-  { operation: "programItem.list", route: "/tickets/[id]" },
-  { operation: "programItem.create", route: "/tickets/[id]" },
-  { operation: "programItem.update", route: "/tickets/[id]" },
-  { operation: "programItem.archive", route: "/tickets/[id]" },
+  // The run schedule (lines) is listed and edited on the ticket page.
+  { operation: "line.list", route: "/tickets/[id]" },
+  { operation: "line.create", route: "/tickets/[id]" },
+  { operation: "line.update", route: "/tickets/[id]" },
+  { operation: "line.archive", route: "/tickets/[id]" },
   // A line's state is changed (override) or set to follow the phase from its row (ADR 0044).
   { operation: "line.changeState", route: "/tickets/[id]" },
   { operation: "line.followPhase", route: "/tickets/[id]" },

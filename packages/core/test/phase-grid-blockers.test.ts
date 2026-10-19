@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { execute, setItemStateTransitions } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
+import { activeOccupancies } from "./line-helpers";
 import { addLine, type GridSetup, gridSetup, lineNow, setCell } from "./phase-grid-helpers";
-import { activeOccupancies } from "./program-item-helpers";
 import { moveToPhase } from "./ticket-helpers";
 
 type Blocker = "collision" | "transition" | "assignee";

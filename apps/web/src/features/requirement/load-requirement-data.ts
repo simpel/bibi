@@ -1,16 +1,16 @@
 import "server-only";
-import type { ProgramItemDto, Result } from "@okazi/core";
+import type { LineDto, Result } from "@okazi/core";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import type { RequirementFormData } from "./ui/requirement-form-data";
 
-export type LoadRequirementDataInput = { programItems: ProgramItemDto[] };
+export type LoadRequirementDataInput = { lines: LineDto[] };
 
 /**
  * Requirement types and lists (own fields and the values to count, one page each) and the
- * ticket's program items a count can apply to.
+ * ticket's lines a count can apply to.
  */
 export async function loadRequirementData({
-  programItems,
+  lines,
 }: LoadRequirementDataInput): Promise<Result<RequirementFormData>> {
   const typed = await loadTypedFormData({ base: "REQUIREMENT" });
   if (!typed.ok) return typed;
@@ -22,7 +22,7 @@ export async function loadRequirementData({
     value: {
       ...typed.value,
       values,
-      programItems: programItems.map(({ id, name }) => ({ id, name })),
+      lines: lines.map(({ id, name }) => ({ id, name })),
     },
   };
 }

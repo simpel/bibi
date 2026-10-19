@@ -8,7 +8,7 @@ import {
   type ItemChoiceGroupInput,
 } from "../src/index";
 import { unwrap } from "./helpers";
-import { addProgramItem } from "./program-item-helpers";
+import { createTestLine } from "./line-helpers";
 import { addRequirement, requirementSetup } from "./requirement-helpers";
 
 type Part = { itemId: string; required?: boolean };
@@ -84,11 +84,11 @@ export type MatchSetup = Awaited<ReturnType<typeof matchSetup>>;
 
 export type ServeInput = { setup: MatchSetup; menu: keyof MatchSetup["menus"] };
 
-/** Serves the menu on a program item (16–17) of the ticket. */
+/** Serves the menu on a line (16–17) of the ticket. */
 export async function serve({ setup, menu }: ServeInput) {
   const { context, ticket, morning, menus } = setup;
   return unwrap({
-    result: await addProgramItem({
+    result: await createTestLine({
       context,
       ticketId: ticket.id,
       entityTypeId: morning.entityTypeId,

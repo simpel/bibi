@@ -1,17 +1,17 @@
 import type { ItemResolution } from "../item/resolve-schema";
-import type { EffectiveForProgramItem } from "../requirement/effective";
+import type { EffectiveForLine } from "../requirement/effective";
 import type { SheetMatch } from "./schema";
 
-export type MatchedProgramItem = {
+export type MatchedLine = {
   id: string;
   name: string;
-  /** The program item's item with its inherited tags (`item.resolve`). */
+  /** The line's item with its inherited tags (`item.resolve`). */
   resolution: ItemResolution;
 };
 
 export type MatchRequirementsInput = {
-  programItems: readonly MatchedProgramItem[];
-  effective: readonly EffectiveForProgramItem[];
+  lines: readonly MatchedLine[];
+  effective: readonly EffectiveForLine[];
   /** Only counts of these lists are matched (the sheet definition's lists). */
   vocabularyIds: readonly string[];
 };
@@ -29,32 +29,32 @@ function matchOf({ resolution, valueId }: KindInput) {
 }
 
 /**
- * Compares the effective counts of each program item with the tags of its item (ADR 0021): a
+ * Compares the effective counts of each line with the tags of its item (ADR 0021): a
  * count on a value the item contains blocks the sheet, one on a value it may contain is flagged.
  * A count of 0 says "none here" and never matches. Blocking matches come first. Pure.
  */
 export function matchRequirements({
-  programItems,
+  lines,
   effective,
   vocabularyIds,
 }: MatchRequirementsInput): SheetMatch[] {
   const matches: SheetMatch[] = [];
-  for (const programItem of programItems) {
-    const counts = effective.find((row) => row.programItemId === programItem.id)?.counts ?? [];
+  for (const line of lines) {
+    const counts = effective.find((row) => row.lineId === line.id)?.counts ?? [];
     for (const { vocabularyValueId, quantity } of counts) {
-      const found = matchOf({ resolution: programItem.resolution, valueId: vocabularyValueId });
+      const found = matchOf({ resolution: line.resolution, valueId: vocabularyValueId });
       if (quantity <= 0 || !found || !vocabularyIds.includes(found.tag.vocabularyId)) continue;
       matches.push({
-        programItemKey: programItem.id,
-        programItemName: programItem.name,
-        itemId: programItem.resolution.itemId,
-        itemName: programItem.resolution.name,
+        lineKey: line.id,
+        lineName: line.name,
+        itemId: line.resolution.itemId,
+        itemName: line.resolution.name,
         vocabularyValueId,
         name: found.tag.name,
         quantity,
         kind: found.kind,
         blocking: found.kind === "CONTAINS",
-        carriers: carrierNames({ resolution: programItem.resolution, ids: found.tag.itemIds }),
+        carriers: carrierNames({ resolution: line.resolution, ids: found.tag.itemIds }),
       });
     }
   }
