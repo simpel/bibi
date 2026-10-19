@@ -16,6 +16,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Assignment",
   "AssignmentFollower",
   "Record",
+  "RecordLink",
   "Item",
   "ItemSetup",
   "ItemComponent",

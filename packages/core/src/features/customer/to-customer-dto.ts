@@ -1,6 +1,6 @@
 import type { Customer } from "@okazi/db";
 import type { OperationContext } from "../../operations/types";
-import { asFieldValues } from "../field-definition/field-usage";
+import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";
 import type { CustomerDto } from "./schema";
 
 /**
@@ -9,17 +9,18 @@ import type { CustomerDto } from "./schema";
  */
 export const CUSTOMER_INCLUDE = {
   _count: { select: { tickets: { where: { status: "ACTIVE" as const } } } },
+  ...WITH_RECORD_LINKS,
 };
 
-export type CustomerRow = Customer & { _count: { tickets: number } };
+export type CustomerRow = Customer & WithRecordLinks & { _count: { tickets: number } };
 
 export type ToCustomerDtoInput = { row: CustomerRow };
 
 export const toCustomerDto = ({ row }: ToCustomerDtoInput): CustomerDto => {
-  const { _count, ...customer } = row;
+  const { _count, record: _record, ...customer } = row;
   return {
     ...customer,
-    fields: asFieldValues({ value: row.fields }),
+    fields: recordFields({ row }),
     ticketCount: _count.tickets,
   };
 };

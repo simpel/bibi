@@ -9,7 +9,7 @@ import {
   RequirementListOutputSchema,
   RequirementSchema,
 } from "./schema";
-import { loadRequirement, toRequirementDto } from "./to-requirement-dto";
+import { loadRequirement, REQUIREMENT_INCLUDE, toRequirementDto } from "./to-requirement-dto";
 import { archiveRequirement, createRequirement, updateRequirement } from "./write-operations";
 
 export const listRequirements = defineOperation({
@@ -31,6 +31,7 @@ export const listRequirements = defineOperation({
       },
       orderBy: [{ createdAt: "asc" }, { id: "asc" }],
       ...pageArgs(input),
+      include: REQUIREMENT_INCLUDE,
     });
     const page = paginate({ rows, limit: input.limit });
     const items = page.items.map((row) => toRequirementDto({ row }));

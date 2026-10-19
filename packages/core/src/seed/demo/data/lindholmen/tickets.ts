@@ -22,7 +22,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   {
     ...{ ref: "L1", customer: hisingen, type: "Conference", day: -21, from: "08:30", to: "17:00" },
     ...{ phase: "Completed", headcount: 40, assignee: "Johan Ek", followers: ["Erik Lund"] },
-    fields: { Purpose: "Kickoff" },
+    fields: { Purpose: "Kickoff", Host: "Mats Olsson" },
   },
   {
     ...{ ref: "L2", customer: kvarnby, type: "Event", day: -10, from: "17:00", to: "23:00" },
@@ -40,7 +40,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
       assignee: "Johan Ek",
       followers: ["Erik Lund", "Maria Holm"],
     },
-    fields: { Purpose: "Strategy days" },
+    fields: { Purpose: "Strategy days", Host: "Eva Sund" },
   },
   {
     ...quoted,

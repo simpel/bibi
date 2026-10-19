@@ -6,6 +6,8 @@ import type { FieldKind } from "./field-kinds";
  * choice field: list value ids for a list, the option strings for inline options.
  */
 export type FieldSpec = {
+  /** The field definition's id; server-side specs carry it (a LINK value is stored by it). */
+  id?: string;
   key: string;
   name: string;
   kind: FieldKind;

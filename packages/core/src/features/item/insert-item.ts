@@ -3,6 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { createRecord } from "../../records/create-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
+import type { CheckedFields } from "../field-definition/split-links";
 import { checkItem } from "./check-item";
 import { planComposition, writeComposition } from "./item-composition";
 import { loadItemType } from "./item-rules";
@@ -22,7 +23,7 @@ type ItemRowInput = {
   data: Omit<ItemCreateInput, "fields" | "setups" | "components" | "choiceGroups"> & {
     customerId: string | null;
   };
-  fields: unknown;
+  fields: CheckedFields;
 };
 
 /** Writes the item's row and its `Record` row (ADR 0056). */
@@ -31,11 +32,11 @@ const insertItemRow = ({ context, data, fields }: ItemRowInput) =>
     context,
     base: "ITEM",
     entityTypeId: data.entityTypeId,
-    fields,
+    ...fields,
     insert: ({ id }) =>
       context.db.item.create({
         data: {
-          ...{ id, ...data, fields: toJson({ value: fields }) ?? {} },
+          ...{ id, ...data, fields: toJson({ value: fields.fields }) ?? {} },
           organizationId: context.organizationId,
         },
       }),
@@ -62,7 +63,7 @@ export async function insertItem({
   const row = await insertItemRow({
     context,
     data: { ...data, entityTypeId, customerId },
-    fields: checked.value ?? {},
+    fields: checked.value ?? { fields: {}, links: [] },
   });
   if (setups) await replaceSetups({ context, itemId: row.id, setups });
   await writeComposition({ context, itemId: row.id, partsChanged: true, composition });

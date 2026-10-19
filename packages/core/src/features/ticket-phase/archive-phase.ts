@@ -5,7 +5,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
 import { clearPhaseCells } from "../phase-grid/cell-lifecycle";
 import { moveTicket } from "../ticket/move-ticket";
-import { toTicketDto } from "../ticket/to-ticket-dto";
+import { TICKET_INCLUDE, toTicketDto } from "../ticket/to-ticket-dto";
 import { checkMinimumConfiguration, serializePhaseChanges } from "./flag-rules";
 import { loadAllTicketPhases, loadTicketPhase, toTicketPhaseDto } from "./load-ticket-phase";
 import type { TicketPhaseArchiveInput } from "./schema";
@@ -36,7 +36,10 @@ async function moveTicketsOut({
   targetPhaseId,
   reason,
 }: MoveAllInput): Promise<Result<true>> {
-  const rows = await context.db.ticket.findMany({ where: { phaseId: id } });
+  const rows = await context.db.ticket.findMany({
+    where: { phaseId: id },
+    include: TICKET_INCLUDE,
+  });
   if (rows.length === 0) return ok({ value: true });
   const target = await loadTarget({ context, id, targetPhaseId });
   if (!target.ok) return target;

@@ -8,6 +8,7 @@ export type ToFieldSpecInput = { field: FieldDefinition; valueIds: readonly stri
 
 /** A list-backed choice field allows the list's active value ids; inline fields their options. */
 export const toFieldSpec = ({ field, valueIds }: ToFieldSpecInput): FieldSpec => ({
+  id: field.id,
   key: field.key,
   name: field.name,
   kind: field.kind,

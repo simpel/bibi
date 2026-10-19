@@ -3,7 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { applyLineState } from "../line/line-state";
 import type { LineRecord } from "../line/schema";
-import { toLineRecord } from "../line/to-line-record";
+import { LINE_INCLUDE, toLineRecord } from "../line/to-line-record";
 import { withEffective } from "../line/with-effective";
 import { TicketExpireHoldsInputSchema, TicketExpireHoldsOutputSchema } from "./schema";
 
@@ -16,7 +16,10 @@ const loadDueLines = ({ context }: Db) =>
       ticket: { status: "ACTIVE", holdsUntil: { lte: new Date() } },
       state: { status: "ACTIVE", expires: true },
     },
-    include: { item: { select: { entityType: { select: { expiryStateId: true } } } } },
+    include: {
+      item: { select: { entityType: { select: { expiryStateId: true } } } },
+      ...LINE_INCLUDE,
+    },
     orderBy: [{ ticketId: "asc" }, { id: "asc" }],
   });
 

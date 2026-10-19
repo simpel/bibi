@@ -45,6 +45,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Assignment",
   "AssignmentFollower",
   "Record",
+  "RecordLink",
   "Item",
   "ItemSetup",
   "ItemComponent",
@@ -108,7 +109,8 @@ export const APP_ID_MODELS = new Set<string>([
  * unfollow, audited on its assignment) and credentials (Apikey: `enabled` is its lifecycle,
  * revoked keys stay; OauthGrantRevocation: one row per user and client, updated on every revoke,
  * never removed) and the id lists of responsibilities and sheet definitions (ADR 0056: replacement
- * sets, audited on their parent).
+ * sets, audited on their parent) and LINK values (RecordLink, ADR 0056: a replacement set audited
+ * on its record).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
   "ItemSetup",
@@ -134,4 +136,5 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "SheetDefinitionEntityType",
   "SheetDefinitionField",
   "SheetDefinitionVocabulary",
+  "RecordLink",
 ]);

@@ -1,4 +1,5 @@
 import type { Item } from "@okazi/db";
+import { recordFields, type WithRecordLinks } from "../../records/record-links";
 import type { Embeddable } from "../../search/embeddable";
 import {
   type FieldInfo,
@@ -10,6 +11,7 @@ import {
 /** An item with what its search text needs: type, venue, field names and list value names. */
 export type IndexedItem = Item & {
   entityType: { name: string; fields: FieldInfo[] };
+  record: WithRecordLinks["record"];
   venue: { name: string; city: string | null } | null;
   valueNames: ReadonlyMap<string, string>;
 };
@@ -24,7 +26,7 @@ export const itemEmbeddable: Embeddable<IndexedItem> = {
       entity.description,
       ...fieldSearchLines({
         fields: entity.entityType.fields,
-        stored: entity.fields,
+        stored: recordFields({ row: entity }),
         names: entity.valueNames,
       }),
       entity.venue ? [entity.venue.name, entity.venue.city].filter(Boolean).join(", ") : null,

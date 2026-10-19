@@ -1,5 +1,8 @@
-/** A field as the seed refers to it: its key, and value name → id for list-backed fields. */
-export type FieldRef = { key: string; values?: ReadonlyMap<string, string> };
+/**
+ * A field as the seed refers to it: its key, value name → id for list-backed fields, and the
+ * target type of a `LINK` field (its values are record names).
+ */
+export type FieldRef = { key: string; values?: ReadonlyMap<string, string>; linkTypeId?: string };
 
 /** A type (item, customer, contact, ticket) as the seed refers to it: id plus field name → field. */
 export type TypeRef = { id: string; fields: ReadonlyMap<string, FieldRef> };

@@ -1,5 +1,6 @@
 import type { ExecuteContext } from "../../operations/context";
 import type { DemoItem } from "./config-types";
+import { checkDemoLinks } from "./link-checks";
 import { getTemplateListSize } from "./template-size";
 import type { DemoOrg } from "./types";
 
@@ -103,7 +104,8 @@ async function counts({ context, org }: CheckDemoConfigInput): Promise<Count[]> 
 
 /**
  * Slices 2–5 checks: row counts per entity match the data files, lists that must not exist do
- * not (check 2: Vingaleden has no "Allergens"), and imported lists have their values.
+ * not (check 2: Vingaleden has no "Allergens"), imported lists have their values, and the LINK
+ * values are `RecordLink` rows that resolve to active records (`checkDemoLinks`).
  */
 export async function checkDemoConfig({
   context,
@@ -127,5 +129,5 @@ export async function checkDemoConfig({
     const values = await context.db.vocabularyValue.count({ where: { vocabulary: { name } } });
     if (values !== size) failures.push(`${org.slug}: list "${name}" has ${values} values`);
   }
-  return failures;
+  return [...failures, ...(await checkDemoLinks({ context, org, skipPipeline }))];
 }

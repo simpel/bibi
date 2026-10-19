@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { applyLineState } from "../line/line-state";
-import { toLineRecord } from "../line/to-line-record";
+import { LINE_INCLUDE, toLineRecord } from "../line/to-line-record";
 
 export type MoveLinesInput = { context: OperationContext; fromStateId: string; toStateId: string };
 
@@ -14,7 +14,10 @@ export async function moveLinesToState({
   fromStateId,
   toStateId,
 }: MoveLinesInput): Promise<Result<number>> {
-  const rows = await context.db.line.findMany({ where: { stateId: fromStateId } });
+  const rows = await context.db.line.findMany({
+    where: { stateId: fromStateId },
+    include: LINE_INCLUDE,
+  });
   for (const row of rows) {
     const before = toLineRecord({ row });
     const moved = await applyLineState({ context, before, stateId: toStateId });

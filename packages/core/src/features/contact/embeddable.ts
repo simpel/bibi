@@ -1,4 +1,5 @@
 import type { Contact } from "@okazi/db";
+import { recordFields, type WithRecordLinks } from "../../records/record-links";
 import type { Embeddable } from "../../search/embeddable";
 import {
   type FieldInfo,
@@ -10,6 +11,7 @@ import {
 /** A contact with what its search text needs: type, customer name and field names. */
 export type IndexedContact = Contact & {
   entityType: { name: string; fields: FieldInfo[] };
+  record: WithRecordLinks["record"];
   customer: { name: string };
   valueNames: ReadonlyMap<string, string>;
 };
@@ -26,7 +28,7 @@ export const contactEmbeddable: Embeddable<IndexedContact> = {
       entity.phone,
       ...fieldSearchLines({
         fields: entity.entityType.fields,
-        stored: entity.fields,
+        stored: recordFields({ row: entity }),
         names: entity.valueNames,
       }),
     ]

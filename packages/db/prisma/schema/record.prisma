@@ -20,7 +20,8 @@ model Record {
   organizationId String
   entityTypeId   String
   base           RecordBase
-  /// Values of the type's own fields, keyed by `FieldDefinition.key`. Mirrors the extending row.
+  /// Values of the type's own scalar and choice fields, keyed by `FieldDefinition.key`. Mirrors
+  /// the extending row. `LINK` values are `RecordLink` rows, never ids in this JSON.
   fields         Json            @default("{}")
   status         RecordStatus    @default(ACTIVE)
   createdAt      DateTime        @default(now())
@@ -34,8 +35,36 @@ model Record {
   ticketTemplate TicketTemplate?
   line           Line?
   requirement    Requirement?
+  /// This record's `LINK` field values (ADR 0056).
+  links          RecordLink[]    @relation("RecordLinkSource")
+  /// `LINK` values of other records that point to this one.
+  linkedFrom     RecordLink[]    @relation("RecordLinkTarget")
 
   @@unique([id, organizationId])
   @@index([organizationId, entityTypeId, status])
   @@index([fields(ops: JsonbOps)], type: Gin)
+}
+
+/// RecordLink – one target of a `LINK` field value (ADR 0056). A field with several targets is
+/// several rows (`position` keeps the order). Composite foreign keys keep source, field and target
+/// in one organization. A replacement set: core replaces a record's rows on every write of its
+/// fields, audited on the record, and merges them into `fields` on read. "Linked from" and "has a
+/// value" rules are indexed `EXISTS` queries on this table.
+model RecordLink {
+  id             String          @id @default(cuid(2))
+  organizationId String
+  recordId       String
+  fieldId        String
+  targetRecordId String
+  position       Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  createdBy      String?
+  record         Record          @relation("RecordLinkSource", fields: [recordId, organizationId], references: [id, organizationId])
+  field          FieldDefinition @relation(fields: [fieldId, organizationId], references: [id, organizationId])
+  target         Record          @relation("RecordLinkTarget", fields: [targetRecordId, organizationId], references: [id, organizationId])
+
+  @@unique([recordId, fieldId, targetRecordId])
+  @@index([organizationId, targetRecordId])
+  @@index([organizationId, fieldId])
 }

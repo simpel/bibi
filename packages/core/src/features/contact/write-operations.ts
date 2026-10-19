@@ -1,6 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { createRecord } from "../../records/create-record";
+import type { LinkValue } from "../../records/record-links";
 import { archiveRecords, updateRecord } from "../../records/update-record";
 import { invalid, notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
@@ -14,7 +15,7 @@ import {
   ContactSchema,
   ContactUpdateInputSchema,
 } from "./schema";
-import { loadContact, toContactDto } from "./to-contact-dto";
+import { CONTACT_INCLUDE, loadContact, toContactDto } from "./to-contact-dto";
 
 const unknownCustomer = () =>
   invalid({
@@ -44,7 +45,8 @@ export const createContact = defineOperation({
       context,
       base: "CONTACT",
       entityTypeId,
-      fields: checked.value,
+      fields: checked.value.fields,
+      links: checked.value.links,
       insert: ({ id }) =>
         context.db.contact.create({
           data: {
@@ -52,9 +54,10 @@ export const createContact = defineOperation({
             ...data,
             entityTypeId,
             customerId,
-            fields: toJson({ value: checked.value }) ?? {},
+            fields: toJson({ value: checked.value.fields }) ?? {},
             organizationId: context.organizationId,
           },
+          include: CONTACT_INCLUDE,
         }),
     });
     const contact = toContactDto({ row });
@@ -77,18 +80,21 @@ export const updateContact = defineOperation({
     const before = await loadContact({ context, id });
     if (!before) return notFound({ entity: "Contact" });
     let json: ReturnType<typeof toJson>;
+    let links: LinkValue[] | undefined;
     if (patch) {
       const values = mergeFields({ before: before.fields, patch });
       const { entityTypeId } = before;
       const checked = await validateFields({ context, entityTypeId, values });
       if (!checked.ok) return checked;
-      json = toJson({ value: checked.value });
+      json = toJson({ value: checked.value.fields });
+      links = checked.value.links;
     }
+    await updateRecord({ context, id, change: { fields: json, links } });
     const row = await context.db.contact.update({
       where: { id },
       data: { ...data, ...(json ? { fields: json } : {}) },
+      include: CONTACT_INCLUDE,
     });
-    await updateRecord({ context, id, change: { fields: json } });
     const contact = toContactDto({ row });
     context.recordChange({ entityId: id, before, after: contact });
     return ok({ value: contact });
@@ -111,7 +117,11 @@ export const archiveContact = defineOperation({
     const records = [{ id, entityTypeId: before.entityTypeId }];
     const linked = await checkNotLinked({ context, records, what: before.name });
     if (!linked.ok) return linked;
-    const row = await context.db.contact.update({ where: { id }, data: { status: "ARCHIVED" } });
+    const row = await context.db.contact.update({
+      where: { id },
+      data: { status: "ARCHIVED" },
+      include: CONTACT_INCLUDE,
+    });
     await archiveRecords({ context, ids: [id] });
     const contact = toContactDto({ row });
     context.recordChange({ entityId: id, before, after: contact });

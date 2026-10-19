@@ -28,6 +28,7 @@ The checks that run today:
   - The number of rows per organization matches for venue, vocabularies, vocabulary values, setups, responsibilities, types, fields, items and capacities (point 1 for what exists).
   - Each responsibility covers the item types and has the default followers of the table below, in order (its join rows, ADR 0056).
   - Archiving a field that records have values for is refused with `CONFLICT`, and the refusal lists the blocking records in `issues` (`checkDemoRecords`, `record-checks.ts`, ADR 0056). Nothing changes.
+  - `LINK` values are `RecordLink` rows (ADR 0056, `checkDemoLinks`, `link-checks.ts`, run from `config-checks.ts`): as many rows as the data files give (Lindholmen: L1 Host Mats Olsson, L3 Host Eva Sund; Vingaleden none), each pointing at an active record, no LINK field key in any `Record.fields`, and archiving a linked contact is refused with `CONFLICT` and leaves it active.
   - Vingaleden has no vocabulary "Allergens" (the first half of point 2).
   - Lindholmen's imported vocabulary "Allergens" has 14 values.
   - The number of item parts (`ItemComponent`) per organization matches the data files.
@@ -112,7 +113,7 @@ Theatre (15 min), Classroom (30), U-shape (30), Boardroom (20), Cabaret (40), Ba
 |---|---|
 | Customer | Company (Org no., Framework agreement yes/no) · Public sector (Org no., Peppol-ID, Requires case number yes/no) · Association (Org no.) |
 | Contact | Contact person (Role: choice Orderer, Invoice recipient, Organizer) |
-| Ticket | Conference (Purpose) · Event (Dresscode: choice Dresscode, Speaker/entertainment) · Tour (School class yes/no) |
+| Ticket | Conference (Purpose, Host: link to a Contact person) · Event (Dresscode: choice Dresscode, Speaker/entertainment) · Tour (School class yes/no) |
 | Requirement | Dietary requirement (vocabulary Allergens or Diet, field Severity) · Accessibility (vocabulary Accessibility) |
 
 ### Ticket phases (ADR 0043)
@@ -372,10 +373,10 @@ Per Vinga is the main assignee of V1–V3 and Stina Holm follows them; V4 is ass
 
 - `packages/core/src/seed/demo/data/` has one folder per organization (`lindholmen/`, `vingaleden/`). The files are pure data, split so that no file goes over 150 lines, e.g. `lindholmen.ts` (roles and users), `config.ts`, `types.ts`, `rooms.ts`, `dishes.ts`, `drinks.ts`, `meals.ts`, `activities.ts` (guides, tours, equipment), `packages.ts`, `customers.ts` and `tickets.ts`; Vingaleden's skippers, trips and add-ons are in `tours.ts`. `pipeline.ts` holds the phases and the phase grid.
 - `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-responsibilities.ts`, `seed-items.ts`, `seed-customers.ts`, `seed-pipeline.ts` (phases, then the grid in `seed-grid.ts`) and `seed-tickets.ts` (lines and their overrides in `seed-lines.ts`). Items with `parts` or `choices` come after the items they contain (`seed-item-input.ts` resolves them); a choice group's options become parts too. Contact persons, the price list and customer-specific packages are created right after their customer.
-  - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`.
+  - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`. A `LINK` field names its target type (`linkType`) and its values name a record of that type (`Host: "Eva Sund"`, resolved by `resolveLinks` in `seed-fields.ts`).
   - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
 - `seed-templates.ts` creates the predefined tickets from `data/<org>/templates.ts` through `ticketTemplate.create` (items, setups, ticket type and start phase by name), after the pipeline and before the tickets. A ticket with `template` in `tickets.ts` is created through `ticket.createFromTemplate` (`seed-ticket-from-template.ts`) and is not moved afterwards.
 - `reconcile.ts` (the harness) and `reconcile-checks.ts` (the registered projection checks, with `record-reconciliation.ts`) run from `checks.ts`.
-- Every record is created through core operations, which write its `Record` row first (`createRecord`, ADR 0056); `reset.ts` deletes the `Record` rows after the seven tables that extend them.
+- Every record is created through core operations, which write its `Record` row first (`createRecord`, ADR 0056); `reset.ts` deletes the `RecordLink` rows first and the `Record` rows after the seven tables that extend them.
 - `checks.ts`, `template-checks.ts`, `config-checks.ts`, `ticket-checks.ts`, `assignment-checks.ts`, `hold-checks.ts`, `pipeline-checks.ts` and `grid-checks.ts` contain the checks above.
 - The seed is extended at the same pace as the parts in ADR 0025. A part that lacks operations is skipped with a clear log, so the demo can always be run.

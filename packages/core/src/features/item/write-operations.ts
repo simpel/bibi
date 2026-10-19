@@ -56,12 +56,12 @@ export const updateItem = defineOperation({
       fields: patch ? mergeFields({ before: before.fields, patch }) : undefined,
     });
     if (!checked.ok) return checked;
-    const json = checked.value ? toJson({ value: checked.value }) : undefined;
+    const json = checked.value ? toJson({ value: checked.value.fields }) : undefined;
     await context.db.item.update({
       where: { id },
       data: { ...data, ...(json ? { fields: json } : {}) },
     });
-    await updateRecord({ context, id, change: { fields: json } });
+    await updateRecord({ context, id, change: { fields: json, links: checked.value?.links } });
     if (setups) await replaceSetups({ context, itemId: id, setups });
     const partsChanged = components !== undefined;
     await writeComposition({ context, itemId: id, partsChanged, composition });

@@ -10,6 +10,8 @@ export type DemoField = {
   kind: FieldKind;
   list?: string;
   options?: readonly string[];
+  /** A `LINK` field's target: the name of a type listed before this one (ADR 0056). */
+  linkType?: string;
 };
 
 export type DemoType = {

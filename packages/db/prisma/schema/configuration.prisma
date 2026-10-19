@@ -90,6 +90,8 @@ model FieldDefinition {
   vocabulary     Vocabulary?  @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
 
   sheetDefinitions SheetDefinitionField[]
+  /// Values of this field when it is a `LINK` (ADR 0056).
+  links            RecordLink[]
 
   @@unique([id, organizationId])
   @@unique([entityTypeId, key])

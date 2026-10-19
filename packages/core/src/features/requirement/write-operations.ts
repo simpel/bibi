@@ -1,6 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { createRecord } from "../../records/create-record";
+import type { LinkValue } from "../../records/record-links";
 import { archiveRecords, updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
@@ -13,7 +14,7 @@ import {
   RequirementSchema,
   RequirementUpdateInputSchema,
 } from "./schema";
-import { loadRequirement, toRequirementDto } from "./to-requirement-dto";
+import { loadRequirement, REQUIREMENT_INCLUDE, toRequirementDto } from "./to-requirement-dto";
 
 export const createRequirement = defineOperation({
   name: "requirement.create",
@@ -43,7 +44,8 @@ export const createRequirement = defineOperation({
       context,
       base: "REQUIREMENT",
       entityTypeId,
-      fields: checked.value,
+      fields: checked.value.fields,
+      links: checked.value.links,
       insert: ({ id }) =>
         context.db.requirement.create({
           data: {
@@ -51,9 +53,10 @@ export const createRequirement = defineOperation({
             ...data,
             ...level,
             entityTypeId,
-            fields: toJson({ value: checked.value }) ?? {},
+            fields: toJson({ value: checked.value.fields }) ?? {},
             organizationId: context.organizationId,
           },
+          include: REQUIREMENT_INCLUDE,
         }),
     });
     const requirement = toRequirementDto({ row });
@@ -75,17 +78,20 @@ export const updateRequirement = defineOperation({
     const before = await loadRequirement({ context, id });
     if (!before) return notFound({ entity: "Requirement" });
     let json: ReturnType<typeof toJson>;
+    let links: LinkValue[] | undefined;
     if (patch) {
       const values = mergeFields({ before: before.fields, patch });
       const checked = await validateFields({ context, entityTypeId: before.entityTypeId, values });
       if (!checked.ok) return checked;
-      json = toJson({ value: checked.value });
+      json = toJson({ value: checked.value.fields });
+      links = checked.value.links;
     }
+    await updateRecord({ context, id, change: { fields: json, links } });
     const row = await context.db.requirement.update({
       where: { id },
       data: { ...(quantity === undefined ? {} : { quantity }), ...(json ? { fields: json } : {}) },
+      include: REQUIREMENT_INCLUDE,
     });
-    await updateRecord({ context, id, change: { fields: json } });
     const requirement = toRequirementDto({ row });
     context.recordChange({ entityId: id, before, after: requirement });
     return ok({ value: requirement });
@@ -107,6 +113,7 @@ export const archiveRequirement = defineOperation({
     const row = await context.db.requirement.update({
       where: { id },
       data: { status: "ARCHIVED" },
+      include: REQUIREMENT_INCLUDE,
     });
     await archiveRecords({ context, ids: [id] });
     const requirement = toRequirementDto({ row });

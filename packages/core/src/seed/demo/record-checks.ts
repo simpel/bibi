@@ -1,4 +1,4 @@
-import { recordsMatching } from "../../features/field-definition/field-usage";
+import { recordsWithValue } from "../../features/field-definition/field-value-usage";
 import { archiveFieldDefinition } from "../../features/field-definition/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
@@ -14,8 +14,7 @@ export type CheckDemoRecordsInput = { context: ExecuteContext; org: DemoOrg };
 export async function checkDemoRecords({ context, org }: CheckDemoRecordsInput): Promise<string[]> {
   const fields = await context.db.fieldDefinition.findMany({ orderBy: { position: "asc" } });
   for (const field of fields) {
-    const match = { kind: "has" as const, key: field.key };
-    const usage = await recordsMatching({ context, entityTypeId: field.entityTypeId, match });
+    const usage = await recordsWithValue({ context, field, presence: "has" });
     if (usage.total === 0) continue;
     const input = { id: field.id };
     const result = await execute({ operation: archiveFieldDefinition, input, context });

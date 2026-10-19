@@ -6,7 +6,7 @@ import { paginate } from "../../shared/paginate";
 import { changeLineState } from "./change-state-operation";
 import { followLinePhase } from "./follow-phase-operation";
 import { LineIdInputSchema, LineListInputSchema, LineListOutputSchema, LineSchema } from "./schema";
-import { loadLine, toLineRecord } from "./to-line-record";
+import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 import { withEffective, withEffectiveOne } from "./with-effective";
 import { archiveLine, createLine, updateLine } from "./write-operations";
 
@@ -32,6 +32,7 @@ export const listLines = defineOperation({
       // Overlapping holders of one item: the oldest `heldAt` first (ADR 0044, no rank or queue).
       orderBy: [{ startsAt: "asc" }, { heldAt: "asc" }, { id: "asc" }],
       ...pageArgs(input),
+      include: LINE_INCLUDE,
     });
     const page = paginate({ rows, limit: input.limit });
     const records = page.items.map((row) => toLineRecord({ row }));

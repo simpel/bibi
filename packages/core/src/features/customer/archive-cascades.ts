@@ -5,7 +5,7 @@ import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { toItemDtos } from "../item/to-item-dto";
 import { archiveTicket } from "../ticket/archive-ticket";
-import { toTicketDto } from "../ticket/to-ticket-dto";
+import { TICKET_INCLUDE, toTicketDto } from "../ticket/to-ticket-dto";
 import { checkExpectedTicketCount } from "./archive-expected";
 import type { CustomerDto } from "./schema";
 
@@ -35,7 +35,10 @@ export async function archiveCustomerTickets({
   customer,
   expected,
 }: ArchiveTicketsInput): Promise<Result<number>> {
-  const rows = await context.db.ticket.findMany({ where: { customerId: customer.id } });
+  const rows = await context.db.ticket.findMany({
+    where: { customerId: customer.id },
+    include: TICKET_INCLUDE,
+  });
   const changed = checkExpectedTicketCount({ name: customer.name, expected, actual: rows.length });
   if (changed) return changed;
   if (rows.length === 0) return ok({ value: 0 });

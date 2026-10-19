@@ -1,5 +1,5 @@
 import type { OperationContext } from "../../operations/types";
-import { asFieldValues } from "../field-definition/field-usage";
+import { recordFields, WITH_RECORD_LINKS } from "../../records/record-links";
 import { effectiveQuantity } from "../line/effective-values";
 import type { SheetDefinitionDto } from "../sheet-definition/schema";
 import type { SheetRow } from "./schema";
@@ -35,14 +35,14 @@ export async function itemRows({
         // Only lines whose state the organization marked as sendable (ADR 0044).
         state: { inSheets: true },
       },
-      include: { item: true },
+      include: { item: { include: WITH_RECORD_LINKS } },
       orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     }),
     context.db.ticket.findFirst({ where: { id: ticketId }, select: HEADCOUNT }),
   ]);
   const headcount = ticket ?? { estimatedHeadcount: null, guaranteedHeadcount: null };
   return lines.map(({ item, ...row }) => {
-    const own = asFieldValues({ value: item?.fields });
+    const own = item ? recordFields({ row: item }) : {};
     const keys = fields.filter((field) => field.entityTypeId === item?.entityTypeId);
     return {
       kind: "ITEM",

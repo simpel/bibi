@@ -7,7 +7,7 @@ import { assignOnCreate } from "../assignment/assign-on-create";
 import { checkNewTicket } from "./check-new-ticket";
 import type { TicketCreateInput, TicketDto } from "./schema";
 import { entryPhaseId, nextReference } from "./ticket-defaults";
-import { toTicketDto } from "./to-ticket-dto";
+import { TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
 
 export type InsertTicketInput = {
   context: OperationContext;
@@ -57,7 +57,8 @@ export async function insertTicket({
     context,
     base: "TICKET",
     entityTypeId,
-    fields: checked.value,
+    fields: checked.value.fields,
+    links: checked.value.links,
     insert: ({ id }) =>
       context.db.ticket.create({
         data: {
@@ -66,9 +67,10 @@ export async function insertTicket({
           entityTypeId,
           phaseId: phaseId.value,
           reference,
-          fields: toJson({ value: checked.value }) ?? {},
+          fields: toJson({ value: checked.value.fields }) ?? {},
           organizationId: context.organizationId,
         },
+        include: TICKET_INCLUDE,
       }),
   });
   const ticket = toTicketDto({ row });

@@ -7,7 +7,7 @@ import { validateFields } from "../field-definition/field-values";
 import { checkLinePeriod, checkPlace, checkTicket } from "./line-rules";
 import { initialStateOf } from "./line-state";
 import type { LineCreateInput, LineRecord } from "./schema";
-import { toLineRecord } from "./to-line-record";
+import { LINE_INCLUDE, toLineRecord } from "./to-line-record";
 
 export type InsertLineInput = {
   context: OperationContext;
@@ -40,18 +40,17 @@ export async function insertLine({
     context,
     base: "LINE",
     entityTypeId,
-    fields: checked.value,
+    ...checked.value,
     insert: ({ id }) =>
       context.db.line.create({
         data: {
-          id,
-          ...data,
-          ...period,
+          ...{ id, ...data, ...period },
           entityTypeId,
           stateId,
-          fields: toJson({ value: checked.value }) ?? {},
+          fields: toJson({ value: checked.value.fields }) ?? {},
           organizationId: context.organizationId,
         },
+        include: LINE_INCLUDE,
       }),
   });
   const line = toLineRecord({ row });

@@ -1,9 +1,10 @@
 import type { ScopedDbClient } from "@okazi/db";
+import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";
 import { asFieldValues } from "./field-usage";
 
 export type FieldInfo = { key: string; name: string };
 
-/** Prisma `include` for a typed record's type name and active field names. */
+/** Prisma `include` for a typed record's type name, active field names and `LINK` values. */
 export const TYPE_FIELDS_INCLUDE = {
   entityType: {
     select: {
@@ -11,6 +12,7 @@ export const TYPE_FIELDS_INCLUDE = {
       fields: { where: { status: "ACTIVE" as const }, select: { key: true, name: true } },
     },
   },
+  ...WITH_RECORD_LINKS,
 };
 
 type FieldLineInput = { field: FieldInfo; value: unknown; names: ReadonlyMap<string, string> };
@@ -43,7 +45,7 @@ export function fieldSearchLines({ fields, stored, names }: FieldSearchLinesInpu
     .filter((line): line is string => line !== null);
 }
 
-export type LoadValueNamesInput = { db: ScopedDbClient; rows: readonly { fields: unknown }[] };
+export type LoadValueNamesInput = { db: ScopedDbClient; rows: readonly WithRecordLinks[] };
 
 type NameRow = { id: string; name: string };
 
@@ -56,7 +58,7 @@ export async function loadValueNames({
   rows,
 }: LoadValueNamesInput): Promise<ReadonlyMap<string, string>> {
   const ids = rows.flatMap((row) =>
-    Object.values(asFieldValues({ value: row.fields }))
+    Object.values(recordFields({ row }))
       .flat()
       .filter((v) => typeof v === "string"),
   );

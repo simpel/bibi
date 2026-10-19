@@ -7,7 +7,7 @@ import { cellsOfPhase } from "../phase-grid/load-grid";
 import { lineMoveBlockers } from "./line-move-check";
 import { applyLineState, itemTypeOf } from "./line-state";
 import { LineFollowPhaseInputSchema, type LineRecord, LineSchema } from "./schema";
-import { loadLine, toLineRecord } from "./to-line-record";
+import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 import { effectiveHandler } from "./with-effective";
 
 type Db = { context: Pick<OperationContext, "db"> };
@@ -40,6 +40,7 @@ async function clearOverride({ context, line }: ClearInput): Promise<Result<Line
   const row = await context.db.line.update({
     where: { id: line.id },
     data: { stateOverridden: false },
+    include: LINE_INCLUDE,
   });
   const after = toLineRecord({ row });
   context.recordChange({ entityId: line.id, before: line, after });

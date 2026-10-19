@@ -5,6 +5,7 @@ import { mergeUsage, usageConflict } from "../../records/blocking-issues";
 import { invalid } from "../../shared/errors";
 import { type FieldKind, isChoiceKind } from "./field-kinds";
 import { recordsMatching } from "./field-usage";
+import { recordsWithValue } from "./field-value-usage";
 
 type Db = Pick<OperationContext, "db">;
 
@@ -66,13 +67,12 @@ export async function checkFieldChange({
   before,
   next,
 }: CheckFieldChangeInput): Promise<Result<true>> {
-  const { entityTypeId, key } = before;
   const reshaped =
     next.kind !== before.kind ||
     next.vocabularyId !== before.vocabularyId ||
     next.linkTypeId !== before.linkTypeId;
   if (reshaped) {
-    const usage = await recordsMatching({ context, entityTypeId, match: { kind: "has", key } });
+    const usage = await recordsWithValue({ context, field: before, presence: "has" });
     const message = `${usage.total} records have a value for ${before.name}`;
     if (usage.total > 0) return usageConflict({ context, usage, message });
   }
@@ -83,7 +83,7 @@ export async function checkFieldChange({
     return usageConflict({ context, usage: options.usage, message });
   }
   if (next.required && !before.required) {
-    const usage = await recordsMatching({ context, entityTypeId, match: { kind: "lacks", key } });
+    const usage = await recordsWithValue({ context, field: before, presence: "lacks" });
     const message = `${usage.total} records lack ${before.name}`;
     if (usage.total > 0) return usageConflict({ context, usage, message });
   }

@@ -1,12 +1,13 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import type { LinkValue } from "../../records/record-links";
 import { updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
 import { insertTicket } from "./insert-ticket";
 import { TicketCreateInputSchema, TicketSchema, TicketUpdateInputSchema } from "./schema";
-import { loadTicket, toTicketDto } from "./to-ticket-dto";
+import { loadTicket, TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
 import { checkTicketDetails } from "./update-rules";
 
 export const createTicket = defineOperation({
@@ -41,17 +42,20 @@ export const updateTicket = defineOperation({
     const details = await checkTicketDetails({ context, before, change: data });
     if (!details.ok) return details;
     let json: ReturnType<typeof toJson>;
+    let links: LinkValue[] | undefined;
     if (patch) {
       const values = mergeFields({ before: before.fields, patch });
       const checked = await validateFields({ context, entityTypeId: before.entityTypeId, values });
       if (!checked.ok) return checked;
-      json = toJson({ value: checked.value });
+      json = toJson({ value: checked.value.fields });
+      links = checked.value.links;
     }
+    await updateRecord({ context, id, change: { fields: json, links } });
     const row = await context.db.ticket.update({
       where: { id },
       data: { ...data, ...(json ? { fields: json } : {}) },
+      include: TICKET_INCLUDE,
     });
-    await updateRecord({ context, id, change: { fields: json } });
     const ticket = toTicketDto({ row });
     context.recordChange({ entityId: id, before, after: ticket });
     return ok({ value: ticket });

@@ -7,7 +7,7 @@ import { applyTerminal } from "./cancellation";
 import { phaseBlockers } from "./phase-rules";
 import { applyLineMoves, type LinePlan, planLineMoves } from "./plan-line-moves";
 import type { TicketDto } from "./schema";
-import { toTicketDto } from "./to-ticket-dto";
+import { TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
 
 export type MoveTicketInput = {
   context: OperationContext;
@@ -66,6 +66,7 @@ export async function moveTicket({
   const row = await context.db.ticket.update({
     where: { id: before.id },
     data: { phaseId: to.id, phaseChangedAt: new Date(), phaseReason: reason ?? null },
+    include: TICKET_INCLUDE,
   });
   const ticket = toTicketDto({ row });
   context.recordChange({ entityType: "ticket", entityId: before.id, before, after: ticket });

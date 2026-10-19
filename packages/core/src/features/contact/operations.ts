@@ -9,7 +9,7 @@ import {
   ContactListOutputSchema,
   ContactSchema,
 } from "./schema";
-import { loadContact, toContactDto } from "./to-contact-dto";
+import { CONTACT_INCLUDE, loadContact, toContactDto } from "./to-contact-dto";
 import { archiveContact, createContact, updateContact } from "./write-operations";
 
 export const listContacts = defineOperation({
@@ -29,6 +29,7 @@ export const listContacts = defineOperation({
         ...(input.query ? { name: { contains: input.query, mode: "insensitive" as const } } : {}),
       },
       orderBy: [{ name: "asc" }, { id: "asc" }],
+      include: CONTACT_INCLUDE,
       ...pageArgs(input),
     });
     const page = paginate({ rows, limit: input.limit });

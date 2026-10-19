@@ -6,7 +6,7 @@ import { execute } from "../../operations/execute";
 import { addDays } from "../../recurrence/plain-date";
 import { fromZonedParts, toZonedParts } from "../../recurrence/zoned-time";
 import type { DemoRefs } from "./demo-refs";
-import { missing, resolveFields } from "./seed-fields";
+import { missing, resolveDemoFields } from "./seed-fields";
 import { seedDemoLines } from "./seed-lines";
 import { createDemoTicketFromTemplate } from "./seed-ticket-from-template";
 import { movePhase } from "./seed-ticket-phase";
@@ -86,7 +86,7 @@ async function seedTicket({ context, refs, userIds, ticket, now }: TicketInput) 
   if (!customer) return missing({ what: `customer ${ticket.customer}` });
   const people = resolvePeople({ userIds, ticket });
   if (!people.ok) return people;
-  const fields = resolveFields({ fields: ticket.fields, type });
+  const fields = await resolveDemoFields({ context, fields: ticket.fields, type });
   if (!fields.ok) return fields;
   const created = ticket.template
     ? await createDemoTicketFromTemplate({

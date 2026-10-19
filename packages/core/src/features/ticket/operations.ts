@@ -15,7 +15,7 @@ import {
   TicketListOutputSchema,
   TicketSchema,
 } from "./schema";
-import { loadTicket, toTicketDto } from "./to-ticket-dto";
+import { loadTicket, TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
 import { createTicket, updateTicket } from "./write-operations";
 
 export const listTickets = defineOperation({
@@ -34,6 +34,7 @@ export const listTickets = defineOperation({
       where: { ...ticketListWhere({ input }), ...ids },
       orderBy: [{ reference: "desc" }, { id: "desc" }],
       ...pageArgs(input),
+      include: TICKET_INCLUDE,
     });
     const page = paginate({ rows, limit: input.limit });
     const items = page.items.map((row) => toTicketDto({ row }));

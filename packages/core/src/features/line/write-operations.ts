@@ -1,5 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import type { LinkValue } from "../../records/record-links";
 import { archiveRecords, updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
@@ -13,7 +14,7 @@ import {
   LineSchema,
   LineUpdateInputSchema,
 } from "./schema";
-import { loadLine, toLineRecord } from "./to-line-record";
+import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 import { effectiveHandler } from "./with-effective";
 
 const OCCUPY_NOTE =
@@ -63,6 +64,7 @@ export const updateLine = defineOperation({
         if (!check.ok) return check;
       }
       let json: ReturnType<typeof toJson>;
+      let links: LinkValue[] | undefined;
       if (patch) {
         const values = mergeFields({ before: before.fields, patch });
         const checked = await validateFields({
@@ -71,14 +73,16 @@ export const updateLine = defineOperation({
           values,
         });
         if (!checked.ok) return checked;
-        json = toJson({ value: checked.value });
+        json = toJson({ value: checked.value.fields });
+        links = checked.value.links;
       }
       const state = await stateAfterMove({ context, before, itemId });
+      await updateRecord({ context, id, change: { fields: json, links } });
       const row = await context.db.line.update({
         where: { id },
         data: { ...data, ...after, ...state, ...(json ? { fields: json } : {}) },
+        include: LINE_INCLUDE,
       });
-      await updateRecord({ context, id, change: { fields: json } });
       const line = toLineRecord({ row });
       context.recordChange({ entityId: id, before, after: line });
       // The hold follows by trigger (ADR 0053); an overlap fails the update with CONFLICT.
@@ -101,6 +105,7 @@ export const archiveLine = defineOperation({
       const row = await context.db.line.update({
         where: { id },
         data: { status: "ARCHIVED" },
+        include: LINE_INCLUDE,
       });
       await archiveRecords({ context, ids: [id] });
       const line = toLineRecord({ row });

@@ -3,6 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
+import type { CheckedFields } from "../field-definition/split-links";
 import { checkReadable } from "../ticket/ticket-rules";
 import { checkTemplateLines } from "./check-template-lines";
 import type { TicketTemplateLineInput } from "./schema";
@@ -42,7 +43,7 @@ export async function checkTemplate({
   phaseId,
   fields,
   lines,
-}: CheckTemplateInput): Promise<Result<Record<string, unknown>>> {
+}: CheckTemplateInput): Promise<Result<CheckedFields>> {
   const hasItems = lines.some((line) => line.itemId);
   for (const check of [
     checkReadable({ context, permission: "ticketPhase:read", path: "phaseId" }),

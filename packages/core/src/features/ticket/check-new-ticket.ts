@@ -3,6 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { checkNewAssignee } from "../assignment/assign-on-create";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
+import type { CheckedFields } from "../field-definition/split-links";
 import type { TicketCreateInput } from "./schema";
 import { checkContact, checkCustomer, checkDesiredPeriod, checkReadable } from "./ticket-rules";
 
@@ -21,7 +22,7 @@ export type CheckNewTicketInput = {
 export async function checkNewTicket({
   context,
   input,
-}: CheckNewTicketInput): Promise<Result<Record<string, unknown>>> {
+}: CheckNewTicketInput): Promise<Result<CheckedFields>> {
   const { entityTypeId, customerId, assigneeId } = input;
   for (const check of [
     checkDesiredPeriod(input),

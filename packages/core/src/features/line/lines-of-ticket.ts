@@ -1,6 +1,6 @@
 import type { OperationContext } from "../../operations/types";
 import type { LineRecord } from "./schema";
-import { toLineRecord } from "./to-line-record";
+import { LINE_INCLUDE, toLineRecord } from "./to-line-record";
 
 export type TypedLine = { line: LineRecord; entityTypeId: string };
 
@@ -28,6 +28,7 @@ export async function linesOfTicket({
       ...(followingOnly ? { stateOverridden: false } : {}),
     },
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
+    include: LINE_INCLUDE,
   });
   const itemIds = [...new Set(rows.flatMap((row) => (row.itemId ? [row.itemId] : [])))];
   const items = await context.db.item.findMany({

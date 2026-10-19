@@ -3,7 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { archiveLinesOfTicket } from "../line/release-for-ticket";
 import type { TicketDto } from "./schema";
-import { toTicketDto } from "./to-ticket-dto";
+import { TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
 
 export type ArchiveTicketInput = { context: OperationContext; ticket: TicketDto };
 
@@ -21,6 +21,7 @@ export async function archiveTicket({
   const row = await context.db.ticket.update({
     where: { id: ticket.id },
     data: { status: "ARCHIVED" },
+    include: TICKET_INCLUDE,
   });
   await archiveRecords({ context, ids: [ticket.id] });
   const after = toTicketDto({ row });

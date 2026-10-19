@@ -1,6 +1,7 @@
 import type { RecordStatus } from "@okazi/db";
 import type { OperationContext } from "../operations/types";
 import { toJson } from "../shared/to-json";
+import { type LinkValue, replaceRecordLinks } from "./record-links";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -28,11 +29,22 @@ export async function updateRecords({ context, ids, change }: UpdateRecordsInput
   });
 }
 
-export type UpdateRecordInput = Db & { id: string; change: RecordChange };
+export type UpdateRecordInput = {
+  context: Pick<OperationContext, "db" | "organizationId">;
+  id: string;
+  /** `links` replaces the record's `LINK` values (`RecordLink` rows); omitted = unchanged. */
+  change: RecordChange & { links?: readonly LinkValue[] | undefined };
+};
 
-/** `updateRecords` for one record. */
-export const updateRecord = ({ context, id, change }: UpdateRecordInput) =>
-  updateRecords({ context, ids: [id], change });
+/** `updateRecords` for one record, plus its `LINK` values when given. */
+export async function updateRecord({
+  context,
+  id,
+  change: { links, ...change },
+}: UpdateRecordInput) {
+  await updateRecords({ context, ids: [id], change });
+  if (links) await replaceRecordLinks({ context, recordId: id, links });
+}
 
 export type ArchiveRecordsInput = Db & { ids: readonly string[] };
 

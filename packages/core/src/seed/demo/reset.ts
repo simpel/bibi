@@ -46,6 +46,7 @@ const configLinks = ({ db, where }: ScopeInput) => [
 
 /** Contacts, customers and the `Record` supertable rows (ADR 0056), after every table that extends them. */
 const recordRoots = ({ db, where }: ScopeInput) => [
+  db.recordLink.deleteMany({ where }),
   db.contact.deleteMany({ where }),
   db.customer.deleteMany({ where }),
   db.record.deleteMany({ where }),

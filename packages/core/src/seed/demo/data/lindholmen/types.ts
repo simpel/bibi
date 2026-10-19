@@ -96,7 +96,14 @@ export const lindholmenTypes: readonly DemoType[] = [
       { name: "Role", kind: "CHOICE", options: ["Orderer", "Invoice recipient", "Organizer"] },
     ],
   },
-  { base: "TICKET", name: "Conference", fields: [{ name: "Purpose", kind: "TEXT" }] },
+  {
+    base: "TICKET",
+    name: "Conference",
+    fields: [
+      { name: "Purpose", kind: "TEXT" },
+      { name: "Host", kind: "LINK", linkType: "Contact person" },
+    ],
+  },
   {
     base: "TICKET",
     name: "Event",

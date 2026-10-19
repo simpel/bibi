@@ -1,6 +1,6 @@
 import type { OperationContext } from "../../operations/types";
 import type { RequirementDto } from "./schema";
-import { toRequirementDto } from "./to-requirement-dto";
+import { REQUIREMENT_INCLUDE, toRequirementDto } from "./to-requirement-dto";
 
 /** One list value's count where it applies, and the requirement row it comes from. */
 export type EffectiveCount = {
@@ -62,7 +62,10 @@ export async function effectiveRequirements({
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     select: { id: true },
   });
-  const rows = await context.db.requirement.findMany({ where: { ticketId } });
+  const rows = await context.db.requirement.findMany({
+    where: { ticketId },
+    include: REQUIREMENT_INCLUDE,
+  });
   return resolveEffective({
     lineIds: lines.map(({ id }) => id),
     requirements: rows.map((row) => toRequirementDto({ row })),

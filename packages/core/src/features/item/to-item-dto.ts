@@ -1,6 +1,6 @@
 import type { Item, ItemChoiceGroup, ItemComponent } from "@okazi/db";
 import type { OperationContext } from "../../operations/types";
-import { asFieldValues } from "../field-definition/field-usage";
+import { loadRecordLinks, withLinks } from "../../records/record-links";
 import type { ItemDto } from "./schema";
 
 type Db = Pick<OperationContext, "db">;
@@ -39,9 +39,10 @@ export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<It
     where: { itemId: { in: ids } },
     orderBy: [{ position: "asc" }],
   });
+  const links = await loadRecordLinks({ context, recordIds: ids });
   return rows.map((row) => ({
     ...row,
-    fields: asFieldValues({ value: row.fields }),
+    fields: withLinks({ fields: row.fields, links: links.filter((l) => l.recordId === row.id) }),
     setups: setups
       .filter((setup) => setup.itemId === row.id)
       .map(({ setupId, capacity }) => ({ setupId, capacity })),

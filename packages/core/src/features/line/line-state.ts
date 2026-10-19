@@ -2,7 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { cellOfTicket } from "../phase-grid/load-grid";
 import type { LineRecord } from "./schema";
-import { toLineRecord } from "./to-line-record";
+import { LINE_INCLUDE, toLineRecord } from "./to-line-record";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -79,6 +79,7 @@ export async function applyLineState({
       heldAt: new Date(),
       ...(overridden === undefined ? {} : { stateOverridden: overridden }),
     },
+    include: LINE_INCLUDE,
   });
   const after = toLineRecord({ row });
   context.recordChange({ entityType: "line", entityId: before.id, before, after });

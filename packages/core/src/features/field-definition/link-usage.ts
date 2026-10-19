@@ -1,8 +1,7 @@
 import type { RecordMatches } from "@okazi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { mergeUsage, usageConflict } from "../../records/blocking-issues";
-import { recordsMatching } from "./field-usage";
+import { usageConflict } from "../../records/blocking-issues";
 
 export type LinkedRecord = { id: string; entityTypeId: string };
 
@@ -11,24 +10,27 @@ export type LinksToInput = {
   records: readonly LinkedRecord[];
 };
 
+/** How many linking records a refusal lists; the total counts them all. */
+const LISTED = 20;
+
 /**
- * Active records whose LINK fields point to one of `records` (ADR 0026: data present → CONFLICT):
- * one indexed `fields @> {key: id}` query per LINK field that targets their types (ADR 0056).
+ * Active records with a LINK value pointing to one of `records` (ADR 0026: data present →
+ * CONFLICT): one indexed `EXISTS` on `RecordLink.targetRecordId` (ADR 0056).
  */
 export async function linksTo({ context, records }: LinksToInput): Promise<RecordMatches> {
-  const typeIds = [...new Set(records.map(({ entityTypeId }) => entityTypeId))];
-  if (typeIds.length === 0) return { total: 0, rows: [] };
-  const fields = await context.db.fieldDefinition.findMany({
-    where: { kind: "LINK", linkTypeId: { in: typeIds } },
-    select: { entityTypeId: true, key: true, linkTypeId: true },
-  });
-  const usages: RecordMatches[] = [];
-  for (const { entityTypeId, key, linkTypeId } of fields) {
-    const values = records.filter((record) => record.entityTypeId === linkTypeId);
-    const match = { kind: "contains" as const, key, values: values.map(({ id }) => id) };
-    usages.push(await recordsMatching({ context, entityTypeId, match }));
-  }
-  return mergeUsage({ usages });
+  const ids = [...new Set(records.map(({ id }) => id))];
+  if (ids.length === 0) return { total: 0, rows: [] };
+  const where = { links: { some: { targetRecordId: { in: ids } } } };
+  const [rows, total] = await Promise.all([
+    context.db.record.findMany({
+      where,
+      select: { id: true, base: true },
+      orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+      take: LISTED,
+    }),
+    context.db.record.count({ where }),
+  ]);
+  return { total, rows };
 }
 
 export type CheckNotLinkedInput = {

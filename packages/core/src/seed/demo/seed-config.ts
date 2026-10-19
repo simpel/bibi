@@ -39,6 +39,14 @@ async function seedLists({ context, config }: SeedConfigInput): Promise<Result<L
   return ok({ value: lists });
 }
 
+type TypeIdOfInput = { refs: DemoRefs; name: string };
+
+/** The id of a type seeded earlier, by name. */
+const typeIdOf = ({ refs, name }: TypeIdOfInput) =>
+  [refs.itemTypes, refs.customerTypes, refs.contactTypes, refs.ticketTypes]
+    .map((types) => types.get(name)?.id)
+    .find(Boolean);
+
 type FieldInput = { context: ExecuteContext; refs: DemoRefs; typeId: string; field: DemoField };
 
 async function seedField({ context, refs, typeId, field }: FieldInput) {
@@ -47,11 +55,17 @@ async function seedField({ context, refs, typeId, field }: FieldInput) {
     const message = `Unknown list ${field.list}`;
     return err({ error: new AppError({ code: "INTERNAL", message }) });
   }
+  const linkTypeId = field.linkType ? typeIdOf({ refs, name: field.linkType }) : undefined;
+  if (field.linkType && !linkTypeId) {
+    const message = `Unknown link type ${field.linkType}`;
+    return err({ error: new AppError({ code: "INTERNAL", message }) });
+  }
   const input = {
     entityTypeId: typeId,
     name: field.name,
     kind: field.kind,
     ...(list ? { vocabularyId: list.id } : {}),
+    ...(linkTypeId ? { linkTypeId } : {}),
     ...(field.options ? { options: [...field.options] } : {}),
   };
   return execute({ operation: createFieldDefinition, input, context });
@@ -69,7 +83,12 @@ async function seedType({ context, refs, type, skipStates }: TypeInput): Promise
     if (!result.ok) return result;
     const list = field.list ? refs.lists.get(field.list) : undefined;
     const values = list ? new Map(list.values.map((value) => [value.name, value.id])) : undefined;
-    fields.set(field.name, { key: result.value.key, ...(values ? { values } : {}) });
+    const { key, linkTypeId } = result.value;
+    fields.set(field.name, {
+      key,
+      ...(values ? { values } : {}),
+      ...(linkTypeId ? { linkTypeId } : {}),
+    });
   }
   if (type.states && !skipStates) {
     const states = await seedItemStates({

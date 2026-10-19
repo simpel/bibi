@@ -1,6 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { createRecord } from "../../records/create-record";
+import type { LinkValue } from "../../records/record-links";
 import { updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
@@ -29,14 +30,15 @@ export const createCustomer = defineOperation({
       context,
       base: "CUSTOMER",
       entityTypeId,
-      fields: checked.value,
+      fields: checked.value.fields,
+      links: checked.value.links,
       insert: ({ id }) =>
         context.db.customer.create({
           data: {
             id,
             ...data,
             entityTypeId,
-            fields: toJson({ value: checked.value }) ?? {},
+            fields: toJson({ value: checked.value.fields }) ?? {},
             organizationId: context.organizationId,
           },
           include: CUSTOMER_INCLUDE,
@@ -62,19 +64,21 @@ export const updateCustomer = defineOperation({
     const before = await loadCustomer({ context, id });
     if (!before) return notFound({ entity: "Customer" });
     let json: ReturnType<typeof toJson>;
+    let links: LinkValue[] | undefined;
     if (patch) {
       const values = mergeFields({ before: before.fields, patch });
       const { entityTypeId } = before;
       const checked = await validateFields({ context, entityTypeId, values });
       if (!checked.ok) return checked;
-      json = toJson({ value: checked.value });
+      json = toJson({ value: checked.value.fields });
+      links = checked.value.links;
     }
+    await updateRecord({ context, id, change: { fields: json, links } });
     const row = await context.db.customer.update({
       where: { id },
       data: { ...data, ...(json ? { fields: json } : {}) },
       include: CUSTOMER_INCLUDE,
     });
-    await updateRecord({ context, id, change: { fields: json } });
     const customer = toCustomerDto({ row });
     context.recordChange({ entityId: id, before, after: customer });
     return ok({ value: customer });

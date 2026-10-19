@@ -7,7 +7,7 @@ import type { ItemStateDto } from "../item-state/schema";
 import { lineMoveBlockers } from "./line-move-check";
 import { applyLineState, itemTypeOf } from "./line-state";
 import { LineChangeStateInputSchema, type LineRecord, LineSchema } from "./schema";
-import { loadLine, toLineRecord } from "./to-line-record";
+import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 import { effectiveHandler } from "./with-effective";
 
 type TargetInput = { context: Pick<OperationContext, "db">; line: LineRecord; id: string };
@@ -48,6 +48,7 @@ export const changeLineState = defineOperation({
         const row = await context.db.line.update({
           where: { id: lineId },
           data: { stateOverridden: true },
+          include: LINE_INCLUDE,
         });
         const after = toLineRecord({ row });
         context.recordChange({ entityId: lineId, before: line, after });

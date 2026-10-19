@@ -2,7 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { releaseLineStates } from "./release-line-states";
-import { toLineRecord } from "./to-line-record";
+import { LINE_INCLUDE, toLineRecord } from "./to-line-record";
 
 export type ReleaseForTicketInput = { context: OperationContext; ticketId: string };
 
@@ -25,11 +25,12 @@ export async function archiveLinesOfTicket({
   context,
   ticketId,
 }: ReleaseForTicketInput): Promise<Result<true>> {
-  const rows = await context.db.line.findMany({ where: { ticketId } });
+  const rows = await context.db.line.findMany({ where: { ticketId }, include: LINE_INCLUDE });
   for (const row of rows) {
     const archived = await context.db.line.update({
       where: { id: row.id },
       data: { status: "ARCHIVED" },
+      include: LINE_INCLUDE,
     });
     await archiveRecords({ context, ids: [row.id] });
     context.recordChange({

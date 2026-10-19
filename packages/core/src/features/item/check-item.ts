@@ -2,6 +2,7 @@ import type { EntityType } from "@okazi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { validateFields } from "../field-definition/field-values";
+import type { CheckedFields } from "../field-definition/split-links";
 import { checkChoiceGroups } from "./item-choice-groups";
 import { checkComponents } from "./item-components";
 import type { Composition } from "./item-composition";
@@ -37,7 +38,7 @@ export async function checkItem({
   data,
   composition,
   fields,
-}: CheckItemInput): Promise<Result<Record<string, unknown> | undefined>> {
+}: CheckItemInput): Promise<Result<CheckedFields | undefined>> {
   const behaviour = checkBehaviourData({ behaviours: type.behaviours, data });
   if (!behaviour.ok) return behaviour;
   const venue = await checkVenue({ context, venueId: data.venueId });

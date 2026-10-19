@@ -1,5 +1,6 @@
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
+import type { ExecuteContext } from "../../operations/context";
 import type { DemoFieldValues } from "./config-types";
 import type { TypeRef } from "./demo-refs";
 
@@ -27,4 +28,39 @@ export function resolveFields({
     resolved[field.key] = ids ? (Array.isArray(raw) ? ids : ids[0]) : raw;
   }
   return ok({ value: resolved });
+}
+
+export type ResolveLinksInput = {
+  context: ExecuteContext;
+  values: Record<string, unknown>;
+  type: TypeRef;
+};
+
+/** `LINK` values by record name → the id of the record of the target type with that name. */
+export async function resolveLinks({
+  context,
+  values,
+  type,
+}: ResolveLinksInput): Promise<Result<Record<string, unknown>>> {
+  const resolved = { ...values };
+  for (const { key, linkTypeId } of type.fields.values()) {
+    const name = values[key];
+    if (!linkTypeId || typeof name !== "string") continue;
+    const where = { entityTypeId: linkTypeId, name };
+    const found =
+      (await context.db.contact.findFirst({ where })) ??
+      (await context.db.customer.findFirst({ where })) ??
+      (await context.db.item.findFirst({ where }));
+    if (!found) return missing({ what: `linked record ${name}` });
+    resolved[key] = found.id;
+  }
+  return ok({ value: resolved });
+}
+
+export type ResolveDemoFieldsInput = ResolveFieldsInput & { context: ExecuteContext };
+
+/** `resolveFields`, then `resolveLinks`: the values a record's operation expects. */
+export async function resolveDemoFields({ context, fields, type }: ResolveDemoFieldsInput) {
+  const resolved = resolveFields({ fields, type });
+  return resolved.ok ? resolveLinks({ context, values: resolved.value, type }) : resolved;
 }
