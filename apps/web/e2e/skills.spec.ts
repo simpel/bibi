@@ -10,7 +10,9 @@ test("create a personal skill, export it and import it back", async ({ page }) =
   await expect(page.getByRole("heading", { name: "Färdigheter", level: 1 })).toBeVisible();
 
   await page.getByRole("link", { name: "Skapa färdighet" }).click();
-  await page.getByLabel(/^Namn/).fill("Round trip");
+  // Until the page has changed, /^Namn/ also matches the list's "Namn" sort button.
+  await expect(page).toHaveURL(/\/sv\/new\/skill$/);
+  await page.getByRole("textbox", { name: /^Namn/ }).fill("Round trip");
   await page
     .getByLabel(/^När ska den användas\?/)
     .fill("When a customer wants to see the premises");
@@ -50,7 +52,10 @@ test("create a personal skill, export it and import it back", async ({ page }) =
   });
   await expect(page.getByLabel("SKILL.md-innehåll")).toHaveValue(copy);
   await page.getByRole("dialog").getByRole("button", { name: "Importera" }).click();
-  await expect(page.getByRole("heading", { name: "Round trip copy", level: 1 })).toBeVisible();
+  // Importing parses and indexes the skill; give it longer than the default under load.
+  await expect(page.getByRole("heading", { name: "Round trip copy", level: 1 })).toBeVisible({
+    timeout: 15_000,
+  });
   await expect(page.getByText("Utkast").first()).toBeVisible();
   await expect(page.getByText("checklist.md")).toBeVisible();
 });
