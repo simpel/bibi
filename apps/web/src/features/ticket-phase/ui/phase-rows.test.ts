@@ -11,6 +11,7 @@ const phase = ({ fields }: { fields: Partial<TicketPhaseDto> & { id: string } })
     requiresReason: false,
     requiresAssignee: false,
     invoiceable: false,
+    event: null,
     transitionsTo: [],
     ...fields,
   }) as TicketPhaseDto;

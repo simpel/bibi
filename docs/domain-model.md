@@ -361,7 +361,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - terms text
 - assignment (the ticket's; the quote has none of its own)
 - statusChangedAt
-- acceptedBy, acceptedAt, acceptanceMethod (`MANUAL` now, later `BANKID` and `LINK`) – *with `quote.accept`*
+- acceptedBy, acceptedAt, acceptanceMethod (`MANUAL` now, later `BANKID` and `LINK`) – set by `quote.accept`
 
 **Relations**
 - `N:1` Ticket is answered by this
@@ -371,7 +371,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 > ★ Versions with change markers against the previous one: each line is `ADDED`, `CHANGED` (with the changed properties) or `UNCHANGED`, paired with the previous version's lines by item in order, and the lines the version dropped are listed as removed. `quote.accept` stores the acceptance and fires the `QUOTE_ACCEPTED` phase event. A quote can also be built directly from items, and "Save as package" then creates a customer-specific item.
 
-> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open ticket that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the ticket moves into the phase with the `QUOTE_SENT` event, if there is one, and older `SENT` versions expire), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`.
+> Operations (`quote:write` to change, `quote:read` to read): `quote.list|get`, `quote.create` (version 1 of an open ticket that has no quote), `quote.update` (validity, terms and lines of a `DRAFT`; lines replace the set, `lineId` keeps a line's snapshot), `quote.revise` (a new `DRAFT` version of the latest, non-draft, non-accepted version), `quote.send` (needs lines and a future validity; the ticket moves into the phase with the `QUOTE_SENT` event, and older `SENT` versions expire), `quote.accept` (from `SENT`; stores `acceptedBy`, `acceptedAt` and `acceptanceMethod` `MANUAL`, creates no other record; the ticket moves into the phase with the `QUOTE_ACCEPTED` event), `quote.decline` and `quote.expire` (from `SENT`). The transition table lives in `features/quote/transitions.ts`; a disallowed move is `CONFLICT`. A quote event moves the ticket as the acting user (`ticket:write` is needed), only when the organization has an active phase with that `event` and allows the move from the ticket's phase; a blocked move (reason, assignee, line collision) fails the send or accept without any change. A phase with an `event` cannot be entered by `ticket.changePhase` or as the target of a phase archive. Archiving a phase clears its `event`; importing a template never takes an event from a phase that has it.
 
 ### Agreement & signing
 

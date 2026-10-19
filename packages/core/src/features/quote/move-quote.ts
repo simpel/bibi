@@ -9,6 +9,8 @@ export type MoveQuoteInput = {
   context: Pick<OperationContext, "db" | "recordChange">;
   before: QuoteDto;
   to: QuoteStatus;
+  /** More columns set in the same update, e.g. who accepted. */
+  extra?: { acceptedBy: string | null; acceptedAt: Date; acceptanceMethod: "MANUAL" };
 };
 
 /**
@@ -19,12 +21,13 @@ export async function moveQuote({
   context,
   before,
   to,
+  extra,
 }: MoveQuoteInput): Promise<Result<QuoteDto>> {
   const allowed = checkQuoteTransition({ from: before.quoteStatus, to });
   if (!allowed.ok) return allowed;
   await context.db.quote.update({
     where: { id: before.id },
-    data: { quoteStatus: to, statusChangedAt: new Date() },
+    data: { quoteStatus: to, statusChangedAt: new Date(), ...extra },
   });
   const quote = await loadQuote({ context, id: before.id });
   if (!quote) return notFound({ entity: "Quote" });

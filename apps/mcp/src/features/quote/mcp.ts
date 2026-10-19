@@ -28,6 +28,10 @@ export const quoteMcpTools = [
     summary: ({ input }) => `Mark quote ${text({ value: input.id })} as sent`,
   }),
   mcpTool({
+    operation: "quote.accept",
+    summary: ({ input }) => `Record that quote ${text({ value: input.id })} was accepted`,
+  }),
+  mcpTool({
     operation: "quote.decline",
     summary: ({ input }) => `Record that quote ${text({ value: input.id })} was declined`,
   }),

@@ -18,6 +18,7 @@ export const SALES_NAMES = [
   "phaseGrid.importTemplate",
   "pipelineSetup.activate",
   "pipelineSetup.preview",
+  "quote.accept",
   "quote.create",
   "quote.decline",
   "quote.expire",

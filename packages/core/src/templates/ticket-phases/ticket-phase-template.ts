@@ -1,6 +1,10 @@
-import type { TicketPhaseFlags } from "../../features/ticket-phase/schema";
+import type { PhaseEvent, TicketPhaseFlags } from "../../features/ticket-phase/schema";
 
-export type TicketPhaseTemplatePhase = { name: string; color: string } & Partial<TicketPhaseFlags>;
+export type TicketPhaseTemplatePhase = {
+  name: string;
+  color: string;
+  event?: PhaseEvent | null;
+} & Partial<TicketPhaseFlags>;
 
 /**
  * Ticket phases an organization can import and then edit freely (ADR 0043). Domain words live

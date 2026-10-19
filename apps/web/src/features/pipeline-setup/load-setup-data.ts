@@ -40,6 +40,7 @@ function currentValues({ data }: TypesOf): SetupFormValues {
     requiresReason: flags.requiresReason,
     requiresAssignee: flags.requiresAssignee,
     invoiceable: flags.invoiceable,
+    event: flags.event,
   }));
   const cells = data.cells.map((cell) => ({
     phase: cell.phaseName,

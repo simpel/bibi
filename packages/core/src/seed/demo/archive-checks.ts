@@ -14,11 +14,12 @@ export type CheckDemoArchiveInput = { context: ExecuteContext; org: DemoOrg };
 async function phaseFailures({ context, org }: CheckDemoArchiveInput): Promise<string[]> {
   const phases = await context.db.ticketPhase.findMany({
     where: { status: "ACTIVE", entry: false, terminal: false },
-    include: { transitionsFrom: true },
+    include: { transitionsFrom: { include: { toPhase: true } } },
   });
   for (const phase of phases) {
     const tickets = await context.db.ticket.count({ where: { phaseId: phase.id } });
-    const target = phase.transitionsFrom[0]?.toPhaseId;
+    // Tickets cannot be moved into a phase that only a quote event enters (ADR 0043).
+    const target = phase.transitionsFrom.find((row) => !row.toPhase.event)?.toPhaseId;
     const templates = await context.db.ticketTemplate.count({ where: { phaseId: phase.id } });
     if (tickets === 0 || templates > 0 || !target) continue;
     const input = { id: phase.id, targetPhaseId: target };

@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid } from "../../shared/errors";
-import type { TicketPhaseDto, TicketPhaseFlags } from "./schema";
+import type { PhaseEvent, TicketPhaseDto, TicketPhaseFlags } from "./schema";
 
 export type CheckFlagsInput = { flags: Partial<TicketPhaseFlags> };
 
@@ -56,6 +56,27 @@ export async function handOverEntry({ context, id }: HandOverEntryInput) {
   for (const row of previous) {
     await context.db.ticketPhase.update({ where: { id: row.id }, data: { entry: false } });
     context.recordChange({ entityId: row.id, before: row, after: { ...row, entry: false } });
+  }
+}
+
+export type HandOverEventInput = {
+  context: OperationContext;
+  event: PhaseEvent;
+  /** The phase that gets the event; null for one that is about to be created. */
+  id: string | null;
+};
+
+/**
+ * At most one phase per quote event (ADR 0043, a unique index): giving a phase an event takes it
+ * from the phase that had it. Audited on the phase that loses it.
+ */
+export async function handOverEvent({ context, event, id }: HandOverEventInput) {
+  const previous = await context.db.ticketPhase.findMany({
+    where: { event, ...(id ? { id: { not: id } } : {}) },
+  });
+  for (const row of previous) {
+    await context.db.ticketPhase.update({ where: { id: row.id }, data: { event: null } });
+    context.recordChange({ entityId: row.id, before: row, after: { ...row, event: null } });
   }
 }
 

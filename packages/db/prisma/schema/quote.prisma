@@ -7,6 +7,11 @@ enum QuoteStatus {
   EXPIRED
 }
 
+/// How the customer's acceptance was recorded (ADR 0022). Only staff entry exists so far.
+enum AcceptanceMethod {
+  MANUAL
+}
+
 /// Quote – a versioned proposal to a ticket (ADR 0022). `quoteStatus` follows a fixed state
 /// machine (`DRAFT → SENT → ACCEPTED | DECLINED | EXPIRED`) and is never set by `quote.update`.
 /// A new version copies the previous one (`previousId`); only a DRAFT can be edited. The totals
@@ -27,6 +32,10 @@ model Quote {
   totalExclVatMinor Int          @default(0)
   totalInclVatMinor Int          @default(0)
   statusChangedAt   DateTime     @default(now())
+  /// Set by `quote.accept` only: the staff user who recorded the acceptance, when, and how.
+  acceptedBy        String?
+  acceptedAt        DateTime?
+  acceptanceMethod  AcceptanceMethod?
   status            RecordStatus @default(ACTIVE)
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt

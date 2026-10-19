@@ -562,6 +562,8 @@
     "amount": "{amount} kr",
     "send": "Mark as sent",
     "sent": "The quote has been marked as sent.",
+    "accept": "Mark as accepted",
+    "accepted": "The quote has been accepted.",
     "decline": "Declined",
     "declined": "The quote has been marked as declined.",
     "expire": "Expire",
@@ -570,6 +572,7 @@
     "revised": "A new version has been created.",
     "confirm": {
       "send": "Mark version {version} as sent to the customer? It can no longer be edited and older sent versions expire.",
+      "accept": "Record that the customer accepted version {version}? The ticket moves on if the pipeline has a phase for it.",
       "decline": "Record that the customer declined version {version}?",
       "expire": "Expire version {version}? The customer can no longer accept it."
     },
@@ -1163,7 +1166,13 @@
       "terminal": "Ends the ticket",
       "requiresReason": "Needs a reason to enter",
       "requiresAssignee": "Needs an assignee to enter",
-      "invoiceable": "Can be invoiced"
+      "invoiceable": "Can be invoiced",
+      "event": "Entered by a quote event",
+      "noEvent": "No event (entered by hand)",
+      "events": {
+        "QUOTE_SENT": "When a quote is sent",
+        "QUOTE_ACCEPTED": "When a quote is accepted"
+      }
     }
   },
   "itemState": {
@@ -1314,6 +1323,7 @@
         "requiresReason": "Needs a reason",
         "requiresAssignee": "Needs an assignee",
         "invoiceable": "Can be invoiced",
+        "event": "Quote event",
         "targetPhaseId": "Move tickets to (phase id)",
         "toPhaseIds": "May move to (phase ids)",
         "ids": "Order (ids)",

@@ -20,6 +20,7 @@ export function quoteAbilities({
   return {
     edit: canWrite && from === "DRAFT",
     send: canWrite && canQuoteTransition({ from, to: "SENT" }),
+    accept: canWrite && canQuoteTransition({ from, to: "ACCEPTED" }),
     decline: canWrite && canQuoteTransition({ from, to: "DECLINED" }),
     expire: canWrite && canQuoteTransition({ from, to: "EXPIRED" }),
     revise: canWrite && revisable,

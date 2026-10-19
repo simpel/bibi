@@ -7,6 +7,7 @@ export const quoteRoutes = [
   restRoute({ operation: "quote.update", method: "PATCH", path: "/quotes/{id}" }),
   restRoute({ operation: "quote.revise", method: "POST", path: "/quotes/{id}/versions" }),
   restRoute({ operation: "quote.send", method: "POST", path: "/quotes/{id}/send" }),
+  restRoute({ operation: "quote.accept", method: "POST", path: "/quotes/{id}/accept" }),
   restRoute({ operation: "quote.decline", method: "POST", path: "/quotes/{id}/decline" }),
   restRoute({ operation: "quote.expire", method: "POST", path: "/quotes/{id}/expire" }),
 ];

@@ -1,6 +1,7 @@
 "use server";
 
 import {
+  acceptQuote,
   createQuote,
   declineQuote,
   expireQuote,
@@ -38,6 +39,10 @@ export async function reviseQuoteAction({ id }: QuoteIdInput): Promise<ActionRes
 
 export async function sendQuoteAction({ id }: QuoteIdInput): Promise<ActionResult<QuoteDto>> {
   return toActionResult({ result: await runOperation({ operation: sendQuote, input: { id } }) });
+}
+
+export async function acceptQuoteAction({ id }: QuoteIdInput): Promise<ActionResult<QuoteDto>> {
+  return toActionResult({ result: await runOperation({ operation: acceptQuote, input: { id } }) });
 }
 
 export async function declineQuoteAction({ id }: QuoteIdInput): Promise<ActionResult<QuoteDto>> {

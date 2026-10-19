@@ -22,6 +22,11 @@ export type DemoTicket = {
   template?: string;
   /** The phase the ticket is moved to after it is created (ADR 0043); default: the entry phase. */
   phase?: string;
+  /**
+   * The item (by name) the ticket's quote charges, for a `phase` that a quote event enters: the
+   * ticket gets a quote that is sent, and for the accepted event accepted (ADR 0043).
+   */
+  quote?: string;
   /** The reason of that move, for phases that require one. */
   reason?: string;
   /** The main assignee (ADR 0034), by user name. */

@@ -14,6 +14,7 @@ const NEW_PHASE = {
   requiresReason: false,
   requiresAssignee: false,
   invoiceable: false,
+  event: null,
 };
 
 /** Step 3: the phases in order, from a template; the flags are asked as plain questions. */

@@ -8,6 +8,7 @@ import type { ActionResult } from "@/lib/action-result";
 import { quoteRoute } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import {
+  acceptQuoteAction,
   declineQuoteAction,
   expireQuoteAction,
   reviseQuoteAction,
@@ -17,6 +18,7 @@ import {
 /** The quote's status and version commands, by their i18n key under `quote`. */
 export const QUOTE_COMMANDS = {
   send: { action: sendQuoteAction, done: "sent", confirm: "confirm.send" },
+  accept: { action: acceptQuoteAction, done: "accepted", confirm: "confirm.accept" },
   decline: { action: declineQuoteAction, done: "declined", confirm: "confirm.decline" },
   expire: { action: expireQuoteAction, done: "expired", confirm: "confirm.expire" },
   revise: { action: reviseQuoteAction, done: "revised", confirm: null },

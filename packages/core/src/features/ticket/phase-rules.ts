@@ -1,8 +1,9 @@
 import type { AppErrorIssue } from "../../errors/app-error";
-import type { TicketPhaseFlags } from "../ticket-phase/schema";
+import type { PhaseEvent, TicketPhaseFlags } from "../ticket-phase/schema";
 
 type Phase = Pick<TicketPhaseFlags, "terminal" | "requiresReason" | "requiresAssignee"> & {
   name: string;
+  event?: PhaseEvent | null;
 };
 
 export type PhaseBlockersInput = {
@@ -13,11 +14,14 @@ export type PhaseBlockersInput = {
   /** User id of the ticket's main assignee (assignment.list), null when nobody is assigned. */
   assigneeId: string | null;
   reason?: string | undefined;
+  /** True only for the move a quote event makes (ADR 0043); everything else is by hand. */
+  viaEvent?: boolean | undefined;
 };
 
 /**
  * Everything that blocks a phase move (ADR 0043): a terminal start, a move the organization does
- * not allow, and the target's `requiresReason` and `requiresAssignee` flags. Empty = allowed.
+ * not allow, a target that only a quote event enters, and the target's `requiresReason` and
+ * `requiresAssignee` flags. Empty = allowed.
  */
 export function phaseBlockers({
   from,
@@ -25,12 +29,17 @@ export function phaseBlockers({
   allowed,
   assigneeId,
   reason,
+  viaEvent,
 }: PhaseBlockersInput): AppErrorIssue[] {
   const blockers: AppErrorIssue[] = [];
   if (from.terminal) {
     blockers.push({ path: "phaseId", message: `"${from.name}" is terminal: no move leaves it` });
   } else if (!allowed) {
     const message = `The organization does not allow a move from "${from.name}" to "${to.name}"`;
+    blockers.push({ path: "phaseId", message });
+  }
+  if (to.event && !viaEvent) {
+    const message = `"${to.name}" is entered by the ${to.event} quote event, not by hand`;
     blockers.push({ path: "phaseId", message });
   }
   if (to.requiresReason && !reason) {

@@ -92,7 +92,9 @@ export async function archivePhase({ context, input }: ArchivePhaseInput) {
   await detachIncoming({ context, id });
   await context.db.ticketPhaseTransition.deleteMany({ where: { fromPhaseId: id } });
   await clearPhaseCells({ context, phaseId: id });
-  const row = await context.db.ticketPhase.update({ where: { id }, data: { status: "ARCHIVED" } });
+  // An archived phase gives up its quote event (ADR 0043): another phase can take it.
+  const data = { status: "ARCHIVED", event: null } as const;
+  const row = await context.db.ticketPhase.update({ where: { id }, data });
   const after = toTicketPhaseDto({ row: { ...row, transitionsFrom: [] } });
   context.recordChange({ entityId: id, before, after });
   return ok({ value: after });

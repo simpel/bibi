@@ -45,6 +45,7 @@ describe("cross-organization isolation: quotes", () => {
       ["quote_update", { id, terms: "Hacked" }],
       ["quote_revise", { id }],
       ["quote_send", { id }],
+      ["quote_accept", { id }],
       ["quote_decline", { id }],
       ["quote_expire", { id }],
       ["quote_create", { ticketId: secret.ticketId }],

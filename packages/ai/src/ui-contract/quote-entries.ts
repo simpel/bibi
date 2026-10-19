@@ -7,6 +7,7 @@ import { uiEntry } from "./ui-entry";
 export const QuoteWireSchema = QuoteSchema.extend({
   validUntil: z.string().nullable(),
   statusChangedAt: z.string(),
+  acceptedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -36,6 +37,7 @@ export const QUOTE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   quote_update: quoteCard,
   quote_revise: quoteCard,
   quote_send: quoteCard,
+  quote_accept: quoteCard,
   quote_decline: quoteCard,
   quote_expire: quoteCard,
 };

@@ -562,6 +562,8 @@
     "amount": "{amount} kr",
     "send": "Markera som skickad",
     "sent": "Offerten har markerats som skickad.",
+    "accept": "Markera som godkänd",
+    "accepted": "Offerten har godkänts.",
     "decline": "Avböjd",
     "declined": "Offerten har markerats som avböjd.",
     "expire": "Låt gå ut",
@@ -570,6 +572,7 @@
     "revised": "En ny version har skapats.",
     "confirm": {
       "send": "Markera version {version} som skickad till kunden? Den kan inte längre redigeras och äldre skickade versioner går ut.",
+      "accept": "Registrera att kunden godkände version {version}? Ärendet flyttas om pipelinen har en fas för det.",
       "decline": "Registrera att kunden avböjde version {version}?",
       "expire": "Låta version {version} gå ut? Kunden kan inte längre acceptera den."
     },
@@ -1163,7 +1166,13 @@
       "terminal": "Avslutar ärendet",
       "requiresReason": "Kräver en anledning",
       "requiresAssignee": "Kräver en ansvarig",
-      "invoiceable": "Kan faktureras"
+      "invoiceable": "Kan faktureras",
+      "event": "Nås genom en offerthändelse",
+      "noEvent": "Ingen händelse (flyttas för hand)",
+      "events": {
+        "QUOTE_SENT": "När en offert skickas",
+        "QUOTE_ACCEPTED": "När en offert godkänns"
+      }
     }
   },
   "itemState": {
@@ -1314,6 +1323,7 @@
         "requiresReason": "Kräver en anledning",
         "requiresAssignee": "Kräver en ansvarig",
         "invoiceable": "Kan faktureras",
+        "event": "Offerthändelse",
         "targetPhaseId": "Flytta ärenden till (fas-id)",
         "toPhaseIds": "Får gå till (fas-id:n)",
         "ids": "Ordning (id:n)",

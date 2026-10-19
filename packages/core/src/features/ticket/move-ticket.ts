@@ -15,6 +15,8 @@ export type MoveTicketInput = {
   before: TicketDto;
   to: TicketPhase;
   reason?: string | undefined;
+  /** True only for the move a quote event makes: other moves cannot enter an event phase. */
+  viaEvent?: boolean | undefined;
 };
 
 /** The ticket's current phase, archived or not (a ticket keeps its phase when it is archived). */
@@ -35,6 +37,7 @@ export async function moveTicket({
   before,
   to,
   reason,
+  viaEvent,
 }: MoveTicketInput): Promise<Result<TicketDto>> {
   if (to.id === before.phaseId) {
     return conflict({ message: `The ticket is already in "${to.name}"` });
@@ -48,7 +51,10 @@ export async function moveTicket({
   const lines: LinePlan = to.terminal
     ? { moves: [], blockers: [] }
     : await planLineMoves({ context, ticketId: before.id, phaseId: to.id });
-  const blockers = [...phaseBlockers({ from, to, allowed, assigneeId, reason }), ...lines.blockers];
+  const blockers = [
+    ...phaseBlockers({ from, to, allowed, assigneeId, reason, viaEvent }),
+    ...lines.blockers,
+  ];
   if (blockers.length > 0) {
     const message = `Ticket #${before.reference} cannot move to "${to.name}"`;
     return conflict({ message, issues: blockers });

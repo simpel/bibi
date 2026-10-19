@@ -2,7 +2,14 @@
 
 import type { QuoteDto } from "@okazi/core";
 import { Button } from "@okazi/ui";
-import { CopyPlusIcon, PencilIcon, SendIcon, TimerOffIcon, XCircleIcon } from "lucide-react";
+import {
+  CheckCircleIcon,
+  CopyPlusIcon,
+  PencilIcon,
+  SendIcon,
+  TimerOffIcon,
+  XCircleIcon,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { NamedOption } from "@/components/form/named-option";
@@ -12,6 +19,7 @@ import { QuoteDialog } from "./quote-dialog";
 export type QuoteAbilities = {
   edit: boolean;
   send: boolean;
+  accept: boolean;
   decline: boolean;
   expire: boolean;
   revise: boolean;
@@ -24,7 +32,7 @@ export type QuoteActionsProps = {
   can: QuoteAbilities;
 };
 
-/** Edit (draft), send, decline, expire and new-version buttons of the quote page. */
+/** Edit (draft), send, accept, decline, expire and new-version buttons of the quote page. */
 export function QuoteActions({ quote, items, can }: QuoteActionsProps) {
   const t = useTranslations("quote");
   const [editing, setEditing] = useState(false);
@@ -40,6 +48,9 @@ export function QuoteActions({ quote, items, can }: QuoteActionsProps) {
         </Button>
       ) : null}
       {can.revise ? <QuoteCommand quote={quote} command="revise" icon={<CopyPlusIcon />} /> : null}
+      {can.accept ? (
+        <QuoteCommand quote={quote} command="accept" icon={<CheckCircleIcon />} variant="default" />
+      ) : null}
       {can.decline ? <QuoteCommand quote={quote} command="decline" icon={<XCircleIcon />} /> : null}
       {can.expire ? <QuoteCommand quote={quote} command="expire" icon={<TimerOffIcon />} /> : null}
       <QuoteDialog

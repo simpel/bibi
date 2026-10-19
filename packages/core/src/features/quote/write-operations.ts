@@ -45,7 +45,7 @@ export const updateQuote = defineOperation({
     "Change a DRAFT quote's validity, terms or lines. Omitted properties are unchanged; `lines` " +
     "replaces the whole set (pass `lineId` to keep a line's snapshot). A quote that is not a " +
     "DRAFT cannot be changed (CONFLICT): make a new version with quote.revise. The status " +
-    "changes only with quote.send, quote.decline and quote.expire.",
+    "changes only with quote.send, quote.accept, quote.decline and quote.expire.",
   input: QuoteUpdateInputSchema,
   output: QuoteSchema,
   permission: "quote:write",

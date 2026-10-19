@@ -1,8 +1,11 @@
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
+import { moveOnQuoteEvent } from "./move-on-event";
 import { moveQuote } from "./move-quote";
+import { loadOpenTicket } from "./quote-rules";
 import { QuoteIdInputSchema, QuoteSchema, type QuoteStatus } from "./schema";
 import { loadQuote } from "./to-quote-dto";
+import { checkQuoteTransition } from "./transitions";
 
 type CloseInput = { name: string; to: QuoteStatus; description: string };
 
@@ -36,4 +39,37 @@ export const expireQuote = closeQuote({
   description:
     "Expire a SENT quote that the customer did not accept in time (ADR 0022). A new version can " +
     "then be made with quote.revise. Any other status is a CONFLICT.",
+});
+
+export const acceptQuote = defineOperation({
+  name: "quote.accept",
+  kind: "command",
+  description:
+    "Record that the customer accepted a SENT quote (ADR 0022). Stores who recorded it " +
+    "(`acceptedBy`), when (`acceptedAt`) and `acceptanceMethod` MANUAL, and creates no other " +
+    "record. The ticket must not be in a terminal phase. The ticket moves into the phase with " +
+    "the QUOTE_ACCEPTED event, if there is one and the organization allows the move from its " +
+    "current phase (needs ticket:write); its lines move through that phase's grid. A blocked " +
+    "move fails the accept without any change. Any other starting status is a CONFLICT.",
+  input: QuoteIdInputSchema,
+  output: QuoteSchema,
+  permission: "quote:write",
+  handler: async ({ input: { id }, context }) => {
+    const before = await loadQuote({ context, id });
+    if (!before) return notFound({ entity: "Quote" });
+    const allowed = checkQuoteTransition({ from: before.quoteStatus, to: "ACCEPTED" });
+    if (!allowed.ok) return allowed;
+    const ticket = await loadOpenTicket({ context, ticketId: before.ticketId });
+    if (!ticket.ok) return ticket;
+    const extra = {
+      acceptedBy: context.actor.userId,
+      acceptedAt: new Date(),
+      acceptanceMethod: "MANUAL",
+    } as const;
+    const accepted = await moveQuote({ context, before, to: "ACCEPTED", extra });
+    if (!accepted.ok) return accepted;
+    const event = "QUOTE_ACCEPTED";
+    const moved = await moveOnQuoteEvent({ context, ticketId: before.ticketId, event });
+    return moved.ok ? accepted : moved;
+  },
 });

@@ -13,6 +13,16 @@ export const PHASE_FLAGS = [
 ] as const;
 export type PhaseFlag = (typeof PHASE_FLAGS)[number];
 
+/** The quote events that can move a ticket into a phase (ADR 0043). */
+export const PHASE_EVENTS = ["QUOTE_SENT", "QUOTE_ACCEPTED"] as const;
+export const PhaseEventSchema = z.enum(PHASE_EVENTS);
+export type PhaseEvent = z.infer<typeof PhaseEventSchema>;
+
+const EventSchema = PhaseEventSchema.nullable().describe(
+  "Quote event that moves tickets into this phase (QUOTE_SENT or QUOTE_ACCEPTED); null for none. " +
+    "At most one phase per event; a phase with an event is not entered by hand",
+);
+
 const FlagShape = {
   entry: z
     .boolean()
@@ -31,6 +41,7 @@ export const TicketPhaseSchema = z.object({
   /** Order among the organization's phases (left to right on the board). */
   position: z.number().int(),
   ...FlagShape,
+  event: EventSchema,
   /** Ids of the phases a ticket may move to from this one (ADR 0043). */
   transitionsTo: z.array(z.string()),
   status: RecordStatusSchema,
@@ -46,12 +57,12 @@ const NameSchema = z
   .max(64)
   .describe("Phase name as staff see it, e.g. Lead, Quote sent or Lost");
 
-const ColorSchema = z
+export const ColorSchema = z
   .string()
   .regex(/^#[0-9a-fA-F]{6}$/, "Use a hex color such as #22c55e")
   .describe("Hex color, e.g. #22c55e");
 
-const OptionalFlags = z.object(FlagShape).partial().shape;
+const OptionalFlags = z.object({ ...FlagShape, event: EventSchema }).partial().shape;
 
 export const TicketPhaseCreateInputSchema = z.object({
   name: NameSchema,

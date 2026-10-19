@@ -15,6 +15,7 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "quote.update", route: "/quotes/[id]" },
   { operation: "quote.revise", route: "/quotes/[id]" },
   { operation: "quote.send", route: "/quotes/[id]" },
+  { operation: "quote.accept", route: "/quotes/[id]" },
   { operation: "quote.decline", route: "/quotes/[id]" },
   { operation: "quote.expire", route: "/quotes/[id]" },
   // Assignments (ADR 0034): shown and changed on the ticket page; the list filters

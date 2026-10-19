@@ -1,0 +1,38 @@
+import { ok, type Result } from "../../errors/result";
+import { authorize } from "../../operations/authorize";
+import type { OperationContext } from "../../operations/types";
+import { changeTicketPhase } from "../ticket/change-phase-operation";
+import { moveTicket } from "../ticket/move-ticket";
+import { loadTicket } from "../ticket/to-ticket-dto";
+import type { PhaseEvent } from "../ticket-phase/schema";
+
+export type MoveOnEventInput = {
+  context: OperationContext;
+  ticketId: string;
+  event: PhaseEvent;
+};
+
+/**
+ * Moves the ticket into the organization's phase for a quote event (ADR 0043), as the acting
+ * user: `ticket.changePhase`'s permission and every move check apply. The phase stays when the
+ * organization has no phase for the event, the ticket is already there, or the organization does
+ * not allow the move from its current phase. Any other blocker (a required reason or assignee, a
+ * line collision) fails the move, and so the quote command, without changing anything.
+ */
+export async function moveOnQuoteEvent({
+  context,
+  ticketId,
+  event,
+}: MoveOnEventInput): Promise<Result<true>> {
+  const to = await context.db.ticketPhase.findFirst({ where: { event } });
+  const before = await loadTicket({ context, id: ticketId });
+  if (!to || !before || to.id === before.phaseId) return ok({ value: true });
+  const transition = { fromPhaseId: before.phaseId, toPhaseId: to.id };
+  if ((await context.db.ticketPhaseTransition.count({ where: transition })) === 0) {
+    return ok({ value: true });
+  }
+  const allowed = authorize({ operation: changeTicketPhase, context });
+  if (!allowed.ok) return allowed;
+  const moved = await moveTicket({ context, before, to, viaEvent: true });
+  return moved.ok ? ok({ value: true }) : moved;
+}

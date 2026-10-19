@@ -1,6 +1,12 @@
 // Ticket phases per organization (ADR 0043): the organization's own phases, in its own order.
 // Behaviour comes only from the generic phase flags. Transitions between phases are data too.
 
+/// Quote event that moves a ticket into a phase (ADR 0043). At most one active phase per event.
+enum PhaseEvent {
+  QUOTE_SENT
+  QUOTE_ACCEPTED
+}
+
 /// Ticket phase – an organization's own phase, e.g. Lead, Quote sent or Lost. Exactly one active
 /// phase is the default `entry` (the first by `position`), and at least one is `terminal`.
 model TicketPhase {
@@ -19,6 +25,8 @@ model TicketPhase {
   requiresAssignee Boolean                 @default(false)
   /// Invoices can be created in this phase.
   invoiceable      Boolean                 @default(false)
+  /// Entered by this quote event instead of by hand; at most one active phase per event.
+  event            PhaseEvent?
   status           RecordStatus            @default(ACTIVE)
   createdAt        DateTime                @default(now())
   updatedAt        DateTime                @updatedAt

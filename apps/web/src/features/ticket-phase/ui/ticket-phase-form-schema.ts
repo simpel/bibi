@@ -1,5 +1,6 @@
-import type { TicketPhaseDto } from "@okazi/core/schemas";
+import type { PhaseEvent, TicketPhaseDto } from "@okazi/core/schemas";
 import { TicketPhaseCreateInputSchema } from "@okazi/core/schemas";
+import { NONE } from "@/components/form/option-select-field";
 import { formSchema } from "@/lib/form-schema";
 
 /** Raw values of the phase form: name, color and the generic phase flags (ADR 0043). */
@@ -11,13 +12,16 @@ export type TicketPhaseFormValues = {
   requiresReason: boolean;
   requiresAssignee: boolean;
   invoiceable: boolean;
+  /** The quote event that enters the phase, or `NONE`. */
+  event: PhaseEvent | typeof NONE;
 };
 
 export type TicketPhaseFormInput = { values: TicketPhaseFormValues };
 
 /** Form values → the shape core's `ticketPhase.create` input schema validates. */
 export function ticketPhaseFormToInput({ values }: TicketPhaseFormInput) {
-  return { ...values, name: values.name.trim() };
+  const event = values.event === NONE ? null : values.event;
+  return { ...values, event, name: values.name.trim() };
 }
 
 export const ticketPhaseFormSchema = formSchema({
@@ -38,5 +42,6 @@ export function ticketPhaseFormDefaults({
     requiresReason: phase?.requiresReason ?? false,
     requiresAssignee: phase?.requiresAssignee ?? false,
     invoiceable: phase?.invoiceable ?? false,
+    event: phase?.event ?? NONE,
   };
 }

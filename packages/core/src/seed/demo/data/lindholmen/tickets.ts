@@ -3,6 +3,7 @@ import type { DemoTicket } from "../../ticket-types";
 const hisingen = "Hisingen Energi AB";
 const kvarnby = "Kvarnby Design AB";
 const gota = "Göta Advokatbyrå KB";
+const quoted = { quote: "Conference lunch" };
 const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
 
 /**
@@ -11,6 +12,8 @@ const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
  * organization's own (`pipeline.ts`): open tickets after the deal are Confirmed, a lost one is
  * Lost. The leads F2, F3 and F6 stay before the quote with a room line in its initial state,
  * Prebooked (a soft hold, ADR 0044): F2 and F3 hold Vinga at the same time, F6's holdsUntil has passed. L4's
+ * tickets in Quote sent and Confirmed get a quote that is sent and, for Confirmed, accepted: the
+ * quote events of the phases move them (ADR 0043). L4's
  * Styrsö line is Booked by the grid when L4 is confirmed. L11 waits in Quote sent with its lunch
  * overridden to Locked; L12 soft-holds Styrsö inside L4's booking, so its move to Confirmed is
  * blocked (both used by `checkDemoGrid`).
@@ -27,6 +30,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     fields: { Dresscode: "Blazer" },
   },
   {
+    ...quoted,
     ...{ ref: "L3", customer: "Västra Sjukvårdsregionen", type: "Conference", day: 3 },
     ...{
       from: "08:30",
@@ -39,11 +43,13 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     fields: { Purpose: "Strategy days" },
   },
   {
+    ...quoted,
     ...{ ref: "L4", customer: gota, type: "Conference", day: 5, from: "09:00", to: "13:00" },
     ...{ phase: "Confirmed", headcount: 12, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
     lines: [{ item: "Styrsö", name: "Half-day conference", from: "09:00", to: "13:00" }],
   },
   {
+    ...quoted,
     ...{ ref: "L5", customer: "Älvstrand Tech AB", type: "Event", day: 14, from: "18:00" },
     ...{
       to: "23:30",
@@ -63,6 +69,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     ...{ template: "Small meeting", phase: "Confirmed", headcount: 4, assignee: "Sara Nilsson" },
   },
   {
+    ...quoted,
     ...{ ref: "L8", customer: "Göteborgs Seglarsällskap", type: "Tour", day: 2, from: "14:00" },
     ...{
       to: "15:00",
@@ -74,6 +81,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     fields: { "School class": false },
   },
   {
+    ...quoted,
     ...{ ref: "L9", customer: kvarnby, type: "Conference", day: 8, from: "09:00", to: "16:00" },
     ...{ phase: "Confirmed", headcount: 18, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
   },
@@ -83,6 +91,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     followers: ["Erik Lund"],
   },
   {
+    ...quoted,
     ...{ ref: "L11", customer: gota, type: "Conference", day: 6, from: "09:00", to: "13:00" },
     ...{
       phase: "Quote sent",
@@ -104,6 +113,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   },
   {
     ...{ ref: "L12", customer: hisingen, type: "Conference", day: 5, from: "10:00", to: "12:00" },
+    ...quoted,
     ...{ headcount: 8, assignee: "Erik Lund", checkMove: { to: "Confirmed", blocked: true } },
     fields: { Purpose: "Strategy meeting" },
     lines: [{ item: "Styrsö", name: "Strategy meeting", from: "10:00", to: "12:00" }],

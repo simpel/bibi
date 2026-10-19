@@ -41,9 +41,15 @@ async function addTransitions({ context, template }: TemplateInput) {
   return { count: added.count, phases: await recordTransitionChanges({ context, before }) };
 }
 
+/** The quote events an active phase already has; the import never takes one from it. */
+async function eventsInUse({ context }: { context: OperationContext }) {
+  const rows = await context.db.ticketPhase.findMany({ where: { event: { not: null } } });
+  return new Set(rows.flatMap((row) => (row.event ? [row.event] : [])));
+}
+
 /**
  * Shared by `ticketPhase.importTemplate` and organization provisioning. An organization that
- * already has an entry phase keeps it: the template's entry flag is then dropped.
+ * already has an entry phase or a quote event phase keeps it: the template's flag is then dropped.
  */
 export async function importTicketPhases({
   context,
@@ -52,13 +58,15 @@ export async function importTicketPhases({
   const created = [];
   const skipped: string[] = [];
   const hasEntry = (await context.db.ticketPhase.count({ where: { entry: true } })) > 0;
+  const takenEvents = await eventsInUse({ context });
   for (const phase of template.phases) {
     if (await ticketPhaseNameTaken({ context, name: phase.name })) {
       skipped.push(phase.name);
       continue;
     }
     const entry = phase.entry === true && !hasEntry;
-    const inserted = await insertTicketPhase({ context, ...phase, entry });
+    const event = phase.event && !takenEvents.has(phase.event) ? phase.event : null;
+    const inserted = await insertTicketPhase({ context, ...phase, entry, event });
     if (!inserted.ok) return inserted;
     created.push(inserted.value);
   }
@@ -76,7 +84,7 @@ export const importTicketPhaseTemplate = defineOperation({
     "Import a ticket phase template as ordinary, editable phases with their flags and " +
     "transitions. Phases whose name already exists are skipped; the template's transitions " +
     "between phases with its names are added, existing transitions are kept. An existing entry " +
-    "phase stays the entry phase.",
+    "phase stays the entry phase, and a quote event that a phase has stays with it.",
   input: TicketPhaseImportTemplateInputSchema,
   output: TicketPhaseImportTemplateOutputSchema,
   permission: "ticketPhase:admin",

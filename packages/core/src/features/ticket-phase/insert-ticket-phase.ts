@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
-import { checkFlagCombination, handOverEntry } from "./flag-rules";
+import { checkFlagCombination, handOverEntry, handOverEvent } from "./flag-rules";
 import { toTicketPhaseDto } from "./load-ticket-phase";
 import type { TicketPhaseCreateInput, TicketPhaseDto } from "./schema";
 
@@ -37,6 +37,7 @@ export async function insertTicketPhase({
   const position = await lastPosition({ context });
   // The current entry phase gives up its flag first: one active entry phase is a unique index.
   if (input.entry) await handOverEntry({ context, id: null });
+  if (input.event) await handOverEvent({ context, event: input.event, id: null });
   const row = await context.db.ticketPhase.create({
     data: { ...input, position, organizationId: context.organizationId },
   });

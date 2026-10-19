@@ -1,4 +1,5 @@
 import {
+  acceptQuote,
   createQuote,
   declineQuote,
   expireQuote,
@@ -66,6 +67,7 @@ for (const operation of [
   updateQuote,
   reviseQuote,
   sendQuote,
+  acceptQuote,
   declineQuote,
   expireQuote,
 ]) {

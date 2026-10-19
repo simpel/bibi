@@ -3,15 +3,10 @@ import { ItemBehavioursSchema } from "../entity-type/behaviour-kinds";
 import { HoldKindSchema } from "../item-state/hold-kind";
 import { ItemStateSchema } from "../item-state/schema";
 import { PhaseGridSchema } from "../phase-grid/schema";
-import { TicketPhaseSchema } from "../ticket-phase/schema";
+import { ColorSchema, TicketPhaseSchema } from "../ticket-phase/schema";
 
 const name = ({ max, example }: { max: number; example: string }) =>
   z.string().trim().min(1).max(max).describe(example);
-
-const ColorSchema = z
-  .string()
-  .regex(/^#[0-9a-fA-F]{6}$/, "Use a hex color such as #22c55e")
-  .describe("Hex color, e.g. #22c55e");
 
 /** One state of an item type in the draft (ADR 0044); flags default to off. */
 export const PipelineStateDraftSchema = z.object({
@@ -52,6 +47,7 @@ export const PipelinePhaseDraftSchema = z.object({
   requiresReason: z.boolean().optional().describe("A reason is required to enter"),
   requiresAssignee: z.boolean().optional().describe("The ticket needs its assignee to enter"),
   invoiceable: z.boolean().optional().describe("Invoices can be created in this phase"),
+  event: TicketPhaseSchema.shape.event.optional(),
 });
 
 /** One grid cell by name: entering `phase` moves the lines of `type` to `state`. */

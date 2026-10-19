@@ -63,6 +63,7 @@ export function phasesFromTemplate({ template }: { template: PipelineTemplateKey
       requiresReason: phase.requiresReason ?? false,
       requiresAssignee: phase.requiresAssignee ?? false,
       invoiceable: phase.invoiceable ?? false,
+      event: phase.event ?? null,
     }),
   );
 }

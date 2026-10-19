@@ -17,6 +17,7 @@ const flagsOf = ({ phase }: { phase: PipelinePhaseDraft }) => ({
   requiresReason: phase.requiresReason ?? false,
   requiresAssignee: phase.requiresAssignee ?? false,
   invoiceable: phase.invoiceable ?? false,
+  event: phase.event ?? null,
 });
 
 /** Entry first, then terminal phases: no step leaves the organization without either. */

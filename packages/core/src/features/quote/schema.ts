@@ -7,6 +7,10 @@ import { OrderLineInputSchema, OrderLineSchema } from "./order-line-schema";
 export const QUOTE_STATUSES = ["DRAFT", "SENT", "ACCEPTED", "DECLINED", "EXPIRED"] as const;
 export const QuoteStatusSchema = z.enum(QUOTE_STATUSES);
 
+/** How an acceptance was recorded; staff entry is the only way so far (ADR 0022). */
+export const ACCEPTANCE_METHODS = ["MANUAL"] as const;
+export const AcceptanceMethodSchema = z.enum(ACCEPTANCE_METHODS);
+
 /** How a line differs from the previous version of the quote. */
 export const LINE_CHANGES = ["ADDED", "CHANGED", "UNCHANGED"] as const;
 export const LineChangeSchema = z.enum(LINE_CHANGES);
@@ -26,13 +30,16 @@ export const QuoteSchema = z.object({
   ticketId: z.string(),
   version: z.number().int().describe("1 for the first quote of the ticket, then +1 per version"),
   previousId: z.string().nullable().describe("The version this one was made from"),
-  /** Changed only by the quote's own commands (`quote.send`, `quote.decline`, …). */
+  /** Changed only by the quote's own commands (`quote.send`, `quote.accept`, …). */
   quoteStatus: QuoteStatusSchema,
   validUntil: z.date().nullable(),
   terms: z.string().nullable(),
   totalExclVatMinor: z.number().int().describe("Sum of the lines excl. VAT, minor units"),
   totalInclVatMinor: z.number().int().describe("Sum of the lines incl. VAT, minor units"),
   statusChangedAt: z.date(),
+  acceptedBy: z.string().nullable().describe("User id of who recorded the acceptance"),
+  acceptedAt: z.date().nullable().describe("When the acceptance was recorded"),
+  acceptanceMethod: AcceptanceMethodSchema.nullable().describe("How the acceptance was recorded"),
   lines: z.array(QuoteLineSchema),
   removedLines: z
     .array(OrderLineSchema)

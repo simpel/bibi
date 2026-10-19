@@ -1,6 +1,5 @@
 import { ok, type Result } from "../../errors/result";
 import { followAssignment } from "../../features/assignment/write-operations";
-import { changeTicketPhase } from "../../features/ticket/change-phase-operation";
 import { createTicket } from "../../features/ticket/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
@@ -10,6 +9,7 @@ import type { DemoRefs } from "./demo-refs";
 import { missing, resolveFields } from "./seed-fields";
 import { seedDemoLines } from "./seed-lines";
 import { createDemoTicketFromTemplate } from "./seed-ticket-from-template";
+import { movePhase } from "./seed-ticket-phase";
 import type { DemoTicket } from "./ticket-types";
 import type { DemoUserIds } from "./users";
 
@@ -117,19 +117,7 @@ async function seedTicket({ context, refs, userIds, ticket, now }: TicketInput) 
     at: ({ time }) => at({ now, day: ticket.day, time }),
   });
   if (!lines.ok) return lines;
-  return movePhase({ context, ticket, ticketId: created.value.id });
-}
-
-type MoveInput = { context: ExecuteContext; ticket: DemoTicket; ticketId: string };
-
-/** Moves the new ticket to its phase in the spec through `ticket.changePhase` (ADR 0043). */
-async function movePhase({ context, ticket, ticketId }: MoveInput) {
-  // A ticket made from a predefined ticket already starts in its phase.
-  if (!ticket.phase || ticket.template) return ok({ value: true });
-  const phase = await context.db.ticketPhase.findFirst({ where: { name: ticket.phase } });
-  if (!phase) return missing({ what: `ticket phase ${ticket.phase}` });
-  const input = { ticketId, phaseId: phase.id, reason: ticket.reason };
-  return execute({ operation: changeTicketPhase, input, context });
+  return movePhase({ context, ticket, ticketId: created.value.id, now });
 }
 
 /** Slice 5 of ADR 0025, started: tickets with a main assignee, followers and phase, as SYSTEM. */

@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { invalid, notFound } from "../../shared/errors";
+import { moveOnQuoteEvent } from "./move-on-event";
 import { moveQuote } from "./move-quote";
 import { loadOpenTicket } from "./quote-rules";
 import { type QuoteDto, QuoteIdInputSchema, QuoteSchema } from "./schema";
@@ -64,6 +65,13 @@ export const sendQuote = defineOperation({
     if (!ticket.ok) return ticket;
     const superseded = await supersede({ context, quote: before });
     if (!superseded.ok) return superseded;
-    return moveQuote({ context, before, to: "SENT" });
+    const sent = await moveQuote({ context, before, to: "SENT" });
+    if (!sent.ok) return sent;
+    const moved = await moveOnQuoteEvent({
+      context,
+      ticketId: before.ticketId,
+      event: "QUOTE_SENT",
+    });
+    return moved.ok ? sent : moved;
   },
 });

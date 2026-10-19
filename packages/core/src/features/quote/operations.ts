@@ -3,7 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import { declineQuote, expireQuote } from "./lifecycle-operations";
+import { acceptQuote, declineQuote, expireQuote } from "./lifecycle-operations";
 import {
   QuoteIdInputSchema,
   QuoteListInputSchema,
@@ -61,6 +61,7 @@ export const quoteOperations = [
   updateQuote,
   reviseQuote,
   sendQuote,
+  acceptQuote,
   declineQuote,
   expireQuote,
 ];
