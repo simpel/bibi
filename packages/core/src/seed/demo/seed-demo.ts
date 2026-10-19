@@ -9,7 +9,7 @@ import type { DemoRefs } from "./demo-refs";
 import { refuseProduction } from "./guard";
 import { postSeedLogging } from "./post-seed";
 import { resetDemoOrg } from "./reset";
-import { runMegaAdmin } from "./run-mega-admin";
+import { runPlatformSeed } from "./run-platform-seed";
 import { seedDemoConfig } from "./seed-config";
 import { type DemoCatalog, seedDemoItems } from "./seed-items";
 import { seedDemoPipeline } from "./seed-pipeline";
@@ -137,8 +137,8 @@ export async function seedDemo({
   }
   if (megaAdmin) {
     const organizationIds = organizations.map(({ organizationId }) => organizationId);
-    const mega = await runMegaAdmin({ db, organizationIds });
-    if (!mega.ok) return mega;
+    const platform = await runPlatformSeed({ db, organizationIds });
+    if (!platform.ok) return platform;
   }
   return ok({ value: { organizations } });
 }

@@ -25,7 +25,7 @@ export async function seedMegaAdmin({
   db,
   organizationIds,
   email = MEGA_ADMIN_EMAIL,
-}: SeedMegaAdminInput): Promise<void> {
+}: SeedMegaAdminInput): Promise<{ id: string }> {
   const data = { name: "Mega Admin", emailVerified: true, role: PLATFORM_ADMIN_ROLE };
   const user = await db.user.upsert({
     where: { email },
@@ -39,4 +39,5 @@ export async function seedMegaAdmin({
       data: { id: createId(), ...where, role: OWNER_ROLE, createdAt: new Date() },
     });
   }
+  return { id: user.id };
 }
