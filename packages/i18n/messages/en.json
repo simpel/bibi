@@ -1907,7 +1907,8 @@
     "switchTo": "Switch to {name}",
     "resetOnboarding": "Reset onboarding",
     "resettingOnboarding": "Resetting onboarding…",
-    "onboardingReset": "Onboarding reset for {name}. They see it on their next page."
+    "onboardingReset": "Onboarding reset for {name}. They see it on their next page.",
+    "platformAdmin": "Platform admin"
   },
   "shell": {
     "mainNavigation": "Main navigation",

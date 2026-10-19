@@ -11,6 +11,8 @@ import { useTranslations } from "next-intl";
 export type DevUserMenuItemProps = {
   user: DevUser;
   current: boolean;
+  /** Second line under the name; the user's role when omitted. */
+  subtitle?: string;
   onSelect: (input: { user: DevUser }) => void;
   onResetOnboarding: (input: { user: DevUser }) => void;
 };
@@ -19,6 +21,7 @@ export type DevUserMenuItemProps = {
 export function DevUserMenuItem({
   user,
   current,
+  subtitle,
   onSelect,
   onResetOnboarding,
 }: DevUserMenuItemProps) {
@@ -28,7 +31,7 @@ export function DevUserMenuItem({
       <DropdownMenuSubTrigger>
         <span className="grid flex-1">
           <span className="text-sm">{user.name}</span>
-          <span className="text-xs text-muted-foreground">{user.role}</span>
+          <span className="text-xs text-muted-foreground">{subtitle ?? user.role}</span>
         </span>
         {current ? <CheckIcon aria-label={t("currentUser")} /> : null}
       </DropdownMenuSubTrigger>

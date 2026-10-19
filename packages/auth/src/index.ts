@@ -1,5 +1,10 @@
 export { type Auth, type CreateAuthInput, createAuth } from "./auth";
-export { type DevUser, isDevEnvironment, listDevUsers } from "./dev/dev-users";
+export {
+  type DevUser,
+  isDevEnvironment,
+  listDevPlatformAdmins,
+  listDevUsers,
+} from "./dev/dev-users";
 export { type ResetDevOnboardingInput, resetDevOnboarding } from "./dev/reset-dev-onboarding";
 export { type SwitchDevUserInput, switchDevUser } from "./dev/switch-dev-user";
 export type { FirstPartyClient } from "./first-party/clients";

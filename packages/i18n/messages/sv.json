@@ -1907,7 +1907,8 @@
     "switchTo": "Byt till {name}",
     "resetOnboarding": "Återställ introduktionen",
     "resettingOnboarding": "Återställer introduktionen…",
-    "onboardingReset": "Introduktionen är återställd för {name}. Den visas vid nästa sidvisning."
+    "onboardingReset": "Introduktionen är återställd för {name}. Den visas vid nästa sidvisning.",
+    "platformAdmin": "Plattformsadmin"
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",

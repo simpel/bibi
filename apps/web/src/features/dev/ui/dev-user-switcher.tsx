@@ -12,18 +12,21 @@ import {
 import { DatabaseIcon, UsersIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { DevService } from "@/lib/dev-services";
+import { DevAdminMenu } from "./dev-admin-menu";
 import { DevServiceMenu } from "./dev-service-menu";
 import { DevUserMenuGroups } from "./dev-user-menu-groups";
 import { useDevSwitcherActions } from "./use-dev-switcher-actions";
 
 export type DevUserSwitcherProps = {
   users: DevUser[];
+  /** Seeded platform admins, shown above the organizations. */
+  admins: DevUser[];
   services: DevService[];
   currentUserId: string | null;
 };
 
 /** Development only (rendered by `DevUserSwitcherSlot`): pick a seeded user to sign in as. */
-export function DevUserSwitcher({ users, services, currentUserId }: DevUserSwitcherProps) {
+export function DevUserSwitcher({ users, admins, services, currentUserId }: DevUserSwitcherProps) {
   const t = useTranslations("dev");
   const { open, setOpen, pending, switchTo, resetOnboarding, reseed } = useDevSwitcherActions();
   return (
@@ -38,6 +41,12 @@ export function DevUserSwitcher({ users, services, currentUserId }: DevUserSwitc
         <DropdownMenuContent align="end" side="top" className="w-56">
           <DevServiceMenu services={services} />
           <DropdownMenuSeparator />
+          <DevAdminMenu
+            admins={admins}
+            currentUserId={currentUserId}
+            onSelect={switchTo}
+            onResetOnboarding={resetOnboarding}
+          />
           <DevUserMenuGroups
             users={users}
             currentUserId={currentUserId}
