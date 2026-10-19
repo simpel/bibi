@@ -8,10 +8,12 @@ import {
   type ItemStateTemplateState,
 } from "../../templates/item-states/item-state-templates";
 import { getPhaseGridTemplate } from "../../templates/phase-grid/phase-grid-templates";
+import { getSetupPreset, type SetupPresetKey } from "../../templates/setup-presets/setup-presets";
 import { getTicketPhaseTemplate } from "../../templates/ticket-phases/ticket-phase-templates";
 import type {
   PipelineCellDraft,
   PipelinePhaseDraft,
+  PipelineSetupDraft,
   PipelineStateDraft,
   PipelineTypeDraft,
 } from "./schema";
@@ -89,4 +91,38 @@ export function cellsFromTemplate({ template, phases, itemTypes }: CellsFromTemp
         return match ? [{ phase: phase.name, type: type.name, state: match.state }] : [];
       }),
     );
+}
+
+export type ExistingSetupType = { id: string; name: string; bookable: boolean };
+
+export type DraftFromPresetInput = {
+  key: SetupPresetKey;
+  existingTypes: readonly ExistingSetupType[];
+};
+
+/**
+ * A whole draft from a setup preset (ADR 0045), by name: existing item types are kept, the
+ * preset's missing ones are added, and states, phases and grid come from the templates.
+ */
+export function draftFromPreset({ key, existingTypes }: DraftFromPresetInput): PipelineSetupDraft {
+  const preset = getSetupPreset({ key });
+  const known = new Set(existingTypes.map((type) => type.name.toLowerCase()));
+  const wanted = [
+    ...existingTypes.map((type) => ({ ...type, entityTypeId: type.id })),
+    ...preset.itemTypes
+      .filter((type) => !known.has(type.name.toLowerCase()))
+      .map((type) => ({ ...type, entityTypeId: undefined })),
+  ];
+  const itemTypes = wanted.map(({ entityTypeId, name, bookable }): PipelineTypeDraft => {
+    const states = statesFromTemplate({ template: defaultStateTemplate({ bookable }), bookable });
+    const identity = entityTypeId
+      ? { entityTypeId }
+      : bookable
+        ? { behaviours: ["BOOKABLE" as const] }
+        : {};
+    return { ...identity, name, ...states };
+  });
+  const template = preset.phases;
+  const phases = phasesFromTemplate({ template });
+  return { itemTypes, phases, cells: cellsFromTemplate({ template, phases, itemTypes }) };
 }
