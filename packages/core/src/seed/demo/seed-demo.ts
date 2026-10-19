@@ -9,6 +9,7 @@ import type { DemoRefs } from "./demo-refs";
 import { refuseProduction } from "./guard";
 import { postSeedLogging } from "./post-seed";
 import { resetDemoOrg } from "./reset";
+import { runPlatformSeed } from "./run-platform-seed";
 import { seedDemoConfig } from "./seed-config";
 import { type DemoCatalog, seedDemoItems } from "./seed-items";
 import { seedDemoPipeline } from "./seed-pipeline";
@@ -26,6 +27,8 @@ export type SeedDemoInput = {
   orgs?: readonly DemoOrg[];
   /** `--skip-pipeline`: item types without phases, states or grid, for the first setup. */
   skipPipeline?: boolean;
+  /** The mega admin (platform admin, owner of every org); on by default for the demo orgs only. */
+  megaAdmin?: boolean;
 };
 
 export type SeedDemoOutput = { organizations: { slug: string; organizationId: string }[] };
@@ -122,6 +125,7 @@ export async function seedDemo({
   db = getDb(),
   orgs = DEMO_ORGS,
   skipPipeline = false,
+  megaAdmin = orgs === DEMO_ORGS,
 }: SeedDemoInput = {}): Promise<Result<SeedDemoOutput>> {
   const allowed = refuseProduction();
   if (!allowed.ok) return allowed;
@@ -130,6 +134,11 @@ export async function seedDemo({
     const seeded = await seedOne({ db, org, skipPipeline });
     if (!seeded.ok) return seeded;
     organizations.push({ slug: org.slug, organizationId: seeded.value });
+  }
+  if (megaAdmin) {
+    const organizationIds = organizations.map(({ organizationId }) => organizationId);
+    const platform = await runPlatformSeed({ db, organizationIds });
+    if (!platform.ok) return platform;
   }
   return ok({ value: { organizations } });
 }

@@ -9,7 +9,7 @@ import { TextField } from "@/components/form/text-field";
 import { authClient } from "@/lib/auth-client";
 import { slugify } from "@/lib/slugify";
 import { useZodMessages } from "@/lib/use-zod-messages";
-import { afterOrganization } from "./after-organization";
+import { afterNewOrganization } from "./after-organization";
 import { OrganizationNameSchema, type OrganizationNameValues } from "./auth-schemas";
 import { useAuthFormAction } from "./use-auth-form-action";
 
@@ -31,7 +31,7 @@ export function CreateOrganizationForm() {
           slug: slugify({ name, suffix: crypto.randomUUID().slice(0, 8) }),
         }),
       messages: { pending: t("creatingOrganization"), success: t("organizationCreated") },
-      onSuccess: () => afterOrganization({ router }),
+      onSuccess: () => afterNewOrganization({ router }),
     }),
   );
   return (

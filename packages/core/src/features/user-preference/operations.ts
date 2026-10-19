@@ -10,6 +10,11 @@ import {
   UserPreferenceSchema,
   UserPreferenceSetInputSchema,
 } from "./schema";
+import {
+  UserSettingsGetInputSchema,
+  UserSettingsSchema,
+  UserSettingsUpdateInputSchema,
+} from "./settings-schema";
 
 const SELECT = { id: true, key: true, value: true, updatedAt: true } as const;
 
@@ -18,7 +23,7 @@ type Row = { id: string; key: string; value: Prisma.JsonValue; updatedAt: Date }
 /** Prisma's and Zod's JSON types differ only nominally; the column only ever holds JSON. */
 const toDto = ({ value, ...row }: Row) => ({ ...row, value: value as JsonValue });
 
-/** Preferences belong to a user; the system actor has none (ADR 0039). */
+/** Preferences and settings belong to a user; the system actor has none (ADR 0039, 0046). */
 const requireUser = ({ context }: { context: Pick<OperationContext, "actor"> }) =>
   context.actor.userId
     ? ok({ value: context.actor.userId })
@@ -78,4 +83,60 @@ export const setUserPreference = defineOperation({
   },
 });
 
-export const userPreferenceOperations = [listUserPreferences, setUserPreference];
+const SETTINGS_SELECT = { id: true, onboardingStatus: true, updatedAt: true } as const;
+
+export const getUserSettings = defineOperation({
+  name: "userSettings.get",
+  kind: "query",
+  description:
+    "Read the caller's own settings, e.g. whether the first setup of an organization is " +
+    "pending, completed or skipped. `onboardingStatus` is null when it never applied.",
+  input: UserSettingsGetInputSchema,
+  output: UserSettingsSchema,
+  permission: "self:read",
+  handler: async ({ context }) => {
+    const user = requireUser({ context });
+    if (!user.ok) return user;
+    const row = await context.db.userSettings.findUnique({
+      where: { userId: user.value },
+      select: SETTINGS_SELECT,
+    });
+    return ok({ value: row ?? { id: null, onboardingStatus: null, updatedAt: null } });
+  },
+});
+
+export const updateUserSettings = defineOperation({
+  name: "userSettings.update",
+  kind: "command",
+  description:
+    "Change the caller's own settings: set the first setup to PENDING (start or restart it), " +
+    "COMPLETED or SKIPPED.",
+  input: UserSettingsUpdateInputSchema,
+  output: UserSettingsSchema,
+  permission: "self:write",
+  handler: async ({ input, context }) => {
+    const user = requireUser({ context });
+    if (!user.ok) return user;
+    const userId = user.value;
+    const before = await context.db.userSettings.findUnique({
+      where: { userId },
+      select: SETTINGS_SELECT,
+    });
+    const after = await context.db.userSettings.upsert({
+      where: { userId },
+      create: { userId, onboardingStatus: input.onboardingStatus },
+      update: { onboardingStatus: input.onboardingStatus },
+      select: SETTINGS_SELECT,
+    });
+    context.recordChange({ entityId: after.id, before: before ?? undefined, after });
+    return ok({ value: after });
+  },
+});
+
+/** The caller's own data: preferences (ADR 0039) and settings (ADR 0046). */
+export const userPreferenceOperations = [
+  listUserPreferences,
+  setUserPreference,
+  getUserSettings,
+  updateUserSettings,
+];

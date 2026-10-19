@@ -1,8 +1,12 @@
 import {
+  getUserSettings,
   listUserPreferences,
   setUserPreference,
   type UserPreferenceDto,
   UserPreferenceSchema,
+  type UserSettingsDto,
+  UserSettingsSchema,
+  updateUserSettings,
 } from "@okazi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
@@ -29,3 +33,12 @@ fieldFromOperation({
   name: "userPreferences",
 });
 mutationFromOperation({ operation: setUserPreference, type: UserPreferenceRef });
+
+export const UserSettingsRef = objectFromSchema<UserSettingsDto>({
+  name: "UserSettings",
+  schema: UserSettingsSchema,
+  description: "The caller's own settings, e.g. where they are in the first setup.",
+});
+
+fieldFromOperation({ operation: getUserSettings, type: UserSettingsRef, name: "userSettings" });
+mutationFromOperation({ operation: updateUserSettings, type: UserSettingsRef });

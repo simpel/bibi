@@ -67,3 +67,9 @@
 ## Not decided
 - One pipeline per organization. A pipeline per ticket type is deferred; a nullable `pipelineId` on `TicketPhase` would allow it later.
 - Automation on phase entry (send mail, create task) is deferred. Phase flags, quote events and line states are the only automation.
+
+## Addendum 2026-10-19 – history and facts (ADR 0052, 0054)
+- History comes from `TicketPhaseChange`, not from `AuditLog`. `Ticket.phaseId` is a projection of the latest change, set by a trigger; `phaseChangedAt` and `phaseReason` are removed.
+- Phases never store facts. A phase may require one on entry (`requiresAcceptedQuote`, later `requiresPaidDeposit`). Quote events still move a ticket forward, recorded with `trigger = QUOTE_EVENT`. A phase that contradicts a fact is shown as a derived warning.
+- `Ticket.quantity` is removed. The ticket owns `estimatedHeadcount` and `guaranteedHeadcount`; lines inherit it.
+- `ProgramItem` is renamed `Line` (ADR 0052).

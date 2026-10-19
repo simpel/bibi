@@ -78,3 +78,10 @@
 ## Open questions
 - Should a state change on a line notify the line's responsibility (ADR 0034), e.g. the head of kitchen when a food line becomes "Ordered"? Deferred until notifications exist.
 - Lines with only a quantity and no item (free-text) are not covered; they get the initial state of a default type.
+
+## Addendum 2026-10-19 – holds as a projection (ADR 0052, 0053, 0054)
+- A line's occupancy is a database projection: written only by triggers on `Line`, `ItemState` and `Setup` through one SQL function, `sync_line_occupancy(line_id)`, never by application code. A reconciliation check rebuilds it in the seed checks and tests.
+- Only lines that have not ended are re-derived. A changeover-time change that would collide is refused with the blocking lines.
+- `heldAt` is removed; "held since" is read from `LineStateChange`. `Line.stateId` is set by a trigger on that history table.
+- Untimed lines (no `startsAt` / `endsAt`) never hold. This resolves the open question about lines without an item: they are allowed and have no hold.
+- Lines may form an `AlternativeGroup`. Choosing one option moves the others to the released state.

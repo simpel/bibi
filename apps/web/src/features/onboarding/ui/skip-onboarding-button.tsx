@@ -1,0 +1,27 @@
+"use client";
+
+import { useRouter } from "@okazi/i18n/navigation";
+import { Button } from "@okazi/ui";
+import { useTranslations } from "next-intl";
+import { setOnboardingStatus } from "@/features/user-preference/settings-actions";
+import { ROUTES } from "@/lib/routes";
+import { useToastAction } from "@/lib/use-toast-action";
+
+/** "Skip for now": remembers the choice on the user (ADR 0046), then opens the app. */
+export function SkipOnboardingButton() {
+  const t = useTranslations("onboarding");
+  const common = useTranslations("common");
+  const router = useRouter();
+  const { run, pending } = useToastAction();
+  const skip = () =>
+    run({
+      action: () => setOnboardingStatus({ onboardingStatus: "SKIPPED" }),
+      messages: { pending: common("saving"), success: t("skipped") },
+      onSuccess: () => router.push(ROUTES.home),
+    });
+  return (
+    <Button type="button" variant="ghost" disabled={pending} onClick={skip}>
+      {t("skip")}
+    </Button>
+  );
+}

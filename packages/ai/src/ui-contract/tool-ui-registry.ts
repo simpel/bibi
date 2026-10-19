@@ -131,4 +131,6 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   oauthGrant_revoke: "connected apps are managed on /profile, not in chat",
   userPreference_list: "UI preference bookkeeping (e.g. table column order), not a tool card",
   userPreference_set: "UI preference bookkeeping (e.g. table column order), not a tool card",
+  userSettings_get: "User settings bookkeeping (first setup state), not a tool card",
+  userSettings_update: "User settings bookkeeping (first setup state), not a tool card",
 };
