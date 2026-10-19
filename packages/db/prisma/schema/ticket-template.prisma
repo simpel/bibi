@@ -8,7 +8,7 @@ enum TemplateQuantityBasis {
 /// ticket starts in, default own-field values and lines. `ticket.createFromTemplate` makes a
 /// ticket from it in one step. `status` is the soft-delete flag (ADR 0006).
 model TicketTemplate {
-  id             String               @id @default(cuid(2))
+  id             String               @id
   organizationId String
   name           String
   entityTypeId   String
@@ -23,6 +23,8 @@ model TicketTemplate {
   entityType     EntityType           @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   phase          TicketPhase          @relation(fields: [phaseId, organizationId], references: [id, organizationId])
   lines          TicketTemplateLine[]
+  /// The supertable row this record extends (ADR 0056).
+  record         Record               @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

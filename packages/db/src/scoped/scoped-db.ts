@@ -8,10 +8,13 @@ import {
   type UpsertEmbeddingInput,
 } from "../embeddings/types";
 import { upsertEmbedding } from "../embeddings/upsert-embedding";
+import { Prisma } from "../generated/prisma/client";
 import { getDb } from "../get-db";
 import { listOauthGrants } from "../oauth-grants/list-oauth-grants";
 import { revokeOauthGrant } from "../oauth-grants/revoke-oauth-grant";
 import type { ListOauthGrantsInput, RevokeOauthGrantInput } from "../oauth-grants/types";
+import { findRecords } from "../records/find-records";
+import type { FindRecordsInput } from "../records/types";
 import { applyScope } from "./apply-scope";
 import { PLATFORM_SCOPE } from "./platform-scope";
 import { ScopeViolationError } from "./scope-violation";
@@ -48,6 +51,12 @@ function extend({ organizationId, actorId, db }: Required<ScopedDbInput>) {
         searchEmbeddings({ ...input, db, organizationId }),
       $deleteEmbedding: (input: Scoped<DeleteEmbeddingInput>) =>
         deleteEmbedding({ ...input, db, organizationId }),
+      // Field rules on the record supertable (ADR 0056): one indexed raw query.
+      // Runs on the client it is called on, so inside `$transaction` it sees the transaction's rows.
+      $findRecords(input: Scoped<FindRecordsInput>) {
+        const client = Prisma.getExtensionContext(this) as unknown as Pick<Db, "$queryRaw">;
+        return findRecords({ ...input, db: client, organizationId });
+      },
       // Better Auth's OAuth tables have no `organizationId` (it is their `referenceId`).
       $listOauthGrants: (input: Scoped<ListOauthGrantsInput>) =>
         listOauthGrants({ ...input, db, organizationId }),

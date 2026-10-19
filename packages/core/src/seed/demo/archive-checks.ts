@@ -18,8 +18,11 @@ async function phaseFailures({ context, org }: CheckDemoArchiveInput): Promise<s
   });
   for (const phase of phases) {
     const tickets = await context.db.ticket.count({ where: { phaseId: phase.id } });
-    // Tickets cannot be moved into a phase that only a quote event enters (ADR 0043).
-    const target = phase.transitionsFrom.find((row) => !row.toPhase.event)?.toPhaseId;
+    // Tickets cannot be moved into a phase that only a quote event enters (ADR 0043), and a
+    // phase that requires a reason would block the move; transitions come in no fixed order.
+    const target = phase.transitionsFrom.find(
+      (row) => !row.toPhase.event && !row.toPhase.requiresReason,
+    )?.toPhaseId;
     const templates = await context.db.ticketTemplate.count({ where: { phaseId: phase.id } });
     if (tickets === 0 || templates > 0 || !target) continue;
     const input = { id: phase.id, targetPhaseId: target };

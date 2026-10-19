@@ -1,5 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { createRecord } from "../../records/create-record";
+import { updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
@@ -23,14 +25,22 @@ export const createCustomer = defineOperation({
     if (!type.ok) return type;
     const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
     if (!checked.ok) return checked;
-    const row = await context.db.customer.create({
-      data: {
-        ...data,
-        entityTypeId,
-        fields: toJson({ value: checked.value }) ?? {},
-        organizationId: context.organizationId,
-      },
-      include: CUSTOMER_INCLUDE,
+    const row = await createRecord({
+      context,
+      base: "CUSTOMER",
+      entityTypeId,
+      fields: checked.value,
+      insert: ({ id }) =>
+        context.db.customer.create({
+          data: {
+            id,
+            ...data,
+            entityTypeId,
+            fields: toJson({ value: checked.value }) ?? {},
+            organizationId: context.organizationId,
+          },
+          include: CUSTOMER_INCLUDE,
+        }),
     });
     const customer = toCustomerDto({ row });
     context.recordChange({ entityId: row.id, after: customer });
@@ -64,6 +74,7 @@ export const updateCustomer = defineOperation({
       data: { ...data, ...(json ? { fields: json } : {}) },
       include: CUSTOMER_INCLUDE,
     });
+    await updateRecord({ context, id, change: { fields: json } });
     const customer = toCustomerDto({ row });
     context.recordChange({ entityId: id, before, after: customer });
     return ok({ value: customer });

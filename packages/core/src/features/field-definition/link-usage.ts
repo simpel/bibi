@@ -1,41 +1,53 @@
+import type { RecordMatches } from "@okazi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { conflict } from "../../shared/errors";
-import { fieldValuesOfType } from "./field-usage";
-
-type Db = Pick<OperationContext, "db">;
+import { mergeUsage, usageConflict } from "../../records/blocking-issues";
+import { recordsMatching } from "./field-usage";
 
 export type LinkedRecord = { id: string; entityTypeId: string };
 
-export type CountLinksInput = { context: Db; records: readonly LinkedRecord[] };
+export type LinksToInput = {
+  context: Pick<OperationContext, "db">;
+  records: readonly LinkedRecord[];
+};
 
-/** Active records whose LINK fields point to one of `records` (ADR 0026: data present → CONFLICT). */
-export async function countLinksTo({ context, records }: CountLinksInput): Promise<number> {
+/**
+ * Active records whose LINK fields point to one of `records` (ADR 0026: data present → CONFLICT):
+ * one indexed `fields @> {key: id}` query per LINK field that targets their types (ADR 0056).
+ */
+export async function linksTo({ context, records }: LinksToInput): Promise<RecordMatches> {
   const typeIds = [...new Set(records.map(({ entityTypeId }) => entityTypeId))];
-  if (typeIds.length === 0) return 0;
+  if (typeIds.length === 0) return { total: 0, rows: [] };
   const fields = await context.db.fieldDefinition.findMany({
     where: { kind: "LINK", linkTypeId: { in: typeIds } },
-    select: { entityTypeId: true, key: true },
+    select: { entityTypeId: true, key: true, linkTypeId: true },
   });
-  const ids = new Set(records.map(({ id }) => id));
-  let count = 0;
-  for (const { entityTypeId, key } of fields) {
-    const values = await fieldValuesOfType({ context, entityTypeId });
-    count += values.filter((value) => ids.has(value[key] as string)).length;
+  const usages: RecordMatches[] = [];
+  for (const { entityTypeId, key, linkTypeId } of fields) {
+    const values = records.filter((record) => record.entityTypeId === linkTypeId);
+    const match = { kind: "contains" as const, key, values: values.map(({ id }) => id) };
+    usages.push(await recordsMatching({ context, entityTypeId, match }));
   }
-  return count;
+  return mergeUsage({ usages });
 }
 
-export type CheckNotLinkedInput = CountLinksInput & { what: string };
+export type CheckNotLinkedInput = {
+  context: OperationContext;
+  records: readonly LinkedRecord[];
+  what: string;
+};
 
-/** CONFLICT while an active record links to one of `records`; clear or change those links first. */
+/**
+ * CONFLICT while an active record links to one of `records`; clear or change those links first.
+ * `issues` lists the linking records.
+ */
 export async function checkNotLinked({
   context,
   records,
   what,
 }: CheckNotLinkedInput): Promise<Result<true>> {
-  const links = await countLinksTo({ context, records });
-  return links > 0
-    ? conflict({ message: `${what} is linked from ${links} records; change those links first` })
-    : ok({ value: true });
+  const usage = await linksTo({ context, records });
+  if (usage.total === 0) return ok({ value: true });
+  const message = `${what} is linked from ${usage.total} records; change those links first`;
+  return usageConflict({ context, usage, message });
 }

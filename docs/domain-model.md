@@ -30,7 +30,7 @@ What changes:
 - **Holds are a projection** ([ADR 0053](decisions/0053-holds-are-a-projection.md)), written by triggers through `sync_line_occupancy`. Only lines that have not ended are re-derived.
 - **History is owned data** ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)): `TicketPhaseChange` and `LineStateChange`. `phaseChangedAt`, `phaseReason` and `heldAt` go. Phases may require facts (`requiresAcceptedQuote`) but never store them.
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
-- **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. Link values move to `RecordLink`; id lists become join tables; polymorphic pairs point at `Record`.
+- **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. *Done:* `Record` (`id`, `entityTypeId`, `base`, `fields`, `status`) is the supertable of `Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line` and `Requirement`, which share its id (composite foreign key with `organizationId`); core writes both rows in one transaction (`packages/core/src/records/`). `base` is the entity base, or `TICKET_TEMPLATE` for a predefined ticket. Link values move to `RecordLink`; id lists become join tables; polymorphic pairs point at `Record`.
 - **Money is derived** ([ADR 0057](decisions/0057-money-balance-is-derived.md)): a payment settles one receivable (sent quote, deposit or invoice); no balance is stored. External calls run after commit (ADR 0058).
 
 ## ER diagram (MVP)
@@ -129,7 +129,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · A custom field on a type.
 
-> **Target (ADR 0056):** values live in `Record.fields` (GIN index); `LINK` values in `RecordLink` with foreign keys.
+> **Stored (ADR 0056):** values are mirrored on the `Record` supertable (`Record.fields`, GIN index), so every "in use" rule is one indexed query (`fields ? key`, `fields @> {key: value}`) and each `CONFLICT` lists the blocking records in `issues` (`records.<id>`; records the caller may not read are only counted). **Target:** `LINK` values in `RecordLink` with foreign keys.
 
 **Attributes**
 - name

@@ -1,5 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { usageConflict } from "../../records/blocking-issues";
 import { conflict, notFound } from "../../shared/errors";
 import { loadVocabulary } from "./load-vocabulary";
 import {
@@ -8,7 +9,7 @@ import {
   VocabularySchema,
   VocabularyUpdateValueInputSchema,
 } from "./schema";
-import { countRecordsUsingValue } from "./usage";
+import { recordsUsingValue } from "./usage";
 
 const VALUE = "vocabularyValue";
 
@@ -71,8 +72,9 @@ export const archiveVocabularyValue = defineOperation({
     const before = await context.db.vocabularyValue.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "List value" });
     const vocabularyId = before.vocabularyId;
-    const used = await countRecordsUsingValue({ context, vocabularyId, valueId: id });
-    if (used > 0) return conflict({ message: `${used} records carry "${before.name}"` });
+    const usage = await recordsUsingValue({ context, vocabularyId, valueId: id });
+    const message = `${usage.total} records carry "${before.name}"`;
+    if (usage.total > 0) return usageConflict({ context, usage, message });
     const row = await context.db.vocabularyValue.update({
       where: { id },
       data: { status: "ARCHIVED" },

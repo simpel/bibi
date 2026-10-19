@@ -1,9 +1,10 @@
-import type { FieldDefinition } from "@okazi/db";
+import type { FieldDefinition, RecordMatches } from "@okazi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { conflict, invalid } from "../../shared/errors";
+import { mergeUsage, usageConflict } from "../../records/blocking-issues";
+import { invalid } from "../../shared/errors";
 import { type FieldKind, isChoiceKind } from "./field-kinds";
-import { containsChoice, fieldValuesOfType } from "./field-usage";
+import { recordsMatching } from "./field-usage";
 
 type Db = Pick<OperationContext, "db">;
 
@@ -34,40 +35,57 @@ export async function checkChoiceSource({
 }
 
 export type CheckFieldChangeInput = {
-  context: Db;
+  context: OperationContext;
   before: FieldDefinition;
   next: ChoiceSource & { required: boolean; linkTypeId: string | null };
 };
 
+type ChangeInput = Pick<CheckFieldChangeInput, "context" | "before"> & { removed: string[] };
+
+/** The removed inline options that active records still carry, and those records. */
+async function optionsInUse({ context, before, removed }: ChangeInput) {
+  const { entityTypeId, key } = before;
+  const usages: RecordMatches[] = [];
+  const used: string[] = [];
+  for (const option of removed) {
+    const match = { kind: "contains" as const, key, values: [option] };
+    const usage = await recordsMatching({ context, entityTypeId, match });
+    if (usage.total > 0) used.push(option);
+    usages.push(usage);
+  }
+  return { used, usage: mergeUsage({ usages }) };
+}
+
 /**
  * "Data present → CONFLICT" for a field (ADR 0021): the kind, list or link target cannot change and inline
  * options cannot be removed while records use them, and a field cannot become required while
- * records lack a value.
+ * records lack a value. Each refusal lists the blocking records (ADR 0056).
  */
 export async function checkFieldChange({
   context,
   before,
   next,
 }: CheckFieldChangeInput): Promise<Result<true>> {
-  const all = await fieldValuesOfType({ context, entityTypeId: before.entityTypeId });
-  const values = all.map((fields) => fields[before.key]);
-  const present = values.filter((value) => value !== undefined);
+  const { entityTypeId, key } = before;
   const reshaped =
     next.kind !== before.kind ||
     next.vocabularyId !== before.vocabularyId ||
     next.linkTypeId !== before.linkTypeId;
-  if (reshaped && present.length > 0) {
-    return conflict({ message: `${present.length} records have a value for ${before.name}` });
+  if (reshaped) {
+    const usage = await recordsMatching({ context, entityTypeId, match: { kind: "has", key } });
+    const message = `${usage.total} records have a value for ${before.name}`;
+    if (usage.total > 0) return usageConflict({ context, usage, message });
   }
   const removed = before.options.filter((option) => !next.options.includes(option));
-  const stillUsed = removed.filter((choice) =>
-    present.some((value) => containsChoice({ value, choice })),
-  );
-  if (stillUsed.length > 0) {
-    return conflict({ message: `Options still in use: ${stillUsed.join(", ")}` });
+  const options = await optionsInUse({ context, before, removed });
+  if (options.used.length > 0) {
+    const message = `Options still in use: ${options.used.join(", ")}`;
+    return usageConflict({ context, usage: options.usage, message });
   }
-  if (next.required && !before.required && present.length < values.length) {
-    return conflict({ message: `${values.length - present.length} records lack ${before.name}` });
+  if (next.required && !before.required) {
+    const usage = await recordsMatching({ context, entityTypeId, match: { kind: "lacks", key } });
+    const message = `${usage.total} records lack ${before.name}`;
+    if (usage.total > 0) return usageConflict({ context, usage, message });
   }
   return ok({ value: true });
 }

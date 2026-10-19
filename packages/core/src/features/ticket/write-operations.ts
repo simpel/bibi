@@ -1,5 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
@@ -50,6 +51,7 @@ export const updateTicket = defineOperation({
       where: { id },
       data: { ...data, ...(json ? { fields: json } : {}) },
     });
+    await updateRecord({ context, id, change: { fields: json } });
     const ticket = toTicketDto({ row });
     context.recordChange({ entityId: id, before, after: ticket });
     return ok({ value: ticket });

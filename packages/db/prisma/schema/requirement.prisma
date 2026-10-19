@@ -3,7 +3,7 @@
 /// that line and replaces the ticket's count for the same value there. Its type (base
 /// `REQUIREMENT`) decides its own fields, e.g. Severity. Never linked to a person: no guest data.
 model Requirement {
-  id                String          @id @default(cuid(2))
+  id                String          @id
   organizationId    String
   ticketId          String
   /// The line it applies to; null = the whole ticket.
@@ -23,6 +23,8 @@ model Requirement {
   line              Line?           @relation(fields: [lineId, organizationId], references: [id, organizationId])
   entityType        EntityType      @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   vocabularyValue   VocabularyValue @relation(fields: [vocabularyValueId, organizationId], references: [id, organizationId])
+  /// The supertable row this record extends (ADR 0056).
+  record            Record          @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, ticketId, status])

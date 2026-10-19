@@ -1,7 +1,7 @@
 /// Customer – the organization (company, agency, association, private person) that buys
 /// (ADR 0022). Its type (base `CUSTOMER`) decides its own fields, e.g. org number or Peppol ID.
 model Customer {
-  id                   String       @id @default(cuid(2))
+  id                   String       @id
   organizationId       String
   entityTypeId         String
   name                 String
@@ -29,6 +29,8 @@ model Customer {
   items                Item[]
   /// Customer prices (ADR 0023).
   priceLists           PriceList[]
+  /// The supertable row this record extends (ADR 0056).
+  record               Record       @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, status])
@@ -38,7 +40,7 @@ model Customer {
 /// Contact – a person at a customer: orderer, invoice recipient or organizer (ADR 0022). Its
 /// type (base `CONTACT`) decides its own fields, e.g. the person's role at the customer.
 model Contact {
-  id             String       @id @default(cuid(2))
+  id             String       @id
   organizationId String
   entityTypeId   String
   customerId     String
@@ -54,6 +56,8 @@ model Contact {
   entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
   customer       Customer     @relation(fields: [customerId, organizationId], references: [id, organizationId])
   tickets        Ticket[]
+  /// The supertable row this record extends (ADR 0056).
+  record         Record       @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

@@ -10,6 +10,7 @@ import { checkDemoHolds } from "./hold-checks";
 import { checkDemoPipeline } from "./pipeline-checks";
 import { checkDemoQuoteEvents } from "./quote-event-checks";
 import { reconcileProjections } from "./reconcile-checks";
+import { checkDemoRecords } from "./record-checks";
 import { checkDemoResponsibilities } from "./responsibility-checks";
 import { checkDemoSetupNeed } from "./setup-need-checks";
 import { checkDemoTemplates } from "./template-checks";
@@ -20,7 +21,7 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPip
 
 /**
  * The checks in `docs/demo-seed.md` that slices 1–5 can verify: the member count, everyone
- * has their documented role, the configuration and items (`checkDemoConfig`), the responsibilities' id lists (`checkDemoResponsibilities`), the pipeline (`checkDemoPipeline`: phases,
+ * has their documented role, the configuration and items (`checkDemoConfig`), the responsibilities' id lists (`checkDemoResponsibilities`), that a refused field archive lists its records (`checkDemoRecords`), the pipeline (`checkDemoPipeline`: phases,
  * states and grid cells), the predefined tickets and the tickets made from them
  * (`checkDemoTemplates`) and the tickets per phase (`checkDemoTickets`), the tickets' assignees and followers
  * (`checkDemoAssignments`), that removing a populated phase or state with a target is allowed
@@ -51,6 +52,7 @@ export async function checkDemoOrg({
   }
   failures.push(...(await checkDemoConfig({ context, org, skipPipeline })));
   failures.push(...(await checkDemoResponsibilities({ context, org })));
+  failures.push(...(await checkDemoRecords({ context, org })));
   failures.push(...(await checkDemoSetupNeed({ context, org, skipPipeline })));
   if (skipPipeline) return [...failures, ...(await auditFailures({ context, org }))];
   failures.push(...(await checkDemoPipeline({ context, org })));

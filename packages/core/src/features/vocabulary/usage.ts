@@ -1,5 +1,7 @@
+import type { RecordMatches } from "@okazi/db";
 import type { OperationContext } from "../../operations/types";
-import { containsChoice, countRecordsWithValue } from "../field-definition/field-usage";
+import { mergeUsage } from "../../records/blocking-issues";
+import { recordsMatching } from "../field-definition/field-usage";
 
 type Db = Pick<OperationContext, "db">;
 
@@ -15,22 +17,22 @@ export const listFieldsUsing = ({ context, vocabularyId }: ListFieldsUsingInput)
 export type ValueInUseInput = ListFieldsUsingInput & { valueId: string };
 
 /**
- * Number of active records that carry the list value: in any field (items, customers, contacts, tickets)
- * or as the value a requirement counts (ADR 0021).
+ * Active records that carry the list value: in any CHOICE or MULTI_CHOICE field (one indexed
+ * `fields @>` query per field, ADR 0056) or as the value a requirement counts (ADR 0021).
  */
-export async function countRecordsUsingValue({
+export async function recordsUsingValue({
   context,
   vocabularyId,
   valueId,
-}: ValueInUseInput): Promise<number> {
-  let total = await context.db.requirement.count({ where: { vocabularyValueId: valueId } });
-  for (const field of await listFieldsUsing({ context, vocabularyId })) {
-    total += await countRecordsWithValue({
-      context,
-      entityTypeId: field.entityTypeId,
-      key: field.key,
-      matches: (value) => containsChoice({ value, choice: valueId }),
-    });
+}: ValueInUseInput): Promise<RecordMatches> {
+  const where = { vocabularyValueId: valueId };
+  const counted = await context.db.requirement.findMany({ where, select: { id: true }, take: 20 });
+  const total = await context.db.requirement.count({ where });
+  const rows = counted.map(({ id }) => ({ id, base: "REQUIREMENT" as const }));
+  const usages: RecordMatches[] = [{ total, rows }];
+  for (const { entityTypeId, key } of await listFieldsUsing({ context, vocabularyId })) {
+    const match = { kind: "contains" as const, key, values: [valueId] };
+    usages.push(await recordsMatching({ context, entityTypeId, match }));
   }
-  return total;
+  return mergeUsage({ usages });
 }

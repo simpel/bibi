@@ -1,9 +1,10 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { usageConflict } from "../../records/blocking-issues";
 import { conflict, notFound } from "../../shared/errors";
 import { checkNotOnSheets } from "../sheet-definition/usage";
 import { checkChoiceSource, checkFieldChange } from "./field-rules";
-import { countRecordsWithValue } from "./field-usage";
+import { recordsMatching } from "./field-usage";
 import { insertField } from "./insert-field";
 import { checkLinkTarget } from "./link-rules";
 import {
@@ -70,8 +71,9 @@ export const archiveFieldDefinition = defineOperation({
     const before = await context.db.fieldDefinition.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Field" });
     const { entityTypeId, key } = before;
-    const used = await countRecordsWithValue({ context, entityTypeId, key });
-    if (used > 0) return conflict({ message: `${used} records have a value for ${before.name}` });
+    const usage = await recordsMatching({ context, entityTypeId, match: { kind: "has", key } });
+    const message = `${usage.total} records have a value for ${before.name}`;
+    if (usage.total > 0) return usageConflict({ context, usage, message });
     const what = `The field ${before.name}`;
     const onSheets = await checkNotOnSheets({ context, reference: { fieldId: id }, what });
     if (!onSheets.ok) return onSheets;

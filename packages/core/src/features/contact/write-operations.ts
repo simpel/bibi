@@ -1,5 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { createRecord } from "../../records/create-record";
+import { archiveRecords, updateRecord } from "../../records/update-record";
 import { invalid, notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
@@ -38,14 +40,22 @@ export const createContact = defineOperation({
     if (!type.ok) return type;
     const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
     if (!checked.ok) return checked;
-    const row = await context.db.contact.create({
-      data: {
-        ...data,
-        entityTypeId,
-        customerId,
-        fields: toJson({ value: checked.value }) ?? {},
-        organizationId: context.organizationId,
-      },
+    const row = await createRecord({
+      context,
+      base: "CONTACT",
+      entityTypeId,
+      fields: checked.value,
+      insert: ({ id }) =>
+        context.db.contact.create({
+          data: {
+            id,
+            ...data,
+            entityTypeId,
+            customerId,
+            fields: toJson({ value: checked.value }) ?? {},
+            organizationId: context.organizationId,
+          },
+        }),
     });
     const contact = toContactDto({ row });
     context.recordChange({ entityId: row.id, after: contact });
@@ -78,6 +88,7 @@ export const updateContact = defineOperation({
       where: { id },
       data: { ...data, ...(json ? { fields: json } : {}) },
     });
+    await updateRecord({ context, id, change: { fields: json } });
     const contact = toContactDto({ row });
     context.recordChange({ entityId: id, before, after: contact });
     return ok({ value: contact });
@@ -101,6 +112,7 @@ export const archiveContact = defineOperation({
     const linked = await checkNotLinked({ context, records, what: before.name });
     if (!linked.ok) return linked;
     const row = await context.db.contact.update({ where: { id }, data: { status: "ARCHIVED" } });
+    await archiveRecords({ context, ids: [id] });
     const contact = toContactDto({ row });
     context.recordChange({ entityId: id, before, after: contact });
     return ok({ value: contact });

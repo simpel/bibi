@@ -1,6 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
+import { archiveRecords } from "../../records/update-record";
 import { conflict, notFound } from "../../shared/errors";
 import { checkNotLinked } from "../field-definition/link-usage";
 import { archiveCustomerPackages, archiveCustomerTickets } from "./archive-cascades";
@@ -100,6 +101,7 @@ export const archiveCustomer = defineOperation({
       data: { status: "ARCHIVED" },
       include: CUSTOMER_INCLUDE,
     });
+    await archiveRecords({ context, ids: [id] });
     const customer = toCustomerDto({ row });
     context.recordChange({ entityType: "customer", entityId: id, before, after: customer });
     return ok({ value: customer });

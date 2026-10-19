@@ -2,6 +2,7 @@ import { appError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import { hasPermission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
+import { archiveRecords } from "../../records/update-record";
 import { toItemDtos } from "../item/to-item-dto";
 import { archiveTicket } from "../ticket/archive-ticket";
 import { toTicketDto } from "../ticket/to-ticket-dto";
@@ -62,6 +63,7 @@ export async function archiveCustomerPackages({
       where: { id: dto.id },
       data: { status: "ARCHIVED" },
     });
+    await archiveRecords({ context, ids: [dto.id] });
     const [after] = await toItemDtos({ context, rows: [row] });
     context.recordChange({ entityType: "item", entityId: dto.id, before: dto, after });
   }

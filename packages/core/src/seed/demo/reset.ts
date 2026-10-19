@@ -44,6 +44,13 @@ const configLinks = ({ db, where }: ScopeInput) => [
   db.responsibilityDefaultFollower.deleteMany({ where }),
 ];
 
+/** Contacts, customers and the `Record` supertable rows (ADR 0056), after every table that extends them. */
+const recordRoots = ({ db, where }: ScopeInput) => [
+  db.contact.deleteMany({ where }),
+  db.customer.deleteMany({ where }),
+  db.record.deleteMany({ where }),
+];
+
 /**
  * Deletes one demo organization and everything it owns, so the seed can recreate it (ADR 0025:
  * idempotent per slug). Business rows have no FK to `organization` and are deleted explicitly,
@@ -71,8 +78,7 @@ export async function resetDemoOrg({ db, org }: ResetDemoOrgInput): Promise<void
       db.ticket.deleteMany({ where }),
       db.ticketPhaseTransition.deleteMany({ where }),
       db.ticketPhase.deleteMany({ where }),
-      db.contact.deleteMany({ where }),
-      db.customer.deleteMany({ where }),
+      ...recordRoots({ db, where }),
       db.fieldDefinition.deleteMany({ where }),
       db.vocabularyValue.deleteMany({ where }),
       db.vocabulary.deleteMany({ where }),

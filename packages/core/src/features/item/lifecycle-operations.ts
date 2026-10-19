@@ -1,5 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { archiveRecords } from "../../records/update-record";
 import { conflict, notFound } from "../../shared/errors";
 import { checkNotLinked } from "../field-definition/link-usage";
 import { itemEmbeddable } from "./embeddable";
@@ -36,6 +37,7 @@ export const archiveItem = defineOperation({
       });
     }
     const row = await context.db.item.update({ where: { id }, data: { status: "ARCHIVED" } });
+    await archiveRecords({ context, ids: [id] });
     const [item] = await toItemDtos({ context, rows: [row] });
     if (!item) return notFound({ entity: "Item" });
     context.recordChange({ entityId: id, before, after: item });

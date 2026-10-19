@@ -1,5 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { archiveRecords } from "../../records/update-record";
 import { archiveLinesOfTicket } from "../line/release-for-ticket";
 import { releaseTicketOccupancy } from "./cancellation";
 import type { TicketDto } from "./schema";
@@ -25,6 +26,7 @@ export async function archiveTicket({
     where: { id: ticket.id },
     data: { status: "ARCHIVED" },
   });
+  await archiveRecords({ context, ids: [ticket.id] });
   const after = toTicketDto({ row });
   context.recordChange({ entityType: "ticket", entityId: ticket.id, before: ticket, after });
   return ok({ value: after });

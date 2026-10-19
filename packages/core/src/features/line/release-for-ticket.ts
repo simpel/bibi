@@ -1,5 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { archiveRecords } from "../../records/update-record";
 import { releaseLineStates } from "./release-line-states";
 import { releaseLine } from "./reserve";
 import { toLineDto } from "./to-line-dto";
@@ -43,6 +44,7 @@ export async function archiveLinesOfTicket({
       where: { id: row.id },
       data: { status: "ARCHIVED" },
     });
+    await archiveRecords({ context, ids: [row.id] });
     context.recordChange({
       entityType: "line",
       entityId: row.id,

@@ -55,6 +55,7 @@ model EntityType {
   itemStates       ItemState[]                 @relation("ItemStateType")
   phaseRules       PhaseStateRule[]
   ticketTemplates  TicketTemplate[]
+  records          Record[]
   templateLines    TicketTemplateLine[]
   responsibilities ResponsibilityEntityType[]
   sheetDefinitions SheetDefinitionEntityType[]

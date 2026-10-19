@@ -1,5 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { createRecord } from "../../records/create-record";
 import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
@@ -36,14 +37,23 @@ export async function insertLine({
   }
   const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
   if (!checked.ok) return checked;
-  const row = await context.db.line.create({
-    data: {
-      ...data,
-      entityTypeId,
-      stateId: await initialStateOf({ context, ticketId: data.ticketId, itemId }),
-      fields: toJson({ value: checked.value }) ?? {},
-      organizationId: context.organizationId,
-    },
+  const stateId = await initialStateOf({ context, ticketId: data.ticketId, itemId });
+  const row = await createRecord({
+    context,
+    base: "LINE",
+    entityTypeId,
+    fields: checked.value,
+    insert: ({ id }) =>
+      context.db.line.create({
+        data: {
+          id,
+          ...data,
+          entityTypeId,
+          stateId,
+          fields: toJson({ value: checked.value }) ?? {},
+          organizationId: context.organizationId,
+        },
+      }),
   });
   const line = toLineDto({ row });
   context.recordChange({ entityId: row.id, after: line });

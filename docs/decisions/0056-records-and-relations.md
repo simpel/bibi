@@ -15,7 +15,7 @@
 ## Decision
 1. **A `Record` supertable** (class-table inheritance): `id`, `organizationId`, `entityTypeId`, `base`, `fields` (JSONB), `status`, timestamps. Each of the seven tables (`Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line`, `Requirement`) shares its primary key with a `Record` row (`id` is both PK and FK, composite with `organizationId`).
 2. **Field values:**
-   - Scalars and choices (`TEXT`, `NUMBER`, `BOOLEAN`, `DATE`, `CHOICE`, `MULTI_CHOICE`) stay in `Record.fields`, with a GIN index (`jsonb_path_ops`). Choice values are vocabulary value ids, validated by core on write. Since values are archived and never deleted, an id cannot dangle. "In use" checks are one indexed query (`fields ? key`, `fields @> {key: [id]}`).
+   - Scalars and choices (`TEXT`, `NUMBER`, `BOOLEAN`, `DATE`, `CHOICE`, `MULTI_CHOICE`) stay in `Record.fields`, with a GIN index (`jsonb_ops`: it serves both `?` and `@>`; `jsonb_path_ops` serves only `@>`). Choice values are vocabulary value ids, validated by core on write. Since values are archived and never deleted, an id cannot dangle. "In use" checks are one indexed query (`fields ? key`, `fields @> {key: [id]}`).
    - Links move to `RecordLink`: `recordId`, `fieldId`, `targetRecordId`, all composite foreign keys. A link field with several targets is several rows. "Cannot archive a record while a link points to it" is an indexed `EXISTS`.
    - Core merges links into `fields` on read, so APIs keep one `fields` object.
 3. **Id lists become join tables** with composite foreign keys: `ResponsibilityEntityType`, `ResponsibilityDefaultFollower`, `SheetDefinitionEntityType`, `SheetDefinitionField`, `SheetDefinitionVocabulary`. `SheetDefinition.roleId` is renamed `responsibilityId` with a foreign key.

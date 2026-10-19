@@ -1,0 +1,41 @@
+/// Which table a `Record` row extends. The entity bases plus `TICKET_TEMPLATE`: a predefined
+/// ticket shares the `TICKET` type with tickets but lives in its own table.
+enum RecordBase {
+  ITEM
+  CUSTOMER
+  CONTACT
+  TICKET
+  TICKET_TEMPLATE
+  LINE
+  REQUIREMENT
+}
+
+/// Record – the supertable of every entity with an org-defined type and fields (ADR 0056,
+/// class-table inheritance). `Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line` and
+/// `Requirement` share its primary key (composite with `organizationId`). Core writes both rows
+/// in one transaction (`packages/core/src/records/`). Field rules ("in use", "linked from") are
+/// one indexed query on `fields` here instead of a scan of seven tables.
+model Record {
+  id             String          @id @default(cuid(2))
+  organizationId String
+  entityTypeId   String
+  base           RecordBase
+  /// Values of the type's own fields, keyed by `FieldDefinition.key`. Mirrors the extending row.
+  fields         Json            @default("{}")
+  status         RecordStatus    @default(ACTIVE)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  createdBy      String?
+  entityType     EntityType      @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  item           Item?
+  customer       Customer?
+  contact        Contact?
+  ticket         Ticket?
+  ticketTemplate TicketTemplate?
+  line           Line?
+  requirement    Requirement?
+
+  @@unique([id, organizationId])
+  @@index([organizationId, entityTypeId, status])
+  @@index([fields(ops: JsonbOps)], type: Gin)
+}

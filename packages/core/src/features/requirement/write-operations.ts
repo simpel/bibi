@@ -1,5 +1,7 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { createRecord } from "../../records/create-record";
+import { archiveRecords, updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
@@ -37,14 +39,22 @@ export const createRequirement = defineOperation({
     }
     const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
     if (!checked.ok) return checked;
-    const row = await context.db.requirement.create({
-      data: {
-        ...data,
-        ...level,
-        entityTypeId,
-        fields: toJson({ value: checked.value }) ?? {},
-        organizationId: context.organizationId,
-      },
+    const row = await createRecord({
+      context,
+      base: "REQUIREMENT",
+      entityTypeId,
+      fields: checked.value,
+      insert: ({ id }) =>
+        context.db.requirement.create({
+          data: {
+            id,
+            ...data,
+            ...level,
+            entityTypeId,
+            fields: toJson({ value: checked.value }) ?? {},
+            organizationId: context.organizationId,
+          },
+        }),
     });
     const requirement = toRequirementDto({ row });
     context.recordChange({ entityId: row.id, after: requirement });
@@ -75,6 +85,7 @@ export const updateRequirement = defineOperation({
       where: { id },
       data: { ...(quantity === undefined ? {} : { quantity }), ...(json ? { fields: json } : {}) },
     });
+    await updateRecord({ context, id, change: { fields: json } });
     const requirement = toRequirementDto({ row });
     context.recordChange({ entityId: id, before, after: requirement });
     return ok({ value: requirement });
@@ -97,6 +108,7 @@ export const archiveRequirement = defineOperation({
       where: { id },
       data: { status: "ARCHIVED" },
     });
+    await archiveRecords({ context, ids: [id] });
     const requirement = toRequirementDto({ row });
     context.recordChange({ entityId: id, before, after: requirement });
     return ok({ value: requirement });

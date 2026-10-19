@@ -1,6 +1,7 @@
 import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { archiveRecords } from "../../records/update-record";
 import { paginate } from "../../shared/paginate";
 import { checkNotLinked } from "../field-definition/link-usage";
 import { venueEmbeddable } from "./embeddable";
@@ -110,6 +111,7 @@ export const archiveVenue = defineOperation({
       where: { id: { in: itemIds } },
       data: { status: "ARCHIVED" },
     });
+    await archiveRecords({ context, ids: itemIds });
     await context.db.embedding.deleteMany({
       where: { entityType: "item", entityId: { in: itemIds } },
     });

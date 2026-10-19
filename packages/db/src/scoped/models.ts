@@ -15,6 +15,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "ResponsibilityDefaultFollower",
   "Assignment",
   "AssignmentFollower",
+  "Record",
   "Item",
   "ItemSetup",
   "ItemComponent",
@@ -88,10 +89,7 @@ export const UNSCOPED_MODELS = new Set<string>([
   ...USER_SCOPED_MODELS,
 ]);
 
-/**
- * Soft-deleted models and the `status` filter reads/updates get unless the caller filters
- * `status` itself. Skill uses DRAFT/PUBLISHED/ARCHIVED, the others RecordStatus.
- */
+/** Soft-deleted models and their default `status` filter (Skill: DRAFT/PUBLISHED/ARCHIVED). */
 export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string, unknown>([
   ["Venue", "ACTIVE"],
   ["EntityType", "ACTIVE"],
@@ -102,6 +100,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["SheetDefinition", "ACTIVE"],
   ["Responsibility", "ACTIVE"],
   ["Assignment", "ACTIVE"],
+  ["Record", "ACTIVE"],
   ["Item", "ACTIVE"],
   ["Customer", "ACTIVE"],
   ["Contact", "ACTIVE"],

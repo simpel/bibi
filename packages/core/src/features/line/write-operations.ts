@@ -1,5 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { archiveRecords, updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
@@ -70,6 +71,7 @@ export const updateLine = defineOperation({
       where: { id },
       data: { ...data, itemId, setupId, ...state, ...(json ? { fields: json } : {}) },
     });
+    await updateRecord({ context, id, change: { fields: json } });
     const line = toLineDto({ row });
     context.recordChange({ entityId: id, before, after: line });
     const moved = placeChanged({ before, after }) || "stateId" in state;
@@ -93,6 +95,7 @@ export const archiveLine = defineOperation({
       where: { id },
       data: { status: "ARCHIVED" },
     });
+    await archiveRecords({ context, ids: [id] });
     const line = toLineDto({ row });
     context.recordChange({ entityId: id, before, after: line });
     await releaseLine({ context, id });

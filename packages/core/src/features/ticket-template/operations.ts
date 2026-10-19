@@ -1,9 +1,9 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { archiveRecords } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
-import { toJson } from "../../shared/to-json";
 import { checkTemplate } from "./check-template";
 import { loadTicketTemplate, toTicketTemplateDto, WITH_LINES } from "./load-ticket-template";
 import { replaceLines } from "./replace-lines";
@@ -16,6 +16,7 @@ import {
   TicketTemplateUpdateInputSchema,
 } from "./schema";
 import { nameTaken } from "./template-name";
+import { insertTemplateRow, updateTemplateRow } from "./template-rows";
 
 export const listTicketTemplates = defineOperation({
   name: "ticketTemplate.list",
@@ -71,13 +72,7 @@ export const createTicketTemplate = defineOperation({
     if (taken) return taken;
     const checked = await checkTemplate({ context, ...input });
     if (!checked.ok) return checked;
-    const row = await context.db.ticketTemplate.create({
-      data: {
-        ...data,
-        fields: toJson({ value: checked.value }) ?? {},
-        organizationId: context.organizationId,
-      },
-    });
+    const row = await insertTemplateRow({ context, data, fields: checked.value });
     await replaceLines({ context, templateId: row.id, lines });
     const after = await loadTicketTemplate({ context, id: row.id });
     if (!after) return notFound({ entity: "Ticket template" });
@@ -108,10 +103,8 @@ export const updateTicketTemplate = defineOperation({
       lines: lines ?? before.lines,
     });
     if (!checked.ok) return checked;
-    await context.db.ticketTemplate.update({
-      where: { id },
-      data: { ...data, ...(fields ? { fields: toJson({ value: checked.value }) } : {}) },
-    });
+    const values = fields ? checked.value : undefined;
+    await updateTemplateRow({ context, id, data, fields: values });
     if (lines) await replaceLines({ context, templateId: id, lines });
     const after = await loadTicketTemplate({ context, id });
     if (!after) return notFound({ entity: "Ticket template" });
@@ -132,6 +125,7 @@ export const archiveTicketTemplate = defineOperation({
     const before = await loadTicketTemplate({ context, id });
     if (!before) return notFound({ entity: "Ticket template" });
     await context.db.ticketTemplate.update({ where: { id }, data: { status: "ARCHIVED" } });
+    await archiveRecords({ context, ids: [id] });
     const after = { ...before, status: "ARCHIVED" as const };
     context.recordChange({ entityId: id, before, after });
     return ok({ value: after });

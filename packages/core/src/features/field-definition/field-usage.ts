@@ -1,57 +1,46 @@
+import type { RecordFieldMatch, RecordMatches } from "@okazi/db";
 import type { OperationContext } from "../../operations/types";
 
 type Db = Pick<OperationContext, "db">;
 
-export type FieldValuesOfTypeInput = { context: Db; entityTypeId: string };
+/** How many blocking records a usage check lists; the total counts them all. */
+const LISTED = 20;
+
+export type RecordsOfTypeInput = { context: Db; entityTypeId: string };
 
 /**
- * The `fields` JSON of every active record of a type: items, customers, contacts, tickets, program
- * items or requirements (a type has one base, so only one table has rows). Used by the "data present → CONFLICT" rules (ADR 0021).
- * Archived rows are not counted: the org-scoped client hides `status = ARCHIVED` rows (ADR 0026).
- * Record counts per type are small (hundreds of rows), so the check runs in memory.
+ * Active records of a type on the `Record` supertable (ADR 0056), plus the lines of active
+ * predefined tickets with the type (counted, not listed). Archived rows are hidden by the
+ * org-scoped client (ADR 0026).
  */
-export async function fieldValuesOfType({
+export async function recordsOfType({
   context,
   entityTypeId,
-}: FieldValuesOfTypeInput): Promise<Record<string, unknown>[]> {
-  const query = { where: { entityTypeId }, select: { fields: true } };
-  const rows = [
-    ...(await context.db.item.findMany(query)),
-    ...(await context.db.customer.findMany(query)),
-    ...(await context.db.contact.findMany(query)),
-    ...(await context.db.ticket.findMany(query)),
-    ...(await context.db.ticketTemplate.findMany(query)),
-    ...(await context.db.line.findMany(query)),
-    ...(await context.db.requirement.findMany(query)),
-  ];
-  return rows.map((row) => asFieldValues({ value: row.fields }));
+}: RecordsOfTypeInput): Promise<RecordMatches> {
+  const rows = await context.db.record.findMany({
+    where: { entityTypeId },
+    select: { id: true, base: true },
+    orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+    take: LISTED,
+  });
+  const total = await context.db.record.count({ where: { entityTypeId } });
+  const templateLines = await context.db.ticketTemplateLine.count({
+    where: { entityTypeId, template: { status: "ACTIVE" } },
+  });
+  return { total: total + templateLines, rows };
 }
 
-export type CountRecordsOfTypeInput = FieldValuesOfTypeInput & { id?: string };
+export type CountRecordsOfTypeInput = RecordsOfTypeInput & { id: string };
 
-/** Active records (items, customers, contacts, tickets, predefined tickets and their lines, ticket lines, requirements) that have the type, optionally one id. */
-export async function countRecordsOfType({
-  context,
-  entityTypeId,
-  id,
-}: CountRecordsOfTypeInput): Promise<number> {
-  const where = { entityTypeId, ...(id ? { id } : {}) };
-  const templateLines = id
-    ? 0
-    : await context.db.ticketTemplateLine.count({
-        where: { entityTypeId, template: { status: "ACTIVE" } },
-      });
-  return (
-    templateLines +
-    (await context.db.ticketTemplate.count({ where })) +
-    (await context.db.item.count({ where })) +
-    (await context.db.customer.count({ where })) +
-    (await context.db.contact.count({ where })) +
-    (await context.db.ticket.count({ where })) +
-    (await context.db.line.count({ where })) +
-    (await context.db.requirement.count({ where }))
-  );
-}
+/** Whether `id` is an active record of the type (0 or 1). */
+export const countRecordsOfType = ({ context, entityTypeId, id }: CountRecordsOfTypeInput) =>
+  context.db.record.count({ where: { entityTypeId, id } });
+
+export type RecordsMatchingInput = RecordsOfTypeInput & { match: RecordFieldMatch };
+
+/** Active records of the type whose `fields` match: one indexed query (`?`, `@>`). */
+export const recordsMatching = ({ context, entityTypeId, match }: RecordsMatchingInput) =>
+  context.db.$findRecords({ entityTypeId, match, limit: LISTED });
 
 export type AsFieldValuesInput = { value: unknown };
 
@@ -61,25 +50,3 @@ export function asFieldValues({ value }: AsFieldValuesInput): Record<string, unk
     ? (value as Record<string, unknown>)
     : {};
 }
-
-export type CountWithValueInput = FieldValuesOfTypeInput & {
-  key: string;
-  matches?: (value: unknown) => boolean;
-};
-
-/** Active records of the type that have a value for `key` (optionally a matching one). */
-export async function countRecordsWithValue({
-  context,
-  entityTypeId,
-  key,
-  matches = () => true,
-}: CountWithValueInput): Promise<number> {
-  const all = await fieldValuesOfType({ context, entityTypeId });
-  return all.filter((fields) => key in fields && matches(fields[key])).length;
-}
-
-export type ContainsChoiceInput = { value: unknown; choice: string };
-
-/** True when a CHOICE value is `choice` or a MULTI_CHOICE value includes it. */
-export const containsChoice = ({ value, choice }: ContainsChoiceInput) =>
-  value === choice || (Array.isArray(value) && value.includes(choice));

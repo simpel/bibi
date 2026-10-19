@@ -1,5 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { createRecord } from "../../records/create-record";
 import { conflict } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { assignOnCreate } from "../assignment/assign-on-create";
@@ -51,15 +52,24 @@ export async function insertTicket({
   const { entityTypeId, fields: _fields, assigneeId, ...data } = input;
   const phaseId = await loadStartPhase({ context, assigneeId, phaseId: startPhaseId });
   if (!phaseId.ok) return phaseId;
-  const row = await context.db.ticket.create({
-    data: {
-      ...data,
-      entityTypeId,
-      phaseId: phaseId.value,
-      reference: await nextReference({ context }),
-      fields: toJson({ value: checked.value }) ?? {},
-      organizationId: context.organizationId,
-    },
+  const reference = await nextReference({ context });
+  const row = await createRecord({
+    context,
+    base: "TICKET",
+    entityTypeId,
+    fields: checked.value,
+    insert: ({ id }) =>
+      context.db.ticket.create({
+        data: {
+          id,
+          ...data,
+          entityTypeId,
+          phaseId: phaseId.value,
+          reference,
+          fields: toJson({ value: checked.value }) ?? {},
+          organizationId: context.organizationId,
+        },
+      }),
   });
   const ticket = toTicketDto({ row });
   context.recordChange({ entityId: row.id, after: ticket });

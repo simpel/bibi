@@ -4,7 +4,7 @@
 /// occupancy for `[startsAt, endsAt)`, and with a setup also a `SETUP` occupancy for the
 /// changeover right before; both have `sourceType = "line"` and follow the row.
 model Line {
-  id              String        @id @default(cuid(2))
+  id              String        @id
   organizationId  String
   ticketId        String
   entityTypeId    String
@@ -37,6 +37,8 @@ model Line {
   setup           Setup?        @relation(fields: [setupId, organizationId], references: [id, organizationId])
   state           ItemState?    @relation(fields: [stateId, organizationId], references: [id, organizationId])
   requirements    Requirement[]
+  /// The supertable row this record extends (ADR 0056).
+  record          Record        @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, ticketId, startsAt])

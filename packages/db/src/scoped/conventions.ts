@@ -44,6 +44,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "ResponsibilityDefaultFollower",
   "Assignment",
   "AssignmentFollower",
+  "Record",
   "Item",
   "ItemSetup",
   "ItemComponent",
@@ -78,8 +79,21 @@ export const CREATED_BY_MODELS = new Set<string>([
 /**
  * Org-scoped models whose id has no `@default(cuid(2))`: the writer passes `createId()` (core for
  * Better Auth tables, raw SQL for Embedding). Rows Better Auth writes itself use its own format.
+ * The tables extending `Record` (ADR 0056) take the cuid2 id of their supertable row.
  */
-export const APP_ID_MODELS = new Set<string>(["Member", "Invitation", "Apikey", "Embedding"]);
+export const APP_ID_MODELS = new Set<string>([
+  "Member",
+  "Invitation",
+  "Apikey",
+  "Embedding",
+  "Item",
+  "Customer",
+  "Contact",
+  "Ticket",
+  "TicketTemplate",
+  "Line",
+  "Requirement",
+]);
 
 /**
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:

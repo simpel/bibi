@@ -3,7 +3,7 @@
 /// is set to the default `entry` phase on create and changed only by `ticket.changePhase`.
 /// `status` is the soft-delete flag (ADR 0006), not the phase.
 model Ticket {
-  id                  String         @id @default(cuid(2))
+  id                  String         @id
   organizationId      String
   /// Reference number, sequential per organization (1, 2, 3, …).
   reference           Int
@@ -43,6 +43,8 @@ model Ticket {
   quotes              Quote[]
   requirements        Requirement[]
   sheets              Sheet[]
+  /// The supertable row this record extends (ADR 0056).
+  record              Record         @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@unique([organizationId, reference])

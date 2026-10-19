@@ -1,5 +1,6 @@
 import { LINE_SOURCE } from "../../features/line/schema";
 import { defineReconciliation, type ReconcileContext, runReconciliations } from "./reconcile";
+import { recordReconciliation } from "./record-reconciliation";
 
 type HoldRow = { lineId: string; itemId: string; holdKind: string; startsAt: Date; endsAt: Date };
 
@@ -59,7 +60,7 @@ export const lineHoldsReconciliation = defineReconciliation({
   },
 });
 
-export const RECONCILIATIONS = [lineHoldsReconciliation];
+export const RECONCILIATIONS = [lineHoldsReconciliation, recordReconciliation];
 
 /** Runs every registered projection check (ADR 0051); also called from Vitest. */
 export const reconcileProjections = ({ context }: ReconcileContext) =>

@@ -1,5 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields } from "../field-definition/field-values";
@@ -60,6 +61,7 @@ export const updateItem = defineOperation({
       where: { id },
       data: { ...data, ...(json ? { fields: json } : {}) },
     });
+    await updateRecord({ context, id, change: { fields: json } });
     if (setups) await replaceSetups({ context, itemId: id, setups });
     const partsChanged = components !== undefined;
     await writeComposition({ context, itemId: id, partsChanged, composition });

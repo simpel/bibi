@@ -9,7 +9,7 @@ enum PriceUnit {
 /// Artikel – anything that can be sold or booked (ADR 0021). Its type decides the behaviours;
 /// the behaviour columns are null unless the type has the behaviour.
 model Item {
-  id                     String               @id @default(cuid(2))
+  id                     String               @id
   organizationId         String
   entityTypeId           String
   venueId                String?
@@ -49,6 +49,8 @@ model Item {
   priceListItems         PriceListItem[]
   /// Order lines that copied this item (snapshot).
   orderLines             OrderLine[]
+  /// The supertable row this record extends (ADR 0056).
+  record                 Record               @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

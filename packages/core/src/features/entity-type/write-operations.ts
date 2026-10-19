@@ -1,8 +1,9 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
+import { usageConflict } from "../../records/blocking-issues";
 import { conflict, notFound } from "../../shared/errors";
-import { countRecordsOfType } from "../field-definition/field-usage";
+import { recordsOfType } from "../field-definition/field-usage";
 import { checkNotOnSheets } from "../sheet-definition/usage";
 import type { EntityBase } from "./behaviour-kinds";
 import { checkBehaviours, checkBehavioursRemovable } from "./behaviours";
@@ -92,8 +93,9 @@ export const archiveEntityType = defineOperation({
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.entityType.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Type" });
-    const used = await countRecordsOfType({ context, entityTypeId: id });
-    if (used > 0) return conflict({ message: `${used} records have the type ${before.name}` });
+    const usage = await recordsOfType({ context, entityTypeId: id });
+    const message = `${usage.total} records have the type ${before.name}`;
+    if (usage.total > 0) return usageConflict({ context, usage, message });
     const linking = await context.db.fieldDefinition.count({ where: { linkTypeId: id } });
     if (linking > 0)
       return conflict({ message: `${linking} LINK fields point to the type ${before.name}` });

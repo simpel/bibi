@@ -60,6 +60,7 @@ export {
   Prisma,
   type Quote,
   QuoteStatus,
+  RecordBase,
   RecordStatus,
   type Requirement,
   type Setup,
@@ -80,6 +81,13 @@ export {
 } from "./generated/prisma/client";
 export { getDb } from "./get-db";
 export type { OauthGrantRow } from "./oauth-grants/types";
+export { findRecords } from "./records/find-records";
+export type {
+  FindRecordsInput,
+  RecordFieldMatch,
+  RecordMatches,
+  RecordRef,
+} from "./records/types";
 export {
   GLOBAL_READ_MODELS,
   ORG_SCOPED_MODELS,
