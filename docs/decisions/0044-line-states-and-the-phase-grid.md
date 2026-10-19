@@ -52,6 +52,8 @@
 - The initial state cannot be archived until another is chosen. A type keeps at least one state.
 
 ### Guided setup
+> **Addendum 2026-10-19:** the wizard UI described here is replaced by the assistant onboarding at `/onboarding` ([ADR 0045](0045-soft-landing-onboarding.md)). The operations `pipelineSetup.preview` and `pipelineSetup.activate`, the templates and the settings pages stay. The list below describes the draft the assistant builds and the checks it passes.
+
 - A wizard at `/onboarding/pipeline` (built on `components/wizard`) leads an admin through the order that makes the grid easy:
   1. **Item types** – which types the organization uses (rooms, food, activities). Reuses `entityType.*`.
   2. **States per type** – start from the template for the type's behavior (bookable: Prebooked, Booked, Released; food: Estimated, Ordered, Locked, Released; other: Planned, Confirmed, Released) or one state "Active".
@@ -59,7 +61,7 @@
   4. **The grid** – phases down, types across, each cell a dropdown or "keep". Pre-filled from the template.
   5. **Preview** – a simulated ticket with one line per type is stepped through every phase. The wizard shows each line's state and a mini calendar with the holds, and lists configuration problems (no entry or terminal phase, a state nothing can leave, a type with no initial state).
   6. **Activate** – creates everything through the normal operations as one audited batch.
-- The wizard runs when an organization has no phases. Afterwards the same data is edited on `/settings/pipeline` and `/settings/item-states`. Templates ("Conference estate") fill all steps and can be changed freely.
+- The first setup runs once, after an organization is created. Afterwards the same data is edited on `/settings/pipeline` and `/settings/item-states`. Templates ("Conference estate") fill all steps and can be changed freely.
 
 ### Commands
 - `itemState.list|get|create|update|archive|reorder|setTransitions`, `phaseGrid.get|setCell|importTemplate`, `line.changeState`, `line.followPhase`, `pipelineSetup.preview|activate`. Permissions: `itemState:read|admin`, `phaseGrid:read|admin`, `programItem:write` for line commands.

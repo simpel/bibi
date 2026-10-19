@@ -34,7 +34,7 @@
 - Auth: Better Auth with the organization plugin (multi-tenancy), API key plugin (REST) and OAuth plugin (MCP).
 - APIs: GraphQL via Pothos (Zod-derived types, no Prisma plugin), REST `/api/v1` with OpenAPI generated from operations, MCP server (`apps/mcp`).
 - AI: Vercel AI SDK via AI Gateway, provider-agnostic, Claude by default.
-- UI: Tailwind v4 (CSS-first tokens), cva, shadcn primitives, Storybook for `packages/ui`.
+- UI: Tailwind v4 (CSS-first tokens), cva, shadcn primitives and shadcn AI Elements (chat, message, prompt input, suggestion, confirmation, questionnaire), React Flow for the onboarding path (ADR 0045), Storybook for `packages/ui`.
 - i18n: next-intl, Swedish and English.
 - Tooling: Biome (lint + format), Vitest (unit/service layer against real Postgres), Playwright (e2e).
 - Email: `@okazi/mail` with a `MailProvider` interface (`send`, `parseInbound`, `fetchInbound`). Adapters: Resend (production, outbound and inbound) and SMTP (Mailpit in dev), selected by `MAIL_PROVIDER` (`smtp` default, `resend` needs `RESEND_API_KEY`; inbound needs `RESEND_WEBHOOK_SECRET` and `MAIL_INBOUND_DOMAIN`). Inbound replies arrive at `POST /api/webhooks/resend` and are stored as `InboundEmail` on the ticket whose address (`ticket-<id>@<domain>`) they were sent to. See `docs/decisions/0012-email-provider.md`.
