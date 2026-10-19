@@ -43,3 +43,9 @@
 - Fine-grained read restrictions per function (e.g. a kitchen user who may only read) are dropped for now. If a venue needs them, they come back as an addition to the fixed roles, not as custom roles.
 - The "Conference venue" template ships responsibilities instead of roles (e.g. Sales, Coordinator, Head of kitchen) as optional data.
 - Touches auth, tenancy and the parity core: built at Opus level and goes through `tenancy-review` (CLAUDE.md).
+
+## Addendum 2026-10-19 – derived assignments (ADR 0055, 0056)
+- Which responsibilities apply to a ticket is derived from its lines' item types. Assignments are no longer created or archived when lines change (replaces the plan in #250).
+- The assignee for (ticket, responsibility) is the explicit `Assignment` if one exists, else the responsibility's default. Followers are the defaults plus explicit follows minus explicit unfollows (`AssignmentFollower.effect`).
+- `Assignment` and `AssignmentFollower` rows mean "someone chose this". `assignment.list|listMine` return the derived result with its source (`EXPLICIT`, `DEFAULT`).
+- `subjectType` / `subjectId` is replaced by `recordId`, a foreign key to `Record` (ADR 0056). Covered entity types and default followers become join tables.
