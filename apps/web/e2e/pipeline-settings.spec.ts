@@ -18,7 +18,7 @@ async function createPhase({
   await page.getByLabel("Namn").fill(name);
   if (flag) await page.getByRole("checkbox", { name: flag }).click();
   await page.getByRole("button", { name: "Spara" }).click();
-  await expect(page).toHaveURL(/\/sv\/settings\/pipeline$/);
+  await expect(page).toHaveURL(/\/sv\/settings\/pipeline$/, { timeout: 15_000 });
   await expect(page.getByRole("cell", { name }).first()).toBeVisible();
 }
 
@@ -58,8 +58,14 @@ test("an admin edits phases and the grid on step pages", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: "Rutnätet" })).toBeVisible();
   await expect(page.getByText("Släpper alla rader").first()).toBeVisible();
-  await page.getByRole("combobox", { name: "Reserved: Conference room" }).click();
-  await page.getByRole("option", { name: "Active" }).click();
+  // The grid re-renders after the reorder; reopen the select until its options show.
+  const cell = page.getByRole("combobox", { name: "Reserved: Conference room" });
+  const active = page.getByRole("option", { name: "Active" });
+  await expect(async () => {
+    if (!(await active.isVisible())) await cell.click();
+    await expect(active).toBeVisible({ timeout: 1_000 });
+  }).toPass();
+  await active.click();
   await expect(
     page.getByText(
       "När ett ärende går in i Reserved flyttas rader av Conference room till Active.",

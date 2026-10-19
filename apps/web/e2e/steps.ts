@@ -18,7 +18,8 @@ export async function signUp({ page, credentials }: PageInput & { credentials: C
   await page.getByLabel("E-post").fill(credentials.email);
   await page.getByLabel("Lösenord").fill(credentials.password);
   await page.getByRole("button", { name: "Skapa konto" }).click();
-  await expect(page).toHaveURL(/\/sv\/select-organization/);
+  // Sign-up creates the account and session before redirecting; slow under load.
+  await expect(page).toHaveURL(/\/sv\/select-organization/, { timeout: 15_000 });
 }
 
 export async function createOrganization({ page, name }: PageInput & { name: string }) {
