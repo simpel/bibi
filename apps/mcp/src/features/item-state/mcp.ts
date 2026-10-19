@@ -30,6 +30,7 @@ export const itemStateMcpTools = [
         ? ""
         : `, moving its lines to ${text({ value: input.targetStateId })}`),
   }),
+  mcpTool({ operation: "itemState.archivePreview" }),
   mcpTool({
     operation: "itemState.reorder",
     idempotent: true,

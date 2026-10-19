@@ -4,6 +4,7 @@
  */
 export const SALES_NAMES = [
   "itemState.archive",
+  "itemState.archivePreview",
   "itemState.create",
   "itemState.get",
   "itemState.list",

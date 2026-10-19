@@ -72,3 +72,4 @@ export * from "./platform/system-log/schema";
 export * from "./recurrence/plain-date";
 export * from "./recurrence/zoned-time";
 export * from "./search/search-schema";
+export * from "./shared/archive-preview";

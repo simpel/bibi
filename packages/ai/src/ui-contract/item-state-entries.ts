@@ -1,5 +1,6 @@
 import { ItemStateSchema } from "@okazi/core/schemas";
 import { z } from "zod";
+import { archivePreviewEntry } from "./archive-preview-entry";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 
@@ -33,6 +34,7 @@ export const ITEM_STATE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   itemState_create: stateCard,
   itemState_update: stateCard,
   itemState_archive: stateCard,
+  itemState_archivePreview: archivePreviewEntry,
   itemState_reorder: stateTable,
   itemState_setTransitions: stateCard,
 };

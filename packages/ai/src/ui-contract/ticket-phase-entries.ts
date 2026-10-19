@@ -1,5 +1,6 @@
 import { TicketPhaseSchema } from "@okazi/core/schemas";
 import { z } from "zod";
+import { archivePreviewEntry } from "./archive-preview-entry";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 
@@ -39,6 +40,7 @@ export const TICKET_PHASE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   ticketPhase_create: phaseCard,
   ticketPhase_update: phaseCard,
   ticketPhase_archive: phaseCard,
+  ticketPhase_archivePreview: archivePreviewEntry,
   ticketPhase_reorder: phaseTable,
   ticketPhase_setTransitions: phaseCard,
   ticketPhase_importTemplate: uiEntry({

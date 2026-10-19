@@ -100,5 +100,6 @@ export const ItemStateSetTransitionsInputSchema = z.object({
 
 export type ItemStateDto = z.infer<typeof ItemStateSchema>;
 export type ItemStateFlags = Pick<ItemStateDto, (typeof STATE_FLAGS)[number] | "hold">;
+export type ItemStateArchiveInput = z.infer<typeof ItemStateArchiveInputSchema>;
 export type ItemStateCreateInput = z.infer<typeof ItemStateCreateInputSchema>;
 export type ItemStateUpdateInput = z.infer<typeof ItemStateUpdateInputSchema>;

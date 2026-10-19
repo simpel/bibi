@@ -1,4 +1,5 @@
 import { archiveItemState } from "./archive-operation";
+import { previewArchiveItemState } from "./archive-preview-operation";
 import { reorderItemStates, setItemStateTransitions } from "./order-operations";
 import { getItemState, listItemStates } from "./read-operations";
 import { createItemState, updateItemState } from "./write-operations";
@@ -10,6 +11,7 @@ export const itemStateOperations = [
   createItemState,
   updateItemState,
   archiveItemState,
+  previewArchiveItemState,
   reorderItemStates,
   setItemStateTransitions,
 ];

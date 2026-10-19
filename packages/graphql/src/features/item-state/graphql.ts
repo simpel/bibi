@@ -5,10 +5,12 @@ import {
   type ItemStateDto,
   ItemStateSchema,
   listItemStates,
+  previewArchiveItemState,
   reorderItemStates,
   setItemStateTransitions,
   updateItemState,
 } from "@okazi/core";
+import { ArchivePreviewRef } from "../../schema/archive-preview";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
@@ -32,6 +34,11 @@ fieldFromOperation({ operation: getItemState, type: ItemStateRef, name: "itemSta
 mutationFromOperation({ operation: createItemState, type: ItemStateRef });
 mutationFromOperation({ operation: updateItemState, type: ItemStateRef });
 mutationFromOperation({ operation: archiveItemState, type: ItemStateRef });
+fieldFromOperation({
+  operation: previewArchiveItemState,
+  type: ArchivePreviewRef,
+  name: "itemStateArchivePreview",
+});
 mutationFromOperation({ operation: reorderItemStates, type: ItemStatePageRef });
 mutationFromOperation({ operation: setItemStateTransitions, type: ItemStateRef });
 

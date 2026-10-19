@@ -1,6 +1,7 @@
 import { listMembers } from "../../features/member/operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import { checkDemoArchive } from "./archive-checks";
 import { checkDemoAssignments } from "./assignment-checks";
 import { checkDemoBoard } from "./board-checks";
 import { checkDemoConfig } from "./config-checks";
@@ -19,7 +20,8 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPip
  * has their documented role, the configuration and items (`checkDemoConfig`), the pipeline (`checkDemoPipeline`: phases,
  * states and grid cells), the predefined tickets and the tickets made from them
  * (`checkDemoTemplates`) and the tickets per phase (`checkDemoTickets`), the tickets' assignees and followers
- * (`checkDemoAssignments`), the lines' soft holds and their expiry (`checkDemoHolds`), the phase
+ * (`checkDemoAssignments`), that removing a populated phase or state with a target is allowed
+ * (`checkDemoArchive`, run before the grid checks move tickets), the lines' soft holds and their expiry (`checkDemoHolds`), the phase
  * moves the grid drives (`checkDemoGrid`), and every write
  * was audited as SYSTEM. Returns failure messages.
  */
@@ -51,6 +53,7 @@ export async function checkDemoOrg({
   failures.push(...(await checkDemoBoard({ context, org })));
   failures.push(...(await checkDemoAssignments({ context, org })));
   failures.push(...(await checkDemoHolds({ context, org })));
+  failures.push(...(await checkDemoArchive({ context, org })));
   failures.push(...(await checkDemoGrid({ context, org })));
   return [...failures, ...(await auditFailures({ context, org }))];
 }

@@ -1,4 +1,5 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
+import type { ArchivePreviewWire } from "./archive-preview-entry";
 import type { AssignmentWire } from "./assignment-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
 import type { ItemResolutionWire } from "./item-resolution-entries";
@@ -56,6 +57,7 @@ export type ToolUiProps = {
   "price-list-card": { priceList: PriceListWire };
   "ticket-phase-table": { items: TicketPhaseWire[]; nextCursor: string | null };
   "ticket-phase-card": { phase: TicketPhaseWire };
+  "archive-preview-card": { preview: ArchivePreviewWire };
   "ticket-template-table": { items: TicketTemplateWire[]; nextCursor: string | null };
   "ticket-template-card": { template: TicketTemplateWire };
   "item-state-table": { items: ItemStateWire[]; nextCursor: string | null };

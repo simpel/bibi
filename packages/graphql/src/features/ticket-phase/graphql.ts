@@ -4,6 +4,7 @@ import {
   getTicketPhase,
   importTicketPhaseTemplate,
   listTicketPhases,
+  previewArchiveTicketPhase,
   reorderTicketPhases,
   setTicketPhaseTransitions,
   type TicketPhaseDto,
@@ -11,6 +12,7 @@ import {
   TicketPhaseSchema,
   updateTicketPhase,
 } from "@okazi/core";
+import { ArchivePreviewRef } from "../../schema/archive-preview";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
@@ -50,6 +52,11 @@ fieldFromOperation({ operation: getTicketPhase, type: TicketPhaseRef, name: "tic
 mutationFromOperation({ operation: createTicketPhase, type: TicketPhaseRef });
 mutationFromOperation({ operation: updateTicketPhase, type: TicketPhaseRef });
 mutationFromOperation({ operation: archiveTicketPhase, type: TicketPhaseRef });
+fieldFromOperation({
+  operation: previewArchiveTicketPhase,
+  type: ArchivePreviewRef,
+  name: "ticketPhaseArchivePreview",
+});
 mutationFromOperation({ operation: reorderTicketPhases, type: TicketPhasePageRef });
 mutationFromOperation({ operation: setTicketPhaseTransitions, type: TicketPhaseRef });
 mutationFromOperation({ operation: importTicketPhaseTemplate, type: TicketPhaseImportRef });

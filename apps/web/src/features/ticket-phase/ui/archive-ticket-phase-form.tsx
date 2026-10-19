@@ -1,36 +1,10 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { TicketPhaseArchiveInput, TicketPhaseDto } from "@okazi/core/schemas";
-import { TicketPhaseArchiveInputSchema } from "@okazi/core/schemas";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { TicketPhaseDto } from "@okazi/core/schemas";
 import { Button, DialogFooter, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
-import { NONE, OptionSelectField } from "@/components/form/option-select-field";
+import { ArchivePreviewPanel } from "@/components/archive-preview/archive-preview-panel";
+import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
-import { formSchema } from "@/lib/form-schema";
-import { useFormAction } from "@/lib/use-form-action";
-import { useZodMessages } from "@/lib/use-zod-messages";
-import { archiveTicketPhaseAction } from "../actions";
-
-type Values = { targetPhaseId: string; reason: string };
-
-const archiveSchema = ({ id }: { id: string }) =>
-  formSchema({
-    schema: TicketPhaseArchiveInputSchema,
-    toInput: ({ values }: { values: Values }) => ({
-      id,
-      ...(values.targetPhaseId && values.targetPhaseId !== NONE
-        ? { targetPhaseId: values.targetPhaseId }
-        : {}),
-      ...(values.reason.trim() ? { reason: values.reason } : {}),
-    }),
-  });
-
-const useArchiveForm = ({ id }: { id: string }) =>
-  useForm<Values, unknown, TicketPhaseArchiveInput>({
-    resolver: zodResolver(archiveSchema({ id }), useZodMessages()),
-    defaultValues: { targetPhaseId: NONE, reason: "" },
-  });
+import { useArchiveTicketPhaseForm } from "./use-archive-ticket-phase-form";
 
 export type ArchiveTicketPhaseFormProps = {
   phase: TicketPhaseDto;
@@ -43,18 +17,10 @@ export type ArchiveTicketPhaseFormProps = {
 export function ArchiveTicketPhaseForm({ phase, targets, onDone }: ArchiveTicketPhaseFormProps) {
   const t = useTranslations("ticketPhase");
   const common = useTranslations("common");
-  const router = useRouter();
-  const form = useArchiveForm({ id: phase.id });
-  const { submit, pending } = useFormAction({
-    form,
-    action: ({ values }) => archiveTicketPhaseAction({ input: values }),
-    messages: { pending: t("archiving"), success: t("archived") },
-    onSuccess: () => {
-      router.refresh();
-      onDone();
-    },
+  const { form, submit, pending, preview, loading, errorKey } = useArchiveTicketPhaseForm({
+    id: phase.id,
+    onDone,
   });
-  const options = targets.map(({ id, name }) => ({ id, name }));
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
@@ -62,15 +28,25 @@ export function ArchiveTicketPhaseForm({ phase, targets, onDone }: ArchiveTicket
           control={form.control}
           name="targetPhaseId"
           label={t("fields.targetPhase")}
-          options={options}
+          options={targets.map(({ id, name }) => ({ id, name }))}
           noneLabel={t("noTarget")}
         />
         <TextField form={form} name="reason" label={t("fields.reason")} multiline />
+        <ArchivePreviewPanel
+          preview={preview}
+          loading={loading}
+          errorKey={errorKey}
+          unit="tickets"
+        />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>
             {common("cancel")}
           </Button>
-          <Button type="submit" variant="destructive" disabled={pending}>
+          <Button
+            type="submit"
+            variant="destructive"
+            disabled={pending || loading || !preview?.archivable}
+          >
             {t("archive")}
           </Button>
         </DialogFooter>

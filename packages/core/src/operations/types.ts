@@ -66,6 +66,11 @@ export type OperationDefinition<I extends z.ZodType, O extends z.ZodType> = {
    * `apiKey.create`, whose secret must not enter a chat). Defaults to true.
    */
   aiAllowed?: boolean;
+  /**
+   * A query that runs a command's logic inside a transaction that is always rolled back, so it
+   * can report what the command would do (and what would block it) without changing anything.
+   */
+  dryRun?: boolean;
   /** Entity re-indexed for search after a successful command (reads `output.id`). */
   embeddable?: Embeddable;
   /** Entity type for audit rows; defaults to the name prefix. */

@@ -28,6 +28,7 @@ describe("cross-organization isolation: item states and line states", () => {
       ["itemState_get", { id }],
       ["itemState_update", { id, name: "Hacked" }],
       ["itemState_archive", { id }],
+      ["itemState_archivePreview", { id }],
       ["itemState_setTransitions", { id, toStateIds: [] }],
       ["line_changeState", { lineId, stateId: seedB.stateId }],
     ] as const) {
@@ -42,6 +43,12 @@ describe("cross-organization isolation: item states and line states", () => {
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("VALIDATION");
     }
+    const foreign = await call({
+      client: b,
+      name: "itemState_archivePreview",
+      args: { id: seedB.stateId, targetStateId: id },
+    });
+    expect(foreign.data.archivable).toBe(false);
     const listed = await call({ client: b, name: "itemState_list", args: { entityTypeId } });
     expect(listed.data.items).toEqual([]);
     const expired = await call({ client: b, name: "ticket_expireHolds" });

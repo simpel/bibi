@@ -8,6 +8,11 @@ export const ticketPhaseRoutes = [
   restRoute({ operation: "ticketPhase.create", method: "POST", path: BASE }),
   restRoute({ operation: "ticketPhase.update", method: "PATCH", path: `${BASE}/{id}` }),
   restRoute({ operation: "ticketPhase.archive", method: "DELETE", path: `${BASE}/{id}` }),
+  restRoute({
+    operation: "ticketPhase.archivePreview",
+    method: "GET",
+    path: `${BASE}/{id}/archive-preview`,
+  }),
   restRoute({ operation: "ticketPhase.reorder", method: "PUT", path: `${BASE}/order` }),
   restRoute({
     operation: "ticketPhase.setTransitions",

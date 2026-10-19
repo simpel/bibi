@@ -1,4 +1,5 @@
 import { archiveTicketPhase } from "./archive-operation";
+import { previewArchiveTicketPhase } from "./archive-preview-operation";
 import { importTicketPhaseTemplate } from "./import-template-operation";
 import { reorderTicketPhases, setTicketPhaseTransitions } from "./order-operations";
 import { getTicketPhase, listTicketPhases } from "./read-operations";
@@ -11,6 +12,7 @@ export const ticketPhaseOperations = [
   createTicketPhase,
   updateTicketPhase,
   archiveTicketPhase,
+  previewArchiveTicketPhase,
   reorderTicketPhases,
   setTicketPhaseTransitions,
   importTicketPhaseTemplate,

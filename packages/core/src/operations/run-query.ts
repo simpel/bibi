@@ -1,6 +1,7 @@
 import type { Result } from "../errors/result";
 import type { ExecuteContext } from "./context";
 import { parseWith } from "./parse-with";
+import { runDryRun } from "./run-dry-run";
 import type { AnyOperation } from "./types";
 
 export type RunQueryInput = { operation: AnyOperation; input: unknown; context: ExecuteContext };
@@ -10,6 +11,7 @@ export async function runQuery({
   input,
   context,
 }: RunQueryInput): Promise<Result<unknown>> {
+  if (operation.dryRun) return runDryRun({ operation, input, context });
   const result = await operation.handler({
     input,
     context: { ...context, recordChange: () => undefined },

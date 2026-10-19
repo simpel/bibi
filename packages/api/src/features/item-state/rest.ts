@@ -8,6 +8,11 @@ export const itemStateRoutes = [
   restRoute({ operation: "itemState.create", method: "POST", path: BASE }),
   restRoute({ operation: "itemState.update", method: "PATCH", path: `${BASE}/{id}` }),
   restRoute({ operation: "itemState.archive", method: "DELETE", path: `${BASE}/{id}` }),
+  restRoute({
+    operation: "itemState.archivePreview",
+    method: "GET",
+    path: `${BASE}/{id}/archive-preview`,
+  }),
   restRoute({ operation: "itemState.reorder", method: "PUT", path: `${BASE}/order` }),
   restRoute({
     operation: "itemState.setTransitions",

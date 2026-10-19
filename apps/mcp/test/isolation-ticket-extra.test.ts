@@ -84,6 +84,7 @@ describe("cross-organization isolation: ticket phases and audit log", () => {
     for (const [name, args] of [
       ["ticketPhase_update", { id, name: "Hijacked" }],
       ["ticketPhase_archive", { id }],
+      ["ticketPhase_archivePreview", { id }],
       ["ticketPhase_get", { id }],
       ["ticketPhase_setTransitions", { id, toPhaseIds: [] }],
     ] as const) {

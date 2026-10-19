@@ -31,6 +31,7 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "itemState.create", route: "/new/item-state" },
   { operation: "itemState.update", route: "/settings/item-states/[id]/update" },
   { operation: "itemState.archive", route: "/settings/item-states" },
+  { operation: "itemState.archivePreview", route: "/settings/item-states" },
   { operation: "itemState.reorder", route: "/settings/item-states" },
   { operation: "itemState.setTransitions", route: "/settings/item-states" },
   { operation: "ticketTemplate.list", route: "/settings/ticket-templates" },

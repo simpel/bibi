@@ -12,6 +12,7 @@ const NAMES = [
   "ticket.list",
   "ticket.update",
   "ticketPhase.archive",
+  "ticketPhase.archivePreview",
   "ticketPhase.create",
   "ticketPhase.get",
   "ticketPhase.importTemplate",

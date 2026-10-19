@@ -122,6 +122,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "ticketPhase.create", route: "/settings/pipeline" },
   { operation: "ticketPhase.update", route: "/settings/pipeline" },
   { operation: "ticketPhase.archive", route: "/settings/pipeline" },
+  { operation: "ticketPhase.archivePreview", route: "/settings/pipeline" },
   { operation: "ticketPhase.reorder", route: "/settings/pipeline" },
   { operation: "ticketPhase.setTransitions", route: "/settings/pipeline" },
   { operation: "ticketPhase.importTemplate", route: "/settings/pipeline" },

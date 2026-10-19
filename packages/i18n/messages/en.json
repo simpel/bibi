@@ -1106,6 +1106,15 @@
       }
     }
   },
+  "archivePreview": {
+    "loading": "Checking what would change…",
+    "movingTickets": "{count, plural, =0 {No tickets move.} one {# ticket moves to the target.} other {# tickets move to the target.}}",
+    "movingLines": "{count, plural, =0 {No lines move.} one {# line moves to the target.} other {# lines move to the target.}}",
+    "cells": "{count, plural, =0 {No grid cells are affected.} one {# grid cell is moved or cleared.} other {# grid cells are moved or cleared.}}",
+    "targetRequired": "Choose a target. Rows still use this.",
+    "blockedTitle": "This cannot be archived yet",
+    "blockedDescription": "Nothing changes until every blocker is resolved."
+  },
   "ticketPhase": {
     "singular": "Phase",
     "plural": "Phases",

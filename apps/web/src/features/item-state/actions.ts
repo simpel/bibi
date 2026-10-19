@@ -6,10 +6,12 @@ import {
   type ItemStateCreateInput,
   type ItemStateDto,
   type ItemStateUpdateInput,
+  previewArchiveItemState,
   reorderItemStates,
   setItemStateTransitions,
   updateItemState,
 } from "@okazi/core";
+import type { ArchivePreview } from "@okazi/core/schemas";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
@@ -37,6 +39,15 @@ export async function archiveItemStateAction({
   input,
 }: ArchiveItemStateActionInput): Promise<ActionResult<ItemStateDto>> {
   return toActionResult({ result: await runOperation({ operation: archiveItemState, input }) });
+}
+
+/** `itemState.archivePreview`: what archiving would move and block; writes nothing. */
+export async function previewArchiveItemStateAction({
+  input,
+}: ArchiveItemStateActionInput): Promise<ActionResult<ArchivePreview>> {
+  return toActionResult({
+    result: await runOperation({ operation: previewArchiveItemState, input }),
+  });
 }
 
 export async function reorderItemStatesAction({

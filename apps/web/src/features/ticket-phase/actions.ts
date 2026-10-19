@@ -5,6 +5,7 @@ import {
   createTicketPhase,
   importPhaseGridTemplate,
   importTicketPhaseTemplate,
+  previewArchiveTicketPhase,
   reorderTicketPhases,
   setTicketPhaseTransitions,
   type TicketPhaseArchiveInput,
@@ -14,6 +15,7 @@ import {
   type TicketPhaseUpdateInput,
   updateTicketPhase,
 } from "@okazi/core";
+import type { ArchivePreview } from "@okazi/core/schemas";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
@@ -41,6 +43,14 @@ export async function archiveTicketPhaseAction({
   input,
 }: ArchiveTicketPhaseActionInput): Promise<ActionResult<TicketPhaseDto>> {
   const result = await runOperation({ operation: archiveTicketPhase, input });
+  return toActionResult({ result });
+}
+
+/** `ticketPhase.archivePreview`: what archiving would move and block; writes nothing. */
+export async function previewArchiveTicketPhaseAction({
+  input,
+}: ArchiveTicketPhaseActionInput): Promise<ActionResult<ArchivePreview>> {
+  const result = await runOperation({ operation: previewArchiveTicketPhase, input });
   return toActionResult({ result });
 }
 

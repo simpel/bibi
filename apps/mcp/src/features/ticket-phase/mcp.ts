@@ -28,6 +28,7 @@ export const ticketPhaseMcpTools = [
         ? ""
         : `, moving its tickets to ${text({ value: input.targetPhaseId })}`),
   }),
+  mcpTool({ operation: "ticketPhase.archivePreview" }),
   mcpTool({
     operation: "ticketPhase.reorder",
     idempotent: true,

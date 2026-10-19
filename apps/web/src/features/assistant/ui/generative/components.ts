@@ -1,6 +1,7 @@
 import type { UiComponent } from "@okazi/ai";
 import type { ComponentType } from "react";
 import { ApprovalCardView } from "./approval-card-view";
+import { ArchivePreviewCardView } from "./archive-preview-card-view";
 import { AssignmentCardView } from "./assignment-card-view";
 import { AssignmentTableView } from "./assignment-table-view";
 import { AuditLogCardView } from "./audit-log-card-view";
@@ -86,6 +87,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "price-list-card": PriceListCardView,
   "ticket-phase-table": TicketPhaseTableView,
   "ticket-phase-card": TicketPhaseCardView,
+  "archive-preview-card": ArchivePreviewCardView,
   "ticket-template-table": TicketTemplateTableView,
   "ticket-template-card": TicketTemplateCardView,
   "item-state-table": ItemStateTableView,

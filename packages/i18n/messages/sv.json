@@ -1106,6 +1106,15 @@
       }
     }
   },
+  "archivePreview": {
+    "loading": "Kontrollerar vad som skulle ändras…",
+    "movingTickets": "{count, plural, =0 {Inga ärenden flyttas.} one {# ärende flyttas till målet.} other {# ärenden flyttas till målet.}}",
+    "movingLines": "{count, plural, =0 {Inga rader flyttas.} one {# rad flyttas till målet.} other {# rader flyttas till målet.}}",
+    "cells": "{count, plural, =0 {Inga rutnätsceller påverkas.} one {# rutnätscell flyttas eller töms.} other {# rutnätsceller flyttas eller töms.}}",
+    "targetRequired": "Välj ett mål. Rader använder fortfarande detta.",
+    "blockedTitle": "Det går inte att arkivera ännu",
+    "blockedDescription": "Inget ändras förrän alla hinder är lösta."
+  },
   "ticketPhase": {
     "singular": "Fas",
     "plural": "Faser",
