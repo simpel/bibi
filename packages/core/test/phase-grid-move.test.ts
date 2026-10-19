@@ -104,7 +104,7 @@ describe("ticket.changePhase moves lines by the phase grid (ADR 0044)", () => {
     expect(room.stateId).toBe(roomState[test.room].id);
     expect(dish.stateId).toBe(food[test.dish].id);
     expect(dish.stateOverridden).toBe(test.dishOverride !== undefined);
-    const holds = await activeOccupancies({ context, sourceId: roomLine.id });
+    const holds = await activeOccupancies({ context, lineId: roomLine.id });
     expect(holds.map((row) => row.holdKind)).toEqual([test.hold]);
   });
 

@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { changeTicketPhase, execute } from "../src/index";
+import { changeTicketPhase, createLine, execute } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { createBookableItem, insertRaw } from "./occupancy-helpers";
+import { insertHold } from "./hold-helpers";
+import { activeOccupancies } from "./line-helpers";
+import { createBookableItem, hours } from "./occupancy-helpers";
 import { testOrg } from "./org-helpers";
 import { createTestTicket, memberUser, moveToPhase, ticketSetup } from "./ticket-helpers";
 import { phaseByName } from "./ticket-phase-helpers";
@@ -82,30 +84,27 @@ describe("ticket.changePhase (ADR 0043)", () => {
     expect(errorCode({ result: reopened })).toBe("CONFLICT");
   });
 
-  it("releases the ticket's occupancy when it enters a terminal phase", async () => {
+  it("drops the line holds of a ticket that enters a terminal phase (ADR 0053)", async () => {
     const { context, ticket } = await leadSetup();
     const item = await createBookableItem({ context });
-    const raw = await insertRaw({ context, itemId: item.id, hold: "HARD", from: 9, to: 12 });
-    const held = await context.db.occupancy.update({
-      where: { id: raw.id },
-      data: { sourceType: "ticket", sourceId: ticket.id },
+    // The room type has no released state, so only the terminal phase releases the hold.
+    const other = await insertHold({ context, itemId: item.id, hold: "SOFT", from: 9, to: 12 });
+    const lineType = await context.db.entityType.findFirstOrThrow({ where: { base: "LINE" } });
+    const input = { ticketId: ticket.id, entityTypeId: lineType.id, itemId: item.id, name: "Talk" };
+    const line = unwrap({
+      result: await execute({
+        operation: createLine,
+        input: { ...input, ...hours({ from: 13, to: 15 }) },
+        context,
+      }),
     });
-    const unrelated = await insertRaw({
-      context,
-      itemId: item.id,
-      hold: "SOFT",
-      from: 9,
-      to: 12,
-    });
+    expect(await activeOccupancies({ context, lineId: line.id })).toHaveLength(1);
     unwrap({
       result: await moveToPhase({ context, ticketId: ticket.id, name: "Lost", reason: "Online" }),
     });
-    const rows = await context.db.occupancy.findMany({
-      where: { id: { in: [held.id, unrelated.id] }, status: { in: ["ACTIVE", "ARCHIVED"] } },
-    });
-    const statusOf = ({ id }: { id: string }) => rows.find((row) => row.id === id)?.status;
-    expect(statusOf({ id: held.id })).toBe("ARCHIVED");
-    expect(statusOf({ id: unrelated.id })).toBe("ACTIVE");
+    expect(await activeOccupancies({ context, lineId: line.id })).toEqual([]);
+    const kept = await context.db.occupancy.findFirst({ where: { id: other.id } });
+    expect(kept?.status).toBe("ACTIVE");
   });
 
   it("refuses unknown and foreign ids", async () => {

@@ -22,7 +22,7 @@ describe("line states and derived holds (ADR 0044)", () => {
     const first = unwrap({ result: await createTestLine({ ...base, from: 9, to: 12 }) });
     const second = unwrap({ result: await createTestLine({ ...base, from: 9, to: 12 }) });
     expect([first.stateId, second.stateId]).toEqual([states.prebooked.id, states.prebooked.id]);
-    expect(await holdsOf({ context, sourceId: second.id })).toEqual(["HOLD:SOFT"]);
+    expect(await holdsOf({ context, lineId: second.id })).toEqual(["HOLD:SOFT"]);
     const input = { itemId: room.id, limit: 50 };
     const listed = unwrap({
       result: await execute({ operation: listLines, input, context }),
@@ -33,7 +33,7 @@ describe("line states and derived holds (ADR 0044)", () => {
     });
     expect(booked).toMatchObject({ stateId: states.booked.id, stateOverridden: true });
     expect(booked.heldAt.getTime()).toBeGreaterThanOrEqual(first.heldAt.getTime());
-    expect(await holdsOf({ context, sourceId: first.id })).toEqual(["HOLD:HARD"]);
+    expect(await holdsOf({ context, lineId: first.id })).toEqual(["HOLD:HARD"]);
     const clash = await toState({ context, lineId: second.id, stateId: states.booked.id });
     expect(errorCode({ result: clash })).toBe("CONFLICT");
   });
@@ -44,7 +44,7 @@ describe("line states and derived holds (ADR 0044)", () => {
     const released = unwrap({
       result: await toState({ context, lineId: line.id, stateId: states.released.id }),
     });
-    expect(await holdsOf({ context, sourceId: released.id })).toEqual([]);
+    expect(await holdsOf({ context, lineId: released.id })).toEqual([]);
     const back = await toState({ context, lineId: line.id, stateId: states.prebooked.id });
     expect(errorCode({ result: back })).toBe("CONFLICT");
   });
@@ -86,7 +86,7 @@ describe("line states and derived holds (ADR 0044)", () => {
       });
       expect(moved.stateId).toBe(state.id);
     }
-    expect(await activeOccupancies({ context, sourceId: line.id })).toEqual([]);
+    expect(await activeOccupancies({ context, lineId: line.id })).toEqual([]);
   });
 
   it("derives the holds again when a state's hold changes, all or nothing", async () => {
@@ -96,6 +96,6 @@ describe("line states and derived holds (ADR 0044)", () => {
     const hard = { id: states.prebooked.id, hold: "HARD" as const };
     const clash = await execute({ operation: updateItemState, input: hard, context });
     expect(errorCode({ result: clash })).toBe("CONFLICT");
-    expect(await holdsOf({ context, sourceId: first.id })).toEqual(["HOLD:SOFT"]);
+    expect(await holdsOf({ context, lineId: first.id })).toEqual(["HOLD:SOFT"]);
   });
 });

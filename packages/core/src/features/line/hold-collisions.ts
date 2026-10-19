@@ -1,7 +1,7 @@
 import type { AppErrorIssue } from "../../errors/app-error";
 import type { OperationContext } from "../../operations/types";
 import type { ItemStateFlags } from "../item-state/schema";
-import { LINE_SOURCE, type LineRecord } from "./schema";
+import type { LineRecord } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -24,13 +24,11 @@ async function blockedPeriod({ context, line }: Db & { line: TimedLine }) {
 
 type TimedLine = LineRecord & { startsAt: Date; endsAt: Date };
 
-type Holder = { sourceType: string | null; sourceId: string | null };
+type Holder = { lineId: string | null };
 
 /** Ticket reference per line id, for the lines among the holders (one query). */
 async function ticketRefs({ context, holders }: Db & { holders: readonly Holder[] }) {
-  const ids = holders.flatMap((holder) =>
-    holder.sourceType === LINE_SOURCE && holder.sourceId ? [holder.sourceId] : [],
-  );
+  const ids = holders.flatMap((holder) => (holder.lineId ? [holder.lineId] : []));
   const lines = await context.db.line.findMany({
     where: { id: { in: ids } },
     select: { id: true, ticket: { select: { reference: true } } },
@@ -66,8 +64,8 @@ export async function holdCollisions({
       endsAt: { gt: period.startsAt },
       AND: [
         { OR: [{ type: { not: "HOLD" } }, { holdKind: "HARD" }] },
-        // Not the line's own rows; manual blocks have no source.
-        { OR: [{ sourceId: null }, { sourceId: { not: line.id } }] },
+        // Not the line's own rows; manual blocks have no line.
+        { OR: [{ lineId: null }, { lineId: { not: line.id } }] },
       ],
     },
     orderBy: { startsAt: "asc" },
@@ -75,7 +73,7 @@ export async function holdCollisions({
   const refs = await ticketRefs({ context, holders });
   const path = `lines.${line.id}`;
   return holders.map((holder) => {
-    const ref = holder.sourceId ? refs.get(holder.sourceId) : undefined;
+    const ref = holder.lineId ? refs.get(holder.lineId) : undefined;
     const by = ref === undefined ? `blocked (${holder.type})` : `booked by ticket #${ref}`;
     const message = `"${line.name}": ${item.name} is ${by} on ${day({ at: holder.startsAt })}`;
     return { path, message };

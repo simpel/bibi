@@ -6,7 +6,6 @@ import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
 import { checkLinePeriod, checkPlace, checkTicket } from "./line-rules";
 import { initialStateOf } from "./line-state";
-import { reserveLine } from "./reserve";
 import type { LineCreateInput, LineRecord } from "./schema";
 import { toLineRecord } from "./to-line-record";
 
@@ -57,6 +56,6 @@ export async function insertLine({
   });
   const line = toLineRecord({ row });
   context.recordChange({ entityId: row.id, after: line });
-  const reserved = await reserveLine({ context, line });
-  return reserved.ok ? ok({ value: line }) : reserved;
+  // The hold follows by trigger (ADR 0053); an overlap fails the insert with CONFLICT.
+  return ok({ value: line });
 }

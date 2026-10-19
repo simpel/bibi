@@ -2,7 +2,6 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { releaseLineStates } from "./release-line-states";
-import { releaseLine } from "./reserve";
 import { toLineRecord } from "./to-line-record";
 
 export type ReleaseForTicketInput = { context: OperationContext; ticketId: string };
@@ -10,29 +9,17 @@ export type ReleaseForTicketInput = { context: OperationContext; ticketId: strin
 /**
  * Releases every active line of the ticket when it enters a terminal phase (ADR 0044): each line
  * with a state moves to its item type's released state (ignoring the grid, overrides and
- * transitions), and the occupancy of every line is released, so a closed ticket no longer blocks
- * the items it held. The lines themselves stay as history.
+ * transitions). The holds follow by trigger (ADR 0053): a ticket in a terminal phase holds
+ * nothing, so a closed ticket no longer blocks its items. The lines themselves stay as history.
  */
-export async function releaseLinesOfTicket({
+export const releaseLinesOfTicket = ({
   context,
   ticketId,
-}: ReleaseForTicketInput): Promise<Result<true>> {
-  const states = await releaseLineStates({ context, ticketId });
-  if (!states.ok) return states;
-  const rows = await context.db.line.findMany({
-    where: { ticketId },
-    select: { id: true },
-  });
-  for (const { id } of rows) {
-    const released = await releaseLine({ context, id });
-    if (!released.ok) return released;
-  }
-  return ok({ value: true });
-}
+}: ReleaseForTicketInput): Promise<Result<true>> => releaseLineStates({ context, ticketId });
 
 /**
- * Archives every active line of the ticket (one audit row each) and releases the
- * occupancy it held. Used when the ticket itself is archived.
+ * Archives every active line of the ticket (one audit row each); their holds go by trigger.
+ * Used when the ticket itself is archived.
  */
 export async function archiveLinesOfTicket({
   context,
@@ -51,8 +38,6 @@ export async function archiveLinesOfTicket({
       before: toLineRecord({ row }),
       after: toLineRecord({ row: archived }),
     });
-    const released = await releaseLine({ context, id: row.id });
-    if (!released.ok) return released;
   }
   return ok({ value: true });
 }

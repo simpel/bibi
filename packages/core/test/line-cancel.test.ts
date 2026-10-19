@@ -33,9 +33,10 @@ describe("cancelling a ticket releases its lines' occupancy (ADR 0022)", () => {
     expect(errorCode({ result: retry })).toBeNull();
     const kept = await context.db.line.findFirstOrThrow({ where: { id: item.id } });
     expect(kept.status).toBe("ACTIVE");
+    // Holds are a projection (ADR 0053): the phase and line changes are audited, not the holds.
     const audit = await context.db.auditLog.findMany({
       where: { entityType: "occupancy", operation: "ticket.changePhase" },
     });
-    expect(audit).toHaveLength(2);
+    expect(audit).toHaveLength(0);
   });
 });

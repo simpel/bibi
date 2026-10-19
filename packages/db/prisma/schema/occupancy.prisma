@@ -9,26 +9,32 @@ enum OccupancyType {
 }
 
 /// Occupancy – a `BOOKABLE` item is taken for `[startsAt, endsAt)`. Released rows are `ARCHIVED`
-/// and no longer block. `sourceType`/`sourceId` name the row that caused it.
+/// and no longer block. Two kinds of rows (ADR 0053): manual blocks (`MAINTENANCE`, `INTERNAL`,
+/// no `lineId`) are owned data written by `occupancy.*`; line holds (`HOLD` and its `SETUP`
+/// buffer, with `lineId`) are a projection written ONLY by database triggers
+/// (`packages/db/sql/sync_line_occupancy.sql`), never by application code.
 model Occupancy {
   id             String        @id @default(cuid(2))
   organizationId String
   itemId         String
   type           OccupancyType
-  /// `HOLD` only: `SOFT` (may overlap) or `HARD` (blocks), from the line's state.
+  /// `HOLD` only: `SOFT` (may overlap) or `HARD` (blocks), copied from the line's state by the
+  /// trigger; nothing else writes it.
   holdKind       HoldKind?
   startsAt       DateTime
   endsAt         DateTime
-  sourceType     String?
-  sourceId       String?
+  /// The line whose hold this is; null for a manual block. Written only by the trigger.
+  lineId         String?
   note           String?
   status         RecordStatus  @default(ACTIVE)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   createdBy      String?
   item           Item          @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  line           Line?         @relation(fields: [lineId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([id, organizationId])
   @@index([organizationId, itemId, startsAt])
-  @@index([organizationId, sourceType, sourceId])
+  /// One `HOLD` and at most one `SETUP` row per line; the trigger upserts on it.
+  @@unique([lineId, type])
 }

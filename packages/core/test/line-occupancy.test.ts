@@ -11,7 +11,7 @@ describe("line occupancy (ADR 0022)", () => {
     const item = unwrap({
       result: await createTestLine({ ...base, from: 10, to: 12, setupId: setup.id }),
     });
-    const rows = await activeOccupancies({ context, sourceId: item.id });
+    const rows = await activeOccupancies({ context, lineId: item.id });
     expect(rows.map(({ type: kind, startsAt, endsAt }) => ({ kind, startsAt, endsAt }))).toEqual([
       { kind: "SETUP", ...hours({ from: 9, to: 10 }) },
       { kind: "HOLD", ...hours({ from: 10, to: 12 }) },
@@ -41,7 +41,7 @@ describe("line occupancy (ADR 0022)", () => {
     });
     const moved = { id: item.id, ...hours({ from: 14, to: 16 }) };
     unwrap({ result: await execute({ operation: updateLine, input: moved, context }) });
-    const rows = await activeOccupancies({ context, sourceId: item.id });
+    const rows = await activeOccupancies({ context, lineId: item.id });
     expect(rows.map((row) => row.startsAt)).toEqual([
       hours({ from: 13, to: 14 }).startsAt,
       hours({ from: 14, to: 16 }).startsAt,
@@ -53,7 +53,7 @@ describe("line occupancy (ADR 0022)", () => {
       result: await execute({ operation: updateLine, input: off, context }),
     });
     expect(updated).toMatchObject({ itemId: null, setupId: null });
-    expect(await activeOccupancies({ context, sourceId: item.id })).toEqual([]);
+    expect(await activeOccupancies({ context, lineId: item.id })).toEqual([]);
     const input = { id: item.id };
     unwrap({ result: await execute({ operation: archiveLine, input, context }) });
   });
@@ -64,7 +64,7 @@ describe("line occupancy (ADR 0022)", () => {
     const item = unwrap({ result: await createTestLine({ ...base, from: 10, to: 12 }) });
     const input = { id: item.id };
     unwrap({ result: await execute({ operation: archiveLine, input, context }) });
-    expect(await activeOccupancies({ context, sourceId: item.id })).toEqual([]);
+    expect(await activeOccupancies({ context, lineId: item.id })).toEqual([]);
     expect(errorCode({ result: await createTestLine({ ...base, from: 10, to: 12 }) })).toBeNull();
   });
 });

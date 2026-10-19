@@ -83,7 +83,6 @@ export * from "./features/skill/operations";
 export * from "./features/skill/read-operations";
 export * from "./features/skill/transfer-operations";
 export * from "./features/skill/write-operations";
-export { TICKET_OCCUPANCY_SOURCE } from "./features/ticket/cancellation";
 export * from "./features/ticket/change-phase-operation";
 export * from "./features/ticket/create-from-template-operation";
 export * from "./features/ticket/expire-holds-operation";

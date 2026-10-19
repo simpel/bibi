@@ -243,7 +243,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` is from/to in → Transition (`ItemStateTransition`)
 - `1:N` is the result of → PhaseStateRule
 
-> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in sheets), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state, all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by `heldAt` and staff decide who gets the item; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
+> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in sheets), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state that has not ended (by trigger, ADR 0053), all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by `heldAt` and staff decide who gets the item; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
 
 ### PhaseStateRule (`PhaseStateRule`) – the phase grid
 
@@ -299,7 +299,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 > **Target (ADR 0055, 0056):** rows are explicit choices only; applicable responsibilities and default assignees and followers are derived. `subjectType` / `subjectId` becomes `recordId`. Followers get `effect` (`FOLLOW` / `UNFOLLOW`).
 
 **Attributes**
-- subject (`subjectType` `TICKET` / `ITEM` and `subjectId`, the same pattern as `Occupancy.sourceType` / `sourceId`; core checks that the subject belongs to the organization)
+- subject (`subjectType` `TICKET` / `ITEM` and `subjectId`, a polymorphic reference; core checks that the subject belongs to the organization)
 - responsibility (`responsibilityId`, optional; none = the subject's main assignment)
 - assignee (`assigneeId`, one member; null while the subject only has followers)
 - followers (`AssignmentFollower`, any number of members; need-to-know: they see the subject under "Following" and are included where the assignee is, e.g. sheets)
@@ -432,7 +432,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 > **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`; derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
 
-> **Target (ADR 0052–0054):** `alternativeGroupId`. `stateId` is set from `LineStateChange`; `heldAt` goes. Holds are written by triggers.
+> **Target (ADR 0052, 0054):** `alternativeGroupId`. `stateId` is set from `LineStateChange`; `heldAt` goes. Holds are written by triggers (done, ADR 0053).
 
 **Attributes**
 - name and type (the organization's own, base `LINE`) and custom fields
@@ -456,7 +456,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` requires → Task
 - `1:N` AccessCode opens for this
 
-> Operations (resource `line`): `line.list|get|create|update|archive` and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followPhase({ lineId })` (clears the override and applies the current phase's grid cell). A new line starts in the grid cell of the ticket's phase for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `ticket.changePhase` moves the lines that are not overridden to the target phase's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A terminal phase moves every line to its type's released state. Who answers for a line comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both `sourceType = line`). An overlap with a hard hold, setup time or block is refused (`CONFLICT`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change (clearing both times releases it); `archive` releases it. Every change is audited. Every line read on every surface carries the effective quantity, price, discount and VAT with their sources.
+> Operations (resource `line`): `line.list|get|create|update|archive` and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followPhase({ lineId })` (clears the override and applies the current phase's grid cell). A new line starts in the grid cell of the ticket's phase for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `ticket.changePhase` moves the lines that are not overridden to the target phase's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A terminal phase moves every line to its type's released state. Who answers for a line comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both with the line's `lineId`, written by trigger, ADR 0053). An overlap with a hard hold, setup time or block is refused (`CONFLICT`, issue `lines.<id>`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change (clearing both times releases it); `archive` releases it; a ticket that is archived or enters a terminal phase holds nothing. Every change is audited. Every line read on every surface carries the effective quantity, price, discount and VAT with their sources.
 
 ### Requirement ★ (`Requirement`)
 
@@ -512,13 +512,13 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · A time block on a bookable item. The basis for conflict checking.
 
-> **Target (ADR 0053):** line holds and their setup buffers are a projection with `lineId` (FK), written only by triggers; `sourceType` / `sourceId` go. Manual blocks stay owned.
+> **Ownership (ADR 0053):** manual blocks (`MAINTENANCE`, `INTERNAL`) are owned; line holds and their setup buffers (`HOLD`, `SETUP`) are a projection with `lineId` (FK), written only by the triggers in `packages/db/sql/sync_line_occupancy.sql` (check `line-holds`).
 
 **Attributes**
 - item (with the `BOOKABLE` behavior)
 - start – end (`startsAt`, `endsAt`; the period is `[start, end)`, so back-to-back blocks do not overlap)
 - type (`HOLD`, `SETUP`, `MAINTENANCE`, `INTERNAL`); a `HOLD` has a kind, `SOFT` or `HARD`, derived from the line's state (ADR 0044)
-- source (`sourceType`, `sourceId`: the record that caused it; null for manual blocks)
+- line (`lineId`: the line whose hold or buffer this is; null for manual blocks; one `HOLD` and at most one `SETUP` per line)
 - note
 - status (active / archived = released; released rows no longer block)
 
@@ -526,7 +526,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:1` Line reserves this
 - `N:1` Item has this
 
-> ★ Active rows of all types except soft holds may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`; the other types follow their source. Changeover time is added as `SETUP` right before the start, based on the setup's changeover time (`changeoverMinutes`).
+> ★ Active rows of all types except soft holds may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`. `HOLD` and `SETUP` are written only by database triggers (ADR 0053), in the same transaction as the change to the line, its state, setup, item type, ticket or phase: a line holds while it and its ticket are active, the ticket's phase is not terminal, it is timed, its item's type is `BOOKABLE` and its state holds and is not released. Changeover time is added as `SETUP` right before a hard hold, based on the setup's changeover time (`changeoverMinutes`). Changing a state's `hold`/`released`, a setup's changeover time, a type's behaviours or a phase's `terminal` re-derives only lines that have not ended (the past calendar is frozen); an overlap refuses the change with `CONFLICT` and one issue per line (`lines.<id>`). Application code never writes line holds (a test enforces it).
 
 ## Items
 

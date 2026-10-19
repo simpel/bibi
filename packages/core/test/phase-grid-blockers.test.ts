@@ -83,7 +83,7 @@ describe("a blocked phase move changes nothing (ADR 0044)", () => {
     expect(after.phaseId).toBe(ticket.phaseId);
     expect((await lineNow({ context, lineId: roomLine.id })).stateId).toBe(roomState.prebooked.id);
     expect((await lineNow({ context, lineId: dishLine.id })).stateId).toBe(food.estimated.id);
-    const holds = await activeOccupancies({ context, sourceId: roomLine.id });
+    const holds = await activeOccupancies({ context, lineId: roomLine.id });
     expect(holds.map((row) => row.holdKind)).toEqual(["SOFT"]);
   });
 });

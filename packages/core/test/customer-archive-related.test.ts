@@ -71,7 +71,7 @@ describe("archiving tickets releases lines and rooms (#166, #145)", () => {
     });
     expect(archived).not.toBeNull();
     const held = await context.db.occupancy.findMany({
-      where: { sourceType: "line", sourceId: item.id },
+      where: { lineId: item.id },
     });
     expect(held).toHaveLength(0);
     const audit = await context.db.auditLog.findMany({

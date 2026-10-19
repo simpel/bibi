@@ -5,9 +5,8 @@ import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
 import { insertLine } from "./insert-line";
-import { checkLinePeriod, checkPlace, placeChanged } from "./line-rules";
+import { checkLinePeriod, checkPlace } from "./line-rules";
 import { stateAfterMove } from "./line-state";
-import { rederiveLine, releaseLine } from "./reserve";
 import {
   LineCreateInputSchema,
   LineIdInputSchema,
@@ -82,10 +81,8 @@ export const updateLine = defineOperation({
       await updateRecord({ context, id, change: { fields: json } });
       const line = toLineRecord({ row });
       context.recordChange({ entityId: id, before, after: line });
-      const moved = placeChanged({ before, after }) || "stateId" in state;
-      if (!moved) return ok({ value: line });
-      const reserved = await rederiveLine({ context, line });
-      return reserved.ok ? ok({ value: line }) : reserved;
+      // The hold follows by trigger (ADR 0053); an overlap fails the update with CONFLICT.
+      return ok({ value: line });
     },
   }),
 });
@@ -108,7 +105,6 @@ export const archiveLine = defineOperation({
       await archiveRecords({ context, ids: [id] });
       const line = toLineRecord({ row });
       context.recordChange({ entityId: id, before, after: line });
-      await releaseLine({ context, id });
       return ok({ value: line });
     },
   }),

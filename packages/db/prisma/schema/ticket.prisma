@@ -2,6 +2,8 @@
 /// (base `TICKET`) decides its own fields. `phaseId` is one of the organization's own phases; it
 /// is set to the default `entry` phase on create and changed only by `ticket.changePhase`.
 /// `status` is the soft-delete flag (ADR 0006), not the phase.
+/// Trigger (ADR 0053): changing `phaseId` or `status` re-derives the holds of the ticket's lines
+/// (an archived ticket or one in a terminal phase holds nothing, `sync_line_occupancy.sql`).
 model Ticket {
   id                  String         @id
   organizationId      String

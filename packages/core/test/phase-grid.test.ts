@@ -84,7 +84,7 @@ describe("terminal phases and the grid's lifecycle (ADR 0044)", () => {
     const reason = "Budget";
     unwrap({ result: await moveToPhase({ context, ticketId: ticket.id, name: "Lost", reason }) });
     expect((await lineNow({ context, lineId: hall.id })).stateId).toBe(roomState.released.id);
-    expect(await activeOccupancies({ context, sourceId: hall.id })).toEqual([]);
+    expect(await activeOccupancies({ context, lineId: hall.id })).toEqual([]);
     expect((await lineNow({ context, lineId: dish.id })).stateId).toBe(food.released.id);
   });
 

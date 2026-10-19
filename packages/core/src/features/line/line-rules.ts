@@ -65,19 +65,3 @@ export function checkLinePeriod({ startsAt, endsAt }: LinePeriod) {
   const message = "Give both a start and an end, or neither for an untimed line";
   return invalid({ message, issues: [{ path, message }] });
 }
-
-export type PlaceChanged = {
-  before: { itemId: string | null; setupId: string | null } & LinePeriod;
-  after: PlaceChanged["before"];
-};
-
-type SameTimeInput = { a: Date | null; b: Date | null };
-
-const sameTime = ({ a, b }: SameTimeInput) => (a?.getTime() ?? null) === (b?.getTime() ?? null);
-
-/** True when the occupancy a line holds must be moved (item, setup or time changed). */
-export const placeChanged = ({ before, after }: PlaceChanged): boolean =>
-  before.itemId !== after.itemId ||
-  before.setupId !== after.setupId ||
-  !sameTime({ a: before.startsAt, b: after.startsAt }) ||
-  !sameTime({ a: before.endsAt, b: after.endsAt });

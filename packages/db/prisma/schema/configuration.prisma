@@ -32,6 +32,8 @@ enum FieldKind {
 }
 
 /// Type – an organization's own type for a base entity, e.g. Conference room, Dish or Boat.
+/// Trigger (ADR 0053): changing `behaviours` (gaining or losing `BOOKABLE`) re-derives the holds
+/// of every line on an item of the type that has not ended (`sync_line_occupancy.sql`).
 model EntityType {
   id               String                      @id @default(cuid(2))
   organizationId   String
@@ -130,6 +132,8 @@ model VocabularyValue {
 }
 
 /// Setup – an organization's own setup with changeover time, e.g. Theatre or U-shape.
+/// Trigger (ADR 0053): changing `changeoverMinutes` re-derives the `SETUP` buffer of every line
+/// with the setup that has not ended; an overlap refuses the change (`sync_line_occupancy.sql`).
 model Setup {
   id                String               @id @default(cuid(2))
   organizationId    String

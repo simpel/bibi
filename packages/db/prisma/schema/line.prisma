@@ -2,7 +2,9 @@
 /// Its type (base `LINE`) decides its own fields. A line with an item has a state of the
 /// item's type (ADR 0044). With a bookable item in a `SOFT` or `HARD` state it holds a `HOLD`
 /// occupancy for `[startsAt, endsAt)`, and with a setup also a `SETUP` occupancy for the
-/// changeover right before; both have `sourceType = "line"` and follow the row. An untimed line
+/// changeover right before; both have `lineId` set and follow the row. A database trigger writes
+/// them (ADR 0053, `packages/db/sql/sync_line_occupancy.sql`) on insert and on every change of
+/// item, setup, time, state, ticket or status; application code never does. An untimed line
 /// (no `startsAt`/`endsAt`, e.g. a fee) never holds and is not drawn on the calendar (ADR 0052).
 /// The price columns are overrides: null = inherit (price list, then item; VAT: item, then venue).
 model Line {
@@ -46,6 +48,7 @@ model Line {
   setup           Setup?        @relation(fields: [setupId, organizationId], references: [id, organizationId])
   state           ItemState?    @relation(fields: [stateId, organizationId], references: [id, organizationId])
   requirements    Requirement[]
+  occupancies     Occupancy[]
   /// The supertable row this record extends (ADR 0056).
   record          Record        @relation(fields: [id, organizationId], references: [id, organizationId])
 

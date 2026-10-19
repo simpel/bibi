@@ -1,11 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { releaseLinesOfTicket } from "../line/release-for-ticket";
-import { releaseOccupancyBySource } from "../occupancy/release-by-source";
 import type { TicketDto } from "./schema";
-
-/** `Occupancy.sourceType` of the rows a ticket holds; `sourceId` is the ticket id. */
-export const TICKET_OCCUPANCY_SOURCE = "ticket";
 
 export type CancellationInput = {
   context: OperationContext;
@@ -25,23 +21,15 @@ export type CancellationHook = (input: CancellationInput) => Promise<Result<true
 
 export const CANCELLATION_HOOKS: CancellationHook[] = [];
 
-export type ReleaseTicketOccupancyInput = { context: OperationContext; ticketId: string };
-
-/** Releases every active occupancy the ticket holds, so the items can be booked again. */
-export const releaseTicketOccupancy = ({
-  context,
-  ticketId,
-}: ReleaseTicketOccupancyInput): Promise<Result<true>> =>
-  releaseOccupancyBySource({ context, sourceType: TICKET_OCCUPANCY_SOURCE, sourceId: ticketId });
-
-/** Everything entering a terminal phase does beyond the phase change: every line is released. */
+/**
+ * Everything entering a terminal phase does beyond the phase change: every line moves to its
+ * released state. The holds go by trigger (ADR 0053).
+ */
 export async function applyTerminal({
   context,
   ticket,
   reason,
 }: CancellationInput): Promise<Result<true>> {
-  const released = await releaseTicketOccupancy({ context, ticketId: ticket.id });
-  if (!released.ok) return released;
   const program = await releaseLinesOfTicket({ context, ticketId: ticket.id });
   if (!program.ok) return program;
   for (const hook of CANCELLATION_HOOKS) {

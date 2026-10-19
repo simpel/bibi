@@ -5,7 +5,8 @@ import { HoldKindSchema } from "../item-state/hold-kind";
 
 /**
  * Why a bookable item is occupied (ADR 0022, 0044). `HOLD` comes from a line's state; every row
- * except a `SOFT` hold is collision-free.
+ * except a `SOFT` hold is collision-free. `HOLD` and `SETUP` rows are a projection of the line,
+ * written only by database triggers (ADR 0053).
  */
 export const OCCUPANCY_TYPES = ["HOLD", "SETUP", "MAINTENANCE", "INTERNAL"] as const;
 export const OccupancyTypeSchema = z.enum(OCCUPANCY_TYPES);
@@ -24,8 +25,8 @@ export const OccupancySchema = z.object({
   holdKind: HoldKindSchema.nullable(),
   startsAt: z.date(),
   endsAt: z.date(),
-  sourceType: z.string().nullable(),
-  sourceId: z.string().nullable(),
+  /** The line whose hold (or setup buffer) this is; null for a manual block (ADR 0053). */
+  lineId: z.string().nullable(),
   note: z.string().nullable(),
   status: RecordStatusSchema,
   createdAt: z.date(),

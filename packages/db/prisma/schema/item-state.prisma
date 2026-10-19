@@ -11,6 +11,8 @@ enum HoldKind {
 
 /// Item state – an organization's own state of a line of one item type (base `ITEM`), e.g.
 /// Prebooked, Booked or Ordered. Exactly one active state per type is `initial`.
+/// Trigger (ADR 0053): changing `hold` or `released` re-derives the holds of every line in the
+/// state that has not ended; an overlap refuses the change (`sync_line_occupancy.sql`).
 model ItemState {
   id              String                @id @default(cuid(2))
   organizationId  String

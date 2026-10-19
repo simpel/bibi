@@ -68,7 +68,10 @@ export const createSetup = defineOperation({
 export const updateSetup = defineOperation({
   name: "setup.update",
   kind: "command",
-  description: "Rename a setup or change its changeover time. Omitted fields are unchanged.",
+  description:
+    "Rename a setup or change its changeover time. Omitted fields are unchanged. A new " +
+    "changeover time moves the setup buffer of every line with the setup that has not ended; " +
+    "if a buffer would overlap another booking the change gives CONFLICT listing the lines.",
   input: SetupUpdateInputSchema,
   output: SetupSchema,
   permission: "configuration:write",

@@ -21,8 +21,8 @@ export type ReleaseLineStatesInput = { context: OperationContext; ticketId: stri
 
 /**
  * Moves every line of the ticket that is not yet in a released state to its item type's released
- * state (ADR 0044), audited per line. A type without a released state keeps the line's state; its
- * occupancy is still released by the caller.
+ * state (ADR 0044), audited per line. A type without a released state keeps the line's state; it holds
+ * nothing anyway once the ticket is in a terminal phase (ADR 0053).
  */
 export async function releaseLineStates({
   context,

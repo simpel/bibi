@@ -1,7 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { cellOfTicket } from "../phase-grid/load-grid";
-import { rederiveLine } from "./reserve";
 import type { LineRecord } from "./schema";
 import { toLineRecord } from "./to-line-record";
 
@@ -64,8 +63,8 @@ export type ApplyLineStateInput = {
 };
 
 /**
- * Moves one line to a state: `heldAt` restarts, the change is audited on the line and its hold is
- * derived again from the new state (ADR 0044). A collision on a hard hold is `CONFLICT`.
+ * Moves one line to a state: `heldAt` restarts, the change is audited on the line and its hold
+ * follows by trigger (ADR 0044, 0053). A collision on a hard hold is `CONFLICT`.
  */
 export async function applyLineState({
   context,
@@ -83,6 +82,5 @@ export async function applyLineState({
   });
   const after = toLineRecord({ row });
   context.recordChange({ entityType: "line", entityId: before.id, before, after });
-  const held = await rederiveLine({ context, line: after });
-  return held.ok ? ok({ value: after }) : held;
+  return ok({ value: after });
 }

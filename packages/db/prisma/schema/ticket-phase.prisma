@@ -9,6 +9,8 @@ enum PhaseEvent {
 
 /// Ticket phase – an organization's own phase, e.g. Lead, Quote sent or Lost. Exactly one active
 /// phase is the default `entry` (the first by `position`), and at least one is `terminal`.
+/// Trigger (ADR 0053): changing `terminal` re-derives the holds of the lines that have not ended
+/// on tickets in the phase (`sync_line_occupancy.sql`).
 model TicketPhase {
   id               String                  @id @default(cuid(2))
   organizationId   String

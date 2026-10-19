@@ -9,35 +9,37 @@ import {
   updateOccupancy,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
+import { createHoldLine, insertHold } from "./hold-helpers";
 import { createTestItem } from "./item-helpers";
-import { createBookableItem, hours, insertRaw } from "./occupancy-helpers";
+import { createBookableItem, hours } from "./occupancy-helpers";
+import { ticketSetup } from "./ticket-helpers";
 
 describe("occupancy (ADR 0022)", () => {
   it("blocks an item and rejects overlapping non-option periods", async () => {
-    const context = testContext();
+    const { context } = await ticketSetup();
     const item = await createBookableItem({ context });
     const block = { itemId: item.id, type: "MAINTENANCE" as const, ...hours({ from: 8, to: 12 }) };
     const created = unwrap({
       result: await execute({ operation: createOccupancy, input: block, context }),
     });
-    expect(created).toMatchObject({ type: "MAINTENANCE", status: "ACTIVE", sourceId: null });
+    expect(created).toMatchObject({ type: "MAINTENANCE", status: "ACTIVE", lineId: null });
     const overlap = { ...block, type: "INTERNAL" as const, ...hours({ from: 11, to: 13 }) };
     const clash = await execute({ operation: createOccupancy, input: overlap, context });
     expect(errorCode({ result: clash })).toBe("CONFLICT");
     const after = { ...overlap, ...hours({ from: 12, to: 13 }) };
     const adjacent = await execute({ operation: createOccupancy, input: after, context });
     expect(errorCode({ result: adjacent })).toBeNull();
-    const ticket = insertRaw({ context, itemId: item.id, hold: "HARD", from: 9, to: 10 });
-    await expect(ticket).rejects.toThrow();
+    const held = await createHoldLine({ context, itemId: item.id, hold: "HARD", from: 9, to: 10 });
+    expect(errorCode({ result: held })).toBe("CONFLICT");
   });
 
   it("lets options overlap each other and blocked periods", async () => {
-    const context = testContext();
+    const { context } = await ticketSetup();
     const item = await createBookableItem({ context });
     const input = { itemId: item.id, type: "INTERNAL" as const, ...hours({ from: 8, to: 12 }) };
     unwrap({ result: await execute({ operation: createOccupancy, input, context }) });
-    await insertRaw({ context, itemId: item.id, hold: "SOFT", from: 9, to: 11 });
-    await insertRaw({ context, itemId: item.id, hold: "SOFT", from: 10, to: 14 });
+    await insertHold({ context, itemId: item.id, hold: "SOFT", from: 9, to: 11 });
+    await insertHold({ context, itemId: item.id, hold: "SOFT", from: 10, to: 14 });
     const list = unwrap({
       result: await execute({
         operation: listOccupancies,
@@ -64,7 +66,7 @@ describe("occupancy (ADR 0022)", () => {
   });
 
   it("updates and releases manual blocks, never other types", async () => {
-    const context = testContext();
+    const { context } = await ticketSetup();
     const item = await createBookableItem({ context });
     const input = { itemId: item.id, type: "MAINTENANCE" as const, ...hours({ from: 8, to: 10 }) };
     const block = unwrap({ result: await execute({ operation: createOccupancy, input, context }) });
@@ -82,7 +84,7 @@ describe("occupancy (ADR 0022)", () => {
     unwrap({ result: await execute({ operation: archiveOccupancy, input: block, context }) });
     const gone = await execute({ operation: getOccupancy, input: block, context });
     expect(errorCode({ result: gone })).toBe("NOT_FOUND");
-    const ticket = await insertRaw({ context, itemId: item.id, hold: "HARD", from: 8, to: 9 });
+    const ticket = await insertHold({ context, itemId: item.id, hold: "HARD", from: 8, to: 9 });
     const locked = await execute({ operation: archiveOccupancy, input: ticket, context });
     expect(errorCode({ result: locked })).toBe("CONFLICT");
   });

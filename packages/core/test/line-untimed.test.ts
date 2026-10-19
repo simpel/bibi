@@ -11,7 +11,7 @@ describe("untimed lines (ADR 0052)", () => {
     const input = { ticketId: ticket.id, entityTypeId: type.id, name: "Parking", itemId: room.id };
     const line = unwrap({ result: await execute({ operation: createLine, input, context }) });
     expect(line).toMatchObject({ startsAt: null, endsAt: null });
-    expect(await activeOccupancies({ context, sourceId: line.id })).toEqual([]);
+    expect(await activeOccupancies({ context, lineId: line.id })).toEqual([]);
     const window = { ticketId: ticket.id, ...{ from: hours({ from: 0, to: 23 }).startsAt } };
     const page = unwrap({
       result: await execute({ operation: listLines, input: window, context }),
@@ -38,13 +38,13 @@ describe("untimed lines (ADR 0052)", () => {
     const { context, ticket, type, room } = await programSetup();
     const base = { context, ticketId: ticket.id, entityTypeId: type.id, itemId: room.id };
     const line = unwrap({ result: await createTestLine({ ...base, from: 10, to: 12 }) });
-    expect(await activeOccupancies({ context, sourceId: line.id })).toHaveLength(1);
+    expect(await activeOccupancies({ context, lineId: line.id })).toHaveLength(1);
     const untimed = { id: line.id, startsAt: null, endsAt: null };
     unwrap({ result: await execute({ operation: updateLine, input: untimed, context }) });
-    expect(await activeOccupancies({ context, sourceId: line.id })).toEqual([]);
+    expect(await activeOccupancies({ context, lineId: line.id })).toEqual([]);
     const timed = { id: line.id, ...hours({ from: 13, to: 14 }) };
     unwrap({ result: await execute({ operation: updateLine, input: timed, context }) });
-    expect(await activeOccupancies({ context, sourceId: line.id })).toHaveLength(1);
+    expect(await activeOccupancies({ context, lineId: line.id })).toHaveLength(1);
   });
 });
 

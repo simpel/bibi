@@ -1,6 +1,5 @@
 import "server-only";
 import {
-  LINE_SOURCE,
   listEntityTypes,
   listItemStates,
   listItems,
@@ -11,7 +10,6 @@ import {
   listVenues,
   ok,
   type Result,
-  TICKET_OCCUPANCY_SOURCE,
   type VenueDto,
 } from "@okazi/core";
 import { listAll } from "@/server/list-all";
@@ -94,7 +92,6 @@ function toCalendarData({ selected, venues, phases, filters, ...rest }: ToCalend
   const all = toCalendarBlocks({
     ...rest,
     occupancies: rest.occupancies.filter(({ itemId }) => spaceIds.has(itemId)),
-    sources: { ticket: TICKET_OCCUPANCY_SOURCE, line: LINE_SOURCE },
   });
   const typeIds = new Set(selected.spaces.map(({ entityTypeId }) => entityTypeId));
   const shownTickets = new Set(all.map((block) => block.ticketId));

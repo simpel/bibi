@@ -88,7 +88,7 @@ async function checkSpecials({ context, org, lines, want }: SpecialsInput) {
       failures.push(`${org.slug}: ${line.name} lacks its price override`);
     }
     if (line.from || !row) continue;
-    const holds = await context.db.occupancy.count({ where: { sourceId: row.id } });
+    const holds = await context.db.occupancy.count({ where: { lineId: row.id } });
     if (row.startsAt !== null || holds > 0)
       failures.push(`${org.slug}: ${line.name} is not untimed`);
   }

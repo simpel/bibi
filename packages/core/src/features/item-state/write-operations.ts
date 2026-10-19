@@ -3,7 +3,6 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { flagsOf, insertItemState, stateNameTaken } from "./insert-item-state";
-import { rederiveLinesInState } from "./lines-in-state";
 import { loadItemState, loadStatesOfType } from "./load-item-state";
 import {
   ItemStateCreateInputSchema,
@@ -58,7 +57,7 @@ export const updateItemState = defineOperation({
     "Rename or recolor an item state, or change its flags. Renaming and recoloring change no " +
     "behavior. Making a state initial takes the flag from the current one; making it released " +
     "removes its transitions out. Changing `hold` or `released` re-derives the holds of every " +
-    "line in the state; a collision with a hard hold gives CONFLICT and changes nothing.",
+    "line in the state that has not ended (past holds stay as they were); a collision with a hard hold gives CONFLICT and changes nothing.",
   input: ItemStateUpdateInputSchema,
   output: ItemStateSchema,
   permission: "itemState:admin",
@@ -77,11 +76,9 @@ export const updateItemState = defineOperation({
     const valid = await checkUpdate({ context, before, flags });
     if (!valid.ok) return valid;
     await applyFlagEffects({ context, before, flags });
+    // Changing `hold` or `released` re-derives the holds of its lines that have not ended, by
+    // trigger (ADR 0053); a collision fails the update with CONFLICT listing the lines.
     await context.db.itemState.update({ where: { id }, data });
-    if (flags.hold !== before.hold || flags.released !== before.released) {
-      const held = await rederiveLinesInState({ context, stateId: id });
-      if (!held.ok) return held;
-    }
     const after = await loadItemState({ context, id });
     if (!after) return notFound({ entity: "Item state" });
     context.recordChange({ entityId: id, before, after });

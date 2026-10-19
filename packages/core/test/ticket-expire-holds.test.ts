@@ -39,7 +39,7 @@ describe("ticket.expireHolds (ADR 0044)", () => {
     expect(await stateOf(soft)).toBe(states.released.id);
     expect(await stateOf(hard)).toBe(states.booked.id);
     expect(await stateOf(waiting)).toBe(states.prebooked.id);
-    expect(await activeOccupancies({ context, sourceId: soft.id })).toEqual([]);
+    expect(await activeOccupancies({ context, lineId: soft.id })).toEqual([]);
     const after = unwrap({
       result: await execute({ operation: getTicket, input: { id: ticket.id }, context }),
     });

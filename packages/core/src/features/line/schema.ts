@@ -4,9 +4,6 @@ import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import { LineEffectiveShape } from "./effective-schema";
 
-/** `Occupancy.sourceType` of the occupancies a line holds. */
-export const LINE_SOURCE = "line";
-
 /** A line as stored: its own values, with `null` overrides meaning "inherit". */
 export const LineRecordSchema = z.object({
   id: z.string(),

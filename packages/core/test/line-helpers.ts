@@ -53,11 +53,11 @@ export const createTestLine = ({ context, from, to, ...input }: CreateTestLineIn
     context,
   });
 
-export type ActiveOccupanciesInput = { context: ExecuteContext; sourceId: string };
+export type ActiveOccupanciesInput = { context: ExecuteContext; lineId: string };
 
-/** The active occupancies a line holds, earliest first. */
-export const activeOccupancies = ({ context, sourceId }: ActiveOccupanciesInput) =>
+/** The active occupancies a line holds (its hold and setup buffer), earliest first. */
+export const activeOccupancies = ({ context, lineId }: ActiveOccupanciesInput) =>
   context.db.occupancy.findMany({
-    where: { sourceType: "line", sourceId },
+    where: { lineId },
     orderBy: { startsAt: "asc" },
   });
