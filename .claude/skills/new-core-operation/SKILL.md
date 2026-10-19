@@ -15,6 +15,7 @@ Template: `packages/core/src/features/setup/operations.ts` (simple) or `features
    - The handler uses `context.db` (org-scoped), never writes `organizationId` itself in `where`, sets `organizationId` and `createdBy` on create, and calls `context.recordChange({ entityId, before?, after })` for audit.
    - Errors: `err({ error: new AppError({ code, message }) })`. Never `throw`.
    - If it changes searchable fields: set `embeddable`.
+   - **Column kinds (ADR 0051):** for every column the operation writes, state its kind: owned (this operation is the only writer), derived (not stored), projection (written only by the database or one named function, in the same transaction) or snapshot (written once). A projection needs a reconciliation check, see skill `new-feature`.
 3. Add the operation to the entity's list and to `core-operations.ts`. Call it through `execute`, never `handler` directly.
 4. **Adapters in the same change:** `rest.ts` (`restRoute`), `graphql.ts` (`*FromOperation`), `mcp.ts`, `apps/web/src/features/web-surfaces.ts` (or `UI_EXEMPT` in `ui-exempt.ts` with a reason) and `tool-ui-registry.ts`.
 5. Tests against a real Postgres in `packages/core`, plus an isolation step in `apps/mcp/test/isolation-<area>.test.ts` (organization B calls the tool with A's ids, gets `NOT_FOUND`; `isolation-coverage.test.ts` enforces it). Check every referenced id for organization and read permission. Run `pnpm test`.

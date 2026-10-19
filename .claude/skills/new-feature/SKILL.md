@@ -20,6 +20,8 @@ One order, one definition of done. Core first, adapters in the same change (ADR 
 - **Lifecycle:** state what links to this record and what happens when it is archived, renamed, removed or changes phase (cascade, block, or reindex). Cover each with a test. Removing a member cleans up their assignments, follows and keys.
 - **Concurrency:** a unique key or count-then-write can race. Return `CONFLICT` (never `INTERNAL`) and make check-and-write atomic.
 - **AI surface:** every command has a localized approval label in `approval-labels.ts`, a `tool-ui-registry.ts` entry and untrusted-content handling for free text from outside.
+- **Column kinds (ADR 0051):** every new column is owned, derived, projection or snapshot, stated in the ticket and in the model comment. Inherit instead of copy; no id lists or ids in JSON without a foreign key.
+- **Reconciliation check:** every projection registers a check in `packages/core/src/seed/demo/reconcile-checks.ts` with `defineReconciliation({ name, rebuild, compare })`: `rebuild` derives the expected rows from owned data, `compare` reads the stored rows and returns one message per difference. Add it to `RECONCILIATIONS`. `checks.ts` runs them all and Vitest can call `reconcileProjections`. Template: `lineHoldsReconciliation`.
 - **Lists and pickers:** paginate or search server-side (no "first 100"), batch reads (no N+1).
 - **Configurable domain:** no domain words in code. Behaviour comes from org data and generic flags (ADR 0021, 0043, 0044).
 

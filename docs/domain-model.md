@@ -21,6 +21,10 @@ Ticket (moves through the organization's phases) → Lines with states (prebooke
 | Projection | Stored for a constraint or index, written only by the database | line holds in `Occupancy` (ADR 0053), `Ticket.phaseId` and `Line.stateId` (ADR 0054) |
 | Snapshot | Frozen copy at a moment that matters | sent quote lines, invoices, sent sheets and their recipients |
 
+**Ownership line.** Once the ticket for an entity lands, its section gets one line right under the heading, in this format (a projection names its reconciliation check in `packages/core/src/seed/demo/reconcile-checks.ts`):
+
+> **Ownership:** owned `name`, `startsAt`; derived `effectiveVatPercent`; projection `holdKind` (check `line-holds`); snapshot `unitPrice` (from the item, taken at send).
+
 What changes:
 - **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `ProgramItem` is renamed `Line`; it may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup`. A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`. `Ticket.quantity` goes; lines inherit the headcount.
 - **Holds are a projection** ([ADR 0053](decisions/0053-holds-are-a-projection.md)), written by triggers through `sync_line_occupancy`. Only lines that have not ended are re-derived.

@@ -19,6 +19,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 6. Ticket F6's `holdsUntil` has passed and its line is still `Prebooked` until `ticket.expireHolds` runs.
 7. Every write has a row in `AuditLog` with actor `SYSTEM`.
 8. Lindholmen's phase grid drives phase moves: moving L11 to Confirmed books its room line and skips its overridden lunch line, and moving L12 to Confirmed is refused because L4 has a hard hold on the same room, and nothing changes.
+9. Every projection matches what is rebuilt from owned data (ADR 0051): `reconcile-checks.ts` registers a `rebuild` query and a `compare` function per projection (`reconcile.ts`), and `checks.ts` runs them all and fails with the first differing rows. Today: line holds in `Occupancy` against the lines. Vitest calls the same `reconcileProjections`.
 
 The checks that run today:
 - **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
@@ -371,5 +372,6 @@ Per Vinga is the main assignee of V1–V3 and Stina Holm follows them; V4 is ass
   - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`.
   - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
 - `seed-templates.ts` creates the predefined tickets from `data/<org>/templates.ts` through `ticketTemplate.create` (items, setups, ticket type and start phase by name), after the pipeline and before the tickets. A ticket with `template` in `tickets.ts` is created through `ticket.createFromTemplate` (`seed-ticket-from-template.ts`) and is not moved afterwards.
+- `reconcile.ts` (the harness) and `reconcile-checks.ts` (the registered projection checks) run from `checks.ts`.
 - `checks.ts`, `template-checks.ts`, `config-checks.ts`, `ticket-checks.ts`, `assignment-checks.ts`, `hold-checks.ts`, `pipeline-checks.ts` and `grid-checks.ts` contain the checks above.
 - The seed is extended at the same pace as the parts in ADR 0025. A part that lacks operations is skipped with a clear log, so the demo can always be run.
