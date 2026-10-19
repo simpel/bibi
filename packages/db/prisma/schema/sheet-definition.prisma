@@ -1,26 +1,83 @@
 /// Sheet definition (ADR 0021) – an organization's own sheet, e.g. Kitchen order or Brewing order.
 /// It names the item types and fields a sheet includes, the lists whose requirements it includes
-/// and the fixed role it goes to. The referenced ids are validated by core (`sheetDefinition.*`), and
-/// archiving a referenced type, field or list is refused while a definition uses it.
+/// and the responsibility it goes to. The referenced ids are join rows with foreign keys (ADR 0056),
+/// validated by core (`sheetDefinition.*`), and archiving a referenced type, field or list is
+/// refused while an active definition uses it.
 model SheetDefinition {
-  id             String       @id @default(cuid(2))
-  organizationId String
-  name           String
+  id               String                      @id @default(cuid(2))
+  organizationId   String
+  name             String
+  /// The responsibility (ADR 0034) that receives the sheet.
+  responsibilityId String
+  status           RecordStatus                @default(ACTIVE)
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime                    @updatedAt
+  createdBy        String?
+  responsibility   Responsibility              @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
   /// Item types (`EntityType` of base ITEM) whose items appear on the sheet.
-  entityTypeIds  String[]
+  entityTypes      SheetDefinitionEntityType[]
   /// Fields (`FieldDefinition` of those types) shown per item.
-  fieldIds       String[]
+  fields           SheetDefinitionField[]
   /// Lists (`Vocabulary`) whose requirements are counted on the sheet.
-  vocabularyIds  String[]
-  /// The receiving fixed role (viewer, member, admin or owner, ADR 0034) until sheets go to a responsibility.
-  roleId         String
-  status         RecordStatus @default(ACTIVE)
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  createdBy      String?
+  vocabularies     SheetDefinitionVocabulary[]
   /// The versions generated from this definition.
-  sheets         Sheet[]
+  sheets           Sheet[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])
+  @@index([organizationId, responsibilityId])
+}
+
+/// An item type a sheet definition includes (ADR 0056). A replacement set, audited on the
+/// definition. `position` keeps the given order.
+model SheetDefinitionEntityType {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  sheetDefinitionId String
+  entityTypeId      String
+  position          Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  sheetDefinition   SheetDefinition @relation(fields: [sheetDefinitionId, organizationId], references: [id, organizationId])
+  entityType        EntityType      @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+
+  @@unique([sheetDefinitionId, entityTypeId])
+  @@index([organizationId, entityTypeId])
+}
+
+/// A field a sheet definition shows per item (ADR 0056). A replacement set, audited on the
+/// definition. `position` keeps the given order.
+model SheetDefinitionField {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  sheetDefinitionId String
+  fieldId           String
+  position          Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  sheetDefinition   SheetDefinition @relation(fields: [sheetDefinitionId, organizationId], references: [id, organizationId])
+  field             FieldDefinition @relation(fields: [fieldId, organizationId], references: [id, organizationId])
+
+  @@unique([sheetDefinitionId, fieldId])
+  @@index([organizationId, fieldId])
+}
+
+/// A list whose requirements a sheet definition counts (ADR 0056). A replacement set, audited on
+/// the definition. `position` keeps the given order.
+model SheetDefinitionVocabulary {
+  id                String          @id @default(cuid(2))
+  organizationId    String
+  sheetDefinitionId String
+  vocabularyId      String
+  position          Int
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  createdBy         String?
+  sheetDefinition   SheetDefinition @relation(fields: [sheetDefinitionId, organizationId], references: [id, organizationId])
+  vocabulary        Vocabulary      @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
+
+  @@unique([sheetDefinitionId, vocabularyId])
+  @@index([organizationId, vocabularyId])
 }

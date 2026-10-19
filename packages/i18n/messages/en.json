@@ -1057,7 +1057,7 @@
   "sheetDefinition": {
     "singular": "Sheet",
     "plural": "Sheets",
-    "listDescription": "Your own sheets, e.g. Kitchen order or Brewing order: which item types, fields and lists' requirements each includes, and which role it goes to.",
+    "listDescription": "Your own sheets, e.g. Kitchen order or Brewing order: which item types, fields and lists' requirements each includes, and which responsibility it goes to.",
     "create": "Create sheet",
     "edit": "Edit sheet",
     "createDescription": "Name the sheet, choose what it includes and who receives it.",
@@ -1071,13 +1071,13 @@
     "emptyDescription": "Create sheets such as Kitchen order or Brewing order.",
     "saving": "Saving sheet…",
     "archiving": "Archiving sheet…",
-    "selectRole": "Choose a role",
+    "selectResponsibility": "Choose a responsibility",
     "fields": {
       "name": "Name",
       "entityTypeIds": "Item types",
       "fieldIds": "Fields",
       "vocabularyIds": "Lists",
-      "roleId": "Receiving role"
+      "responsibilityId": "Receiving responsibility"
     },
     "hints": {
       "entityTypeIds": "Items of these types appear on the sheet.",
@@ -1093,7 +1093,7 @@
       "name": "Name",
       "types": "Item types",
       "lists": "Lists",
-      "role": "Receiving role"
+      "responsibility": "Receiving responsibility"
     },
     "wizard": {
       "progress": "Steps",
@@ -1105,7 +1105,7 @@
       "descriptions": {
         "name": "Name the sheet, e.g. Kitchen order.",
         "content": "Pick the item types, their fields and the lists the sheet is compiled from.",
-        "receiver": "Pick the role that receives the sheet."
+        "receiver": "Pick the responsibility that receives the sheet."
       }
     }
   },
@@ -1278,7 +1278,7 @@
         "entityTypeIds": "Item types (ids)",
         "fieldIds": "Fields (ids)",
         "vocabularyIds": "Lists (ids)",
-        "roleId": "Receiving role (id)",
+        "responsibilityId": "Receiving responsibility (id)",
         "key": "Key",
         "kind": "Field kind",
         "required": "Required",

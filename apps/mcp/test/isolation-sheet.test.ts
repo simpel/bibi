@@ -1,12 +1,15 @@
+import type { ExecuteContext } from "@okazi/core";
 import { describe, expect, it } from "vitest";
 import { call, connect, type Json, testContext } from "./helpers";
+import { seedResponsibility } from "./seed-responsibility";
 import { seedTicket } from "./seed-ticket";
 
 type Client = Awaited<ReturnType<typeof connect>>;
-type SeedInput = { client: Client };
+type SeedInput = { client: Client; context: ExecuteContext };
 
-async function seedSheet({ client }: SeedInput): Promise<Json> {
+async function seedSheet({ client, context }: SeedInput): Promise<Json> {
   const ticket = await seedTicket({ client });
+  const responsibilityId = await seedResponsibility({ client, context });
   const type = await call({
     client,
     name: "entityType_create",
@@ -15,7 +18,7 @@ async function seedSheet({ client }: SeedInput): Promise<Json> {
   const definition = await call({
     client,
     name: "sheetDefinition_create",
-    args: { name: "Secret sheet", entityTypeIds: [type.data.id], roleId: "owner" },
+    args: { name: "Secret sheet", entityTypeIds: [type.data.id], responsibilityId },
   });
   expect(definition.isError, JSON.stringify(definition.data)).toBe(false);
   const sheet = await call({
@@ -24,15 +27,25 @@ async function seedSheet({ client }: SeedInput): Promise<Json> {
     args: { ticketId: ticket.id, sheetDefinitionId: definition.data.id },
   });
   expect(sheet.isError, JSON.stringify(sheet.data)).toBe(false);
-  return { ticket, definition: definition.data, sheet: sheet.data };
+  return {
+    ticket,
+    type: type.data,
+    responsibilityId,
+    definition: definition.data,
+    sheet: sheet.data,
+  };
 }
 
 describe("cross-organization isolation: sheets and sheet definitions", () => {
   it("refuses sheet and sheet definition operations on another organization's rows", async () => {
-    const a = await connect({ context: testContext() });
-    const b = await connect({ context: testContext() });
-    const { ticket, definition, sheet } = await seedSheet({ client: a });
-    const mine = await seedSheet({ client: b });
+    const [contextA, contextB] = [testContext(), testContext()];
+    const a = await connect({ context: contextA });
+    const b = await connect({ context: contextB });
+    const { ticket, definition, sheet, responsibilityId } = await seedSheet({
+      client: a,
+      context: contextA,
+    });
+    const mine = await seedSheet({ client: b, context: contextB });
     const cases = [
       ["sheet_get", { id: sheet.id }],
       ["sheet_send", { id: sheet.id }],
@@ -46,6 +59,12 @@ describe("cross-organization isolation: sheets and sheet definitions", () => {
       expect(result.isError, name).toBe(true);
       expect(result.data.code, name).toBe("NOT_FOUND");
     }
+    const borrowed = await call({
+      client: b,
+      name: "sheetDefinition_create",
+      args: { name: "Borrowed receiver", entityTypeIds: [mine.type.id], responsibilityId },
+    });
+    expect(borrowed.data.code).toBe("VALIDATION");
     const sheets = await call({ client: b, name: "sheet_list" });
     expect(sheets.data.items.map((item: { id: string }) => item.id)).toEqual([mine.sheet.id]);
     const filtered = await call({ client: b, name: "sheet_list", args: { ticketId: ticket.id } });
@@ -56,8 +75,9 @@ describe("cross-organization isolation: sheets and sheet definitions", () => {
   });
 
   it("leaves the owning organization's sheet and definition untouched", async () => {
-    const a = await connect({ context: testContext() });
-    const { definition, sheet } = await seedSheet({ client: a });
+    const context = testContext();
+    const a = await connect({ context });
+    const { definition, sheet } = await seedSheet({ client: a, context });
     const own = await call({ client: a, name: "sheet_get", args: { id: sheet.id } });
     expect(own.data.version).toBe(1);
     expect(own.data.sentAt).toBeNull();

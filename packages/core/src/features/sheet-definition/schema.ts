@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { FixedRoleSchema } from "../../permissions/fixed-roles";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 
@@ -10,7 +9,7 @@ export const SheetDefinitionSchema = z.object({
   entityTypeIds: z.array(z.string()).describe("Item types whose items appear on the sheet"),
   fieldIds: z.array(z.string()).describe("Fields of those types shown per item"),
   vocabularyIds: z.array(z.string()).describe("Lists whose requirements are counted"),
-  roleId: z.string().describe("The fixed role the sheet goes to: viewer, member, admin or owner"),
+  responsibilityId: z.string().describe("The responsibility the sheet goes to"),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -31,7 +30,10 @@ export const SheetDefinitionCreateInputSchema = z.object({
   vocabularyIds: IdsSchema.default([]).describe(
     "Ids of lists (vocabulary.list) whose requirements are counted on the sheet",
   ),
-  roleId: FixedRoleSchema.describe("The fixed role that receives the sheet, e.g. member"),
+  responsibilityId: z
+    .string()
+    .min(1)
+    .describe("Id of the responsibility (responsibility.list) that receives the sheet"),
 });
 
 export const SheetDefinitionUpdateInputSchema = z.object({
@@ -40,7 +42,11 @@ export const SheetDefinitionUpdateInputSchema = z.object({
   entityTypeIds: IdsSchema.optional().describe("Replaces the item types"),
   fieldIds: IdsSchema.optional().describe("Replaces the fields"),
   vocabularyIds: IdsSchema.optional().describe("Replaces the lists"),
-  roleId: FixedRoleSchema.optional().describe("The fixed role that receives the sheet"),
+  responsibilityId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("The responsibility that receives the sheet"),
 });
 
 export const SheetDefinitionIdInputSchema = z.object({ id: z.string().min(1) });
@@ -59,5 +65,5 @@ export type SheetDefinitionUpdateInput = z.infer<typeof SheetDefinitionUpdateInp
 /** What a definition includes and where it goes: checked together by `checkSheetContents`. */
 export type SheetDefinitionContents = Pick<
   SheetDefinitionDto,
-  "entityTypeIds" | "fieldIds" | "vocabularyIds" | "roleId"
+  "entityTypeIds" | "fieldIds" | "vocabularyIds" | "responsibilityId"
 >;

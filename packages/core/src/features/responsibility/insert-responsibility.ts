@@ -1,7 +1,8 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { conflict } from "../../shared/errors";
+import { conflict, notFound } from "../../shared/errors";
 import { checkResponsibilityContents } from "./check-contents";
+import { findResponsibility, replaceResponsibilityLinks } from "./responsibility-rows";
 import type { ResponsibilityCreateInput, ResponsibilityDto } from "./schema";
 
 export type InsertResponsibilityInput = { context: OperationContext } & ResponsibilityCreateInput;
@@ -20,9 +21,13 @@ export async function insertResponsibility({
   }
   const contents = await checkResponsibilityContents({ context, contents: given });
   if (!contents.ok) return contents;
-  const row = await context.db.responsibility.create({
-    data: { name, ...contents.value, organizationId: context.organizationId },
+  const { entityTypeIds, defaultFollowerIds, ...scalars } = contents.value;
+  const { id } = await context.db.responsibility.create({
+    data: { name, ...scalars, organizationId: context.organizationId },
   });
-  context.recordChange({ entityId: row.id, after: row });
-  return ok({ value: row });
+  await replaceResponsibilityLinks({ context, responsibilityId: id, contents: contents.value });
+  const after = await findResponsibility({ context, id });
+  if (!after) return notFound({ entity: "Responsibility" });
+  context.recordChange({ entityId: id, after });
+  return ok({ value: after });
 }

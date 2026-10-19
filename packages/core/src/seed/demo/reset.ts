@@ -32,6 +32,19 @@ const itemStates = ({ db, where }: ScopeInput) => [
 ];
 
 /**
+ * Sheet definitions and the id lists of definitions and responsibilities (ADR 0056); after the
+ * sheet versions, before the responsibilities, types, fields and lists they point at.
+ */
+const configLinks = ({ db, where }: ScopeInput) => [
+  db.sheetDefinitionEntityType.deleteMany({ where }),
+  db.sheetDefinitionField.deleteMany({ where }),
+  db.sheetDefinitionVocabulary.deleteMany({ where }),
+  db.sheetDefinition.deleteMany({ where }),
+  db.responsibilityEntityType.deleteMany({ where }),
+  db.responsibilityDefaultFollower.deleteMany({ where }),
+];
+
+/**
  * Deletes one demo organization and everything it owns, so the seed can recreate it (ADR 0025:
  * idempotent per slug). Business rows have no FK to `organization` and are deleted explicitly,
  * children first; Better Auth rows (members, roles, invitations) cascade with the organization.
@@ -45,6 +58,7 @@ export async function resetDemoOrg({ db, org }: ResetDemoOrgInput): Promise<void
       db.conversation.deleteMany({ where }),
       ...ticketChildren({ db, where }),
       ...itemStates({ db, where }),
+      ...configLinks({ db, where }),
       db.priceListItem.deleteMany({ where }),
       db.priceList.deleteMany({ where }),
       db.itemComponent.deleteMany({ where }),

@@ -1,6 +1,6 @@
 import { byId, type ParityEntity, tool } from "./parity-entities";
 
-/** A sheet over the parity type, field and list, going to the fixed owner role. */
+/** A sheet over the parity type, field and list, going to the parity responsibility. */
 export const sheetDefinition: ParityEntity = {
   ...byId({
     name: "sheetDefinition",
@@ -18,7 +18,7 @@ export const sheetDefinition: ParityEntity = {
         entityTypeIds: [made.entityType.id],
         fieldIds: [made.fieldDefinition.id],
         vocabularyIds: [made.vocabulary.id],
-        roleId: "owner",
+        responsibilityId: made.responsibility.id,
       },
     }),
 };

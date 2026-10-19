@@ -25,6 +25,7 @@ The checks that run today:
 - **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
 - **Part 2 (configuration):**
   - The number of rows per organization matches for venue, vocabularies, vocabulary values, setups, responsibilities, types, fields, items and capacities (point 1 for what exists).
+  - Each responsibility covers the item types and has the default followers of the table below, in order (its join rows, ADR 0056).
   - Vingaleden has no vocabulary "Allergens" (the first half of point 2).
   - Lindholmen's imported vocabulary "Allergens" has 14 values.
   - The number of item parts (`ItemComponent`) per organization matches the data files.

@@ -23,7 +23,7 @@ export const listSheets = defineOperation({
   kind: "query",
   description:
     "List generated sheet versions (e.g. kitchen orders), newest first: version, receiving " +
-    "role, the rows of the snapshot, the changes marked ★ since the last sent version and " +
+    "responsibility, the rows of the snapshot, the changes marked ★ since the last sent version and " +
     "when it was sent. Filter by ticket or sheet definition.",
   input: SheetListInputSchema,
   output: SheetListOutputSchema,
@@ -97,7 +97,7 @@ export const sendSheet = defineOperation({
   name: "sheet.send",
   kind: "command",
   description:
-    "Send a sheet version to its receiving role: marks the version as sent, which is the " +
+    "Send a sheet version to its receiving responsibility: marks the version as sent, which is the " +
     "baseline the next version's ★ changes are measured against. Not for a ticket in a " +
     "terminal phase (CONFLICT), only the latest version, and a version once. A blocked " +
     "sheet (`blocked`: a count matches an item that contains it, see `matches`) gives CONFLICT.",

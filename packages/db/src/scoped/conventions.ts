@@ -36,7 +36,12 @@ export const CREATED_BY_MODELS = new Set<string>([
   "VocabularyValue",
   "Setup",
   "SheetDefinition",
+  "SheetDefinitionEntityType",
+  "SheetDefinitionField",
+  "SheetDefinitionVocabulary",
   "Responsibility",
+  "ResponsibilityEntityType",
+  "ResponsibilityDefaultFollower",
   "Assignment",
   "AssignmentFollower",
   "Item",
@@ -88,7 +93,8 @@ export const APP_ID_MODELS = new Set<string>(["Member", "Invitation", "Apikey", 
  * history, `sentAt` is its lifecycle, never removed), followers (AssignmentFollower: removed on
  * unfollow, audited on its assignment) and credentials (Apikey: `enabled` is its lifecycle,
  * revoked keys stay; OauthGrantRevocation: one row per user and client, updated on every revoke,
- * never removed).
+ * never removed) and the id lists of responsibilities and sheet definitions (ADR 0056: replacement
+ * sets, audited on their parent).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
   "ItemSetup",
@@ -109,4 +115,9 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "AssignmentFollower",
   "Apikey",
   "OauthGrantRevocation",
+  "ResponsibilityEntityType",
+  "ResponsibilityDefaultFollower",
+  "SheetDefinitionEntityType",
+  "SheetDefinitionField",
+  "SheetDefinitionVocabulary",
 ]);

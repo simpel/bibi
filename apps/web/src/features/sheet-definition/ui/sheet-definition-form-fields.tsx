@@ -56,26 +56,32 @@ function IdsField({ form, name, options, onPick }: IdsFieldProps) {
   );
 }
 
-export type SheetRoleFieldProps = { form: SheetForm; roles: readonly SheetOption[] };
+export type SheetResponsibilityFieldProps = {
+  form: SheetForm;
+  responsibilities: readonly SheetOption[];
+};
 
-export function SheetRoleField({ form, roles }: SheetRoleFieldProps) {
+export function SheetResponsibilityField({
+  form,
+  responsibilities,
+}: SheetResponsibilityFieldProps) {
   const t = useTranslations("sheetDefinition");
   return (
     <FormController
       control={form.control}
-      name="roleId"
+      name="responsibilityId"
       render={({ field }) => (
         <FormItem>
           <FormLabel>
-            {t("fields.roleId")}
+            {t("fields.responsibilityId")}
             <span className="ml-0.5 text-destructive">*</span>
           </FormLabel>
           <FormControl>
             <ChoiceControl
               value={field.value}
               onChange={field.onChange}
-              choices={toChoices({ options: roles })}
-              placeholder={t("selectRole")}
+              choices={toChoices({ options: responsibilities })}
+              placeholder={t("selectResponsibility")}
             />
           </FormControl>
           <FormMessage />
@@ -114,7 +120,7 @@ export function SheetDefinitionFormFields({ form, options }: SheetDefinitionForm
   return (
     <>
       <SheetContentFields form={form} options={options} />
-      <SheetRoleField form={form} roles={options.roles} />
+      <SheetResponsibilityField form={form} responsibilities={options.responsibilities} />
     </>
   );
 }

@@ -2,8 +2,10 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
+import { checkNotOnSheets } from "../sheet-definition/usage";
 import { checkResponsibilityContents } from "./check-contents";
 import { insertResponsibility } from "./insert-responsibility";
+import { findResponsibility, replaceResponsibilityLinks } from "./responsibility-rows";
 import {
   ResponsibilityCreateInputSchema,
   ResponsibilityIdInputSchema,
@@ -51,7 +53,7 @@ export const updateResponsibility = defineOperation({
   output: ResponsibilitySchema,
   permission: "configuration:write",
   handler: async ({ input: { id, name, ...changes }, context }) => {
-    const before = await context.db.responsibility.findFirst({ where: { id } });
+    const before = await findResponsibility({ context, id });
     if (!before) return notFound({ entity: "Responsibility" });
     if (name && (await nameTaken({ context, name, id }))) return taken({ name });
     const { entityTypeIds, defaultAssigneeId, defaultFollowerIds } = {
@@ -63,30 +65,39 @@ export const updateResponsibility = defineOperation({
       contents: { entityTypeIds, defaultAssigneeId, defaultFollowerIds },
     });
     if (!contents.ok) return contents;
-    const row = await context.db.responsibility.update({
+    await context.db.responsibility.update({
       where: { id },
-      data: { ...(name ? { name } : {}), ...contents.value },
+      data: { ...(name ? { name } : {}), defaultAssigneeId: contents.value.defaultAssigneeId },
     });
-    context.recordChange({ entityId: id, before, after: row });
-    return ok({ value: row });
+    await replaceResponsibilityLinks({ context, responsibilityId: id, contents: contents.value });
+    const after = await findResponsibility({ context, id });
+    if (!after) return notFound({ entity: "Responsibility" });
+    context.recordChange({ entityId: id, before, after });
+    return ok({ value: after });
   },
 });
 
 export const archiveResponsibility = defineOperation({
   name: "responsibility.archive",
   kind: "command",
-  description: "Archive a responsibility. Its name can then be reused.",
+  description:
+    "Archive a responsibility. Its name can then be reused. Refused (CONFLICT) while an active " +
+    "sheet definition goes to it.",
   input: ResponsibilityIdInputSchema,
   output: ResponsibilitySchema,
   permission: "configuration:write",
   handler: async ({ input: { id }, context }) => {
-    const before = await context.db.responsibility.findFirst({ where: { id } });
+    const before = await findResponsibility({ context, id });
     if (!before) return notFound({ entity: "Responsibility" });
+    const reference = { responsibilityId: id };
+    const unused = await checkNotOnSheets({ context, reference, what: before.name });
+    if (!unused.ok) return unused;
     const row = await context.db.responsibility.update({
       where: { id },
       data: { status: "ARCHIVED" },
     });
-    context.recordChange({ entityId: id, before, after: row });
-    return ok({ value: row });
+    const after = { ...before, ...row };
+    context.recordChange({ entityId: id, before, after });
+    return ok({ value: after });
   },
 });

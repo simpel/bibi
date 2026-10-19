@@ -4,11 +4,14 @@ import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { checkSheetContents } from "./check-contents";
 import {
+  type SheetDefinitionContents,
   SheetDefinitionCreateInputSchema,
+  type SheetDefinitionDto,
   SheetDefinitionIdInputSchema,
   SheetDefinitionSchema,
   SheetDefinitionUpdateInputSchema,
 } from "./schema";
+import { findSheetDefinition, replaceSheetLinks } from "./sheet-definition-rows";
 
 type NameTakenInput = { context: Pick<OperationContext, "db">; name: string; id?: string };
 
@@ -20,14 +23,30 @@ async function nameTaken({ context, name, id }: NameTakenInput) {
 const taken = ({ name }: { name: string }) =>
   conflict({ message: `A sheet named "${name}" exists` });
 
+type SaveLinksInput = {
+  context: OperationContext;
+  id: string;
+  contents: SheetDefinitionContents;
+  before?: SheetDefinitionDto;
+};
+
+/** Writes the id lists as join rows and records the change with the stored shape. */
+async function saveLinks({ context, id, contents, before }: SaveLinksInput) {
+  await replaceSheetLinks({ context, sheetDefinitionId: id, contents });
+  const after = await findSheetDefinition({ context, id });
+  if (!after) return notFound({ entity: "Sheet" });
+  context.recordChange({ entityId: id, ...(before ? { before } : {}), after });
+  return ok({ value: after });
+}
+
 export const createSheetDefinition = defineOperation({
   name: "sheetDefinition.create",
   kind: "command",
   description:
     "Define a sheet, e.g. Kitchen order: the item types and fields it includes, the lists whose " +
-    "requirements it counts and the fixed role it goes to (viewer, member, admin or owner). " +
+    "requirements it counts and the responsibility it goes to (e.g. Head of kitchen). " +
     "Sheet names are unique. Every id must be an active item type, a field of one of those " +
-    "types or a list (else VALIDATION).",
+    "types, a list or a responsibility (else VALIDATION).",
   input: SheetDefinitionCreateInputSchema,
   output: SheetDefinitionSchema,
   permission: "configuration:write",
@@ -35,11 +54,11 @@ export const createSheetDefinition = defineOperation({
     if (await nameTaken({ context, name })) return taken({ name });
     const contents = await checkSheetContents({ context, contents: given });
     if (!contents.ok) return contents;
-    const row = await context.db.sheetDefinition.create({
-      data: { name, ...contents.value, organizationId: context.organizationId },
+    const { responsibilityId } = contents.value;
+    const { id } = await context.db.sheetDefinition.create({
+      data: { name, responsibilityId, organizationId: context.organizationId },
     });
-    context.recordChange({ entityId: row.id, after: row });
-    return ok({ value: row });
+    return saveLinks({ context, id, contents: contents.value });
   },
 });
 
@@ -47,30 +66,30 @@ export const updateSheetDefinition = defineOperation({
   name: "sheetDefinition.update",
   kind: "command",
   description:
-    "Rename a sheet definition or replace its item types, fields, lists or receiving role. " +
+    "Rename a sheet definition or replace its item types, fields, lists or receiving " +
+    "responsibility. " +
     "Omitted fields are unchanged. Fields must belong to the resulting item types.",
   input: SheetDefinitionUpdateInputSchema,
   output: SheetDefinitionSchema,
   permission: "configuration:write",
   handler: async ({ input: { id, name, ...changes }, context }) => {
-    const before = await context.db.sheetDefinition.findFirst({ where: { id } });
+    const before = await findSheetDefinition({ context, id });
     if (!before) return notFound({ entity: "Sheet" });
     if (name && (await nameTaken({ context, name, id }))) return taken({ name });
-    const { entityTypeIds, fieldIds, vocabularyIds, roleId } = {
+    const { entityTypeIds, fieldIds, vocabularyIds, responsibilityId } = {
       ...before,
       ...definedOnly({ changes }),
     };
     const contents = await checkSheetContents({
       context,
-      contents: { entityTypeIds, fieldIds, vocabularyIds, roleId },
+      contents: { entityTypeIds, fieldIds, vocabularyIds, responsibilityId },
     });
     if (!contents.ok) return contents;
-    const row = await context.db.sheetDefinition.update({
+    await context.db.sheetDefinition.update({
       where: { id },
-      data: { ...(name ? { name } : {}), ...contents.value },
+      data: { ...(name ? { name } : {}), responsibilityId: contents.value.responsibilityId },
     });
-    context.recordChange({ entityId: id, before, after: row });
-    return ok({ value: row });
+    return saveLinks({ context, id, contents: contents.value, before });
   },
 });
 
@@ -89,13 +108,14 @@ export const archiveSheetDefinition = defineOperation({
   output: SheetDefinitionSchema,
   permission: "configuration:write",
   handler: async ({ input: { id }, context }) => {
-    const before = await context.db.sheetDefinition.findFirst({ where: { id } });
+    const before = await findSheetDefinition({ context, id });
     if (!before) return notFound({ entity: "Sheet" });
     const row = await context.db.sheetDefinition.update({
       where: { id },
       data: { status: "ARCHIVED" },
     });
-    context.recordChange({ entityId: id, before, after: row });
-    return ok({ value: row });
+    const after = { ...before, ...row };
+    context.recordChange({ entityId: id, before, after });
+    return ok({ value: after });
   },
 });

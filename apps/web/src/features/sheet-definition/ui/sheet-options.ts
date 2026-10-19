@@ -5,7 +5,7 @@ export type SheetOption = { id: string; name: string };
 export type SheetOptions = {
   types: (SheetOption & { fields: SheetOption[] })[];
   lists: SheetOption[];
-  roles: SheetOption[];
+  responsibilities: SheetOption[];
 };
 
 export type NamesOfInput = { ids: readonly string[]; options: readonly SheetOption[] };

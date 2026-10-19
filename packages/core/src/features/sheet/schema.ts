@@ -64,9 +64,7 @@ export const SheetSchema = z.object({
   ticketId: z.string(),
   sheetDefinitionId: z.string(),
   version: z.number().int().describe("1, 2, 3, … per ticket and sheet definition"),
-  roleId: z
-    .string()
-    .describe("The receiving fixed role at generation (viewer, member, admin or owner)"),
+  responsibilityId: z.string().describe("The receiving responsibility at generation"),
   content: SheetContentSchema,
   changes: z.array(SheetChangeSchema).describe("Rows marked ★ since `baseVersion`"),
   blocked: z.boolean().describe("A count matches an item that contains it: sheet.send is refused"),

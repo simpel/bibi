@@ -194,7 +194,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · What a sheet looks like, e.g. "Kitchen order" or "Brewing order".
 
-> **Target (ADR 0056):** id lists become join tables; `roleId` becomes `responsibilityId` with a foreign key.
+> Stored (ADR 0056) as join rows with composite foreign keys (`SheetDefinitionEntityType`, `SheetDefinitionField`, `SheetDefinitionVocabulary`, in the given order) and `responsibilityId` with a foreign key; the API keeps the id lists. Archiving an included type, field or list, or the receiving responsibility, is refused (`CONFLICT`, naming the sheets) while an active definition uses it.
 
 **Attributes**
 - name (unique)
@@ -275,7 +275,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · Decided in [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md). What someone answers for, e.g. "Head of kitchen" or "Head of exhibits". Organization data managed by admins. It carries no permissions: access comes from the fixed member roles (see User).
 
-> **Target (ADR 0056):** `entityTypeIds` and `defaultFollowerIds` become join tables with foreign keys.
+> Stored (ADR 0056) as join rows (`ResponsibilityEntityType` with a composite foreign key to the type, `ResponsibilityDefaultFollower` by user id, in the given order); the API keeps the id lists.
 
 **Attributes**
 - name (unique among the organization's active responsibilities)
@@ -287,6 +287,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 **Relations**
 - `N:M` covers → EntityType
 - `1:N` scopes → Assignment
+- `1:N` receives → SheetDefinition, Sheet
 - `1:N` SheetDefinition goes to this
 
 > Operations: `responsibility.list|get|create|update|archive` under the resource `configuration` (`configuration:write`, held by `admin` and `owner`, to change). The covered types and people are stored as id lists and checked by core: every covered type must be an active item type of the organization and the default assignee and followers must be members (`VALIDATION`); the assignee is not repeated among the followers. Names are unique among active responsibilities (`CONFLICT`). Settings page: `/settings/responsibilities`. The "Conference venue" template ships Sales (Package), Coordinator (Conference room, Equipment) and Head of kitchen (Dish, Drink, Meal) as optional data; `configuration.importTemplate` makes the importing member their default assignee and creates none when the caller is not a member (e.g. SYSTEM). Archiving is refused with `CONFLICT` while an active sheet definition uses the responsibility, once sheets go to a responsibility.
@@ -613,6 +614,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 **Relations**
 - `N:1` Ticket produces this
 - `N:1` SheetDefinition produces this version
+- `N:1` goes to → Responsibility
 
 > Operations (resource `sheet`): `sheet.list|get|generate|send`. `sheet.generate` snapshots the ticket for a definition; a changed ticket gives the next version with the changed rows marked ★ against the last *sent* version, an unchanged ticket returns the latest version. `sheet.send` marks a version as sent: only from the `CONFIRMED` phase (`CONFLICT` otherwise), only the latest version, and a version once. A `blocked` sheet is refused with `CONFLICT`. A version is never edited or removed. The core function `diffContent` is the only place the markers are computed; `matchRequirements` (over `item.resolve`) is the only place matches are computed. A change in matches gives a new version.
 

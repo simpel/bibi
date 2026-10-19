@@ -1,4 +1,4 @@
-/// Sheet – one version of a ticket's compilation for a role (ADR 0021), e.g. a kitchen order.
+/// Sheet – one version of a ticket's compilation for a responsibility (ADR 0021), e.g. a kitchen order.
 /// `content` is a snapshot of the ticket at generation, shaped by its `SheetDefinition`.
 /// `changes` marks (★) what differs from `baseVersion`, the last version that was sent before
 /// this one; both are null/empty for the first send. A version is never edited or removed:
@@ -10,8 +10,8 @@ model Sheet {
   sheetDefinitionId String
   /// 1, 2, 3, … per ticket and definition.
   version           Int
-  /// The receiving fixed role at generation (ADR 0034).
-  roleId            String
+  /// The receiving responsibility at generation (ADR 0034).
+  responsibilityId  String
   /// Snapshot of the ticket's rows the definition includes.
   content           Json
   /// Rows added, changed or removed since `baseVersion` (see core `SheetChange`).
@@ -30,9 +30,11 @@ model Sheet {
   createdBy         String?
   ticket            Ticket          @relation(fields: [ticketId, organizationId], references: [id, organizationId])
   sheetDefinition   SheetDefinition @relation(fields: [sheetDefinitionId, organizationId], references: [id, organizationId])
+  responsibility    Responsibility  @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@unique([ticketId, sheetDefinitionId, version])
   @@index([organizationId, ticketId])
   @@index([organizationId, sheetDefinitionId])
+  @@index([organizationId, responsibilityId])
 }

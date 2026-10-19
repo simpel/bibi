@@ -10,6 +10,7 @@ import {
 import { unwrap } from "./helpers";
 import { createTestLine } from "./line-helpers";
 import { addRequirement, requirementSetup } from "./requirement-helpers";
+import { createTestResponsibility } from "./responsibility-helpers";
 
 type Part = { itemId: string; required?: boolean };
 type Ctx = { context: ExecuteContext };
@@ -72,7 +73,7 @@ export async function matchSetup() {
         entityTypeIds: [type.id],
         fieldIds: [],
         vocabularyIds: [list.id],
-        roleId: "owner",
+        responsibilityId: (await createTestResponsibility({ context })).id,
       },
       context,
     }),

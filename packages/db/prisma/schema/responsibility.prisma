@@ -1,23 +1,64 @@
 /// Responsibility (ADR 0034) – what someone answers for, e.g. Head of kitchen or Head of exhibits.
-/// It covers item types and names a default assignee and default followers. The referenced ids
-/// are validated by core (`responsibility.*`): item types are active types of base ITEM, people
-/// are members of the organization (user ids). It carries no permissions.
+/// It covers item types (`ResponsibilityEntityType`) and names a default assignee and default
+/// followers (`ResponsibilityDefaultFollower`). Core validates (`responsibility.*`) that the item
+/// types are active types of base ITEM and the people are members of the organization (user ids).
+/// It carries no permissions.
 model Responsibility {
-  id                 String       @id @default(cuid(2))
-  organizationId     String
-  name               String
-  /// Item types (`EntityType` of base ITEM) this responsibility covers.
-  entityTypeIds      String[]
+  id                String                          @id @default(cuid(2))
+  organizationId    String
+  name              String
   /// The member (user id) who answers for it by default.
-  defaultAssigneeId  String
+  defaultAssigneeId String
+  status            RecordStatus                    @default(ACTIVE)
+  createdAt         DateTime                        @default(now())
+  updatedAt         DateTime                        @updatedAt
+  createdBy         String?
+  /// Item types (`EntityType` of base ITEM) this responsibility covers.
+  entityTypes       ResponsibilityEntityType[]
   /// Members (user ids) who follow it by default.
-  defaultFollowerIds String[]
-  status             RecordStatus @default(ACTIVE)
-  createdAt          DateTime     @default(now())
-  updatedAt          DateTime     @updatedAt
-  createdBy          String?
-  assignments        Assignment[]
+  defaultFollowers  ResponsibilityDefaultFollower[]
+  assignments       Assignment[]
+  /// Sheet definitions that go to this responsibility.
+  sheetDefinitions  SheetDefinition[]
+  /// Sheet versions generated for this responsibility.
+  sheets            Sheet[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])
+}
+
+/// An item type a responsibility covers (ADR 0056). A replacement set: `responsibility.update`
+/// replaces the rows, audited on the responsibility. `position` keeps the given order.
+model ResponsibilityEntityType {
+  id               String         @id @default(cuid(2))
+  organizationId   String
+  responsibilityId String
+  entityTypeId     String
+  position         Int
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  createdBy        String?
+  responsibility   Responsibility @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+  entityType       EntityType     @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+
+  @@unique([responsibilityId, entityTypeId])
+  @@index([organizationId, entityTypeId])
+}
+
+/// A member (user id) who follows a responsibility by default (ADR 0056). Like
+/// `AssignmentFollower`, `userId` is validated by core as a member. A replacement set, audited
+/// on the responsibility. `position` keeps the given order.
+model ResponsibilityDefaultFollower {
+  id               String         @id @default(cuid(2))
+  organizationId   String
+  responsibilityId String
+  userId           String
+  position         Int
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  createdBy        String?
+  responsibility   Responsibility @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+
+  @@unique([responsibilityId, userId])
+  @@index([organizationId, userId])
 }

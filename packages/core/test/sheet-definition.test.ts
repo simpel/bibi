@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   archiveEntityType,
   archiveFieldDefinition,
+  archiveResponsibility,
   archiveSheetDefinition,
   archiveVocabulary,
   createEntityType,
@@ -13,17 +14,8 @@ import {
 } from "../src/index";
 import { errorCode, peer, unwrap } from "./helpers";
 import { testOrg } from "./org-helpers";
-import { createSheetSetup } from "./sheet-definition-helpers";
-
-type Setup = Awaited<ReturnType<typeof createSheetSetup>>;
-
-const kitchenOrder = ({ dish, field, list, role }: Setup) => ({
-  name: "Kitchen order",
-  entityTypeIds: [dish.id, dish.id],
-  fieldIds: [field.id],
-  vocabularyIds: [list.id],
-  roleId: role,
-});
+import { createTestResponsibility } from "./responsibility-helpers";
+import { createSheetSetup, kitchenOrder } from "./sheet-definition-helpers";
 
 describe("sheet definitions (ADR 0021)", () => {
   it("defines a sheet that readers can list and get", async () => {
@@ -57,9 +49,9 @@ describe("sheet definitions (ADR 0021)", () => {
       input: { base: "CUSTOMER", name: "Company" },
       context,
     });
-    const custom = { ...input, name: "Bar order", roleId: "Kitchen" as "member" };
+    const custom = { ...input, name: "Bar order", responsibilityId: "Kitchen" };
     const bad = await execute({ operation: createSheetDefinition, input: custom, context });
-    expect(bad.ok ? [] : bad.error.issues.map((issue) => issue.path)).toEqual(["roleId"]);
+    expect(bad.ok ? [] : bad.error.issues.map((issue) => issue.path)).toEqual(["responsibilityId"]);
     const unknownType = await execute({
       operation: createSheetDefinition,
       input: { ...input, name: "Bar order", entityTypeIds: [unwrap({ result: other }).id] },
@@ -71,7 +63,7 @@ describe("sheet definitions (ADR 0021)", () => {
     ]);
     const empty = await execute({
       operation: createSheetDefinition,
-      input: { name: "Empty", roleId: "owner" },
+      input: { name: "Empty", responsibilityId: setup.responsibility.id },
       context,
     });
     expect(errorCode({ result: empty })).toBe("VALIDATION");
@@ -87,12 +79,15 @@ describe("sheet definitions (ADR 0021)", () => {
         context,
       }),
     });
+    const brewer = await createTestResponsibility({ context, name: "Head brewer" });
+    const changes = { name: "Brewing order", responsibilityId: brewer.id };
     const renamed = await execute({
       operation: updateSheetDefinition,
-      input: { id: sheet.id, name: "Brewing order", roleId: "owner" },
+      input: { id: sheet.id, ...changes },
       context,
     });
-    expect(unwrap({ result: renamed })).toMatchObject({ name: "Brewing order", roleId: "owner" });
+    const kept = { fieldIds: [setup.field.id], vocabularyIds: [setup.list.id] };
+    expect(unwrap({ result: renamed })).toMatchObject({ ...changes, ...kept });
     const orphaned = await execute({
       operation: updateSheetDefinition,
       input: { id: sheet.id, entityTypeIds: [] },
@@ -101,7 +96,7 @@ describe("sheet definitions (ADR 0021)", () => {
     expect(errorCode({ result: orphaned })).toBe("VALIDATION");
   });
 
-  it("refuses to archive types, fields and lists a sheet uses", async () => {
+  it("refuses to archive types, fields, lists and the responsibility a sheet uses", async () => {
     const context = await testOrg();
     const setup = await createSheetSetup({ context });
     const sheet = unwrap({
@@ -115,8 +110,13 @@ describe("sheet definitions (ADR 0021)", () => {
       execute({ operation: archiveEntityType, input: { id: setup.dish.id }, context }),
       execute({ operation: archiveFieldDefinition, input: { id: setup.field.id }, context }),
       execute({ operation: archiveVocabulary, input: { id: setup.list.id }, context }),
+      execute({
+        operation: archiveResponsibility,
+        input: { id: setup.responsibility.id },
+        context,
+      }),
     ]);
-    expect(attempts.map((result) => errorCode({ result }))).toEqual(Array(3).fill("CONFLICT"));
+    expect(attempts.map((result) => errorCode({ result }))).toEqual(Array(4).fill("CONFLICT"));
     unwrap({
       result: await execute({
         operation: archiveSheetDefinition,
@@ -130,13 +130,5 @@ describe("sheet definitions (ADR 0021)", () => {
       context,
     });
     expect(errorCode({ result: freed })).toBeNull();
-  });
-
-  it("never refers to another organization's configuration", async () => {
-    const theirs = await createSheetSetup({ context: await testOrg() });
-    const context = await testOrg();
-    const input = { ...kitchenOrder(theirs), roleId: "owner" };
-    const result = await execute({ operation: createSheetDefinition, input, context });
-    expect(errorCode({ result })).toBe("VALIDATION");
   });
 });

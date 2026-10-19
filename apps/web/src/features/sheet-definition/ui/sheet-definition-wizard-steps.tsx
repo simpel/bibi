@@ -2,7 +2,7 @@ import type { SheetDefinitionCreateInput } from "@okazi/core";
 import type { UseFormReturn } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";
 import type { WizardStepDef } from "@/components/wizard/step-wizard";
-import { SheetContentFields, SheetRoleField } from "./sheet-definition-form-fields";
+import { SheetContentFields, SheetResponsibilityField } from "./sheet-definition-form-fields";
 import type { SheetDefinitionFormValues } from "./sheet-definition-form-schema";
 import type { SheetOptions } from "./sheet-options";
 
@@ -31,8 +31,8 @@ export function sheetSteps({ form, options, nameLabel, text }: SheetStepsInput) 
     },
     {
       ...text({ id: "receiver" }),
-      fields: ["roleId"],
-      content: <SheetRoleField form={form} roles={options.roles} />,
+      fields: ["responsibilityId"],
+      content: <SheetResponsibilityField form={form} responsibilities={options.responsibilities} />,
     },
   ];
   return steps;

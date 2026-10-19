@@ -30,9 +30,9 @@ export type SameAsLatestInput = {
   definition: SheetDefinitionDto;
 };
 
-/** An unchanged ticket, matches and role gives no new version. */
+/** An unchanged ticket, matches and responsibility gives no new version. */
 export const sameAsLatest = ({ latest, content, matches, definition }: SameAsLatestInput) =>
-  latest.roleId === definition.roleId &&
+  latest.responsibilityId === definition.responsibilityId &&
   isDeepStrictEqual(latest.content, toJson({ value: content })) &&
   isDeepStrictEqual(latest.matches, toJson({ value: matches }));
 
@@ -62,7 +62,7 @@ export function createVersion({
       ticketId: ticket.id,
       sheetDefinitionId: definition.id,
       version: (latest?.version ?? 0) + 1,
-      roleId: definition.roleId,
+      responsibilityId: definition.responsibilityId,
       content: toJson({ value: content }) ?? {},
       changes: toJson({ value: diffContent({ before, after: content }) }) ?? [],
       matches: toJson({ value: matches }) ?? [],

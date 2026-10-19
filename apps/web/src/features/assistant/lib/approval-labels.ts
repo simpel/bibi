@@ -29,7 +29,7 @@ export const FIELD_KEYS = [
   "entityTypeIds",
   "fieldIds",
   "vocabularyIds",
-  "roleId",
+  "responsibilityId",
   "key",
   "kind",
   "required",

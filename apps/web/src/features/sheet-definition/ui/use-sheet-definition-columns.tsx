@@ -37,9 +37,10 @@ export function useSheetDefinitionColumns({
         accessorFn: (sheet) => names({ ids: sheet.vocabularyIds, options: options.lists }),
       },
       {
-        id: "role",
-        header: t("columns.role"),
-        accessorFn: (sheet) => names({ ids: [sheet.roleId], options: options.roles }),
+        id: "responsibility",
+        header: t("columns.responsibility"),
+        accessorFn: (sheet) =>
+          names({ ids: [sheet.responsibilityId], options: options.responsibilities }),
       },
     ];
     if (!canWrite) return data;

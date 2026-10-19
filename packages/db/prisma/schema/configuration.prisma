@@ -33,30 +33,32 @@ enum FieldKind {
 
 /// Type – an organization's own type for a base entity, e.g. Conference room, Dish or Boat.
 model EntityType {
-  id              String               @id @default(cuid(2))
-  organizationId  String
-  base            EntityBase
-  name            String
-  behaviours      ItemBehaviour[]
+  id               String                      @id @default(cuid(2))
+  organizationId   String
+  base             EntityBase
+  name             String
+  behaviours       ItemBehaviour[]
   /// Item types: where lines in an `expires` state fall when the ticket's `holdsUntil` passes.
-  expiryStateId   String?
-  status          RecordStatus         @default(ACTIVE)
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  createdBy       String?
-  fields          FieldDefinition[]
-  linkedBy        FieldDefinition[]    @relation("FieldLinkType")
-  items           Item[]
-  customers       Customer[]
-  contacts        Contact[]
-  tickets         Ticket[]
-  lines           Line[]
-  requirements    Requirement[]
-  itemStates      ItemState[]          @relation("ItemStateType")
-  phaseRules      PhaseStateRule[]
-  ticketTemplates TicketTemplate[]
-  templateLines   TicketTemplateLine[]
-  expiryState     ItemState?           @relation("ExpiryState", fields: [expiryStateId, organizationId], references: [id, organizationId])
+  expiryStateId    String?
+  status           RecordStatus                @default(ACTIVE)
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime                    @updatedAt
+  createdBy        String?
+  fields           FieldDefinition[]
+  linkedBy         FieldDefinition[]           @relation("FieldLinkType")
+  items            Item[]
+  customers        Customer[]
+  contacts         Contact[]
+  tickets          Ticket[]
+  lines            Line[]
+  requirements     Requirement[]
+  itemStates       ItemState[]                 @relation("ItemStateType")
+  phaseRules       PhaseStateRule[]
+  ticketTemplates  TicketTemplate[]
+  templateLines    TicketTemplateLine[]
+  responsibilities ResponsibilityEntityType[]
+  sheetDefinitions SheetDefinitionEntityType[]
+  expiryState      ItemState?                  @relation("ExpiryState", fields: [expiryStateId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, base, status])
@@ -84,6 +86,8 @@ model FieldDefinition {
   linkType       EntityType?  @relation("FieldLinkType", fields: [linkTypeId, organizationId], references: [id, organizationId])
   vocabulary     Vocabulary?  @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
 
+  sheetDefinitions SheetDefinitionField[]
+
   @@unique([id, organizationId])
   @@unique([entityTypeId, key])
   @@index([organizationId, entityTypeId, status])
@@ -91,15 +95,16 @@ model FieldDefinition {
 
 /// List – an organization's own word list, e.g. Allergens, Diet or Harbor.
 model Vocabulary {
-  id             String            @id @default(cuid(2))
-  organizationId String
-  name           String
-  status         RecordStatus      @default(ACTIVE)
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  createdBy      String?
-  values         VocabularyValue[]
-  fields         FieldDefinition[]
+  id               String                      @id @default(cuid(2))
+  organizationId   String
+  name             String
+  status           RecordStatus                @default(ACTIVE)
+  createdAt        DateTime                    @default(now())
+  updatedAt        DateTime                    @updatedAt
+  createdBy        String?
+  values           VocabularyValue[]
+  fields           FieldDefinition[]
+  sheetDefinitions SheetDefinitionVocabulary[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

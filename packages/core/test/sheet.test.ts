@@ -29,7 +29,8 @@ describe("sheet.generate (ADR 0021)", () => {
   it("snapshots the ticket, the included items with fields and the counts", async () => {
     const setup = await sheetSetup();
     const sheet = unwrap({ result: await generate(setup) });
-    expect(sheet).toMatchObject({ version: 1, roleId: "owner", baseVersion: null, sentAt: null });
+    const { responsibilityId } = setup.definition;
+    expect(sheet).toMatchObject({ version: 1, responsibilityId, baseVersion: null, sentAt: null });
     expect(sheet.changes).toEqual([]);
     const [head, item, count] = sheet.content.rows;
     expect(head).toMatchObject({ kind: "TICKET", key: setup.ticket.id });

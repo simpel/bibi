@@ -4,6 +4,11 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import {
+  findResponsibility,
+  RESPONSIBILITY_INCLUDE,
+  toResponsibilityDto,
+} from "./responsibility-rows";
+import {
   ResponsibilityIdInputSchema,
   ResponsibilityListInputSchema,
   ResponsibilityListOutputSchema,
@@ -22,9 +27,11 @@ export const listResponsibilities = defineOperation({
   handler: async ({ input, context }) => {
     const rows = await context.db.responsibility.findMany({
       orderBy: [{ name: "asc" }, { id: "asc" }],
+      include: RESPONSIBILITY_INCLUDE,
       ...pageArgs(input),
     });
-    return ok({ value: paginate({ rows, limit: input.limit }) });
+    const items = rows.map((row) => toResponsibilityDto({ row }));
+    return ok({ value: paginate({ rows: items, limit: input.limit }) });
   },
 });
 
@@ -36,7 +43,7 @@ export const getResponsibility = defineOperation({
   output: ResponsibilitySchema,
   permission: "configuration:read",
   handler: async ({ input, context }) => {
-    const row = await context.db.responsibility.findFirst({ where: { id: input.id } });
-    return row ? ok({ value: row }) : notFound({ entity: "Responsibility" });
+    const found = await findResponsibility({ context, id: input.id });
+    return found ? ok({ value: found }) : notFound({ entity: "Responsibility" });
   },
 });

@@ -11,11 +11,11 @@ describe("sheet definition form schema", () => {
     const values = {
       ...sheetDefinitionFormDefaults({}),
       name: " Kitchen order ",
-      roleId: "member",
+      responsibilityId: "r1",
     };
     expect(sheetDefinitionFormToInput({ values })).toMatchObject({
       name: "Kitchen order",
-      roleId: "member",
+      responsibilityId: "r1",
     });
   });
 
@@ -26,15 +26,14 @@ describe("sheet definition form schema", () => {
     const ok = sheetDefinitionFormSchema.safeParse({
       ...sheetDefinitionFormDefaults({}),
       name: "Kitchen order",
-      roleId: "owner",
+      responsibilityId: "r1",
     });
     expect(ok.success).toBe(true);
-    const custom = sheetDefinitionFormSchema.safeParse({
+    const missing = sheetDefinitionFormSchema.safeParse({
       ...sheetDefinitionFormDefaults({}),
       name: "Kitchen order",
-      roleId: "Kitchen",
     });
-    expect(custom.success).toBe(false);
+    expect(missing.success).toBe(false);
   });
 
   it("offers the fields of the chosen types and names ids", () => {

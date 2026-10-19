@@ -1,7 +1,6 @@
 import type { AppErrorIssue } from "../../errors/app-error";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { isFixedRole } from "../../permissions/fixed-roles";
 import { invalid } from "../../shared/errors";
 import type { SheetDefinitionContents } from "./schema";
 
@@ -12,10 +11,13 @@ export type CheckSheetContentsInput = { context: Db; contents: SheetDefinitionCo
 const missing = ({ wanted, found }: { wanted: readonly string[]; found: readonly string[] }) =>
   wanted.filter((id) => !found.includes(id));
 
-/** Ids of the wanted rows that exist: active types of base ITEM, active fields of those types. */
+/**
+ * Ids of the wanted rows that exist: active types of base ITEM, active fields of those types,
+ * active lists, and whether the receiving responsibility is active.
+ */
 async function findIncluded({ context, contents }: CheckSheetContentsInput) {
-  const { entityTypeIds, fieldIds, vocabularyIds } = contents;
-  const [types, fields, lists] = await Promise.all([
+  const { entityTypeIds, fieldIds, vocabularyIds, responsibilityId } = contents;
+  const [types, fields, lists, receivers] = await Promise.all([
     context.db.entityType.findMany({
       where: { id: { in: entityTypeIds }, base: "ITEM" },
       select: { id: true },
@@ -25,8 +27,9 @@ async function findIncluded({ context, contents }: CheckSheetContentsInput) {
       select: { id: true },
     }),
     context.db.vocabulary.findMany({ where: { id: { in: vocabularyIds } }, select: { id: true } }),
+    context.db.responsibility.count({ where: { id: responsibilityId } }),
   ]);
-  return { types, fields, lists };
+  return { types, fields, lists, receiver: receivers > 0 };
 }
 
 const idsOf = ({ rows }: { rows: readonly { id: string }[] }) => rows.map((row) => row.id);
@@ -40,15 +43,15 @@ const dedupe = ({ contents }: { contents: SheetDefinitionContents }) => ({
 
 /**
  * `VALIDATION` unless every id refers to an active row of the organization: item types,
- * fields of those types and lists, and the receiving role is a fixed role (ADR 0034, until
- * sheets go to a responsibility). A sheet includes items or requirements.
+ * fields of those types, lists and the receiving responsibility (ADR 0034). A sheet includes
+ * items or requirements.
  */
 export async function checkSheetContents({
   context,
   contents: given,
 }: CheckSheetContentsInput): Promise<Result<SheetDefinitionContents>> {
   const contents = dedupe({ contents: given });
-  const { types, fields, lists } = await findIncluded({ context, contents });
+  const { types, fields, lists, receiver } = await findIncluded({ context, contents });
   const problems: [string, string[], string][] = [
     [
       "entityTypeIds",
@@ -69,8 +72,9 @@ export async function checkSheetContents({
   const issues: AppErrorIssue[] = problems
     .filter(([, unknown]) => unknown.length > 0)
     .map(([path, unknown, what]) => ({ path, message: `Not ${what}: ${unknown.join(", ")}` }));
-  if (!isFixedRole({ role: contents.roleId })) {
-    issues.push({ path: "roleId", message: `Not a fixed role: ${contents.roleId}` });
+  if (!receiver) {
+    const message = `Not a responsibility: ${contents.responsibilityId}`;
+    issues.push({ path: "responsibilityId", message });
   }
   if (contents.entityTypeIds.length + contents.vocabularyIds.length === 0) {
     issues.push({ path: "entityTypeIds", message: "Include item types or lists" });

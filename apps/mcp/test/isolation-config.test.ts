@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
+import { seedResponsibility } from "./seed-responsibility";
 
 const SECRET_PHASE = { name: "Secret phase", color: "#22c55e", entry: true } as const;
 
@@ -35,8 +36,10 @@ describe("cross-organization isolation: ticket phases", () => {
 
 describe("cross-organization isolation: sheets, setups and fields", () => {
   it("hides sheet definitions, setups and field definitions from another organization", async () => {
-    const a = await connect({ context: testContext() });
+    const context = testContext();
+    const a = await connect({ context });
     const b = await connect({ context: testContext() });
+    const responsibilityId = await seedResponsibility({ client: a, context });
     const type = await call({
       client: a,
       name: "entityType_create",
@@ -51,7 +54,7 @@ describe("cross-organization isolation: sheets, setups and fields", () => {
     const sheet = await call({
       client: a,
       name: "sheetDefinition_create",
-      args: { name: "Secret sheet", entityTypeIds: [type.data.id], roleId: "owner" },
+      args: { name: "Secret sheet", entityTypeIds: [type.data.id], responsibilityId },
     });
     expect(sheet.isError, JSON.stringify(sheet.data)).toBe(false);
     const cases = [

@@ -13,6 +13,7 @@ import { unwrap } from "./helpers";
 import { createTestItem } from "./item-helpers";
 import { createTestLine } from "./line-helpers";
 import { addRequirement, requirementSetup } from "./requirement-helpers";
+import { createTestResponsibility } from "./responsibility-helpers";
 import { memberUser } from "./ticket-helpers";
 import { phaseByName } from "./ticket-phase-helpers";
 
@@ -44,14 +45,14 @@ async function createLounge({ context }: ContextInput) {
 
 type DefinitionInput = ContextInput & { entityTypeId: string; fieldId: string; listId: string };
 
-/** "Kitchen order" for the fixed owner role: the lounge type and field, and the Allergens list. */
+/** "Kitchen order" for Head of kitchen: the lounge type and field, and the Allergens list. */
 async function createKitchenOrder({ context, entityTypeId, fieldId, listId }: DefinitionInput) {
   const input = {
     name: "Kitchen order",
     entityTypeIds: [entityTypeId],
     fieldIds: [fieldId],
     vocabularyIds: [listId],
-    roleId: "owner",
+    responsibilityId: (await createTestResponsibility({ context })).id,
   };
   return unwrap({ result: await execute({ operation: createSheetDefinition, input, context }) });
 }

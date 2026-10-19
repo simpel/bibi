@@ -1057,7 +1057,7 @@
   "sheetDefinition": {
     "singular": "Blad",
     "plural": "Blad",
-    "listDescription": "Era egna blad, t.ex. Köksorder eller Bryggorder: vilka artikeltyper, fält och listors behov varje blad tar med och vilken roll det går till.",
+    "listDescription": "Era egna blad, t.ex. Köksorder eller Bryggorder: vilka artikeltyper, fält och listors behov varje blad tar med och vilket ansvar det går till.",
     "create": "Skapa blad",
     "edit": "Redigera blad",
     "createDescription": "Namnge bladet, välj vad det tar med och vem som tar emot det.",
@@ -1071,13 +1071,13 @@
     "emptyDescription": "Skapa blad som Köksorder eller Bryggorder.",
     "saving": "Sparar blad…",
     "archiving": "Arkiverar blad…",
-    "selectRole": "Välj en roll",
+    "selectResponsibility": "Välj ett ansvar",
     "fields": {
       "name": "Namn",
       "entityTypeIds": "Artikeltyper",
       "fieldIds": "Fält",
       "vocabularyIds": "Listor",
-      "roleId": "Mottagande roll"
+      "responsibilityId": "Mottagande ansvar"
     },
     "hints": {
       "entityTypeIds": "Artiklar av dessa typer kommer med på bladet.",
@@ -1093,7 +1093,7 @@
       "name": "Namn",
       "types": "Artikeltyper",
       "lists": "Listor",
-      "role": "Mottagande roll"
+      "responsibility": "Mottagande ansvar"
     },
     "wizard": {
       "progress": "Steg",
@@ -1105,7 +1105,7 @@
       "descriptions": {
         "name": "Namnge underlaget, till exempel Köksorder.",
         "content": "Välj artikeltyper, deras fält och de listor underlaget sammanställs från.",
-        "receiver": "Välj den roll som får underlaget."
+        "receiver": "Välj det ansvar som får underlaget."
       }
     }
   },
@@ -1278,7 +1278,7 @@
         "entityTypeIds": "Artikeltyper (id)",
         "fieldIds": "Fält (id)",
         "vocabularyIds": "Listor (id)",
-        "roleId": "Mottagande roll (id)",
+        "responsibilityId": "Mottagande ansvar (id)",
         "key": "Nyckel",
         "kind": "Fälttyp",
         "required": "Obligatoriskt",

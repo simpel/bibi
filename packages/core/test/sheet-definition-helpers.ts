@@ -6,10 +6,11 @@ import {
   execute,
 } from "../src/index";
 import { unwrap } from "./helpers";
+import { createTestResponsibility } from "./responsibility-helpers";
 
 export type SheetSetupInput = { context: ExecuteContext };
 
-/** A kitchen-order setup: a dish type with a field, an allergen list, sent to members. */
+/** A kitchen-order setup: a dish type with a field, an allergen list, sent to Head of kitchen. */
 export async function createSheetSetup({ context }: SheetSetupInput) {
   const dish = unwrap({
     result: await execute({
@@ -28,5 +29,17 @@ export async function createSheetSetup({ context }: SheetSetupInput) {
   const list = unwrap({
     result: await execute({ operation: createVocabulary, input: { name: "Allergens" }, context }),
   });
-  return { dish, field, list, role: "member" as const };
+  const responsibility = await createTestResponsibility({ context });
+  return { dish, field, list, responsibility };
 }
+
+export type SheetSetup = Awaited<ReturnType<typeof createSheetSetup>>;
+
+/** "Kitchen order" over the setup, with the dish type listed twice (stored once). */
+export const kitchenOrder = ({ dish, field, list, responsibility }: SheetSetup) => ({
+  name: "Kitchen order",
+  entityTypeIds: [dish.id, dish.id],
+  fieldIds: [field.id],
+  vocabularyIds: [list.id],
+  responsibilityId: responsibility.id,
+});

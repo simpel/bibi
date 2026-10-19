@@ -8,7 +8,7 @@ export type SheetDefinitionFormValues = {
   entityTypeIds: string[];
   fieldIds: string[];
   vocabularyIds: string[];
-  roleId: string;
+  responsibilityId: string;
 };
 
 export type SheetDefinitionFormInput = { values: SheetDefinitionFormValues };
@@ -33,6 +33,6 @@ export function sheetDefinitionFormDefaults({
     entityTypeIds: sheet?.entityTypeIds ?? [],
     fieldIds: sheet?.fieldIds ?? [],
     vocabularyIds: sheet?.vocabularyIds ?? [],
-    roleId: sheet?.roleId ?? "",
+    responsibilityId: sheet?.responsibilityId ?? "",
   };
 }
