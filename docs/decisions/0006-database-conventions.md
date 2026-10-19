@@ -26,7 +26,7 @@ Every exception is listed as a constant in `packages/db/src/scoped/` (`models.ts
 | --- | --- | --- |
 | Global (`GLOBAL_MODELS`) | `User`, `Session`, `Account`, `Verification`, `Organization`, `Apikey`, `Jwks`, `OauthClient`, `OauthResource`, `OauthClientResource`, `OauthRefreshToken`, `OauthAccessToken`, `OauthConsent`, `OauthClientAssertion` | Better Auth tables (`auth.prisma`, generated). Identity, sessions, API keys and OAuth are shared across organizations. `Organization.id` is the tenant id. |
 | Platform (`PLATFORM_MODELS`) | `SystemLog`, `AiSetting` | Platform tables (ADR 0015), written only by platform code with `getDb()`. |
-| User-scoped (`USER_SCOPED_MODELS`) | `UserPreference` | Belongs to one user across organizations (ADR 0039). Unlike the others it is reached through `scopedDb`, which pins it to the acting user (`userId = actorId`) and refuses the system actor. |
+| User-scoped (`USER_SCOPED_MODELS`) | `UserPreference`, `UserSettings` | Belongs to one user across organizations (ADR 0039). Unlike the others it is reached through `scopedDb`, which pins it to the acting user (`userId = actorId`) and refuses the system actor. |
 
 `Skill` is org-scoped but has a nullable `organizationId`: SYSTEM skills are global rows (`GLOBAL_READ_MODELS`), readable from every organization and writable only by the seeder.
 
@@ -62,4 +62,4 @@ Every org-scoped model is soft-deleted (`SOFT_DELETE_MODELS`), append-only (`APP
 - AuditLog retention and pseudonymisation: see 0032.
 
 ## Addendum 2026-10-17
-- User-scoped tables (`USER_SCOPED_MODELS`, first `UserPreference`): see 0039.
+- User-scoped tables (`USER_SCOPED_MODELS`, first `UserPreference`, then `UserSettings`): see 0039 and 0046.

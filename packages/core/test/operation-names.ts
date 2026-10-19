@@ -142,5 +142,6 @@ const NAMES = [
 ];
 /** Every core operation name, sorted. Add new operations here (registry test). */
 const PREFERENCE_NAMES = ["userPreference.list", "userPreference.set"];
-const EXTRA = [...EXTRA_NAMES, ...ASSIGNMENT_NAMES, ...PREFERENCE_NAMES];
+const SETTINGS_NAMES = ["userSettings.get", "userSettings.update"];
+const EXTRA = [...EXTRA_NAMES, ...ASSIGNMENT_NAMES, ...PREFERENCE_NAMES, ...SETTINGS_NAMES];
 export const OPERATION_NAMES: readonly string[] = [...NAMES, ...EXTRA].sort();

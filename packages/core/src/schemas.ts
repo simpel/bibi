@@ -49,6 +49,7 @@ export * from "./features/ticket/schema";
 export * from "./features/ticket-phase/schema";
 export * from "./features/ticket-template/schema";
 export * from "./features/user-preference/schema";
+export * from "./features/user-preference/settings-schema";
 export * from "./features/venue/schema";
 export * from "./features/vocabulary/schema";
 export {

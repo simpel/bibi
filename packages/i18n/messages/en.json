@@ -1902,7 +1902,12 @@
     "reseeded": "Database reseeded.",
     "searchUsers": "Search users…",
     "noUsers": "No users found.",
-    "allUsers": "All users ({count})"
+    "allUsers": "All users ({count})",
+    "currentUser": "Signed in",
+    "switchTo": "Switch to {name}",
+    "resetOnboarding": "Reset onboarding",
+    "resettingOnboarding": "Resetting onboarding…",
+    "onboardingReset": "Onboarding reset for {name}. They see it on their next page."
   },
   "shell": {
     "mainNavigation": "Main navigation",
@@ -2633,6 +2638,7 @@
       "looksGood": "Looks good",
       "changeSell": "I want to change what we sell",
       "changeMoves": "I want to change how a request moves"
-    }
+    },
+    "skipped": "You can set things up later by asking the assistant, or in Settings."
   }
 }

@@ -1,6 +1,12 @@
 "use server";
 
-import { getAuth, isDevEnvironment, listDevUsers, switchDevUser } from "@okazi/auth";
+import {
+  getAuth,
+  isDevEnvironment,
+  listDevUsers,
+  resetDevOnboarding,
+  switchDevUser,
+} from "@okazi/auth";
 import { seedDemo } from "@okazi/core/seed/demo";
 import { headers } from "next/headers";
 import type { ActionResult } from "@/lib/action-result";
@@ -34,4 +40,14 @@ export async function reseedDevDatabaseAction(): Promise<ActionResult<null>> {
   const user = users.find((u) => u.email === session?.user.email) ?? users[0];
   if (user) await switchDevUser({ userId: user.id, headers: await headers() });
   return { ok: true, value: null };
+}
+
+export type ResetDevOnboardingActionInput = { userId: string };
+
+/** Dev switcher: sends a seeded user through the first setup again (ADR 0046); dev only. */
+export async function resetDevOnboardingAction({
+  userId,
+}: ResetDevOnboardingActionInput): Promise<ActionResult<null>> {
+  if (await resetDevOnboarding({ userId })) return { ok: true, value: null };
+  return { ok: false, error: { code: "FORBIDDEN", message: "Reset failed", issues: [] } };
 }

@@ -25,7 +25,7 @@ export type DevUserSwitcherProps = {
 /** Development only (rendered by `DevUserSwitcherSlot`): pick a seeded user to sign in as. */
 export function DevUserSwitcher({ users, services, currentUserId }: DevUserSwitcherProps) {
   const t = useTranslations("dev");
-  const { open, setOpen, pending, switchTo, reseed } = useDevSwitcherActions();
+  const { open, setOpen, pending, switchTo, resetOnboarding, reseed } = useDevSwitcherActions();
   return (
     <div className="fixed bottom-4 right-4 z-50">
       <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -38,7 +38,12 @@ export function DevUserSwitcher({ users, services, currentUserId }: DevUserSwitc
         <DropdownMenuContent align="end" side="top" className="w-56">
           <DevServiceMenu services={services} />
           <DropdownMenuSeparator />
-          <DevUserMenuGroups users={users} currentUserId={currentUserId} onSelect={switchTo} />
+          <DevUserMenuGroups
+            users={users}
+            currentUserId={currentUserId}
+            onSelect={switchTo}
+            onResetOnboarding={resetOnboarding}
+          />
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={reseed}>
             <DatabaseIcon />

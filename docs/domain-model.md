@@ -62,6 +62,7 @@ erDiagram
   Responsibility }o--o{ EntityType : "covers"
   User ||--o{ Invitation : "invites"
   User ||--o{ UserPreference : "saves"
+  User ||--o| UserSettings : "has"
   Deposit ||--o{ Payment : "is paid with"
   Invoice ||--o{ Payment : "is settled with"
   Invoice ||--o{ OrderLine : "invoices"
@@ -712,6 +713,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `1:N` follows → Assignment (`AssignmentFollower`)
 - `1:N` is responsible for → Task
 - `1:N` saves → UserPreference
+- `1:1` has → UserSettings (optional)
 
 | Role | Can |
 |---|---|
@@ -783,6 +785,19 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` belongs to → User
 
 > Operations (`self:read|write`, which every member has): `userPreference.list({ prefix? })` lists the caller's own preferences, `userPreference.set({ key, value })` saves one (upsert, audited). The data layer pins every row to the acting user (`USER_SCOPED_MODELS`).
+
+### UserSettings (`UserSettings`)
+
+*MVP* · The typed settings of one user ([ADR 0046](decisions/0046-user-settings.md)), separate from the free-form `UserPreference`. First one: where the user is in the first setup of an organization. User-scoped like `UserPreference`; no row means nothing is pending.
+
+**Attributes**
+- onboardingStatus (`PENDING`, `COMPLETED` or `SKIPPED`)
+- updated
+
+**Relations**
+- `1:1` belongs to → User
+
+> Operations (`self:read|write`): `userSettings.get` and `userSettings.update({ onboardingStatus })` (upsert, audited). Creating an organization sets `PENDING`; the app layout sends a pending user to `/onboarding`; skipping sets `SKIPPED`, approving the first setup `COMPLETED` ([ADR 0045](decisions/0045-soft-landing-onboarding.md)).
 
 ### Task
 
@@ -956,5 +971,6 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | User | Användare |
 | Invitation | Inbjudan |
 | UserPreference | Användarinställning |
+| UserSettings | Användarens inställningar |
 | SystemLog | Systemlogg |
 | AiSetting | AI-inställning |

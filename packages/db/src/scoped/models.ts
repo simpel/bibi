@@ -71,10 +71,10 @@ export const PLATFORM_MODELS = new Set<string>(["SystemLog", "AiSetting", "Strip
 
 /**
  * User-scoped tables (ADR 0039): rows belong to one user (`userId`) across organizations, e.g.
- * UI preferences. `scopedDb` pins every query to its `actorId` instead of the organization and
+ * UI preferences and settings. `scopedDb` pins every query to its `actorId` instead of the organization and
  * refuses them for the system actor. No `organizationId`, `status` or `createdBy`.
  */
-export const USER_SCOPED_MODELS = new Set<string>(["UserPreference"]);
+export const USER_SCOPED_MODELS = new Set<string>(["UserPreference", "UserSettings"]);
 
 /** Every model that is deliberately not org-scoped. Each Prisma model is here or org-scoped. */
 export const UNSCOPED_MODELS = new Set<string>([

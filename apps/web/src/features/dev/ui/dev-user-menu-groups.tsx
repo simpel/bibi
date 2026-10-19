@@ -1,6 +1,5 @@
 import type { DevUser } from "@okazi/auth";
 import {
-  DropdownMenuCheckboxItem,
   DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
@@ -9,16 +8,23 @@ import {
 import { UsersIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { groupDevUsers } from "@/lib/group-dev-users";
+import { DevUserMenuItem } from "./dev-user-menu-item";
 import { DevUserSearchList } from "./dev-user-search-list";
 
 export type DevUserMenuGroupsProps = {
   users: DevUser[];
   currentUserId: string | null;
   onSelect: (input: { user: DevUser }) => void;
+  onResetOnboarding: (input: { user: DevUser }) => void;
 };
 
 /** One sub-menu per organization: one user per role, then a searchable list of everyone. */
-export function DevUserMenuGroups({ users, currentUserId, onSelect }: DevUserMenuGroupsProps) {
+export function DevUserMenuGroups({
+  users,
+  currentUserId,
+  onSelect,
+  onResetOnboarding,
+}: DevUserMenuGroupsProps) {
   const t = useTranslations("dev");
   return groupDevUsers({ users }).map(({ organization, representatives, users: members }) => (
     <DropdownMenuSub key={organization}>
@@ -28,16 +34,13 @@ export function DevUserMenuGroups({ users, currentUserId, onSelect }: DevUserMen
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="w-72">
         {representatives.map((user) => (
-          <DropdownMenuCheckboxItem
+          <DevUserMenuItem
             key={user.id}
-            checked={user.id === currentUserId}
-            onSelect={() => onSelect({ user })}
-          >
-            <span className="grid">
-              <span className="text-sm">{user.name}</span>
-              <span className="text-xs text-muted-foreground">{user.role}</span>
-            </span>
-          </DropdownMenuCheckboxItem>
+            user={user}
+            current={user.id === currentUserId}
+            onSelect={onSelect}
+            onResetOnboarding={onResetOnboarding}
+          />
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuSub>
@@ -45,7 +48,11 @@ export function DevUserMenuGroups({ users, currentUserId, onSelect }: DevUserMen
             {t("allUsers", { count: members.length })}
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="w-80">
-            <DevUserSearchList users={members} onSelect={onSelect} />
+            <DevUserSearchList
+              users={members}
+              onSelect={onSelect}
+              onResetOnboarding={onResetOnboarding}
+            />
           </DropdownMenuSubContent>
         </DropdownMenuSub>
       </DropdownMenuSubContent>

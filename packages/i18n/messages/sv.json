@@ -1902,7 +1902,12 @@
     "reseeded": "Databasen är återskapad.",
     "searchUsers": "Sök användare…",
     "noUsers": "Inga användare hittades.",
-    "allUsers": "Alla användare ({count})"
+    "allUsers": "Alla användare ({count})",
+    "currentUser": "Inloggad",
+    "switchTo": "Byt till {name}",
+    "resetOnboarding": "Återställ introduktionen",
+    "resettingOnboarding": "Återställer introduktionen…",
+    "onboardingReset": "Introduktionen är återställd för {name}. Den visas vid nästa sidvisning."
   },
   "shell": {
     "mainNavigation": "Huvudnavigering",
@@ -2633,6 +2638,7 @@
       "looksGood": "Ser bra ut",
       "changeSell": "Jag vill ändra vad vi säljer",
       "changeMoves": "Jag vill ändra hur en förfrågan rör sig"
-    }
+    },
+    "skipped": "Du kan ställa in allt senare genom att fråga assistenten, eller under Inställningar."
   }
 }
