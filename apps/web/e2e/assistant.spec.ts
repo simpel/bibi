@@ -16,7 +16,8 @@ test("a proposed venue needs approval: nothing is created until the user approve
 
   await sendChat({ page, text: "create venue Test Hall" });
   const card = page.locator('[data-slot="approval-card"]');
-  await expect(card).toBeVisible();
+  // The first tool call warms up the chat route and the MCP server.
+  await expect(card).toBeVisible({ timeout: 15_000 });
   await expect(card.getByText("Godkänn åtgärd")).toBeVisible();
   await expect(card.getByText('Create venue "Test Hall"')).toBeVisible();
   await expect(card.getByText("Skapa anläggning")).toBeVisible();
@@ -57,6 +58,7 @@ test("rejecting a proposal creates nothing and locks the card", async ({ page })
   await openAssistant({ page });
   await sendChat({ page, text: "create venue Rejected Hall" });
   const card = page.locator('[data-slot="approval-card"]');
+  await expect(card).toBeVisible({ timeout: 15_000 });
   await card.getByRole("button", { name: "Avslå" }).click();
   await expect(card).toHaveAttribute("data-state", "rejected");
   await expect(card.getByText("Avslagen")).toBeVisible();
