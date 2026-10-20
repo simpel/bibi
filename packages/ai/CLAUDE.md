@@ -22,7 +22,7 @@ The server layer for the assistant (ADR 0007, 0008). Framework-independent: Web 
 - Routes (as the web app mounts them): `app/api/chat/route.ts` → `export const POST = createChatHandler({ resolveContext: resolveExecuteContext })` and `app/api/assistant/approval/route.ts` → `createApprovalHandler({ resolveContext: resolveExecuteContext })`. `runtime = "nodejs"`.
 - Chat request: `useChat` with `DefaultChatTransport({ api, body: { conversationId, pageContext: { route, locale: "sv"|"en", entity?: { type, id } } } })`. Response: SSE (`x-vercel-ai-ui-message-stream: v1`), header `x-okazi-conversation-id`, plus a transient data part `data-okazi-conversation` `{ conversationId, created }`. Errors before the stream: JSON `{ error: { code, message, issues } }` with status 400/401/403/404/500.
 - Approval cards: `extractPendingApprovals({ message })` (client-safe: `@okazi/ai/approvals`) → `{ toolCallId, toolName, operation, input, summary, approvalToken, expiresAt }[]`. Buttons POST `{ decision: "approve"|"reject", approvalToken, conversationId, toolCallId, operation }` → `{ status: "approved", result }` / `{ status: "rejected" }` / error (409 = already used, 403 = invalid/expired/other user). The decision is saved as a TOOL message (`Approval update: …` + `data-okazi-approval`), so the next turn knows the outcome.
-- Generative UI: `resolveToolUi({ toolName, output })` (client-safe: `@okazi/ai/ui`) → `{ component, props }` (`ToolUi`, discriminated union). Component keys: `venue-table|venue-card|item-table|item-card|item-resolution-card|entity-type-table|entity-type-card|field-definition-table|field-definition-card|vocabulary-table|vocabulary-card|setup-table|setup-card|search-results|skill-table|skill-card|approval-card|error|json`. Types may be imported from `@okazi/ai` (`import type`), values in client code only from `/ui` and `/approvals`.
+- Generative UI: `resolveToolUi({ toolName, output })` (client-safe: `@okazi/ai/ui`) → `{ component, props }` (`ToolUi`, discriminated union). Component keys are `UiComponent` in `src/ui-contract/tool-ui-types.ts`. Types may be imported from `@okazi/ai` (`import type`), values in client code only from `/ui` and `/approvals`.
 - ⌘K: the same chat handler, a new conversation per question (do not send a `conversationId`).
 - The web app's placeholder embedding (`server/embed.ts`) is replaced by `createEmbed()` from `@okazi/ai/embed` (the same model id `okazi-placeholder-hash-v1` without a key).
 
@@ -36,11 +36,8 @@ The server layer for the assistant (ADR 0007, 0008). Framework-independent: Web 
 - Wired in `apps/mcp/src/embed.ts`. Changing model: `pnpm --filter @okazi/ai reindex [--org <id>]` (`reindexAll`) re-embeds rows with a different `model` from stored text and indexes entities whose row is missing or out of date (content hash), e.g. after `search.index_failed` (ADR 0030).
 
 ## Models
-- No models in env. Chat (`assistant.chat`) and embeddings (`search.embedding`) use what a superadmin chose (`resolveAiModel`, ADR 0015). Unchosen model → `UNAVAILABLE` (503) and `ai.modelNotConfigured` at error level. Errors in the stream (e.g. an unknown model at the gateway) are logged as `ai.streamFailed`.
+- No models in env (a superadmin chooses them in `/admin/ai-models`). New AI feature: an entry in `AI_FEATURES` (core), `resolveAiModel({ feature })` where it runs, texts in `admin.aiModels.features`. Chat (`assistant.chat`) and embeddings (`search.embedding`) use what a superadmin chose (`resolveAiModel`, ADR 0015). Unchosen model → `UNAVAILABLE` (503) and `ai.modelNotConfigured` at error level. Errors in the stream (e.g. an unknown model at the gateway) are logged as `ai.streamFailed`.
 - `createChatHandler({ model })` and `createEmbed({ model })` are test/E2E seams only.
-
-## Environment variables (via `@okazi/config`)
-`AI_GATEWAY_API_KEY`, `MCP_URL`, `WEB_URL`, `WEB_OAUTH_CLIENT_ID`, `NODE_ENV` (new, in the env schema and `turbo.json`).
 
 ## Tests
 Vitest against a real Postgres, mocked model (`MockLanguageModelV4`, `MockEmbeddingModelV4`), no network calls. apps/mcp is started in-process via a path import (`test/helpers/mcp-server.ts`): a package dependency would create a cycle (`apps/mcp` depends on `@okazi/ai/embed`).

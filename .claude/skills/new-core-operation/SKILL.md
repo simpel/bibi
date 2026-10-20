@@ -9,7 +9,7 @@ Template: `packages/core/src/features/setup/operations.ts` (simple) or `features
 
 1. **Schema** in `features/<entity>/schema.ts`: Zod for input and output. Make the input one object, no positional arguments.
 2. **Operation** with `defineOperation({ name, kind, description, input, output, permission, handler })`.
-   - **Feature scope (ADR 0050):** `permission` names the feature that owns the entity (`ENTITY_FEATURE`). The output holds only that feature's data; another feature's record is an id. An input id of another feature is checked with `checkReadable(<feature>:read)` before it is read, and error messages never describe it. Copying another feature's data (a snapshot) needs its `read` at copy time. Audit images are DTOs, not raw rows. If the output seems to need another feature's data, the scope is wrong: stop and fix the scope.
+   - **Feature scope (`docs/specs/permissions.md`, ADR 0050):** `permission` names the feature that owns the entity (`ENTITY_FEATURE`). The output holds only that feature's data; another feature's record is an id. An input id of another feature is checked with `checkReadable(<feature>:read)` before it is read, and error messages never describe it. Copying another feature's data (a snapshot) needs its `read` at copy time. Audit images are DTOs, not raw rows. If the output seems to need another feature's data, the scope is wrong: stop and fix the scope.
    - `name`: `<entity>.<verb>` (e.g. `item.archive`).
    - `permission`: `<feature>:<action>` (ADR 0050; a new feature goes into `FEATURE_SPECS` in core).
    - `kind: "command"` requires approval by default (AI proposes, human confirms). Set `approval` only if an exception is justified.

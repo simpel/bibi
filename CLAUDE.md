@@ -25,7 +25,8 @@
 - See `docs/decisions/0009-language-in-code-and-ui.md`.
 
 ## Conventions
-- Decisions are logged as ADRs in `docs/decisions/NNNN-title.md`.
+- **Rules live in the nearest `CLAUDE.md`** (root only for what crosses packages), written as short imperatives, never as catalogs the code already shows. **ADRs** (`docs/decisions/NNNN-title.md`) record why: a decision with a rejected alternative or a costly reversal. A rule links its reason in one line (`Why: ADR NNNN`). Behaviour specs go in `docs/specs/` (entities in `docs/domain-model.md`), not in an ADR.
+- **Versioning (ADR 0060).** Every app and package has its own semver, from Conventional Commits by path (`feat:` minor, `fix:` patch, `!` major). Commit and PR titles are `<type>: <summary>`. release-please opens a release PR that bumps each changed `package.json` and its `CHANGELOG.md`; merging it creates the `@okazi/<name>-vX.Y.Z` tags and GitHub releases. Never edit versions or changelogs by hand.
 
 ## Tech stack
 - Monorepo: pnpm workspaces + Turborepo, TypeScript (strict).
@@ -115,8 +116,8 @@
 - `pnpm --filter @okazi/core cleanup:test-orgs`: opt-in dry run listing organizations left by old test runs in the dev database; `-- --yes` deletes them. Organizations with a real member are kept.
 - `pnpm lint`: Biome check.
 - `node tools/ci/verify.mjs [--all | --light | --only <id>]`: the checks CI runs (lint, structure, typecheck, migrate, test, build), defined once in `tools/ci/checks.json`; by default scoped to the files you changed (`build` only when apps or shared packages changed).
-- `pnpm typecheck`: TypeScript for all packages.
 - `pnpm check:structure`: checks file size, function size, exports, barrel files and feature files.
+- `pnpm typecheck`: TypeScript for all packages.
 - `pnpm test`: Vitest and the parity test.
 - `pnpm --filter @okazi/web test:e2e`: Playwright with a scripted model (`E2E_MOCK_MODEL`), see `apps/web/CLAUDE.md`.
 

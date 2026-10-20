@@ -19,9 +19,9 @@
   - `userPreference.list({ prefix? })` → `{ items: { id, key, value, updatedAt }[] }`: the caller's own rows only.
   - `userPreference.set({ key, value })` → the saved row (upsert). A command: audited, and approval is required when the AI actor calls it.
   - REST `GET /user-preferences?prefix=` and `PUT /user-preferences/{key}`; GraphQL `userPreferences(prefix:)` and `userPreferenceSet(input:)`; MCP `userPreference_list` and `userPreference_set`.
-- **Permission `self:read|edit` (renamed by ADR 0050 from `self:read|write`; `RESOURCES` is now `FEATURES`, and API keys do not get `self`).** `self` is a pseudo-resource (`SELF_RESOURCE`), not in `RESOURCES`: no role grants or withholds it, and `hasPermission` grants it to every caller that has an execute context (an authenticated member of the active organization, or an API key/OAuth token bound to one). Ownership is enforced by the data layer, not by roles.
+- **Permission `self:read|write`.** `self` is a pseudo-feature (`SELF_FEATURE`), not in `FEATURES`: no role grants or withholds it, and `hasPermission` grants it to every caller with an execute context (not to API keys). Ownership is enforced by the data layer, not by roles (ADR 0050).
 - **Audit and logging** follow the normal pipeline: one `AuditLog` row per `set` (entity type `userPreference`, before/after) in the organization the change was made from, and one system log line per call.
-- **Web:** `features/user-preference/load.ts` (`loadUserPreferences({ prefix })` → key → value, `{}` when signed out or on error) and `actions.ts` (`saveUserPreference({ key, value })` → `ActionResult`). Both operations are in `UI_EXEMPT`: they have no page of their own.
+- **Web:** `features/user-preference/` loads and saves preferences; both operations are in `UI_EXEMPT` because they have no page of their own.
 
 ## Consequences
 - Org admins who read the audit log of their organization see the preference changes made there (UI choices only; no business data belongs in a preference).

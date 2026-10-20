@@ -24,3 +24,6 @@ Okazi must be usable through the web UI, GraphQL, REST and MCP. Without a common
 - The parity test blocks merge when a surface misses a command. That is intentional.
 - The generic GraphQL surface for MCP means the AI assistant can read more than the curated tools show. Depth and cost limits and org scoping are therefore mandatory.
 - The adapters (`packages/graphql`, `packages/api`, `apps/mcp`) need their own CLAUDE.md notes as they are built out.
+
+## Addendum 2026-10-13
+- The web app does not read through GraphQL; it runs the same operations in-process (`runOperation`, ADR 0010). GraphQL and REST are for external callers and MCP's generic reads. Parity is unchanged.

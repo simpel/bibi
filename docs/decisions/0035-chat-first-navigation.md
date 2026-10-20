@@ -20,3 +20,6 @@
 - The venue list is no longer the landing page. E2E steps that expected `/venues` after sign-up now expect `/`.
 - The home page renders client state from `AssistantProvider`, so it is a thin server page plus a client island.
 - "My work", "Calendar" and operational "Sheets" (ADR 0036) need pages and, for "My work", `assignment.listMine` (ADR 0034). They are tracked as follow-up tickets and are not in the menu until they exist.
+
+## Addendum 2026-10-18
+- The contextual dock on other pages was removed: the assistant exists only on `/`. ⌘K and "ask about this" start a conversation and navigate to `/`, and the page context still reaches the assistant (ADR 0007).

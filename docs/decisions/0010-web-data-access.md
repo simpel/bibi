@@ -15,16 +15,10 @@ ADR 0003 says "reads via GraphQL". The web app (`apps/web`) is Next.js with serv
 
 ## Consequences
 - Fewer hops and no cookie forwarding. Types come directly from the operations' Zod schemas.
-- The web app's reads are limited to what the operations return. Graph edges (for example `Venue.rooms`) are replaced by separate operation calls (`room.list`). If free-form graph reads are needed in the web app, a GraphQL mode can be added later without changing the operations.
+- The web app's reads are limited to what the operations return. Graph edges (for example `Venue.items`) are replaced by separate operation calls (`item.list`). If free-form graph reads are needed in the web app, a GraphQL mode can be added later without changing the operations.
 - Client components must not import `@okazi/core` (it pulls in Prisma). Forms and client-safe parts get Zod schemas from `@okazi/core/schemas` (see the addendum below).
 
-## Addendum 2026-10-13 – the AI phase
-- The path alias `@core-schema/*` is removed. `@okazi/core/schemas` (`packages/core/src/schemas.ts`) is a client-safe sub-package that only re-exports the features' `schema.ts` (Zod, no Prisma or fs imports). `@okazi/ai/ui` derives its wire schemas from the same file, so core fields follow along without hand-copied mirrors. That no Prisma ends up in the client bundle is checked with `next build` and a search in `.next/static`.
-- The assistant's path differs from the web app's: `/api/chat` and `/api/assistant/approval` (`@okazi/ai`) connect as the user to `apps/mcp` with a first-party token (`getFirstPartyAccessToken`, client `assistant`) and do not run `runOperation`. The web app still uses `runOperation` for conversation history (list, open, rename, archive) and for Skills. After an approved proposal, the card calls `router.refresh()` so the server components reload data.
-- That `UI_EXEMPT` is empty means all operations have a web surface. Operations whose UI lives in the shell (the assistant panel) are listed with `route: "*"` and the component file that provides the UI.
-
-## Addendum 2026-10-14 – configurable domain
-- `Room` and `room.*` are replaced by `Item` and `item.*` (ADR 0021). The example above becomes `item.list` filtered by venue.
-
-## Addendum 2026-10-15 – system log sink exception
-- **Exception:** `apps/web/src/instrumentation-node.ts` imports `createSystemLogSink` from `@okazi/db` at server startup to initialize logging with a Postgres sink. This is necessary to write the system log to the database for the superadmin view (ADR 0014, 0015). The sink is registered once at process startup and writes non-request data (process logs), not operation results. This import sits outside the request context and does not affect request data access.
+## Addenda
+- 2026-10-13: `@okazi/core/schemas` is the client-safe re-export of the features' `schema.ts` (the old `@core-schema/*` alias is gone); `@okazi/ai/ui` derives its wire schemas from it. The assistant does not use `runOperation`: `/api/chat` and `/api/assistant/approval` connect to `apps/mcp` as the user with a first-party token. Operations whose UI lives in the shell are listed in `web-surfaces.ts` with `route: "*"`.
+- 2026-10-14: `Room` became `Item` (ADR 0021).
+- 2026-10-15: the one exception to "never import `@okazi/db`": `apps/web/src/instrumentation-node.ts` imports `createSystemLogSink` at startup to write process logs to Postgres (ADR 0014, 0015). It sits outside the request context and touches no request data.

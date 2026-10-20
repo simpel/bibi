@@ -5,7 +5,7 @@ description: Change the Prisma schema and create a migration following Okazi's d
 
 # Database migration
 
-Conventions: `docs/decisions/0006-database-conventions.md`.
+Conventions: `packages/db/CLAUDE.md` (rules and triggers), why: `docs/decisions/0006-database-conventions.md`.
 
 1. Edit `packages/db/prisma/schema/*.prisma`. Better Auth tables are generated: do not edit them by hand, run `pnpm --filter @okazi/auth auth:generate`.
 2. Every business model: cuid2 `id`, `organizationId` (no FK to `organization`), `status` for soft delete, `createdAt`, `updatedAt`, `createdBy`, an index on `organizationId`. No `DELETE` in app code.

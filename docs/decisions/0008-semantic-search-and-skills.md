@@ -35,17 +35,7 @@ Users and the assistant need to find entities (venues, rooms and later bookings)
 - System skills are versioned in the repo. Changes to them are code changes and are reviewed as such.
 - Importing skills from external files is a security risk. The content is treated as data and tool permissions are limited by the skill's `allowed tools`.
 
-## Addendum 2026-10-13 – implementation of the AI data layer
-- SYSTEM skills are stored with `organizationId = null`. The org-scoped client lets all organizations read them but never write them. Only the seeder (`seedSystemSkills`) writes them, with the unscoped client. CHECK constraints in the database bind scope to organization and owner.
-- A personal skill is shared by being copied to the organization as a draft (`skill.share`, requires admin). The original stays. A member who wants to share needs an admin (or export and import).
-- The tools are named `skill_list` and `skill_get` in MCP (operation names use `_`). `list_skill` and `load_skill` in the decision above become aliases or wrappers in `packages/ai`.
-- Search filters hits per user: personal skills and conversations are visible only to the owner. SYSTEM skills are indexed once globally and are part of every organization's search.
-- Conversations (ADR 0007) are private to the owner. An org admin may read, but not write, for oversight.
-
-## Addendum 2026-10-14
-- `Room` is replaced by `Item` with the behavior `BOOKABLE` (ADR 0021). `Venue` and `Item` come first as searchable entities.
-
-## Addendum 2026-10-15
-- "Asynchronous" means after commit and non-blocking for the command's outcome, not a queue. See 0030.
-- Actual behaviour: `createIndexingHook` runs in-process as an `afterCommit` hook of `execute`. An indexing error (for example the embedding provider is down) never changes the command's result: the hook catches it and logs `search.index_failed` (error, with operation, organization, entity type and id).
-- After a failure the entity has no index row (create) or an out-of-date row (update). `pnpm --filter @okazi/ai reindex [--org <id>]` repairs both: it runs `indexEntity` for every active searchable entity, and the content hash makes it embed only rows that are missing or stale. The run is idempotent.
+## Addenda (current behaviour is in `packages/core/CLAUDE.md`, "AI data layer" and "Search")
+- 2026-10-13: SYSTEM skills are global rows (`organizationId = null`) that only the seeder writes; a personal skill is shared by copying it to the organization as a draft (admin only). The MCP tools are `skill_list` and `skill_get`. Search filters hits per user and conversations are private to the owner.
+- 2026-10-14: `Room` is replaced by `Item` with the `BOOKABLE` capability (ADR 0021).
+- 2026-10-15: "asynchronous" means an in-process `afterCommit` hook, not a queue (ADR 0030). An indexing error never changes the command's result; it logs `search.index_failed`, and `pnpm --filter @okazi/ai reindex` repairs missing or stale rows idempotently.

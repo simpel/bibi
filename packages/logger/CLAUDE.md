@@ -9,8 +9,8 @@ The system log (ADR 0014). pino, one JSON line per event to stdout (stderr for s
 - `runWithLogContext({ context, fn })`, `getLogContext()`, `addToLogContext({ fields })`. `resolveExecuteContext` adds `organizationId`, `userId`, `actorType` and `conversationId`.
 - `maskEmail({ email })` → `***@domain.se`.
 
-## Events today
-`http.request`, `http.unhandledError`, `operation.completed|rejected|failed|afterCommitFailed`, `auth.resolveFailed|sessionCreated|library`, `mcp.toolCalled`, `approval.proposed|proposalRejected|decided|failed`, `ai.runCompleted|runFinishFailed|chatFailed|streamFailed|modelNotConfigured|modelCatalogFailed|placeholderEmbedder`, `auth.platformDenied`, `platformAdmin.granted|revoked`, `mail.sent|failed`, `search.index_failed`, `process.started|startFailed|unhandledRejection|uncaughtException`, `config.ignored`.
+## Events
+Stable `<area>.<event>` names; find existing ones with `rg "event: \""` before adding a new one.
 
 ## Rules
 - Never log input or output. `AuditLog` has the before/after image. Known secret field names are redacted anyway (`redact-paths.ts`).

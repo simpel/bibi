@@ -23,3 +23,7 @@ Users at venues (sales staff, coordinators, kitchen) work through many steps bet
 - The approval flow is security-critical. It is reviewed at Opus level and tested in Playwright with a mocked model.
 - Conversations contain business data and are therefore stored with the same org scoping and audit as other data.
 - We depend on AI Gateway. Cost and latency follow the provider's prices and models.
+
+## Addenda
+- 2026-10-17: the assistant is the home page `/`, not a panel on every page (ADR 0035); ⌘K starts a conversation there.
+- 2026-10-14: models are chosen per feature by a superadmin in `/admin/ai-models`, with no default and no env variable (ADR 0015).

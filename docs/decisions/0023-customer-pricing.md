@@ -14,3 +14,6 @@
 
 ## Consequences
 - Entities: `PriceList` and `PriceListItem`.
+
+## Addendum 2026-10-19
+- Lines no longer copy the price. A line's price is derived: line override, then the customer's valid price list, then the item's price. A quote or invoice freezes it when sent (ADR 0052).

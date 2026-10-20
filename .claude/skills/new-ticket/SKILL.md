@@ -22,7 +22,7 @@ The ticket creator knows the scope, so the creator decides how the work is run. 
    - **Model:** leave `Auto` unless you know better. `Haiku` for scripted or clearly specified work (docs, i18n strings, boilerplate), never open-ended implementation (it measured ~93 turns per ticket against Sonnet's ~19). `Sonnet` for ordinary and mechanical work. `Opus` where a mistake is expensive (tenancy, auth, trigger SQL, migrations with logic). A ticket cannot be two models.
    - **Effort:** how hard the implementing agent thinks. Leave `Auto`: Docs is Low, a codemod is Medium, Opus, L/XL and risky areas are High, everything else Medium. Set `High` or `Extra` for a ticket whose difficulty is in the reasoning (a subtle concurrency bug, a hard design), `Low` for trivial work. Extra is never a default. The last fix round raises effort one step.
 3. **Write the body** with these sections, in this order:
-   - `### Background`: why, the source ADR, "Found by an agent while working on #N" for follow-ups.
+   - `### Background`: why, the source ADR and its spec, "Found by an agent while working on #N" for follow-ups.
    - `### To do`: checkboxes, one coherent step each.
    - `### Seed data`: the files in `packages/core/src/seed/demo/` and `docs/demo-seed.md` that change, or "No seed change" with the reason. Required for `Feature` and `Codemod`.
    - `### Depends on`: one `- #N` line per blocker. `tools/backlog/select.mjs` reads this section, so keep it exact.

@@ -8,7 +8,7 @@
 - The general need is to hand over a ticket or a sheet (ADR 0021) to someone outside the system: an external chef, AV supplier, shipping company or carrier.
 
 ## Decision
-- Partner is dropped from the MVP. Sheets go to a role in the organization (ADR 0020, 0021).
+- Partner is dropped from the MVP. Sheets go to a responsibility in the organization (ADR 0021, 0034; originally a role, ADR 0020).
 - The operation `ticket.export` (`ticket:read`) provides a ticket in the formats:
   - `json`: versioned, stable schema for integrations. The organization's fields are included with their definitions.
   - `pdf`: program, setups, items with the choices made, and requirements.
@@ -20,4 +20,4 @@
 ## Consequences
 - ADR 0004 gets an addendum: partner access across company boundaries is no longer planned.
 - The Partner entity is removed from the domain model.
-- CLAUDE.md is updated: sheets go to the organization's own roles, and export exists for handover.
+- CLAUDE.md is updated: sheets go to the organization's own responsibilities, and export exists for handover.

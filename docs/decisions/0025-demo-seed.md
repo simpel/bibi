@@ -2,6 +2,7 @@
 
 - **Date:** 2026-10-14
 - **Status:** Accepted
+- **Spec:** `docs/demo-seed.md` (the source for the content and the checks)
 
 ## Context
 - We need realistic data for development, demo and e2e tests.
@@ -9,24 +10,13 @@
 - The configurable domain (ADR 0021) is visible only if the demo shows at least two organizations that are set up differently.
 
 ## Decision
-- `pnpm --filter @okazi/core seed:demo` creates two fictional organizations:
-  - **Lindholmen Experience Center** (experience center): conference, exhibition and restaurant, inspired by the reference customer.
-  - **Vingaleden Archipelago Tours** (archipelago tours): boat tours without food.
-- The content is specified in `docs/demo-seed.md`. That file is the source, and the data files in the code follow it.
-- All writes go through `execute` with core operations, including configuration and phase changes. The actor is `SYSTEM`. Each organization thus sets itself up the same way a real customer would.
-- The script is idempotent per org slug. A new run deletes and recreates only the demo organizations. It refuses to run in production.
-- All dates are computed relative to today's date, so the data does not go stale.
-- The seed grows with each part that is built:
-  1. Custom roles (ADR 0020)
-  2. Configurable domain: types, fields, vocabularies, setups and behaviors (ADR 0021)
-  3. Items and composition: catalog and packages
-  4. Customers, price lists, ticket phases and item states (ADR 0022, 0023, 0043, 0044). Each organization gets its own phases, transitions and phase grid from `data/<org>/pipeline.ts` (Lindholmen the conference-estate set, Vingaleden its own tour-company set); the organization is provisioned without the default phases and the checks assert the counts
-  5. Tickets, lines and requirements
-  6. Sheets with matching and blocking
-  7. Export (ADR 0024)
-- The checks in `docs/demo-seed.md` run after the seed in CI. The seed thus works as an integration test of the whole flow.
+- **`pnpm --filter @okazi/core seed:demo` creates two fictional organizations**, set up differently: Lindholmen Experience Center (conference, exhibition and restaurant, inspired by the reference customer) and Vingaleden Archipelago Tours (boat tours without food). Each gets its own types, lists, phases, states and grid.
+- **All writes go through `execute` with core operations** as `SYSTEM`, including configuration and phase changes, so each organization sets itself up the way a real customer would. Rejected: writing directly with Prisma.
+- **`docs/demo-seed.md` is the source** and the data files follow it. Checks defined there run after the seed in CI, so the seed is an integration test of the whole flow.
+- The script is idempotent per org slug (it deletes and recreates only the demo organizations), refuses to run in production, and computes all dates relative to today.
+- The seed grows with each part that is built; every ticket that adds or changes data states its seed change.
 
 ## Consequences
-- The seed can only create what the operations support. If an operation is missing it becomes visible immediately.
-- The same organizations are used by Playwright (`apps/web`) instead of separate fixtures.
-- When the domain changes, `docs/demo-seed.md` must be updated in the same change.
+- The seed can only create what the operations support, so a missing operation is visible immediately.
+- Playwright (`apps/web`) uses the same organizations instead of separate fixtures.
+- When the domain changes, `docs/demo-seed.md` is updated in the same change.
