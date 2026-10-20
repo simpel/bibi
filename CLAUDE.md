@@ -37,10 +37,7 @@
 - UI: Tailwind v4 (CSS-first tokens), cva, shadcn primitives and shadcn AI Elements (chat, message, prompt input, suggestion, confirmation, questionnaire), React Flow for the onboarding path (ADR 0045), Storybook for `packages/ui`.
 - i18n: next-intl, Swedish and English.
 - Tooling: Biome (lint + format), Vitest (unit/service layer against real Postgres), Playwright (e2e).
-- Email: `@okazi/mail` with a `MailProvider` interface (`send`, `parseInbound`, `fetchInbound`). Adapters: Resend (production, outbound and inbound) and SMTP (Mailpit in dev), selected by `MAIL_PROVIDER` (`smtp` default, `resend` needs `RESEND_API_KEY`; inbound needs `RESEND_WEBHOOK_SECRET` and `MAIL_INBOUND_DOMAIN`). Inbound replies arrive at `POST /api/webhooks/resend` and are stored as `InboundEmail` on the ticket whose address (`ticket-<id>@<domain>`) they were sent to. See `docs/decisions/0012-email-provider.md`.
-- Stripe webhook: `POST /api/webhooks/stripe`, signed with `STRIPE_WEBHOOK_SECRET`, runs SYSTEM-only `payment.applySignal` and `paymentAccount.applySignal`. See `docs/decisions/0028-payments-with-stripe.md`.
-- Jobs: pg-boss in `apps/worker` (queue and cron in Postgres). Jobs call core operations as SYSTEM. See `docs/decisions/0027-job-scheduler.md`.
-- Logging: pino via `@okazi/logger`, JSON to stdout and the `SystemLog` table, request context with `AsyncLocalStorage`. See `docs/decisions/0014-system-logging.md`.
+- Email (`packages/mail`), Stripe webhook (`apps/web`), jobs (`apps/worker`, pg-boss), logging (`packages/logger`, pino): see each folder's `CLAUDE.md`.
 - Ops: Docker (compose with Postgres and Mailpit, `--profile app` for web + mcp), GitHub Actions for CI.
 - Decisions: `docs/decisions/0002-tech-stack-and-monorepo.md` and others.
 
@@ -56,13 +53,9 @@
   - Reusable AI behaviour lives as skills (System / Organization / Personal), not as ad hoc prompts.
   - See `docs/decisions/0007-ai-first-ux.md` and `docs/decisions/0008-semantic-search-and-skills.md`.
 - **Configurable domain.** No domain words in code. The organization defines types, fields, lists, ticket phases, item states and responsibilities as data. Every ticket and item has one assignee plus followers (ADR 0034). Code owns only generic capabilities (`PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE`, `SETUPS`) and flags on phases and states (ADR 0043, 0044). Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
-- **Capabilities, demands and buffers (ADR 0059, accepted, partly built).** A type has capabilities (`EntityType.capabilities`); a bundle's parts are `ItemPart` rows (`parts`) and its customisation groups are `ItemCustomisationGroup` rows (`customisationGroups`), end to end with no aliases. Coming: setup and teardown minutes (type, item, line), bundles expanded into linked lines, pooled equipment and staff through `ItemDemand` and `LineAllocation`, working hours, and `item:write` for managers. Plan and issues: `docs/plans/type-capabilities-and-resources.md`.
-- **Database triggers (projections, ADR 0053).** Triggers are invisible to Prisma and `check:structure`, so they are listed here. SQL lives one file per function under `packages/db/sql/` and is applied verbatim by a migration (`packages/db/test/line-holds-sql.test.ts`); each table with a trigger says so in its Prisma doc comment. Application code never writes what a trigger writes.
-  - `sync_line_occupancy.sql`: line holds (`Occupancy` `HOLD`/`SETUP` with `lineId`). Triggers on `Line` (insert; update of item, setup, time, state, ticket, status), `ItemState` (`hold`, `released`), `Setup` (`changeoverMinutes`), `EntityType` (`capabilities`), `Ticket` (`phaseId`, `status`) and `TicketPhase` (`terminal`). Configuration changes re-derive only lines that have not ended. An overlap raises `line_occupancy_conflict`, mapped to `CONFLICT` with `lines.<id>` issues. Checked by the `line-holds` reconciliation; only `features/occupancy/write-operations.ts` (manual blocks) writes `occupancy` in core.
-- **Permissions.** A permission is `<feature>:<action>` (`FEATURE_SPECS` in `packages/core/src/permissions/`). A core operation names one in `permission`. The roles are presets (`PRESET_PERMISSIONS`); admins add per-member and per-API-key overrides (`PermissionOverride`, `permission.get|update`). Pages, navigation and the assistant follow the effective permissions. See `docs/decisions/0050-permission-presets-and-overrides.md`.
-- **Feature scope: no cross-feature data.** An operation returns only data of its own feature (owner map `ENTITY_FEATURE`); another feature's record is an id, resolved through that feature's own operation. Inputs that reference another feature's id are checked with `checkReadable(<feature>:read)`, and errors never describe records the caller cannot view. Snapshots copied from another feature need its `read` at copy time. Audit, search text and approval previews only show what the caller may view. Pages show a denied piece as hidden instead of failing. If a feature needs another feature's data in its output, the scope is wrong: fix the scope (ADR 0050, "Feature scope").
-- **Multi-tenant.** Everything is scoped by `organizationId`. Every mutation is logged in `AuditLog`. See `docs/decisions/0004-multi-tenancy.md` and `docs/decisions/0006-database-conventions.md`.
-- **Single source of truth.** Every column is owned, derived, a projection or a snapshot (ADR 0051). A fact lives in one place; defaults are inherited (`null` = inherit), never copied; references are foreign keys, never id lists or ids in JSON (ADR 0056). Projections are written only by the database or one named function and have a reconciliation check. Line holds are projected by triggers (`sync_line_occupancy`, ADR 0053) and current phase and line state by history-table triggers (ADR 0054); SQL for triggers lives in `packages/db/sql/`. The line is the booking and quotes and invoices are snapshots of lines (ADR 0052). Balances are derived (ADR 0057). Domain history never comes from `AuditLog`.
+- **Capabilities, demands, buffers and database triggers** (ADR 0059, 0053): `packages/core/CLAUDE.md`, `packages/db/CLAUDE.md`.
+- **Permissions and feature scope** (ADR 0050): `<feature>:<action>` with fixed role presets and per-member overrides; an operation returns only its own feature's data. Details in `packages/core/CLAUDE.md`.
+- **Single source of truth.** Every column is owned, derived, a projection or a snapshot (ADR 0051). A fact lives in one place; defaults are inherited (`null` = inherit), never copied; references are foreign keys, never id lists or ids in JSON (ADR 0056). Projections are written only by the database or one named function and have a reconciliation check. Triggers that write projections are listed in `packages/db/CLAUDE.md`. The line is the booking and quotes and invoices are snapshots of lines (ADR 0052). Balances are derived (ADR 0057). Domain history never comes from `AuditLog`.
 - **Everything is logged.** Core `execute` writes one system log row per operation (succeeded, rejected or failed). Every entry point opens a request context with `requestId` and `surface`, which also end up on `AuditLog`. See `docs/decisions/0014-system-logging.md`.
 
 ## Code rules
@@ -78,41 +71,8 @@
 - A new HTTP entry point is wrapped in `withRequestLogging({ surface, handler })`. Other entry points (CLI, jobs) run in `runWithLogContext`.
 - Feature folders have fixed file names: `schema.ts`, `operations.ts`, `graphql.ts`, `rest.ts`, `mcp.ts` and `ui/`.
 - UI is built only from `@okazi/ui`. Variants use cva. Tokens live in one file.
-- **Every table is a shadcn TanStack table** (shadcn's data-table pattern on `@tanstack/react-table`). Never a raw `<table>`, never another table library or a hand-rolled list pretending to be a table. In the web app a table is always rendered with `PersistedDataTable` (`apps/web/src/components/data-table/`, on `DataTable` in `@okazi/ui`) with a stable `tableId`; columns live in a `use-<entity>-columns` hook; the assistant's card has its own hook and `tableId` with the same cells. Never use the `Table*` primitives directly. The only exception is the calendar grid (a keyboard-navigated time grid, not a table of records). See `docs/decisions/0040-data-tables.md`.
-  - **All columns are sortable.**
-  - **Column order**, left to right:
-    1. Multiselect checkbox, only if bulk editing benefits the list.
-    2. Main title, name or identifier.
-    3. Descriptive columns (the organization's own fields), in the order the organization defines them.
-    4. Status.
-    5. Dates and times, then numbers and amounts.
-    6. Row actions, always the far-right column.
-  - **Users reorder columns by drag and drop.** This is always on and not a setting. The checkbox and row actions stay pinned at the edges. All other columns, including the title, can be moved. The order above is the default.
-  - **The order is saved per user and per table** as a user preference on the server, not in `localStorage`, so it follows her across devices. It is restored on every visit, so she always sees the same order.
-  - **Row actions** go in a `DropdownMenu` submenu. Every action in it has a text label. Never an icon-only action button.
-- `"use client"` is set only at the client boundary: components that a server component renders and that themselves have state, context or browser events. Children and hooks inherit the boundary and get no directive of their own.
+- UI rules (forms, tables, `"use client"`, i18n): `apps/web/CLAUDE.md`.
 - Verified with `pnpm check:structure`.
-
-## Forms (applies to all input in the UI)
-- Every form is a shadcn form: `Form`, `FormController` (shadcn's `FormField`), `FormItem`, `FormLabel`, `FormControl` and `FormMessage` from `@okazi/ui`, with react-hook-form and `zodResolver` with localised messages (`useZodMessages`). The schema comes from core (`@okazi/core/schemas`, via `formSchema({ schema, toInput })` when needed), never a hand-written duplicate schema.
-- Fields: `TextField` and `CheckField` (`apps/web/src/components/form/`) are shadcn fields and require `<Form {...form}>` around the form. Other controls (select etc.) are built with `FormController` directly.
-- Validation is shown the shadcn way: field errors in `FormMessage` under the field. Server field errors (`AppError.issues`, `path` = field name) are set on the fields with `form.setError`.
-- **Create and update are pages, not dialogs** (except tiny actions: archive, rename, assign, confirm). Create lives at `/new/<thing>` (`/new/skill`, `/new/item`), update at `/<things>/<id>/update`. Multi-step creates use `components/wizard/` (`useWizard`, `WizardProgress`, `WizardFooter`, `TypedWizard`, `CreatePageShell`); add the thing to `NEW_PARENTS` in `breadcrumb-model.ts`.
-- **Forms that change data** are **always** submitted via a server action (`features/<entity>/actions.ts` → `runOperation`/`runPlatformOperation` → `toActionResult`). No `fetch` calls from forms.
-- The toast flow is owned by the helpers, never by the component:
-  - Forms: `useFormAction({ form, action, messages, onSuccess?, onError? })` (`lib/use-form-action.ts`).
-  - Actions without fields (archive, publish, share, …): `useToastAction().run({ action, messages, onSuccess? })` (`lib/use-toast-action.ts`). `ConfirmDialog` has no error box: the outcome is a toast and the caller closes the dialog on success.
-  - Each process has **one** toast id: `toast.loading(pending)` is replaced by `toast.success(success, { id })`.
-  - Errors become a **persistent** toast with a close button (`duration: Infinity, closeButton: true`). Network errors become `errors.network`.
-  - `messages` come from i18n: `common.saving`/`archiving`/`sending` for pending, the entity's own key for the outcome (e.g. `venue.created`).
-- Auto-save (e.g. a select that saves on change) uses the same flow. On error the field is reset via `onError`.
-- References: `features/venue/ui/venue-form.tsx` (form) and `features/venue/ui/archive-venue-dialog.tsx` (action without fields).
-- Exceptions, with reasons:
-  - **Sign-in and account** (`features/auth/ui`): shadcn `Form` and the same toast flow via `useAuthFormAction`, but the call goes through the Better Auth client, not a server action. Better Auth's OAuth provider plugin carries the signed authorize query (`sig`) and performs the redirect to the next OAuth step in the browser, which the MCP sign-in requires.
-  - **Search and filter forms** (URL navigation only): shadcn `Form`, but no server action and no toast.
-  - **The chat composer** streams via `useChat` to `/api/chat`, which a server action cannot do.
-- Load errors (not the outcome of an action): `ErrorState` in server components, `InlineLoadError` in client islands (e.g. the history list, live search). A toast on every search would be noise.
-- `ErrorBanner`, `useActionSubmit` and `useAuthSubmit` have been removed. Do not reintroduce equivalent patterns.
 
 ## Package layout
 - `apps/web`: the Next.js app (UI, server actions, `/api/chat`).
@@ -127,13 +87,8 @@
 - `packages/i18n`: messages, sv and en.
 - `packages/ai`: AI SDK setup, MCP client, the generative UI registry and system skills.
 - `packages/config`: environment variables (typed and validated) plus shared tsconfig and Biome config.
-- `packages/mail`: `MailProvider` with SMTP and Resend adapters, `sendMail` (logs `mail.sent`/`mail.failed`) and `createMemoryMailProvider` for tests.
-- `packages/logger`: the system log (pino), request context, `withRequestLogging` and the test helper `captureLogs`.
-
-## Superadmin
-- `/admin` in the web app: system log and AI model per feature. Only for `user.role = "superadmin"`, granted with `pnpm --filter @okazi/auth grant-superadmin <email>`. See `docs/decisions/0015-platform-admin.md`.
-- AI models (chat and embedding) are controlled **only** in `/admin/ai-models`, never via env. No model selected = the feature returns `UNAVAILABLE` and logs an error.
-- New AI feature: an entry in `AI_FEATURES` (core), `resolveAiModel({ feature })` where it runs, and texts in `admin.aiModels.features`.
+- `packages/mail`: `MailProvider` with SMTP and Resend adapters.
+- `packages/logger`: the system log (pino) and request context.
 
 ## Working with subagents
 - Baseline: Sonnet.
@@ -143,18 +98,8 @@
 - The main agent owns integration and the parity test. Subagents must not change each other's packages until the main agent has integrated.
 
 ## Issues and project board
-- All work is tracked on https://github.com/users/simpel/projects/8 (kanban). Not project 7.
-- Every piece of work has an issue on the board. If none exists, create it with the `new-ticket` skill (`node tools/backlog/ticket.mjs create`), which adds it to the board and sets Status, Priority (P0–P2), Size (XS–XL) and Kind (Feature, Bugfix, Codemod, Tech debt, Docs, Test), plus Model (Auto, Haiku, Sonnet, Opus) and Effort (Auto, Low, Medium, High, Extra) when you know better. The creator decides how the work is run; the `work-backlog` run follows the fields.
-- Move the card when the work changes state: `Backlog` → `Todo` → `In progress` when work starts → `Done` when merged. `Parked` = the `work-backlog` run could not land the work and pushed it to a `parked/<issues>` branch (linked in the issue comment); fix it there or move the card back to `Todo`. Update with `gh project item-edit` (field ids via `gh project field-list 8 --owner simpel`).
-- PRs link the issue with `Closes #NN`. Comment on the issue with what was done if the work is split up or abandoned.
-- Every ticket that adds or changes data or behaviour has a **Seed data** section: which files in `packages/core/src/seed/demo/` (data, `seed-*.ts`, `checks.ts`, `reset.ts`) and `docs/demo-seed.md` change, or an explicit "No seed change" with the reason. A ticket is not done until `seed:demo` runs from an empty database with green checks; `packages/core/test/seed-demo.test.ts` runs the full demo seed in `pnpm test`, so CI enforces it.
-- `gh` needs the `project` scope (`gh auth refresh -s project`).
-- Autonomous ticket work: the `work-backlog` workflow (`.claude/workflows/work-backlog.js`) picks unblocked `Todo` tickets, up to 3 at a time, and loops until none are left (safety cap 50 batches). It never picks a `source:agent` ticket until a human moves it to `Todo`.
-  - **Flow:** each ticket gets its own worktree (`pnpm wt:new t-<N>`, branch `ticket/<N>`, own database), is implemented and verified there, then shipped as a pull request: one commit `<type>: <issue title>` with `Closes #N` (type from Kind, ADR 0060), rebased on `origin/main`, re-verified if `main` moved. The run waits for CI on the PR and **squash-merges** it, one at a time, so `main` stays one commit per ticket in a single line. The main checkout is never touched. A ticket that stays red (checks, CI, tenancy review), conflicts or is blocked is pushed to `parked/<N>`, its PR closed, commented on and moved to `Parked`.
-  - **Where a rule lives:** a deterministic gate that must hold for every change is a CI check (`tools/ci/checks.json` defines the checks once for CI and for the run; `.github/workflows/*`) or a test; judgment and how-to are skills (`.claude/skills`), shared by people and the run; the workflow only orchestrates (order, parallelism, retries, escalation, board state). A rule both people and the run need is a skill, not a prompt.
-  - **Paths by Kind** (`PATHS` in the workflow; each path's rules are a skill that people use too): Feature (`new-feature`, the default), Bugfix (`fix-bug`: a failing test first), Tech debt (`refactor`: behaviour-preserving), Test (`add-tests`: tests only), Docs (`write-docs`: documentation only, lint and check:structure only), Codemod (`codemod`: scripted, runs alone, a residue search for the old names in the ticket's `### Renames`), and `type:decision` (`add-adr`: a Proposed ADR in a PR that is left for a person to accept, never merged by the run). Gates (docs-only, tests-only, ADR file, repro, residue) feed the same fix loop as red checks.
-  - **Model and effort** (`pickModel`, `pickEffort`): the Model field (Haiku, Sonnet or Opus) wins; Kind Codemod is Sonnet with 3 fix rounds; Size L or XL, `area:auth` and `area:db` are Opus; Sonnet otherwise. Effort (Auto: Docs Low, codemod Medium, Opus, L/XL and risky areas High, else Medium; Extra is the API's xhigh) sets the reasoning effort. The last fix round raises both. A Codemod or XL ticket runs alone, and the log says when the fields look contradictory.
-  - **Mechanics:** everything deterministic is a script in `tools/backlog/` (`select.mjs`, `prep.sh`, `checks.sh`, `ship.sh`, `ci.sh`, `merge.sh`, `main-ci.sh`, `park.sh`, `residue.sh`, `release.sh`; `ticket.mjs` creates tickets) and Haiku only runs them as one-command runners; Sonnet or Opus work only where judgment is needed (implement, fix rounds, conflicts, red CI, tenancy review). After a batch with merges the run waits for CI on `main` and stops when it is red. `adopt: [N]` continues the worktree of a dead run (`prep.sh --adopt`). `node tools/backlog/workflow-smoke.mjs` and `bash tools/backlog/scripts-smoke.sh` test the workflow and the scripts without GitHub (CI runs them in the `tools` job). Out-of-scope problems the agents notice are filed after each batch as `source:agent` issues in `Backlog`. Never Fable.
+- Every piece of work has an issue on https://github.com/users/simpel/projects/8 (not project 7); create one with the `new-ticket` skill. PRs link it with `Closes #NN`. A ticket that adds or changes data or behaviour has a **Seed data** section and is not done until `seed:demo` runs from an empty database with green checks.
+- Board states, the `work-backlog` workflow and its scripts: `tools/backlog/CLAUDE.md`.
 
 ## Commands
 - `docker compose up -d`: starts Postgres and Mailpit (mail at http://localhost:8025).
@@ -167,11 +112,11 @@
 - `pnpm wt:new <name> [--base <ref>] [--branch <branch>]`: a git worktree in `../okazi-worktrees/<name>` with its own database (`okazi_<name>`), ports (3100+/3200+) and `.env`. `pnpm wt:rm <name> [--force] [--delete-branch]` drops it, `pnpm wt:list` lists them. Scripts in `tools/worktree/` (Superset's `.superset/*.sh` just call them).
 - Tests load the root `.env` via `loadTestEnv()` (`@okazi/config/load-test-env`) in every `vitest.config.ts`, with `AI_GATEWAY_API_KEY` blanked: tests never call paid AI. `DATABASE_URL` is replaced by the test database: `TEST_DATABASE_URL` if set, else `<db>_test` (`okazi_test` in the main checkout, `okazi_<name>_test` in a worktree), so tests never write into the dev database.
 - `pnpm test:db`: creates the test database if missing and applies migrations (pgvector included). `pnpm test` runs it first (Turbo `@okazi/db#migrate:test`); run it yourself before `vitest` in a single package after a new migration.
-- `pnpm --filter @okazi/core cleanup:test-orgs`: opt-in, never automatic. Dry run listing the organizations old test runs left in the dev database (not a `DEMO_ORGS` slug, every member on a reserved test domain such as `.test` or `example.com`) and their orphaned test users; `-- --yes` deletes them. Organizations with a real member are kept.
+- `pnpm --filter @okazi/core cleanup:test-orgs`: opt-in dry run listing organizations left by old test runs in the dev database; `-- --yes` deletes them. Organizations with a real member are kept.
 - `pnpm lint`: Biome check.
-- `pnpm check:structure`: checks file size, function size, exports, barrel files and feature files.
 - `node tools/ci/verify.mjs [--all | --light | --only <id>]`: the checks CI runs (lint, structure, typecheck, migrate, test, build), defined once in `tools/ci/checks.json`; by default scoped to the files you changed (`build` only when apps or shared packages changed).
 - `pnpm typecheck`: TypeScript for all packages.
+- `pnpm check:structure`: checks file size, function size, exports, barrel files and feature files.
 - `pnpm test`: Vitest and the parity test.
 - `pnpm --filter @okazi/web test:e2e`: Playwright with a scripted model (`E2E_MOCK_MODEL`), see `apps/web/CLAUDE.md`.
 

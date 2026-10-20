@@ -634,7 +634,7 @@ const check = (name, ok, detail = "") => {
     tickets: [alone(1), alone(2)],
     impl: done,
     hook: (opts) =>
-      opts.label.startsWith("main-ci")
+      opts.label.startsWith("main-ci p")
         ? { state: "red", sha: "abc", url: "https://x/run/9" }
         : undefined,
   });
@@ -653,11 +653,11 @@ const check = (name, ok, detail = "") => {
     tickets: [alone(1), alone(2)],
     impl: done,
     hook: (opts) =>
-      opts.label.startsWith("main-ci") ? { state: "pending", sha: "abc" } : undefined,
+      opts.label.startsWith("main-ci p") ? { state: "pending", sha: "abc" } : undefined,
   });
   check(
     "pending main CI is polled twice, then the run continues",
-    pending.calls.filter((c) => c.label.startsWith("main-ci")).length === 4 &&
+    pending.calls.filter((c) => c.label.startsWith("main-ci p")).length === 4 &&
       pending.calls.filter((c) => c.phase === "Implement").length === 2,
   );
 
@@ -666,7 +666,10 @@ const check = (name, ok, detail = "") => {
     tickets: [T(1, "One", [], "S", { kind: "Feature" })],
     impl: done,
   });
-  check("mainCheck: false skips the check", !off.calls.some((c) => c.label.startsWith("main-ci")));
+  check(
+    "mainCheck: false skips the check",
+    !off.calls.some((c) => c.label.startsWith("main-ci p")),
+  );
 
   const decision = await runScript({
     tickets: [T(2, "Choose", ["type:decision"], "S")],
@@ -674,7 +677,51 @@ const check = (name, ok, detail = "") => {
   });
   check(
     "an opened decision PR does not trigger a main check",
-    !decision.calls.some((c) => c.label.startsWith("main-ci")),
+    !decision.calls.some((c) => c.label.startsWith("main-ci p")),
+  );
+}
+
+// 13. the run does not start while main is red
+{
+  const t = [T(1, "One", [], "S", { kind: "Feature" })];
+  const redMain = (opts) =>
+    opts.label === "main-ci start"
+      ? { state: "red", sha: "abc", url: "https://x/run/1" }
+      : undefined;
+  const blocked = await runScript({ tickets: t, impl: done, hook: redMain });
+  check(
+    "a red main stops the run before any ticket starts",
+    !blocked.calls.some((c) => c.phase === "Implement") && blocked.result.mainRed?.sha === "abc",
+  );
+  check(
+    "the refusal says how to continue",
+    blocked.logs.some((l) => l.includes("ignoreMainRed")),
+  );
+  const forced = await runScript({
+    args: { ignoreMainRed: true },
+    tickets: t,
+    impl: done,
+    hook: redMain,
+  });
+  check(
+    "ignoreMainRed starts anyway",
+    forced.calls.some((c) => c.phase === "Implement") &&
+      !forced.calls.some((c) => c.label === "main-ci start"),
+  );
+  const fine = await runScript({ tickets: t, impl: done });
+  check(
+    "a green or unknown main starts normally",
+    fine.calls.some((c) => c.phase === "Implement"),
+  );
+  const off = await runScript({
+    args: { mainCheck: false },
+    tickets: t,
+    impl: done,
+    hook: redMain,
+  });
+  check(
+    "mainCheck: false skips the start check too",
+    off.calls.some((c) => c.phase === "Implement"),
   );
 }
 

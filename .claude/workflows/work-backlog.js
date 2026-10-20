@@ -561,6 +561,17 @@ function packBatch(tickets) {
   return batch
 }
 
+// A red main would make every ticket's PR red too, so the run does not start while CI on main is red (a person fixes
+// main first, or starts with ignoreMainRed: true, for example to run the ticket that fixes it).
+if (MAIN_CHECK && !(args && args.ignoreMainRed)) {
+  phase('Main')
+  const h0 = await agent(runnerPrompt('tools/backlog/main-ci.sh --timeout 60'), { label: 'main-ci start', phase: 'Main', schema: LAND, model: 'haiku', effort: 'low' })
+  if (h0 && h0.state === 'red') {
+    log(`Not started: CI on main is red at ${h0.sha} (${h0.url || 'no run url'}). Fix main first, or run with ignoreMainRed: true.`)
+    return { mainRed: h0, landed: [], opened: [], parked: [], failed: [], followUpIssues: [] }
+  }
+}
+
 const results = []
 const followUps = []
 const filed = []
