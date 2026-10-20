@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Worktree preparation for the work-backlog workflow: tools/backlog/prep.sh <issue-number>
+# Worktree preparation for the work-backlog workflow: tools/backlog/prep.sh [--adopt] <issue-number>
+# --adopt takes over the worktree and lock of a run that died, KEEPING its uncommitted work, and prints
+# WORKTREE_DIR=<path>. Use it only when the run that holds the lock is dead; it never deletes anything.
 # Creates ../okazi-worktrees/t-<N> on branch ticket/<N> from origin/main, after clearing leftovers
 # from an earlier run that hold no work. Prints WORKTREE_DIR=<path> on success, PROBLEM=<reason>
 # and exit 1 otherwise. Run from the main checkout.
@@ -7,6 +9,8 @@
 # so two runs or agents never prepare or write in the same worktree. The land and park steps release it with
 # tools/backlog/release.sh. A lock older than LOCK_MAX_AGE_MIN (default 720) is treated as stale.
 set -uo pipefail
+ADOPT=0
+if [ "${1:-}" = "--adopt" ]; then ADOPT=1; shift; fi
 N="${1:-}"
 if ! [[ "$N" =~ ^[0-9]+$ ]]; then
   echo "PROBLEM=usage: tools/backlog/prep.sh <issue-number>"
@@ -27,6 +31,14 @@ STATE="$(gh issue view "$N" -R simpel/okazi --json state --jq .state 2>/dev/null
 LOCKS="$(dirname "$MAIN")/okazi-worktrees/.locks"
 LOCK="$LOCKS/$NAME"
 mkdir -p "$LOCKS" || fail "could not create $LOCKS"
+if [ "$ADOPT" = 1 ]; then
+  [ -d "$DIR" ] || fail "nothing to adopt: $DIR does not exist"
+  [ "$(git -C "$DIR" branch --show-current)" = "$BRANCH" ] || fail "worktree $DIR is not on $BRANCH"
+  rm -rf "$LOCK"
+  mkdir "$LOCK" 2>/dev/null || fail "could not take the lock $LOCK"
+  echo "WORKTREE_DIR=$DIR"
+  exit 0
+fi
 if [ -d "$LOCK" ] && [ -n "$(find "$LOCK" -maxdepth 0 -mmin +"${LOCK_MAX_AGE_MIN:-720}")" ]; then
   rmdir "$LOCK" 2>/dev/null || rm -rf "$LOCK"
 fi

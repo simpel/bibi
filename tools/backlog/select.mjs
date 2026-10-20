@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Board selection for the work-backlog workflow. Read-only: changes nothing on GitHub.
 // Usage: node tools/backlog/select.mjs [--statuses Todo,Backlog] [--only 12,34] [--exclude 56]
-// Prints one JSON object: { ok, problem?, tickets: [{ number, title, labels, itemId, priority, status, openBlockers }] }.
+// Prints one JSON object: { ok, problem?, tickets: [{ number, title, labels, itemId, priority, size, kind, model, status, openBlockers }] }.
 // openBlockers = issues under "### Depends on" in the body plus native blocked-by, that are still open.
 import { execFileSync } from "node:child_process";
 
@@ -78,6 +78,9 @@ function toTicket({ item, open }) {
     labels: item.labels ?? [],
     itemId: item.id,
     priority: item.priority ?? "",
+    size: item.size ?? "",
+    kind: item.kind ?? "",
+    model: item.model ?? "",
     status: item.status,
     openBlockers: [...blockers].filter((n) => n !== number && open.has(n)),
   };
