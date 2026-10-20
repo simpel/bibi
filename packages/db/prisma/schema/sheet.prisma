@@ -31,10 +31,38 @@ model Sheet {
   ticket            Ticket          @relation(fields: [ticketId, organizationId], references: [id, organizationId])
   sheetDefinition   SheetDefinition @relation(fields: [sheetDefinitionId, organizationId], references: [id, organizationId])
   responsibility    Responsibility  @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+  /// Who received it: the derived assignee and followers at send time (ADR 0055); empty until sent.
+  recipients        SheetRecipient[]
 
   @@unique([id, organizationId])
   @@unique([ticketId, sheetDefinitionId, version])
   @@index([organizationId, ticketId])
   @@index([organizationId, sheetDefinitionId])
   @@index([organizationId, responsibilityId])
+}
+
+/// How a recipient took part in a sent sheet (ADR 0055).
+enum SheetRecipientRole {
+  ASSIGNEE
+  FOLLOWER
+}
+
+/// A member (user id) who received a sent sheet (ADR 0055, ADR 0051 snapshot): the responsibility's
+/// derived assignee and followers at send time. Written once by `sheet.send`, never changed, so
+/// later changes of defaults or choices do not rewrite who received it. `userId` is a member
+/// validated by core, like `AssignmentFollower`. `position` keeps the order.
+model SheetRecipient {
+  id             String             @id @default(cuid(2))
+  organizationId String
+  sheetId        String
+  userId         String
+  role           SheetRecipientRole
+  position       Int
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  createdBy      String?
+  sheet          Sheet              @relation(fields: [sheetId, organizationId], references: [id, organizationId])
+
+  @@unique([sheetId, userId])
+  @@index([organizationId, userId])
 }

@@ -26,7 +26,7 @@ export function AssignmentCardView({ assignment }: AssignmentCardViewProps) {
       </CardHeader>
       <CardContent className="grid gap-1 p-4 pt-0 text-sm text-muted-foreground">
         <p>{assignment.assigneeId ? t("assigned") : t("unassigned")}</p>
-        <p>{t("followers", { count: assignment.followerIds.length })}</p>
+        <p>{t("followers", { count: assignment.followers.length })}</p>
       </CardContent>
     </Card>
   );

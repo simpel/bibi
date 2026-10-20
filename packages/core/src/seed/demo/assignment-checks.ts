@@ -1,4 +1,5 @@
 import type { ExecuteContext } from "../../operations/context";
+import { checkDemoChoices } from "./choice-checks";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoAssignmentsInput = { context: ExecuteContext; org: DemoOrg };
@@ -29,5 +30,6 @@ export async function checkDemoAssignments({
   if (followers !== expected.followers) {
     failures.push(`${org.slug}: ${followers} ticket followers, expected ${expected.followers}`);
   }
+  failures.push(...(await checkDemoChoices({ context, org })));
   return failures;
 }

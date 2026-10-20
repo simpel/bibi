@@ -58,6 +58,13 @@ export const SheetMatchSchema = z.object({
   carriers: z.array(z.string()).describe("Names of the items or parts that carry the value"),
 });
 
+export const SHEET_RECIPIENT_ROLES = ["ASSIGNEE", "FOLLOWER"] as const;
+
+export const SheetRecipientSchema = z.object({
+  userId: z.string().describe("User id of the member who received the sheet"),
+  role: z.enum(SHEET_RECIPIENT_ROLES).describe("Assignee or follower of the responsibility"),
+});
+
 export const SheetSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
@@ -76,6 +83,12 @@ export const SheetSchema = z.object({
     .describe("The last sent version the changes are measured against; null = none sent before"),
   sentAt: z.date().nullable(),
   sentBy: z.string().nullable(),
+  recipients: z
+    .array(SheetRecipientSchema)
+    .describe(
+      "Who received it: the responsibility's assignee and followers on the ticket when it was " +
+        "sent (a snapshot, ADR 0055); empty until sent",
+    ),
   createdAt: z.date(),
   updatedAt: z.date(),
   createdBy: z.string().nullable(),

@@ -23,13 +23,22 @@ model Assignment {
   @@index([organizationId, assigneeId, status])
 }
 
-/// A member (user id) who follows an assignment (ADR 0034): need to know, never required by rules.
-/// Removed on unfollow (audited on the assignment).
+/// What an explicit follower row says (ADR 0055): `FOLLOW` adds the member to the followers,
+/// `UNFOLLOW` removes a member who follows by default (the responsibility's default followers).
+enum FollowEffect {
+  FOLLOW
+  UNFOLLOW
+}
+
+/// A member (user id) who chose to follow or to leave an assignment (ADR 0034, 0055): need to know,
+/// never required by rules. Only explicit choices are stored; the defaults come from the
+/// responsibility. Removed when the choice is undone (audited on the assignment).
 model AssignmentFollower {
   id             String     @id @default(cuid(2))
   organizationId String
   assignmentId   String
   userId         String
+  effect         FollowEffect @default(FOLLOW)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
   createdBy      String?

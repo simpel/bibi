@@ -1,4 +1,5 @@
 import type { DemoTicket } from "../../ticket-types";
+import { l11Choices } from "./ticket-choices";
 
 const hisingen = "Hisingen Energi AB";
 const kvarnby = "Kvarnby Design AB";
@@ -105,6 +106,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
       assignee: "Maria Holm",
       checkMove: { to: "Confirmed", blocked: false },
     },
+    choices: l11Choices,
     fields: { Purpose: "Board meeting" },
     lines: [
       // ADR 0052: an agreed room price (950 kr in the item) and a flat fee without a time.

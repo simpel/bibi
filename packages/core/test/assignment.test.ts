@@ -32,7 +32,7 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
     expect(assigned).toMatchObject({ ...subject, responsibilityId: null, assigneeId: johan });
     await followAs({ context, ...subject, userId: erik });
     const again = await followAs({ context, ...subject, userId: erik });
-    expect(again.followerIds).toEqual([erik]);
+    expect(again.followers).toEqual([{ userId: erik, source: "EXPLICIT" }]);
     const unfollowed = unwrap({
       result: await execute({
         operation: unfollowAssignment,
@@ -40,7 +40,7 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
         context,
       }),
     });
-    expect(unfollowed.followerIds).toEqual([]);
+    expect(unfollowed.followers).toEqual([]);
     const list = unwrap({
       result: await execute({ operation: listAssignments, input: subject, context }),
     });

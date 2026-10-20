@@ -33,7 +33,7 @@ export function useAssignmentCardColumns(): ColumnDef<AssignmentCardRow>[] {
       {
         id: "followers",
         header: t("columns.followers"),
-        accessorFn: (a) => a.followerIds.length,
+        accessorFn: (a) => a.followers.length,
       },
     ],
     [t],

@@ -10,8 +10,23 @@ export const AssignmentSubjectTypeSchema = z.enum(ASSIGNMENT_SUBJECT_TYPES);
 export const ASSIGNMENT_KINDS = ["ASSIGNED", "FOLLOWING"] as const;
 export const AssignmentKindSchema = z.enum(ASSIGNMENT_KINDS);
 
+/**
+ * Where an assignee or follower comes from (ADR 0055): `EXPLICIT` was chosen on this subject,
+ * `DEFAULT` is inherited from the responsibility's defaults.
+ */
+export const ASSIGNMENT_SOURCES = ["EXPLICIT", "DEFAULT"] as const;
+export const AssignmentSourceSchema = z.enum(ASSIGNMENT_SOURCES);
+
+export const AssignmentFollowerSchema = z.object({
+  userId: z.string().describe("User id of the member who follows"),
+  source: AssignmentSourceSchema,
+});
+
 export const AssignmentSchema = z.object({
-  id: z.string(),
+  id: z
+    .string()
+    .nullable()
+    .describe("Id of the stored choice; null when nothing is stored and all of it is default"),
   organizationId: z.string(),
   subjectType: AssignmentSubjectTypeSchema,
   subjectId: z.string(),
@@ -20,10 +35,15 @@ export const AssignmentSchema = z.object({
     .nullable()
     .describe("The responsibility this assignment is for; null = the subject's main assignment"),
   assigneeId: z.string().nullable().describe("User id of the member who answers for it"),
-  followerIds: z.array(z.string()).describe("User ids of the members who follow it"),
+  assigneeSource: AssignmentSourceSchema.nullable().describe(
+    "EXPLICIT = chosen on this subject, DEFAULT = the responsibility's default assignee; null = none",
+  ),
+  followers: z
+    .array(AssignmentFollowerSchema)
+    .describe("The members who follow it: the defaults, plus explicit follows, minus unfollows"),
   status: RecordStatusSchema,
-  createdAt: z.date(),
-  updatedAt: z.date(),
+  createdAt: z.date().nullable().describe("null when nothing is stored"),
+  updatedAt: z.date().nullable().describe("null when nothing is stored"),
   createdBy: z.string().nullable(),
 });
 
@@ -48,7 +68,10 @@ export const AssignmentAssignInputSchema = z.object({
     .string()
     .min(1)
     .nullable()
-    .describe("User id of the new assignee (member.list userId); null removes the assignee"),
+    .describe(
+      "User id of the new assignee (member.list userId); null removes the explicit choice: the " +
+        "main assignee is then empty, a responsibility falls back to its default assignee",
+    ),
 });
 
 export const AssignmentFollowInputSchema = z.object({
@@ -72,6 +95,7 @@ export const AssignmentListMineOutputSchema = z.object({
   nextCursor: z.string().nullable(),
 });
 
+export type AssignmentSource = z.infer<typeof AssignmentSourceSchema>;
 export type AssignmentSubjectType = z.infer<typeof AssignmentSubjectTypeSchema>;
 export type AssignmentKind = z.infer<typeof AssignmentKindSchema>;
 export type AssignmentDto = z.infer<typeof AssignmentSchema>;

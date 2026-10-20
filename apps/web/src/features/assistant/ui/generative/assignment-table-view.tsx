@@ -20,7 +20,7 @@ export function AssignmentTableView({ items, nextCursor }: AssignmentTableViewPr
         tableId="assistant.assignment"
         columns={columns}
         data={items}
-        getRowId={(assignment) => assignment.id}
+        getRowId={(assignment) => `${assignment.subjectId}:${assignment.responsibilityId ?? ""}`}
         emptyText={t("empty")}
       />
       <MoreHint nextCursor={nextCursor} />

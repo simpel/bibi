@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { conflict, notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { checkReadable } from "../ticket/ticket-rules";
 import { buildSheetContent } from "./build-content";
 import { checkNotBlocked } from "./check-blocked";
 import { checkPhase } from "./check-phase";
@@ -15,7 +16,8 @@ import {
   SheetListOutputSchema,
   SheetSchema,
 } from "./schema";
-import { toSheetDto } from "./to-sheet-dto";
+import { currentRecipients, storeRecipients } from "./snapshot-recipients";
+import { SHEET_INCLUDE, toSheetDto } from "./to-sheet-dto";
 import { createVersion, findVersions, sameAsLatest } from "./versions";
 
 export const listSheets = defineOperation({
@@ -34,6 +36,7 @@ export const listSheets = defineOperation({
         ...(input.ticketId ? { ticketId: input.ticketId } : {}),
         ...(input.sheetDefinitionId ? { sheetDefinitionId: input.sheetDefinitionId } : {}),
       },
+      include: SHEET_INCLUDE,
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       ...pageArgs(input),
     });
@@ -51,7 +54,10 @@ export const getSheet = defineOperation({
   output: SheetSchema,
   permission: "sheet:read",
   handler: async ({ input, context }) => {
-    const row = await context.db.sheet.findFirst({ where: { id: input.id } });
+    const row = await context.db.sheet.findFirst({
+      where: { id: input.id },
+      include: SHEET_INCLUDE,
+    });
     return row ? ok({ value: toSheetDto({ row }) }) : notFound({ entity: "Sheet" });
   },
 });
@@ -100,15 +106,19 @@ export const sendSheet = defineOperation({
     "Send a sheet version to its receiving responsibility: marks the version as sent, which is the " +
     "baseline the next version's ★ changes are measured against. Not for a ticket in a " +
     "terminal phase (CONFLICT), only the latest version, and a version once. A blocked " +
-    "sheet (`blocked`: a count matches an item that contains it, see `matches`) gives CONFLICT.",
+    "sheet (`blocked`: a count matches an item that contains it, see `matches`) gives CONFLICT. " +
+    "Needs `assignment:read`: the recipients (the responsibility's assignee and followers on " +
+    "the ticket) are stored as a snapshot that later changes do not rewrite.",
   input: SheetIdInputSchema,
   output: SheetSchema,
   permission: "sheet:write",
   handler: async ({ input: { id }, context }) => {
-    const before = await context.db.sheet.findFirst({ where: { id } });
+    const readable = checkReadable({ context, permission: "assignment:read", path: "id" });
+    if (!readable.ok) return readable;
+    const before = await context.db.sheet.findFirst({ where: { id }, include: SHEET_INCLUDE });
     if (!before) return notFound({ entity: "Sheet" });
     if (before.sentAt) return conflict({ message: `Version ${before.version} is already sent` });
-    const { ticketId, sheetDefinitionId, version } = before;
+    const { ticketId, sheetDefinitionId, version, responsibilityId } = before;
     const newer = await context.db.sheet.count({
       where: { ticketId, sheetDefinitionId, version: { gt: version } },
     });
@@ -117,10 +127,13 @@ export const sendSheet = defineOperation({
     if (!unblocked.ok) return unblocked;
     const phase = await checkPhase({ context, ticketId });
     if (!phase.ok) return phase;
-    const row = await context.db.sheet.update({
+    const recipients = await currentRecipients({ context, ticketId, responsibilityId });
+    await context.db.sheet.update({
       where: { id },
       data: { sentAt: new Date(), sentBy: context.actor.userId },
     });
+    await storeRecipients({ context, sheetId: id, recipients });
+    const row = await context.db.sheet.findFirstOrThrow({ where: { id }, include: SHEET_INCLUDE });
     const sheet = toSheetDto({ row });
     context.recordChange({ entityId: id, before: toSheetDto({ row: before }), after: sheet });
     return ok({ value: sheet });

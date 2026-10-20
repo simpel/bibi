@@ -1,40 +1,54 @@
-import type { Assignment } from "@okazi/db";
 import type { OperationContext } from "../../operations/types";
-import { type AssignmentDto, type AssignmentSlot, AssignmentSubjectTypeSchema } from "./schema";
+import { type ChoiceRow, deriveAssignment, type SlotDefaults } from "./derive-assignment";
+import type { AssignmentDto, AssignmentSlot } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
+type SlotContext = { context: Pick<OperationContext, "db" | "organizationId"> };
 
-/** Followers in the order they started following, and the record's base (the subject type). */
+/** Followers in the order they chose, and the record's base (the subject type). */
 export const ASSIGNMENT_INCLUDE = {
   record: { select: { base: true } },
   followers: {
-    select: { userId: true },
+    select: { userId: true, effect: true },
     orderBy: [{ createdAt: "asc" as const }, { id: "asc" as const }],
   },
 };
 
-export type AssignmentRow = Assignment & {
-  record: { base: string };
-  followers: { userId: string }[];
-};
+export type AssignmentRow = ChoiceRow & { record: { base: string } };
 
-/** The API keeps `subjectType`/`subjectId`; the row references its `Record` (ADR 0056). */
-export const toAssignmentDto = ({ row }: { row: AssignmentRow }): AssignmentDto => {
-  const { followers, record, recordId, ...assignment } = row;
-  return {
-    ...assignment,
-    subjectType: AssignmentSubjectTypeSchema.parse(record.base),
-    subjectId: recordId,
-    followerIds: followers.map((follower) => follower.userId),
-  };
-};
+/** The stored choice and the responsibility's defaults for one slot (ADR 0055). */
+export type SlotState = { row: AssignmentRow | null; defaults: SlotDefaults | null };
 
-/** The slot's assignment, archived ones included (they are reactivated on write), or null. */
-export async function findAssignment({
+/** The defaults of the active responsibilities among `responsibilityIds`, by id. */
+export async function loadDefaults({
+  context,
+  responsibilityIds,
+}: Db & { responsibilityIds: readonly string[] }): Promise<Map<string, SlotDefaults>> {
+  if (responsibilityIds.length === 0) return new Map();
+  const rows = await context.db.responsibility.findMany({
+    where: { id: { in: [...responsibilityIds] } },
+    select: {
+      id: true,
+      defaultAssigneeId: true,
+      defaultFollowers: { select: { userId: true }, orderBy: { position: "asc" } },
+    },
+  });
+  const defaults = rows.map((row) => [
+    row.id,
+    { assigneeId: row.defaultAssigneeId, followerIds: row.defaultFollowers.map((f) => f.userId) },
+  ]);
+  return new Map(defaults as [string, SlotDefaults][]);
+}
+
+/**
+ * The slot's stored choice, archived ones included (they are reactivated on write), and its
+ * responsibility's defaults. A responsibility that is archived or unknown has none.
+ */
+export async function loadSlotState({
   context,
   subjectId,
   responsibilityId,
-}: Db & AssignmentSlot): Promise<AssignmentDto | null> {
+}: Db & AssignmentSlot): Promise<SlotState> {
   const row = await context.db.assignment.findFirst({
     where: {
       recordId: subjectId,
@@ -43,7 +57,32 @@ export async function findAssignment({
     },
     include: ASSIGNMENT_INCLUDE,
   });
-  return row ? toAssignmentDto({ row }) : null;
+  const defaults = responsibilityId
+    ? ((await loadDefaults({ context, responsibilityIds: [responsibilityId] })).get(
+        responsibilityId,
+      ) ?? null)
+    : null;
+  return { row, defaults };
+}
+
+export type SlotDtoInput = SlotContext & AssignmentSlot & SlotState;
+
+/** The derived assignment of a slot (ADR 0055). */
+export const toSlotDto = ({ context, row, defaults, ...slot }: SlotDtoInput): AssignmentDto =>
+  deriveAssignment({
+    organizationId: context.organizationId,
+    ...slot,
+    responsibilityId: slot.responsibilityId ?? null,
+    row,
+    defaults,
+  });
+
+/** The derived assignment of a slot, loaded fresh. */
+export async function loadSlot({
+  context,
+  ...slot
+}: SlotContext & AssignmentSlot): Promise<AssignmentDto> {
+  return toSlotDto({ context, ...slot, ...(await loadSlotState({ context, ...slot })) });
 }
 
 /** The main assignee (user id) of a subject, or null when nobody is assigned. */

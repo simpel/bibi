@@ -2537,6 +2537,7 @@
     "title": "Ansvarig och följare",
     "assignee": "Ansvarig",
     "followers": "Följare",
+    "defaultFrom": "Standard från {name}",
     "nobody": "Ingen",
     "assign": "Byt ansvarig",
     "assignDescription": "Välj den medlem som ansvarar för detta. Följare hålls informerade.",

@@ -41,6 +41,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   ...DOMAIN_HISTORY_MODELS,
   "Requirement",
   "Sheet",
+  "SheetRecipient",
   "Quote",
   "OrderLine",
   "InboundEmail",

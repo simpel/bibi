@@ -1,11 +1,11 @@
 import { isDeepStrictEqual } from "node:util";
-import type { Sheet, Ticket } from "@okazi/db";
+import type { Ticket } from "@okazi/db";
 import type { OperationContext } from "../../operations/types";
 import { toJson } from "../../shared/to-json";
 import type { SheetDefinitionDto } from "../sheet-definition/schema";
 import { diffContent } from "./diff-content";
 import type { SheetContent, SheetMatch } from "./schema";
-import { toSheetDto } from "./to-sheet-dto";
+import { SHEET_INCLUDE, type SheetWithRecipients, toSheetDto } from "./to-sheet-dto";
 
 type Db = { context: Pick<OperationContext, "db" | "organizationId"> };
 type Of = { ticketId: string; sheetDefinitionId: string };
@@ -14,17 +14,22 @@ type Of = { ticketId: string; sheetDefinitionId: string };
 export async function findVersions({ context, ticketId, sheetDefinitionId }: Db & Of) {
   const where = { ticketId, sheetDefinitionId };
   const [latest, sent] = await Promise.all([
-    context.db.sheet.findFirst({ where, orderBy: { version: "desc" } }),
+    context.db.sheet.findFirst({
+      where,
+      orderBy: { version: "desc" },
+      include: SHEET_INCLUDE,
+    }),
     context.db.sheet.findFirst({
       where: { ...where, sentAt: { not: null } },
       orderBy: { version: "desc" },
+      include: SHEET_INCLUDE,
     }),
   ]);
   return { latest, sent };
 }
 
 export type SameAsLatestInput = {
-  latest: Sheet;
+  latest: SheetWithRecipients;
   content: SheetContent;
   matches: SheetMatch[];
   definition: SheetDefinitionDto;
@@ -41,8 +46,8 @@ export type CreateVersionInput = Db & {
   definition: SheetDefinitionDto;
   content: SheetContent;
   matches: SheetMatch[];
-  latest: Sheet | null;
-  sent: Sheet | null;
+  latest: SheetWithRecipients | null;
+  sent: SheetWithRecipients | null;
 };
 
 /** The next version, with the rows marked ★ that differ from the last sent version. */
@@ -69,5 +74,6 @@ export function createVersion({
       blocked: matches.some((match) => match.blocking),
       baseVersion: sent?.version ?? null,
     },
+    include: SHEET_INCLUDE,
   });
 }

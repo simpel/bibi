@@ -1,6 +1,13 @@
 import type { DemoFieldValues } from "./config-types";
 
 /**
+ * An explicit choice on a ticket's responsibility (ADR 0055): the only thing stored besides the
+ * defaults. `assignee` answers for the responsibility instead of its default assignee; `unfollow`
+ * leaves its default followers. Both by user name.
+ */
+export type DemoChoice = { responsibility: string; assignee?: string; unfollow?: string };
+
+/**
  * A demo ticket (slice 5 of ADR 0025, `docs/demo-seed.md`). `ref` is the row in the spec (L1,
  * V3, …); `day` is the offset from the day of the run and `from`/`to` local times (HH:MM,
  * Europe/Stockholm) of the desired period on that day. Customer, type, phase and people are
@@ -41,6 +48,8 @@ export type DemoTicket = {
   assignee?: string;
   /** Members who follow the ticket, by user name. */
   followers?: readonly string[];
+  /** Explicit choices that differ from the responsibilities' defaults (ADR 0055). */
+  choices?: readonly DemoChoice[];
   fields?: DemoFieldValues;
   /** `holdsUntil` (ADR 0044) as an offset in days from the day of the run, at the end of that day. */
   holdsUntilDay?: number;

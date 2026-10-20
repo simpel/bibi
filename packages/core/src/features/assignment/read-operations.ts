@@ -1,10 +1,9 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { invalid } from "../../shared/errors";
-import { pageArgs } from "../../shared/page-input";
-import { paginate } from "../../shared/paginate";
 import { checkSubject } from "./check-slot";
-import { ASSIGNMENT_INCLUDE, toAssignmentDto } from "./load-assignment";
+import { listMineAssignments } from "./list-mine";
+import { listSubjectAssignments } from "./list-subject";
 import {
   AssignmentListInputSchema,
   AssignmentListMineInputSchema,
@@ -17,19 +16,17 @@ export const listAssignments = defineOperation({
   kind: "query",
   description:
     "List who answers for a ticket or an item and who follows it: the main " +
-    "assignment (responsibilityId null) first, then one per responsibility on a ticket.",
+    "assignment (responsibilityId null) first, then one per responsibility on a ticket " +
+    "(ADR 0055). Only explicit choices are stored: the responsibilities that apply come from the " +
+    "ticket's lines, and a responsibility's default assignee and followers apply unless chosen " +
+    "otherwise. `assigneeSource` and each follower's `source` say EXPLICIT or DEFAULT.",
   input: AssignmentListInputSchema,
   output: AssignmentListOutputSchema,
   permission: "assignment:read",
   handler: async ({ input, context }) => {
     const subject = await checkSubject({ context, ...input });
     if (!subject.ok) return subject;
-    const rows = await context.db.assignment.findMany({
-      where: { recordId: input.subjectId },
-      include: ASSIGNMENT_INCLUDE,
-      orderBy: [{ responsibilityId: { sort: "asc", nulls: "first" } }, { id: "asc" }],
-    });
-    return ok({ value: { items: rows.map((row) => toAssignmentDto({ row })) } });
+    return ok({ value: { items: await listSubjectAssignments({ context, ...input }) } });
   },
 });
 
@@ -38,21 +35,15 @@ export const listMyAssignments = defineOperation({
   kind: "query",
   description:
     "List the signed-in member's assignments, newest first: ASSIGNED (what they answer for) or " +
-    "FOLLOWING (what they follow). Each row names its subject (subjectType, subjectId).",
+    "FOLLOWING (what they follow), including what their responsibilities' defaults give them on " +
+    "tickets (ADR 0055). Each row names its subject (subjectType, subjectId).",
   input: AssignmentListMineInputSchema,
   output: AssignmentListMineOutputSchema,
   permission: "assignment:read",
-  handler: async ({ input: { kind, subjectType, ...page }, context }) => {
+  handler: async ({ input: { kind, subjectType, ...pageInput }, context }) => {
     const userId = context.actor.userId;
     if (!userId) return invalid({ message: "assignment.listMine needs a signed-in member" });
-    const mine = kind === "ASSIGNED" ? { assigneeId: userId } : { followers: { some: { userId } } };
-    const rows = await context.db.assignment.findMany({
-      where: { ...mine, ...(subjectType ? { record: { base: subjectType } } : {}) },
-      include: ASSIGNMENT_INCLUDE,
-      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-      ...pageArgs(page),
-    });
-    const items = paginate({ rows, limit: page.limit });
-    return ok({ value: { ...items, items: items.items.map((row) => toAssignmentDto({ row })) } });
+    const page = { context, userId, kind, subjectType, ...pageInput };
+    return ok({ value: await listMineAssignments(page) });
   },
 });

@@ -5,8 +5,8 @@ import { uiEntry } from "./ui-entry";
 
 /** JSON form of an assignment as tool results carry it (dates = ISO strings). */
 export const AssignmentWireSchema = AssignmentSchema.extend({
-  createdAt: z.string(),
-  updatedAt: z.string(),
+  createdAt: z.string().nullable(),
+  updatedAt: z.string().nullable(),
 });
 /** `assignment_list` has no cursor; `assignment_listMine` has one. */
 export const AssignmentListWireSchema = z.object({

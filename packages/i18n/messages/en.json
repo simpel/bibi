@@ -2537,6 +2537,7 @@
     "title": "Assignee and followers",
     "assignee": "Assignee",
     "followers": "Followers",
+    "defaultFrom": "Default from {name}",
     "nobody": "No one",
     "assign": "Change assignee",
     "assignDescription": "Pick the member who answers for this. Followers stay informed.",
