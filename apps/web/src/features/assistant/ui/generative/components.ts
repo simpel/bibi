@@ -1,5 +1,7 @@
 import type { UiComponent } from "@okazi/ai";
 import type { ComponentType } from "react";
+import { AlternativeGroupCardView } from "./alternative-group-card-view";
+import { AlternativeGroupTableView } from "./alternative-group-table-view";
 import { ApprovalCardView } from "./approval-card-view";
 import { ArchivePreviewCardView } from "./archive-preview-card-view";
 import { AssignmentCardView } from "./assignment-card-view";
@@ -100,6 +102,8 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "ticket-card": TicketCardView,
   "line-table": LineTableView,
   "line-card": LineCardView,
+  "alternative-group-table": AlternativeGroupTableView,
+  "alternative-group-card": AlternativeGroupCardView,
   "requirement-table": RequirementTableView,
   "requirement-card": RequirementCardView,
   "pipeline-board": PipelineBoardView,

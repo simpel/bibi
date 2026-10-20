@@ -7,54 +7,60 @@
 /// item, setup, time, state, ticket or status; application code never does. An untimed line
 /// (no `startsAt`/`endsAt`, e.g. a fee) never holds and is not drawn on the calendar (ADR 0052).
 /// The price columns are overrides: null = inherit (price list, then item; VAT: item, then venue).
+/// `alternativeGroupId` (owned) makes the line one option of an `AlternativeGroup` (ADR 0052).
 model Line {
-  id              String        @id
-  organizationId  String
-  ticketId        String
-  entityTypeId    String
-  name            String
+  id                 String             @id
+  organizationId     String
+  ticketId           String
+  entityTypeId       String
+  name               String
   /// Both set or both null (untimed).
-  startsAt        DateTime?
-  endsAt          DateTime?
+  startsAt           DateTime?
+  endsAt             DateTime?
   /// The bookable item (`BOOKABLE`) the line is held in, if any.
-  itemId          String?
+  itemId             String?
   /// How the item is set up; one of the item's setups. Requires `itemId`.
-  setupId         String?
+  setupId            String?
   /// How many; null = the ticket's headcount (guaranteed if set, else estimated).
-  quantity        Int?
+  quantity           Int?
   /// Override of the unit price in minor units (1/100 kr); null = inherit.
-  unitPriceMinor  Int?
+  unitPriceMinor     Int?
   /// Override of the discount in percent, e.g. 10.00; null = inherit.
-  discountPercent Decimal?      @db.Decimal(5, 2)
+  discountPercent    Decimal?           @db.Decimal(5, 2)
   /// Override of the VAT rate in percent; null = inherit.
-  vatRatePercent  Int?
+  vatRatePercent     Int?
+  /// The alternative group this line is an option of; null for an ordinary line (ADR 0052).
+  alternativeGroupId String?
   /// Internal note.
-  note            String?
+  note               String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
-  fields          Json          @default("{}")
+  fields             Json               @default("{}")
   /// The line's state, one of its item type's states; null for a line without an item.
-  stateId         String?
+  stateId            String?
   /// Set by `line.changeState`: phase moves skip the line (ADR 0044).
-  stateOverridden Boolean       @default(false)
+  stateOverridden    Boolean            @default(false)
   /// When the line entered its current state ("held since").
-  heldAt          DateTime      @default(now())
-  status          RecordStatus  @default(ACTIVE)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  createdBy       String?
-  ticket          Ticket        @relation(fields: [ticketId, organizationId], references: [id, organizationId])
-  entityType      EntityType    @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  item            Item?         @relation(fields: [itemId, organizationId], references: [id, organizationId])
-  setup           Setup?        @relation(fields: [setupId, organizationId], references: [id, organizationId])
-  state           ItemState?    @relation(fields: [stateId, organizationId], references: [id, organizationId])
-  requirements    Requirement[]
-  occupancies     Occupancy[]
-  orderLines      OrderLine[]
+  heldAt             DateTime           @default(now())
+  status             RecordStatus       @default(ACTIVE)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  createdBy          String?
+  ticket             Ticket             @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  entityType         EntityType         @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  item               Item?              @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  setup              Setup?             @relation(fields: [setupId, organizationId], references: [id, organizationId])
+  state              ItemState?         @relation(fields: [stateId, organizationId], references: [id, organizationId])
+  requirements       Requirement[]
+  occupancies        Occupancy[]
+  orderLines         OrderLine[]
+  alternativeGroup   AlternativeGroup?  @relation("AlternativeGroupOptions", fields: [alternativeGroupId, organizationId], references: [id, organizationId])
+  chosenIn           AlternativeGroup[] @relation("AlternativeGroupChoice")
   /// The supertable row this record extends (ADR 0056).
-  record          Record        @relation(fields: [id, organizationId], references: [id, organizationId])
+  record             Record             @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, ticketId, startsAt])
   @@index([organizationId, entityTypeId])
   @@index([organizationId, stateId])
+  @@index([organizationId, alternativeGroupId])
 }

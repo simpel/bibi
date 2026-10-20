@@ -111,7 +111,7 @@ async function seedTicket({ context, refs, userIds, ticket, now }: TicketInput) 
   const lines = await seedDemoLines({
     context,
     ticketId: created.value.id,
-    lines: ticket.lines ?? [],
+    ticket,
     at: ({ time }) => at({ now, day: ticket.day, time }),
   });
   if (!lines.ok) return lines;

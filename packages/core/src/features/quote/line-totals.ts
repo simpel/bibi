@@ -21,13 +21,22 @@ export function lineAmounts({
 
 export type QuoteTotals = { totalExclVatMinor: number; totalInclVatMinor: number };
 
-/** The quote's totals: the sums of its lines. */
-export function quoteTotals({ lines }: { lines: readonly LineAmounts[] }): QuoteTotals {
+type CountedLine = LineAmounts & { inTotal: boolean };
+
+/** The quote's totals: the sums of the lines that count (`inTotal`, ADR 0052). */
+export function quoteTotals({ lines }: { lines: readonly CountedLine[] }): QuoteTotals {
   let excl = 0;
   let vat = 0;
   for (const line of lines) {
+    if (!line.inTotal) continue;
     excl += line.totalExclVatMinor;
     vat += line.vatMinor;
   }
   return { totalExclVatMinor: excl, totalInclVatMinor: excl + vat };
 }
+
+type GroupedLine = { alternativeGroupChosen: boolean | null };
+
+/** ADR 0052: the totals are "from" prices while some alternative group is not chosen. */
+export const totalIsFrom = ({ lines }: { lines: readonly GroupedLine[] }): boolean =>
+  lines.some((line) => line.alternativeGroupChosen === false);

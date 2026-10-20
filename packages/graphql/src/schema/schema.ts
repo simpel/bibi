@@ -17,6 +17,7 @@ import "../features/ticket-phase/graphql";
 import "../features/ticket-template/graphql";
 import "../features/ticket/graphql";
 import "../features/line/graphql";
+import "../features/alternative-group/graphql";
 import "../features/item-state/graphql";
 import "../features/phase-grid/graphql";
 import "../features/pipeline-setup/graphql";

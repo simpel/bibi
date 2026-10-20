@@ -1,5 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
+import { conflict } from "../../shared/errors";
+import { groupHardHoldBlocker } from "../alternative-group/hard-hold";
 import { cellOfTicket } from "../phase-grid/load-grid";
 import type { LineRecord } from "./schema";
 import { LINE_INCLUDE, toLineRecord } from "./to-line-record";
@@ -64,7 +66,8 @@ export type ApplyLineStateInput = {
 
 /**
  * Moves one line to a state: `heldAt` restarts, the change is audited on the line and its hold
- * follows by trigger (ADR 0044, 0053). A collision on a hard hold is `CONFLICT`.
+ * follows by trigger (ADR 0044, 0053). A collision on a hard hold is `CONFLICT`, and so is a
+ * second option of an alternative group going hard (ADR 0052).
  */
 export async function applyLineState({
   context,
@@ -72,6 +75,8 @@ export async function applyLineState({
   stateId,
   overridden,
 }: ApplyLineStateInput): Promise<Result<LineRecord>> {
+  const blocker = await groupHardHoldBlocker({ context, line: before, stateId, lock: true });
+  if (blocker) return conflict({ message: blocker.message, issues: [blocker] });
   const row = await context.db.line.update({
     where: { id: before.id },
     data: {

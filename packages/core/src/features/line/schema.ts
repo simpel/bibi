@@ -22,6 +22,8 @@ export const LineRecordSchema = z.object({
   unitPriceMinor: z.number().int().nullable(),
   discountPercent: z.number().nullable(),
   vatRatePercent: z.number().int().nullable(),
+  /** The alternative group (alternativeGroup.get) the line is an option of (ADR 0052). */
+  alternativeGroupId: z.string().nullable(),
   note: z.string().nullable(),
   fields: FieldValuesSchema,
   /** The line's state (one of its item type's states, ADR 0044); null without an item. */

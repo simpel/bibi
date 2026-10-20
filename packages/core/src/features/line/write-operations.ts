@@ -2,8 +2,9 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { LinkValue } from "../../records/record-links";
 import { archiveRecords, updateRecord } from "../../records/update-record";
-import { notFound } from "../../shared/errors";
+import { conflict, notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
+import { groupHardHoldBlocker } from "../alternative-group/hard-hold";
 import { mergeFields, validateFields } from "../field-definition/field-values";
 import { insertLine } from "./insert-line";
 import { checkLinePeriod, checkPlace } from "./line-rules";
@@ -77,6 +78,9 @@ export const updateLine = defineOperation({
         links = checked.value.links;
       }
       const state = await stateAfterMove({ context, before, itemId });
+      const stateId = state.stateId ?? null;
+      const grouped = await groupHardHoldBlocker({ context, line: before, stateId, lock: true });
+      if (grouped) return conflict({ message: grouped.message, issues: [grouped] });
       await updateRecord({ context, id, change: { fields: json, links } });
       const row = await context.db.line.update({
         where: { id },

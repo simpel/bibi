@@ -5,6 +5,7 @@ import { sendQuote } from "../../features/quote/send-operation";
 import { createQuote } from "../../features/quote/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import { chosenLineIds } from "./seed-alternatives";
 import { missing } from "./seed-fields";
 import type { DemoTicket } from "./ticket-types";
 
@@ -66,7 +67,8 @@ export type SeedTicketQuoteInput = QuoteInput & {
 
 /**
  * Brings the ticket into its phase through its quote (ADR 0043, 0052): the ticket's lines are
- * quoted and sent, and for the accepted event also accepted. The phases follow from the
+ * quoted and sent, and for the accepted event also accepted, with the customer's pick of each
+ * alternative group that has `chosen` (ADR 0052). The phases follow from the
  * organization's events, never from `ticket.changePhase`.
  */
 export async function seedTicketQuote({
@@ -76,7 +78,11 @@ export async function seedTicketQuote({
   const sent = await createSentQuote(rest);
   if (!sent.ok) return sent;
   if (event === "QUOTE_SENT") return changeAfterQuote(rest);
-  const input = { id: sent.value };
+  const { context, ticketId, ticket } = rest;
+  const alternatives = ticket.alternatives ?? [];
+  const chosen = await chosenLineIds({ context, ticketId, alternatives });
+  if (!chosen.ok) return chosen;
+  const input = { id: sent.value, chosenLineIds: chosen.value };
   const accepted = await execute({ operation: acceptQuote, input, context: rest.context });
   return accepted.ok ? changeAfterQuote(rest) : accepted;
 }

@@ -19,6 +19,11 @@ export const UI_EXEMPT: readonly UiExempt[] = [
       "A line has no page of its own: the ticket page lists the run schedule with line.list and edits it inline.",
   },
   {
+    operation: "alternativeGroup.get",
+    reason:
+      "An alternative group has no page of its own: the ticket page lists them with alternativeGroup.list and chooses inline.",
+  },
+  {
     operation: "requirement.get",
     reason:
       "A requirement has no page of its own: the ticket page lists its counts with requirement.list and edits them inline.",

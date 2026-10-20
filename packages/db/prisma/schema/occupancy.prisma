@@ -34,7 +34,7 @@ model Occupancy {
   line           Line?         @relation(fields: [lineId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([id, organizationId])
-  @@index([organizationId, itemId, startsAt])
   /// One `HOLD` and at most one `SETUP` row per line; the trigger upserts on it.
   @@unique([lineId, type])
+  @@index([organizationId, itemId, startsAt])
 }

@@ -21,7 +21,10 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.orderLine.deleteMany({ where }),
   db.invoice.deleteMany({ where }),
   db.quote.deleteMany({ where }),
+  // A chosen alternative points at its line and the lines at their group (ADR 0052).
+  db.alternativeGroup.updateMany({ where, data: { chosenLineId: null } }),
   db.line.deleteMany({ where }),
+  db.alternativeGroup.deleteMany({ where }),
   db.ticketTemplateLine.deleteMany({ where }),
   db.ticketTemplate.deleteMany({ where }),
 ];

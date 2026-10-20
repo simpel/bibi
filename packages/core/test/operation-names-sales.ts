@@ -3,6 +3,12 @@
  * stays within the size limit.
  */
 export const SALES_NAMES = [
+  "alternativeGroup.archive",
+  "alternativeGroup.choose",
+  "alternativeGroup.create",
+  "alternativeGroup.get",
+  "alternativeGroup.list",
+  "alternativeGroup.update",
   "itemState.archive",
   "itemState.archivePreview",
   "itemState.create",

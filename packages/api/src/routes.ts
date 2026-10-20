@@ -1,3 +1,4 @@
+import { alternativeGroupRoutes } from "./features/alternative-group/rest";
 import { apiKeyRoutes } from "./features/api-key/rest";
 import { assignmentRoutes } from "./features/assignment/rest";
 import { auditLogRoutes } from "./features/audit-log/rest";
@@ -40,6 +41,7 @@ import type { RestRoute } from "./rest-route";
 import { searchRoutes } from "./search-rest";
 
 const gridAndSetupRoutes = [...phaseGridRoutes, ...pipelineSetupRoutes];
+const lineAndGroupRoutes = [...lineRoutes, ...alternativeGroupRoutes];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
 const moneyRoutes = [...paymentAccountRoutes, ...paymentRoutes, ...depositRoutes, ...invoiceRoutes];
@@ -66,7 +68,7 @@ export function listRestRoutes(): RestRoute[] {
     ...itemStateRoutes,
     ...gridAndSetupRoutes,
     ...ticketRoutes,
-    ...lineRoutes,
+    ...lineAndGroupRoutes,
     ...requirementRoutes,
     ...sheetRoutes,
     ...pipelineRoutes,

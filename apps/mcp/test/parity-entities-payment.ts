@@ -6,7 +6,8 @@ import { createRestClient } from "./parity-rest";
 
 const LINE =
   "id lineId itemId position name quantity unitPriceMinor priceUnit discountPercent vatRatePercent " +
-  "tags totalExclVatMinor vatMinor";
+  "tags totalExclVatMinor vatMinor alternativeGroupId alternativeGroupName alternativeGroupChosen " +
+  "inTotal";
 
 /** The singleton payout account: onboarding creates it, then every surface reads it back. */
 export const paymentAccountEntity: ParityEntity = {

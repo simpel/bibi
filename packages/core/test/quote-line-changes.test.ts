@@ -17,6 +17,10 @@ const line = ({ overrides = {} }: { overrides?: Partial<OrderLineDto> } = {}): O
   tags: [],
   totalExclVatMinor: 500_000,
   vatMinor: 60_000,
+  alternativeGroupId: null,
+  alternativeGroupName: null,
+  alternativeGroupChosen: null,
+  inTotal: true,
   ...overrides,
 });
 
@@ -28,8 +32,9 @@ describe("order line amounts", () => {
 
   it("sums the lines into the quote totals", () => {
     const lines = [
-      { totalExclVatMinor: 500_000, vatMinor: 60_000 },
-      { totalExclVatMinor: 80_000, vatMinor: 20_000 },
+      { totalExclVatMinor: 500_000, vatMinor: 60_000, inTotal: true },
+      { totalExclVatMinor: 80_000, vatMinor: 20_000, inTotal: true },
+      { totalExclVatMinor: 90_000, vatMinor: 22_500, inTotal: false },
     ];
     expect(quoteTotals({ lines })).toEqual({
       totalExclVatMinor: 580_000,

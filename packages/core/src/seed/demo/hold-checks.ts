@@ -3,13 +3,22 @@ import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { lineHoldsReconciliation } from "./line-holds-reconcile";
 import { runReconciliations } from "./reconcile";
-import type { DemoLine } from "./ticket-types";
+import type { DemoLine, DemoTicket } from "./ticket-types";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoHoldsInput = { context: ExecuteContext; org: DemoOrg };
 
-/** `initial`: the line should still be in its type's initial state (a lead without override). */
+/**
+ * `initial`: the line should still be in its type's initial state (a lead without override).
+ * `expired`: it should be released after expiry, or already by the customer's pick (ADR 0052).
+ */
 type Expected = DemoLine & { expired: boolean; initial: boolean };
+
+/** An option the customer did not pick in a chosen alternative group (released, ADR 0052). */
+const pickedAway = ({ ticket, line }: { ticket: DemoTicket; line: DemoLine }) =>
+  (ticket.alternatives ?? []).some(
+    (group) => group.chosen && group.chosen !== line.name && group.lines.includes(line.name),
+  );
 
 const SELECT = {
   id: true,
@@ -60,7 +69,7 @@ export async function checkDemoHolds({ context, org }: CheckDemoHoldsInput): Pro
   const lines = org.tickets.flatMap((ticket) =>
     (ticket.lines ?? []).map((line) => ({
       ...line,
-      expired: (ticket.holdsUntilDay ?? 0) < 0,
+      expired: (ticket.holdsUntilDay ?? 0) < 0 || pickedAway({ ticket, line }),
       initial: !ticket.phase && !line.state,
     })),
   );

@@ -28,6 +28,24 @@ export const OrderLineSchema = z.object({
     .describe("List values the item contained (item.resolve `contains`), e.g. allergens"),
   totalExclVatMinor: z.number().int().describe("quantity × unit price − discount, minor units"),
   vatMinor: z.number().int().describe("VAT on the line total, minor units"),
+  alternativeGroupId: z
+    .string()
+    .nullable()
+    .describe("The alternative group (alternativeGroup.get) the line is an option of (ADR 0052)"),
+  alternativeGroupName: z
+    .string()
+    .nullable()
+    .describe("The group's name; null on an ordinary line"),
+  alternativeGroupChosen: z
+    .boolean()
+    .nullable()
+    .describe("Whether the group had a chosen option; null on an ordinary line"),
+  inTotal: z
+    .boolean()
+    .describe(
+      "Counts in the quote's totals: false for a group's options other than the chosen one " +
+        "(or, until one is chosen, other than the cheapest one)",
+    ),
 });
 
 export type OrderLineTag = z.infer<typeof OrderLineTagSchema>;

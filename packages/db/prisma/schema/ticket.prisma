@@ -5,7 +5,7 @@
 /// Trigger (ADR 0053): changing `phaseId` or `status` re-derives the holds of the ticket's lines
 /// (an archived ticket or one in a terminal phase holds nothing, `sync_line_occupancy.sql`).
 model Ticket {
-  id                  String         @id
+  id                  String             @id
   organizationId      String
   /// Reference number, sequential per organization (1, 2, 3, …).
   reference           Int
@@ -23,31 +23,32 @@ model Ticket {
   guaranteedHeadcount Int?
   /// Budget in minor units (1/100 kr).
   budgetMinor         Int?
-  phaseChangedAt      DateTime       @default(now())
+  phaseChangedAt      DateTime           @default(now())
   /// Why the phase last changed (`ticket.changePhase` reason); required by `requiresReason` phases.
   phaseReason         String?
   /// Lines in an `expires` state fall to their type's `expiryStateId` after this date (ADR 0044).
   holdsUntil          DateTime?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
-  fields              Json           @default("{}")
-  status              RecordStatus   @default(ACTIVE)
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
+  fields              Json               @default("{}")
+  status              RecordStatus       @default(ACTIVE)
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
   createdBy           String?
-  entityType          EntityType     @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  customer            Customer       @relation(fields: [customerId, organizationId], references: [id, organizationId])
-  contact             Contact?       @relation(fields: [contactId, organizationId], references: [id, organizationId])
-  phase               TicketPhase    @relation(fields: [phaseId, organizationId], references: [id, organizationId])
+  entityType          EntityType         @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  customer            Customer           @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  contact             Contact?           @relation(fields: [contactId, organizationId], references: [id, organizationId])
+  phase               TicketPhase        @relation(fields: [phaseId, organizationId], references: [id, organizationId])
   inboundEmails       InboundEmail[]
   payments            Payment[]
   deposits            Deposit[]
   invoices            Invoice[]
   lines               Line[]
+  alternativeGroups   AlternativeGroup[]
   quotes              Quote[]
   requirements        Requirement[]
   sheets              Sheet[]
   /// The supertable row this record extends (ADR 0056).
-  record              Record         @relation(fields: [id, organizationId], references: [id, organizationId])
+  record              Record             @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@unique([organizationId, reference])

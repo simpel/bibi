@@ -598,7 +598,8 @@
     "totals": {
       "exclVat": "Total excl. VAT",
       "vat": "VAT",
-      "inclVat": "Total incl. VAT"
+      "inclVat": "Total incl. VAT",
+      "from": "From {amount}"
     },
     "lines": {
       "title": "Order lines",
@@ -609,7 +610,9 @@
       "discount": "Discount %",
       "vat": "VAT",
       "total": "Total excl. VAT",
-      "change": "Change"
+      "change": "Change",
+      "option": "Option of {name}",
+      "notInTotal": "Not in the total"
     },
     "draftLines": "A draft shows the ticket's priced lines as they are now; sending freezes them.",
     "editLinesOnTicket": "Edit the lines on the ticket",
@@ -696,6 +699,32 @@
     },
     "untimed": "No time",
     "inherited": "(inherited)"
+  },
+  "alternativeGroup": {
+    "plural": "Alternatives",
+    "description": "Lines the customer picks one of, e.g. Room A or Room B. The quote counts the cheapest as a from price until one is chosen.",
+    "empty": "No alternatives on this ticket.",
+    "create": "Group as alternatives",
+    "createDescription": "Pick two or more lines the customer chooses between. Each keeps its own state and hold.",
+    "rename": "Rename",
+    "archive": "Dissolve",
+    "archiveConfirm": "Dissolve “{name}”? Its options become ordinary lines and keep their states.",
+    "archived": "The alternatives were dissolved.",
+    "created": "The alternatives were created.",
+    "updated": "The alternatives were renamed.",
+    "choose": "Choose option",
+    "chooseDone": "The option was chosen and the others released.",
+    "chosen": "Chosen: {name}",
+    "open": "Not chosen",
+    "fields": {
+      "name": "Name",
+      "lineIds": "Options"
+    },
+    "columns": {
+      "name": "Name",
+      "options": "Options",
+      "status": "Status"
+    }
   },
   "requirement": {
     "singular": "Requirement",
@@ -1347,6 +1376,8 @@
         "targetStateId": "Move lines to (state id)",
         "toStateIds": "May move to (state ids)",
         "lineId": "Line (id)",
+        "lineIds": "Options (line ids)",
+        "chosenLineIds": "Chosen options (line ids)",
         "stateId": "State (id)",
         "holdsUntil": "Hold until",
         "expiryStateId": "Expiry state (id)",
@@ -1430,6 +1461,10 @@
         "line_archive": "Remove line",
         "line_changeState": "Change line state",
         "line_followPhase": "Let line follow the phase",
+        "alternativeGroup_create": "Create alternatives",
+        "alternativeGroup_update": "Change alternatives",
+        "alternativeGroup_archive": "Dissolve alternatives",
+        "alternativeGroup_choose": "Choose an alternative",
         "ticket_expireHolds": "Expire overdue holds",
         "ticket_createFromTemplate": "Create ticket from a predefined ticket",
         "ticketTemplate_create": "Create predefined ticket",
@@ -1601,6 +1636,19 @@
         },
         "untimed": "No time",
         "unitPrice": "Unit price {price}"
+      },
+      "alternativeGroup": {
+        "empty": "No alternatives found.",
+        "chosen": "Chosen",
+        "open": "Not chosen",
+        "options": "{count, plural, one {# option} other {# options}}",
+        "archived": "Dissolved",
+        "openTicket": "Open the ticket",
+        "columns": {
+          "name": "Name",
+          "status": "Status",
+          "options": "Options"
+        }
       },
       "requirement": {
         "singular": "Requirement",

@@ -10,6 +10,7 @@ export const COMPARED_LINE_FIELDS = [
   "priceUnit",
   "discountPercent",
   "vatRatePercent",
+  "alternativeGroupId",
 ] as const;
 
 export type MarkLineChangesInput = {

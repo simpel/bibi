@@ -20,6 +20,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 7. Every write has a row in `AuditLog` with actor `SYSTEM`.
 8. Lindholmen's phase grid drives phase moves: moving L11 to Confirmed books its room line and skips its overridden lunch line, and moving L12 to Confirmed is refused because L4 has a hard hold on the same room, and nothing changes.
 9. Every projection matches what is rebuilt from owned data (ADR 0051): `reconcile-checks.ts` registers a `rebuild` query and a `compare` function per projection (`reconcile.ts`), and `checks.ts` runs them all and fails with the first differing rows. Today: line holds in `Occupancy` (`HOLD` and `SETUP` with `lineId`, written only by the database trigger `sync_line_occupancy`, ADR 0053) against the lines that have not ended (same item, kind and period; a hard hold with a setup also its changeover buffer), and the `Record` supertable rows against the seven tables that extend them (same base, type, status and fields, ADR 0056). Vitest calls the same `reconcileProjections`.
+10. Lindholmen's alternative groups (ADR 0052, `alternative-checks.ts`): L13's "Workshop room" (Hönö or Styrsö) is open after its quote was sent, and both options are soft holds; L14's "Planning room" was chosen when its quote was accepted (`quote.accept` with `chosenLineIds`), so Planning in Hönö is the group's `chosenLineId` and still holds (Booked by the grid), and Planning in Styrsö is `Released` and holds nothing. `checkDemoHolds` expects the Styrsö option released too.
 
 
 The checks that run today:
@@ -287,6 +288,8 @@ The main assignee (A) and followers (F) are given by first name (ADR 0034): the 
 | L9 | Kvarnby Design · Conference | D+8 | 18 | Design workshop + Conference lunch | Confirmed | Maria / Sara | activity that contains a room |
 | L11 | Göta Advokatbyrå · Conference | D+6 09–13 | 10 | Styrsö (Boardroom, own price 800 kr) + Conference lunch, the lunch line overridden to Locked, + Projector hire without a time | Quote sent (check 8 moves it to Confirmed) | Maria / – | a line state override that survives a phase move |
 | L12 | Hisingen Energi · Conference | D+5 10–12 | 8 | Styrsö, a soft hold inside L4's booking | Lead | Erik / – | a phase move blocked by a hard hold (check 8, e2e) |
+| L13 | Kvarnby Design · Conference | D+20 09–12 | 14 | Workshop in Hönö **or** Styrsö (alternative group "Workshop room", both `Prebooked`) + Conference lunch | Quote sent | Maria / – | alternatives: the quote shows both rooms and counts the cheaper as a "from" price (check 10) |
+| L14 | Älvstrand Tech · Conference | D+25 13–16 | 16 | Planning in Hönö **or** Styrsö (alternative group "Planning room") + Conference lunch; the customer picked Hönö on accept | Confirmed | Johan / – | a chosen alternative: Hönö Booked by the grid, Styrsö released (check 10) |
 
 **Note on L3:** the nut allergy hits Chocolate fondant, which has the alternatives Cloudberry parfait and Lemon sorbet. The result is "may contain" and no blocking (check 4). The replacement is made on the ticket's copy of the package, so the catalog package is not changed (snapshot, ADR 0021). L3 thus also shows that a package can be adapted for a single occasion.
 

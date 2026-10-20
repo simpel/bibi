@@ -6,6 +6,7 @@ export { type Err, err, type Ok, ok, type Result } from "./errors/result";
 export { type GraphqlErrorExtensions, toGraphqlExtensions } from "./errors/to-graphql-extensions";
 export { toHttpStatus } from "./errors/to-http-status";
 export { type McpErrorResult, toMcpError } from "./errors/to-mcp-error";
+export * from "./features/alternative-group/operations";
 export { hashApiKey } from "./features/api-key/key-secret";
 export * from "./features/api-key/read-operations";
 export * from "./features/api-key/write-operations";

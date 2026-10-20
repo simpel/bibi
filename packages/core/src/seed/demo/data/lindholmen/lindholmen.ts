@@ -1,5 +1,6 @@
 import type { DemoOrg } from "../../types";
 import { lindholmenActivities } from "./activities";
+import { lindholmenAlternativeTickets } from "./alternative-tickets";
 import { lindholmenLists } from "./config";
 import { lindholmenCustomers } from "./customers";
 import { lindholmenDishes } from "./dishes";
@@ -54,5 +55,5 @@ export const lindholmen: DemoOrg = {
   customers: lindholmenCustomers,
   pipeline: lindholmenPipeline,
   templates: lindholmenTemplates,
-  tickets: lindholmenTickets,
+  tickets: [...lindholmenTickets, ...lindholmenAlternativeTickets],
 };

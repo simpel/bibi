@@ -17,7 +17,14 @@ async function releasedStates({ context, entityTypeIds }: Db & { entityTypeIds: 
   return { byType, ids: new Set(rows.map((row) => row.id)) };
 }
 
-export type ReleaseLineStatesInput = { context: OperationContext; ticketId: string };
+export type ReleaseLineStatesInput = {
+  context: OperationContext;
+  ticketId: string;
+  /** Only these lines of the ticket (e.g. the options not chosen, ADR 0052). */
+  lineIds?: readonly string[];
+  /** Mark the moved lines as overridden, so phase moves skip them (an explicit release). */
+  overridden?: boolean;
+};
 
 /**
  * Moves every line of the ticket that is not yet in a released state to its item type's released
@@ -27,14 +34,16 @@ export type ReleaseLineStatesInput = { context: OperationContext; ticketId: stri
 export async function releaseLineStates({
   context,
   ticketId,
+  lineIds,
+  overridden,
 }: ReleaseLineStatesInput): Promise<Result<true>> {
-  const lines = await linesOfTicket({ context, ticketId });
+  const lines = await linesOfTicket({ context, ticketId, lineIds });
   const entityTypeIds = [...new Set(lines.map((typed) => typed.entityTypeId))];
   const released = await releasedStates({ context, entityTypeIds });
   for (const { line, entityTypeId } of lines) {
     const stateId = released.byType.get(entityTypeId);
     if (!stateId || (line.stateId && released.ids.has(line.stateId))) continue;
-    const moved = await applyLineState({ context, before: line, stateId });
+    const moved = await applyLineState({ context, before: line, stateId, overridden });
     if (!moved.ok) return moved;
   }
   return ok({ value: true });

@@ -1,5 +1,6 @@
 import type { ApprovalRequired } from "../approval/approval-schema";
 import type { AskedQuestion } from "../questions/question-schema";
+import type { AlternativeGroupWire } from "./alternative-group-entries";
 import type { ArchivePreviewWire } from "./archive-preview-entry";
 import type { AssignmentWire } from "./assignment-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
@@ -69,6 +70,8 @@ export type ToolUiProps = {
   "ticket-card": { ticket: TicketWire };
   "line-table": { items: LineWire[]; nextCursor: string | null };
   "line-card": { line: LineWire };
+  "alternative-group-table": { items: AlternativeGroupWire[]; nextCursor: string | null };
+  "alternative-group-card": { group: AlternativeGroupWire };
   "requirement-table": { items: RequirementWire[]; nextCursor: string | null };
   "requirement-card": { requirement: RequirementWire };
   "pipeline-board": { board: PipelineBoardWire };

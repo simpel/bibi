@@ -28,10 +28,10 @@ model TicketTemplate {
 /// Ticket template line – a line the ticket gets, timed from the ticket's start.
 /// Replaced as a set by `ticketTemplate.update`.
 model TicketTemplateLine {
-  id              String                @id @default(cuid(2))
+  id              String         @id @default(cuid(2))
   organizationId  String
   templateId      String
-  position        Int                   @default(0)
+  position        Int            @default(0)
   /// The line type (base `LINE`) of the created line.
   entityTypeId    String
   name            String
@@ -42,13 +42,13 @@ model TicketTemplateLine {
   durationMinutes Int
   /// The line's quantity; null = the ticket's headcount (ADR 0052).
   quantity        Int?
-  createdAt       DateTime              @default(now())
-  updatedAt       DateTime              @updatedAt
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
   createdBy       String?
-  template        TicketTemplate        @relation(fields: [templateId, organizationId], references: [id, organizationId])
-  entityType      EntityType            @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  item            Item?                 @relation(fields: [itemId, organizationId], references: [id, organizationId])
-  setup           Setup?                @relation(fields: [setupId, organizationId], references: [id, organizationId])
+  template        TicketTemplate @relation(fields: [templateId, organizationId], references: [id, organizationId])
+  entityType      EntityType     @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  item            Item?          @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  setup           Setup?         @relation(fields: [setupId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, templateId, position])

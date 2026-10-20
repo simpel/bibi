@@ -9,6 +9,12 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "inboundEmail.list", route: "/tickets/[id]" },
   // Overdue soft holds (ADR 0044) are expired by hand from the ticket list.
   { operation: "ticket.expireHolds", route: "/tickets" },
+  // Alternatives (ADR 0052): grouped and chosen on the ticket page.
+  { operation: "alternativeGroup.list", route: "/tickets/[id]" },
+  { operation: "alternativeGroup.create", route: "/tickets/[id]" },
+  { operation: "alternativeGroup.update", route: "/tickets/[id]" },
+  { operation: "alternativeGroup.archive", route: "/tickets/[id]" },
+  { operation: "alternativeGroup.choose", route: "/tickets/[id]" },
   { operation: "quote.list", route: "/tickets/[id]" },
   { operation: "quote.create", route: "/tickets/[id]" },
   { operation: "quote.get", route: "/quotes/[id]" },

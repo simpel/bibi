@@ -1,0 +1,26 @@
+/// Alternative group – lines on one ticket of which the customer picks exactly one (ADR 0052),
+/// e.g. "Room A or Room B". Owned: `ticketId`, `name`. `chosenLineId` is owned too, set once by
+/// `alternativeGroup.choose` (staff, or `quote.accept` with the chosen option); null until then.
+/// Membership is owned by the line (`Line.alternativeGroupId`). Choosing moves the other options
+/// to their type's released state, which releases their holds by trigger (ADR 0053). At most one
+/// option may be in a hard-hold state. `status` is the soft-delete flag (ADR 0006).
+model AlternativeGroup {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  ticketId       String
+  name           String
+  /// The option the customer picked; null until chosen.
+  chosenLineId   String?
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  ticket         Ticket       @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  chosenLine     Line?        @relation("AlternativeGroupChoice", fields: [chosenLineId, organizationId], references: [id, organizationId])
+  options        Line[]       @relation("AlternativeGroupOptions")
+  orderLines     OrderLine[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status])
+  @@index([organizationId, ticketId])
+}

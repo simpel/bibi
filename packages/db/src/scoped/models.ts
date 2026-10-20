@@ -35,6 +35,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "TicketTemplate",
   "TicketTemplateLine",
   "Line",
+  "AlternativeGroup",
   "Requirement",
   "Sheet",
   "Quote",
@@ -113,6 +114,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["Ticket", "ACTIVE"],
   ["TicketTemplate", "ACTIVE"],
   ["Line", "ACTIVE"],
+  ["AlternativeGroup", "ACTIVE"],
   ["Requirement", "ACTIVE"],
   ["Quote", "ACTIVE"],
   ["Conversation", "ACTIVE"],
@@ -125,10 +127,7 @@ export const SOFT_DELETE_MODELS = new Set<string>(SOFT_DELETE_DEFAULTS.keys());
 /** Append-only models: no update/delete/upsert through `scopedDb`. */
 export const APPEND_ONLY_MODELS = new Set<string>(["AuditLog", "Message", "InboundEmail"]);
 
-/**
- * Models with global rows (`organizationId` null, e.g. SYSTEM skills). `scopedDb` reads the org's
- * rows plus the global rows; writes stay pinned to the org (global rows only by system code).
- */
+/** Models with global rows (`organizationId` null): reads include them, writes stay org-pinned. */
 export const GLOBAL_READ_MODELS = new Set<string>(["Skill"]);
 
 export const READ_OPERATIONS = new Set<string>([

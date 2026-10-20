@@ -1,5 +1,6 @@
 import type { AppErrorIssue } from "../../errors/app-error";
 import type { OperationContext } from "../../operations/types";
+import { groupHardHoldBlocker } from "../alternative-group/hard-hold";
 import type { ItemStateDto } from "../item-state/schema";
 import { holdCollisions } from "./hold-collisions";
 import type { LineRecord } from "./schema";
@@ -27,7 +28,8 @@ export type LineMoveBlockersInput = { context: Pick<OperationContext, "db">; mov
 
 /**
  * Everything that blocks one line move (ADR 0044): a transition the type does not allow, or a
- * hard hold that would collide on the line's bookable item. Empty = the move can be applied.
+ * hard hold that would collide on the line's bookable item, or a second option of an alternative
+ * group going hard (ADR 0052). Empty = the move can be applied.
  */
 export async function lineMoveBlockers({
   context,
@@ -35,5 +37,7 @@ export async function lineMoveBlockers({
 }: LineMoveBlockersInput): Promise<AppErrorIssue[]> {
   const blocked = transitionBlocker(move);
   if (blocked) return [blocked];
+  const grouped = await groupHardHoldBlocker({ context, line: move.line, stateId: move.to.id });
+  if (grouped) return [grouped];
   return holdCollisions({ context, line: move.line, to: move.to });
 }

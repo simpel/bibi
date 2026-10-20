@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { lindholmen } from "../src/seed/demo/data/lindholmen/lindholmen";
 import { vingaleden } from "../src/seed/demo/data/vingaleden/vingaleden";
 import { seedDemo } from "../src/seed/demo/seed-demo";
+import { LINDHOLMEN_LINE_STATES } from "./seed-demo-lines";
 
 /** Same data as the real demo, under unique slugs so parallel runs and dev data never clash. */
 const testOrgs = () => {
@@ -89,8 +90,8 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       where: { organizationId: lind?.organizationId },
       orderBy: { reference: "asc" },
     });
-    // L1–L12 and the leads F2, F3 and F6 with their room lines (ADR 0044).
-    expect(tickets).toHaveLength(15);
+    // L1–L14 and the leads F2, F3 and F6 with their room lines (ADR 0044, 0052).
+    expect(tickets).toHaveLength(17);
     const johan = await db.member.findFirst({
       where: { organizationId: lind?.organizationId, user: { name: "Johan Ek" } },
     });
@@ -106,23 +107,9 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       include: { state: true },
       orderBy: [{ name: "asc" }, { state: { name: "asc" } }],
     });
-    // F6 expired, L11 confirmed, L12 blocked; L7, L10 from templates; quoted tickets get lunch.
-    expect(lines.map((line) => [line.name, line.state?.name, line.stateOverridden])).toEqual([
-      ["Afternoon break buffet", "Ordered", false],
-      ["Afternoon break room", "Booked", false],
-      ["Board lunch", "Locked", true],
-      ["Board meeting", "Booked", false],
-      ["Coffee and tea", "Estimated", false],
-      ["Conference lunch", "Estimated", false],
-      ...Array.from({ length: 5 }, () => ["Conference lunch", "Ordered", false]),
-      ["Half-day conference", "Booked", false],
-      ["Kickoff", "Prebooked", false],
-      ["Product launch", "Prebooked", false],
-      ["Projector hire", "Booked", false],
-      ["Small meeting room", "Booked", false],
-      ["Strategy meeting", "Prebooked", false],
-      ["Team day", "Released", false],
-    ]);
+    expect(lines.map((line) => [line.name, line.state?.name, line.stateOverridden])).toEqual(
+      LINDHOLMEN_LINE_STATES,
+    );
   });
   it("re-seeds an organization that has occupancy rows", async () => {
     const orgs = testOrgs();

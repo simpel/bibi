@@ -39,6 +39,12 @@ export const QuoteSchema = z.object({
     .int()
     .describe("Sum of the lines excl. VAT, minor units; frozen when sent, live on a DRAFT"),
   totalInclVatMinor: z.number().int().describe("Sum of the lines incl. VAT, minor units"),
+  totalIsFrom: z
+    .boolean()
+    .describe(
+      'The totals are "from" prices: some alternative group is not chosen, so it counts its ' +
+        "cheapest option (ADR 0052)",
+    ),
   statusChangedAt: z.date(),
   acceptedBy: z.string().nullable().describe("User id of who recorded the acceptance"),
   acceptedAt: z.date().nullable().describe("When the acceptance was recorded"),
@@ -86,6 +92,19 @@ export const QuoteUpdateInputSchema = z.object({ id: z.string().min(1), ...Quote
 
 export const QuoteIdInputSchema = z.object({ id: z.string().min(1) });
 
+export const QuoteAcceptInputSchema = z.object({
+  id: z.string().min(1),
+  chosenLineIds: z
+    .array(z.string().min(1))
+    .max(20)
+    .optional()
+    .describe(
+      "The options the customer picked: per alternative group of the ticket not yet chosen, " +
+        "the id of one of its lines (alternativeGroup.list optionLineIds). The other options " +
+        "are released, as alternativeGroup.choose does",
+    ),
+});
+
 export const QuoteListInputSchema = z.object({
   ticketId: z.string().optional().describe("Only the versions of this ticket's quote"),
   quoteStatus: QuoteStatusSchema.optional().describe("Only quotes with this status"),
@@ -104,4 +123,5 @@ export type QuoteDto = z.infer<typeof QuoteSchema>;
 export type QuoteCreateInput = z.infer<typeof QuoteCreateInputSchema>;
 export type QuoteUpdateInput = z.infer<typeof QuoteUpdateInputSchema>;
 export type QuoteIdInput = z.infer<typeof QuoteIdInputSchema>;
+export type QuoteAcceptInput = z.infer<typeof QuoteAcceptInputSchema>;
 export type QuoteListInput = z.infer<typeof QuoteListInputSchema>;

@@ -1,4 +1,5 @@
 import { ACCESS_UI_ENTRIES } from "./access-entries";
+import { ALTERNATIVE_GROUP_UI_ENTRIES } from "./alternative-group-entries";
 import { ASSIGNMENT_UI_ENTRIES } from "./assignment-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
 import { CUSTOMER_UI_ENTRIES } from "./customer-entries";
@@ -71,6 +72,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...PHASE_GRID_UI_ENTRIES,
   ...TICKET_UI_ENTRIES,
   ...LINE_UI_ENTRIES,
+  ...ALTERNATIVE_GROUP_UI_ENTRIES,
   ...ASSIGNMENT_UI_ENTRIES,
   ...REQUIREMENT_UI_ENTRIES,
   ...PIPELINE_UI_ENTRIES,

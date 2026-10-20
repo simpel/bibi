@@ -46,6 +46,8 @@ export type DemoTicket = {
   holdsUntilDay?: number;
   /** The ticket's lines, on the ticket's day. */
   lines?: readonly DemoLine[];
+  /** Lines (by name) grouped as alternatives the customer picks one of (ADR 0052). */
+  alternatives?: readonly DemoAlternative[];
   /**
    * A phase move `checkDemoGrid` makes after seeding (ADR 0044): `blocked` moves must be refused
    * and change nothing; the others must move the lines as the grid says, skipping overrides.
@@ -68,3 +70,10 @@ export type DemoLine = {
   quantity?: number;
   unitPriceKr?: number;
 };
+
+/**
+ * An alternative group (ADR 0052): its name and its options as line names. `chosen` is the option
+ * the customer picks when the ticket's quote is accepted (`quote.accept` with `chosenLineIds`);
+ * without it the group stays open and every option keeps its soft hold.
+ */
+export type DemoAlternative = { name: string; lines: readonly string[]; chosen?: string };

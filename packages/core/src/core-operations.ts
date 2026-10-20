@@ -1,3 +1,4 @@
+import { alternativeGroupOperations } from "./features/alternative-group/operations";
 import { apiKeyOperations } from "./features/api-key/operations";
 import { assignmentOperations } from "./features/assignment/operations";
 import { auditLogOperations } from "./features/audit-log/operations";
@@ -43,6 +44,7 @@ import { createSearchOperation } from "./search/search-operation";
 export type CreateCoreOperationsInput = { embed: EmbedFn };
 
 const pipelineGroupOperations = [...pipelineOperations, ...pipelineSetupOperations];
+const lineGroupOperations = [...lineOperations, ...alternativeGroupOperations];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
 const moneyOperations = [
@@ -73,7 +75,7 @@ export function createCoreOperations({ embed }: CreateCoreOperationsInput): AnyO
     ...itemStateOperations,
     ...phaseGridOperations,
     ...ticketOperations,
-    ...lineOperations,
+    ...lineGroupOperations,
     ...assignmentOperations,
     ...requirementOperations,
     ...sheetOperations,

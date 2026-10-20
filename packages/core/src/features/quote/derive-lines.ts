@@ -3,6 +3,7 @@ import { resolveItemTags } from "../item/resolve-item";
 import type { LineDto } from "../line/schema";
 import { LINE_INCLUDE, toLineRecord } from "../line/to-line-record";
 import { withEffective } from "../line/with-effective";
+import { applyAlternatives } from "./alternatives";
 import { lineAmounts } from "./line-totals";
 import type { OrderLineDto, OrderLineTag } from "./order-line-schema";
 
@@ -55,6 +56,8 @@ function toDerived({ line, unitPriceMinor, position, facts }: ToDerivedInput): D
     ...{ id: line.id, lineId: line.id, itemId: line.itemId, position, name: line.name },
     ...{ quantity, unitPriceMinor, priceUnit: facts?.priceUnit ?? null, discountPercent },
     ...{ vatRatePercent, tags: facts?.tags ?? [], ...amounts },
+    ...{ alternativeGroupId: line.alternativeGroupId, alternativeGroupName: null },
+    ...{ alternativeGroupChosen: null, inTotal: true },
   };
   return { line: order, missing };
 }
@@ -64,7 +67,7 @@ export type DeriveTicketLinesInput = Db & { ticketIds: readonly string[] };
 /**
  * The tickets' priced lines as order lines (ADR 0052): every active line with an effective unit
  * price, at its effective quantity, discount and VAT, with the item's price unit and tags. What a
- * DRAFT quote shows and what `quote.send` freezes. Keyed by ticket id.
+ * DRAFT quote shows and what `quote.send` freezes, with their alternative groups. Keyed by ticket.
  */
 export async function deriveTicketLines({
   context,
@@ -88,5 +91,6 @@ export async function deriveTicketLines({
     list.push(toDerived({ line, unitPriceMinor, position: list.length, facts: known }));
     out.set(line.ticketId, list);
   }
+  await applyAlternatives({ context, lines: [...out.values()].flat() });
   return out;
 }

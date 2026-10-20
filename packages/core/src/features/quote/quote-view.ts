@@ -1,6 +1,6 @@
 import type { OrderLine, Quote } from "@okazi/db";
 import { markLineChanges } from "./line-changes";
-import { quoteTotals } from "./line-totals";
+import { quoteTotals, totalIsFrom } from "./line-totals";
 import type { OrderLineDto, OrderLineTag } from "./order-line-schema";
 import type { QuoteDto, QuoteLineDto } from "./schema";
 
@@ -23,6 +23,10 @@ export const toOrderLineDto = ({ row }: { row: OrderLine }): OrderLineDto => ({
   tags: asTags({ value: row.tags }),
   totalExclVatMinor: row.totalExclVatMinor,
   vatMinor: row.vatMinor,
+  alternativeGroupId: row.alternativeGroupId,
+  alternativeGroupName: row.alternativeGroupName,
+  alternativeGroupChosen: row.alternativeGroupChosen,
+  inTotal: row.inTotal,
 });
 
 type Drift = Pick<QuoteDto, "differsFromTicket" | "ticketChanges" | "ticketRemovedLines">;
@@ -58,6 +62,10 @@ export function toQuoteDto({ row: { lines: rows, ...quote }, previous, live }: T
   const { totalExclVatMinor, totalInclVatMinor } = draft ? quoteTotals({ lines: own }) : quote;
   const drift = quote.quoteStatus === "ACCEPTED" ? ticketDrift({ snapshot: own, live }) : NO_DRIFT;
   const marked = markLineChanges({ lines: own, previous });
-  const dto: QuoteDto = { ...quote, totalExclVatMinor, totalInclVatMinor, ...marked, ...drift };
+  const from = totalIsFrom({ lines: own });
+  const dto: QuoteDto = {
+    ...{ ...quote, totalExclVatMinor, totalInclVatMinor, totalIsFrom: from },
+    ...{ ...marked, ...drift },
+  };
   return dto;
 }

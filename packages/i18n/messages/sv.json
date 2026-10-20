@@ -598,7 +598,8 @@
     "totals": {
       "exclVat": "Summa exkl. moms",
       "vat": "Moms",
-      "inclVat": "Summa inkl. moms"
+      "inclVat": "Summa inkl. moms",
+      "from": "Från {amount}"
     },
     "lines": {
       "title": "Orderrader",
@@ -609,7 +610,9 @@
       "discount": "Rabatt %",
       "vat": "Moms",
       "total": "Summa exkl. moms",
-      "change": "Ändring"
+      "change": "Ändring",
+      "option": "Alternativ i {name}",
+      "notInTotal": "Ingår inte i summan"
     },
     "draftLines": "Ett utkast visar ärendets prissatta rader som de är nu; när offerten skickas fryses de.",
     "editLinesOnTicket": "Redigera raderna på ärendet",
@@ -696,6 +699,32 @@
     },
     "untimed": "Ingen tid",
     "inherited": "(ärvt)"
+  },
+  "alternativeGroup": {
+    "plural": "Alternativ",
+    "description": "Rader som kunden väljer en av, t.ex. Rum A eller Rum B. Offerten räknar det billigaste som ett från-pris tills ett är valt.",
+    "empty": "Inga alternativ på det här ärendet.",
+    "create": "Gruppera som alternativ",
+    "createDescription": "Välj två eller fler rader som kunden väljer mellan. Varje rad behåller sitt eget läge och sin reservation.",
+    "rename": "Byt namn",
+    "archive": "Lös upp",
+    "archiveConfirm": "Lösa upp ”{name}”? Alternativen blir vanliga rader och behåller sina lägen.",
+    "archived": "Alternativen löstes upp.",
+    "created": "Alternativen skapades.",
+    "updated": "Alternativen bytte namn.",
+    "choose": "Välj alternativ",
+    "chooseDone": "Alternativet valdes och de andra släpptes.",
+    "chosen": "Valt: {name}",
+    "open": "Inte valt",
+    "fields": {
+      "name": "Namn",
+      "lineIds": "Alternativ"
+    },
+    "columns": {
+      "name": "Namn",
+      "options": "Alternativ",
+      "status": "Status"
+    }
   },
   "requirement": {
     "singular": "Behov",
@@ -1347,6 +1376,8 @@
         "targetStateId": "Flytta rader till (läges-id)",
         "toStateIds": "Får gå till (läges-id:n)",
         "lineId": "Rad (id)",
+        "lineIds": "Alternativ (rad-id)",
+        "chosenLineIds": "Valda alternativ (rad-id)",
         "stateId": "Läge (id)",
         "holdsUntil": "Håll till",
         "expiryStateId": "Utgångsläge (id)",
@@ -1430,6 +1461,10 @@
         "line_archive": "Ta bort rad",
         "line_changeState": "Byt läge på rad",
         "line_followPhase": "Låt raden följa fasen",
+        "alternativeGroup_create": "Skapa alternativ",
+        "alternativeGroup_update": "Ändra alternativ",
+        "alternativeGroup_archive": "Lös upp alternativ",
+        "alternativeGroup_choose": "Välj ett alternativ",
         "ticket_expireHolds": "Släpp förfallna reservationer",
         "ticket_createFromTemplate": "Skapa ärende från fördefinierat ärende",
         "ticketTemplate_create": "Skapa fördefinierat ärende",
@@ -1601,6 +1636,19 @@
         },
         "untimed": "Ingen tid",
         "unitPrice": "Styckpris {price}"
+      },
+      "alternativeGroup": {
+        "empty": "Inga alternativ hittades.",
+        "chosen": "Valt",
+        "open": "Inte valt",
+        "options": "{count, plural, one {# alternativ} other {# alternativ}}",
+        "archived": "Upplöst",
+        "openTicket": "Öppna ärendet",
+        "columns": {
+          "name": "Namn",
+          "status": "Status",
+          "options": "Alternativ"
+        }
       },
       "requirement": {
         "singular": "Behov",

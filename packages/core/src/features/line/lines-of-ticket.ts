@@ -9,6 +9,8 @@ export type LinesOfTicketInput = {
   ticketId: string;
   /** Only lines that follow the phase grid (not overridden). */
   followingOnly?: boolean;
+  /** Only these lines of the ticket. */
+  lineIds?: readonly string[];
 };
 
 /**
@@ -19,6 +21,7 @@ export async function linesOfTicket({
   context,
   ticketId,
   followingOnly = false,
+  lineIds,
 }: LinesOfTicketInput): Promise<TypedLine[]> {
   const rows = await context.db.line.findMany({
     where: {
@@ -26,6 +29,7 @@ export async function linesOfTicket({
       itemId: { not: null },
       stateId: { not: null },
       ...(followingOnly ? { stateOverridden: false } : {}),
+      ...(lineIds ? { id: { in: [...lineIds] } } : {}),
     },
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     include: LINE_INCLUDE,

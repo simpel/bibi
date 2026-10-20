@@ -30,6 +30,7 @@ model Quote {
   validUntil        DateTime?
   terms             String?
   /// Sums of the frozen lines in minor units (1/100 kr), set by `quote.send`; 0 on a DRAFT.
+  /// An alternative group counts its chosen option, or its cheapest one until chosen (ADR 0052).
   totalExclVatMinor Int               @default(0)
   totalInclVatMinor Int               @default(0)
   statusChangedAt   DateTime          @default(now())
@@ -58,36 +59,47 @@ model Quote {
 /// Belongs to exactly one quote or invoice (check constraint in the migration). Written only by
 /// `quote.send` and `invoice.create` and never changed afterwards; audited on its owner.
 model OrderLine {
-  id                String     @id @default(cuid(2))
-  organizationId    String
-  quoteId           String?
-  invoiceId         String?
+  id                     String            @id @default(cuid(2))
+  organizationId         String
+  quoteId                String?
+  invoiceId              String?
   /// The ticket line this snapshot was taken from; pairs versions' lines (ADR 0052).
-  lineId            String
-  itemId            String?
+  lineId                 String
+  itemId                 String?
   /// Order on the quote, from 0.
-  position          Int
-  name              String
-  quantity          Int
+  position               Int
+  name                   String
+  quantity               Int
   /// Price per unit in minor units (1/100 kr), in the item's price unit.
-  unitPriceMinor    Int
-  priceUnit         PriceUnit?
-  discountPercent   Decimal    @default(0) @db.Decimal(5, 2)
-  vatRatePercent    Int
+  unitPriceMinor         Int
+  priceUnit              PriceUnit?
+  discountPercent        Decimal           @default(0) @db.Decimal(5, 2)
+  vatRatePercent         Int
   /// The list values the item contains (`item.resolve`): `[{ valueId, vocabularyId, name }]`.
-  tags              Json       @default("[]")
-  totalExclVatMinor Int
-  vatMinor          Int
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
-  createdBy         String?
-  quote             Quote?     @relation(fields: [quoteId, organizationId], references: [id, organizationId])
-  invoice           Invoice?   @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
-  line              Line       @relation(fields: [lineId, organizationId], references: [id, organizationId])
-  item              Item?      @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  tags                   Json              @default("[]")
+  totalExclVatMinor      Int
+  vatMinor               Int
+  /// Snapshot of the line's alternative group (ADR 0052): its id and name; null on an ordinary line.
+  alternativeGroupId     String?
+  alternativeGroupName   String?
+  /// Snapshot: whether the group had a chosen option; null on an ordinary line. Any false makes
+  /// the quote's totals "from" prices (derived, not stored).
+  alternativeGroupChosen Boolean?
+  /// Snapshot: whether the line counts in the quote's totals. False for the options of a group
+  /// that are not its chosen one (or, until chosen, not its cheapest one).
+  inTotal                Boolean           @default(true)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  createdBy              String?
+  quote                  Quote?            @relation(fields: [quoteId, organizationId], references: [id, organizationId])
+  invoice                Invoice?          @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
+  line                   Line              @relation(fields: [lineId, organizationId], references: [id, organizationId])
+  item                   Item?             @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  alternativeGroup       AlternativeGroup? @relation(fields: [alternativeGroupId, organizationId], references: [id, organizationId])
 
   @@index([organizationId, quoteId])
   @@index([organizationId, invoiceId])
+  @@index([organizationId, alternativeGroupId])
   @@index([organizationId, lineId])
   @@index([organizationId, itemId])
 }

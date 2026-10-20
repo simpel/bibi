@@ -1,3 +1,4 @@
+import { alternativeGroupMcpTools } from "../features/alternative-group/mcp";
 import { apiKeyMcpTools } from "../features/api-key/mcp";
 import { assignmentMcpTools } from "../features/assignment/mcp";
 import { auditLogMcpTools } from "../features/audit-log/mcp";
@@ -40,6 +41,7 @@ import { searchMcpTools } from "../search-mcp";
 import type { McpToolMeta } from "./meta";
 
 const gridAndSetupMcpTools = [...phaseGridMcpTools, ...pipelineSetupMcpTools];
+const lineAndGroupMcpTools = [...lineMcpTools, ...alternativeGroupMcpTools];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
 const moneyMcpTools = [
@@ -71,7 +73,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...gridAndSetupMcpTools,
     ...ticketMcpTools,
     ...assignmentMcpTools,
-    ...lineMcpTools,
+    ...lineAndGroupMcpTools,
     ...requirementMcpTools,
     ...sheetMcpTools,
     ...pipelineMcpTools,

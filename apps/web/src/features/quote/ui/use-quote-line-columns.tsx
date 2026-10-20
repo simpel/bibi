@@ -45,6 +45,12 @@ const itemColumn = ({ t }: { t: Translate }): Column => ({
   cell: ({ row: { original } }) => (
     <span className={original.removed ? STRUCK : undefined}>
       <span className="font-medium">{original.line.name}</span>
+      {original.line.alternativeGroupName ? (
+        <span className="block text-xs text-muted-foreground">
+          {t("lines.option", { name: original.line.alternativeGroupName })}
+          {original.line.inTotal ? null : ` · ${t("lines.notInTotal")}`}
+        </span>
+      ) : null}
       {original.line.tags.length > 0 ? (
         <span className="block text-xs text-muted-foreground">
           {original.line.tags.map((tag) => tag.name).join(", ")}
