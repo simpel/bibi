@@ -30,12 +30,21 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm db:migrate
-      - run: pnpm lint
-      - run: pnpm check:structure
-      - run: pnpm typecheck
-      - run: pnpm test
-      - run: pnpm build
+      # The checks (lint, structure, typecheck, migrate, test, build) are defined once in tools/ci/checks.json and
+      # also run by the work-backlog run (tools/backlog/checks.sh).
+      - run: node tools/ci/verify.mjs --all
+
+  tools:
+    # The check runner, the work-backlog workflow and its scripts have their own tests (no database needed).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test tools/ci/verify.test.mjs
+      - run: node tools/backlog/workflow-smoke.mjs
+      - run: bash tools/backlog/scripts-smoke.sh
 
   storybook:
     # A broken story fails the build (ADR 0002).
@@ -48,7 +57,7 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @okazi/ui build-storybook
+      - run: node tools/ci/verify.mjs --only storybook
 
   e2e:
     # Playwright against a production build with the scripted model (ADR 0002, 0007).

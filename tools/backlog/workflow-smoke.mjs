@@ -93,8 +93,8 @@ const check = (name, ok, detail = "") => {
       !calls.find((c) => c.label.startsWith("#2 ")).prompt.includes("mechanical rename"),
   );
   check(
-    "codemod prompt renames symbols with the compiler, not a text replace",
-    impl4?.prompt.includes("ts-morph") && impl4.prompt.includes("Let the compiler find the rest"),
+    "codemod prompt points at the codemod skill and the Renames table",
+    impl4?.prompt.includes("codemod skill") && impl4.prompt.includes("### Renames"),
   );
   check(
     "codemod script lives outside the git tree",
@@ -403,8 +403,7 @@ const check = (name, ok, detail = "") => {
   );
   check(
     "docs skip the new-feature skill",
-    !docsImpl.prompt.includes("new-feature skill") &&
-      docsImpl.prompt.includes("documentation only"),
+    !docsImpl.prompt.includes("new-feature skill") && docsImpl.prompt.includes("write-docs skill"),
   );
 
   const docsBad = await runScript({
@@ -503,7 +502,7 @@ const check = (name, ok, detail = "") => {
   });
   check(
     "tech debt gets the behaviour-preserving rules",
-    techDebt.calls.find((c) => c.phase === "Implement").prompt.includes("behaviour-preserving"),
+    techDebt.calls.find((c) => c.phase === "Implement").prompt.includes("refactor skill"),
   );
 }
 
@@ -616,6 +615,67 @@ const check = (name, ok, detail = "") => {
   });
   const order = two.calls.filter((c) => c.label.startsWith("merge")).map((c) => c.label);
   check("both tickets are merged", order.length === 2, order.join(","));
+}
+
+// 12. main health after merges
+{
+  const alone = (n) => T(n, `Big ${n}`, [], "XL", { kind: "Feature" });
+  const green = await runScript({
+    tickets: [T(1, "One", [], "S", { kind: "Feature" })],
+    impl: done,
+  });
+  check(
+    "after a merge the run checks CI on main",
+    green.calls.some((c) => c.label === "main-ci p1"),
+  );
+  check("a green main is not reported", green.result.mainRed === null);
+
+  const red = await runScript({
+    tickets: [alone(1), alone(2)],
+    impl: done,
+    hook: (opts) =>
+      opts.label.startsWith("main-ci")
+        ? { state: "red", sha: "abc", url: "https://x/run/9" }
+        : undefined,
+  });
+  check(
+    "red CI on main stops the run before the next batch",
+    red.calls.filter((c) => c.phase === "Implement").length === 1,
+    String(red.calls.filter((c) => c.phase === "Implement").length),
+  );
+  check(
+    "the red main is reported",
+    red.result.mainRed?.sha === "abc" &&
+      red.logs.some((l) => l.startsWith("Stopped: CI on main is red")),
+  );
+
+  const pending = await runScript({
+    tickets: [alone(1), alone(2)],
+    impl: done,
+    hook: (opts) =>
+      opts.label.startsWith("main-ci") ? { state: "pending", sha: "abc" } : undefined,
+  });
+  check(
+    "pending main CI is polled twice, then the run continues",
+    pending.calls.filter((c) => c.label.startsWith("main-ci")).length === 4 &&
+      pending.calls.filter((c) => c.phase === "Implement").length === 2,
+  );
+
+  const off = await runScript({
+    args: { mainCheck: false },
+    tickets: [T(1, "One", [], "S", { kind: "Feature" })],
+    impl: done,
+  });
+  check("mainCheck: false skips the check", !off.calls.some((c) => c.label.startsWith("main-ci")));
+
+  const decision = await runScript({
+    tickets: [T(2, "Choose", ["type:decision"], "S")],
+    impl: () => ({ ...done(), files: ["docs/decisions/0063-z.md"] }),
+  });
+  check(
+    "an opened decision PR does not trigger a main check",
+    !decision.calls.some((c) => c.label.startsWith("main-ci")),
+  );
 }
 
 console.log(failed ? `\n${failed} FAILED` : "\nall passed");

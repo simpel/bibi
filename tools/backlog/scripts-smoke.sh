@@ -17,7 +17,7 @@ git init -q --bare -b main "$ROOT/origin.git"
 git clone -q "$ROOT/origin.git" "$ROOT/okazi" 2>/dev/null
 cd "$ROOT/okazi" || exit 1
 git config user.email t@t; git config user.name t
-mkdir -p tools/backlog && cp "$SRC"/tools/backlog/*.sh tools/backlog/
+mkdir -p tools/backlog && cp "$SRC"/tools/backlog/*.sh tools/backlog/; mkdir -p tools/ci && cp "$SRC"/tools/ci/checks.json "$SRC"/tools/ci/verify.mjs tools/ci/
 echo base > a.txt; echo base > b.txt; echo "old name here" > c.txt
 git add -A && git commit -qm "base" && git push -q origin HEAD:main
 mkdir -p "$ROOT/okazi-worktrees/.locks"
@@ -49,7 +49,7 @@ case "\$1 \$2" in
               git commit -q -m "\$subj" -m "\$body" && git push -q origin HEAD:main; rm -f "$STATE/pr-1" ;;
   "pr view") git -C "$ROOT/origin.git" rev-parse main ;;
   "pr close") rm -f "$STATE/pr-1" ;;
-  "run list") echo 77 ;;
+  "run list") if [[ "\$*" == *--workflow* ]]; then cat "$STATE/main-run.json"; else echo 77; fi ;;
   "run view") echo "FAIL packages/core test: boom" ;;
 esac
 exit 0
@@ -137,6 +137,21 @@ run env KIND=Feature "$S/ship.sh" 1 --title "Parked one" <<<"s" >/dev/null
 OUT="$(run "$S/park.sh" 1 "Parked one" <<<"checks stayed red")"
 eq "park reports parked" "$(jq -r .state <<<"$OUT")" parked
 has "park closed the PR" "$(cat "$STATE/gh.log")" "pr close 101"
+
+# ---- main-ci: CI of main after the merges -----------------------------------------------------
+git -C "$ROOT/okazi" fetch -q origin
+MAIN_SHA="$(git -C "$ROOT/okazi" rev-parse origin/main)"
+echo "[{\"headSha\":\"$MAIN_SHA\",\"status\":\"completed\",\"conclusion\":\"success\",\"url\":\"https://x/run/1\"}]" >"$STATE/main-run.json"
+eq "main-ci green" "$(jq -r .state <<<"$(run "$S/main-ci.sh" --timeout 1)")" green
+echo "[{\"headSha\":\"$MAIN_SHA\",\"status\":\"completed\",\"conclusion\":\"failure\",\"url\":\"https://x/run/2\"}]" >"$STATE/main-run.json"
+OUT="$(run "$S/main-ci.sh" --timeout 1)"
+eq "main-ci red with the run url" "$(jq -r .state <<<"$OUT"):$(jq -r .url <<<"$OUT")" "red:https://x/run/2"
+echo "[{\"headSha\":\"$MAIN_SHA\",\"status\":\"in_progress\",\"conclusion\":null,\"url\":\"u\"}]" >"$STATE/main-run.json"
+eq "main-ci pending while the run is in progress" "$(jq -r .state <<<"$(CI_POLL_SECONDS=1 run "$S/main-ci.sh" --timeout 1)")" pending
+echo '[{"headSha":"someone-elses-sha","status":"completed","conclusion":"failure","url":"u"}]' >"$STATE/main-run.json"
+eq "main-ci ignores runs of other commits" "$(jq -r .state <<<"$(CI_POLL_SECONDS=1 run "$S/main-ci.sh" --timeout 1)")" pending
+echo "[{\"headSha\":\"$MAIN_SHA\",\"status\":\"completed\",\"conclusion\":\"cancelled\",\"url\":\"u\"}]" >"$STATE/main-run.json"
+eq "main-ci treats a cancelled run as pending" "$(jq -r .state <<<"$(CI_POLL_SECONDS=1 run "$S/main-ci.sh" --timeout 1)")" pending
 
 # ---- residue ---------------------------------------------------------------------------------
 mkdir -p "$ROOT/res/docs/decisions" && cd "$ROOT/res" || exit 1

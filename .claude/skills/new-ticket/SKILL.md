@@ -10,13 +10,13 @@ The ticket creator knows the scope, so the creator decides how the work is run. 
 1. **Check for a duplicate:** `gh issue list -R simpel/okazi --state all --search "<keywords>"`. Update an existing issue instead of creating a second one.
 2. **Decide the execution profile** (board fields, one value each):
    - **Kind** picks the path the run takes:
-     - `Feature` (default): implement, fix, tenancy review, pull request.
-     - `Bugfix`: reproduce first. The agent writes a failing test, then fixes; a ticket without that proof is sent back.
-     - `Tech debt`: behaviour-preserving. Existing tests must pass unmodified.
-     - `Test`: tests only. A production file in the change is sent back.
-     - `Docs`: documentation only, and only lint and check:structure run. A code file in the change is sent back.
-     - `Codemod`: a mechanical change done with scripts (a rename, a move). Runs alone, on Sonnet, with 3 fix rounds, and a script checks that no old name is left.
-     - A `type:decision` label (with any Kind) makes it a decision ticket: the agent drafts a Proposed ADR and opens a PR that a person accepts. The run never merges it.
+     - `Feature` (default): the `new-feature` skill; implement, fix, tenancy review, pull request.
+     - `Bugfix` (`fix-bug` skill): reproduce first. The agent writes a failing test, then fixes; a ticket without that proof is sent back.
+     - `Tech debt` (`refactor` skill): behaviour-preserving. Existing tests must pass unmodified.
+     - `Test` (`add-tests` skill): tests only. A production file in the change is sent back.
+     - `Docs` (`write-docs` skill): documentation only, and only lint and check:structure run. A code file in the change is sent back.
+     - `Codemod` (`codemod` skill): a mechanical change done with scripts (a rename, a move). Runs alone, on Sonnet, with 3 fix rounds, and a script checks that no old name is left.
+     - A `type:decision` label (with any Kind) makes it a decision ticket (`add-adr` skill): the agent drafts a Proposed ADR and opens a PR that a person accepts. The run never merges it.
    - **Size:** `XS` to `XL`. `XL` runs alone. `L` and `XL` default to Opus.
    - **Priority:** `P0` to `P2`.
    - **Model:** leave `Auto` unless you know better. `Haiku` for scripted or clearly specified work (docs, i18n strings, boilerplate), never open-ended implementation (it measured ~93 turns per ticket against Sonnet's ~19). `Sonnet` for ordinary and mechanical work. `Opus` where a mistake is expensive (tenancy, auth, trigger SQL, migrations with logic). A ticket cannot be two models.

@@ -9,6 +9,7 @@ export const meta = {
     { title: 'Review', detail: 'tenancy review for core/db/auth/mcp changes (Opus; Sonnet for codemod tickets)' },
     { title: 'Land', detail: 'open a PR, wait for CI, squash-merge one at a time (decision PRs stay open for review)' },
     { title: 'Park', detail: 'push a failed ticket to parked/<N>, comment, card to Parked' },
+    { title: 'Main', detail: 'after merges, wait for CI on main; stop the run when it is red' },
     { title: 'Follow-ups', detail: 'file out-of-scope findings as source:agent issues in Backlog' },
   ],
 }
@@ -26,6 +27,8 @@ if (ADOPT.length) STATUSES.push('In progress')
 const adopting = (t) => ADOPT.includes(t.number)
 const CI_POLLS = 6 // ci.sh waits up to 9 minutes per call, so a PR may wait about 54 minutes for CI
 const CI_FIX_ROUNDS = 2
+const MAIN_POLLS = 2 // main-ci.sh waits up to 9 minutes per call
+const MAIN_CHECK = !(args && args.mainCheck === false) // args.mainCheck: false skips the main-health step
 const BASE_FIX_ROUNDS = 2 // XL and codemod tickets get 3, see fixRounds
 const TIERS = ['haiku', 'sonnet', 'opus'] // fable is never used
 // Board ids are fixed: agents never run gh project field-list / item-list to find them (GraphQL rate limit).
@@ -257,23 +260,16 @@ const RUN_CHECKS = `Run the full checks with exactly this command from the workt
 
 // The scratch directory is outside the git tree, so the script is never committed.
 const scratchDir = (t) => `${REPO}-worktrees/.scratch/${wtName(t)}`
-const codemodRules = (t) => `This ticket is a mechanical rename. Do it with scripts in layers, not by editing files one at a time. A text replace is wrong for code symbols (it hits strings, comments and unrelated scopes), so symbols go through the TypeScript compiler:
-1. Inventory first. From the ticket, list every old name and its new name: identifiers (variables, functions, types, properties, enum values), Prisma models and columns, file and directory names, strings (i18n keys, GraphQL and REST field names, MCP tool names, enum values stored as text), SQL under packages/db/sql, docs. Count matches per old name with rg -c (skip node_modules and generated code).
-2. Work in ${scratchDir(t)} (outside the git tree, never committed). Layer 1, database: edit schema.prisma, run pnpm db:generate, write the new migration (an in-place rename, no data migration). Never edit an applied migration.
-3. Layer 2, TypeScript symbols: install ts-morph in the scratch directory (npm i ts-morph there; it brings its own TypeScript, so the repo's stays untouched) and write a script that opens each tsconfig and renames each symbol with the language service (identifier.rename()), and moves files with sourceFile.move() so imports update. This handles shadowing, shorthand properties, imports and exports. Give it a dry run that prints what would change per file, check it, then run it. Properties that come from the regenerated Prisma client follow the schema, not the script.
-4. Layer 3, text: for strings and non-TypeScript files (i18n JSON, SQL functions, Markdown skills, docs, templates) use a script with word boundaries and every case variant (camelCase, PascalCase, UPPER_SNAKE, kebab-case, i18n keys). Rename more specific names first. Rename directories and the remaining files with plain mv (no git commands).
-5. Let the compiler find the rest: run pnpm typecheck, fix what it lists, and repeat. Never edit node_modules, generated code, lockfiles or docs/decisions history (ADR addenda keep the old names).
-6. By hand, only what scripts cannot do: SQL functions and triggers (packages/db/sql, and the test that applies them verbatim), name collisions with existing names, and wording of user-facing strings in sv and en.
-7. Finish with rg for every old name, case-insensitively. Only existing migrations and ADR history may still match. Put the final match counts and any exception in notes.`
+const codemodRules = (t) => `This ticket is a mechanical rename: follow the codemod skill, which is the rulebook for it (inventory, database, TypeScript symbols through the compiler, text, residue check). Do not edit files one at a time. Work in ${scratchDir(t)}, outside the git tree, so scripts are never committed. The ticket's "### Renames" table is the inventory, and a script checks that no old name is left (applied migrations, ADR history, node_modules and generated code are excluded).`
 // ---- Paths: what a ticket's Kind changes ---------------------------------------
 // feature is the default. A path sets its prompt rules, which checks run, whether the tenancy review runs, and whether
 // the run merges the PR itself (decision PRs stay open: a person accepts an ADR). Gates that go with a path are in
 // pathGates below. `skill` = follows the new-feature skill and runs seed:demo.
-const BUGFIX_RULES = () => `This is a bug fix: reproduce first. Write a failing test that proves the bug, run it and see it fail, then fix the bug, then show the same test passes. Return repro = { test, failedBefore: true }. If the bug cannot be covered by a test (a layout, a race you cannot force), return repro = { test: "", failedBefore: false, skippedReason } with the reason. The regression test stays in the change.`
-const TECH_DEBT_RULES = () => `This is a behaviour-preserving refactor. Do not change behaviour and do not change what existing tests assert: they must pass unmodified. If you must touch a test, say which and why in notes. No new features, no new dependencies; keep public APIs and operation names.`
-const TEST_RULES = () => `This ticket adds tests only. Change no production code: if a test needs a production change, stop and return status=blocked with the reason. Tests must assert behaviour (they fail if the code is wrong), live in the existing suites and follow the isolation-test patterns already in the repo.`
-const DOCS_RULES = () => `This ticket changes documentation only: markdown under docs/, ADR addenda, skills and CLAUDE.md. Change no code. Every path, command, file and name you mention must exist: check each with rg or ls. Keep docs/domain-model.md and docs/artifacts/domain-model.html in step. Only lint and check:structure run for this ticket.`
-const DECISION_RULES = () => `This is a decision ticket: you draft the decision, a person accepts it. Use the add-adr skill and write the ADR as Status: Proposed. Read the issue, verify every claim about the code before you state it, give a recommendation with the alternatives you rejected and why, and list the consequences (surfaces, data classes, seed). Do not implement anything, do not set Accepted, do not edit CLAUDE.md or the domain model: the change is the new docs/decisions/NNNN-*.md file only. The run opens a pull request and leaves it for review.`
+const BUGFIX_RULES = () => `This is a bug fix: follow the fix-bug skill (reproduce first: a failing test, then the fix, then the same test passing). Return repro = { test, failedBefore: true }. If the bug cannot be covered by a test, return repro = { test: "", failedBefore: false, skippedReason } with the reason.`
+const TECH_DEBT_RULES = () => `This is a behaviour-preserving refactor: follow the refactor skill. Existing tests must pass unmodified; if you touch a test, say which and why in notes. No new features, no new dependencies.`
+const TEST_RULES = () => `This ticket adds tests only: follow the add-tests skill. Change no production code; if a test needs a production change, return status=blocked with the reason.`
+const DOCS_RULES = () => `This ticket changes documentation only: follow the write-docs skill. Change no code. Only lint and check:structure run.`
+const DECISION_RULES = () => `This is a decision ticket: you draft the decision, a person accepts it. Follow the add-adr skill and write the ADR as Status: Proposed, with a verified context, a recommendation and the alternatives you rejected. Do not implement anything, do not set Accepted, do not edit CLAUDE.md or the domain model: the change is the new docs/decisions/NNNN-*.md file only. The run opens a pull request and leaves it for review.`
 const PATHS = {
   feature: { rules: () => '', checks: '', review: true, merge: true, skill: true },
   bugfix: { rules: BUGFIX_RULES, checks: '', review: true, merge: true, skill: true },
@@ -307,7 +303,7 @@ ${pathOfTicket(t).skill ? `- Start with the new-feature skill: it fixes the orde
 - Do NOT run git add/commit/push/rebase/stash/checkout/reset. The ship step commits and opens the pull request.
 - If the spec needs a human decision or is blocked by missing work, stop and return status=blocked with the reason in notes.
 - ${FOLLOW_UP_RULE}
-${pathOfTicket(t).rules(t) ? `- ${pathOfTicket(t).rules(t)}\n` : ''}${pathOfTicket(t).skill ? `- If the ticket adds or changes data or behaviour, also run seed:demo against an empty database in your worktree as docs/demo-seed.md describes and report the result in notes.\n` : ''}- When done: ${runChecks(t)} If something fails and the fix is obvious, fix it and run the checks again; otherwise report it.
+${pathOfTicket(t).rules(t) ? `- ${pathOfTicket(t).rules(t)}\n` : ''}${pathOfTicket(t).skill ? `- If the ticket adds or changes data or behaviour, update the demo seed as its "Seed data" section says; packages/core/test/seed-demo.test.ts seeds the full demo from scratch inside pnpm test, so the checks cover it.\n` : ''}- When done: ${runChecks(t)} If something fails and the fix is obvious, fix it and run the checks again; otherwise report it.
 Return files = every path you created, changed or deleted (relative to the worktree).`
 
 const fixPrompt = (t, dir, failures) => `Checks failed after work on issue #${t.number} ("${t.title}").
@@ -334,6 +330,7 @@ const withStdin = (cmd, text) => `${cmd} <<'OKAZI_EOF'\n${text}\nOKAZI_EOF`
 const runnerPrompt = (cmd) => `Run exactly this one command from ${REPO} and nothing else. Its last line of output is one JSON object; return that object unchanged. If it prints no JSON, return state="failed" with the last 20 lines as reason.\n${cmd}`
 const shipCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/ship.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
 const mergeCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/merge.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
+const mainCiCmd = () => 'tools/backlog/main-ci.sh --timeout 540'
 const ciCmd = (t) => `tools/backlog/ci.sh ${t.number} --timeout 540`
 const residueCmd = (t, dir) => `tools/backlog/residue.sh ${dir} ${(t.renames || []).map(sh).join(' ')}`
 
@@ -526,6 +523,17 @@ async function runTicket(t) {
   return { t, outcome: 'landed', sha: merged.sha, pr: opened.url, model: state.model }
 }
 
+// Two tickets that were each green can still break each other once both are squash-merged, so after a batch with merges
+// the run waits for CI on main and stops when it is red (rollback.yml and a person take it from there).
+async function mainHealth() {
+  let r = null
+  for (let poll = 1; poll <= MAIN_POLLS; poll++) {
+    r = await agent(runnerPrompt(mainCiCmd()), { label: `main-ci p${poll}`, phase: 'Main', schema: LAND, model: 'haiku', effort: 'low' })
+    if (!r || r.state !== 'pending') break
+  }
+  return r
+}
+
 // ---- Main loop -------------------------------------------------------------
 // Tickets under the same ADR tend to edit the same files and collide on rebase, so a batch takes at most
 // one per ADR. The others stay unselected and come up in a later batch.
@@ -557,6 +565,7 @@ const results = []
 const followUps = []
 const filed = []
 const tried = [] // every ticket attempted this run; never reselected, so the loop always ends
+let mainRed = null
 for (let n = 1; n <= MAX_BATCHES; n++) {
   phase('Select')
   const sel = await agent(selectPrompt(tried), { label: `select #${n}`, schema: TICKETS, model: 'haiku', effort: 'low' })
@@ -577,6 +586,18 @@ for (let n = 1; n <= MAX_BATCHES; n++) {
   const out = await parallel(batch.map((t) => () => runTicket(t)))
   out.forEach((r, i) => results.push(r || { t: batch[i], outcome: 'failed', reason: 'pipeline error' }))
 
+  let stop = false
+  if (MAIN_CHECK && out.some((r) => r && r.outcome === 'landed')) {
+    phase('Main')
+    const h = await mainHealth()
+    if (h && h.state === 'red') {
+      mainRed = h
+      stop = true
+      log(`Stopped: CI on main is red at ${h.sha} (${h.url || 'no run url'}) after the merges of batch ${n}.`)
+    } else if (h && h.state === 'pending') log(`CI on main was still running after ${MAIN_POLLS} waits at ${h.sha}; continuing.`)
+    else if (!h || h.state !== 'green') log('The main CI check did not finish; continuing.')
+  }
+
   // Barrier on purpose: dedup needs every finding of the batch.
   if (followUps.length) {
     phase('Follow-ups')
@@ -585,7 +606,8 @@ for (let n = 1; n <= MAX_BATCHES; n++) {
     if (f) filed.push(...f.created)
     log(`Follow-ups: ${items.length} found, ${f ? f.created.length : 0} filed (source:agent, Backlog)${f && f.duplicates && f.duplicates.length ? `, ${f.duplicates.length} already tracked` : ''}`)
   }
+  if (stop) break
 }
 
 const pick = (o) => results.filter((r) => r.outcome === o).map((r) => ({ number: r.t.number, title: r.t.title, sha: r.sha, pr: r.pr, branch: r.branch, reason: r.reason, model: r.model }))
-return { landed: pick('landed'), opened: pick('opened'), parked: pick('parked'), failed: pick('failed'), followUpIssues: filed }
+return { mainRed, landed: pick('landed'), opened: pick('opened'), parked: pick('parked'), failed: pick('failed'), followUpIssues: filed }

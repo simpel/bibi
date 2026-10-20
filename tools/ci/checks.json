@@ -1,0 +1,50 @@
+{
+  "comment": "The single definition of the checks. Used by CI (.github/workflows/ci.yml) and by the work-backlog run (tools/backlog/checks.sh) through verify.mjs. stage: fast = always all reported; slow = run when every fast check passed; last = run when everything before passed. paths: regexes over changed files; the check runs in auto mode only when one matches (--all ignores them). job: the check has its own CI job and is skipped by --all. light: part of --light (documentation and decision tickets). needs: postgres = a database must be up.",
+  "checks": [
+    { "id": "lint", "name": "pnpm lint", "command": "pnpm lint", "stage": "fast", "light": true },
+    {
+      "id": "structure",
+      "name": "pnpm check:structure",
+      "command": "pnpm check:structure",
+      "stage": "fast",
+      "light": true
+    },
+    { "id": "typecheck", "name": "pnpm typecheck", "command": "pnpm typecheck", "stage": "fast" },
+    {
+      "id": "migrate",
+      "name": "pnpm db:migrate",
+      "command": "pnpm db:migrate",
+      "stage": "slow",
+      "needs": "postgres"
+    },
+    {
+      "id": "test",
+      "name": "pnpm test",
+      "command": "pnpm test",
+      "stage": "slow",
+      "needs": "postgres"
+    },
+    {
+      "id": "build",
+      "name": "pnpm build",
+      "command": "pnpm build",
+      "stage": "last",
+      "paths": [
+        "^apps/web/",
+        "^apps/mcp/",
+        "^packages/(ui|i18n|ai|graphql|api|auth)/",
+        "^packages/core/src/(schemas|index)\\.ts$",
+        "^packages/core/package\\.json$",
+        "^(package\\.json|pnpm-lock\\.yaml|pnpm-workspace\\.yaml|turbo\\.json|tsconfig[^/]*\\.json)$"
+      ]
+    },
+    {
+      "id": "storybook",
+      "name": "build-storybook",
+      "command": "pnpm --filter @okazi/ui build-storybook",
+      "stage": "last",
+      "job": "storybook",
+      "paths": ["^packages/ui/", "^(package\\.json|pnpm-lock\\.yaml)$"]
+    }
+  ]
+}
