@@ -4,6 +4,7 @@ import type { Permission } from "../../operations/permission";
 import { hasPermission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
+import { checkItemsUnused } from "../item/archive-guard";
 import { toItemDtos } from "../item/to-item-dto";
 import { archiveTicket } from "../ticket/archive-ticket";
 import { TICKET_INCLUDE, toTicketDto } from "../ticket/to-ticket-dto";
@@ -65,6 +66,8 @@ export async function archiveCustomerBundles({
   const allowed = requirePermission({ context, permission: "item:delete", what: "bundles" });
   if (!allowed.ok) return allowed;
   const before = await toItemDtos({ context, rows });
+  const unused = await checkItemsUnused({ context, items: before });
+  if (!unused.ok) return unused;
   for (const dto of before) {
     const row = await context.db.item.update({
       where: { id: dto.id },
