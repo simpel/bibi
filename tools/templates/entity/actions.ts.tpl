@@ -13,7 +13,7 @@ import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
 
-// Server actions for {{Pascal}}: forms that change data always go through these (CLAUDE.md, Forms).
+// Server actions for {{Pascal}}: forms that change data always go through these (apps/web/CLAUDE.md, Forms).
 // Remember: export {{Pascal}}UpdateInputSchema from packages/core/src/schemas.ts and the types/operations from index.ts.
 type {{Pascal}}UpdateInput = z.infer<typeof {{Pascal}}UpdateInputSchema>;
 

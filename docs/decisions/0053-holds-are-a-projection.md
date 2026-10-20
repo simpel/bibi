@@ -26,7 +26,7 @@
 6. A reconciliation query rebuilds line holds from lines and compares. It runs in the seed checks and in the test suite (rule 7 in ADR 0051).
 7. Changing a setup's changeover time re-derives every future buffer. If that creates an overlap, the change is refused with `CONFLICT` listing the lines.
 8. **Only lines that have not ended are re-derived.** Occupancy of ended lines is frozen. Changing a state's `hold` flag or a setup's changeover time never rewrites the past calendar or fails on old overlaps.
-9. **Discoverability.** Triggers are invisible to Prisma and to `check:structure`. The SQL lives in one file per function under `packages/db/sql/` (applied by the migration), each table with a trigger says so in its Prisma doc comment, and `CLAUDE.md` lists them under Architecture principles.
+9. **Discoverability.** Triggers are invisible to Prisma and to `check:structure`. The SQL lives in one file per function under `packages/db/sql/` (applied by the migration), each table with a trigger says so in its Prisma doc comment, and `packages/db/CLAUDE.md` lists them.
 
 Alternative considered: one TypeScript writer run by `execute` after every command for the lines it recorded. Rejected because a write that skips the hook skips the sync; a trigger cannot be skipped.
 

@@ -1,50 +1,33 @@
 # ADR triage
 
-Sorted from headings and size, so verify each ADR while migrating it. Policy: root `CLAUDE.md`, "Conventions".
+Policy: root `CLAUDE.md`, "Conventions". Rules go to the nearest `CLAUDE.md` with `Why: ADR NNNN`. Behaviour specs go to `docs/specs/` (entities stay in `docs/domain-model.md`). An ADR stays a decision record: context, the decision with rejected alternatives, consequences, dated one-line addenda.
 
-Rule of thumb: an ADR stays a decision record only if it names a rejected alternative or a costly reversal. A rule goes to the nearest `CLAUDE.md` with `Why: ADR NNNN`. A spec goes to `docs/domain-model.md` or the package, and the ADR keeps one paragraph.
-
-Only 0012 and 0059 have an "Alternatives" section. Most of the rest are rules or specs.
-
-## 1. Keep as decision records (short, no change)
-0001, 0002, 0003, 0007, 0013, 0023, 0024, 0025, 0027, 0030, 0031, 0033, 0042, 0058, 0060, 0012 (has alternatives).
-
-## 2. Rule: move the rule to a `CLAUDE.md`, keep a 1-paragraph ADR
-| ADR | Rule goes to |
+## Done: spec moved out, ADR shortened
+| ADR | Spec |
 |---|---|
-| 0005 authentication | `packages/auth/CLAUDE.md` (already there) |
-| 0006 database conventions | `packages/db/CLAUDE.md` (already there) |
-| 0009 language | root `CLAUDE.md` (already there) |
-| 0010 web data access | `apps/web/CLAUDE.md` (done) |
-| 0014 system logging | `packages/logger/CLAUDE.md` (already there) |
-| 0015 platform admin | `packages/core/CLAUDE.md`, `apps/web/CLAUDE.md` (done) |
-| 0035, 0036, 0041 navigation and views | `apps/web/CLAUDE.md` |
-| 0038 page width | `apps/web/CLAUDE.md` (done) |
-| 0040 data tables | `apps/web/CLAUDE.md` (done) |
-| 0039, 0046 user preferences and settings | `packages/core/CLAUDE.md` (`self` scope, done) |
-| 0032 audit retention, 0037 public docs | the owning package, when touched |
-| 0051 single source of truth | root `CLAUDE.md` (done) |
+| 0043, 0044, 0054 | `docs/specs/tickets-phases-and-states.md` |
+| 0034, 0050, 0055 | `docs/specs/permissions.md`, `docs/specs/assignments-and-responsibilities.md` |
+| 0021, 0026 | `docs/specs/configurable-domain.md` |
+| 0045 | `docs/specs/onboarding.md` |
+| 0049 | `docs/specs/change-layer.md` |
+| 0028 | `docs/specs/payments.md` |
 
-## 3. Spec: move the spec out, keep the decision paragraph
-Highest value first. These have addenda or amendments, so the truth is spread over several sections.
+## Done: stale content fixed or derivable lists removed
+0004, 0005, 0006, 0008, 0010, 0012, 0022, 0039. These described removed things (roles by name, `booking-<id>` addresses, `Room`, `self:edit`, history from `AuditLog`) or listed what the code already shows (the `UNSCOPED_MODELS` tables).
 
-| ADR | Words | Spec goes to |
-|---|---|---|
-| 0044 line states and phase grid | 1453 | `docs/domain-model.md` |
-| 0059 capabilities, demands, buffers | 1442 | `docs/plans/type-capabilities-and-resources.md` |
-| 0050 permission presets | 1286 | `packages/core/src/permissions/` README |
-| 0034 roles and responsibilities | 1206 | `docs/domain-model.md` |
-| 0045 soft-landing onboarding | 1116 | `docs/domain-model.md` or a web README |
-| 0043 tickets and phases | 1090 | `docs/domain-model.md` |
-| 0021 configurable items | 976 | `docs/domain-model.md` |
-| 0028 payments, 0029 invoicing | 921, 261 | `packages/core` payment feature README |
-| 0026 configurable domain implementation | 690 | `packages/core/CLAUDE.md` (rules done), rest to domain model |
-| 0049 conversational change layer | 728 | `packages/ai` README |
-| 0052, 0053, 0054, 0055, 0056, 0057 | 356–761 | `docs/domain-model.md` |
-| 0004 multi-tenancy, 0008 search and skills, 0022 quotes and occupancy | 346–654 | `docs/domain-model.md` or the package |
+## Read and kept as decision records
+0052, 0053, 0056, 0057, 0059 (decision, alternatives and consequences; about one page each; 0059 has a plan in `docs/plans/`), 0014, 0015.
 
-## 4. Superseded: keep as a stub with a pointer
+## Read in full, then fixed or kept
+- Fixed (stale or duplicated content): 0003 (web reads in-process), 0007 (assistant is `/`, models chosen by a superadmin), 0009 (Swedish-docs line and rule list removed), 0013 (staging resolved), 0023 (price is derived, not copied), 0024 (sheets go to a responsibility), 0025 (rewritten short, the spec is `docs/demo-seed.md`), 0027 (only two jobs built), 0035 (dock removed), 0036 (roles and top bar).
+- Kept as they are, no drift found: 0001, 0002, 0029, 0030, 0031, 0032, 0033, 0037, 0038, 0040 (its rules also live in `apps/web/CLAUDE.md`), 0041, 0042, 0046, 0051, 0058 (its open item on `paymentAccount.startOnboarding` still holds), 0060.
+
+## Superseded: keep as a stub with a pointer
 0011 (by 0021), 0020 (by 0034), 0048 (by 0050).
 
 ## Gaps
 Numbers 0016–0019 and 0047 do not exist. Do not reuse them.
+
+## Follow-ups
+- ADR 0059 describes work that is partly built (bundle expansion, demands, buffers): keep the plan and the ADR in step as slices land.
+- Size and function limits apply to code files only, not to `CLAUDE.md`, specs or ADRs. No docs length check is planned.

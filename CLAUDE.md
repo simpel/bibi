@@ -25,7 +25,7 @@
 - See `docs/decisions/0009-language-in-code-and-ui.md`.
 
 ## Conventions
-- **Rules live in the nearest `CLAUDE.md`** (root only for what crosses packages), written as short imperatives, never as catalogs the code already shows. **ADRs** (`docs/decisions/NNNN-title.md`) record why: a decision with a rejected alternative or a costly reversal. A rule links its reason in one line (`Why: ADR NNNN`). Specs go in `docs/domain-model.md` or the package, not in an ADR.
+- **Rules live in the nearest `CLAUDE.md`** (root only for what crosses packages), written as short imperatives, never as catalogs the code already shows. **ADRs** (`docs/decisions/NNNN-title.md`) record why: a decision with a rejected alternative or a costly reversal. A rule links its reason in one line (`Why: ADR NNNN`). Behaviour specs go in `docs/specs/` (entities in `docs/domain-model.md`), not in an ADR.
 - **Versioning (ADR 0060).** Every app and package has its own semver, from Conventional Commits by path (`feat:` minor, `fix:` patch, `!` major). Commit and PR titles are `<type>: <summary>`. release-please opens a release PR that bumps each changed `package.json` and its `CHANGELOG.md`; merging it creates the `@okazi/<name>-vX.Y.Z` tags and GitHub releases. Never edit versions or changelogs by hand.
 
 ## Tech stack

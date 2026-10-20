@@ -5,7 +5,7 @@ description: Fix violations of `pnpm check:structure` (150 lines/file, 40 lines/
 
 # Structure fixes
 
-Rules: `docs/decisions/0009-language-in-code-and-ui.md`. Check: `tools/check-structure.mjs` and `tools/lib/`.
+Rules: root `CLAUDE.md`, "Code rules" (language: `docs/decisions/0009-language-in-code-and-ui.md`). Check: `tools/check-structure.mjs` and `tools/lib/`.
 
 1. Run `pnpm check:structure` and read the output per file.
 2. Fix per rule:

@@ -22,9 +22,9 @@
 - All active rows except soft holds must not overlap on one item. This is enforced with an exclusion constraint in Postgres (`btree_gist`) and mapped to `CONFLICT`.
 - Setup time is added as `SETUP` right before the start, based on the setup's changeover time (`Setup`, ADR 0021).
 
-### History
-- Status and phase history comes from `AuditLog`. Entities keep `statusChangedAt` or `phaseChangedAt` for lists and sorting.
-
 ## Consequences
 - The quote state machine is tested as a table: every allowed and every disallowed transition.
 - AI can propose quote commands but not perform them without approval (ADR 0007).
+
+## Addenda
+- 2026-10-19: a `DRAFT` quote is a live view of the ticket's lines and `quote.send` freezes a snapshot (ADR 0052). Line holds are a database projection (ADR 0053). History comes from history tables, not `AuditLog` (ADR 0054).

@@ -10,20 +10,10 @@ The team worked in Swedish for documentation and product, but the codebase must 
 ## Decision
 ### Language
 - Code, entity names, API fields, tool names and comments in English. See the glossary in `docs/domain-model.md` for the sv↔en translation.
-- Documentation (`docs/`, ADRs and CLAUDE.md) in Swedish. (Superseded by the Addendum below.)
 - All UI text goes through next-intl with messages for Swedish and English. No hardcoded strings in components.
 
 ### Code rules
-- Max 150 lines per file and max 40 lines per function. One idea per file.
-- Named exports only. `default` only for Next.js page, layout and route.
-- No barrel files except a package's `src/index.ts`.
-- Functions take one typed object as a parameter.
-- Strict TypeScript without `any`. Zod at all boundaries.
-- Environment variables only through `@okazi/config`.
-- Typed `AppError` and `Result`. No thrown strings.
-- Feature folders with fixed file names: `schema.ts`, `operations.ts`, `graphql.ts`, `rest.ts`, `mcp.ts`, `ui/`.
-- UI only through `@okazi/ui`. Variants with cva. Tokens in one file.
-- Compliance is checked by `pnpm check:structure` and Biome in CI.
+- The code rules (file and function size, named exports, no barrels, one object parameter, strict TypeScript, Zod at boundaries, feature folder file names) live in the root `CLAUDE.md` and are checked by `pnpm check:structure` and Biome in CI.
 
 ## Consequences
 - English names make APIs and MCP tools consistent for international integrations. Swedish terms remain in the UI.

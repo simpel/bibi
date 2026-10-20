@@ -32,7 +32,7 @@ Board ids (fixed, same board as `work-backlog`; never run `gh project field-list
 ## 3. Analyze
 
 In the worktree:
-1. Read the issue's "To do"/"Done when" spec and any linked ADR in `docs/decisions/`.
+1. Read the issue's "To do"/"Done when" spec and any linked ADR in `docs/decisions/` and the spec it names.
 2. `git log origin/main..HEAD --stat` and `git diff origin/main..HEAD` to see what already exists.
 3. Re-read the parking reason comment from step 1.3 — that's the thing to actually fix.
 4. Run `docker compose -p okazi -f /Users/joelsanden/Code/okazi/docker-compose.yml up -d --wait postgres` then `CHECKS`, to see the current red/green state and exactly what's failing now (blockers may have landed since parking, so the picture can have changed).

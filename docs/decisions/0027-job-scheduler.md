@@ -37,3 +37,6 @@
 - The `pgboss` schema lives outside Prisma. The migration check and the backup (`pg_dump`) must include it.
 - Manual execution remains: `ticket.expireHolds` is an ordinary operation that can also be called from web, GraphQL, REST and MCP (ADR 0003).
 - Resolves the open question about a scheduler in ADR 0013 and in `CLAUDE.md`.
+
+## Addendum 2026-10-20
+- Built so far: `ticket.expireHolds` and `system.pseudonymiseAuditLog` (ADR 0032). Embedding and outgoing-mail queues are not built: indexing stays in-process (ADR 0030) and mail is sent after commit. Current rules for adding a job are in `apps/worker/CLAUDE.md`.

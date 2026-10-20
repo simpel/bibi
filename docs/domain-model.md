@@ -934,19 +934,6 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Operations (`self:read|write`): `userSettings.get` and `userSettings.update({ onboardingStatus })` (upsert, audited). Creating an organization sets `PENDING`; the app layout sends a pending user to `/onboarding`; skipping sets `SKIPPED`, approving the first setup `COMPLETED` ([ADR 0045](decisions/0045-soft-landing-onboarding.md)).
 
-### UserSettings (`UserSettings`)
-
-*MVP* · The typed settings of one user ([ADR 0046](decisions/0046-user-settings.md)), separate from the free-form `UserPreference`. First one: where the user is in the first setup of an organization. User-scoped like `UserPreference`; no row means nothing is pending.
-
-**Attributes**
-- onboardingStatus (`PENDING`, `COMPLETED` or `SKIPPED`)
-- updated
-
-**Relations**
-- `1:1` belongs to → User
-
-> Operations (`self:read|write`): `userSettings.get` and `userSettings.update({ onboardingStatus })` (upsert, audited). Creating an organization sets `PENDING`; the app layout sends a pending user to `/onboarding`; skipping sets `SKIPPED`, approving the first setup `COMPLETED` ([ADR 0045](decisions/0045-soft-landing-onboarding.md)).
-
 ### Task
 
 *Phase 2* · Set up room, AV test, cleaning.

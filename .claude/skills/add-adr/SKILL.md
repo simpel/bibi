@@ -5,7 +5,7 @@ description: Write a new decision record (ADR) in `docs/decisions/NNNN-title.md`
 
 # New ADR
 
-0. **Is it an ADR?** Write one only if you rejected a real alternative or the decision is costly to reverse. A convention or rule goes in the nearest `CLAUDE.md` with `Why: ADR NNNN` (or no ADR at all). A spec goes in `docs/domain-model.md` or the package. Keep an ADR to about one page; never grow an old one with a spec.
+0. **Is it an ADR?** A `type:decision` ticket always produces one. Otherwise write one only if you rejected a real alternative or the decision is costly to reverse. A convention or rule goes in the nearest `CLAUDE.md` with `Why: ADR NNNN` (or no ADR at all). A spec goes in `docs/specs/` (entities in `docs/domain-model.md`). Keep an ADR to about one page; never grow an old one with a spec.
 1. **Number:** highest `NNNN` + 1, taken across `docs/decisions/`, other branches and worktrees (`git worktree list`, `git branch -a`, `git log --all --name-only --pretty= -- docs/decisions | sort -u | tail`), so two ADRs never share a number. Filename `NNNN-short-title.md` (lowercase, hyphens). English.
 2. **Structure** (see `0059-capabilities-demands-and-buffers.md` for a full one):
    ```
@@ -26,6 +26,7 @@ description: Write a new decision record (ADR) in `docs/decisions/NNNN-title.md`
 6. **Older ADRs:** if the decision replaces one, set the old one to "Superseded by NNNN". If it only extends or amends one, add a dated "Addendum" at its end (as in 0010): `## Addendum YYYY-MM-DD – topic` with a one-line pointer `(ADR NNNN)`, and add it to this ADR's `Related`.
 7. **When it is accepted, follow through in the same change:**
    - `CLAUDE.md`: put the rule as a short imperative in the nearest folder's `CLAUDE.md`, linking the ADR. Root `CLAUDE.md` only if it crosses packages or changes the stack, a principle or the open questions. Mark anything not built as "accepted, not built yet" with the issue that builds it.
+   - The spec in `docs/specs/` the ADR names (`Spec:` in its header): update the current behaviour there, never in the ADR.
    - `docs/domain-model.md` and `docs/artifacts/domain-model.html` together: a **Target (ADR NNNN)** note on each entity it changes.
    - The board: create the issues with the `new-ticket` skill, in dependency order, each with Kind, Size, Priority, a Seed data section and Depends on. A rename or other large mechanical change is a `Codemod` ticket with a Renames table and lands first. Create the `adr:NNNN` label, and add it only to tickets that edit the same code (the run batches one ticket per ADR label).
    - Close the `type:decision` ticket that tracked the acceptance.
