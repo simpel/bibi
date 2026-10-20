@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { canPermission } from "@/lib/can";
 import { NAV_GROUPS, type NavAudience, type NavGroupId, type NavItem } from "./nav-items";
 import type { ShellAccess } from "./shell-types";
-import { isActive, SidebarLink } from "./sidebar-link";
+import { activeHref, SidebarLink } from "./sidebar-link";
 
 export type SidebarNavProps = {
   groups: readonly NavGroupId[];
@@ -43,6 +43,8 @@ export function SidebarNav({ groups, label, access, headings }: SidebarNavProps)
     }))
     .filter(({ items }) => items.length > 0);
   if (visible.length === 0) return null;
+  const hrefs = visible.flatMap(({ items }) => items.map((item) => item.href));
+  const current = activeHref({ pathname, hrefs });
   return (
     <nav aria-label={shell(label)} className="grid gap-4">
       {visible.map(({ group, items }) => (
@@ -58,7 +60,7 @@ export function SidebarNav({ groups, label, access, headings }: SidebarNavProps)
               href={href}
               label={t(labelKey)}
               icon={icon}
-              active={isActive({ pathname, href })}
+              active={href === current}
             />
           ))}
         </div>

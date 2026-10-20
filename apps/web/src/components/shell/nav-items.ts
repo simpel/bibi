@@ -6,10 +6,12 @@ import {
   CalendarRangeIcon,
   ContactIcon,
   KanbanIcon,
+  KeyRoundIcon,
   LayoutDashboardIcon,
   type LucideIcon,
   SettingsIcon,
   ShieldCheckIcon,
+  UsersIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 
@@ -21,6 +23,8 @@ export type NavLabelKey =
   | "customers"
   | "items"
   | "venues"
+  | "members"
+  | "apiKeys"
   | "settings"
   | "platformAdmin";
 
@@ -99,6 +103,21 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
     },
   ],
   admin: [
+    // Members (each row links to their permissions) and API keys, so admins find them directly.
+    {
+      href: ROUTES.settingsMembers,
+      labelKey: "members",
+      icon: UsersIcon,
+      audience: "everyone",
+      permission: "member:write",
+    },
+    {
+      href: ROUTES.settingsIntegrations,
+      labelKey: "apiKeys",
+      icon: KeyRoundIcon,
+      audience: "everyone",
+      permission: "apiKey:read",
+    },
     { href: ROUTES.settings, labelKey: "settings", icon: SettingsIcon, audience: "configure" },
     {
       href: ROUTES.admin,
