@@ -3,68 +3,80 @@
 Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `@okazi/ui`. The surface for venue staff. See ADR 0003, 0005, 0007, 0009 and 0010.
 
 ## Structure
-- `src/app/[locale]/` – pages (`(auth)` = login, sign-up, select-organization, oauth/consent, accept-invitation/[id]; `(app)` = protected shell; `/` is the assistant (ADR 0035), `/settings` the settings hub). `page.tsx`/`layout.tsx`/`route.ts` are thin: they read params and render a feature.
-- Page width (ADR 0038): `(app)/(contained)/` pages sit in `PageContainer` (`@okazi/ui`: `default`, nest `narrow` or `wide` with `gutter={false}`); `(app)/(canvas)/` pages (`/`, `/calendar`) are full width, fill the viewport below the top bar and own their gutter and scrolling. A new page goes into one of the two groups; `AppShell` adds no container.
-- `src/app/[locale]/(app)/(contained)/skills` (`page`, `new`, `[id]`, `[id]/edit`) – the Skills section.
-- `src/app/[locale]/(app)/(contained)/settings/*` – configuration, for admins only (ADR 0034): `settings/layout.tsx` shows a forbidden state to managers and members, and the sidebar hides the entry. `settings/members` changes a member's preset (an auto-saving select per row; names link to `settings/members/<id>`, the member's detail page), invites and removes; members with a role above the caller's own are read-only (`features/member/assignable-roles.ts`). `settings/members/<id>/permissions` and `settings/api-keys/<id>/permissions` (ADR 0050) show the preset as a select (changing it confirms, then sets the preset and drops every override) and a features × actions grid for allow/deny overrides (`permission.get|update`); every cell saves on change with one toast. Detail pages name their breadcrumb crumb with `CrumbName` (`components/shell/crumb-name.tsx`). Pages, navigation, the settings hub and the assistant follow the caller's effective permissions: a feature whose `view` is denied is hidden, not just disabled. `caller-abilities.ts` derives its abilities from the effective permissions and the caller's `role`.
-- `src/app/api/auth/[...all]` (Better Auth), `api/graphql`, `api/v1/[...path]` (REST + OpenAPI), `api/chat` (the assistant's turn, `createChatHandler`), `api/assistant/approval` (the approval card's POST, `createApprovalHandler`), `.well-known/oauth-authorization-server` and `oauth-protected-resource` (discovery for MCP/OAuth, forwarded to Better Auth). The chat and approval routes have `runtime = "nodejs"`, `dynamic = "force-dynamic"` and `maxDuration`.
-- `src/features/<entity>/ui/` – components per entity (fixed names `venue`, `item`, `skill`; `auth/ui` for sign-in; `assistant/` see below). `actions.ts` next to `ui/` = server actions. `web-surfaces.ts` = which operations have UI (`route` or `route: "*"` + `component` for UI in the shell, e.g. the assistant panel; `UI_EXEMPT` in `ui-exempt.ts` lists operations deliberately without UI).
-- `src/components/` – app level: `shell/` (sidebar in three zones per ADR 0036: assistant + recent conversations, work/catalog, and bottom-left settings, superadmin and the user menu with organization, theme and language; ⌘K incl. "Ask the assistant"; the `/settings` hub), `form/`, `states/`, `confirm-dialog`, `markdown-view` (safe markdown without raw HTML, parser in `lib/markdown/`).
-- `src/server/` – server code only: `run-operation.ts`, `operations.ts` (registration), `embed.ts` (`createEmbed` from `@okazi/ai/embed`), `handlers.ts` (GraphQL/REST), `assistant-handlers.ts` (chat + approval), `e2e-mock-model.ts` (E2E only, see below), `caller-abilities.ts`, `session.ts`, `guard.ts`, `auth-pages.ts`, `load-error.ts`, `to-action-result.ts`.
-- `src/lib/` – pure helper functions (error mapping, form helpers, routes). Tested with Vitest.
-- `src/proxy.ts` – next-intl routing (Next 16's name for middleware). `src/i18n/request.config.ts` is `*.config.ts` to allow a default export.
+- `src/app/[locale]/`: `(auth)` = sign-in flows, `(app)` = protected shell. `/` is the assistant (ADR 0035), `/settings` the settings hub. `page.tsx`/`layout.tsx`/`route.ts` are thin: they read params and render a feature.
+- Page width (ADR 0038): `(app)/(contained)/` pages sit in `PageContainer` (`@okazi/ui`); `(app)/(canvas)/` pages (`/`, `/calendar`) are full width and own their gutter and scrolling. A new page goes into one of the two groups; `AppShell` adds no container.
+- `settings/*` is for admins only (ADR 0034): `settings/layout.tsx` shows a forbidden state and the sidebar hides the entry. Pages, navigation, the settings hub and the assistant follow the caller's effective permissions: a feature whose `view` is denied is hidden, not just disabled (`server/caller-abilities.ts`). Detail pages name their breadcrumb crumb with `CrumbName`.
+- API routes: `api/auth/[...all]` (Better Auth), `api/graphql`, `api/v1/[...path]` (REST), `api/chat`, `api/assistant/approval`, `api/webhooks/resend` and `api/webhooks/stripe`, plus the `.well-known/oauth-*` discovery routes forwarded to Better Auth. Chat and approval routes set `runtime = "nodejs"`, `dynamic = "force-dynamic"` and `maxDuration`. New HTTP entry points are wrapped in `withRequestLogging`.
+- `src/features/<entity>/ui/` = components per entity; `actions.ts` next to `ui/` = server actions. `features/web-surfaces.ts` lists which operations have UI (`UI_EXEMPT` in `ui-exempt.ts` lists operations deliberately without UI, with a reason).
+- `src/components/` = app-level (`shell/`, `form/`, `data-table/`, `states/`, `confirm-dialog`). `src/server/` = server code only. `src/lib/` = pure helpers, tested with Vitest.
+- `src/proxy.ts` is next-intl routing (Next 16's name for middleware). `src/i18n/request.config.ts` is `*.config.ts` to allow a default export.
 
 ## Data access (a single path)
-- Reads in server components: `runOperation({ operation, input })`. Commands: server action → `runOperation` → `toActionResult`. The caller comes from `resolveExecuteContext({ headers: await headers() })` (the same as GraphQL/REST/MCP) and `execute` does validation, permissions, audit and search indexing.
-- Never `@okazi/db`, a custom `ExecuteContext` or `fetch` against `/api/graphql` in the web app. Why not GraphQL: ADR 0010 (same process, no cookie forwarding, types straight from Zod). GraphQL/REST exist for external callers.
-- Errors: `Result` → `handleLoadError` (401 → login, 404 → not-found, otherwise `ErrorState`) or `ActionResult` → toast via `useFormAction`/`useToastAction` (auth: `useAuthFormAction`), see "Forms" in the root `CLAUDE.md`. AppError code → `errors.*` in `lib/error-key.ts`; Better Auth errors in `lib/auth-error-key.ts`; Zod errors in `lib/issue-message-key.ts`.
-- Client components must not import values from `@okazi/core` (the barrel pulls in Prisma). Zod schemas are reached via `@okazi/core/schemas` (a barrel with only the Zod files; a new entity = one line in `packages/core/src/schemas.ts`). `import type` from `@okazi/core` is free.
-- The assistant does **not** go through `runOperation`: `/api/chat` runs the MCP client against `apps/mcp` as the user (ADR 0007). `runOperation` handles the web app's own pages, the conversation history (server actions in `features/assistant/actions.ts`) and Skills.
-- Forms: see "Forms" in the root `CLAUDE.md` (shadcn `Form`, server action, `useFormAction` with toasts). `formSchema({ schema, toInput })` turns raw string values into the core schema's input, `zodResolver` + `useZodMessages()` give localized errors.
+- Reads in server components: `runOperation({ operation, input })`. Commands: server action → `runOperation` → `toActionResult`. The caller comes from `resolveExecuteContext({ headers: await headers() })`, the same as GraphQL, REST and MCP.
+- Never `@okazi/db`, a custom `ExecuteContext` or `fetch` against `/api/graphql` in the web app. Why: ADR 0010.
+- Errors: `Result` → `handleLoadError` (401 → login, 404 → not-found, otherwise `ErrorState`), or `ActionResult` → toast. AppError code → `errors.*` in `lib/error-key.ts`.
+- Client components must not import values from `@okazi/core` (the barrel pulls in Prisma). Zod schemas come from `@okazi/core/schemas`; `import type` from `@okazi/core` is free.
+- The assistant does **not** go through `runOperation`: `/api/chat` runs the MCP client against `apps/mcp` as the user (ADR 0007).
 
 ## Adding a page/feature
-1. Core operation first (`packages/core`), then GraphQL/REST/MCP.
-2. `src/features/<entity>/actions.ts` (server actions) and `ui/` (list = server component, form/dialog = client). Copy `venue/ui` and `item/ui`.
-3. Page: `src/app/[locale]/(app)/(contained)/<route>/page.tsx` (thin; `(canvas)` only for full-width pages, ADR 0038), nav in the right group of `components/shell/nav-items.ts` (configuration pages go to `settings-items.ts`, ADR 0036).
-4. Add the operations to `WEB_SURFACES` in `features/web-surfaces.ts` (or to `UI_EXEMPT` in `features/ui-exempt.ts` with a reason).
+1. Core operation first (`packages/core`), then GraphQL, REST and MCP.
+2. `src/features/<entity>/actions.ts` and `ui/` (list = server component, form = client). Copy `venue/ui` and `item/ui`.
+3. Page: `(contained)/<route>/page.tsx` (thin), nav in the right group of `components/shell/nav-items.ts` (configuration pages go to `settings-items.ts`, ADR 0036).
+4. Add the operations to `WEB_SURFACES` (or `UI_EXEMPT`).
 5. Text in `packages/i18n/messages/sv.json` and `en.json` (key parity is tested).
 
 ## i18n
-- All text via `useTranslations` / `getTranslations`; no hardcoded strings or colors. Links and router from `@okazi/i18n/navigation` (locale-aware), not `next/link`.
-- Server components and layouts call `setRequestLocale(locale)`; `locale` from params is converted with `resolveLocale`.
-- Typed keys: `sv.json` is the source of truth. Dynamic keys must be unions (see `ErrorKey`).
+- All text via `useTranslations` / `getTranslations`; no hardcoded strings or colors. Links and router from `@okazi/i18n/navigation`, not `next/link`.
+- Server components and layouts call `setRequestLocale(locale)`; convert `locale` with `resolveLocale`.
+- `sv.json` is the source of truth for typed keys. Dynamic keys must be unions (see `ErrorKey`).
 
-## Environment variables
-Read only via `@okazi/config`: `DATABASE_URL`, `BETTER_AUTH_SECRET` (>= 32 characters), `BETTER_AUTH_URL`, `WEB_URL`, `MCP_URL`, `SMTP_URL`, `MAIL_FROM`, `MAIL_PROVIDER` (`smtp` or `resend`), `RESEND_API_KEY`, `RESEND_WEBHOOK_SECRET`, `MAIL_INBOUND_DOMAIN` (optional; ticket reply addresses), `AI_GATEWAY_API_KEY` (optional; without it the assistant cannot answer; models are chosen in `/admin/ai-models`), `WEB_OAUTH_CLIENT_ID` (after provisioning; the same value in `.env` for web and MCP), `E2E_MOCK_MODEL` (E2E only, ignored in production), `NODE_ENV`. `next.config.ts` and the scripts read the repo root `.env` via `@next/env`. (The only exception: `NEXT_RUNTIME` in `instrumentation.ts`, Next's own flag.)
+## Forms (all input in the UI)
+- Every form is a shadcn form: `Form`, `FormController` (shadcn's `FormField`), `FormItem`, `FormLabel`, `FormControl` and `FormMessage` from `@okazi/ui`, with react-hook-form and `zodResolver` with localised messages (`useZodMessages`). The schema comes from core (`@okazi/core/schemas`, via `formSchema({ schema, toInput })` when needed), never a hand-written duplicate.
+- Fields: `TextField` and `CheckField` (`components/form/`) require `<Form {...form}>` around the form. Other controls are built with `FormController` directly.
+- Field errors show in `FormMessage` under the field. Server field errors (`AppError.issues`, `path` = field name) are set with `form.setError`.
+- **Create and update are pages, not dialogs** (except tiny actions: archive, rename, assign, confirm). Create lives at `/new/<thing>`, update at `/<things>/<id>/update`. Multi-step creates use `components/wizard/`; add the thing to `NEW_PARENTS` in `breadcrumb-model.ts`.
+- **Forms that change data** are always submitted via a server action (`features/<entity>/actions.ts` → `runOperation` → `toActionResult`). No `fetch` from forms.
+- The toast flow is owned by the helpers, never by the component:
+  - Forms: `useFormAction({ form, action, messages, onSuccess?, onError? })` (`lib/use-form-action.ts`).
+  - Actions without fields: `useToastAction().run({ action, messages, onSuccess? })` (`lib/use-toast-action.ts`). `ConfirmDialog` has no error box: the outcome is a toast and the caller closes the dialog on success.
+  - One toast id per process: `toast.loading(pending)` is replaced by `toast.success(success, { id })`.
+  - Errors are a **persistent** toast with a close button (`duration: Infinity, closeButton: true`). Network errors become `errors.network`.
+  - `messages` come from i18n: `common.saving`/`archiving`/`sending` for pending, the entity's own key for the outcome (e.g. `venue.created`).
+- Auto-save (a select that saves on change) uses the same flow; on error the field is reset via `onError`.
+- References: `features/venue/ui/venue-form.tsx` and `features/venue/ui/archive-venue-dialog.tsx`.
+- Exceptions: sign-in and account forms use `useAuthFormAction` through the Better Auth client (OAuth needs the signed `sig` query and a browser redirect); search and filter forms navigate by URL with no action or toast; the chat composer streams via `useChat`.
+- Load errors (not action outcomes): `ErrorState` in server components, `InlineLoadError` in client islands.
+- `ErrorBanner`, `useActionSubmit` and `useAuthSubmit` are removed. Do not reintroduce equivalent patterns.
 
-## Commands
-- `pnpm --filter @okazi/web dev | build | start | typecheck | test`
-- First time: `docker compose up -d postgres`, `pnpm db:migrate`, `pnpm --filter @okazi/core seed:skills`, `pnpm --filter @okazi/web provision:oauth` (prints `WEB_OAUTH_CLIENT_ID=...`).
-- `pnpm --filter @okazi/web provision:oauth [--redirect-uri <url>]` – creates/updates the first-party client for the assistant (public, PKCE, `skip_consent`, linked to the MCP resource). Idempotent (finds the client by name). The redirect URI is `${WEB_URL}/api/assistant/oauth/callback`, but it is never followed: `getFirstPartyAccessToken` runs authorization code + PKCE in-process and reads the code from the authorize response, so **no callback route exists or is needed**. The URI only has to be registered.
-- E2E (Playwright, preinstalled Chromium `/opt/pw-browsers/chromium`, never run `playwright install`): build `pnpm --filter @okazi/mcp build` and `pnpm --filter @okazi/web build`, set `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL=http://localhost:3000` and `WEB_OAUTH_CLIENT_ID`, then run `pnpm --filter @okazi/web test:e2e`. `playwright.config.ts` starts MCP (`node ../mcp/dist/http.js`, :3001) and the web app (`pnpm start`, :3000) with `E2E_MOCK_MODEL=1` and `NODE_ENV=test` (`next start` otherwise sets `production`, where the flag is ignored). Servers that are already running are reused. The ports come from `WEB_URL`/`MCP_URL` in the root `.env` (default 3000/3001; worktrees from `pnpm wt:new` get their own ports and database via `tools/worktree/setup.sh`, and `dev`/`start` read `WEB_PORT`). CI (`e2e` job in `.github/workflows/ci.yml`): Postgres service, `db:migrate`, `seed:skills`, `provision:oauth` (its `WEB_OAUTH_CLIENT_ID` line goes to `$GITHUB_ENV`), builds of mcp and web, Playwright's Chromium (cached in `~/.cache/ms-playwright`, no `PW_CHROMIUM_PATH` there), then `test:e2e`. Required variables: `DATABASE_URL`, `BETTER_AUTH_SECRET` (>= 32 characters), `BETTER_AUTH_URL`, `WEB_URL`, `MCP_URL`, `WEB_OAUTH_CLIENT_ID`, `E2E_MOCK_MODEL=1` (`NODE_ENV=test` is set by `playwright.config.ts`). With `CI` set the HTML report goes to `apps/web/playwright-report`, uploaded as an artifact together with `test-results` (traces). The `storybook` job runs `pnpm --filter @okazi/ui build-storybook`. `E2E_SCREENSHOTS_DIR=<dir>` enables `e2e/screenshots.spec.ts` (light/dark, desktop/mobile).
+## Tables (ADR 0040)
+- Every table is a shadcn TanStack table, rendered with `PersistedDataTable` (`components/data-table/`, on `DataTable` in `@okazi/ui`) with a stable `tableId`. Columns live in a `use-<entity>-columns` hook; the assistant's card has its own hook and `tableId` with the same cells. Never a raw `<table>`, never the `Table*` primitives directly, never another table library. Only exception: the calendar grid.
+- All columns are sortable. Default order: multiselect checkbox (only if bulk editing helps), main title, descriptive columns in the organization's order, status, dates and times, numbers and amounts, row actions (far right).
+- Users reorder columns by drag and drop (always on); the checkbox and row actions stay pinned. The order is saved per user and per table as a server-side user preference, not in `localStorage`.
+- Row actions go in a `DropdownMenu` submenu, each with a text label. Never an icon-only action button.
+
+## `"use client"`
+- Set only at the client boundary: components that a server component renders and that themselves have state, context or browser events. Children and hooks inherit the boundary.
 
 ## The assistant (ADR 0007, 0008)
-- `features/assistant/` – `state/` (context and hooks: `AssistantProvider` in the shell holds ONE `useChat` for the home page and ⌘K; `chat-transport.ts` = `DefaultChatTransport` against `/api/chat` that sends only the last message + `pageContext` from `usePathname`), `lib/` (pure helper functions with tests: page context, error mapping, stored messages → `useChat`), `ui/` (home, chat, history, composer), `ui/generative/` (generative UI), `actions.ts` (list/open/rename/archive conversations via `runOperation`).
-- The assistant exists only on the home page `/` (`assistant-home.tsx`, ADR 0035); there is no dock, sheet, toggle or shortcut elsewhere. `AssistantProvider` stays in the shell so the session survives navigation: `ask` (⌘K) and `prefill` (calendar slots) start a conversation and navigate to `/` via `goHome`. The top bar has a breadcrumb on the left (`breadcrumb-model.ts`) and the ⌘K command bar on the right. The conversation id comes from the data part `data-okazi-conversation` (and the header `x-okazi-conversation-id`). Errors before the stream are JSON `{ error: { code } }` and are mapped to `errors.*`.
-- Generative UI: `resolveToolUi` (`@okazi/ai/ui`) gives `{ component, props }`; `ui/generative/components.ts` is `{ [K in UiComponent]: ComponentType<GenerativeProps<K>> }` (exhaustive at compile time, plus a test against `UI_COMPONENTS`). A new key in `@okazi/ai` ⇒ a type error here until the component exists. All cards are built from `@okazi/ui`; links go to real pages (`venueRoute`, `skillRoute`).
-- Approval cards (`ui/generative/approval/`): `extractPendingApprovals` gives a card per tool call. Approve/Decline POSTs `{ decision, approvalToken, conversationId?, toolCallId?, operation }` to `/api/assistant/approval`; 409 = already used, 403 = invalid/expired, 401 = signed out, network errors can be retried. After approval the result is shown via `ToolResultView`, a toast and `router.refresh()`. The client adds nothing to the chat: the server saved a TOOL message and the next turn reads the history from the database. Saved decisions are restored when a conversation is opened (`stored-messages.ts`).
-- ⌘K: `command-bar.tsx` + `ask-assistant-group.tsx`. Free text + Enter calls `ask({ text })`: a new conversation (no `conversationId`), navigates to `/` and streams the answer there.
-- E2E only: `E2E_MOCK_MODEL=1` (and `NODE_ENV` ≠ `production`, see `server/mock-model-policy.ts`) makes `assistant-handlers.ts` dynamically import `server/e2e-mock-model.ts` (`MockLanguageModelV4` from `ai/test`): "create venue <name>" → `venue_create`, "list venues" → `venue_list`, "list skills" → `skill_list`.
-- `WEB_OAUTH_CLIENT_ID` + `x-okazi-actor: ai` are handled by `packages/auth` (only this client may act as AI).
-- `/login` and `/select-organization` continue the OAuth flow via `authClient.oauth2.continue({ postLogin: true })` when the URL has a signed `sig` query; `/oauth/consent` shows consent.
-
-## Skills
-- `features/skill/` – list (`?scope=&status=&q=&semantic=1&cursor=`: `skill.list`, or core `search` for search by meaning), detail (rendered instructions, tools, resources, version), form (react-hook-form + `SkillCreateInputSchema` via `@okazi/core/schemas`), publish, archive, share (personal → organization, admin only: the button is shown via `server/caller-abilities.ts`, the operation checks anyway), export (`skill.export` → `.md` download) and import (file or pasted SKILL.md). `skill-abilities.ts` is the only place that decides which buttons are shown.
+- `features/assistant/`: `AssistantProvider` in the shell holds ONE `useChat` for the home page and ⌘K. The assistant exists only on `/` (ADR 0035); `ask` and `prefill` start a conversation and navigate there.
+- Generative UI: `resolveToolUi` (`@okazi/ai/ui`) gives `{ component, props }`; `ui/generative/components.ts` is exhaustive at compile time, so a new key in `@okazi/ai` is a type error here until the component exists. Cards are built from `@okazi/ui`.
+- Approval cards POST the decision to `/api/assistant/approval`; the client adds nothing to the chat, the server saves a TOOL message and the next turn reads history from the database.
+- `WEB_OAUTH_CLIENT_ID` + `x-okazi-actor: ai` are handled by `packages/auth` (only this client may act as AI). `provision:oauth` registers a redirect URI that is never followed (the code is read in-process), so **no callback route exists or is needed**.
 
 ## Superadmin (ADR 0015)
-- `src/app/[locale]/(admin)/admin/` (`logs`, `ai-models`) with its own shell (`features/admin/ui/admin-shell.tsx`, shadcn sidebar). `server/platform-guard.ts`: anonymous → login, otherwise 404 unless superadmin.
-- Data: `runPlatformOperation` (`server/run-platform-operation.ts`) with `platformOperations()` (gateway catalog injected). Never `runOperation` for platform data.
-- AI models: a TanStack table with one row per AI feature. Each row has a shadcn form with a `Select` that shows only *possible* models (`aiModel.list({ feature })`), with price per 1M tokens. The choice is saved directly via `useFormAction`. The embedding feature requires confirmation first.
-- The log view: the URL is the view's state (`page`, `pageSize`, `level`, `q`, `requestId`, `surface`, `log`). See `features/admin/logs/log-params.ts`.
-- `"use client"` only on the islands that server components render (`admin-nav`, `log-table`, `log-filters`, `log-detail-sheet`, `ai-feature-table`). Children and hooks inherit the client boundary.
+- `src/app/[locale]/(admin)/admin/` with its own shell. `server/platform-guard.ts`: anonymous → login, otherwise 404 unless superadmin. Platform data goes through `runPlatformOperation`, never `runOperation`. AI models are chosen only in `/admin/ai-models`.
+- Granting: `pnpm --filter @okazi/auth grant-superadmin <email>`.
+
+## Webhooks
+- `POST /api/webhooks/resend`: inbound mail, stored as `InboundEmail` on the ticket for `ticket-<id>@<domain>` (ADR 0012, `packages/mail`).
+- `POST /api/webhooks/stripe`: signed with `STRIPE_WEBHOOK_SECRET`; runs the SYSTEM-only `payment.applySignal` and `paymentAccount.applySignal` (ADR 0028).
+
+## Commands and environment
+- `pnpm --filter @okazi/web dev | build | start | typecheck | test`. First time: `docker compose up -d postgres`, `pnpm db:migrate`, `pnpm --filter @okazi/core seed:skills`, `pnpm --filter @okazi/web provision:oauth` (prints `WEB_OAUTH_CLIENT_ID=...` for `.env`).
+- Environment variables are read only via `@okazi/config`. `E2E_MOCK_MODEL` is ignored in production. E2E: see `e2e/README.md`.
 
 ## Pitfalls
-- `loading.tsx`/`error.tsx`/`not-found.tsx` are not allowed default exports in the Biome config: use `// biome-ignore lint/style/noDefaultExport` (see `[locale]/error.tsx`).
-- Auth pages opened by OAuth (`sig` in the query) must not redirect signed-in users (`login/page.tsx`).
-- A magic link during an ongoing OAuth flow does not automatically return to authorize (not verified). Password and OTP continue the flow.
-- The web font for `--font-serif` (Source Serif 4) is not loaded yet; the system serif is used until the Claude Design export exists.
+- `loading.tsx`/`error.tsx`/`not-found.tsx` need `// biome-ignore lint/style/noDefaultExport` (see `[locale]/error.tsx`).
+- Auth pages opened by OAuth (`sig` in the query) must not redirect signed-in users.
+- A magic link during an ongoing OAuth flow does not return to authorize (not verified). Password and OTP continue the flow.
+- The web font for `--font-serif` is not loaded yet; the system serif is used until the Claude Design export exists.

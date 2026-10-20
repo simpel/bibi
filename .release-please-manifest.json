@@ -1,0 +1,16 @@
+{
+  "apps/mcp": "0.1.0",
+  "apps/web": "0.1.0",
+  "apps/worker": "0.1.0",
+  "packages/ai": "0.1.0",
+  "packages/api": "0.1.0",
+  "packages/auth": "0.1.0",
+  "packages/config": "0.1.0",
+  "packages/core": "0.1.0",
+  "packages/db": "0.1.0",
+  "packages/graphql": "0.1.0",
+  "packages/i18n": "0.1.0",
+  "packages/logger": "0.1.0",
+  "packages/mail": "0.1.0",
+  "packages/ui": "0.1.0"
+}

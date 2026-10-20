@@ -1,0 +1,63 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "b7cbe59400ea69e98fe95acdfda1a69af08956d4",
+  "plugins": ["node-workspace"],
+  "packages": {
+    "apps/mcp": {
+      "release-type": "node",
+      "component": "@okazi/mcp"
+    },
+    "apps/web": {
+      "release-type": "node",
+      "component": "@okazi/web"
+    },
+    "apps/worker": {
+      "release-type": "node",
+      "component": "@okazi/worker"
+    },
+    "packages/ai": {
+      "release-type": "node",
+      "component": "@okazi/ai"
+    },
+    "packages/api": {
+      "release-type": "node",
+      "component": "@okazi/api"
+    },
+    "packages/auth": {
+      "release-type": "node",
+      "component": "@okazi/auth"
+    },
+    "packages/config": {
+      "release-type": "node",
+      "component": "@okazi/config"
+    },
+    "packages/core": {
+      "release-type": "node",
+      "component": "@okazi/core"
+    },
+    "packages/db": {
+      "release-type": "node",
+      "component": "@okazi/db"
+    },
+    "packages/graphql": {
+      "release-type": "node",
+      "component": "@okazi/graphql"
+    },
+    "packages/i18n": {
+      "release-type": "node",
+      "component": "@okazi/i18n"
+    },
+    "packages/logger": {
+      "release-type": "node",
+      "component": "@okazi/logger"
+    },
+    "packages/mail": {
+      "release-type": "node",
+      "component": "@okazi/mail"
+    },
+    "packages/ui": {
+      "release-type": "node",
+      "component": "@okazi/ui"
+    }
+  }
+}
