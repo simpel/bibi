@@ -50,7 +50,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "customer.create", route: "/customers" },
   { operation: "customer.update", route: "/customers/[id]" },
   { operation: "customer.archive", route: "/customers/[id]" },
-  { operation: "item.saveAsPackage", route: "/customers/[id]" },
+  { operation: "item.saveAsBundle", route: "/customers/[id]" },
   // Contact persons are listed and edited on their customer's page.
   { operation: "contact.list", route: "/customers/[id]" },
   { operation: "contact.create", route: "/customers/[id]" },

@@ -15,7 +15,7 @@ export type ItemFactsInput = {
   hidden: string;
 };
 
-/** Facts of an item's page: type, venue and the type's own fields (behaviours: `ItemBehaviours`). */
+/** Facts of an item's page: type, venue and the type's own fields (capabilities: `ItemCapabilities`). */
 export function itemFacts({ item, type, data, t, yesNo, hidden }: ItemFactsInput): Fact[] {
   const venue =
     data.venuesHidden && item.venueId ? hidden : nameOf({ options: data.venues, id: item.venueId });

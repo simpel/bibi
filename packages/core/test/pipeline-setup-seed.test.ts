@@ -41,7 +41,7 @@ describe("guided setup from the empty demo (seed:demo --skip-pipeline)", {
       context,
     });
     const itemTypes = unwrap({ result: listed }).items.map((type) => {
-      const bookable = type.behaviours.includes("BOOKABLE");
+      const bookable = type.capabilities.includes("BOOKABLE");
       const template = bookable ? "bookable" : "other";
       return {
         entityTypeId: type.id,

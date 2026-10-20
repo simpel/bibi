@@ -29,7 +29,7 @@ async function loadStates(): Promise<LineStateOption[]> {
 export async function loadProgramData(): Promise<Result<ProgramFormData>> {
   const [typed, items, setups, states] = await Promise.all([
     loadTypedFormData({ base: "LINE" }),
-    runOperation({ operation: listItems, input: { behaviour: "BOOKABLE", limit: LIMIT } }),
+    runOperation({ operation: listItems, input: { capability: "BOOKABLE", limit: LIMIT } }),
     runOperation({ operation: listSetups, input: { limit: LIMIT } }),
     loadStates(),
   ]);

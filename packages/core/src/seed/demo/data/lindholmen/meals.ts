@@ -1,19 +1,22 @@
 import type { DemoItem } from "../../config-types";
 
-type MealInput = Pick<DemoItem, "name" | "parts" | "choices"> & { kr: number; style: string };
+type MealInput = Pick<DemoItem, "name" | "parts" | "customisations"> & {
+  kr: number;
+  style: string;
+};
 
-const meal = ({ name, kr, style, parts, choices }: MealInput): DemoItem => ({
+const meal = ({ name, kr, style, parts, customisations }: MealInput): DemoItem => ({
   type: "Meal",
   name,
   fields: { "Service style": style },
   ...{ priceKr: kr, priceUnit: "PER_PERSON" },
   ...(parts ? { parts } : {}),
-  ...(choices ? { choices } : {}),
+  ...(customisations ? { customisations } : {}),
 });
 
 const named = ({ names }: { names: readonly string[] }) => names.map((name) => ({ name }));
 
-/** Lindholmen's 6 meals (`docs/demo-seed.md`, Meals). Parts outside a choice group are mandatory. */
+/** Lindholmen's 6 meals (`docs/demo-seed.md`, Meals). Parts outside a customisation group are mandatory. */
 export const lindholmenMeals: readonly DemoItem[] = [
   meal({
     ...{ name: "Conference breakfast", kr: 125, style: "Buffet" },
@@ -30,21 +33,21 @@ export const lindholmenMeals: readonly DemoItem[] = [
   meal({
     ...{ name: "Morning break", kr: 65, style: "Buffet" },
     parts: named({ names: ["Coffee and tea"] }),
-    choices: [
+    customisations: [
       { name: "Snack", options: named({ names: ["Cinnamon bun", "Oat ball", "Fresh fruit"] }) },
     ],
   }),
   meal({
     ...{ name: "Afternoon break", kr: 65, style: "Buffet" },
     parts: named({ names: ["Coffee and tea"] }),
-    choices: [
+    customisations: [
       { name: "Snack", options: named({ names: ["Carrot cake", "Oat ball", "Fresh fruit"] }) },
     ],
   }),
   meal({
     ...{ name: "Conference lunch", kr: 245, style: "Buffet" },
     parts: named({ names: ["Green salad and bread", "Mineral water"] }),
-    choices: [
+    customisations: [
       {
         name: "Main course",
         options: named({
@@ -60,7 +63,7 @@ export const lindholmenMeals: readonly DemoItem[] = [
   }),
   meal({
     ...{ name: "Three-course dinner", kr: 595, style: "Plated" },
-    choices: [
+    customisations: [
       {
         name: "Starter",
         options: named({

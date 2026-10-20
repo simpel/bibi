@@ -37,30 +37,30 @@ async function customerCounts({
 
 const partCount = ({ item }: { item: DemoItem }) =>
   (item.parts?.length ?? 0) +
-  (item.choices ?? []).reduce((sum, group) => sum + group.options.length, 0);
+  (item.customisations ?? []).reduce((sum, group) => sum + group.options.length, 0);
 
-/** Slice 3: catalog and customer-specific items, their parts and choice groups. */
+/** Slice 3: catalog and customer-specific items, their parts and customisation groups. */
 async function catalogCounts({ context, org }: CheckDemoConfigInput): Promise<Count[]> {
-  const own = org.customers.flatMap((customer) => customer.packages ?? []);
+  const own = org.customers.flatMap((customer) => customer.bundles ?? []);
   const items = [...org.config.items, ...own];
   const { db } = context;
   const sum = ({ values }: { values: number[] }) => values.reduce((a, b) => a + b, 0);
   return [
     { what: "items", actual: await db.item.count(), expected: items.length },
     {
-      what: "customer packages",
+      what: "customer bundles",
       actual: await db.item.count({ where: { customerId: { not: null } } }),
       expected: own.length,
     },
     {
       what: "parts",
-      actual: await db.itemComponent.count(),
+      actual: await db.itemPart.count(),
       expected: sum({ values: items.map((item) => partCount({ item })) }),
     },
     {
-      what: "choice groups",
-      actual: await db.itemChoiceGroup.count(),
-      expected: sum({ values: items.map((item) => item.choices?.length ?? 0) }),
+      what: "customisation groups",
+      actual: await db.itemCustomisationGroup.count(),
+      expected: sum({ values: items.map((item) => item.customisations?.length ?? 0) }),
     },
   ];
 }

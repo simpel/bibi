@@ -4,17 +4,17 @@
 /// organization; core checks that its base is a ticket or an item. `assigneeId` is a member (user id); it is null
 /// when the subject only has followers so far.
 model Assignment {
-  id               String                @id @default(cuid(2))
+  id               String               @id @default(cuid(2))
   organizationId   String
   recordId         String
   responsibilityId String?
   assigneeId       String?
-  status           RecordStatus          @default(ACTIVE)
-  createdAt        DateTime              @default(now())
-  updatedAt        DateTime              @updatedAt
+  status           RecordStatus         @default(ACTIVE)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
   createdBy        String?
-  record           Record                @relation(fields: [recordId, organizationId], references: [id, organizationId])
-  responsibility   Responsibility?       @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+  record           Record               @relation(fields: [recordId, organizationId], references: [id, organizationId])
+  responsibility   Responsibility?      @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
   followers        AssignmentFollower[]
 
   @@unique([id, organizationId])
@@ -34,15 +34,15 @@ enum FollowEffect {
 /// never required by rules. Only explicit choices are stored; the defaults come from the
 /// responsibility. Removed when the choice is undone (audited on the assignment).
 model AssignmentFollower {
-  id             String     @id @default(cuid(2))
+  id             String       @id @default(cuid(2))
   organizationId String
   assignmentId   String
   userId         String
   effect         FollowEffect @default(FOLLOW)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   createdBy      String?
-  assignment     Assignment @relation(fields: [assignmentId, organizationId], references: [id, organizationId])
+  assignment     Assignment   @relation(fields: [assignmentId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@unique([assignmentId, userId])

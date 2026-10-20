@@ -5,12 +5,12 @@ import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsToInput } from "@/components/typed-fields/raw-fields";
 import { blankToNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
-import { hasBehaviour } from "./has-behaviour";
+import { hasCapability } from "./has-capability";
 import {
-  type ChoiceGroupFormValue,
-  type ComponentFormValue,
+  type CustomisationGroupFormValue,
   type ItemFormValues,
   NO_VENUE,
+  type PartFormValue,
 } from "./item-form-values";
 
 /** What the resolver outputs: core's create input. */
@@ -22,27 +22,30 @@ export type ItemInputArgs = {
   specs: FieldSpec[];
 };
 
-type ComponentsInput = { components: ComponentFormValue[] };
+type PartsInput = { parts: PartFormValue[] };
 
-/** Raw part rows → core's `components`; rows without a part are left out. */
-function componentsToInput({ components }: ComponentsInput) {
-  return components
-    .filter((component) => component.itemId !== "")
-    .map((component) => ({
-      itemId: component.itemId,
-      quantity: numberOrNull({ value: component.quantity }) ?? 1,
-      offsetMinutes: numberOrNull({ value: component.offsetMinutes }) ?? 0,
-      durationMinutes: numberOrNull({ value: component.durationMinutes }),
-      required: component.required,
+/** Raw part rows → core's `parts`; rows without a part are left out. */
+function partsToInput({ parts }: PartsInput) {
+  return parts
+    .filter((part) => part.itemId !== "")
+    .map((part) => ({
+      itemId: part.itemId,
+      quantity: numberOrNull({ value: part.quantity }) ?? 1,
+      offsetMinutes: numberOrNull({ value: part.offsetMinutes }) ?? 0,
+      durationMinutes: numberOrNull({ value: part.durationMinutes }),
+      required: part.required,
     }));
 }
 
-type ChoiceGroupsInput = { choiceGroups: ChoiceGroupFormValue[]; components: ComponentFormValue[] };
+type CustomisationGroupsInput = {
+  customisationGroups: CustomisationGroupFormValue[];
+  parts: PartFormValue[];
+};
 
-/** Raw groups → core's `choiceGroups`; options of parts that were removed are dropped. */
-function choiceGroupsToInput({ choiceGroups, components }: ChoiceGroupsInput) {
-  const partIds = components.map((component) => component.itemId).filter((id) => id !== "");
-  return choiceGroups.map((group) => ({
+/** Raw groups → core's `customisationGroups`; options of parts that were removed are dropped. */
+function customisationGroupsToInput({ customisationGroups, parts }: CustomisationGroupsInput) {
+  const partIds = parts.map((part) => part.itemId).filter((id) => id !== "");
+  return customisationGroups.map((group) => ({
     name: group.name.trim(),
     minPick: numberOrNull({ value: group.minPick }) ?? 0,
     maxPick: numberOrNull({ value: group.maxPick }) ?? 1,
@@ -50,32 +53,32 @@ function choiceGroupsToInput({ choiceGroups, components }: ChoiceGroupsInput) {
   }));
 }
 
-/** Fields of the behaviours the type has; sections of other behaviours are left out. */
-function behaviourInput({ values, type }: Omit<ItemInputArgs, "specs">) {
+/** Fields of the capabilities the type has; sections of other capabilities are left out. */
+function capabilityInput({ values, type }: Omit<ItemInputArgs, "specs">) {
   const kr = numberOrNull({ value: values.price });
   return {
-    ...(hasBehaviour({ type, behaviour: "PRICED" })
+    ...(hasCapability({ type, capability: "PRICED" })
       ? {
           priceMinor: kr === null ? null : Math.round(kr * 100),
           priceUnit: kr === null ? null : values.priceUnit,
           vatRatePercent: numberOrNull({ value: values.vatRatePercent }),
         }
       : {}),
-    ...(hasBehaviour({ type, behaviour: "BOOKABLE" })
+    ...(hasCapability({ type, capability: "BOOKABLE" })
       ? { defaultDurationMinutes: numberOrNull({ value: values.defaultDurationMinutes }) }
       : {}),
-    ...(hasBehaviour({ type, behaviour: "SETUPS" })
+    ...(hasCapability({ type, capability: "SETUPS" })
       ? {
           setups: Object.entries(values.setups)
             .filter(([, capacity]) => capacity.trim() !== "")
             .map(([setupId, capacity]) => ({ setupId, capacity: Number(capacity) })),
         }
       : {}),
-    ...(hasBehaviour({ type, behaviour: "COMPOSABLE" })
-      ? { components: componentsToInput({ components: values.components }) }
+    ...(hasCapability({ type, capability: "BUNDLE" })
+      ? { parts: partsToInput({ parts: values.parts }) }
       : {}),
-    ...(hasBehaviour({ type, behaviour: "CHOICES" })
-      ? { choiceGroups: choiceGroupsToInput(values) }
+    ...(hasCapability({ type, capability: "CUSTOMISATIONS" })
+      ? { customisationGroups: customisationGroupsToInput(values) }
       : {}),
   };
 }
@@ -88,7 +91,7 @@ export function itemFormToInput({ values, type, specs }: ItemInputArgs) {
     name: values.name.trim(),
     description: blankToNull({ value: values.description }),
     fields: fieldsToInput({ values, specs }),
-    ...behaviourInput({ values, type }),
+    ...capabilityInput({ values, type }),
   };
 }
 

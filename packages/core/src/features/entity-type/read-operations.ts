@@ -16,7 +16,7 @@ export const listEntityTypes = defineOperation({
   kind: "query",
   description:
     "List the organization's own types (e.g. Conference room, Dish, Boat for items; Company for " +
-    "customers) with their behaviours and fields. Read this to know which fields an item has.",
+    "customers) with their capabilities and fields. Read this to know which fields an item has.",
   input: EntityTypeListInputSchema,
   output: EntityTypeListOutputSchema,
   permission: "configuration:read",
@@ -35,7 +35,7 @@ export const listEntityTypes = defineOperation({
 export const getEntityType = defineOperation({
   name: "entityType.get",
   kind: "query",
-  description: "Get one type by id, with its behaviours and fields.",
+  description: "Get one type by id, with its capabilities and fields.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,
   permission: "configuration:read",

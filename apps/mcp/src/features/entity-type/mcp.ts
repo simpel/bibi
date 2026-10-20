@@ -9,7 +9,7 @@ export const entityTypeMcpTools = [
   mcpTool({
     operation: "entityType.create",
     summary: ({ input }) =>
-      `Create ${text({ value: input.base })} type "${text({ value: input.name })}" (behaviours: ${list({ value: input.behaviours })})`,
+      `Create ${text({ value: input.base })} type "${text({ value: input.name })}" (capabilities: ${list({ value: input.capabilities })})`,
   }),
   mcpTool({
     operation: "entityType.update",

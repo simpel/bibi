@@ -19,7 +19,7 @@ describe("org-specific item tool descriptions", () => {
     const room = await call({
       client: a,
       name: "entityType_create",
-      args: { base: "ITEM", name: "Konferensrum", behaviours: ["BOOKABLE"] },
+      args: { base: "ITEM", name: "Konferensrum", capabilities: ["BOOKABLE"] },
     });
     await call({
       client: a,
@@ -29,7 +29,7 @@ describe("org-specific item tool descriptions", () => {
     await call({
       client: b,
       name: "entityType_create",
-      args: { base: "ITEM", name: "Boat", behaviours: ["PRICED"] },
+      args: { base: "ITEM", name: "Boat", capabilities: ["PRICED"] },
     });
     const forA = await descriptionOf({ client: a, name: "item_create" });
     const forB = await descriptionOf({ client: b, name: "item_create" });

@@ -11,10 +11,10 @@ test("a capacity change shows before and after, and Confirm applies it (ADR 0049
   const post = async ({ path, data }: { path: string; data: object }) =>
     (await (await page.request.post(`/api/v1${path}`, { data })).json()) as { id: string };
   const setup = await post({ path: "/setups", data: { name: "Boardroom" } });
-  const behaviours = ["BOOKABLE", "SETUPS"];
+  const capabilities = ["BOOKABLE", "SETUPS"];
   const type = await post({
     path: "/entity-types",
-    data: { base: "ITEM", name: "Room", behaviours },
+    data: { base: "ITEM", name: "Room", capabilities },
   });
   const setups = [{ setupId: setup.id, capacity: 10 }];
   const item = await post({

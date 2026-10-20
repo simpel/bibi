@@ -8,10 +8,10 @@ import { WizardFooter } from "@/components/wizard/wizard-footer";
 import { WizardProgress } from "@/components/wizard/wizard-progress";
 import { ROUTES } from "@/lib/routes";
 import { BaseSelectField } from "./base-select-field";
-import { BehaviourField } from "./behaviour-field";
+import { CapabilityField } from "./capability-field";
 import { useEntityTypeWizard } from "./use-entity-type-wizard";
 
-/** Create a type step by step: base and name, then (item types) behaviours; fields come next. */
+/** Create a type step by step: base and name, then (item types) capabilities; fields come next. */
 export function EntityTypeWizard() {
   const t = useTranslations("entityType");
   const router = useRouter();
@@ -29,7 +29,7 @@ export function EntityTypeWizard() {
             <TextField form={form} name="name" label={t("fields.name")} required />
           </>
         ) : (
-          <BehaviourField control={form.control} />
+          <CapabilityField control={form.control} />
         )}
         <WizardFooter
           first={index === 0}

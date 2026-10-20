@@ -26,7 +26,7 @@ const type = ({ ...over }: Partial<EntityTypeDto>): EntityTypeDto => ({
   organizationId: "o",
   base: "ITEM",
   name: "Konferensrum",
-  behaviours: ["BOOKABLE"],
+  capabilities: ["BOOKABLE"],
   expiryStateId: null,
   fields: [],
   status: "ACTIVE",
@@ -54,7 +54,7 @@ describe("describeOrgFields", () => {
     expect(describeOrgFields({ types: [], vocabularies: [] })).toBe("");
   });
 
-  it("lists types, behaviours, fields, list values and inline options", () => {
+  it("lists types, capabilities, fields, list values and inline options", () => {
     const out = describeOrgFields({
       vocabularies: [vocabulary],
       types: [

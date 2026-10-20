@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { rawFields } from "@/components/typed-fields/raw-fields";
 import { TypeFields } from "@/components/typed-fields/type-fields";
 import { TypeSelectField } from "@/components/typed-fields/type-select-field";
-import { BehaviourSections } from "./behaviour-sections";
+import { CapabilitySections } from "./capability-sections";
 import { ItemCoreFields } from "./item-core-fields";
 import type { ItemFormData } from "./item-form-data";
 import { useItemForm } from "./use-item-form";
@@ -13,12 +13,12 @@ export type ItemFormProps = {
   data: ItemFormData;
   item?: ItemDto | undefined;
   typeId?: string | undefined;
-  /** Create mode: save as this customer's package. */
+  /** Create mode: save as this customer's bundle. */
   customerId?: string | undefined;
   onDone: () => void;
 };
 
-/** Create (type picker first) or edit an item: core fields, the type's own fields, behaviours. */
+/** Create (type picker first) or edit an item: core fields, the type's own fields, capabilities. */
 export function ItemForm(props: ItemFormProps) {
   const { data, item, onDone } = props;
   const common = useTranslations("common");
@@ -42,7 +42,7 @@ export function ItemForm(props: ItemFormProps) {
           <>
             <ItemCoreFields form={form} venues={data.venues} venuesHidden={data.venuesHidden} />
             <TypeFields control={form.control} type={type} data={data} />
-            <BehaviourSections form={form} type={type} data={data} itemId={item?.id} />
+            <CapabilitySections form={form} type={type} data={data} itemId={item?.id} />
           </>
         ) : null}
         <DialogFooter>

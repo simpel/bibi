@@ -1,6 +1,6 @@
 ---
 name: change-setup
-description: "Change how the organization is set up, or its data, from a request in plain words: e.g. 'add two more seats to the Linnea conference room', 'raise the lunch price to 195 kr', 'create a package with a per-person price for a drink, snacks and an evening booking of the concert hall'. Use whenever the user asks to add, change, rename, combine or remove something that already exists in Okazi."
+description: "Change how the organization is set up, or its data, from a request in plain words: e.g. 'add two more seats to the Linnea conference room', 'raise the lunch price to 195 kr', 'create a bundle with a per-person price for a drink, snacks and an evening booking of the concert hall'. Use whenever the user asks to add, change, rename, combine or remove something that already exists in Okazi."
 allowed-tools: search venue_list venue_get item_list item_get item_resolve entityType_list entityType_get setup_list priceList_list priceList_get ticket_list ticket_get venue_update item_create item_update item_archive changeSet_apply
 metadata:
   title: "Change the setup"

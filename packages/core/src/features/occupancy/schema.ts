@@ -35,7 +35,7 @@ export const OccupancySchema = z.object({
 });
 
 export const OccupancyCreateInputSchema = z.object({
-  itemId: z.string().min(1).describe("Id of the bookable item (item.list behaviour BOOKABLE)"),
+  itemId: z.string().min(1).describe("Id of the bookable item (item.list capability BOOKABLE)"),
   type: ManualOccupancyTypeSchema.describe("MAINTENANCE (out of service) or INTERNAL (own use)"),
   startsAt: z.coerce.date().describe("Start of the period, ISO 8601"),
   endsAt: z.coerce.date().describe("End of the period (exclusive), ISO 8601"),

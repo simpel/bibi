@@ -24,7 +24,7 @@ async function createLounge({ context }: ContextInput) {
   const roomType = unwrap({
     result: await execute({
       operation: createEntityType,
-      input: { base: "ITEM", name: "Lounge", behaviours: ["BOOKABLE"] },
+      input: { base: "ITEM", name: "Lounge", capabilities: ["BOOKABLE"] },
       context,
     }),
   });

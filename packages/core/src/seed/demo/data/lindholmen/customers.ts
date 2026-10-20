@@ -1,5 +1,5 @@
 import type { DemoContact, DemoCustomer } from "../../customer-types";
-import { nordkustPackage } from "./packages";
+import { nordkustBundle } from "./bundles";
 
 type PersonInput = { name: string; role: string; email?: string };
 
@@ -18,7 +18,7 @@ export const lindholmenCustomers: readonly DemoCustomer[] = [
     fields: { "Org no.": "556712-3401", "Framework agreement": true },
     ...{ invoiceCity: "Göteborg", paymentTermsDays: 30 },
     priceList: { name: "Nordkust framework agreement", discountPercent: 15 },
-    packages: [nordkustPackage],
+    bundles: [nordkustBundle],
     contacts: [
       person({ name: "Karin Wallin", role: "Orderer", email: "karin.wallin@nordkust.test" }),
       person({

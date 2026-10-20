@@ -24,7 +24,7 @@ const PROGRAM_SLACK_MS = 7 * 86_400_000;
 
 /** Every read the calendar joins, in a fixed order (see `readSources`). */
 export function loadSources({ from, to, venueId }: CalendarWindow) {
-  const spaceFilter = { behaviour: "BOOKABLE" as const, ...(venueId ? { venueId } : {}) };
+  const spaceFilter = { capability: "BOOKABLE" as const, ...(venueId ? { venueId } : {}) };
   const programWindow = { from, to: new Date(to.getTime() + PROGRAM_SLACK_MS) };
   return Promise.all([
     listAll({ operation: listVenues, input: {} }),

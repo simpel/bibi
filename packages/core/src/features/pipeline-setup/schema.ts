@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ItemBehavioursSchema } from "../entity-type/behaviour-kinds";
+import { ItemCapabilitiesSchema } from "../entity-type/capability-kinds";
 import { HoldKindSchema } from "../item-state/hold-kind";
 import { ItemStateSchema } from "../item-state/schema";
 import { PhaseGridSchema } from "../phase-grid/schema";
@@ -19,7 +19,7 @@ export const PipelineStateDraftSchema = z.object({
   expires: z.boolean().optional().describe("Falls to the expiry state when holdsUntil passes"),
 });
 
-/** One item type in the draft: an existing type (`entityTypeId`) or a new one (`behaviours`). */
+/** One item type in the draft: an existing type (`entityTypeId`) or a new one (`capabilities`). */
 export const PipelineTypeDraftSchema = z.object({
   entityTypeId: z
     .string()
@@ -27,8 +27,8 @@ export const PipelineTypeDraftSchema = z.object({
     .optional()
     .describe("Id of an existing item type (entityType.list base ITEM); omit for a new type"),
   name: name({ max: 100, example: "Item type name, e.g. Conference room or Dish" }),
-  behaviours: ItemBehavioursSchema.optional().describe(
-    "New types only; an existing type keeps its own behaviours",
+  capabilities: ItemCapabilitiesSchema.optional().describe(
+    "New types only; an existing type keeps its own capabilities",
   ),
   states: z.array(PipelineStateDraftSchema).min(1).max(20).describe("The type's states, in order"),
   expiryState: z

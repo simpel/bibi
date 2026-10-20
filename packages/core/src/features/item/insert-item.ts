@@ -20,7 +20,7 @@ export type InsertItemInput = {
 
 type ItemRowInput = {
   context: OperationContext;
-  data: Omit<ItemCreateInput, "fields" | "setups" | "components" | "choiceGroups"> & {
+  data: Omit<ItemCreateInput, "fields" | "setups" | "parts" | "customisationGroups"> & {
     customerId: string | null;
   };
   fields: CheckedFields;
@@ -42,20 +42,20 @@ const insertItemRow = ({ context, data, fields }: ItemRowInput) =>
       }),
   });
 
-/** Checks and creates an item with its setups, parts and choice groups, and records it for audit. */
+/** Checks and creates an item with its setups, parts and customisation groups, and records it for audit. */
 export async function insertItem({
   context,
-  input: { entityTypeId, fields, setups, components, choiceGroups, ...data },
+  input: { entityTypeId, fields, setups, parts, customisationGroups, ...data },
   customerId,
 }: InsertItemInput): Promise<Result<ItemDto>> {
   const type = await loadItemType({ context, entityTypeId });
   if (!type.ok) return type;
-  const composition = planComposition({ components, choiceGroups });
+  const composition = planComposition({ parts, customisationGroups });
   const checked = await checkItem({
     context,
     type: type.value,
     customerId,
-    data: { ...data, setups, components, choiceGroups },
+    data: { ...data, setups, parts, customisationGroups },
     composition,
     fields: fields ?? {},
   });

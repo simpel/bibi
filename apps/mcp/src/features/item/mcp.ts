@@ -24,8 +24,8 @@ export const itemMcpTools = [
     summary: ({ input }) => `Archive item ${text({ value: input.id })}`,
   }),
   mcpTool({
-    operation: "item.saveAsPackage",
+    operation: "item.saveAsBundle",
     summary: ({ input }) =>
-      `Save package "${text({ value: input.name })}" for customer ${text({ value: input.customerId })}`,
+      `Save bundle "${text({ value: input.name })}" for customer ${text({ value: input.customerId })}`,
   }),
 ];

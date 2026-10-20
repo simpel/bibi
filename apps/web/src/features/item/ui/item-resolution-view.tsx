@@ -38,8 +38,8 @@ const INDENT = ["", "ps-4", "ps-8", "ps-12", "ps-16"];
 
 function PartLine({ node }: { node: ResolvedItemNode }) {
   const t = useTranslations("item.resolution");
-  const note = node.choiceGroup
-    ? t("option", { group: node.choiceGroup })
+  const note = node.customisationGroup
+    ? t("option", { group: node.customisationGroup })
     : node.required
       ? null
       : t("optional");

@@ -2,7 +2,7 @@ import type { EntityType } from "@okazi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
-import type { EntityBase } from "./behaviour-kinds";
+import type { EntityBase } from "./capability-kinds";
 
 export type LoadTypeOfBaseInput = {
   context: Pick<OperationContext, "db">;

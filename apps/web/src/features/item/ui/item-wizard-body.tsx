@@ -4,7 +4,7 @@ import type { UseFormReturn } from "react-hook-form";
 import { rawFields } from "@/components/typed-fields/raw-fields";
 import { TypeFields } from "@/components/typed-fields/type-fields";
 import { TypeSelectField } from "@/components/typed-fields/type-select-field";
-import { BehaviourSections } from "./behaviour-sections";
+import { CapabilitySections } from "./capability-sections";
 import { ItemCoreFields } from "./item-core-fields";
 import type { ItemFormData } from "./item-form-data";
 import type { ItemFormOutput } from "./item-form-schema";
@@ -43,5 +43,5 @@ export function ItemWizardBody({ form, step, type, data, typeOf }: ItemWizardBod
       </>
     );
   }
-  return <BehaviourSections form={form} type={type} data={data} />;
+  return <CapabilitySections form={form} type={type} data={data} />;
 }

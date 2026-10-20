@@ -29,7 +29,7 @@ export const listSetups = defineOperation({
   kind: "query",
   description:
     "List the organization's setups (e.g. Bio, U-bord, Mingel) with changeover time. " +
-    "Items with the SETUPS behaviour have a capacity per setup.",
+    "Items with the SETUPS capability have a capacity per setup.",
   input: SetupListInputSchema,
   output: SetupListOutputSchema,
   permission: "configuration:read",

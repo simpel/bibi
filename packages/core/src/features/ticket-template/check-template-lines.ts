@@ -66,7 +66,7 @@ export type CheckTemplateLinesInput = Db & Lines;
 
 /**
  * Every line of a template points at records that exist and fit: an active line type, a
- * general item (a customer's own package belongs to that customer, not to a template) and, when
+ * general item (a customer's own bundle belongs to that customer, not to a template) and, when
  * given, one of that item's setups.
  */
 export async function checkTemplateLines({

@@ -20,7 +20,7 @@ The GraphQL adapter (Pothos + GraphQL Yoga). Thin: all logic and permissions liv
 ## Pitfalls
 - `graphql` exists as both CJS and ESM; mixed copies break `instanceof GraphQLError`. Vitest therefore inlines graphql/pothos/envelop (`vitest.config.ts`). Do the same in other test environments.
 - The Pothos prisma plugin is not used: the client is an `$extends` client (`scopedDb`) and Prisma 7-generated. The types are hand-written/Zod-derived.
-- `Venue.items`, `Item.components[].item` and item search hits still run one operation per parent (items are not loader-backed); bounded by depth/cost.
+- `Venue.items`, `Item.parts[].item` and item search hits still run one operation per parent (items are not loader-backed); bounded by depth/cost.
 
 ## New entity
 `pnpm gen entity` creates `src/features/<entity>/graphql.ts`; import the file in `schema/schema.ts`.

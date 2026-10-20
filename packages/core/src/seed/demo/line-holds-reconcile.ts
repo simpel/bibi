@@ -28,7 +28,7 @@ async function rebuildLineHolds({ context }: ReconcileContext): Promise<HoldRow[
       endsAt: { gt: new Date() },
       startsAt: { not: null },
       ticket: { status: "ACTIVE", phase: { terminal: false } },
-      item: { entityType: { behaviours: { has: "BOOKABLE" } } },
+      item: { entityType: { capabilities: { has: "BOOKABLE" } } },
       state: { released: false, hold: { not: "NONE" } },
     },
     select: {

@@ -4,8 +4,8 @@ import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fie
 
 export type PriceUnitValue = (typeof PRICE_UNITS)[number];
 
-/** One part of a COMPOSABLE item as raw form values. */
-export type ComponentFormValue = {
+/** One part of a BUNDLE item as raw form values. */
+export type PartFormValue = {
   itemId: string;
   quantity: string;
   offsetMinutes: string;
@@ -13,8 +13,8 @@ export type ComponentFormValue = {
   required: boolean;
 };
 
-/** One choice group of a CHOICES item as raw form values; `itemIds` are parts of the item. */
-export type ChoiceGroupFormValue = {
+/** One customisation group of a CUSTOMISATIONS item as raw form values; `itemIds` are parts of the item. */
+export type CustomisationGroupFormValue = {
   name: string;
   minPick: string;
   maxPick: string;
@@ -34,8 +34,8 @@ export type ItemFormValues = {
   defaultDurationMinutes: string;
   /** Capacity per setup id; "" = the setup is not used. */
   setups: Record<string, string>;
-  components: ComponentFormValue[];
-  choiceGroups: ChoiceGroupFormValue[];
+  parts: PartFormValue[];
+  customisationGroups: CustomisationGroupFormValue[];
 };
 
 export const NO_VENUE = "none";
@@ -59,14 +59,14 @@ export function itemFormDefaults({ type, item }: ItemDefaultsInput): ItemFormVal
     vatRatePercent: text({ value: item?.vatRatePercent }),
     defaultDurationMinutes: text({ value: item?.defaultDurationMinutes }),
     setups,
-    components: (item?.components ?? []).map((component) => ({
-      itemId: component.itemId,
-      quantity: String(component.quantity),
-      offsetMinutes: String(component.offsetMinutes),
-      durationMinutes: text({ value: component.durationMinutes }),
-      required: component.required,
+    parts: (item?.parts ?? []).map((part) => ({
+      itemId: part.itemId,
+      quantity: String(part.quantity),
+      offsetMinutes: String(part.offsetMinutes),
+      durationMinutes: text({ value: part.durationMinutes }),
+      required: part.required,
     })),
-    choiceGroups: (item?.choiceGroups ?? []).map((group) => ({
+    customisationGroups: (item?.customisationGroups ?? []).map((group) => ({
       name: group.name,
       minPick: String(group.minPick),
       maxPick: String(group.maxPick),

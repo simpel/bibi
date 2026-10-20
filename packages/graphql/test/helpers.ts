@@ -85,7 +85,7 @@ const CREATE_TYPE = `mutation($i: EntityTypeCreateInput!) { entityTypeCreate(inp
 export async function createItemType({ gql, name = "Konferensrum" }: CreateItemTypeInput) {
   const res = await gql({
     query: CREATE_TYPE,
-    variables: { i: { base: "ITEM", name, behaviours: ["BOOKABLE", "SETUPS", "PRICED"] } },
+    variables: { i: { base: "ITEM", name, capabilities: ["BOOKABLE", "SETUPS", "PRICED"] } },
   });
   return res.body.data.entityTypeCreate.id as string;
 }

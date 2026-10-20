@@ -26,7 +26,7 @@ function FieldList({ fields }: FieldListProps) {
   );
 }
 
-/** One type with its behaviours and fields (name, kind, required). */
+/** One type with its capabilities and fields (name, kind, required). */
 export function EntityTypeCardView({ entityType }: EntityTypeCardViewProps) {
   const t = useTranslations("assistant.ui.entityType");
   return (
@@ -41,9 +41,9 @@ export function EntityTypeCardView({ entityType }: EntityTypeCardViewProps) {
       </CardHeader>
       <CardContent className="grid gap-2 p-4 pt-0 text-sm text-muted-foreground">
         <div className="flex flex-wrap gap-1">
-          {entityType.behaviours.map((behaviour) => (
-            <Badge key={behaviour} variant="outline">
-              {t(`behaviour.${behaviour}`)}
+          {entityType.capabilities.map((capability) => (
+            <Badge key={capability} variant="outline">
+              {t(`capability.${capability}`)}
             </Badge>
           ))}
         </div>

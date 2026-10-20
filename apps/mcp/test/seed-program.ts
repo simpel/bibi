@@ -33,7 +33,7 @@ export async function seedProgram({ client }: SeedProgramInput): Promise<SeededP
   const roomType = await ok({
     client,
     name: "entityType_create",
-    args: { base: "ITEM", name: "Secret room", behaviours: ["BOOKABLE"] },
+    args: { base: "ITEM", name: "Secret room", capabilities: ["BOOKABLE"] },
   });
   const item = await ok({
     client,

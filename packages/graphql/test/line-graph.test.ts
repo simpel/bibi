@@ -16,8 +16,8 @@ describe("line graph (ADR 0022)", () => {
     const context = testContext();
     expect((await provisionOrganization({ organizationId: context.organizationId })).ok).toBe(true);
     const gql = createClient({ context });
-    const type = async ({ base, behaviours }: { base: string; behaviours?: string[] }) =>
-      (await gql({ query: TYPE, variables: { i: { base, name: `${base} type`, behaviours } } }))
+    const type = async ({ base, capabilities }: { base: string; capabilities?: string[] }) =>
+      (await gql({ query: TYPE, variables: { i: { base, name: `${base} type`, capabilities } } }))
         .body.data.entityTypeCreate.id as string;
     const customer = await gql({
       query: CUSTOMER,
@@ -38,7 +38,7 @@ describe("line graph (ADR 0022)", () => {
       },
     });
     const ticketId = ticket.body.data.ticketCreate.id;
-    const roomType = await type({ base: "ITEM", behaviours: ["BOOKABLE"] });
+    const roomType = await type({ base: "ITEM", capabilities: ["BOOKABLE"] });
     const room = await gql({
       query: ITEM,
       variables: { i: { entityTypeId: roomType, name: "Ek" } },

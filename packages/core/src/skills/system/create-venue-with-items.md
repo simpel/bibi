@@ -21,7 +21,7 @@ item is called and which fields it has is defined by the organization, never ass
 3. Propose the venue with `venue_create`. Commands need the user's approval: wait for the
    approval result before continuing and use the returned `id` as `venueId`.
 4. Look up the organization's item types with `entityType_list` (base ITEM). Pick the type that
-   matches what the user describes; if several fit, ask. Read its `fields` and `behaviours`.
+   matches what the user describes; if several fit, ask. Read its `fields` and `capabilities`.
    If no type fits, say so and suggest creating one in Settings, do not guess.
 5. For each item propose `item_create` with `entityTypeId`, `venueId`, `name` and:
    - `fields`: values keyed by the type's field keys. For list-backed choice fields use the

@@ -56,7 +56,7 @@ export async function insertItemState({
   const flags = flagsOf({ input });
   // The first state of a type is its initial state.
   if (earlier.length === 0) flags.initial = true;
-  const bookable = type.value.behaviours.includes("BOOKABLE");
+  const bookable = type.value.capabilities.includes("BOOKABLE");
   const valid = checkStateFlags({ flags, bookable });
   if (!valid.ok) return valid;
   if (flags.initial) await handOverInitial({ context, entityTypeId, id: null });

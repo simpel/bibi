@@ -36,7 +36,7 @@ export async function ItemStatePage({ locale, mode }: ItemStatePageProps) {
       }
     >
       <ItemStateForm
-        type={{ id: type.value.id, bookable: type.value.behaviours.includes("BOOKABLE") }}
+        type={{ id: type.value.id, bookable: type.value.capabilities.includes("BOOKABLE") }}
         state={editing}
       />
     </FormPageShell>

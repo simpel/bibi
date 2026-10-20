@@ -1,7 +1,7 @@
 import type { EntityTypeDto } from "@okazi/core";
-import type { ItemBehaviour } from "@okazi/core/schemas";
+import type { ItemCapability } from "@okazi/core/schemas";
 import type { FieldPath } from "react-hook-form";
-import { hasBehaviour } from "./has-behaviour";
+import { hasCapability } from "./has-capability";
 import type { ItemFormValues } from "./item-form-values";
 
 export type WizardStep = "type" | "details" | "setup";
@@ -18,17 +18,17 @@ export const STEP_FIELDS: Record<WizardStep, Fields> = {
     "vatRatePercent",
     "defaultDurationMinutes",
     "setups",
-    "components",
-    "choiceGroups",
+    "parts",
+    "customisationGroups",
   ],
 };
 
-const BEHAVIOURS: ItemBehaviour[] = ["PRICED", "BOOKABLE", "SETUPS", "COMPOSABLE", "CHOICES"];
+const CAPABILITIES: ItemCapability[] = ["PRICED", "BOOKABLE", "SETUPS", "BUNDLE", "CUSTOMISATIONS"];
 
 export type StepsForInput = { type: EntityTypeDto | undefined };
 
-/** The setup step exists only when the type has a behaviour that needs it. */
+/** The setup step exists only when the type has a capability that needs it. */
 export function stepsFor({ type }: StepsForInput): WizardStep[] {
-  const needsSetup = BEHAVIOURS.some((behaviour) => hasBehaviour({ type, behaviour }));
+  const needsSetup = CAPABILITIES.some((capability) => hasCapability({ type, capability }));
   return needsSetup ? ["type", "details", "setup"] : ["type", "details"];
 }

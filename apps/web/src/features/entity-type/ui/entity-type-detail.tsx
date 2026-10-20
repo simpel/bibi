@@ -16,7 +16,7 @@ import { EntityTypeForm } from "./entity-type-form";
 
 export type EntityTypeDetailProps = { locale: Locale; id: string };
 
-/** Type detail page: rename, behaviours (one form, saved together), fields and archive. */
+/** Type detail page: rename, capabilities (one form, saved together), fields and archive. */
 export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
   const t = await getTranslations("entityType");
   const common = await getTranslations("common");

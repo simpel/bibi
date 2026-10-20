@@ -8,7 +8,7 @@ export const conferenceVenueTypes: readonly ConfigurationTemplateType[] = [
   {
     base: "ITEM",
     name: "Conference room",
-    behaviours: ["BOOKABLE", "SETUPS", "PRICED"],
+    capabilities: ["BOOKABLE", "SETUPS", "PRICED"],
     fields: [
       { name: "Floor", kind: "NUMBER" },
       { name: "Area m²", kind: "NUMBER" },
@@ -19,19 +19,19 @@ export const conferenceVenueTypes: readonly ConfigurationTemplateType[] = [
   {
     base: "ITEM",
     name: "Dish",
-    behaviours: ["PRICED"],
+    capabilities: ["PRICED"],
     fields: [allergens, { name: "Diet", kind: "MULTI_CHOICE", list: "Diet" }],
   },
   {
     base: "ITEM",
     name: "Drink",
-    behaviours: ["PRICED"],
+    capabilities: ["PRICED"],
     fields: [allergens, { name: "Alcoholic", kind: "BOOLEAN" }],
   },
   {
     base: "ITEM",
     name: "Meal",
-    behaviours: ["PRICED", "COMPOSABLE", "CHOICES"],
+    capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS"],
     fields: [
       { name: "Service style", kind: "CHOICE", options: ["Buffet", "Plated", "Finger food"] },
     ],
@@ -39,13 +39,13 @@ export const conferenceVenueTypes: readonly ConfigurationTemplateType[] = [
   {
     base: "ITEM",
     name: "Equipment",
-    behaviours: ["BOOKABLE", "PRICED"],
+    capabilities: ["BOOKABLE", "PRICED"],
     fields: [{ name: "Inventory number", kind: "TEXT" }],
   },
   {
     base: "ITEM",
-    name: "Package",
-    behaviours: ["PRICED", "COMPOSABLE", "CHOICES"],
+    name: "Bundle",
+    capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS"],
     fields: [{ name: "Minimum quantity", kind: "NUMBER" }],
   },
   { base: "CUSTOMER", name: "Company", fields: [orgNumber] },

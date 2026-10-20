@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
-import type { ItemBehaviour } from "../entity-type/behaviour-kinds";
+import type { ItemCapability } from "../entity-type/capability-kinds";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 
 type Db = Pick<OperationContext, "db">;
@@ -15,29 +15,32 @@ export type LoadItemTypeInput = { context: Db; entityTypeId: string };
 export const loadItemType = ({ context, entityTypeId }: LoadItemTypeInput) =>
   loadTypeOfBase({ context, entityTypeId, base: "ITEM" });
 
-/** Which input keys carry data for which behaviour. */
-const BEHAVIOUR_KEYS: Record<string, ItemBehaviour> = {
+/** Which input keys carry data for which capability. */
+const CAPABILITY_KEYS: Record<string, ItemCapability> = {
   priceMinor: "PRICED",
   priceUnit: "PRICED",
   vatRatePercent: "PRICED",
   defaultDurationMinutes: "BOOKABLE",
   setups: "SETUPS",
-  components: "COMPOSABLE",
-  choiceGroups: "CHOICES",
+  parts: "BUNDLE",
+  customisationGroups: "CUSTOMISATIONS",
 };
 
-export type CheckBehaviourDataInput = {
-  behaviours: readonly ItemBehaviour[];
+export type CheckCapabilityDataInput = {
+  capabilities: readonly ItemCapability[];
   data: Record<string, unknown>;
 };
 
-/** Behaviour data is only accepted when the item's type has the behaviour (ADR 0021). */
-export function checkBehaviourData({ behaviours, data }: CheckBehaviourDataInput): Result<true> {
-  for (const [key, behaviour] of Object.entries(BEHAVIOUR_KEYS)) {
+/** Capability data is only accepted when the item's type has the capability (ADR 0021). */
+export function checkCapabilityData({
+  capabilities,
+  data,
+}: CheckCapabilityDataInput): Result<true> {
+  for (const [key, capability] of Object.entries(CAPABILITY_KEYS)) {
     const value = data[key];
     const empty = value === undefined || value === null || (Array.isArray(value) && !value.length);
-    if (!empty && !behaviours.includes(behaviour)) {
-      return issue({ path: key, message: `The item type does not have ${behaviour}` });
+    if (!empty && !capabilities.includes(capability)) {
+      return issue({ path: key, message: `The item type does not have ${capability}` });
     }
   }
   return ok({ value: true });

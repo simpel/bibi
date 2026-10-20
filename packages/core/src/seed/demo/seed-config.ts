@@ -74,7 +74,7 @@ async function seedField({ context, refs, typeId, field }: FieldInput) {
 type TypeInput = { context: ExecuteContext; refs: DemoRefs; type: DemoType; skipStates: boolean };
 
 async function seedType({ context, refs, type, skipStates }: TypeInput): Promise<Result<TypeRef>> {
-  const input = { base: type.base, name: type.name, behaviours: [...(type.behaviours ?? [])] };
+  const input = { base: type.base, name: type.name, capabilities: [...(type.capabilities ?? [])] };
   const created = await execute({ operation: createEntityType, input, context });
   if (!created.ok) return created;
   const fields = new Map<string, FieldRef>();
@@ -95,7 +95,7 @@ async function seedType({ context, refs, type, skipStates }: TypeInput): Promise
       context,
       entityTypeId: created.value.id,
       template: type.states,
-      bookable: type.behaviours?.includes("BOOKABLE") ?? false,
+      bookable: type.capabilities?.includes("BOOKABLE") ?? false,
     });
     if (!states.ok) return states;
   }

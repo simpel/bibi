@@ -5,7 +5,7 @@ import {
   createSheetDefinition,
   type ExecuteContext,
   execute,
-  type ItemChoiceGroupInput,
+  type ItemCustomisationGroupInput,
 } from "../src/index";
 import { unwrap } from "./helpers";
 import { createTestLine } from "./line-helpers";
@@ -15,10 +15,10 @@ import { createTestResponsibility } from "./responsibility-helpers";
 type Part = { itemId: string; required?: boolean };
 type Ctx = { context: ExecuteContext };
 
-/** Menu items are bookable, composable and tagged with Allergens (Gluten, Lactose). */
+/** Menu items are bookable bundles, tagged with Allergens (Gluten, Lactose). */
 async function createMenuType({ context, listId }: Ctx & { listId: string }) {
-  const behaviours = ["BOOKABLE", "COMPOSABLE", "CHOICES"] as ("BOOKABLE" | "COMPOSABLE")[];
-  const input = { base: "ITEM" as const, name: "Menu", behaviours };
+  const capabilities = ["BOOKABLE", "BUNDLE", "CUSTOMISATIONS"] as ("BOOKABLE" | "BUNDLE")[];
+  const input = { base: "ITEM" as const, name: "Menu", capabilities };
   const type = unwrap({ result: await execute({ operation: createEntityType, input, context }) });
   const field = { entityTypeId: type.id, kind: "MULTI_CHOICE" as const, vocabularyId: listId };
   const tagged = { ...field, name: "Allergens" };
@@ -27,8 +27,8 @@ async function createMenuType({ context, listId }: Ctx & { listId: string }) {
 }
 
 type MakeInput = Ctx & { entityTypeId: string; name: string; fields?: object } & {
-  components?: Part[];
-  choiceGroups?: ItemChoiceGroupInput[];
+  parts?: Part[];
+  customisationGroups?: ItemCustomisationGroupInput[];
 };
 
 async function make({ context, ...input }: MakeInput) {
@@ -50,17 +50,17 @@ export async function matchSetup() {
   const plain = await make({ ...base, name: "Plain" });
   const pick = [{ name: "Base", minPick: 1, maxPick: 1, itemIds: [bread, plain] }];
   const menus = {
-    mandatory: await make({ ...base, name: "Mandatory", components: [{ itemId: bread }] }),
+    mandatory: await make({ ...base, name: "Mandatory", parts: [{ itemId: bread }] }),
     optional: await make({
       ...base,
       name: "Optional",
-      components: [{ itemId: bread, required: false }, { itemId: plain }],
+      parts: [{ itemId: bread, required: false }, { itemId: plain }],
     }),
     alternative: await make({
       ...base,
       name: "Alternative",
-      components: [{ itemId: bread }, { itemId: plain }],
-      choiceGroups: pick,
+      parts: [{ itemId: bread }, { itemId: plain }],
+      customisationGroups: pick,
     }),
     lactose: butter,
     plain,

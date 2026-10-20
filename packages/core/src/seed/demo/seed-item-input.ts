@@ -44,24 +44,24 @@ function resolveParts({ parts, seeded }: PartsInput): Result<Part[]> {
   return ok({ value: resolved });
 }
 
-type Composition = { components: Part[]; choiceGroups: ItemChoiceGroup[] };
-type ItemChoiceGroup = { name: string; minPick: number; maxPick: number; itemIds: string[] };
+type Composition = { parts: Part[]; customisationGroups: ItemCustomisationGroup[] };
+type ItemCustomisationGroup = { name: string; minPick: number; maxPick: number; itemIds: string[] };
 type CompositionInput = { item: DemoItem; seeded: ReadonlyMap<string, string> };
 
-/** Mandatory parts plus every choice group's options as parts, and the groups over them. */
+/** Mandatory parts plus every customisation group's options as parts, and the groups over them. */
 function resolveComposition({ item, seeded }: CompositionInput): Result<Composition> {
-  const components = resolveParts({ parts: item.parts ?? [], seeded });
-  if (!components.ok) return components;
-  const choiceGroups: ItemChoiceGroup[] = [];
-  for (const group of item.choices ?? []) {
+  const parts = resolveParts({ parts: item.parts ?? [], seeded });
+  if (!parts.ok) return parts;
+  const customisationGroups: ItemCustomisationGroup[] = [];
+  for (const group of item.customisations ?? []) {
     const options = resolveParts({ parts: group.options, seeded });
     if (!options.ok) return options;
-    components.value.push(...options.value);
+    parts.value.push(...options.value);
     const pick = group.pick ?? 1;
     const itemIds = options.value.map((option) => option.itemId);
-    choiceGroups.push({ name: group.name, minPick: pick, maxPick: pick, itemIds });
+    customisationGroups.push({ name: group.name, minPick: pick, maxPick: pick, itemIds });
   }
-  return ok({ value: { components: components.value, choiceGroups } });
+  return ok({ value: { parts: parts.value, customisationGroups } });
 }
 
 export type ItemInputArgs = {
@@ -72,7 +72,7 @@ export type ItemInputArgs = {
   seeded: ReadonlyMap<string, string>;
 };
 
-/** `item.create` (or `item.saveAsPackage`) input for one demo item, with names resolved to ids. */
+/** `item.create` (or `item.saveAsBundle`) input for one demo item, with names resolved to ids. */
 export function itemInput({ item, refs, venueId, seeded }: ItemInputArgs) {
   const type = refs.itemTypes.get(item.type);
   if (!type) return missing({ what: `item type ${item.type}` });
@@ -82,7 +82,7 @@ export function itemInput({ item, refs, venueId, seeded }: ItemInputArgs) {
   if (!setups.ok) return setups;
   const composition = resolveComposition({ item, seeded });
   if (!composition.ok) return composition;
-  const { components, choiceGroups } = composition.value;
+  const { parts, customisationGroups } = composition.value;
   return ok({
     value: {
       ...{ entityTypeId: type.id, venueId, name: item.name, fields: fields.value },
@@ -90,8 +90,8 @@ export function itemInput({ item, refs, venueId, seeded }: ItemInputArgs) {
       ...(item.priceUnit ? { priceUnit: item.priceUnit } : {}),
       ...(item.durationMinutes ? { defaultDurationMinutes: item.durationMinutes } : {}),
       ...(setups.value.length ? { setups: setups.value } : {}),
-      ...(components.length ? { components } : {}),
-      ...(choiceGroups.length ? { choiceGroups } : {}),
+      ...(parts.length ? { parts } : {}),
+      ...(customisationGroups.length ? { customisationGroups } : {}),
     },
   });
 }

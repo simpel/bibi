@@ -24,7 +24,7 @@ describe("cross-organization isolation: the guided pipeline setup", () => {
   it("refuses another organization's item type in a preview and an activation", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
-    const args = { base: "ITEM", name: "Room", behaviours: ["BOOKABLE"] };
+    const args = { base: "ITEM", name: "Room", capabilities: ["BOOKABLE"] };
     const typeA = await call({ client: a, name: "entityType_create", args });
     expect(typeA.isError, JSON.stringify(typeA.data)).toBe(false);
     const foreign = draft({ entityTypeId: typeA.data.id });
@@ -50,7 +50,7 @@ describe("cross-organization isolation: the guided pipeline setup", () => {
   it("never puts another organization's item types into a preset draft", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
-    const args = { base: "ITEM", name: "Secret room", behaviours: ["BOOKABLE"] };
+    const args = { base: "ITEM", name: "Secret room", capabilities: ["BOOKABLE"] };
     const typeA = await call({ client: a, name: "entityType_create", args });
     expect(typeA.isError, JSON.stringify(typeA.data)).toBe(false);
     const draftB = await call({

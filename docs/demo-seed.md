@@ -2,7 +2,7 @@
 
 Specification for `pnpm --filter @okazi/core seed:demo` (ADR 0025). Two fictional organizations set up completely differently with the same code, to show the configurable domain (ADR 0021).
 
-- **Lindholmen Experience Center**: conferences, exhibition and restaurant. Uses everything: vocabularies with allergens, sheets to the kitchen, packages, item states and a phase grid.
+- **Lindholmen Experience Center**: conferences, exhibition and restaurant. Uses everything: vocabularies with allergens, sheets to the kitchen, bundles, item states and a phase grid.
 - **Vingaleden Archipelago Tours**: boat tours in the Gothenburg archipelago. No food, no allergens, other phases and other requirements.
 
 All dates are relative to the day of the run: `D` = today, `D+3` = in three days. Times are local time (Europe/Stockholm).
@@ -14,7 +14,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 1. The number of rows per entity and organization matches the tables below.
 2. Vingaleden has no vocabulary called "Allergens", and none of its sheets include food.
 3. Lindholmen's kitchen order for ticket L5 is **blocked**: anaphylaxis to crustaceans against a mandatory dish.
-4. Lindholmen's kitchen order for ticket L3 is **not** blocked: the nut allergy has an alternative in the choice group.
+4. Lindholmen's kitchen order for ticket L3 is **not** blocked: the nut allergy has an alternative in the customisation group.
 5. Tickets F2 and F3 hold the same room and time with soft holds. Both lines are `Prebooked`, F2 was held before F3 (its newest `LineStateChange` is older; no queue).
 6. Ticket F6's `holdsUntil` has passed and its line is still `Prebooked` until `ticket.expireHolds` runs.
 7. Every write has a row in `AuditLog` with actor `SYSTEM`.
@@ -34,8 +34,8 @@ The checks that run today:
   - `LINK` values are `RecordLink` rows (ADR 0056, `checkDemoLinks`, `link-checks.ts`, run from `config-checks.ts`): as many rows as the data files give (Lindholmen: L1 Host Mats Olsson, L3 Host Eva Sund; Vingaleden none), each pointing at an active record, no LINK field key in any `Record.fields`, and archiving a linked contact is refused with `CONFLICT` and leaves it active.
   - Vingaleden has no vocabulary "Allergens" (the first half of point 2).
   - Lindholmen's imported vocabulary "Allergens" has 14 values.
-  - The number of item parts (`ItemComponent`) per organization matches the data files.
-- **Part 3 (catalog):** the whole catalog of both organizations is seeded via `item.create` as SYSTEM, parts after the items they contain, and Nordkust management team via `item.saveAsPackage` right after its customer. The checks compare with the data files per organization: the number of items (Lindholmen 61, Vingaleden 9), customer-specific packages (Lindholmen 1), item parts (`ItemComponent`, choice options included) and choice groups (`ItemChoiceGroup`). The test also verifies that the Three-course dinner has the groups Starter, Main course and Dessert over 8 parts, and that Nordkust management team belongs to Nordkust Logistik. Every choice group in the tables is "choose 1" (`minPick` = `maxPick` = 1).
+  - The number of item parts (`ItemPart`) per organization matches the data files.
+- **Part 3 (catalog):** the whole catalog of both organizations is seeded via `item.create` as SYSTEM, parts after the items they contain, and Nordkust management team via `item.saveAsBundle` right after its customer. The checks compare with the data files per organization: the number of items (Lindholmen 61, Vingaleden 9), customer-specific bundles (Lindholmen 1), item parts (`ItemPart`, choice options included) and customisation groups (`ItemCustomisationGroup`). The test also verifies that the Three-course dinner has the groups Starter, Main course and Dessert over 8 parts, and that Nordkust management team belongs to Nordkust Logistik. Every customisation group in the tables is "choose 1" (`minPick` = `maxPick` = 1).
 - **Part 2 (configuration), item states:** every item type with states in the data files gets them from a template (ADR 0044) through `itemState.create`, initial state first; the type's default state "Active" is archived and the template's Released state becomes the type's expiry state (`entityType.update` `expiryStateId`). Templates: bookable (Prebooked `SOFT` `expires`, Booked `HARD` `inSheets`, Released), food (Estimated, Ordered, Locked `inSheets`, Released) and other (Planned, Confirmed `inSheets`, Released; on a `BOOKABLE` type Planned holds `SOFT` and Confirmed `HARD`). Lindholmen: Conference room and Equipment bookable, Dish, Drink and Meal food, Tour and Guide other; Package keeps "Active". Vingaleden: Boat and Skipper bookable, Tour and Add-on other. Lindholmen also has the line type Line (base `LINE`).
 - **Part 4 (customers), started:** the number of customers and contact persons per organization matches the data files, and Nordkust Logistik has its price list with a general discount of 15 %. Ticket phases and the phase grid follow when those operations exist.
 - **Part 5 (tickets), started:** the number of tickets per organization matches the data files, each with its customer, type, desired period, headcount, own fields, main assignee and 0–2 followers by name (ADR 0034; `checkDemoAssignments` compares the counts). Each ticket is created through `ticket.create` in the entry phase and then moved to its phase. A phase with a quote event (Lindholmen's Quote sent and Confirmed) is reached through the ticket's quote (ADR 0052): the ticket gets an untimed line of the item named in its `quote` (`line.create`, counting the headcount) unless one of its lines already has that item, then `quote.create` (valid 30 days, a live view of the priced lines) and `quote.send`, which freezes every priced line as an order line, and for Confirmed also `quote.accept`. L4's Conference lunch line is changed to 14 after its quote was accepted (`changeAfterQuote`), so L4 differs from its accepted quote; any other phase (all of Vingaleden's, and Completed, Lost) through `ticket.changePhase` (`checkDemoTickets` compares the number of tickets per phase and checks the minimum configuration: one entry and one terminal phase). The phases are the organization's own (see Ticket phases and the pipeline part below): open tickets after the deal are Confirmed, L1, L2 and V1 Completed, L6 ("Budget") Lost, V2 ("Weather") Called off – weather, V3 Weather OK and V4 Weather hold. Requirements and the other lines follow. Responsibility assignments are derived (ADR 0055): no row exists for them except the explicit choices of `choices` in the data files, made through `assignment.assign` and `assignment.unfollow` (L11 only, in `seed-ticket-choices.ts`); `checkDemoChoices` (`choice-checks.ts`) asserts that exactly those rows are stored and that on every seeded ticket with lines each applicable responsibility's derived assignee and followers equal its defaults except those choices.
@@ -83,7 +83,7 @@ Seeded in part 2 via `responsibility.create` as SYSTEM, after the item types. Fo
 
 | Responsibility | Covers (item types) | Default assignee | Default followers |
 |---|---|---|---|
-| Sales | Package | Erik Lund | Sara Nilsson |
+| Sales | Bundle | Erik Lund | Sara Nilsson |
 | Coordinator | Conference room, Equipment, Tour, Guide | Johan Ek | Maria Holm |
 | Head of kitchen | Dish, Drink, Meal | Ali Karimi | – |
 
@@ -101,16 +101,16 @@ Seeded in part 2 via `responsibility.create` as SYSTEM, after the item types. Fo
 Theatre (15 min), Classroom (30), U-shape (30), Boardroom (20), Cabaret (40), Banquet (60), Reception (15).
 
 ### Item types
-| Type | Behaviours | Own fields |
+| Type | Capabilities | Own fields |
 |---|---|---|
 | Conference room | `BOOKABLE`, `SETUPS`, `PRICED` | Floor (number), Area m² (number), Ceiling height m (number), Daylight (yes/no), View (choice: View) |
 | Dish | – | Allergens (multi-choice: Allergens), Diet (multi-choice: Diet) |
 | Drink | `PRICED` | Allergens (multi-choice), Alcoholic (yes/no) |
-| Meal | `PRICED`, `COMPOSABLE`, `CHOICES` | Service style (choice: Buffet, Plated, Finger food) |
-| Tour | `PRICED`, `COMPOSABLE`, `CHOICES`, `BOOKABLE` | Language (multi-choice: Swedish, English, German) |
+| Meal | `PRICED`, `BUNDLE`, `CUSTOMISATIONS` | Service style (choice: Buffet, Plated, Finger food) |
+| Tour | `PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE` | Language (multi-choice: Swedish, English, German) |
 | Guide | `BOOKABLE` | Language (multi-choice) |
 | Equipment | `BOOKABLE`, `PRICED` | Inventory number (text) |
-| Package | `PRICED`, `COMPOSABLE`, `CHOICES` | Minimum quantity (number) |
+| Bundle | `PRICED`, `BUNDLE`, `CUSTOMISATIONS` | Minimum quantity (number) |
 
 ### Other types
 | Base entity | Types and fields |
@@ -218,7 +218,7 @@ Price per hour excl. VAT. Capacity per setup.
 | Wine package (2 glasses) | SEK 225/pp | Sulphur dioxide/sulphites | yes |
 
 ### Meals (6)
-Parts without a choice group are mandatory.
+Parts without a customisation group are mandatory.
 
 | Meal | Price/pp | Parts |
 |---|---|---|
@@ -232,14 +232,14 @@ Parts without a choice group are mandatory.
 ### Guides and tours
 - Guides (`BOOKABLE`): Emma Lind (Swedish, English), Oskar Ahl (Swedish, German), Nora Falk (Swedish, English).
 - Exhibition tour: 60 min, max 25 people, SEK 1,450 per group. **Choose 1 guide.**
-- Evening tour: 90 min, max 25 people, SEK 2,200 per group. **Choose 1 guide.** Shows that something bookable can sit in a choice group.
+- Evening tour: 90 min, max 25 people, SEK 2,200 per group. **Choose 1 guide.** Shows that something bookable can sit in a customisation group.
 - Design workshop: 120 min in Knippla, SEK 395/pp. Contains the room Knippla in the Cabaret setup.
 
 ### Equipment
 Projector (SEK 450), Mobile sound system (SEK 900), Extra whiteboard (SEK 150), Hearing loop (SEK 0).
 
-### Packages (4 in the catalog + 1 customer-specific)
-| Package | Price/pp | Contents (offset from start) |
+### Bundles (4 in the catalog + 1 customer-specific)
+| Bundle | Price/pp | Contents (offset from start) |
 |---|---|---|
 | Half-day conference | 545 | **Room, choose 1:** Hönö, Öckerö, Styrsö, Vrångö (+0:00, 4 h) · Morning break (+1:30) · Conference lunch (+3:30) |
 | Full-day conference | 795 | **Room, choose 1:** Hönö, Öckerö, Styrsö, Vrångö (+0:00, 8 h) · Morning break (+1:30) · Conference lunch (+3:30) · Afternoon break (+6:00) |
@@ -331,11 +331,11 @@ Fixed roles (ADR 0034).
 Seated (10 min), Standing (5 min), Deck reception (20 min).
 
 ### Item types
-| Type | Behaviours | Own fields |
+| Type | Capabilities | Own fields |
 |---|---|---|
 | Boat | `BOOKABLE`, `SETUPS`, `PRICED` | Registration number (text), Toilet on board (yes/no), Max knots (number) |
 | Skipper | `BOOKABLE` | Certification (choice: Certification) |
-| Tour | `PRICED`, `COMPOSABLE`, `CHOICES` | Departure harbor (choice: Harbor), Distance nm (number) |
+| Tour | `PRICED`, `BUNDLE`, `CUSTOMISATIONS` | Departure harbor (choice: Harbor), Distance nm (number) |
 | Add-on | `PRICED` | – |
 
 ### Other types, phases, item states and sheets
@@ -375,10 +375,14 @@ Per Vinga is the main assignee of V1–V3 and Stina Holm follows them; V4 is ass
 
 ---
 
+## After the capability rename (ADR 0059, #390)
+
+The migration `rename_capabilities_bundle_customisations` renames `behaviours` to `capabilities`, `COMPOSABLE` to `BUNDLE`, `CHOICES` to `CUSTOMISATIONS`, `ItemComponent` to `ItemPart` and `ItemChoiceGroup` to `ItemCustomisationGroup` in place. Dev and worktree databases need `pnpm db:migrate` and then `seed:demo` again (it resets the demo organizations), so the type named "Package" becomes "Bundle" and stored JSON (audit rows, embeddings, conversations) of the demo data no longer shows the old names.
+
 ## Structure in the code
 
-- `packages/core/src/seed/demo/data/` has one folder per organization (`lindholmen/`, `vingaleden/`). The files are pure data, split so that no file goes over 150 lines, e.g. `lindholmen.ts` (roles and users), `config.ts`, `types.ts`, `rooms.ts`, `dishes.ts`, `drinks.ts`, `meals.ts`, `activities.ts` (guides, tours, equipment), `packages.ts`, `customers.ts` and `tickets.ts`; Vingaleden's skippers, trips and add-ons are in `tours.ts`. `pipeline.ts` holds the phases and the phase grid.
-- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-responsibilities.ts`, `seed-items.ts`, `seed-customers.ts`, `seed-pipeline.ts` (phases, then the grid in `seed-grid.ts`) and `seed-tickets.ts` (lines and their overrides in `seed-lines.ts`). Items with `parts` or `choices` come after the items they contain (`seed-item-input.ts` resolves them); a choice group's options become parts too. Contact persons, the price list and customer-specific packages are created right after their customer.
+- `packages/core/src/seed/demo/data/` has one folder per organization (`lindholmen/`, `vingaleden/`). The files are pure data, split so that no file goes over 150 lines, e.g. `lindholmen.ts` (roles and users), `config.ts`, `types.ts`, `rooms.ts`, `dishes.ts`, `drinks.ts`, `meals.ts`, `activities.ts` (guides, tours, equipment), `bundles.ts`, `customers.ts` and `tickets.ts`; Vingaleden's skippers, trips and add-ons are in `tours.ts`. `pipeline.ts` holds the phases and the phase grid.
+- `seed-demo.ts` runs the parts in order via `execute` with core operations: `seed-roles.ts`, `seed-config.ts`, `seed-responsibilities.ts`, `seed-items.ts`, `seed-customers.ts`, `seed-pipeline.ts` (phases, then the grid in `seed-grid.ts`) and `seed-tickets.ts` (lines and their overrides in `seed-lines.ts`). Items with `parts` or `customisations` come after the items they contain (`seed-item-input.ts` resolves them); a customisation group's options become parts too. Contact persons, the price list and customer-specific packages are created right after their customer.
   - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`. A `LINK` field names its target type (`linkType`) and its values name a record of that type (`Host: "Eva Sund"`, resolved by `resolveLinks` in `seed-fields.ts`).
   - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
 - `seed-templates.ts` creates the predefined tickets from `data/<org>/templates.ts` through `ticketTemplate.create` (items, setups, ticket type and start phase by name), after the pipeline and before the tickets. A ticket with `template` in `tickets.ts` is created through `ticket.createFromTemplate` (`seed-ticket-from-template.ts`) and is not moved afterwards.

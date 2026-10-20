@@ -55,14 +55,14 @@ export async function archiveCustomerTickets({
   return ok({ value: rows.length });
 }
 
-/** Archives the customer's own packages (items with its `customerId`); one audit row each. */
-export async function archiveCustomerPackages({
+/** Archives the customer's own bundles (items with its `customerId`); one audit row each. */
+export async function archiveCustomerBundles({
   context,
   customer,
 }: CascadeInput): Promise<Result<number>> {
   const rows = await context.db.item.findMany({ where: { customerId: customer.id } });
   if (rows.length === 0) return ok({ value: 0 });
-  const allowed = requirePermission({ context, permission: "item:delete", what: "packages" });
+  const allowed = requirePermission({ context, permission: "item:delete", what: "bundles" });
   if (!allowed.ok) return allowed;
   const before = await toItemDtos({ context, rows });
   for (const dto of before) {

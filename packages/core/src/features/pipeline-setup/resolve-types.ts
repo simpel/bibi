@@ -12,7 +12,7 @@ export type ResolveTypesInput = {
 /**
  * Whether each draft item type is bookable (by name). An existing type (`entityTypeId`) must be an
  * active item type of the organization (`NOT_FOUND` otherwise, also for another organization's id)
- * and is read with `configuration:read`; a new type is bookable when its behaviours say so.
+ * and is read with `configuration:read`; a new type is bookable when its capabilities say so.
  */
 export async function resolveBookable({
   context,
@@ -26,17 +26,17 @@ export async function resolveBookable({
   }
   const rows = await context.db.entityType.findMany({
     where: { id: { in: ids }, base: "ITEM" },
-    select: { id: true, behaviours: true },
+    select: { id: true, capabilities: true },
   });
   const bookable = new Map<string, boolean>();
   for (const type of draft.itemTypes) {
     if (!type.entityTypeId) {
-      bookable.set(type.name, type.behaviours?.includes("BOOKABLE") === true);
+      bookable.set(type.name, type.capabilities?.includes("BOOKABLE") === true);
       continue;
     }
     const row = rows.find((candidate) => candidate.id === type.entityTypeId);
     if (!row) return notFound({ entity: "Item type" });
-    bookable.set(type.name, row.behaviours.includes("BOOKABLE"));
+    bookable.set(type.name, row.capabilities.includes("BOOKABLE"));
   }
   return ok({ value: bookable });
 }

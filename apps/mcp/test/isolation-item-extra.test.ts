@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 
-describe("cross-organization isolation: item archive, resolve and packages", () => {
-  it("refuses another organization's item for archive, resolve and as package part", async () => {
+describe("cross-organization isolation: item archive, resolve and bundles", () => {
+  it("refuses another organization's item for archive, resolve and as bundle part", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
     const typeA = await call({
@@ -33,19 +33,19 @@ describe("cross-organization isolation: item archive, resolve and packages", () 
       args: { entityTypeId: customerType.data.id, name: "Own customer" },
     });
     expect(customer.isError, JSON.stringify(customer.data)).toBe(false);
-    const packageType = await call({
+    const bundleType = await call({
       client: b,
       name: "entityType_create",
-      args: { base: "ITEM", name: "Package", behaviours: ["COMPOSABLE"] },
+      args: { base: "ITEM", name: "Bundle", capabilities: ["BUNDLE"] },
     });
     const saved = await call({
       client: b,
-      name: "item_saveAsPackage",
+      name: "item_saveAsBundle",
       args: {
         customerId: customer.data.id,
-        entityTypeId: packageType.data.id,
+        entityTypeId: bundleType.data.id,
         name: "Borrowing",
-        components: [{ itemId: id }],
+        parts: [{ itemId: id }],
       },
     });
     expect(saved.isError).toBe(true);
@@ -55,12 +55,12 @@ describe("cross-organization isolation: item archive, resolve and packages", () 
 
     const ownerSave = await call({
       client: a,
-      name: "item_saveAsPackage",
+      name: "item_saveAsBundle",
       args: {
         customerId: customer.data.id,
         entityTypeId: typeA.data.id,
         name: "Foreign customer",
-        components: [{ itemId: id }],
+        parts: [{ itemId: id }],
       },
     });
     expect(ownerSave.isError).toBe(true);

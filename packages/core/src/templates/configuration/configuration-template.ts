@@ -1,4 +1,4 @@
-import type { EntityBase, ItemBehaviour } from "../../features/entity-type/behaviour-kinds";
+import type { EntityBase, ItemCapability } from "../../features/entity-type/capability-kinds";
 import type { FieldKind } from "../../features/field-definition/field-kinds";
 import type { VocabularyTemplateKey } from "../vocabularies/vocabulary-templates";
 
@@ -13,7 +13,7 @@ export type ConfigurationTemplateField = {
 export type ConfigurationTemplateType = {
   base: EntityBase;
   name: string;
-  behaviours?: readonly ItemBehaviour[];
+  capabilities?: readonly ItemCapability[];
   fields?: readonly ConfigurationTemplateField[];
 };
 
@@ -22,7 +22,7 @@ export type ConfigurationTemplateResponsibility = { name: string; types: readonl
 
 /**
  * A starter configuration an organization can import and then edit freely (ADR 0021): lists,
- * setups, and types with behaviours and fields. Domain words live only in this data.
+ * setups, and types with capabilities and fields. Domain words live only in this data.
  */
 export type ConfigurationTemplate = {
   key: string;

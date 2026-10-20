@@ -58,7 +58,7 @@ describe("graph traversal", () => {
     const res = await gql({
       query: `query($id: String!) { item(id: $id) {
         fields setups { capacity setup { name changeoverMinutes } }
-        entityType { name behaviours fields { key name kind } }
+        entityType { name capabilities fields { key name kind } }
       } }`,
       variables: { id: created.body.data.itemCreate.id },
     });
@@ -68,7 +68,7 @@ describe("graph traversal", () => {
       setups: [{ capacity: 20, setup: { name: "U-bord", changeoverMinutes: 15 } }],
       entityType: {
         name: "Konferensrum",
-        behaviours: expect.arrayContaining(["BOOKABLE", "SETUPS", "PRICED"]),
+        capabilities: expect.arrayContaining(["BOOKABLE", "SETUPS", "PRICED"]),
         fields: [{ key: "area", name: "Yta", kind: "NUMBER" }],
       },
     });

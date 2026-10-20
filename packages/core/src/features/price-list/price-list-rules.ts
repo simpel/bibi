@@ -51,7 +51,7 @@ export function checkPricing({
 
 export type CheckItemsInput = Db & { items: readonly PriceListItemDto[] };
 
-/** Each item is active, has the PRICED behaviour and is listed at most once. */
+/** Each item is active, has the PRICED capability and is listed at most once. */
 export async function checkItems({ context, items }: CheckItemsInput): Promise<Result<true>> {
   const ids = items.map((item) => item.itemId);
   if (new Set(ids).size !== ids.length) {
@@ -59,10 +59,10 @@ export async function checkItems({ context, items }: CheckItemsInput): Promise<R
     return invalid({ message, issues: [{ path: "items", message }] });
   }
   const found = await context.db.item.count({
-    where: { id: { in: ids }, entityType: { behaviours: { has: "PRICED" } } },
+    where: { id: { in: ids }, entityType: { capabilities: { has: "PRICED" } } },
   });
   if (found !== ids.length) {
-    const message = "Unknown item, or an item without the PRICED behaviour";
+    const message = "Unknown item, or an item without the PRICED capability";
     return invalid({ message, issues: [{ path: "items", message }] });
   }
   return ok({ value: true });

@@ -10,7 +10,7 @@ describe("item state graph (ADR 0044)", () => {
     const gql = createClient({ context: testContext() });
     const type = await gql({
       query: TYPE,
-      variables: { i: { base: "ITEM", name: "Room", behaviours: ["BOOKABLE"] } },
+      variables: { i: { base: "ITEM", name: "Room", capabilities: ["BOOKABLE"] } },
     });
     const entityTypeId = type.body.data.entityTypeCreate.id;
     const soft = { entityTypeId, name: "Prebooked", color: "#f59e0b", hold: "SOFT" };

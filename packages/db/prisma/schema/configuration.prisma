@@ -1,5 +1,5 @@
 // The configurable domain (ADR 0021): every organization defines its own types, fields, lists
-// and setups as data. Code only knows the base entities, behaviours and field kinds below.
+// and setups as data. Code only knows the base entities, capabilities and field kinds below.
 
 /// The base entity an organization's own type classifies.
 enum EntityBase {
@@ -11,11 +11,11 @@ enum EntityBase {
   LINE
 }
 
-/// Generic behaviours an item type switches on (ADR 0021). No domain words.
-enum ItemBehaviour {
+/// Generic capabilities an item type switches on (ADR 0021). No domain words.
+enum ItemCapability {
   PRICED
-  COMPOSABLE
-  CHOICES
+  BUNDLE
+  CUSTOMISATIONS
   BOOKABLE
   SETUPS
 }
@@ -32,14 +32,14 @@ enum FieldKind {
 }
 
 /// Type – an organization's own type for a base entity, e.g. Conference room, Dish or Boat.
-/// Trigger (ADR 0053): changing `behaviours` (gaining or losing `BOOKABLE`) re-derives the holds
+/// Trigger (ADR 0053): changing `capabilities` (gaining or losing `BOOKABLE`) re-derives the holds
 /// of every line on an item of the type that has not ended (`sync_line_occupancy.sql`).
 model EntityType {
   id               String                      @id @default(cuid(2))
   organizationId   String
   base             EntityBase
   name             String
-  behaviours       ItemBehaviour[]
+  capabilities     ItemCapability[]
   /// Item types: where lines in an `expires` state fall when the ticket's `holdsUntil` passes.
   expiryStateId    String?
   status           RecordStatus                @default(ACTIVE)

@@ -10,7 +10,7 @@ export type SetupsSectionProps = {
   setups: SetupDto[];
 };
 
-/** SETUPS behaviour: one capacity per setup of the organization; empty = not used. */
+/** SETUPS capability: one capacity per setup of the organization; empty = not used. */
 export function SetupsSection({ form, setups }: SetupsSectionProps) {
   const t = useTranslations("item");
   return (

@@ -22,7 +22,7 @@ describe("configurable domain over HTTP", () => {
       method: "POST",
       path: "/entity-types",
       org,
-      body: { base: "ITEM", name: "Konferensrum", behaviours: ["BOOKABLE"] },
+      body: { base: "ITEM", name: "Konferensrum", capabilities: ["BOOKABLE"] },
     });
     const field = await call({
       method: "POST",
@@ -41,7 +41,7 @@ describe("configurable domain over HTTP", () => {
       method: "POST",
       path: "/entity-types",
       org,
-      body: { base: "ITEM", name: "Rekvisita", behaviours: ["BOOKABLE"] },
+      body: { base: "ITEM", name: "Rekvisita", capabilities: ["BOOKABLE"] },
     });
     const item = await call({
       method: "POST",

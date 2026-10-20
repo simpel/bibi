@@ -2,8 +2,8 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
 import { insertItemState } from "../item-state/insert-item-state";
-import type { EntityBase, ItemBehaviour } from "./behaviour-kinds";
-import { checkBehaviours } from "./behaviours";
+import { checkCapabilities } from "./capabilities";
+import type { EntityBase, ItemCapability } from "./capability-kinds";
 import { toEntityTypeDto } from "./load-entity-type";
 import type { EntityTypeDto } from "./schema";
 
@@ -11,7 +11,7 @@ export type InsertEntityTypeInput = {
   context: OperationContext;
   base: EntityBase;
   name: string;
-  behaviours?: readonly ItemBehaviour[];
+  capabilities?: readonly ItemCapability[];
 };
 
 type DefaultStateInput = { context: OperationContext; type: EntityTypeDto };
@@ -28,7 +28,7 @@ const insertDefaultState = ({ context, type }: DefaultStateInput) =>
     name: "Active",
     color: "#64748b",
     initial: true,
-    hold: type.behaviours.includes("BOOKABLE") ? "HARD" : "NONE",
+    hold: type.capabilities.includes("BOOKABLE") ? "HARD" : "NONE",
     inSheets: true,
   });
 
@@ -37,16 +37,16 @@ export async function insertEntityType({
   context,
   base,
   name,
-  behaviours = [],
+  capabilities = [],
 }: InsertEntityTypeInput): Promise<Result<EntityTypeDto>> {
-  const valid = checkBehaviours({ base, behaviours });
+  const valid = checkCapabilities({ base, capabilities });
   if (!valid.ok) return valid;
   if (await context.db.entityType.findFirst({ where: { base, name } })) {
     return conflict({ message: `A type named "${name}" exists` });
   }
   const row = await context.db.entityType.create({
     data: {
-      ...{ base, name, behaviours: [...behaviours] },
+      ...{ base, name, capabilities: [...capabilities] },
       organizationId: context.organizationId,
     },
   });

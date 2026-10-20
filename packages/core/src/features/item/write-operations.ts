@@ -18,10 +18,10 @@ export const createItem = defineOperation({
   name: "item.create",
   kind: "command",
   description:
-    "Create an item of one of the organization's item types. Behaviour data (price, default " +
-    "length, setup capacities, parts, choice groups) is only accepted if the type has that " +
-    "behaviour; `fields` must match the type's own fields. The item joins the catalog; use " +
-    "item.saveAsPackage for a customer-specific package.",
+    "Create an item of one of the organization's item types. Capability data (price, default " +
+    "length, setup capacities, parts, customisation groups) is only accepted if the type has that " +
+    "capability; `fields` must match the type's own fields. The item joins the catalog; use " +
+    "item.saveAsBundle for a customer-specific bundle.",
   input: ItemCreateInputSchema,
   output: ItemSchema,
   permission: "item:write",
@@ -34,7 +34,7 @@ export const updateItem = defineOperation({
   kind: "command",
   description:
     "Update an item. Omitted properties are unchanged; `fields` is merged by key (null " +
-    "clears a value); `setups`, `components` and `choiceGroups` replace the whole set (groups " +
+    "clears a value); `setups`, `parts` and `customisationGroups` replace the whole set (groups " +
     "are kept when only parts change). The type cannot be changed.",
   input: ItemUpdateInputSchema,
   output: ItemSchema,
@@ -42,18 +42,18 @@ export const updateItem = defineOperation({
   embeddable: itemEmbeddable,
   consequences: itemUpdateConsequences,
   handler: async ({ input, context }) => {
-    const { id, fields: patch, setups, components, choiceGroups, ...data } = input;
+    const { id, fields: patch, setups, parts, customisationGroups, ...data } = input;
     const before = await loadItem({ context, id });
     if (!before) return notFound({ entity: "Item" });
     const type = await loadItemType({ context, entityTypeId: before.entityTypeId });
     if (!type.ok) return type;
-    const composition = planComposition({ before, components, choiceGroups });
+    const composition = planComposition({ before, parts, customisationGroups });
     const checked = await checkItem({
       context,
       type: type.value,
       itemId: id,
       customerId: before.customerId,
-      data: { ...data, setups, components, choiceGroups },
+      data: { ...data, setups, parts, customisationGroups },
       composition,
       fields: patch ? mergeFields({ before: before.fields, patch }) : undefined,
     });
@@ -65,7 +65,7 @@ export const updateItem = defineOperation({
     });
     await updateRecord({ context, id, change: { fields: json, links: checked.value?.links } });
     if (setups) await replaceSetups({ context, itemId: id, setups });
-    const partsChanged = components !== undefined;
+    const partsChanged = parts !== undefined;
     await writeComposition({ context, itemId: id, partsChanged, composition });
     const item = await loadItem({ context, id });
     if (!item) return notFound({ entity: "Item" });

@@ -2,13 +2,13 @@ import {
   archiveItem,
   createItem,
   getItem,
-  ItemChoiceGroupSchema,
-  ItemComponentSchema,
+  ItemCustomisationGroupSchema,
   type ItemDto,
+  ItemPartSchema,
   ItemSchema,
   ItemSetupSchema,
   listItems,
-  saveItemAsPackage,
+  saveItemAsBundle,
   updateItem,
 } from "@okazi/core";
 import { builder } from "../../schema/builder";
@@ -22,8 +22,8 @@ import { SetupRef } from "../setup/graphql";
 import { VenueRef } from "../venue/graphql";
 
 type ItemSetupDto = ItemDto["setups"][number];
-type ItemComponentDto = ItemDto["components"][number];
-type ItemChoiceGroupDto = ItemDto["choiceGroups"][number];
+type ItemPartDto = ItemDto["parts"][number];
+type ItemCustomisationGroupDto = ItemDto["customisationGroups"][number];
 
 export const ItemSetupRef = objectFromSchema<ItemSetupDto>({
   name: "ItemSetup",
@@ -31,22 +31,23 @@ export const ItemSetupRef = objectFromSchema<ItemSetupDto>({
   description: "Capacity of an item in one setup.",
 });
 
-export const ItemComponentRef = objectFromSchema<ItemComponentDto>({
-  name: "ItemComponent",
-  schema: ItemComponentSchema,
-  description: "One part of a COMPOSABLE item: quantity, timing and whether it is mandatory.",
+export const ItemPartRef = objectFromSchema<ItemPartDto>({
+  name: "ItemPart",
+  schema: ItemPartSchema,
+  description: "One part of a BUNDLE item: quantity, timing and whether it is mandatory.",
 });
 
-export const ItemChoiceGroupRef = objectFromSchema<ItemChoiceGroupDto>({
-  name: "ItemChoiceGroup",
-  schema: ItemChoiceGroupSchema,
-  description: "Choice group of a CHOICES item: pick between minPick and maxPick of the options.",
+export const ItemCustomisationGroupRef = objectFromSchema<ItemCustomisationGroupDto>({
+  name: "ItemCustomisationGroup",
+  schema: ItemCustomisationGroupSchema,
+  description:
+    "Customisation group of a CUSTOMISATIONS item: pick between minPick and maxPick of the options.",
 });
 
 export const ItemRef = objectFromSchema<ItemDto>({
   name: "Item",
   schema: ItemSchema,
-  omit: ["organizationId", "setups", "components", "choiceGroups"],
+  omit: ["organizationId", "setups", "parts", "customisationGroups"],
   description: "Artikel – anything the organization sells or books, as defined by its item type.",
 });
 const ItemPageRef = pageType({ name: "ItemPage", item: ItemRef });
@@ -54,34 +55,34 @@ const ItemPageRef = pageType({ name: "ItemPage", item: ItemRef });
 builder.objectField(ItemRef, "setups", (t) =>
   t.field({
     type: [ItemSetupRef],
-    description: "Capacity per setup (SETUPS behaviour), largest first.",
+    description: "Capacity per setup (SETUPS capability), largest first.",
     resolve: (item) => item.setups,
   }),
 );
 
-builder.objectField(ItemRef, "components", (t) =>
+builder.objectField(ItemRef, "parts", (t) =>
   t.field({
-    type: [ItemComponentRef],
-    description: "Parts (COMPOSABLE behaviour), by offset.",
-    resolve: (item) => item.components,
+    type: [ItemPartRef],
+    description: "Parts (BUNDLE capability), by offset.",
+    resolve: (item) => item.parts,
   }),
 );
 
-builder.objectField(ItemRef, "choiceGroups", (t) =>
+builder.objectField(ItemRef, "customisationGroups", (t) =>
   t.field({
-    type: [ItemChoiceGroupRef],
-    description: "Choice groups among the parts (CHOICES behaviour), in order.",
-    resolve: (item) => item.choiceGroups,
+    type: [ItemCustomisationGroupRef],
+    description: "Customisation groups among the parts (CUSTOMISATIONS capability), in order.",
+    resolve: (item) => item.customisationGroups,
   }),
 );
 
-builder.objectField(ItemComponentRef, "item", (t) =>
+builder.objectField(ItemPartRef, "item", (t) =>
   t.field({
     type: ItemRef,
     nullable: true,
     description: "The part (null if archived).",
-    resolve: (component, _args, ctx) =>
-      runOperation({ operation: getItem, input: { id: component.itemId }, ctx }).catch(
+    resolve: (part, _args, ctx) =>
+      runOperation({ operation: getItem, input: { id: part.itemId }, ctx }).catch(
         () => null,
       ) as never,
   }),
@@ -92,7 +93,7 @@ fieldFromOperation({ operation: getItem, type: ItemRef, name: "item" });
 mutationFromOperation({ operation: createItem, type: ItemRef });
 mutationFromOperation({ operation: updateItem, type: ItemRef });
 mutationFromOperation({ operation: archiveItem, type: ItemRef });
-mutationFromOperation({ operation: saveItemAsPackage, type: ItemRef });
+mutationFromOperation({ operation: saveItemAsBundle, type: ItemRef });
 
 // Graph edges. Reads go through core operations or the per-request loaders (org-scoped).
 // They live here so that venue/graphql.ts does not need to import this file.

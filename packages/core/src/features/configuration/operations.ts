@@ -15,7 +15,7 @@ export const importConfigurationTemplate = defineOperation({
   kind: "command",
   description:
     "Import a starter configuration (e.g. conference-venue) as ordinary, editable lists, " +
-    "setups, types with behaviours and fields, and example responsibilities (defaulting to you " +
+    "setups, types with capabilities and fields, and example responsibilities (defaulting to you " +
     "when you are a member). Idempotent: anything whose name already " +
     "exists is skipped and left untouched, so it is safe to run again.",
   input: ConfigurationImportTemplateInputSchema,

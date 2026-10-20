@@ -7,7 +7,7 @@ import { useEntityTypeColumns } from "./use-entity-type-columns";
 
 export type EntityTypeTableProps = { types: EntityTypeDto[] };
 
-/** Types of one base entity: name (link to the detail page), behaviours and field count. */
+/** Types of one base entity: name (link to the detail page), capabilities and field count. */
 export function EntityTypeTable({ types }: EntityTypeTableProps) {
   const t = useTranslations("entityType");
   const columns = useEntityTypeColumns();

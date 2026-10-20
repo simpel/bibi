@@ -11,7 +11,7 @@ import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { createEntityTypeAction, updateEntityTypeAction } from "../actions";
 import { BaseSelectField } from "./base-select-field";
-import { BehaviourField } from "./behaviour-field";
+import { CapabilityField } from "./capability-field";
 import {
   type EntityTypeFormOutput,
   type EntityTypeFormValues,
@@ -31,11 +31,11 @@ type SaveInput = { entityType: EntityTypeDto | undefined; values: EntityTypeForm
 const save = ({ entityType, values }: SaveInput) =>
   entityType
     ? updateEntityTypeAction({
-        input: { id: entityType.id, name: values.name, behaviours: values.behaviours },
+        input: { id: entityType.id, name: values.name, capabilities: values.capabilities },
       })
     : createEntityTypeAction({ input: values });
 
-/** Create (base, name, behaviours) or edit (name, behaviours) a type. A CONFLICT shows as a toast. */
+/** Create (base, name, capabilities) or edit (name, capabilities) a type. A CONFLICT shows as a toast. */
 export function EntityTypeForm({ entityType, onDone }: EntityTypeFormProps) {
   const t = useTranslations("entityType");
   const common = useTranslations("common");
@@ -58,7 +58,7 @@ export function EntityTypeForm({ entityType, onDone }: EntityTypeFormProps) {
       <form onSubmit={submit} noValidate className="grid gap-4">
         {entityType ? null : <BaseSelectField control={form.control} />}
         <TextField form={form} name="name" label={t("fields.name")} required />
-        {form.watch("base") === "ITEM" ? <BehaviourField control={form.control} /> : null}
+        {form.watch("base") === "ITEM" ? <CapabilityField control={form.control} /> : null}
         <div className="flex justify-end gap-2">
           {onDone ? (
             <Button type="button" variant="outline" onClick={onDone}>

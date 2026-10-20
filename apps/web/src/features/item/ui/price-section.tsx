@@ -53,7 +53,7 @@ function PriceUnitField({ control }: PriceUnitFieldProps) {
   );
 }
 
-/** PRICED behaviour: price in kr (stored as minor units), price unit and VAT (empty = the venue default). */
+/** PRICED capability: price in kr (stored as minor units), price unit and VAT (empty = the venue default). */
 export function PriceSection({ form }: PriceSectionProps) {
   const t = useTranslations("item");
   return (

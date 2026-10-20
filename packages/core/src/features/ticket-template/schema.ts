@@ -43,7 +43,7 @@ export const TicketTemplateLineInputSchema = z.object({
     .string()
     .min(1)
     .nullish()
-    .describe("Id of a general item (item.list), e.g. a room or a dish; not a customer's package"),
+    .describe("Id of a general item (item.list), e.g. a room or a dish; not a customer's bundle"),
   setupId: z.string().min(1).nullish().describe("One of the item's setups (needs itemId)"),
   offsetMinutes: MinutesSchema.describe("Minutes from the ticket's start to the line's start"),
   durationMinutes: MinutesSchema.min(1).describe("How long the line lasts, in minutes"),

@@ -26,7 +26,7 @@ const flagsOf = ({ state }: { state: PipelineStateDraft }) => ({
 /** The draft's type: the existing one, or a new item type (with its default state). */
 async function ensureType({ context, draft }: TypeInput): Promise<Result<string>> {
   if (draft.entityTypeId) return ok({ value: draft.entityTypeId });
-  const input = { base: "ITEM" as const, name: draft.name, behaviours: draft.behaviours ?? [] };
+  const input = { base: "ITEM" as const, name: draft.name, capabilities: draft.capabilities ?? [] };
   const created = await runNested({ operation: createEntityType, input, context });
   return created.ok ? ok({ value: created.value.id }) : created;
 }

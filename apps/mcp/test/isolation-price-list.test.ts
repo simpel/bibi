@@ -8,7 +8,7 @@ describe("cross-organization isolation: price lists", () => {
     const type = await call({
       client: a,
       name: "entityType_create",
-      args: { base: "ITEM", name: "Secret room", behaviours: ["BOOKABLE", "PRICED"] },
+      args: { base: "ITEM", name: "Secret room", capabilities: ["BOOKABLE", "PRICED"] },
     });
     const item = await call({
       client: a,

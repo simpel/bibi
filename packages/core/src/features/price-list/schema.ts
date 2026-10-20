@@ -4,7 +4,7 @@ import { RecordStatusSchema } from "../../shared/record-status";
 
 /** One agreed price on a price list (ADR 0023). */
 export const PriceListItemSchema = z.object({
-  itemId: z.string().min(1).describe("Id of a PRICED item (item.list behaviour PRICED)"),
+  itemId: z.string().min(1).describe("Id of a PRICED item (item.list capability PRICED)"),
   priceMinor: z
     .number()
     .int()

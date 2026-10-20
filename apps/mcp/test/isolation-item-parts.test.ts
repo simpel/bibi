@@ -18,7 +18,7 @@ describe("cross-organization isolation: item parts", () => {
     const typeB = await call({
       client: b,
       name: "entityType_create",
-      args: { base: "ITEM", name: "Own package", behaviours: ["COMPOSABLE", "CHOICES"] },
+      args: { base: "ITEM", name: "Own bundle", capabilities: ["BUNDLE", "CUSTOMISATIONS"] },
     });
     const own = await call({
       client: b,
@@ -26,32 +26,34 @@ describe("cross-organization isolation: item parts", () => {
       args: { entityTypeId: typeB.data.id, name: "Own" },
     });
     expect(own.isError, JSON.stringify(own.data)).toBe(false);
-    const components = [{ itemId: secret.data.id }];
-    const choiceGroups = [{ name: "Pick", minPick: 1, maxPick: 1, itemIds: [secret.data.id] }];
+    const parts = [{ itemId: secret.data.id }];
+    const customisationGroups = [
+      { name: "Pick", minPick: 1, maxPick: 1, itemIds: [secret.data.id] },
+    ];
     const created = await call({
       client: b,
       name: "item_create",
-      args: { entityTypeId: typeB.data.id, name: "Borrowing", components },
+      args: { entityTypeId: typeB.data.id, name: "Borrowing", parts },
     });
     expect(["NOT_FOUND", "VALIDATION"]).toContain(created.data.code);
     const updated = await call({
       client: b,
       name: "item_update",
-      args: { id: own.data.id, components },
+      args: { id: own.data.id, parts },
     });
     expect(["NOT_FOUND", "VALIDATION"]).toContain(updated.data.code);
     const grouped = await call({
       client: b,
       name: "item_update",
-      args: { id: own.data.id, components, choiceGroups },
+      args: { id: own.data.id, parts, customisationGroups },
     });
     expect(grouped.isError, JSON.stringify(grouped.data)).toBe(true);
     const after = await call({ client: b, name: "item_get", args: { id: own.data.id } });
-    expect(after.data.components).toEqual([]);
-    expect(after.data.choiceGroups).toEqual([]);
+    expect(after.data.parts).toEqual([]);
+    expect(after.data.customisationGroups).toEqual([]);
     const listed = await call({ client: b, name: "item_list" });
     expect(listed.data.items).toHaveLength(1);
-    expect(listed.data.items[0].components).toEqual([]);
+    expect(listed.data.items[0].parts).toEqual([]);
     const intact = await call({ client: a, name: "item_get", args: { id: secret.data.id } });
     expect(intact.data.name).toBe("Hemlig");
   });

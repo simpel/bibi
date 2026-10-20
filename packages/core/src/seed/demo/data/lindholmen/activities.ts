@@ -30,14 +30,14 @@ export const lindholmenActivities: readonly DemoItem[] = [
     name: "Exhibition tour",
     fields: { Language: ["Swedish", "English", "German"] },
     ...{ priceKr: 1450, priceUnit: "FLAT", durationMinutes: 60 },
-    choices: [{ name: "Guide", options: guides }],
+    customisations: [{ name: "Guide", options: guides }],
   },
   {
     type: "Tour",
     name: "Evening tour",
     fields: { Language: ["Swedish", "English", "German"] },
     ...{ priceKr: 2200, priceUnit: "FLAT", durationMinutes: 90 },
-    choices: [{ name: "Guide", options: guides }],
+    customisations: [{ name: "Guide", options: guides }],
   },
   {
     type: "Tour",

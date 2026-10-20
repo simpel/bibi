@@ -11,7 +11,7 @@ export const vingaledenTours: readonly DemoItem[] = [
     name: "Sunset tour",
     fields: { "Departure harbor": "Saltholmen", "Distance nm": 18 },
     ...{ priceKr: 495, priceUnit: "PER_PERSON" },
-    choices: [
+    customisations: [
       {
         name: "Boat",
         options: [

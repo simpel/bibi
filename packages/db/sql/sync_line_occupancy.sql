@@ -58,7 +58,7 @@ BEGIN
    WHERE l."id" = target_line_id
      AND l."status" = 'ACTIVE' AND t."status" = 'ACTIVE' AND NOT p."terminal"
      AND l."startsAt" IS NOT NULL AND l."endsAt" IS NOT NULL
-     AND 'BOOKABLE' = ANY (et."behaviours")
+     AND 'BOOKABLE' = ANY (et."capabilities")
      AND NOT s."released" AND s."hold" <> 'NONE';
   hold_kind := CASE WHEN FOUND THEN held."hold" ELSE NULL END;
   changeover := CASE WHEN hold_kind = 'HARD' THEN held.minutes ELSE 0 END;
@@ -84,7 +84,7 @@ EXCEPTION WHEN exclusion_violation THEN
 END $$;
 
 -- Re-derives a set of lines and collects every line that collides, so a configuration change
--- (state flags, changeover time, behaviours, terminal flag) is refused with all of them listed.
+-- (state flags, changeover time, capabilities, terminal flag) is refused with all of them listed.
 CREATE OR REPLACE FUNCTION sync_line_occupancies(line_ids text[])
 RETURNS void LANGUAGE plpgsql AS $$
 DECLARE
@@ -193,7 +193,7 @@ CREATE TRIGGER line_occupancy_setup AFTER UPDATE ON "Setup"
 
 DROP TRIGGER IF EXISTS line_occupancy_entity_type ON "EntityType";
 CREATE TRIGGER line_occupancy_entity_type AFTER UPDATE ON "EntityType"
-  FOR EACH ROW WHEN (OLD."behaviours" IS DISTINCT FROM NEW."behaviours")
+  FOR EACH ROW WHEN (OLD."capabilities" IS DISTINCT FROM NEW."capabilities")
   EXECUTE FUNCTION line_occupancy_on_entity_type();
 
 DROP TRIGGER IF EXISTS line_occupancy_ticket ON "Ticket";

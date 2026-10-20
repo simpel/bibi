@@ -1,4 +1,4 @@
-import type { EntityBase, ItemBehaviour } from "../../features/entity-type/behaviour-kinds";
+import type { EntityBase, ItemCapability } from "../../features/entity-type/capability-kinds";
 import type { FieldKind } from "../../features/field-definition/field-kinds";
 import type { PRICE_UNITS } from "../../features/item/schema";
 import type { ItemStateTemplateKey } from "../../templates/item-states/item-state-templates";
@@ -17,13 +17,13 @@ export type DemoField = {
 export type DemoType = {
   base: EntityBase;
   name: string;
-  behaviours?: readonly ItemBehaviour[];
+  capabilities?: readonly ItemCapability[];
   fields?: readonly DemoField[];
   /** Item types: the states the type gets from a template (ADR 0044); default one "Active". */
   states?: ItemStateTemplateKey;
 };
 
-/** A part of a COMPOSABLE demo item, by the name of an item seeded before it. */
+/** A part of a BUNDLE demo item, by the name of an item seeded before it. */
 export type DemoPart = {
   name: string;
   quantity?: number;
@@ -32,8 +32,8 @@ export type DemoPart = {
   required?: boolean;
 };
 
-/** A choice group (CHOICES): pick `pick` (default 1) of the options, which become parts too. */
-export type DemoChoiceGroup = { name: string; pick?: number; options: readonly DemoPart[] };
+/** A customisation group (CUSTOMISATIONS): pick `pick` (default 1) of the options, which become parts too. */
+export type DemoCustomisationGroup = { name: string; pick?: number; options: readonly DemoPart[] };
 
 /** Field values by field name; choice values by value or option name. */
 export type DemoFieldValues = Readonly<
@@ -42,7 +42,7 @@ export type DemoFieldValues = Readonly<
 
 /**
  * A demo item. Field values are given by field name; choice values by value or option name.
- * `setups` maps setup name → capacity, `parts` and `choices` list earlier items by name. Prices are in kronor excl. VAT.
+ * `setups` maps setup name → capacity, `parts` and `customisations` list earlier items by name. Prices are in kronor excl. VAT.
  */
 export type DemoItem = {
   type: string;
@@ -52,7 +52,7 @@ export type DemoItem = {
   priceUnit?: (typeof PRICE_UNITS)[number];
   setups?: Readonly<Record<string, number>>;
   parts?: readonly DemoPart[];
-  choices?: readonly DemoChoiceGroup[];
+  customisations?: readonly DemoCustomisationGroup[];
   /** BOOKABLE: default booking length in minutes. */
   durationMinutes?: number;
 };

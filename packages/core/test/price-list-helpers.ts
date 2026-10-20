@@ -5,7 +5,7 @@ import { createRoomType, createTestItem } from "./item-helpers";
 
 export type PriceListSetupInput = { context: ExecuteContext };
 
-/** A customer, a PRICED room and an item whose type lacks the PRICED behaviour. */
+/** A customer, a PRICED room and an item whose type lacks the PRICED capability. */
 export async function priceListSetup({ context }: PriceListSetupInput) {
   const customer = await createTestCustomer({ context, name: "Nordkust AB" });
   const roomType = await createRoomType({ context });

@@ -52,8 +52,8 @@ export const CREATED_BY_MODELS = new Set<string>([
   "RecordLink",
   "Item",
   "ItemSetup",
-  "ItemComponent",
-  "ItemChoiceGroup",
+  "ItemPart",
+  "ItemCustomisationGroup",
   "Customer",
   "Contact",
   "PriceList",
@@ -106,7 +106,7 @@ export const APP_ID_MODELS = new Set<string>([
 
 /**
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:
- * replacement sets owned by a parent and audited on it (ItemSetup, ItemComponent, ItemChoiceGroup,
+ * replacement sets owned by a parent and audited on it (ItemSetup, ItemPart, ItemCustomisationGroup,
  * TicketPhaseTransition, ItemStateTransition, TicketTemplateLine, PriceListItem, OrderLine, the id
  * lists of responsibilities and sheet definitions and RecordLink, ADR 0056), phase grid cells
  * (PhaseStateRule, audited on itself), the derived search index (Embedding), Better Auth
@@ -117,8 +117,8 @@ export const APP_ID_MODELS = new Set<string>([
  */
 export const HARD_DELETE_MODELS = new Set<string>([
   "ItemSetup",
-  "ItemComponent",
-  "ItemChoiceGroup",
+  "ItemPart",
+  "ItemCustomisationGroup",
   "TicketPhaseTransition",
   "ItemStateTransition",
   "PhaseStateRule",

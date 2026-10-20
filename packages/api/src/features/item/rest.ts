@@ -20,8 +20,8 @@ export const itemRoutes = [
   restRoute({ operation: "item.update", method: "PATCH", path: "/items/{id}" }),
   restRoute({ operation: "item.archive", method: "DELETE", path: "/items/{id}" }),
   restRoute({
-    operation: "item.saveAsPackage",
+    operation: "item.saveAsBundle",
     method: "POST",
-    path: "/customers/{customerId}/packages",
+    path: "/customers/{customerId}/bundles",
   }),
 ];

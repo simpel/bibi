@@ -12,11 +12,11 @@ import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { OccupancySection } from "../../occupancy/ui/occupancy-section";
 import { loadItemFormData } from "../load-item-form-data";
+import { BundleOwner } from "./bundle-owner";
 import { ItemActions } from "./item-actions";
-import { ItemBehaviours } from "./item-behaviours";
+import { ItemCapabilities } from "./item-capabilities";
 import { ItemFacts } from "./item-facts";
 import { ItemResolutionSection } from "./item-resolution-section";
-import { PackageOwner } from "./package-owner";
 
 export type ItemDetailProps = { locale: Locale; id: string };
 
@@ -44,14 +44,15 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         description={item.value.description ?? undefined}
         actions={actions}
       />
-      {item.value.customerId ? <PackageOwner customerId={item.value.customerId} /> : null}
+      {item.value.customerId ? <BundleOwner customerId={item.value.customerId} /> : null}
       <WithHistory locale={locale} entityType="item" entityId={item.value.id}>
         <ItemFacts item={item.value} type={type} data={data.value} />
-        <ItemBehaviours item={item.value} data={data.value} locale={locale} />
-        {type?.behaviours.includes("COMPOSABLE") ? (
+        <ItemCapabilities item={item.value} data={data.value} locale={locale} />
+        {type?.capabilities.includes("BUNDLE") ? (
           <ItemResolutionSection locale={locale} itemId={item.value.id} />
         ) : null}
-        {type?.behaviours.includes("BOOKABLE") && can({ abilities, permission: "ticket:read" }) ? (
+        {type?.capabilities.includes("BOOKABLE") &&
+        can({ abilities, permission: "ticket:read" }) ? (
           <OccupancySection locale={locale} itemId={item.value.id} />
         ) : null}
       </WithHistory>

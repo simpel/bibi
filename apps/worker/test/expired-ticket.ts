@@ -41,7 +41,7 @@ async function provisionedOrg() {
 
 /** A room type with Prebooked (soft, expires, initial) and Released as its expiry state. */
 async function roomType({ context }: { context: ExecuteContext }) {
-  const input = { base: "ITEM", name: "Room", behaviours: ["BOOKABLE"] };
+  const input = { base: "ITEM", name: "Room", capabilities: ["BOOKABLE"] };
   const type = await run({ context, operation: createEntityType, input });
   const color = "#64748b";
   const state = { entityTypeId: type.id, color };

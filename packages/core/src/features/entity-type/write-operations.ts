@@ -5,8 +5,8 @@ import { usageConflict } from "../../records/blocking-issues";
 import { conflict, notFound } from "../../shared/errors";
 import { recordsOfType } from "../field-definition/field-usage";
 import { checkNotOnSheets } from "../sheet-definition/usage";
-import type { EntityBase } from "./behaviour-kinds";
-import { checkBehaviours, checkBehavioursRemovable } from "./behaviours";
+import { checkCapabilities, checkCapabilitiesRemovable } from "./capabilities";
+import type { EntityBase } from "./capability-kinds";
 import { checkExpiryState } from "./expiry-state";
 import { insertEntityType } from "./insert-entity-type";
 import { toEntityTypeDto } from "./load-entity-type";
@@ -49,8 +49,8 @@ export const updateEntityType = defineOperation({
   name: "entityType.update",
   kind: "command",
   description:
-    "Rename a type, replace its behaviours or set an item type's expiry state (where lines in " +
-    "an expiring state fall when the ticket's holdsUntil passes). Switching a behaviour off while items of the " +
+    "Rename a type, replace its capabilities or set an item type's expiry state (where lines in " +
+    "an expiring state fall when the ticket's holdsUntil passes). Switching a capability off while items of the " +
     "type have data for it (e.g. prices for PRICED) is refused with CONFLICT.",
   input: EntityTypeUpdateInputSchema,
   output: EntityTypeSchema,
@@ -58,11 +58,11 @@ export const updateEntityType = defineOperation({
   handler: async ({ input: { id, ...data }, context }) => {
     const before = await context.db.entityType.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Type" });
-    const behaviours = data.behaviours ?? before.behaviours;
-    const valid = checkBehaviours({ base: before.base, behaviours });
+    const capabilities = data.capabilities ?? before.capabilities;
+    const valid = checkCapabilities({ base: before.base, capabilities });
     if (!valid.ok) return valid;
-    const removed = before.behaviours.filter((behaviour) => !behaviours.includes(behaviour));
-    const removable = await checkBehavioursRemovable({ context, entityTypeId: id, removed });
+    const removed = before.capabilities.filter((capability) => !capabilities.includes(capability));
+    const removable = await checkCapabilitiesRemovable({ context, entityTypeId: id, removed });
     if (!removable.ok) return removable;
     const expiry = await checkExpiryState({
       context,

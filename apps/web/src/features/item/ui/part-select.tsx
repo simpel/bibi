@@ -28,10 +28,10 @@ export function PartSelect({ form, index, parts }: PartSelectProps) {
   return (
     <FormController
       control={form.control}
-      name={`components.${index}.itemId`}
+      name={`parts.${index}.itemId`}
       render={({ field }) => (
         <FormItem className="sm:col-span-2">
-          <FormLabel>{t("components.part")}</FormLabel>
+          <FormLabel>{t("parts.part")}</FormLabel>
           <Select value={field.value} onValueChange={field.onChange}>
             <FormControl>
               <SelectTrigger>

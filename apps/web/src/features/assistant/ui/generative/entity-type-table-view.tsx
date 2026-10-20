@@ -32,10 +32,10 @@ function useEntityTypeColumns(): ColumnDef<Row>[] {
       },
       { id: "base", header: t("columns.base"), accessorFn: (type) => t(`base.${type.base}`) },
       {
-        id: "behaviours",
-        header: t("columns.behaviours"),
+        id: "capabilities",
+        header: t("columns.capabilities"),
         accessorFn: (type) =>
-          type.behaviours.map((behaviour) => t(`behaviour.${behaviour}`)).join(", ") || "–",
+          type.capabilities.map((capability) => t(`capability.${capability}`)).join(", ") || "–",
       },
       { id: "fields", header: t("columns.fields"), accessorFn: (type) => type.fields.length },
     ],

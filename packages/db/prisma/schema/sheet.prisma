@@ -4,7 +4,7 @@
 /// this one; both are null/empty for the first send. A version is never edited or removed:
 /// `sentAt` is its only lifecycle, and a changed ticket produces the next version.
 model Sheet {
-  id                String          @id @default(cuid(2))
+  id                String           @id @default(cuid(2))
   organizationId    String
   ticketId          String
   sheetDefinitionId String
@@ -15,22 +15,22 @@ model Sheet {
   /// Snapshot of the ticket's rows the definition includes.
   content           Json
   /// Rows added, changed or removed since `baseVersion` (see core `SheetChange`).
-  changes           Json            @default("[]")
+  changes           Json             @default("[]")
   /// Counts that hit the ticket's items at generation (core `SheetMatch`), blocking ones first.
-  matches           Json            @default("[]")
+  matches           Json             @default("[]")
   /// True when a match is blocking (an item contains a counted value): `sheet.send` is refused.
-  blocked           Boolean         @default(false)
+  blocked           Boolean          @default(false)
   /// The last sent version the changes are measured against; null when none was sent before.
   baseVersion       Int?
   sentAt            DateTime?
   /// User id of whoever sent it.
   sentBy            String?
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
   createdBy         String?
-  ticket            Ticket          @relation(fields: [ticketId, organizationId], references: [id, organizationId])
-  sheetDefinition   SheetDefinition @relation(fields: [sheetDefinitionId, organizationId], references: [id, organizationId])
-  responsibility    Responsibility  @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
+  ticket            Ticket           @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  sheetDefinition   SheetDefinition  @relation(fields: [sheetDefinitionId, organizationId], references: [id, organizationId])
+  responsibility    Responsibility   @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
   /// Who received it: the derived assignee and followers at send time (ADR 0055); empty until sent.
   recipients        SheetRecipient[]
 

@@ -5,10 +5,10 @@ import {
   archiveSetup,
   type ExecuteContext,
   execute,
-  saveItemAsPackage,
+  saveItemAsBundle,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { createMealSetup } from "./item-choice-group-helpers";
+import { createMealSetup } from "./item-customisation-group-helpers";
 import { createTestLine, programSetup } from "./line-helpers";
 import { createTestTicket, ticketSetup } from "./ticket-helpers";
 
@@ -21,18 +21,18 @@ type ArchiveInput = {
 const archive = ({ context, ...input }: ArchiveInput) =>
   execute({ operation: archiveCustomer, input, context });
 
-describe("customer.archive with packages (#151)", () => {
-  it("archives the customer's packages with it, one audit row each", async () => {
+describe("customer.archive with bundles (#151)", () => {
+  it("archives the customer's bundles with it, one audit row each", async () => {
     const { context, customer } = await ticketSetup();
     const { meal, cod, veal } = await createMealSetup({ context });
     const pkg = unwrap({
       result: await execute({
-        operation: saveItemAsPackage,
+        operation: saveItemAsBundle,
         input: {
           entityTypeId: meal.id,
           customerId: customer.id,
           name: "Acme lunch",
-          components: [{ itemId: cod }, { itemId: veal }],
+          parts: [{ itemId: cod }, { itemId: veal }],
         },
         context,
       }),

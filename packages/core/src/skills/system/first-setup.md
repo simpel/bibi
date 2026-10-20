@@ -40,7 +40,7 @@ the assistant, or in Settings and Pipeline. Nothing is saved in this skill.
    organization's own; never remove those (they have an `entityTypeId`).
 4. Adjust the draft by name, keeping everything else exactly as returned:
    - Rooms only (food and drink not ticked): remove the new item types that are not held in time (no `BOOKABLE` in
-     `behaviours`), e.g. food and drink.
+     `capabilities`), e.g. food and drink.
    - Food only (rooms not ticked): remove the new item types that are held in time (`BOOKABLE`).
    - Book directly: remove the phase whose `event` is `QUOTE_SENT`, and set `event` to null on
      the phase whose `event` is `QUOTE_ACCEPTED`.

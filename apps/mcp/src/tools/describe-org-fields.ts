@@ -59,9 +59,9 @@ type TypeLineInput = {
 };
 
 function describeType({ type, types, vocabularies }: TypeLineInput): string {
-  const behaviours = type.behaviours.length > 0 ? ` [${type.behaviours.join(", ")}]` : "";
+  const capabilities = type.capabilities.length > 0 ? ` [${type.capabilities.join(", ")}]` : "";
   const fields = type.fields.map((field) => describeField({ field, vocabularies, types }));
-  return `- ${quote({ name: type.name })} (entityTypeId=${type.id})${behaviours}: ${fields.join("; ") || "no own fields"}`;
+  return `- ${quote({ name: type.name })} (entityTypeId=${type.id})${capabilities}: ${fields.join("; ") || "no own fields"}`;
 }
 
 type CutInput = { lines: string[]; maxChars: number };

@@ -8,12 +8,12 @@ import type { ItemFormData } from "./ui/item-form-data";
 const LIMIT = 100;
 
 export type LoadItemFormDataInput = {
-  /** A customer's package: its own packages can be parts too, next to the catalog. */
+  /** A customer's bundle: its own bundles can be parts too, next to the catalog. */
   customerId?: string | null | undefined;
 };
 
 /**
- * Everything the item form needs to render a type's fields and behaviours (one page each).
+ * Everything the item form needs to render a type's fields and capabilities (one page each).
  * Without `venue:read` the venues are hidden (ADR 0050 feature scope), not an error.
  */
 export async function loadItemFormData({

@@ -2,14 +2,14 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldDefinitionSchema } from "../field-definition/schema";
-import { EntityBaseSchema, ItemBehaviourSchema, ItemBehavioursSchema } from "./behaviour-kinds";
+import { EntityBaseSchema, ItemCapabilitiesSchema, ItemCapabilitySchema } from "./capability-kinds";
 
 export const EntityTypeSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   base: EntityBaseSchema,
   name: z.string(),
-  behaviours: z.array(ItemBehaviourSchema),
+  capabilities: z.array(ItemCapabilitySchema),
   /** Item types: the state lines in an `expires` state fall to when `holdsUntil` passes. */
   expiryStateId: z.string().nullable(),
   /** Active fields of the type, in display order. */
@@ -30,14 +30,14 @@ const NameSchema = z
 export const EntityTypeCreateInputSchema = z.object({
   base: EntityBaseSchema,
   name: NameSchema,
-  behaviours: ItemBehavioursSchema.optional(),
+  capabilities: ItemCapabilitiesSchema.optional(),
 });
 
 export const EntityTypeUpdateInputSchema = z.object({
   id: z.string().min(1),
   name: NameSchema.optional(),
-  behaviours: ItemBehavioursSchema.optional().describe(
-    "Replaces all behaviours. Switching one off while items have data for it is refused.",
+  capabilities: ItemCapabilitiesSchema.optional().describe(
+    "Replaces all capabilities. Switching one off while items have data for it is refused.",
   ),
   expiryStateId: z
     .string()

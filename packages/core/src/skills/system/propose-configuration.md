@@ -22,8 +22,8 @@ words: use the user's own vocabulary for every name.
 3. Present the whole proposal as one short plan before creating anything:
    - Lists (with values), e.g. needs counted against a list such as allergens.
    - Setups (ways a space can be arranged) with `changeoverMinutes`.
-   - Types with a `base` and, for ITEM types, the behaviours that fit: PRICED, COMPOSABLE,
-     CHOICES (needs COMPOSABLE), BOOKABLE, SETUPS (needs BOOKABLE).
+   - Types with a `base` and, for ITEM types, the capabilities that fit: PRICED, BUNDLE,
+     CUSTOMISATIONS (needs BUNDLE), BOOKABLE, SETUPS (needs BOOKABLE).
    - Fields per type with a kind: TEXT, NUMBER, BOOLEAN, DATE, CHOICE, MULTI_CHOICE, LINK. Choice
      fields use a list (`vocabularyId`) or inline `options`. A LINK field points to records of
      another type (`linkTypeId`: an item, customer, contact or ticket type), so create the

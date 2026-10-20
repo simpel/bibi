@@ -10,7 +10,7 @@ export type ItemFactsProps = {
   data: ItemFormData;
 };
 
-/** Description list of an item: core facts, the type's own fields and the behaviour values. */
+/** Description list of an item: core facts, the type's own fields and the capability values. */
 export async function ItemFacts({ item, type, data }: ItemFactsProps) {
   const t = await getTranslations("item");
   const common = await getTranslations("common");

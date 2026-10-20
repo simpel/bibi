@@ -4,10 +4,10 @@ import {
   createVocabulary,
   type ExecuteContext,
   execute,
-  type ItemChoiceGroupInput,
+  type ItemCustomisationGroupInput,
 } from "../src/index";
 import { unwrap } from "./helpers";
-import { createItemType } from "./item-choice-group-helpers";
+import { createItemType } from "./item-customisation-group-helpers";
 
 type Ctx = { context: ExecuteContext };
 
@@ -35,7 +35,11 @@ async function createDishType({ context }: Ctx) {
 }
 
 type Part = { itemId: string; required?: boolean; quantity?: number; offsetMinutes?: number };
-type PackageInput = { name: string; parts: Part[]; choiceGroups?: ItemChoiceGroupInput[] };
+type BundleInput = {
+  name: string;
+  parts: Part[];
+  customisationGroups?: ItemCustomisationGroupInput[];
+};
 
 /** One dish per allergen combination used by the menu. */
 async function createDishes({ context }: Ctx) {
@@ -57,21 +61,20 @@ async function createDishes({ context }: Ctx) {
   return { dishes, valueId };
 }
 
+/** The capabilities of the menu's bundle type. */
+const BUNDLE_TYPE: ("BUNDLE" | "CUSTOMISATIONS")[] = ["BUNDLE", "CUSTOMISATIONS"];
+
 /**
- * Dishes and packages of several levels:
+ * Dishes and bundles of several levels:
  * day = 3 × lunch + salad (Milk); lunch = 2 × starter + choice(cod | veal) + optional cake;
  * starter = bread (Gluten) + optional butter (Milk); duo = a choice with one option (egg roll).
  */
 export async function createMenu({ context }: Ctx) {
   const { dishes, valueId } = await createDishes({ context });
   const { bread, butter, cod, veal, cake, salad, eggRoll } = dishes;
-  const pack = await createItemType({
-    context,
-    name: "Package",
-    behaviours: ["COMPOSABLE", "CHOICES"],
-  });
-  const compose = async ({ name, parts, choiceGroups = [] }: PackageInput) => {
-    const input = { entityTypeId: pack.id, name, components: parts, choiceGroups };
+  const pack = await createItemType({ context, name: "Bundle", capabilities: BUNDLE_TYPE });
+  const compose = async ({ name, parts, customisationGroups = [] }: BundleInput) => {
+    const input = { entityTypeId: pack.id, name, parts, customisationGroups };
     return unwrap({ result: await execute({ operation: createItem, input, context }) }).id;
   };
   const starter = await compose({
@@ -86,7 +89,7 @@ export async function createMenu({ context }: Ctx) {
       { itemId: veal, offsetMinutes: 35 },
       { itemId: cake, required: false, offsetMinutes: 60 },
     ],
-    choiceGroups: [{ name: "Main", minPick: 1, maxPick: 1, itemIds: [cod, veal] }],
+    customisationGroups: [{ name: "Main", minPick: 1, maxPick: 1, itemIds: [cod, veal] }],
   });
   const day = await compose({
     name: "Day",
@@ -96,6 +99,10 @@ export async function createMenu({ context }: Ctx) {
     ],
   });
   const only = [{ name: "Only", minPick: 1, maxPick: 1, itemIds: [eggRoll] }];
-  const duo = await compose({ name: "Duo", parts: [{ itemId: eggRoll }], choiceGroups: only });
+  const duo = await compose({
+    name: "Duo",
+    parts: [{ itemId: eggRoll }],
+    customisationGroups: only,
+  });
   return { ids: { ...dishes, starter, lunch, day, duo }, valueId };
 }

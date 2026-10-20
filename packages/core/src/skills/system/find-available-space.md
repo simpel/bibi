@@ -15,10 +15,10 @@ Goal: shortlist bookable items that fit the request and explain why each one fit
 1. Pin down the requirements: number of participants, date and time, setup (e.g. theatre,
    classroom, banquet), features (daylight, accessibility), city or venue. Ask at most one
    short follow-up question if the participant count is missing.
-2. Learn the organization's model: call `entityType_list` and use the types with behaviour
+2. Learn the organization's model: call `entityType_list` and use the types with capability
    BOOKABLE. Their `fields` tell you what can be filtered on (area, floor, daylight, ...).
 3. Search broadly: call `search` with the request in the user's own words, restricted to
-   `entityTypes: ["item"]`. Then call `item_list` with `behaviour: "BOOKABLE"` (optionally
+   `entityTypes: ["item"]`. Then call `item_list` with `capability: "BOOKABLE"` (optionally
    `venueId` or `entityTypeId`) to cover items that search missed.
 4. Filter strictly on hard requirements: a setup capacity (`setups[].capacity`, names from
    `setup_list`) must be at least the participant count for the wanted setup (any setup if none

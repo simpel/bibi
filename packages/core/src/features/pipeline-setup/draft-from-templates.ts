@@ -18,7 +18,7 @@ import type {
   PipelineTypeDraft,
 } from "./schema";
 
-/** The state templates of the wizard: one per behaviour, or one state "Active". */
+/** The state templates of the wizard: one per capability, or one state "Active". */
 export const STATE_TEMPLATE_CHOICES = ["bookable", "food", "other", "single"] as const;
 export type StateTemplateChoice = (typeof STATE_TEMPLATE_CHOICES)[number];
 
@@ -50,7 +50,7 @@ export function statesFromTemplate({ template, bookable }: StatesFromTemplateInp
   return { states, expiryState: source.find((state) => state.expiry)?.name ?? null };
 }
 
-/** The template for a type's behaviour: bookable types hold, others are planned. */
+/** The template for a type's capability: bookable types hold, others are planned. */
 export const defaultStateTemplate = ({ bookable }: { bookable: boolean }): StateTemplateChoice =>
   bookable ? "bookable" : "other";
 
@@ -119,7 +119,7 @@ export function draftFromPreset({ key, existingTypes }: DraftFromPresetInput): P
     const identity = entityTypeId
       ? { entityTypeId }
       : bookable
-        ? { behaviours: ["BOOKABLE" as const] }
+        ? { capabilities: ["BOOKABLE" as const] }
         : {};
     return { ...identity, name, ...states };
   });

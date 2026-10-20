@@ -78,7 +78,7 @@ export const CONFIGURATION_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   item_create: itemCard,
   item_update: itemCard,
   item_archive: itemCard,
-  item_saveAsPackage: itemCard,
+  item_saveAsBundle: itemCard,
   entityType_list: entityTypeTable,
   entityType_get: entityTypeCard,
   entityType_create: entityTypeCard,

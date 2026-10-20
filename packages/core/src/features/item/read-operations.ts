@@ -8,7 +8,7 @@ import { loadItem, toItemDtos } from "./to-item-dto";
 
 type OwnerFilterInput = { customerId?: string | undefined; onlyCustomer?: boolean | undefined };
 
-/** The catalog, plus or instead of one customer's own packages (ADR 0021). */
+/** The catalog, plus or instead of one customer's own bundles (ADR 0021). */
 function ownerFilter({ customerId, onlyCustomer }: OwnerFilterInput) {
   if (!customerId) return { customerId: null };
   if (onlyCustomer) return { customerId };
@@ -20,8 +20,8 @@ export const listItems = defineOperation({
   kind: "query",
   description:
     "List the organization's items (artiklar): everything it sells or books, e.g. rooms, " +
-    "dishes or boats. Filter by type, venue or behaviour (BOOKABLE for bookable resources). " +
-    "Lists the catalog; with customerId it also lists that customer's own packages.",
+    "dishes or boats. Filter by type, venue or capability (BOOKABLE for bookable resources). " +
+    "Lists the catalog; with customerId it also lists that customer's own bundles.",
   input: ItemListInputSchema,
   output: ItemListOutputSchema,
   permission: "item:read",
@@ -30,7 +30,7 @@ export const listItems = defineOperation({
       where: {
         ...(input.entityTypeId ? { entityTypeId: input.entityTypeId } : {}),
         ...(input.venueId ? { venueId: input.venueId } : {}),
-        ...(input.behaviour ? { entityType: { behaviours: { has: input.behaviour } } } : {}),
+        ...(input.capability ? { entityType: { capabilities: { has: input.capability } } } : {}),
         ...ownerFilter(input),
       },
       orderBy: [{ name: "asc" }, { id: "asc" }],

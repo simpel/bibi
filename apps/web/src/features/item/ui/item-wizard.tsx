@@ -12,7 +12,7 @@ import { useItemWizard } from "./use-item-wizard";
 
 export type ItemWizardProps = { data: ItemFormData; typeId?: string | undefined };
 
-/** Create an item one step at a time: type, then its details, then price and other behaviours. */
+/** Create an item one step at a time: type, then its details, then price and other capabilities. */
 export function ItemWizard({ data, typeId }: ItemWizardProps) {
   const t = useTranslations("item");
   const router = useRouter();

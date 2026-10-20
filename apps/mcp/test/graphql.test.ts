@@ -16,7 +16,7 @@ describe("graphql tools", () => {
     const type = await call({
       client,
       name: "entityType_create",
-      args: { base: "ITEM", name: "Konferensrum", behaviours: ["BOOKABLE"] },
+      args: { base: "ITEM", name: "Konferensrum", capabilities: ["BOOKABLE"] },
     });
     await call({
       client,

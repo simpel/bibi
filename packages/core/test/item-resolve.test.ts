@@ -51,7 +51,7 @@ describe("item.resolve (ADR 0021)", () => {
     if (root === "veal") expect(resolution.nodes[0]?.tags).toEqual([]);
   });
 
-  it("expands multi-level packages with quantity, timing and mandatory flags", async () => {
+  it("expands multi-level bundles with quantity, timing and mandatory flags", async () => {
     const context = testContext();
     const { ids } = await createMenu({ context });
     const result = await execute({ operation: resolveItem, input: { id: ids.day }, context });
@@ -76,7 +76,7 @@ describe("item.resolve (ADR 0021)", () => {
       mandatory: true,
     });
     expect(row({ key: "cod" })).toMatchObject({
-      choiceGroup: "Main",
+      customisationGroup: "Main",
       mandatory: false,
       offsetMinutes: 210,
     });

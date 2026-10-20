@@ -22,7 +22,7 @@ export function estateDraft({ roomTypeId }: EstateDraftInput = {}): PipelineSetu
   const food = statesFromTemplate({ template: "food", bookable: false });
   const itemTypes = [
     {
-      ...(roomTypeId ? { entityTypeId: roomTypeId } : { behaviours: ["BOOKABLE" as const] }),
+      ...(roomTypeId ? { entityTypeId: roomTypeId } : { capabilities: ["BOOKABLE" as const] }),
       name: "Room",
       ...room,
     },
@@ -37,6 +37,6 @@ export type RoomTypeInput = { context: ExecuteContext };
 
 /** An existing bookable item type "Room" with only its default state. */
 export async function roomType({ context }: RoomTypeInput) {
-  const input = { base: "ITEM" as const, name: "Room", behaviours: ["BOOKABLE" as const] };
+  const input = { base: "ITEM" as const, name: "Room", capabilities: ["BOOKABLE" as const] };
   return unwrap({ result: await execute({ operation: createEntityType, input, context }) });
 }

@@ -66,16 +66,16 @@ The parity core: every capability is defined **once** as an operation and then e
 ## Configurable domain (ADR 0021, 0026)
 - `entityType.*`, `fieldDefinition.*`, `vocabulary.*` (plus `addValue|updateValue|archiveValue|importTemplate`) and `setup.*` require `configuration:read|create|edit|remove`. `item.*` requires `item:*`.
 - No domain words in the code:
-  - Base entities and behaviours: `features/entity-type/behaviour-kinds.ts`.
+  - Base entities and capabilities: `features/entity-type/capability-kinds.ts`.
   - Field kinds: `features/field-definition/field-kinds.ts`.
 - Field values live in `Item.fields` (JSON) under the field's `key`. `buildFieldsSchema({ specs })` (client-safe) validates them, and `loadFieldSpecs` fetches specs with the vocabulary values' ids.
 - The rule "data exists → CONFLICT" exists in three places:
-  - behaviours: `entity-type/behaviours.ts`
+  - capabilities: `entity-type/capabilities.ts`
   - field changes: `field-definition/field-rules.ts`
   - archiving: in the respective operation
-- Behaviour data on the item is checked in `item/item-rules.ts`. `COMPOSABLE` parts (`ItemComponent`) are replaced as a set via `components`; `item/item-components.ts` checks parts and `item/component-graph.ts` rejects cycles and more than 5 levels. `CHOICES` has no data yet.
+- Capability data on the item is checked in `item/item-rules.ts`. `BUNDLE` parts (`ItemPart`) are replaced as a set via `parts`; `item/item-parts.ts` checks parts and `item/part-graph.ts` rejects cycles and more than 5 levels. `CUSTOMISATIONS` has no data yet.
 - Vocabulary templates are data in `templates/vocabularies/` (`eu-14-allergens`).
-- `configuration.importTemplate` (`configuration:write`) imports a starter pack from `templates/configuration/` (`conference-venue`): lists, setups, and types with behaviours and fields, via the shared insert helpers (`insertVocabulary`, `insertSetup`, `insertEntityType`, `insertField`). Idempotent: names that exist are skipped and left untouched (an existing type keeps its own fields). Audit rows carry the created kind (`withEntityType`).
+- `configuration.importTemplate` (`configuration:write`) imports a starter pack from `templates/configuration/` (`conference-venue`): lists, setups, and types with capabilities and fields, via the shared insert helpers (`insertVocabulary`, `insertSetup`, `insertEntityType`, `insertField`). Idempotent: names that exist are skipped and left untouched (an existing type keeps its own fields). Audit rows carry the created kind (`withEntityType`).
 - Errors are built with `shared/errors.ts` (`notFound`, `conflict`, `invalid`). Pagination: `shared/page-input.ts`.
 
 ## Demo data

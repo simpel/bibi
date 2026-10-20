@@ -27,7 +27,7 @@ async function createPricedDishType({ context }: Ctx) {
   const type = unwrap({
     result: await execute({
       operation: createEntityType,
-      input: { base: "ITEM", name: "Dish", behaviours: ["PRICED"] },
+      input: { base: "ITEM", name: "Dish", capabilities: ["PRICED"] },
       context,
     }),
   });

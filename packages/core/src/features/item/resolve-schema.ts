@@ -18,7 +18,10 @@ export const ResolvedItemNodeSchema = z.object({
   offsetMinutes: z.number().int().describe("Start relative to the start of the resolved item"),
   durationMinutes: z.number().int().nullable().describe("Own length; null = the parent's length"),
   required: z.boolean().describe("The part is mandatory in its parent (true for the root)"),
-  choiceGroup: z.string().nullable().describe("Name of the choice group it is an option in"),
+  customisationGroup: z
+    .string()
+    .nullable()
+    .describe("Name of the customisation group it is an option in"),
   mandatory: z
     .boolean()
     .describe("Included whatever is chosen: every step from the root is mandatory, no option"),

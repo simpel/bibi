@@ -6,7 +6,7 @@ import type { ItemFormValues } from "./item-form-values";
 
 export type BookableSectionProps = { form: UseFormReturn<ItemFormValues, unknown, ItemFormOutput> };
 
-/** BOOKABLE behaviour: the default booking length. */
+/** BOOKABLE capability: the default booking length. */
 export function BookableSection({ form }: BookableSectionProps) {
   const t = useTranslations("item");
   return (

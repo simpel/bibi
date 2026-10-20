@@ -15,13 +15,13 @@ async function existingItemTypes({ context }: { context: Context }): Promise<Exi
   if (!hasPermission({ permissions: context.permissions, permission })) return [];
   const rows = await context.db.entityType.findMany({
     where: { status: "ACTIVE", base: "ITEM" },
-    select: { id: true, name: true, behaviours: true },
+    select: { id: true, name: true, capabilities: true },
     orderBy: [{ name: "asc" }, { id: "asc" }],
   });
   return rows.map((row) => ({
     id: row.id,
     name: row.name,
-    bookable: row.behaviours.includes("BOOKABLE"),
+    bookable: row.capabilities.includes("BOOKABLE"),
   }));
 }
 

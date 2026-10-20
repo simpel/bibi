@@ -288,13 +288,13 @@
     "select": "Select…",
     "search": "Search…",
     "noOptions": "No options.",
-    "savePackage": "Save as package",
-    "savePackageDescription": "Pick a package type and its parts. The package is shown only for this customer; the catalog is unchanged.",
-    "packageSaved": "The package has been saved.",
-    "packages": "Packages",
-    "packagesEmpty": "No packages for this customer yet.",
-    "packagesNoTypes": "There is no item type with parts (COMPOSABLE) yet. Create one under Types first.",
-    "packageFor": "Package for {customer}",
+    "saveBundle": "Save as bundle",
+    "saveBundleDescription": "Pick a bundle type and its parts. The bundle is shown only for this customer; the catalog is unchanged.",
+    "bundleSaved": "The bundle has been saved.",
+    "bundles": "Bundles",
+    "bundlesEmpty": "No bundles for this customer yet.",
+    "bundlesNoTypes": "There is no item type with the Bundle capability yet. Create one under Types first.",
+    "bundleFor": "Bundle for {customer}",
     "fields": {
       "type": "Type",
       "name": "Name",
@@ -310,8 +310,8 @@
       "price": "Price",
       "bookable": "Booking",
       "setups": "Setups",
-      "components": "Parts",
-      "choices": "Choices"
+      "parts": "Parts",
+      "customisations": "Customisations"
     },
     "setupsHint": "Capacity, max number of people, per setup. Leave empty for setups that are not used.",
     "noSetups": "There are no setups. Create them under Setups.",
@@ -330,7 +330,7 @@
     "priceValue": "{amount} SEK {unit}",
     "durationValue": "{minutes} min",
     "capacityValue": "{name}: {capacity}",
-    "components": {
+    "parts": {
       "hint": "The items this item contains, with quantity and timing relative to its start.",
       "none": "No parts yet.",
       "add": "Add part",
@@ -341,19 +341,19 @@
       "durationMinutes": "Length (minutes)",
       "required": "Mandatory"
     },
-    "componentValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (optional)}}",
-    "choiceGroups": {
+    "partValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (optional)}}",
+    "customisationGroups": {
       "hint": "Groups of parts to choose between, with how many to pick.",
-      "none": "No choice groups yet.",
-      "add": "Add choice group",
-      "remove": "Remove choice group",
+      "none": "No customisation groups yet.",
+      "add": "Add customisation group",
+      "remove": "Remove customisation group",
       "name": "Name",
       "minPick": "Choose at least",
       "maxPick": "Choose at most",
       "options": "Options",
       "noOptions": "Add parts first; the options are chosen among them."
     },
-    "choiceGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
+    "customisationGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
     "resolution": {
       "title": "Contents",
       "contains": "Contains",
@@ -807,11 +807,11 @@
   "entityType": {
     "singular": "Type",
     "plural": "Types",
-    "listDescription": "Types decide which fields and behaviours items, customers and tickets have in your organization.",
+    "listDescription": "Types decide which fields and capabilities items, customers and tickets have in your organization.",
     "create": "Create type",
     "edit": "Edit type",
     "createDescription": "Choose what the type is for and name it.",
-    "editDescription": "Change the name and behaviours.",
+    "editDescription": "Change the name and capabilities.",
     "archive": "Archive type",
     "archiveConfirm": "Do you want to archive the type {name}? This is refused while it is in use.",
     "archived": "The type has been archived.",
@@ -825,19 +825,19 @@
     "importing": "Importing template…",
     "imported": "{created, plural, one {# type} other {# types}} created, {skipped} already existed.",
     "fieldCount": "{count, plural, one {# field} other {# fields}}",
-    "noBehaviours": "No behaviours",
-    "behavioursHeading": "Behaviours",
-    "behavioursHint": "Behaviours switch on general features for items of the type. A behaviour cannot be switched off while items have data for it.",
-    "requires": "Requires {behaviour}.",
+    "noCapabilities": "No capabilities",
+    "capabilitiesHeading": "Capabilities",
+    "capabilitiesHint": "Capabilities switch on general features for items of the type. A capability cannot be switched off while items have data for it.",
+    "requires": "Requires {capability}.",
     "fieldsHeading": "Fields",
     "fields": {
       "base": "Applies to",
       "name": "Name",
-      "behaviours": "Behaviours"
+      "capabilities": "Capabilities"
     },
     "columns": {
       "name": "Name",
-      "behaviours": "Behaviours",
+      "capabilities": "Capabilities",
       "fields": "Fields"
     },
     "bases": {
@@ -848,17 +848,17 @@
       "REQUIREMENT": "Requirements",
       "LINE": "Lines"
     },
-    "behaviours": {
+    "capabilities": {
       "PRICED": "Priced",
-      "COMPOSABLE": "Composable",
-      "CHOICES": "Choice groups",
+      "BUNDLE": "Bundle",
+      "CUSTOMISATIONS": "Customisations",
       "BOOKABLE": "Bookable",
       "SETUPS": "Setups"
     },
-    "behaviourHints": {
+    "capabilityHints": {
       "PRICED": "Price, price unit and VAT.",
-      "COMPOSABLE": "Contains other items.",
-      "CHOICES": "Choice groups among the parts.",
+      "BUNDLE": "Contains other items.",
+      "CUSTOMISATIONS": "Customisation groups to choose between.",
       "BOOKABLE": "Occupies time and has a default length.",
       "SETUPS": "Capacity per setup."
     },
@@ -866,11 +866,11 @@
       "progress": "Steps",
       "steps": {
         "base": "Name",
-        "behaviours": "Behaviours"
+        "capabilities": "Capabilities"
       },
       "descriptions": {
         "base": "Choose what the type is for and name it.",
-        "behaviours": "Pick what items of this type can do. You add its fields next."
+        "capabilities": "Pick what items of this type can do. You add its fields next."
       }
     }
   },
@@ -1325,7 +1325,7 @@
         "venueId": "Venue (id)",
         "entityTypeId": "Type (id)",
         "base": "Base",
-        "behaviours": "Behaviours",
+        "capabilities": "Capabilities",
         "fields": "Fields",
         "priceMinor": "Price (minor units)",
         "priceUnit": "Price unit",
@@ -1353,8 +1353,8 @@
         "markdown": "SKILL.md",
         "title": "Title",
         "value": "Value",
-        "components": "Parts",
-        "choiceGroups": "Choice groups",
+        "parts": "Parts",
+        "customisationGroups": "Customisation groups",
         "customerId": "Customer (id)",
         "email": "Email",
         "phone": "Phone",
@@ -1590,14 +1590,14 @@
         },
         "duration": "{minutes} min",
         "setupsCount": "{count, plural, one {# setup} other {# setups}}",
-        "componentsCount": "{count, plural, one {# part} other {# parts}}",
-        "choiceGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
+        "partsCount": "{count, plural, one {# part} other {# parts}}",
+        "customisationGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
         "sections": {
           "price": "Price",
           "bookable": "Booking",
           "setups": "Setups",
-          "components": "Parts",
-          "choices": "Choices"
+          "parts": "Parts",
+          "customisations": "Customisations"
         }
       },
       "customer": {
@@ -1727,7 +1727,7 @@
         "columns": {
           "name": "Name",
           "base": "Base",
-          "behaviours": "Behaviours",
+          "capabilities": "Capabilities",
           "fields": "Fields"
         },
         "base": {
@@ -1738,10 +1738,10 @@
           "REQUIREMENT": "Requirement",
           "LINE": "Line"
         },
-        "behaviour": {
+        "capability": {
           "PRICED": "Priced",
-          "COMPOSABLE": "Composable",
-          "CHOICES": "Choices",
+          "BUNDLE": "Bundle",
+          "CUSTOMISATIONS": "Customisations",
           "BOOKABLE": "Bookable",
           "SETUPS": "Setups"
         }
@@ -2479,8 +2479,8 @@
         },
         "items-and-venues": {
           "title": "Items and venues",
-          "lead": "Venues are your buildings and sites. Items are everything you sell or book: rooms, dishes, drinks, equipment and packages.",
-          "body": "# Venues\n\nA venue is a building or site. Items belong to a venue.\n\n1. Open **Venues** in the left menu and choose **Create venue**.\n2. Enter the name, address, contact details and opening hours.\n3. Save. The venue page lists the items at that venue.\n\nArchiving a venue also archives its items.\n\n# Items\n\nAn item is anything that can be sold or booked. What an item looks like depends on its **type**, and your administrators define the types. A \"Conference room\" type might have fields for floor and area. A \"Dish\" type might have a price and a list of allergens.\n\nTo add an item:\n\n1. Open **Items** and choose **Create item**.\n2. Pick the type, then fill in the name, description, venue and the type's fields.\n3. Save.\n\nIf no types exist yet, choose **Go to types** and create one first. Use the type filter on the list to find items quickly.\n\n# What a type can do\n\nWhen a type is created it can switch on any of these behaviours. They are the only things Okazi builds in. Everything else is your own naming.\n\n- **Priced**: the item has a price, a price unit (per person, per unit, per hour or flat) and VAT.\n- **Composable**: the item contains other items, with quantity and timing. A package is an example.\n- **Choices**: a composable item can offer choice groups, for example \"choose 1 of 3 main courses\".\n- **Bookable**: the item can be occupied in time, and Okazi stops double booking. A room is an example.\n- **Setups**: a bookable item has a capacity per setup, for example 80 people in Theatre and 40 in U-shape.\n\n# Setups and changeover\n\nSetups are your named room layouts, such as Cinema, U-shape or Mingle. Each has a changeover time, which Okazi blocks right before a line that uses it. Create them under **Settings, Setups**, and set the capacity per setup on each bookable item.\n\n# Packages for one customer\n\nOn a customer page, choose **Save as package** to build a package from catalog items. The package is shown only for that customer and the catalog does not change.\n\n# Contents of an item\n\nAn item that contains other items shows **Contents** with what it **Contains** (mandatory parts) and what it **May contain** (optional parts and choices). This is what Okazi compares with the counts you record. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Blocking an item\n\nTo take a room out of use for maintenance or internal use, open the item and choose **Block item**. Bookings cannot overlap a block. Choose **Release block** to open it again.\n\n# Prices for a customer\n\nPrice lists let you give a customer a general discount or special prices per item. See [Configuration](/docs/guide/configuration)."
+          "lead": "Venues are your buildings and sites. Items are everything you sell or book: rooms, dishes, drinks, equipment and bundles.",
+          "body": "# Venues\n\nA venue is a building or site. Items belong to a venue.\n\n1. Open **Venues** in the left menu and choose **Create venue**.\n2. Enter the name, address, contact details and opening hours.\n3. Save. The venue page lists the items at that venue.\n\nArchiving a venue also archives its items.\n\n# Items\n\nAn item is anything that can be sold or booked. What an item looks like depends on its **type**, and your administrators define the types. A \"Conference room\" type might have fields for floor and area. A \"Dish\" type might have a price and a list of allergens.\n\nTo add an item:\n\n1. Open **Items** and choose **Create item**.\n2. Pick the type, then fill in the name, description, venue and the type's fields.\n3. Save.\n\nIf no types exist yet, choose **Go to types** and create one first. Use the type filter on the list to find items quickly.\n\n# What a type can do\n\nWhen a type is created it can switch on any of these capabilities. They are the only things Okazi builds in. Everything else is your own naming.\n\n- **Priced**: the item has a price, a price unit (per person, per unit, per hour or flat) and VAT.\n- **Bundle**: the item contains other items, with quantity and timing. A conference day is an example.\n- **Customisations**: a bundle can offer customisation groups, for example \"choose 1 of 3 main courses\".\n- **Bookable**: the item can be occupied in time, and Okazi stops double booking. A room is an example.\n- **Setups**: a bookable item has a capacity per setup, for example 80 people in Theatre and 40 in U-shape.\n\n# Setups and changeover\n\nSetups are your named room layouts, such as Cinema, U-shape or Mingle. Each has a changeover time, which Okazi blocks right before a line that uses it. Create them under **Settings, Setups**, and set the capacity per setup on each bookable item.\n\n# Bundles for one customer\n\nOn a customer page, choose **Save as bundle** to build a bundle from catalog items. The bundle is shown only for that customer and the catalog does not change.\n\n# Contents of an item\n\nAn item that contains other items shows **Contents** with what it **Contains** (mandatory parts) and what it **May contain** (optional parts and choices). This is what Okazi compares with the counts you record. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Blocking an item\n\nTo take a room out of use for maintenance or internal use, open the item and choose **Block item**. Bookings cannot overlap a block. Choose **Release block** to open it again.\n\n# Prices for a customer\n\nPrice lists let you give a customer a general discount or special prices per item. See [Configuration](/docs/guide/configuration)."
         },
         "needs-and-sheets": {
           "title": "Needs and sheets",
@@ -2495,7 +2495,7 @@
         "configuration": {
           "title": "Configuration",
           "lead": "Admins set up what things are called and how they work in your organization. Everything here is your own data.",
-          "body": "# Who can configure\n\nOnly admins see **Settings** in the left menu. It opens a page that lists every configuration area. Changes affect everyone in the organization.\n\n# Types and fields\n\nUnder **Settings, Types** you define the kinds of records you work with: items, customers, contacts, tickets, requirements and lines. For example \"Conference room\", \"Dish\", \"Company\" or \"Conference\".\n\n1. Choose **Create type**, say what it is for and name it.\n2. For an item type, switch on behaviours such as **Priced**, **Bookable** or **Setups**. See [Items and venues](/docs/guide/items-and-venues).\n3. Add fields. A field can be text, number, yes/no, date, choice, multiple choice or a link to another record. Mark it required if it must always be filled in.\n\nA type cannot be archived while it is in use, and a field cannot change kind once it has data.\n\n# Lists\n\nUnder **Settings, Lists** you keep your own word lists, such as allergens, diets or accessibility needs. Fields and needs point to a list. To get started, choose **Import the EU's 14 allergens**. You can edit the list afterwards. A list or a value cannot be archived while a field uses it or a need counts it.\n\n# Setups\n\nUnder **Settings, Setups** you name your room layouts and set the changeover time. See [Items and venues](/docs/guide/items-and-venues).\n\n# Phases\n\nUnder **Settings, Phases** you decide which phases your tickets move through, what they are called and in which order they appear on the pipeline board. Nothing about a phase is fixed: each has a name, a colour and a few flags that decide what Okazi does. You need one entry phase and at least one phase that ends the ticket. See [Tickets](/docs/guide/tickets).\n\n1. Choose **Create phase**, or **Import conference venue template** for a ready set.\n2. Use **Edit transitions** to choose which phases a ticket may move to from each one.\n3. Reorder with the arrows.\n\nA phase is archived, never deleted. If tickets are in it, you choose the phase they move to.\n\n# Sheets\n\nUnder **Settings, Sheets** you define a sheet such as \"Kitchen order\": name it, choose which item types and fields it includes, which lists' needs it counts, and which role receives it. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Price lists\n\nUnder **Settings, Price lists** you create a list for a customer or for everyone, with a validity period. Choose either a general discount in percent, or a price per item, not both. New order lines use the list's prices, and an archived list no longer applies.\n\n# Payments and skills\n\n**Settings, Payments** connects Stripe. See [Payments](/docs/guide/payments). **Settings, Skills** holds organization skills for the assistant. See [The assistant](/docs/guide/assistant).\n\n# Templates and the assistant\n\nTemplates such as the conference venue starter set are optional. They are only data, so you can change everything afterwards. You can also ask the assistant to propose a setup, for example \"We are a manor with a restaurant\". You approve each change."
+          "body": "# Who can configure\n\nOnly admins see **Settings** in the left menu. It opens a page that lists every configuration area. Changes affect everyone in the organization.\n\n# Types and fields\n\nUnder **Settings, Types** you define the kinds of records you work with: items, customers, contacts, tickets, requirements and lines. For example \"Conference room\", \"Dish\", \"Company\" or \"Conference\".\n\n1. Choose **Create type**, say what it is for and name it.\n2. For an item type, switch on capabilities such as **Priced**, **Bookable** or **Setups**. See [Items and venues](/docs/guide/items-and-venues).\n3. Add fields. A field can be text, number, yes/no, date, choice, multiple choice or a link to another record. Mark it required if it must always be filled in.\n\nA type cannot be archived while it is in use, and a field cannot change kind once it has data.\n\n# Lists\n\nUnder **Settings, Lists** you keep your own word lists, such as allergens, diets or accessibility needs. Fields and needs point to a list. To get started, choose **Import the EU's 14 allergens**. You can edit the list afterwards. A list or a value cannot be archived while a field uses it or a need counts it.\n\n# Setups\n\nUnder **Settings, Setups** you name your room layouts and set the changeover time. See [Items and venues](/docs/guide/items-and-venues).\n\n# Phases\n\nUnder **Settings, Phases** you decide which phases your tickets move through, what they are called and in which order they appear on the pipeline board. Nothing about a phase is fixed: each has a name, a colour and a few flags that decide what Okazi does. You need one entry phase and at least one phase that ends the ticket. See [Tickets](/docs/guide/tickets).\n\n1. Choose **Create phase**, or **Import conference venue template** for a ready set.\n2. Use **Edit transitions** to choose which phases a ticket may move to from each one.\n3. Reorder with the arrows.\n\nA phase is archived, never deleted. If tickets are in it, you choose the phase they move to.\n\n# Sheets\n\nUnder **Settings, Sheets** you define a sheet such as \"Kitchen order\": name it, choose which item types and fields it includes, which lists' needs it counts, and which role receives it. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Price lists\n\nUnder **Settings, Price lists** you create a list for a customer or for everyone, with a validity period. Choose either a general discount in percent, or a price per item, not both. New order lines use the list's prices, and an archived list no longer applies.\n\n# Payments and skills\n\n**Settings, Payments** connects Stripe. See [Payments](/docs/guide/payments). **Settings, Skills** holds organization skills for the assistant. See [The assistant](/docs/guide/assistant).\n\n# Templates and the assistant\n\nTemplates such as the conference venue starter set are optional. They are only data, so you can change everything afterwards. You can also ask the assistant to propose a setup, for example \"We are a manor with a restaurant\". You approve each change."
         },
         "members-and-roles": {
           "title": "Members and roles",
@@ -2904,7 +2904,7 @@
       "quote": "Offers with prices that are sent to customers.",
       "payment": "Payment links and payments for bookings.",
       "sheet": "Versioned sheets, such as a kitchen order, sent to a responsibility.",
-      "item": "What you sell: rooms, food, drinks, activities and packages.",
+      "item": "What you sell: rooms, food, drinks, activities and bundles.",
       "venue": "Your venues and the spaces in them that can be booked.",
       "priceList": "Price lists with the prices of your items.",
       "configuration": "Your own types, fields and lists, such as allergens.",

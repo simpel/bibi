@@ -5,7 +5,7 @@ import { archiveRecords } from "../../records/update-record";
 import { conflict, notFound } from "../../shared/errors";
 import { inUseConflict } from "../../shared/in-use";
 import { checkNotLinked } from "../field-definition/link-usage";
-import { archiveCustomerPackages, archiveCustomerTickets } from "./archive-cascades";
+import { archiveCustomerBundles, archiveCustomerTickets } from "./archive-cascades";
 import { customerEmbeddable } from "./embeddable";
 import { CustomerArchiveInputSchema, type CustomerDto, CustomerSchema } from "./schema";
 import { CUSTOMER_INCLUDE, loadCustomer, toCustomerDto } from "./to-customer-dto";
@@ -37,7 +37,7 @@ type CascadeFlags = {
 };
 type CascadeArchiveInput = { context: OperationContext; customer: CustomerDto } & CascadeFlags;
 
-/** Blocks on tickets unless cascaded; always archives the customer's packages. */
+/** Blocks on tickets unless cascaded; always archives the customer's bundles. */
 async function cascadeArchive({ context, customer, ...flags }: CascadeArchiveInput) {
   if (flags.archiveTickets) {
     const expected = flags.expectedTicketCount;
@@ -47,7 +47,7 @@ async function cascadeArchive({ context, customer, ...flags }: CascadeArchiveInp
     const tickets = await context.db.ticket.count({ where: { customerId: customer.id } });
     if (tickets > 0) return ticketsBlock({ context, name: customer.name, tickets });
   }
-  return archiveCustomerPackages({ context, customer });
+  return archiveCustomerBundles({ context, customer });
 }
 
 type BlockedInput = { context: OperationContext; name: string; tickets: number };
@@ -74,7 +74,7 @@ export const archiveCustomer = defineOperation({
     "active price lists (archive those first). Every ticket that is not archived, in any " +
     "phase, also blocks it, unless `archiveTickets` is true: then those tickets are " +
     "archived with the customer, with their lines and room occupancy (needs " +
-    "ticket:delete). The customer's own packages are archived with it (needs item:delete). " +
+    "ticket:delete). The customer's own bundles are archived with it (needs item:delete). " +
     "With `archiveTickets` and `expectedTicketCount` it is refused with CONFLICT, and nothing " +
     "is archived, unless exactly that many tickets would be archived. " +
     "Refused while a LINK field points to the customer or to anything archived with it.",

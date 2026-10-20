@@ -1,9 +1,12 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
-import { ItemBehaviourSchema } from "../entity-type/behaviour-kinds";
+import { ItemCapabilitySchema } from "../entity-type/capability-kinds";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
-import { ChoiceGroupsInputSchema, ItemChoiceGroupSchema } from "./choice-group-schema";
+import {
+  CustomisationGroupsInputSchema,
+  ItemCustomisationGroupSchema,
+} from "./customisation-group-schema";
 
 export const PRICE_UNITS = ["PER_PERSON", "PER_UNIT", "PER_HOUR", "FLAT"] as const;
 export const PriceUnitSchema = z.enum(PRICE_UNITS);
@@ -13,7 +16,7 @@ export const ItemSetupSchema = z.object({
   capacity: z.number().int().positive().max(100_000).describe("Max people in this setup"),
 });
 
-export const ItemComponentSchema = z.object({
+export const ItemPartSchema = z.object({
   itemId: z.string().min(1).describe("Id of the part (another item)"),
   quantity: z.number().int().positive().max(100_000).describe("How many of the part"),
   offsetMinutes: z
@@ -33,7 +36,7 @@ export const ItemComponentSchema = z.object({
 });
 
 /** Max levels in a composition, the top item included (ADR 0021). */
-export const MAX_COMPONENT_DEPTH = 5;
+export const MAX_PART_DEPTH = 5;
 
 export const ItemSchema = z.object({
   id: z.string(),
@@ -43,7 +46,7 @@ export const ItemSchema = z.object({
   customerId: z
     .string()
     .nullable()
-    .describe("null = catalog item; set = a package specific to this customer"),
+    .describe("null = catalog item; set = a bundle specific to this customer"),
   name: z.string(),
   description: z.string().nullable(),
   fields: FieldValuesSchema,
@@ -52,15 +55,15 @@ export const ItemSchema = z.object({
   vatRatePercent: z.number().int().nullable(),
   defaultDurationMinutes: z.number().int().nullable(),
   setups: z.array(ItemSetupSchema),
-  components: z.array(ItemComponentSchema),
-  choiceGroups: z.array(ItemChoiceGroupSchema),
+  parts: z.array(ItemPartSchema),
+  customisationGroups: z.array(ItemCustomisationGroupSchema),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
   createdBy: z.string().nullable(),
 });
 
-const Behaviour = {
+const Capability = {
   priceMinor: z
     .number()
     .int()
@@ -79,18 +82,18 @@ const Behaviour = {
     .array(ItemSetupSchema)
     .max(100)
     .describe("SETUPS: capacity per setup. Replaces the whole set."),
-  components: z
+  parts: z
     .array(
-      ItemComponentSchema.extend({
-        offsetMinutes: ItemComponentSchema.shape.offsetMinutes.default(0),
-        durationMinutes: ItemComponentSchema.shape.durationMinutes.default(null),
-        quantity: ItemComponentSchema.shape.quantity.default(1),
-        required: ItemComponentSchema.shape.required.default(true),
+      ItemPartSchema.extend({
+        offsetMinutes: ItemPartSchema.shape.offsetMinutes.default(0),
+        durationMinutes: ItemPartSchema.shape.durationMinutes.default(null),
+        quantity: ItemPartSchema.shape.quantity.default(1),
+        required: ItemPartSchema.shape.required.default(true),
       }),
     )
     .max(100)
     .describe(
-      `COMPOSABLE: the parts. Replaces the whole set. No cycles, at most ${MAX_COMPONENT_DEPTH} levels.`,
+      `BUNDLE: the parts. Replaces the whole set. No cycles, at most ${MAX_PART_DEPTH} levels.`,
     ),
 };
 
@@ -100,13 +103,13 @@ export const ItemCreateInputSchema = z.object({
   name: z.string().trim().min(1).max(200),
   description: z.string().trim().max(5000).nullish(),
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
-  priceMinor: Behaviour.priceMinor.nullish(),
-  priceUnit: Behaviour.priceUnit.nullish(),
-  vatRatePercent: Behaviour.vatRatePercent.nullish(),
-  defaultDurationMinutes: Behaviour.defaultDurationMinutes.nullish(),
-  setups: Behaviour.setups.optional(),
-  components: Behaviour.components.optional(),
-  choiceGroups: ChoiceGroupsInputSchema.optional(),
+  priceMinor: Capability.priceMinor.nullish(),
+  priceUnit: Capability.priceUnit.nullish(),
+  vatRatePercent: Capability.vatRatePercent.nullish(),
+  defaultDurationMinutes: Capability.defaultDurationMinutes.nullish(),
+  setups: Capability.setups.optional(),
+  parts: Capability.parts.optional(),
+  customisationGroups: CustomisationGroupsInputSchema.optional(),
 });
 
 export const ItemUpdateInputSchema = ItemCreateInputSchema.omit({ entityTypeId: true })
@@ -123,15 +126,15 @@ export const ItemIdInputSchema = z.object({ id: z.string().min(1) });
 export const ItemListInputSchema = z.object({
   entityTypeId: z.string().optional().describe("Only items of this type"),
   venueId: z.string().optional().describe("Only items in this venue"),
-  behaviour: ItemBehaviourSchema.optional().describe("Only items whose type has this behaviour"),
+  capability: ItemCapabilitySchema.optional().describe("Only items whose type has this capability"),
   customerId: z
     .string()
     .optional()
-    .describe("Also list this customer's own packages. Without it, only the catalog is listed."),
+    .describe("Also list this customer's own bundles. Without it, only the catalog is listed."),
   onlyCustomer: z
     .boolean()
     .optional()
-    .describe("With customerId: only that customer's packages, without the catalog"),
+    .describe("With customerId: only that customer's bundles, without the catalog"),
   ...PageInputShape,
 });
 

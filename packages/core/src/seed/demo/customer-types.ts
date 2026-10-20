@@ -19,6 +19,6 @@ export type DemoCustomer = {
   contacts: readonly DemoContact[];
   /** The customer's price list (ADR 0023); a general discount in percent. */
   priceList?: { name: string; discountPercent: number };
-  /** Customer-specific packages (`item.saveAsPackage`), built from catalog items by name. */
-  packages?: readonly DemoItem[];
+  /** Customer-specific bundles (`item.saveAsBundle`), built from catalog items by name. */
+  bundles?: readonly DemoItem[];
 };

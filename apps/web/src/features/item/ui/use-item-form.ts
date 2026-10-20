@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { type Resolver, useForm } from "react-hook-form";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
-import { createItemAction, saveItemAsPackageAction, updateItemAction } from "../actions";
+import { createItemAction, saveItemAsBundleAction, updateItemAction } from "../actions";
 import type { ItemFormData } from "./item-form-data";
 import { type ItemFormOutput, itemFormSchema } from "./item-form-schema";
 import { type ItemFormValues, itemFormDefaults } from "./item-form-values";
@@ -21,7 +21,7 @@ export type UseItemFormInput = {
   item?: ItemDto | undefined;
   /** Create mode: the type to start with, e.g. the one chosen in the list filter. */
   typeId?: string | undefined;
-  /** Create mode: save the item as this customer's package ("Save as package", ADR 0021). */
+  /** Create mode: save the item as this customer's bundle ("Save as bundle", ADR 0021). */
   customerId?: string | undefined;
   onDone: () => void;
 };
@@ -29,15 +29,15 @@ export type UseItemFormInput = {
 type SuccessKeyInput = { item: ItemDto | undefined; customerId: string | undefined };
 
 const successKey = ({ item, customerId }: SuccessKeyInput) =>
-  item ? "updated" : customerId ? "packageSaved" : "created";
+  item ? "updated" : customerId ? "bundleSaved" : "created";
 
 type CreateActionInput = { values: ItemFormOutput; customerId: string | undefined };
 
-/** A catalog item, or a customer's package when a customer is given. */
+/** A catalog item, or a customer's bundle when a customer is given. */
 const createAction = ({ values, customerId }: CreateActionInput) =>
   customerId
-    ? saveItemAsPackageAction({
-        input: { ...values, customerId, components: values.components ?? [] },
+    ? saveItemAsBundleAction({
+        input: { ...values, customerId, parts: values.parts ?? [] },
       })
     : createItemAction({ input: values });
 

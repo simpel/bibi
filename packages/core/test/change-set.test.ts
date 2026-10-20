@@ -14,7 +14,7 @@ beforeAll(() => registerOperations({ operations: createCoreOperations({ embed: f
 const apply = ({ context, steps }: { context: ReturnType<typeof testContext>; steps: unknown[] }) =>
   execute({
     operation: applyChangeSetOperation,
-    input: { title: "Evening package", steps: steps as never },
+    input: { title: "Evening bundle", steps: steps as never },
     context,
   });
 

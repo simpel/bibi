@@ -52,7 +52,7 @@ export async function holdCollisions({
   // ADR 0052: an untimed line never holds, so it cannot collide.
   if (!startsAt || !endsAt) return [];
   const item = await context.db.item.findFirst({
-    where: { id: line.itemId, entityType: { behaviours: { has: "BOOKABLE" } } },
+    where: { id: line.itemId, entityType: { capabilities: { has: "BOOKABLE" } } },
     select: { name: true },
   });
   if (!item) return [];

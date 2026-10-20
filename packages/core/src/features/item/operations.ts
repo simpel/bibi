@@ -1,5 +1,5 @@
+import { saveItemAsBundle } from "./bundle-operations";
 import { archiveItem } from "./lifecycle-operations";
-import { saveItemAsPackage } from "./package-operations";
 import { getItem, listItems } from "./read-operations";
 import { resolveItem } from "./resolve-operation";
 import { createItem, updateItem } from "./write-operations";
@@ -11,5 +11,5 @@ export const itemOperations = [
   createItem,
   updateItem,
   archiveItem,
-  saveItemAsPackage,
+  saveItemAsBundle,
 ];

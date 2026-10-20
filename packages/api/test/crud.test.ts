@@ -13,7 +13,7 @@ describe("venue + item CRUD over HTTP", () => {
       method: "POST",
       path: "/entity-types",
       org,
-      body: { base: "ITEM", name: "Konferensrum", behaviours: ["BOOKABLE", "SETUPS", "PRICED"] },
+      body: { base: "ITEM", name: "Konferensrum", capabilities: ["BOOKABLE", "SETUPS", "PRICED"] },
     });
     expect(type.status).toBe(201);
     const room = await call({

@@ -40,7 +40,7 @@ describe("configuration.importTemplate (ADR 0021)", () => {
       allergens?.id,
     );
     const room = result.created.entityTypes.find((type) => type.name === "Conference room");
-    expect(room?.behaviours).toEqual(["BOOKABLE", "SETUPS", "PRICED"]);
+    expect(room?.capabilities).toEqual(["BOOKABLE", "SETUPS", "PRICED"]);
     expect(room?.fields.map((field) => field.key)).toContain("area_m2");
   });
 
@@ -51,8 +51,10 @@ describe("configuration.importTemplate (ADR 0021)", () => {
     const floor = room?.fields.find((field) => field.name === "Floor");
     const archive = { operation: archiveFieldDefinition, input: { id: floor?.id }, context };
     unwrap({ result: await execute(archive) });
-    const behaviours = { id: room?.id, behaviours: ["BOOKABLE"] };
-    unwrap({ result: await execute({ operation: updateEntityType, input: behaviours, context }) });
+    const capabilities = { id: room?.id, capabilities: ["BOOKABLE"] };
+    unwrap({
+      result: await execute({ operation: updateEntityType, input: capabilities, context }),
+    });
     const again = await importTemplate({ context });
     expect(names({ result: again })).toEqual({ vocabularies: [], setups: [], entityTypes: [] });
     expect(again.skipped.entityTypes).toHaveLength(template.types.length);
@@ -60,7 +62,7 @@ describe("configuration.importTemplate (ADR 0021)", () => {
       result: await execute({ operation: listEntityTypes, input: { base: "ITEM" }, context }),
     });
     const kept = types.items.find((type) => type.id === room?.id);
-    expect(kept?.behaviours).toEqual(["BOOKABLE"]);
+    expect(kept?.capabilities).toEqual(["BOOKABLE"]);
     expect(kept?.fields.some((field) => field.name === "Floor")).toBe(false);
   });
 

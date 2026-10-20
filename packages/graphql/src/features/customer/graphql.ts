@@ -44,11 +44,11 @@ builder.objectField(CustomerRef, "entityType", (t) =>
   }),
 );
 
-// Customer-specific packages (ADR 0021). They live here so item/graphql.ts stays catalog-only.
-builder.objectField(CustomerRef, "packages", (t) =>
+// Customer-specific bundles (ADR 0021). They live here so item/graphql.ts stays catalog-only.
+builder.objectField(CustomerRef, "bundles", (t) =>
   t.field({
     type: [ItemRef],
-    description: "The customer's own packages (customer-specific items), ordered by name.",
+    description: "The customer's own bundles (customer-specific items), ordered by name.",
     args: { limit: t.arg.int({ defaultValue: 50, description: "Max 100" }) },
     resolve: async (customer, { limit }, ctx) => {
       const input = { customerId: customer.id, onlyCustomer: true };
@@ -66,7 +66,7 @@ builder.objectField(ItemRef, "customer", (t) =>
   t.field({
     type: CustomerRef,
     nullable: true,
-    description: "The customer a package belongs to (null for catalog items or if archived).",
+    description: "The customer a bundle belongs to (null for catalog items or if archived).",
     resolve: (item, _args, ctx) => {
       requirePermission({ ctx, permission: "customer:read" });
       return item.customerId ? ctx.loaders.customer.load({ id: item.customerId }) : null;

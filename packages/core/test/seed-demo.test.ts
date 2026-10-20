@@ -42,27 +42,24 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     expect(await items({ organizationId: vinga?.organizationId })).toBe(9);
     const dinner = await db.item.findFirst({
       where: { organizationId: lind?.organizationId, name: "Three-course dinner" },
-      include: { choiceGroups: { orderBy: { position: "asc" } }, components: true },
+      include: { customisationGroups: { orderBy: { position: "asc" } }, parts: true },
     });
-    expect(dinner?.choiceGroups.map((group) => group.name)).toEqual([
+    expect(dinner?.customisationGroups.map((group) => group.name)).toEqual([
       "Starter",
       "Main course",
       "Dessert",
     ]);
-    expect(dinner?.components).toHaveLength(8);
-    const ownPackage = await db.item.findFirst({
+    expect(dinner?.parts).toHaveLength(8);
+    const ownBundle = await db.item.findFirst({
       where: { organizationId: lind?.organizationId, name: "Nordkust management team" },
       include: { customer: true },
     });
-    expect(ownPackage?.customer?.name).toBe("Nordkust Logistik AB");
+    expect(ownBundle?.customer?.name).toBe("Nordkust Logistik AB");
     const tour = await db.item.findFirst({
       where: { organizationId: vinga?.organizationId, name: "Lighthouse tour to Vinga" },
-      include: { components: { include: { part: true }, orderBy: { createdAt: "asc" } } },
+      include: { parts: { include: { part: true }, orderBy: { createdAt: "asc" } } },
     });
-    expect(tour?.components.map((component) => component.part.name).sort()).toEqual([
-      "Jonna Sand",
-      "RIB Snabben",
-    ]);
+    expect(tour?.parts.map((part) => part.part.name).sort()).toEqual(["Jonna Sand", "RIB Snabben"]);
     const vinga220 = await db.itemSetup.findFirst({
       where: { organizationId: lind?.organizationId, capacity: 220, setup: { name: "Theatre" } },
       include: { item: true },

@@ -6,7 +6,7 @@ export const PRODUCT_CONTEXT = [
   "Data is organized as venues and items. Each organization defines its",
   "own item types, fields, lists (vocabularies) and setups as data; never assume a domain word such",
   "as room, dish or boat: look them up with entityType_list first. An item has a type; the type's",
-  "behaviours (PRICED, COMPOSABLE, CHOICES, BOOKABLE, SETUPS) decide which parts it carries (price,",
+  "capabilities (PRICED, BUNDLE, CUSTOMISATIONS, BOOKABLE, SETUPS) decide which parts it carries (price,",
   "bookable duration, capacity per setup). Choice values of list-backed fields are list value ids.",
   "You act inside one organization, for the signed-in user, with exactly that user's permissions.",
 ].join(" ");

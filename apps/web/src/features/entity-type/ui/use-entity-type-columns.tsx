@@ -4,11 +4,11 @@ import type { ColumnDef } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { entityTypeRoute } from "@/lib/configuration-routes";
-import { BehaviourBadges } from "./behaviour-badges";
+import { CapabilityBadges } from "./capability-badges";
 
 type Column = ColumnDef<EntityTypeDto>;
 
-/** Name · behaviours · number of fields. */
+/** Name · capabilities · number of fields. */
 export function useEntityTypeColumns(): Column[] {
   const t = useTranslations("entityType");
   return useMemo<Column[]>(
@@ -27,10 +27,10 @@ export function useEntityTypeColumns(): Column[] {
         ),
       },
       {
-        id: "behaviours",
-        header: t("columns.behaviours"),
-        accessorFn: (type) => type.behaviours.map((b) => t(`behaviours.${b}`)).join(", "),
-        cell: ({ row }) => <BehaviourBadges behaviours={row.original.behaviours} />,
+        id: "capabilities",
+        header: t("columns.capabilities"),
+        accessorFn: (type) => type.capabilities.map((b) => t(`capabilities.${b}`)).join(", "),
+        cell: ({ row }) => <CapabilityBadges capabilities={row.original.capabilities} />,
       },
       {
         id: "fields",

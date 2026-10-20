@@ -22,7 +22,7 @@ const named = ({ rows }: { rows: { id: string; name: string }[] }): NamedOption[
 export async function loadPriceListFormData(): Promise<PriceListFormData> {
   const [customers, items] = await Promise.all([
     runOperation({ operation: listCustomers, input: { limit: LIMIT } }),
-    runOperation({ operation: listItems, input: { behaviour: "PRICED", limit: LIMIT } }),
+    runOperation({ operation: listItems, input: { capability: "PRICED", limit: LIMIT } }),
   ]);
   return {
     customers: customers.ok ? named({ rows: customers.value.items }) : [],

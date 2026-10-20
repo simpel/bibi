@@ -8,7 +8,7 @@ export async function createRoomType({ context }: RoomTypeInput) {
   const input = {
     base: "ITEM" as const,
     name: "Konferensrum",
-    behaviours: ["BOOKABLE" as const, "SETUPS" as const, "PRICED" as const],
+    capabilities: ["BOOKABLE" as const, "SETUPS" as const, "PRICED" as const],
   };
   return unwrap({ result: await execute({ operation: createEntityType, input, context }) });
 }

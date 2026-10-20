@@ -53,14 +53,14 @@ export async function createVenue({
   await expect(page.getByRole("link", { name })).toBeVisible();
 }
 
-/** Creates an item type with the "Bokningsbar" behaviour and one number field on its page. */
+/** Creates an item type with the "Bokningsbar" capability and one number field on its page. */
 export async function createItemType({
   page,
   name,
   numberField,
 }: PageInput & { name: string; numberField: string }) {
   await page.goto("/sv/settings/types");
-  // Create is a step page (/new/type): base and name, then behaviours; it opens the new type.
+  // Create is a step page (/new/type): base and name, then capabilities; it opens the new type.
   await page.getByRole("link", { name: "Skapa typ" }).first().click();
   await page.getByLabel("Namn").fill(name);
   await page.getByRole("button", { name: "Nästa" }).click();

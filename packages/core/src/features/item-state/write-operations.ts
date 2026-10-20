@@ -46,7 +46,7 @@ async function checkUpdate({ context, before, flags }: CheckInput) {
     return conflict({ message: "A type needs an initial state: make another state initial" });
   }
   const type = await context.db.entityType.findFirst({ where: { id: before.entityTypeId } });
-  const bookable = type?.behaviours.includes("BOOKABLE") ?? false;
+  const bookable = type?.capabilities.includes("BOOKABLE") ?? false;
   return checkStateFlags({ flags, bookable });
 }
 

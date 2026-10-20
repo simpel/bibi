@@ -23,7 +23,7 @@ export type CheckPlaceInput = Db & {
 
 /**
  * Where a line is held: no item at all, or an active item (general or the ticket
- * customer's own package). A setup needs a `BOOKABLE` item and one of the item's own setups;
+ * customer's own bundle). A setup needs a `BOOKABLE` item and one of the item's own setups;
  * a setup without an item is a `VALIDATION` issue on `setupId`.
  */
 export async function checkPlace({ context, ticketId, itemId, setupId }: CheckPlaceInput) {
@@ -46,7 +46,7 @@ export async function checkPlace({ context, ticketId, itemId, setupId }: CheckPl
 
 type CheckItemInput = Db & { itemId: string; customerId: string | undefined };
 
-/** An active item of the organization: general or the ticket customer's own package. */
+/** An active item of the organization: general or the ticket customer's own bundle. */
 async function checkItem({ context, itemId, customerId }: CheckItemInput) {
   const item = await context.db.item.findFirst({ where: { id: itemId } });
   const foreign = item?.customerId && customerId && item.customerId !== customerId;

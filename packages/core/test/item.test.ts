@@ -12,7 +12,7 @@ import { errorCode, testContext, unwrap } from "./helpers";
 import { createRoomType } from "./item-helpers";
 
 describe("items (ADR 0021)", () => {
-  it("stores behaviour data only when the type has the behaviour", async () => {
+  it("stores capability data only when the type has the capability", async () => {
     const context = testContext();
     const dish = unwrap({
       result: await execute({
@@ -35,7 +35,7 @@ describe("items (ADR 0021)", () => {
     expect(errorCode({ result: plain })).toBeNull();
   });
 
-  it("replaces setup capacities as a set and filters by behaviour", async () => {
+  it("replaces setup capacities as a set and filters by capability", async () => {
     const context = testContext();
     const room = await createRoomType({ context });
     const theatre = unwrap({
@@ -90,13 +90,13 @@ describe("items (ADR 0021)", () => {
     });
     expect(errorCode({ result: twice })).toBe("VALIDATION");
     const bookable = unwrap({
-      result: await execute({ operation: listItems, input: { behaviour: "BOOKABLE" }, context }),
+      result: await execute({ operation: listItems, input: { capability: "BOOKABLE" }, context }),
     });
     expect(bookable.items.map((item) => item.id)).toEqual([created.id]);
-    const composable = unwrap({
-      result: await execute({ operation: listItems, input: { behaviour: "COMPOSABLE" }, context }),
+    const bundles = unwrap({
+      result: await execute({ operation: listItems, input: { capability: "BUNDLE" }, context }),
     });
-    expect(composable.items).toHaveLength(0);
+    expect(bundles.items).toHaveLength(0);
     const other = await execute({
       operation: getItem,
       input: { id: created.id },

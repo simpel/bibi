@@ -3,28 +3,28 @@
 import { Link } from "@okazi/i18n/navigation";
 import {
   Badge,
-  BehaviourDisplay,
   BookableDisplay,
+  BundleDisplay,
+  CapabilityDisplay,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  ChoicesDisplay,
-  ComposableDisplay,
+  CustomisationsDisplay,
   PricedDisplay,
 } from "@okazi/ui";
 import { useFormatter, useTranslations } from "next-intl";
-import { choiceGroupLines } from "@/features/item/ui/choice-group-lines";
+import { customisationGroupLines } from "@/features/item/ui/customisation-group-lines";
 import { itemRoute } from "@/lib/configuration-routes";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";
 
 export type ItemCardViewProps = GenerativeProps<"item-card">;
 
-type BehavioursProps = { item: ItemCardViewProps["item"] };
+type CapabilitiesProps = { item: ItemCardViewProps["item"] };
 
-/** The behaviour values of the item, shown with the same displays as the item page. */
-function Behaviours({ item }: BehavioursProps) {
+/** The capability values of the item, shown with the same displays as the item page. */
+function Capabilities({ item }: CapabilitiesProps) {
   const t = useTranslations("assistant.ui.item");
   const format = useFormatter();
   const amount =
@@ -37,28 +37,27 @@ function Behaviours({ item }: BehavioursProps) {
       ? null
       : t("duration", { minutes: item.defaultDurationMinutes });
   const setups = item.setups.length > 0 ? [t("setupsCount", { count: item.setups.length })] : [];
-  const parts =
-    item.components.length > 0 ? [t("componentsCount", { count: item.components.length })] : [];
-  const groups = choiceGroupLines({
-    groups: item.choiceGroups,
-    format: (values) => t("choiceGroupValue", values),
+  const parts = item.parts.length > 0 ? [t("partsCount", { count: item.parts.length })] : [];
+  const groups = customisationGroupLines({
+    groups: item.customisationGroups,
+    format: (values) => t("customisationGroupValue", values),
   });
   return (
     <>
       <PricedDisplay title={t("sections.price")} price={price} />
       <BookableDisplay title={t("sections.bookable")} duration={duration} />
-      <BehaviourDisplay
-        behaviour="SETUPS"
+      <CapabilityDisplay
+        capability="SETUPS"
         title={t("sections.setups")}
         rows={setups.map((value) => ({ value }))}
       />
-      <ComposableDisplay title={t("sections.components")} parts={parts} />
-      <ChoicesDisplay title={t("sections.choices")} groups={groups} />
+      <BundleDisplay title={t("sections.parts")} parts={parts} />
+      <CustomisationsDisplay title={t("sections.customisations")} groups={groups} />
     </>
   );
 }
 
-/** One item: name (link), field values and behaviours (price, length, setups, parts, choices). */
+/** One item: name (link), field values and capabilities (price, length, setups, parts, customisations). */
 export function ItemCardView({ item }: ItemCardViewProps) {
   const t = useTranslations("assistant.ui.item");
   const lines = fieldLines({ fields: item.fields });
@@ -74,7 +73,7 @@ export function ItemCardView({ item }: ItemCardViewProps) {
       </CardHeader>
       <CardContent className="grid gap-1 p-4 pt-0 text-sm text-muted-foreground">
         {item.description ? <p className="text-foreground">{item.description}</p> : null}
-        <Behaviours item={item} />
+        <Capabilities item={item} />
         {lines.map((line) => (
           <p key={line}>{line}</p>
         ))}

@@ -15,7 +15,7 @@ export async function createSheetSetup({ context }: SheetSetupInput) {
   const dish = unwrap({
     result: await execute({
       operation: createEntityType,
-      input: { base: "ITEM", name: "Dish", behaviours: ["PRICED"] },
+      input: { base: "ITEM", name: "Dish", capabilities: ["PRICED"] },
       context,
     }),
   });

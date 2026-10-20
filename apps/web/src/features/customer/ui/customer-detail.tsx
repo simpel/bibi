@@ -11,13 +11,13 @@ import { handleLoadError } from "@/server/load-error";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import { runOperation } from "@/server/run-operation";
 import { ContactSection } from "../../contact/ui/contact-section";
-import { CustomerPackagesSection } from "../../item/ui/customer-packages-section";
+import { CustomerBundlesSection } from "../../item/ui/customer-bundles-section";
 import { CustomerActions } from "./customer-actions";
 import { CustomerFacts } from "./customer-facts";
 
 export type CustomerDetailProps = { locale: Locale; id: string };
 
-/** Customer detail page body: facts with edit and archive, contact persons and packages. */
+/** Customer detail page body: facts with edit and archive, contact persons and bundles. */
 export async function CustomerDetail({ locale, id }: CustomerDetailProps) {
   const common = await getTranslations("common");
   const abilities = await getCallerAbilities();
@@ -54,7 +54,7 @@ export async function CustomerDetail({ locale, id }: CustomerDetailProps) {
         locale={locale}
       />
       <ContactSection locale={locale} customerId={customer.value.id} />
-      <CustomerPackagesSection locale={locale} customerId={customer.value.id} />
+      <CustomerBundlesSection locale={locale} customerId={customer.value.id} />
     </div>
   );
 }

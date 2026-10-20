@@ -1,19 +1,19 @@
 import type { OperationContext } from "../../operations/types";
-import type { ItemChoiceGroupInput } from "./choice-group-schema";
-import { replaceChoiceGroups } from "./item-choice-groups";
-import { replaceComponents } from "./item-components";
+import type { ItemCustomisationGroupInput } from "./customisation-group-schema";
+import { replaceCustomisationGroups } from "./item-customisation-groups";
+import { replaceParts } from "./item-parts";
 import type { ItemDto } from "./schema";
 
-type Components = ItemDto["components"];
+type Parts = ItemDto["parts"];
 
-/** The parts and choice groups an item has after a write. */
-export type Composition = { components: Components; choiceGroups: ItemChoiceGroupInput[] };
+/** The parts and customisation groups an item has after a write. */
+export type Composition = { parts: Parts; customisationGroups: ItemCustomisationGroupInput[] };
 
 export type PlanCompositionInput = {
   /** The item before the change; undefined on create. */
   before?: ItemDto | undefined;
-  components: Components | undefined;
-  choiceGroups: ItemChoiceGroupInput[] | undefined;
+  parts: Parts | undefined;
+  customisationGroups: ItemCustomisationGroupInput[] | undefined;
 };
 
 /**
@@ -22,13 +22,13 @@ export type PlanCompositionInput = {
  */
 export function planComposition({
   before,
-  components,
-  choiceGroups,
+  parts,
+  customisationGroups,
 }: PlanCompositionInput): Composition | undefined {
-  if (components === undefined && choiceGroups === undefined) return undefined;
+  if (parts === undefined && customisationGroups === undefined) return undefined;
   return {
-    components: components ?? before?.components ?? [],
-    choiceGroups: choiceGroups ?? before?.choiceGroups ?? [],
+    parts: parts ?? before?.parts ?? [],
+    customisationGroups: customisationGroups ?? before?.customisationGroups ?? [],
   };
 }
 
@@ -49,7 +49,11 @@ export async function writeComposition({
 }: WriteCompositionInput) {
   if (!composition) return;
   if (partsChanged) {
-    await replaceComponents({ context, itemId, components: composition.components });
+    await replaceParts({ context, itemId, parts: composition.parts });
   }
-  await replaceChoiceGroups({ context, itemId, choiceGroups: composition.choiceGroups });
+  await replaceCustomisationGroups({
+    context,
+    itemId,
+    customisationGroups: composition.customisationGroups,
+  });
 }

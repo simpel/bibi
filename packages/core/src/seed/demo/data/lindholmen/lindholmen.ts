@@ -1,12 +1,12 @@
 import type { DemoOrg } from "../../types";
 import { lindholmenActivities } from "./activities";
 import { lindholmenAlternativeTickets } from "./alternative-tickets";
+import { lindholmenBundles } from "./bundles";
 import { lindholmenLists } from "./config";
 import { lindholmenCustomers } from "./customers";
 import { lindholmenDishes } from "./dishes";
 import { lindholmenDrinks } from "./drinks";
 import { lindholmenMeals } from "./meals";
-import { lindholmenPackages } from "./packages";
 import { lindholmenPipeline } from "./pipeline";
 import { lindholmenResponsibilities } from "./responsibilities";
 import { lindholmenRooms } from "./rooms";
@@ -57,7 +57,7 @@ export const lindholmen: DemoOrg = {
       ...lindholmenDrinks,
       ...lindholmenMeals,
       ...lindholmenActivities,
-      ...lindholmenPackages,
+      ...lindholmenBundles,
     ],
     checks: { listSizes: { Allergens: 14 } },
   },

@@ -14,11 +14,11 @@ import {
   entityTypeFormSchema,
 } from "./entity-type-form-schema";
 
-export type EntityTypeStep = "base" | "behaviours";
+export type EntityTypeStep = "base" | "capabilities";
 
-const STEP_FIELDS = { base: ["base", "name"], behaviours: ["behaviours"] } as const;
+const STEP_FIELDS = { base: ["base", "name"], capabilities: ["capabilities"] } as const;
 
-/** Form and steps of the create-type wizard; only item types have the behaviours step. */
+/** Form and steps of the create-type wizard; only item types have the capabilities step. */
 export function useEntityTypeWizard() {
   const t = useTranslations("entityType");
   const router = useRouter();
@@ -32,7 +32,8 @@ export function useEntityTypeWizard() {
     messages: { pending: t("saving"), success: t("created") },
     onSuccess: ({ value }) => router.push(`${ROUTES.settingsTypes}/${value.id}`),
   });
-  const steps: EntityTypeStep[] = form.watch("base") === "ITEM" ? ["base", "behaviours"] : ["base"];
+  const steps: EntityTypeStep[] =
+    form.watch("base") === "ITEM" ? ["base", "capabilities"] : ["base"];
   const wizard = useWizard({ form, steps, fieldsOf: ({ step }) => [...STEP_FIELDS[step]], run });
   return { ...wizard, form, steps, pending };
 }

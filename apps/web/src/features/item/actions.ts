@@ -5,9 +5,9 @@ import {
   createItem,
   type ItemCreateInput,
   type ItemDto,
-  type ItemSaveAsPackageInput,
+  type ItemSaveAsBundleInput,
   type ItemUpdateInput,
-  saveItemAsPackage,
+  saveItemAsBundle,
   updateItem,
 } from "@okazi/core";
 import type { ActionResult } from "@/lib/action-result";
@@ -17,7 +17,7 @@ import { toActionResult } from "@/server/to-action-result";
 export type CreateItemActionInput = { input: ItemCreateInput };
 export type UpdateItemActionInput = { input: ItemUpdateInput };
 export type ArchiveItemActionInput = { id: string };
-export type SaveItemAsPackageActionInput = { input: ItemSaveAsPackageInput };
+export type SaveItemAsBundleActionInput = { input: ItemSaveAsBundleInput };
 
 export async function createItemAction({
   input,
@@ -37,8 +37,8 @@ export async function archiveItemAction({
   return toActionResult({ result: await runOperation({ operation: archiveItem, input: { id } }) });
 }
 
-export async function saveItemAsPackageAction({
+export async function saveItemAsBundleAction({
   input,
-}: SaveItemAsPackageActionInput): Promise<ActionResult<ItemDto>> {
-  return toActionResult({ result: await runOperation({ operation: saveItemAsPackage, input }) });
+}: SaveItemAsBundleActionInput): Promise<ActionResult<ItemDto>> {
+  return toActionResult({ result: await runOperation({ operation: saveItemAsBundle, input }) });
 }

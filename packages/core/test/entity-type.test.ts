@@ -11,24 +11,24 @@ import {
 import { errorCode, testContext, unwrap } from "./helpers";
 import { createRoomType, createTestItem } from "./item-helpers";
 
-describe("entity types and behaviours (ADR 0021)", () => {
-  it("validates behaviour dependencies and that only item types have behaviours", async () => {
+describe("entity types and capabilities (ADR 0021)", () => {
+  it("validates capability dependencies and that only item types have capabilities", async () => {
     const context = testContext();
     const setupsAlone = await execute({
       operation: createEntityType,
-      input: { base: "ITEM", name: "X", behaviours: ["SETUPS"] },
+      input: { base: "ITEM", name: "X", capabilities: ["SETUPS"] },
       context,
     });
     expect(errorCode({ result: setupsAlone })).toBe("VALIDATION");
-    const choices = await execute({
+    const customisations = await execute({
       operation: createEntityType,
-      input: { base: "ITEM", name: "X", behaviours: ["CHOICES"] },
+      input: { base: "ITEM", name: "X", capabilities: ["CUSTOMISATIONS"] },
       context,
     });
-    expect(errorCode({ result: choices })).toBe("VALIDATION");
+    expect(errorCode({ result: customisations })).toBe("VALIDATION");
     const customer = await execute({
       operation: createEntityType,
-      input: { base: "CUSTOMER", name: "Company", behaviours: ["PRICED"] },
+      input: { base: "CUSTOMER", name: "Company", capabilities: ["PRICED"] },
       context,
     });
     expect(errorCode({ result: customer })).toBe("VALIDATION");
@@ -56,18 +56,18 @@ describe("entity types and behaviours (ADR 0021)", () => {
     expect(items.items.map((type) => type.base)).toEqual(["ITEM"]);
   });
 
-  it("refuses to switch a behaviour off while items have data for it", async () => {
+  it("refuses to switch a capability off while items have data for it", async () => {
     const context = testContext();
     const type = await createRoomType({ context });
     const setup = unwrap({
       result: await execute({ operation: createSetup, input: { name: "Theatre" }, context }),
     });
     const item = await createTestItem({ context, entityTypeId: type.id, name: "Vinga" });
-    type Behaviours = ("BOOKABLE" | "SETUPS" | "PRICED")[];
-    const off = ({ behaviours }: { behaviours: Behaviours }) =>
-      execute({ operation: updateEntityType, input: { id: type.id, behaviours }, context });
-    expect(errorCode({ result: await off({ behaviours: ["BOOKABLE", "SETUPS"] }) })).toBeNull();
-    const priced = await off({ behaviours: ["BOOKABLE", "SETUPS", "PRICED"] });
+    type Capabilities = ("BOOKABLE" | "SETUPS" | "PRICED")[];
+    const off = ({ capabilities }: { capabilities: Capabilities }) =>
+      execute({ operation: updateEntityType, input: { id: type.id, capabilities }, context });
+    expect(errorCode({ result: await off({ capabilities: ["BOOKABLE", "SETUPS"] }) })).toBeNull();
+    const priced = await off({ capabilities: ["BOOKABLE", "SETUPS", "PRICED"] });
     expect(errorCode({ result: priced })).toBeNull();
     unwrap({
       result: await execute({
@@ -76,13 +76,13 @@ describe("entity types and behaviours (ADR 0021)", () => {
         context,
       }),
     });
-    expect(errorCode({ result: await off({ behaviours: ["BOOKABLE", "SETUPS"] }) })).toBe(
+    expect(errorCode({ result: await off({ capabilities: ["BOOKABLE", "SETUPS"] }) })).toBe(
       "CONFLICT",
     );
-    expect(errorCode({ result: await off({ behaviours: ["BOOKABLE", "PRICED"] }) })).toBe(
+    expect(errorCode({ result: await off({ capabilities: ["BOOKABLE", "PRICED"] }) })).toBe(
       "CONFLICT",
     );
-    expect(errorCode({ result: await off({ behaviours: ["SETUPS", "PRICED"] }) })).toBe(
+    expect(errorCode({ result: await off({ capabilities: ["SETUPS", "PRICED"] }) })).toBe(
       "VALIDATION",
     );
   });

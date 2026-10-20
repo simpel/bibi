@@ -1,10 +1,10 @@
-import type { Item, ItemComponent } from "@okazi/db";
+import type { Item, ItemPart } from "@okazi/db";
 import type { ItemGraph } from "./resolve-graph";
 import type { ResolvedItemNode } from "./resolve-schema";
 
 type Step = {
   path: readonly string[];
-  component: ItemComponent | null;
+  part: ItemPart | null;
   mandatory: boolean;
   totalQuantity: number;
   offsetMinutes: number;
@@ -16,32 +16,32 @@ export type BuildTreeInput = {
   tagsOf: (input: { item: Item }) => string[];
 };
 
-type GroupOfInput = { graph: ItemGraph; component: ItemComponent };
+type GroupOfInput = { graph: ItemGraph; part: ItemPart };
 
 /** An option is mandatory only when its group must pick all of its options (no alternative). */
-function optionIsMandatory({ graph, component }: GroupOfInput): boolean {
-  if (!component.choiceGroupId) return true;
-  const group = graph.groups.get(component.choiceGroupId);
+function optionIsMandatory({ graph, part }: GroupOfInput): boolean {
+  if (!part.customisationGroupId) return true;
+  const group = graph.groups.get(part.customisationGroupId);
   return group !== undefined && group.minPick >= group.options;
 }
 
 type NodeOfInput = { item: Item; step: Step; graph: ItemGraph; tags: string[] };
 
 function nodeOf({ item, step, graph, tags }: NodeOfInput): ResolvedItemNode {
-  const { component } = step;
-  const groupId = component?.choiceGroupId;
+  const { part } = step;
+  const groupId = part?.customisationGroupId;
   return {
     path: [...step.path],
     depth: step.path.length - 1,
     itemId: item.id,
     name: item.name,
     entityTypeId: item.entityTypeId,
-    quantity: component?.quantity ?? 1,
+    quantity: part?.quantity ?? 1,
     totalQuantity: step.totalQuantity,
     offsetMinutes: step.offsetMinutes,
-    durationMinutes: component ? component.durationMinutes : item.defaultDurationMinutes,
-    required: component?.required ?? true,
-    choiceGroup: groupId ? (graph.groups.get(groupId)?.name ?? null) : null,
+    durationMinutes: part ? part.durationMinutes : item.defaultDurationMinutes,
+    required: part?.required ?? true,
+    customisationGroup: groupId ? (graph.groups.get(groupId)?.name ?? null) : null,
     mandatory: step.mandatory,
     priceMinor: item.priceMinor,
     priceUnit: item.priceUnit,
@@ -60,22 +60,21 @@ export function buildTree({ graph, rootId, tagsOf }: BuildTreeInput): ResolvedIt
     const item = graph.items.get(id);
     if (!item) return;
     nodes.push(nodeOf({ item, step, graph, tags: tagsOf({ item }) }));
-    for (const component of graph.parts.get(id) ?? []) {
-      if (step.path.includes(component.partId)) continue;
+    for (const part of graph.parts.get(id) ?? []) {
+      if (step.path.includes(part.partId)) continue;
       visit({
-        id: component.partId,
+        id: part.partId,
         step: {
-          path: [...step.path, component.partId],
-          component,
-          mandatory:
-            step.mandatory && component.required && optionIsMandatory({ graph, component }),
-          totalQuantity: step.totalQuantity * component.quantity,
-          offsetMinutes: step.offsetMinutes + component.offsetMinutes,
+          path: [...step.path, part.partId],
+          part,
+          mandatory: step.mandatory && part.required && optionIsMandatory({ graph, part }),
+          totalQuantity: step.totalQuantity * part.quantity,
+          offsetMinutes: step.offsetMinutes + part.offsetMinutes,
         },
       });
     }
   };
-  const root = { path: [rootId], component: null, mandatory: true, totalQuantity: 1 };
+  const root = { path: [rootId], part: null, mandatory: true, totalQuantity: 1 };
   visit({ id: rootId, step: { ...root, offsetMinutes: 0 } });
   return nodes;
 }

@@ -29,7 +29,7 @@ describe("ticket templates (ADR 0043)", () => {
     expect(listed.items.map((template) => template.id)).toEqual([made.id]);
   });
 
-  it("refuses a terminal start phase, a foreign type and a customer's package", async () => {
+  it("refuses a terminal start phase, a foreign type and a customer's bundle", async () => {
     const setup = await templateSetup();
     const { context } = setup;
     const lost = await phaseByName({ context, name: "Lost" });

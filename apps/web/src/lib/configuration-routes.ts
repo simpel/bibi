@@ -7,7 +7,7 @@ export function itemRoute({ id }: IdRouteInput): string {
   return `${ROUTES.items}/${encodeURIComponent(id)}`;
 }
 
-/** `/settings/types/<id>`: type detail page (behaviours and fields). */
+/** `/settings/types/<id>`: type detail page (capabilities and fields). */
 export function entityTypeRoute({ id }: IdRouteInput): string {
   return `${ROUTES.settingsTypes}/${encodeURIComponent(id)}`;
 }

@@ -11,7 +11,7 @@ async function seedQuoteBasis({ client }: { client: Client }) {
   const itemType = await call({
     client,
     name: "entityType_create",
-    args: { base: "ITEM", name: "Secret dish", behaviours: ["PRICED"] },
+    args: { base: "ITEM", name: "Secret dish", capabilities: ["PRICED"] },
   });
   const item = await call({
     client,

@@ -43,7 +43,7 @@ describe("cross-organization isolation: sheets, setups and fields", () => {
     const type = await call({
       client: a,
       name: "entityType_create",
-      args: { base: "ITEM", name: "Secret room", behaviours: ["BOOKABLE", "SETUPS"] },
+      args: { base: "ITEM", name: "Secret room", capabilities: ["BOOKABLE", "SETUPS"] },
     });
     const field = await call({
       client: a,

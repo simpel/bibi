@@ -57,7 +57,7 @@ const NAMES = [
   "item.get",
   "item.list",
   "item.resolve",
-  "item.saveAsPackage",
+  "item.saveAsBundle",
   "item.update",
   "member.assignRole",
   "member.cancelInvitation",

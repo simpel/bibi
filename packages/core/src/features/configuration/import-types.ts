@@ -19,9 +19,9 @@ type CreateTypeInput = {
 
 /** One type and its fields, in template order. */
 async function createType({ context, type, listIds }: CreateTypeInput) {
-  const { base, name, behaviours = [] } = type;
+  const { base, name, capabilities = [] } = type;
   const audited = withEntityType({ context, entityType: "entityType" });
-  const created = await insertEntityType({ context: audited, base, name, behaviours });
+  const created = await insertEntityType({ context: audited, base, name, capabilities });
   if (!created.ok) return created;
   const fieldContext = withEntityType({ context, entityType: "fieldDefinition" });
   for (const { list, options, ...field } of type.fields ?? []) {

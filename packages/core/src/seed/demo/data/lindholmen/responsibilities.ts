@@ -2,7 +2,7 @@ import type { DemoResponsibility } from "../../types";
 
 /** Lindholmen's responsibilities (`docs/demo-seed.md`): item types by name, people by user name. */
 export const lindholmenResponsibilities: readonly DemoResponsibility[] = [
-  { name: "Sales", types: ["Package"], assignee: "Erik Lund", followers: ["Sara Nilsson"] },
+  { name: "Sales", types: ["Bundle"], assignee: "Erik Lund", followers: ["Sara Nilsson"] },
   {
     name: "Coordinator",
     types: ["Conference room", "Equipment", "Tour", "Guide"],

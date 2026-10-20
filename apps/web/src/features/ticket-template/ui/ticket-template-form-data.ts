@@ -7,7 +7,7 @@ export type TicketTemplateFormData = {
   lineTypes: NamedOption[];
   /** Phases a ticket can start in: not terminal. */
   phases: NamedOption[];
-  /** The catalog's items (not a customer's own packages). */
+  /** The catalog's items (not a customer's own bundles). */
   items: NamedOption[];
   /** The caller may not view items: the picker is disabled and reads "Hidden". */
   itemsHidden: boolean;

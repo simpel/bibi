@@ -45,8 +45,8 @@ const entityType = byId({
   field: "entityType",
   list: "entity-types",
   createTool: "entityType_create",
-  args: { base: "ITEM", name: "Parity room", behaviours: ["BOOKABLE", "SETUPS", "PRICED"] },
-  nested: { fields: FIELD, behaviours: "" },
+  args: { base: "ITEM", name: "Parity room", capabilities: ["BOOKABLE", "SETUPS", "PRICED"] },
+  nested: { fields: FIELD, capabilities: "" },
 });
 const fieldDefinition: ParityEntity = {
   ...byId({
@@ -92,8 +92,8 @@ const item: ParityEntity = {
     args: {},
     nested: {
       setups: "{ setupId capacity }",
-      components: "{ itemId quantity offsetMinutes durationMinutes required }",
-      choiceGroups: "{ name minPick maxPick itemIds }",
+      parts: "{ itemId quantity offsetMinutes durationMinutes required }",
+      customisationGroups: "{ name minPick maxPick itemIds }",
     },
   }),
   create: ({ mcp, made }) =>

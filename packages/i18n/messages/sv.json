@@ -288,13 +288,13 @@
     "select": "Välj…",
     "search": "Sök…",
     "noOptions": "Inga alternativ.",
-    "savePackage": "Spara som paket",
-    "savePackageDescription": "Välj pakettyp och delar. Paketet visas bara för den här kunden; katalogen påverkas inte.",
-    "packageSaved": "Paketet har sparats.",
-    "packages": "Paket",
-    "packagesEmpty": "Kunden har inga paket ännu.",
-    "packagesNoTypes": "Det finns ingen artikeltyp med delar (COMPOSABLE) ännu. Skapa en under Typer först.",
-    "packageFor": "Paket för {customer}",
+    "saveBundle": "Spara som paket",
+    "saveBundleDescription": "Välj pakettyp och delar. Paketet visas bara för den här kunden; katalogen påverkas inte.",
+    "bundleSaved": "Paketet har sparats.",
+    "bundles": "Paket",
+    "bundlesEmpty": "Kunden har inga paket ännu.",
+    "bundlesNoTypes": "Det finns ingen artikeltyp med förmågan Paket ännu. Skapa en under Typer först.",
+    "bundleFor": "Paket för {customer}",
     "fields": {
       "type": "Typ",
       "name": "Namn",
@@ -310,8 +310,8 @@
       "price": "Pris",
       "bookable": "Bokning",
       "setups": "Uppställningar",
-      "components": "Delar",
-      "choices": "Valgrupper"
+      "parts": "Delar",
+      "customisations": "Anpassningar"
     },
     "setupsHint": "Kapacitet, max antal personer, per uppställning. Lämna tomt för uppställningar som inte används.",
     "noSetups": "Det finns inga uppställningar. Skapa dem under Uppställningar.",
@@ -330,7 +330,7 @@
     "priceValue": "{amount} kr {unit}",
     "durationValue": "{minutes} min",
     "capacityValue": "{name}: {capacity}",
-    "components": {
+    "parts": {
       "hint": "Artiklarna som ingår, med antal och tid räknat från starten.",
       "none": "Inga delar ännu.",
       "add": "Lägg till del",
@@ -341,19 +341,19 @@
       "durationMinutes": "Längd (minuter)",
       "required": "Obligatorisk"
     },
-    "componentValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (valfri)}}",
-    "choiceGroups": {
+    "partValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (valfri)}}",
+    "customisationGroups": {
       "hint": "Grupper av delar att välja mellan, med hur många som ska väljas.",
-      "none": "Inga valgrupper ännu.",
-      "add": "Lägg till valgrupp",
-      "remove": "Ta bort valgrupp",
+      "none": "Inga anpassningsgrupper ännu.",
+      "add": "Lägg till anpassningsgrupp",
+      "remove": "Ta bort anpassningsgrupp",
       "name": "Namn",
       "minPick": "Välj minst",
       "maxPick": "Välj högst",
       "options": "Alternativ",
       "noOptions": "Lägg till delar först; alternativen väljs bland dem."
     },
-    "choiceGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
+    "customisationGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
     "resolution": {
       "title": "Innehåll",
       "contains": "Innehåller",
@@ -807,11 +807,11 @@
   "entityType": {
     "singular": "Typ",
     "plural": "Typer",
-    "listDescription": "Typerna bestämmer vilka fält och beteenden artiklar, kunder och ärenden har i er organisation.",
+    "listDescription": "Typerna bestämmer vilka fält och förmågor artiklar, kunder och ärenden har i er organisation.",
     "create": "Skapa typ",
     "edit": "Redigera typ",
     "createDescription": "Välj vad typen gäller och namnge den.",
-    "editDescription": "Ändra namn och beteenden.",
+    "editDescription": "Ändra namn och förmågor.",
     "archive": "Arkivera typ",
     "archiveConfirm": "Vill du arkivera typen {name}? Det går inte så länge den används.",
     "archived": "Typen har arkiverats.",
@@ -825,19 +825,19 @@
     "importing": "Importerar mall…",
     "imported": "{created, plural, one {# typ} other {# typer}} skapades, {skipped} fanns redan.",
     "fieldCount": "{count, plural, one {# fält} other {# fält}}",
-    "noBehaviours": "Inga beteenden",
-    "behavioursHeading": "Beteenden",
-    "behavioursHint": "Beteenden slår på generella funktioner för artiklar av typen. Ett beteende kan inte stängas av så länge artiklar har data för det.",
-    "requires": "Kräver {behaviour}.",
+    "noCapabilities": "Inga förmågor",
+    "capabilitiesHeading": "Förmågor",
+    "capabilitiesHint": "Förmågor slår på generella funktioner för artiklar av typen. En förmåga kan inte stängas av så länge artiklar har data för det.",
+    "requires": "Kräver {capability}.",
     "fieldsHeading": "Fält",
     "fields": {
       "base": "Gäller",
       "name": "Namn",
-      "behaviours": "Beteenden"
+      "capabilities": "Förmågor"
     },
     "columns": {
       "name": "Namn",
-      "behaviours": "Beteenden",
+      "capabilities": "Förmågor",
       "fields": "Fält"
     },
     "bases": {
@@ -848,17 +848,17 @@
       "REQUIREMENT": "Behov",
       "LINE": "Programpunkter"
     },
-    "behaviours": {
+    "capabilities": {
       "PRICED": "Prissatt",
-      "COMPOSABLE": "Sammansatt",
-      "CHOICES": "Valgrupper",
+      "BUNDLE": "Paket",
+      "CUSTOMISATIONS": "Anpassningar",
       "BOOKABLE": "Bokningsbar",
       "SETUPS": "Uppställningar"
     },
-    "behaviourHints": {
+    "capabilityHints": {
       "PRICED": "Pris, prisenhet och moms.",
-      "COMPOSABLE": "Innehåller andra artiklar.",
-      "CHOICES": "Valgrupper bland delarna.",
+      "BUNDLE": "Innehåller andra artiklar.",
+      "CUSTOMISATIONS": "Anpassningsgrupper att välja mellan.",
       "BOOKABLE": "Upptar tid och har standardlängd.",
       "SETUPS": "Kapacitet per uppställning."
     },
@@ -866,11 +866,11 @@
       "progress": "Steg",
       "steps": {
         "base": "Namn",
-        "behaviours": "Beteenden"
+        "capabilities": "Förmågor"
       },
       "descriptions": {
         "base": "Välj vad typen är till för och namnge den.",
-        "behaviours": "Välj vad artiklar av typen kan göra. Fälten lägger du till härnäst."
+        "capabilities": "Välj vad artiklar av typen kan göra. Fälten lägger du till härnäst."
       }
     }
   },
@@ -1325,7 +1325,7 @@
         "venueId": "Anläggning (id)",
         "entityTypeId": "Typ (id)",
         "base": "Bas",
-        "behaviours": "Beteenden",
+        "capabilities": "Förmågor",
         "fields": "Fält",
         "priceMinor": "Pris (öre)",
         "priceUnit": "Prisenhet",
@@ -1353,8 +1353,8 @@
         "markdown": "SKILL.md",
         "title": "Titel",
         "value": "Värde",
-        "components": "Delar",
-        "choiceGroups": "Valgrupper",
+        "parts": "Delar",
+        "customisationGroups": "Anpassningsgrupper",
         "customerId": "Kund (id)",
         "email": "E-post",
         "phone": "Telefon",
@@ -1590,14 +1590,14 @@
         },
         "duration": "{minutes} min",
         "setupsCount": "{count, plural, one {# uppställning} other {# uppställningar}}",
-        "componentsCount": "{count, plural, one {# del} other {# delar}}",
-        "choiceGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
+        "partsCount": "{count, plural, one {# del} other {# delar}}",
+        "customisationGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
         "sections": {
           "price": "Pris",
           "bookable": "Bokning",
           "setups": "Uppställningar",
-          "components": "Delar",
-          "choices": "Valgrupper"
+          "parts": "Delar",
+          "customisations": "Anpassningar"
         }
       },
       "customer": {
@@ -1727,7 +1727,7 @@
         "columns": {
           "name": "Namn",
           "base": "Bas",
-          "behaviours": "Beteenden",
+          "capabilities": "Förmågor",
           "fields": "Fält"
         },
         "base": {
@@ -1738,10 +1738,10 @@
           "REQUIREMENT": "Behov",
           "LINE": "Programpunkt"
         },
-        "behaviour": {
+        "capability": {
           "PRICED": "Prissatt",
-          "COMPOSABLE": "Sammansatt",
-          "CHOICES": "Val",
+          "BUNDLE": "Paket",
+          "CUSTOMISATIONS": "Anpassningar",
           "BOOKABLE": "Bokningsbar",
           "SETUPS": "Uppställningar"
         }
@@ -2480,7 +2480,7 @@
         "items-and-venues": {
           "title": "Artiklar och anläggningar",
           "lead": "Anläggningar är era byggnader och platser. Artiklar är allt ni säljer eller bokar: lokaler, rätter, drycker, utrustning och paket.",
-          "body": "# Anläggningar\n\nEn anläggning är en byggnad eller plats. Artiklar hör till en anläggning.\n\n1. Öppna **Anläggningar** i vänstermenyn och välj **Skapa anläggning**.\n2. Ange namn, adress, kontaktuppgifter och öppettider.\n3. Spara. Anläggningens sida listar artiklarna på den anläggningen.\n\nArkiverar du en anläggning arkiveras också dess artiklar.\n\n# Artiklar\n\nEn artikel är allt som kan säljas eller bokas. Hur en artikel ser ut beror på dess **typ**, och era administratörer definierar typerna. En typ \"Konferensrum\" kan ha fält för våning och yta. En typ \"Rätt\" kan ha ett pris och en lista över allergener.\n\nSå här lägger du till en artikel:\n\n1. Öppna **Artiklar** och välj **Skapa artikel**.\n2. Välj typ och fyll sedan i namn, beskrivning, anläggning och typens fält.\n3. Spara.\n\nFinns inga typer än, välj **Gå till typer** och skapa en först. Använd typfiltret i listan för att hitta artiklar snabbt.\n\n# Vad en typ kan göra\n\nNär en typ skapas kan den slå på något av dessa beteenden. De är det enda Okazi har inbyggt. Allt annat är era egna namn.\n\n- **Prissatt**: artikeln har ett pris, en prisenhet (per person, per enhet, per timme eller fast pris) och moms.\n- **Sammansatt**: artikeln innehåller andra artiklar, med antal och tid. Ett paket är ett exempel.\n- **Val**: en sammansatt artikel kan erbjuda valgrupper, till exempel \"välj 1 av 3 varmrätter\".\n- **Bokningsbar**: artikeln kan beläggas i tid, och Okazi hindrar dubbelbokning. En lokal är ett exempel.\n- **Uppställningar**: en bokningsbar artikel har en kapacitet per uppställning, till exempel 80 personer i Teater och 40 i U-bord.\n\n# Uppställningar och ställtid\n\nUppställningar är era namngivna lokalupplägg, som Bio, U-bord eller Mingel. Varje uppställning har en ställtid, som Okazi blockerar precis före en programpunkt som använder den. Skapa dem under **Inställningar, Uppställningar** och ange kapacitet per uppställning på varje bokningsbar artikel.\n\n# Paket för en kund\n\nPå en kunds sida väljer du **Spara som paket** för att bygga ett paket av katalogartiklar. Paketet visas bara för den kunden och katalogen påverkas inte.\n\n# Innehållet i en artikel\n\nEn artikel som innehåller andra artiklar visar **Innehåll** med vad den **Innehåller** (obligatoriska delar) och vad den **Kan innehålla** (valfria delar och val). Det är detta Okazi jämför med de antal ni registrerar. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Blockera en artikel\n\nVill du ta en lokal ur bruk för underhåll eller internt bruk, öppna artikeln och välj **Blockera artikel**. Bokningar kan inte överlappa en blockering. Välj **Släpp blockering** för att öppna den igen.\n\n# Priser för en kund\n\nMed prislistor kan du ge en kund en generell rabatt eller särskilda priser per artikel. Se [Konfiguration](/docs/guide/configuration)."
+          "body": "# Anläggningar\n\nEn anläggning är en byggnad eller plats. Artiklar hör till en anläggning.\n\n1. Öppna **Anläggningar** i vänstermenyn och välj **Skapa anläggning**.\n2. Ange namn, adress, kontaktuppgifter och öppettider.\n3. Spara. Anläggningens sida listar artiklarna på den anläggningen.\n\nArkiverar du en anläggning arkiveras också dess artiklar.\n\n# Artiklar\n\nEn artikel är allt som kan säljas eller bokas. Hur en artikel ser ut beror på dess **typ**, och era administratörer definierar typerna. En typ \"Konferensrum\" kan ha fält för våning och yta. En typ \"Rätt\" kan ha ett pris och en lista över allergener.\n\nSå här lägger du till en artikel:\n\n1. Öppna **Artiklar** och välj **Skapa artikel**.\n2. Välj typ och fyll sedan i namn, beskrivning, anläggning och typens fält.\n3. Spara.\n\nFinns inga typer än, välj **Gå till typer** och skapa en först. Använd typfiltret i listan för att hitta artiklar snabbt.\n\n# Vad en typ kan göra\n\nNär en typ skapas kan den slå på någon av dessa förmågor. De är det enda Okazi har inbyggt. Allt annat är era egna namn.\n\n- **Prissatt**: artikeln har ett pris, en prisenhet (per person, per enhet, per timme eller fast pris) och moms.\n- **Paket**: artikeln innehåller andra artiklar, med antal och tid. En konferensdag är ett exempel.\n- **Anpassningar**: ett paket kan erbjuda anpassningsgrupper, till exempel \"välj 1 av 3 varmrätter\".\n- **Bokningsbar**: artikeln kan beläggas i tid, och Okazi hindrar dubbelbokning. En lokal är ett exempel.\n- **Uppställningar**: en bokningsbar artikel har en kapacitet per uppställning, till exempel 80 personer i Teater och 40 i U-bord.\n\n# Uppställningar och ställtid\n\nUppställningar är era namngivna lokalupplägg, som Bio, U-bord eller Mingel. Varje uppställning har en ställtid, som Okazi blockerar precis före en programpunkt som använder den. Skapa dem under **Inställningar, Uppställningar** och ange kapacitet per uppställning på varje bokningsbar artikel.\n\n# Paket för en kund\n\nPå en kunds sida väljer du **Spara som paket** för att bygga ett paket av katalogartiklar. Paketet visas bara för den kunden och katalogen påverkas inte.\n\n# Innehållet i en artikel\n\nEn artikel som innehåller andra artiklar visar **Innehåll** med vad den **Innehåller** (obligatoriska delar) och vad den **Kan innehålla** (valfria delar och val). Det är detta Okazi jämför med de antal ni registrerar. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Blockera en artikel\n\nVill du ta en lokal ur bruk för underhåll eller internt bruk, öppna artikeln och välj **Blockera artikel**. Bokningar kan inte överlappa en blockering. Välj **Släpp blockering** för att öppna den igen.\n\n# Priser för en kund\n\nMed prislistor kan du ge en kund en generell rabatt eller särskilda priser per artikel. Se [Konfiguration](/docs/guide/configuration)."
         },
         "needs-and-sheets": {
           "title": "Behov och blad",
@@ -2495,7 +2495,7 @@
         "configuration": {
           "title": "Konfiguration",
           "lead": "Administratörer ställer in vad saker heter och hur de fungerar i er organisation. Allt här är era egna data.",
-          "body": "# Vem kan konfigurera\n\nBara administratörer ser **Inställningar** i vänstermenyn. Den öppnar en sida som listar alla konfigurationsområden. Ändringar påverkar alla i organisationen.\n\n# Typer och fält\n\nUnder **Inställningar, Typer** definierar du vilka sorters poster ni arbetar med: artiklar, kunder, kontakter, ärenden, behov och programpunkter. Till exempel \"Konferensrum\", \"Rätt\", \"Företag\" eller \"Konferens\".\n\n1. Välj **Skapa typ**, ange vad den gäller och namnge den.\n2. För en artikeltyp slår du på beteenden som **Prissatt**, **Bokningsbar** eller **Uppställningar**. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n3. Lägg till fält. Ett fält kan vara text, tal, ja/nej, datum, val, flerval eller en länk till en annan post. Markera det som obligatoriskt om det alltid måste fyllas i.\n\nEn typ kan inte arkiveras så länge den används, och ett fält kan inte byta sort när det har data.\n\n# Listor\n\nUnder **Inställningar, Listor** håller du era egna ordlistor, som allergener, kostval eller tillgänglighetsbehov. Fält och behov pekar på en lista. För att komma igång väljer du **Importera EU:s 14 allergener**. Du kan redigera listan efteråt. En lista eller ett värde kan inte arkiveras så länge ett fält använder det eller ett behov räknar det.\n\n# Uppställningar\n\nUnder **Inställningar, Uppställningar** namnger du era lokalupplägg och anger ställtid. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n\n# Faser\n\nUnder **Inställningar, Faser** bestämmer du vilka faser era ärenden går igenom, vad de heter och i vilken ordning de visas på tavlan. Inget om en fas är fast: varje fas har ett namn, en färg och några flaggor som avgör vad Okazi gör. Ni behöver en startfas och minst en fas som avslutar ärendet. Se [Ärenden](/docs/guide/tickets).\n\n1. Välj **Skapa fas**, eller **Importera mallen Konferensgård** för en färdig uppsättning.\n2. Använd **Redigera övergångar** för att välja vilka faser ett ärende får gå till från varje fas.\n3. Ändra ordning med pilarna.\n\nEn fas arkiveras, den tas aldrig bort. Finns det ärenden i den väljer du vilken fas de flyttas till.\n\n# Blad\n\nUnder **Inställningar, Blad** definierar du ett blad som \"Köksorder\": namnge det, välj vilka artikeltyper och fält det tar med, vilka listors behov det räknar och vilken roll som tar emot det. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Prislistor\n\nUnder **Inställningar, Prislistor** skapar du en lista för en kund eller för alla, med en giltighetstid. Välj antingen en generell rabatt i procent eller ett pris per artikel, inte båda. Nya orderrader använder listans priser, och en arkiverad lista gäller inte längre.\n\n# Betalningar och färdigheter\n\n**Inställningar, Betalningar** kopplar Stripe. Se [Betalningar](/docs/guide/payments). **Inställningar, Färdigheter** innehåller organisationens färdigheter för assistenten. Se [Assistenten](/docs/guide/assistant).\n\n# Mallar och assistenten\n\nMallar som startuppsättningen Konferensgård är valfria. De är bara data, så du kan ändra allt efteråt. Du kan också be assistenten föreslå en uppsättning, till exempel \"Vi är en herrgård med restaurang\". Du godkänner varje ändring."
+          "body": "# Vem kan konfigurera\n\nBara administratörer ser **Inställningar** i vänstermenyn. Den öppnar en sida som listar alla konfigurationsområden. Ändringar påverkar alla i organisationen.\n\n# Typer och fält\n\nUnder **Inställningar, Typer** definierar du vilka sorters poster ni arbetar med: artiklar, kunder, kontakter, ärenden, behov och programpunkter. Till exempel \"Konferensrum\", \"Rätt\", \"Företag\" eller \"Konferens\".\n\n1. Välj **Skapa typ**, ange vad den gäller och namnge den.\n2. För en artikeltyp slår du på förmågor som **Prissatt**, **Bokningsbar** eller **Uppställningar**. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n3. Lägg till fält. Ett fält kan vara text, tal, ja/nej, datum, val, flerval eller en länk till en annan post. Markera det som obligatoriskt om det alltid måste fyllas i.\n\nEn typ kan inte arkiveras så länge den används, och ett fält kan inte byta sort när det har data.\n\n# Listor\n\nUnder **Inställningar, Listor** håller du era egna ordlistor, som allergener, kostval eller tillgänglighetsbehov. Fält och behov pekar på en lista. För att komma igång väljer du **Importera EU:s 14 allergener**. Du kan redigera listan efteråt. En lista eller ett värde kan inte arkiveras så länge ett fält använder det eller ett behov räknar det.\n\n# Uppställningar\n\nUnder **Inställningar, Uppställningar** namnger du era lokalupplägg och anger ställtid. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n\n# Faser\n\nUnder **Inställningar, Faser** bestämmer du vilka faser era ärenden går igenom, vad de heter och i vilken ordning de visas på tavlan. Inget om en fas är fast: varje fas har ett namn, en färg och några flaggor som avgör vad Okazi gör. Ni behöver en startfas och minst en fas som avslutar ärendet. Se [Ärenden](/docs/guide/tickets).\n\n1. Välj **Skapa fas**, eller **Importera mallen Konferensgård** för en färdig uppsättning.\n2. Använd **Redigera övergångar** för att välja vilka faser ett ärende får gå till från varje fas.\n3. Ändra ordning med pilarna.\n\nEn fas arkiveras, den tas aldrig bort. Finns det ärenden i den väljer du vilken fas de flyttas till.\n\n# Blad\n\nUnder **Inställningar, Blad** definierar du ett blad som \"Köksorder\": namnge det, välj vilka artikeltyper och fält det tar med, vilka listors behov det räknar och vilken roll som tar emot det. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Prislistor\n\nUnder **Inställningar, Prislistor** skapar du en lista för en kund eller för alla, med en giltighetstid. Välj antingen en generell rabatt i procent eller ett pris per artikel, inte båda. Nya orderrader använder listans priser, och en arkiverad lista gäller inte längre.\n\n# Betalningar och färdigheter\n\n**Inställningar, Betalningar** kopplar Stripe. Se [Betalningar](/docs/guide/payments). **Inställningar, Färdigheter** innehåller organisationens färdigheter för assistenten. Se [Assistenten](/docs/guide/assistant).\n\n# Mallar och assistenten\n\nMallar som startuppsättningen Konferensgård är valfria. De är bara data, så du kan ändra allt efteråt. Du kan också be assistenten föreslå en uppsättning, till exempel \"Vi är en herrgård med restaurang\". Du godkänner varje ändring."
         },
         "members-and-roles": {
           "title": "Medlemmar och roller",
