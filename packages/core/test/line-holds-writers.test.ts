@@ -6,9 +6,12 @@ const SRC = join(import.meta.dirname, "../src");
 
 /**
  * The only core files that may write `Occupancy` (ADR 0053): the manual-block operations, and
- * the demo reset that deletes an organization.
+ * the organization delete behind the demo reset and `cleanup:test-orgs`.
  */
-const ALLOWED = new Set(["features/occupancy/write-operations.ts", "seed/demo/reset.ts"]);
+const ALLOWED = new Set([
+  "features/occupancy/write-operations.ts",
+  "seed/demo/delete-organizations.ts",
+]);
 
 const WRITE =
   /\.occupancy\s*\.\s*(create|createMany|createManyAndReturn|update|updateMany|updateManyAndReturn|upsert|delete|deleteMany)\b/;

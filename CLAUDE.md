@@ -159,7 +159,9 @@
 - `pnpm --filter @okazi/web provision:oauth`: creates the assistant's OAuth client and prints `WEB_OAUTH_CLIENT_ID=...` (put it in `.env`, read by web and MCP).
 - `pnpm dev`: starts the web app (:3000) and the MCP server (:3001) via Turborepo.
 - `pnpm wt:new <name> [--base <ref>] [--branch <branch>]`: a git worktree in `../okazi-worktrees/<name>` with its own database (`okazi_<name>`), ports (3100+/3200+) and `.env`. `pnpm wt:rm <name> [--force] [--delete-branch]` drops it, `pnpm wt:list` lists them. Scripts in `tools/worktree/` (Superset's `.superset/*.sh` just call them).
-- Tests load the root `.env` via `loadTestEnv()` (`@okazi/config/load-test-env`) in every `vitest.config.ts`, with `AI_GATEWAY_API_KEY` blanked: tests never call paid AI.
+- Tests load the root `.env` via `loadTestEnv()` (`@okazi/config/load-test-env`) in every `vitest.config.ts`, with `AI_GATEWAY_API_KEY` blanked: tests never call paid AI. `DATABASE_URL` is replaced by the test database: `TEST_DATABASE_URL` if set, else `<db>_test` (`okazi_test` in the main checkout, `okazi_<name>_test` in a worktree), so tests never write into the dev database.
+- `pnpm test:db`: creates the test database if missing and applies migrations (pgvector included). `pnpm test` runs it first (Turbo `@okazi/db#migrate:test`); run it yourself before `vitest` in a single package after a new migration.
+- `pnpm --filter @okazi/core cleanup:test-orgs`: opt-in, never automatic. Dry run listing the organizations old test runs left in the dev database (not a `DEMO_ORGS` slug, every member on a reserved test domain such as `.test` or `example.com`) and their orphaned test users; `-- --yes` deletes them. Organizations with a real member are kept.
 - `pnpm lint`: Biome check.
 - `pnpm check:structure`: checks file size, function size, exports, barrel files and feature files.
 - `pnpm typecheck`: TypeScript for all packages.

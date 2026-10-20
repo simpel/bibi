@@ -15,7 +15,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "seed:skills": "tsx --env-file-if-exists=../../.env src/skills/seed-cli.ts",
-    "seed:demo": "tsx --env-file-if-exists=../../.env src/seed/demo/seed-cli.ts"
+    "seed:demo": "tsx --env-file-if-exists=../../.env src/seed/demo/seed-cli.ts",
+    "cleanup:test-orgs": "tsx --env-file-if-exists=../../.env src/seed/demo/cleanup-cli.ts"
   },
   "dependencies": {
     "@okazi/config": "workspace:*",
