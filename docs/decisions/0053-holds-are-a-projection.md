@@ -35,3 +35,6 @@ Alternative considered: one TypeScript writer run by `execute` after every comma
 - Logic moves into SQL, which is harder to read and test than TypeScript. Mitigation: one function, one migration file, and the reconciliation test, which covers it from the outside.
 - The `polymorphic source` columns go away for line holds. `Occupancy.sourceType` / `sourceId` are removed (manual blocks have no source).
 - `heldAt` moves to line state history (ADR 0054).
+
+## Addendum 2026-10-20 – buffers and allocations
+- Setup buffers also exist for soft holds as non-blocking rows, a `TEARDOWN` type is added, and allocation windows are projected by the same trigger family, so the `Occupancy` key grows beyond `(lineId, type)` (ADR 0059).

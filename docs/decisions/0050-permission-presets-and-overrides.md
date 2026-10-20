@@ -74,3 +74,6 @@ Denying `read` on a feature must hide its data everywhere, not only its own page
 - Owners of the new entity types (`ENTITY_FEATURE`): lines, alternative groups, requirements and line-state history belong to `program` (`line.*`, `alternativeGroup.*`; archiving a line or dissolving a group is `program:delete`; changing a line's state or following the phase is `program:write`); deposits, invoices and the derived balance belong to `payment`; phase history belongs to `ticket`.
 - Record-wide refusals (`usageConflict`, ADR 0056) name only the blocking records whose feature the caller may read (`BASE_FEATURE`: a contact is `customer`, a ticket template `template`, a line or requirement `program`). A caller who may not read all of them gets "It is still in use" with neither names nor a count.
 - Snapshots of lines (`quote.send`, `invoice.create`) copy line and item data, so they need `program:read` and `item:read` at copy time (`checkLinesReadable`). A DRAFT quote shows the ticket's lines live only to a caller with `program:read`; without it the quote shows no lines and an ACCEPTED quote no drift.
+
+## Addendum 2026-10-20 – manager and items
+- The manager preset gains `item:write` (not `item:delete`), so managers maintain demands, setup times and working hours without a per-member override (ADR 0059).

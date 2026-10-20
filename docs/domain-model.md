@@ -32,6 +32,7 @@ What changes:
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
 - **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. *Done:* `Record` (`id`, `entityTypeId`, `base`, `fields`, `status`) is the supertable of `Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line` and `Requirement`, which share its id (composite foreign key with `organizationId`); core writes both rows in one transaction (`packages/core/src/records/`). `base` is the entity base, or `TICKET_TEMPLATE` for a predefined ticket. *Done:* `LINK` values are `RecordLink` rows (`recordId`, `fieldId`, `targetRecordId`, `position`; composite foreign keys, several rows for several targets), never ids in `fields` JSON; core merges them into `fields` on read. Id lists are join tables. *Target:* polymorphic pairs point at `Record`.
 - **Money is derived** ([ADR 0057](decisions/0057-money-balance-is-derived.md)): a payment settles one receivable (sent quote, deposit or invoice); no balance is stored. External calls run after commit (ADR 0058).
+- **Capabilities, demands and buffers** ([ADR 0059](decisions/0059-capabilities-demands-and-buffers.md), accepted, not built): capability sections replace the behaviour list (`BUNDLE`, `CUSTOMISATIONS`), setup and teardown minutes on type, item and line, bundles expanded into linked part lines with per-rate VAT, `ItemDemand` and `LineAllocation` for pooled equipment and staff, working hours, and `item:write` for managers.
 
 ## ER diagram (MVP)
 
@@ -116,6 +117,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 ### EntityType (`EntityType`)
 
 *MVP* · The organization's own type for a base entity: item, customer, contact, ticket, requirement or line.
+
+> **Target (ADR 0059):** `behaviours` becomes `capabilities`, with `BUNDLE` and `CUSTOMISATIONS` replacing `COMPOSABLE` and `CHOICES` (customisations no longer need a bundle). An item type is Equipment or Person. Nullable `setupMinutes` and `teardownMinutes` are the type default.
 
 **Attributes**
 - base entity (`ITEM | CUSTOMER | CONTACT | TICKET | REQUIREMENT | LINE`)
@@ -452,6 +455,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A line on a ticket: a room, a meal, an activity or a break, with its own time and state ([ADR 0044](decisions/0044-line-states-and-the-phase-grid.md)). Created, among other cases, when a composite item is added to the ticket.
 
+> **Target (ADR 0059):** `parentLineId` links a part line to its bundle line (part lines do not count in the total), nullable `setupMinutes` and `teardownMinutes` overrides, and `LineAllocation` rows (which unit of a pool the line got). Derived: effective minutes and `warnings`.
+
 > **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`; derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
 
 > **Done:** holds are written by triggers (ADR 0053); `stateId` is a projection of `LineStateChange` (ADR 0054; check `line states`) and "held since" is read from the newest change. Alternative groups: `alternativeGroupId` (ADR 0052).
@@ -560,6 +565,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A time block on a bookable item. The basis for conflict checking.
 
+> **Target (ADR 0059):** a `TEARDOWN` type, setup and teardown buffers also for soft holds (non-blocking), and allocation windows (setup, booking, teardown) projected by the same trigger, so the key grows beyond `(lineId, type)`.
+
 > **Ownership (ADR 0053):** manual blocks (`MAINTENANCE`, `INTERNAL`) are owned; line holds and their setup buffers (`HOLD`, `SETUP`) are a projection with `lineId` (FK), written only by the triggers in `packages/db/sql/sync_line_occupancy.sql` (check `line-holds`).
 
 **Attributes**
@@ -581,6 +588,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 ### Item (`Item`)
 
 *MVP* · Everything that can be sold or booked: dish, drink, venue space, equipment, guide, package.
+
+> **Target (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` (an override of the type default; effective setup is the larger of it and the layout's changeover), `ItemDemand` rows (what the item asks of a pool), and working hours for a bookable item. Customisations work on any item.
 
 **Attributes**
 - type (the organization's own) and custom fields (`fields` as JSON)
@@ -614,6 +623,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A part of a composite item.
 
+> **Target (ADR 0059):** renamed `ItemPart` (relation `parts`). Parts expand onto a ticket as part lines linked by `Line.parentLineId`; `offsetMinutes` and `durationMinutes` are defaults that an event's lines can change.
+
 **Attributes**
 - parent item
 - item (the component), unique per parent
@@ -634,6 +645,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 ### ItemChoiceGroup (`ItemChoiceGroup`)
 
 *MVP* · Selectable alternatives among the components of a composite item.
+
+> **Target (ADR 0059):** renamed `ItemCustomisationGroup`. Groups hang on any item and each option has a price effect (included, extra, replaces).
 
 **Attributes**
 - name, unique per item

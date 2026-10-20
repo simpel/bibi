@@ -54,3 +54,7 @@ Types for `Item` switch on behaviors (the states of an item's lines are `ItemSta
 - The operations are generic (`item.*`, `entityType.*`, `fieldDefinition.*`, `vocabulary.*`, `requirement.*`, `sheet.*`, `setup.*`). GraphQL and REST expose fields as `fields: JSON` plus the definitions. The MCP tools describe the organization's fields dynamically, so the AI sees "Cabins" at the boat company and "Daylight" at the conference estate.
 - UI and AI must read the configuration to know what applies. Each behavior and field type therefore gets its own Zod schema and its own component in `@okazi/ui`.
 - Reports that should work in all organizations build on behaviors and phases, never on type names.
+
+## Addendum 2026-10-20 – capabilities and resources
+- The flat behaviour list becomes capability sections in the UI, `CHOICES` no longer requires `COMPOSABLE`, bundles expand into linked lines, and items can demand pooled equipment and staff (ADR 0059).
+- `behaviour` becomes `capability`, `COMPOSABLE` becomes `BUNDLE` and `CHOICES` becomes `CUSTOMISATIONS` end to end, with `ItemComponent` renamed `ItemPart` and `ItemChoiceGroup` renamed `ItemCustomisationGroup` (ADR 0059).

@@ -35,3 +35,6 @@
 - `Line` (today `ProgramItem`) grows three nullable price columns and nullable times. The rename is one large mechanical change with no data to migrate.
 - `AlternativeGroup` is new: `ticketId`, `name`, `chosenLineId` (null until chosen). A line has `alternativeGroupId`. Choosing is a command (`alternativeGroup.choose`) on every surface.
 - Soft holds on every option of a group are the normal case (the customer has not chosen). A hard hold on more than one option of a group is refused.
+
+## Addendum 2026-10-20 – bundle lines
+- A bundle expands into one priced bundle line plus part lines linked by `parentLineId` that do not count in the total. Bundle VAT is allocated across the parts and frozen as one row per rate on quotes and invoices (ADR 0059).
