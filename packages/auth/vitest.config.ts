@@ -1,7 +1,7 @@
 import { loadTestEnv } from "@okazi/config/load-test-env";
 import { defineConfig } from "vitest/config";
 
-// Root `.env` (a worktree's own database in a worktree), AI key blanked: tests never call paid AI.
+// Root `.env` with DATABASE_URL moved to `<db>_test` (never the dev database), AI key blanked.
 loadTestEnv();
 
 export default defineConfig({

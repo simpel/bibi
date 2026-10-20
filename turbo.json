@@ -14,15 +14,19 @@
       "dependsOn": ["^build", "@okazi/db#generate"]
     },
     "test": {
-      "dependsOn": ["^build", "@okazi/db#generate"],
+      "dependsOn": ["^build", "@okazi/db#generate", "@okazi/db#migrate:test"],
       "cache": false
     },
     "generate": {
+      "cache": false
+    },
+    "migrate:test": {
       "cache": false
     }
   },
   "globalPassThroughEnv": [
     "DATABASE_URL",
+    "TEST_DATABASE_URL",
     "BETTER_AUTH_SECRET",
     "BETTER_AUTH_URL",
     "SMTP_URL",

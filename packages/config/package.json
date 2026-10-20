@@ -8,7 +8,8 @@
     "./tsconfig.base.json": "./tsconfig.base.json",
     "./tsconfig.next.json": "./tsconfig.next.json",
     "./load-root-env": "./src/load-root-env.ts",
-    "./load-test-env": "./src/load-test-env.ts"
+    "./load-test-env": "./src/load-test-env.ts",
+    "./test-database-url": "./src/test-database-url.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
