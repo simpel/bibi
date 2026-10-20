@@ -5,6 +5,7 @@ import type { {{Pascal}}Dto } from "./schema";
 // Register {{camel}}Embeddable in packages/core/src/search/embeddables.ts.
 export const {{camel}}Embeddable: Embeddable<{{Pascal}}Dto> = {
   entityType: "{{camel}}",
+  isRecord: false,
   toText: ({ entity }) => [entity.name].join("\n"), // TODO: add relevant text fields
   // TODO: db.{{camel}}.findMany({ where: { id: { in: [...ids] } } }) once the Prisma model exists.
   // `viewer` is set by search: return only rows that user may see.

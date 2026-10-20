@@ -72,6 +72,7 @@ export async function resetDemoOrg({ db, org }: ResetDemoOrgInput): Promise<void
   if (existing) {
     const where = { organizationId: existing.id };
     await db.$transaction([
+      db.embedding.deleteMany({ where }),
       db.message.deleteMany({ where }),
       db.conversation.deleteMany({ where }),
       ...ticketChildren({ db, where }),
@@ -98,7 +99,6 @@ export async function resetDemoOrg({ db, org }: ResetDemoOrgInput): Promise<void
       db.entityType.deleteMany({ where }),
       db.venue.deleteMany({ where }),
       db.skill.deleteMany({ where }),
-      db.embedding.deleteMany({ where }),
       db.auditLog.deleteMany({ where }),
       db.organization.delete({ where: { id: existing.id } }),
     ]);

@@ -79,7 +79,7 @@ describe("assignment.listMine and the list filters (ADR 0034)", () => {
       context,
     });
     expect(errorCode({ result: onItem })).toBe("NOT_FOUND");
-    const count = await context.db.assignment.count({ where: { subjectId: first.id } });
+    const count = await context.db.assignment.count({ where: { recordId: first.id } });
     expect(count).toBe(2);
   });
 });

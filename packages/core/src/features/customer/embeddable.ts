@@ -17,6 +17,7 @@ export type IndexedCustomer = Customer & {
 
 export const customerEmbeddable: Embeddable<IndexedCustomer> = {
   entityType: "customer",
+  isRecord: true,
   readPermission: "customer:read",
   toText: ({ entity }) =>
     [

@@ -45,7 +45,7 @@ export async function searchEmbeddings({
       ORDER BY ts_rank_cd("search", q) DESC
       LIMIT ${CANDIDATES}
     )
-    SELECT e."entityType", e."entityId", e."content",
+    SELECT e."entityType", COALESCE(e."recordId", e."entityId") AS "entityId", e."content",
       (COALESCE(1.0 / (${RRF_K} + vec.rank), 0) + COALESCE(1.0 / (${RRF_K} + fts.rank), 0))::float8
         AS score
     FROM vec

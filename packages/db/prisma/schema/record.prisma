@@ -39,6 +39,8 @@ model Record {
   links          RecordLink[]    @relation("RecordLinkSource")
   /// `LINK` values of other records that point to this one.
   linkedFrom     RecordLink[]    @relation("RecordLinkTarget")
+  assignments    Assignment[]
+  embedding      Embedding[]
 
   @@unique([id, organizationId])
   @@index([organizationId, entityTypeId, status])

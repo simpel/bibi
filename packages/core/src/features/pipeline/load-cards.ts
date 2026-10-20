@@ -11,10 +11,10 @@ export type LoadCardsInput = { context: Db; input: PipelineBoardInput; since: Da
 
 async function mainAssignees({ context, ids }: { context: Db; ids: string[] }) {
   const rows = await context.db.assignment.findMany({
-    where: { subjectType: "TICKET", subjectId: { in: ids }, responsibilityId: null },
-    select: { subjectId: true, assigneeId: true },
+    where: { recordId: { in: ids }, responsibilityId: null },
+    select: { recordId: true, assigneeId: true },
   });
-  return new Map(rows.map((row) => [row.subjectId, row.assigneeId]));
+  return new Map(rows.map((row) => [row.recordId, row.assigneeId]));
 }
 
 type Counts = { heldLines: number; bookedLines: number };

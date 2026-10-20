@@ -6,11 +6,13 @@ export {
 export { REDACTED, redactAuditImage } from "./audit-log/redact-audit-image";
 export { type CreateDbInput, createDb, type Db } from "./client";
 export { deleteEmbedding } from "./embeddings/delete-embedding";
+export { embeddingKeyOf, embeddingWhere } from "./embeddings/embedding-key";
 export { searchEmbeddings } from "./embeddings/search-embeddings";
 export {
   type DeleteEmbeddingInput,
   EMBEDDING_DIMENSIONS,
   type EmbeddingHit,
+  type EmbeddingKey,
   type EmbeddingVector,
   GLOBAL_EMBEDDING_SCOPE,
   type SearchEmbeddingsInput,
@@ -23,7 +25,6 @@ export {
   type AlternativeGroup,
   type Assignment,
   type AssignmentFollower,
-  AssignmentSubjectType,
   type AuditLog,
   type Contact,
   type Conversation,

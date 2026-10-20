@@ -97,7 +97,7 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     });
     expect(tickets[0]).toMatchObject({ reference: 1, estimatedHeadcount: 40 });
     const main = await db.assignment.findFirst({
-      where: { subjectId: tickets[0]?.id, responsibilityId: null },
+      where: { recordId: tickets[0]?.id, responsibilityId: null },
       include: { followers: true },
     });
     expect(main?.assigneeId).toBe(johan?.userId);

@@ -1,4 +1,4 @@
-import type { ScopedDbClient } from "@okazi/db";
+import { embeddingWhere, type ScopedDbClient } from "@okazi/db";
 import { AppError } from "../errors/app-error";
 import { contentHash } from "./content-hash";
 import type { EmbedFn } from "./embed";
@@ -20,22 +20,22 @@ export async function indexEntity({
   db,
   embed,
 }: IndexEntityInput): Promise<IndexEntityOutcome> {
-  const { entityType } = embeddable;
+  const key = { entityType: embeddable.entityType, entityId, isRecord: embeddable.isRecord };
   const [entity] = await embeddable.load({ ids: [entityId], db });
   if (!entity) {
-    await db.$deleteEmbedding({ entityType, entityId });
+    await db.$deleteEmbedding(key);
     return "removed";
   }
   const content = embeddable.toText({ entity });
   const hash = contentHash({ text: content });
   const existing = await db.embedding.findFirst({
-    where: { entityType, entityId },
+    where: embeddingWhere(key),
     select: { contentHash: true },
   });
   if (existing?.contentHash === hash) return "unchanged";
   const { model, embeddings } = await embed({ texts: [content] });
   const [embedding] = embeddings;
   if (!embedding) throw new AppError({ code: "INTERNAL", message: "Embedder returned nothing" });
-  await db.$upsertEmbedding({ entityType, entityId, model, content, contentHash: hash, embedding });
+  await db.$upsertEmbedding({ ...key, model, content, contentHash: hash, embedding });
   return "indexed";
 }

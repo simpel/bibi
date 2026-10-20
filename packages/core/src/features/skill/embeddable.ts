@@ -10,6 +10,7 @@ const MAX_INSTRUCTIONS_TEXT = 4000;
  */
 export const skillEmbeddable: Embeddable<Skill> = {
   entityType: "skill",
+  isRecord: false,
   toText: ({ entity }) =>
     [
       entity.name,

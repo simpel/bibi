@@ -4,7 +4,7 @@ import { invalid } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { checkSubject } from "./check-slot";
-import { toAssignmentDto, WITH_FOLLOWERS } from "./load-assignment";
+import { ASSIGNMENT_INCLUDE, toAssignmentDto } from "./load-assignment";
 import {
   AssignmentListInputSchema,
   AssignmentListMineInputSchema,
@@ -25,8 +25,8 @@ export const listAssignments = defineOperation({
     const subject = await checkSubject({ context, ...input });
     if (!subject.ok) return subject;
     const rows = await context.db.assignment.findMany({
-      where: input,
-      include: WITH_FOLLOWERS,
+      where: { recordId: input.subjectId },
+      include: ASSIGNMENT_INCLUDE,
       orderBy: [{ responsibilityId: { sort: "asc", nulls: "first" } }, { id: "asc" }],
     });
     return ok({ value: { items: rows.map((row) => toAssignmentDto({ row })) } });
@@ -47,8 +47,8 @@ export const listMyAssignments = defineOperation({
     if (!userId) return invalid({ message: "assignment.listMine needs a signed-in member" });
     const mine = kind === "ASSIGNED" ? { assigneeId: userId } : { followers: { some: { userId } } };
     const rows = await context.db.assignment.findMany({
-      where: { ...mine, ...(subjectType ? { subjectType } : {}) },
-      include: WITH_FOLLOWERS,
+      where: { ...mine, ...(subjectType ? { record: { base: subjectType } } : {}) },
+      include: ASSIGNMENT_INCLUDE,
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       ...pageArgs(page),
     });

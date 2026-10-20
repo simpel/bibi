@@ -1,4 +1,5 @@
 import type { Db } from "../client";
+import { embeddingWhere } from "./embedding-key";
 import type { DeleteEmbeddingInput } from "./types";
 
 export type DeleteEmbeddingArgs = DeleteEmbeddingInput & { db: Db };
@@ -7,8 +8,7 @@ export type DeleteEmbeddingArgs = DeleteEmbeddingInput & { db: Db };
 export async function deleteEmbedding({
   db,
   organizationId,
-  entityType,
-  entityId,
+  ...key
 }: DeleteEmbeddingArgs): Promise<void> {
-  await db.embedding.deleteMany({ where: { organizationId, entityType, entityId } });
+  await db.embedding.deleteMany({ where: { organizationId, ...embeddingWhere(key) } });
 }

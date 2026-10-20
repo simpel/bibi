@@ -113,7 +113,7 @@ export const archiveVenue = defineOperation({
     });
     await archiveRecords({ context, ids: itemIds });
     await context.db.embedding.deleteMany({
-      where: { entityType: "item", entityId: { in: itemIds } },
+      where: { entityType: "item", recordId: { in: itemIds } },
     });
     context.recordChange({ entityId: id, before, after: venue });
     for (const entityId of itemIds) {

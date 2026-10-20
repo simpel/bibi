@@ -67,6 +67,20 @@ describe("search", () => {
     expect(itemsOnly.hits.every((hit) => hit.entityType === "item")).toBe(true);
   });
 
+  it("keys a record's index row by recordId and other entities by entityId", async () => {
+    const context = testContext();
+    const { venue, room } = await seed({ context });
+    const rows = await context.db.embedding.findMany({
+      select: { entityId: true, recordId: true },
+    });
+    expect(rows).toEqual(
+      expect.arrayContaining([
+        { entityId: null, recordId: room.id },
+        { entityId: venue.id, recordId: null },
+      ]),
+    );
+  });
+
   it("skips unchanged content and drops archived entities", async () => {
     const context = testContext();
     const { room } = await seed({ context });

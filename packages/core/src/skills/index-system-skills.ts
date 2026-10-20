@@ -10,7 +10,7 @@ export type IndexSystemSkillsInput = {
   skillIds?: readonly string[];
 };
 
-const scope = { organizationId: GLOBAL_EMBEDDING_SCOPE, entityType: "skill" };
+const scope = { organizationId: GLOBAL_EMBEDDING_SCOPE, entityType: "skill", isRecord: false };
 
 /** Indexes SYSTEM skills once, globally; every org's `search` includes these rows. */
 export async function indexSystemSkills({
@@ -28,7 +28,7 @@ export async function indexSystemSkills({
     const content = skillEmbeddable.toText({ entity: skill });
     const hash = contentHash({ text: content });
     const existing = await db.embedding.findFirst({
-      where: { ...scope, entityId: skill.id },
+      where: { organizationId: scope.organizationId, entityType: "skill", entityId: skill.id },
       select: { contentHash: true },
     });
     if (existing?.contentHash === hash) continue;

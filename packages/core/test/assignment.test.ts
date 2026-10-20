@@ -101,6 +101,16 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
     expect(errorCode({ result: item })).toBe("NOT_FOUND");
   });
 
+  it("refuses a record of another base and keeps rows in the record's organization", async () => {
+    const { context, customer, ticket } = await setup();
+    const input = { subjectType: "TICKET" as const, subjectId: customer.id, assigneeId: null };
+    const wrongBase = await execute({ operation: assignAssignment, input, context });
+    expect(errorCode({ result: wrongBase })).toBe("NOT_FOUND");
+    const other = await testOrg();
+    const data = { organizationId: other.organizationId, recordId: ticket.id };
+    await expect(other.db.assignment.create({ data })).rejects.toThrow();
+  });
+
   it("keeps the ticket's main assignee in a phase that requires one", async () => {
     const { context, ticket, subject } = await setup();
     const confirmed = await phaseByName({ context, name: "Confirmed" });

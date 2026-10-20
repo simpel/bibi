@@ -1,5 +1,5 @@
 import type { OperationContext } from "../../operations/types";
-import { findAssignment, toAssignmentDto, WITH_FOLLOWERS } from "./load-assignment";
+import { ASSIGNMENT_INCLUDE, findAssignment, toAssignmentDto } from "./load-assignment";
 import type { AssignmentDto, AssignmentSlot } from "./schema";
 
 type Context = { context: OperationContext };
@@ -20,17 +20,16 @@ export async function saveAssignee({
     ? await context.db.assignment.update({
         where: { id: before.id },
         data: { assigneeId, status: "ACTIVE" },
-        include: WITH_FOLLOWERS,
+        include: ASSIGNMENT_INCLUDE,
       })
     : await context.db.assignment.create({
         data: {
           organizationId: context.organizationId,
-          subjectType: slot.subjectType,
-          subjectId: slot.subjectId,
+          recordId: slot.subjectId,
           responsibilityId: slot.responsibilityId ?? null,
           assigneeId,
         },
-        include: WITH_FOLLOWERS,
+        include: ASSIGNMENT_INCLUDE,
       });
   const after = toAssignmentDto({ row });
   context.recordChange({ entityType: "assignment", entityId: after.id, before, after });
@@ -64,7 +63,7 @@ export async function removeFollower({ context, userId, ...slot }: ChangeFollowe
 async function recordFollowers({ context, before }: Context & { before: AssignmentDto }) {
   const row = await context.db.assignment.findFirstOrThrow({
     where: { id: before.id },
-    include: WITH_FOLLOWERS,
+    include: ASSIGNMENT_INCLUDE,
   });
   const after = toAssignmentDto({ row });
   context.recordChange({ entityType: "assignment", entityId: after.id, before, after });

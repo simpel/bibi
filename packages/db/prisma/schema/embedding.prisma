@@ -3,8 +3,12 @@
 model Embedding {
   id             String                       @id
   organizationId String
+  /// The embeddable's type (`Embeddable.entityType`, e.g. `item`), also for records.
   entityType     String
-  entityId       String
+  /// Id of a non-record entity (venue, skill, conversation); null for records.
+  entityId       String?
+  /// The record (ADR 0056) for record entities; null otherwise. Exactly one of the two is set.
+  recordId       String?
   model          String
   content        String
   contentHash    String
@@ -12,8 +16,10 @@ model Embedding {
   search         Unsupported("tsvector")?     @default(dbgenerated("to_tsvector('simple'::regconfig, content)"))
   createdAt      DateTime                     @default(now())
   updatedAt      DateTime                     @updatedAt
+  record         Record?                      @relation(fields: [recordId, organizationId], references: [id, organizationId])
 
   @@unique([organizationId, entityType, entityId])
+  @@unique([organizationId, recordId])
   @@index([organizationId, entityType])
   @@index([search], type: Gin)
 }

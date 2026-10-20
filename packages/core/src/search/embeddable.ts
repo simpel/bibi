@@ -23,6 +23,8 @@ export type LoadInput = {
 export interface Embeddable<E extends { id: string } = { id: string }> {
   /** Stored in `Embedding.entityType`; matches the operation/entity prefix, e.g. `venue`. */
   readonly entityType: string;
+  /** A `Record` (ADR 0056): its index row references the record with a foreign key. */
+  readonly isRecord: boolean;
   /** When set, `search` drops hits of this type for callers without the permission. */
   readonly readPermission?: Permission;
   /** Text that is embedded and full-text indexed. Keep it human-readable. */

@@ -301,10 +301,10 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · [ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md). Says who answers for a subject: one assignee plus followers.
 
-> **Target (ADR 0055, 0056):** rows are explicit choices only; applicable responsibilities and default assignees and followers are derived. `subjectType` / `subjectId` becomes `recordId`. Followers get `effect` (`FOLLOW` / `UNFOLLOW`).
+> **Target (ADR 0055, 0056):** rows are explicit choices only; applicable responsibilities and default assignees and followers are derived. Followers get `effect` (`FOLLOW` / `UNFOLLOW`).
 
 **Attributes**
-- subject (`subjectType` `TICKET` / `ITEM` and `subjectId`, a polymorphic reference; core checks that the subject belongs to the organization)
+- subject (`recordId`, a composite foreign key to the subject's `Record`, ADR 0056; core checks that its base is `TICKET` or `ITEM`. The API keeps `subjectType` / `subjectId`, read from the record)
 - responsibility (`responsibilityId`, optional; none = the subject's main assignment)
 - assignee (`assigneeId`, one member; null while the subject only has followers)
 - followers (`AssignmentFollower`, any number of members; need-to-know: they see the subject under "Following" and are included where the assignee is, e.g. sheets)
@@ -315,7 +315,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `N:1` User is the assignee
 - `1:N` has → AssignmentFollower
 
-> Unique on (subject, responsibility); a partial index keeps the main assignment unique per subject. Planned (#250): a ticket gets one assignment per responsibility derived from its lines' item entity types, with the default assignee and followers; an existing assignment is never overwritten, and it is archived when no line of the covered types remains. Operations (resource `assignment`, written by `member` and up), all audited, AI needs approval, on every surface: `assignment.assign` (null removes the assignee, refused for the main assignee while the ticket is in a phase with `requiresAssignee`), `assignment.follow`, `assignment.unfollow`, `assignment.list({ subjectType, subjectId })` and `assignment.listMine({ kind: ASSIGNED | FOLLOWING })`. Assignee and followers must be members (`VALIDATION`); a subject of another organization is `NOT_FOUND`. `ticket.list` filters by `assigneeId` and `followerId`; the web list shows All, Assigned to me and Following. `ticket.create` and `ticket.createFromTemplate` take an optional `assigneeId`, which defaults to the creating member.
+> Unique on (record, responsibility); a partial index keeps the main assignment unique per record. Planned (#250): a ticket gets one assignment per responsibility derived from its lines' item entity types, with the default assignee and followers; an existing assignment is never overwritten, and it is archived when no line of the covered types remains. Operations (resource `assignment`, written by `member` and up), all audited, AI needs approval, on every surface: `assignment.assign` (null removes the assignee, refused for the main assignee while the ticket is in a phase with `requiresAssignee`), `assignment.follow`, `assignment.unfollow`, `assignment.list({ subjectType, subjectId })` and `assignment.listMine({ kind: ASSIGNED | FOLLOWING })`. Assignee and followers must be members (`VALIDATION`); a subject of another organization is `NOT_FOUND`. `ticket.list` filters by `assigneeId` and `followerId`; the web list shows All, Assigned to me and Following. `ticket.create` and `ticket.createFromTemplate` take an optional `assigneeId`, which defaults to the creating member.
 
 ## Sales & customer
 

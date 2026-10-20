@@ -10,19 +10,17 @@ const ENTITY: Record<AssignmentSubjectType, string> = {
   ITEM: "Item",
 };
 
-async function countSubject({ context, subjectType, subjectId }: Db & AssignmentSlot) {
-  const where = { where: { id: subjectId } };
-  if (subjectType === "TICKET") return context.db.ticket.count(where);
-  return context.db.item.count(where);
-}
-
-/** The subject must be an active row of the organization (polymorphic, so no FK, ADR 0034). */
+/**
+ * The subject must be a record of the organization (ADR 0056) whose base is the subject type.
+ * The composite foreign key on `Assignment.recordId` keeps it in the organization; this check
+ * only turns a missing or mistyped id into `NOT_FOUND` before the write.
+ */
 export async function checkSubject({
   context,
   subjectType,
   subjectId,
 }: Db & AssignmentSlot): Promise<Result<true>> {
-  const found = await countSubject({ context, subjectType, subjectId });
+  const found = await context.db.record.count({ where: { id: subjectId, base: subjectType } });
   return found > 0 ? ok({ value: true }) : notFound({ entity: ENTITY[subjectType] });
 }
 

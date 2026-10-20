@@ -1,5 +1,5 @@
 import type { EmbedFn } from "@okazi/core";
-import { type Db, GLOBAL_EMBEDDING_SCOPE, upsertEmbedding } from "@okazi/db";
+import { type Db, embeddingKeyOf, GLOBAL_EMBEDDING_SCOPE, upsertEmbedding } from "@okazi/db";
 
 export type ReembedStaleRowsInput = {
   db: Db;
@@ -52,8 +52,8 @@ export async function reembedStaleRows({
     for (const [index, row] of rows.entries()) {
       const embedding = embeddings[index];
       if (!embedding) continue;
-      const { organizationId: org, entityType, entityId, content, contentHash } = row;
-      const target = { organizationId: org, entityType, entityId, content, contentHash };
+      const { organizationId: org, content, contentHash } = row;
+      const target = { organizationId: org, ...embeddingKeyOf({ row }), content, contentHash };
       if (await upsertEmbedding({ db, ...target, model: written, embedding })) count++;
     }
     cursor = rows.at(-1)?.id;

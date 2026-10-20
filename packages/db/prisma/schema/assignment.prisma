@@ -1,31 +1,25 @@
-/// What an assignment is about (ADR 0034).
-enum AssignmentSubjectType {
-  TICKET
-  ITEM
-}
-
 /// Assignment (ADR 0034) – who answers for a subject (a ticket or an item). A subject
 /// has one main assignment (`responsibilityId` null) and, for tickets, one per responsibility.
-/// `subjectType`/`subjectId` is a polymorphic reference: core checks
-/// that the subject belongs to the organization. `assigneeId` is a member (user id); it is null
+/// `recordId` is the subject's `Record` (ADR 0056): the composite foreign key keeps it in the
+/// organization; core checks that its base is a ticket or an item. `assigneeId` is a member (user id); it is null
 /// when the subject only has followers so far.
 model Assignment {
   id               String                @id @default(cuid(2))
   organizationId   String
-  subjectType      AssignmentSubjectType
-  subjectId        String
+  recordId         String
   responsibilityId String?
   assigneeId       String?
   status           RecordStatus          @default(ACTIVE)
   createdAt        DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
   createdBy        String?
+  record           Record                @relation(fields: [recordId, organizationId], references: [id, organizationId])
   responsibility   Responsibility?       @relation(fields: [responsibilityId, organizationId], references: [id, organizationId])
   followers        AssignmentFollower[]
 
   @@unique([id, organizationId])
   // The main assignment (no responsibility) is kept unique by a partial index in the migration.
-  @@unique([organizationId, subjectType, subjectId, responsibilityId])
+  @@unique([organizationId, recordId, responsibilityId])
   @@index([organizationId, assigneeId, status])
 }
 

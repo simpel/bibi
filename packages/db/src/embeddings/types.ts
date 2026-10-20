@@ -8,10 +8,18 @@ export const GLOBAL_EMBEDDING_SCOPE = "__global__";
 
 export type EmbeddingVector = readonly number[];
 
-export type UpsertEmbeddingInput = {
-  organizationId: string;
+/**
+ * Which entity an index row is for. Records (ADR 0056) are stored in `recordId` with a foreign
+ * key; other entities (venue, skill, conversation) in `entityId`. `entityId` is the id either way.
+ */
+export type EmbeddingKey = {
   entityType: string;
   entityId: string;
+  isRecord: boolean;
+};
+
+export type UpsertEmbeddingInput = EmbeddingKey & {
+  organizationId: string;
   model: string;
   content: string;
   contentHash: string;
@@ -33,8 +41,4 @@ export type EmbeddingHit = {
   content: string;
 };
 
-export type DeleteEmbeddingInput = {
-  organizationId: string;
-  entityType: string;
-  entityId: string;
-};
+export type DeleteEmbeddingInput = EmbeddingKey & { organizationId: string };

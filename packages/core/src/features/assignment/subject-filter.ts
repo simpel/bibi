@@ -23,11 +23,11 @@ export async function subjectIdFilter({
   if (!assigneeId && !followerId) return {};
   const rows = await context.db.assignment.findMany({
     where: {
-      subjectType,
+      record: { base: subjectType },
       ...(assigneeId ? { assigneeId } : {}),
       ...(followerId ? { followers: { some: { userId: followerId } } } : {}),
     },
-    select: { subjectId: true },
+    select: { recordId: true },
   });
-  return { id: { in: [...new Set(rows.map((row) => row.subjectId))] } };
+  return { id: { in: [...new Set(rows.map((row) => row.recordId))] } };
 }

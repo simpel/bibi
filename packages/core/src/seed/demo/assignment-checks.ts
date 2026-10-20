@@ -11,7 +11,7 @@ export async function checkDemoAssignments({
   context,
   org,
 }: CheckDemoAssignmentsInput): Promise<string[]> {
-  const where = { subjectType: "TICKET" as const, responsibilityId: null };
+  const where = { record: { base: "TICKET" as const }, responsibilityId: null };
   const assigned = await context.db.assignment.count({
     where: { ...where, assigneeId: { not: null } },
   });

@@ -92,7 +92,7 @@ describe("quote events move the ticket (ADR 0043)", () => {
     await configure({ context });
     const input = { id: quote.id };
     unwrap({ result: await execute({ operation: sendQuote, input, context }) });
-    const nobody = await context.db.assignment.deleteMany({ where: { subjectId: ticket.id } });
+    const nobody = await context.db.assignment.deleteMany({ where: { recordId: ticket.id } });
     expect(nobody.count).toBeGreaterThan(0);
     const result = await execute({ operation: acceptQuote, input, context });
     expect(errorCode({ result })).toBe("CONFLICT");
