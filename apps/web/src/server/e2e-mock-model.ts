@@ -14,7 +14,8 @@ import {
 
 /**
  * Script: on `/onboarding` the first setup (`e2e-mock-first-setup.ts`); elsewhere "create venue
- * <name>", "set capacity <itemId> <setupId> <n>", "list venues", "list skills"; anything else
+ * <name>", "set capacity <itemId> <setupId> <n>",
+ * "rename responsibility <id> <name>", "list venues", "list skills"; anything else
  * gets a canned reply.
  */
 function respond({ prompt }: PromptInput): StreamResult {
@@ -27,6 +28,11 @@ function respond({ prompt }: PromptInput): StreamResult {
   if (capacity?.[1] && capacity[2] && capacity[3]) {
     const setups = [{ setupId: capacity[2], capacity: Number(capacity[3]) }];
     return toolStep({ toolName: "item_update", input: { id: capacity[1], setups } });
+  }
+  const rename = /rename responsibility (\S+) (.+)/i.exec(text);
+  if (rename?.[1] && rename[2]) {
+    const input = { id: rename[1], name: rename[2].trim() };
+    return toolStep({ toolName: "responsibility_update", input });
   }
   if (/list venues/i.test(text)) return toolStep({ toolName: "venue_list", input: {} });
   if (/list skills/i.test(text)) return toolStep({ toolName: "skill_list", input: {} });

@@ -17,4 +17,4 @@ Run with a scripted model (`E2E_MOCK_MODEL=1`), never a paid AI call.
 - The `storybook` job runs `pnpm --filter @okazi/ui build-storybook`.
 
 ## The scripted model
-- `E2E_MOCK_MODEL=1` (and `NODE_ENV` not `production`, see `server/mock-model-policy.ts`) makes `assistant-handlers.ts` dynamically import `server/e2e-mock-model.ts` (`MockLanguageModelV4` from `ai/test`): "create venue <name>" → `venue_create`, "list venues" → `venue_list`, "list skills" → `skill_list`.
+- `E2E_MOCK_MODEL=1` (and `NODE_ENV` not `production`, see `server/mock-model-policy.ts`) makes `assistant-handlers.ts` dynamically import `server/e2e-mock-model.ts` (`MockLanguageModelV4` from `ai/test`): "create venue <name>" → `venue_create`, "list venues" → `venue_list`, "list skills" → `skill_list`, "rename responsibility <id> <name>" → `responsibility_update`.
