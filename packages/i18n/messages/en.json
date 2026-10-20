@@ -2048,7 +2048,10 @@
     "themeSystem": "System",
     "adminNavigation": "Administration",
     "mySkills": "My skills",
-    "profile": "Profile"
+    "profile": "Profile",
+    "platformAdminTitle": "Superadmin",
+    "platformAdminDescription": "System log and AI models for the whole platform.",
+    "platformAdminOpen": "Open system admin"
   },
   "settingsHub": {
     "title": "Settings",

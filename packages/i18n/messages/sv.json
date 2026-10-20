@@ -2048,7 +2048,10 @@
     "themeSystem": "System",
     "adminNavigation": "Administration",
     "mySkills": "Mina färdigheter",
-    "profile": "Profil"
+    "profile": "Profil",
+    "platformAdminTitle": "Superadmin",
+    "platformAdminDescription": "Systemlogg och AI-modeller för hela plattformen.",
+    "platformAdminOpen": "Öppna systemadmin"
   },
   "settingsHub": {
     "title": "Inställningar",

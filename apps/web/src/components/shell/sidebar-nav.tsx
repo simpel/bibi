@@ -18,7 +18,6 @@ export type SidebarNavProps = {
 const VISIBLE: Record<NavAudience, (access: ShellAccess) => boolean> = {
   everyone: () => true,
   configure: (access) => access.canConfigure,
-  platformAdmin: (access) => access.platformAdmin,
 };
 
 type IsVisibleInput = { item: NavItem; access: ShellAccess };

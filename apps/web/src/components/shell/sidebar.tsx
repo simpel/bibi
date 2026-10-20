@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import { AssistantNav } from "./assistant-nav";
+import { PlatformAdminCard } from "./platform-admin-card";
 import type { ShellAccess, ShellUser } from "./shell-types";
 import { SidebarNav } from "./sidebar-nav";
 import { UserMenu } from "./user-menu";
@@ -20,6 +21,7 @@ export function Sidebar({ organizationId, user, access }: SidebarProps) {
       <SidebarNav groups={["work", "catalog"]} label="mainNavigation" access={access} headings />
       <div className="mt-auto grid gap-2 border-t pt-4">
         <SidebarNav groups={["admin"]} label="adminNavigation" access={access} headings={false} />
+        {access.platformAdmin ? <PlatformAdminCard /> : null}
         <UserMenu user={user} organizationId={organizationId} />
       </div>
     </div>
