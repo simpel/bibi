@@ -28,9 +28,38 @@ test("a capacity change shows before and after, and Confirm applies it (ADR 0049
   await expect(changes.getByText("Boardroom")).toBeVisible();
   await expect(changes.getByText("10", { exact: true })).toBeVisible();
   await expect(changes.getByText("12", { exact: true })).toBeVisible();
-  await expect(card.getByText("Kräver admin")).toBeVisible();
+  // An item change is in the catalog group (ADR 0050): no admin badge.
+  await expect(card.getByText("Kräver admin")).toHaveCount(0);
   await card.getByRole("button", { name: "Bekräfta" }).click();
   await expect(card).toHaveAttribute("data-state", "approved");
   const saved = await (await page.request.get(`/api/v1/items/${item.id}`)).json();
   expect(saved.setups).toEqual([{ setupId: setup.id, capacity: 12 }]);
+});
+
+test("a responsibility change shows the Needs admin badge (setup group, ADR 0050)", async ({
+  page,
+}) => {
+  await signUpWithOrganization({ page, name: "Ansvar AB" });
+  const api = async ({
+    method,
+    path,
+    data,
+  }: {
+    method: "get" | "post";
+    path: string;
+    data?: object;
+  }) =>
+    // biome-ignore lint/suspicious/noExplicitAny: e2e reads loosely typed JSON
+    (await (await page.request[method](`/api/v1${path}`, { data })).json()) as any;
+  const members = await api({ method: "get", path: "/members" });
+  const defaultAssigneeId = (members.items ?? members)[0].userId as string;
+  const made = await api({
+    method: "post",
+    path: "/responsibilities",
+    data: { name: "Kitchen", defaultAssigneeId },
+  });
+  await openAssistant({ page });
+  await sendChat({ page, text: `rename responsibility ${made.id} Pantry` });
+  const card = page.locator('[data-slot="approval-card"]');
+  await expect(card.getByText("Kräver admin")).toBeVisible();
 });
