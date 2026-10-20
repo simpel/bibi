@@ -11,19 +11,28 @@ const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 const green = { green: true, failures: [] };
 const red = (text) => ({ green: false, failures: [{ check: "typecheck", output: text }] });
 
-async function runScript({ args = {}, tickets, impl, review }) {
+async function runScript({ args = {}, tickets, impl, review, hook }) {
   const calls = [];
   const logs = [];
   const agent = async (prompt, opts) => {
     calls.push({ prompt, ...opts });
+    const custom = hook?.(opts, prompt);
+    if (custom !== undefined) return custom;
     if (opts.label.startsWith("select")) {
       const excluded = (prompt.match(/--exclude ([\d,]+)/)?.[1] ?? "").split(",").map(Number);
       return { ok: true, tickets: tickets.filter((t) => !excluded.includes(t.number)) };
     }
+    if (opts.label.startsWith("residue")) return { matches: [] };
     if (opts.phase === "Implement") return impl(opts, prompt);
     if (opts.phase === "Verify") return impl(opts, prompt);
     if (opts.phase === "Review") return review ? review(opts) : { ok: true, findings: [] };
-    if (opts.phase === "Land") return { state: "landed", sha: "abc1234" };
+    if (opts.phase === "Land") {
+      if (opts.label.startsWith("ci p")) return { state: "green" };
+      if (opts.label.startsWith("merge")) return { state: "merged", sha: "abc1234", pr: 101 };
+      if (/^(resolve|land-fix|ci-fix)/.test(opts.label) && prompt.includes("merge.sh"))
+        return { state: "merged", sha: "abc1234", pr: 101 };
+      return { state: "opened", pr: 101, url: "https://github.com/simpel/okazi/pull/101" };
+    }
     if (opts.phase === "Park") return { state: "parked", branch: "parked/x" };
     return { created: [] };
   };
@@ -50,6 +59,7 @@ const T = (number, title, labels, size = "M", extra = {}) => ({
   ...extra,
 });
 const done = () => ({ status: "done", summary: "ok", files: ["a.ts"], checks: green });
+const docsDone = () => ({ status: "done", summary: "ok", files: ["docs/a.md"], checks: green });
 let failed = 0;
 const check = (name, ok, detail = "") => {
   console.log(`${ok ? "PASS" : "FAIL"}  ${name}${ok ? "" : `  -> ${detail}`}`);
@@ -119,8 +129,8 @@ const check = (name, ok, detail = "") => {
     tickets: [T(1, "Small", ["area:web"], "S"), T(2, "Big", ["area:core"], "XL")],
     impl: done,
   });
-  const land1 = calls.find((c) => c.label === "land #1");
-  const land2 = calls.find((c) => c.label === "land #2");
+  const land1 = calls.find((c) => c.label === "ship #1");
+  const land2 = calls.find((c) => c.label === "ship #2");
   check("Sonnet ticket lands with a Sonnet co-author", land1?.prompt.includes("Claude Sonnet 5.5"));
   check("Opus ticket lands with an Opus co-author", land2?.prompt.includes("Claude Opus 5.5"));
 }
@@ -287,8 +297,8 @@ const check = (name, ok, detail = "") => {
     fixes.length === 3 && fixes[2].model === "sonnet",
     fixes.map((f) => f.model).join(","),
   );
-  const green = await runScript({ tickets: docs, impl: done });
-  const land = green.calls.find((c) => c.label === "land #1");
+  const green = await runScript({ tickets: docs, impl: docsDone });
+  const land = green.calls.find((c) => c.label === "ship #1");
   check("a green Haiku ticket is credited to Haiku", land?.prompt.includes("Claude Haiku 5.5"));
   const big = await runScript({
     tickets: [T(2, "Big", ["area:db"], "L", { model: "Haiku" })],
@@ -360,6 +370,252 @@ const check = (name, ok, detail = "") => {
     await runScript({ tickets: [T(9, "Core", ["area:core"], "M")], impl: done })
   ).calls.find((c) => c.phase === "Review");
   check("tenancy review runs at high effort", rev?.effort === "high");
+}
+
+// 10. paths: the PR flow and what a Kind changes
+{
+  const feature = await runScript({
+    tickets: [T(1, "A feature", ["area:web"], "M", { kind: "Feature" })],
+    impl: done,
+  });
+  const labels = feature.calls.filter((c) => c.phase === "Land").map((c) => c.label);
+  check(
+    "a feature is shipped, CI-checked and merged",
+    labels.join(",") === "ship #1,ci p1 #1,merge #1",
+    labels.join(","),
+  );
+  check(
+    "the result carries the PR",
+    feature.result.landed[0]?.pr === "https://github.com/simpel/okazi/pull/101",
+    JSON.stringify(feature.result.landed),
+  );
+
+  const docs = await runScript({
+    tickets: [T(2, "Docs", ["area:core"], "S", { kind: "Docs" })],
+    impl: docsDone,
+  });
+  const docsImpl = docs.calls.find((c) => c.phase === "Implement");
+  check("docs run the light checks", docsImpl.prompt.includes("checks.sh --light"));
+  check(
+    "docs ship with light checks and no review",
+    docs.calls.find((c) => c.label === "ship #2").prompt.includes("CHECKS_ARGS='--light'") &&
+      !docs.calls.some((c) => c.phase === "Review"),
+  );
+  check(
+    "docs skip the new-feature skill",
+    !docsImpl.prompt.includes("new-feature skill") &&
+      docsImpl.prompt.includes("documentation only"),
+  );
+
+  const docsBad = await runScript({
+    tickets: [T(3, "Docs", [], "S", { kind: "Docs" })],
+    impl: (opts) => (opts.phase === "Implement" ? done() : docsDone()),
+  });
+  const fix3 = docsBad.calls.find((c) => c.phase === "Verify");
+  check(
+    "a code file in a docs ticket fails the docs-only gate and goes to a fix round",
+    fix3?.prompt.includes("docs-only") && fix3.prompt.includes("a.ts"),
+  );
+  check("the docs ticket then ships", docsBad.result.landed.length === 1);
+
+  const tests = await runScript({
+    tickets: [T(4, "Tests", ["area:core"], "S", { kind: "Test" })],
+    impl: (opts) =>
+      opts.phase === "Implement" ? done() : { ...done(), files: ["packages/core/test/a.test.ts"] },
+  });
+  check(
+    "a test ticket with a production file fails the tests-only gate",
+    tests.calls.find((c) => c.phase === "Verify")?.prompt.includes("tests-only"),
+  );
+  check("a test ticket has no tenancy review", !tests.calls.some((c) => c.phase === "Review"));
+
+  const decision = await runScript({
+    tickets: [T(5, "Choose X", ["type:decision"], "S")],
+    impl: () => ({ ...done(), files: ["docs/decisions/0061-x.md"] }),
+  });
+  const dl = decision.calls.filter((c) => c.phase === "Land").map((c) => c.label);
+  check(
+    "a decision PR is opened for review: no CI wait, no merge",
+    dl.join(",") === "ship #5",
+    dl.join(","),
+  );
+  check(
+    "a decision ticket is reported as opened and runs review-only",
+    decision.result.opened.length === 1 &&
+      decision.calls.find((c) => c.label === "ship #5").prompt.includes("REVIEW_ONLY=1"),
+  );
+  check(
+    "a decision PR is titled as docs even when Kind says Feature",
+    decision.calls.find((c) => c.label === "ship #5").prompt.includes("KIND='Docs'"),
+  );
+  check(
+    "decision tickets are picked, not skipped",
+    decision.calls.find((c) => c.phase === "Implement")?.prompt.includes("Status: Proposed"),
+  );
+
+  const noAdr = await runScript({
+    tickets: [T(6, "Choose Y", ["type:decision"], "S")],
+    impl: (opts) =>
+      opts.phase === "Implement"
+        ? { ...done(), files: ["docs/notes.md"] }
+        : { ...done(), files: ["docs/decisions/0062-y.md"] },
+  });
+  check(
+    "a decision without an ADR file is sent back",
+    noAdr.calls.find((c) => c.phase === "Verify")?.prompt.includes("adr-file"),
+  );
+
+  const bug = await runScript({
+    tickets: [T(7, "Fix it", [], "S", { kind: "Bugfix" })],
+    impl: (opts) =>
+      opts.phase === "Implement"
+        ? done()
+        : { ...done(), repro: { test: "a.test.ts", failedBefore: true } },
+  });
+  check(
+    "a bugfix without a failing test first is sent back for a repro",
+    bug.calls.find((c) => c.phase === "Verify")?.prompt.includes("No failing test was shown"),
+  );
+  check("a bugfix with a repro ships", bug.result.landed.length === 1);
+  const bugOk = await runScript({
+    tickets: [T(8, "Fix it", [], "S", { kind: "Bugfix" })],
+    impl: () => ({ ...done(), repro: { test: "a.test.ts", failedBefore: true } }),
+  });
+  check(
+    "a bugfix that proved the bug needs no fix round",
+    !bugOk.calls.some((c) => c.phase === "Verify"),
+  );
+  const bugSkip = await runScript({
+    tickets: [T(9, "Fix it", [], "S", { kind: "Bugfix" })],
+    impl: () => ({
+      ...done(),
+      repro: { test: "", failedBefore: false, skippedReason: "layout only" },
+    }),
+  });
+  check(
+    "a bugfix may skip the repro with a reason",
+    !bugSkip.calls.some((c) => c.phase === "Verify"),
+  );
+
+  const techDebt = await runScript({
+    tickets: [T(10, "Tidy", [], "S", { kind: "Tech debt" })],
+    impl: done,
+  });
+  check(
+    "tech debt gets the behaviour-preserving rules",
+    techDebt.calls.find((c) => c.phase === "Implement").prompt.includes("behaviour-preserving"),
+  );
+}
+
+// 11. codemod residue gate and CI / merge recovery
+{
+  let n = 0;
+  const hook = (opts) =>
+    opts.label.startsWith("residue")
+      ? { matches: n++ === 0 ? [{ name: "OldName", count: 3, files: ["a.ts"] }] : [] }
+      : undefined;
+  const r = await runScript({
+    tickets: [
+      T(1, "Rename a thing", [], "L", { kind: "Codemod", renames: ["OldName", "oldThing"] }),
+    ],
+    impl: done,
+    hook,
+  });
+  const residueCall = r.calls.find((c) => c.label.startsWith("residue"));
+  check(
+    "the residue gate runs the script with the old names",
+    residueCall?.prompt.includes("residue.sh") &&
+      residueCall.prompt.includes("'OldName'") &&
+      residueCall.prompt.includes("'oldThing'"),
+  );
+  check(
+    "leftover old names go to a fix round, then ship",
+    r.calls
+      .find((c) => c.phase === "Verify" && c.label.startsWith("fix"))
+      ?.prompt.includes("rename residue") && r.result.landed.length === 1,
+  );
+
+  const noRenames = await runScript({
+    tickets: [T(2, "Rename b", [], "M", { kind: "Codemod" })],
+    impl: done,
+  });
+  check(
+    "a codemod without a Renames table skips the residue gate",
+    !noRenames.calls.some((c) => c.label.startsWith("residue")),
+  );
+
+  let polls = 0;
+  const ciHook = (opts) => {
+    if (opts.label.startsWith("ci p"))
+      return polls++ === 0
+        ? { state: "red", failed: "check", log: "FAIL packages/core boom" }
+        : { state: "green" };
+    return undefined;
+  };
+  const ci = await runScript({
+    tickets: [T(3, "CI flaky", [], "S", { kind: "Feature" })],
+    impl: done,
+    hook: ciHook,
+  });
+  const fix = ci.calls.find((c) => c.label.startsWith("ci-fix"));
+  check(
+    "red CI goes to a fix round with the log",
+    fix?.prompt.includes("FAIL packages/core boom") &&
+      fix.prompt.includes("ship.sh 3 --title") &&
+      fix.prompt.includes("--resume"),
+  );
+  check("after the CI fix the PR is merged", ci.result.landed.length === 1);
+
+  const stuck = await runScript({
+    tickets: [T(4, "CI never green", [], "S", { kind: "Feature" })],
+    impl: done,
+    hook: (opts) =>
+      opts.label.startsWith("ci p") ? { state: "red", failed: "check", log: "x" } : undefined,
+  });
+  check(
+    "CI that stays red parks the ticket after two fixes",
+    stuck.result.parked.length === 1 &&
+      stuck.calls.filter((c) => c.label.startsWith("ci-fix")).length === 2,
+  );
+
+  const slow = await runScript({
+    tickets: [T(5, "CI slow", [], "S", { kind: "Feature" })],
+    impl: done,
+    hook: (opts) => (opts.label.startsWith("ci p") ? { state: "pending" } : undefined),
+  });
+  check(
+    "CI that stays pending is polled six times, then parked",
+    slow.calls.filter((c) => c.label.startsWith("ci p")).length === 6 &&
+      slow.result.parked.length === 1,
+  );
+
+  let merges = 0;
+  const mergeHook = (opts) =>
+    opts.label.startsWith("merge #")
+      ? merges++ === 0
+        ? { state: "conflict", files: "a.ts" }
+        : { state: "merged", sha: "def" }
+      : undefined;
+  const conflict = await runScript({
+    tickets: [T(6, "Merge conflict", [], "S", { kind: "Feature" })],
+    impl: done,
+    hook: mergeHook,
+  });
+  const resolve = conflict.calls.find((c) => c.label.startsWith("resolve"));
+  check(
+    "a merge conflict is resolved and the merge script resumed",
+    resolve?.prompt.includes("merge.sh 6 --title") &&
+      resolve.prompt.includes("--resume") &&
+      conflict.result.landed.length === 1,
+  );
+
+  const two = await runScript({
+    args: { batchSize: 3 },
+    tickets: [T(7, "One", [], "S", { kind: "Feature" }), T(8, "Two", [], "S", { kind: "Feature" })],
+    impl: done,
+  });
+  const order = two.calls.filter((c) => c.label.startsWith("merge")).map((c) => c.label);
+  check("both tickets are merged", order.length === 2, order.join(","));
 }
 
 console.log(failed ? `\n${failed} FAILED` : "\nall passed");

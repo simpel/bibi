@@ -7,7 +7,7 @@ export const meta = {
     { title: 'Implement', detail: 'one agent per ticket: creates its worktree, implements, runs the full checks' },
     { title: 'Verify', detail: 'fix loop with escalation when the implementer reports red checks' },
     { title: 'Review', detail: 'tenancy review for core/db/auth/mcp changes (Opus; Sonnet for codemod tickets)' },
-    { title: 'Land', detail: 'one at a time: commit, rebase (resolving conflicts), full checks, push, board to Done' },
+    { title: 'Land', detail: 'open a PR, wait for CI, squash-merge one at a time (decision PRs stay open for review)' },
     { title: 'Park', detail: 'push a failed ticket to parked/<N>, comment, card to Parked' },
     { title: 'Follow-ups', detail: 'file out-of-scope findings as source:agent issues in Backlog' },
   ],
@@ -24,6 +24,8 @@ const ONLY = (args && args.only) || null
 const ADOPT = (args && args.adopt) || []
 if (ADOPT.length) STATUSES.push('In progress')
 const adopting = (t) => ADOPT.includes(t.number)
+const CI_POLLS = 6 // ci.sh waits up to 9 minutes per call, so a PR may wait about 54 minutes for CI
+const CI_FIX_ROUNDS = 2
 const BASE_FIX_ROUNDS = 2 // XL and codemod tickets get 3, see fixRounds
 const TIERS = ['haiku', 'sonnet', 'opus'] // fable is never used
 // Board ids are fixed: agents never run gh project field-list / item-list to find them (GraphQL rate limit).
@@ -140,6 +142,7 @@ const TICKETS = {
           kind: { type: 'string' },
           model: { type: 'string' },
           effort: { type: 'string' },
+          renames: { type: 'array', items: { type: 'string' } },
           status: { type: 'string' },
           openBlockers: { type: 'array', items: { type: 'number' } },
         },
@@ -175,6 +178,12 @@ const IMPL = {
     checks: VERIFY,
     notes: { type: 'string' },
     followUps: FOLLOW_UPS,
+    // Bugfix path: the failing test that proves the bug before the fix, or why it cannot be tested.
+    repro: {
+      type: 'object',
+      properties: { test: { type: 'string' }, failedBefore: { type: 'boolean' }, skippedReason: { type: 'string' } },
+      required: ['failedBefore'],
+    },
   },
   required: ['status', 'summary', 'files', 'checks'],
 }
@@ -183,16 +192,35 @@ const REVIEW = {
   properties: { ok: { type: 'boolean' }, findings: { type: 'array', items: { type: 'string' } }, followUps: FOLLOW_UPS },
   required: ['ok', 'findings'],
 }
+// One result shape for ship.sh, ci.sh and merge.sh (each prints a subset).
 const LAND = {
   type: 'object',
   properties: {
-    state: { type: 'string', enum: ['landed', 'conflict', 'red', 'failed'] },
+    state: { type: 'string', enum: ['opened', 'green', 'pending', 'merged', 'conflict', 'red', 'failed'] },
+    pr: { type: 'number' },
+    url: { type: 'string' },
     sha: { type: 'string' },
     files: { type: 'string' },
     reason: { type: 'string' },
+    failed: { type: 'string' },
+    log: { type: 'string' },
     checks: VERIFY,
   },
   required: ['state'],
+}
+const RESIDUE = {
+  type: 'object',
+  properties: {
+    matches: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: { name: { type: 'string' }, count: { type: 'number' }, files: { type: 'array', items: { type: 'string' } } },
+        required: ['name', 'count', 'files'],
+      },
+    },
+  },
+  required: ['matches'],
 }
 const FILED = {
   type: 'object',
@@ -237,6 +265,35 @@ const codemodRules = (t) => `This ticket is a mechanical rename. Do it with scri
 5. Let the compiler find the rest: run pnpm typecheck, fix what it lists, and repeat. Never edit node_modules, generated code, lockfiles or docs/decisions history (ADR addenda keep the old names).
 6. By hand, only what scripts cannot do: SQL functions and triggers (packages/db/sql, and the test that applies them verbatim), name collisions with existing names, and wording of user-facing strings in sv and en.
 7. Finish with rg for every old name, case-insensitively. Only existing migrations and ADR history may still match. Put the final match counts and any exception in notes.`
+// ---- Paths: what a ticket's Kind changes ---------------------------------------
+// feature is the default. A path sets its prompt rules, which checks run, whether the tenancy review runs, and whether
+// the run merges the PR itself (decision PRs stay open: a person accepts an ADR). Gates that go with a path are in
+// pathGates below. `skill` = follows the new-feature skill and runs seed:demo.
+const BUGFIX_RULES = () => `This is a bug fix: reproduce first. Write a failing test that proves the bug, run it and see it fail, then fix the bug, then show the same test passes. Return repro = { test, failedBefore: true }. If the bug cannot be covered by a test (a layout, a race you cannot force), return repro = { test: "", failedBefore: false, skippedReason } with the reason. The regression test stays in the change.`
+const TECH_DEBT_RULES = () => `This is a behaviour-preserving refactor. Do not change behaviour and do not change what existing tests assert: they must pass unmodified. If you must touch a test, say which and why in notes. No new features, no new dependencies; keep public APIs and operation names.`
+const TEST_RULES = () => `This ticket adds tests only. Change no production code: if a test needs a production change, stop and return status=blocked with the reason. Tests must assert behaviour (they fail if the code is wrong), live in the existing suites and follow the isolation-test patterns already in the repo.`
+const DOCS_RULES = () => `This ticket changes documentation only: markdown under docs/, ADR addenda, skills and CLAUDE.md. Change no code. Every path, command, file and name you mention must exist: check each with rg or ls. Keep docs/domain-model.md and docs/artifacts/domain-model.html in step. Only lint and check:structure run for this ticket.`
+const DECISION_RULES = () => `This is a decision ticket: you draft the decision, a person accepts it. Use the add-adr skill and write the ADR as Status: Proposed. Read the issue, verify every claim about the code before you state it, give a recommendation with the alternatives you rejected and why, and list the consequences (surfaces, data classes, seed). Do not implement anything, do not set Accepted, do not edit CLAUDE.md or the domain model: the change is the new docs/decisions/NNNN-*.md file only. The run opens a pull request and leaves it for review.`
+const PATHS = {
+  feature: { rules: () => '', checks: '', review: true, merge: true, skill: true },
+  bugfix: { rules: BUGFIX_RULES, checks: '', review: true, merge: true, skill: true },
+  techdebt: { rules: TECH_DEBT_RULES, checks: '', review: true, merge: true, skill: true },
+  test: { rules: TEST_RULES, checks: '', review: false, merge: true, skill: false },
+  docs: { rules: DOCS_RULES, checks: '--light', review: false, merge: true, skill: false },
+  decision: { rules: DECISION_RULES, checks: '--light', review: false, merge: false, skill: false },
+  codemod: { rules: codemodRules, checks: '', review: true, merge: true, skill: true },
+}
+// A type:decision label wins over Kind, then a codemod, then the Kind.
+function pathOf(t) {
+  if (t.labels.includes('type:decision')) return 'decision'
+  if (isCodemod(t)) return 'codemod'
+  return { bugfix: 'bugfix', 'tech debt': 'techdebt', docs: 'docs', test: 'test' }[kindOf(t)] || 'feature'
+}
+const pathOfTicket = (t) => PATHS[pathOf(t)]
+const runChecks = (t) =>
+  pathOfTicket(t).checks === '--light'
+    ? `Run the light checks with exactly this command from the worktree: tools/backlog/checks.sh --light. It runs lint and check:structure only and prints one JSON line {green, failures:[{check, output}]}. Copy it into checks unchanged.`
+    : RUN_CHECKS
 const implPrompt = (t, dir) => `Implement GitHub issue #${t.number} ("${t.title}").
 Setup (run exactly these two commands first):
 1. From ${REPO}: tools/backlog/prep.sh ${adopting(t) ? '--adopt ' : ''}${t.number}
@@ -245,14 +302,12 @@ Setup (run exactly these two commands first):
 Then work only in the worktree:
 ${inWorktree(dir)}
 ${adopting(t) ? `- ADOPTED TICKET: an earlier run died and left its work, uncommitted, in this worktree. Do not start over and do not reset anything. First run git status --short | wc -l and git diff --stat | tail -5, compare what exists with the issue's "To do", and continue from there. ${isCodemod(t) ? `The codemod script may still be in ${scratchDir(t)}; reuse it if it is there. ` : ''}Run the full checks early to see where it stands.\n` : ''}- Read the issue: gh issue view ${t.number} -R simpel/okazi. Its "To do" and "Done when" sections are the spec. Read the linked ADR in docs/decisions/.
-- Start with the new-feature skill: it fixes the order of work and the gates (isolation test, referenced-id checks, read permission, lifecycle, concurrency, approval labels) that belong to this ticket. Then use the skill it names for each step (new-entity, new-core-operation, db-migration, i18n-strings, new-ui-component, structure-fix). Migrations are fine: your database is yours alone.
-- While working, run the cheap checks after every coherent group of edits: pnpm lint and pnpm check:structure (seconds), pnpm --filter <package> typecheck for the package you touched, and the targeted pnpm test for it. A structure or type error found now costs one edit; found at the end it costs a whole fix round. Pipe long output through tail or grep.
+${pathOfTicket(t).skill ? `- Start with the new-feature skill: it fixes the order of work and the gates (isolation test, referenced-id checks, read permission, lifecycle, concurrency, approval labels) that belong to this ticket. Then use the skill it names for each step (new-entity, new-core-operation, db-migration, i18n-strings, new-ui-component, structure-fix). Migrations are fine: your database is yours alone.\n` : ''}- While working, run the cheap checks after every coherent group of edits: pnpm lint and pnpm check:structure (seconds), pnpm --filter <package> typecheck for the package you touched, and the targeted pnpm test for it. A structure or type error found now costs one edit; found at the end it costs a whole fix round. Pipe long output through tail or grep.
 - ${READING_RULES}
-- Do NOT run git add/commit/push/rebase/stash/checkout/reset. The landing step commits.
+- Do NOT run git add/commit/push/rebase/stash/checkout/reset. The ship step commits and opens the pull request.
 - If the spec needs a human decision or is blocked by missing work, stop and return status=blocked with the reason in notes.
 - ${FOLLOW_UP_RULE}
-${isCodemod(t) ? `- ${codemodRules(t)}\n` : ''}- If the ticket adds or changes data or behaviour, also run seed:demo against an empty database in your worktree as docs/demo-seed.md describes and report the result in notes.
-- When done: ${RUN_CHECKS} If something fails and the fix is obvious, fix it and run the checks again; otherwise report it.
+${pathOfTicket(t).rules(t) ? `- ${pathOfTicket(t).rules(t)}\n` : ''}${pathOfTicket(t).skill ? `- If the ticket adds or changes data or behaviour, also run seed:demo against an empty database in your worktree as docs/demo-seed.md describes and report the result in notes.\n` : ''}- When done: ${runChecks(t)} If something fails and the fix is obvious, fix it and run the checks again; otherwise report it.
 Return files = every path you created, changed or deleted (relative to the worktree).`
 
 const fixPrompt = (t, dir, failures) => `Checks failed after work on issue #${t.number} ("${t.title}").
@@ -260,34 +315,45 @@ ${inWorktree(dir)}
 Failures:
 ${failures.map((f) => `### ${f.check}\n${f.output}`).join('\n\n')}
 Fix the cause. ${READING_RULES} No git commands that change state. ${FOLLOW_UP_RULE}
-Then ${RUN_CHECKS}
+Then ${runChecks(t)}
 Return the full list of files this ticket has touched so far (including earlier ones).`
 
 const reviewPrompt = (t, dir) => `Use the tenancy-review skill on the uncommitted changes for issue #${t.number} (git diff plus untracked files in the worktree).
 ${inWorktree(dir)}
 Check org scoping, permissions, AuditLog, and AI approval, plus the new-feature gates: referenced ids checked for org and read permission, read permission on search and UI, archive/rename/removal lifecycle, races returning CONFLICT. Do not edit files. ok=false only for a real tenancy/permission/audit defect in this ticket's changes; list each with file:line. Defects in code this ticket did not touch go in followUps instead (they must not block the ticket).${isCodemod(t) ? '\nThis ticket is a mechanical rename done by a script. Review the hand-written parts (the migration, SQL functions and triggers, anything that is not a pure identifier substitution) and skip the substituted lines.' : ''}`
 
-// Landing and parking are scripts (tools/backlog/land.sh, park.sh, tested in a sandbox repo): commit, rebase, the
-// skip-checks-when-main-did-not-move rule, push retries, board move and cleanup are deterministic. The agent that
-// runs them is a one-command runner; a model only works where judgment is needed (conflicts, red checks).
+// Shipping, waiting for CI, merging and parking are scripts (tools/backlog/ship.sh, ci.sh, merge.sh, park.sh, tested in
+// a sandbox by scripts-smoke.sh): commit, rebase, the skip-checks-when-main-did-not-move rule, the pull request, the
+// squash merge, board move and cleanup are deterministic. The agent that runs them is a one-command runner; a model
+// only works where judgment is needed (conflicts, red checks, red CI).
 const sh = (v) => `'${String(v).replace(/'/g, `'\\''`)}'`
-const boardEnv = (t, model) => `ITEM_ID=${t.itemId} PROJECT_ID=${PROJECT_ID} STATUS_FIELD=${STATUS_FIELD} DONE_OPTION=${STATUS_OPTION.Done} PARKED_OPTION=${STATUS_OPTION.Parked} CO_AUTHOR=${sh(coAuthor(model))}`
+// A decision ticket's PR is a docs change whatever its Kind, so it never triggers a release (ADR 0060).
+const boardEnv = (t, model) => `ITEM_ID=${t.itemId} PROJECT_ID=${PROJECT_ID} STATUS_FIELD=${STATUS_FIELD} DONE_OPTION=${STATUS_OPTION.Done} PARKED_OPTION=${STATUS_OPTION.Parked} CO_AUTHOR=${sh(coAuthor(model))} KIND=${sh(pathOf(t) === 'decision' ? 'Docs' : t.kind || '')}`
+const shipEnv = (t, model) => `${boardEnv(t, model)} CHECKS_ARGS=${sh(pathOfTicket(t).checks)}${pathOfTicket(t).merge ? '' : ' REVIEW_ONLY=1'}`
 const withStdin = (cmd, text) => `${cmd} <<'OKAZI_EOF'\n${text}\nOKAZI_EOF`
 const runnerPrompt = (cmd) => `Run exactly this one command from ${REPO} and nothing else. Its last line of output is one JSON object; return that object unchanged. If it prints no JSON, return state="failed" with the last 20 lines as reason.\n${cmd}`
-const landCmd = (t, summary, model) => withStdin(`${boardEnv(t, model)} tools/backlog/land.sh ${t.number} --title ${sh(t.title)}`, summary)
-const resumeCmd = (t, model) => `${boardEnv(t, model)} tools/backlog/land.sh ${t.number} --resume`
+const shipCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/ship.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
+const mergeCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/merge.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
+const ciCmd = (t) => `tools/backlog/ci.sh ${t.number} --timeout 540`
+const residueCmd = (t, dir) => `tools/backlog/residue.sh ${dir} ${(t.renames || []).map(sh).join(' ')}`
 
-const resolvePrompt = (t, dir, files, model) => `Rebasing issue #${t.number} ("${t.title}") onto origin/main stopped on conflicts in: ${files}. Tickets in a batch often touch the same registries, index files, i18n messages or role templates.
+const resolvePrompt = (t, dir, files, resumeCommand) => `Rebasing issue #${t.number} ("${t.title}") onto origin/main stopped on conflicts in: ${files}. Tickets in a batch often touch the same registries, index files, i18n messages or role templates.
 ${inWorktree(dir)}
 - For each conflicted file, read both sides (git diff, git log -p origin/main -3 -- <file>) and keep the intent of BOTH: main's change and this ticket's. Never drop main's lines to make the conflict go away.
 - git add each resolved file. Do not run git rebase --continue, commit or push: the script does that.
 - Only if a conflict is a real semantic clash you cannot reconcile with confidence: git rebase --abort and return state="failed", reason "rebase conflict: <files>: <why>".
-- Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCmd(t, model)}`
+- Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCommand}`
 
-const landFixPrompt = (t, dir, checks, model) => `After rebasing issue #${t.number} ("${t.title}") onto a moved origin/main the checks are red. The cause is most likely a clash between this ticket and what landed on main meanwhile.
+const landFixPrompt = (t, dir, checks, resumeCommand) => `After rebasing issue #${t.number} ("${t.title}") onto a moved origin/main the checks are red. The cause is most likely a clash between this ticket and what was merged to main meanwhile.
 ${inWorktree(dir)}
 ${checks.failures.map((f) => `### ${f.check}\n${f.output}`).join('\n\n')}
-Fix the cause in the worktree. ${READING_RULES} Do not run git add, commit, amend or push: the script amends the ticket's commit. Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCmd(t, model)}`
+Fix the cause in the worktree. ${READING_RULES} Do not run git add, commit, amend or push: the script amends the ticket's commit. Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCommand}`
+
+const ciFixPrompt = (t, dir, ci, resumeCommand) => `CI failed on the pull request of issue #${t.number} ("${t.title}") although the local checks were green. Failed checks: ${ci.failed || 'unknown'}.
+${inWorktree(dir)}
+CI log (the failed run, last lines):
+${ci.log || '(no log was available: reproduce with the checks CI runs: pnpm lint, check:structure, typecheck, test, build)'}
+Fix the cause in the worktree. ${READING_RULES} Do not run git add, commit, amend or push: the script amends the ticket's commit and pushes. Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCommand}`
 
 const parkCmd = (t, reason, model) => withStdin(`${boardEnv(t, model)} tools/backlog/park.sh ${t.number} ${sh(t.title)}`, reason)
 
@@ -300,11 +366,12 @@ Findings (JSON): ${JSON.stringify(items)}
 Return the created issue numbers.`
 
 // ---- Ticket pipeline ---------------------------------------------------------
-// Landing is serialised: each ticket rebases on what the previous one pushed.
-let landingQueue = Promise.resolve()
+// Merging is serialised: each ticket is rebased on what the previous one merged. Opening a PR and waiting for CI
+// run in parallel.
+let mergeQueue = Promise.resolve()
 function serially(fn) {
-  const run = landingQueue.then(fn)
-  landingQueue = run.catch(() => {})
+  const run = mergeQueue.then(fn)
+  mergeQueue = run.catch(() => {})
   return run
 }
 
@@ -314,23 +381,82 @@ async function park(t, dir, reason, model) {
   return { t, outcome: 'parked', branch: p ? p.branch : null, reason: reason.split('\n')[0] }
 }
 
-// Landing is serialised as a whole, resolve and fix rounds included: main must not move under a half-landed ticket.
-async function landTicket(t, dir, summary, model) {
-  const step = (prompt, model, label) => agent(prompt, { label: `${label} #${t.number}`, phase: 'Land', schema: LAND, model, ...(model === 'haiku' ? { effort: 'low' } : {}) })
-  let r = await step(runnerPrompt(landCmd(t, summary, model)), 'haiku', 'land')
-  for (let round = 1; r && r.state !== 'landed' && round <= 2; round++) {
-    if (r.state === 'conflict') r = await step(resolvePrompt(t, dir, r.files, model), 'sonnet', `resolve r${round}`)
-    else if (r.state === 'red' && r.checks) r = await step(landFixPrompt(t, dir, r.checks, model), 'sonnet', `land-fix r${round}`)
+const step = (t, prompt, model, label) => agent(prompt, { label: `${label} #${t.number}`, phase: 'Land', schema: LAND, model, ...(model === 'haiku' ? { effort: 'low' } : {}) })
+
+// A rebase conflict or red checks go to a model, then the script runs again with --resume (up to two rounds).
+async function resolveLoop(t, dir, r, ok, resumeCommand) {
+  for (let round = 1; r && r.state !== ok && round <= 2; round++) {
+    if (r.state === 'conflict') r = await step(t, resolvePrompt(t, dir, r.files, resumeCommand), 'sonnet', `resolve r${round}`)
+    else if (r.state === 'red' && r.checks) r = await step(t, landFixPrompt(t, dir, r.checks, resumeCommand), 'sonnet', `land-fix r${round}`)
     else break
   }
   return r
 }
 
-const landFailure = (r) => {
-  if (!r) return 'land agent failed'
+async function shipTicket(t, dir, summary, model) {
+  const r = await step(t, runnerPrompt(shipCmd(t, summary, model)), 'haiku', 'ship')
+  return resolveLoop(t, dir, r, 'opened', shipCmd(t, summary, model, true))
+}
+
+// CI runs on the pull request. Waiting happens outside the merge queue; red CI is fixed on the same branch.
+async function ciGreen(t, dir, summary, model) {
+  for (let fixes = 0; ; fixes++) {
+    let c = null
+    for (let poll = 1; poll <= CI_POLLS; poll++) {
+      c = await step(t, runnerPrompt(ciCmd(t)), 'haiku', `ci p${poll}`)
+      if (!c || c.state !== 'pending') break
+    }
+    if (!c || c.state !== 'red' || fixes === CI_FIX_ROUNDS) return c
+    const r = await step(t, ciFixPrompt(t, dir, c, shipCmd(t, summary, model, true)), 'sonnet', `ci-fix r${fixes + 1}`)
+    if (!r || r.state !== 'opened') return r
+  }
+}
+
+async function mergeTicket(t, dir, summary, model) {
+  const r = await step(t, runnerPrompt(mergeCmd(t, summary, model)), 'haiku', 'merge')
+  return resolveLoop(t, dir, r, 'merged', mergeCmd(t, summary, model, true))
+}
+
+const stepFailure = (r, what) => {
+  if (!r) return `${what} agent failed`
   if (r.state === 'conflict') return `rebase conflict: ${r.files}`
-  if (r.state === 'red') return `red before push\n${(r.checks ? r.checks.failures : []).map((f) => `${f.check}:\n${f.output}`).join('\n\n')}`
-  return r.reason || `land ${r.state}`
+  if (r.state === 'red' && r.checks) return `red before the ${what}\n${r.checks.failures.map((f) => `${f.check}:\n${f.output}`).join('\n\n')}`
+  if (r.state === 'red') return `CI red: ${r.failed}\n${r.log || ''}`
+  if (r.state === 'pending') return 'CI still pending after the polls'
+  return r.reason || `${what} ${r.state}`
+}
+
+// ---- Gates: what a path requires beyond green checks. A failed gate goes through the same fix loop. ----
+const isDocFile = (f) => /^docs\//.test(f) || /\.md$/.test(f) || /^\.claude\/skills\//.test(f)
+const isTestFile = (f) => /(^|\/)(tests?|__tests__|e2e)\//.test(f) || /\.(test|spec)\.[cm]?[jt]sx?$/.test(f)
+function pathGates(t, state) {
+  const out = []
+  const p = pathOf(t)
+  const outside = (ok) => state.files.filter((f) => !ok(f))
+  if (p === 'docs' && outside(isDocFile).length) out.push({ check: 'docs-only', output: `A documentation ticket may only change documentation. Not documentation: ${outside(isDocFile).join(', ')}. Revert those files or move the change to a code ticket.` })
+  if (p === 'test' && outside(isTestFile).length) out.push({ check: 'tests-only', output: `A test ticket may only change tests. Not tests: ${outside(isTestFile).join(', ')}. Revert those files, or return status=blocked if the tests need a production change.` })
+  if (p === 'decision') {
+    if (outside(isDocFile).length) out.push({ check: 'decision-docs-only', output: `A decision ticket changes documentation only. Not documentation: ${outside(isDocFile).join(', ')}.` })
+    if (!state.files.some((f) => /^docs\/decisions\/\d{4}-[^/]+\.md$/.test(f))) out.push({ check: 'adr-file', output: 'A decision ticket must add docs/decisions/NNNN-*.md (use the add-adr skill, Status: Proposed).' })
+  }
+  if (p === 'bugfix') {
+    const r = state.repro
+    if (!r || (!r.failedBefore && !r.skippedReason)) out.push({ check: 'repro', output: 'No failing test was shown before the fix. Write a test that fails on the bug, run it, then fix; return repro = { test, failedBefore: true }. If the bug cannot be tested, return repro.skippedReason with why.' })
+  }
+  return out
+}
+// A rename ticket lists its old names in "### Renames"; a script counts what is left of them.
+async function residueGate(t, dir) {
+  if (!isCodemod(t) || !(t.renames || []).length) return []
+  const r = await agent(runnerPrompt(residueCmd(t, dir)), { label: `residue #${t.number}`, phase: 'Verify', schema: RESIDUE, model: 'haiku', effort: 'low' })
+  if (!r || !r.matches.length) return []
+  const lines = r.matches.map((m) => `${m.name}: ${m.count} (for example ${m.files.join(', ')})`).join('\n')
+  return [{ check: 'rename residue', output: `Old names are still in the code:\n${lines}\nApplied migrations, ADR history, node_modules and generated code are already excluded: everything else must be renamed.` }]
+}
+async function verify(t, dir, state, checks) {
+  const gates = [...pathGates(t, state), ...(await residueGate(t, dir))]
+  const base = checks || { green: false, failures: [{ check: 'checks', output: 'the agent reported no checks' }] }
+  return { green: base.green && gates.length === 0, failures: [...base.failures, ...gates] }
 }
 
 // Each fix round reports its own checks, so no separate verify agent is needed between rounds.
@@ -338,9 +464,9 @@ const landFailure = (r) => {
 const failureKey = (v) => v.failures.map((f) => `${f.check}:${f.output}`).join('\n')
 async function fixLoop(t, dir, state, collect, checks) {
   const rounds = fixRounds(t)
-  let v = checks
+  let v = await verify(t, dir, state, checks)
   let before = null
-  for (let round = 1; v && !v.green && round <= rounds; round++) {
+  for (let round = 1; !v.green && round <= rounds; round++) {
     if (before !== null && failureKey(v) === before) break
     before = failureKey(v)
     if (round === rounds) {
@@ -349,8 +475,10 @@ async function fixLoop(t, dir, state, collect, checks) {
     }
     const r = await agent(fixPrompt(t, dir, v.failures), { label: `fix #${t.number} r${round} ${state.model}`, phase: 'Verify', schema: IMPL, model: state.model, effort: state.effort })
     collect(r)
-    if (r && r.files.length) state.files = [...new Set([...state.files, ...r.files])]
-    v = r ? r.checks : null
+    if (!r) return null
+    if (r.files.length) state.files = r.files // the fix round returns the full list, so a reverted file drops out
+    if (r.repro) state.repro = r.repro
+    v = await verify(t, dir, state, r.checks)
   }
   return v
 }
@@ -358,7 +486,7 @@ async function fixLoop(t, dir, state, collect, checks) {
 async function runTicket(t) {
   const dir = wtDir(t)
   const model = assertModel(pickModel(t))
-  const state = { model, effort: pickEffort(t, model), files: [] }
+  const state = { model, effort: pickEffort(t, model), files: [], repro: null }
   const collect = (r) => r && r.followUps && r.followUps.forEach((f) => followUps.push({ ...f, from: t.number }))
   const impl = await agent(implPrompt(t, dir), { label: `#${t.number} ${state.model}`, phase: 'Implement', schema: IMPL, model: state.model, effort: state.effort })
   if (!impl) return park(t, dir, 'implement agent failed', state.model)
@@ -369,6 +497,7 @@ async function runTicket(t) {
   if (impl.status === 'blocked') return park(t, dir, `blocked: ${impl.notes || impl.summary}`, state.model)
   if (!impl.files.length) return park(t, dir, 'implement agent reported no changes', state.model)
   state.files = impl.files
+  state.repro = impl.repro || null
 
   const v = await fixLoop(t, dir, state, collect, impl.checks)
   if (!v || !v.green) {
@@ -376,17 +505,25 @@ async function runTicket(t) {
     return park(t, dir, `checks still red after the fix rounds\n${why}`, state.model)
   }
 
-  if (needsTenancyReview(t)) {
+  if (needsTenancyReview(t) && pathOfTicket(t).review) {
     const r = await agent(reviewPrompt(t, dir), { label: `tenancy #${t.number}`, phase: 'Review', schema: REVIEW, model: reviewModel(t), effort: reviewEffort(t) })
     if (!r) return park(t, dir, 'tenancy review agent failed', state.model)
     collect(r)
     if (!r.ok) return park(t, dir, `tenancy review rejected\n${r.findings.join('\n')}`, state.model)
   }
 
-  const land = await serially(() => landTicket(t, dir, impl.summary, state.model))
-  if (!land || land.state !== 'landed') return park(t, dir, landFailure(land), state.model)
-  log(`#${t.number} landed ${land.sha || ''} (${state.model})`)
-  return { t, outcome: 'landed', sha: land.sha, model: state.model }
+  const opened = await shipTicket(t, dir, impl.summary, state.model)
+  if (!opened || opened.state !== 'opened') return park(t, dir, stepFailure(opened, 'ship'), state.model)
+  if (!pathOfTicket(t).merge) {
+    log(`#${t.number} pull request opened for review: ${opened.url}`)
+    return { t, outcome: 'opened', pr: opened.url, model: state.model }
+  }
+  const ci = await ciGreen(t, dir, impl.summary, state.model)
+  if (!ci || ci.state !== 'green') return park(t, dir, stepFailure(ci, 'CI'), state.model)
+  const merged = await serially(() => mergeTicket(t, dir, impl.summary, state.model))
+  if (!merged || merged.state !== 'merged') return park(t, dir, stepFailure(merged, 'merge'), state.model)
+  log(`#${t.number} merged ${merged.sha || ''} via ${opened.url} (${state.model})`)
+  return { t, outcome: 'landed', sha: merged.sha, pr: opened.url, model: state.model }
 }
 
 // ---- Main loop -------------------------------------------------------------
@@ -400,7 +537,6 @@ function packBatch(tickets) {
     .filter((t) => STATUSES.includes(t.status))
     // A card in progress is only picked up when it is explicitly adopted.
     .filter((t) => t.status !== 'In progress' || adopting(t))
-    .filter((t) => !t.labels.includes('type:decision'))
     // Agent findings wait in Backlog until a human moves them to Todo; otherwise a run could feed itself.
     .filter((t) => !(t.labels.includes('source:agent') && t.status === 'Backlog'))
     .sort((a, b) => (a.priority || 'P9').localeCompare(b.priority || 'P9') || a.number - b.number)
@@ -431,7 +567,7 @@ for (let n = 1; n <= MAX_BATCHES; n++) {
   const batch = packBatch(sel.tickets)
   const blocked = sel.tickets.filter((t) => t.openBlockers.length).length
   if (!batch.length) {
-    log(`Board drained: no unblocked non-decision tickets left (${blocked} blocked).`)
+    log(`Board drained: no unblocked tickets left (${blocked} blocked).`)
     break
   }
   log(`Batch ${n}: ${batch.map((t) => `#${t.number} (${pickModel(t)}/${pickEffort(t, pickModel(t))}${isCodemod(t) ? ', codemod' : ''}${isExclusive(t) ? ', alone' : ''}${challenges(t).length ? `; challenge: ${challenges(t).join('; ')}` : ''})`).join(', ')}; ${blocked} still blocked`)
@@ -451,5 +587,5 @@ for (let n = 1; n <= MAX_BATCHES; n++) {
   }
 }
 
-const pick = (o) => results.filter((r) => r.outcome === o).map((r) => ({ number: r.t.number, title: r.t.title, sha: r.sha, branch: r.branch, reason: r.reason, model: r.model }))
-return { landed: pick('landed'), parked: pick('parked'), failed: pick('failed'), followUpIssues: filed }
+const pick = (o) => results.filter((r) => r.outcome === o).map((r) => ({ number: r.t.number, title: r.t.title, sha: r.sha, pr: r.pr, branch: r.branch, reason: r.reason, model: r.model }))
+return { landed: pick('landed'), opened: pick('opened'), parked: pick('parked'), failed: pick('failed'), followUpIssues: filed }

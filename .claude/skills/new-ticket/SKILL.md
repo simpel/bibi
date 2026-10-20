@@ -9,7 +9,14 @@ The ticket creator knows the scope, so the creator decides how the work is run. 
 
 1. **Check for a duplicate:** `gh issue list -R simpel/okazi --state all --search "<keywords>"`. Update an existing issue instead of creating a second one.
 2. **Decide the execution profile** (board fields, one value each):
-   - **Kind:** `Feature`, `Bugfix`, `Codemod`, `Tech debt`, `Docs` or `Test`. A `Codemod` is a mechanical change done with scripts (a rename, a move). It runs alone, on Sonnet, with 3 fix rounds.
+   - **Kind** picks the path the run takes:
+     - `Feature` (default): implement, fix, tenancy review, pull request.
+     - `Bugfix`: reproduce first. The agent writes a failing test, then fixes; a ticket without that proof is sent back.
+     - `Tech debt`: behaviour-preserving. Existing tests must pass unmodified.
+     - `Test`: tests only. A production file in the change is sent back.
+     - `Docs`: documentation only, and only lint and check:structure run. A code file in the change is sent back.
+     - `Codemod`: a mechanical change done with scripts (a rename, a move). Runs alone, on Sonnet, with 3 fix rounds, and a script checks that no old name is left.
+     - A `type:decision` label (with any Kind) makes it a decision ticket: the agent drafts a Proposed ADR and opens a PR that a person accepts. The run never merges it.
    - **Size:** `XS` to `XL`. `XL` runs alone. `L` and `XL` default to Opus.
    - **Priority:** `P0` to `P2`.
    - **Model:** leave `Auto` unless you know better. `Haiku` for scripted or clearly specified work (docs, i18n strings, boilerplate), never open-ended implementation (it measured ~93 turns per ticket against Sonnet's ~19). `Sonnet` for ordinary and mechanical work. `Opus` where a mistake is expensive (tenancy, auth, trigger SQL, migrations with logic). A ticket cannot be two models.
@@ -21,7 +28,7 @@ The ticket creator knows the scope, so the creator decides how the work is run. 
    - `### Depends on`: one `- #N` line per blocker. `tools/backlog/select.mjs` reads this section, so keep it exact.
    - `### Done when`: observable outcome, plus the gates line (`pnpm lint`, `check:structure`, `typecheck`, `test`).
    - `### Execution` (optional): why this Kind or Model, the risky spots (for example `sync_line_occupancy.sql`).
-   - `### Renames` (required for `Codemod`): a table of old name, new name and kind (identifier, Prisma, string, file, SQL). The codemod and the residue search work from it.
+   - `### Renames` (required for `Codemod`): a table with the old names in the first column, each in backticks (text in parentheses is ignored), then the new name and the kind (identifier, Prisma, string, file, SQL). The codemod works from it and the residue gate searches for every old name. A plain lowercase word matches as a whole word, an identifier or file name as a substring.
 4. **Labels:** `type:*` and `area:*` from the paths. An `adr:NNNN` label links the ticket to its ADR, and `work-backlog` runs tickets with the same ADR label one per batch, so add it only to tickets that edit the same code.
 5. **Create it** with the helper, never with bare `gh issue create` (it validates the board options, the Seed data and Renames sections, and handles the project auto-add):
    ```bash
@@ -30,5 +37,5 @@ The ticket creator knows the scope, so the creator decides how the work is run. 
    ```
    `spec.json`: `{ "title", "body", "labels": [], "priority": "P1", "size": "M", "kind": "Feature", "model": "Auto", "effort": "Auto" }`. Status defaults to `Backlog`.
 6. **Change fields later:** `node tools/backlog/ticket.mjs set <number[,number...]> --status Todo --size L --model Opus --effort High`.
-7. **Move to `Todo` only when it can start:** its blockers are done and its ADR is accepted. `type:decision` and `source:agent` tickets are never picked by the run until a human moves them.
+7. **Move to `Todo` only when it can start:** its blockers are done and its ADR is accepted. `source:agent` tickets are never picked by the run until a human moves them. Every ticket the run finishes becomes a pull request that is squash-merged when CI is green (a decision ticket's PR stays open), so the title you give the issue becomes the commit line on `main`: write it as a clear summary.
 8. **Tell the user** the issue numbers, and link them from any plan or ADR that spawned them.

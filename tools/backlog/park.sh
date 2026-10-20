@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Parks a ticket that could not land, for the work-backlog workflow. Run from the main checkout:
+# Parks a ticket that could not land, for the work-backlog workflow. An open pull request is closed. Run from the main checkout:
 #   tools/backlog/park.sh <N> "<issue title>"   (reason on stdin, max 30 lines are used)
 # Aborts a stopped rebase, commits the work as WIP, pushes it to parked/<N> (never force), comments on the issue,
 # moves the card to Parked, removes the worktree (keeps the branch) and releases the lock.
@@ -33,6 +33,13 @@ if cd "$DIR" 2>/dev/null; then
     git branch -m "$BRANCH" >/dev/null 2>&1
     git push -u origin "$BRANCH" >/dev/null 2>&1 || BRANCH=""
   fi
+fi
+
+# An open pull request of this ticket is closed: its work now lives on the parked branch.
+PR="$(pr_number_for "$N")"
+if [ -n "$PR" ]; then
+  gh pr close "$PR" -R "$REPO" --comment "Parked by the work-backlog run; the reason is on the issue." >/dev/null 2>&1 || true
+  git push origin --delete "ticket/$N" >/dev/null 2>&1 || true
 fi
 
 COMMENT="The work-backlog run parked this ticket."

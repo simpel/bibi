@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers for land.sh and park.sh (sourced, not run).
+# Shared helpers for ship.sh, ci.sh, merge.sh and park.sh (sourced, not run).
 # Board ids arrive as environment variables from the workflow so they live in one place (work-backlog.js):
 # ITEM_ID, PROJECT_ID, STATUS_FIELD and the option id for the target status. Missing ITEM_ID skips the card move.
 
@@ -35,3 +35,36 @@ rebase_in_progress() {
 }
 
 conflicted_files() { git diff --name-only --diff-filter=U | paste -sd, -; }
+
+REPO="${REPO:-simpel/okazi}"
+
+# Conventional Commits type from the ticket's Kind (ADR 0060); release-please reads it on main, and
+# .github/workflows/pr-title.yml checks the PR title, which becomes the squash commit.
+commit_type() {
+  case "$(printf '%s' "${KIND:-}" | tr '[:upper:]' '[:lower:]')" in
+    bugfix) echo fix ;;
+    codemod|"tech debt") echo refactor ;;
+    docs) echo docs ;;
+    test) echo test ;;
+    *) echo feat ;;
+  esac
+}
+
+# The open pull request of ticket $1 (empty when there is none).
+pr_number_for() {
+  gh pr list -R "$REPO" --head "ticket/$1" --state open --json number -q '.[0].number // empty' 2>/dev/null
+}
+
+# Run the checks in the current worktree. CHECKS_ARGS=--light runs only lint and check:structure.
+# The script comes from the main checkout so a worktree on an older base still gets the current checks.
+run_checks() {
+  # shellcheck disable=SC2086
+  "$MAIN/tools/backlog/checks.sh" ${CHECKS_ARGS:-} | tail -1
+}
+
+# Remove the worktree and branch of ticket $1 and release its lock. Best effort.
+cleanup_ticket() {
+  cd "$MAIN" || true
+  pnpm wt:rm "t-$1" --delete-branch >/dev/null 2>&1 || true
+  "$(dirname "${BASH_SOURCE[0]}")/release.sh" "$1" >/dev/null 2>&1 || true
+}
