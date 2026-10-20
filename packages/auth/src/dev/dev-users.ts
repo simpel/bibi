@@ -1,6 +1,6 @@
 import { getEnv } from "@okazi/config";
-import { DEMO_ORGS } from "@okazi/core/seed/demo";
 import { SUPERADMIN_ROLE } from "@okazi/core";
+import { DEMO_ORGS } from "@okazi/core/seed/demo";
 import { getDb } from "@okazi/db";
 
 /** Seeded demo users have `@<slug>.okazi.test` addresses (reserved TLD, docs/demo-seed.md). */

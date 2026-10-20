@@ -10,7 +10,6 @@ import {
   LayoutDashboardIcon,
   type LucideIcon,
   SettingsIcon,
-  ShieldCheckIcon,
   UsersIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
@@ -25,11 +24,10 @@ export type NavLabelKey =
   | "venues"
   | "members"
   | "apiKeys"
-  | "settings"
-  | "platformAdmin";
+  | "settings";
 
-/** Who sees an entry: everyone (subject to its permission), settings viewers, or superadmins. */
-export type NavAudience = "everyone" | "configure" | "platformAdmin";
+/** Who sees an entry: everyone (subject to its permission) or settings viewers. */
+export type NavAudience = "everyone" | "configure";
 
 export type NavItem = {
   href: string;
@@ -40,7 +38,7 @@ export type NavItem = {
   permission?: Permission;
 };
 
-export type NavGroupId = "primary" | "work" | "catalog" | "admin" | "platform";
+export type NavGroupId = "primary" | "work" | "catalog" | "admin";
 
 /**
  * Sidebar entries per zone, most used first (ADR 0036). A new entity adds its entry to the
@@ -119,13 +117,5 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       permission: "apiKey:read",
     },
     { href: ROUTES.settings, labelKey: "settings", icon: SettingsIcon, audience: "configure" },
-  ],
-  platform: [
-    {
-      href: ROUTES.admin,
-      labelKey: "platformAdmin",
-      icon: ShieldCheckIcon,
-      audience: "platformAdmin",
-    },
   ],
 };
