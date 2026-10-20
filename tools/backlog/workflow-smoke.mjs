@@ -67,15 +67,15 @@ const check = (name, ok, detail = "") => {
   ];
   const { logs, calls } = await runScript({ args: { batchSize: 5 }, tickets, impl: done });
   const batch = logs.filter((l) => l.startsWith("Batch")).join("\n");
-  check("XL without area:db is Opus", /#1 \(opus, alone\)/.test(batch), batch);
-  check("small web ticket is Sonnet", /#2 \(sonnet\)/.test(batch), batch);
+  check("XL without area:db is Opus", /#1 \(opus\/high, alone\)/.test(batch), batch);
+  check("small web ticket is Sonnet", /#2 \(sonnet\/medium\)/.test(batch), batch);
   check(
     "Model=Sonnet beats area:db and size L",
-    /#3 \(sonnet; challenge: Model=Sonnet/.test(batch),
+    /#3 \(sonnet\/high; challenge: Model=Sonnet/.test(batch),
     batch,
   );
-  check("Kind=Codemod runs on Sonnet", /#4 \(sonnet, codemod, alone\)/.test(batch), batch);
-  check("area:auth is Opus", /#5 \(opus\)/.test(batch), batch);
+  check("Kind=Codemod runs on Sonnet", /#4 \(sonnet\/medium, codemod, alone\)/.test(batch), batch);
+  check("area:auth is Opus", /#5 \(opus\/high\)/.test(batch), batch);
   const impl4 = calls.find((c) => c.phase === "Implement" && c.label.startsWith("#4 "));
   check(
     "codemod prompt only on the codemod ticket",
@@ -232,13 +232,13 @@ const check = (name, ok, detail = "") => {
   const log1 = logs.find((l) => l.includes("#1 (")) || "";
   check(
     "empty Kind plus Rename title falls back to codemod and says so",
-    /#1 \(sonnet, codemod, alone; challenge: Kind empty/.test(log1),
+    /#1 \(sonnet\/medium, codemod, alone; challenge: Kind empty/.test(log1),
     log1,
   );
   const second = logs.find((l) => l.startsWith("Batch 2")) || "";
   check(
     "Model=Sonnet on an XL ticket is followed but challenged",
-    /#2 \(sonnet, alone; challenge: Model=Sonnet on a large or risky ticket/.test(second),
+    /#2 \(sonnet\/high, alone; challenge: Model=Sonnet on a large or risky ticket/.test(second),
     second,
   );
   check(
@@ -262,6 +262,104 @@ const check = (name, ok, detail = "") => {
     "follow-up filing uses tools/backlog/ticket.mjs",
     filing?.prompt.includes("ticket.mjs create") && !filing.prompt.includes("gh issue create"),
   );
+}
+
+// 8. Haiku is a valid explicit choice
+{
+  let n = 0;
+  const failing = (opts) => ({
+    status: "done",
+    summary: "s",
+    files: ["a.md"],
+    checks: red(opts.phase === "Implement" ? "a" : `b${n++}`),
+  });
+  const docs = [
+    T(1, "Update the docs guide", ["area:docs"], "S", { model: "Haiku", kind: "Docs" }),
+  ];
+  const { calls } = await runScript({ tickets: docs, impl: failing });
+  check(
+    "Model=Haiku runs the implementer on Haiku",
+    calls.find((c) => c.phase === "Implement")?.model === "haiku",
+  );
+  const fixes = calls.filter((c) => c.phase === "Verify");
+  check(
+    "Haiku ticket gets 3 fix rounds and escalates to Sonnet on the last",
+    fixes.length === 3 && fixes[2].model === "sonnet",
+    fixes.map((f) => f.model).join(","),
+  );
+  const green = await runScript({ tickets: docs, impl: done });
+  const land = green.calls.find((c) => c.label === "land #1");
+  check("a green Haiku ticket is credited to Haiku", land?.prompt.includes("Claude Haiku 5.5"));
+  const big = await runScript({
+    tickets: [T(2, "Big", ["area:db"], "L", { model: "Haiku" })],
+    impl: done,
+  });
+  check(
+    "Model=Haiku on a large or risky ticket is followed but challenged",
+    big.logs.some((l) => l.includes("challenge: Model=Haiku")),
+    big.logs.join(" | "),
+  );
+}
+
+// 9. effort per ticket
+{
+  const eff = async (ticket, impl = done) => {
+    const { calls } = await runScript({ tickets: [ticket], impl });
+    return calls.find((c) => c.phase === "Implement")?.effort;
+  };
+  check(
+    "Docs defaults to low effort",
+    (await eff(T(1, "Docs", [], "S", { kind: "Docs" }))) === "low",
+  );
+  check(
+    "a plain feature defaults to medium",
+    (await eff(T(2, "Feature", ["area:web"], "M"))) === "medium",
+  );
+  check("a risky ticket defaults to high", (await eff(T(3, "Risky", ["area:db"], "M"))) === "high");
+  check(
+    "a codemod defaults to medium even when XL",
+    (await eff(T(4, "Rename x", [], "XL", { kind: "Codemod" }))) === "medium",
+  );
+  check(
+    "Effort=Extra is passed as xhigh",
+    (await eff(T(5, "Hard", [], "S", { effort: "Extra" }))) === "xhigh",
+  );
+  check(
+    "Effort=Low wins over a risky default",
+    (await eff(T(6, "Risky", ["area:db"], "M", { effort: "Low" }))) === "low",
+  );
+  const failing = (opts) => ({
+    status: "done",
+    summary: "s",
+    files: ["a.ts"],
+    checks: red(`x${Math.random()}`.slice(0, 3) + opts.label),
+  });
+  const { calls } = await runScript({
+    tickets: [T(7, "Normal", ["area:web"], "M")],
+    impl: failing,
+  });
+  const fixes = calls.filter((c) => c.phase === "Verify");
+  check(
+    "the last fix round raises effort and model",
+    fixes.length === 2 &&
+      fixes[0].effort === "medium" &&
+      fixes[1].effort === "high" &&
+      fixes[1].model === "opus",
+    fixes.map((f) => `${f.model}/${f.effort}`).join(","),
+  );
+  const risky = await runScript({
+    tickets: [T(8, "Risky", ["area:db"], "M", { effort: "Low" })],
+    impl: done,
+  });
+  check(
+    "Effort=Low on a risky ticket is challenged",
+    risky.logs.some((l) => l.includes("challenge: Effort=Low")),
+    risky.logs.join(" | "),
+  );
+  const rev = (
+    await runScript({ tickets: [T(9, "Core", ["area:core"], "M")], impl: done })
+  ).calls.find((c) => c.phase === "Review");
+  check("tenancy review runs at high effort", rev?.effort === "high");
 }
 
 console.log(failed ? `\n${failed} FAILED` : "\nall passed");

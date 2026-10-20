@@ -1,34 +1,57 @@
 #!/usr/bin/env node
-// Create or update a ticket on the okazi board with every required field in one step.
+// Create or update tickets on the okazi board with every required field in one step.
 //   node tools/backlog/ticket.mjs create --spec spec.json [--dry-run]
-//     spec: { title, body, labels?, status? (default Backlog), priority?, size, kind, model? }
-//   node tools/backlog/ticket.mjs set <number> [--status S] [--priority P] [--size Z] [--kind K] [--model M]
+//     spec: { title, body, labels?, status? (default Backlog), priority?, size, kind, model?, effort? }
+//   node tools/backlog/ticket.mjs set <number[,number...]> [--status S] [--priority P] [--size Z] [--kind K] [--model M] [--effort E]
 // Field values are checked against the board's own options. Prints one JSON object. See the new-ticket skill.
+// GitHub's GraphQL limit is shared with every other run, so field metadata is cached for an hour, `set` resolves
+// all item ids with one item-list call, and a rate-limited call is retried with a pause.
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const OWNER = "simpel";
 const REPO = "simpel/okazi";
 const PROJECT = "8";
+const CACHE = join(tmpdir(), "okazi-board-fields.json");
+const CACHE_MAX_AGE_MS = 60 * 60 * 1000;
 const FIELD_OF = {
   status: "Status",
   priority: "Priority",
   size: "Size",
   kind: "Kind",
   model: "Model",
+  effort: "Effort",
 };
 
+function sleep({ seconds }) {
+  execFileSync("sleep", [String(seconds)]);
+}
+
 function gh(args) {
-  return execFileSync("gh", args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }).trim();
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return execFileSync("gh", args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }).trim();
+    } catch (error) {
+      const limited = /rate limit/i.test(String(error.stderr ?? error.message));
+      if (!limited || attempt === 3) throw error;
+      sleep({ seconds: attempt * 30 });
+    }
+  }
 }
 
 function boardFields() {
+  if (existsSync(CACHE) && Date.now() - statSync(CACHE).mtimeMs < CACHE_MAX_AGE_MS) {
+    const cached = JSON.parse(readFileSync(CACHE, "utf8"));
+    return { projectId: cached.projectId, fields: new Map(cached.fields) };
+  }
   const view = ["project", "view", PROJECT, "--owner", OWNER, "--format", "json", "-q", ".id"];
   const list = ["project", "field-list", PROJECT, "--owner", OWNER, "--format", "json"];
-  const fields = new Map(JSON.parse(gh(list)).fields.map((f) => [f.name, f]));
-  return { projectId: gh(view), fields };
+  const fields = JSON.parse(gh(list)).fields.map((f) => [f.name, f]);
+  const projectId = gh(view);
+  writeFileSync(CACHE, JSON.stringify({ projectId, fields }));
+  return { projectId, fields: new Map(fields) };
 }
 
 function optionId({ fields, key, value }) {
@@ -59,6 +82,23 @@ export function validateSpec({ spec }) {
   }
   if (!spec.priority) warnings.push("no priority set");
   return { errors, warnings };
+}
+
+// One call for every item on the board: number -> item id.
+function itemIdsByNumber() {
+  const list = [
+    "project",
+    "item-list",
+    PROJECT,
+    "--owner",
+    OWNER,
+    "--format",
+    "json",
+    "-L",
+    "1000",
+  ];
+  const items = JSON.parse(gh(list)).items;
+  return new Map(items.filter((i) => i.content?.number).map((i) => [i.content.number, i.id]));
 }
 
 function itemIdFor({ number, url }) {
@@ -116,11 +156,19 @@ function create({ spec, dryRun }) {
   return { ok: true, number, url, warnings };
 }
 
-function set({ number, values }) {
-  const url = `https://github.com/${REPO}/issues/${number}`;
+function set({ numbers, values }) {
   const board = boardFields();
-  setFields({ itemId: itemIdFor({ number, url }), values, board });
-  return { ok: true, number, values };
+  for (const key of Object.keys(FIELD_OF)) {
+    if (values[key]) optionId({ fields: board.fields, key, value: values[key] });
+  }
+  const ids = itemIdsByNumber();
+  const done = [];
+  for (const number of numbers) {
+    const url = `https://github.com/${REPO}/issues/${number}`;
+    setFields({ itemId: ids.get(number) ?? itemIdFor({ number, url }), values, board });
+    done.push(number);
+  }
+  return { ok: true, numbers: done, values };
 }
 
 function parse({ argv }) {
@@ -145,10 +193,15 @@ function main() {
       process.exitCode = out.ok ? 0 : 1;
     } else if (command === "set") {
       const { dryRun: _ignored, ...values } = flags;
-      console.log(JSON.stringify(set({ number: Number(positional[0]), values })));
+      const numbers = String(positional[0] ?? "")
+        .split(",")
+        .filter(Boolean)
+        .map(Number);
+      if (!numbers.length) throw new Error("set needs an issue number or a comma-separated list");
+      console.log(JSON.stringify(set({ numbers, values })));
     } else {
       throw new Error(
-        "usage: ticket.mjs create --spec file.json [--dry-run] | set <number> --kind K ...",
+        "usage: ticket.mjs create --spec file.json [--dry-run] | set <n[,n]> --kind K ...",
       );
     }
   } catch (error) {

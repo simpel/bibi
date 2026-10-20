@@ -42,13 +42,13 @@ const wtDir = (t) => `${REPO}-worktrees/${wtName(t)}` // where pnpm wt:new puts 
 
 // ---- Model choice (deterministic, from the board's fields) -----------------
 // The ticket creator decides: the board fields Kind (Feature, Bugfix, Codemod, Tech debt, Docs, Test) and
-// Model (Auto, Sonnet, Opus) are set when the ticket is created (new-ticket skill). The workflow follows them,
+// Model (Auto, Haiku, Sonnet, Opus) are set when the ticket is created (new-ticket skill). The workflow follows them,
 // falls back to labels when they are empty, and challenges contradictions in the log.
-// 1. Model = Sonnet or Opus wins.
+// 1. Model = Haiku, Sonnet or Opus wins. Haiku is for scripted or clearly specified work (docs, i18n strings, boilerplate):
+//    in this workflow it measured ~93 turns per open-ended ticket against Sonnet's ~19, so it is never the default.
 // 2. Kind = Codemod is scripted work: Sonnet. The judgment is small and the checks plus the review catch a bad script.
 // 3. Opus where a mistake is expensive: Size L or XL, area:auth, area:db.
 // 4. Sonnet otherwise. The Opus tenancy review and the fix-loop escalation catch what it misses.
-// No Haiku for implementation: measured ~93 turns per ticket against Sonnet's ~19, so it cost more in total.
 // Fallback while Kind is empty (older tickets): a title that starts with "Rename" counts as a codemod.
 const kindOf = (t) => (t.kind || '').toLowerCase()
 const isCodemod = (t) => kindOf(t) === 'codemod' || (!kindOf(t) && /^rename\b/i.test(t.title))
@@ -58,7 +58,7 @@ const riskyArea = (t) => t.labels.includes('area:auth') || t.labels.includes('ar
 const isExclusive = (t) => isCodemod(t) || t.size === 'XL'
 function pickModel(t) {
   const m = (t.model || '').toLowerCase()
-  if (m === 'opus' || m === 'sonnet') return m
+  if (['haiku', 'sonnet', 'opus'].includes(m)) return m
   if (isCodemod(t)) return 'sonnet'
   if (isBig(t) || riskyArea(t)) return 'opus'
   return 'sonnet'
@@ -69,11 +69,30 @@ function challenges(t) {
   const m = (t.model || '').toLowerCase()
   if (m === 'sonnet' && !isCodemod(t) && (isBig(t) || riskyArea(t))) out.push('Model=Sonnet on a large or risky ticket')
   if (m === 'opus' && isCodemod(t)) out.push('Model=Opus on a codemod')
+  if (m === 'haiku' && (isBig(t) || riskyArea(t))) out.push('Model=Haiku on a large or risky ticket')
+  if ((t.effort || '').toLowerCase() === 'low' && (isBig(t) || riskyArea(t))) out.push('Effort=Low on a large or risky ticket')
   if (!kindOf(t) && isCodemod(t)) out.push('Kind empty, treated as codemod from the title')
   return out
 }
+// ---- Effort (reasoning effort of the implementing agent) -------------------
+// The board field Effort (Auto, Low, Medium, High, Extra) is set at creation; Extra maps to the API's xhigh.
+// Auto derives it: Docs is Low; a codemod is Medium (the script is mechanical); Opus, Size L/XL and risky areas
+// are High; everything else is Medium. Extra is never a default. The last fix round raises effort one step.
+const EFFORTS = ['low', 'medium', 'high', 'xhigh']
+const EFFORT_OF = { low: 'low', medium: 'medium', high: 'high', extra: 'xhigh' }
+function pickEffort(t, model) {
+  const e = EFFORT_OF[(t.effort || '').toLowerCase()]
+  if (e) return e
+  if (kindOf(t) === 'docs') return 'low'
+  if (isCodemod(t)) return 'medium'
+  if (model === 'opus' || isBig(t) || riskyArea(t)) return 'high'
+  return 'medium'
+}
+const raiseEffort = (e) => EFFORTS[Math.min(EFFORTS.indexOf(e) + 1, EFFORTS.length - 1)]
+const reviewEffort = (t) => (isCodemod(t) ? 'medium' : 'high')
 // Large or scripted tickets fail checks more often on the first pass.
-const fixRounds = (t) => (isCodemod(t) || t.size === 'XL' ? BASE_FIX_ROUNDS + 1 : BASE_FIX_ROUNDS)
+// A Haiku ticket gets the extra round too, so the last-round escalation to Sonnet happens before it is parked.
+const fixRounds = (t) => (isCodemod(t) || t.size === 'XL' || pickModel(t) === 'haiku' ? BASE_FIX_ROUNDS + 1 : BASE_FIX_ROUNDS)
 const reviewModel = (t) => (isCodemod(t) ? 'sonnet' : 'opus')
 function escalate(m) {
   const i = TIERS.indexOf(m)
@@ -120,6 +139,7 @@ const TICKETS = {
           size: { type: 'string' },
           kind: { type: 'string' },
           model: { type: 'string' },
+          effort: { type: 'string' },
           status: { type: 'string' },
           openBlockers: { type: 'array', items: { type: 'number' } },
         },
@@ -323,8 +343,11 @@ async function fixLoop(t, dir, state, collect, checks) {
   for (let round = 1; v && !v.green && round <= rounds; round++) {
     if (before !== null && failureKey(v) === before) break
     before = failureKey(v)
-    if (round === rounds) state.model = assertModel(escalate(state.model))
-    const r = await agent(fixPrompt(t, dir, v.failures), { label: `fix #${t.number} r${round} ${state.model}`, phase: 'Verify', schema: IMPL, model: state.model })
+    if (round === rounds) {
+      state.model = assertModel(escalate(state.model))
+      state.effort = raiseEffort(state.effort)
+    }
+    const r = await agent(fixPrompt(t, dir, v.failures), { label: `fix #${t.number} r${round} ${state.model}`, phase: 'Verify', schema: IMPL, model: state.model, effort: state.effort })
     collect(r)
     if (r && r.files.length) state.files = [...new Set([...state.files, ...r.files])]
     v = r ? r.checks : null
@@ -334,9 +357,10 @@ async function fixLoop(t, dir, state, collect, checks) {
 
 async function runTicket(t) {
   const dir = wtDir(t)
-  const state = { model: assertModel(pickModel(t)), files: [] }
+  const model = assertModel(pickModel(t))
+  const state = { model, effort: pickEffort(t, model), files: [] }
   const collect = (r) => r && r.followUps && r.followUps.forEach((f) => followUps.push({ ...f, from: t.number }))
-  const impl = await agent(implPrompt(t, dir), { label: `#${t.number} ${state.model}`, phase: 'Implement', schema: IMPL, model: state.model })
+  const impl = await agent(implPrompt(t, dir), { label: `#${t.number} ${state.model}`, phase: 'Implement', schema: IMPL, model: state.model, effort: state.effort })
   if (!impl) return park(t, dir, 'implement agent failed', state.model)
   // prep.sh refuses closed issues and locked tickets (another run or agent owns the worktree): never park those,
   // parking would touch the other run's worktree.
@@ -353,7 +377,7 @@ async function runTicket(t) {
   }
 
   if (needsTenancyReview(t)) {
-    const r = await agent(reviewPrompt(t, dir), { label: `tenancy #${t.number}`, phase: 'Review', schema: REVIEW, model: reviewModel(t) })
+    const r = await agent(reviewPrompt(t, dir), { label: `tenancy #${t.number}`, phase: 'Review', schema: REVIEW, model: reviewModel(t), effort: reviewEffort(t) })
     if (!r) return park(t, dir, 'tenancy review agent failed', state.model)
     collect(r)
     if (!r.ok) return park(t, dir, `tenancy review rejected\n${r.findings.join('\n')}`, state.model)
@@ -410,7 +434,7 @@ for (let n = 1; n <= MAX_BATCHES; n++) {
     log(`Board drained: no unblocked non-decision tickets left (${blocked} blocked).`)
     break
   }
-  log(`Batch ${n}: ${batch.map((t) => `#${t.number} (${pickModel(t)}${isCodemod(t) ? ', codemod' : ''}${isExclusive(t) ? ', alone' : ''}${challenges(t).length ? `; challenge: ${challenges(t).join('; ')}` : ''})`).join(', ')}; ${blocked} still blocked`)
+  log(`Batch ${n}: ${batch.map((t) => `#${t.number} (${pickModel(t)}/${pickEffort(t, pickModel(t))}${isCodemod(t) ? ', codemod' : ''}${isExclusive(t) ? ', alone' : ''}${challenges(t).length ? `; challenge: ${challenges(t).join('; ')}` : ''})`).join(', ')}; ${blocked} still blocked`)
   if (n === MAX_BATCHES) log(`Last batch allowed by maxBatches/safety cap (${MAX_BATCHES}).`)
   batch.forEach((t) => tried.push(t.number))
 
