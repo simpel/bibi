@@ -17,7 +17,7 @@ export type CustomerPackagesSectionProps = { locale: Locale; customerId: string 
  */
 export async function CustomerPackagesSection(props: CustomerPackagesSectionProps) {
   const abilities = await getCallerAbilities();
-  if (!can({ abilities, permission: "item:view" })) return null;
+  if (!can({ abilities, permission: "item:read" })) return null;
   return <PackagesBody {...props} abilities={abilities} />;
 }
 
@@ -41,7 +41,7 @@ async function PackagesBody({
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("packages")}</h2>
-        {can({ abilities, permission: "item:create" }) && types.length > 0 ? (
+        {can({ abilities, permission: "item:write" }) && types.length > 0 ? (
           <SavePackageButton customerId={customerId} data={{ ...data.value, types }} />
         ) : null}
       </div>

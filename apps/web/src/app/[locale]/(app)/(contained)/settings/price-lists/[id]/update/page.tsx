@@ -10,7 +10,7 @@ export default async function UpdatePriceListPage({ params }: UpdatePriceListPag
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="priceList:edit">
+    <PermissionGate permission="priceList:write">
       <PriceListUpdate locale={locale} id={id} />
     </PermissionGate>
   );

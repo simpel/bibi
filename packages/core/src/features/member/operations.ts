@@ -27,7 +27,7 @@ export const listMembers = defineOperation({
     "Filter by role.",
   input: MemberListInputSchema,
   output: MemberListOutputSchema,
-  permission: "member:view",
+  permission: "member:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.member.findMany({
       where: input.role ? { role: input.role } : {},
@@ -47,7 +47,7 @@ export const getMember = defineOperation({
   description: "Read one staff member of the organization by id (see member.list).",
   input: MemberIdInputSchema,
   output: MemberSchema,
-  permission: "member:view",
+  permission: "member:read",
   handler: async ({ input, context }) => {
     const row = await context.db.member.findFirst({
       where: { id: input.id },
@@ -67,7 +67,7 @@ export const assignMemberRole = defineOperation({
     "above your own or change someone above you, and the last admin stays admin.",
   input: MemberAssignRoleInputSchema,
   output: MemberSchema,
-  permission: "member:edit",
+  permission: "member:write",
   handler: async ({ input, context }) => {
     const before = await context.db.member.findFirst({
       where: { id: input.id },
@@ -104,7 +104,7 @@ export const removeMember = defineOperation({
     "removed, and you cannot remove someone above your own role.",
   input: MemberRemoveInputSchema,
   output: MemberSchema,
-  permission: "member:remove",
+  permission: "member:delete",
   handler: async ({ input, context }) => {
     const row = await context.db.member.findFirst({
       where: { id: input.id },

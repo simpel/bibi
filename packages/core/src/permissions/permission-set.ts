@@ -7,23 +7,25 @@ import {
   type PermissionAction,
 } from "./features";
 
-/** What a caller may do: `{ ticket: ["view", "edit"], item: ["view"] }` (ADR 0050). */
+/** What a caller may do: `{ ticket: ["read", "write"], item: ["read"] }` (ADR 0050). */
 export type PermissionSet = Partial<Record<string, readonly PermissionAction[]>>;
 
 export const PermissionSetSchema = z
-  .partialRecord(z.enum(FEATURES), z.array(z.enum(PERMISSION_ACTIONS)).max(7))
-  .describe('Actions per feature, e.g. { "ticket": ["view", "edit"] }. Every action implies view.');
+  .partialRecord(z.enum(FEATURES), z.array(z.enum(PERMISSION_ACTIONS)).max(3))
+  .describe(
+    'Actions per feature, e.g. { "ticket": ["read", "write"] }. Every action implies read.',
+  );
 
 export type NormalizePermissionsInput = { permissions: PermissionSet };
 
 /**
- * Canonical form: only actions the feature has, any action implies `view`, actions in the
+ * Canonical form: only actions the feature has, any action implies `read`, actions in the
  * feature's order, features in `FEATURES` order, empty features dropped.
  */
 export function normalizePermissions({ permissions }: NormalizePermissionsInput): PermissionSet {
   const entries = FEATURES.flatMap((feature) => {
     const granted = new Set(permissions[feature] ?? []);
-    if (granted.size > 0) granted.add("view");
+    if (granted.size > 0) granted.add("read");
     const actions = featureActions({ feature }).filter((action) => granted.has(action));
     return actions.length === 0 ? [] : [[feature, actions] as const];
   });

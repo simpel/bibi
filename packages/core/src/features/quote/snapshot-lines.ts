@@ -21,12 +21,12 @@ const lineIssue = ({ at, field, message }: { at: number; field: string; message:
 
 type CopyItemInput = Db & { itemId: string; customerId: string; at: number };
 
-/** One text for a missing item, another customer's package or no `item:view` (no oracle). */
+/** One text for a missing item, another customer's package or no `item:read` (no oracle). */
 const ITEM_UNAVAILABLE = "Item not found or not allowed";
 
 /**
  * A fresh snapshot of an active item: name, price, VAT (else the venue's) and contained tags.
- * A snapshot copies item data, so it needs `item:view` at copy time (ADR 0050).
+ * A snapshot copies item data, so it needs `item:read` at copy time (ADR 0050).
  */
 async function copyItem({
   context,
@@ -34,7 +34,7 @@ async function copyItem({
   customerId,
   at,
 }: CopyItemInput): Promise<Result<Snapshot>> {
-  const readable = checkReadable({ context, permission: "item:view", path: `lines.${at}.itemId` });
+  const readable = checkReadable({ context, permission: "item:read", path: `lines.${at}.itemId` });
   if (!readable.ok) return lineIssue({ at, field: "itemId", message: ITEM_UNAVAILABLE });
   const item = await context.db.item.findFirst({
     where: { id: itemId },

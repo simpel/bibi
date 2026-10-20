@@ -23,7 +23,7 @@ export const listQuotes = defineOperation({
     "versions) or status (DRAFT, SENT, ACCEPTED, DECLINED, EXPIRED).",
   input: QuoteListInputSchema,
   output: QuoteListOutputSchema,
-  permission: "quote:view",
+  permission: "quote:read",
   handler: async ({ input, context }) => {
     const { ticketId, quoteStatus } = input;
     const rows = await context.db.quote.findMany({
@@ -47,7 +47,7 @@ export const getQuote = defineOperation({
     "removed. The quote has no owner of its own: it uses the ticket's.",
   input: QuoteIdInputSchema,
   output: QuoteSchema,
-  permission: "quote:view",
+  permission: "quote:read",
   handler: async ({ input, context }) => {
     const quote = await loadQuote({ context, id: input.id });
     return quote ? ok({ value: quote }) : notFound({ entity: "Quote" });

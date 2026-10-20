@@ -97,7 +97,7 @@ describe("search", () => {
       return unwrap({ result }).hits.map((hit) => hit.entityType);
     };
     expect(await query({ permissions: {} })).toEqual([]);
-    expect(await query({ permissions: { item: ["view"] } })).toEqual(["item"]);
-    expect(await query({ permissions: { venue: ["view"] } })).toEqual(["venue"]);
+    expect(await query({ permissions: { item: ["read"] } })).toEqual(["item"]);
+    expect(await query({ permissions: { venue: ["read"] } })).toEqual(["venue"]);
   });
 });

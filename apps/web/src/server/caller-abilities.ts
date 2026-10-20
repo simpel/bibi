@@ -43,7 +43,7 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
 
 export type CanInput = { abilities: Pick<CallerAbilities, "permissions">; permission: Permission };
 
-/** Precise check against the effective permissions, e.g. `item:create` for "New item". */
+/** Precise check against the effective permissions, e.g. `item:write` for "New item". */
 export function can({ abilities, permission }: CanInput): boolean {
   return canPermission({ permissions: abilities.permissions, permission });
 }
@@ -53,7 +53,7 @@ export type RowAccessInput = { abilities: Pick<CallerAbilities, "permissions">; 
 /** `edit` and `remove` of one feature, for a table's row actions. */
 export function rowAccess({ abilities, feature }: RowAccessInput): RowAccess {
   return {
-    canEdit: can({ abilities, permission: `${feature}:edit` }),
-    canRemove: can({ abilities, permission: `${feature}:remove` }),
+    canEdit: can({ abilities, permission: `${feature}:write` }),
+    canRemove: can({ abilities, permission: `${feature}:delete` }),
   };
 }

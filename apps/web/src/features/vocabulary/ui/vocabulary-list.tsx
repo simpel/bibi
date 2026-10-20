@@ -29,7 +29,7 @@ async function VocabularyListHeader({ canCreate }: VocabularyListHeaderProps) {
 export type VocabularyListProps = { locale: Locale; cursor?: string | undefined };
 
 const PAGE_SIZE = 50;
-const CREATE = "configuration:create";
+const CREATE = "configuration:write";
 
 /** Lists page body: header with create and the allergen template import, table, pagination. */
 export async function VocabularyList({ locale, cursor }: VocabularyListProps) {

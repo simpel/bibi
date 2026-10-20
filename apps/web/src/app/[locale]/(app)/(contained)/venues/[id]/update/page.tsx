@@ -10,7 +10,7 @@ export default async function UpdateVenuePage({ params }: UpdateVenuePageProps) 
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="venue:edit">
+    <PermissionGate permission="venue:write">
       <VenueUpdate locale={locale} id={id} />
     </PermissionGate>
   );

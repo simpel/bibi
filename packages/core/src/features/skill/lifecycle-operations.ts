@@ -29,7 +29,7 @@ export const publishSkill = defineOperation({
     "personal skills are published by their owner.",
   input: SkillIdInputSchema,
   output: SkillSchema,
-  permission: "self:edit",
+  permission: "self:write",
   embeddable: skillEmbeddable,
   handler: ({ input, context }) => setStatus({ input, context, status: "PUBLISHED" }),
 });
@@ -40,7 +40,7 @@ export const archiveSkill = defineOperation({
   description: "Archive (soft-delete) a skill. Archived skills are hidden and free their slug.",
   input: SkillIdInputSchema,
   output: SkillSchema,
-  permission: "self:edit",
+  permission: "self:write",
   embeddable: skillEmbeddable,
   handler: ({ input, context }) => setStatus({ input, context, status: "ARCHIVED" }),
 });

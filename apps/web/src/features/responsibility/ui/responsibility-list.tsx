@@ -69,7 +69,7 @@ export async function ResponsibilityList({ locale, cursor }: ResponsibilityListP
   const result = await loadPage({ cursor });
   const options = result.ok ? result.value.options : undefined;
   const create =
-    can({ abilities, permission: "responsibility:create" }) && options ? (
+    can({ abilities, permission: "responsibility:write" }) && options ? (
       <CreateResponsibilityButton />
     ) : undefined;
   const header = (

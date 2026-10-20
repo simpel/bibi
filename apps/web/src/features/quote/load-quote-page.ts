@@ -57,8 +57,8 @@ export async function loadQuotePage({ id }: { id: string }): Promise<Result<Quot
       can: quoteAbilities({
         quote,
         latestVersion,
-        canEdit: can({ abilities, permission: "quote:edit" }),
-        canSend: can({ abilities, permission: "quote:send" }),
+        canEdit: can({ abilities, permission: "quote:write" }),
+        canSend: can({ abilities, permission: "quote:write" }),
       }),
     },
   };

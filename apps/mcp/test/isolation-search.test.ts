@@ -45,10 +45,10 @@ describe("cross-organization isolation: search", () => {
     const organizationId = `org_search_perm_${Date.now()}`;
     const { itemId } = await seedItem({ organizationId });
     const withRead = await connect({
-      context: testContext({ organizationId, permissions: { item: ["view"] } }),
+      context: testContext({ organizationId, permissions: { item: ["read"] } }),
     });
     const withoutRead = await connect({
-      context: testContext({ organizationId, permissions: { venue: ["view"] } }),
+      context: testContext({ organizationId, permissions: { venue: ["read"] } }),
     });
     const visible = await call({ client: withRead, name: "search", args: { query: WORD } });
     expect(visible.data.hits.map((hit: Hit) => hit.entityId)).toContain(itemId);

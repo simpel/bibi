@@ -2,12 +2,12 @@
  * The parts of the app staff get permissions for (ADR 0050). A permission is `<feature>:<action>`.
  * New feature: add it here; presets, the permission grid and the docs follow from this table.
  */
-export const BASE_ACTIONS = ["view", "create", "edit", "remove"] as const;
-
-/** Named actions on top of the base ones, where they matter (sending out, phases, export). */
-export const EXTRA_ACTIONS = ["changePhase", "export", "send"] as const;
-
-export const PERMISSION_ACTIONS = [...BASE_ACTIONS, ...EXTRA_ACTIONS] as const;
+/**
+ * The three actions (ADR 0050): `read` sees the feature, `write` creates and changes it
+ * (including sending, exporting and moving a ticket's phase), `delete` archives it. Okazi never
+ * hard-deletes; `delete` is the archive action.
+ */
+export const PERMISSION_ACTIONS = ["read", "write", "delete"] as const;
 export type PermissionAction = (typeof PERMISSION_ACTIONS)[number];
 
 export const FEATURE_GROUPS = ["bookings", "selling", "catalog", "setup", "organization"] as const;
@@ -15,41 +15,43 @@ export type FeatureGroup = (typeof FEATURE_GROUPS)[number];
 
 type FeatureSpec = { group: FeatureGroup; actions: readonly PermissionAction[] };
 
-const crud = ["view", "create", "edit", "remove"] as const;
+const all = PERMISSION_ACTIONS;
+/** Features whose records are never archived. */
+const noDelete = ["read", "write"] as const;
 
 export const FEATURE_SPECS = {
-  ticket: { group: "bookings", actions: [...crud, "changePhase", "export"] },
-  program: { group: "bookings", actions: crud },
-  customer: { group: "selling", actions: crud },
-  quote: { group: "selling", actions: [...crud, "send"] },
-  payment: { group: "selling", actions: ["view", "create", "edit"] },
-  sheet: { group: "selling", actions: ["view", "create", "send"] },
-  item: { group: "catalog", actions: crud },
-  venue: { group: "catalog", actions: crud },
-  priceList: { group: "catalog", actions: crud },
-  configuration: { group: "setup", actions: crud },
-  pipeline: { group: "setup", actions: crud },
-  template: { group: "setup", actions: crud },
-  responsibility: { group: "setup", actions: crud },
-  member: { group: "organization", actions: crud },
-  apiKey: { group: "organization", actions: crud },
-  paymentAccount: { group: "organization", actions: ["view", "edit"] },
-  audit: { group: "organization", actions: ["view"] },
-  assistant: { group: "organization", actions: ["view", "edit"] },
+  ticket: { group: "bookings", actions: all },
+  program: { group: "bookings", actions: all },
+  customer: { group: "selling", actions: all },
+  quote: { group: "selling", actions: all },
+  payment: { group: "selling", actions: noDelete },
+  sheet: { group: "selling", actions: noDelete },
+  item: { group: "catalog", actions: all },
+  venue: { group: "catalog", actions: all },
+  priceList: { group: "catalog", actions: all },
+  configuration: { group: "setup", actions: all },
+  pipeline: { group: "setup", actions: all },
+  template: { group: "setup", actions: all },
+  responsibility: { group: "setup", actions: all },
+  member: { group: "organization", actions: all },
+  apiKey: { group: "organization", actions: all },
+  paymentAccount: { group: "organization", actions: noDelete },
+  audit: { group: "organization", actions: ["read"] },
+  assistant: { group: "organization", actions: noDelete },
 } as const satisfies Record<string, FeatureSpec>;
 
 export type Feature = keyof typeof FEATURE_SPECS;
 export const FEATURES = Object.keys(FEATURE_SPECS) as Feature[];
 
 /**
- * Admin-only lock: every action but `view` on these comes only from the `admin` preset; overrides
+ * Admin-only lock: every action but `read` on these comes only from the `admin` preset; overrides
  * on them are refused and stale ones ignored. Otherwise one toggle would make someone an admin.
  */
 export const LOCKED_FEATURES: readonly Feature[] = ["member", "apiKey", "paymentAccount"];
 
 /**
  * Shared vocabulary (ADR 0050, feature scope): every screen shows these as labels (a ticket's
- * type and phase, a colleague's name), so `view` on them is always granted and cannot be denied.
+ * type and phase, a colleague's name), so `read` on them is always granted and cannot be denied.
  * Changing them stays permissioned.
  */
 export const ALWAYS_VISIBLE_FEATURES: readonly Feature[] = [
@@ -77,10 +79,10 @@ export type IsLockedInput = { feature: Feature; action: PermissionAction };
 
 /**
  * Whether `feature:action` is fixed by the preset and never overridden: admin-only actions on
- * locked features, and `view` on shared vocabulary (always granted).
+ * locked features, and `read` on shared vocabulary (always granted).
  */
 export function isLocked({ feature, action }: IsLockedInput): boolean {
-  if (action === "view") return ALWAYS_VISIBLE_FEATURES.includes(feature);
+  if (action === "read") return ALWAYS_VISIBLE_FEATURES.includes(feature);
   return LOCKED_FEATURES.includes(feature);
 }
 

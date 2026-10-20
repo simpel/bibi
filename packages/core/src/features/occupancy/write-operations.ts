@@ -20,7 +20,7 @@ export const createOccupancy = defineOperation({
     OVERLAP_NOTE,
   input: OccupancyCreateInputSchema,
   output: OccupancySchema,
-  permission: "ticket:create",
+  permission: "ticket:write",
   handler: async ({ input, context }) => {
     const bookable = await checkBookable({ context, itemId: input.itemId });
     if (!bookable.ok) return bookable;
@@ -43,7 +43,7 @@ export const updateOccupancy = defineOperation({
     `unchanged. ${OVERLAP_NOTE}`,
   input: OccupancyUpdateInputSchema,
   output: OccupancySchema,
-  permission: "ticket:edit",
+  permission: "ticket:write",
   handler: async ({ input: { id, ...data }, context }) => {
     const before = await loadOccupancy({ context, id });
     if (!before) return notFound({ entity: "Occupancy" });
@@ -67,7 +67,7 @@ export const archiveOccupancy = defineOperation({
   description: "Release a MAINTENANCE or INTERNAL block so the item can be booked again.",
   input: OccupancyIdInputSchema,
   output: OccupancySchema,
-  permission: "ticket:remove",
+  permission: "ticket:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await loadOccupancy({ context, id });
     if (!before) return notFound({ entity: "Occupancy" });

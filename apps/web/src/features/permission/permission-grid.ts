@@ -48,7 +48,7 @@ export type IsOnInput = CellInput & { granted: readonly string[] };
 /** A cell is on when granted and its feature is viewable (every action implies view). */
 export function isOn({ granted, feature, action }: IsOnInput): boolean {
   if (!granted.includes(cellKey({ feature, action }))) return false;
-  return action === "view" || granted.includes(cellKey({ feature, action: "view" }));
+  return action === "read" || granted.includes(cellKey({ feature, action: "read" }));
 }
 
 export type SetCellInput = IsOnInput & { on: boolean };
@@ -56,9 +56,9 @@ export type SetCellInput = IsOnInput & { on: boolean };
 /** Turn a cell on or off. View off takes the whole feature away; any action on brings view. */
 export function setCell({ granted, feature, action, on }: SetCellInput): string[] {
   const key = cellKey({ feature, action });
-  const view = cellKey({ feature, action: "view" });
+  const view = cellKey({ feature, action: "read" });
   if (on) return [...new Set([...granted, key, view])];
-  if (action !== "view") return granted.filter((entry) => entry !== key);
+  if (action !== "read") return granted.filter((entry) => entry !== key);
   const editable = FEATURE_SPECS[feature].actions.filter(
     (candidate) => !isLocked({ feature, action: candidate as PermissionAction }),
   );

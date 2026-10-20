@@ -9,7 +9,7 @@ describe("previewChange names (ADR 0050, feature scope)", () => {
     const customer = await createTestCustomer({ context: admin, name: "Secret AB" });
     const ids = [customer.id];
     expect(await resolveNames({ context: admin, ids })).toEqual({ [customer.id]: "Secret AB" });
-    const blind = { ...admin, permissions: { item: ["view" as const] } };
+    const blind = { ...admin, permissions: { item: ["read" as const] } };
     expect(await resolveNames({ context: blind, ids })).toEqual({});
   });
 });

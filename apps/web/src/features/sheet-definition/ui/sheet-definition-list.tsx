@@ -69,7 +69,7 @@ export async function SheetDefinitionList({ locale, cursor }: SheetDefinitionLis
   const result = await loadPage({ cursor });
   const options = result.ok ? result.value.options : undefined;
   const create =
-    can({ abilities, permission: "template:create" }) && options ? (
+    can({ abilities, permission: "template:write" }) && options ? (
       <CreateSheetDefinitionButton />
     ) : undefined;
   const header = (

@@ -21,7 +21,7 @@ export const listCustomers = defineOperation({
     "persons that buy. Filter by ids, customer type or part of the name.",
   input: CustomerListInputSchema,
   output: CustomerListOutputSchema,
-  permission: "customer:view",
+  permission: "customer:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.customer.findMany({
       where: {
@@ -45,7 +45,7 @@ export const getCustomer = defineOperation({
   description: "Get one customer by id, with invoice details and the type's field values.",
   input: CustomerIdInputSchema,
   output: CustomerSchema,
-  permission: "customer:view",
+  permission: "customer:read",
   handler: async ({ input, context }) => {
     const customer = await loadCustomer({ context, id: input.id });
     return customer ? ok({ value: customer }) : notFound({ entity: "Customer" });

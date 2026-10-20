@@ -91,7 +91,7 @@ async function canReadTarget({ context, linkTypeId }: CanReadTargetInput): Promi
   const type = await context.db.entityType.findFirst({ where: { id: linkTypeId } });
   const feature = type ? BASE_FEATURE[type.base] : undefined;
   if (!feature) return false;
-  const permission = `${feature}:view` as Permission;
+  const permission = `${feature}:read` as Permission;
   return hasPermission({ permissions: context.permissions, permission });
 }
 

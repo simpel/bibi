@@ -6,7 +6,7 @@ import type { TemplateTicketFormData } from "./ui/template-ticket-form-data";
 const LIMIT = 100;
 
 /**
- * What the short create form picks from: predefined tickets, customers (hidden without `customer:view`) and (optionally, without
+ * What the short create form picks from: predefined tickets, customers (hidden without `customer:read`) and (optionally, without
  * read access the list is empty) the members who can be assigned.
  */
 export async function loadTemplateTicketData(): Promise<Result<TemplateTicketFormData>> {

@@ -23,7 +23,7 @@ export const listProgramItems = defineOperation({
     "item, item state and a time window (from/to).",
   input: ProgramItemListInputSchema,
   output: ProgramItemListOutputSchema,
-  permission: "program:view",
+  permission: "program:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.programItem.findMany({
       where: {
@@ -49,7 +49,7 @@ export const getProgramItem = defineOperation({
   description: "Get one program item by id, with the type's field values.",
   input: ProgramItemIdInputSchema,
   output: ProgramItemSchema,
-  permission: "program:view",
+  permission: "program:read",
   handler: async ({ input, context }) => {
     const programItem = await loadProgramItem({ context, id: input.id });
     return programItem ? ok({ value: programItem }) : notFound({ entity: "Program item" });

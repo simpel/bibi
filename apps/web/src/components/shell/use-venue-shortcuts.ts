@@ -7,14 +7,14 @@ import { canPermission } from "@/lib/can";
 
 export type UseVenueShortcutsInput = { enabled: boolean; permissions: PermissionSet };
 
-/** Loads venues for ⌘K quick actions the first time the bar opens (needs `venue:view`). */
+/** Loads venues for ⌘K quick actions the first time the bar opens (needs `venue:read`). */
 export function useVenueShortcuts({
   enabled,
   permissions,
 }: UseVenueShortcutsInput): VenueShortcut[] {
   const [venues, setVenues] = useState<VenueShortcut[]>([]);
   useEffect(() => {
-    if (!enabled || !canPermission({ permissions, permission: "venue:view" })) return;
+    if (!enabled || !canPermission({ permissions, permission: "venue:read" })) return;
     let cancelled = false;
     listVenueShortcutsAction().then((result) => {
       if (!cancelled && result.ok) setVenues(result.value);

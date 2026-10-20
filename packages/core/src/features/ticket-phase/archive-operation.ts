@@ -14,7 +14,7 @@ export const archiveTicketPhase = defineOperation({
     "be archived (CONFLICT), nor a phase predefined tickets start in. Its phase grid cells are cleared.",
   input: TicketPhaseArchiveInputSchema,
   output: TicketPhaseSchema,
-  permission: "pipeline:remove",
+  permission: "pipeline:delete",
   handler: ({ input, context }) => archivePhase({ context, input }),
   consequences: async ({ input, context }) => {
     // Only counted for a caller who may view them (ADR 0050, feature scope).

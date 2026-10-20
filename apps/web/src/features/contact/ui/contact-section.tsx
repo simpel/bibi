@@ -16,8 +16,8 @@ export async function ContactSection({ locale, customerId }: ContactSectionProps
   const t = await getTranslations("contact");
   const abilities = await getCallerAbilities();
   const access = {
-    canEdit: can({ abilities, permission: "customer:edit" }),
-    canRemove: can({ abilities, permission: "customer:remove" }),
+    canEdit: can({ abilities, permission: "customer:write" }),
+    canRemove: can({ abilities, permission: "customer:delete" }),
   };
   const [contacts, data] = await Promise.all([
     runOperation({ operation: listContacts, input: { customerId, limit: 100 } }),
@@ -32,7 +32,7 @@ export async function ContactSection({ locale, customerId }: ContactSectionProps
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("plural")}</h2>
-        {can({ abilities, permission: "customer:create" }) && !noTypes ? (
+        {can({ abilities, permission: "customer:write" }) && !noTypes ? (
           <CreateContactButton customerId={customerId} data={data.value} />
         ) : null}
       </div>

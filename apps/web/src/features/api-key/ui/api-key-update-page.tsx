@@ -17,7 +17,7 @@ export type ApiKeyUpdatePageProps = { locale: Locale; id: string };
 export async function ApiKeyUpdatePage({ locale, id }: ApiKeyUpdatePageProps) {
   const t = await getTranslations("integration.apiKeys");
   const abilities = await getCallerAbilities();
-  if (!can({ abilities, permission: "apiKey:edit" })) return <ErrorState errorKey="forbidden" />;
+  if (!can({ abilities, permission: "apiKey:write" })) return <ErrorState errorKey="forbidden" />;
   const keys = await runOperation({ operation: listApiKeys, input: { limit: 100 } });
   if (!keys.ok) return <ErrorState errorKey={handleLoadError({ error: keys.error, locale })} />;
   const apiKey = keys.value.items.find((candidate) => candidate.id === id);

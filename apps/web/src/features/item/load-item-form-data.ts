@@ -14,7 +14,7 @@ export type LoadItemFormDataInput = {
 
 /**
  * Everything the item form needs to render a type's fields and behaviours (one page each).
- * Without `venue:view` the venues are hidden (ADR 0050 feature scope), not an error.
+ * Without `venue:read` the venues are hidden (ADR 0050 feature scope), not an error.
  */
 export async function loadItemFormData({
   customerId,

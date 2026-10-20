@@ -22,7 +22,7 @@ type CanChangePresetInput = {
 
 /** Whether the caller may give another preset: the edit permission and a role that reaches it. */
 function canChangePreset({ abilities, isMember, preset }: CanChangePresetInput): boolean {
-  const permission = isMember ? "member:edit" : "apiKey:edit";
+  const permission = isMember ? "member:write" : "apiKey:write";
   return (
     can({ abilities, permission }) && canManageMember({ caller: abilities.role, member: preset })
   );
@@ -37,7 +37,7 @@ export type PermissionPageProps = { locale: Locale; subjectType: SubjectType; su
 export async function PermissionPage({ locale, subjectType, subjectId }: PermissionPageProps) {
   const t = await getTranslations("permissions");
   const abilities = await getCallerAbilities();
-  if (!can({ abilities, permission: "member:edit" })) return <ErrorState errorKey="forbidden" />;
+  if (!can({ abilities, permission: "member:write" })) return <ErrorState errorKey="forbidden" />;
   const subject = { subjectType, subjectId };
   const name = await findSubjectName(subject);
   if (name === null) notFound();

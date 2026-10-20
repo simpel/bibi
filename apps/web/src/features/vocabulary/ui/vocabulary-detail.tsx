@@ -30,7 +30,7 @@ export async function VocabularyDetail({ locale, id }: VocabularyDetailProps) {
       {access.canEdit || access.canRemove ? (
         <VocabularyRowActions vocabulary={vocabulary} redirectToList access={access} />
       ) : null}
-      {can({ abilities, permission: "configuration:create" }) ? (
+      {can({ abilities, permission: "configuration:write" }) ? (
         <AddValueButton vocabularyId={vocabulary.id} />
       ) : null}
     </>

@@ -2,7 +2,7 @@ import { FEATURES, type Feature } from "./features";
 import type { FixedRole } from "./fixed-roles";
 import { grantAll, type PermissionSet, unionPermissions } from "./permission-set";
 
-/** Features only admins see by default; `view` on them can still be allowed per member. */
+/** Features only admins see by default; `read` on them can still be allowed per member. */
 const ADMIN_VIEW: readonly Feature[] = ["audit", "assistant", "apiKey"];
 
 /** The daily work a manager does in full: bookings, selling and money (ADR 0050). */
@@ -17,7 +17,7 @@ const MANAGER_FEATURES: readonly Feature[] = [
 
 const member = grantAll({
   features: FEATURES.filter((feature) => !ADMIN_VIEW.includes(feature)),
-  only: "view",
+  only: "read",
 });
 
 /**

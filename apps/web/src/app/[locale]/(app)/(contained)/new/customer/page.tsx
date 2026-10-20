@@ -9,7 +9,7 @@ export default async function NewCustomerPage({ params }: NewCustomerPageProps) 
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="customer:create">
+    <PermissionGate permission="customer:write">
       <CustomerCreate locale={locale} />
     </PermissionGate>
   );

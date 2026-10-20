@@ -34,7 +34,7 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 - Exports: `getFirstPartyAccessToken` + the types `GetFirstPartyAccessToken`, `GetFirstPartyAccessTokenInput`, `FirstPartyClient`. Server code (`node:crypto`, the Better Auth server): never import in client components.
 
 ## API keys and OAuth grants (ADR 0005)
-- Issued, listed, updated and revoked **only** by core `apiKey.create|list|update|revoke` (`apiKey:*`, admin preset only, ADR 0050) and `oauthGrant.list|revoke` (`self:view|edit`, the caller's own grants; not available to API keys). Audited there; the secret is returned once and never logged or audited.
+- Issued, listed, updated and revoked **only** by core `apiKey.create|list|update|revoke` (`apiKey:*`, admin preset only, ADR 0050) and `oauthGrant.list|revoke` (`self:read|edit`, the caller's own grants; not available to API keys). Audited there; the secret is returned once and never logged or audited.
 - Core writes the `apikey` row itself with the plugin's hashing (`hashApiKey` = `defaultKeyHasher`, guarded by `test/api-key.test.ts`), prefix `okz_` and rate limit (`API_KEY_RATE_LIMIT`). The plugin is used for `verifyApiKey` only; all its HTTP endpoints are closed (`DISABLED_API_KEY_PATHS`).
 - `apiKey.create` refuses the AI actor: the secret must never enter a conversation.
 

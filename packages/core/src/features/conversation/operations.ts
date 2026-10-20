@@ -24,7 +24,7 @@ export const listConversations = defineOperation({
     "allUsers=true to include other users' conversations.",
   input: ConversationListInputSchema,
   output: ConversationListOutputSchema,
-  permission: "self:view",
+  permission: "self:read",
   handler: async ({ input, context }) => {
     if (input.allUsers && !canReadAllConversations({ context })) {
       const message = "Only organization admins can list other users' conversations";
@@ -47,7 +47,7 @@ export const getConversation = defineOperation({
   description: "Get one of your conversations by id (without messages; use message.list).",
   input: ConversationIdInputSchema,
   output: ConversationSchema,
-  permission: "self:view",
+  permission: "self:read",
   handler: async ({ input, context }) => {
     const conversation = await findConversation({ context, id: input.id, access: "read" });
     return conversation ? ok({ value: conversation }) : notFound();
@@ -60,7 +60,7 @@ export const createConversation = defineOperation({
   description: "Start a new assistant conversation owned by the current user.",
   input: ConversationCreateInputSchema,
   output: ConversationSchema,
-  permission: "self:edit",
+  permission: "self:write",
   // Bookkeeping of the user's own chat; no approval card for the assistant creating it.
   approval: false,
   embeddable: conversationEmbeddable,
@@ -84,7 +84,7 @@ export const renameConversation = defineOperation({
   description: "Rename one of your conversations.",
   input: ConversationRenameInputSchema,
   output: ConversationSchema,
-  permission: "self:edit",
+  permission: "self:write",
   approval: false,
   embeddable: conversationEmbeddable,
   handler: async ({ input, context }) => {
@@ -105,7 +105,7 @@ export const archiveConversation = defineOperation({
   description: "Archive (soft-delete) a conversation. Owners and org admins can archive.",
   input: ConversationIdInputSchema,
   output: ConversationSchema,
-  permission: "self:edit",
+  permission: "self:write",
   embeddable: conversationEmbeddable,
   handler: async ({ input, context }) => {
     const before = await findConversation({ context, id: input.id, access: "manage" });

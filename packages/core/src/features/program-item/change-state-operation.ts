@@ -35,7 +35,7 @@ export const changeLineState = defineOperation({
     "CONFLICT naming the blocker.",
   input: LineChangeStateInputSchema,
   output: ProgramItemSchema,
-  permission: "program:edit",
+  permission: "program:write",
   entityType: "programItem",
   handler: async ({ input: { lineId, stateId }, context }) => {
     const line = await loadProgramItem({ context, id: lineId });

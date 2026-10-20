@@ -13,10 +13,10 @@ export const pipelineBoard = defineOperation({
     "organization's order, terminal phases last as closed lanes, and one card per ticket in its " +
     "phase's column. Filter by assignee or type. Tickets in terminal phases appear only for " +
     "`closedWithinDays` days. A card names its customer by id only (customer.get or " +
-    "customer.list resolve it); its held and booked line counts are null without program:view.",
+    "customer.list resolve it); its held and booked line counts are null without program:read.",
   input: PipelineBoardInputSchema,
   output: PipelineBoardSchema,
-  permission: "ticket:view",
+  permission: "ticket:read",
   // The cards are tickets; a card's customer is only its id (ADR 0050, feature scope).
   entityType: "ticket",
   handler: async ({ input, context }) => {

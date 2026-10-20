@@ -11,9 +11,9 @@ export type WithHistoryProps = {
   children: ReactNode;
 };
 
-/** Wraps a detail page body in details/history tabs (only with `audit:view`; without it just the body, ADR 0050). */
+/** Wraps a detail page body in details/history tabs (only with `audit:read`; without it just the body, ADR 0050). */
 export async function WithHistory({ locale, entityType, entityId, children }: WithHistoryProps) {
-  if (!can({ abilities: await getCallerAbilities(), permission: "audit:view" })) return children;
+  if (!can({ abilities: await getCallerAbilities(), permission: "audit:read" })) return children;
   const history = <EntityHistory locale={locale} entityType={entityType} entityId={entityId} />;
   return <HistoryTabs details={children} history={history} />;
 }

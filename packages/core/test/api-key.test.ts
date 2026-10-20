@@ -71,14 +71,14 @@ describe("apiKey operations (ADR 0005)", () => {
     expect(errorCode({ result: await get({ context }) })).toBe("NOT_FOUND");
   });
 
-  it("refuses unknown presets, and callers without apiKey:create", async () => {
+  it("refuses unknown presets, and callers without apiKey:write", async () => {
     const owner = await testOrg();
     const admin = { ...owner, roles: ["admin"] };
     for (const role of ["owner", "Sales"]) {
       expect(errorCode({ result: await create({ context: admin, role }) })).toBe("VALIDATION");
     }
     expect(errorCode({ result: await create({ context: admin, role: "admin" }) })).toBeNull();
-    // API keys are admin-only (ADR 0050): the manager preset has no apiKey:create.
+    // API keys are admin-only (ADR 0050): the manager preset has no apiKey:write.
     const manager = { ...owner, roles: ["manager"], permissions: PRESET_PERMISSIONS.manager };
     expect(errorCode({ result: await create({ context: manager, role: "member" }) })).toBe(
       "FORBIDDEN",

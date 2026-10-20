@@ -16,9 +16,9 @@ export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
   const t = await getTranslations("programItem");
   const abilities = await getCallerAbilities();
   const access = {
-    canEdit: can({ abilities, permission: "program:edit" }),
-    canRemove: can({ abilities, permission: "program:remove" }),
-    canChangeState: can({ abilities, permission: "program:edit" }),
+    canEdit: can({ abilities, permission: "program:write" }),
+    canRemove: can({ abilities, permission: "program:delete" }),
+    canChangeState: can({ abilities, permission: "program:write" }),
   };
   const [programItems, data] = await Promise.all([
     runOperation({ operation: listProgramItems, input: { ticketId: ticket.id, limit: 100 } }),
@@ -34,7 +34,7 @@ export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("plural")}</h2>
-        {can({ abilities, permission: "program:create" }) ? (
+        {can({ abilities, permission: "program:write" }) ? (
           <CreateProgramItemButton
             data={data.value}
             ticketId={ticket.id}

@@ -35,7 +35,7 @@ export function PermissionCell(props: PermissionCellProps) {
   const locked = isLocked({ feature, action });
   const label = `${t(`features.${feature}`)}: ${t(`actions.${action}`)}`;
   const lockedHint =
-    action === "view" && ALWAYS_VISIBLE_FEATURES.includes(feature)
+    action === "read" && ALWAYS_VISIBLE_FEATURES.includes(feature)
       ? t("alwaysVisible")
       : t("lockedHint");
   const checkbox = (

@@ -21,7 +21,7 @@ const PAGE_SIZE = 20;
 export async function VenueList({ locale, cursor }: VenueListProps) {
   const t = await getTranslations("venue");
   const abilities = await getCallerAbilities();
-  const create = can({ abilities, permission: "venue:create" }) ? <CreateVenueButton /> : undefined;
+  const create = can({ abilities, permission: "venue:write" }) ? <CreateVenueButton /> : undefined;
   const result = await runOperation({
     operation: listVenues,
     input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },

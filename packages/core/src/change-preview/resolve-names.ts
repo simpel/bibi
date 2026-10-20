@@ -36,7 +36,7 @@ type VisibleInput = { entityType: string; permissions: PermissionSet };
 function nameVisible({ entityType, permissions }: VisibleInput): boolean {
   const feature = ENTITY_FEATURE[entityType];
   if (!feature || feature === "self") return false;
-  return hasPermission({ permissions, permission: `${feature}:view` });
+  return hasPermission({ permissions, permission: `${feature}:read` });
 }
 
 /** Strings that look like record ids (cuid2), wherever they appear in paths or values. */

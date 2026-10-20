@@ -22,12 +22,12 @@
 | Setup | `configuration` (types, fields, lists, setups), `pipeline` (phases, item states, phase grid), `template` (ticket templates, sheet definitions), `responsibility` |
 | Organization | `member`, `apiKey`, `paymentAccount`, `audit`, `assistant` (organization skills, everyone's conversations) |
 
-- Actions: `view`, `create`, `edit`, `remove` (archive, Okazi never deletes). A feature may add a named action where it matters: `ticket:changePhase`, `ticket:export`, `quote:send`, `sheet:send`. The actions are independent; none implies another, except that every action implies `view`.
+- Actions: `read`, `write` and `delete` (amended 2026-10-20). `write` covers creating, changing, sending (quotes, sheets), exporting and moving a ticket to another phase; managing the phases themselves is the separate `pipeline` feature. `delete` is the archive action (Okazi never hard-deletes). `write` and `delete` imply `read`. Payments, sheets, the payment account and the assistant have no `delete`; the audit log is `read` only.
 - Always on, with no permission: the caller's own conversations, personal skills, preferences, settings and connected apps (`self`), and search (it only returns what the caller may view).
 
 ### Presets
 - `member`, `manager` and `admin` (ADR 0034) become presets: constant permission sets in code, not configurable per organization.
-  - `member`: `view` on every feature except `audit` and `assistant`.
+  - `member`: `read` on every feature except `audit`, `assistant` and `apiKey`.
   - `manager`: member + every action on Bookings and Selling.
   - `admin`: every action on every feature.
 - Every member and every API key has exactly one preset.
@@ -35,19 +35,19 @@
 ### Overrides
 - An admin fine-tunes one member or API key with overrides: `allow` or `deny` per `feature:action`, stored in `PermissionOverride` (org-scoped, unique per subject + permission).
 - Effective permissions = preset, plus `allow`, minus `deny`. Only the differences are stored, so a change to a preset reaches everyone on it.
-- Admin-only lock: every action except `view` on `member`, `apiKey` and `paymentAccount` comes only from the `admin` preset. Overrides on them are refused (VALIDATION), and stale rows are ignored.
-- `view` can be denied on any feature, so not everyone sees everything. Pages, navigation, tools and the assistant follow the effective permissions.
-- Only callers with `member:edit` (admins) read or change overrides. Changes are audited.
+- Admin-only lock: every action except `read` on `member`, `apiKey` and `paymentAccount` comes only from the `admin` preset. Overrides on them are refused (VALIDATION), and stale rows are ignored.
+- `read` can be denied on any feature except shared vocabulary, so not everyone sees everything. Pages, navigation, tools and the assistant follow the effective permissions.
+- Only callers with `member:write` (admins) read or change overrides. Changes are audited.
 
 ### Feature scope (no cross-feature data)
-Denying `view` on a feature must hide its data everywhere, not only its own pages. If one feature shows another feature's data, the scope is wrong; fix the scope instead of adding checks around it.
+Denying `read` on a feature must hide its data everywhere, not only its own pages. If one feature shows another feature's data, the scope is wrong; fix the scope instead of adding checks around it.
 
 - **One feature per output.** An operation returns only data owned by the feature of its `permission`. Ownership is `ENTITY_FEATURE` in `packages/core/src/permissions/entity-features.ts`. Another feature's record appears only as its id.
 - **Resolve through the owner.** A surface that needs another feature's data (a page, a GraphQL edge, a card) calls that feature's own operation. If that returns FORBIDDEN, the surface shows the piece as hidden and keeps working; it never fails the whole page.
-- **Inputs are checked too.** An operation that takes another feature's id calls `checkReadable({ permission: "<feature>:view" })` before reading it. Neither the output nor an error message may reveal anything about a record the caller cannot view (no id-to-name oracle).
-- **Snapshots need view at copy time.** Copying another feature's data into this one (quote lines from items, sheet rows from the program) requires `view` on the source when the copy is made. After that the copy belongs to the copying feature.
+- **Inputs are checked too.** An operation that takes another feature's id calls `checkReadable({ permission: "<feature>:read" })` before reading it. Neither the output nor an error message may reveal anything about a record the caller cannot view (no id-to-name oracle).
+- **Snapshots need read at copy time.** Copying another feature's data into this one (quote lines from items, sheet rows from the program) requires `read` on the source when the copy is made. After that the copy belongs to the copying feature.
 - **Derived views follow the owner.** Audit entries are shown only when the caller may view the entity's feature, and audit images are DTOs, never raw rows. Search text holds only the entity's own fields. Approval previews name only records the caller may view.
-- **Shared vocabulary is always visible.** `configuration`, `pipeline`, `template`, `responsibility` and `member` (`ALWAYS_VISIBLE_FEATURES`): type, phase and list names and colleagues' names are labels on every screen, so `view` on them cannot be denied. Changing them stays permissioned.
+- **Shared vocabulary is always visible.** `configuration`, `pipeline`, `template`, `responsibility` and `member` (`ALWAYS_VISIBLE_FEATURES`): type, phase and list names and colleagues' names are labels on every screen, so `read` on them cannot be denied. Changing them stays permissioned.
 - **Bundles are declared, not implied.** A feature that owns several entity kinds (`ticket` owns occupancy, assignments and ticket email; `program` owns program items, line states and needs) says so in `ENTITY_FEATURE`. Nothing else crosses.
 - **Known limit.** Chat history stores tool results as they were; denying a permission later does not rewrite old conversations.
 - **Guard.** A core test fails when an operation's output schema has a field named after another feature's entity (`customerName`, `itemPriceMinor`, ...) or when an audited entity type has no owner in `ENTITY_FEATURE`.

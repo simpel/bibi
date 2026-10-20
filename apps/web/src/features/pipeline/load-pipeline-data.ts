@@ -21,11 +21,11 @@ const LIMIT = 100;
 
 /**
  * The cards' customer names through `customer.list` (the board carries only ids, ADR 0050
- * "Feature scope"). Without `customer:view`, or when the lookup fails, names stay hidden.
+ * "Feature scope"). Without `customer:read`, or when the lookup fails, names stay hidden.
  */
 async function loadCustomerNames({ board }: { board: PipelineBoard }) {
   const abilities = await getCallerAbilities();
-  if (!can({ abilities, permission: "customer:view" })) return {};
+  if (!can({ abilities, permission: "customer:read" })) return {};
   const ids = [...new Set(board.cards.map((card) => card.customerId))];
   const chunks = Array.from({ length: Math.ceil(ids.length / LIMIT) }, (_, index) =>
     ids.slice(index * LIMIT, (index + 1) * LIMIT),

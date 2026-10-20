@@ -87,7 +87,7 @@ export const importTicketPhaseTemplate = defineOperation({
     "phase stays the entry phase, and a quote event that a phase has stays with it.",
   input: TicketPhaseImportTemplateInputSchema,
   output: TicketPhaseImportTemplateOutputSchema,
-  permission: "pipeline:create",
+  permission: "pipeline:write",
   handler: ({ input, context }) =>
     importTicketPhases({ context, template: getTicketPhaseTemplate({ key: input.template }) }),
 });

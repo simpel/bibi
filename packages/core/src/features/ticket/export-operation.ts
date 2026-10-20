@@ -16,7 +16,7 @@ export const exportTicket = defineOperation({
     "and content.",
   input: TicketExportInputSchema,
   output: TicketExportOutputSchema,
-  permission: "ticket:export",
+  permission: "ticket:write",
   handler: async ({ input, context }) => {
     const ticket = await loadTicket({ context, id: input.id });
     if (!ticket) return notFound({ entity: "Ticket" });

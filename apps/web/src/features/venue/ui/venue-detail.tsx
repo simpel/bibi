@@ -29,7 +29,7 @@ export async function VenueDetail({ locale, id, itemCursor }: VenueDetailProps) 
       <WithHistory locale={locale} entityType="venue" entityId={venue.id}>
         <div className="grid gap-8">
           <VenueFacts venue={venue} />
-          {can({ abilities, permission: "item:view" }) ? (
+          {can({ abilities, permission: "item:read" }) ? (
             <section className="grid gap-4">
               <h2 className="text-xl font-semibold">{items("plural")}</h2>
               <VenueItemsSection locale={locale} venueId={venue.id} cursor={itemCursor} />

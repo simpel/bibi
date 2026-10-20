@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 import { seedOrgMember } from "./seed-org-member";
 
-const overrides = [{ feature: "item", action: "edit", effect: "allow" }];
+const overrides = [{ feature: "item", action: "write", effect: "allow" }];
 
 describe("cross-organization isolation: permissions and API key updates", () => {
   it("keeps one organization's member permissions from another", async () => {

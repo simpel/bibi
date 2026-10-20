@@ -19,8 +19,8 @@ export async function RequirementSection({ locale, ticket }: RequirementSectionP
   const t = await getTranslations("requirement");
   const abilities = await getCallerAbilities();
   const access = {
-    canEdit: can({ abilities, permission: "program:edit" }),
-    canRemove: can({ abilities, permission: "program:remove" }),
+    canEdit: can({ abilities, permission: "program:write" }),
+    canRemove: can({ abilities, permission: "program:delete" }),
   };
   const input = { ticketId: ticket.id, limit: 100 };
   const [requirements, programItems] = await Promise.all([
@@ -40,7 +40,7 @@ export async function RequirementSection({ locale, ticket }: RequirementSectionP
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("plural")}</h2>
-        {can({ abilities, permission: "program:create" }) ? (
+        {can({ abilities, permission: "program:write" }) ? (
           <CreateRequirementButton data={data.value} ticketId={ticket.id} />
         ) : null}
       </div>

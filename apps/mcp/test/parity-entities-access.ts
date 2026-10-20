@@ -53,7 +53,7 @@ const permission: ParityEntity = {
       args: {
         subjectType: "member",
         subjectId: made.memberSeed.id,
-        overrides: [{ feature: "item", action: "edit", effect: "allow" }],
+        overrides: [{ feature: "item", action: "write", effect: "allow" }],
       },
     }),
   viaMcp: ({ mcp, created }) =>

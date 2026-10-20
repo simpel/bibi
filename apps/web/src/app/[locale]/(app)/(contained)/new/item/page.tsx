@@ -13,7 +13,7 @@ export default async function NewItemPage({ params, searchParams }: NewItemPageP
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="item:create">
+    <PermissionGate permission="item:write">
       <ItemCreate locale={locale} typeId={readCursor({ value: (await searchParams).type })} />
     </PermissionGate>
   );

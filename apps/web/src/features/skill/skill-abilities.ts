@@ -4,7 +4,7 @@ export type SkillAbilities = { edit: boolean; publish: boolean; archive: boolean
 
 export type SkillAbilitiesInput = {
   skill: Pick<SkillDto, "scope" | "status">;
-  /** The caller is an organization admin (`assistant:edit`). */
+  /** The caller is an organization admin (`assistant:write`). */
   admin: boolean;
 };
 

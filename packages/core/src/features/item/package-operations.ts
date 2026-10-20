@@ -15,7 +15,7 @@ export const saveItemAsPackage = defineOperation({
     "unchanged. Parts are catalog items or the customer's own packages.",
   input: ItemSaveAsPackageInputSchema,
   output: ItemSchema,
-  permission: "item:create",
+  permission: "item:write",
   embeddable: itemEmbeddable,
   handler: async ({ input: { customerId, ...input }, context }) => {
     const customer = await checkCustomer({ context, customerId });

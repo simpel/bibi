@@ -10,7 +10,7 @@ export default async function UpdateTicketPage({ params }: UpdateTicketPageProps
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="ticket:edit">
+    <PermissionGate permission="ticket:write">
       <TicketUpdate locale={locale} id={id} />
     </PermissionGate>
   );

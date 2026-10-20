@@ -15,8 +15,8 @@ export async function OccupancySection({ locale, itemId }: OccupancySectionProps
   const t = await getTranslations("occupancy");
   const abilities = await getCallerAbilities();
   const access = {
-    canEdit: can({ abilities, permission: "ticket:edit" }),
-    canRemove: can({ abilities, permission: "ticket:remove" }),
+    canEdit: can({ abilities, permission: "ticket:write" }),
+    canRemove: can({ abilities, permission: "ticket:delete" }),
   };
   const occupancies = await runOperation({
     operation: listOccupancies,
@@ -30,7 +30,7 @@ export async function OccupancySection({ locale, itemId }: OccupancySectionProps
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("plural")}</h2>
-        {can({ abilities, permission: "ticket:create" }) ? (
+        {can({ abilities, permission: "ticket:write" }) ? (
           <CreateOccupancyButton itemId={itemId} />
         ) : null}
       </div>

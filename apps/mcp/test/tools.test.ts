@@ -30,7 +30,7 @@ describe("MCP tools", () => {
     expect(byName.get("venue_list")?.annotations?.readOnlyHint).toBe(true);
     expect(byName.get("venue_archive")?.annotations?.destructiveHint).toBe(true);
     expect(byName.get("venue_create")?.annotations?.destructiveHint).toBe(false);
-    expect(byName.get("venue_create")?.description).toContain("venue:create");
+    expect(byName.get("venue_create")?.description).toContain("venue:write");
     expect(byName.get("venue_create")?.description).toContain("approval_required");
     expect(byName.get("venue_get")?.inputSchema.required).toContain("id");
   });

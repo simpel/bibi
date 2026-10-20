@@ -23,7 +23,7 @@ export const createApiKey = defineOperation({
     "once. Admins only, from a signed-in web session; the assistant never can.",
   input: ApiKeyCreateInputSchema,
   output: ApiKeyCreatedSchema,
-  permission: "apiKey:create",
+  permission: "apiKey:write",
   // The secret must never enter a chat (ADR 0005, #88).
   aiAllowed: false,
   handler: async ({ input, context }) => {
@@ -46,7 +46,7 @@ export const updateApiKey = defineOperation({
     "(see permission.update). Admins only.",
   input: ApiKeyUpdateInputSchema,
   output: ApiKeySchema,
-  permission: "apiKey:edit",
+  permission: "apiKey:write",
   handler: async ({ input, context }) => {
     const where = { id: input.id, enabled: true };
     const row = await context.db.apikey.findFirst({ where, select: API_KEY_SELECT });
@@ -77,7 +77,7 @@ export const revokeApiKey = defineOperation({
   description: "Revoke an API key (see apiKey.list). Requests with it fail at once. Admins only.",
   input: ApiKeyIdInputSchema,
   output: ApiKeySchema,
-  permission: "apiKey:remove",
+  permission: "apiKey:delete",
   handler: async ({ input, context }) => {
     const where = { id: input.id, enabled: true };
     const row = await context.db.apikey.findFirst({ where, select: API_KEY_SELECT });

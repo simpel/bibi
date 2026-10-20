@@ -28,7 +28,7 @@ export const inviteMember = defineOperation({
     "member when they accept. You cannot invite with a role above your own.",
   input: MemberInviteInputSchema,
   output: InvitationSchema,
-  permission: "member:create",
+  permission: "member:write",
   handler: async ({ input, context }) => {
     const inviterId = context.actor.userId;
     if (!inviterId)
@@ -65,7 +65,7 @@ export const cancelInvitation = defineOperation({
   description: "Revoke a pending invitation (from member.listInvitations); its link stops working.",
   input: InvitationIdInputSchema,
   output: InvitationSchema,
-  permission: "member:create",
+  permission: "member:write",
   handler: async ({ input, context }) => {
     const before = await context.db.invitation.findFirst({
       where: { id: input.id, status: "pending" },
@@ -94,7 +94,7 @@ export const listInvitations = defineOperation({
   description: "List the organization's pending, unexpired invitations with the role they give.",
   input: InvitationListInputSchema,
   output: InvitationListOutputSchema,
-  permission: "member:create",
+  permission: "member:write",
   handler: async ({ input, context }) => {
     const rows = await context.db.invitation.findMany({
       where: { status: "pending", expiresAt: { gt: new Date() } },

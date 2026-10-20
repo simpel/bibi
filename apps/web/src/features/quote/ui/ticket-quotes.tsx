@@ -32,7 +32,7 @@ export async function TicketQuotes({ locale, ticket, phases }: TicketQuotesProps
   }
   const items = quotes.value.items;
   const open = !phases.find(({ id }) => id === ticket.phaseId)?.terminal;
-  const canCreate = can({ abilities, permission: "quote:create" }) && open && items.length === 0;
+  const canCreate = can({ abilities, permission: "quote:write" }) && open && items.length === 0;
   return (
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">

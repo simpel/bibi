@@ -11,11 +11,11 @@ export type CommandEntry = {
 };
 
 export const NAVIGATE_ENTRIES: readonly CommandEntry[] = [
-  { href: ROUTES.venues, labelKey: "goToVenues", icon: BuildingIcon, permission: "venue:view" },
-  { href: ROUTES.items, labelKey: "goToItems", icon: BoxIcon, permission: "item:view" },
+  { href: ROUTES.venues, labelKey: "goToVenues", icon: BuildingIcon, permission: "venue:read" },
+  { href: ROUTES.items, labelKey: "goToItems", icon: BoxIcon, permission: "item:read" },
 ];
 
 export const ACTION_ENTRIES: readonly CommandEntry[] = [
-  { href: ROUTES.venueNew, labelKey: "createVenue", icon: PlusIcon, permission: "venue:create" },
-  { href: ROUTES.itemNew, labelKey: "createItem", icon: PlusIcon, permission: "item:create" },
+  { href: ROUTES.venueNew, labelKey: "createVenue", icon: PlusIcon, permission: "venue:write" },
+  { href: ROUTES.itemNew, labelKey: "createItem", icon: PlusIcon, permission: "item:write" },
 ];

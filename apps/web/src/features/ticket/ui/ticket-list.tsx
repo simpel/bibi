@@ -47,9 +47,9 @@ const HeaderActions = ({ create }: { create: ReactNode }) => (
 
 type HeaderPartsInput = { abilities: CallerAbilities; noTypes: boolean };
 
-/** The create button (not without types) and the header actions; both need `ticket:create`. */
+/** The create button (not without types) and the header actions; both need `ticket:write`. */
 function headerParts({ abilities, noTypes }: HeaderPartsInput) {
-  const canCreate = can({ abilities, permission: "ticket:create" });
+  const canCreate = can({ abilities, permission: "ticket:write" });
   const create = canCreate && !noTypes ? <CreateTicketButton /> : undefined;
   return { create, actions: canCreate ? <HeaderActions create={create} /> : undefined };
 }

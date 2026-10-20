@@ -9,7 +9,7 @@ export default async function NewResponsibilityPage({ params }: NewResponsibilit
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="responsibility:create">
+    <PermissionGate permission="responsibility:write">
       <ResponsibilityCreate locale={locale} />
     </PermissionGate>
   );

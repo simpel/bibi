@@ -18,7 +18,7 @@ export const listFieldDefinitions = defineOperation({
     "Values of these fields are stored in an entity's `fields` JSON under each field's `key`.",
   input: FieldDefinitionListInputSchema,
   output: FieldDefinitionListOutputSchema,
-  permission: "configuration:view",
+  permission: "configuration:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.fieldDefinition.findMany({
       where: input.entityTypeId ? { entityTypeId: input.entityTypeId } : {},
@@ -35,7 +35,7 @@ export const getFieldDefinition = defineOperation({
   description: "Get one field definition by id.",
   input: FieldDefinitionIdInputSchema,
   output: FieldDefinitionSchema,
-  permission: "configuration:view",
+  permission: "configuration:read",
   handler: async ({ input, context }) => {
     const field = await context.db.fieldDefinition.findFirst({ where: { id: input.id } });
     return field ? ok({ value: field }) : notFound({ entity: "Field" });

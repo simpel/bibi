@@ -20,7 +20,7 @@ export const createPriceList = defineOperation({
     "and set agreed item prices with priceList.setItems; a list never has both.",
   input: PriceListCreateInputSchema,
   output: PriceListSchema,
-  permission: "priceList:create",
+  permission: "priceList:write",
   handler: async ({ input, context }) => {
     const terms = await checkTerms({ context, ...input });
     if (!terms.ok) return terms;
@@ -42,7 +42,7 @@ export const updatePriceList = defineOperation({
     "are unchanged; null clears one. Refused to set a discount while the list has item prices.",
   input: PriceListUpdateInputSchema,
   output: PriceListSchema,
-  permission: "priceList:edit",
+  permission: "priceList:write",
   handler: async ({ input: { id, ...data }, context }) => {
     const before = await loadPriceList({ context, id });
     if (!before) return notFound({ entity: "Price list" });
@@ -75,7 +75,7 @@ export const setPriceListItems = defineOperation({
     "general discount (clear it with priceList.update first).",
   input: PriceListSetItemsInputSchema,
   output: PriceListSchema,
-  permission: "priceList:edit",
+  permission: "priceList:write",
   handler: async ({ input: { id, items }, context }) => {
     const before = await loadPriceList({ context, id });
     if (!before) return notFound({ entity: "Price list" });
@@ -103,7 +103,7 @@ export const archivePriceList = defineOperation({
   description: "Archive (soft-delete) a price list. New order lines no longer use its prices.",
   input: PriceListIdInputSchema,
   output: PriceListSchema,
-  permission: "priceList:remove",
+  permission: "priceList:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await loadPriceList({ context, id });
     if (!before) return notFound({ entity: "Price list" });

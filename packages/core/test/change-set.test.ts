@@ -83,7 +83,7 @@ describe("changeSet.apply (ADR 0049)", () => {
     }).steps[0]?.output as { id: string };
     const member = {
       ...admin,
-      permissions: { venue: ["view"] as const },
+      permissions: { venue: ["read"] as const },
     };
     const denied = await apply({
       context: member,

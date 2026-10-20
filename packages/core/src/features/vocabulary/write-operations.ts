@@ -20,7 +20,7 @@ export const createVocabulary = defineOperation({
   description: "Create a list with optional initial values. List names are unique.",
   input: VocabularyCreateInputSchema,
   output: VocabularySchema,
-  permission: "configuration:create",
+  permission: "configuration:write",
   handler: ({ input, context }) => insertVocabulary({ context, ...input }),
 });
 
@@ -30,7 +30,7 @@ export const updateVocabulary = defineOperation({
   description: "Rename a list. Values are changed with vocabulary.addValue/updateValue.",
   input: VocabularyUpdateInputSchema,
   output: VocabularySchema,
-  permission: "configuration:edit",
+  permission: "configuration:write",
   handler: async ({ input: { id, name }, context }) => {
     const before = await context.db.vocabulary.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "List" });
@@ -51,7 +51,7 @@ export const archiveVocabulary = defineOperation({
     "one of its values or a sheet definition counts its requirements.",
   input: VocabularyIdInputSchema,
   output: VocabularySchema,
-  permission: "configuration:remove",
+  permission: "configuration:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.vocabulary.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "List" });
@@ -82,7 +82,7 @@ export const importVocabularyTemplate = defineOperation({
     "Refused if a list with the template's name exists.",
   input: VocabularyImportTemplateInputSchema,
   output: VocabularySchema,
-  permission: "configuration:create",
+  permission: "configuration:write",
   handler: ({ input, context }) => {
     const { name, values } = getVocabularyTemplate({ key: input.template });
     return insertVocabulary({ context, name, values: [...values] });

@@ -10,7 +10,7 @@ export default async function UpdateResponsibilityPage({ params }: UpdateRespons
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="responsibility:edit">
+    <PermissionGate permission="responsibility:write">
       <ResponsibilityUpdate locale={locale} id={id} />
     </PermissionGate>
   );

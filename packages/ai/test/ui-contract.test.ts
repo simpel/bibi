@@ -109,8 +109,8 @@ describe("permission profile card", () => {
       subjectType: "member",
       subjectId: "m1",
       preset: "manager",
-      overrides: [{ feature: "item", action: "edit", effect: "allow" }],
-      effective: { item: ["view", "edit"] },
+      overrides: [{ feature: "item", action: "write", effect: "allow" }],
+      effective: { item: ["read", "write"] },
     };
     for (const toolName of ["permission_get", "permission_update"]) {
       expect(resolveToolUi({ toolName, output: mcp({ value: profile }) })).toEqual({

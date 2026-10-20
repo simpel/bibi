@@ -30,8 +30,8 @@ export async function CustomerDetail({ locale, id }: CustomerDetailProps) {
   }
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const type = data.value.types.find(({ id: typeId }) => typeId === customer.value.entityTypeId);
-  const canEdit = can({ abilities, permission: "customer:edit" });
-  const canArchive = can({ abilities, permission: "customer:remove" });
+  const canEdit = can({ abilities, permission: "customer:write" });
+  const canArchive = can({ abilities, permission: "customer:delete" });
   const actions =
     canEdit || canArchive ? (
       <CustomerActions customer={customer.value} canEdit={canEdit} canArchive={canArchive} />

@@ -17,9 +17,9 @@ const PRIVATE_TYPES: readonly string[] = [
 
 /** Private types an admin may still read for everyone, by the same rule as their list operation. */
 const ADMIN_READABLE: Readonly<Record<string, Permission>> = {
-  conversation: "assistant:view",
-  message: "assistant:view",
-  invitation: "member:create",
+  conversation: "assistant:read",
+  message: "assistant:read",
+  invitation: "member:write",
 };
 
 type TypesInput = { permissions: PermissionSet };
@@ -31,7 +31,7 @@ function sharedTypes({ permissions }: TypesInput): string[] {
       const adminRule = ADMIN_READABLE[type];
       if (adminRule) return hasPermission({ permissions, permission: adminRule });
       if (feature === "self" || PRIVATE_TYPES.includes(type)) return false;
-      return hasPermission({ permissions, permission: `${feature}:view` });
+      return hasPermission({ permissions, permission: `${feature}:read` });
     })
     .map(([type]) => type);
 }
@@ -42,7 +42,7 @@ export type AuditVisibilityInput = { context: Pick<OperationContext, "actor" | "
  * Per-user visibility on top of scopedDb (which already limits rows to the org), ADR 0050
  * "Feature scope": a row is shown only when the caller may view its entity type's feature
  * (ENTITY_FEATURE). Private types are shown only to the user who made the change, except that
- * `assistant:view` sees conversation rows (same rule as `conversation.list`) and `member:create`
+ * `assistant:read` sees conversation rows (same rule as `conversation.list`) and `member:write`
  * sees invitation rows (same rule as `member.listInvitations`). Unknown entity types are hidden
  * (fail closed). System jobs see everything.
  */

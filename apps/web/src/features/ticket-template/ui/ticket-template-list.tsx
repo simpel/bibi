@@ -15,7 +15,7 @@ export type TicketTemplateListProps = { locale: Locale };
 
 /** An organization has a handful of predefined tickets: one page, no paging. */
 const PAGE_SIZE = 100;
-const CREATE = "template:create";
+const CREATE = "template:write";
 
 /** Predefined tickets page body: header with the admin action and the table. */
 export async function TicketTemplateList({ locale }: TicketTemplateListProps) {

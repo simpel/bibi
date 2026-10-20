@@ -20,7 +20,7 @@ export const listItemStates = defineOperation({
     "a line may move to from it (`transitionsTo`). Filter by item type.",
   input: ItemStateListInputSchema,
   output: ItemStateListOutputSchema,
-  permission: "pipeline:view",
+  permission: "pipeline:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.itemState.findMany({
       where: input.entityTypeId ? { entityTypeId: input.entityTypeId } : {},
@@ -39,7 +39,7 @@ export const getItemState = defineOperation({
   description: "Get one item state by id, with its flags and the states it may move to.",
   input: ItemStateIdInputSchema,
   output: ItemStateSchema,
-  permission: "pipeline:view",
+  permission: "pipeline:read",
   handler: async ({ input, context }) => {
     const state = await loadItemState({ context, id: input.id });
     return state ? ok({ value: state }) : notFound({ entity: "Item state" });

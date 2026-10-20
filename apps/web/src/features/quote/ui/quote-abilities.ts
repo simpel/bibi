@@ -5,9 +5,9 @@ export type QuoteAbilitiesInput = {
   quote: QuoteDto;
   /** The highest version of the ticket's quote. */
   latestVersion: number;
-  /** The caller holds `quote:edit` (edit, accept, decline, expire, revise). */
+  /** The caller holds `quote:write` (edit, accept, decline, expire, revise). */
   canEdit: boolean;
-  /** The caller holds `quote:send`. */
+  /** The caller holds `quote:write`. */
   canSend: boolean;
 };
 

@@ -12,7 +12,7 @@ export default async function NewTicketPage({ params, searchParams }: NewTicketP
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="ticket:create">
+    <PermissionGate permission="ticket:write">
       <TicketCreate locale={locale} custom={(await searchParams).mode === "custom"} />
     </PermissionGate>
   );

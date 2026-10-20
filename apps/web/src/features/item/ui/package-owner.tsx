@@ -6,7 +6,7 @@ import { runOperation } from "@/server/run-operation";
 
 export type PackageOwnerProps = { customerId: string };
 
-/** "Package for <customer>" on a customer-specific item; the name reads "Hidden" without `customer:view`. */
+/** "Package for <customer>" on a customer-specific item; the name reads "Hidden" without `customer:read`. */
 export async function PackageOwner({ customerId }: PackageOwnerProps) {
   const t = await getTranslations("item");
   const customer = await runOperation({ operation: getCustomer, input: { id: customerId } });

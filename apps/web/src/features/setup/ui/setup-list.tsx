@@ -15,7 +15,7 @@ import { SetupTable } from "./setup-table";
 export type SetupListProps = { locale: Locale; cursor?: string | undefined };
 
 const PAGE_SIZE = 50;
-const CREATE = "configuration:create";
+const CREATE = "configuration:write";
 
 /** Setups page body: header with create, table, cursor pagination. */
 export async function SetupList({ locale, cursor }: SetupListProps) {

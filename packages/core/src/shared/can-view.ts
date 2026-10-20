@@ -6,5 +6,5 @@ export type CanViewInput = { context: Pick<OperationContext, "permissions">; fea
 
 /** Whether the caller may view `feature`'s data (ADR 0050, feature scope). */
 export function canView({ context, feature }: CanViewInput): boolean {
-  return hasPermission({ permissions: context.permissions, permission: `${feature}:view` });
+  return hasPermission({ permissions: context.permissions, permission: `${feature}:read` });
 }

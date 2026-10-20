@@ -30,7 +30,7 @@ export const createProgramItem = defineOperation({
     `program item types. ${OCCUPY_NOTE}`,
   input: ProgramItemCreateInputSchema,
   output: ProgramItemSchema,
-  permission: "program:create",
+  permission: "program:write",
   handler: async ({ input, context }) => insertProgramItem({ context, input }),
 });
 
@@ -43,7 +43,7 @@ export const updateProgramItem = defineOperation({
     `occupancy. ${OCCUPY_NOTE}`,
   input: ProgramItemUpdateInputSchema,
   output: ProgramItemSchema,
-  permission: "program:edit",
+  permission: "program:write",
   handler: async ({ input: { id, fields: patch, ...data }, context }) => {
     const before = await loadProgramItem({ context, id });
     if (!before) return notFound({ entity: "Program item" });
@@ -86,7 +86,7 @@ export const archiveProgramItem = defineOperation({
     "Remove (archive) a program item from the run schedule and release the item it occupied.",
   input: ProgramItemIdInputSchema,
   output: ProgramItemSchema,
-  permission: "program:remove",
+  permission: "program:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await loadProgramItem({ context, id });
     if (!before) return notFound({ entity: "Program item" });

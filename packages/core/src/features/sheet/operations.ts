@@ -28,7 +28,7 @@ export const listSheets = defineOperation({
     "when it was sent. Filter by ticket or sheet definition.",
   input: SheetListInputSchema,
   output: SheetListOutputSchema,
-  permission: "sheet:view",
+  permission: "sheet:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.sheet.findMany({
       where: {
@@ -50,7 +50,7 @@ export const getSheet = defineOperation({
   description: "Get one sheet version by id, with its rows and the changes marked ★.",
   input: SheetIdInputSchema,
   output: SheetSchema,
-  permission: "sheet:view",
+  permission: "sheet:read",
   handler: async ({ input, context }) => {
     const row = await context.db.sheet.findFirst({ where: { id: input.id } });
     return row ? ok({ value: toSheetDto({ row }) }) : notFound({ entity: "Sheet" });
@@ -65,10 +65,10 @@ export const generateSheet = defineOperation({
     "snapshot of the ticket's items and counts that the definition includes. A changed " +
     "ticket gives the next version, with the changed rows marked ★ against the last SENT " +
     "version; an unchanged ticket returns the latest version. Sending is a separate step " +
-    "(sheet.send). Needs ticket:view, program:view and item:view (the rows are copied from them).",
+    "(sheet.send). Needs ticket:read, program:read and item:read (the rows are copied from them).",
   input: SheetGenerateInputSchema,
   output: SheetSchema,
-  permission: "sheet:create",
+  permission: "sheet:write",
   handler: async ({ input: { ticketId, sheetDefinitionId }, context }) => {
     const readable = checkSourcesReadable({ context });
     if (!readable.ok) return readable;
@@ -106,7 +106,7 @@ export const sendSheet = defineOperation({
     "sheet (`blocked`: a count matches an item that contains it, see `matches`) gives CONFLICT.",
   input: SheetIdInputSchema,
   output: SheetSchema,
-  permission: "sheet:send",
+  permission: "sheet:write",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.sheet.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Sheet" });

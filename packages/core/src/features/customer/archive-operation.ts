@@ -73,13 +73,13 @@ export const archiveCustomer = defineOperation({
     "active price lists (archive those first). Every ticket that is not archived, in any " +
     "phase, also blocks it, unless `archiveTickets` is true: then those tickets are " +
     "archived with the customer, with their program items and room occupancy (needs " +
-    "ticket:remove). The customer's own packages are archived with it (needs item:remove). " +
+    "ticket:delete). The customer's own packages are archived with it (needs item:delete). " +
     "With `archiveTickets` and `expectedTicketCount` it is refused with CONFLICT, and nothing " +
     "is archived, unless exactly that many tickets would be archived. " +
     "Refused while a LINK field points to the customer or to anything archived with it.",
   input: CustomerArchiveInputSchema,
   output: CustomerSchema,
-  permission: "customer:remove",
+  permission: "customer:delete",
   embeddable: customerEmbeddable,
   handler: async ({ input, context }) => {
     const { id, archiveTickets, expectedTicketCount } = input;

@@ -29,12 +29,12 @@ export const PipelineCardSchema = z.object({
     .number()
     .int()
     .nullable()
-    .describe("Lines in a soft-hold state (reserved, not blocking); null without program:view"),
+    .describe("Lines in a soft-hold state (reserved, not blocking); null without program:read"),
   bookedLines: z
     .number()
     .int()
     .nullable()
-    .describe("Lines in a hard-hold state (blocking their item); null without program:view"),
+    .describe("Lines in a hard-hold state (blocking their item); null without program:read"),
 });
 
 export const PipelineBoardInputSchema = z.object({

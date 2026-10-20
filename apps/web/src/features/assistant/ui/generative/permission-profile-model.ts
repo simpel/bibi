@@ -19,7 +19,7 @@ export function buildPermissionModel({ profile, feature, action }: BuildPermissi
     profile.overrides
       .filter((o) => o.effect === effect)
       .map((o) => chip({ f: o.feature, a: o.action }));
-  const visible = FEATURES.filter((f) => profile.effective[f]?.includes("view"));
+  const visible = FEATURES.filter((f) => profile.effective[f]?.includes("read"));
   return {
     allowed: byEffect({ effect: "allow" }),
     denied: byEffect({ effect: "deny" }),

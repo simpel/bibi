@@ -26,7 +26,7 @@ export const list{{Pascal}}s = defineOperation({
   description: "TODO: list the organization's {{Pascal}} rows, ordered by name.",
   input: {{Pascal}}ListInputSchema,
   output: {{Pascal}}ListOutputSchema,
-  permission: "{{camel}}:view",
+  permission: "{{camel}}:read",
   // TODO: context.db.{{camel}}.findMany({ orderBy, ...pageArgs(input) }) and paginate({ rows, limit }).
   handler: () => todo({ operation: "{{camel}}.list" }),
 });
@@ -37,7 +37,7 @@ export const get{{Pascal}} = defineOperation({
   description: "TODO: get one {{Pascal}} by id.",
   input: {{Pascal}}IdInputSchema,
   output: {{Pascal}}Schema,
-  permission: "{{camel}}:view",
+  permission: "{{camel}}:read",
   // TODO: context.db.{{camel}}.findFirst({ where: { id } }), notFound({ entity: "{{Pascal}}" }) when missing.
   handler: () => todo({ operation: "{{camel}}.get" }),
 });
@@ -48,7 +48,7 @@ export const create{{Pascal}} = defineOperation({
   description: "TODO: create a {{Pascal}}.",
   input: {{Pascal}}CreateInputSchema,
   output: {{Pascal}}Schema,
-  permission: "{{camel}}:create",
+  permission: "{{camel}}:write",
   embeddable: {{camel}}Embeddable,
   // TODO: context.db.{{camel}}.create({ data: { ...input, organizationId: context.organizationId } }) and recordChange.
   handler: () => todo({ operation: "{{camel}}.create" }),
@@ -60,7 +60,7 @@ export const update{{Pascal}} = defineOperation({
   description: "TODO: update fields of a {{Pascal}}. Omitted fields are unchanged.",
   input: {{Pascal}}UpdateInputSchema,
   output: {{Pascal}}Schema,
-  permission: "{{camel}}:edit",
+  permission: "{{camel}}:write",
   embeddable: {{camel}}Embeddable,
   // TODO: load `before`, update, context.recordChange({ entityId, before, after }).
   handler: () => todo({ operation: "{{camel}}.update" }),
@@ -72,7 +72,7 @@ export const archive{{Pascal}} = defineOperation({
   description: "TODO: archive (soft-delete) a {{Pascal}}.",
   input: {{Pascal}}IdInputSchema,
   output: {{Pascal}}Schema,
-  permission: "{{camel}}:remove",
+  permission: "{{camel}}:delete",
   embeddable: {{camel}}Embeddable,
   // TODO: set status ARCHIVED, context.recordChange({ entityId, before, after }).
   handler: () => todo({ operation: "{{camel}}.archive" }),

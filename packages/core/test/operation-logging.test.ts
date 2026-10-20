@@ -17,7 +17,7 @@ const crashing = defineOperation({
   description: "Throws",
   input: createVenue.input,
   output: createVenue.output,
-  permission: "venue:view",
+  permission: "venue:read",
   handler: async () => {
     throw new Error("kaboom");
   },

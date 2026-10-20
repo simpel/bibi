@@ -3,7 +3,7 @@ import type { PermissionSet } from "../permissions/permission-set";
 
 export type { PermissionAction } from "../permissions/features";
 
-/** `<feature>:<action>`, e.g. `ticket:edit` (ADR 0050). */
+/** `<feature>:<action>`, e.g. `ticket:write` (ADR 0050). */
 export type Permission = `${string}:${PermissionAction}`;
 
 export type HasPermissionInput = { permissions: PermissionSet; permission: Permission };

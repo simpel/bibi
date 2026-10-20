@@ -39,7 +39,7 @@ export type ApplyOverridesInput = {
 
 /**
  * Effective permissions: the preset, plus `allow`, minus `deny`. Locked and unknown overrides
- * are ignored; denying `view` takes the whole feature away (every action implies view).
+ * are ignored; denying `read` takes the whole feature away (every action implies read).
  */
 export function applyOverrides({ preset, overrides }: ApplyOverridesInput): PermissionSet {
   const granted = new Map<Feature, Set<PermissionAction>>();
@@ -53,7 +53,7 @@ export function applyOverrides({ preset, overrides }: ApplyOverridesInput): Perm
     if (effect === "deny") actions.delete(action as PermissionAction);
     granted.set(feature as Feature, actions);
   }
-  const deniedView = new Set(valid.filter((o) => o.effect === "deny" && o.action === "view"));
+  const deniedView = new Set(valid.filter((o) => o.effect === "deny" && o.action === "read"));
   const entries = [...granted].map(([feature, actions]) => {
     const hidden = [...deniedView].some((override) => override.feature === feature);
     return [feature, hidden ? [] : [...actions]] as const;

@@ -20,7 +20,7 @@ export const listContacts = defineOperation({
     "Filter by customer, contact type or part of the name.",
   input: ContactListInputSchema,
   output: ContactListOutputSchema,
-  permission: "customer:view",
+  permission: "customer:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.contact.findMany({
       where: {
@@ -43,7 +43,7 @@ export const getContact = defineOperation({
   description: "Get one contact person by id, with the type's field values.",
   input: ContactIdInputSchema,
   output: ContactSchema,
-  permission: "customer:view",
+  permission: "customer:read",
   handler: async ({ input, context }) => {
     const contact = await loadContact({ context, id: input.id });
     return contact ? ok({ value: contact }) : notFound({ entity: "Contact" });

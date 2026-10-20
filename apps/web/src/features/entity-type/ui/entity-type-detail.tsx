@@ -24,7 +24,7 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
   const result = await runOperation({ operation: getEntityType, input: { id } });
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const entityType = result.value;
-  const archive = can({ abilities, permission: "configuration:remove" }) ? (
+  const archive = can({ abilities, permission: "configuration:delete" }) ? (
     <ArchiveEntityTypeButton entityType={entityType} redirectToList />
   ) : undefined;
   return (
@@ -42,7 +42,7 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
           {t(`bases.${entityType.base}`)}
         </Badge>
       </div>
-      {can({ abilities, permission: "configuration:edit" }) ? (
+      {can({ abilities, permission: "configuration:write" }) ? (
         <section className="grid max-w-xl gap-4">
           <h2 className="text-xl font-semibold">{t("edit")}</h2>
           <EntityTypeForm entityType={entityType} />

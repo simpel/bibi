@@ -18,7 +18,7 @@ export const addVocabularyValue = defineOperation({
   description: "Add a value to a list. Returns the whole list.",
   input: VocabularyAddValueInputSchema,
   output: VocabularySchema,
-  permission: "configuration:create",
+  permission: "configuration:write",
   entityType: VALUE,
   handler: async ({ input: { vocabularyId, name, position }, context }) => {
     const list = await loadVocabulary({ context, id: vocabularyId });
@@ -46,7 +46,7 @@ export const updateVocabularyValue = defineOperation({
   description: "Rename or move a list value. Items keep the value (they store its id).",
   input: VocabularyUpdateValueInputSchema,
   output: VocabularySchema,
-  permission: "configuration:edit",
+  permission: "configuration:write",
   entityType: VALUE,
   handler: async ({ input: { id, ...data }, context }) => {
     const before = await context.db.vocabularyValue.findFirst({ where: { id } });
@@ -65,7 +65,7 @@ export const archiveVocabularyValue = defineOperation({
     "Archive a list value. Refused while a record still carries it or a requirement counts it.",
   input: VocabularyArchiveValueInputSchema,
   output: VocabularySchema,
-  permission: "configuration:remove",
+  permission: "configuration:delete",
   entityType: VALUE,
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.vocabularyValue.findFirst({ where: { id } });

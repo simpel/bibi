@@ -25,7 +25,7 @@ export async function TicketPhaseList({ locale }: TicketPhaseListProps) {
     operation: listTicketPhases,
     input: { limit: PAGE_SIZE },
   });
-  const actions = can({ abilities, permission: "pipeline:create" }) ? (
+  const actions = can({ abilities, permission: "pipeline:write" }) ? (
     <>
       <ImportTicketPhaseTemplateButton />
       <CreateTicketPhaseButton />

@@ -10,7 +10,7 @@ import { LineStateMenu } from "./line-state-menu";
 import type { ProgramFormData } from "./program-form-data";
 import { ProgramItemDialog } from "./program-item-dialog";
 
-/** Edit and remove follow `program:*`; changing a line's state and following the phase are `program:edit` (ADR 0050). */
+/** Edit and remove follow `program:*`; changing a line's state and following the phase are `program:write` (ADR 0050). */
 export type ProgramAccess = RowAccess & { canChangeState: boolean };
 
 export type ProgramRowActionsProps = {

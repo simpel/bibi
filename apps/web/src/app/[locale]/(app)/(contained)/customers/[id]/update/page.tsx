@@ -10,7 +10,7 @@ export default async function UpdateCustomerPage({ params }: UpdateCustomerPageP
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="customer:edit">
+    <PermissionGate permission="customer:write">
       <CustomerUpdate locale={locale} id={id} />
     </PermissionGate>
   );

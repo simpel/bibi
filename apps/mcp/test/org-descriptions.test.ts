@@ -52,11 +52,11 @@ describe("org-specific item tool descriptions", () => {
     });
     const limited = testContext({
       organizationId: admin.organizationId,
-      permissions: { item: ["view", "create", "edit"] },
+      permissions: { item: ["read", "write"] },
     });
     const client = await connect({ context: limited });
     const description = await descriptionOf({ client, name: "item_create" });
-    expect(description).toContain("item:create");
+    expect(description).toContain("item:write");
     expect(description).not.toContain("Konferensrum");
   });
 });

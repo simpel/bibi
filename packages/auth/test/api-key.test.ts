@@ -94,7 +94,7 @@ describe("resolveExecuteContext – API keys", () => {
     const admin = await resolveExecuteContext({ headers: owner.headers });
     if (!admin.ok) throw admin.error;
     const overrides = [
-      { feature: "venue" as const, action: "create" as const, effect: "allow" as const },
+      { feature: "venue" as const, action: "write" as const, effect: "allow" as const },
     ];
     const input = { subjectType: "apiKey" as const, subjectId: id, overrides };
     expect(

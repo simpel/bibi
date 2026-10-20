@@ -23,7 +23,7 @@ export type ToCustomerDtoInput = {
 export const toCustomerDto = ({ row, context }: ToCustomerDtoInput): CustomerDto => {
   const { _count, ...customer } = row;
   const { permissions } = context;
-  const ticketsVisible = hasPermission({ permissions, permission: "ticket:view" });
+  const ticketsVisible = hasPermission({ permissions, permission: "ticket:read" });
   return {
     ...customer,
     fields: asFieldValues({ value: row.fields }),

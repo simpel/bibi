@@ -4,7 +4,7 @@ import { hasPermission, type Permission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 
 /** The features a sheet copies its rows from: the ticket, its program items and their items. */
-const SOURCE_PERMISSIONS: readonly Permission[] = ["ticket:view", "program:view", "item:view"];
+const SOURCE_PERMISSIONS: readonly Permission[] = ["ticket:read", "program:read", "item:read"];
 
 export type CheckSourcesReadableInput = { context: Pick<OperationContext, "permissions"> };
 

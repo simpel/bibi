@@ -9,9 +9,9 @@ type Context = Pick<OperationContext, "db" | "permissions">;
 
 export type PresetDraftInput = { context: Context; input: PipelinePresetDraftInput };
 
-/** The organization's active item types; none for a caller without `configuration:view`. */
+/** The organization's active item types; none for a caller without `configuration:read`. */
 async function existingItemTypes({ context }: { context: Context }): Promise<ExistingSetupType[]> {
-  const permission = "configuration:view";
+  const permission = "configuration:read";
   if (!hasPermission({ permissions: context.permissions, permission })) return [];
   const rows = await context.db.entityType.findMany({
     where: { status: "ACTIVE", base: "ITEM" },

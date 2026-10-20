@@ -4,10 +4,10 @@ import { createTestQuote, quoteSetup } from "./quote-helpers";
 
 const UNAVAILABLE = "Item not found or not allowed";
 
-describe("quote lines need item:view (ADR 0050, feature scope)", () => {
+describe("quote lines need item:read (ADR 0050, feature scope)", () => {
   it("refuses a line whose item the caller may not view, like an unknown item", async () => {
     const { context, ticket, lunch } = await quoteSetup();
-    const overrides = [{ feature: "item", action: "view", effect: "deny" }];
+    const overrides = [{ feature: "item", action: "read", effect: "deny" }];
     const blind = { ...context, permissions: applyOverrides({ preset: "admin", overrides }) };
     const lines = [{ itemId: lunch.id, quantity: 1 }];
     const denied = await createTestQuote({ context: blind, ticketId: ticket.id, lines }).catch(

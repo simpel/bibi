@@ -33,7 +33,7 @@ const load = ({ cursor }: { cursor?: string | undefined }) =>
   ]);
 
 const createAction = ({ abilities }: { abilities: CallerAbilities }) =>
-  can({ abilities, permission: "priceList:create" }) ? <CreatePriceListButton /> : undefined;
+  can({ abilities, permission: "priceList:write" }) ? <CreatePriceListButton /> : undefined;
 
 /** Price lists page body (ADR 0023): header with create, table, cursor pagination. */
 export async function PriceListList({ locale, cursor }: PriceListListProps) {

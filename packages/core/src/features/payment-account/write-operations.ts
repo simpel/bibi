@@ -20,7 +20,7 @@ export const startPaymentOnboarding = defineOperation({
     "browser; call again for a fresh link if it expired).",
   input: PaymentAccountStartOnboardingInputSchema,
   output: PaymentAccountOnboardingSchema,
-  permission: "paymentAccount:edit",
+  permission: "paymentAccount:write",
   entityType: "paymentAccount",
   handler: async ({ input, context }) => {
     const account = await ensurePaymentAccount({ input, context });
@@ -46,7 +46,7 @@ export const syncPaymentAccount = defineOperation({
     "Run it after the venue returns from the onboarding page.",
   input: PaymentAccountSyncInputSchema,
   output: PaymentAccountSchema,
-  permission: "paymentAccount:edit",
+  permission: "paymentAccount:write",
   entityType: "paymentAccount",
   approval: false,
   handler: async ({ context }) => {

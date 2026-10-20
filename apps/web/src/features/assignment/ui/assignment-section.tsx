@@ -37,7 +37,7 @@ export async function AssignmentSection({ locale, subject, members }: Assignment
     <section className="grid gap-3">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("title")}</h2>
-        {can({ abilities, permission: "ticket:edit" }) ? (
+        {can({ abilities, permission: "ticket:write" }) ? (
           <AssignmentActions
             subject={subject}
             assigneeId={assigneeId}

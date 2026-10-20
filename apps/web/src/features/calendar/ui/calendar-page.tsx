@@ -113,7 +113,7 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
         params={params}
         data={result.value}
         timeZone={TIME_ZONE}
-        canBook={can({ abilities, permission: "ticket:create" })}
+        canBook={can({ abilities, permission: "ticket:write" })}
       />
     </CalendarLayout>
   );

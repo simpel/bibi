@@ -9,7 +9,7 @@ export default async function NewSheetDefinitionPage({ params }: NewSheetDefinit
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="template:create">
+    <PermissionGate permission="template:write">
       <SheetDefinitionCreate locale={locale} />
     </PermissionGate>
   );

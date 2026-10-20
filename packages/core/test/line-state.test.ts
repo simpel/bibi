@@ -66,10 +66,10 @@ describe("line states and derived holds (ADR 0044)", () => {
     expect(errorCode({ result: none })).toBe("VALIDATION");
   });
 
-  it("is a program change: ticket:edit alone may not set a line's state (ADR 0050)", async () => {
+  it("is a program change: ticket:write alone may not set a line's state (ADR 0050)", async () => {
     const { context, base, states } = await setup();
     const line = unwrap({ result: await addProgramItem({ ...base, from: 9, to: 10 }) });
-    const ticketOnly = { ...context, permissions: { ticket: ["view" as const, "edit" as const] } };
+    const ticketOnly = { ...context, permissions: { ticket: ["read" as const, "write" as const] } };
     const stateId = states.booked.id;
     const denied = await toState({ context: ticketOnly, lineId: line.id, stateId });
     expect(errorCode({ result: denied })).toBe("FORBIDDEN");

@@ -26,7 +26,7 @@ const featureOf = ({ operation }: { operation: AnyOperation }) =>
 const PERMISSION_EXCEPTIONS: Readonly<Record<string, string>> = {
   "skill.share":
     "copies the caller's own (self) skill into the organization's shared skills, which is " +
-    "managing the organization's assistant (assistant:edit)",
+    "managing the organization's assistant (assistant:write)",
 };
 
 /** Key prefix → the feature that owns data named like that. */
@@ -54,8 +54,8 @@ const FOREIGN_KEY =
 const OUTPUT_EXCEPTIONS: Readonly<Record<string, string>> = {
   "venue:contactEmail": "the venue's own contact details, not a customer contact",
   "venue:contactPhone": "the venue's own contact details, not a customer contact",
-  "sheet:itemName": "sheet rows are a snapshot copied with item:view at generate time",
-  "sheet:programItemName": "sheet rows are a snapshot copied with program:view at generate time",
+  "sheet:itemName": "sheet rows are a snapshot copied with item:read at generate time",
+  "sheet:programItemName": "sheet rows are a snapshot copied with program:read at generate time",
 };
 
 describe("feature scope guard (ADR 0050)", () => {

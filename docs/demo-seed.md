@@ -22,7 +22,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 
 The checks that run today:
 - **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
-- **Permission overrides (ADR 0050):** `checkDemoPermissions` (`permission-checks.ts`) asserts that every documented override is stored for its member (via `permission.get`). Lindholmen has two: Maria Holm (`manager`) has `payment:view` denied, so she handles bookings but does not see money; Peter Sjoberg (`member`) has `item:create` and `item:edit` allowed, so he reads everything and also keeps the catalogue up to date. Seeded with `permission.update` in `seed-roles.ts` from the `overrides` of the user in `data/lindholmen/lindholmen.ts`.
+- **Permission overrides (ADR 0050):** `checkDemoPermissions` (`permission-checks.ts`) asserts that every documented override is stored for its member (via `permission.get`). Lindholmen has two: Maria Holm (`manager`) has `payment:read` denied, so she handles bookings but does not see money; Peter Sjoberg (`member`) has `item:write` and `item:write` allowed, so he reads everything and also keeps the catalogue up to date. Seeded with `permission.update` in `seed-roles.ts` from the `overrides` of the user in `data/lindholmen/lindholmen.ts`.
 - **Part 2 (configuration):**
   - The number of rows per organization matches for venue, vocabularies, vocabulary values, setups, responsibilities, types, fields, items and capacities (point 1 for what exists).
   - Vingaleden has no vocabulary "Allergens" (the first half of point 2).

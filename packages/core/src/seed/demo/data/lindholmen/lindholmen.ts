@@ -29,17 +29,14 @@ export const lindholmen: DemoOrg = {
     {
       name: "Maria Holm",
       role: "manager",
-      overrides: [{ feature: "payment", action: "view", effect: "deny" }],
+      overrides: [{ feature: "payment", action: "read", effect: "deny" }],
     },
     { name: "Ali Karimi", role: "manager" },
     // Reads everything and also keeps the catalogue up to date.
     {
       name: "Peter Sjoberg",
       role: "member",
-      overrides: [
-        { feature: "item", action: "create", effect: "allow" },
-        { feature: "item", action: "edit", effect: "allow" },
-      ],
+      overrides: [{ feature: "item", action: "write", effect: "allow" }],
     },
     { name: "Lena Strand", role: "manager" },
   ],

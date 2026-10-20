@@ -14,7 +14,7 @@ export type ItemStateListProps = { locale: Locale };
 export async function ItemStateList({ locale }: ItemStateListProps) {
   const t = await getTranslations("itemState");
   const abilities = await getCallerAbilities();
-  const canCreate = can({ abilities, permission: "pipeline:create" });
+  const canCreate = can({ abilities, permission: "pipeline:write" });
   const access = rowAccess({ abilities, feature: "pipeline" });
   const data = await loadItemStateData();
   const header = <PageHeader title={t("plural")} description={t("listDescription")} />;

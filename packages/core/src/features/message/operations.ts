@@ -25,7 +25,7 @@ export const listMessages = defineOperation({
     "AI SDK UIMessage parts shape.",
   input: MessageListInputSchema,
   output: MessageListOutputSchema,
-  permission: "self:view",
+  permission: "self:read",
   handler: async ({ input, context }) => {
     const id = input.conversationId;
     if (!(await findConversation({ context, id, access: "read" }))) return notFound();
@@ -48,7 +48,7 @@ export const appendMessage = defineOperation({
     "only append ASSISTANT or TOOL messages to its own conversation.",
   input: MessageAppendInputSchema,
   output: MessageSchema,
-  permission: "self:edit",
+  permission: "self:write",
   // Chat persistence, owner-only and append-only: no approval card for every turn.
   approval: false,
   handler: async ({ input, context }) => {

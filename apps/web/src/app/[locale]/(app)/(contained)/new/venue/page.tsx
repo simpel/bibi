@@ -8,7 +8,7 @@ type NewVenuePageProps = { params: Promise<{ locale: string }> };
 export default async function NewVenuePage({ params }: NewVenuePageProps) {
   setRequestLocale(resolveLocale({ value: (await params).locale }));
   return (
-    <PermissionGate permission="venue:create">
+    <PermissionGate permission="venue:write">
       <VenueCreate />
     </PermissionGate>
   );

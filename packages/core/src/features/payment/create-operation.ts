@@ -17,7 +17,7 @@ export const createPayment = defineOperation({
     "The payment starts PENDING and is updated when Stripe reports it paid.",
   input: PaymentCreateInputSchema,
   output: PaymentSchema,
-  permission: "payment:create",
+  permission: "payment:write",
   handler: async ({ input, context }) => {
     const target = await loadChargeTarget({ input, context });
     if (!target.ok) return err({ error: target.error });

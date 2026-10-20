@@ -27,7 +27,7 @@ export const applyPaymentAccountSignal = defineOperation({
   description: "Refresh a payout account's status after a Stripe account event (webhook only).",
   input: AccountSignalSchema,
   output: AccountSignalResultSchema,
-  permission: "paymentAccount:edit",
+  permission: "paymentAccount:write",
   entityType: "paymentAccount",
   approval: false,
   handler: async ({ input, context }) => {

@@ -20,10 +20,10 @@ export async function TicketActions({ ticket, data, abilities }: TicketActionsPr
   const t = await getTranslations("ticket");
   return (
     <>
-      {can({ abilities, permission: "ticket:export" }) ? (
+      {can({ abilities, permission: "ticket:write" }) ? (
         <ExportTicketButton id={ticket.id} />
       ) : null}
-      {can({ abilities, permission: "ticket:edit" }) ? (
+      {can({ abilities, permission: "ticket:write" }) ? (
         <Button asChild variant="outline">
           <Link href={updateRoute({ detail: ticketRoute({ id: ticket.id }) })}>
             <PencilIcon />
@@ -31,7 +31,7 @@ export async function TicketActions({ ticket, data, abilities }: TicketActionsPr
           </Link>
         </Button>
       ) : null}
-      {can({ abilities, permission: "ticket:changePhase" }) ? (
+      {can({ abilities, permission: "ticket:write" }) ? (
         <ChangePhaseButton ticket={ticket} phases={data.phases} />
       ) : null}
     </>

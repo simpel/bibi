@@ -23,7 +23,7 @@ export const createItem = defineOperation({
     "item.saveAsPackage for a customer-specific package.",
   input: ItemCreateInputSchema,
   output: ItemSchema,
-  permission: "item:create",
+  permission: "item:write",
   embeddable: itemEmbeddable,
   handler: ({ input, context }) => insertItem({ context, input, customerId: null }),
 });
@@ -37,7 +37,7 @@ export const updateItem = defineOperation({
     "are kept when only parts change). The type cannot be changed.",
   input: ItemUpdateInputSchema,
   output: ItemSchema,
-  permission: "item:edit",
+  permission: "item:write",
   embeddable: itemEmbeddable,
   consequences: itemUpdateConsequences,
   handler: async ({ input, context }) => {

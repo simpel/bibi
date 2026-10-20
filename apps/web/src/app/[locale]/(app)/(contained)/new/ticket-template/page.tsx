@@ -9,7 +9,7 @@ export default async function NewTicketTemplatePage({ params }: NewTicketTemplat
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="template:create">
+    <PermissionGate permission="template:write">
       <TicketTemplateCreate locale={locale} />
     </PermissionGate>
   );

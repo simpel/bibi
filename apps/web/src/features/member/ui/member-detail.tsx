@@ -30,7 +30,7 @@ export async function MemberDetail({ locale, id }: MemberDetailProps) {
     { label: t("columns.roles"), value: preset === null ? "–" : role(preset) },
     { label: t("memberSince"), value: format.dateTime(createdAt, { dateStyle: "medium" }) },
   ];
-  const permissions = can({ abilities, permission: "member:edit" }) ? (
+  const permissions = can({ abilities, permission: "member:write" }) ? (
     <Button asChild variant="outline">
       <Link href={memberPermissionsRoute({ id })}>{t("permissions")}</Link>
     </Button>

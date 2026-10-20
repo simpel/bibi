@@ -12,7 +12,7 @@ export default async function IntegrationsPage({ params }: IntegrationsPageProps
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   const t = await getTranslations("integration");
-  if (!can({ abilities: await getCallerAbilities(), permission: "apiKey:view" }))
+  if (!can({ abilities: await getCallerAbilities(), permission: "apiKey:read" }))
     return <ErrorState errorKey="forbidden" />;
   return (
     <div className="grid gap-8">

@@ -16,7 +16,10 @@ export type PaymentAccountPanelProps = { locale: Locale };
 /** Organization settings: connect to Stripe so customers pay the venue directly (ADR 0028). */
 export async function PaymentAccountPanel({ locale }: PaymentAccountPanelProps) {
   const t = await getTranslations("paymentAccount");
-  const canEdit = can({ abilities: await getCallerAbilities(), permission: "paymentAccount:edit" });
+  const canEdit = can({
+    abilities: await getCallerAbilities(),
+    permission: "paymentAccount:write",
+  });
   const account = await runOperation({ operation: getPaymentAccount, input: {} });
   const header = <PageHeader title={t("title")} description={t("description")} />;
   if (!account.ok) {

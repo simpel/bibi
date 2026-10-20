@@ -19,7 +19,7 @@ type ReaderInput = { of: ExecuteContext; permissions: Record<string, string[]> }
 const reader = ({ of, permissions }: ReaderInput) =>
   testContext({
     organizationId: of.organizationId,
-    permissions: { audit: ["view"], ...permissions },
+    permissions: { audit: ["read"], ...permissions },
   });
 
 describe("auditLog feature scope (ADR 0050)", () => {
@@ -27,12 +27,12 @@ describe("auditLog feature scope (ADR 0050)", () => {
     const admin = testContext();
     await createTestCustomer({ context: admin, name: "Hidden AB" });
     await execute({ operation: createVenue, input: { name: "Hall" }, context: admin });
-    const venueOnly = reader({ of: admin, permissions: { venue: ["view"] } });
+    const venueOnly = reader({ of: admin, permissions: { venue: ["read"] } });
     const types = (await list({ context: venueOnly })).items.map((row) => row.entityType);
     expect(types).toEqual(["venue"]);
     const customerReader = reader({
       of: admin,
-      permissions: { customer: ["view"], configuration: ["view"] },
+      permissions: { customer: ["read"], configuration: ["read"] },
     });
     const visible = new Set(
       (await list({ context: customerReader })).items.map((r) => r.entityType),

@@ -24,7 +24,7 @@ export async function FieldSection({ entityType }: FieldSectionProps) {
     <section className="grid gap-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">{t("plural")}</h2>
-        {can({ abilities, permission: "configuration:create" }) ? (
+        {can({ abilities, permission: "configuration:write" }) ? (
           <AddFieldButton
             entityTypeId={entityType.id}
             vocabularies={vocabularies}

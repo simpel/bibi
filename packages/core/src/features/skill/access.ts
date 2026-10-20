@@ -23,7 +23,7 @@ type ContextInput = { context: Pick<OperationContext, "actor" | "permissions"> }
 
 export function isSkillAdmin({ context }: ContextInput): boolean {
   if (context.actor.type === "system") return true;
-  return hasPermission({ permissions: context.permissions, permission: "assistant:edit" });
+  return hasPermission({ permissions: context.permissions, permission: "assistant:write" });
 }
 
 export type FindVisibleSkillInput = { context: Pick<OperationContext, "actor" | "db">; id: string };

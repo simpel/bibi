@@ -55,7 +55,7 @@ export const followLinePhase = defineOperation({
     "collide; otherwise CONFLICT names the blockers and nothing changes.",
   input: LineFollowPhaseInputSchema,
   output: ProgramItemSchema,
-  permission: "program:edit",
+  permission: "program:write",
   entityType: "programItem",
   handler: async ({ input: { lineId }, context }) => {
     const line = await loadProgramItem({ context, id: lineId });

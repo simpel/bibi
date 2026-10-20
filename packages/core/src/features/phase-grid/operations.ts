@@ -21,7 +21,7 @@ export const getPhaseGrid = defineOperation({
     "Terminal phases have no cells: they release every line.",
   input: PhaseGridGetInputSchema,
   output: PhaseGridSchema,
-  permission: "pipeline:view",
+  permission: "pipeline:read",
   entityType: "phaseStateRule",
   handler: async ({ input, context }) =>
     ok({ value: await loadGrid({ context, phaseId: input.phaseId }) }),
@@ -37,7 +37,7 @@ export const setPhaseGridCell = defineOperation({
     "move and to new lines. Returns the phase's cells.",
   input: PhaseGridSetCellInputSchema,
   output: PhaseGridSchema,
-  permission: "pipeline:edit",
+  permission: "pipeline:write",
   entityType: "phaseStateRule",
   handler: async ({ input, context }) => {
     const checked = await checkCell({ context, input });
@@ -72,7 +72,7 @@ export const importPhaseGridTemplate = defineOperation({
     "Existing tickets are not moved. Returns the number of cells set and the whole grid.",
   input: PhaseGridImportTemplateInputSchema,
   output: PhaseGridImportTemplateOutputSchema,
-  permission: "pipeline:create",
+  permission: "pipeline:write",
   entityType: "phaseStateRule",
   handler: ({ input, context }) =>
     importPhaseGrid({ context, template: getPhaseGridTemplate({ key: input.template }) }),

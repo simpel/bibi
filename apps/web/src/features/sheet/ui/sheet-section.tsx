@@ -40,8 +40,8 @@ export async function SheetSection({ locale, ticket }: SheetSectionProps) {
             sheet={
               sheets.value.items.find((sheet) => sheet.sheetDefinitionId === definition.id) ?? null
             }
-            canGenerate={can({ abilities, permission: "sheet:create" })}
-            canSend={can({ abilities, permission: "sheet:send" })}
+            canGenerate={can({ abilities, permission: "sheet:write" })}
+            canSend={can({ abilities, permission: "sheet:write" })}
           />
         ))
       )}

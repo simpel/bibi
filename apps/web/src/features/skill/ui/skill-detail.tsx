@@ -29,7 +29,7 @@ export async function SkillDetail({ locale, id }: SkillDetailProps) {
   const abilities = await getCallerAbilities();
   const can = skillAbilities({
     skill,
-    admin: canPermission({ permissions: abilities.permissions, permission: "assistant:edit" }),
+    admin: canPermission({ permissions: abilities.permissions, permission: "assistant:write" }),
   });
   return (
     <div className="grid gap-6">

@@ -12,8 +12,8 @@ export type ItemActionsProps = { item: ItemDto; abilities: CallerAbilities };
 /** Edit (its own page) and archive buttons of the item detail page, each by its permission. */
 export async function ItemActions({ item, abilities }: ItemActionsProps) {
   const t = await getTranslations("item");
-  const canEdit = can({ abilities, permission: "item:edit" });
-  const canArchive = can({ abilities, permission: "item:remove" });
+  const canEdit = can({ abilities, permission: "item:write" });
+  const canArchive = can({ abilities, permission: "item:delete" });
   return (
     <>
       {canEdit ? (

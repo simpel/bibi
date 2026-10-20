@@ -12,7 +12,7 @@ export type ResolveTypesInput = {
 /**
  * Whether each draft item type is bookable (by name). An existing type (`entityTypeId`) must be an
  * active item type of the organization (`NOT_FOUND` otherwise, also for another organization's id)
- * and is read with `configuration:view`; a new type is bookable when its behaviours say so.
+ * and is read with `configuration:read`; a new type is bookable when its behaviours say so.
  */
 export async function resolveBookable({
   context,
@@ -20,7 +20,7 @@ export async function resolveBookable({
 }: ResolveTypesInput): Promise<Result<Map<string, boolean>>> {
   const ids = draft.itemTypes.flatMap((type) => (type.entityTypeId ? [type.entityTypeId] : []));
   if (ids.length > 0) {
-    const permission = "configuration:view";
+    const permission = "configuration:read";
     const readable = checkReadable({ context, permission, path: "itemTypes" });
     if (!readable.ok) return readable;
   }

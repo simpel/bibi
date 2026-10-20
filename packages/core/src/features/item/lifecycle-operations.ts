@@ -16,7 +16,7 @@ export const archiveItem = defineOperation({
     "predefined ticket has a line with it.",
   input: ItemIdInputSchema,
   output: ItemSchema,
-  permission: "item:remove",
+  permission: "item:delete",
   embeddable: itemEmbeddable,
   handler: async ({ input: { id }, context }) => {
     const before = await loadItem({ context, id });

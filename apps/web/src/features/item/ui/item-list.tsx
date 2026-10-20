@@ -17,7 +17,7 @@ const PAGE_SIZE = 20;
 
 /** Item catalog page body: loads the page of items and the form data, then renders the catalog. */
 export async function ItemList({ locale, typeId, cursor }: ItemListProps) {
-  const canCreate = can({ abilities: await getCallerAbilities(), permission: "item:create" });
+  const canCreate = can({ abilities: await getCallerAbilities(), permission: "item:write" });
   const [data, result] = await Promise.all([
     loadItemFormData(),
     runOperation({

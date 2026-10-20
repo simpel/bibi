@@ -30,7 +30,7 @@ describe("LINK fields and read permission (#157)", () => {
       });
     const writer = testContext({
       organizationId: admin.organizationId,
-      permissions: { item: ["view", "create", "edit", "remove"] },
+      permissions: { item: ["read", "write", "delete"] },
     });
     for (const value of [customer.id, "missing"]) {
       const result = await setValue({ value, context: writer });
@@ -39,7 +39,7 @@ describe("LINK fields and read permission (#157)", () => {
     }
     const reader = testContext({
       organizationId: admin.organizationId,
-      permissions: { item: ["view", "create", "edit", "remove"], customer: ["view"] },
+      permissions: { item: ["read", "write", "delete"], customer: ["read"] },
     });
     expect(
       errorCode({ result: await setValue({ value: customer.id, context: reader }) }),

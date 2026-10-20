@@ -26,7 +26,7 @@ export const listTickets = defineOperation({
     "follower (assignment.list) or a window over the desired period (`from`/`to`).",
   input: TicketListInputSchema,
   output: TicketListOutputSchema,
-  permission: "ticket:view",
+  permission: "ticket:read",
   handler: async ({ input, context }) => {
     const { assigneeId, followerId } = input;
     const ids = await subjectIdFilter({ context, subjectType: "TICKET", assigneeId, followerId });
@@ -50,7 +50,7 @@ export const getTicket = defineOperation({
     "Who answers for it: assignment.list.",
   input: TicketIdInputSchema,
   output: TicketSchema,
-  permission: "ticket:view",
+  permission: "ticket:read",
   handler: async ({ input, context }) => {
     const ticket = await loadTicket({ context, id: input.id });
     return ticket ? ok({ value: ticket }) : notFound({ entity: "Ticket" });

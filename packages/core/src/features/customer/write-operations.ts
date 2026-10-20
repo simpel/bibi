@@ -16,7 +16,7 @@ export const createCustomer = defineOperation({
     "type's own fields (e.g. org number).",
   input: CustomerCreateInputSchema,
   output: CustomerSchema,
-  permission: "customer:create",
+  permission: "customer:write",
   embeddable: customerEmbeddable,
   handler: async ({ input: { entityTypeId, fields, ...data }, context }) => {
     const type = await loadTypeOfBase({ context, entityTypeId, base: "CUSTOMER" });
@@ -46,7 +46,7 @@ export const updateCustomer = defineOperation({
     "clears a value). The type cannot be changed.",
   input: CustomerUpdateInputSchema,
   output: CustomerSchema,
-  permission: "customer:edit",
+  permission: "customer:write",
   embeddable: customerEmbeddable,
   handler: async ({ input: { id, fields: patch, ...data }, context }) => {
     const before = await loadCustomer({ context, id });

@@ -13,7 +13,7 @@ export default async function NewItemStatePage({ params, searchParams }: NewItem
   setRequestLocale(locale);
   const { type = "" } = await searchParams;
   return (
-    <PermissionGate permission="pipeline:create">
+    <PermissionGate permission="pipeline:write">
       <ItemStatePage locale={locale} mode={{ create: type }} />
     </PermissionGate>
   );

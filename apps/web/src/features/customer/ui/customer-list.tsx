@@ -40,7 +40,7 @@ export async function CustomerList({ locale, cursor }: CustomerListProps) {
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const noTypes = data.value.types.length === 0;
   const create =
-    can({ abilities, permission: "customer:create" }) && !noTypes ? (
+    can({ abilities, permission: "customer:write" }) && !noTypes ? (
       <CreateCustomerButton />
     ) : undefined;
   const page: { items: CustomerDto[]; nextCursor: string | null } = result.value;

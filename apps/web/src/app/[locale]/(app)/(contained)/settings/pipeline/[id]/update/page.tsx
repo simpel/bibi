@@ -10,7 +10,7 @@ export default async function UpdateTicketPhasePage({ params }: UpdateTicketPhas
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="pipeline:edit">
+    <PermissionGate permission="pipeline:write">
       <TicketPhaseUpdate locale={locale} id={id} />
     </PermissionGate>
   );

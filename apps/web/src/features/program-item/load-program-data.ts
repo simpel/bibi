@@ -24,7 +24,7 @@ async function loadStates(): Promise<LineStateOption[]> {
 
 /**
  * Program item types and lists, bookable items, setups and item states (one page each). Without
- * `item:view` the items are hidden (ADR 0050 feature scope), not an error.
+ * `item:read` the items are hidden (ADR 0050 feature scope), not an error.
  */
 export async function loadProgramData(): Promise<Result<ProgramFormData>> {
   const [typed, items, setups, states] = await Promise.all([

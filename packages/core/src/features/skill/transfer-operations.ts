@@ -18,7 +18,7 @@ export const shareSkill = defineOperation({
     "skill (DRAFT) and keeps your personal original. Needs an org admin.",
   input: SkillShareInputSchema,
   output: SkillSchema,
-  permission: "assistant:edit",
+  permission: "assistant:write",
   embeddable: skillEmbeddable,
   handler: async ({ input, context }) => {
     const source = await findVisibleSkill({ context, id: input.id });
@@ -48,7 +48,7 @@ export const importSkill = defineOperation({
     "a DRAFT skill. PERSONAL by default; ORGANIZATION needs an org admin.",
   input: SkillImportInputSchema,
   output: SkillSchema,
-  permission: "self:edit",
+  permission: "self:write",
   embeddable: skillEmbeddable,
   handler: async ({ input, context }) => {
     const allowed = checkCanCreateSkill({ context, scope: input.scope });

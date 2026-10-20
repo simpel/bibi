@@ -15,7 +15,7 @@ export const changeTicketPhase = defineOperation({
     "nothing and gives CONFLICT with every blocker in `issues`.",
   input: TicketChangePhaseInputSchema,
   output: TicketSchema,
-  permission: "ticket:changePhase",
+  permission: "ticket:write",
   handler: async ({ input: { ticketId, phaseId, reason }, context }) => {
     const before = await loadTicket({ context, id: ticketId });
     if (!before) return notFound({ entity: "Ticket" });

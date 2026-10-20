@@ -20,7 +20,7 @@ export const listApiKeys = defineOperation({
     "expiry and last use. The secret is never returned after creation. Admins only.",
   input: ApiKeyListInputSchema,
   output: ApiKeyListOutputSchema,
-  permission: "apiKey:view",
+  permission: "apiKey:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.apikey.findMany({
       where: { enabled: true },
@@ -45,7 +45,7 @@ export const getApiKey = defineOperation({
     "last use. The secret is never returned. Admins only.",
   input: ApiKeyIdInputSchema,
   output: ApiKeySchema,
-  permission: "apiKey:view",
+  permission: "apiKey:read",
   handler: async ({ input, context }) => {
     const row = await context.db.apikey.findFirst({
       where: { id: input.id, enabled: true },

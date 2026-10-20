@@ -32,7 +32,7 @@ export const listSetups = defineOperation({
     "Items with the SETUPS behaviour have a capacity per setup.",
   input: SetupListInputSchema,
   output: SetupListOutputSchema,
-  permission: "configuration:view",
+  permission: "configuration:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.setup.findMany({
       orderBy: [{ name: "asc" }, { id: "asc" }],
@@ -48,7 +48,7 @@ export const getSetup = defineOperation({
   description: "Get one setup by id.",
   input: SetupIdInputSchema,
   output: SetupSchema,
-  permission: "configuration:view",
+  permission: "configuration:read",
   handler: async ({ input, context }) => {
     const setup = await context.db.setup.findFirst({ where: { id: input.id } });
     return setup ? ok({ value: setup }) : notFound({ entity: "Setup" });
@@ -61,7 +61,7 @@ export const createSetup = defineOperation({
   description: "Create a setup. Setup names are unique.",
   input: SetupCreateInputSchema,
   output: SetupSchema,
-  permission: "configuration:create",
+  permission: "configuration:write",
   handler: ({ input, context }) => insertSetup({ context, ...input }),
 });
 
@@ -71,7 +71,7 @@ export const updateSetup = defineOperation({
   description: "Rename a setup or change its changeover time. Omitted fields are unchanged.",
   input: SetupUpdateInputSchema,
   output: SetupSchema,
-  permission: "configuration:edit",
+  permission: "configuration:write",
   handler: async ({ input: { id, ...data }, context }) => {
     const before = await context.db.setup.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Setup" });
@@ -91,7 +91,7 @@ export const archiveSetup = defineOperation({
     "Archive a setup. Refused while an active item has a capacity for it or an active program item uses it.",
   input: SetupIdInputSchema,
   output: SetupSchema,
-  permission: "configuration:remove",
+  permission: "configuration:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.setup.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Setup" });

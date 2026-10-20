@@ -5,7 +5,7 @@ import { createTestTicket, ticketSetup } from "./ticket-helpers";
 
 const withoutTickets = applyOverrides({
   preset: "admin",
-  overrides: [{ feature: "ticket", action: "view", effect: "deny" }],
+  overrides: [{ feature: "ticket", action: "read", effect: "deny" }],
 });
 
 describe("customer feature scope (ADR 0050)", () => {

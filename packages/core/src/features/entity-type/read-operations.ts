@@ -19,7 +19,7 @@ export const listEntityTypes = defineOperation({
     "customers) with their behaviours and fields. Read this to know which fields an item has.",
   input: EntityTypeListInputSchema,
   output: EntityTypeListOutputSchema,
-  permission: "configuration:view",
+  permission: "configuration:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.entityType.findMany({
       where: input.base ? { base: input.base } : {},
@@ -38,7 +38,7 @@ export const getEntityType = defineOperation({
   description: "Get one type by id, with its behaviours and fields.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,
-  permission: "configuration:view",
+  permission: "configuration:read",
   handler: async ({ input, context }) => {
     const row = await context.db.entityType.findFirst({ where: { id: input.id } });
     return row

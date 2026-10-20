@@ -25,7 +25,7 @@ export async function PhaseGridEditor({ locale }: PhaseGridEditorProps) {
         </h2>
         <p className="text-sm text-muted-foreground">{t("description")}</p>
       </div>
-      <PhaseGridTable {...data.value} canEdit={can({ abilities, permission: "pipeline:edit" })} />
+      <PhaseGridTable {...data.value} canEdit={can({ abilities, permission: "pipeline:write" })} />
     </section>
   );
 }

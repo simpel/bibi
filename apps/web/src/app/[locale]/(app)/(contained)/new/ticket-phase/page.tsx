@@ -8,7 +8,7 @@ type NewTicketPhasePageProps = { params: Promise<{ locale: string }> };
 export default async function NewTicketPhasePage({ params }: NewTicketPhasePageProps) {
   setRequestLocale(resolveLocale({ value: (await params).locale }));
   return (
-    <PermissionGate permission="pipeline:create">
+    <PermissionGate permission="pipeline:write">
       <TicketPhaseCreate />
     </PermissionGate>
   );

@@ -10,7 +10,7 @@ export default async function UpdateItemStatePage({ params }: UpdateItemStatePag
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="pipeline:edit">
+    <PermissionGate permission="pipeline:write">
       <ItemStatePage locale={locale} mode={{ update: id }} />
     </PermissionGate>
   );

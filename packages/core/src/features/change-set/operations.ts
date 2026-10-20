@@ -13,7 +13,7 @@ export const applyChangeSetOperation = defineOperation({
     "command that needs approval; the user confirms the whole set once.",
   input: ChangeSetApplyInputSchema,
   output: ChangeSetApplyOutputSchema,
-  permission: "self:edit",
+  permission: "self:write",
   handler: ({ input, context }) => applyChangeSet({ input, context }),
 });
 

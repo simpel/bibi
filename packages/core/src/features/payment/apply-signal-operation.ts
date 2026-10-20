@@ -18,7 +18,7 @@ export const applyPaymentSignal = defineOperation({
   description: "Apply a verified Stripe event to a payment (Stripe webhook only).",
   input: PaymentSignalSchema,
   output: PaymentSignalResultSchema,
-  permission: "payment:edit",
+  permission: "payment:write",
   approval: false,
   handler: async ({ input, context }) => {
     if (context.actor.type !== "system") {

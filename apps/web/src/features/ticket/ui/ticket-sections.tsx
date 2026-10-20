@@ -23,23 +23,23 @@ export function TicketSections({ locale, ticket, phases, abilities }: TicketSect
   const allowed = ({ permission }: { permission: Permission }) => can({ abilities, permission });
   return (
     <>
-      {allowed({ permission: "quote:view" }) ? (
+      {allowed({ permission: "quote:read" }) ? (
         <TicketQuotes locale={locale} ticket={ticket} phases={phases} />
       ) : null}
-      {allowed({ permission: "payment:view" }) ? (
+      {allowed({ permission: "payment:read" }) ? (
         <TicketPayments
           locale={locale}
           ticketId={ticket.id}
-          canRequest={allowed({ permission: "payment:create" })}
+          canRequest={allowed({ permission: "payment:write" })}
         />
       ) : null}
-      {allowed({ permission: "program:view" }) ? (
+      {allowed({ permission: "program:read" }) ? (
         <>
           <ProgramSection locale={locale} ticket={ticket} />
           <RequirementSection locale={locale} ticket={ticket} />
         </>
       ) : null}
-      {allowed({ permission: "sheet:view" }) ? (
+      {allowed({ permission: "sheet:read" }) ? (
         <SheetSection locale={locale} ticket={ticket} />
       ) : null}
       <TicketInbox locale={locale} ticketId={ticket.id} address={ticket.inboundAddress} />

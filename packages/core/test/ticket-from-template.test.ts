@@ -85,7 +85,7 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
     const customerId = (await setup.newTicket()).customerId;
     const writer = testContext({
       organizationId: context.organizationId,
-      permissions: { ticket: ["view", "create", "edit", "remove"], customer: ["view"] },
+      permissions: { ticket: ["read", "write", "delete"], customer: ["read"] },
     });
     const refused = await execute({
       operation: createTicketFromTemplate,

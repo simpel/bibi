@@ -8,7 +8,7 @@ type NewTypePageProps = { params: Promise<{ locale: string }> };
 export default async function NewTypePage({ params }: NewTypePageProps) {
   setRequestLocale(resolveLocale({ value: (await params).locale }));
   return (
-    <PermissionGate permission="configuration:create">
+    <PermissionGate permission="configuration:write">
       <EntityTypeCreate />
     </PermissionGate>
   );

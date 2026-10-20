@@ -15,7 +15,7 @@ export const archiveItemState = defineOperation({
     "The initial state cannot be archived until another state is initial (CONFLICT).",
   input: ItemStateArchiveInputSchema,
   output: ItemStateSchema,
-  permission: "pipeline:remove",
+  permission: "pipeline:delete",
   handler: ({ input, context }) => archiveState({ context, input }),
   consequences: async ({ input, context }) => {
     // Only counted for a caller who may view them (ADR 0050, feature scope).

@@ -16,7 +16,7 @@ export const getPermissions = defineOperation({
     "an admin set (allow or deny per feature:action) and the effective result. Admins only.",
   input: PermissionSubjectInputSchema,
   output: PermissionProfileSchema,
-  permission: "member:edit",
+  permission: "member:write",
   handler: async ({ input, context }) => {
     const preset = await loadPreset({ context, subject: input });
     if (!preset.ok) return preset;
@@ -30,12 +30,12 @@ export const updatePermissions = defineOperation({
   kind: "command",
   description:
     "Fine-tune a member's or API key's permissions on top of its preset: the complete list of " +
-    "overrides, each allow or deny for one feature:action (e.g. item:edit). Anything left out " +
+    "overrides, each allow or deny for one feature:action (e.g. item:write). Anything left out " +
     "goes back to the preset. Managing members, API keys and the payment account stays with " +
     "the admin preset and cannot be overridden. Admins only.",
   input: PermissionUpdateInputSchema,
   output: PermissionProfileSchema,
-  permission: "member:edit",
+  permission: "member:write",
   entityType: "permission",
   handler: async ({ input, context }) => {
     const { overrides: requested, ...subject } = input;

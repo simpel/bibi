@@ -55,7 +55,7 @@ describe("previewChange (ADR 0049)", () => {
       context,
     });
     expect(errorCode({ result: missing })).toBe("NOT_FOUND");
-    const viewer = { ...context, permissions: { item: ["view" as const] } };
+    const viewer = { ...context, permissions: { item: ["read" as const] } };
     const denied = await previewChange({
       operation: updateItem,
       input: { id: item.id, name: "X" },

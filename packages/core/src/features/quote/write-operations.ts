@@ -17,7 +17,7 @@ export const createQuote = defineOperation({
     "quote gets a new version with quote.revise instead (CONFLICT).",
   input: QuoteCreateInputSchema,
   output: QuoteSchema,
-  permission: "quote:create",
+  permission: "quote:write",
   handler: async ({ input: { ticketId, lines = [], ...terms }, context }) => {
     const ticket = await loadOpenTicket({ context, ticketId });
     if (!ticket.ok) return ticket;
@@ -48,7 +48,7 @@ export const updateQuote = defineOperation({
     "changes only with quote.send, quote.accept, quote.decline and quote.expire.",
   input: QuoteUpdateInputSchema,
   output: QuoteSchema,
-  permission: "quote:edit",
+  permission: "quote:write",
   handler: async ({ input: { id, lines, ...terms }, context }) => {
     const before = await loadQuote({ context, id });
     if (!before) return notFound({ entity: "Quote" });

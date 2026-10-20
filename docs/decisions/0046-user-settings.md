@@ -12,7 +12,7 @@
 - **A separate table, `UserSettings`: one typed row per user.** Columns: `userId` (unique), `onboardingStatus` (`PENDING`, `COMPLETED`, `SKIPPED`), timestamps. Future per-user behaviour settings become columns here, not keys in `UserPreference`.
   - No row means the user was never asked, so nothing is pending. `userSettings.get` then returns `onboardingStatus: null` and `id: null`.
 - **User-scoped like `UserPreference`** (ADR 0039): no `organizationId`, listed in `USER_SCOPED_MODELS`, reached only through `scopedDb`, which pins every query to the acting user and refuses the system actor.
-- **Operations**, on every surface (ADR 0003), permission `self:view|edit` (ADR 0050):
+- **Operations**, on every surface (ADR 0003), permission `self:read|edit` (ADR 0050):
   - `userSettings.get` → `{ id, onboardingStatus, updatedAt }` of the caller.
   - `userSettings.update({ onboardingStatus })` → upsert, audited. The AI actor needs approval like any command.
   - REST `GET` and `PUT /user-settings`, GraphQL `userSettings` and `userSettingsUpdate`, MCP `userSettings_get` and `userSettings_update`.

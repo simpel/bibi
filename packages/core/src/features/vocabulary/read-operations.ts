@@ -19,7 +19,7 @@ export const listVocabularies = defineOperation({
     "Choice fields and requirements pick values from these lists.",
   input: VocabularyListInputSchema,
   output: VocabularyListOutputSchema,
-  permission: "configuration:view",
+  permission: "configuration:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.vocabulary.findMany({
       orderBy: [{ name: "asc" }, { id: "asc" }],
@@ -37,7 +37,7 @@ export const getVocabulary = defineOperation({
   description: "Get one list by id, with its active values in order.",
   input: VocabularyIdInputSchema,
   output: VocabularySchema,
-  permission: "configuration:view",
+  permission: "configuration:read",
   handler: async ({ input, context }) => {
     const vocabulary = await loadVocabulary({ context, id: input.id });
     return vocabulary ? ok({ value: vocabulary }) : notFound({ entity: "List" });

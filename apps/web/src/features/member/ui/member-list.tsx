@@ -49,7 +49,7 @@ export async function MemberList({ locale, cursor }: MemberListProps) {
   const t = await getTranslations("member");
   const abilities = await getCallerAbilities();
   const { role } = abilities;
-  const canInvite = can({ abilities, permission: "member:create" });
+  const canInvite = can({ abilities, permission: "member:write" });
   const members = await runOperation({
     operation: listMembers,
     input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },

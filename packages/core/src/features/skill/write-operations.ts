@@ -19,7 +19,7 @@ export const createSkill = defineOperation({
     "ORGANIZATION skills need an org admin.",
   input: SkillCreateInputSchema,
   output: SkillSchema,
-  permission: "self:edit",
+  permission: "self:write",
   embeddable: skillEmbeddable,
   handler: async ({ input: { scope, slug, ...rest }, context }) => {
     const allowed = checkCanCreateSkill({ context, scope });
@@ -40,7 +40,7 @@ export const updateSkill = defineOperation({
     "SYSTEM skills are read-only.",
   input: SkillUpdateInputSchema,
   output: SkillSchema,
-  permission: "self:edit",
+  permission: "self:write",
   embeddable: skillEmbeddable,
   handler: async ({ input: { id, ...changes }, context }) => {
     const before = await findVisibleSkill({ context, id });

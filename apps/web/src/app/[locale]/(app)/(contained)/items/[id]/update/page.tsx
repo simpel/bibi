@@ -10,7 +10,7 @@ export default async function UpdateItemPage({ params }: UpdateItemPageProps) {
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="item:edit">
+    <PermissionGate permission="item:write">
       <ItemUpdate locale={locale} id={id} />
     </PermissionGate>
   );

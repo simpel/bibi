@@ -20,7 +20,7 @@ describe("member.remove and API keys (ADR 0050)", () => {
       result: await execute({ operation: createApiKey, input, context: asLeaver }),
     });
     const overrides = [
-      { feature: "item" as const, action: "edit" as const, effect: "allow" as const },
+      { feature: "item" as const, action: "write" as const, effect: "allow" as const },
     ];
     unwrap({
       result: await execute({

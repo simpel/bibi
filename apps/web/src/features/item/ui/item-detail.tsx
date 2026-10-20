@@ -51,7 +51,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         {type?.behaviours.includes("COMPOSABLE") ? (
           <ItemResolutionSection locale={locale} itemId={item.value.id} />
         ) : null}
-        {type?.behaviours.includes("BOOKABLE") && can({ abilities, permission: "ticket:view" }) ? (
+        {type?.behaviours.includes("BOOKABLE") && can({ abilities, permission: "ticket:read" }) ? (
           <OccupancySection locale={locale} itemId={item.value.id} />
         ) : null}
       </WithHistory>

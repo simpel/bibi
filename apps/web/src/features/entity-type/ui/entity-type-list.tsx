@@ -17,7 +17,7 @@ import { ImportConfigurationTemplateButton } from "./import-configuration-templa
 export type EntityTypeListProps = { locale: Locale; cursor?: string | undefined };
 
 const PAGE_SIZE = 100;
-const CREATE = "configuration:create";
+const CREATE = "configuration:write";
 
 function groupByBase({ types }: { types: EntityTypeDto[] }) {
   const groups = new Map<EntityTypeDto["base"], EntityTypeDto[]>();

@@ -20,7 +20,7 @@ const book = defineOperation({
   description: "Test only",
   input: z.object({ itemId: z.string(), setupId: z.string(), startsAt: z.date() }),
   output: OccupancySchema.nullable(),
-  permission: "ticket:edit",
+  permission: "ticket:write",
   handler: async ({ input, context }) => {
     const source = { sourceType: "test", sourceId: "ticket-1" };
     const added = await addChangeover({ context, ...input, ...source });

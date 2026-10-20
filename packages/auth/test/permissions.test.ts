@@ -69,11 +69,11 @@ describe("preset and override resolution (ADR 0034, 0050)", () => {
         subjectType: "MEMBER",
         subjectId: member.id,
         feature: "item",
-        action: "edit",
+        action: "write",
         effect: "ALLOW",
       },
     });
     const context = await resolve({ headers });
-    expect(context.permissions.item).toEqual(["view", "edit"]);
+    expect(context.permissions.item).toEqual(["read", "write"]);
   });
 });

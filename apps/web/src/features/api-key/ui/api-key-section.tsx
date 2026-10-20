@@ -25,7 +25,7 @@ export async function ApiKeySection({ locale }: ApiKeySectionProps) {
           <h2 className="text-lg font-semibold">{t("title")}</h2>
           <p className="text-sm text-muted-foreground">{t("description")}</p>
         </div>
-        {can({ abilities, permission: "apiKey:create" }) ? (
+        {can({ abilities, permission: "apiKey:write" }) ? (
           <CreateApiKeyButton roles={roles} />
         ) : null}
       </header>
@@ -36,7 +36,7 @@ export async function ApiKeySection({ locale }: ApiKeySectionProps) {
       ) : (
         <ApiKeyTable
           apiKeys={keys.value.items}
-          canManage={can({ abilities, permission: "apiKey:edit" })}
+          canManage={can({ abilities, permission: "apiKey:write" })}
         />
       )}
     </section>

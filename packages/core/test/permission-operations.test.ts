@@ -10,15 +10,15 @@ describe("permission.get and permission.update (ADR 0050)", () => {
     const context = await testOrg();
     const id = await addTestMember({ context, role: "member" });
     const overrides = [
-      { feature: "item" as const, action: "edit" as const, effect: "allow" as const },
-      { feature: "item" as const, action: "view" as const, effect: "allow" as const },
+      { feature: "item" as const, action: "write" as const, effect: "allow" as const },
+      { feature: "item" as const, action: "read" as const, effect: "allow" as const },
     ];
     const input = { ...subject({ id }), overrides };
     const saved = unwrap({
       result: await execute({ operation: updatePermissions, input, context }),
     });
     expect(saved.overrides).toEqual([overrides[0]]);
-    expect(saved.effective.item).toEqual(["view", "edit"]);
+    expect(saved.effective.item).toEqual(["read", "write"]);
     const read = unwrap({
       result: await execute({ operation: getPermissions, input: subject({ id }), context }),
     });
@@ -33,7 +33,7 @@ describe("permission.get and permission.update (ADR 0050)", () => {
     const context = await testOrg();
     const id = await addTestMember({ context, role: "manager" });
     const deny = [
-      { feature: "payment" as const, action: "view" as const, effect: "deny" as const },
+      { feature: "payment" as const, action: "read" as const, effect: "deny" as const },
     ];
     await execute({
       operation: updatePermissions,
@@ -48,14 +48,14 @@ describe("permission.get and permission.update (ADR 0050)", () => {
       }),
     });
     expect(reset.overrides).toEqual([]);
-    expect(reset.effective.payment).toEqual(["view", "create", "edit"]);
+    expect(reset.effective.payment).toEqual(["read", "write"]);
   });
 
   it("refuses locked admin-only permissions and duplicates", async () => {
     const context = await testOrg();
     const id = await addTestMember({ context, role: "manager" });
     const locked = [
-      { feature: "member" as const, action: "edit" as const, effect: "allow" as const },
+      { feature: "member" as const, action: "write" as const, effect: "allow" as const },
     ];
     const result = await execute({
       operation: updatePermissions,

@@ -14,7 +14,7 @@ const LIMIT = 100;
 
 /**
  * Ticket types, lists, customers, contacts, members and phases (one page each). Without
- * `customer:view` the customers are hidden (ADR 0050 feature scope), not an error. Contacts and
+ * `customer:read` the customers are hidden (ADR 0050 feature scope), not an error. Contacts and
  * members are optional: without read access they show as "–" and cannot be picked.
  */
 export async function loadTicketData(): Promise<Result<TicketFormData>> {

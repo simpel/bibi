@@ -22,7 +22,7 @@ export const previewPipelineSetup = defineOperation({
     "state and hold. Use it to propose a full setup from a description of the organization.",
   input: PipelineSetupDraftSchema,
   output: PipelinePreviewSchema,
-  permission: "pipeline:view",
+  permission: "pipeline:read",
   entityType: "pipelineSetup",
   handler: async ({ input, context }) => {
     const bookable = await resolveBookable({ context, draft: input });
@@ -43,7 +43,7 @@ export const activatePipelineSetup = defineOperation({
     "configuration, itemState, ticketPhase and phaseGrid admin.",
   input: PipelineSetupDraftSchema,
   output: PipelineActivateOutputSchema,
-  permission: "pipeline:edit",
+  permission: "pipeline:write",
   entityType: "pipelineSetup",
   handler: ({ input, context }) => activatePipeline({ context, draft: input }),
 });
@@ -58,7 +58,7 @@ export const presetDraftPipelineSetup = defineOperation({
     "check it with pipelineSetup.preview. Use it for an organization's first setup.",
   input: PipelinePresetDraftInputSchema,
   output: PipelineSetupDraftSchema,
-  permission: "pipeline:view",
+  permission: "pipeline:read",
   entityType: "pipelineSetup",
   handler: ({ input, context }) => presetDraft({ context, input }),
 });

@@ -90,14 +90,14 @@ describe("auditLog.list / auditLog.get", () => {
     const venue = await makeVenue({ context: owner, name: "Mine" });
     const noAudit = testContext({
       organizationId: owner.organizationId,
-      permissions: { venue: ["view"] },
+      permissions: { venue: ["read"] },
     });
     expect(
       errorCode({
         result: await execute({ operation: listAuditLogs, input: {}, context: noAudit }),
       }),
     ).toBe("FORBIDDEN");
-    const stranger = testContext({ permissions: { audit: ["view"] } });
+    const stranger = testContext({ permissions: { audit: ["read"] } });
     const theirs = await list({ context: stranger, input: { entityId: venue.id } });
     expect(theirs.items).toEqual([]);
     const id = (await list({ context: owner })).items[0]?.id ?? "";
@@ -110,11 +110,11 @@ describe("auditLog.list / auditLog.get", () => {
     await execute({ operation: createConversation, input: { title: "Private" }, context: owner });
     const peer = testContext({
       organizationId: owner.organizationId,
-      permissions: { audit: ["view"] },
+      permissions: { audit: ["read"] },
     });
     const admin = testContext({
       organizationId: owner.organizationId,
-      permissions: { audit: ["view"], assistant: ["view"] },
+      permissions: { audit: ["read"], assistant: ["read"] },
     });
     const filter = { entityType: "conversation" };
     expect((await list({ context: peer, input: filter })).items).toEqual([]);
@@ -129,11 +129,11 @@ describe("auditLog.list / auditLog.get", () => {
     });
     const peer = testContext({
       organizationId: inviter.organizationId,
-      permissions: { audit: ["view"], member: ["view"] },
+      permissions: { audit: ["read"], member: ["read"] },
     });
     const admin = testContext({
       organizationId: inviter.organizationId,
-      permissions: { audit: ["view"], member: ["view", "create", "edit", "remove"] },
+      permissions: { audit: ["read"], member: ["read", "write", "delete"] },
     });
     const filter = { entityType: "invitation" };
     expect((await list({ context: peer, input: filter })).items).toEqual([]);

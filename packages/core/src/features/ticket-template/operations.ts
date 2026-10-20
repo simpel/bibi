@@ -26,7 +26,7 @@ export const listTicketTemplates = defineOperation({
     "ticket.createFromTemplate.",
   input: TicketTemplateListInputSchema,
   output: TicketTemplateListOutputSchema,
-  permission: "template:view",
+  permission: "template:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.ticketTemplate.findMany({
       orderBy: [{ name: "asc" }, { id: "asc" }],
@@ -44,7 +44,7 @@ export const getTicketTemplate = defineOperation({
   description: "Get one predefined ticket (template) by id, with its lines.",
   input: TicketTemplateIdInputSchema,
   output: TicketTemplateSchema,
-  permission: "template:view",
+  permission: "template:read",
   handler: async ({ input, context }) => {
     const template = await loadTicketTemplate({ context, id: input.id });
     return template ? ok({ value: template }) : notFound({ entity: "Ticket template" });
@@ -64,7 +64,7 @@ export const createTicketTemplate = defineOperation({
     `in, default own-field values and lines. ${LINE_NOTE}`,
   input: TicketTemplateCreateInputSchema,
   output: TicketTemplateSchema,
-  permission: "template:create",
+  permission: "template:write",
   handler: async ({ input, context }) => {
     const { lines, fields: _fields, ...data } = input;
     const taken = await nameTaken({ context, name: data.name });
@@ -94,7 +94,7 @@ export const updateTicketTemplate = defineOperation({
     `the whole set when given. Tickets already made from it are not changed. ${LINE_NOTE}`,
   input: TicketTemplateUpdateInputSchema,
   output: TicketTemplateSchema,
-  permission: "template:edit",
+  permission: "template:write",
   handler: async ({ input: { id, lines, fields, ...data }, context }) => {
     const before = await loadTicketTemplate({ context, id });
     if (!before) return notFound({ entity: "Ticket template" });
@@ -127,7 +127,7 @@ export const archiveTicketTemplate = defineOperation({
     "Archive (soft-delete) a predefined ticket. Tickets already made from it are not changed.",
   input: TicketTemplateIdInputSchema,
   output: TicketTemplateSchema,
-  permission: "template:remove",
+  permission: "template:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await loadTicketTemplate({ context, id });
     if (!before) return notFound({ entity: "Ticket template" });

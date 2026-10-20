@@ -38,7 +38,7 @@ export async function archiveCustomerTickets({
   const rows = await context.db.ticket.findMany({ where: { customerId: customer.id } });
   if (rows.length > 0) {
     // Before the count check, so its message never describes tickets the caller cannot remove.
-    const allowed = requirePermission({ context, permission: "ticket:remove", what: "tickets" });
+    const allowed = requirePermission({ context, permission: "ticket:delete", what: "tickets" });
     if (!allowed.ok) return allowed;
   }
   const changed = checkExpectedTicketCount({ name: customer.name, expected, actual: rows.length });
@@ -58,7 +58,7 @@ export async function archiveCustomerPackages({
 }: CascadeInput): Promise<Result<number>> {
   const rows = await context.db.item.findMany({ where: { customerId: customer.id } });
   if (rows.length === 0) return ok({ value: 0 });
-  const allowed = requirePermission({ context, permission: "item:remove", what: "packages" });
+  const allowed = requirePermission({ context, permission: "item:delete", what: "packages" });
   if (!allowed.ok) return allowed;
   const before = await toItemDtos({ context, rows });
   for (const dto of before) {

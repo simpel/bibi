@@ -24,7 +24,7 @@ export const listItems = defineOperation({
     "Lists the catalog; with customerId it also lists that customer's own packages.",
   input: ItemListInputSchema,
   output: ItemListOutputSchema,
-  permission: "item:view",
+  permission: "item:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.item.findMany({
       where: {
@@ -48,7 +48,7 @@ export const getItem = defineOperation({
   description: "Get one item by id, with its field values, setup capacities and parts.",
   input: ItemIdInputSchema,
   output: ItemSchema,
-  permission: "item:view",
+  permission: "item:read",
   handler: async ({ input, context }) => {
     const item = await loadItem({ context, id: input.id });
     return item ? ok({ value: item }) : notFound({ entity: "Item" });

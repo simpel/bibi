@@ -26,7 +26,7 @@ export const listPayments = defineOperation({
     "in minor units, currency and the customer's payment link.",
   input: PaymentListInputSchema,
   output: PaymentListOutputSchema,
-  permission: "payment:view",
+  permission: "payment:read",
   handler: async ({ input: { ticketId, limit, cursor }, context }) => {
     const rows = await context.db.payment.findMany({
       where: { ticketId },
@@ -46,7 +46,7 @@ export const getPayment = defineOperation({
   description: "Get one payment by id: method, status, amount, payment link and when it was paid.",
   input: PaymentIdInputSchema,
   output: PaymentSchema,
-  permission: "payment:view",
+  permission: "payment:read",
   handler: async ({ input, context }) => {
     const row = await context.db.payment.findFirst({ where: { id: input.id } });
     return row ? ok({ value: toPaymentDto({ row }) }) : notFound({ entity: "Payment" });
@@ -75,7 +75,7 @@ export async function getPublicPayment({
   const context = createExecuteContext({
     organizationId: row.organizationId,
     roles: [],
-    permissions: { payment: ["view"] },
+    permissions: { payment: ["read"] },
     actor: { type: "system", userId: null },
     db,
   });

@@ -30,7 +30,7 @@ export const createSheetDefinition = defineOperation({
     "types or a list (else VALIDATION).",
   input: SheetDefinitionCreateInputSchema,
   output: SheetDefinitionSchema,
-  permission: "template:create",
+  permission: "template:write",
   handler: async ({ input: { name, ...given }, context }) => {
     if (await nameTaken({ context, name })) return taken({ name });
     const contents = await checkSheetContents({ context, contents: given });
@@ -51,7 +51,7 @@ export const updateSheetDefinition = defineOperation({
     "Omitted fields are unchanged. Fields must belong to the resulting item types.",
   input: SheetDefinitionUpdateInputSchema,
   output: SheetDefinitionSchema,
-  permission: "template:edit",
+  permission: "template:write",
   handler: async ({ input: { id, name, ...changes }, context }) => {
     const before = await context.db.sheetDefinition.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Sheet" });
@@ -91,7 +91,7 @@ export const archiveSheetDefinition = defineOperation({
   description: "Archive a sheet definition. Its name can then be reused.",
   input: SheetDefinitionIdInputSchema,
   output: SheetDefinitionSchema,
-  permission: "template:remove",
+  permission: "template:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.sheetDefinition.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Sheet" });

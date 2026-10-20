@@ -22,7 +22,7 @@ export const listVenues = defineOperation({
   description: "List active venues of the organization, ordered by name.",
   input: VenueListInputSchema,
   output: VenueListOutputSchema,
-  permission: "venue:view",
+  permission: "venue:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.venue.findMany({
       orderBy: [{ name: "asc" }, { id: "asc" }],
@@ -39,7 +39,7 @@ export const getVenue = defineOperation({
   description: "Get one venue by id.",
   input: VenueIdInputSchema,
   output: VenueSchema,
-  permission: "venue:view",
+  permission: "venue:read",
   handler: async ({ input, context }) => {
     const venue = await context.db.venue.findFirst({ where: { id: input.id } });
     return venue ? ok({ value: venue }) : notFound();
@@ -53,7 +53,7 @@ export const createVenue = defineOperation({
     "Create a venue (a building or site that bookable items, such as rooms, can belong to).",
   input: VenueCreateInputSchema,
   output: VenueSchema,
-  permission: "venue:create",
+  permission: "venue:write",
   embeddable: venueEmbeddable,
   handler: async ({ input, context }) => {
     const venue = await context.db.venue.create({
@@ -70,7 +70,7 @@ export const updateVenue = defineOperation({
   description: "Update fields of an active venue. Omitted fields are left unchanged.",
   input: VenueUpdateInputSchema,
   output: VenueSchema,
-  permission: "venue:edit",
+  permission: "venue:write",
   embeddable: venueEmbeddable,
   handler: async ({ input: { id, ...data }, context }) => {
     const before = await context.db.venue.findFirst({ where: { id } });
@@ -89,7 +89,7 @@ export const archiveVenue = defineOperation({
     "Refused while a LINK field points to one of those items.",
   input: VenueIdInputSchema,
   output: VenueSchema,
-  permission: "venue:remove",
+  permission: "venue:delete",
   embeddable: venueEmbeddable,
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.venue.findFirst({ where: { id } });
