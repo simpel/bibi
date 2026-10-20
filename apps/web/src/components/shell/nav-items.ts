@@ -40,7 +40,7 @@ export type NavItem = {
   permission?: Permission;
 };
 
-export type NavGroupId = "primary" | "work" | "catalog" | "admin";
+export type NavGroupId = "primary" | "work" | "catalog" | "admin" | "platform";
 
 /**
  * Sidebar entries per zone, most used first (ADR 0036). A new entity adds its entry to the
@@ -119,6 +119,8 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       permission: "apiKey:read",
     },
     { href: ROUTES.settings, labelKey: "settings", icon: SettingsIcon, audience: "configure" },
+  ],
+  platform: [
     {
       href: ROUTES.admin,
       labelKey: "platformAdmin",

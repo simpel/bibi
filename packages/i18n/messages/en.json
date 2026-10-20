@@ -202,7 +202,8 @@
       "primary": "Overview",
       "work": "Work",
       "catalog": "Catalog",
-      "admin": "Administration"
+      "admin": "Administration",
+      "platform": "Platform"
     },
     "integrations": "Integrations",
     "itemStates": "Item states",

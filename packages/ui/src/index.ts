@@ -16,6 +16,7 @@ export { Button, type ButtonProps, buttonVariants } from "./components/button/bu
 export * from "./components/card/card";
 export * from "./components/chart/chart";
 export { Checkbox, type CheckboxProps } from "./components/checkbox/checkbox";
+export * from "./components/collapsible/collapsible";
 export * from "./components/color-swatch/color-swatch";
 export { Combobox, type ComboboxProps } from "./components/combobox/combobox";
 export type { ComboboxOption } from "./components/combobox/combobox-groups";

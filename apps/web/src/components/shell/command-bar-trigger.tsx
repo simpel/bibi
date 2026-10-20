@@ -11,7 +11,7 @@ export function CommandBarTrigger({ onOpen }: CommandBarTriggerProps) {
   return (
     <Button
       variant="outline"
-      className="w-full max-w-xs justify-start gap-2 text-muted-foreground"
+      className="w-full min-w-0 max-w-xs shrink justify-start gap-2 text-muted-foreground"
       aria-label={t("commandBar")}
       onClick={onOpen}
     >

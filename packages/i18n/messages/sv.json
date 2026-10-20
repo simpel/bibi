@@ -202,7 +202,8 @@
       "primary": "Översikt",
       "work": "Arbete",
       "catalog": "Katalog",
-      "admin": "Administration"
+      "admin": "Administration",
+      "platform": "Plattform"
     },
     "integrations": "Integrationer",
     "itemStates": "Artikelstatusar",

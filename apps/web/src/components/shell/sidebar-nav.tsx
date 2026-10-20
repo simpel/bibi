@@ -3,16 +3,18 @@
 import { usePathname } from "@okazi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { canPermission } from "@/lib/can";
+import { NavGroup } from "./nav-group";
 import { NAV_GROUPS, type NavAudience, type NavGroupId, type NavItem } from "./nav-items";
 import type { ShellAccess } from "./shell-types";
-import { activeHref, SidebarLink } from "./sidebar-link";
+import { activeHref } from "./sidebar-link";
 
 export type SidebarNavProps = {
   groups: readonly NavGroupId[];
-  label: "mainNavigation" | "adminNavigation";
   access: ShellAccess;
-  /** Show each group's heading (the main zone); the admin zone has none. */
+  /** Show each group's heading, which makes it collapsible (Work, Catalog, Administration). */
   headings: boolean;
+  /** Groups that start collapsed unless the current page is inside them. */
+  closed?: readonly NavGroupId[];
 };
 
 const VISIBLE: Record<NavAudience, (access: ShellAccess) => boolean> = {
@@ -31,10 +33,9 @@ function isVisible({ item, access }: IsVisibleInput): boolean {
   );
 }
 
-/** One sidebar zone: its groups, filtered by what the member may see (ADR 0036). */
-export function SidebarNav({ groups, label, access, headings }: SidebarNavProps) {
+/** Sidebar groups, filtered by what the member may see (ADR 0036, 0050). */
+export function SidebarNav({ groups, access, headings, closed = [] }: SidebarNavProps) {
   const t = useTranslations("nav");
-  const shell = useTranslations("shell");
   const pathname = usePathname();
   const visible = groups
     .map((group) => ({
@@ -42,29 +43,15 @@ export function SidebarNav({ groups, label, access, headings }: SidebarNavProps)
       items: NAV_GROUPS[group].filter((item) => isVisible({ item, access })),
     }))
     .filter(({ items }) => items.length > 0);
-  if (visible.length === 0) return null;
   const hrefs = visible.flatMap(({ items }) => items.map((item) => item.href));
   const current = activeHref({ pathname, hrefs });
-  return (
-    <nav aria-label={shell(label)} className="grid gap-4">
-      {visible.map(({ group, items }) => (
-        <div key={group} className="grid gap-1">
-          {headings ? (
-            <span className="px-3 text-xs font-medium text-muted-foreground">
-              {t(`groups.${group}`)}
-            </span>
-          ) : null}
-          {items.map(({ href, labelKey, icon }) => (
-            <SidebarLink
-              key={href}
-              href={href}
-              label={t(labelKey)}
-              icon={icon}
-              active={href === current}
-            />
-          ))}
-        </div>
-      ))}
-    </nav>
-  );
+  return visible.map(({ group, items }) => (
+    <NavGroup
+      key={group}
+      items={items}
+      current={current}
+      defaultOpen={!closed.includes(group)}
+      {...(headings ? { heading: t(`groups.${group}`) } : {})}
+    />
+  ));
 }

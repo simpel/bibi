@@ -1,18 +1,22 @@
+import { Separator, SidebarTrigger } from "@okazi/ui";
+import { useTranslations } from "next-intl";
 import { Breadcrumb } from "./breadcrumb";
 import { CommandBar } from "./command-bar";
-import { MobileNav, type MobileNavProps } from "./mobile-nav";
+import type { ShellAccess } from "./shell-types";
 
-export type TopBarProps = MobileNavProps;
+export type TopBarProps = { access: ShellAccess };
 
-/** Mobile menu and breadcrumb on the left, the ⌘K command bar on the right. */
-export function TopBar(props: TopBarProps) {
+/** Sidebar toggle and breadcrumb on the left, the ⌘K command bar on the right. */
+export function TopBar({ access }: TopBarProps) {
+  const t = useTranslations("nav");
   return (
     <header className="flex h-14 items-center gap-2 border-b bg-background px-4">
-      <MobileNav {...props} />
+      <SidebarTrigger label={t("openMenu")} />
+      <Separator orientation="vertical" className="h-4" />
       <div className="flex min-w-0 flex-1 items-center">
         <Breadcrumb />
       </div>
-      <CommandBar permissions={props.access.permissions} />
+      <CommandBar permissions={access.permissions} />
     </header>
   );
 }
