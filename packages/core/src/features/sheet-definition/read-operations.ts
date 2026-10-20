@@ -24,7 +24,7 @@ export const listSheetDefinitions = defineOperation({
     "responsibility it goes to.",
   input: SheetDefinitionListInputSchema,
   output: SheetDefinitionListOutputSchema,
-  permission: "configuration:read",
+  permission: "template:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.sheetDefinition.findMany({
       orderBy: [{ name: "asc" }, { id: "asc" }],
@@ -42,7 +42,7 @@ export const getSheetDefinition = defineOperation({
   description: "Get one sheet definition by id.",
   input: SheetDefinitionIdInputSchema,
   output: SheetDefinitionSchema,
-  permission: "configuration:read",
+  permission: "template:read",
   handler: async ({ input, context }) => {
     const found = await findSheetDefinition({ context, id: input.id });
     return found ? ok({ value: found }) : notFound({ entity: "Sheet" });

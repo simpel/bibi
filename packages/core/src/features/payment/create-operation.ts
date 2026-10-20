@@ -68,8 +68,10 @@ export const createPayment = defineOperation({
         createdBy: context.actor.userId,
       },
     });
-    context.recordChange({ entityId: row.id, after: row });
-    return ok({ value: toPaymentDto({ row }) });
+    const payment = toPaymentDto({ row });
+    // Audit images are DTOs: the public token and the connected account id never enter them.
+    context.recordChange({ entityId: row.id, after: payment });
+    return ok({ value: payment });
   },
   external: chargeAfterCommit,
 });

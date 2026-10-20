@@ -37,7 +37,7 @@ export const AiFeatureSettingSchema = z.object({
   id: AiFeatureIdSchema,
   modelType: z.enum(["language", "embedding"]),
   requiresReindex: z.boolean(),
-  /** Chosen by a platform admin; `null` = not configured, the feature fails (UNAVAILABLE). */
+  /** Chosen by a superadmin; `null` = not configured, the feature fails (UNAVAILABLE). */
   modelId: z.string().nullable(),
   updatedAt: z.date().nullable(),
   updatedBy: z.string().nullable(),

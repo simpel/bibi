@@ -3,14 +3,16 @@ import { Link } from "@okazi/i18n/navigation";
 import { actionsColumn, type ColumnDef } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
-import { ROUTES } from "@/lib/routes";
+import { memberRoute } from "@/lib/routes";
 import { RoleBadge } from "./role-badge";
 
 export type MemberRow = Pick<MemberDto, "id" | "name" | "email" | "role">;
 
 export type UseMemberColumnsInput<TRow extends MemberRow> = {
-  /** Link each name to the members settings page (assistant card). */
+  /** Link each name to the member's detail page. */
   linkNames?: boolean;
+  /** The role cell, e.g. an auto-saving select; `null` falls back to the badge. */
+  renderRole?: (row: TRow) => ReactNode;
   /** Row actions menu; omit for no actions column. */
   renderActions?: (row: TRow) => ReactNode;
 };
@@ -18,6 +20,7 @@ export type UseMemberColumnsInput<TRow extends MemberRow> = {
 /** Columns of the member table, shared by the members page and the assistant card. */
 export function useMemberColumns<TRow extends MemberRow>({
   linkNames = false,
+  renderRole,
   renderActions,
 }: UseMemberColumnsInput<TRow>): ColumnDef<TRow>[] {
   const t = useTranslations("member.columns");
@@ -32,7 +35,7 @@ export function useMemberColumns<TRow extends MemberRow>({
       accessorFn: (m) => m.name,
       cell: ({ row }) =>
         linkNames ? (
-          <Link href={ROUTES.settingsMembers} className="font-medium hover:underline">
+          <Link href={memberRoute({ id: row.original.id })} className="font-medium hover:underline">
             {row.original.name}
           </Link>
         ) : (
@@ -44,7 +47,7 @@ export function useMemberColumns<TRow extends MemberRow>({
       id: "role",
       header: t("roles"),
       accessorFn: (m) => m.role ?? "",
-      cell: ({ row }) => <RoleBadge role={row.original.role} />,
+      cell: ({ row }) => renderRole?.(row.original) ?? <RoleBadge role={row.original.role} />,
     },
     ...actionColumn,
   ];

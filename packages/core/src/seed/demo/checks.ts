@@ -10,6 +10,7 @@ import { checkDemoFactGuards } from "./fact-guard-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
 import { checkDemoPayments } from "./payment-checks";
+import { checkDemoPermissions } from "./permission-checks";
 import { checkDemoPipeline } from "./pipeline-checks";
 import { checkDemoPrices } from "./price-checks";
 import { checkDemoQuoteEvents } from "./quote-event-checks";
@@ -20,6 +21,25 @@ import { checkDemoSetupNeed } from "./setup-need-checks";
 import { checkDemoTemplates } from "./template-checks";
 import { checkDemoTickets } from "./ticket-checks";
 import type { DemoOrg } from "./types";
+
+type OrgCheck = (input: { context: ExecuteContext; org: DemoOrg }) => Promise<string[]>;
+
+/** The checks that need the pipeline, in order (the archive checks run before the grid moves). */
+const PIPELINE_CHECKS: readonly OrgCheck[] = [
+  checkDemoPipeline,
+  checkDemoTemplates,
+  checkDemoTickets,
+  checkDemoBoard,
+  checkDemoAssignments,
+  checkDemoHolds,
+  checkDemoAlternatives,
+  checkDemoArchive,
+  checkDemoQuoteEvents,
+  checkDemoFactGuards,
+  checkDemoGrid,
+  checkDemoPrices,
+  checkDemoPayments,
+];
 
 export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPipeline?: boolean };
 
@@ -56,24 +76,14 @@ export async function checkDemoOrg({
       failures.push(`${org.slug}: ${user.name} has ${member ? member.role : "no member"}`);
     }
   }
+  const listed = members.value.items;
+  failures.push(...(await checkDemoPermissions({ context, org, members: listed })));
   failures.push(...(await checkDemoConfig({ context, org, skipPipeline })));
   failures.push(...(await checkDemoResponsibilities({ context, org })));
   failures.push(...(await checkDemoRecords({ context, org })));
   failures.push(...(await checkDemoSetupNeed({ context, org, skipPipeline })));
   if (skipPipeline) return [...failures, ...(await auditFailures({ context, org }))];
-  failures.push(...(await checkDemoPipeline({ context, org })));
-  failures.push(...(await checkDemoTemplates({ context, org })));
-  failures.push(...(await checkDemoTickets({ context, org })));
-  failures.push(...(await checkDemoBoard({ context, org })));
-  failures.push(...(await checkDemoAssignments({ context, org })));
-  failures.push(...(await checkDemoHolds({ context, org })));
-  failures.push(...(await checkDemoAlternatives({ context, org })));
-  failures.push(...(await checkDemoArchive({ context, org })));
-  failures.push(...(await checkDemoQuoteEvents({ context, org })));
-  failures.push(...(await checkDemoFactGuards({ context, org })));
-  failures.push(...(await checkDemoGrid({ context, org })));
-  failures.push(...(await checkDemoPrices({ context, org })));
-  failures.push(...(await checkDemoPayments({ context, org })));
+  for (const check of PIPELINE_CHECKS) failures.push(...(await check({ context, org })));
   failures.push(...(await reconcileProjections({ context })));
   return [...failures, ...(await auditFailures({ context, org }))];
 }

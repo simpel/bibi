@@ -33,7 +33,7 @@ export const createLine = defineOperation({
     `line types. ${OCCUPY_NOTE}`,
   input: LineCreateInputSchema,
   output: LineSchema,
-  permission: "line:write",
+  permission: "program:write",
   handler: effectiveHandler({ handler: ({ input, context }) => insertLine({ context, input }) }),
 });
 
@@ -48,7 +48,7 @@ export const updateLine = defineOperation({
     `occupancy. ${OCCUPY_NOTE}`,
   input: LineUpdateInputSchema,
   output: LineSchema,
-  permission: "line:write",
+  permission: "program:write",
   handler: effectiveHandler({
     handler: async ({ input: { id, fields: patch, ...data }, context }) => {
       const before = await loadLine({ context, id });
@@ -105,7 +105,7 @@ export const archiveLine = defineOperation({
   description: "Remove (archive) a line from the run schedule and release the item it occupied.",
   input: LineIdInputSchema,
   output: LineSchema,
-  permission: "line:write",
+  permission: "program:delete",
   handler: effectiveHandler({
     handler: async ({ input: { id }, context }) => {
       const before = await loadLine({ context, id });

@@ -47,8 +47,11 @@ export type ToQuoteDtoInput = {
   row: QuoteRow;
   /** The previous version's frozen lines; null on version 1. */
   previous: readonly OrderLineDto[] | null;
-  /** The ticket's priced lines now (`deriveTicketLines`). */
-  live: readonly OrderLineDto[];
+  /**
+   * The ticket's priced lines now (`deriveTicketLines`); null for a caller without
+   * `program:read` (ADR 0050): a DRAFT then shows no lines and an ACCEPTED quote no drift.
+   */
+  live: readonly OrderLineDto[] | null;
 };
 
 /**
@@ -58,9 +61,10 @@ export type ToQuoteDtoInput = {
  */
 export function toQuoteDto({ row: { lines: rows, ...quote }, previous, live }: ToQuoteDtoInput) {
   const draft = quote.quoteStatus === "DRAFT";
-  const own = draft ? [...live] : rows.map((row) => toOrderLineDto({ row }));
+  const own = draft ? [...(live ?? [])] : rows.map((row) => toOrderLineDto({ row }));
   const { totalExclVatMinor, totalInclVatMinor } = draft ? quoteTotals({ lines: own }) : quote;
-  const drift = quote.quoteStatus === "ACCEPTED" ? ticketDrift({ snapshot: own, live }) : NO_DRIFT;
+  const accepted = quote.quoteStatus === "ACCEPTED" && live;
+  const drift = accepted ? ticketDrift({ snapshot: own, live }) : NO_DRIFT;
   const marked = markLineChanges({ lines: own, previous });
   const from = totalIsFrom({ lines: own });
   const dto: QuoteDto = {

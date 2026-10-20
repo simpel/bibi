@@ -17,7 +17,7 @@ export type ChooseOnAcceptInput = {
  * `quote.accept` with the customer's picks (ADR 0052): each line id must be an option of a group of
  * the ticket that is not chosen yet, at most one per group (`VALIDATION` on `chosenLineIds.N`).
  * Each pick then goes through `chooseOption`, which releases the other options; the caller needs
- * `alternativeGroup.choose`'s permission (`line:write`).
+ * `alternativeGroup.choose`'s permission (`program:write`).
  */
 export async function chooseOnAccept({
   context,

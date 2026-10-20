@@ -90,7 +90,7 @@ export const archiveVenue = defineOperation({
     "Refused while a LINK field points to one of those items.",
   input: VenueIdInputSchema,
   output: VenueSchema,
-  permission: "venue:write",
+  permission: "venue:delete",
   embeddable: venueEmbeddable,
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.venue.findFirst({ where: { id } });

@@ -22,7 +22,7 @@ export const listAssignments = defineOperation({
     "otherwise. `assigneeSource` and each follower's `source` say EXPLICIT or DEFAULT.",
   input: AssignmentListInputSchema,
   output: AssignmentListOutputSchema,
-  permission: "assignment:read",
+  permission: "ticket:read",
   handler: async ({ input, context }) => {
     const subject = await checkSubject({ context, ...input });
     if (!subject.ok) return subject;
@@ -39,7 +39,7 @@ export const listMyAssignments = defineOperation({
     "tickets (ADR 0055). Each row names its subject (subjectType, subjectId).",
   input: AssignmentListMineInputSchema,
   output: AssignmentListMineOutputSchema,
-  permission: "assignment:read",
+  permission: "ticket:read",
   handler: async ({ input: { kind, subjectType, ...pageInput }, context }) => {
     const userId = context.actor.userId;
     if (!userId) return invalid({ message: "assignment.listMine needs a signed-in member" });

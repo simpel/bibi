@@ -13,6 +13,7 @@ export function TicketListTable({ tickets, data }: TicketListTableProps) {
     <TicketTable
       tickets={tickets}
       customers={data.customers}
+      customersHidden={data.customersHidden}
       types={data.types.map(({ id, name }) => ({ id, name }))}
       phases={data.phases}
     />

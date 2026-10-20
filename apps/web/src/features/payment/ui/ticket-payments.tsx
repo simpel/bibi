@@ -43,6 +43,7 @@ export async function TicketPayments({ locale, ticketId, canRequest }: TicketPay
   const t = await getTranslations("payment");
   const deposit = await getTranslations("deposit");
   const result = await loadMoney({ ticketId });
+  if (!result.ok && result.error.code === "FORBIDDEN") return null;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const { balance, deposits, invoices, payments } = result.value;
   return (

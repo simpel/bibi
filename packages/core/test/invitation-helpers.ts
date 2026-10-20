@@ -1,6 +1,6 @@
 import { getDb } from "@okazi/db";
 import { createId } from "@paralleldrive/cuid2";
-import { type ExecuteContext, execute, type GrantableRole, inviteMember } from "../src/index";
+import { type ExecuteContext, execute, type FixedRole, inviteMember } from "../src/index";
 import { testOrg } from "./org-helpers";
 
 /** An owner context whose inviter is a real user (`invitation.inviterId` has a FK). */
@@ -20,5 +20,5 @@ export const invite = ({
 }: {
   context: ExecuteContext;
   email: string;
-  role: GrantableRole;
+  role: FixedRole;
 }) => execute({ operation: inviteMember, input: { email, role }, context });

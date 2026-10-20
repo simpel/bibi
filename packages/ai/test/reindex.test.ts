@@ -22,8 +22,8 @@ describe("reindexAll", () => {
     const organizationId = `org_${createId()}`;
     const context = createExecuteContext({
       organizationId,
-      roles: ["owner"],
-      permissions: grantAll({ upTo: "admin" }),
+      roles: ["admin"],
+      permissions: grantAll({}),
       actor: { type: "user", userId: `user_${createId()}` },
     });
     const placeholder = createEmbed({ apiKey: null, nodeEnv: "test" });

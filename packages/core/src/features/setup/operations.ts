@@ -94,7 +94,7 @@ export const archiveSetup = defineOperation({
     "Archive a setup. Refused while an active item has a capacity for it or an active line uses it.",
   input: SetupIdInputSchema,
   output: SetupSchema,
-  permission: "configuration:write",
+  permission: "configuration:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.setup.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Setup" });

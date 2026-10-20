@@ -30,7 +30,7 @@ export function createSearchOperation({
       "meaning and keywords. Returns entity type, id, score and the indexed text.",
     input: SearchInputSchema,
     output: SearchOutputSchema,
-    permission: "search:read",
+    permission: "self:read",
     handler: async ({ input, context }) => {
       const { embeddings } = await embed({ texts: [input.query] });
       const [embedding] = embeddings;

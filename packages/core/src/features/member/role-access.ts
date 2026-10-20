@@ -2,7 +2,6 @@ import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { type FixedRole, highestRole, roleRank } from "../../permissions/fixed-roles";
-import { OWNER_ROLE } from "../../permissions/resources";
 
 type Context = Pick<OperationContext, "actor" | "roles">;
 
@@ -27,12 +26,11 @@ export function checkCanGrantRole({ context, role }: CheckCanGrantRoleInput): Re
 export type CheckCanManageMemberInput = { context: Context; role: FixedRole | null };
 
 /**
- * Only an owner changes or removes an owner, and nobody changes or removes a member whose role
- * is above their own. A member without a fixed role ranks lowest.
+ * Nobody changes or removes a member whose role is above their own. A member without a fixed
+ * role ranks lowest.
  */
 export function checkCanManageMember({ context, role }: CheckCanManageMemberInput): Result<true> {
   const rank = role ? roleRank({ role }) : -1;
   if (rank <= callerRank({ context })) return ok({ value: true });
-  if (role === OWNER_ROLE) return forbidden({ message: "Only an owner can change an owner" });
   return forbidden({ message: "You cannot change a member who has more access than you" });
 }

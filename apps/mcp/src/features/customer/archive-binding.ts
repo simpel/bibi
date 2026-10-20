@@ -17,5 +17,7 @@ export async function bindArchiveCustomer({
   const id = text({ value: rest.id });
   const found = await execute({ operation: getCustomer, input: { id }, context });
   if (!found.ok) return found;
-  return ok({ value: { ...rest, expectedTicketCount: found.value.ticketCount } });
+  // Null when the caller may not view tickets; the archive then refuses the cascade anyway.
+  const count = found.value.ticketCount;
+  return ok({ value: { ...rest, ...(count === null ? {} : { expectedTicketCount: count }) } });
 }

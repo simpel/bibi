@@ -23,6 +23,7 @@ export function ProgramPlaceFields({ form, data }: ProgramPlaceFieldsProps) {
         name="itemId"
         label={t("fields.item")}
         options={data.items}
+        hidden={data.itemsHidden}
         noneLabel={t("noItem")}
       />
       {setups.length > 0 ? (

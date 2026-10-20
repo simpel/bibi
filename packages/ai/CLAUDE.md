@@ -36,7 +36,7 @@ The server layer for the assistant (ADR 0007, 0008). Framework-independent: Web 
 - Wired in `apps/mcp/src/embed.ts`. Changing model: `pnpm --filter @okazi/ai reindex [--org <id>]` (`reindexAll`) re-embeds rows with a different `model` from stored text and indexes entities whose row is missing or out of date (content hash), e.g. after `search.index_failed` (ADR 0030).
 
 ## Models
-- No models in env. Chat (`assistant.chat`) and embeddings (`search.embedding`) use what a platform admin chose (`resolveAiModel`, ADR 0015). Unchosen model → `UNAVAILABLE` (503) and `ai.modelNotConfigured` at error level. Errors in the stream (e.g. an unknown model at the gateway) are logged as `ai.streamFailed`.
+- No models in env. Chat (`assistant.chat`) and embeddings (`search.embedding`) use what a superadmin chose (`resolveAiModel`, ADR 0015). Unchosen model → `UNAVAILABLE` (503) and `ai.modelNotConfigured` at error level. Errors in the stream (e.g. an unknown model at the gateway) are logged as `ai.streamFailed`.
 - `createChatHandler({ model })` and `createEmbed({ model })` are test/E2E seams only.
 
 ## Environment variables (via `@okazi/config`)

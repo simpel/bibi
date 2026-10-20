@@ -7,7 +7,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { CreateEntityTypeButton } from "./create-entity-type-button";
@@ -17,6 +17,7 @@ import { ImportConfigurationTemplateButton } from "./import-configuration-templa
 export type EntityTypeListProps = { locale: Locale; cursor?: string | undefined };
 
 const PAGE_SIZE = 100;
+const CREATE = "configuration:write";
 
 function groupByBase({ types }: { types: EntityTypeDto[] }) {
   const groups = new Map<EntityTypeDto["base"], EntityTypeDto[]>();
@@ -37,12 +38,12 @@ function HeaderActions({ create }: { create: ReactNode }) {
 /** Types page body: header with create, one table per base entity, cursor pagination. */
 export async function EntityTypeList({ locale, cursor }: EntityTypeListProps) {
   const t = await getTranslations("entityType");
-  const { configurationWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const result = await runOperation({
     operation: listEntityTypes,
     input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
   });
-  const create = configurationWrite ? <CreateEntityTypeButton /> : undefined;
+  const create = can({ abilities, permission: CREATE }) ? <CreateEntityTypeButton /> : undefined;
   const actions = create && <HeaderActions create={create} />;
   const header = (
     <PageHeader title={t("plural")} description={t("listDescription")} actions={actions} />

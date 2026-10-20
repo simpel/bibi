@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { MarkdownView } from "@/components/markdown-view";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import { canPermission } from "@/lib/can";
 import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
@@ -25,8 +26,11 @@ export async function SkillDetail({ locale, id }: SkillDetailProps) {
   const result = await runOperation({ operation: getSkill, input: { id } });
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const skill = result.value;
-  const { skillAdmin } = await getCallerAbilities();
-  const can = skillAbilities({ skill, admin: skillAdmin });
+  const abilities = await getCallerAbilities();
+  const can = skillAbilities({
+    skill,
+    admin: canPermission({ permissions: abilities.permissions, permission: "assistant:write" }),
+  });
   return (
     <div className="grid gap-6">
       <Link

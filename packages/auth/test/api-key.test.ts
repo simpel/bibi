@@ -1,7 +1,15 @@
-import { createVenue, execute, getVenue, removeMember, revokeApiKey } from "@okazi/core";
+import {
+  createVenue,
+  execute,
+  getVenue,
+  PRESET_PERMISSIONS,
+  removeMember,
+  revokeApiKey,
+  updatePermissions,
+} from "@okazi/core";
 import { getDb } from "@okazi/db";
 import { describe, expect, it } from "vitest";
-import { ROLE_PERMISSIONS, resolveExecuteContext } from "../src/index";
+import { resolveExecuteContext } from "../src/index";
 import { issueKey, issueKeyOrThrow, keyHeaders } from "./api-key-helpers";
 import { codeOf, createOrg, signUp } from "./helpers";
 import { memberSession } from "./roles";
@@ -22,8 +30,8 @@ const resolveKey = async ({ key }: { key: string }) => {
 };
 
 describe("resolveExecuteContext – API keys", () => {
-  it("resolves org, owner and key role from x-api-key and Bearer okz_", async () => {
-    const { owner, organizationId, key } = await ownerWithKey();
+  it("resolves org, preset and the key as actor from x-api-key and Bearer okz_", async () => {
+    const { organizationId, key, id } = await ownerWithKey();
     expect(key.startsWith("okz_")).toBe(true);
     const viaHeader = await resolveExecuteContext({ headers: keyHeaders({ key }) });
     const viaBearer = await resolveExecuteContext({
@@ -33,8 +41,8 @@ describe("resolveExecuteContext – API keys", () => {
       if (!result.ok) throw result.error;
       expect(result.value.organizationId).toBe(organizationId);
       expect(result.value.roles).toEqual(["admin"]);
-      expect(result.value.permissions).toEqual(ROLE_PERMISSIONS.admin);
-      expect(result.value.actor).toEqual({ type: "user", userId: owner.userId });
+      expect(result.value.permissions).toEqual(PRESET_PERMISSIONS.admin);
+      expect(result.value.actor).toEqual({ type: "apiKey", userId: null, apiKeyId: id });
       expect(result.value.credential).toBe("apiKey");
     }
   });
@@ -72,46 +80,46 @@ describe("resolveExecuteContext – API keys", () => {
     expect(codeOf({ result: read })).toBe("NOT_FOUND");
   });
 
-  it("refuses a key whose owner is not a member of its organization", async () => {
+  it("refuses a key without a valid preset", async () => {
     const { key, id } = await ownerWithKey();
-    const stranger = await signUp();
-    // A key tampered to name another owner grants nothing at resolve time.
-    const metadata = JSON.stringify({ userId: stranger.userId, role: "admin" });
+    const metadata = JSON.stringify({ createdBy: "someone" });
     await getDb().apikey.update({ where: { id }, data: { metadata } });
     const result = await resolveExecuteContext({ headers: keyHeaders({ key }) });
     expect(codeOf({ result })).toBe("FORBIDDEN");
   });
 
-  it("caps the key at the member's role and stops it when the member is removed", async () => {
-    const { owner, user, organizationId, headers } = await memberSession({ role: "viewer" });
-    expect(codeOf({ result: await issueKey({ headers, role: "member" }) })).toBe("FORBIDDEN");
-    // A viewer has no `integration:admin`: only admins and owners manage keys (ADR 0034).
-    expect(codeOf({ result: await issueKey({ headers, role: "viewer" }) })).toBe("FORBIDDEN");
-    await getDb().member.updateMany({
-      where: { organizationId, userId: user.userId },
-      data: { role: "admin" },
-    });
-    const { key } = await issueKeyOrThrow({ headers, role: "viewer" });
-    const write = await execute({
-      operation: createVenue,
-      input: { name: "no" },
-      context: await resolveKey({ key }),
-    });
-    expect(codeOf({ result: write })).toBe("FORBIDDEN");
+  it("applies the key's own overrides and outlives the admin who created it", async () => {
+    const { owner, user, organizationId, headers } = await memberSession({ role: "admin" });
+    const { key, id } = await issueKeyOrThrow({ headers, role: "member" });
+    const admin = await resolveExecuteContext({ headers: owner.headers });
+    if (!admin.ok) throw admin.error;
+    const overrides = [
+      { feature: "venue" as const, action: "write" as const, effect: "allow" as const },
+    ];
+    const input = { subjectType: "apiKey" as const, subjectId: id, overrides };
+    expect(
+      codeOf({
+        result: await execute({ operation: updatePermissions, input, context: admin.value }),
+      }),
+    ).toBe("OK");
     const member = await getDb().member.findFirstOrThrow({
       where: { organizationId, userId: user.userId },
     });
-    const ownerContext = await resolveExecuteContext({ headers: owner.headers });
-    if (!ownerContext.ok) throw ownerContext.error;
     const removed = await execute({
       operation: removeMember,
       input: { id: member.id },
-      context: ownerContext.value,
+      context: admin.value,
     });
     expect(codeOf({ result: removed })).toBe("OK");
-    // member.remove revokes the key (#92), so it is unknown now, not just powerless.
-    expect(codeOf({ result: await resolveExecuteContext({ headers: keyHeaders({ key }) }) })).toBe(
-      "UNAUTHENTICATED",
-    );
+    const venue = await execute({
+      operation: createVenue,
+      input: { name: "Via key" },
+      context: await resolveKey({ key }),
+    });
+    expect(codeOf({ result: venue })).toBe("OK");
+    const audit = await getDb().auditLog.findFirst({
+      where: { operation: "venue.create", organizationId },
+    });
+    expect(audit).toMatchObject({ actorType: "API_KEY", actorId: id });
   });
 });

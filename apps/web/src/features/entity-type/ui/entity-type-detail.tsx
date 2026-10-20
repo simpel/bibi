@@ -8,7 +8,7 @@ import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { FieldSection } from "@/features/field-definition/ui/field-section";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { ArchiveEntityTypeButton } from "./archive-entity-type-button";
@@ -20,11 +20,11 @@ export type EntityTypeDetailProps = { locale: Locale; id: string };
 export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
   const t = await getTranslations("entityType");
   const common = await getTranslations("common");
-  const { configurationWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const result = await runOperation({ operation: getEntityType, input: { id } });
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const entityType = result.value;
-  const archive = configurationWrite ? (
+  const archive = can({ abilities, permission: "configuration:delete" }) ? (
     <ArchiveEntityTypeButton entityType={entityType} redirectToList />
   ) : undefined;
   return (
@@ -42,7 +42,7 @@ export async function EntityTypeDetail({ locale, id }: EntityTypeDetailProps) {
           {t(`bases.${entityType.base}`)}
         </Badge>
       </div>
-      {configurationWrite ? (
+      {can({ abilities, permission: "configuration:write" }) ? (
         <section className="grid max-w-xl gap-4">
           <h2 className="text-xl font-semibold">{t("edit")}</h2>
           <EntityTypeForm entityType={entityType} />

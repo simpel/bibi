@@ -3,19 +3,20 @@
 import type { RequirementDto } from "@okazi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
+import type { RowAccess } from "@/lib/can";
 import type { RequirementFormData } from "./requirement-form-data";
 import { useRequirementColumns } from "./use-requirement-columns";
 
 export type RequirementTableProps = {
   requirements: RequirementDto[];
   data: RequirementFormData;
-  canWrite: boolean;
+  access: RowAccess;
 };
 
 /** The ticket's counts: list value, where it applies, the requirement type and how many. */
-export function RequirementTable({ requirements, data, canWrite }: RequirementTableProps) {
+export function RequirementTable({ requirements, data, access }: RequirementTableProps) {
   const t = useTranslations("requirement");
-  const columns = useRequirementColumns({ data, canWrite });
+  const columns = useRequirementColumns({ data, access });
   return (
     <PersistedDataTable
       tableId="requirement.list"

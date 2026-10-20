@@ -15,7 +15,7 @@ export const previewArchiveItemState = defineOperation({
     "`itemState.archive`. Same input as `itemState.archive`.",
   input: ItemStateArchiveInputSchema,
   output: ArchivePreviewSchema,
-  permission: "itemState:admin",
+  permission: "pipeline:delete",
   handler: async ({ input, context }) => {
     const moving = await context.db.line.count({ where: { stateId: input.id } });
     const cells = await context.db.phaseStateRule.count({ where: { stateId: input.id } });

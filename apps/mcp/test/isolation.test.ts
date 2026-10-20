@@ -44,6 +44,11 @@ describe("cross-organization isolation", () => {
     expect(own.map((item: { id: string }) => item.id)).toContain(memberA.id);
     const members = (await call({ client: b, name: "member_list" })).data.items;
     expect(members.map((item: { id: string }) => item.id)).not.toContain(memberA.id);
+    const get = await call({ client: b, name: "member_get", args: { id: memberA.id } });
+    expect(get.data.code).toBe("NOT_FOUND");
+    expect((await call({ client: a, name: "member_get", args: { id: memberA.id } })).data.id).toBe(
+      memberA.id,
+    );
     const assign = await call({
       client: b,
       name: "member_assignRole",
@@ -64,7 +69,7 @@ describe("cross-organization isolation", () => {
     const invited = await call({
       client: a,
       name: "member_invite",
-      args: { email: "secret@x.test", role: "viewer" },
+      args: { email: "secret@x.test", role: "member" },
     });
     expect(invited.data.status).toBe("pending");
     expect((await call({ client: b, name: "member_listInvitations" })).data.items).toEqual([]);

@@ -42,8 +42,10 @@ const keyColumn = ({ t }: { t: Translate }): Column => ({
   ),
 });
 
-/** Name · key start · role · owner · expiry · last used, then the row actions. */
-export function useApiKeyColumns(): Column[] {
+/** Name · key start · role · creator · expiry · last used, then the row actions. */
+export type UseApiKeyColumnsInput = { canManage: boolean };
+
+export function useApiKeyColumns({ canManage }: UseApiKeyColumnsInput): Column[] {
   const t = useTranslations("integration.apiKeys");
   const roles = useTranslations("role");
   const common = useTranslations("common");
@@ -58,17 +60,21 @@ export function useApiKeyColumns(): Column[] {
         accessorFn: (key) => roles(parseFixedRole({ role: key.role }) ?? "unknown"),
       },
       {
-        id: "owner",
-        header: t("columns.owner"),
-        accessorFn: (key) => key.ownerName ?? t("unknownOwner"),
+        id: "createdBy",
+        header: t("columns.createdBy"),
+        accessorFn: (key) => key.createdByName ?? t("unknownCreator"),
       },
       dateColumn({ id: "expires", t, format, pick: (key) => key.expiresAt }),
       dateColumn({ id: "lastUsed", t, format, pick: (key) => key.lastUsedAt }),
-      actionsColumn<ApiKeyDto>({
-        label: common("actions"),
-        cell: (key) => <ApiKeyRowActions apiKey={key} />,
-      }),
+      ...(canManage
+        ? [
+            actionsColumn<ApiKeyDto>({
+              label: common("actions"),
+              cell: (key) => <ApiKeyRowActions apiKey={key} />,
+            }),
+          ]
+        : []),
     ],
-    [t, roles, common, format],
+    [t, roles, common, format, canManage],
   );
 }

@@ -3,11 +3,11 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
 import { DEFAULT_INVOICE_DAYS } from "../payment/request-charge";
+import { checkLinesReadable } from "../quote/check-lines-readable";
 import { checkPricedLines } from "../quote/check-priced-lines";
 import { deriveTicketLines } from "../quote/derive-lines";
 import { writeOrderLines } from "../quote/freeze-lines";
 import { quoteTotals } from "../quote/line-totals";
-import { checkReadable } from "../ticket/ticket-rules";
 import { type InvoiceCreateInput, InvoiceCreateInputSchema, InvoiceSchema } from "./schema";
 import { loadInvoice } from "./to-invoice-dto";
 
@@ -52,8 +52,8 @@ export const createInvoice = defineOperation({
   output: InvoiceSchema,
   permission: "payment:write",
   handler: async ({ input, context }) => {
-    // The snapshot copies the ticket's lines, so the caller must be able to read them.
-    const readable = checkReadable({ context, permission: "line:read", path: "ticketId" });
+    // The snapshot copies the ticket's lines and their items, so the caller must read both.
+    const readable = checkLinesReadable({ context, path: "ticketId" });
     if (!readable.ok) return readable;
     const dueDate = await checkInvoiceable({ context, input });
     if (!dueDate.ok) return dueDate;

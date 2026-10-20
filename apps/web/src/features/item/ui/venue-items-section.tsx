@@ -38,6 +38,7 @@ export async function VenueItemsSection({ locale, venueId, cursor }: VenueItemsS
         items={items}
         types={data.value.types}
         venues={data.value.venues}
+        venuesHidden={data.value.venuesHidden}
         locale={locale}
       />
       <CursorPagination

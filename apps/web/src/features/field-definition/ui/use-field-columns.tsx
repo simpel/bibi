@@ -8,8 +8,13 @@ import type { FieldTableProps } from "./field-table";
 
 type Column = ColumnDef<FieldDefinitionDto>;
 
+const neighbours = ({ fields, id }: { fields: FieldTableProps["fields"]; id: string }) => {
+  const index = fields.findIndex((field) => field.id === id);
+  return { previous: fields[index - 1], next: fields[index + 1] };
+};
+
 /** Name · kind · required · source, plus the row actions when the caller can write. */
-export function useFieldColumns({ fields, vocabularies, linkTypes, canWrite }: FieldTableProps) {
+export function useFieldColumns({ fields, vocabularies, linkTypes, access }: FieldTableProps) {
   const t = useTranslations("fieldDefinition");
   const common = useTranslations("common");
   return useMemo<Column[]>(() => {
@@ -28,24 +33,21 @@ export function useFieldColumns({ fields, vocabularies, linkTypes, canWrite }: F
         accessorFn: (f) => fieldSource({ field: f, vocabularies, linkTypes, t }),
       },
     ];
-    if (!canWrite) return data;
+    if (!access.canEdit && !access.canRemove) return data;
     return [
       ...data,
       actionsColumn<FieldDefinitionDto>({
         label: common("actions"),
-        cell: (field) => {
-          const index = fields.findIndex(({ id }) => id === field.id);
-          return (
-            <FieldRowActions
-              field={field}
-              previous={fields[index - 1]}
-              next={fields[index + 1]}
-              vocabularies={vocabularies}
-              linkTypes={linkTypes}
-            />
-          );
-        },
+        cell: (field) => (
+          <FieldRowActions
+            field={field}
+            {...neighbours({ fields, id: field.id })}
+            vocabularies={vocabularies}
+            linkTypes={linkTypes}
+            access={access}
+          />
+        ),
       }),
     ];
-  }, [t, common, fields, vocabularies, linkTypes, canWrite]);
+  }, [t, common, fields, vocabularies, linkTypes, access]);
 }

@@ -76,6 +76,8 @@ export * from "./components/kanban/kanban-board";
 export type * from "./components/kanban/kanban-types";
 export { Label, type LabelProps } from "./components/label/label";
 export * from "./components/page-container/page-container";
+export * from "./components/permission-profile-card/permission-chip-list";
+export * from "./components/permission-profile-card/permission-profile-card";
 export * from "./components/popover/popover";
 export * from "./components/questionnaire/questionnaire";
 export * from "./components/questionnaire/questionnaire-actions";
@@ -93,6 +95,8 @@ export {
 export { Separator, type SeparatorProps } from "./components/separator/separator";
 export * from "./components/setup-panel/phase-path";
 export * from "./components/setup-panel/setup-panel";
+export * from "./components/setup-panel/setup-selection";
+export * from "./components/setup-panel/setup-target";
 export {
   Sheet,
   SheetClose,

@@ -23,7 +23,7 @@ export const listResponsibilities = defineOperation({
     "someone answers for, which item types each covers and its default assignee and followers.",
   input: ResponsibilityListInputSchema,
   output: ResponsibilityListOutputSchema,
-  permission: "configuration:read",
+  permission: "responsibility:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.responsibility.findMany({
       orderBy: [{ name: "asc" }, { id: "asc" }],
@@ -41,7 +41,7 @@ export const getResponsibility = defineOperation({
   description: "Get one responsibility by id.",
   input: ResponsibilityIdInputSchema,
   output: ResponsibilitySchema,
-  permission: "configuration:read",
+  permission: "responsibility:read",
   handler: async ({ input, context }) => {
     const found = await findResponsibility({ context, id: input.id });
     return found ? ok({ value: found }) : notFound({ entity: "Responsibility" });

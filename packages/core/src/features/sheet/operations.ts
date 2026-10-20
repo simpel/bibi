@@ -7,6 +7,7 @@ import { checkReadable } from "../ticket/ticket-rules";
 import { buildSheetContent } from "./build-content";
 import { checkNotBlocked } from "./check-blocked";
 import { checkPhase } from "./check-phase";
+import { checkSourcesReadable } from "./check-sources-readable";
 import { loadMatches } from "./load-matches";
 import { loadSources } from "./load-sources";
 import {
@@ -70,11 +71,13 @@ export const generateSheet = defineOperation({
     "snapshot of the ticket's items and counts that the definition includes. A changed " +
     "ticket gives the next version, with the changed rows marked ★ against the last SENT " +
     "version; an unchanged ticket returns the latest version. Sending is a separate step " +
-    "(sheet.send).",
+    "(sheet.send). Needs ticket:read, program:read and item:read (the rows are copied from them).",
   input: SheetGenerateInputSchema,
   output: SheetSchema,
   permission: "sheet:write",
   handler: async ({ input: { ticketId, sheetDefinitionId }, context }) => {
+    const readable = checkSourcesReadable({ context });
+    if (!readable.ok) return readable;
     const sources = await loadSources({ context, ticketId, sheetDefinitionId });
     if (!sources.ok) return sources;
     const { ticket, definition } = sources.value;
@@ -107,13 +110,13 @@ export const sendSheet = defineOperation({
     "baseline the next version's ★ changes are measured against. Not for a ticket in a " +
     "terminal phase (CONFLICT), only the latest version, and a version once. A blocked " +
     "sheet (`blocked`: a count matches an item that contains it, see `matches`) gives CONFLICT. " +
-    "Needs `assignment:read`: the recipients (the responsibility's assignee and followers on " +
+    "Needs `ticket:read`: the recipients (the responsibility's assignee and followers on " +
     "the ticket) are stored as a snapshot that later changes do not rewrite.",
   input: SheetIdInputSchema,
   output: SheetSchema,
   permission: "sheet:write",
   handler: async ({ input: { id }, context }) => {
-    const readable = checkReadable({ context, permission: "assignment:read", path: "id" });
+    const readable = checkReadable({ context, permission: "ticket:read", path: "id" });
     if (!readable.ok) return readable;
     const before = await context.db.sheet.findFirst({ where: { id }, include: SHEET_INCLUDE });
     if (!before) return notFound({ entity: "Sheet" });

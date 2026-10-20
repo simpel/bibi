@@ -2,6 +2,7 @@ import { alternativeGroupRoutes } from "./features/alternative-group/rest";
 import { apiKeyRoutes } from "./features/api-key/rest";
 import { assignmentRoutes } from "./features/assignment/rest";
 import { auditLogRoutes } from "./features/audit-log/rest";
+import { changeSetRoutes } from "./features/change-set/rest";
 import { configurationRoutes } from "./features/configuration/rest";
 import { contactRoutes } from "./features/contact/rest";
 import { conversationRoutes } from "./features/conversation/rest";
@@ -20,6 +21,7 @@ import { oauthGrantRoutes } from "./features/oauth-grant/rest";
 import { occupancyRoutes } from "./features/occupancy/rest";
 import { paymentRoutes } from "./features/payment/rest";
 import { paymentAccountRoutes } from "./features/payment-account/rest";
+import { permissionRoutes } from "./features/permission/rest";
 import { phaseGridRoutes } from "./features/phase-grid/rest";
 import { pipelineRoutes } from "./features/pipeline/rest";
 import { pipelineSetupRoutes } from "./features/pipeline-setup/rest";
@@ -40,7 +42,8 @@ import { vocabularyRoutes } from "./features/vocabulary/rest";
 import type { RestRoute } from "./rest-route";
 import { searchRoutes } from "./search-rest";
 
-const gridAndSetupRoutes = [...phaseGridRoutes, ...pipelineSetupRoutes];
+const accessRoutes = [...memberRoutes, ...apiKeyRoutes, ...permissionRoutes];
+const gridAndSetupRoutes = [...phaseGridRoutes, ...pipelineSetupRoutes, ...changeSetRoutes];
 const lineAndGroupRoutes = [...lineRoutes, ...alternativeGroupRoutes];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
@@ -78,9 +81,8 @@ export function listRestRoutes(): RestRoute[] {
     ...conversationRoutes,
     ...messageRoutes,
     ...skillRoutes,
-    ...memberRoutes,
     ...auditLogRoutes,
-    ...apiKeyRoutes,
+    ...accessRoutes,
     ...oauthGrantRoutes,
     ...userPreferenceRoutes,
     ...searchRoutes,

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FixedRoleSchema, GrantableRoleSchema } from "../../permissions/fixed-roles";
+import { FixedRoleSchema } from "../../permissions/fixed-roles";
 
 /** A staff member of the organization. Only what is needed to assign work; no other data. */
 export const MemberSchema = z.object({
@@ -29,7 +29,7 @@ export const MemberListOutputSchema = z.object({
 export const MemberAssignRoleInputSchema = z.object({
   id: z.string().min(1).describe("Member id (from member.list)"),
   role: FixedRoleSchema.describe(
-    "The member's new role: viewer, member, admin or owner (never above your own)",
+    "The member's new role: member, manager or admin (never above your own)",
   ),
 });
 
@@ -59,8 +59,8 @@ export const MemberInviteInputSchema = z.object({
     .email()
     .max(254)
     .describe("Email address of the person to invite; they accept with this address"),
-  role: GrantableRoleSchema.describe(
-    "The role the invitee gets when they accept: viewer, member or admin (never above your own)",
+  role: FixedRoleSchema.describe(
+    "The role the invitee gets when they accept: member, manager or admin (never above yours)",
   ),
 });
 

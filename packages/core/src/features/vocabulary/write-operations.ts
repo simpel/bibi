@@ -51,7 +51,7 @@ export const archiveVocabulary = defineOperation({
     "one of its values or a sheet definition counts its requirements.",
   input: VocabularyIdInputSchema,
   output: VocabularySchema,
-  permission: "configuration:write",
+  permission: "configuration:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.vocabulary.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "List" });

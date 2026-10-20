@@ -2,7 +2,7 @@ import { listContacts } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import { runOperation } from "@/server/run-operation";
@@ -14,7 +14,11 @@ export type ContactSectionProps = { locale: Locale; customerId: string };
 /** The customer's contact persons: a table with edit and archive, and a create button. */
 export async function ContactSection({ locale, customerId }: ContactSectionProps) {
   const t = await getTranslations("contact");
-  const { contactWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
+  const access = {
+    canEdit: can({ abilities, permission: "customer:write" }),
+    canRemove: can({ abilities, permission: "customer:delete" }),
+  };
   const [contacts, data] = await Promise.all([
     runOperation({ operation: listContacts, input: { customerId, limit: 100 } }),
     loadTypedFormData({ base: "CONTACT" }),
@@ -28,14 +32,14 @@ export async function ContactSection({ locale, customerId }: ContactSectionProps
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("plural")}</h2>
-        {contactWrite && !noTypes ? (
+        {can({ abilities, permission: "customer:write" }) && !noTypes ? (
           <CreateContactButton customerId={customerId} data={data.value} />
         ) : null}
       </div>
       {contacts.value.items.length === 0 ? (
         <p className="text-sm text-muted-foreground">{noTypes ? t("noTypes") : t("empty")}</p>
       ) : (
-        <ContactTable contacts={contacts.value.items} data={data.value} canWrite={contactWrite} />
+        <ContactTable contacts={contacts.value.items} data={data.value} access={access} />
       )}
     </section>
   );

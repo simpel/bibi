@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "auth:generate": "auth generate --config src/cli-config.ts --output ../db/prisma/schema/auth.prisma --yes",
-    "grant-admin": "tsx --env-file-if-exists=../../.env src/platform/grant-admin-cli.ts"
+    "grant-superadmin": "tsx --env-file-if-exists=../../.env src/platform/grant-superadmin-cli.ts"
   },
   "dependencies": {
     "@better-auth/api-key": "1.7.7",

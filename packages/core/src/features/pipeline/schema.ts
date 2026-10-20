@@ -13,7 +13,9 @@ export const PipelineCardSchema = z.object({
   columnId: z.string().describe("The ticket's phase id"),
   reference: z.number().int().describe("Ticket reference number"),
   typeName: z.string(),
-  customerName: z.string(),
+  customerId: z
+    .string()
+    .describe("The ticket's customer id; resolve its name with customer.get or customer.list"),
   startsAt: z.date().nullable().describe("Desired start"),
   endsAt: z.date().nullable().describe("Desired end"),
   quantity: z
@@ -23,8 +25,16 @@ export const PipelineCardSchema = z.object({
     .describe("Guaranteed or estimated headcount, else the requested quantity"),
   phaseChangedAt: z.date().describe("When the ticket entered its phase (time in phase)"),
   assigneeId: z.string().nullable().describe("Main assignee (user id)"),
-  heldLines: z.number().int().describe("Lines in a soft-hold state (reserved, not blocking)"),
-  bookedLines: z.number().int().describe("Lines in a hard-hold state (blocking their item)"),
+  heldLines: z
+    .number()
+    .int()
+    .nullable()
+    .describe("Lines in a soft-hold state (reserved, not blocking); null without program:read"),
+  bookedLines: z
+    .number()
+    .int()
+    .nullable()
+    .describe("Lines in a hard-hold state (blocking their item); null without program:read"),
 });
 
 export const PipelineBoardInputSchema = z.object({

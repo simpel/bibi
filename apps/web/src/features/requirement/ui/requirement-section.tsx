@@ -2,7 +2,7 @@ import { listLines, listRequirements, type TicketDto } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadRequirementData } from "../load-requirement-data";
@@ -17,13 +17,18 @@ export type RequirementSectionProps = { locale: Locale; ticket: TicketDto };
  */
 export async function RequirementSection({ locale, ticket }: RequirementSectionProps) {
   const t = await getTranslations("requirement");
-  const { requirementWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
+  const access = {
+    canEdit: can({ abilities, permission: "program:write" }),
+    canRemove: can({ abilities, permission: "program:delete" }),
+  };
   const input = { ticketId: ticket.id, limit: 100 };
   const [requirements, lines] = await Promise.all([
     runOperation({ operation: listRequirements, input }),
     runOperation({ operation: listLines, input }),
   ]);
   for (const result of [requirements, lines]) {
+    if (!result.ok && result.error.code === "FORBIDDEN") return null;
     if (!result.ok)
       return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   }
@@ -35,14 +40,14 @@ export async function RequirementSection({ locale, ticket }: RequirementSectionP
     <section className="grid gap-4">
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("plural")}</h2>
-        {requirementWrite ? (
+        {can({ abilities, permission: "program:write" }) ? (
           <CreateRequirementButton data={data.value} ticketId={ticket.id} />
         ) : null}
       </div>
       {rows.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("empty")}</p>
       ) : (
-        <RequirementTable requirements={rows} data={data.value} canWrite={requirementWrite} />
+        <RequirementTable requirements={rows} data={data.value} access={access} />
       )}
     </section>
   );

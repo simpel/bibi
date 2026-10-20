@@ -12,7 +12,7 @@ const cache = new Map<AiFeatureId, { modelId: string; expires: number }>();
 export type ResolveAiModelInput = { feature: AiFeatureId; db?: Db };
 
 /**
- * The model id an AI feature runs on: the platform admin's choice (`AiSetting`, ADR 0015).
+ * The model id an AI feature runs on: the superadmin's choice (`AiSetting`, ADR 0015).
  * There is no fallback: an unconfigured feature fails with UNAVAILABLE and logs
  * `ai.modelNotConfigured` at error level on every attempt, until an admin picks a model.
  */

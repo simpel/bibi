@@ -30,7 +30,8 @@ the assistant, or in Settings and Pipeline. Nothing is saved in this skill.
    1. "What kind of place do you run?" Answers: a conference venue or estate
       (`conference-estate`), a restaurant with private rooms (`restaurant`), an experience
       centre or museum (`experience-centre`), something else (`other`).
-   2. "What do you sell?" Answers: rooms (`rooms`), food and drink (`food`), both (`both`).
+   2. "What do you sell?" with `multiple: true` (they tick all that apply). Answers: rooms
+      (`rooms`), food and drink (`food`).
    3. "Do your customers usually get a quote before they book?" Answers: yes (`quote-first`),
       no, they book straight away (`book-directly`).
 3. Pick the preset from question 1: `conference-estate`, `restaurant` or `experience-centre`. For
@@ -38,9 +39,9 @@ the assistant, or in Settings and Pipeline. Nothing is saved in this skill.
    `pipelineSetup_presetDraft` with that `key`. Its item types already include the
    organization's own; never remove those (they have an `entityTypeId`).
 4. Adjust the draft by name, keeping everything else exactly as returned:
-   - Rooms only: remove the new item types that are not held in time (no `BOOKABLE` in
+   - Rooms only (food and drink not ticked): remove the new item types that are not held in time (no `BOOKABLE` in
      `behaviours`), e.g. food and drink.
-   - Food only: remove the new item types that are held in time (`BOOKABLE`).
+   - Food only (rooms not ticked): remove the new item types that are held in time (`BOOKABLE`).
    - Book directly: remove the phase whose `event` is `QUOTE_SENT`, and set `event` to null on
      the phase whose `event` is `QUOTE_ACCEPTED`.
    - Quote first, and no phase has `event` `QUOTE_SENT`: add a phase "Quote sent" (in the

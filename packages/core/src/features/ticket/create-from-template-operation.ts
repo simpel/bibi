@@ -78,7 +78,7 @@ export const createTicketFromTemplate = defineOperation({
   handler: async ({ input, context }) => {
     const readable = checkReadable({
       context,
-      permission: "ticketTemplate:read",
+      permission: "template:read",
       path: "templateId",
     });
     if (!readable.ok) return readable;

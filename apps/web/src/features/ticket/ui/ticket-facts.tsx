@@ -22,10 +22,17 @@ export async function TicketFacts({ ticket, data }: TicketFactsProps) {
   const type = data.types.find(({ id }) => id === ticket.entityTypeId);
   const phase = data.phases.find(({ id }) => id === ticket.phaseId);
   const budget = ticket.budgetMinor;
+  const hidden = data.customersHidden ? common("hidden") : undefined;
   const facts = [
     { label: t("type"), value: type?.name ?? "–" },
-    { label: t("customer"), value: nameOf({ options: data.customers, id: ticket.customerId }) },
-    { label: t("contact"), value: nameOf({ options: data.contacts, id: ticket.contactId }) },
+    {
+      label: t("customer"),
+      value: nameOf({ options: data.customers, id: ticket.customerId, hidden }),
+    },
+    {
+      label: t("contact"),
+      value: nameOf({ options: data.contacts, id: ticket.contactId, hidden }),
+    },
     { label: t("when"), value: desiredPeriod({ ticket, format }) },
     { label: t("phase"), value: phase?.name ?? "–" },
     ...(ticket.phaseReason ? [{ label: t("phaseReason"), value: ticket.phaseReason }] : []),

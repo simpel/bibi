@@ -35,7 +35,7 @@ export function TicketForm({ data, ticket, onDone }: TicketFormProps) {
         )}
         {type ? (
           <>
-            <TicketCoreFields form={form} customers={data.customers} contacts={data.contacts} />
+            <TicketCoreFields form={form} data={data} />
             <TypeFields control={form.control} type={type} data={data} />
           </>
         ) : null}

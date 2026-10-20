@@ -57,7 +57,7 @@ export const followLinePhase = defineOperation({
     "collide; otherwise CONFLICT names the blockers and nothing changes.",
   input: LineFollowPhaseInputSchema,
   output: LineSchema,
-  permission: "line:write",
+  permission: "program:write",
   entityType: "line",
   handler: effectiveHandler({
     handler: async ({ input: { lineId }, context }) => {

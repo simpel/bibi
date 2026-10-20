@@ -34,7 +34,7 @@ export async function linksTo({ context, records }: LinksToInput): Promise<Recor
 }
 
 export type CheckNotLinkedInput = {
-  context: OperationContext;
+  context: Pick<OperationContext, "db" | "permissions">;
   records: readonly LinkedRecord[];
   what: string;
 };

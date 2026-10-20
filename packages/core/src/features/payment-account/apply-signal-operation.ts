@@ -5,6 +5,7 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { getStripeConnectGateway } from "./gateway-registry";
 import { PaymentAccountStatusSchema } from "./schema";
+import { toPaymentAccountDto } from "./to-payment-account-dto";
 
 const AccountSignalSchema = z.object({
   providerAccountId: z.string().min(1).describe("Stripe connected account (`acct_...`)"),
@@ -26,7 +27,7 @@ export const applyPaymentAccountSignal = defineOperation({
   description: "Refresh a payout account's status after a Stripe account event (webhook only).",
   input: AccountSignalSchema,
   output: AccountSignalResultSchema,
-  permission: "payment:write",
+  permission: "paymentAccount:write",
   entityType: "paymentAccount",
   approval: false,
   handler: async ({ input, context }) => {
@@ -46,7 +47,12 @@ export const applyPaymentAccountSignal = defineOperation({
       where: { id: before.id },
       data: { status: fetched.value.status },
     });
-    context.recordChange({ entityId: row.id, before, after: row });
+    const { organizationId } = context;
+    context.recordChange({
+      entityId: row.id,
+      before: toPaymentAccountDto({ row: before, organizationId }),
+      after: toPaymentAccountDto({ row, organizationId }),
+    });
     return ok({ value: { status: row.status, changed: true } });
   },
 });

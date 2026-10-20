@@ -22,7 +22,7 @@ export async function ticketFixture(): Promise<{ context: ExecuteContext; ticket
   const context = createExecuteContext({
     organizationId,
     roles: ["admin"],
-    permissions: grantAll({ upTo: "admin" }),
+    permissions: grantAll({}),
     actor: { type: "user", userId: `user_${randomUUID()}` },
   });
   value({ result: await provisionOrganization({ organizationId }) });

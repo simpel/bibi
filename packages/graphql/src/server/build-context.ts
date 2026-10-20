@@ -28,6 +28,6 @@ export async function buildContext({
     core: resolved.value,
     afterCommit,
     operations: new Map(operations.map((operation) => [operation.name, operation])),
-    loaders: createLoaders({ db: resolved.value.db }),
+    loaders: createLoaders({ db: resolved.value.db, permissions: resolved.value.permissions }),
   };
 }

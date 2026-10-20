@@ -14,7 +14,8 @@ import {
 
 /**
  * Script: on `/onboarding` the first setup (`e2e-mock-first-setup.ts`); elsewhere "create venue
- * <name>", "list venues", "list skills"; anything else gets a canned reply.
+ * <name>", "set capacity <itemId> <setupId> <n>", "list venues", "list skills"; anything else
+ * gets a canned reply.
  */
 function respond({ prompt }: PromptInput): StreamResult {
   if (isFirstSetup({ prompt })) return firstSetupStep({ prompt });
@@ -22,6 +23,11 @@ function respond({ prompt }: PromptInput): StreamResult {
   const text = lastUserText({ prompt }).trim();
   const create = /create venue (.+)/i.exec(text);
   if (create?.[1]) return toolStep({ toolName: "venue_create", input: { name: create[1].trim() } });
+  const capacity = /set capacity (\S+) (\S+) (\d+)/i.exec(text);
+  if (capacity?.[1] && capacity[2] && capacity[3]) {
+    const setups = [{ setupId: capacity[2], capacity: Number(capacity[3]) }];
+    return toolStep({ toolName: "item_update", input: { id: capacity[1], setups } });
+  }
   if (/list venues/i.test(text)) return toolStep({ toolName: "venue_list", input: {} });
   if (/list skills/i.test(text)) return toolStep({ toolName: "skill_list", input: {} });
   return textStep({ text: "I am a scripted test assistant. Try: create venue Test Hall." });

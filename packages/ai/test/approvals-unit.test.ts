@@ -58,6 +58,39 @@ describe("extractPendingApprovals", () => {
     });
   });
 
+  it("keeps core's preview, where a created field has no before (ADR 0049)", () => {
+    const preview = {
+      group: "setup",
+      changes: [
+        {
+          entityType: "item",
+          entityId: "i1",
+          kind: "create",
+          name: "Rum 1",
+          fields: [{ path: "name", after: "Rum 1" }],
+        },
+      ],
+      names: {},
+      consequences: [],
+    };
+    const message = {
+      id: "m1",
+      role: "assistant",
+      parts: [
+        {
+          type: "dynamic-tool",
+          toolName: "item_create",
+          toolCallId: "c1",
+          state: "output-available",
+          input: {},
+          output: { structuredContent: { ...proposal, preview } },
+        },
+      ],
+    } as const;
+    const [approval] = extractPendingApprovals({ message: message as never });
+    expect(approval?.preview).toEqual(preview);
+  });
+
   it("ignores malformed proposals", () => {
     const bad = { ...proposal, approvalToken: "" };
     const parts = [

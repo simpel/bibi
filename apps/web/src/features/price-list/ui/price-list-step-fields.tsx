@@ -25,6 +25,7 @@ export function PriceListIdentityFields({
         name="customerId"
         label={t("fields.customer")}
         options={data.customers}
+        hidden={data.customersHidden}
         noneLabel={t("noCustomer")}
       />
     </>

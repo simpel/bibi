@@ -1,6 +1,7 @@
 enum ActorType {
   USER
   AI
+  API_KEY
   SYSTEM
 }
 

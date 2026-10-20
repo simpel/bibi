@@ -15,6 +15,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Responsibility",
   "ResponsibilityEntityType",
   "ResponsibilityDefaultFollower",
+  "PermissionOverride",
   "Assignment",
   "AssignmentFollower",
   "Record",
@@ -81,8 +82,9 @@ export const GLOBAL_MODELS = new Set<string>([
 export const PLATFORM_MODELS = new Set<string>(["SystemLog", "AiSetting", "StripeWebhookEvent"]);
 
 /**
- * User-scoped tables (ADR 0039), e.g. UI preferences: rows belong to one user across organizations.
- * `scopedDb` pins every query to its `actorId` and refuses the system actor. No `organizationId`.
+ * User-scoped tables (ADR 0039): rows belong to one user (`userId`) across organizations, e.g.
+ * UI preferences and settings. `scopedDb` pins every query to its `actorId` instead of the organization and
+ * refuses them for the system actor. No `organizationId`, `status` or `createdBy`.
  */
 export const USER_SCOPED_MODELS = new Set<string>(["UserPreference", "UserSettings"]);
 
@@ -103,6 +105,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["Setup", "ACTIVE"],
   ["SheetDefinition", "ACTIVE"],
   ["Responsibility", "ACTIVE"],
+  ["PermissionOverride", "ACTIVE"],
   ["Assignment", "ACTIVE"],
   ["Record", "ACTIVE"],
   ["Item", "ACTIVE"],

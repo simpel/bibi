@@ -12,11 +12,13 @@ type Column = ColumnDef<ItemDto>;
 export type UseItemColumnsInput = {
   types: EntityTypeDto[];
   venues: { id: string; name: string }[];
+  /** Venue cell text when the caller may not view venues (ADR 0050). */
+  hidden?: string | undefined;
   locale: string;
 };
 
 /** Name · type · venue · price. */
-export function useItemColumns({ types, venues, locale }: UseItemColumnsInput): Column[] {
+export function useItemColumns({ types, venues, hidden, locale }: UseItemColumnsInput): Column[] {
   const t = useTranslations("item");
   return useMemo<Column[]>(
     () => [
@@ -38,7 +40,7 @@ export function useItemColumns({ types, venues, locale }: UseItemColumnsInput): 
       {
         id: "venue",
         header: t("columns.venue"),
-        accessorFn: (item) => nameOf({ options: venues, id: item.venueId }),
+        accessorFn: (item) => nameOf({ options: venues, id: item.venueId, hidden }),
       },
       {
         id: "price",
@@ -47,6 +49,6 @@ export function useItemColumns({ types, venues, locale }: UseItemColumnsInput): 
         cell: ({ row }) => priceText({ item: row.original, locale, t }),
       },
     ],
-    [t, types, venues, locale],
+    [t, types, venues, hidden, locale],
   );
 }

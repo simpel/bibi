@@ -33,7 +33,7 @@ async function checkStartPhase({ context, phaseId }: PhaseInput): Promise<Result
 
 /**
  * The checks a template passes on create and on every change: referenced records are readable by
- * the caller (`ticketPhase:read`, `item:read`), the type is a `TICKET` type, the start phase can
+ * the caller (`pipeline:read`, `item:read`), the type is a `TICKET` type, the start phase can
  * receive tickets, default field values match the type and the lines point at fitting records.
  * Returns the validated default field values.
  */
@@ -46,7 +46,7 @@ export async function checkTemplate({
 }: CheckTemplateInput): Promise<Result<CheckedFields>> {
   const hasItems = lines.some((line) => line.itemId);
   for (const check of [
-    checkReadable({ context, permission: "ticketPhase:read", path: "phaseId" }),
+    checkReadable({ context, permission: "pipeline:read", path: "phaseId" }),
     hasItems
       ? checkReadable({ context, permission: "item:read", path: "lines" })
       : ok({ value: true as const }),

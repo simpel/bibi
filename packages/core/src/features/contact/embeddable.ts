@@ -19,7 +19,7 @@ export type IndexedContact = Contact & {
 export const contactEmbeddable: Embeddable<IndexedContact> = {
   entityType: "contact",
   isRecord: true,
-  readPermission: "contact:read",
+  readPermission: "customer:read",
   toText: ({ entity }) =>
     [
       entity.name,

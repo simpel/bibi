@@ -74,6 +74,7 @@ export type { ItemStateWire } from "./ui-contract/item-state-entries";
 export type { LineWire } from "./ui-contract/line-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire, TicketBalanceWire } from "./ui-contract/payment-entries";
+export type { PermissionProfileWire } from "./ui-contract/permission-entries";
 export type { PhaseGridCellWire } from "./ui-contract/phase-grid-entries";
 export type { PipelineBoardWire } from "./ui-contract/pipeline-entries";
 export type {

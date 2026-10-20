@@ -45,6 +45,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Responsibility",
   "ResponsibilityEntityType",
   "ResponsibilityDefaultFollower",
+  "PermissionOverride",
   "Assignment",
   "AssignmentFollower",
   "Record",
@@ -105,19 +106,14 @@ export const APP_ID_MODELS = new Set<string>([
 
 /**
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:
- * replacement sets owned by a parent (ItemSetup, ItemComponent, ItemChoiceGroup; audited on the
- * item; TicketPhaseTransition, audited on its from-phase; ItemStateTransition, audited on its from-state; PhaseStateRule, a phase grid cell audited on itself; TicketTemplateLine, audited on its template; PriceListItem, audited on its price
- * list; OrderLine, audited on its quote), the derived search index (Embedding) and Better Auth membership rows (Member is deleted on removal,
- * Invitation has its own `status` lifecycle; core audits both) and the payout account
- * (PaymentAccount: one row per organization with its own `status` lifecycle, never removed) and
- * payments and the receivables they settle (Payment, Deposit, Invoice: their own `status`
- * lifecycle, never removed, ADR 0057) and sheet versions (Sheet:
- * history, `sentAt` is its lifecycle, never removed), followers (AssignmentFollower: removed on
- * unfollow, audited on its assignment) and credentials (Apikey: `enabled` is its lifecycle,
- * revoked keys stay; OauthGrantRevocation: one row per user and client, updated on every revoke,
- * never removed) and the id lists of responsibilities and sheet definitions (ADR 0056: replacement
- * sets, audited on their parent) and LINK values (RecordLink, ADR 0056: a replacement set audited
- * on its record).
+ * replacement sets owned by a parent and audited on it (ItemSetup, ItemComponent, ItemChoiceGroup,
+ * TicketPhaseTransition, ItemStateTransition, TicketTemplateLine, PriceListItem, OrderLine, the id
+ * lists of responsibilities and sheet definitions and RecordLink, ADR 0056), phase grid cells
+ * (PhaseStateRule, audited on itself), the derived search index (Embedding), Better Auth
+ * membership rows (Member; Invitation has its own `status`; core audits both), rows with their
+ * own `status` lifecycle that are never removed (PaymentAccount, Payment, Deposit, Invoice, ADR
+ * 0057), sheet versions (`sentAt` is their lifecycle), followers (AssignmentFollower, removed on
+ * unfollow) and credentials (Apikey: `enabled`; OauthGrantRevocation: one row per user and client).
  */
 export const HARD_DELETE_MODELS = new Set<string>([
   "ItemSetup",

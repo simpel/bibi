@@ -20,8 +20,8 @@ import { unwrap } from "./helpers";
 const adminOf = ({ organizationId }: { organizationId: string }) =>
   createExecuteContext({
     organizationId,
-    roles: ["owner"],
-    permissions: grantAll({ upTo: "admin" }),
+    roles: ["admin"],
+    permissions: grantAll({}),
     actor: { type: "user", userId: `user_${createId()}` },
   });
 

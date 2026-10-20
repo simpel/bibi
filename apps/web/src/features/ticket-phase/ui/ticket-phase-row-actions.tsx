@@ -4,6 +4,7 @@ import type { TicketPhaseDto } from "@okazi/core/schemas";
 import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import type { RowAccess } from "@/lib/can";
 import { ArchiveTicketPhaseDialog } from "./archive-ticket-phase-dialog";
 import { EditTicketPhaseItem } from "./edit-ticket-phase-item";
 import { MoveItems } from "./move-items";
@@ -13,27 +14,43 @@ export type TicketPhaseRowActionsProps = {
   phase: TicketPhaseDto;
   index: number;
   phases: readonly TicketPhaseDto[];
+  access: RowAccess;
 };
 
 type Dialog = "transitions" | "archive";
 
-/** Edit (page) / transitions / move / archive for one phase. */
-export function TicketPhaseRowActions({ phase, index, phases }: TicketPhaseRowActionsProps) {
+type MenuProps = TicketPhaseRowActionsProps & { onOpen: (dialog: Dialog) => void };
+
+function PhaseMenu({ phase, index, phases, access, onOpen }: MenuProps) {
   const t = useTranslations("ticketPhase");
   const common = useTranslations("common");
+  return (
+    <DataTableRowActions label={common("actions")}>
+      {access.canEdit ? (
+        <>
+          <EditTicketPhaseItem id={phase.id} />
+          <DropdownMenuItem onSelect={() => onOpen("transitions")}>
+            {t("editTransitions")}
+          </DropdownMenuItem>
+          <MoveItems phases={phases} index={index} />
+        </>
+      ) : null}
+      {access.canRemove ? (
+        <DropdownMenuItem destructive onSelect={() => onOpen("archive")}>
+          {t("archive")}
+        </DropdownMenuItem>
+      ) : null}
+    </DataTableRowActions>
+  );
+}
+
+/** Edit (page) / transitions / move / archive for one phase. */
+export function TicketPhaseRowActions(props: TicketPhaseRowActionsProps) {
+  const { phase, phases } = props;
   const [dialog, setDialog] = useState<Dialog | null>(null);
   return (
     <>
-      <DataTableRowActions label={common("actions")}>
-        <EditTicketPhaseItem id={phase.id} />
-        <DropdownMenuItem onSelect={() => setDialog("transitions")}>
-          {t("editTransitions")}
-        </DropdownMenuItem>
-        <MoveItems phases={phases} index={index} />
-        <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
-          {t("archive")}
-        </DropdownMenuItem>
-      </DataTableRowActions>
+      <PhaseMenu {...props} onOpen={setDialog} />
       {dialog === "transitions" ? (
         <TransitionsDialog
           phase={phase}

@@ -18,7 +18,7 @@ export const shareSkill = defineOperation({
     "skill (DRAFT) and keeps your personal original. Needs an org admin.",
   input: SkillShareInputSchema,
   output: SkillSchema,
-  permission: "skill:admin",
+  permission: "assistant:write",
   embeddable: skillEmbeddable,
   handler: async ({ input, context }) => {
     const source = await findVisibleSkill({ context, id: input.id });
@@ -34,8 +34,9 @@ export const shareSkill = defineOperation({
       content,
       source: `share:${source.id}`,
     });
-    context.recordChange({ entityId: skill.id, after: skill });
-    return ok({ value: toSkillDto({ skill }) });
+    const dto = toSkillDto({ skill });
+    context.recordChange({ entityId: skill.id, after: dto });
+    return ok({ value: dto });
   },
 });
 
@@ -47,7 +48,7 @@ export const importSkill = defineOperation({
     "a DRAFT skill. PERSONAL by default; ORGANIZATION needs an org admin.",
   input: SkillImportInputSchema,
   output: SkillSchema,
-  permission: "skill:write",
+  permission: "self:write",
   embeddable: skillEmbeddable,
   handler: async ({ input, context }) => {
     const allowed = checkCanCreateSkill({ context, scope: input.scope });
@@ -60,7 +61,8 @@ export const importSkill = defineOperation({
       content: parsed.value,
       source: "import",
     });
-    context.recordChange({ entityId: skill.id, after: skill });
-    return ok({ value: toSkillDto({ skill }) });
+    const dto = toSkillDto({ skill });
+    context.recordChange({ entityId: skill.id, after: dto });
+    return ok({ value: dto });
   },
 });

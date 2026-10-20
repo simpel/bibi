@@ -102,3 +102,21 @@ describe("resolveToolUi", () => {
     expect(resolveToolUi({ toolName: "load_skill", output: skill }).component).toBe("skill-card");
   });
 });
+
+describe("permission profile card", () => {
+  it("maps permission_get and permission_update to the permission-profile-card", () => {
+    const profile = {
+      subjectType: "member",
+      subjectId: "m1",
+      preset: "manager",
+      overrides: [{ feature: "item", action: "write", effect: "allow" }],
+      effective: { item: ["read", "write"] },
+    };
+    for (const toolName of ["permission_get", "permission_update"]) {
+      expect(resolveToolUi({ toolName, output: mcp({ value: profile }) })).toEqual({
+        component: "permission-profile-card",
+        props: { profile },
+      });
+    }
+  });
+});

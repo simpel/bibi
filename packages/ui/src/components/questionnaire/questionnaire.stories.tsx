@@ -61,3 +61,33 @@ export const SingleChoice: Story = {
     </Questionnaire>
   ),
 };
+
+const sellItems = [
+  { name: "sell", required: true, choices: [{ value: "rooms" }, { value: "food" }] },
+] as const;
+
+/** Several answers allowed: checkboxes instead of radio buttons. */
+export const MultipleChoice: Story = {
+  render: () => (
+    <Questionnaire
+      className="max-w-lg"
+      defaultItem="sell"
+      items={sellItems}
+      shortcuts="numbers"
+      onSubmit={(event) => event.preventDefault()}
+    >
+      <QuestionnaireItem name="sell" required multiple>
+        <QuestionnaireTitle>What do you sell?</QuestionnaireTitle>
+        <QuestionnaireDescription>Tick all that apply.</QuestionnaireDescription>
+        <QuestionnaireChoices>
+          <QuestionnaireChoice value="rooms">Rooms</QuestionnaireChoice>
+          <QuestionnaireChoice value="food">Food and drink</QuestionnaireChoice>
+          <QuestionnaireInput aria-label="Another answer" placeholder="Or write your own…" />
+        </QuestionnaireChoices>
+      </QuestionnaireItem>
+      <QuestionnaireActions>
+        <QuestionnaireSubmit>Answer</QuestionnaireSubmit>
+      </QuestionnaireActions>
+    </Questionnaire>
+  ),
+};

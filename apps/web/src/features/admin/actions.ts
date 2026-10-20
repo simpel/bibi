@@ -8,7 +8,7 @@ import { toActionResult } from "@/server/to-action-result";
 
 export type UpdateAiFeatureActionInput = { feature: AiFeatureId; modelId: string };
 
-/** Sets the model of one AI feature. Platform admins only. */
+/** Sets the model of one AI feature. Superadmins only. */
 export async function updateAiFeatureAction({
   feature,
   modelId,

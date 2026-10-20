@@ -1,9 +1,9 @@
 import { getDb } from "@okazi/db";
 import { createId } from "@paralleldrive/cuid2";
-import type { ExecuteContext, PermissionAction, PermissionSet } from "../src/index";
-import { testContext } from "./helpers";
+import type { ExecuteContext, PermissionSet } from "../src/index";
+import { type TestAccess, testContext } from "./helpers";
 
-export type TestOrgInput = { access?: PermissionAction; permissions?: PermissionSet };
+export type TestOrgInput = { access?: TestAccess; permissions?: PermissionSet };
 
 /**
  * `testContext()` plus a real `organization` row: roles and members have a foreign key to it

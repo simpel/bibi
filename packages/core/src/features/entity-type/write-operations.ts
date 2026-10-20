@@ -89,7 +89,7 @@ export const archiveEntityType = defineOperation({
     "type, a LINK field points to it, or a sheet definition includes it.",
   input: EntityTypeIdInputSchema,
   output: EntityTypeSchema,
-  permission: "configuration:write",
+  permission: "configuration:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.entityType.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Type" });

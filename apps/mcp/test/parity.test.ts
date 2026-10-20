@@ -80,10 +80,11 @@ function withoutOrg({ value }: { value: Json }): Json {
 }
 
 /**
- * Read-only views over other entities, and the guided pipeline setup (a preview and a batch of
- * other entities' commands): no rows of their own to create and read back through each surface.
+ * Read-only views over other entities, the guided pipeline setup (a preview and a batch of other
+ * entities' commands) and change sets (a batch of other commands, ADR 0049): no rows of their own
+ * to create and read back through each surface.
  */
-const VIEWS = new Set(["search", "pipeline", "pipelineSetup"]);
+const VIEWS = new Set(["search", "pipeline", "pipelineSetup", "changeSet"]);
 
 function coreEntityTypes(): string[] {
   return [
@@ -109,7 +110,7 @@ describe("entity read parity: core -> GraphQL, REST, MCP return equal data", () 
     const made: Record<string, Json> = { memberSeed: await seedOrgMember({ context }) };
     for (const entity of ENTITIES) {
       const created = await entity.create({ mcp, made, context });
-      expect(created?.id, `${entity.name}: create via MCP`).toBeTruthy();
+      expect(created?.id ?? created?.subjectId, `${entity.name}: create via MCP`).toBeTruthy();
       made[entity.name] = created;
       const keys = Object.keys(created).filter((key) => key !== "organizationId");
       const input = { context, mcp, created, keys };

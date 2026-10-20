@@ -2,7 +2,8 @@ import { getLogContext } from "@okazi/logger";
 import { toJson } from "../shared/to-json";
 import type { Actor, RecordedChange } from "./types";
 
-const ACTOR_TYPE = { user: "USER", ai: "AI", system: "SYSTEM" } as const;
+/** Actor kind → `ActorType` column value (AuditLog, Message). */
+export const ACTOR_TYPE = { user: "USER", ai: "AI", system: "SYSTEM", apiKey: "API_KEY" } as const;
 
 export type AuditRowsInput = {
   /** `""` for org commands (forced by scopedDb), `PLATFORM_SCOPE` for platform commands. */
@@ -26,10 +27,10 @@ export function auditRows({ organizationId, operation, actor, changes, output }:
   return rows.map((change) => ({
     organizationId,
     actorType: ACTOR_TYPE[actor.type],
-    actorId: actor.userId,
+    actorId: actor.userId ?? actor.apiKeyId ?? null,
     conversationId: actor.conversationId ?? null,
     approvedBy: actor.approvedBy ?? null,
-    operation: operation.name,
+    operation: change.operation ?? operation.name,
     entityType: change.entityType ?? operation.entityType,
     entityId: change.entityId || null,
     before: toJson({ value: change.before }),

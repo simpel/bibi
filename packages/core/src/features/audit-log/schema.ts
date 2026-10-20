@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 
-export const AUDIT_ACTOR_TYPES = ["USER", "AI", "SYSTEM"] as const;
+export const AUDIT_ACTOR_TYPES = ["USER", "AI", "API_KEY", "SYSTEM"] as const;
 
 export const AuditActorTypeSchema = z.enum(AUDIT_ACTOR_TYPES);
 
@@ -36,7 +36,7 @@ export const AuditLogListInputSchema = z.object({
   ...PageInputShape,
   entityType: optionalId.describe("Entity type, e.g. venue or item"),
   entityId: optionalId.describe("Only changes to this entity (use with entityType)"),
-  actorType: AuditActorTypeSchema.optional().describe("USER, AI or SYSTEM"),
+  actorType: AuditActorTypeSchema.optional().describe("USER, AI, API_KEY or SYSTEM"),
   actorId: optionalId.describe("Only changes made by this user id"),
   conversationId: optionalId.describe("Only changes proposed in this assistant conversation"),
   requestId: optionalId.describe("Only changes from this request (links to the system log)"),

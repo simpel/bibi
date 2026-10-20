@@ -14,7 +14,7 @@ import type { Control, FieldValues, Path } from "react-hook-form";
 export type RoleFieldProps<V extends FieldValues> = {
   control: Control<V>;
   name: Path<V>;
-  /** The roles the caller may give (`assignableRoles` / `invitableRoles`). */
+  /** The roles the caller may give (`assignableRoles`). */
   roles: readonly FixedRole[];
 };
 

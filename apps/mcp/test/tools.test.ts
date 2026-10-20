@@ -1,4 +1,4 @@
-import { createCoreOperations } from "@okazi/core";
+import { createCoreOperations, PRESET_PERMISSIONS } from "@okazi/core";
 import { describe, expect, it } from "vitest";
 import { fakeEmbed } from "./fake-embed";
 import { call, connect, testContext } from "./helpers";
@@ -73,5 +73,23 @@ describe("MCP tools", () => {
     const viewer = await connect({ context: testContext({ access: "read" }) });
     const denied = await call({ client: viewer, name: "venue_create", args: { name: "X" } });
     expect(denied.data.code).toBe("FORBIDDEN");
+  });
+
+  it("lists only the commands the caller may run, and every query (ADR 0048)", async () => {
+    const names = async ({ access }: { access: "read" | "write" | "admin" }) => {
+      const client = await connect({ context: testContext({ access }) });
+      return (await client.listTools()).tools.map((tool) => tool.name);
+    };
+    const viewer = await names({ access: "read" });
+    expect(viewer).toContain("venue_list");
+    expect(viewer).not.toContain("venue_create");
+    const member = await connect({
+      context: testContext({ permissions: PRESET_PERMISSIONS.manager }),
+    });
+    const memberNames = (await member.listTools()).tools.map((tool) => tool.name);
+    expect(memberNames).toEqual(expect.arrayContaining(["ticket_create", "item_list"]));
+    expect(memberNames).not.toContain("item_update");
+    const admin = await names({ access: "admin" });
+    expect(admin).toEqual(expect.arrayContaining(["venue_create", "item_update", "venue_list"]));
   });
 });

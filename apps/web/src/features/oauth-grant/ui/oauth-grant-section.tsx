@@ -12,7 +12,7 @@ export type OauthGrantSectionProps = { locale: Locale };
 
 /**
  * The signed-in user's own connected OAuth/MCP clients in this organization, on the profile page:
- * every role may see and disconnect their own (`integration:write` is personal, ADR 0034).
+ * every role may see and disconnect their own (`self:write` is personal, ADR 0034).
  */
 export async function OauthGrantSection({ locale }: OauthGrantSectionProps) {
   const t = await getTranslations("integration.oauthGrants");

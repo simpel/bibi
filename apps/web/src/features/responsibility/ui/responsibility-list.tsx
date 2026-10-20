@@ -6,8 +6,9 @@ import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import type { RowAccess } from "@/lib/can";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadResponsibilityOptions } from "../load-responsibility-options";
@@ -41,21 +42,17 @@ type ResponsibilityPageProps = {
   page: ResponsibilityListOutput & { options: ResponsibilityOptions };
   cursor: string | undefined;
   create: ReactNode;
-  canWrite: boolean;
+  access: RowAccess;
 };
 
-async function ResponsibilityPage({ page, cursor, create, canWrite }: ResponsibilityPageProps) {
+async function ResponsibilityPage({ page, cursor, create, access }: ResponsibilityPageProps) {
   const t = await getTranslations("responsibility");
   if (page.items.length === 0 && !cursor) {
     return <EmptyState title={t("empty")} description={t("emptyDescription")} action={create} />;
   }
   return (
     <>
-      <ResponsibilityTable
-        responsibilities={page.items}
-        options={page.options}
-        canWrite={canWrite}
-      />
+      <ResponsibilityTable responsibilities={page.items} options={page.options} access={access} />
       <CursorPagination
         pathname={ROUTES.settingsResponsibilities}
         cursor={cursor}
@@ -68,10 +65,13 @@ async function ResponsibilityPage({ page, cursor, create, canWrite }: Responsibi
 /** Responsibilities page body: header with create, table, cursor pagination. */
 export async function ResponsibilityList({ locale, cursor }: ResponsibilityListProps) {
   const t = await getTranslations("responsibility");
-  const { configurationWrite } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const result = await loadPage({ cursor });
   const options = result.ok ? result.value.options : undefined;
-  const create = configurationWrite && options ? <CreateResponsibilityButton /> : undefined;
+  const create =
+    can({ abilities, permission: "responsibility:write" }) && options ? (
+      <CreateResponsibilityButton />
+    ) : undefined;
   const header = (
     <PageHeader title={t("plural")} description={t("listDescription")} actions={create} />
   );
@@ -91,7 +91,7 @@ export async function ResponsibilityList({ locale, cursor }: ResponsibilityListP
         page={result.value}
         cursor={cursor}
         create={create}
-        canWrite={configurationWrite}
+        access={rowAccess({ abilities, feature: "responsibility" })}
       />
     </div>
   );

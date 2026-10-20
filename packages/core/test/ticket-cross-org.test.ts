@@ -47,13 +47,8 @@ describe("ticket referenced ids (ADR 0004)", () => {
     const { context, type, customer } = await ticketSetup();
     const contact = await createTestContact({ context, customerId: customer.id });
     const base = { entityTypeId: type.id, customerId: customer.id };
-    const all = grantAll({ upTo: "admin" });
-    const noContact = { ...context, permissions: { ...all, contact: [] } };
-    const withContact = { ...base, contactId: contact.id };
-    expect(await refusal({ context: noContact, input: withContact })).toMatchObject({
-      code: "VALIDATION",
-      path: "contactId",
-    });
+    const all = grantAll({});
+    // Contacts are part of the customer feature (ADR 0050).
     const noCustomer = { ...context, permissions: { ...all, customer: [] } };
     expect(await refusal({ context: noCustomer, input: base })).toMatchObject({
       code: "VALIDATION",
@@ -61,7 +56,7 @@ describe("ticket referenced ids (ADR 0004)", () => {
     });
     const ticket = await createTestTicket({ context, ...base });
     const update = await refusal({
-      context: noContact,
+      context: noCustomer,
       input: { contactId: contact.id },
       ticketId: ticket.id,
     });

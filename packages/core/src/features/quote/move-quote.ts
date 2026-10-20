@@ -6,7 +6,7 @@ import { loadQuote } from "./to-quote-dto";
 import { checkQuoteTransition } from "./transitions";
 
 export type MoveQuoteInput = {
-  context: Pick<OperationContext, "db" | "recordChange">;
+  context: Pick<OperationContext, "db" | "permissions" | "recordChange">;
   before: QuoteDto;
   to: QuoteStatus;
   /** More columns set in the same update, e.g. who accepted. */

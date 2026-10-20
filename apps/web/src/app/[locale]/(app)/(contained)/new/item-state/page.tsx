@@ -1,5 +1,6 @@
 import { resolveLocale } from "@okazi/i18n";
 import { setRequestLocale } from "next-intl/server";
+import { PermissionGate } from "@/components/states/permission-gate";
 import { ItemStatePage } from "@/features/item-state/ui/item-state-page";
 
 type NewItemStatePageProps = {
@@ -11,5 +12,9 @@ export default async function NewItemStatePage({ params, searchParams }: NewItem
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   const { type = "" } = await searchParams;
-  return <ItemStatePage locale={locale} mode={{ create: type }} />;
+  return (
+    <PermissionGate permission="pipeline:write">
+      <ItemStatePage locale={locale} mode={{ create: type }} />
+    </PermissionGate>
+  );
 }

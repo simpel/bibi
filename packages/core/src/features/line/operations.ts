@@ -20,7 +20,7 @@ export const listLines = defineOperation({
     "item, item state and a time window (from/to).",
   input: LineListInputSchema,
   output: LineListOutputSchema,
-  permission: "line:read",
+  permission: "program:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.line.findMany({
       where: {
@@ -52,7 +52,7 @@ export const getLine = defineOperation({
     "discount and VAT (each with its source: the line's own override or inherited).",
   input: LineIdInputSchema,
   output: LineSchema,
-  permission: "line:read",
+  permission: "program:read",
   handler: async ({ input, context }) => {
     const line = await loadLine({ context, id: input.id });
     if (!line) return notFound({ entity: "Line" });

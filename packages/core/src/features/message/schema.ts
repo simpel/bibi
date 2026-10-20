@@ -27,7 +27,7 @@ export const MessageSchema = z.object({
   role: MessageRoleSchema,
   parts: z.array(MessagePartSchema),
   metadata: z.record(z.string(), z.unknown()),
-  actorType: z.enum(["USER", "AI", "SYSTEM"]).describe("Who appended the message"),
+  actorType: z.enum(["USER", "AI", "API_KEY", "SYSTEM"]).describe("Who appended the message"),
   createdAt: z.date(),
   createdBy: z.string().nullable(),
 });

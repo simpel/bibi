@@ -12,11 +12,11 @@ export type GridCellProps = {
   states: readonly ItemStateDto[];
   /** The state the cell sets, or null for "keep". */
   stateId: string | null;
-  canAdmin: boolean;
+  canEdit: boolean;
 };
 
 /** One cell: a dropdown of the type's states or "keep", with what it does in plain words. */
-export function GridCell({ phase, type, states, stateId, canAdmin }: GridCellProps) {
+export function GridCell({ phase, type, states, stateId, canEdit }: GridCellProps) {
   const t = useTranslations("phaseGrid");
   const { pending, change } = useSetCell({ phaseId: phase.id, entityTypeId: type.id });
   const current = states.find((state) => state.id === stateId);
@@ -28,7 +28,7 @@ export function GridCell({ phase, type, states, stateId, canAdmin }: GridCellPro
       <Select
         value={current?.id ?? KEEP}
         onValueChange={(value) => change({ value })}
-        disabled={!canAdmin || pending}
+        disabled={!canEdit || pending}
       >
         <SelectTrigger aria-label={t("cellLabel", { phase: phase.name, type: type.name })}>
           <SelectValue />

@@ -1,6 +1,6 @@
 import { getEnv } from "@okazi/config";
+import { SUPERADMIN_ROLE } from "@okazi/core";
 import { getDb } from "@okazi/db";
-import { PLATFORM_ADMIN_ROLE } from "../plugins/admin";
 
 /** Seeded demo users have `@<slug>.okazi.test` addresses (reserved TLD, docs/demo-seed.md). */
 export const DEV_EMAIL_SUFFIX = ".okazi.test";
@@ -38,16 +38,16 @@ export async function listDevUsers(): Promise<DevUser[]> {
 }
 
 /**
- * Seeded platform admins (e.g. the mega admin of `seed:demo`), for a top-level entry of the dev
+ * Seeded superadmins (e.g. the mega admin of `seed:demo`), for a top-level entry of the dev
  * switcher. They belong to no single organization, so `organization` and `role` are placeholders.
  * Empty outside dev.
  */
 export async function listDevPlatformAdmins(): Promise<DevUser[]> {
   if (!isDevEnvironment()) return [];
   const admins = await getDb().user.findMany({
-    where: { role: PLATFORM_ADMIN_ROLE, email: { endsWith: DEV_EMAIL_SUFFIX } },
+    where: { role: SUPERADMIN_ROLE, email: { endsWith: DEV_EMAIL_SUFFIX } },
     orderBy: { name: "asc" },
     select: { id: true, name: true, email: true },
   });
-  return admins.map((user) => ({ ...user, organization: "Platform", role: PLATFORM_ADMIN_ROLE }));
+  return admins.map((user) => ({ ...user, organization: "Platform", role: SUPERADMIN_ROLE }));
 }

@@ -1,3 +1,4 @@
+import type { ChangePreview } from "@okazi/core";
 import { z } from "zod";
 
 export const APPROVAL_TTL_SECONDS = 10 * 60;
@@ -25,4 +26,6 @@ export type ApprovalRequired = {
   summary: string;
   approvalToken: string;
   expiresAt: string;
+  /** What it would change, computed by core in a rolled-back run (ADR 0049). Display only. */
+  preview: ChangePreview;
 };

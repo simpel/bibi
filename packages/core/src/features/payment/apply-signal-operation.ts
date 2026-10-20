@@ -3,6 +3,7 @@ import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { nextPaymentState } from "./payment-transition";
+import { toPaymentDto } from "./to-payment-dto";
 import { PaymentSignalResultSchema, PaymentSignalSchema } from "./webhook-schema";
 
 /**
@@ -37,7 +38,11 @@ export const applyPaymentSignal = defineOperation({
     const base = { paymentId: before.id, ticketId: before.ticketId };
     if (!next) return ok({ value: { ...base, status: before.status, changed: false } });
     const row = await context.db.payment.update({ where: { id: before.id }, data: next });
-    context.recordChange({ entityId: row.id, before, after: row });
+    context.recordChange({
+      entityId: row.id,
+      before: toPaymentDto({ row: before }),
+      after: toPaymentDto({ row }),
+    });
     return ok({ value: { ...base, status: row.status, changed: true } });
   },
 });

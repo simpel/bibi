@@ -2,8 +2,6 @@ import { ASSIGNMENT_NAMES } from "./operation-names-assignment";
 import { EXTRA_NAMES } from "./operation-names-integration";
 
 const NAMES = [
-  "auditLog.get",
-  "auditLog.list",
   "ticket.changePhase",
   "ticket.create",
   "ticket.createFromTemplate",
@@ -63,6 +61,7 @@ const NAMES = [
   "item.update",
   "member.assignRole",
   "member.cancelInvitation",
+  "member.get",
   "member.invite",
   "member.list",
   "member.listInvitations",
@@ -142,7 +141,8 @@ const NAMES = [
   "vocabulary.updateValue",
 ];
 /** Every core operation name, sorted. Add new operations here (registry test). */
-const PREFERENCE_NAMES = ["userPreference.list", "userPreference.set"];
-const SETTINGS_NAMES = ["userSettings.get", "userSettings.update"];
-const EXTRA = [...EXTRA_NAMES, ...ASSIGNMENT_NAMES, ...PREFERENCE_NAMES, ...SETTINGS_NAMES];
-export const OPERATION_NAMES: readonly string[] = [...NAMES, ...EXTRA].sort();
+export const OPERATION_NAMES: readonly string[] = [
+  ...NAMES,
+  ...EXTRA_NAMES,
+  ...ASSIGNMENT_NAMES,
+].sort();

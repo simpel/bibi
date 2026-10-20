@@ -14,7 +14,7 @@ const isLastAsked = ({ messages, toolCallId }: LastAskedInput): boolean => {
 };
 
 export type UseQuestionAnswerInput = {
-  question: Pick<AskedQuestion, "choices">;
+  question: Pick<AskedQuestion, "choices"> & { multiple?: boolean };
   toolCallId: string | undefined;
 };
 

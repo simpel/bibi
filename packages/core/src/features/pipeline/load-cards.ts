@@ -1,4 +1,5 @@
 import type { OperationContext } from "../../operations/types";
+import { canView } from "../../shared/can-view";
 import { subjectIdFilter } from "../assignment/subject-filter";
 import { LATEST_PHASE_CHANGE } from "../ticket/phase-history";
 import type { PipelineBoardInput, PipelineCard } from "./schema";
@@ -7,7 +8,11 @@ import type { PipelineBoardInput, PipelineCard } from "./schema";
 const CARD_LIMIT = 500;
 
 type Db = Pick<OperationContext, "db">;
-export type LoadCardsInput = { context: Db; input: PipelineBoardInput; since: Date };
+export type LoadCardsInput = {
+  context: Pick<OperationContext, "db" | "permissions">;
+  input: PipelineBoardInput;
+  since: Date;
+};
 
 async function mainAssignees({ context, ids }: { context: Db; ids: string[] }) {
   const rows = await context.db.assignment.findMany({
@@ -61,23 +66,22 @@ export async function loadTicketCards({
       ...(entityTypeId ? { entityTypeId } : {}),
       OR: openOrRecentlyClosed({ since }),
     },
-    include: {
-      customer: { select: { name: true } },
-      entityType: { select: { name: true } },
-      ...LATEST_PHASE_CHANGE,
-    },
+    include: { entityType: { select: { name: true } }, ...LATEST_PHASE_CHANGE },
     orderBy: [{ reference: "desc" }, { id: "desc" }],
     take: CARD_LIMIT,
   });
   const owners = await mainAssignees({ context, ids: rows.map((row) => row.id) });
-  const lines = await lineCounts({ context, ids: rows.map((row) => row.id) });
+  // Line states belong to the program: counted only for a caller who may view it (ADR 0050).
+  const counted = canView({ context, feature: "program" });
+  const lines = counted ? await lineCounts({ context, ids: rows.map((row) => row.id) }) : null;
+  const none = counted ? { heldLines: 0, bookedLines: 0 } : { heldLines: null, bookedLines: null };
   return rows.map((row) => ({
-    ...(lines.get(row.id) ?? { heldLines: 0, bookedLines: 0 }),
+    ...(lines?.get(row.id) ?? none),
     id: row.id,
     columnId: row.phaseId,
     reference: row.reference,
     typeName: row.entityType.name,
-    customerName: row.customer.name,
+    customerId: row.customerId,
     startsAt: row.desiredStartsAt,
     endsAt: row.desiredEndsAt,
     quantity: row.guaranteedHeadcount ?? row.estimatedHeadcount,

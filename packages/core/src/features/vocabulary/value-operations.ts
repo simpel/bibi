@@ -66,7 +66,7 @@ export const archiveVocabularyValue = defineOperation({
     "Archive a list value. Refused while a record still carries it or a requirement counts it.",
   input: VocabularyArchiveValueInputSchema,
   output: VocabularySchema,
-  permission: "configuration:write",
+  permission: "configuration:delete",
   entityType: VALUE,
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.vocabularyValue.findFirst({ where: { id } });

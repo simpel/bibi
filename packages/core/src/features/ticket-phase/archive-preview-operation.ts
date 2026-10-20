@@ -15,7 +15,7 @@ export const previewArchiveTicketPhase = defineOperation({
     "`ticketPhase.archive`. Same input as `ticketPhase.archive`.",
   input: TicketPhaseArchiveInputSchema,
   output: ArchivePreviewSchema,
-  permission: "ticketPhase:admin",
+  permission: "pipeline:delete",
   handler: async ({ input, context }) => {
     const moving = await context.db.ticket.count({ where: { phaseId: input.id } });
     const cells = await context.db.phaseStateRule.count({ where: { phaseId: input.id } });

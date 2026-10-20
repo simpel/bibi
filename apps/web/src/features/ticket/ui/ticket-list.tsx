@@ -14,7 +14,7 @@ import {
   minePageInput,
 } from "@/features/assignment/ui/mine-filter";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadTicketData } from "../load-ticket-data";
@@ -45,22 +45,30 @@ const HeaderActions = ({ create }: { create: ReactNode }) => (
   </>
 );
 
+type HeaderPartsInput = { abilities: CallerAbilities; noTypes: boolean };
+
+/** The create button (not without types) and the header actions; both need `ticket:write`. */
+function headerParts({ abilities, noTypes }: HeaderPartsInput) {
+  const canCreate = can({ abilities, permission: "ticket:write" });
+  const create = canCreate && !noTypes ? <CreateTicketButton /> : undefined;
+  return { create, actions: canCreate ? <HeaderActions create={create} /> : undefined };
+}
+
 /** Tickets page body: header with create, the table (or an empty state) and pagination. */
 export async function TicketList({ locale, cursor, mine }: TicketListProps) {
   const t = await getTranslations("ticket");
-  const { ticketWrite, userId } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const [data, result] = await Promise.all([
     loadTicketData(),
     runOperation({
       operation: listTickets,
-      input: minePageInput({ limit: PAGE_SIZE, cursor, mine, userId }),
+      input: minePageInput({ limit: PAGE_SIZE, cursor, mine, userId: abilities.userId }),
     }),
   ]);
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   const noTypes = data.value.types.length === 0;
-  const create = ticketWrite && !noTypes ? <CreateTicketButton /> : undefined;
-  const actions = ticketWrite ? <HeaderActions create={create} /> : undefined;
+  const { create, actions } = headerParts({ abilities, noTypes });
   const page: { items: TicketDto[]; nextCursor: string | null } = result.value;
   return (
     <div className="grid gap-6">

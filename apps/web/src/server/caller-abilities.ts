@@ -1,94 +1,59 @@
 import "server-only";
 import { resolveExecuteContext } from "@okazi/auth";
-import { type FixedRole, hasPermission, highestRole } from "@okazi/core";
+import {
+  type Feature,
+  type FixedRole,
+  highestRole,
+  type Permission,
+  type PermissionSet,
+} from "@okazi/core";
 import { headers } from "next/headers";
+import { canPermission, type RowAccess } from "@/lib/can";
 
 export type CallerAbilities = {
+  /** The caller's effective permissions (ADR 0050). */
+  permissions: PermissionSet;
   /** The caller's fixed role (ADR 0034); `null` when not a member or no fixed role. */
   role: FixedRole | null;
   /** The signed-in user (for follow and "Assigned to me"); null when not resolved. */
   userId: string | null;
-  skillAdmin: boolean;
-  memberAdmin: boolean;
-  configurationWrite: boolean;
-  ticketPhaseAdmin: boolean;
-  ticketTemplateAdmin: boolean;
-  itemStateAdmin: boolean;
-  phaseGridAdmin: boolean;
-  itemWrite: boolean;
-  customerWrite: boolean;
-  contactWrite: boolean;
-  priceListWrite: boolean;
-  occupancyWrite: boolean;
-  ticketWrite: boolean;
-  lineWrite: boolean;
-  assignmentWrite: boolean;
-  requirementWrite: boolean;
-  quoteWrite: boolean;
-  paymentAdmin: boolean;
-  sheetWrite: boolean;
-  paymentWrite: boolean;
-  integrationAdmin: boolean;
 };
 
 const NONE: CallerAbilities = {
+  permissions: {},
   role: null,
   userId: null,
-  skillAdmin: false,
-  memberAdmin: false,
-  configurationWrite: false,
-  ticketPhaseAdmin: false,
-  ticketTemplateAdmin: false,
-  itemStateAdmin: false,
-  phaseGridAdmin: false,
-  itemWrite: false,
-  customerWrite: false,
-  contactWrite: false,
-  priceListWrite: false,
-  occupancyWrite: false,
-  ticketWrite: false,
-  lineWrite: false,
-  assignmentWrite: false,
-  requirementWrite: false,
-  quoteWrite: false,
-  paymentAdmin: false,
-  sheetWrite: false,
-  paymentWrite: false,
-  integrationAdmin: false,
 };
 
 /**
- * What the signed-in user's fixed role allows, for hiding buttons and admin pages that would only
- * fail (the operations still enforce everything). Uses the same resolver as `runOperation`.
- * Every role reads everything (ADR 0034), so there are no read abilities.
+ * What the signed-in user's effective permissions allow (preset + overrides, ADR 0050), for
+ * hiding buttons and pages that would only fail (the operations still enforce everything). Uses
+ * the same resolver as `runOperation`. `permissions` also answers view questions (`canView`).
  */
 export async function getCallerAbilities(): Promise<CallerAbilities> {
   const context = await resolveExecuteContext({ headers: await headers() });
   if (!context.ok) return NONE;
   const { permissions, roles, actor } = context.value;
   return {
+    permissions,
     role: highestRole({ roles }),
     userId: actor.userId,
-    skillAdmin: hasPermission({ permissions, permission: "skill:admin" }),
-    memberAdmin: hasPermission({ permissions, permission: "member:admin" }),
-    configurationWrite: hasPermission({ permissions, permission: "configuration:write" }),
-    ticketPhaseAdmin: hasPermission({ permissions, permission: "ticketPhase:admin" }),
-    ticketTemplateAdmin: hasPermission({ permissions, permission: "ticketTemplate:admin" }),
-    itemStateAdmin: hasPermission({ permissions, permission: "itemState:admin" }),
-    phaseGridAdmin: hasPermission({ permissions, permission: "phaseGrid:admin" }),
-    itemWrite: hasPermission({ permissions, permission: "item:write" }),
-    customerWrite: hasPermission({ permissions, permission: "customer:write" }),
-    contactWrite: hasPermission({ permissions, permission: "contact:write" }),
-    priceListWrite: hasPermission({ permissions, permission: "priceList:write" }),
-    occupancyWrite: hasPermission({ permissions, permission: "occupancy:write" }),
-    ticketWrite: hasPermission({ permissions, permission: "ticket:write" }),
-    lineWrite: hasPermission({ permissions, permission: "line:write" }),
-    assignmentWrite: hasPermission({ permissions, permission: "assignment:write" }),
-    requirementWrite: hasPermission({ permissions, permission: "requirement:write" }),
-    quoteWrite: hasPermission({ permissions, permission: "quote:write" }),
-    paymentAdmin: hasPermission({ permissions, permission: "payment:admin" }),
-    sheetWrite: hasPermission({ permissions, permission: "sheet:write" }),
-    paymentWrite: hasPermission({ permissions, permission: "payment:write" }),
-    integrationAdmin: hasPermission({ permissions, permission: "integration:admin" }),
+  };
+}
+
+export type CanInput = { abilities: Pick<CallerAbilities, "permissions">; permission: Permission };
+
+/** Precise check against the effective permissions, e.g. `item:write` for "New item". */
+export function can({ abilities, permission }: CanInput): boolean {
+  return canPermission({ permissions: abilities.permissions, permission });
+}
+
+export type RowAccessInput = { abilities: Pick<CallerAbilities, "permissions">; feature: Feature };
+
+/** `edit` and `remove` of one feature, for a table's row actions. */
+export function rowAccess({ abilities, feature }: RowAccessInput): RowAccess {
+  return {
+    canEdit: can({ abilities, permission: `${feature}:write` }),
+    canRemove: can({ abilities, permission: `${feature}:delete` }),
   };
 }

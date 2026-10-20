@@ -12,7 +12,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { buildKanbanAnnouncements } from "./kanban-announcements";
 import { KanbanCard } from "./kanban-card";
 import { KanbanColumn } from "./kanban-column";
@@ -46,6 +46,8 @@ export function KanbanBoard<TCard extends KanbanCardData>({
   onMove,
 }: KanbanBoardProps<TCard>) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  // A stable id: dnd-kit's own counter differs between server and client (hydration mismatch).
+  const dndId = useId();
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
@@ -67,6 +69,7 @@ export function KanbanBoard<TCard extends KanbanCardData>({
 
   return (
     <DndContext
+      id={dndId}
       sensors={sensors}
       collisionDetection={closestCorners}
       onDragStart={({ active: a }: DragStartEvent) => setActiveId(String(a.id))}

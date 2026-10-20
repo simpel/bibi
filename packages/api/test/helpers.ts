@@ -4,9 +4,8 @@ import {
   createExecuteContext,
   type ExecuteContext,
   err,
-  grantAll,
   ok,
-  type PermissionAction,
+  PRESET_PERMISSIONS,
   type Result,
 } from "@okazi/core";
 import { createId } from "@paralleldrive/cuid2";
@@ -17,6 +16,9 @@ export const operations = createCoreOperations({ embed: fakeEmbed });
 
 type ResolveInput = { headers: Headers };
 
+/** Shorthand for a preset (ADR 0050): read → member, write → manager, admin → admin. */
+const PRESET_FOR_ACCESS = { read: "member", write: "manager", admin: "admin" } as const;
+
 /** Test auth: `x-test-org` (+ optional `x-test-access` read|write|admin|none, `x-test-user`) selects the caller; no org → 401. */
 async function resolveContext({ headers }: ResolveInput): Promise<Result<ExecuteContext>> {
   const organizationId = headers.get("x-test-org");
@@ -24,11 +26,17 @@ async function resolveContext({ headers }: ResolveInput): Promise<Result<Execute
     return err({ error: appError({ code: "UNAUTHENTICATED", message: "Sign in required" }) });
   }
   const access = headers.get("x-test-access") ?? "admin";
-  const permissions = access === "none" ? {} : grantAll({ upTo: access as PermissionAction });
+  const preset = PRESET_FOR_ACCESS[access as keyof typeof PRESET_FOR_ACCESS];
+  const permissions = preset ? PRESET_PERMISSIONS[preset] : {};
   const userId = headers.get("x-test-user") ?? `user_${organizationId}`;
   const actor = { type: "user" as const, userId };
   return ok({
-    value: createExecuteContext({ organizationId, roles: [access], permissions, actor }),
+    value: createExecuteContext({
+      organizationId,
+      roles: preset ? [preset] : [],
+      permissions,
+      actor,
+    }),
   });
 }
 

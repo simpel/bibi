@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { NamedOption } from "@/components/form/named-option";
 import { nameOf } from "@/components/form/named-option";
+import type { RowAccess } from "@/lib/can";
 import { TicketTemplateRowActions } from "./ticket-template-row-actions";
 
 type Column = ColumnDef<TicketTemplateDto>;
@@ -11,11 +12,11 @@ type Column = ColumnDef<TicketTemplateDto>;
 export type TemplateColumnsInput = {
   phases: readonly NamedOption[];
   types: readonly NamedOption[];
-  canAdmin: boolean;
+  access: RowAccess;
 };
 
 /** Name, ticket type, start phase and line count; admins also get the row actions. */
-export function useTemplateColumns({ phases, types, canAdmin }: TemplateColumnsInput): Column[] {
+export function useTemplateColumns({ phases, types, access }: TemplateColumnsInput): Column[] {
   const t = useTranslations("ticketTemplate");
   const common = useTranslations("common");
   return useMemo<Column[]>(() => {
@@ -37,11 +38,11 @@ export function useTemplateColumns({ phases, types, canAdmin }: TemplateColumnsI
         accessorFn: (row) => row.lines.length,
       },
     ];
-    if (!canAdmin) return columns;
+    if (!access.canEdit && !access.canRemove) return columns;
     const actions = actionsColumn<TicketTemplateDto>({
       label: common("actions"),
-      cell: (template) => <TicketTemplateRowActions template={template} />,
+      cell: (template) => <TicketTemplateRowActions template={template} access={access} />,
     });
     return [...columns, actions];
-  }, [t, common, phases, types, canAdmin]);
+  }, [t, common, phases, types, access]);
 }

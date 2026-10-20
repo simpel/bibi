@@ -27,6 +27,7 @@ export const ACCESS_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
     schema: MemberListWireSchema,
     toProps: ({ value }) => value,
   }),
+  member_get: memberCard,
   member_assignRole: memberCard,
   member_remove: memberCard,
   member_listInvitations: uiEntry({

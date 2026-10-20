@@ -2,7 +2,7 @@ import { listAlternativeGroups, listLines, type TicketDto } from "@okazi/core";
 import type { Locale } from "@okazi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { AlternativeGroupTable } from "./alternative-group-table";
@@ -14,12 +14,13 @@ export type AlternativeGroupSectionProps = { locale: Locale; ticket: TicketDto }
 /** The ticket's alternatives (ADR 0052): lines the customer picks one of, chosen from here. */
 export async function AlternativeGroupSection({ locale, ticket }: AlternativeGroupSectionProps) {
   const t = await getTranslations("alternativeGroup");
-  const { lineWrite } = await getCallerAbilities();
+  const lineWrite = can({ abilities: await getCallerAbilities(), permission: "program:write" });
   const input = { ticketId: ticket.id, limit: 100 };
   const [groups, lines] = await Promise.all([
     runOperation({ operation: listAlternativeGroups, input }),
     runOperation({ operation: listLines, input }),
   ]);
+  if (!groups.ok && groups.error.code === "FORBIDDEN") return null;
   if (!groups.ok) {
     return <ErrorState errorKey={handleLoadError({ error: groups.error, locale })} />;
   }

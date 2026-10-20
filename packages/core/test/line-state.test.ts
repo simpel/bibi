@@ -66,6 +66,15 @@ describe("line states and derived holds (ADR 0044)", () => {
     expect(errorCode({ result: none })).toBe("VALIDATION");
   });
 
+  it("is a program change: ticket:write alone may not set a line's state (ADR 0050)", async () => {
+    const { context, base, states } = await setup();
+    const line = unwrap({ result: await createTestLine({ ...base, from: 9, to: 10 }) });
+    const ticketOnly = { ...context, permissions: { ticket: ["read" as const, "write" as const] } };
+    const stateId = states.booked.id;
+    const denied = await toState({ context: ticketOnly, lineId: line.id, stateId });
+    expect(errorCode({ result: denied })).toBe("FORBIDDEN");
+  });
+
   it("moves a food line through its states without holding anything", async () => {
     const { context, base } = await setup();
     const input = { base: "ITEM" as const, name: "Dish" };

@@ -22,9 +22,9 @@ const resolvePrincipal = ({ headers, credential }: ResolveInput): Promise<Result
 async function resolve({ headers, credential }: ResolveInput): Promise<Result<ExecuteContext>> {
   const principal = await resolvePrincipal({ headers, credential });
   if (!principal.ok) return principal;
-  const { userId, organizationId, roles, permissions, aiAllowed } = principal.value;
+  const { userId, apiKeyId, organizationId, roles, permissions, aiAllowed } = principal.value;
   if (roles === null) return forbidden({ message: "Not a member of the organization" });
-  const actor = buildActor({ headers, userId, aiAllowed });
+  const actor = buildActor({ headers, userId, apiKeyId, aiAllowed });
   if (!actor.ok) return actor;
   return ok({
     value: createExecuteContext({

@@ -1,6 +1,7 @@
 import {
   assignMemberRole,
   cancelInvitation,
+  getMember,
   type InvitationDto,
   InvitationSchema,
   inviteMember,
@@ -31,6 +32,7 @@ export const InvitationRef = objectFromSchema<InvitationDto>({
 const InvitationPageRef = pageType({ name: "InvitationPage", item: InvitationRef });
 
 fieldFromOperation({ operation: listMembers, type: MemberPageRef, name: "members" });
+fieldFromOperation({ operation: getMember, type: MemberRef, name: "member" });
 mutationFromOperation({ operation: assignMemberRole, type: MemberRef });
 mutationFromOperation({ operation: removeMember, type: MemberRef });
 fieldFromOperation({ operation: listInvitations, type: InvitationPageRef, name: "invitations" });

@@ -13,7 +13,8 @@ import type { TicketFormData } from "./ui/ticket-form-data";
 const LIMIT = 100;
 
 /**
- * Ticket types, lists, customers, contacts, members and phases (one page each). Contacts and
+ * Ticket types, lists, customers, contacts, members and phases (one page each). Without
+ * `customer:read` the customers are hidden (ADR 0050 feature scope), not an error. Contacts and
  * members are optional: without read access they show as "–" and cannot be picked.
  */
 export async function loadTicketData(): Promise<Result<TicketFormData>> {
@@ -25,15 +26,17 @@ export async function loadTicketData(): Promise<Result<TicketFormData>> {
     runOperation({ operation: listTicketPhases, input: { limit: LIMIT } }),
   ]);
   if (!typed.ok) return typed;
-  if (!customers.ok) return customers;
+  if (!customers.ok && customers.error.code !== "FORBIDDEN") return customers;
   if (!phases.ok) return phases;
   const people = members.ok ? members.value.items : [];
   const contactRows = contacts.ok ? contacts.value.items : [];
+  const customerRows = customers.ok ? customers.value.items : [];
   return {
     ok: true,
     value: {
       ...typed.value,
-      customers: customers.value.items.map(({ id, name }) => ({ id, name })),
+      customers: customerRows.map(({ id, name }) => ({ id, name })),
+      customersHidden: !customers.ok,
       contacts: contactRows.map(({ id, name, customerId }) => ({ id, name, customerId })),
       members: people.map(({ userId, name }) => ({ id: userId, name })),
       phases: phases.value.items,

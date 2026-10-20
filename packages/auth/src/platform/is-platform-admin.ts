@@ -1,5 +1,5 @@
+import { SUPERADMIN_ROLE } from "@okazi/core";
 import { getDb } from "@okazi/db";
-import { PLATFORM_ADMIN_ROLE } from "../plugins/admin";
 
 export type IsPlatformAdminInput = { userId: string };
 
@@ -14,5 +14,5 @@ export async function isPlatformAdmin({ userId }: IsPlatformAdminInput): Promise
   });
   if (!user || user.banned) return false;
   const roles = (user.role ?? "").split(",").map((role) => role.trim());
-  return roles.includes(PLATFORM_ADMIN_ROLE);
+  return roles.includes(SUPERADMIN_ROLE);
 }

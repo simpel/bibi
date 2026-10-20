@@ -87,9 +87,9 @@ describe("an invoice is a frozen receivable of the ticket's lines (ADR 0052, 005
     expect(errorCode({ result: blocked })).toBe("CONFLICT");
   });
 
-  it("needs line:read to copy the lines and stays in its organization", async () => {
+  it("needs program:read to copy the lines and stays in its organization", async () => {
     const { context, ticket } = await invoiceable();
-    const permissions = { ...grantAll({ upTo: "admin" }), line: [] };
+    const permissions = { ...grantAll({}), program: [] };
     const blind = testContext({ organizationId: context.organizationId, permissions });
     expect(errorCode({ result: await create({ context: blind, ticketId: ticket.id }) })).toBe(
       "VALIDATION",

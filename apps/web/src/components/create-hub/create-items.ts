@@ -14,7 +14,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
-import type { CallerAbilities } from "@/server/caller-abilities";
+import { type CallerAbilities, can } from "@/server/caller-abilities";
 
 import type { CreateItem } from "./create-item-types";
 
@@ -30,91 +30,91 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
     group: "work",
     href: ROUTES.ticketNew,
     icon: CalendarCheckIcon,
-    ability: "ticketWrite",
+    permission: "ticket:write",
   },
   {
     key: "customer",
     group: "work",
     href: ROUTES.customerNew,
     icon: UsersIcon,
-    ability: "customerWrite",
+    permission: "customer:write",
   },
-  { key: "item", group: "catalog", href: ROUTES.itemNew, icon: BoxIcon, ability: "itemWrite" },
+  { key: "item", group: "catalog", href: ROUTES.itemNew, icon: BoxIcon, permission: "item:write" },
   {
     key: "venue",
     group: "catalog",
     href: ROUTES.venueNew,
     icon: BuildingIcon,
-    ability: null,
+    permission: "venue:write",
   },
   {
     key: "priceList",
     group: "catalog",
     href: ROUTES.priceListNew,
     icon: TagIcon,
-    ability: "priceListWrite",
+    permission: "priceList:write",
   },
   {
     key: "skill",
     group: "settings",
     href: ROUTES.skillNew,
     icon: BookOpenIcon,
-    ability: "skillAdmin",
+    permission: "assistant:write",
   },
   {
     key: "type",
     group: "settings",
     href: ROUTES.typeNew,
     icon: ShapesIcon,
-    ability: "configurationWrite",
+    permission: "configuration:write",
   },
   {
     key: "list",
     group: "settings",
     href: ROUTES.settingsLists,
     icon: ListIcon,
-    ability: "configurationWrite",
+    permission: "configuration:write",
   },
   {
     key: "setup",
     group: "settings",
     href: ROUTES.settingsSetups,
     icon: LayoutGridIcon,
-    ability: "configurationWrite",
+    permission: "configuration:write",
   },
   {
     key: "responsibility",
     group: "settings",
     href: ROUTES.responsibilityNew,
     icon: UserCheckIcon,
-    ability: "configurationWrite",
+    permission: "responsibility:write",
   },
   {
     key: "sheet",
     group: "settings",
     href: ROUTES.sheetNew,
     icon: ClipboardListIcon,
-    ability: "configurationWrite",
+    permission: "template:write",
   },
   {
     key: "ticketPhase",
     group: "settings",
     href: ROUTES.settingsPipeline,
     icon: CircleDotIcon,
-    ability: "ticketPhaseAdmin",
+    permission: "pipeline:write",
   },
   {
     key: "member",
     group: "settings",
     href: ROUTES.settingsMembers,
     icon: UserPlusIcon,
-    ability: "memberAdmin",
+    permission: "member:write",
   },
 ];
 
 export type CreatableInput = { abilities: CallerAbilities };
 
-/** What the caller's role allows to create. */
+/** What the caller's permissions allow to create. */
 export function creatableItems({ abilities }: CreatableInput): CreateItem[] {
-  return CREATE_ITEMS.filter(({ ability }) => ability === null || abilities[ability] === true);
+  return CREATE_ITEMS.filter(({ permission }) => can({ abilities, permission }));
 }

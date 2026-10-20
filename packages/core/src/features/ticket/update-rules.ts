@@ -37,7 +37,7 @@ export async function checkTicketDetails({
     return ok({ value: true });
   }
   if (contactId) {
-    const readable = checkReadable({ context, permission: "contact:read", path: "contactId" });
+    const readable = checkReadable({ context, permission: "customer:read", path: "contactId" });
     if (!readable.ok) return readable;
   }
   const contact = await checkContact({ context, contactId, customerId });

@@ -20,7 +20,7 @@ export function TicketWizard({ data }: TicketWizardProps) {
       typeOf={typeOf}
       run={run}
       pending={pending}
-      core={<TicketCoreFields form={form} customers={data.customers} contacts={data.contacts} />}
+      core={<TicketCoreFields form={form} data={data} />}
       coreFields={[
         "customerId",
         "contactId",

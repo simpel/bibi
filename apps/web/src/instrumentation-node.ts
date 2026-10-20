@@ -14,7 +14,7 @@ export function registerCoreOperations(): void {
 /** Process logger for the web server; Next owns the process, so no exit on uncaught errors. */
 export function registerLogging(): void {
   const retentionDays = getEnv().SYSTEM_LOG_RETENTION_DAYS;
-  // stdout for ops + the SystemLog table for the platform admin view (ADR 0014, 0015).
+  // stdout for ops + the SystemLog table for the superadmin view (ADR 0014, 0015).
   initLogger({ service: "web", sinks: [createSystemLogSink({ retentionDays })] });
   installProcessHandlers({ exitOnUncaught: false });
   getLogger().info({ event: "process.started", msg: "@okazi/web started" });

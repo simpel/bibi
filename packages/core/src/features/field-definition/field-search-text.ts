@@ -37,7 +37,7 @@ export type FieldSearchLinesInput = {
   names: ReadonlyMap<string, string>;
 };
 
-/** "Field name: value" lines for search text; list value and linked record ids become names. */
+/** "Field name: value" lines for search text; list value ids become names. */
 export function fieldSearchLines({ fields, stored, names }: FieldSearchLinesInput): string[] {
   const values = asFieldValues({ value: stored });
   return fields
@@ -47,11 +47,10 @@ export function fieldSearchLines({ fields, stored, names }: FieldSearchLinesInpu
 
 export type LoadValueNamesInput = { db: ScopedDbClient; rows: readonly WithRecordLinks[] };
 
-type NameRow = { id: string; name: string };
-
 /**
- * Names of the records the rows' field values refer to: list values (archived included) and
- * linked items, customers, contacts and tickets (by reference). Ids are globally unique.
+ * Names of the list values the rows' field values refer to (archived included). Lists are
+ * shared vocabulary; linked records (LINK fields) belong to their own feature, so their names
+ * never enter another entity's search text (ADR 0050, feature scope) and stay ids.
  */
 export async function loadValueNames({
   db,
@@ -62,19 +61,9 @@ export async function loadValueNames({
       .flat()
       .filter((v) => typeof v === "string"),
   );
-  const where = { id: { in: ids } };
-  const [values, items, customers, contacts, tickets] = await Promise.all([
-    db.vocabularyValue.findMany({
-      where: { ...where, status: { in: ["ACTIVE", "ARCHIVED"] } },
-      select: { id: true, name: true },
-    }),
-    db.item.findMany({ where, select: { id: true, name: true } }),
-    db.customer.findMany({ where, select: { id: true, name: true } }),
-    db.contact.findMany({ where, select: { id: true, name: true } }),
-    db.ticket.findMany({ where, select: { id: true, reference: true } }),
-  ]);
-  const refs: NameRow[] = tickets.map((b) => ({ id: b.id, name: String(b.reference) }));
-  return new Map(
-    [...values, ...items, ...customers, ...contacts, ...refs].map((r) => [r.id, r.name]),
-  );
+  const values = await db.vocabularyValue.findMany({
+    where: { id: { in: ids }, status: { in: ["ACTIVE", "ARCHIVED"] } },
+    select: { id: true, name: true },
+  });
+  return new Map(values.map((r) => [r.id, r.name]));
 }

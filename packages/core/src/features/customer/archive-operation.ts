@@ -3,6 +3,7 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { conflict, notFound } from "../../shared/errors";
+import { inUseConflict } from "../../shared/in-use";
 import { checkNotLinked } from "../field-definition/link-usage";
 import { archiveCustomerPackages, archiveCustomerTickets } from "./archive-cascades";
 import { customerEmbeddable } from "./embeddable";
@@ -42,20 +43,25 @@ async function cascadeArchive({ context, customer, ...flags }: CascadeArchiveInp
     const expected = flags.expectedTicketCount;
     const archived = await archiveCustomerTickets({ context, customer, expected });
     if (!archived.ok) return archived;
-  } else if (customer.ticketCount > 0) return ticketsBlock({ customer });
+  } else {
+    const tickets = await context.db.ticket.count({ where: { customerId: customer.id } });
+    if (tickets > 0) return ticketsBlock({ context, name: customer.name, tickets });
+  }
   return archiveCustomerPackages({ context, customer });
 }
 
-type BlockedInput = { customer: CustomerDto };
+type BlockedInput = { context: OperationContext; name: string; tickets: number };
 
 /** Every ticket that is not archived blocks, whatever its phase (#134). */
-const ticketsBlock = ({ customer: { name, ticketCount } }: BlockedInput) =>
-  conflict({
-    message: `${name} has ${ticketCount} tickets that are not archived; archive them first or set archiveTickets`,
+const ticketsBlock = ({ context, name, tickets }: BlockedInput) =>
+  inUseConflict({
+    context,
+    feature: "ticket",
+    message: `${name} has ${tickets} tickets that are not archived; archive them first or set archiveTickets`,
     issues: [
       {
         path: "archiveTickets",
-        message: `${ticketCount} tickets block archiving; set archiveTickets to archive them too`,
+        message: `${tickets} tickets block archiving; set archiveTickets to archive them too`,
       },
     ],
   });
@@ -68,13 +74,13 @@ export const archiveCustomer = defineOperation({
     "active price lists (archive those first). Every ticket that is not archived, in any " +
     "phase, also blocks it, unless `archiveTickets` is true: then those tickets are " +
     "archived with the customer, with their lines and room occupancy (needs " +
-    "ticket:write). The customer's own packages are archived with it (needs item:write). " +
+    "ticket:delete). The customer's own packages are archived with it (needs item:delete). " +
     "With `archiveTickets` and `expectedTicketCount` it is refused with CONFLICT, and nothing " +
     "is archived, unless exactly that many tickets would be archived. " +
     "Refused while a LINK field points to the customer or to anything archived with it.",
   input: CustomerArchiveInputSchema,
   output: CustomerSchema,
-  permission: "customer:write",
+  permission: "customer:delete",
   embeddable: customerEmbeddable,
   handler: async ({ input, context }) => {
     const { id, archiveTickets, expectedTicketCount } = input;
@@ -84,8 +90,10 @@ export const archiveCustomer = defineOperation({
     if (contacts > 0)
       return conflict({ message: `${before.name} has ${contacts} active contacts` });
     const priceLists = await context.db.priceList.count({ where: { customerId: id } });
-    if (priceLists > 0)
-      return conflict({ message: `${before.name} has ${priceLists} active price lists` });
+    if (priceLists > 0) {
+      const message = `${before.name} has ${priceLists} active price lists`;
+      return inUseConflict({ context, feature: "priceList", message });
+    }
     const tickets = archiveTickets;
     const linked = await checkCustomerNotLinked({ context, customer: before, tickets });
     if (!linked.ok) return linked;
@@ -102,7 +110,7 @@ export const archiveCustomer = defineOperation({
       include: CUSTOMER_INCLUDE,
     });
     await archiveRecords({ context, ids: [id] });
-    const customer = toCustomerDto({ row });
+    const customer = toCustomerDto({ row, context });
     context.recordChange({ entityType: "customer", entityId: id, before, after: customer });
     return ok({ value: customer });
   },

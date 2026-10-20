@@ -37,6 +37,11 @@ describe("approval flow", () => {
       summary: 'Create venue "Proposed"',
     });
     expect(typeof proposal.data.approvalToken).toBe("string");
+    // ADR 0049: the card gets core's preview of the change; the rolled-back run left nothing.
+    expect(proposal.data.preview).toMatchObject({
+      changes: [{ entityType: "venue", kind: "create", name: "Proposed" }],
+      consequences: [],
+    });
     expect(await base.db.venue.count()).toBe(0);
     expect(await base.db.auditLog.count()).toBe(0);
 

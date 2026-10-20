@@ -55,7 +55,7 @@ async function assistantShots({ page, mode }: { page: Page; mode: Mode }) {
   const card = page.locator('[data-slot="approval-card"]');
   await expect(card).toBeVisible();
   await shot({ page, mode, name: "approval-pending" });
-  await card.getByRole("button", { name: "Godkänn" }).click();
+  await card.getByRole("button", { name: "Bekräfta" }).click();
   await expect(card).toHaveAttribute("data-state", "approved");
   await shot({ page, mode, name: "approval-approved" });
   await page.locator(PANEL).getByRole("button", { name: "Tidigare konversationer" }).click();

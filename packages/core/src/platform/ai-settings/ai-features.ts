@@ -1,7 +1,7 @@
 /**
- * Every AI feature whose model a platform admin can choose (ADR 0015). New AI capability = one
+ * Every AI feature whose model a superadmin can choose (ADR 0015). New AI capability = one
  * entry here, `resolveAiModel({ feature })` where it runs, and labels in i18n
- * (`admin.aiModels.features`). No env defaults: a platform admin must choose every model, and an
+ * (`admin.aiModels.features`). No env defaults: a superadmin must choose every model, and an
  * unconfigured feature fails (UNAVAILABLE). Client-safe: no config or database imports.
  *
  * `requires` is what makes a model *possible* for the feature; only such models are offered and

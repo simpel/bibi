@@ -2,8 +2,9 @@ import type { Db } from "@okazi/db";
 import type { z } from "zod";
 import type { Result } from "../errors/result";
 import type { OperationKind, RecordedChange } from "../operations/types";
+import type { SUPERADMIN_ROLE } from "../permissions/fixed-roles";
 
-/** A platform admin (verified by `@okazi/auth`) or trusted system code. Never the AI actor. */
+/** A superadmin (verified by `@okazi/auth`) or trusted system code. Never the AI actor. */
 export type PlatformActor = { type: "user"; userId: string } | { type: "system"; userId: null };
 
 /**
@@ -12,7 +13,7 @@ export type PlatformActor = { type: "user"; userId: string } | { type: "system";
  */
 export type PlatformContext = {
   actor: PlatformActor;
-  platformRole: "admin" | null;
+  platformRole: typeof SUPERADMIN_ROLE | null;
   db: Db;
 };
 

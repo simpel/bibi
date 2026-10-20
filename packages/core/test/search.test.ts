@@ -110,8 +110,8 @@ describe("search", () => {
       });
       return unwrap({ result }).hits.map((hit) => hit.entityType);
     };
-    expect(await query({ permissions: { search: ["read"] } })).toEqual([]);
-    expect(await query({ permissions: { search: ["read"], item: ["read"] } })).toEqual(["item"]);
-    expect(await query({ permissions: { search: ["read"], venue: ["read"] } })).toEqual(["venue"]);
+    expect(await query({ permissions: {} })).toEqual([]);
+    expect(await query({ permissions: { item: ["read"] } })).toEqual(["item"]);
+    expect(await query({ permissions: { venue: ["read"] } })).toEqual(["venue"]);
   });
 });

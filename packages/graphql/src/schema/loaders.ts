@@ -3,6 +3,7 @@ import {
   type CustomerDto,
   type EntityTypeDto,
   type ItemStateDto,
+  type PermissionSet,
   type TicketPhaseDto,
   toCustomerDto,
   toItemStateDto,
@@ -34,6 +35,9 @@ const byId = <T extends { id: string }>({ rows }: { rows: readonly T[] }): Map<s
   new Map(rows.map((row) => [row.id, row]));
 
 type DbInput = { db: ScopedDb };
+
+/** The caller's permissions: DTOs fill caller-dependent fields from them (ADR 0050). */
+export type CreateLoadersInput = DbInput & { permissions: PermissionSet };
 type Ids = { ids: readonly string[] };
 
 async function loadEntityTypes({ db, ids }: DbInput & Ids) {
@@ -82,7 +86,7 @@ async function loadItemStates({ db, ids }: DbInput & Ids) {
 }
 
 /** One set per request. Entities with per-user visibility are not here: they use operations. */
-export function createLoaders({ db }: DbInput): Loaders {
+export function createLoaders({ db, permissions }: CreateLoadersInput): Loaders {
   return {
     venue: createBatchLoader({
       batch: async (ids) =>
@@ -96,7 +100,7 @@ export function createLoaders({ db }: DbInput): Loaders {
       batch: async (ids) => {
         const where = { id: { in: [...ids] } };
         const rows = await db.customer.findMany({ where, include: CUSTOMER_INCLUDE });
-        return byId({ rows: rows.map((row) => toCustomerDto({ row })) });
+        return byId({ rows: rows.map((row) => toCustomerDto({ row, context: { permissions } })) });
       },
     }),
     ticketPhase: createBatchLoader({ batch: (ids) => loadTicketPhases({ db, ids }) }),

@@ -50,7 +50,7 @@ builder.objectField(LineRef, "state", (t) =>
     description: "The line's state (null for a line without an item).",
     resolve: (line, _args, ctx) => {
       if (!line.stateId) return null;
-      requirePermission({ ctx, permission: "itemState:read" });
+      requirePermission({ ctx, permission: "pipeline:read" });
       return ctx.loaders.itemState.load({ id: line.stateId });
     },
   }),

@@ -21,7 +21,7 @@ export const listRequirements = defineOperation({
     "replaces the ticket's there. Filter by ticket, line or list value.",
   input: RequirementListInputSchema,
   output: RequirementListOutputSchema,
-  permission: "requirement:read",
+  permission: "program:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.requirement.findMany({
       where: {
@@ -45,7 +45,7 @@ export const getRequirement = defineOperation({
   description: "Get one requirement by id, with the type's field values.",
   input: RequirementIdInputSchema,
   output: RequirementSchema,
-  permission: "requirement:read",
+  permission: "program:read",
   handler: async ({ input, context }) => {
     const requirement = await loadRequirement({ context, id: input.id });
     return requirement ? ok({ value: requirement }) : notFound({ entity: "Requirement" });

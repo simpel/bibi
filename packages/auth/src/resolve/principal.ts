@@ -2,11 +2,14 @@ import type { PermissionSet } from "@okazi/core";
 
 /** Authenticated caller after credential checks, before the execute context is built. */
 export type Principal = {
-  userId: string;
+  /** The signed-in user; `null` for an API key, which belongs to the organization (ADR 0050). */
+  userId: string | null;
+  /** Set for API key requests: the key is the actor. */
+  apiKeyId?: string;
   organizationId: string;
-  /** Role names in `organizationId`; `null` when the user is not a member. */
+  /** Preset names in `organizationId`; `null` when the user is not a member. */
   roles: string[] | null;
-  /** Effective permissions (membership, intersected with the key's for API keys). */
+  /** Effective permissions: preset plus overrides (ADR 0050). */
   permissions: PermissionSet;
   /** Whether `x-okazi-actor: ai` may be honoured (first-party web client tokens only). */
   aiAllowed: boolean;

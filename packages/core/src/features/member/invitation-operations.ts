@@ -23,12 +23,12 @@ export const inviteMember = defineOperation({
   kind: "command",
   entityType: "invitation",
   description:
-    "Invite a person by email to join the organization as staff with one fixed role (viewer, " +
-    "member or admin; owner is never invited). They get an email with a link and become a " +
+    "Invite a person by email to join the organization as staff with one fixed role (member, " +
+    "manager or admin). They get an email with a link and become a " +
     "member when they accept. You cannot invite with a role above your own.",
   input: MemberInviteInputSchema,
   output: InvitationSchema,
-  permission: "member:admin",
+  permission: "member:write",
   handler: async ({ input, context }) => {
     const inviterId = context.actor.userId;
     if (!inviterId)
@@ -65,7 +65,7 @@ export const cancelInvitation = defineOperation({
   description: "Revoke a pending invitation (from member.listInvitations); its link stops working.",
   input: InvitationIdInputSchema,
   output: InvitationSchema,
-  permission: "member:admin",
+  permission: "member:write",
   handler: async ({ input, context }) => {
     const before = await context.db.invitation.findFirst({
       where: { id: input.id, status: "pending" },
@@ -94,7 +94,7 @@ export const listInvitations = defineOperation({
   description: "List the organization's pending, unexpired invitations with the role they give.",
   input: InvitationListInputSchema,
   output: InvitationListOutputSchema,
-  permission: "member:admin",
+  permission: "member:write",
   handler: async ({ input, context }) => {
     const rows = await context.db.invitation.findMany({
       where: { status: "pending", expiresAt: { gt: new Date() } },

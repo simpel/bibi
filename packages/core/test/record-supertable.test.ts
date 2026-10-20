@@ -58,7 +58,7 @@ describe("record supertable (ADR 0056)", () => {
     ]);
   });
 
-  it("counts blocking records the caller may not read without naming them", async () => {
+  it("does not name or count blocking records the caller may not read", async () => {
     const admin = testContext();
     const { type, key, fieldId } = await createTypeWithField({
       context: admin,
@@ -69,13 +69,15 @@ describe("record supertable (ADR 0056)", () => {
     unwrap({ result: await execute({ operation: createCustomer, input, context: admin }) });
     const configurer = testContext({
       organizationId: admin.organizationId,
-      permissions: { configuration: ["read", "write", "admin"] },
+      permissions: { configuration: ["read", "write", "delete"] },
     });
     const operation = archiveFieldDefinition;
     const refused = await execute({ operation, input: { id: fieldId }, context: configurer });
-    expect(refused.ok ? null : refused.error.issues).toEqual([
-      { path: "records", message: "1 more records" },
-    ]);
+    // ADR 0050: a caller who may not read the blocking records is told neither what nor how many.
+    expect(refused.ok ? null : refused.error).toMatchObject({
+      message: "It is still in use",
+      issues: [],
+    });
   });
 
   it("finds records inside the running transaction and never another organization's", async () => {

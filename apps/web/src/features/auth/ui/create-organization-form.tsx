@@ -13,7 +13,7 @@ import { afterNewOrganization } from "./after-organization";
 import { OrganizationNameSchema, type OrganizationNameValues } from "./auth-schemas";
 import { useAuthFormAction } from "./use-auth-form-action";
 
-/** Creates an organization (the caller becomes owner) and makes it the active one. */
+/** Creates an organization (the caller becomes admin) and makes it the active one. */
 export function CreateOrganizationForm() {
   const t = useTranslations("auth");
   const router = useRouter();

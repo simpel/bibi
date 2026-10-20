@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  applyOverrides,
   execute,
   generateSheet,
   getSheet,
@@ -93,6 +94,15 @@ describe("sheet.generate (ADR 0021)", () => {
     expect(errorCode({ result: await generate(foreign) })).toBe("NOT_FOUND");
     const reader = peer({ of: setup.context, access: "read" });
     expect(errorCode({ result: await generate({ ...setup, context: reader }) })).toBe("FORBIDDEN");
+  });
+
+  it("needs view on the program it copies (ADR 0050)", async () => {
+    const setup = await sheetSetup();
+    const overrides = [{ feature: "program", action: "read", effect: "deny" }];
+    const permissions = applyOverrides({ preset: "admin", overrides });
+    const result = await generate({ ...setup, context: { ...setup.context, permissions } });
+    expect(result).toMatchObject({ ok: false, error: { code: "FORBIDDEN" } });
+    expect(result.ok ? "" : result.error.message).toContain("missing program:read");
   });
 });
 

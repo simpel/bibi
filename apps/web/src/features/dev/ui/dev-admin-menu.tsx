@@ -10,7 +10,7 @@ export type DevAdminMenuProps = {
   onResetOnboarding: (input: { user: DevUser }) => void;
 };
 
-/** The seeded platform admins as top-level entries, above the organizations. */
+/** The seeded superadmins as top-level entries, above the organizations. */
 export function DevAdminMenu({
   admins,
   currentUserId,

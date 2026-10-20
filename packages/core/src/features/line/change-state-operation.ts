@@ -36,7 +36,7 @@ export const changeLineState = defineOperation({
     "CONFLICT naming the blocker.",
   input: LineChangeStateInputSchema,
   output: LineSchema,
-  permission: "line:write",
+  permission: "program:write",
   entityType: "line",
   handler: effectiveHandler({
     handler: async ({ input: { lineId, stateId }, context }) => {

@@ -1,9 +1,10 @@
 import type { OperationContext } from "../../operations/types";
+import { canView } from "../../shared/can-view";
 import { deriveTicketLines } from "./derive-lines";
 import { type QuoteRow, toOrderLineDto, toQuoteDto } from "./quote-view";
 import type { QuoteDto } from "./schema";
 
-type Db = { context: Pick<OperationContext, "db"> };
+type Db = { context: Pick<OperationContext, "db" | "permissions"> };
 
 const LINE_ORDER = [{ position: "asc" as const }, { id: "asc" as const }];
 
@@ -27,7 +28,8 @@ async function previousLinesOf({ context, rows }: ToQuoteDtosInput) {
 
 /**
  * Quotes with their lines marked against each one's previous version; DRAFT and ACCEPTED quotes
- * also read their tickets' priced lines (a fixed number of queries per page).
+ * also read their tickets' priced lines (a fixed number of queries per page), only for a caller
+ * who may read the program (ADR 0050, feature scope).
  */
 export async function toQuoteDtos({ context, rows }: ToQuoteDtosInput): Promise<QuoteDto[]> {
   const previousOf = await previousLinesOf({ context, rows });
@@ -38,12 +40,13 @@ export async function toQuoteDtos({ context, rows }: ToQuoteDtosInput): Promise<
         .map((row) => row.ticketId),
     ),
   ];
-  const live = await deriveTicketLines({ context, ticketIds });
+  const visible = canView({ context, feature: "program" });
+  const live = visible ? await deriveTicketLines({ context, ticketIds }) : null;
   return rows.map((row) =>
     toQuoteDto({
       row,
       previous: previousOf({ id: row.previousId }),
-      live: (live.get(row.ticketId) ?? []).map((derived) => derived.line),
+      live: live ? (live.get(row.ticketId) ?? []).map((derived) => derived.line) : null,
     }),
   );
 }

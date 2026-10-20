@@ -1,15 +1,16 @@
 import type { ReactNode } from "react";
+import { canOpenSettings } from "@/components/shell/settings-items";
 import { ErrorState } from "@/components/states/error-state";
 import { getCallerAbilities } from "@/server/caller-abilities";
 
 type SettingsLayoutProps = { children: ReactNode };
 
 /**
- * `/settings/*` is configuration: only admins and owners (ADR 0034). Members and viewers do not
- * see the sidebar entry and get a forbidden state here; the operations check again.
+ * `/settings/*` is configuration. Callers who may view none of its areas do not see the sidebar
+ * entry and get a forbidden state here; each page's operations check its own feature (ADR 0050).
  */
 export default async function SettingsLayout({ children }: SettingsLayoutProps) {
-  const { configurationWrite } = await getCallerAbilities();
-  if (!configurationWrite) return <ErrorState errorKey="forbidden" />;
+  const { permissions } = await getCallerAbilities();
+  if (!canOpenSettings({ permissions })) return <ErrorState errorKey="forbidden" />;
   return <>{children}</>;
 }

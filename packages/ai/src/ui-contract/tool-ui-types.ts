@@ -9,6 +9,7 @@ import type { ItemStateWire } from "./item-state-entries";
 import type { LineWire } from "./line-entries";
 import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire, TicketBalanceWire } from "./payment-entries";
+import type { PermissionProfileWire } from "./permission-entries";
 import type { PhaseGridCellWire } from "./phase-grid-entries";
 import type { PipelineBoardWire } from "./pipeline-entries";
 import type { PipelinePreviewWire, PipelineSetupDraftWire } from "./pipeline-setup-entries";
@@ -110,6 +111,7 @@ export type ToolUiProps = {
   "sheet-card": { sheet: SheetWire };
   "member-table": { items: MemberWire[]; nextCursor: string | null };
   "member-card": { member: MemberWire };
+  "permission-profile-card": { profile: PermissionProfileWire };
   "invitation-table": { items: InvitationWire[]; nextCursor: string | null };
   "invitation-card": { invitation: InvitationWire };
   "audit-log-table": { items: AuditLogWire[]; nextCursor: string | null };

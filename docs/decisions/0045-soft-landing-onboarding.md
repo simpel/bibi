@@ -2,7 +2,7 @@
 
 - **Date:** 2026-10-19
 - **Status:** Accepted
-- **Related:** 0007 (AI-first UX), 0044 (line states and the phase grid), 0021 (configurable items), 0043 (ticket and phases), 0004 (multi-tenancy), 0015 (platform admin)
+- **Related:** 0007 (AI-first UX), 0044 (line states and the phase grid), 0021 (configurable items), 0043 (ticket and phases), 0004 (multi-tenancy), 0015 (superadmin)
 
 ## Context
 - ADR 0044 built the first setup as a seven-step wizard at `/onboarding/pipeline`: item types, states, phases, the grid, preview, activate. It is accurate and complete, and far too detailed for someone who has just created an organization. States, holds, "bookable" and the grid are concepts a new user has not met yet.
@@ -31,13 +31,20 @@
 - If the organization already has phases, the card says in plain words what is archived (ADR 0044).
 
 ### What the panel shows
+- The chat on `/onboarding` shows no draft cards (`pipelineSetup.presetDraft`, `pipelineSetup.preview`); the panel is the only picture of the draft.
 - "What you sell": a card per kind of item type, in plain words. "How a request moves": the phases in order. A note says it is a starting point and that nothing is saved yet.
 - No states, holds, grid or counts of settings.
 
+### Pointing at the draft (amended, issue #316)
+- Each item type card and each phase node is a button (click, or Tab then Enter/Space) that gets a selected outline and opens a small comment box anchored to it ("Phase: Quote sent"). One element is selected at a time; Escape or Cancel deselects it.
+- The comment box is an AI Elements `PromptInput`. Sending posts the next chat message through the shared `useChat` session with the element named, e.g. `About the phase “Quote sent”: rename it to Offer sent` (templates in i18n). Sending is blocked while the assistant is working.
+- The assistant revises the draft with `pipelineSetup.preview` as with any other request; the panel follows the latest draft. Nothing in the panel changes data itself, so the chat composer exception in CLAUDE.md "Forms" applies.
+- `SetupPanel` takes an optional `selection` (selected element, `onSelect`, `renderComment`); without it the panel stays read-only.
+
 ### UI components
 - All UI is shadcn/ui and the shadcn AI Elements patterns in `packages/ui`, never hand-rolled and never another UI library: `Chat`, `Message`, `Prompt Input`, `Suggestion` for the thread; `Confirmation` for the approval card; `Card`, `Badge` and `Button Group` for the panel.
-- Questions to the user use the shadcn `Questionnaire`. The answer is sent as the next chat message through `useChat`. It does not change data, so the chat composer exception in CLAUDE.md "Forms" applies: no FormData submit and no server action.
-- The phase path in the panel uses React Flow (`@xyflow/react`), read-only, with `Card` nodes and edges (fit view, no editing, no pan or zoom), as the AI Elements guidance for canvas, node and edge suggests. This ADR approves the dependency. Item types stay plain `Card`s.
+- Questions to the user use the shadcn `Questionnaire`. Radio buttons for one answer, checkboxes (`multiple`) when several answers apply, e.g. "What do you sell?". The answer is sent as the next chat message through `useChat`. It does not change data, so the chat composer exception in CLAUDE.md "Forms" applies: no FormData submit and no server action.
+- The phase path in the panel uses React Flow (`@xyflow/react`), read-only, with `Card` nodes and edges (fit view, no editing, no pan or zoom; nodes are selectable only to comment on them, see above), as the AI Elements guidance for canvas, node and edge suggests. This ADR approves the dependency. Item types stay plain `Card`s.
 - Each new component gets a Storybook story.
 
 ### What is replaced

@@ -4,7 +4,7 @@ import { OPERATION_NAME_PATTERN } from "../operations/define-operation";
 import type { PlatformOperation, PlatformOperationDefinition } from "./types";
 
 /**
- * Declares a platform operation (ADR 0015): product-wide, not tenant data, platform admins only,
+ * Declares a platform operation (ADR 0015): product-wide, not tenant data, Superadmins only,
  * web-only by decision. Run it through `executePlatform` – never call `handler` directly.
  */
 export function definePlatformOperation<I extends z.ZodType, O extends z.ZodType>({

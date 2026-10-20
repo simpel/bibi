@@ -18,17 +18,19 @@ test("a proposed venue needs approval: nothing is created until the user approve
   const card = page.locator('[data-slot="approval-card"]');
   // The first tool call warms up the chat route and the MCP server.
   await expect(card).toBeVisible({ timeout: 15_000 });
-  await expect(card.getByText("Godkänn åtgärd")).toBeVisible();
+  await expect(card.getByText("Bekräfta ändring")).toBeVisible();
   await expect(card.getByText('Create venue "Test Hall"')).toBeVisible();
   await expect(card.getByText("Skapa anläggning")).toBeVisible();
   await expect(card.getByText(/Gäller i \d+:\d\d/)).toBeVisible();
+  // ADR 0049: the card shows core's preview of the change, field by field.
+  await expect(card.locator('[data-slot="approval-changes"]').getByText("Test Hall")).toBeVisible();
   expect(await listVenueNames({ page })).toEqual([]);
 
-  await card.getByRole("button", { name: "Godkänn" }).click();
+  await card.getByRole("button", { name: "Bekräfta" }).click();
   await expect(card).toHaveAttribute("data-state", "approved");
-  await expect(card.getByText("Godkänd")).toBeVisible();
+  await expect(card.getByText("Bekräftad")).toBeVisible();
   await expect(card.locator('[data-slot="venue-card"]').getByText("Test Hall")).toBeVisible();
-  await expect(card.getByRole("button", { name: "Godkänn" })).toHaveCount(0);
+  await expect(card.getByRole("button", { name: "Bekräfta" })).toHaveCount(0);
   expect(await listVenueNames({ page })).toEqual(["Test Hall"]);
 
   await page
@@ -59,9 +61,9 @@ test("rejecting a proposal creates nothing and locks the card", async ({ page })
   await sendChat({ page, text: "create venue Rejected Hall" });
   const card = page.locator('[data-slot="approval-card"]');
   await expect(card).toBeVisible({ timeout: 15_000 });
-  await card.getByRole("button", { name: "Avslå" }).click();
+  await card.getByRole("button", { name: "Avbryt" }).click();
   await expect(card).toHaveAttribute("data-state", "rejected");
-  await expect(card.getByText("Avslagen")).toBeVisible();
+  await expect(card.getByText("Avbruten")).toBeVisible();
   expect(await listVenueNames({ page })).toEqual([]);
 });
 

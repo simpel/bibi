@@ -4,6 +4,7 @@ import { err, ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { getStripeConnectGateway } from "./gateway-registry";
 import type { PaymentAccountStartOnboardingInput } from "./schema";
+import { toPaymentAccountDto } from "./to-payment-account-dto";
 
 export type EnsureAccountInput = {
   input: PaymentAccountStartOnboardingInput;
@@ -36,7 +37,10 @@ export async function ensurePaymentAccount({
       createdBy: context.actor.userId,
     },
   });
-  context.recordChange({ entityId: row.id, after: row });
+  context.recordChange({
+    entityId: row.id,
+    after: toPaymentAccountDto({ row, organizationId: context.organizationId }),
+  });
   return ok({ value: { stripeAccountId: row.stripeAccountId, rowId: row.id } });
 }
 

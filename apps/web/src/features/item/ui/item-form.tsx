@@ -40,7 +40,7 @@ export function ItemForm(props: ItemFormProps) {
         )}
         {type ? (
           <>
-            <ItemCoreFields form={form} venues={data.venues} />
+            <ItemCoreFields form={form} venues={data.venues} venuesHidden={data.venuesHidden} />
             <TypeFields control={form.control} type={type} data={data} />
             <BehaviourSections form={form} type={type} data={data} itemId={item?.id} />
           </>

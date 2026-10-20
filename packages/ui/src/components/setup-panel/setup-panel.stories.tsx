@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { SetupPanel, type SetupPanelLabels } from "./setup-panel";
+import { useState } from "react";
+import { Button } from "../button/button";
+import { SetupPanel, type SetupPanelLabels, type SetupPanelProps } from "./setup-panel";
+import type { SetupTarget } from "./setup-selection";
 
 const labels: SetupPanelLabels = {
   empty: "Your first version appears here as we talk",
@@ -7,6 +10,7 @@ const labels: SetupPanelLabels = {
   unsaved: "Nothing is saved yet",
   sell: "What you sell",
   path: "How a request moves",
+  hint: "Click a phase or something you sell to tell me what to change.",
 };
 
 const meta = { title: "Components/SetupPanel", component: SetupPanel } satisfies Meta<
@@ -29,4 +33,39 @@ export const Draft: Story = {
     ],
     labels,
   },
+};
+
+function SelectableDraft({ initial }: { initial: SetupTarget | null }) {
+  const [selected, setSelected] = useState<SetupTarget | null>(initial);
+  return (
+    <SetupPanel
+      {...(Draft.args as SetupPanelProps)}
+      selection={{
+        selected,
+        onSelect: ({ target }) => setSelected(target),
+        renderComment: ({ target, close }) => (
+          <div className="flex flex-col gap-2 text-sm">
+            <span className="font-medium">
+              {target.kind === "phase" ? "Phase" : "Item type"}: {target.name}
+            </span>
+            <Button type="button" size="sm" variant="ghost" onClick={close}>
+              Cancel
+            </Button>
+          </div>
+        ),
+      }}
+    />
+  );
+}
+
+/** Click (or Enter on) a phase or item type to open its comment box. */
+export const Selectable: Story = {
+  args: Draft.args,
+  render: () => <SelectableDraft initial={null} />,
+};
+
+/** The selected state: the phase is outlined and its comment box is open. */
+export const Selected: Story = {
+  args: Draft.args,
+  render: () => <SelectableDraft initial={{ kind: "phase", name: "Quote sent" }} />,
 };

@@ -31,10 +31,10 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       select: { role: true },
     });
     expect(roles.map((member) => member.role).sort()).toEqual([
+      "admin",
+      "manager",
       "member",
-      "owner",
-      "viewer",
-      "viewer",
+      "member",
     ]);
     const items = ({ organizationId }: { organizationId?: string }) =>
       db.item.count({ where: { organizationId, status: "ACTIVE" } });

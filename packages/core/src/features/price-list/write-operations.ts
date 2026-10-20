@@ -103,7 +103,7 @@ export const archivePriceList = defineOperation({
   description: "Archive (soft-delete) a price list. New order lines no longer use its prices.",
   input: PriceListIdInputSchema,
   output: PriceListSchema,
-  permission: "priceList:write",
+  permission: "priceList:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await loadPriceList({ context, id });
     if (!before) return notFound({ entity: "Price list" });

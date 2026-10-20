@@ -28,6 +28,7 @@ export async function loadTicketTemplateData(): Promise<Result<TicketTemplateFor
       lineTypes: lineTypes.value.items.map(named),
       phases: phases.value.items.filter(({ terminal }) => !terminal).map(named),
       items: items.ok ? items.value.items.map(named) : [],
+      itemsHidden: !items.ok,
     },
   };
 }

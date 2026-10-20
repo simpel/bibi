@@ -19,7 +19,7 @@ import { loadGroup, toGroupDtos } from "./to-group-dto";
 const OPTIONS_NOTE =
   "Every option keeps its own state and hold: soft holds on all options are the normal case " +
   "until the customer picks one; at most one option may be in a hard-hold state (VALIDATION).";
-const Group = { output: AlternativeGroupSchema, permission: "line:write" } as const;
+const Group = { output: AlternativeGroupSchema, permission: "program:write" } as const;
 
 export const listAlternativeGroups = defineOperation({
   name: "alternativeGroup.list",
@@ -29,7 +29,7 @@ export const listAlternativeGroups = defineOperation({
     "first, with their options and the chosen one. Filter by ticket.",
   input: AlternativeGroupListInputSchema,
   output: AlternativeGroupListOutputSchema,
-  permission: "line:read",
+  permission: "program:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.alternativeGroup.findMany({
       where: input.ticketId ? { ticketId: input.ticketId } : {},
@@ -48,7 +48,7 @@ export const getAlternativeGroup = defineOperation({
   description: "Get one alternative group by id, with its options and the chosen one.",
   input: AlternativeGroupIdInputSchema,
   output: AlternativeGroupSchema,
-  permission: "line:read",
+  permission: "program:read",
   handler: async ({ input, context }) => {
     const group = await loadGroup({ context, id: input.id });
     return group ? ok({ value: group }) : notFound({ entity: "Alternative group" });
@@ -86,6 +86,7 @@ export const archiveAlternativeGroup = defineOperation({
     "states and holds. Sent quotes keep the group in their snapshot.",
   input: AlternativeGroupIdInputSchema,
   ...Group,
+  permission: "program:delete",
   handler: dissolveGroup,
 });
 

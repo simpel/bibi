@@ -88,7 +88,7 @@ builder.objectField(TicketRef, "phase", (t) =>
     type: TicketPhaseRef,
     description: "The ticket's phase, with its flags (archived phases included).",
     resolve: (ticket, _args, ctx) => {
-      requirePermission({ ctx, permission: "ticketPhase:read" });
+      requirePermission({ ctx, permission: "pipeline:read" });
       return ctx.loaders.ticketPhase.load({ id: ticket.phaseId }) as never;
     },
   }),

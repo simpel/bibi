@@ -1,4 +1,4 @@
-import type { ApiKeyCreated, GrantableRole } from "@okazi/core";
+import type { ApiKeyCreated, FixedRole } from "@okazi/core";
 import { Button, DialogFooter, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
@@ -7,13 +7,13 @@ import { ApiKeySelectField } from "./api-key-select-field";
 import { useApiKeyForm } from "./use-api-key-form";
 
 export type ApiKeyFormProps = {
-  /** Fixed roles up to the caller's own (never owner). */
-  roles: readonly GrantableRole[];
+  /** Fixed roles up to the caller's own. */
+  roles: readonly FixedRole[];
   onCreated: (input: { created: ApiKeyCreated }) => void;
   onCancel: () => void;
 };
 
-/** Name, fixed role (never owner, never above the caller's) and expiry of a new key. */
+/** Name, fixed role (never above the caller's) and expiry of a new key. */
 export function ApiKeyForm({ roles, onCreated, onCancel }: ApiKeyFormProps) {
   const t = useTranslations("integration.apiKeys");
   const common = useTranslations("common");

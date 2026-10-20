@@ -44,7 +44,7 @@ export const createCustomer = defineOperation({
           include: CUSTOMER_INCLUDE,
         }),
     });
-    const customer = toCustomerDto({ row });
+    const customer = toCustomerDto({ row, context });
     context.recordChange({ entityId: row.id, after: customer });
     return ok({ value: customer });
   },
@@ -79,7 +79,7 @@ export const updateCustomer = defineOperation({
       data: { ...data, ...(json ? { fields: json } : {}) },
       include: CUSTOMER_INCLUDE,
     });
-    const customer = toCustomerDto({ row });
+    const customer = toCustomerDto({ row, context });
     context.recordChange({ entityId: id, before, after: customer });
     return ok({ value: customer });
   },

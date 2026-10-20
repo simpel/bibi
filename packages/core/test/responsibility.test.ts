@@ -20,8 +20,8 @@ async function setup() {
       context,
     }),
   });
-  const chef = await addTestMemberWithUser({ context, role: "member", name: "Chef" });
-  const helper = await addTestMemberWithUser({ context, role: "viewer", name: "Helper" });
+  const chef = await addTestMemberWithUser({ context, role: "manager", name: "Chef" });
+  const helper = await addTestMemberWithUser({ context, role: "member", name: "Helper" });
   return { context, type, chef: chef.userId, helper: helper.userId };
 }
 

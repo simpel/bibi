@@ -30,4 +30,22 @@ describe("latestSetupDraft", () => {
     ];
     expect(latestSetupDraft({ messages })?.itemTypes).toEqual(["Dish"]);
   });
+
+  it("takes a preset draft from its structured output", () => {
+    const preset = {
+      id: "preset",
+      role: "assistant",
+      parts: [
+        {
+          type: "tool-pipelineSetup_presetDraft",
+          toolCallId: "preset",
+          state: "output-available",
+          input: {},
+          output: { structuredContent: input({ name: "Hall" }) },
+        },
+      ],
+    } as unknown as UIMessage;
+    const running = message({ state: "input-available", name: "Half" });
+    expect(latestSetupDraft({ messages: [preset, running] })?.itemTypes).toEqual(["Hall"]);
+  });
 });

@@ -74,10 +74,10 @@ export type CheckLinkValuesInput = {
 };
 
 /** The permission resource that guards reading records of a linkable base. */
-const BASE_RESOURCE: Readonly<Record<string, string>> = {
+const BASE_FEATURE: Readonly<Record<string, string>> = {
   ITEM: "item",
   CUSTOMER: "customer",
-  CONTACT: "contact",
+  CONTACT: "customer",
   TICKET: "ticket",
 };
 
@@ -89,15 +89,15 @@ type CanReadTargetInput = { context: CheckLinkValuesInput["context"]; linkTypeId
  */
 async function canReadTarget({ context, linkTypeId }: CanReadTargetInput): Promise<boolean> {
   const type = await context.db.entityType.findFirst({ where: { id: linkTypeId } });
-  const resource = type ? BASE_RESOURCE[type.base] : undefined;
-  if (!resource) return false;
-  const permission = `${resource}:read` as Permission;
+  const feature = type ? BASE_FEATURE[type.base] : undefined;
+  if (!feature) return false;
+  const permission = `${feature}:read` as Permission;
   return hasPermission({ permissions: context.permissions, permission });
 }
 
 /**
  * Every LINK value must be an active record of the field's target type, in the organization, and
- * the caller needs `<base>:read` on the target base to set one.
+ * the caller needs `<feature>:view` on the target base to set one.
  */
 export async function checkLinkValues({
   context,

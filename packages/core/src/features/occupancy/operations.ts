@@ -20,7 +20,7 @@ export const listOccupancies = defineOperation({
     "internal use), earliest first. Filter by item, type and a time window (from/to).",
   input: OccupancyListInputSchema,
   output: OccupancyListOutputSchema,
-  permission: "occupancy:read",
+  permission: "ticket:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.occupancy.findMany({
       where: {
@@ -44,7 +44,7 @@ export const getOccupancy = defineOperation({
   description: "Get one occupancy of a bookable item by id.",
   input: OccupancyIdInputSchema,
   output: OccupancySchema,
-  permission: "occupancy:read",
+  permission: "ticket:read",
   handler: async ({ input, context }) => {
     const occupancy = await loadOccupancy({ context, id: input.id });
     return occupancy ? ok({ value: occupancy }) : notFound({ entity: "Occupancy" });

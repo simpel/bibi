@@ -28,7 +28,7 @@ export async function checkNewTicket({
     checkDesiredPeriod(input),
     checkReadable({ context, permission: "customer:read", path: "customerId" }),
     input.contactId
-      ? checkReadable({ context, permission: "contact:read", path: "contactId" })
+      ? checkReadable({ context, permission: "customer:read", path: "contactId" })
       : PASSED,
     await loadTypeOfBase({ context, entityTypeId, base: "TICKET" }),
     await checkCustomer({ context, customerId }),

@@ -1,7 +1,10 @@
 import type { PipelineCard } from "@okazi/core";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 
-export type PipelineCardContentProps = { card: PipelineCard };
+export type PipelineCardContentProps = {
+  /** `customerName` is null when the caller may not view customers: then none is shown. */
+  card: PipelineCard & { customerName: string | null };
+};
 
 /** What a board card shows: ticket number and type, customer, start and quantity. */
 export function PipelineCardContent({ card }: PipelineCardContentProps) {
@@ -12,15 +15,17 @@ export function PipelineCardContent({ card }: PipelineCardContentProps) {
   return (
     <div className="grid gap-0.5 text-sm">
       <span className="flex items-center gap-1 font-medium">{heading}</span>
-      <span className="text-muted-foreground">{card.customerName}</span>
+      {card.customerName ? (
+        <span className="text-muted-foreground">{card.customerName}</span>
+      ) : null}
       <span className="text-xs text-muted-foreground">
         {card.startsAt ? format.dateTime(card.startsAt, { dateStyle: "medium" }) : t("noDate")}
         {card.quantity === null ? "" : ` · ${t("quantity", { count: card.quantity })}`}
       </span>
       <span className="text-xs text-muted-foreground">
         {t("inPhase", { time: format.relativeTime(card.phaseChangedAt, since) })}
-        {card.heldLines > 0 ? ` · ${t("heldLines", { count: card.heldLines })}` : ""}
-        {card.bookedLines > 0 ? ` · ${t("bookedLines", { count: card.bookedLines })}` : ""}
+        {card.heldLines ? ` · ${t("heldLines", { count: card.heldLines })}` : ""}
+        {card.bookedLines ? ` · ${t("bookedLines", { count: card.bookedLines })}` : ""}
       </span>
     </div>
   );

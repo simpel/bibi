@@ -31,7 +31,7 @@ export const createContact = defineOperation({
     "types. `fields` must match the type's own fields (e.g. the person's role).",
   input: ContactCreateInputSchema,
   output: ContactSchema,
-  permission: "contact:write",
+  permission: "customer:write",
   embeddable: contactEmbeddable,
   handler: async ({ input: { entityTypeId, customerId, fields, ...data }, context }) => {
     if (!(await context.db.customer.findFirst({ where: { id: customerId } }))) {
@@ -74,7 +74,7 @@ export const updateContact = defineOperation({
     "(null clears a value). The customer and the type cannot be changed.",
   input: ContactUpdateInputSchema,
   output: ContactSchema,
-  permission: "contact:write",
+  permission: "customer:write",
   embeddable: contactEmbeddable,
   handler: async ({ input: { id, fields: patch, ...data }, context }) => {
     const before = await loadContact({ context, id });
@@ -109,7 +109,7 @@ export const archiveContact = defineOperation({
     "while another record's LINK field points to it.",
   input: ContactIdInputSchema,
   output: ContactSchema,
-  permission: "contact:write",
+  permission: "customer:delete",
   embeddable: contactEmbeddable,
   handler: async ({ input: { id }, context }) => {
     const before = await loadContact({ context, id });

@@ -1,0 +1,31 @@
+/// Who an override fine-tunes (ADR 0050): a member (`Member.id`) or an API key (`apikey.id`).
+enum PermissionSubject {
+  MEMBER
+  API_KEY
+}
+
+enum PermissionEffect {
+  ALLOW
+  DENY
+}
+
+/// PermissionOverride (ADR 0050) – one `feature:action` added to (ALLOW) or taken from (DENY) a
+/// member's or API key's preset. Only the differences are stored, so preset changes reach
+/// everyone. Resetting to the preset archives the row. Locked features (`member`, `apiKey`,
+/// `paymentAccount` except view) are refused by core and ignored when resolving.
+model PermissionOverride {
+  id             String            @id @default(cuid(2))
+  organizationId String
+  subjectType    PermissionSubject
+  subjectId      String
+  feature        String
+  action         String
+  effect         PermissionEffect
+  status         RecordStatus      @default(ACTIVE)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  createdBy      String?
+
+  @@unique([organizationId, subjectType, subjectId, feature, action])
+  @@index([organizationId, subjectType, subjectId, status])
+}

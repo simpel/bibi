@@ -4,10 +4,12 @@
  * without pulling the server into the browser bundle. Add each new feature's `schema.ts` here.
  */
 
+export * from "./change-preview/schema";
 export * from "./features/alternative-group/schema";
 export * from "./features/api-key/schema";
 export * from "./features/assignment/schema";
 export * from "./features/audit-log/schema";
+export * from "./features/change-set/schema";
 export * from "./features/configuration/schema";
 export * from "./features/contact/schema";
 export * from "./features/conversation/schema";
@@ -36,6 +38,7 @@ export * from "./features/payment/balance-schema";
 export * from "./features/payment/schema";
 export * from "./features/payment/settlement-schema";
 export * from "./features/payment-account/schema";
+export * from "./features/permission/schema";
 export * from "./features/phase-grid/schema";
 export * from "./features/pipeline/schema";
 export * from "./features/pipeline-setup/preset-schema";
@@ -59,23 +62,18 @@ export * from "./features/user-preference/schema";
 export * from "./features/user-preference/settings-schema";
 export * from "./features/venue/schema";
 export * from "./features/vocabulary/schema";
+export * from "./permissions/features";
 export {
+  ADMIN_ROLE,
   FIXED_ROLES,
   type FixedRole,
   FixedRoleSchema,
-  GRANTABLE_ROLES,
-  type GrantableRole,
-  GrantableRoleSchema,
   parseFixedRole,
   roleRank,
+  SUPERADMIN_ROLE,
 } from "./permissions/fixed-roles";
+export * from "./permissions/overrides";
 export { type PermissionSet, PermissionSetSchema } from "./permissions/permission-set";
-export {
-  PERMISSION_ACTIONS,
-  type PermissionAction,
-  RESOURCES,
-  type Resource,
-} from "./permissions/resources";
 export * from "./platform/ai-settings/ai-features";
 export * from "./platform/ai-settings/schema";
 export * from "./platform/system-log/schema";

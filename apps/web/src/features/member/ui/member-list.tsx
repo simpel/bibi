@@ -5,11 +5,12 @@ import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
+import type { RowAccess } from "@/lib/can";
 import { ROUTES } from "@/lib/routes";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { assignableRoles, invitableRoles } from "../assignable-roles";
+import { assignableRoles } from "../assignable-roles";
 import { InvitationList } from "./invitation-list";
 import { InviteMemberButton } from "./invite-member-button";
 import { MemberTable } from "./member-table";
@@ -22,17 +23,17 @@ type MemberContentProps = {
   page: { items: MemberDto[]; nextCursor: string | null };
   cursor?: string | undefined;
   role: FixedRole | null;
-  canAdmin: boolean;
+  access: RowAccess;
 };
 
-async function MemberContent({ page, cursor, role, canAdmin }: MemberContentProps) {
+async function MemberContent({ page, cursor, role, access }: MemberContentProps) {
   const t = await getTranslations("member");
   const roles = assignableRoles({ caller: role });
   return (
     <>
       {page.items.length === 0 ? <EmptyState title={t("empty")} /> : null}
       {page.items.length > 0 ? (
-        <MemberTable members={page.items} roles={roles} caller={role} canAdmin={canAdmin} />
+        <MemberTable members={page.items} roles={roles} caller={role} access={access} />
       ) : null}
       <CursorPagination
         pathname={ROUTES.settingsMembers}
@@ -43,28 +44,35 @@ async function MemberContent({ page, cursor, role, canAdmin }: MemberContentProp
   );
 }
 
-/** Members page body: staff table; admins and owners also change roles, invite and remove. */
+/** Members page body: staff table; admins also change roles, invite and remove. */
 export async function MemberList({ locale, cursor }: MemberListProps) {
   const t = await getTranslations("member");
-  const { memberAdmin, role } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
+  const { role } = abilities;
+  const canInvite = can({ abilities, permission: "member:write" });
   const members = await runOperation({
     operation: listMembers,
     input: { limit: PAGE_SIZE, ...(cursor ? { cursor } : {}) },
   });
-  const invite = <InviteMemberButton roles={invitableRoles({ caller: role })} />;
+  const invite = <InviteMemberButton roles={assignableRoles({ caller: role })} />;
   return (
     <div className="grid gap-6">
       <PageHeader
         title={t("plural")}
         description={t("listDescription")}
-        actions={memberAdmin ? invite : undefined}
+        actions={canInvite ? invite : undefined}
       />
       {members.ok ? (
-        <MemberContent page={members.value} cursor={cursor} role={role} canAdmin={memberAdmin} />
+        <MemberContent
+          page={members.value}
+          cursor={cursor}
+          role={role}
+          access={rowAccess({ abilities, feature: "member" })}
+        />
       ) : (
         <ErrorState errorKey={handleLoadError({ error: members.error, locale })} />
       )}
-      {memberAdmin ? <InvitationList locale={locale} /> : null}
+      {canInvite ? <InvitationList locale={locale} /> : null}
     </div>
   );
 }

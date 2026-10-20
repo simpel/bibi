@@ -32,7 +32,7 @@ export const createResponsibility = defineOperation({
     "active item type and the people must be members (else VALIDATION).",
   input: ResponsibilityCreateInputSchema,
   output: ResponsibilitySchema,
-  permission: "configuration:write",
+  permission: "responsibility:write",
   handler: ({ input, context }) => insertResponsibility({ context, ...input }),
 });
 
@@ -51,7 +51,7 @@ export const updateResponsibility = defineOperation({
     "followers. Omitted fields are unchanged.",
   input: ResponsibilityUpdateInputSchema,
   output: ResponsibilitySchema,
-  permission: "configuration:write",
+  permission: "responsibility:write",
   handler: async ({ input: { id, name, ...changes }, context }) => {
     const before = await findResponsibility({ context, id });
     if (!before) return notFound({ entity: "Responsibility" });
@@ -85,7 +85,7 @@ export const archiveResponsibility = defineOperation({
     "sheet definition goes to it.",
   input: ResponsibilityIdInputSchema,
   output: ResponsibilitySchema,
-  permission: "configuration:write",
+  permission: "responsibility:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await findResponsibility({ context, id });
     if (!before) return notFound({ entity: "Responsibility" });
@@ -96,7 +96,7 @@ export const archiveResponsibility = defineOperation({
       where: { id },
       data: { status: "ARCHIVED" },
     });
-    const after = { ...before, ...row };
+    const after = ResponsibilitySchema.parse({ ...before, ...row });
     context.recordChange({ entityId: id, before, after });
     return ok({ value: after });
   },

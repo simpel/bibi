@@ -9,13 +9,16 @@ export type ItemTableProps = {
   items: ItemDto[];
   types: EntityTypeDto[];
   venues: { id: string; name: string }[];
+  venuesHidden?: boolean;
   locale: string;
 };
 
 /** Item catalog rows: name (link to the detail page), type, venue and price. */
-export function ItemTable({ items, types, venues, locale }: ItemTableProps) {
+export function ItemTable({ items, types, venues, venuesHidden, locale }: ItemTableProps) {
   const t = useTranslations("item");
-  const columns = useItemColumns({ types, venues, locale });
+  const common = useTranslations("common");
+  const hidden = venuesHidden ? common("hidden") : undefined;
+  const columns = useItemColumns({ types, venues, hidden, locale });
   return (
     <PersistedDataTable
       tableId="item.catalog"

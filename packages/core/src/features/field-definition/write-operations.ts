@@ -66,7 +66,7 @@ export const archiveFieldDefinition = defineOperation({
     "definition includes it.",
   input: FieldDefinitionIdInputSchema,
   output: FieldDefinitionSchema,
-  permission: "configuration:write",
+  permission: "configuration:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await context.db.fieldDefinition.findFirst({ where: { id } });
     if (!before) return notFound({ entity: "Field" });

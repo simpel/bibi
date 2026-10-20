@@ -21,7 +21,7 @@ export const listTicketPhases = defineOperation({
     "to from it (`transitionsTo`).",
   input: TicketPhaseListInputSchema,
   output: TicketPhaseListOutputSchema,
-  permission: "ticketPhase:read",
+  permission: "pipeline:read",
   handler: async ({ input, context }) => {
     const rows = await context.db.ticketPhase.findMany({
       orderBy: [{ position: "asc" }, { id: "asc" }],
@@ -39,7 +39,7 @@ export const getTicketPhase = defineOperation({
   description: "Get one ticket phase by id, with its flags and the phases it may move to.",
   input: TicketPhaseIdInputSchema,
   output: TicketPhaseSchema,
-  permission: "ticketPhase:read",
+  permission: "pipeline:read",
   handler: async ({ input, context }) => {
     const phase = await loadTicketPhase({ context, id: input.id });
     return phase ? ok({ value: phase }) : notFound({ entity: "Ticket phase" });

@@ -5,6 +5,7 @@ import { setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { TablePreferencesProvider } from "@/components/data-table/table-preferences-provider";
 import { AppShell } from "@/components/shell/app-shell";
+import { canOpenSettings } from "@/components/shell/settings-items";
 import { loadUserPreferences } from "@/features/user-preference/load";
 import { loadOnboardingStatus } from "@/features/user-preference/settings-load";
 import { ROUTES } from "@/lib/routes";
@@ -36,7 +37,11 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
       <AppShell
         organizationId={organizationId}
         user={{ name, email }}
-        access={{ canConfigure: abilities.configurationWrite, platformAdmin }}
+        access={{
+          canConfigure: canOpenSettings({ permissions: abilities.permissions }),
+          platformAdmin,
+          permissions: abilities.permissions,
+        }}
       >
         {children}
       </AppShell>

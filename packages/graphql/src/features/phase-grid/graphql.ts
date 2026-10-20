@@ -53,7 +53,7 @@ builder.objectFields(PhaseGridCellRef, (t) => ({
     type: TicketPhaseRef,
     description: "The phase the cell applies to.",
     resolve: (cell, _args, ctx) => {
-      requirePermission({ ctx, permission: "ticketPhase:read" });
+      requirePermission({ ctx, permission: "pipeline:read" });
       return ctx.loaders.ticketPhase.load({ id: cell.phaseId }) as never;
     },
   }),
@@ -69,7 +69,7 @@ builder.objectFields(PhaseGridCellRef, (t) => ({
     type: ItemStateRef,
     description: "The state the lines move to.",
     resolve: (cell, _args, ctx) => {
-      requirePermission({ ctx, permission: "itemState:read" });
+      requirePermission({ ctx, permission: "pipeline:read" });
       return ctx.loaders.itemState.load({ id: cell.stateId }) as never;
     },
   }),

@@ -51,7 +51,8 @@ async function checkItem({ context, itemId, customerId }: CheckItemInput) {
   const item = await context.db.item.findFirst({ where: { id: itemId } });
   const foreign = item?.customerId && customerId && item.customerId !== customerId;
   if (item && !foreign) return ok({ value: true });
-  const message = item ? "The item is a package for another customer" : "Unknown item";
+  // Never describe an item the caller may not use (ADR 0050, feature scope).
+  const message = "Item not found or not allowed";
   return invalid({ message, issues: [{ path: "itemId", message }] });
 }
 

@@ -10,10 +10,12 @@ import { usePipelineLabels } from "./use-pipeline-labels";
 export type PipelineBoardViewProps = {
   board: PipelineBoard;
   transitions: Readonly<Record<string, readonly string[]>>;
+  /** Customer id → name; a card without one shows no customer (ADR 0050). */
+  customerNames: Readonly<Record<string, string>>;
 };
 
 /** The kanban board of tickets by phase; a drop runs `ticket.changePhase`. */
-export function PipelineBoardView({ board, transitions }: PipelineBoardViewProps) {
+export function PipelineBoardView({ board, transitions, customerNames }: PipelineBoardViewProps) {
   const labels = usePipelineLabels();
   const { move, dialog } = useMoveCard();
   const columns = board.columns.map((column) => ({
@@ -21,7 +23,10 @@ export function PipelineBoardView({ board, transitions }: PipelineBoardViewProps
     title: column.title,
     color: column.color,
   }));
-  const cards = board.cards.map((card) => ({ ...card, title: card.customerName }));
+  const cards = board.cards.map((card) => {
+    const customerName = customerNames[card.customerId] ?? null;
+    return { ...card, customerName, title: customerName ?? `#${card.reference}` };
+  });
   const column = ({ id }: { id: string }) => board.columns.find((c) => c.id === id);
 
   return (

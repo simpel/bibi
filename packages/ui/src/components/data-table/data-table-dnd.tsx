@@ -14,7 +14,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import type { ReactNode } from "react";
+import { type ReactNode, useId } from "react";
 import { buildAnnouncements } from "./data-table-announcements";
 import { isPinnedColumn, resolveColumnOrder } from "./data-table-order";
 import { restrictToMovableColumns } from "./data-table-restrict-modifier";
@@ -29,6 +29,14 @@ export type DataTableDndProps = {
   children: ReactNode;
 };
 
+/** Pointer (after 5 px, so clicks still sort) and keyboard dragging of column headers. */
+function useColumnSensors() {
+  return useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+}
+
 /** Drag and drop context for column headers. Render it outside the `<table>` element. */
 export function DataTableDnd({
   order,
@@ -37,11 +45,10 @@ export function DataTableDnd({
   onOrderChange,
   children,
 }: DataTableDndProps) {
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  );
+  const sensors = useColumnSensors();
   const movable = order.filter((id) => !isPinnedColumn({ id }));
+  // A stable id: dnd-kit's own counter differs between server and client (hydration mismatch).
+  const dndId = useId();
 
   function handleDragEnd({ active, over }: DragEndEvent) {
     if (!over || active.id === over.id) return;
@@ -55,6 +62,7 @@ export function DataTableDnd({
 
   return (
     <DndContext
+      id={dndId}
       sensors={sensors}
       collisionDetection={closestCenter}
       modifiers={[restrictToHorizontalAxis, restrictToMovableColumns]}

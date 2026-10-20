@@ -13,6 +13,7 @@ export * from "./features/api-key/write-operations";
 export * from "./features/assignment/read-operations";
 export * from "./features/assignment/write-operations";
 export * from "./features/audit-log/operations";
+export * from "./features/change-set/operations";
 export * from "./features/configuration/operations";
 export * from "./features/contact/operations";
 export * from "./features/contact/write-operations";
@@ -61,6 +62,7 @@ export * from "./features/payment/operations";
 export * from "./features/payment/provider-registry";
 export * from "./features/payment-account/gateway-registry";
 export * from "./features/payment-account/operations";
+export * from "./features/permission/operations";
 export * from "./features/phase-grid/operations";
 export * from "./features/pipeline/operations";
 export * from "./features/pipeline-setup/operations";
@@ -113,6 +115,7 @@ export { type AfterCommitHook, type AfterCommitInput, execute } from "./operatio
 export { hasPermission, type Permission } from "./operations/permission";
 export { getOperation, listOperations, registerOperations } from "./operations/registry";
 export { requiresApproval } from "./operations/requires-approval";
+export { type PreviewChangeInput, previewChange } from "./operations/run-change-preview";
 export type * from "./operations/types";
 export { UNTRUSTED_OUTPUT_META_KEY } from "./operations/untrusted-output";
 export { type ProvisionOrganizationInput, provisionOrganization } from "./organization/provision";
@@ -126,15 +129,12 @@ export {
   PermissionSetSchema,
   unionPermissions,
 } from "./permissions/permission-set";
-export * from "./permissions/resources";
-export * from "./platform/ai-settings/ai-features";
+export * from "./permissions/presets";
 export * from "./platform/ai-settings/resolve-ai-model";
-export * from "./platform/ai-settings/schema";
 export { type CreatePlatformContextInput, createPlatformContext } from "./platform/context";
 export { definePlatformOperation } from "./platform/define-platform-operation";
 export { type ExecutePlatformInput, executePlatform } from "./platform/execute-platform";
 export * from "./platform/platform-operations";
-export * from "./platform/system-log/schema";
 export type * from "./platform/types";
 export * from "./schemas";
 export type { EmbedFn, EmbedInput, EmbedOutput } from "./search/embed";

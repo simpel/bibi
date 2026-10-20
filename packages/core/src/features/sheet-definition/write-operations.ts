@@ -49,7 +49,7 @@ export const createSheetDefinition = defineOperation({
     "types, a list or a responsibility (else VALIDATION).",
   input: SheetDefinitionCreateInputSchema,
   output: SheetDefinitionSchema,
-  permission: "configuration:write",
+  permission: "template:write",
   handler: async ({ input: { name, ...given }, context }) => {
     if (await nameTaken({ context, name })) return taken({ name });
     const contents = await checkSheetContents({ context, contents: given });
@@ -71,7 +71,7 @@ export const updateSheetDefinition = defineOperation({
     "Omitted fields are unchanged. Fields must belong to the resulting item types.",
   input: SheetDefinitionUpdateInputSchema,
   output: SheetDefinitionSchema,
-  permission: "configuration:write",
+  permission: "template:write",
   handler: async ({ input: { id, name, ...changes }, context }) => {
     const before = await findSheetDefinition({ context, id });
     if (!before) return notFound({ entity: "Sheet" });
@@ -106,7 +106,7 @@ export const archiveSheetDefinition = defineOperation({
   description: "Archive a sheet definition. Its name can then be reused.",
   input: SheetDefinitionIdInputSchema,
   output: SheetDefinitionSchema,
-  permission: "configuration:write",
+  permission: "template:delete",
   handler: async ({ input: { id }, context }) => {
     const before = await findSheetDefinition({ context, id });
     if (!before) return notFound({ entity: "Sheet" });
@@ -114,7 +114,7 @@ export const archiveSheetDefinition = defineOperation({
       where: { id },
       data: { status: "ARCHIVED" },
     });
-    const after = { ...before, ...row };
+    const after = SheetDefinitionSchema.parse({ ...before, ...row });
     context.recordChange({ entityId: id, before, after });
     return ok({ value: after });
   },

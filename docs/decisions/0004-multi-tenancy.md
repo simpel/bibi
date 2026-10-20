@@ -27,11 +27,11 @@ Each venue customer is its own organization with its own users, venues, bookings
 
 ## Addendum 2026-10-14 (membership changes)
 - Inviting, revoking an invitation and removing a member are core operations (`member.invite`, `member.cancelInvitation`, `member.listInvitations`, `member.remove`) with parity on every surface, like `member.assignRole`. They write Better Auth's `invitation` and `member` rows through `scopedDb`, so they are authorized, tenant-scoped and audited (`AuditLog` with entity type `invitation` or `member`).
-- Better Auth's own invite, cancel-invitation and remove-member endpoints are closed, even to the owner. Accepting an invitation stays in Better Auth (the invitee is not yet a member, so there is no organization context to run a core operation in).
+- Better Auth's own invite, cancel-invitation and remove-member endpoints are closed, even to an admin. Accepting an invitation stays in Better Auth (the invitee is not yet a member, so there is no organization context to run a core operation in).
 - Core cannot send mail, so the invitation mail is an after-commit hook (`invitationMailHook` in `packages/auth`) that every surface passes to `execute`. A failed send is logged and never undoes the invitation.
-- The last owner cannot be removed, only an owner removes another owner, and nobody invites with or removes more access than they have themselves.
+- The last admin cannot be removed (the organization always keeps one), and nobody invites with, assigns or removes more access than they have themselves (ADR 0034).
 - Invitations name roles like members do: a role rename rewrites pending invitations, and a role cannot be archived while a pending invitation names it.
 
 ## Addendum 2026-10-15 (organization creation and switching)
 - **Organization creation:** New organizations are created via Better Auth's `create-organization-form.tsx` in the web app, without routing through a core operation. This is an exception to the parity principle because organization creation is a platform-level action tied to the user's authentication session (ADR 0015, platform scope).
-- **Organization switching for API clients:** An OAuth token locks a client to the organization at consent time. An API key is tied to a specific user within an organization, and the user's current organization determines the scope. Both are resolved by `resolveExecuteContext` in `packages/auth`; the caller cannot switch organizations by changing a parameter.
+- **Organization switching for API clients:** An OAuth token locks a client to the organization at consent time. An API key belongs to one organization (ADR 0050) and that organization is its scope. Both are resolved by `resolveExecuteContext` in `packages/auth`; the caller cannot switch organizations by changing a parameter.

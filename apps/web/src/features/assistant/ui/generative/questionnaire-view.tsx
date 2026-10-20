@@ -64,7 +64,9 @@ export function QuestionnaireView({ question, toolCallId }: QuestionnaireViewPro
           answer({ values: new FormData(event.currentTarget).getAll(NAME).map(String) });
         }}
       >
-        <QuestionnaireItem name={NAME} required disabled={!open}>
+        {/* Never disable the item: the primitive hides a disabled item, which left answered
+            questions as an empty card. The choices and input are disabled instead. */}
+        <QuestionnaireItem name={NAME} required multiple={question.multiple}>
           <QuestionnaireTitle>{question.question}</QuestionnaireTitle>
           {question.description ? (
             <QuestionnaireDescription>{question.description}</QuestionnaireDescription>

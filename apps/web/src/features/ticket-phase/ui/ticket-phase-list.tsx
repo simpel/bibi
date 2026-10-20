@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { PhaseGridEditor } from "@/features/phase-grid/ui/phase-grid-editor";
-import { getCallerAbilities } from "@/server/caller-abilities";
+import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { CreateTicketPhaseButton } from "./create-ticket-phase-button";
@@ -20,12 +20,12 @@ const PAGE_SIZE = 100;
 /** Ticket phases page body: header with admin actions and the ordered table. */
 export async function TicketPhaseList({ locale }: TicketPhaseListProps) {
   const t = await getTranslations("ticketPhase");
-  const { ticketPhaseAdmin } = await getCallerAbilities();
+  const abilities = await getCallerAbilities();
   const result = await runOperation({
     operation: listTicketPhases,
     input: { limit: PAGE_SIZE },
   });
-  const actions = ticketPhaseAdmin ? (
+  const actions = can({ abilities, permission: "pipeline:write" }) ? (
     <>
       <ImportTicketPhaseTemplateButton />
       <CreateTicketPhaseButton />
@@ -50,7 +50,7 @@ export async function TicketPhaseList({ locale }: TicketPhaseListProps) {
       {items.length === 0 ? (
         <EmptyState title={t("empty")} description={t("emptyDescription")} action={actions} />
       ) : (
-        <TicketPhaseTable phases={items} canAdmin={ticketPhaseAdmin} />
+        <TicketPhaseTable phases={items} access={rowAccess({ abilities, feature: "pipeline" })} />
       )}
       <PhaseGridEditor locale={locale} />
     </div>

@@ -5,13 +5,13 @@ import type { OperationContext } from "../../operations/types";
 export type ConversationAccessInput = { context: Pick<OperationContext, "actor" | "permissions"> };
 
 /**
- * Conversations are private to their owner. Org admins/owners (`conversation:admin`) and system
+ * Conversations are private to their owner. Org admins/owners (`assistant:read`) and system
  * jobs may read everyone's (oversight: conversations hold business data), but only the owner
  * writes messages or renames.
  */
 export function canReadAllConversations({ context }: ConversationAccessInput): boolean {
   if (context.actor.type === "system") return true;
-  return hasPermission({ permissions: context.permissions, permission: "conversation:admin" });
+  return hasPermission({ permissions: context.permissions, permission: "assistant:read" });
 }
 
 /** `read`/`manage`: owner, admin or system. `own`: owner (or system) only. */

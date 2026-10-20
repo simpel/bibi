@@ -1,5 +1,6 @@
 import { resolveLocale } from "@okazi/i18n";
 import { setRequestLocale } from "next-intl/server";
+import { PermissionGate } from "@/components/states/permission-gate";
 import { ResponsibilityUpdate } from "@/features/responsibility/ui/responsibility-update";
 
 type UpdateResponsibilityPageProps = { params: Promise<{ locale: string; id: string }> };
@@ -8,5 +9,9 @@ export default async function UpdateResponsibilityPage({ params }: UpdateRespons
   const { locale: rawLocale, id } = await params;
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
-  return <ResponsibilityUpdate locale={locale} id={id} />;
+  return (
+    <PermissionGate permission="responsibility:write">
+      <ResponsibilityUpdate locale={locale} id={id} />
+    </PermissionGate>
+  );
 }
