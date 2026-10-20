@@ -1,4 +1,5 @@
 import { getEnv } from "@okazi/config";
+import { DEMO_ORGS } from "@okazi/core/seed/demo";
 import { SUPERADMIN_ROLE } from "@okazi/core";
 import { getDb } from "@okazi/db";
 
@@ -18,11 +19,18 @@ export function isDevEnvironment(): boolean {
   return getEnv().NODE_ENV === "development";
 }
 
-/** Seeded dev users grouped by their organization, oldest membership first. Empty outside dev. */
+/**
+ * Seeded dev users of the demo organizations (`DEMO_ORGS`), grouped by organization, oldest
+ * membership first. Copies that test runs leave in the dev database (same names, suffixed slugs)
+ * are left out. Empty outside dev.
+ */
 export async function listDevUsers(): Promise<DevUser[]> {
   if (!isDevEnvironment()) return [];
   const members = await getDb().member.findMany({
-    where: { user: { email: { endsWith: DEV_EMAIL_SUFFIX } } },
+    where: {
+      user: { email: { endsWith: DEV_EMAIL_SUFFIX } },
+      organization: { slug: { in: DEMO_ORGS.map((org) => org.slug) } },
+    },
     orderBy: [{ organization: { name: "asc" } }, { createdAt: "asc" }],
     select: {
       role: true,
