@@ -5,7 +5,12 @@ const phases: TicketPhaseTemplate["phases"] = [
   { name: "Site visit", color: "#d97706" },
   { name: "Quote sent", color: "#7c3aed", event: "QUOTE_SENT" },
   { name: "Confirmed", color: "#16a34a", requiresAssignee: true, event: "QUOTE_ACCEPTED" },
-  { name: "Final count locked", color: "#0d9488", requiresAssignee: true },
+  {
+    name: "Final count locked",
+    color: "#0d9488",
+    requiresAssignee: true,
+    requiresAcceptedQuote: true,
+  },
   {
     name: "Completed",
     color: "#2563eb",

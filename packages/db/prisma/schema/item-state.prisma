@@ -38,6 +38,8 @@ model ItemState {
   transitionsFrom ItemStateTransition[] @relation("StateTransitionFrom")
   transitionsTo   ItemStateTransition[] @relation("StateTransitionTo")
   lines           Line[]
+  changesFrom     LineStateChange[]     @relation("StateChangeFrom")
+  changesTo       LineStateChange[]     @relation("StateChangeTo")
   phaseRules      PhaseStateRule[]
 
   @@unique([id, organizationId])

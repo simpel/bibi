@@ -12,7 +12,7 @@ export const TicketSchema = z.object({
   entityTypeId: z.string(),
   customerId: z.string(),
   contactId: z.string().nullable(),
-  /** The organization's own phase (ADR 0043); changed only by `ticket.changePhase`. */
+  /** The organization's own phase (ADR 0043); the newest entry of its phase history (ADR 0054). */
   phaseId: z.string(),
   desiredStartsAt: z.date().nullable(),
   desiredEndsAt: z.date().nullable(),
@@ -21,8 +21,9 @@ export const TicketSchema = z.object({
   budgetMinor: z.number().int().nullable(),
   /** Lines in an expiring state fall to their type's expiry state after this date (ADR 0044). */
   holdsUntil: z.date().nullable(),
+  /** When the ticket entered its phase (time in phase): its newest `TicketPhaseChange`. */
   phaseChangedAt: z.date(),
-  /** The reason given with the last phase change. */
+  /** The reason given with the last phase change (newest `TicketPhaseChange`). */
   phaseReason: z.string().nullable(),
   fields: FieldValuesSchema,
   /**

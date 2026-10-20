@@ -30,7 +30,7 @@ export const LineRecordSchema = z.object({
   stateId: z.string().nullable(),
   /** Set by `line.changeState`: phase moves skip the line. */
   stateOverridden: z.boolean(),
-  /** When the line entered its current state ("held since"). */
+  /** When the line entered its current state ("held since"): its newest `LineStateChange`. */
   heldAt: z.date(),
   status: RecordStatusSchema,
   createdAt: z.date(),

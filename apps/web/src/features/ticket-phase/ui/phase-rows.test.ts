@@ -10,6 +10,7 @@ const phase = ({ fields }: { fields: Partial<TicketPhaseDto> & { id: string } })
     terminal: false,
     requiresReason: false,
     requiresAssignee: false,
+    requiresAcceptedQuote: false,
     invoiceable: false,
     event: null,
     transitionsTo: [],

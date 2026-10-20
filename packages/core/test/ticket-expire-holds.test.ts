@@ -40,6 +40,12 @@ describe("ticket.expireHolds (ADR 0044)", () => {
     expect(await stateOf(hard)).toBe(states.booked.id);
     expect(await stateOf(waiting)).toBe(states.prebooked.id);
     expect(await activeOccupancies({ context, lineId: soft.id })).toEqual([]);
+    // The expiry is recorded in the line's state history (ADR 0054).
+    const last = await context.db.lineStateChange.findFirst({
+      where: { lineId: soft.id },
+      orderBy: { seq: "desc" },
+    });
+    expect(last).toMatchObject({ toStateId: states.released.id, trigger: "EXPIRY" });
     const after = unwrap({
       result: await execute({ operation: getTicket, input: { id: ticket.id }, context }),
     });

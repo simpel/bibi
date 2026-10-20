@@ -91,6 +91,7 @@ export * from "./features/ticket/create-from-template-operation";
 export * from "./features/ticket/expire-holds-operation";
 export * from "./features/ticket/export-operation";
 export * from "./features/ticket/operations";
+export * from "./features/ticket/phase-history-operation";
 export * from "./features/ticket/write-operations";
 export * from "./features/ticket-phase/archive-operation";
 export * from "./features/ticket-phase/archive-preview-operation";

@@ -6,6 +6,7 @@ import { paginate } from "../../shared/paginate";
 import { changeLineState } from "./change-state-operation";
 import { followLinePhase } from "./follow-phase-operation";
 import { LineIdInputSchema, LineListInputSchema, LineListOutputSchema, LineSchema } from "./schema";
+import { byHeldSince } from "./state-history";
 import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 import { withEffective, withEffectiveOne } from "./with-effective";
 import { archiveLine, createLine, updateLine } from "./write-operations";
@@ -29,13 +30,15 @@ export const listLines = defineOperation({
         ...(input.from ? { endsAt: { gt: input.from } } : {}),
         ...(input.to ? { startsAt: { lt: input.to } } : {}),
       },
-      // Overlapping holders of one item: the oldest `heldAt` first (ADR 0044, no rank or queue).
-      orderBy: [{ startsAt: "asc" }, { heldAt: "asc" }, { id: "asc" }],
+      orderBy: [{ startsAt: "asc" }, { id: "asc" }],
       ...pageArgs(input),
       include: LINE_INCLUDE,
     });
     const page = paginate({ rows, limit: input.limit });
-    const records = page.items.map((row) => toLineRecord({ row }));
+    // Overlapping holders of one item: the oldest "held since" first (ADR 0044, no rank or
+    // queue). It is the newest state change (ADR 0054), so lines that start together are
+    // ordered by it within the page.
+    const records = byHeldSince({ rows: page.items }).map((row) => toLineRecord({ row }));
     const items = await withEffective({ context, lines: records });
     return ok({ value: { items, nextCursor: page.nextCursor } });
   },

@@ -27,12 +27,13 @@ type ClaimInput = Db & { id: string; stateId: string };
 
 /**
  * Locks the line and confirms it is still in the state it was loaded in, so two concurrent runs
- * never expire one line twice: the second waits for the first and then finds nothing to do.
+ * never expire one line twice: the second waits for the first and then finds nothing to do. It
+ * touches only `updatedAt`: the state changes through the history (ADR 0054).
  */
 async function claim({ context, id, stateId }: ClaimInput): Promise<boolean> {
   const claimed = await context.db.line.updateMany({
     where: { id, stateId },
-    data: { stateId },
+    data: { updatedAt: new Date() },
   });
   return claimed.count > 0;
 }
@@ -57,7 +58,7 @@ export const expireTicketHolds = defineOperation({
       if (!target || !row.stateId || target === row.stateId) continue;
       if (!(await claim({ context, id: row.id, stateId: row.stateId }))) continue;
       const before = toLineRecord({ row });
-      const moved = await applyLineState({ context, before, stateId: target });
+      const moved = await applyLineState({ context, before, stateId: target, trigger: "EXPIRY" });
       if (!moved.ok) return moved;
       items.push(moved.value);
     }

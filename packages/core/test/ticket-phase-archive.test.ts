@@ -6,7 +6,7 @@ import {
   setTicketPhaseTransitions,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { createTestTicket, ticketSetup } from "./ticket-helpers";
+import { createTestTicket, placeInPhase, ticketSetup } from "./ticket-helpers";
 import { phaseByName } from "./ticket-phase-helpers";
 
 describe("ticketPhase.archive (ADR 0043)", () => {
@@ -67,7 +67,7 @@ describe("ticketPhase.archive (ADR 0043)", () => {
       entityTypeId: type.id,
       customerId: customer.id,
     });
-    await context.db.ticket.update({ where: { id: ticket.id }, data: { phaseId: extra.id } });
+    await placeInPhase({ ticket, phaseId: extra.id });
     const archive = ({ rest }: { rest: Record<string, unknown> }) =>
       execute({ operation: archiveTicketPhase, input: { id: extra.id, ...rest }, context });
     const noTarget = await archive({ rest: {} });
@@ -88,6 +88,11 @@ describe("ticketPhase.archive (ADR 0043)", () => {
     });
     expect(archived).toMatchObject({ status: "ARCHIVED", transitionsTo: [] });
     const moved = await context.db.ticket.findFirstOrThrow({ where: { id: ticket.id } });
-    expect(moved).toMatchObject({ phaseId: lost.id, phaseReason: "Merged" });
+    expect(moved.phaseId).toBe(lost.id);
+    const change = await context.db.ticketPhaseChange.findFirstOrThrow({
+      where: { ticketId: ticket.id },
+      orderBy: { seq: "desc" },
+    });
+    expect(change).toMatchObject({ toPhaseId: lost.id, reason: "Merged", trigger: "SYSTEM" });
   });
 });

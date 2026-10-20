@@ -1,6 +1,8 @@
 /// Ticket – one customer request from first contact to the delivered event (ADR 0043). Its type
-/// (base `TICKET`) decides its own fields. `phaseId` is one of the organization's own phases; it
-/// is set to the default `entry` phase on create and changed only by `ticket.changePhase`.
+/// (base `TICKET`) decides its own fields. `phaseId` is one of the organization's own phases. It
+/// is a projection of the phase history (ADR 0054): the trigger on `TicketPhaseChange` insert sets
+/// it (`domain_history.sql`), and core never writes it after the insert. When the ticket entered
+/// its phase and why come from the newest `TicketPhaseChange`.
 /// `status` is the soft-delete flag (ADR 0006), not the phase.
 /// Trigger (ADR 0053): changing `phaseId` or `status` re-derives the holds of the ticket's lines
 /// (an archived ticket or one in a terminal phase holds nothing, `sync_line_occupancy.sql`).
@@ -23,9 +25,6 @@ model Ticket {
   guaranteedHeadcount Int?
   /// Budget in minor units (1/100 kr).
   budgetMinor         Int?
-  phaseChangedAt      DateTime           @default(now())
-  /// Why the phase last changed (`ticket.changePhase` reason); required by `requiresReason` phases.
-  phaseReason         String?
   /// Lines in an `expires` state fall to their type's `expiryStateId` after this date (ADR 0044).
   holdsUntil          DateTime?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
@@ -45,6 +44,7 @@ model Ticket {
   lines               Line[]
   alternativeGroups   AlternativeGroup[]
   quotes              Quote[]
+  phaseChanges        TicketPhaseChange[]
   requirements        Requirement[]
   sheets              Sheet[]
   /// The supertable row this record extends (ADR 0056).

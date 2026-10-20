@@ -59,7 +59,13 @@ export const changeLineState = defineOperation({
       if (issues.length > 0) {
         return conflict({ message: `"${line.name}" cannot move to ${target.value.name}`, issues });
       }
-      return applyLineState({ context, before: line, stateId, overridden: true });
+      return applyLineState({
+        context,
+        before: line,
+        stateId,
+        trigger: "MANUAL",
+        overridden: true,
+      });
     },
   }),
 });

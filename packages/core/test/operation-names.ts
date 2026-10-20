@@ -10,6 +10,7 @@ const NAMES = [
   "ticket.export",
   "ticket.get",
   "ticket.list",
+  "ticket.phaseHistory",
   "ticket.update",
   "ticketPhase.archive",
   "ticketPhase.archivePreview",

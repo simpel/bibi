@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { APPEND_ONLY_MODELS } from "../src/scoped/append-only-models";
 import {
   APP_ID_MODELS,
   COLUMN_EXCEPTIONS,
@@ -6,12 +7,7 @@ import {
   CREATED_BY_MODELS,
   HARD_DELETE_MODELS,
 } from "../src/scoped/conventions";
-import {
-  APPEND_ONLY_MODELS,
-  ORG_SCOPED_MODELS,
-  SOFT_DELETE_MODELS,
-  UNSCOPED_MODELS,
-} from "../src/scoped/models";
+import { ORG_SCOPED_MODELS, SOFT_DELETE_MODELS, UNSCOPED_MODELS } from "../src/scoped/models";
 import { fieldOf, readSchemaModels } from "./read-schema";
 
 const models = readSchemaModels();

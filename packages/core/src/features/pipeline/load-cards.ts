@@ -1,5 +1,6 @@
 import type { OperationContext } from "../../operations/types";
 import { subjectIdFilter } from "../assignment/subject-filter";
+import { LATEST_PHASE_CHANGE } from "../ticket/phase-history";
 import type { PipelineBoardInput, PipelineCard } from "./schema";
 
 /** Upper bound of cards, so one board response stays small. */
@@ -35,6 +36,18 @@ async function lineCounts({ context, ids }: { context: Db; ids: string[] }) {
 }
 
 /** Tickets in open phases, plus those that entered a terminal phase since `since`. */
+/**
+ * Open tickets, and closed ones that entered their terminal phase since `since`: nothing leaves
+ * a terminal phase, so a change into one is the current one (phase history, ADR 0054).
+ */
+const openOrRecentlyClosed = ({ since }: { since: Date }) => [
+  { phase: { terminal: false } },
+  {
+    phase: { terminal: true },
+    phaseChanges: { some: { changedAt: { gte: since }, toPhase: { terminal: true } } },
+  },
+];
+
 export async function loadTicketCards({
   context,
   input,
@@ -46,12 +59,13 @@ export async function loadTicketCards({
     where: {
       ...ids,
       ...(entityTypeId ? { entityTypeId } : {}),
-      OR: [
-        { phase: { terminal: false } },
-        { phase: { terminal: true }, phaseChangedAt: { gte: since } },
-      ],
+      OR: openOrRecentlyClosed({ since }),
     },
-    include: { customer: { select: { name: true } }, entityType: { select: { name: true } } },
+    include: {
+      customer: { select: { name: true } },
+      entityType: { select: { name: true } },
+      ...LATEST_PHASE_CHANGE,
+    },
     orderBy: [{ reference: "desc" }, { id: "desc" }],
     take: CARD_LIMIT,
   });
@@ -67,7 +81,7 @@ export async function loadTicketCards({
     startsAt: row.desiredStartsAt,
     endsAt: row.desiredEndsAt,
     quantity: row.guaranteedHeadcount ?? row.estimatedHeadcount,
-    phaseChangedAt: row.phaseChangedAt,
+    phaseChangedAt: row.phaseChanges[0]?.changedAt ?? row.createdAt,
     assigneeId: owners.get(row.id) ?? null,
   }));
 }

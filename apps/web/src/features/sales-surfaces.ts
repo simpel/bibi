@@ -7,6 +7,8 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "ticket.get", route: "/tickets/[id]" },
   { operation: "ticket.update", route: "/tickets/[id]" },
   { operation: "inboundEmail.list", route: "/tickets/[id]" },
+  // The phase history and the facts that contradict the phase (ADR 0054).
+  { operation: "ticket.phaseHistory", route: "/tickets/[id]" },
   // Overdue soft holds (ADR 0044) are expired by hand from the ticket list.
   { operation: "ticket.expireHolds", route: "/tickets" },
   // Alternatives (ADR 0052): grouped and chosen on the ticket page.

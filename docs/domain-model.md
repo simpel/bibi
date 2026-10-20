@@ -28,7 +28,7 @@ Ticket (moves through the organization's phases) → Lines with states (prebooke
 What changes:
 - **The line is the booking** ([ADR 0052](decisions/0052-the-line-is-the-booking.md)). `Line` (formerly the program item, renamed in the first slice) may be untimed and carries price, discount and VAT overrides (`null` = inherit). Lines can form an `AlternativeGroup` (fourth slice, done). A draft quote is a live view of the lines; `quote.send` snapshots them as `OrderLine` with `lineId`; an accepted quote shows how the ticket's lines differ from it (third slice, done). `Ticket.quantity` is gone; lines inherit the headcount (second slice, done).
 - **Holds are a projection** ([ADR 0053](decisions/0053-holds-are-a-projection.md)), written by triggers through `sync_line_occupancy`. Only lines that have not ended are re-derived.
-- **History is owned data** ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)): `TicketPhaseChange` and `LineStateChange`. `phaseChangedAt`, `phaseReason` and `heldAt` go. Phases may require facts (`requiresAcceptedQuote`) but never store them.
+- **History is owned data** ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md), done): `TicketPhaseChange` and `LineStateChange`, append-only. `Ticket.phaseId` and `Line.stateId` are projections, set by the trigger on insert (`domain_history.sql`); `phaseChangedAt`, `phaseReason` and `heldAt` are gone and read from the newest change. Phases may require facts (`requiresAcceptedQuote`) but never store them; a phase that contradicts a fact is a derived warning (`ticket.phaseHistory`).
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
 - **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. *Done:* `Record` (`id`, `entityTypeId`, `base`, `fields`, `status`) is the supertable of `Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line` and `Requirement`, which share its id (composite foreign key with `organizationId`); core writes both rows in one transaction (`packages/core/src/records/`). `base` is the entity base, or `TICKET_TEMPLATE` for a predefined ticket. *Done:* `LINK` values are `RecordLink` rows (`recordId`, `fieldId`, `targetRecordId`, `position`; composite foreign keys, several rows for several targets), never ids in `fields` JSON; core merges them into `fields` on read. Id lists are join tables. *Target:* polymorphic pairs point at `Record`.
 - **Money is derived** ([ADR 0057](decisions/0057-money-balance-is-derived.md)): a payment settles one receivable (sent quote, deposit or invoice); no balance is stored. External calls run after commit (ADR 0058).
@@ -219,11 +219,12 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 **Attributes**
 - name (unique among the organization's active phases), color, order (`position`)
-- flags: `entry` (new tickets start here, exactly one default), `terminal` (nothing leaves it; all lines are released on entry), `requiresReason`, `requiresAssignee`, `invoiceable` (only after the last line has ended), `event` (`QUOTE_SENT` / `QUOTE_ACCEPTED`, at most one phase per event; such a phase is entered by the quote event, not by hand)
+- flags: `entry` (new tickets start here, exactly one default), `terminal` (nothing leaves it; all lines are released on entry), `requiresReason`, `requiresAssignee`, `requiresAcceptedQuote` (the ticket must have an accepted quote to enter; a phase guards the fact, the quote owns it, [ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)), `invoiceable` (only after the last line has ended), `event` (`QUOTE_SENT` / `QUOTE_ACCEPTED`, at most one phase per event; such a phase is entered by the quote event, not by hand)
 - archived (a phase that holds tickets is archived only with a chosen target phase)
 
 **Relations**
 - `1:N` Ticket is in this
+- `1:N` is from/to in → TicketPhaseChange
 - `1:N` is from/to in → Transition (`TicketPhaseTransition`, from → to)
 - `1:N` sets states in → PhaseStateRule
 
@@ -243,10 +244,11 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 **Relations**
 - `N:1` EntityType has this
 - `1:N` Line is in this
+- `1:N` is from/to in → LineStateChange
 - `1:N` is from/to in → Transition (`ItemStateTransition`)
 - `1:N` is the result of → PhaseStateRule
 
-> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in sheets), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state that has not ended (by trigger, ADR 0053), all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by `heldAt` and staff decide who gets the item; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
+> A new item type starts with one initial state, "Active" (`HARD` for a `BOOKABLE` type, in sheets), which the organization renames or replaces. A state in use is archived only with a chosen target state of the same type; the type's expiry state follows it. Changing `hold` or `released` re-derives the holds of every line in the state that has not ended (by trigger, ADR 0053), all or nothing. `hold = SOFT` reserves the item without blocking others, with no queue: overlapping soft holds are listed by held since (the newest `LineStateChange`) and staff decide who gets the item; `HARD` blocks the item. Operations (`itemState:admin|read`): `itemState.list|get|create|update|archive|reorder|setTransitions`; settings page `/settings/item-states`.
 
 ### PhaseStateRule (`PhaseStateRule`) – the phase grid
 
@@ -358,7 +360,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 *MVP* · One customer request from first contact to the delivered event ([ADR 0043](decisions/0043-ticket-and-configurable-phases.md)). It lives in the organization's phases and never turns into another record. Lines, quotes, requirements, sheets, payments and mail attach to it.
 
-> **Target (ADR 0054):** `phaseChangedAt` and `phaseReason` go (`quantity` went in ADR 0052's second slice). `phaseId` is projected from `TicketPhaseChange`. Phase flags may require facts (`requiresAcceptedQuote`).
+> **Ownership (ADR 0054, done):** projection `phaseId` (from the newest `TicketPhaseChange`, by trigger; check `ticket phases`); derived `phaseChangedAt` and `phaseReason` (read from the newest change, not stored).
 
 **Attributes**
 - reference number (`reference`, sequential per organization)
@@ -367,7 +369,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - desired period (`desiredStartsAt`, `desiredEndsAt`, optional) – what the customer asked for; each line has its own time
 - holds until (`holdsUntil`, optional): one date for the whole ticket ("we hold this until 28 Feb"). When it passes, every line in an `expires` state falls to its type's expiry state; other lines and the phase are unchanged ([ADR 0044](decisions/0044-line-states-and-the-phase-grid.md))
 - estimated and guaranteed headcount (`estimatedHeadcount`, `guaranteedHeadcount`): the ticket's one headcount; a line without its own quantity counts the guaranteed one if set, else the estimate ([ADR 0052](decisions/0052-the-line-is-the-booking.md)); budget (`budgetMinor`, minor units)
-- phase (`phaseId`), `phaseChangedAt`, reason of the last phase change (required by phases with `requiresReason`)
+- phase (`phaseId`, projected from the phase history), when it entered the phase (`phaseChangedAt`) and the reason of the last phase change (`phaseReason`, required by phases with `requiresReason`), both read from the newest `TicketPhaseChange`
 - main assignment and responsibility assignments (see Assignment; the main assignee is required by phases with `requiresAssignee`)
 - inbound address (`inboundAddress`, derived: `ticket-<id>@<MAIL_INBOUND_DOMAIN>`, null when inbound mail is not configured)
 - channel (form, email, phone, Venuu) – *later*
@@ -376,6 +378,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `N:1` Customer (organization) sends this
 - `N:1` Contact is contact for this
 - `N:1` is in → TicketPhase
+- `1:N` has → TicketPhaseChange (its phase history)
 - `1:N` has → Quote, Line, Requirement, Sheet, Payment, Deposit, Invoice
 - `1:N` InboundEmail is a reply on this
 - `1:N` is answered for by → Assignment
@@ -384,7 +387,22 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 > ★ A pipeline the organization draws itself, with line states that follow it. Phase changes only through `ticket.changePhase({ ticketId, phaseId, reason? })`, never through `update`; `quote.send` and `quote.accept` move the ticket into the phase with the matching `event`; payments and invoices never move a ticket.
 
-> Operations (`ticket:write` to change, `ticket:read` to read): `ticket.list|get|create|createFromTemplate|update|changePhase|export|expireHolds`. `ticket.expireHolds` runs every 15 minutes in the worker (and by hand from the ticket list): lines in an `expires` state on tickets whose `holdsUntil` has passed move to their type's expiry state, each audited. `create` gives the next reference number and puts the ticket in the default `entry` phase; `createFromTemplate` creates it in the predefined ticket's phase with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` gives json, pdf or csv ([ADR 0024](decisions/0024-ticket-export-instead-of-partner.md)); today it gives a versioned json document with the ticket and its phase, the full schema and csv follow (#63). Every change is audited; phase history comes from `AuditLog`.
+> Operations (`ticket:write` to change, `ticket:read` to read): `ticket.list|get|create|createFromTemplate|update|changePhase|export|expireHolds|phaseHistory`. `ticket.expireHolds` runs every 15 minutes in the worker (and by hand from the ticket list): lines in an `expires` state on tickets whose `holdsUntil` has passed move to their type's expiry state, each audited. `create` gives the next reference number and puts the ticket in the default `entry` phase; `createFromTemplate` creates it in the predefined ticket's phase with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` gives json, pdf or csv ([ADR 0024](decisions/0024-ticket-export-instead-of-partner.md)); today it gives a versioned json document with the ticket and its phase, the full schema and csv follow (#63). Every change is audited. Phase history comes from `TicketPhaseChange`, never from `AuditLog`: `ticket.phaseHistory({ ticketId })` (`ticket:read`) lists it oldest first with the derived `warnings` (an accepted quote while the ticket is in an open phase before the acceptance phase, shown only to callers with `quote:read`), on the ticket page and in the assistant.
+
+### TicketPhaseChange (`TicketPhaseChange`) – phase history
+
+*MVP* · One entry of a ticket's phase history ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)). Append-only, owned by core; no feature reads phase history from `AuditLog`, so pseudonymising the audit log never changes it.
+
+**Attributes**
+- ticket, from phase (`fromPhaseId`, null for the first entry), to phase (`toPhaseId`)
+- reason (free text; covered by the organization's data retention, not by audit pseudonymisation)
+- trigger (`MANUAL`, `QUOTE_EVENT`, `TEMPLATE`, `SYSTEM`), changed at, changed by (user id, null for the system), insertion order (`seq`)
+
+**Relations**
+- `N:1` Ticket has this
+- `N:0..1` is from → TicketPhase; `N:1` is to → TicketPhase
+
+> Inserting a row sets `Ticket.phaseId` by trigger (`packages/db/sql/domain_history.sql`), which in turn re-derives the ticket's holds (ADR 0053) in the same transaction. A row written against a phase the ticket has already left fails (`CONFLICT`); any other write of `phaseId` is refused by the database. Every ticket has a first entry from its creation (`MANUAL`, or `TEMPLATE` from a predefined ticket). Checked by the `ticket phases` reconciliation.
 
 ### Quote ★
 
@@ -436,7 +454,7 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 
 > **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`; derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
 
-> **Target (ADR 0054):** `stateId` is set from `LineStateChange`; `heldAt` goes. Holds are written by triggers (done, ADR 0053).
+> **Done:** holds are written by triggers (ADR 0053); `stateId` is a projection of `LineStateChange` (ADR 0054; check `line states`) and "held since" is read from the newest change. Alternative groups: `alternativeGroupId` (ADR 0052).
 
 **Attributes**
 - name and type (the organization's own, base `LINE`) and custom fields
@@ -446,13 +464,14 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - quantity (`quantity`; null = the ticket's headcount, guaranteed if set, else estimated)
 - commercial overrides (`unitPriceMinor`, `discountPercent`, `vatRatePercent`; null = inherit). Derived on every read, never stored: the unit price is the line's own, else the customer's price list valid on the line's day (else the ticket's desired start, else today; the newest start wins) with an agreed price for the item, else the item's price; the discount is the line's own, else that price list's general discount on the item's price, else 0; VAT is the line's own, else the item's, else the item's venue default. Each effective value comes with its source (`LINE` = own, anything else = inherited), so a changed price list or headcount shows on the line at once
 - state (`stateId`, an `ItemState` of the item's type; null for a line without an item), `stateOverridden` (set by hand, skipped by phase moves)
-- held since (`heldAt`, when the line entered its current state; shown oldest first where soft holds overlap, no queue or rank); the line has no expiry of its own, see Ticket `holdsUntil`
+- held since (`heldAt`, derived: when the line entered its current state, its newest `LineStateChange`; shown oldest first where soft holds overlap, no queue or rank); the line has no expiry of its own, see Ticket `holdsUntil`
 - alternative group (`alternativeGroupId`, optional): the line is one option of an `AlternativeGroup`
 - internal note
 
 **Relations**
 - `N:1` Ticket has this
 - `N:1` is in → ItemState
+- `1:N` has → LineStateChange (its state history)
 - `N:0..1` is held in → Item (bookable)
 - `N:0..1` is set up as → Setup
 - `1:N` adjusts → Requirement
@@ -463,6 +482,8 @@ A new organization starts with the fixed access roles (`viewer`, `member`, `admi
 - `1:N` AccessCode opens for this
 
 > Operations (resource `line`): `line.list|get|create|update|archive` and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followPhase({ lineId })` (clears the override and applies the current phase's grid cell). A new line starts in the grid cell of the ticket's phase for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `ticket.changePhase` moves the lines that are not overridden to the target phase's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A terminal phase moves every line to its type's released state. Who answers for a line comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both with the line's `lineId`, written by trigger, ADR 0053). An overlap with a hard hold, setup time or block is refused (`CONFLICT`, issue `lines.<id>`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change (clearing both times releases it); `archive` releases it; a ticket that is archived or enters a terminal phase holds nothing. Every change is audited. Every line read on every surface carries the effective quantity, price, discount and VAT with their sources. A second option of an alternative group going into a hard-hold state (by `line.changeState`, `line.update` or a phase move) is `CONFLICT`.
+
+> State history ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)): `LineStateChange` (line, from state, to state (null when the line lost its item), trigger `MANUAL` / `PHASE` / `EXPIRY` / `SYSTEM`, changed at, changed by, `seq`), append-only. Inserting a row sets `Line.stateId` by trigger (`domain_history.sql`), which re-derives the line's hold; a stale row fails with `CONFLICT` and any other write of `stateId` is refused by the database. A new line with a state gets a first row (`SYSTEM`); `line.changeState` writes `MANUAL`, phase moves, terminal releases and `line.followPhase` `PHASE`, `ticket.expireHolds` `EXPIRY`.
 
 ### AlternativeGroup (`AlternativeGroup`)
 
@@ -926,7 +947,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### Communication & log
 
-*Phase 2* · Email, notes and change history. Status history comes from `AuditLog`.
+*Phase 2* · Email, notes and change history. Phase and line-state history come from `TicketPhaseChange` and `LineStateChange` (ADR 0054), never from `AuditLog`.
 
 **Attributes**
 - channel

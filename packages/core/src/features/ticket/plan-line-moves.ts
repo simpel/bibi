@@ -64,7 +64,7 @@ export async function applyLineMoves({
     (a, b) => Number(a.to.hold === "HARD") - Number(b.to.hold === "HARD"),
   );
   for (const { line, to } of ordered) {
-    const moved = await applyLineState({ context, before: line, stateId: to.id });
+    const moved = await applyLineState({ context, before: line, stateId: to.id, trigger: "PHASE" });
     if (!moved.ok) return moved;
   }
   return ok({ value: true });

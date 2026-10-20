@@ -3,24 +3,27 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const root = join(import.meta.dirname, "..");
-const source = readFileSync(join(root, "sql/sync_line_occupancy.sql"), "utf8");
 
-/** The latest migration that applies the trigger SQL (ADR 0053). */
-function latestApplying() {
+/** The trigger SQL files and the migrations that apply them (ADR 0053, 0054). */
+const SQL_FILES = ["sync_line_occupancy.sql", "domain_history.sql"] as const;
+
+/** The latest migration that applies one trigger SQL file. */
+function latestApplying({ file }: { file: string }) {
   const dir = join(root, "prisma/migrations");
   const applying = readdirSync(dir)
     .filter((name) => !name.endsWith(".toml"))
     .sort()
     .map((name) => readFileSync(join(dir, name, "migration.sql"), "utf8"))
-    .filter((sql) => sql.includes("BEGIN packages/db/sql/sync_line_occupancy.sql"));
+    .filter((sql) => sql.includes(`BEGIN packages/db/sql/${file}`));
   return applying.at(-1) ?? "";
 }
 
-describe("line holds SQL (ADR 0053)", () => {
-  it("is applied verbatim by the latest migration that includes it", () => {
-    const sql = latestApplying();
-    const start = sql.indexOf("\n", sql.indexOf("BEGIN packages/db/sql/sync_line_occupancy.sql"));
-    const end = sql.indexOf("-- END packages/db/sql/sync_line_occupancy.sql");
+describe("trigger SQL (ADR 0053, 0054)", () => {
+  it.each(SQL_FILES)("%s is applied verbatim by the latest migration that includes it", (file) => {
+    const source = readFileSync(join(root, "sql", file), "utf8");
+    const sql = latestApplying({ file });
+    const start = sql.indexOf("\n", sql.indexOf(`BEGIN packages/db/sql/${file}`));
+    const end = sql.indexOf(`-- END packages/db/sql/${file}`);
     expect(sql.slice(start + 1, end)).toBe(source);
   });
 });

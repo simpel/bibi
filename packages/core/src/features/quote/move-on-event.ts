@@ -33,6 +33,6 @@ export async function moveOnQuoteEvent({
   }
   const allowed = authorize({ operation: changeTicketPhase, context });
   if (!allowed.ok) return allowed;
-  const moved = await moveTicket({ context, before, to, viaEvent: true });
+  const moved = await moveTicket({ context, before, to, trigger: "QUOTE_EVENT" });
   return moved.ok ? ok({ value: true }) : moved;
 }

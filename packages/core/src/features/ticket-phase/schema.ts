@@ -9,6 +9,7 @@ export const PHASE_FLAGS = [
   "terminal",
   "requiresReason",
   "requiresAssignee",
+  "requiresAcceptedQuote",
   "invoiceable",
 ] as const;
 export type PhaseFlag = (typeof PHASE_FLAGS)[number];
@@ -30,6 +31,9 @@ const FlagShape = {
   terminal: z.boolean().describe("No move leaves this phase; entering it releases every line"),
   requiresReason: z.boolean().describe("A reason is required to enter (lost, cancelled, reopened)"),
   requiresAssignee: z.boolean().describe("The ticket must have its main assignee to enter"),
+  requiresAcceptedQuote: z
+    .boolean()
+    .describe("The ticket must have an accepted quote to enter (the phase guards the fact)"),
   invoiceable: z.boolean().describe("Invoices can be created in this phase"),
 };
 

@@ -18,6 +18,7 @@ describe("cross-organization isolation for tickets", () => {
       ["ticket_get", { id }],
       ["ticket_changePhase", { ticketId: id, phaseId: phaseB.data.id }],
       ["ticket_export", { id }],
+      ["ticket_phaseHistory", { ticketId: id }],
       ["ticket_update", { id, estimatedHeadcount: 99 }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");

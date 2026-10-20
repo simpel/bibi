@@ -44,6 +44,7 @@ async function create({ context, template, input }: CreateInput): Promise<Result
   const ticket = await insertTicket({
     context,
     phaseId: template.phaseId,
+    trigger: "TEMPLATE",
     input: {
       ...{ entityTypeId: template.entityTypeId, customerId, assigneeId, fields: template.fields },
       estimatedHeadcount: headcount,

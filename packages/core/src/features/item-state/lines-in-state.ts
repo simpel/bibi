@@ -20,7 +20,7 @@ export async function moveLinesToState({
   });
   for (const row of rows) {
     const before = toLineRecord({ row });
-    const moved = await applyLineState({ context, before, stateId: toStateId });
+    const moved = await applyLineState({ context, before, stateId: toStateId, trigger: "SYSTEM" });
     if (!moved.ok) return moved;
   }
   return ok({ value: rows.length });

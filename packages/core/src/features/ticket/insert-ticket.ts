@@ -5,15 +5,18 @@ import { conflict } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { assignOnCreate } from "../assignment/assign-on-create";
 import { checkNewTicket } from "./check-new-ticket";
+import { recordPhaseChange } from "./phase-history";
 import type { TicketCreateInput, TicketDto } from "./schema";
 import { entryPhaseId, nextReference } from "./ticket-defaults";
-import { TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
+import { loadTicket, TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
 
 export type InsertTicketInput = {
   context: OperationContext;
   input: TicketCreateInput;
   /** Start phase; the organization's entry phase when omitted (`ticket.createFromTemplate` sets it). */
   phaseId?: string;
+  /** Recorded on the first phase history row (ADR 0054): `TEMPLATE` from a template, else `MANUAL`. */
+  trigger?: "MANUAL" | "TEMPLATE";
 };
 
 type EntryInput = {
@@ -22,16 +25,23 @@ type EntryInput = {
   phaseId: string | undefined;
 };
 
-/** The start phase; when it requires an assignee (ADR 0043), the new ticket must get one. */
+/**
+ * The start phase; when it requires an assignee (ADR 0043), the new ticket must get one. A new
+ * ticket has no quote, so it cannot start in a phase that requires an accepted one (ADR 0054).
+ */
 async function loadStartPhase({
   context,
   assigneeId,
   phaseId,
 }: EntryInput): Promise<Result<string>> {
   const start = phaseId ? ok({ value: phaseId }) : await entryPhaseId({ context });
-  if (!start.ok || assigneeId) return start;
+  if (!start.ok) return start;
   const phase = await context.db.ticketPhase.findFirst({ where: { id: start.value } });
-  if (!phase?.requiresAssignee) return start;
+  if (phase?.requiresAcceptedQuote) {
+    const message = `A new ticket cannot start in "${phase.name}": it requires an accepted quote`;
+    return conflict({ message, issues: [{ path: "phaseId", message }] });
+  }
+  if (assigneeId || !phase?.requiresAssignee) return start;
   return conflict({
     message: `A ticket in "${phase.name}" requires an assignee`,
     issues: [{ path: "assigneeId", message: "Required by the entry phase" }],
@@ -46,6 +56,7 @@ export async function insertTicket({
   context,
   input,
   phaseId: startPhaseId,
+  trigger = "MANUAL",
 }: InsertTicketInput): Promise<Result<TicketDto>> {
   const checked = await checkNewTicket({ context, input });
   if (!checked.ok) return checked;
@@ -73,7 +84,10 @@ export async function insertTicket({
         include: TICKET_INCLUDE,
       }),
   });
-  const ticket = toTicketDto({ row });
+  // The first entry of the phase history (ADR 0054); it confirms the phase inserted above.
+  const first = { fromPhaseId: null, toPhaseId: phaseId.value, trigger } as const;
+  await recordPhaseChange({ context, ticketId: row.id, ...first });
+  const ticket = (await loadTicket({ context, id: row.id })) ?? toTicketDto({ row });
   context.recordChange({ entityId: row.id, after: ticket });
   await assignOnCreate({ context, subjectType: "TICKET", subjectId: row.id, assigneeId });
   return ok({ value: ticket });

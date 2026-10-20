@@ -51,6 +51,7 @@ export * from "./features/sheet-definition/schema";
 export * from "./features/skill/schema";
 export * from "./features/ticket/create-from-template-schema";
 export * from "./features/ticket/export-schema";
+export * from "./features/ticket/phase-history-schema";
 export * from "./features/ticket/schema";
 export * from "./features/ticket-phase/schema";
 export * from "./features/ticket-template/schema";

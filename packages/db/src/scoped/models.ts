@@ -1,3 +1,5 @@
+import { DOMAIN_HISTORY_MODELS } from "./append-only-models";
+
 /** Models that carry `organizationId` and may be accessed through `scopedDb`. */
 export const ORG_SCOPED_MODELS = new Set<string>([
   "Venue",
@@ -36,6 +38,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "TicketTemplateLine",
   "Line",
   "AlternativeGroup",
+  ...DOMAIN_HISTORY_MODELS,
   "Requirement",
   "Sheet",
   "Quote",
@@ -56,10 +59,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "OauthGrantRevocation",
 ]);
 
-/**
- * Global tables (ADR 0006): Better Auth's identity, session, API key and OAuth tables. They are
- * shared across organizations, owned by Better Auth (`auth.prisma`) and refused by `scopedDb`.
- */
+/** Global tables (ADR 0006): Better Auth's, shared across organizations, refused by `scopedDb`. */
 export const GLOBAL_MODELS = new Set<string>([
   "User",
   "Session",
@@ -123,9 +123,6 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
 
 /** Models soft-deleted via `status`; reads exclude archived rows unless `status` is filtered. */
 export const SOFT_DELETE_MODELS = new Set<string>(SOFT_DELETE_DEFAULTS.keys());
-
-/** Append-only models: no update/delete/upsert through `scopedDb`. */
-export const APPEND_ONLY_MODELS = new Set<string>(["AuditLog", "Message", "InboundEmail"]);
 
 /** Models with global rows (`organizationId` null): reads include them, writes stay org-pinned. */
 export const GLOBAL_READ_MODELS = new Set<string>(["Skill"]);

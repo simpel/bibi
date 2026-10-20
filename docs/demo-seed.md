@@ -15,12 +15,13 @@ The script ends with checks that make CI fail if the demo does not show what it 
 2. Vingaleden has no vocabulary called "Allergens", and none of its sheets include food.
 3. Lindholmen's kitchen order for ticket L5 is **blocked**: anaphylaxis to crustaceans against a mandatory dish.
 4. Lindholmen's kitchen order for ticket L3 is **not** blocked: the nut allergy has an alternative in the choice group.
-5. Tickets F2 and F3 hold the same room and time with soft holds. Both lines are `Prebooked`, F2's `heldAt` is earlier than F3's (no queue).
+5. Tickets F2 and F3 hold the same room and time with soft holds. Both lines are `Prebooked`, F2 was held before F3 (its newest `LineStateChange` is older; no queue).
 6. Ticket F6's `holdsUntil` has passed and its line is still `Prebooked` until `ticket.expireHolds` runs.
 7. Every write has a row in `AuditLog` with actor `SYSTEM`.
 8. Lindholmen's phase grid drives phase moves: moving L11 to Confirmed books its room line and skips its overridden lunch line, and moving L12 to Confirmed is refused because L4 has a hard hold on the same room, and nothing changes.
-9. Every projection matches what is rebuilt from owned data (ADR 0051): `reconcile-checks.ts` registers a `rebuild` query and a `compare` function per projection (`reconcile.ts`), and `checks.ts` runs them all and fails with the first differing rows. Today: line holds in `Occupancy` (`HOLD` and `SETUP` with `lineId`, written only by the database trigger `sync_line_occupancy`, ADR 0053) against the lines that have not ended (same item, kind and period; a hard hold with a setup also its changeover buffer), and the `Record` supertable rows against the seven tables that extend them (same base, type, status and fields, ADR 0056). Vitest calls the same `reconcileProjections`.
+9. Every projection matches what is rebuilt from owned data (ADR 0051): `reconcile-checks.ts` registers a `rebuild` query and a `compare` function per projection (`reconcile.ts`), and `checks.ts` runs them all and fails with the first differing rows. Today: line holds in `Occupancy` (`HOLD` and `SETUP` with `lineId`, written only by the database trigger `sync_line_occupancy`, ADR 0053) against the lines that have not ended (same item, kind and period; a hard hold with a setup also its changeover buffer), the `Record` supertable rows against the seven tables that extend them (same base, type, status and fields, ADR 0056), and every ticket's `phaseId` and every line's `stateId` against its newest `TicketPhaseChange` and `LineStateChange` (`history-reconcile.ts`, ADR 0054; a ticket without history, or a line with a state but no history, differs). Vitest calls the same `reconcileProjections`.
 10. Lindholmen's alternative groups (ADR 0052, `alternative-checks.ts`): L13's "Workshop room" (Hönö or Styrsö) is open after its quote was sent, and both options are soft holds; L14's "Planning room" was chosen when its quote was accepted (`quote.accept` with `chosenLineIds`), so Planning in Hönö is the group's `chosenLineId` and still holds (Booked by the grid), and Planning in Styrsö is `Released` and holds nothing. `checkDemoHolds` expects the Styrsö option released too.
+11. Phase history is owned data (ADR 0054), made by the same operations as the moves: every ticket's history starts without a from phase, by `TEMPLATE` for the tickets made from a predefined ticket and by `MANUAL` otherwise; a ticket in a quote-event phase got there by `QUOTE_EVENT` (or started there from a template); every board card's time in phase is its newest change (`pipeline-checks.ts`, `board-checks.ts`). Lindholmen's "Final count locked" requires an accepted quote: moving the first open ticket without one there is refused with that blocker and changes nothing (`fact-guard-checks.ts`).
 
 
 The checks that run today:
@@ -125,7 +126,7 @@ Theatre (15 min), Classroom (30), U-shape (30), Boardroom (20), Cabaret (40), Ba
 | Site visit | – |
 | Quote sent | `event` `QUOTE_SENT` |
 | Confirmed | `event` `QUOTE_ACCEPTED`, `requiresAssignee` |
-| Final count locked | `requiresAssignee` |
+| Final count locked | `requiresAssignee`, `requiresAcceptedQuote` |
 | Completed | `terminal`, `requiresAssignee`, `invoiceable` |
 | Lost | `terminal`, `requiresReason` |
 | Cancelled | `terminal`, `requiresReason` |
@@ -380,7 +381,7 @@ Per Vinga is the main assignee of V1–V3 and Stina Holm follows them; V4 is ass
   - The data refers to rows by name: vocabulary, setup, type, field and value, e.g. `View: "River"`. A `LINK` field names its target type (`linkType`) and its values name a record of that type (`Host: "Eva Sund"`, resolved by `resolveLinks` in `seed-fields.ts`).
   - The names are resolved to ids and field keys at run time (`demo-refs.ts`).
 - `seed-templates.ts` creates the predefined tickets from `data/<org>/templates.ts` through `ticketTemplate.create` (items, setups, ticket type and start phase by name), after the pipeline and before the tickets. A ticket with `template` in `tickets.ts` is created through `ticket.createFromTemplate` (`seed-ticket-from-template.ts`) and is not moved afterwards.
-- `reconcile.ts` (the harness) and `reconcile-checks.ts` (the registered projection checks, with `record-reconciliation.ts`) run from `checks.ts`.
-- Every record is created through core operations, which write its `Record` row first (`createRecord`, ADR 0056); `reset.ts` deletes the `RecordLink` rows first and the `Record` rows after the seven tables that extend them.
-- `checks.ts`, `template-checks.ts`, `config-checks.ts`, `ticket-checks.ts`, `assignment-checks.ts`, `hold-checks.ts`, `pipeline-checks.ts` and `grid-checks.ts` contain the checks above.
+- `reconcile.ts` (the harness) and `reconcile-checks.ts` (the registered projection checks, with `record-reconciliation.ts` and `history-reconcile.ts`) run from `checks.ts`.
+- Every record is created through core operations, which write its `Record` row first (`createRecord`, ADR 0056); `reset.ts` deletes the phase and line-state history (ADR 0054) before the lines and tickets, and the `RecordLink` rows first and the `Record` rows after the seven tables that extend them.
+- `checks.ts`, `template-checks.ts`, `config-checks.ts`, `ticket-checks.ts`, `assignment-checks.ts`, `hold-checks.ts`, `pipeline-checks.ts`, `board-checks.ts`, `fact-guard-checks.ts` and `grid-checks.ts` contain the checks above.
 - The seed is extended at the same pace as the parts in ADR 0025. A part that lacks operations is skipped with a clear log, so the demo can always be run.

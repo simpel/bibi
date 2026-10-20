@@ -6,6 +6,7 @@ import { checkDemoArchive } from "./archive-checks";
 import { checkDemoAssignments } from "./assignment-checks";
 import { checkDemoBoard } from "./board-checks";
 import { checkDemoConfig } from "./config-checks";
+import { checkDemoFactGuards } from "./fact-guard-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
 import { checkDemoPayments } from "./payment-checks";
@@ -29,7 +30,8 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPip
  * (`checkDemoTemplates`) and the tickets per phase (`checkDemoTickets`), the tickets' assignees and followers
  * (`checkDemoAssignments`), that removing a populated phase or state with a target is allowed
  * (`checkDemoArchive`, run before the grid checks move tickets), the lines' soft holds and their expiry (`checkDemoHolds`), the alternative groups' holds before and after the customer's pick (`checkDemoAlternatives`, ADR 0052), the phase
- * quote events that moved the tickets (`checkDemoQuoteEvents`), the phase
+ * quote events that moved the tickets (`checkDemoQuoteEvents`), that a phase requiring an
+ * accepted quote refuses a ticket without one (`checkDemoFactGuards`, ADR 0054), the phase
  * moves the grid drives (`checkDemoGrid`), every line's effective price and inherited quantity
  * (`checkDemoPrices`, ADR 0052), the derived balances (`checkDemoPayments`, ADR 0057), every projection against its owned data
  * (`reconcileProjections`, ADR 0051), and every write
@@ -68,6 +70,7 @@ export async function checkDemoOrg({
   failures.push(...(await checkDemoAlternatives({ context, org })));
   failures.push(...(await checkDemoArchive({ context, org })));
   failures.push(...(await checkDemoQuoteEvents({ context, org })));
+  failures.push(...(await checkDemoFactGuards({ context, org })));
   failures.push(...(await checkDemoGrid({ context, org })));
   failures.push(...(await checkDemoPrices({ context, org })));
   failures.push(...(await checkDemoPayments({ context, org })));

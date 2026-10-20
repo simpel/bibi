@@ -27,7 +27,8 @@ export const createTicketPhase = defineOperation({
   kind: "command",
   description:
     "Create a ticket phase: a name, a hex color and its flags (entry, terminal, " +
-    "requiresReason, requiresAssignee, invoiceable; all false by default) and an optional quote " +
+    "requiresReason, requiresAssignee, requiresAcceptedQuote, invoiceable; all false by default) " +
+    "and an optional quote " +
     "`event` (QUOTE_SENT or QUOTE_ACCEPTED: quote.send and quote.accept move tickets here; at " +
     "most one phase per event, so it is taken from the phase that had it). It is placed last. " +
     "A new entry phase takes the entry flag from the current one. Allow moves to and from it " +

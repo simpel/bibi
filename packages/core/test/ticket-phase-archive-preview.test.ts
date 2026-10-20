@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createTicketPhase, execute, previewArchiveTicketPhase } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { createTestTicket, ticketSetup } from "./ticket-helpers";
+import { createTestTicket, placeInPhase, ticketSetup } from "./ticket-helpers";
 import { phaseByName } from "./ticket-phase-helpers";
 
 describe("ticketPhase.archivePreview (ADR 0043)", () => {
@@ -19,7 +19,7 @@ describe("ticketPhase.archivePreview (ADR 0043)", () => {
       entityTypeId: type.id,
       customerId: customer.id,
     });
-    await context.db.ticket.update({ where: { id: ticket.id }, data: { phaseId: extra.id } });
+    await placeInPhase({ ticket, phaseId: extra.id });
     const preview = ({ ...input }: { id: string; targetPhaseId?: string }) =>
       execute({ operation: previewArchiveTicketPhase, input, context });
     const noTarget = unwrap({ result: await preview({ id: extra.id }) });

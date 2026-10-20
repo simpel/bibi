@@ -18,6 +18,9 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   ["Message", ["updatedAt"]],
   // Append-only: a received mail never changes; written by the inbound webhook (SYSTEM).
   ["InboundEmail", ["updatedAt"]],
+  // Append-only domain history (ADR 0054): `changedAt` and `changedBy` say when and who.
+  ["TicketPhaseChange", ["createdAt", "updatedAt", "createdBy"]],
+  ["LineStateChange", ["createdAt", "updatedAt", "createdBy"]],
   // Derived search index, rebuilt from its entity; not authored by anyone.
   ["Embedding", ["createdBy"]],
   // Better Auth tables (shape owned by Better Auth); `inviterId` records the inviter.

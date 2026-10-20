@@ -1,7 +1,10 @@
 import type { AppErrorIssue } from "../../errors/app-error";
 import type { PhaseEvent, TicketPhaseFlags } from "../ticket-phase/schema";
 
-type Phase = Pick<TicketPhaseFlags, "terminal" | "requiresReason" | "requiresAssignee"> & {
+type Phase = Pick<
+  TicketPhaseFlags,
+  "terminal" | "requiresReason" | "requiresAssignee" | "requiresAcceptedQuote"
+> & {
   name: string;
   event?: PhaseEvent | null;
 };
@@ -16,12 +19,14 @@ export type PhaseBlockersInput = {
   reason?: string | undefined;
   /** True only for the move a quote event makes (ADR 0043); everything else is by hand. */
   viaEvent?: boolean | undefined;
+  /** Whether the ticket has an accepted quote (needed by `requiresAcceptedQuote`, ADR 0054). */
+  acceptedQuote?: boolean | undefined;
 };
 
 /**
  * Everything that blocks a phase move (ADR 0043): a terminal start, a move the organization does
- * not allow, a target that only a quote event enters, and the target's `requiresReason` and
- * `requiresAssignee` flags. Empty = allowed.
+ * not allow, a target that only a quote event enters, and the target's `requiresReason`,
+ * `requiresAssignee` and `requiresAcceptedQuote` flags (phases guard facts, ADR 0054). Empty = allowed.
  */
 export function phaseBlockers({
   from,
@@ -30,6 +35,7 @@ export function phaseBlockers({
   assigneeId,
   reason,
   viaEvent,
+  acceptedQuote,
 }: PhaseBlockersInput): AppErrorIssue[] {
   const blockers: AppErrorIssue[] = [];
   if (from.terminal) {
@@ -48,6 +54,10 @@ export function phaseBlockers({
   if (to.requiresAssignee && !assigneeId) {
     const message = `"${to.name}" requires a main assignee (assignment.assign)`;
     blockers.push({ path: "assigneeId", message });
+  }
+  if (to.requiresAcceptedQuote && !acceptedQuote) {
+    const message = `"${to.name}" requires an accepted quote (quote.accept)`;
+    blockers.push({ path: "quote", message });
   }
   return blockers;
 }

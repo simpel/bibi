@@ -464,6 +464,7 @@
     "transitionRefused": "Your organization does not allow this move.",
     "linesBlocked": "{count, plural, one {# line cannot move: a hold collides or its state change is not allowed.} other {# lines cannot move: a hold collides or their state change is not allowed.}}",
     "assigneeRequired": "This phase needs an assignee. Assign one on the ticket first.",
+    "acceptedQuoteRequired": "This phase needs an accepted quote. Accept the ticket's quote first.",
     "reasonRequired": "This phase needs a reason.",
     "export": "Export",
     "exported": "The ticket has been exported.",
@@ -507,7 +508,22 @@
     "buildStepByStep": "Build it step by step",
     "useTemplate": "Use a predefined ticket instead",
     "templateBlocked": "{count, plural, one {# line is blocked: a hold collides.} other {# lines are blocked: a hold collides.}}",
-    "noAssignee": "No one yet"
+    "noAssignee": "No one yet",
+    "phaseHistory": {
+      "title": "Phase history",
+      "empty": "No phase changes yet.",
+      "entered": "Entered {phase}",
+      "changed": "Changed phase",
+      "trigger": {
+        "MANUAL": "By hand",
+        "QUOTE_EVENT": "By a quote event",
+        "TEMPLATE": "From a predefined ticket",
+        "SYSTEM": "By the system"
+      },
+      "warnings": {
+        "QUOTE_ACCEPTED_IN_EARLIER_PHASE": "The quote is accepted, but the ticket is still in an earlier phase. Move the ticket or check the quote."
+      }
+    }
   },
   "calendar": {
     "title": "Calendar",
@@ -1204,6 +1220,7 @@
       "terminal": "Ends the ticket",
       "requiresReason": "Needs a reason to enter",
       "requiresAssignee": "Needs an assignee to enter",
+      "requiresAcceptedQuote": "Needs an accepted quote to enter",
       "invoiceable": "Can be invoiced",
       "event": "Entered by a quote event",
       "noEvent": "No event (entered by hand)",
@@ -1363,6 +1380,7 @@
         "terminal": "Ends the ticket",
         "requiresReason": "Needs a reason",
         "requiresAssignee": "Needs an assignee",
+        "requiresAcceptedQuote": "Needs an accepted quote",
         "invoiceable": "Can be invoiced",
         "event": "Quote event",
         "targetPhaseId": "Move tickets to (phase id)",

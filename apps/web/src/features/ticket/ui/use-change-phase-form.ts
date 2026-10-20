@@ -14,11 +14,17 @@ import {
 
 export type UseChangePhaseFormInput = { ticket: TicketDto; onDone: () => void };
 
-const FIELD_OF = { reason: "reason", phaseId: "phaseId", assigneeId: "phaseId" } as const;
+const FIELD_OF = {
+  reason: "reason",
+  phaseId: "phaseId",
+  assigneeId: "phaseId",
+  quote: "phaseId",
+} as const;
 const MESSAGE_OF = {
   reason: "reasonRequired",
   phaseId: "transitionRefused",
   assigneeId: "assigneeRequired",
+  quote: "acceptedQuoteRequired",
 } as const;
 
 /**

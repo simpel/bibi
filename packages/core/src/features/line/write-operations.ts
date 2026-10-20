@@ -7,6 +7,7 @@ import { toJson } from "../../shared/to-json";
 import { groupHardHoldBlocker } from "../alternative-group/hard-hold";
 import { mergeFields, validateFields } from "../field-definition/field-values";
 import { insertLine } from "./insert-line";
+import { moveWithState } from "./item-state-move";
 import { checkLinePeriod, checkPlace } from "./line-rules";
 import { stateAfterMove } from "./line-state";
 import {
@@ -78,15 +79,18 @@ export const updateLine = defineOperation({
         links = checked.value.links;
       }
       const state = await stateAfterMove({ context, before, itemId });
-      const stateId = state.stateId ?? null;
+      const stateId = state?.stateId ?? null;
       const grouped = await groupHardHoldBlocker({ context, line: before, stateId, lock: true });
       if (grouped) return conflict({ message: grouped.message, issues: [grouped] });
       await updateRecord({ context, id, change: { fields: json, links } });
-      const row = await context.db.line.update({
-        where: { id },
-        data: { ...data, ...after, ...state, ...(json ? { fields: json } : {}) },
-        include: LINE_INCLUDE,
-      });
+      const reset = state ? { stateOverridden: false } : {};
+      const write = () =>
+        context.db.line.update({
+          where: { id },
+          data: { ...data, ...after, ...reset, ...(json ? { fields: json } : {}) },
+        });
+      const fromStateId = before.stateId;
+      const row = await moveWithState({ context, lineId: id, fromStateId, state, write });
       const line = toLineRecord({ row });
       context.recordChange({ entityId: id, before, after: line });
       // The hold follows by trigger (ADR 0053); an overlap fails the update with CONFLICT.

@@ -8,6 +8,7 @@ export const PIPELINE_FIELD_KEYS = [
   "terminal",
   "requiresReason",
   "requiresAssignee",
+  "requiresAcceptedQuote",
   "invoiceable",
   "event",
   "targetPhaseId",

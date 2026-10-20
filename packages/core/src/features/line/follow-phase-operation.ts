@@ -75,7 +75,13 @@ export const followLinePhase = defineOperation({
           issues,
         });
       }
-      return applyLineState({ context, before: line, stateId, overridden: false });
+      return applyLineState({
+        context,
+        before: line,
+        stateId,
+        trigger: "PHASE",
+        overridden: false,
+      });
     },
   }),
 });

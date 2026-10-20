@@ -2,7 +2,7 @@ import { getDb } from "@okazi/db";
 import { describe, expect, it } from "vitest";
 import { archiveCustomer, type ExecuteContext, execute, getTicket, grantAll } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
-import { createTestTicket, ticketSetup } from "./ticket-helpers";
+import { createTestTicket, placeInPhase, ticketSetup } from "./ticket-helpers";
 import { phases } from "./ticket-phase-helpers";
 
 type TicketsInput = { context: ExecuteContext; entityTypeId: string; customerId: string };
@@ -13,10 +13,7 @@ async function ticketPerPhase({ context, ...input }: TicketsInput): Promise<stri
   for (const phase of await phases({ context })) {
     const ticket = await createTestTicket({ context, ...input });
     // Placed directly: the phase rules are not what this test is about.
-    await getDb().ticket.update({
-      where: { id: ticket.id },
-      data: { phaseId: phase.id },
-    });
+    await placeInPhase({ ticket, phaseId: phase.id });
     ids.push(ticket.id);
   }
   return ids;

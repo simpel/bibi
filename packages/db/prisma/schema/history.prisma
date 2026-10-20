@@ -1,0 +1,81 @@
+// Domain history (ADR 0054): append-only tables owned by core. The current phase of a ticket and
+// the current state of a line are projections of them: a trigger on insert sets `Ticket.phaseId`
+// and `Line.stateId` (`packages/db/sql/domain_history.sql`), and nothing else changes them.
+// The audit log stays evidence; no feature reads history from it.
+
+/// What made a ticket change phase (ADR 0054).
+enum PhaseChangeTrigger {
+  /// A person moved the ticket (`ticket.changePhase`, `ticket.create`).
+  MANUAL
+  /// A quote event moved it (`QUOTE_SENT`, `QUOTE_ACCEPTED`).
+  QUOTE_EVENT
+  /// The ticket was created from a predefined ticket (`ticket.createFromTemplate`).
+  TEMPLATE
+  /// The system moved it, e.g. archiving the phase it was in.
+  SYSTEM
+}
+
+/// What made a line change state (ADR 0054).
+enum StateChangeTrigger {
+  /// A person set the state (`line.changeState`).
+  MANUAL
+  /// The ticket's phase (phase grid, terminal release, `line.followPhase`).
+  PHASE
+  /// `ticket.expireHolds` moved an expired soft hold to its expiry state.
+  EXPIRY
+  /// The system, e.g. the first state of a new line or a line moved to an item of another type.
+  SYSTEM
+}
+
+/// Ticket phase change – one entry of a ticket's phase history. Append-only. The newest row
+/// (`seq`) is the ticket's current phase: inserting a row sets `Ticket.phaseId` by trigger, which
+/// in turn re-derives the ticket's holds (ADR 0053) in the same transaction.
+model TicketPhaseChange {
+  id             String             @id @default(cuid(2))
+  organizationId String
+  /// Insertion order; the newest row is the current phase.
+  seq            Int                @default(autoincrement())
+  ticketId       String
+  /// Null for the first row (the phase the ticket was created in).
+  fromPhaseId    String?
+  toPhaseId      String
+  /// Free text given with the move; required by `requiresReason` phases.
+  reason         String?
+  trigger        PhaseChangeTrigger
+  changedAt      DateTime           @default(now())
+  /// User who made the change; null for the system.
+  changedBy      String?
+  ticket         Ticket             @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  fromPhase      TicketPhase?       @relation("PhaseChangeFrom", fields: [fromPhaseId, organizationId], references: [id, organizationId])
+  toPhase        TicketPhase        @relation("PhaseChangeTo", fields: [toPhaseId, organizationId], references: [id, organizationId])
+
+  @@unique([seq])
+  @@index([organizationId, ticketId, seq])
+  @@index([organizationId, toPhaseId, changedAt])
+}
+
+/// Line state change – one entry of a line's state history. Append-only. The newest row (`seq`)
+/// is the line's current state: inserting a row sets `Line.stateId` by trigger, which re-derives
+/// the line's hold (ADR 0053) in the same transaction. `changedAt` of the newest row is "held since".
+model LineStateChange {
+  id             String             @id @default(cuid(2))
+  organizationId String
+  /// Insertion order; the newest row is the current state.
+  seq            Int                @default(autoincrement())
+  lineId         String
+  /// Null for the first row of a line, or after a line without a state.
+  fromStateId    String?
+  /// Null when the line lost its item (a line without an item has no state).
+  toStateId      String?
+  trigger        StateChangeTrigger
+  changedAt      DateTime           @default(now())
+  /// User who made the change; null for the system.
+  changedBy      String?
+  line           Line               @relation(fields: [lineId, organizationId], references: [id, organizationId])
+  fromState      ItemState?         @relation("StateChangeFrom", fields: [fromStateId, organizationId], references: [id, organizationId])
+  toState        ItemState?         @relation("StateChangeTo", fields: [toStateId, organizationId], references: [id, organizationId])
+
+  @@unique([seq])
+  @@index([organizationId, lineId, seq])
+  @@index([organizationId, toStateId, changedAt])
+}

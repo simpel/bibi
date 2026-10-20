@@ -35,12 +35,12 @@ model Line {
   note               String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
   fields             Json               @default("{}")
-  /// The line's state, one of its item type's states; null for a line without an item.
+  /// The line's state, one of its item type's states; null for a line without an item. A
+  /// projection of the state history (ADR 0054): set by the trigger on `LineStateChange` insert
+  /// (`domain_history.sql`), never written after the insert. "Held since" is the newest change.
   stateId            String?
   /// Set by `line.changeState`: phase moves skip the line (ADR 0044).
   stateOverridden    Boolean            @default(false)
-  /// When the line entered its current state ("held since").
-  heldAt             DateTime           @default(now())
   status             RecordStatus       @default(ACTIVE)
   createdAt          DateTime           @default(now())
   updatedAt          DateTime           @updatedAt
@@ -55,6 +55,7 @@ model Line {
   orderLines         OrderLine[]
   alternativeGroup   AlternativeGroup?  @relation("AlternativeGroupOptions", fields: [alternativeGroupId, organizationId], references: [id, organizationId])
   chosenIn           AlternativeGroup[] @relation("AlternativeGroupChoice")
+  stateChanges       LineStateChange[]
   /// The supertable row this record extends (ADR 0056).
   record             Record             @relation(fields: [id, organizationId], references: [id, organizationId])
 

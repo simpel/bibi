@@ -46,6 +46,10 @@ export const PipelinePhaseDraftSchema = z.object({
   terminal: z.boolean().optional().describe("Ends the ticket; entering it releases every line"),
   requiresReason: z.boolean().optional().describe("A reason is required to enter"),
   requiresAssignee: z.boolean().optional().describe("The ticket needs its assignee to enter"),
+  requiresAcceptedQuote: z
+    .boolean()
+    .optional()
+    .describe("The ticket needs an accepted quote to enter"),
   invoiceable: z.boolean().optional().describe("Invoices can be created in this phase"),
   event: TicketPhaseSchema.shape.event.optional(),
 });

@@ -23,7 +23,8 @@ const pickedAway = ({ ticket, line }: { ticket: DemoTicket; line: DemoLine }) =>
 const SELECT = {
   id: true,
   name: true,
-  heldAt: true,
+  // "Held since" is the newest state change (ADR 0054); `seq` orders changes strictly.
+  stateChanges: { select: { seq: true }, orderBy: { seq: "desc" }, take: 1 },
   state: { select: { name: true, initial: true, released: true, hold: true } },
 } as const;
 
@@ -51,9 +52,9 @@ function checkOverlaps({ loaded }: { loaded: Loaded }) {
     if (group.length < 2) continue;
     const soft = group.filter(({ row }) => row?.state?.hold === "SOFT").length;
     if (soft !== group.length) failures.push(`${label}: ${soft} soft holds`);
-    const held = group.map(({ row }) => row?.heldAt.getTime() ?? 0);
+    const held = group.map(({ row }) => row?.stateChanges[0]?.seq ?? 0);
     if (held.some((time, index) => index > 0 && time <= (held[index - 1] ?? 0))) {
-      failures.push(`${label}: heldAt is not in the order the lines were held`);
+      failures.push(`${label}: held since is not in the order the lines were held`);
     }
   }
   return failures;
@@ -61,7 +62,7 @@ function checkOverlaps({ loaded }: { loaded: Loaded }) {
 
 /**
  * Checks 5 and 6 of `docs/demo-seed.md` (ADR 0044): every seeded line of a lead without an
- * override starts in its type's initial state, overlapping lines are soft holds ordered by `heldAt`, and after
+ * override starts in its type's initial state, overlapping lines are soft holds ordered by when they were held (state history), and after
  * `ticket.expireHolds` the lines of tickets whose holdsUntil has passed are released while the
  * others keep their state. Returns failure messages.
  */

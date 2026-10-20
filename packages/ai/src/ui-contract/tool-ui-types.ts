@@ -19,7 +19,7 @@ import type { RequirementWire } from "./requirement-entries";
 import type { ResponsibilityWire } from "./responsibility-entries";
 import type { SheetDefinitionWire } from "./sheet-definition-entries";
 import type { SheetWire } from "./sheet-entries";
-import type { TicketWire } from "./ticket-entries";
+import type { TicketPhaseHistoryWire, TicketWire } from "./ticket-entries";
 import type { TicketPhaseWire } from "./ticket-phase-entries";
 import type { TicketTemplateWire } from "./ticket-template-entries";
 import type {
@@ -68,6 +68,7 @@ export type ToolUiProps = {
   "phase-grid-table": { cells: PhaseGridCellWire[] };
   "ticket-table": { items: TicketWire[]; nextCursor: string | null };
   "ticket-card": { ticket: TicketWire };
+  "ticket-phase-history": { history: TicketPhaseHistoryWire };
   "line-table": { items: LineWire[]; nextCursor: string | null };
   "line-card": { line: LineWire };
   "alternative-group-table": { items: AlternativeGroupWire[]; nextCursor: string | null };

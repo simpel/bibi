@@ -11,6 +11,7 @@ export type TicketPhaseFormValues = {
   terminal: boolean;
   requiresReason: boolean;
   requiresAssignee: boolean;
+  requiresAcceptedQuote: boolean;
   invoiceable: boolean;
   /** The quote event that enters the phase, or `NONE`. */
   event: PhaseEvent | typeof NONE;
@@ -41,6 +42,7 @@ export function ticketPhaseFormDefaults({
     terminal: phase?.terminal ?? false,
     requiresReason: phase?.requiresReason ?? false,
     requiresAssignee: phase?.requiresAssignee ?? false,
+    requiresAcceptedQuote: phase?.requiresAcceptedQuote ?? false,
     invoiceable: phase?.invoiceable ?? false,
     event: phase?.event ?? NONE,
   };

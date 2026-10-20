@@ -23,6 +23,9 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.quote.deleteMany({ where }),
   // A chosen alternative points at its line and the lines at their group (ADR 0052).
   db.alternativeGroup.updateMany({ where, data: { chosenLineId: null } }),
+  // The phase and state history (ADR 0054) points at the lines, tickets, phases and states.
+  db.lineStateChange.deleteMany({ where }),
+  db.ticketPhaseChange.deleteMany({ where }),
   db.line.deleteMany({ where }),
   db.alternativeGroup.deleteMany({ where }),
   db.ticketTemplateLine.deleteMany({ where }),

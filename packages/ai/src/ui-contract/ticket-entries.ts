@@ -1,4 +1,8 @@
-import { TicketSchema } from "@okazi/core/schemas";
+import {
+  TicketPhaseChangeSchema,
+  TicketPhaseHistoryOutputSchema,
+  TicketSchema,
+} from "@okazi/core/schemas";
 import { z } from "zod";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
@@ -19,6 +23,13 @@ export const TicketListWireSchema = z.object({
 
 export type TicketWire = z.infer<typeof TicketWireSchema>;
 
+/** JSON form of a ticket's phase history (ADR 0054). */
+export const TicketPhaseHistoryWireSchema = TicketPhaseHistoryOutputSchema.extend({
+  items: z.array(TicketPhaseChangeSchema.extend({ changedAt: z.string() })),
+});
+
+export type TicketPhaseHistoryWire = z.infer<typeof TicketPhaseHistoryWireSchema>;
+
 const ticketTable = uiEntry({
   component: "ticket-table",
   schema: TicketListWireSchema,
@@ -38,4 +49,9 @@ export const TICKET_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   ticket_createFromTemplate: ticketCard,
   ticket_update: ticketCard,
   ticket_changePhase: ticketCard,
+  ticket_phaseHistory: uiEntry({
+    component: "ticket-phase-history",
+    schema: TicketPhaseHistoryWireSchema,
+    toProps: ({ value }) => ({ history: value }),
+  }),
 };

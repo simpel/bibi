@@ -8,7 +8,10 @@ import {
   type TicketDto,
   type TicketExport,
   TicketExportOutputSchema,
+  type TicketPhaseHistory,
+  TicketPhaseHistoryOutputSchema,
   TicketSchema,
+  ticketPhaseHistory,
   updateTicket,
 } from "@okazi/core";
 import { builder } from "../../schema/builder";
@@ -39,7 +42,19 @@ const TicketExportRef = objectFromSchema<TicketExport>({
 
 fieldFromOperation({ operation: listTickets, type: TicketPageRef, name: "tickets" });
 fieldFromOperation({ operation: getTicket, type: TicketRef, name: "ticket" });
+const TicketPhaseHistoryRef = objectFromSchema<TicketPhaseHistory>({
+  name: "TicketPhaseHistory",
+  schema: TicketPhaseHistoryOutputSchema,
+  description:
+    "A ticket's phase history, oldest first (ADR 0054), and the facts that contradict its phase.",
+});
+
 fieldFromOperation({ operation: exportTicket, type: TicketExportRef, name: "ticketExport" });
+fieldFromOperation({
+  operation: ticketPhaseHistory,
+  type: TicketPhaseHistoryRef,
+  name: "ticketPhaseHistory",
+});
 mutationFromOperation({ operation: createTicket, type: TicketRef });
 mutationFromOperation({ operation: createTicketFromTemplate, type: TicketRef });
 mutationFromOperation({ operation: updateTicket, type: TicketRef });

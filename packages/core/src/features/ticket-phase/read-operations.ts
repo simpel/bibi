@@ -16,7 +16,8 @@ export const listTicketPhases = defineOperation({
   kind: "query",
   description:
     "List the organization's ticket phases in board order, each with its flags (entry, " +
-    "terminal, requiresReason, requiresAssignee, invoiceable) and the phases a ticket may move " +
+    "terminal, requiresReason, requiresAssignee, requiresAcceptedQuote, invoiceable) and the " +
+    "phases a ticket may move " +
     "to from it (`transitionsTo`).",
   input: TicketPhaseListInputSchema,
   output: TicketPhaseListOutputSchema,

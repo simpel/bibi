@@ -464,6 +464,7 @@
     "transitionRefused": "Er organisation tillåter inte den här flytten.",
     "linesBlocked": "{count, plural, one {# rad kan inte flyttas: en reservation krockar eller lägesbytet är inte tillåtet.} other {# rader kan inte flyttas: en reservation krockar eller lägesbytet är inte tillåtet.}}",
     "assigneeRequired": "Fasen kräver en ansvarig. Tilldela en på ärendet först.",
+    "acceptedQuoteRequired": "Fasen kräver en accepterad offert. Acceptera ärendets offert först.",
     "reasonRequired": "Fasen kräver en anledning.",
     "export": "Exportera",
     "exported": "Ärendet har exporterats.",
@@ -507,7 +508,22 @@
     "buildStepByStep": "Bygg det steg för steg",
     "useTemplate": "Använd ett fördefinierat ärende i stället",
     "templateBlocked": "{count, plural, one {# rad är blockerad: en reservation krockar.} other {# rader är blockerade: reservationer krockar.}}",
-    "noAssignee": "Ingen ännu"
+    "noAssignee": "Ingen ännu",
+    "phaseHistory": {
+      "title": "Fashistorik",
+      "empty": "Inga fasbyten ännu.",
+      "entered": "Gick till {phase}",
+      "changed": "Bytte fas",
+      "trigger": {
+        "MANUAL": "För hand",
+        "QUOTE_EVENT": "Av en offerthändelse",
+        "TEMPLATE": "Från ett färdigt ärende",
+        "SYSTEM": "Av systemet"
+      },
+      "warnings": {
+        "QUOTE_ACCEPTED_IN_EARLIER_PHASE": "Offerten är accepterad, men ärendet är kvar i en tidigare fas. Flytta ärendet eller kontrollera offerten."
+      }
+    }
   },
   "calendar": {
     "title": "Kalender",
@@ -1204,6 +1220,7 @@
       "terminal": "Avslutar ärendet",
       "requiresReason": "Kräver en anledning",
       "requiresAssignee": "Kräver en ansvarig",
+      "requiresAcceptedQuote": "Kräver en accepterad offert",
       "invoiceable": "Kan faktureras",
       "event": "Nås genom en offerthändelse",
       "noEvent": "Ingen händelse (flyttas för hand)",
@@ -1363,6 +1380,7 @@
         "terminal": "Avslutar ärendet",
         "requiresReason": "Kräver en anledning",
         "requiresAssignee": "Kräver en ansvarig",
+        "requiresAcceptedQuote": "Kräver en accepterad offert",
         "invoiceable": "Kan faktureras",
         "event": "Offerthändelse",
         "targetPhaseId": "Flytta ärenden till (fas-id)",

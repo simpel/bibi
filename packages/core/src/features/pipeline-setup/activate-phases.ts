@@ -16,6 +16,7 @@ const flagsOf = ({ phase }: { phase: PipelinePhaseDraft }) => ({
   terminal: phase.terminal ?? false,
   requiresReason: phase.requiresReason ?? false,
   requiresAssignee: phase.requiresAssignee ?? false,
+  requiresAcceptedQuote: phase.requiresAcceptedQuote ?? false,
   invoiceable: phase.invoiceable ?? false,
   event: phase.event ?? null,
 });

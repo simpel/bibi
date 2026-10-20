@@ -43,7 +43,13 @@ export async function releaseLineStates({
   for (const { line, entityTypeId } of lines) {
     const stateId = released.byType.get(entityTypeId);
     if (!stateId || (line.stateId && released.ids.has(line.stateId))) continue;
-    const moved = await applyLineState({ context, before: line, stateId, overridden });
+    const moved = await applyLineState({
+      context,
+      before: line,
+      stateId,
+      trigger: overridden ? "MANUAL" : "PHASE",
+      overridden,
+    });
     if (!moved.ok) return moved;
   }
   return ok({ value: true });

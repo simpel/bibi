@@ -1,7 +1,7 @@
+import { APPEND_ONLY_MODELS } from "./append-only-models";
 import { applyUserScope } from "./apply-user-scope";
 import { CREATED_BY_MODELS } from "./conventions";
 import {
-  APPEND_ONLY_MODELS,
   CREATE_OPERATIONS,
   DELETE_OPERATIONS,
   ORG_SCOPED_MODELS,

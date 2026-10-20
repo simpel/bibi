@@ -7,7 +7,8 @@ import { validateFields } from "../field-definition/field-values";
 import { checkLinePeriod, checkPlace, checkTicket } from "./line-rules";
 import { initialStateOf } from "./line-state";
 import type { LineCreateInput, LineRecord } from "./schema";
-import { LINE_INCLUDE, toLineRecord } from "./to-line-record";
+import { recordFirstState } from "./state-history";
+import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 
 export type InsertLineInput = {
   context: OperationContext;
@@ -53,8 +54,9 @@ export async function insertLine({
         include: LINE_INCLUDE,
       }),
   });
-  const line = toLineRecord({ row });
+  // First state history row (ADR 0054); holds follow by trigger, an overlap is CONFLICT (0053).
+  await recordFirstState({ context, lineId: row.id, stateId });
+  const line = (await loadLine({ context, id: row.id })) ?? toLineRecord({ row });
   context.recordChange({ entityId: row.id, after: line });
-  // The hold follows by trigger (ADR 0053); an overlap fails the insert with CONFLICT.
   return ok({ value: line });
 }

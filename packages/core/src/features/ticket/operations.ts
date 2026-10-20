@@ -9,6 +9,7 @@ import { createTicketFromTemplate } from "./create-from-template-operation";
 import { expireTicketHolds } from "./expire-holds-operation";
 import { exportTicket } from "./export-operation";
 import { ticketListWhere } from "./list-where";
+import { ticketPhaseHistory } from "./phase-history-operation";
 import {
   TicketIdInputSchema,
   TicketListInputSchema,
@@ -67,4 +68,5 @@ export const ticketOperations = [
   createTicketFromTemplate,
   exportTicket,
   expireTicketHolds,
+  ticketPhaseHistory,
 ];

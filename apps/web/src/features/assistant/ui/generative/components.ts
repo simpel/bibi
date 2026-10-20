@@ -59,6 +59,7 @@ import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
 import { TicketCardView } from "./ticket-card-view";
 import { TicketPhaseCardView } from "./ticket-phase-card-view";
+import { TicketPhaseHistoryView } from "./ticket-phase-history-view";
 import { TicketPhaseTableView } from "./ticket-phase-table-view";
 import { TicketTableView } from "./ticket-table-view";
 import { TicketTemplateCardView } from "./ticket-template-card-view";
@@ -100,6 +101,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   questionnaire: QuestionnaireView,
   "ticket-table": TicketTableView,
   "ticket-card": TicketCardView,
+  "ticket-phase-history": TicketPhaseHistoryView,
   "line-table": LineTableView,
   "line-card": LineCardView,
   "alternative-group-table": AlternativeGroupTableView,

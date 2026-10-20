@@ -24,6 +24,6 @@ export const changeTicketPhase = defineOperation({
       const message = "Unknown or archived phase";
       return invalid({ message, issues: [{ path: "phaseId", message }] });
     }
-    return moveTicket({ context, before, to, reason });
+    return moveTicket({ context, before, to, reason, trigger: "MANUAL" });
   },
 });

@@ -12,32 +12,36 @@ enum PhaseEvent {
 /// Trigger (ADR 0053): changing `terminal` re-derives the holds of the lines that have not ended
 /// on tickets in the phase (`sync_line_occupancy.sql`).
 model TicketPhase {
-  id               String                  @id @default(cuid(2))
-  organizationId   String
-  name             String
-  color            String
-  position         Int                     @default(0)
+  id                    String                  @id @default(cuid(2))
+  organizationId        String
+  name                  String
+  color                 String
+  position              Int                     @default(0)
   /// New tickets start here.
-  entry            Boolean                 @default(false)
+  entry                 Boolean                 @default(false)
   /// No move leaves this phase; entering it releases every line.
-  terminal         Boolean                 @default(false)
+  terminal              Boolean                 @default(false)
   /// A reason is required to enter.
-  requiresReason   Boolean                 @default(false)
+  requiresReason        Boolean                 @default(false)
   /// The ticket must have its main assignee (ADR 0034) to enter.
-  requiresAssignee Boolean                 @default(false)
+  requiresAssignee      Boolean                 @default(false)
+  /// The ticket must have an accepted quote to enter (ADR 0054: phases guard facts).
+  requiresAcceptedQuote Boolean                 @default(false)
   /// Invoices can be created in this phase.
-  invoiceable      Boolean                 @default(false)
+  invoiceable           Boolean                 @default(false)
   /// Entered by this quote event instead of by hand; at most one active phase per event.
-  event            PhaseEvent?
-  status           RecordStatus            @default(ACTIVE)
-  createdAt        DateTime                @default(now())
-  updatedAt        DateTime                @updatedAt
-  createdBy        String?
-  transitionsFrom  TicketPhaseTransition[] @relation("TransitionFrom")
-  transitionsTo    TicketPhaseTransition[] @relation("TransitionTo")
-  tickets          Ticket[]
-  stateRules       PhaseStateRule[]
-  templates        TicketTemplate[]
+  event                 PhaseEvent?
+  status                RecordStatus            @default(ACTIVE)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  createdBy             String?
+  transitionsFrom       TicketPhaseTransition[] @relation("TransitionFrom")
+  transitionsTo         TicketPhaseTransition[] @relation("TransitionTo")
+  tickets               Ticket[]
+  stateRules            PhaseStateRule[]
+  templates             TicketTemplate[]
+  changesFrom           TicketPhaseChange[]     @relation("PhaseChangeFrom")
+  changesTo             TicketPhaseChange[]     @relation("PhaseChangeTo")
 
   @@unique([id, organizationId])
   @@index([organizationId, status, position])

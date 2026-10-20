@@ -48,6 +48,15 @@ function lineConflict({ cause }: { cause: PostgresCause }): Mapped | undefined {
   return { code: "CONFLICT", message, issues };
 }
 
+/**
+ * A history row written against a phase or state that changed in the meantime (ADR 0054,
+ * `domain_history.sql`): a concurrent change won.
+ */
+const HISTORY_STALE: Mapped = {
+  code: "CONFLICT",
+  message: "Changed by someone else in the meantime: reload and try again",
+};
+
 function fromPrisma({ error }: { error: KnownError }): Mapped | undefined {
   const known = PRISMA_CODES[error.code];
   if (known) return known;
@@ -55,6 +64,7 @@ function fromPrisma({ error }: { error: KnownError }): Mapped | undefined {
   if (!cause) return;
   const line = lineConflict({ cause });
   if (line) return line;
+  if (cause.message === "history_stale") return HISTORY_STALE;
   return typeof cause.code === "string" ? POSTGRES_CODES[cause.code] : undefined;
 }
 

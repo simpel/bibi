@@ -20,22 +20,25 @@ import { loadTicketData } from "../load-ticket-data";
 import { ExportTicketButton } from "./export-ticket-button";
 import { TicketActions } from "./ticket-actions";
 import { TicketFacts } from "./ticket-facts";
+import { TicketPhaseHistory } from "./ticket-phase-history";
 import { TicketPhaseLabel } from "./ticket-phase-label";
 
 export type TicketDetailProps = { locale: Locale; id: string };
 
-const BackLink = ({ label }: { label: string }) => (
-  <Link
-    href={ROUTES.tickets}
-    className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-  >
-    <ArrowLeftIcon className="size-4" />
-    {label}
-  </Link>
-);
+async function BackLink() {
+  const common = await getTranslations("common");
+  return (
+    <Link
+      href={ROUTES.tickets}
+      className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+    >
+      <ArrowLeftIcon className="size-4" />
+      {common("back")}
+    </Link>
+  );
+}
 
 export async function TicketDetail({ locale, id }: TicketDetailProps) {
-  const common = await getTranslations("common");
   const t = await getTranslations("ticket");
   const { ticketWrite, paymentWrite } = await getCallerAbilities();
   const [ticket, data] = await Promise.all([
@@ -54,7 +57,7 @@ export async function TicketDetail({ locale, id }: TicketDetailProps) {
   );
   return (
     <div className="grid gap-6">
-      <BackLink label={common("back")} />
+      <BackLink />
       <PageHeader title={t("reference", { reference: ticket.value.reference })} actions={actions} />
       <div>
         <TicketPhaseLabel phases={data.value.phases} id={ticket.value.phaseId} />
@@ -66,6 +69,7 @@ export async function TicketDetail({ locale, id }: TicketDetailProps) {
         members={data.value.members}
       />
       <TicketQuotes locale={locale} ticket={ticket.value} phases={data.value.phases} />
+      <TicketPhaseHistory locale={locale} ticketId={id} phases={data.value.phases} />
       <TicketPayments locale={locale} ticketId={id} canRequest={paymentWrite} />
       <ProgramSection locale={locale} ticket={ticket.value} />
       <RequirementSection locale={locale} ticket={ticket.value} />

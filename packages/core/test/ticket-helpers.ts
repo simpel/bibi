@@ -90,3 +90,22 @@ export async function moveToPhase({ context, ticketId, name, reason }: MoveToPha
   const input = { ticketId, phaseId: phase.id, reason };
   return execute({ operation: changeTicketPhase, input, context });
 }
+
+export type PlaceInPhaseInput = {
+  ticket: { id: string; organizationId: string; phaseId: string };
+  phaseId: string;
+};
+
+/**
+ * Puts a ticket in a phase without the move rules, through its phase history (ADR 0054: the only
+ * way `phaseId` changes). For tests whose subject is not the move itself.
+ */
+export async function placeInPhase({ ticket, phaseId }: PlaceInPhaseInput): Promise<void> {
+  if (phaseId === ticket.phaseId) return;
+  await getDb().ticketPhaseChange.create({
+    data: {
+      ...{ organizationId: ticket.organizationId, ticketId: ticket.id },
+      ...{ fromPhaseId: ticket.phaseId, toPhaseId: phaseId, trigger: "SYSTEM" },
+    },
+  });
+}

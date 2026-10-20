@@ -46,7 +46,13 @@ async function moveTicketsOut({
   const blockers: AppErrorIssue[] = [];
   for (const row of rows) {
     const to: TicketPhase = target.value;
-    const moved = await moveTicket({ context, before: toTicketDto({ row }), to, reason });
+    const moved = await moveTicket({
+      context,
+      before: toTicketDto({ row }),
+      to,
+      reason,
+      trigger: "SYSTEM",
+    });
     if (!moved.ok) blockers.push(...moved.error.issues);
   }
   if (blockers.length === 0) return ok({ value: true });
