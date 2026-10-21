@@ -21,4 +21,9 @@
 - Proposing `payment.create` through MCP makes zero provider calls; the approval card shows the PENDING row without a reference or link. Tested in `apps/mcp/test/approval-payment.test.ts` and `packages/core/test/payment-after-commit.test.ts`.
 - A crash between the commit and the Stripe call leaves a `PENDING` row with no reference and no link. It is harmless (nothing was charged) and visible in the ticket's payment list. Repeating the call for that row would reuse the same idempotency key; no retry operation exists yet.
 - Mail: core handlers send no mail today. Invitation mail is an `afterCommit` hook in `packages/auth`, which a preview never runs. New mail to customers belongs in `external` (or an `afterCommit` hook when its outcome does not change the output).
-- Open: `paymentAccount.startOnboarding` still calls Stripe (create account, onboarding link) inside its handler, so previewing it creates a connected account. It needs the same split.
+- ~~Open: `paymentAccount.startOnboarding` still calls Stripe inside its handler.~~ Closed, see the addendum.
+
+## Addendum 2026-10-21: `paymentAccount.startOnboarding`
+- The handler now only inserts the `PaymentAccount` row (`stripeAccountId` is nullable, one migration). `external` (`onboard-after-commit.ts`) creates the connected account when the row has no account id, stores it, and creates the onboarding link, which is returned with the row. A preview creates no Stripe account and keeps no row.
+- The account's idempotency key stays `okazi-connected-account-<organization id>` (one row per organization, so equal to a key per row). If Stripe refuses, or the process dies after the commit, the row stays with a null account id and the next `startOnboarding` resumes it: one connected account per organization, also when called twice.
+- `paymentAccount.sync` stays in its handler: it only reads from Stripe, has `approval: false` and creates nothing there, so there is no side effect to defer. With a null account id it returns the row unchanged.

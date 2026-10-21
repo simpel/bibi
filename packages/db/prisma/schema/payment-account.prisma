@@ -1,11 +1,13 @@
 /// Where the organization gets paid: its Stripe connected account (Accounts v2, ADR 0028). One per
 /// organization, created by `paymentAccount.startOnboarding`. Okazi never holds venue funds.
 /// `status` mirrors the account's card payments capability and is refreshed by
-/// `paymentAccount.sync`; no row at all means "not connected".
+/// `paymentAccount.sync`; no row at all means "not connected". `stripeAccountId` is null from the
+/// committed row until the Stripe call after the commit stored it (ADR 0058); a second
+/// `startOnboarding` resumes such a row.
 model PaymentAccount {
   id              String               @id @default(cuid(2))
   organizationId  String
-  stripeAccountId String
+  stripeAccountId String?
   status          PaymentAccountStatus @default(ONBOARDING)
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt

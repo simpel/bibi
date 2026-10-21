@@ -3,6 +3,7 @@
 Current behaviour. Why: ADR 0028 (provider and Connect), 0029 (invoicing), 0057 (derived balance), 0058 (after commit).
 
 ## Model
+- `paymentAccount.startOnboarding` inserts the account row first (`stripeAccountId` null) and calls Stripe only after the commit (ADR 0058): a preview creates no connected account, and a call after a refused one resumes the row instead of creating a second account.
 - Stripe is the provider, with Connect: one connected account per organization, direct charges on it (the venue is the merchant and Stripe carries the loss risk, not Okazi; never mix with destination charges). Accounts are created with the Accounts v2 API and onboarded through an account link started from organization settings. The platform account comes from `@okazi/config`.
 - A `PaymentProvider` interface keeps the adapter replaceable (like `MailProvider`).
 - A payment settles exactly one receivable: a sent quote, a deposit request or an invoice (`quoteId`, `depositId` or `invoiceId`). `payment.create` takes the receivable; the amount defaults to the open balance and may be lower.

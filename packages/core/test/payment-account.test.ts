@@ -1,8 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { AppError } from "../src/errors/app-error";
+import { err } from "../src/errors/result";
 import {
   type ExecuteContext,
   execute,
   getPaymentAccount,
+  previewChange,
   setStripeConnectGateway,
   startPaymentOnboarding,
   syncPaymentAccount,
@@ -38,6 +41,32 @@ describe("paymentAccount", () => {
     expect(second.stripeAccountId).toBe(first.stripeAccountId);
     expect(gateway.calls.filter((call) => call === "createAccount")).toHaveLength(1);
     expect(gateway.calls.filter((call) => call === "createOnboardingLink")).toHaveLength(2);
+  });
+
+  it("previews onboarding without calling Stripe or keeping a row (ADR 0058)", async () => {
+    const context = testContext();
+    const input = { country: "SE" };
+    const preview = await previewChange({ operation: startPaymentOnboarding, input, context });
+    expect(preview.ok).toBe(true);
+    expect(gateway.calls).toEqual([]);
+    expect(await context.db.paymentAccount.count()).toBe(0);
+  });
+
+  it("resumes a row whose Stripe call was refused without a second account", async () => {
+    const context = testContext();
+    const realCreate = gateway.createAccount;
+    gateway.createAccount = async () => {
+      gateway.calls.push("createAccount");
+      return err({ error: new AppError({ code: "UNAVAILABLE", message: "Stripe is down" }) });
+    };
+    expect(errorCode({ result: await start({ context }) })).toBe("UNAVAILABLE");
+    const stuck = await context.db.paymentAccount.findFirst({});
+    expect(stuck?.stripeAccountId).toBeNull();
+    gateway.createAccount = realCreate;
+    const resumed = unwrap({ result: await start({ context }) });
+    expect(resumed.id).toBe(stuck?.id);
+    expect(resumed.stripeAccountId).toMatch(/^acct_/);
+    expect(await context.db.paymentAccount.count()).toBe(1);
   });
 
   it("syncs the status from Stripe", async () => {

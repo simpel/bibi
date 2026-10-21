@@ -32,8 +32,13 @@ export const PaymentAccountStartOnboardingInputSchema = z.object({
 export const PaymentAccountSyncInputSchema = z.object({});
 
 export const PaymentAccountOnboardingSchema = PaymentAccountSchema.extend({
-  onboardingUrl: z.url().describe("Stripe-hosted onboarding page. Short-lived, single use."),
-  onboardingExpiresAt: z.date(),
+  onboardingUrl: z
+    .url()
+    .nullable()
+    .describe(
+      "Stripe-hosted onboarding page. Short-lived, single use. Null until Stripe is called.",
+    ),
+  onboardingExpiresAt: z.date().nullable(),
 });
 
 export type PaymentAccountStatus = z.infer<typeof PaymentAccountStatusSchema>;
