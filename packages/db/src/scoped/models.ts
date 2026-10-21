@@ -24,6 +24,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "ItemSetup",
   "ItemPart",
   "ItemCustomisationGroup",
+  "ItemCustomisationOption",
   "Customer",
   "Contact",
   "PriceList",
@@ -130,20 +131,3 @@ export const SOFT_DELETE_MODELS = new Set<string>(SOFT_DELETE_DEFAULTS.keys());
 
 /** Models with global rows (`organizationId` null): reads include them, writes stay org-pinned. */
 export const GLOBAL_READ_MODELS = new Set<string>(["Skill"]);
-
-export const READ_OPERATIONS = new Set<string>([
-  "findMany",
-  "findFirst",
-  "findFirstOrThrow",
-  "findUnique",
-  "findUniqueOrThrow",
-  "count",
-  "aggregate",
-  "groupBy",
-]);
-
-export const CREATE_OPERATIONS = new Set<string>(["create", "createMany", "createManyAndReturn"]);
-
-export const UPDATE_OPERATIONS = new Set<string>(["update", "updateMany", "updateManyAndReturn"]);
-
-export const DELETE_OPERATIONS = new Set<string>(["delete", "deleteMany"]);

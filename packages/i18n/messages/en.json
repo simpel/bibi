@@ -343,7 +343,7 @@
     },
     "partValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (optional)}}",
     "customisationGroups": {
-      "hint": "Groups of parts to choose between, with how many to pick.",
+      "hint": "Groups of other items to choose between, each with how many to pick and what an option does to the price.",
       "none": "No customisation groups yet.",
       "add": "Add customisation group",
       "remove": "Remove customisation group",
@@ -351,7 +351,11 @@
       "minPick": "Choose at least",
       "maxPick": "Choose at most",
       "options": "Options",
-      "noOptions": "Add parts first; the options are chosen among them."
+      "noOptions": "No options yet.",
+      "addOption": "Add option",
+      "removeOption": "Remove option",
+      "option": "Item",
+      "priceEffect": "Price effect"
     },
     "customisationGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
     "resolution": {
@@ -737,7 +741,17 @@
     "bundleFields": {
       "itemId": "Bundle",
       "name": "Name (default the bundle's)"
-    }
+    },
+    "chooseOptions": "Choose options",
+    "chooseOptionsDescription": "Choose the line's options in each customisation group. Each chosen option becomes its own line under this one: included options add nothing, extras are charged at their own price, and an option that replaces sets the price instead of the item.",
+    "optionsChosen": "The options have been saved.",
+    "optionGroup": "{name} (choose {min, number}{same, select, true {} other {–{max, number}}})",
+    "optionChoice": "{name} · {effect}"
+  },
+  "priceEffect": {
+    "INCLUDED": "Included",
+    "EXTRA": "Extra",
+    "REPLACES": "Replaces"
   },
   "alternativeGroup": {
     "plural": "Alternatives",
@@ -1508,6 +1522,7 @@
         "line_archive": "Remove line",
         "line_changeState": "Change line state",
         "line_expandBundle": "Add bundle with its parts",
+        "line_chooseOptions": "Choose line options",
         "line_followPhase": "Let line follow the phase",
         "alternativeGroup_create": "Create alternatives",
         "alternativeGroup_update": "Change alternatives",
@@ -2503,7 +2518,7 @@
         "items-and-venues": {
           "title": "Items and venues",
           "lead": "Venues are your buildings and sites. Items are everything you sell or book: rooms, dishes, drinks, equipment and bundles.",
-          "body": "# Venues\n\nA venue is a building or site. Items belong to a venue.\n\n1. Open **Venues** in the left menu and choose **Create venue**.\n2. Enter the name, address, contact details and opening hours.\n3. Save. The venue page lists the items at that venue.\n\nArchiving a venue also archives its items.\n\n# Items\n\nAn item is anything that can be sold or booked. What an item looks like depends on its **type**, and your administrators define the types. A \"Conference room\" type might have fields for floor and area. A \"Dish\" type might have a price and a list of allergens.\n\nTo add an item:\n\n1. Open **Items** and choose **Create item**.\n2. Pick the type, then fill in the name, description, venue and the type's fields.\n3. Save.\n\nIf no types exist yet, choose **Go to types** and create one first. Use the type filter on the list to find items quickly.\n\n# What a type can do\n\nWhen a type is created it can switch on any of these capabilities. They are the only things Okazi builds in. Everything else is your own naming.\n\n- **Priced**: the item has a price, a price unit (per person, per unit, per hour or flat) and VAT.\n- **Bundle**: the item contains other items, with quantity and timing. A conference day is an example.\n- **Customisations**: a bundle can offer customisation groups, for example \"choose 1 of 3 main courses\".\n- **Bookable**: the item can be occupied in time, and Okazi stops double booking. A room is an example.\n- **Setups**: a bookable item has a capacity per setup, for example 80 people in Theatre and 40 in U-shape.\n\n# Setups and changeover\n\nSetups are your named room layouts, such as Cinema, U-shape or Mingle. Each has a changeover time, which Okazi blocks right before a line that uses it. Create them under **Settings, Setups**, and set the capacity per setup on each bookable item.\n\n# Bundles for one customer\n\nOn a customer page, choose **Save as bundle** to build a bundle from catalog items. The bundle is shown only for that customer and the catalog does not change.\n\n# Contents of an item\n\nAn item that contains other items shows **Contents** with what it **Contains** (mandatory parts) and what it **May contain** (optional parts and choices). This is what Okazi compares with the counts you record. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Blocking an item\n\nTo take a room out of use for maintenance or internal use, open the item and choose **Block item**. Bookings cannot overlap a block. Choose **Release block** to open it again.\n\n# Prices for a customer\n\nPrice lists let you give a customer a general discount or special prices per item. See [Configuration](/docs/guide/configuration)."
+          "body": "# Venues\n\nA venue is a building or site. Items belong to a venue.\n\n1. Open **Venues** in the left menu and choose **Create venue**.\n2. Enter the name, address, contact details and opening hours.\n3. Save. The venue page lists the items at that venue.\n\nArchiving a venue also archives its items.\n\n# Items\n\nAn item is anything that can be sold or booked. What an item looks like depends on its **type**, and your administrators define the types. A \"Conference room\" type might have fields for floor and area. A \"Dish\" type might have a price and a list of allergens.\n\nTo add an item:\n\n1. Open **Items** and choose **Create item**.\n2. Pick the type, then fill in the name, description, venue and the type's fields.\n3. Save.\n\nIf no types exist yet, choose **Go to types** and create one first. Use the type filter on the list to find items quickly.\n\n# What a type can do\n\nWhen a type is created it can switch on any of these capabilities. They are the only things Okazi builds in. Everything else is your own naming.\n\n- **Priced**: the item has a price, a price unit (per person, per unit, per hour or flat) and VAT.\n- **Bundle**: the item contains other items, with quantity and timing. A conference day is an example.\n- **Customisations**: any item can offer groups of options, other items that are included, charged extra or replace its price, for example \"choose 1 of 3 main courses\".\n- **Bookable**: the item can be occupied in time, and Okazi stops double booking. A room is an example.\n- **Setups**: a bookable item has a capacity per setup, for example 80 people in Theatre and 40 in U-shape.\n\n# Setups and changeover\n\nSetups are your named room layouts, such as Cinema, U-shape or Mingle. Each has a changeover time, which Okazi blocks right before a line that uses it. Create them under **Settings, Setups**, and set the capacity per setup on each bookable item.\n\n# Bundles for one customer\n\nOn a customer page, choose **Save as bundle** to build a bundle from catalog items. The bundle is shown only for that customer and the catalog does not change.\n\n# Contents of an item\n\nAn item that contains other items shows **Contents** with what it **Contains** (mandatory parts) and what it **May contain** (optional parts and choices). This is what Okazi compares with the counts you record. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Blocking an item\n\nTo take a room out of use for maintenance or internal use, open the item and choose **Block item**. Bookings cannot overlap a block. Choose **Release block** to open it again.\n\n# Prices for a customer\n\nPrice lists let you give a customer a general discount or special prices per item. See [Configuration](/docs/guide/configuration)."
         },
         "needs-and-sheets": {
           "title": "Needs and sheets",

@@ -34,13 +34,11 @@ async function checkFrozen({ context, line }: LineInput): Promise<string[]> {
   return failures;
 }
 
-/** One part line per part of the bundle item that is not a customisation option. */
+/** One part line per part of the bundle item (options are chosen lines, not parts). */
 async function checkParts({ context, line }: LineInput): Promise<string[]> {
   const [parts, expected] = await Promise.all([
-    context.db.line.count({ where: { parentLineId: line.id } }),
-    context.db.itemPart.count({
-      where: { parentId: line.itemId ?? "", customisationGroupId: null },
-    }),
+    context.db.line.count({ where: { parentLineId: line.id, priceEffect: null } }),
+    context.db.itemPart.count({ where: { parentId: line.itemId ?? "" } }),
   ]);
   return parts === expected ? [] : [`${line.name}: ${parts} part lines, expected ${expected}`];
 }

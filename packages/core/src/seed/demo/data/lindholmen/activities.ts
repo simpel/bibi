@@ -29,7 +29,8 @@ const microphones: readonly DemoItem[] = Array.from({ length: 10 }, (_, index) =
 
 /**
  * Lindholmen's guides, tours and equipment (`docs/demo-seed.md`, Guides and tours, Equipment).
- * A tour picks one bookable guide; the Design workshop contains the room Knippla.
+ * A tour picks one bookable guide; the Design workshop contains the room Knippla; the Projector
+ * offers an Installation group (Our technician as a priced extra, or Self-install).
  */
 export const lindholmenActivities: readonly DemoItem[] = [
   guide({ name: "Emma Lind", languages: ["Swedish", "English"] }),
@@ -55,7 +56,21 @@ export const lindholmenActivities: readonly DemoItem[] = [
     ...{ priceKr: 395, priceUnit: "PER_PERSON", durationMinutes: 120 },
     parts: [{ name: "Knippla (workshop)", durationMinutes: 120 }],
   },
-  equipment({ name: "Projector", kr: 450, inventory: "LEC-AV-001" }),
+  // ADR 0059: opting out is choosing the other option, not a waiver.
+  { type: "Service", name: "Our technician", priceKr: 650, priceUnit: "FLAT" },
+  { type: "Service", name: "Self-install" },
+  {
+    ...equipment({ name: "Projector", kr: 450, inventory: "LEC-AV-001" }),
+    customisations: [
+      {
+        name: "Installation",
+        options: [
+          { name: "Our technician", priceEffect: "EXTRA" },
+          { name: "Self-install", priceEffect: "INCLUDED" },
+        ],
+      },
+    ],
+  },
   equipment({ name: "Mobile sound system", kr: 900, inventory: "LEC-AV-002" }),
   equipment({ name: "Extra whiteboard", kr: 150, inventory: "LEC-FU-001" }),
   equipment({ name: "Hearing loop", kr: 0, inventory: "LEC-AV-003" }),

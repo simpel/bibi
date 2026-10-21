@@ -5,7 +5,7 @@ import { CAPABILITY_REQUIRES, type EntityBase, type ItemCapability } from "./cap
 
 export type CheckCapabilitiesInput = { base: EntityBase; capabilities: readonly ItemCapability[] };
 
-/** Only item types have capabilities, and CUSTOMISATIONS/SETUPS need BUNDLE/BOOKABLE. */
+/** Only item types have capabilities, and SETUPS needs BOOKABLE (CUSTOMISATIONS stands alone). */
 export function checkCapabilities({ base, capabilities }: CheckCapabilitiesInput): Result<true> {
   if (base !== "ITEM" && capabilities.length > 0) {
     const message = "Only item types have capabilities";

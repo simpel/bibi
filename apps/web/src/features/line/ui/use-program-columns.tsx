@@ -3,6 +3,7 @@ import { actionsColumn, type ColumnDef } from "@okazi/ui";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";
+import { chosenOptions } from "./choose-options-schema";
 import { LineStateCell, stateOf } from "./line-state-cell";
 import { placeOf } from "./place-of";
 import { amountColumns } from "./program-amount-columns";
@@ -11,23 +12,29 @@ import { nameColumn } from "./program-name-column";
 import { type ProgramAccess, ProgramRowActions } from "./program-row-actions";
 
 type Translator = ReturnType<typeof useTranslations<"line">>;
+type EffectTranslator = ReturnType<typeof useTranslations<"priceEffect">>;
 type Formatter = ReturnType<typeof useFormatter>;
 type Column = ColumnDef<LineDto>;
 
-export type UseProgramColumnsInput = { data: ProgramFormData; access: ProgramAccess };
+export type UseProgramColumnsInput = {
+  lines: LineDto[];
+  data: ProgramFormData;
+  access: ProgramAccess;
+};
 
 type DataInput = {
   data: ProgramFormData;
   t: Translator;
+  effects: EffectTranslator;
   format: Formatter;
   locale: string;
   hidden: string | undefined;
 };
 
 /** The data columns (without the row actions). */
-function dataColumns({ data, t, format, locale, hidden }: DataInput): Column[] {
+function dataColumns({ data, t, effects, format, locale, hidden }: DataInput): Column[] {
   return [
-    nameColumn({ t }),
+    nameColumn({ t, effects }),
     {
       id: "type",
       header: t("columns.type"),
@@ -64,21 +71,29 @@ function dataColumns({ data, t, format, locale, hidden }: DataInput): Column[] {
 }
 
 /** Name · type · where · state · time · quantity · unit price, plus the row actions when writable. */
-export function useProgramColumns({ data, access }: UseProgramColumnsInput): Column[] {
+export function useProgramColumns({ lines, data, access }: UseProgramColumnsInput): Column[] {
   const t = useTranslations("line");
+  const effects = useTranslations("priceEffect");
   const common = useTranslations("common");
   const format = useFormatter();
   const locale = useLocale();
   return useMemo<Column[]>(() => {
     const hidden = data.itemsHidden ? common("hidden") : undefined;
-    const columns = dataColumns({ data, t, format, locale, hidden });
+    const columns = dataColumns({ data, t, effects, format, locale, hidden });
     if (!access.canEdit && !access.canRemove && !access.canChangeState) return columns;
     return [
       ...columns,
       actionsColumn<LineDto>({
         label: common("actions"),
-        cell: (item) => <ProgramRowActions line={item} data={data} access={access} />,
+        cell: (item) => (
+          <ProgramRowActions
+            line={item}
+            data={data}
+            access={access}
+            chosen={chosenOptions({ line: item, lines })}
+          />
+        ),
       }),
     ];
-  }, [t, common, format, locale, data, access]);
+  }, [t, effects, common, format, locale, lines, data, access]);
 }

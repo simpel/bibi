@@ -8,6 +8,7 @@ import { checkDemoBoard } from "./board-checks";
 import { checkDemoBuffers } from "./buffer-checks";
 import { checkDemoBundles } from "./bundle-checks";
 import { checkDemoConfig } from "./config-checks";
+import { checkDemoCustomisations } from "./customisation-checks";
 import { checkDemoFactGuards } from "./fact-guard-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
@@ -87,6 +88,7 @@ export async function checkDemoOrg({
   failures.push(...(await checkDemoPermissions({ context, org, members: listed })));
   failures.push(...(await checkDemoConfig({ context, org, skipPipeline })));
   failures.push(...(await checkDemoPools({ context, org })));
+  failures.push(...(await checkDemoCustomisations({ context, org })));
   failures.push(...(await checkDemoResponsibilities({ context, org })));
   failures.push(...(await checkDemoRecords({ context, org })));
   failures.push(...(await checkDemoSetupNeed({ context, org, skipPipeline })));

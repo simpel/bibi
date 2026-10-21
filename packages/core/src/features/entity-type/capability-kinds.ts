@@ -33,12 +33,11 @@ export const ItemCapabilitiesSchema = z
   .refine((list) => new Set(list).size === list.length, "Capabilities must be unique")
   .describe(
     "Item types only. PRICED: price, unit and VAT. BUNDLE: contains other items. " +
-      "CUSTOMISATIONS: customisation groups among the parts (needs BUNDLE). BOOKABLE: occupies time, " +
+      "CUSTOMISATIONS: groups of options, each an item with a price effect. BOOKABLE: occupies time, " +
       "with a default length. SETUPS: capacity per setup (needs BOOKABLE).",
   );
 
 /** Capability → the capability it requires. */
 export const CAPABILITY_REQUIRES: Partial<Record<ItemCapability, ItemCapability>> = {
-  CUSTOMISATIONS: "BUNDLE",
   SETUPS: "BOOKABLE",
 };

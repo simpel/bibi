@@ -3,7 +3,13 @@ import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { checkReadable } from "../ticket/ticket-rules";
 import { changeLineState } from "./change-state-operation";
+import { chooseOptions } from "./choose-options";
+import {
+  LineChooseOptionsInputSchema,
+  LineChooseOptionsOutputSchema,
+} from "./choose-options-schema";
 import { expandLineBundle } from "./expand-operation";
 import { followLinePhase } from "./follow-phase-operation";
 import { LineListInputSchema, LineListOutputSchema } from "./list-schema";
@@ -63,11 +69,35 @@ export const getLine = defineOperation({
   },
 });
 
+export const chooseLineOptions = defineOperation({
+  name: "line.chooseOptions",
+  kind: "command",
+  description:
+    "Choose the customisation options of a line whose item has customisation groups (ADR " +
+    "0059). Replaces the line's choices: each chosen option becomes an option line under the " +
+    "line (same time, quantity and type) and a dropped one is removed. Each group needs between " +
+    "its minPick and maxPick options; a group with minPick 0 can be skipped, and opting out is " +
+    "choosing the other option. The option's price effect decides the totals: INCLUDED does not " +
+    "count, EXTRA counts at its own price, REPLACES counts instead of the line. A chosen " +
+    "option's own needs apply as for any line. Needs item:read (the options are items).",
+  input: LineChooseOptionsInputSchema,
+  output: LineChooseOptionsOutputSchema,
+  permission: "program:write",
+  handler: async ({ input, context }) => {
+    const readable = checkReadable({ context, permission: "item:read", path: "optionItemIds" });
+    if (!readable.ok) return readable;
+    const lines = await chooseOptions({ context, input });
+    if (!lines.ok) return lines;
+    return ok({ value: { items: await withEffective({ context, lines: lines.value }) } });
+  },
+});
+
 export const lineOperations = [
   listLines,
   getLine,
   createLine,
   expandLineBundle,
+  chooseLineOptions,
   updateLine,
   archiveLine,
   changeLineState,

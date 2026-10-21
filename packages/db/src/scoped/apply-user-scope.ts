@@ -1,5 +1,10 @@
-import { CREATE_OPERATIONS, DELETE_OPERATIONS, READ_OPERATIONS, UPDATE_OPERATIONS } from "./models";
 import { assertNoNestedWrites } from "./nested-writes";
+import {
+  CREATE_OPERATIONS,
+  DELETE_OPERATIONS,
+  READ_OPERATIONS,
+  UPDATE_OPERATIONS,
+} from "./operation-kinds";
 import { ScopeViolationError } from "./scope-violation";
 import { SYSTEM_ACTOR_ID } from "./system-actor";
 

@@ -1,5 +1,6 @@
 import type { EntityBase, ItemCapability } from "../../features/entity-type/capability-kinds";
 import type { FieldKind } from "../../features/field-definition/field-kinds";
+import type { PRICE_EFFECTS } from "../../features/item/customisation-group-schema";
 import type { PRICE_UNITS } from "../../features/item/schema";
 import type { ItemStateTemplateKey } from "../../templates/item-states/item-state-templates";
 import type { VocabularyTemplateKey } from "../../templates/vocabularies/vocabulary-templates";
@@ -37,8 +38,19 @@ export type DemoPart = {
   required?: boolean;
 };
 
-/** A customisation group (CUSTOMISATIONS): pick `pick` (default 1) of the options, which become parts too. */
-export type DemoCustomisationGroup = { name: string; pick?: number; options: readonly DemoPart[] };
+/** A customisation option by the name of an item seeded before it; INCLUDED unless given. */
+export type DemoOption = { name: string; priceEffect?: (typeof PRICE_EFFECTS)[number] };
+
+/**
+ * A customisation group (CUSTOMISATIONS, on any item, ADR 0059): pick `pick` (default 1) of the
+ * options; `minPick` (default `pick`) 0 makes the group skippable.
+ */
+export type DemoCustomisationGroup = {
+  name: string;
+  pick?: number;
+  minPick?: number;
+  options: readonly DemoOption[];
+};
 
 /** Field values by field name; choice values by value or option name. */
 export type DemoFieldValues = Readonly<

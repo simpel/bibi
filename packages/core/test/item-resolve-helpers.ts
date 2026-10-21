@@ -35,6 +35,10 @@ async function createDishType({ context }: Ctx) {
 }
 
 type Part = { itemId: string; required?: boolean; quantity?: number; offsetMinutes?: number };
+
+/** Options included in the price, in the given order. */
+const options = ({ itemIds }: { itemIds: string[] }) =>
+  itemIds.map((itemId) => ({ itemId, priceEffect: "INCLUDED" as const }));
 type BundleInput = {
   name: string;
   parts: Part[];
@@ -85,11 +89,11 @@ export async function createMenu({ context }: Ctx) {
     name: "Lunch",
     parts: [
       { itemId: starter, quantity: 2 },
-      { itemId: cod, offsetMinutes: 30 },
-      { itemId: veal, offsetMinutes: 35 },
       { itemId: cake, required: false, offsetMinutes: 60 },
     ],
-    customisationGroups: [{ name: "Main", minPick: 1, maxPick: 1, itemIds: [cod, veal] }],
+    customisationGroups: [
+      { name: "Main", minPick: 1, maxPick: 1, options: options({ itemIds: [cod, veal] }) },
+    ],
   });
   const day = await compose({
     name: "Day",
@@ -98,11 +102,7 @@ export async function createMenu({ context }: Ctx) {
       { itemId: salad, offsetMinutes: 200 },
     ],
   });
-  const only = [{ name: "Only", minPick: 1, maxPick: 1, itemIds: [eggRoll] }];
-  const duo = await compose({
-    name: "Duo",
-    parts: [{ itemId: eggRoll }],
-    customisationGroups: only,
-  });
+  const only = [{ name: "Only", minPick: 1, maxPick: 1, options: options({ itemIds: [eggRoll] }) }];
+  const duo = await compose({ name: "Duo", parts: [], customisationGroups: only });
   return { ids: { ...dishes, starter, lunch, day, duo }, valueId };
 }

@@ -19,6 +19,7 @@ export const SALES_NAMES = [
   "itemState.update",
   "line.changeState",
   "line.expandBundle",
+  "line.chooseOptions",
   "line.followPhase",
   "phaseGrid.get",
   "phaseGrid.setCell",

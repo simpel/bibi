@@ -7,6 +7,7 @@ import { applyAlternatives } from "./alternatives";
 import { applyBundles } from "./bundle-lines";
 import { lineAmounts } from "./line-totals";
 import type { OrderLineDto, OrderLineTag } from "./order-line-schema";
+import { applyPriceEffects } from "./price-effects";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
@@ -70,8 +71,8 @@ export type DeriveTicketLinesInput = Db & { ticketIds: readonly string[] };
 /**
  * The tickets' priced lines as order lines (ADR 0052): every active line with an effective unit
  * price, at its effective quantity, discount and VAT, with the item's price unit and tags. What a
- * DRAFT quote shows and what `quote.send` freezes, with their alternative groups and a bundle
- * line's VAT per rate of its parts (ADR 0059). Keyed by ticket.
+ * DRAFT quote shows and what `quote.send` freezes, with their alternative groups, a bundle
+ * line's VAT per rate of its parts and the options' price effects (ADR 0059). Keyed by ticket.
  */
 export async function deriveTicketLines({
   context,
@@ -98,5 +99,6 @@ export async function deriveTicketLines({
   const derived = [...out.values()].flat();
   await applyAlternatives({ context, lines: derived });
   applyBundles({ derived, lines });
+  applyPriceEffects({ derived, lines });
   return out;
 }

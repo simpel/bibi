@@ -11,6 +11,7 @@ export const lineRoutes = [
   restRoute({ operation: "line.get", method: "GET", path: "/lines/{id}" }),
   restRoute({ operation: "line.create", method: "POST", path: "/lines" }),
   restRoute({ operation: "line.expandBundle", method: "POST", path: "/lines/expand-bundle" }),
+  restRoute({ operation: "line.chooseOptions", method: "POST", path: "/lines/{lineId}/options" }),
   restRoute({ operation: "line.update", method: "PATCH", path: "/lines/{id}" }),
   restRoute({ operation: "line.archive", method: "DELETE", path: "/lines/{id}" }),
   restRoute({

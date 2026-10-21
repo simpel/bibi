@@ -28,7 +28,12 @@ describe("cross-organization isolation: item parts", () => {
     expect(own.isError, JSON.stringify(own.data)).toBe(false);
     const parts = [{ itemId: secret.data.id }];
     const customisationGroups = [
-      { name: "Pick", minPick: 1, maxPick: 1, itemIds: [secret.data.id] },
+      {
+        name: "Pick",
+        minPick: 1,
+        maxPick: 1,
+        options: [{ itemId: secret.data.id, priceEffect: "EXTRA" }],
+      },
     ];
     const created = await call({
       client: b,

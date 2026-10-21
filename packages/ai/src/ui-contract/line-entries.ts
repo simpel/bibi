@@ -43,6 +43,12 @@ export const LINE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
     schema: z.object({ items: z.array(LineWireSchema) }),
     toProps: ({ value }) => ({ items: value.items, nextCursor: null }),
   }),
+  // The line's option lines after a choice (ADR 0059).
+  line_chooseOptions: uiEntry({
+    component: "line-table",
+    schema: z.object({ items: z.array(LineWireSchema) }),
+    toProps: ({ value }) => ({ items: value.items, nextCursor: null }),
+  }),
   line_followPhase: lineCard,
   // The lines `ticket.expireHolds` moved to their expiry state (ADR 0044).
   ticket_expireHolds: uiEntry({

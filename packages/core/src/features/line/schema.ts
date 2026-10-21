@@ -6,6 +6,7 @@ import {
 } from "../../shared/buffers";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
+import { PriceEffectSchema } from "../item/customisation-group-schema";
 import { LineEffectiveShape } from "./effective-schema";
 
 /** A line as stored: its own values, with `null` overrides meaning "inherit". */
@@ -31,11 +32,14 @@ export const LineRecordSchema = z.object({
   /** The alternative group (alternativeGroup.get) the line is an option of (ADR 0052). */
   alternativeGroupId: z.string().nullable(),
   /**
-   * The bundle line (line.get) this part line belongs to (ADR 0059); null for any other line.
-   * Set by `line.expandBundle` only. A part line shows its own price but does not count in the
-   * totals: its bundle line carries the price, with VAT per rate of its parts.
+   * The line (line.get) this part or option line belongs to (ADR 0059); null for any other
+   * line. Set by `line.expandBundle` (a part line, which shows its own price but does not count in
+   * the totals: its bundle line carries the price, with VAT per rate of its parts) or by
+   * `line.chooseOptions` (an option line, see `priceEffect`).
    */
   parentLineId: z.string().nullable(),
+  /** Option lines only (ADR 0059, snapshot set by `line.chooseOptions`); null on other lines. */
+  priceEffect: PriceEffectSchema.nullable(),
   note: z.string().nullable(),
   fields: FieldValuesSchema,
   /** The line's state (one of its item type's states, ADR 0044); null without an item. */

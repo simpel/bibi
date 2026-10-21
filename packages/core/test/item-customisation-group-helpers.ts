@@ -4,6 +4,7 @@ import {
   type ExecuteContext,
   execute,
   type ItemCustomisationGroupInput,
+  type PriceEffect,
 } from "../src/index";
 import { unwrap } from "./helpers";
 import { createTestItem } from "./item-helpers";
@@ -40,30 +41,43 @@ export async function createMealSetup({ context }: Ctx) {
 export type CreateLunchInput = Ctx & {
   entityTypeId: string;
   parts: string[];
-  customisationGroups: ItemCustomisationGroupInput[];
+  customisationGroups?: ItemCustomisationGroupInput[];
 };
 
 export function createLunch({
   context,
   entityTypeId,
   parts: partIds,
-  customisationGroups,
+  customisationGroups = [],
 }: CreateLunchInput) {
   const parts = partIds.map((itemId) => ({ itemId }));
   const input = { entityTypeId, name: "Lunch", parts, customisationGroups };
   return execute({ operation: createItem, input, context });
 }
 
-export type MainCourseInput = { itemIds: string[]; minPick?: number; maxPick?: number };
+export type MainCourseInput = {
+  itemIds: string[];
+  minPick?: number;
+  maxPick?: number;
+  priceEffect?: PriceEffect;
+};
 
-/** A "Main course" group, by default pick exactly one. */
-export const mainCourse = ({ itemIds, minPick = 1, maxPick = 1 }: MainCourseInput) => ({
+/** A "Main course" group, by default pick exactly one, every option included in the price. */
+export const mainCourse = ({
+  itemIds,
+  minPick = 1,
+  maxPick = 1,
+  priceEffect = "INCLUDED",
+}: MainCourseInput) => ({
   name: "Main course",
   minPick,
   maxPick,
-  itemIds,
+  options: itemIds.map((itemId) => ({ itemId, priceEffect })),
 });
 
-/** Groups with sorted options: parts written in one statement have no fixed order. */
+/** Groups with sorted options, to compare sets. */
 export const sortedGroups = ({ groups }: { groups: ItemCustomisationGroupInput[] }) =>
-  groups.map((group) => ({ ...group, itemIds: [...group.itemIds].sort() }));
+  groups.map((group) => ({
+    ...group,
+    options: [...group.options].sort((a, b) => a.itemId.localeCompare(b.itemId)),
+  }));

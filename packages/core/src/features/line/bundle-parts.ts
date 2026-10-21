@@ -67,8 +67,8 @@ export function planParts({ bundle, headcount, parts }: PlanPartsInput): Result<
 export type LoadBundleInput = { context: Pick<OperationContext, "db">; itemId: string };
 
 /**
- * The active `BUNDLE` item with its active parts in order, without customisation options (those
- * are chosen, not expanded); null when there is no such item.
+ * The active `BUNDLE` item with its active parts in order; null when there is no such item.
+ * Customisation options are not parts: they are chosen per line (`line.chooseOptions`).
  */
 export async function loadBundle({ context, itemId }: LoadBundleInput) {
   const item = await context.db.item.findFirst({
@@ -76,7 +76,7 @@ export async function loadBundle({ context, itemId }: LoadBundleInput) {
     select: {
       name: true,
       parts: {
-        where: { customisationGroupId: null, part: { status: "ACTIVE" } },
+        where: { part: { status: "ACTIVE" } },
         orderBy: [{ position: "asc" }, { id: "asc" }],
         select: {
           ...{ partId: true, quantity: true, offsetMinutes: true, durationMinutes: true },

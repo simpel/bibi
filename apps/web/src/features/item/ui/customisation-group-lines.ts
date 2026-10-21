@@ -14,18 +14,18 @@ export type CustomisationGroupLinesInput = {
   format: (values: CustomisationGroupValues) => string;
 };
 
-/** One line per customisation group, e.g. "Main course: choose 1 of 4", for `CustomisationsDisplay`. */
+/** One line per customisation group, e.g. "Installation: choose 1 of 2", for `CustomisationsDisplay`. */
 export function customisationGroupLines({
   groups,
   format,
 }: CustomisationGroupLinesInput): string[] {
-  return groups.map(({ name, minPick, maxPick, itemIds }) =>
+  return groups.map(({ name, minPick, maxPick, options }) =>
     format({
       name,
       min: minPick,
       max: maxPick,
       same: String(minPick === maxPick),
-      options: itemIds.length,
+      options: options.length,
     }),
   );
 }

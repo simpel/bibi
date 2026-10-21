@@ -67,9 +67,16 @@ export const lindholmenTypes: readonly DemoType[] = [
     base: "ITEM",
     name: "Equipment",
     states: "bookable",
-    capabilities: ["BOOKABLE", "PRICED"],
+    // ADR 0059: customisations on any item, e.g. who installs it.
+    capabilities: ["BOOKABLE", "PRICED", "CUSTOMISATIONS"],
     ...{ setupMinutes: 10, teardownMinutes: 10 },
     fields: [{ name: "Inventory number", kind: "TEXT" }],
+  },
+  {
+    base: "ITEM",
+    name: "Service",
+    states: "other",
+    capabilities: ["PRICED"],
   },
   {
     base: "ITEM",

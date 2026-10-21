@@ -1,5 +1,5 @@
 import type { EntityTypeDto, ItemDto } from "@okazi/core";
-import type { PRICE_UNITS } from "@okazi/core/schemas";
+import type { PRICE_UNITS, PriceEffect } from "@okazi/core/schemas";
 import { type BufferFormValues, bufferFormDefaults } from "@/components/form/buffer-values";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 
@@ -14,12 +14,15 @@ export type PartFormValue = {
   required: boolean;
 };
 
-/** One customisation group of a CUSTOMISATIONS item as raw form values; `itemIds` are parts of the item. */
+/** One option of a customisation group: another item ("" = not picked yet) and its price effect. */
+export type CustomisationOptionFormValue = { itemId: string; priceEffect: PriceEffect };
+
+/** One customisation group of a CUSTOMISATIONS item as raw form values. */
 export type CustomisationGroupFormValue = {
   name: string;
   minPick: string;
   maxPick: string;
-  itemIds: string[];
+  options: CustomisationOptionFormValue[];
 };
 
 /** Raw values of the item form: inputs are strings; kr, not minor units; one entry per field key. */
@@ -72,7 +75,7 @@ export function itemFormDefaults({ type, item }: ItemDefaultsInput): ItemFormVal
       name: group.name,
       minPick: String(group.minPick),
       maxPick: String(group.maxPick),
-      itemIds: group.itemIds,
+      options: group.options.map(({ itemId, priceEffect }) => ({ itemId, priceEffect })),
     })),
   };
 }

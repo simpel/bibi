@@ -1,30 +1,24 @@
-import {
-  Button,
-  FormControl,
-  FormController,
-  FormItem,
-  FormLabel,
-  FormMessage,
-  MultiChoiceControl,
-} from "@okazi/ui";
+import { Button } from "@okazi/ui";
 import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";
+import { CustomisationOptionsField } from "./customisation-options-field";
+import type { ItemFormData } from "./item-form-data";
 import type { ItemFormOutput } from "./item-form-schema";
 import type { ItemFormValues } from "./item-form-values";
 
 export type CustomisationGroupRowProps = {
   form: UseFormReturn<ItemFormValues, unknown, ItemFormOutput>;
   index: number;
-  /** The item's current parts, the options a group can offer. */
-  options: { value: string; label: string }[];
+  /** Items a group can offer as options. */
+  items: ItemFormData["parts"];
   onRemove: () => void;
 };
 
-/** One customisation group: name, how many to pick, and which parts are the options. */
+/** One customisation group: name, how many to pick, and which items are the options. */
 export function CustomisationGroupRow(props: CustomisationGroupRowProps) {
-  const { form, index, options, onRemove } = props;
+  const { form, index, items, onRemove } = props;
   const t = useTranslations("item.customisationGroups");
   const name = `customisationGroups.${index}` as const;
   return (
@@ -32,24 +26,7 @@ export function CustomisationGroupRow(props: CustomisationGroupRowProps) {
       <TextField form={form} name={`${name}.name`} label={t("name")} />
       <TextField form={form} name={`${name}.minPick`} label={t("minPick")} type="number" />
       <TextField form={form} name={`${name}.maxPick`} label={t("maxPick")} type="number" />
-      <FormController
-        control={form.control}
-        name={`${name}.itemIds`}
-        render={({ field }) => (
-          <FormItem className="sm:col-span-3">
-            <FormLabel>{t("options")}</FormLabel>
-            <FormControl>
-              <MultiChoiceControl
-                value={field.value}
-                onChange={field.onChange}
-                choices={options}
-                emptyLabel={t("noOptions")}
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+      <CustomisationOptionsField form={form} groupIndex={index} items={items} />
       <RemoveButton label={t("remove")} onRemove={onRemove} />
     </div>
   );

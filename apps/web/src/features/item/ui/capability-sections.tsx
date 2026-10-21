@@ -15,7 +15,7 @@ export type CapabilitySectionsProps = {
   form: UseFormReturn<ItemFormValues, unknown, ItemFormOutput>;
   type: EntityTypeDto;
   data: ItemFormData;
-  /** The item being edited, left out of the parts it can contain. */
+  /** The item being edited, left out of the parts and options it can contain. */
   itemId?: string | undefined;
 };
 
@@ -33,7 +33,7 @@ export function CapabilitySections({ form, type, data, itemId }: CapabilitySecti
         <PartsSection form={form} parts={parts} />
       ) : null}
       {hasCapability({ type, capability: "CUSTOMISATIONS" }) ? (
-        <CustomisationGroupsSection form={form} parts={parts} />
+        <CustomisationGroupsSection form={form} items={parts} />
       ) : null}
       <BufferFields form={form} inherits="type" />
     </>

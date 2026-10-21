@@ -20,12 +20,15 @@ const weightOf = ({ line }: { line: LineDto }) =>
  */
 export function applyBundles({ derived, lines }: ApplyBundlesInput) {
   const partsOf = new Map<string, LineDto[]>();
+  const partIds = new Set<string>();
   for (const line of lines) {
-    if (!line.parentLineId) continue;
+    // Option lines (a price effect) are not parts: `applyPriceEffects` prices them.
+    if (!line.parentLineId || line.priceEffect) continue;
+    partIds.add(line.id);
     partsOf.set(line.parentLineId, [...(partsOf.get(line.parentLineId) ?? []), line]);
   }
   for (const entry of derived) {
-    if (entry.line.parentLineId) entry.line.inTotal = false;
+    if (partIds.has(entry.line.lineId)) entry.line.inTotal = false;
     const parts = partsOf.get(entry.line.lineId);
     if (!parts) continue;
     const split = allocateBundleVat({

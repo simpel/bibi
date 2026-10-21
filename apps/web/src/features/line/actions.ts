@@ -3,9 +3,11 @@
 import {
   archiveLine,
   changeLineState,
+  chooseLineOptions,
   createLine,
   expandLineBundle,
   followLinePhase,
+  type LineChooseOptionsInput,
   type LineCreateInput,
   type LineDto,
   type LineExpandBundleInput,
@@ -70,4 +72,13 @@ export async function expandBundleAction({
   input,
 }: ExpandBundleActionInput): Promise<ActionResult<{ items: LineDto[] }>> {
   return toActionResult({ result: await runOperation({ operation: expandLineBundle, input }) });
+}
+
+export type ChooseLineOptionsActionInput = { input: LineChooseOptionsInput };
+
+/** Replaces a line's chosen options with one option line each (ADR 0059). */
+export async function chooseLineOptionsAction({
+  input,
+}: ChooseLineOptionsActionInput): Promise<ActionResult<{ items: LineDto[] }>> {
+  return toActionResult({ result: await runOperation({ operation: chooseLineOptions, input }) });
 }

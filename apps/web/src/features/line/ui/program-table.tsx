@@ -16,7 +16,7 @@ export type ProgramTableProps = {
 /** The run schedule: what, type, where (item and setup), who is responsible, time and quantity. */
 export function ProgramTable({ lines, data, access }: ProgramTableProps) {
   const t = useTranslations("line");
-  const columns = useProgramColumns({ data, access });
+  const columns = useProgramColumns({ lines, data, access });
   return (
     <PersistedDataTable
       tableId="line.list"

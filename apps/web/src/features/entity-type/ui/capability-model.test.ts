@@ -8,8 +8,14 @@ describe("toggleCapability", () => {
   });
 
   it("drops dependents when a capability is switched off", () => {
+    const current = ["BOOKABLE", "SETUPS", "PRICED"] as const;
+    const next = toggleCapability({ current, capability: "BOOKABLE", checked: false });
+    expect(next).toEqual(["PRICED"]);
+  });
+
+  it("keeps CUSTOMISATIONS without BUNDLE (ADR 0059)", () => {
     const current = ["BUNDLE", "CUSTOMISATIONS", "PRICED"] as const;
     const next = toggleCapability({ current, capability: "BUNDLE", checked: false });
-    expect(next).toEqual(["PRICED"]);
+    expect(next).toEqual(["PRICED", "CUSTOMISATIONS"]);
   });
 });
