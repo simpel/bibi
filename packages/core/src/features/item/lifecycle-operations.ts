@@ -1,9 +1,9 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { archiveRecords } from "../../records/update-record";
-import { conflict, notFound } from "../../shared/errors";
-import { inUseConflict } from "../../shared/in-use";
+import { notFound } from "../../shared/errors";
 import { checkNotLinked } from "../field-definition/link-usage";
+import { checkItemsUnused } from "./archive-guard";
 import { itemEmbeddable } from "./embeddable";
 import { ItemIdInputSchema, ItemSchema } from "./schema";
 import { loadItem, toItemDtos } from "./to-item-dto";
@@ -25,19 +25,8 @@ export const archiveItem = defineOperation({
     const records = [{ id, entityTypeId: before.entityTypeId }];
     const linked = await checkNotLinked({ context, records, what: before.name });
     if (!linked.ok) return linked;
-    const scheduled = await context.db.line.count({ where: { itemId: id } });
-    if (scheduled > 0) {
-      const message = `${before.name} is used by ${scheduled} active lines`;
-      return inUseConflict({ context, feature: "program", message });
-    }
-    const templated = await context.db.ticketTemplateLine.count({
-      where: { itemId: id, template: { status: "ACTIVE" } },
-    });
-    if (templated > 0) {
-      return conflict({
-        message: `${before.name} is used by ${templated} predefined ticket lines`,
-      });
-    }
+    const unused = await checkItemsUnused({ context, items: [before] });
+    if (!unused.ok) return unused;
     const row = await context.db.item.update({ where: { id }, data: { status: "ARCHIVED" } });
     await archiveRecords({ context, ids: [id] });
     const [item] = await toItemDtos({ context, rows: [row] });

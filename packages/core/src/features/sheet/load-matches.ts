@@ -20,7 +20,7 @@ async function loadLines({
   const rows = await context.db.line.findMany({
     where: {
       ticketId,
-      item: { entityTypeId: { in: definition.entityTypeIds } },
+      item: { status: "ACTIVE", entityTypeId: { in: definition.entityTypeIds } },
       // Only lines whose state the organization marked as sendable (ADR 0044).
       state: { inSheets: true },
     },

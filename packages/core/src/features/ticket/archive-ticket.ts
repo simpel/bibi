@@ -3,6 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { archiveGroupsOfTicket } from "../alternative-group/archive-groups";
 import { archiveLinesOfTicket } from "../line/release-for-ticket";
+import { archiveRequirements } from "../requirement/archive-requirements";
 import type { TicketDto } from "./schema";
 import { TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
 
@@ -21,6 +22,7 @@ export async function archiveTicket({
   const program = await archiveLinesOfTicket({ context, ticketId: ticket.id });
   if (!program.ok) return program;
   await archiveGroupsOfTicket({ context, ticketId: ticket.id });
+  await archiveRequirements({ context, ticketId: ticket.id });
   const row = await context.db.ticket.update({
     where: { id: ticket.id },
     data: { status: "ARCHIVED" },

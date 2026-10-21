@@ -6,6 +6,7 @@ import { conflict, notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { groupHardHoldBlocker } from "../alternative-group/hard-hold";
 import { mergeFields, validateFields } from "../field-definition/field-values";
+import { archiveRequirements } from "../requirement/archive-requirements";
 import { insertLine } from "./insert-line";
 import { moveWithState } from "./item-state-move";
 import { checkLinePeriod, checkPlace } from "./line-rules";
@@ -116,6 +117,7 @@ export const archiveLine = defineOperation({
         include: LINE_INCLUDE,
       });
       await archiveRecords({ context, ids: [id] });
+      await archiveRequirements({ context, lineId: id });
       const line = toLineRecord({ row });
       context.recordChange({ entityId: id, before, after: line });
       return ok({ value: line });
