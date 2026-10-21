@@ -11,7 +11,7 @@ enum PriceUnit {
 /// Trigger (ADR 0053, 0059): changing `setupMinutes` or `teardownMinutes` re-derives the holds of
 /// the item's lines that have not ended (`sync_line_occupancy.sql`).
 model Item {
-  id                     String                   @id
+  id                     String                    @id
   organizationId         String
   entityTypeId           String
   venueId                String?
@@ -20,7 +20,7 @@ model Item {
   name                   String
   description            String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
-  fields                 Json                     @default("{}")
+  fields                 Json                      @default("{}")
   /// PRICED: price in minor units (1/100 kr), unit and VAT (null = the venue's default).
   priceMinor             Int?
   priceUnit              PriceUnit?
@@ -30,20 +30,22 @@ model Item {
   /// Buffers before and after a booking, in minutes (ADR 0059, owned); null = the type's.
   setupMinutes           Int?
   teardownMinutes        Int?
-  status                 RecordStatus             @default(ACTIVE)
-  createdAt              DateTime                 @default(now())
-  updatedAt              DateTime                 @updatedAt
+  status                 RecordStatus              @default(ACTIVE)
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
   createdBy              String?
-  entityType             EntityType               @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  venue                  Venue?                   @relation(fields: [venueId, organizationId], references: [id, organizationId])
-  customer               Customer?                @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  entityType             EntityType                @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  venue                  Venue?                    @relation(fields: [venueId, organizationId], references: [id, organizationId])
+  customer               Customer?                 @relation(fields: [customerId, organizationId], references: [id, organizationId])
   setups                 ItemSetup[]
   /// BUNDLE: the parts this item contains.
-  parts                  ItemPart[]               @relation("ItemPartParent")
+  parts                  ItemPart[]                @relation("ItemPartParent")
   /// The bundles this item is a part of.
-  partOf                 ItemPart[]               @relation("ItemPartOf")
-  /// CUSTOMISATIONS: customisation groups among the parts.
+  partOf                 ItemPart[]                @relation("ItemPartOf")
+  /// CUSTOMISATIONS: the item's customisation groups (ADR 0059: on any item, not only bundles).
   customisationGroups    ItemCustomisationGroup[]
+  /// The customisation groups this item is an option in.
+  optionIn               ItemCustomisationOption[]
   /// BOOKABLE: the periods the item is held (ADR 0022).
   occupancies            Occupancy[]
   /// BOOKABLE: the lines held in this item.
@@ -55,7 +57,7 @@ model Item {
   /// Order lines that copied this item (snapshot).
   orderLines             OrderLine[]
   /// The supertable row this record extends (ADR 0056).
-  record                 Record                   @relation(fields: [id, organizationId], references: [id, organizationId])
+  record                 Record                    @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, status])
@@ -84,40 +86,36 @@ model ItemSetup {
 /// Item part – one part of a `BUNDLE` item (ADR 0021). Replaced as a set by `item.*`.
 /// The graph is acyclic and at most 5 levels deep; core enforces both.
 model ItemPart {
-  id                   String                  @id @default(cuid(2))
-  organizationId       String
-  parentId             String
-  partId               String
-  quantity             Int                     @default(1)
+  id              String   @id @default(cuid(2))
+  organizationId  String
+  parentId        String
+  partId          String
+  quantity        Int      @default(1)
   /// Start of the part relative to the start of the parent, in minutes.
-  offsetMinutes        Int                     @default(0)
+  offsetMinutes   Int      @default(0)
   /// Length of the part; null = until the end of the parent. Both are defaults: a part line
   /// gets its times from them when the bundle is expanded and keeps its own after (ADR 0059).
-  durationMinutes      Int?
+  durationMinutes Int?
   /// Mandatory part (true) or optional part (false).
-  required             Boolean                 @default(true)
-  /// CUSTOMISATIONS: the customisation group this part is an option in; null = not an option.
-  customisationGroupId String?
+  required        Boolean  @default(true)
   /// Order of the parts on the item, from 0. Breaks ties between parts with the same offset.
-  position             Int
-  createdAt            DateTime                @default(now())
-  updatedAt            DateTime                @updatedAt
-  createdBy            String?
-  parent               Item                    @relation("ItemPartParent", fields: [parentId, organizationId], references: [id, organizationId])
-  part                 Item                    @relation("ItemPartOf", fields: [partId, organizationId], references: [id, organizationId])
-  customisationGroup   ItemCustomisationGroup? @relation(fields: [customisationGroupId, organizationId], references: [id, organizationId])
+  position        Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdBy       String?
+  parent          Item     @relation("ItemPartParent", fields: [parentId, organizationId], references: [id, organizationId])
+  part            Item     @relation("ItemPartOf", fields: [partId, organizationId], references: [id, organizationId])
 
   @@unique([parentId, partId])
   @@index([organizationId, parentId])
   @@index([organizationId, partId])
-  @@index([organizationId, customisationGroupId])
 }
 
-/// Item customisation group – pick between `minPick` and `maxPick` of the parts linked to it (CUSTOMISATIONS,
-/// ADR 0021). Replaced as a set by `item.*` together with the parts; core enforces
-/// `0 <= minPick <= maxPick <= number of options`.
+/// Item customisation group – pick between `minPick` and `maxPick` of its options (CUSTOMISATIONS,
+/// ADR 0021, 0059). Hangs on any item of a type with CUSTOMISATIONS. Replaced as a set by `item.*`;
+/// core enforces `0 <= minPick <= maxPick <= number of options`.
 model ItemCustomisationGroup {
-  id             String     @id @default(cuid(2))
+  id             String                    @id @default(cuid(2))
   organizationId String
   itemId         String
   name           String
@@ -125,13 +123,46 @@ model ItemCustomisationGroup {
   maxPick        Int
   /// Order of the groups on the item, from 0.
   position       Int
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  createdAt      DateTime                  @default(now())
+  updatedAt      DateTime                  @updatedAt
   createdBy      String?
-  item           Item       @relation(fields: [itemId, organizationId], references: [id, organizationId])
-  options        ItemPart[]
+  item           Item                      @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  options        ItemCustomisationOption[]
 
   @@unique([id, organizationId])
   @@unique([itemId, name])
+  @@index([organizationId, itemId])
+}
+
+/// What choosing a customisation option does to the price of the item it is chosen on (ADR 0059).
+enum PriceEffect {
+  /// Included in the item's price: the option line does not count in the totals.
+  INCLUDED
+  /// Charged on top: the option line counts at its own effective price.
+  EXTRA
+  /// Replaces the item's price: the option line counts and the item's line does not.
+  REPLACES
+}
+
+/// Item customisation option – one item that can be chosen in a customisation group, with its
+/// price effect (ADR 0059, owned). Replaced as a set with the groups by `item.*`. An item is an
+/// option in at most one group of the same item; core enforces it.
+model ItemCustomisationOption {
+  id             String                 @id @default(cuid(2))
+  organizationId String
+  groupId        String
+  /// The item that is chosen (another item, never the group's own item).
+  itemId         String
+  priceEffect    PriceEffect
+  /// Order of the options in the group, from 0.
+  position       Int
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  createdBy      String?
+  group          ItemCustomisationGroup @relation(fields: [groupId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  item           Item                   @relation(fields: [itemId, organizationId], references: [id, organizationId])
+
+  @@unique([groupId, itemId])
+  @@index([organizationId, groupId])
   @@index([organizationId, itemId])
 }

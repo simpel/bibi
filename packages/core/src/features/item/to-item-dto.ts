@@ -1,4 +1,4 @@
-import type { Item, ItemCustomisationGroup, ItemPart } from "@okazi/db";
+import type { Item } from "@okazi/db";
 import type { OperationContext } from "../../operations/types";
 import { loadRecordLinks, withLinks } from "../../records/record-links";
 import { effectiveBuffers } from "../../shared/buffers";
@@ -6,19 +6,27 @@ import type { ItemDto } from "./schema";
 
 type Db = Pick<OperationContext, "db">;
 
-type CustomisationGroupsOfInput = {
-  groups: readonly ItemCustomisationGroup[];
-  parts: readonly ItemPart[];
-};
-
-/** An item's customisation groups in order, each with its options in the order of the parts. */
-const customisationGroupsOf = ({ groups, parts }: CustomisationGroupsOfInput) =>
-  groups.map(({ id, name, minPick, maxPick }) => ({
-    name,
-    minPick,
-    maxPick,
-    itemIds: parts.filter((part) => part.customisationGroupId === id).map((part) => part.partId),
-  }));
+/**
+ * The items' customisation groups in order, each with its options in order. An archived option
+ * drops out of its group, like an archived part (ADR 0059).
+ */
+async function customisationGroupsOf({ context, ids }: { context: Db; ids: readonly string[] }) {
+  const groups = await context.db.itemCustomisationGroup.findMany({
+    where: { itemId: { in: [...ids] } },
+    orderBy: [{ position: "asc" }],
+    include: {
+      options: {
+        where: { item: { status: "ACTIVE" } },
+        orderBy: [{ position: "asc" }],
+        select: { itemId: true, priceEffect: true },
+      },
+    },
+  });
+  return ({ itemId }: { itemId: string }) =>
+    groups
+      .filter((group) => group.itemId === itemId)
+      .map(({ name, minPick, maxPick, options }) => ({ name, minPick, maxPick, options }));
+}
 
 export type ToItemDtosInput = { context: Db; rows: readonly Item[] };
 
@@ -46,10 +54,7 @@ export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<It
     where: { parentId: { in: ids } },
     orderBy: [{ offsetMinutes: "asc" }, { position: "asc" }],
   });
-  const groups = await context.db.itemCustomisationGroup.findMany({
-    where: { itemId: { in: ids } },
-    orderBy: [{ position: "asc" }],
-  });
+  const groupsOf = await customisationGroupsOf({ context, ids });
   const links = await loadRecordLinks({ context, recordIds: ids });
   const types = await typeBuffers({ context, rows });
   return rows.map((row) => ({
@@ -68,10 +73,7 @@ export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<It
         durationMinutes,
         required,
       })),
-    customisationGroups: customisationGroupsOf({
-      groups: groups.filter((group) => group.itemId === row.id),
-      parts: parts.filter((part) => part.parentId === row.id),
-    }),
+    customisationGroups: groupsOf({ itemId: row.id }),
   }));
 }
 

@@ -1,6 +1,7 @@
 import {
   archiveLine,
   changeLineState,
+  chooseLineOptions,
   createLine,
   expandLineBundle,
   expireTicketHolds,
@@ -49,6 +50,15 @@ ExpandBundleRef.implement({
   }),
 });
 mutationFromOperation({ operation: expandLineBundle, type: ExpandBundleRef });
+
+const ChooseOptionsRef = builder.objectRef<{ items: LineDto[] }>("LineChooseOptionsResult");
+ChooseOptionsRef.implement({
+  description: "The line's option lines after `line.chooseOptions`, in group order.",
+  fields: (t) => ({
+    items: t.field({ type: [LineRef], resolve: (result) => result.items }),
+  }),
+});
+mutationFromOperation({ operation: chooseLineOptions, type: ChooseOptionsRef });
 
 const ExpireHoldsRef = builder.objectRef<{ items: LineDto[] }>("TicketExpireHoldsResult");
 ExpireHoldsRef.implement({

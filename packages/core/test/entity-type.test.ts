@@ -25,7 +25,8 @@ describe("entity types and capabilities (ADR 0021)", () => {
       input: { base: "ITEM", name: "X", capabilities: ["CUSTOMISATIONS"] },
       context,
     });
-    expect(errorCode({ result: customisations })).toBe("VALIDATION");
+    // ADR 0059: customisations hang on any item, so they no longer need BUNDLE.
+    expect(errorCode({ result: customisations })).toBeNull();
     const customer = await execute({
       operation: createEntityType,
       input: { base: "CUSTOMER", name: "Company", capabilities: ["PRICED"] },

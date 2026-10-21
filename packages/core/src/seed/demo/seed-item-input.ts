@@ -1,4 +1,5 @@
 import { ok, type Result } from "../../errors/result";
+import type { PriceEffect } from "../../features/item/customisation-group-schema";
 import type { DemoItem, DemoPart } from "./config-types";
 import type { DemoRefs } from "./demo-refs";
 import { missing, resolveFields } from "./seed-fields";
@@ -44,24 +45,28 @@ function resolveParts({ parts, seeded }: PartsInput): Result<Part[]> {
   return ok({ value: resolved });
 }
 
-type Composition = { parts: Part[]; customisationGroups: ItemCustomisationGroup[] };
-type ItemCustomisationGroup = { name: string; minPick: number; maxPick: number; itemIds: string[] };
-type CompositionInput = { item: DemoItem; seeded: ReadonlyMap<string, string> };
+type Group = {
+  name: string;
+  minPick: number;
+  maxPick: number;
+  options: { itemId: string; priceEffect: PriceEffect }[];
+};
+type GroupsInput = { item: DemoItem; seeded: ReadonlyMap<string, string> };
 
-/** Mandatory parts plus every customisation group's options as parts, and the groups over them. */
-function resolveComposition({ item, seeded }: CompositionInput): Result<Composition> {
-  const parts = resolveParts({ parts: item.parts ?? [], seeded });
-  if (!parts.ok) return parts;
-  const customisationGroups: ItemCustomisationGroup[] = [];
+/** Every customisation group with its option names resolved to ids (ADR 0059). */
+function resolveGroups({ item, seeded }: GroupsInput): Result<Group[]> {
+  const groups: Group[] = [];
   for (const group of item.customisations ?? []) {
-    const options = resolveParts({ parts: group.options, seeded });
-    if (!options.ok) return options;
-    parts.value.push(...options.value);
+    const options = [];
+    for (const option of group.options) {
+      const itemId = seeded.get(option.name);
+      if (!itemId) return missing({ what: `option ${option.name}` });
+      options.push({ itemId, priceEffect: option.priceEffect ?? "INCLUDED" });
+    }
     const pick = group.pick ?? 1;
-    const itemIds = options.value.map((option) => option.itemId);
-    customisationGroups.push({ name: group.name, minPick: pick, maxPick: pick, itemIds });
+    groups.push({ name: group.name, minPick: group.minPick ?? pick, maxPick: pick, options });
   }
-  return ok({ value: { parts: parts.value, customisationGroups } });
+  return ok({ value: groups });
 }
 
 export type ItemInputArgs = {
@@ -80,9 +85,11 @@ export function itemInput({ item, refs, venueId, seeded }: ItemInputArgs) {
   if (!fields.ok) return fields;
   const setups = resolveSetups({ item, refs });
   if (!setups.ok) return setups;
-  const composition = resolveComposition({ item, seeded });
-  if (!composition.ok) return composition;
-  const { parts, customisationGroups } = composition.value;
+  const resolved = resolveParts({ parts: item.parts ?? [], seeded });
+  if (!resolved.ok) return resolved;
+  const groups = resolveGroups({ item, seeded });
+  if (!groups.ok) return groups;
+  const [parts, customisationGroups] = [resolved.value, groups.value];
   return ok({
     value: {
       ...{ entityTypeId: type.id, venueId, name: item.name, fields: fields.value },

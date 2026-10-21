@@ -32,7 +32,7 @@ What changes:
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
 - **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. *Done:* `Record` (`id`, `entityTypeId`, `base`, `fields`, `status`) is the supertable of `Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line` and `Requirement`, which share its id (composite foreign key with `organizationId`); core writes both rows in one transaction (`packages/core/src/records/`). `base` is the entity base, or `TICKET_TEMPLATE` for a predefined ticket. *Done:* `LINK` values are `RecordLink` rows (`recordId`, `fieldId`, `targetRecordId`, `position`; composite foreign keys, several rows for several targets), never ids in `fields` JSON; core merges them into `fields` on read. Id lists are join tables. *Target:* polymorphic pairs point at `Record`.
 - **Money is derived** ([ADR 0057](decisions/0057-money-balance-is-derived.md)): a payment settles one receivable (sent quote, deposit or invoice); no balance is stored. External calls run after commit (ADR 0058).
-- **Capabilities, demands and buffers** ([ADR 0059](decisions/0059-capabilities-demands-and-buffers.md), accepted, partly built): the keys are renamed end to end (`capabilities`, `BUNDLE`, `CUSTOMISATIONS`, `ItemPart`, `ItemCustomisationGroup`); setup and teardown minutes on type, item and line are built (soft and hard buffers, `TEARDOWN`, the larger-of rule); the pool target selector is built as a derived read, `item.freeUnits` (a specific item, or an item type plus required list values; free units in name order, the first is the prepick); still to come are capability sections in the type editor, bundles expanded into linked part lines with per-rate VAT, `ItemDemand` and `LineAllocation` for pooled equipment and staff, working hours, and `item:write` for managers.
+- **Capabilities, demands and buffers** ([ADR 0059](decisions/0059-capabilities-demands-and-buffers.md), accepted, partly built): the keys are renamed end to end (`capabilities`, `BUNDLE`, `CUSTOMISATIONS`, `ItemPart`, `ItemCustomisationGroup`); customisations work on any item, each option an item with a price effect (`ItemCustomisationOption`, `line.chooseOptions`); setup and teardown minutes on type, item and line are built (soft and hard buffers, `TEARDOWN`, the larger-of rule); the pool target selector is built as a derived read, `item.freeUnits` (a specific item, or an item type plus required list values; free units in name order, the first is the prepick); still to come are capability sections in the type editor, bundles expanded into linked part lines with per-rate VAT, `ItemDemand` and `LineAllocation` for pooled equipment and staff, working hours, and `item:write` for managers.
 
 ## ER diagram (MVP)
 
@@ -77,7 +77,8 @@ erDiagram
   Item ||--o{ ItemPart : "contains"
   Item ||--o{ ItemPart : "is part of"
   Item ||--o{ ItemCustomisationGroup : "has"
-  ItemCustomisationGroup ||--o{ ItemPart : "groups"
+  ItemCustomisationGroup ||--o{ ItemCustomisationOption : "offers"
+  Item ||--o{ ItemCustomisationOption : "is an option in"
   Item ||--o{ Occupancy : "has"
   Item ||--o{ ItemSetup : "has"
   Setup ||--o{ ItemSetup : "is used in"
@@ -118,14 +119,16 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · The organization's own type for a base entity: item, customer, contact, ticket, requirement or line.
 
-> **Target (ADR 0059):** customisations no longer need a bundle. An item type is Equipment or Person.
+> **Done (ADR 0059):** customisations no longer need a bundle (`CUSTOMISATIONS` stands alone; only `SETUPS` requires `BOOKABLE`).
+
+> **Target (ADR 0059):** an item type is Equipment or Person.
 
 > **Done (ADR 0059):** item types have nullable `setupMinutes` and `teardownMinutes` (owned): the default buffers of their items, null = none (`VALIDATION` on other bases). Changing them re-derives the holds of lines that have not ended (by trigger; a collision is `CONFLICT`).
 
 **Attributes**
 - base entity (`ITEM | CUSTOMER | CONTACT | TICKET | REQUIREMENT | LINE`)
 - name (e.g. Conference room, Dish, Boat, Bundle, Company, Conference) — unique per base entity
-- capabilities (`ITEM` only): `PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE`, `SETUPS` — `CUSTOMISATIONS` requires `BUNDLE`, `SETUPS` requires `BOOKABLE` (otherwise `VALIDATION`)
+- capabilities (`ITEM` only): `PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE`, `SETUPS` — `SETUPS` requires `BOOKABLE` (otherwise `VALIDATION`)
 
 **Relations**
 - `1:N` has → FieldDefinition
@@ -463,7 +466,9 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` overrides (owned, null = the item's, else its type's). Derived on every read: `effectiveSetupMinutes` (the inherited minutes or the setup's changeover time, whichever is larger, never the sum) and `effectiveTeardownMinutes`, each with its source (`LINE`, `ITEM`, `TYPE`, or `SETUP` when the changeover wins; null = no buffer).
 
-> **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`, `parentLineId`; derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
+> **Done (ADR 0059):** `line.chooseOptions` replaces the customisation options chosen on a line whose item has groups. Each chosen option becomes an option line under it (`parentLineId` = the line; same ticket, type, fields, time and quantity as the line; its own item and name; `priceEffect` snapshot). A dropped option's line is archived. Each group needs between its `minPick` and `maxPick` options (`VALIDATION`); a group with `minPick` 0 can be skipped, and opting out is choosing another option. An option is chosen once per line while active (partial unique index). A line with part or option lines keeps its item; moving a timed line moves its timed part and option lines by the same delta and archiving it archives them, at every level. Quote derivation: `INCLUDED` never counts, `EXTRA` counts at its own price, `REPLACES` counts and its parent line does not; an option of an unchosen alternative (ADR 0052) is left out with it. Option lines are not bundle parts (no VAT split). The order line has no price effect field of its own; an option line is snapshotted like any line (`parentLineId`, `inTotal`).
+
+> **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`, `parentLineId`; snapshot `priceEffect` (set by `line.chooseOptions`, never changed); derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
 
 > **Done:** holds are written by triggers (ADR 0053); `stateId` is a projection of `LineStateChange` (ADR 0054; check `line states`) and "held since" is read from the newest change. Alternative groups: `alternativeGroupId` (ADR 0052).
 
@@ -478,7 +483,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - state (`stateId`, an `ItemState` of the item's type; null for a line without an item), `stateOverridden` (set by hand, skipped by phase moves)
 - held since (`heldAt`, derived: when the line entered its current state, its newest `LineStateChange`; shown oldest first where soft holds overlap, no queue or rank); the line has no expiry of its own, see Ticket `holdsUntil`
 - alternative group (`alternativeGroupId`, optional): the line is one option of an `AlternativeGroup`
-- bundle line (`parentLineId`, optional): the line is a part line of that bundle line (ADR 0059)
+- parent line (`parentLineId`, optional): the line is a part line of that bundle line (`line.expandBundle`) or an option line of that line (`line.chooseOptions`; ADR 0059)
+- price effect (`priceEffect`, snapshot): `INCLUDED | EXTRA | REPLACES` on an option line, else null; the database allows it only with `parentLineId`
 - internal note
 
 **Relations**
@@ -490,12 +496,12 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` adjusts → Requirement
 - `1:N` is charged via → OrderLine
 - `N:0..1` is an option of → AlternativeGroup
-- `N:0..1` is a part of → Line (its bundle line)
+- `N:0..1` is a part or option of → Line (its parent line)
 - `1:0..1` holds → Occupancy (derived from the state's `hold`)
 - `1:N` requires → Task
 - `1:N` AccessCode opens for this
 
-> Operations (resource `line`): `line.list|get|create|update|archive` and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followPhase({ lineId })` (clears the override and applies the current phase's grid cell). A new line starts in the grid cell of the ticket's phase for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `ticket.changePhase` moves the lines that are not overridden to the target phase's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A terminal phase moves every line to its type's released state. Who answers for a line comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both with the line's `lineId`, written by trigger, ADR 0053). An overlap with a hard hold, setup time or block is refused (`CONFLICT`, issue `lines.<id>`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change (clearing both times releases it); `archive` releases it; a ticket that is archived or enters a terminal phase holds nothing. Every change is audited. Every line read on every surface carries the effective quantity, price, discount and VAT with their sources. A second option of an alternative group going into a hard-hold state (by `line.changeState`, `line.update` or a phase move) is `CONFLICT`.
+> Operations (resource `line`): `line.list|get|create|update|archive`, `line.chooseOptions({ lineId, optionItemIds })` (permission `program:write`, plus `item:read` since the options are items; web, GraphQL, REST `POST /lines/{lineId}/options`, MCP) and `line.changeState({ lineId, stateId })` (an allowed transition of the type; marks the line `stateOverridden`) and `line.followPhase({ lineId })` (clears the override and applies the current phase's grid cell). A new line starts in the grid cell of the ticket's phase for its item type, else in the type's initial state; a line moved to an item of another type starts over the same way. `ticket.changePhase` moves the lines that are not overridden to the target phase's cells, atomically: a disallowed transition or a hard-hold collision refuses the whole move with `CONFLICT` and one issue per blocking line (`path` `lines.<id>`). A terminal phase moves every line to its type's released state. Who answers for a line comes from the ticket's assignment of the responsibility that covers its item type ([ADR 0034](decisions/0034-fixed-access-roles-and-responsibilities.md)). With a bookable item the line holds an occupancy for its period (soft or hard, from its state; none in a `NONE` or released state), and with a setup and a hard hold also a `SETUP` occupancy for the setup's changeover time right before (both with the line's `lineId`, written by trigger, ADR 0053). An overlap with a hard hold, setup time or block is refused (`CONFLICT`, issue `lines.<id>`) and nothing is saved; soft holds may overlap. `update` moves the occupancy when item, setup or time change (clearing both times releases it); `archive` releases it; a ticket that is archived or enters a terminal phase holds nothing. Every change is audited. Every line read on every surface carries the effective quantity, price, discount and VAT with their sources. A second option of an alternative group going into a hard-hold state (by `line.changeState`, `line.update` or a phase move) is `CONFLICT`.
 
 > State history ([ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md)): `LineStateChange` (line, from state, to state (null when the line lost its item), trigger `MANUAL` / `PHASE` / `EXPIRY` / `SYSTEM`, changed at, changed by, `seq`), append-only. Inserting a row sets `Line.stateId` by trigger (`domain_history.sql`), which re-derives the line's hold; a stale row fails with `CONFLICT` and any other write of `stateId` is refused by the database. A new line with a state gets a first row (`SYSTEM`); `line.changeState` writes `MANUAL`, phase moves, terminal releases and `line.followPhase` `PHASE`, `ticket.expireHolds` `EXPIRY`.
 
@@ -600,7 +606,9 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` (owned, an override of the type default, on any item); derived on read `effectiveSetupMinutes` and `effectiveTeardownMinutes` with their source (`ITEM` or `TYPE`). A line's effective setup is the larger of these and its setup's changeover.
 
-> **Target (ADR 0059):** `ItemDemand` rows (what the item asks of a pool), and working hours for a bookable item. Customisations work on any item.
+> **Target (ADR 0059):** `ItemDemand` rows (what the item asks of a pool), and working hours for a bookable item.
+
+> **Done (ADR 0059):** customisation groups hang on any item whose type has `CUSTOMISATIONS`, not only bundles; each option is another item with a price effect (`ItemCustomisationOption`).
 
 **Attributes**
 - type (the organization's own) and custom fields (`fields` as JSON)
@@ -609,7 +617,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - capability columns (values only if the type has the capability, otherwise `VALIDATION`):
   - `PRICED`: `priceMinor` (minor units), `priceUnit` (`PER_PERSON`, `PER_UNIT`, `PER_HOUR`, `FLAT`), `vatRatePercent` (null = the venue's default)
   - `BUNDLE`: contains other items with count, `offsetMinutes`, `durationMinutes`
-  - `CUSTOMISATIONS`: customisation groups among the parts (requires `BUNDLE`)
+  - `CUSTOMISATIONS`: customisation groups of options, each another item with a price effect (on any item)
   - `BOOKABLE`: occupancy in time, conflict protection, `defaultDurationMinutes`
   - `SETUPS`: capacity per setup (requires `BOOKABLE`)
 - buffers (`setupMinutes`, `teardownMinutes`; any item, null = the type's; ADR 0059)
@@ -623,6 +631,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` contains → ItemPart
 - `1:N` is part of → ItemPart
 - `1:N` has → ItemCustomisationGroup
+- `1:N` is an option in → ItemCustomisationOption
 - `1:N` has → Occupancy
 - `1:N` has → ItemSetup
 - Tagged via fields that select from a vocabulary
@@ -644,21 +653,19 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - offsetMinutes from the parent's start (default 0)
 - durationMinutes (null = until the end of the parent)
 - required (default) or optional
-- customisation group (`customisationGroupId`, with `CUSTOMISATIONS`; null = not an option)
 - position (order on the item, from the input order; sorts parts with the same offset)
 
 **Relations**
 - `N:1` Item contains this
 - `N:1` refers to → Item
-- `N:0..1` is part of → ItemCustomisationGroup
 
 > Replaced as a set by `item.create`/`item.update` (`parts`), only for types with `BUNDLE` (otherwise `VALIDATION`). The graph is acyclic. Core rejects cycles and depth beyond 5 levels (the top item included, parents above counted) with `VALIDATION`. In a bundle, the bundle price is charged. VAT is distributed over the parts in proportion to the parts' list prices.
 
 ### ItemCustomisationGroup (`ItemCustomisationGroup`)
 
-*MVP* · Selectable alternatives among the parts of an item.
+*MVP* · Selectable options on an item, e.g. "Installation": self-install or installed by staff. Hangs on any item whose type has `CUSTOMISATIONS` (ADR 0059).
 
-> **Target (ADR 0059):** groups hang on any item and each option has a price effect (included, extra, replaces).
+> **Done (ADR 0059):** groups hang on any item, not only bundles, and each option has a price effect (`ItemCustomisationOption`).
 
 **Attributes**
 - name, unique per item
@@ -668,9 +675,27 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 **Relations**
 - `N:1` Item has this
-- `1:N` groups → ItemPart
+- `1:N` offers → ItemCustomisationOption
 
-> Replaced as a set by `item.create`/`item.update` (`customisationGroups`: name, `minPick`, `maxPick`, `itemIds`), only for types with `CUSTOMISATIONS` (otherwise `VALIDATION`). `0 ≤ minPick ≤ maxPick ≤ number of options`; every option is a part of the item and in at most one group (`VALIDATION`). When only `parts` change, the groups are kept and checked again. `CUSTOMISATIONS` cannot be turned off while an active item of the type has groups (`CONFLICT`).
+> Replaced as a set, with their options, by `item.create`/`item.update` (`customisationGroups`: `{ name, minPick, maxPick, options: [{ itemId, priceEffect }] }`), only for types with `CUSTOMISATIONS` (otherwise `VALIDATION`). Core enforces (`VALIDATION`): group names unique per item (case-insensitive), `0 ≤ minPick ≤ maxPick ≤ number of options`, each group has 1 to 100 options (at most 50 groups), an item is an option at most once on the same item (across its groups), an option is never the item itself, and every option is a catalog item or a bundle of the item's own customer. Changing only `parts` leaves the groups untouched. `CUSTOMISATIONS` cannot be turned off while an active item of the type has groups (`CONFLICT`).
+
+### ItemCustomisationOption (`ItemCustomisationOption`)
+
+*MVP* · One item that can be chosen in a customisation group, with what choosing it does to the price (ADR 0059).
+
+> **Ownership:** owned `groupId`, `itemId`, `priceEffect`, `position`; replaced as a set with the groups by `item.create`/`item.update`.
+
+**Attributes**
+- group (`groupId`)
+- item (`itemId`, another item; the option's name and price come from it)
+- price effect (`priceEffect`): `INCLUDED` (in the item's price, adds nothing), `EXTRA` (charged on top at the option's own price), `REPLACES` (the option's price replaces the item's)
+- position (order in the group, from 0)
+
+**Relations**
+- `N:1` ItemCustomisationGroup offers this (deleted with its group)
+- `N:1` refers to → Item
+
+> Unique per group and item; deleted with its group. `line.chooseOptions` only offers options whose item is active. Chosen on a line by `line.chooseOptions`; the choice is a set of option lines (see Line).
 
 ### Sheet ★ (`Sheet`)
 
@@ -1092,6 +1117,7 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | Item | Artikel |
 | ItemPart | Artikeldel |
 | ItemCustomisationGroup | Anpassningsgrupp |
+| ItemCustomisationOption | Tillval |
 | Customer | Kund |
 | Contact | Kontaktperson |
 | Ticket | Ärende |

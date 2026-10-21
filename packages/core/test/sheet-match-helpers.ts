@@ -48,7 +48,8 @@ export async function matchSetup() {
   const bread = await make({ ...base, name: "Bread", fields: { allergens: [gluten] } });
   const butter = await make({ ...base, name: "Butter", fields: { allergens: [lactose] } });
   const plain = await make({ ...base, name: "Plain" });
-  const pick = [{ name: "Base", minPick: 1, maxPick: 1, itemIds: [bread, plain] }];
+  const options = [bread, plain].map((itemId) => ({ itemId, priceEffect: "INCLUDED" as const }));
+  const pick = [{ name: "Base", minPick: 1, maxPick: 1, options }];
   const menus = {
     mandatory: await make({ ...base, name: "Mandatory", parts: [{ itemId: bread }] }),
     optional: await make({
@@ -56,12 +57,7 @@ export async function matchSetup() {
       name: "Optional",
       parts: [{ itemId: bread, required: false }, { itemId: plain }],
     }),
-    alternative: await make({
-      ...base,
-      name: "Alternative",
-      parts: [{ itemId: bread }, { itemId: plain }],
-      customisationGroups: pick,
-    }),
+    alternative: await make({ ...base, name: "Alternative", customisationGroups: pick }),
     lactose: butter,
     plain,
   };

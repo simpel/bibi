@@ -38,18 +38,20 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     ]);
     const items = ({ organizationId }: { organizationId?: string }) =>
       db.item.count({ where: { organizationId, status: "ACTIVE" } });
-    expect(await items({ organizationId: lind?.organizationId })).toBe(72);
+    expect(await items({ organizationId: lind?.organizationId })).toBe(74);
     expect(await items({ organizationId: vinga?.organizationId })).toBe(9);
     const dinner = await db.item.findFirst({
       where: { organizationId: lind?.organizationId, name: "Three-course dinner" },
-      include: { customisationGroups: { orderBy: { position: "asc" } }, parts: true },
+      include: {
+        customisationGroups: { orderBy: { position: "asc" }, include: { options: true } },
+      },
     });
     expect(dinner?.customisationGroups.map((group) => group.name)).toEqual([
       "Starter",
       "Main course",
       "Dessert",
     ]);
-    expect(dinner?.parts).toHaveLength(8);
+    expect(dinner?.customisationGroups.flatMap((group) => group.options)).toHaveLength(8);
     const ownBundle = await db.item.findFirst({
       where: { organizationId: lind?.organizationId, name: "Nordkust management team" },
       include: { customer: true },

@@ -1,7 +1,5 @@
 import type { DemoItem } from "../../config-types";
 
-const sunset = 150;
-
 /** Skippers, trips and add-ons (`docs/demo-seed.md`, Catalog). The boats are in `config.ts`. */
 export const vingaledenTours: readonly DemoItem[] = [
   { type: "Skipper", name: "Kalle Ek", fields: { Certification: "Ship officer class VIII" } },
@@ -14,17 +12,11 @@ export const vingaledenTours: readonly DemoItem[] = [
     customisations: [
       {
         name: "Boat",
-        options: [
-          { name: "M/S Kajan", durationMinutes: sunset },
-          { name: "M/S Tern", durationMinutes: sunset },
-        ],
+        options: [{ name: "M/S Kajan" }, { name: "M/S Tern" }],
       },
       {
         name: "Skipper",
-        options: [
-          { name: "Kalle Ek", durationMinutes: sunset },
-          { name: "Jonna Sand", durationMinutes: sunset },
-        ],
+        options: [{ name: "Kalle Ek" }, { name: "Jonna Sand" }],
       },
     ],
   },

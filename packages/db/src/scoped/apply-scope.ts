@@ -1,15 +1,14 @@
 import { APPEND_ONLY_MODELS } from "./append-only-models";
 import { applyUserScope } from "./apply-user-scope";
 import { CREATED_BY_MODELS } from "./conventions";
+import { ORG_SCOPED_MODELS, USER_SCOPED_MODELS } from "./models";
+import { assertNoNestedWrites } from "./nested-writes";
 import {
   CREATE_OPERATIONS,
   DELETE_OPERATIONS,
-  ORG_SCOPED_MODELS,
   READ_OPERATIONS,
   UPDATE_OPERATIONS,
-  USER_SCOPED_MODELS,
-} from "./models";
-import { assertNoNestedWrites } from "./nested-writes";
+} from "./operation-kinds";
 import { ScopeViolationError } from "./scope-violation";
 import { scopeWhere } from "./scope-where";
 

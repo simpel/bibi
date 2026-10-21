@@ -5,7 +5,8 @@ import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import type { CheckedFields } from "../field-definition/split-links";
 import { checkItem } from "./check-item";
-import { planComposition, writeComposition } from "./item-composition";
+import { replaceCustomisationGroups } from "./item-customisation-groups";
+import { replaceParts } from "./item-parts";
 import { loadItemType } from "./item-rules";
 import { replaceSetups } from "./item-setups";
 import type { ItemCreateInput, ItemDto } from "./schema";
@@ -50,13 +51,11 @@ export async function insertItem({
 }: InsertItemInput): Promise<Result<ItemDto>> {
   const type = await loadItemType({ context, entityTypeId });
   if (!type.ok) return type;
-  const composition = planComposition({ parts, customisationGroups });
   const checked = await checkItem({
     context,
     type: type.value,
     customerId,
     data: { ...data, setups, parts, customisationGroups },
-    composition,
     fields: fields ?? {},
   });
   if (!checked.ok) return checked;
@@ -66,7 +65,10 @@ export async function insertItem({
     fields: checked.value ?? { fields: {}, links: [] },
   });
   if (setups) await replaceSetups({ context, itemId: row.id, setups });
-  await writeComposition({ context, itemId: row.id, partsChanged: true, composition });
+  if (parts) await replaceParts({ context, itemId: row.id, parts });
+  if (customisationGroups) {
+    await replaceCustomisationGroups({ context, itemId: row.id, customisationGroups });
+  }
   const item = await loadItem({ context, id: row.id });
   if (!item) return notFound({ entity: "Item" });
   context.recordChange({ entityId: row.id, after: item });

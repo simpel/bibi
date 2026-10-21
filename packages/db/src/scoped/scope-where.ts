@@ -1,4 +1,5 @@
-import { GLOBAL_READ_MODELS, READ_OPERATIONS, SOFT_DELETE_DEFAULTS } from "./models";
+import { GLOBAL_READ_MODELS, SOFT_DELETE_DEFAULTS } from "./models";
+import { READ_OPERATIONS } from "./operation-kinds";
 
 type Args = Record<string, unknown>;
 

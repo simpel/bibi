@@ -343,7 +343,7 @@
     },
     "partValue": "{quantity} × {name}, +{offset} min{required, select, true {} other { (valfri)}}",
     "customisationGroups": {
-      "hint": "Grupper av delar att välja mellan, med hur många som ska väljas.",
+      "hint": "Grupper av andra artiklar att välja mellan, med hur många som ska väljas och vad ett tillval gör med priset.",
       "none": "Inga anpassningsgrupper ännu.",
       "add": "Lägg till anpassningsgrupp",
       "remove": "Ta bort anpassningsgrupp",
@@ -351,7 +351,11 @@
       "minPick": "Välj minst",
       "maxPick": "Välj högst",
       "options": "Alternativ",
-      "noOptions": "Lägg till delar först; alternativen väljs bland dem."
+      "noOptions": "Inga tillval ännu.",
+      "addOption": "Lägg till tillval",
+      "removeOption": "Ta bort tillval",
+      "option": "Artikel",
+      "priceEffect": "Prispåverkan"
     },
     "customisationGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
     "resolution": {
@@ -737,7 +741,17 @@
     "bundleFields": {
       "itemId": "Paket",
       "name": "Namn (paketets om tomt)"
-    }
+    },
+    "chooseOptions": "Välj tillval",
+    "chooseOptionsDescription": "Välj radens tillval i varje anpassningsgrupp. Varje valt tillval blir en egen rad under den här: tillval som ingår kostar inget extra, tillägg debiteras med sitt eget pris och ett tillval som ersätter sätter priset i stället för artikeln.",
+    "optionsChosen": "Tillvalen har sparats.",
+    "optionGroup": "{name} (välj {min, number}{same, select, true {} other {–{max, number}}})",
+    "optionChoice": "{name} · {effect}"
+  },
+  "priceEffect": {
+    "INCLUDED": "Ingår",
+    "EXTRA": "Tillägg",
+    "REPLACES": "Ersätter"
   },
   "alternativeGroup": {
     "plural": "Alternativ",
@@ -1508,6 +1522,7 @@
         "line_archive": "Ta bort rad",
         "line_changeState": "Byt läge på rad",
         "line_expandBundle": "Lägg till paket med delar",
+        "line_chooseOptions": "Välj tillval för rad",
         "line_followPhase": "Låt raden följa fasen",
         "alternativeGroup_create": "Skapa alternativ",
         "alternativeGroup_update": "Ändra alternativ",
@@ -2503,7 +2518,7 @@
         "items-and-venues": {
           "title": "Artiklar och anläggningar",
           "lead": "Anläggningar är era byggnader och platser. Artiklar är allt ni säljer eller bokar: lokaler, rätter, drycker, utrustning och paket.",
-          "body": "# Anläggningar\n\nEn anläggning är en byggnad eller plats. Artiklar hör till en anläggning.\n\n1. Öppna **Anläggningar** i vänstermenyn och välj **Skapa anläggning**.\n2. Ange namn, adress, kontaktuppgifter och öppettider.\n3. Spara. Anläggningens sida listar artiklarna på den anläggningen.\n\nArkiverar du en anläggning arkiveras också dess artiklar.\n\n# Artiklar\n\nEn artikel är allt som kan säljas eller bokas. Hur en artikel ser ut beror på dess **typ**, och era administratörer definierar typerna. En typ \"Konferensrum\" kan ha fält för våning och yta. En typ \"Rätt\" kan ha ett pris och en lista över allergener.\n\nSå här lägger du till en artikel:\n\n1. Öppna **Artiklar** och välj **Skapa artikel**.\n2. Välj typ och fyll sedan i namn, beskrivning, anläggning och typens fält.\n3. Spara.\n\nFinns inga typer än, välj **Gå till typer** och skapa en först. Använd typfiltret i listan för att hitta artiklar snabbt.\n\n# Vad en typ kan göra\n\nNär en typ skapas kan den slå på någon av dessa förmågor. De är det enda Okazi har inbyggt. Allt annat är era egna namn.\n\n- **Prissatt**: artikeln har ett pris, en prisenhet (per person, per enhet, per timme eller fast pris) och moms.\n- **Paket**: artikeln innehåller andra artiklar, med antal och tid. En konferensdag är ett exempel.\n- **Anpassningar**: ett paket kan erbjuda anpassningsgrupper, till exempel \"välj 1 av 3 varmrätter\".\n- **Bokningsbar**: artikeln kan beläggas i tid, och Okazi hindrar dubbelbokning. En lokal är ett exempel.\n- **Uppställningar**: en bokningsbar artikel har en kapacitet per uppställning, till exempel 80 personer i Teater och 40 i U-bord.\n\n# Uppställningar och ställtid\n\nUppställningar är era namngivna lokalupplägg, som Bio, U-bord eller Mingel. Varje uppställning har en ställtid, som Okazi blockerar precis före en programpunkt som använder den. Skapa dem under **Inställningar, Uppställningar** och ange kapacitet per uppställning på varje bokningsbar artikel.\n\n# Paket för en kund\n\nPå en kunds sida väljer du **Spara som paket** för att bygga ett paket av katalogartiklar. Paketet visas bara för den kunden och katalogen påverkas inte.\n\n# Innehållet i en artikel\n\nEn artikel som innehåller andra artiklar visar **Innehåll** med vad den **Innehåller** (obligatoriska delar) och vad den **Kan innehålla** (valfria delar och val). Det är detta Okazi jämför med de antal ni registrerar. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Blockera en artikel\n\nVill du ta en lokal ur bruk för underhåll eller internt bruk, öppna artikeln och välj **Blockera artikel**. Bokningar kan inte överlappa en blockering. Välj **Släpp blockering** för att öppna den igen.\n\n# Priser för en kund\n\nMed prislistor kan du ge en kund en generell rabatt eller särskilda priser per artikel. Se [Konfiguration](/docs/guide/configuration)."
+          "body": "# Anläggningar\n\nEn anläggning är en byggnad eller plats. Artiklar hör till en anläggning.\n\n1. Öppna **Anläggningar** i vänstermenyn och välj **Skapa anläggning**.\n2. Ange namn, adress, kontaktuppgifter och öppettider.\n3. Spara. Anläggningens sida listar artiklarna på den anläggningen.\n\nArkiverar du en anläggning arkiveras också dess artiklar.\n\n# Artiklar\n\nEn artikel är allt som kan säljas eller bokas. Hur en artikel ser ut beror på dess **typ**, och era administratörer definierar typerna. En typ \"Konferensrum\" kan ha fält för våning och yta. En typ \"Rätt\" kan ha ett pris och en lista över allergener.\n\nSå här lägger du till en artikel:\n\n1. Öppna **Artiklar** och välj **Skapa artikel**.\n2. Välj typ och fyll sedan i namn, beskrivning, anläggning och typens fält.\n3. Spara.\n\nFinns inga typer än, välj **Gå till typer** och skapa en först. Använd typfiltret i listan för att hitta artiklar snabbt.\n\n# Vad en typ kan göra\n\nNär en typ skapas kan den slå på någon av dessa förmågor. De är det enda Okazi har inbyggt. Allt annat är era egna namn.\n\n- **Prissatt**: artikeln har ett pris, en prisenhet (per person, per enhet, per timme eller fast pris) och moms.\n- **Paket**: artikeln innehåller andra artiklar, med antal och tid. En konferensdag är ett exempel.\n- **Anpassningar**: vilken artikel som helst kan erbjuda grupper av tillval, andra artiklar som ingår, debiteras som tillägg eller ersätter dess pris, till exempel \"välj 1 av 3 varmrätter\".\n- **Bokningsbar**: artikeln kan beläggas i tid, och Okazi hindrar dubbelbokning. En lokal är ett exempel.\n- **Uppställningar**: en bokningsbar artikel har en kapacitet per uppställning, till exempel 80 personer i Teater och 40 i U-bord.\n\n# Uppställningar och ställtid\n\nUppställningar är era namngivna lokalupplägg, som Bio, U-bord eller Mingel. Varje uppställning har en ställtid, som Okazi blockerar precis före en programpunkt som använder den. Skapa dem under **Inställningar, Uppställningar** och ange kapacitet per uppställning på varje bokningsbar artikel.\n\n# Paket för en kund\n\nPå en kunds sida väljer du **Spara som paket** för att bygga ett paket av katalogartiklar. Paketet visas bara för den kunden och katalogen påverkas inte.\n\n# Innehållet i en artikel\n\nEn artikel som innehåller andra artiklar visar **Innehåll** med vad den **Innehåller** (obligatoriska delar) och vad den **Kan innehålla** (valfria delar och val). Det är detta Okazi jämför med de antal ni registrerar. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Blockera en artikel\n\nVill du ta en lokal ur bruk för underhåll eller internt bruk, öppna artikeln och välj **Blockera artikel**. Bokningar kan inte överlappa en blockering. Välj **Släpp blockering** för att öppna den igen.\n\n# Priser för en kund\n\nMed prislistor kan du ge en kund en generell rabatt eller särskilda priser per artikel. Se [Konfiguration](/docs/guide/configuration)."
         },
         "needs-and-sheets": {
           "title": "Behov och blad",

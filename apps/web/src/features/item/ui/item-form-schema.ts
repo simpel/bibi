@@ -38,19 +38,15 @@ function partsToInput({ parts }: PartsInput) {
     }));
 }
 
-type CustomisationGroupsInput = {
-  customisationGroups: CustomisationGroupFormValue[];
-  parts: PartFormValue[];
-};
+type CustomisationGroupsInput = { customisationGroups: CustomisationGroupFormValue[] };
 
-/** Raw groups → core's `customisationGroups`; options of parts that were removed are dropped. */
-function customisationGroupsToInput({ customisationGroups, parts }: CustomisationGroupsInput) {
-  const partIds = parts.map((part) => part.itemId).filter((id) => id !== "");
+/** Raw groups → core's `customisationGroups`; option rows without an item are left out. */
+function customisationGroupsToInput({ customisationGroups }: CustomisationGroupsInput) {
   return customisationGroups.map((group) => ({
     name: group.name.trim(),
     minPick: numberOrNull({ value: group.minPick }) ?? 0,
     maxPick: numberOrNull({ value: group.maxPick }) ?? 1,
-    itemIds: group.itemIds.filter((id) => partIds.includes(id)),
+    options: group.options.filter((option) => option.itemId !== ""),
   }));
 }
 

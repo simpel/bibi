@@ -36,9 +36,14 @@ model Line {
   vatRatePercent     Int?
   /// The alternative group this line is an option of; null for an ordinary line (ADR 0052).
   alternativeGroupId String?
-  /// The bundle line this part line belongs to (ADR 0059, owned): set only when a bundle is
-  /// expanded (`line.expandBundle`), never changed. A part line does not count in the totals.
+  /// The line this part or option line belongs to (ADR 0059, owned): set when a bundle is
+  /// expanded (`line.expandBundle`) or an option is chosen (`line.chooseOptions`), never
+  /// changed. A part line does not count in the totals; an option line as its price effect says.
   parentLineId       String?
+  /// Set on an option line (ADR 0059, snapshot): the price effect of the customisation option
+  /// when it was chosen on the parent line (`line.chooseOptions`), never changed. Null on any
+  /// other line, part lines included.
+  priceEffect        PriceEffect?
   /// Internal note.
   note               String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.

@@ -2,6 +2,7 @@ import "server-only";
 import { listItemStates, listItems, listSetups, type Result } from "@okazi/core";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import { runOperation } from "@/server/run-operation";
+import { loadCustomisableItems } from "./customisable-items";
 import type { LineStateOption } from "./ui/line-state-option";
 import type { ProgramFormData } from "./ui/program-form-data";
 
@@ -23,16 +24,18 @@ async function loadStates(): Promise<LineStateOption[]> {
 }
 
 /**
- * Line types and lists, bookable items, bundles, setups and item states (one page each). Without
+ * Line types and lists, bookable items, bundles, customisable items, setups and item states
+ * (one page each). Without
  * `item:read` the items are hidden (ADR 0050 feature scope), not an error.
  */
 export async function loadProgramData(): Promise<Result<ProgramFormData>> {
-  const [typed, items, bundles, setups, states] = await Promise.all([
+  const [typed, items, bundles, setups, states, customisable] = await Promise.all([
     loadTypedFormData({ base: "LINE" }),
     runOperation({ operation: listItems, input: { capability: "BOOKABLE", limit: LIMIT } }),
     runOperation({ operation: listItems, input: { capability: "BUNDLE", limit: LIMIT } }),
     runOperation({ operation: listSetups, input: { limit: LIMIT } }),
     loadStates(),
+    loadCustomisableItems(),
   ]);
   if (!typed.ok) return typed;
   if (!items.ok && items.error.code !== "FORBIDDEN") return items;
@@ -52,6 +55,7 @@ export async function loadProgramData(): Promise<Result<ProgramFormData>> {
       bundles: bundles.ok ? bundles.value.items.map(({ id, name }) => ({ id, name })) : [],
       setups: setups.value.items.map(({ id, name }) => ({ id, name })),
       states,
+      customisable,
     },
   };
 }

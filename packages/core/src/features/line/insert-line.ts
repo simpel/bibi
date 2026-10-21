@@ -4,6 +4,7 @@ import { createRecord } from "../../records/create-record";
 import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
+import type { PriceEffect } from "../item/customisation-group-schema";
 import { checkLinePeriod, checkPlace, checkTicket } from "./line-rules";
 import { initialStateOf } from "./line-state";
 import type { LineCreateInput, LineRecord } from "./schema";
@@ -12,14 +13,14 @@ import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 
 export type InsertLineInput = {
   context: OperationContext;
-  /** `parentLineId` is set only by `line.expandBundle` (ADR 0059). */
-  input: LineCreateInput & { parentLineId?: string };
+  /** Set only by `line.expandBundle` (a part line) and `line.chooseOptions` (ADR 0059). */
+  input: LineCreateInput & { parentLineId?: string; priceEffect?: PriceEffect };
 };
 
 /**
  * Creates a line in the state the phase grid gives it for the ticket's phase (else its
  * type's initial state), holds its bookable item as the state says and records the change.
- * Shared by `line.create` and `line.expandBundle`.
+ * Shared by `line.create`, `line.expandBundle` and `line.chooseOptions`.
  */
 export async function insertLine({
   context,

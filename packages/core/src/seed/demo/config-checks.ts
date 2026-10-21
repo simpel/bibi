@@ -35,8 +35,7 @@ async function customerCounts({
   ];
 }
 
-const partCount = ({ item }: { item: DemoItem }) =>
-  (item.parts?.length ?? 0) +
+const optionCount = ({ item }: { item: DemoItem }) =>
   (item.customisations ?? []).reduce((sum, group) => sum + group.options.length, 0);
 
 /** Slice 3: catalog and customer-specific items, their parts and customisation groups. */
@@ -55,12 +54,17 @@ async function catalogCounts({ context, org }: CheckDemoConfigInput): Promise<Co
     {
       what: "parts",
       actual: await db.itemPart.count(),
-      expected: sum({ values: items.map((item) => partCount({ item })) }),
+      expected: sum({ values: items.map((item) => item.parts?.length ?? 0) }),
     },
     {
       what: "customisation groups",
       actual: await db.itemCustomisationGroup.count(),
       expected: sum({ values: items.map((item) => item.customisations?.length ?? 0) }),
+    },
+    {
+      what: "customisation options",
+      actual: await db.itemCustomisationOption.count(),
+      expected: sum({ values: items.map((item) => optionCount({ item })) }),
     },
   ];
 }

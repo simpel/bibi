@@ -63,9 +63,9 @@ describe("item.resolve (ADR 0021)", () => {
       "Starter",
       "Bread",
       "Butter",
+      "Nut cake",
       "Cod",
       "Veal",
-      "Nut cake",
       "Salad",
     ]);
     expect(row({ key: "bread" })).toMatchObject({
@@ -78,7 +78,7 @@ describe("item.resolve (ADR 0021)", () => {
     expect(row({ key: "cod" })).toMatchObject({
       customisationGroup: "Main",
       mandatory: false,
-      offsetMinutes: 210,
+      offsetMinutes: 180,
     });
     expect(row({ key: "butter" })).toMatchObject({ required: false, mandatory: false });
     expect(row({ key: "salad" })).toMatchObject({ depth: 1, mandatory: true, offsetMinutes: 200 });

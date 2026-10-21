@@ -1,10 +1,10 @@
-import type { Item, ItemPart } from "@okazi/db";
-import type { ItemGraph } from "./resolve-graph";
+import type { Item } from "@okazi/db";
+import type { ItemEdge, ItemGraph } from "./resolve-graph";
 import type { ResolvedItemNode } from "./resolve-schema";
 
 type Step = {
   path: readonly string[];
-  part: ItemPart | null;
+  part: ItemEdge | null;
   mandatory: boolean;
   totalQuantity: number;
   offsetMinutes: number;
@@ -16,12 +16,12 @@ export type BuildTreeInput = {
   tagsOf: (input: { item: Item }) => string[];
 };
 
-type GroupOfInput = { graph: ItemGraph; part: ItemPart };
+type GroupOfInput = { graph: ItemGraph; part: ItemEdge };
 
 /** An option is mandatory only when its group must pick all of its options (no alternative). */
 function optionIsMandatory({ graph, part }: GroupOfInput): boolean {
-  if (!part.customisationGroupId) return true;
-  const group = graph.groups.get(part.customisationGroupId);
+  if (!part.groupId) return true;
+  const group = graph.groups.get(part.groupId);
   return group !== undefined && group.minPick >= group.options;
 }
 
@@ -29,7 +29,7 @@ type NodeOfInput = { item: Item; step: Step; graph: ItemGraph; tags: string[] };
 
 function nodeOf({ item, step, graph, tags }: NodeOfInput): ResolvedItemNode {
   const { part } = step;
-  const groupId = part?.customisationGroupId;
+  const groupId = part?.groupId;
   return {
     path: [...step.path],
     depth: step.path.length - 1,
@@ -60,12 +60,12 @@ export function buildTree({ graph, rootId, tagsOf }: BuildTreeInput): ResolvedIt
     const item = graph.items.get(id);
     if (!item) return;
     nodes.push(nodeOf({ item, step, graph, tags: tagsOf({ item }) }));
-    for (const part of graph.parts.get(id) ?? []) {
-      if (step.path.includes(part.partId)) continue;
+    for (const part of graph.edges.get(id) ?? []) {
+      if (step.path.includes(part.childId)) continue;
       visit({
-        id: part.partId,
+        id: part.childId,
         step: {
-          path: [...step.path, part.partId],
+          path: [...step.path, part.childId],
           part,
           mandatory: step.mandatory && part.required && optionIsMandatory({ graph, part }),
           totalQuantity: step.totalQuantity * part.quantity,

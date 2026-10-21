@@ -19,6 +19,15 @@ export const lineMcpTools = [
       (input.startsAt ? ` from ${text({ value: input.startsAt })}` : ", without a time"),
   }),
   mcpTool({
+    operation: "line.chooseOptions",
+    idempotent: true,
+    summary: ({ input }) =>
+      `Set the options of line ${text({ value: input.lineId })} to ` +
+      (Array.isArray(input.optionItemIds) && input.optionItemIds.length > 0
+        ? input.optionItemIds.map((value: unknown) => text({ value })).join(", ")
+        : "none"),
+  }),
+  mcpTool({
     operation: "line.update",
     idempotent: true,
     summary: ({ input }) =>

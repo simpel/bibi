@@ -7,7 +7,8 @@ import { mergeFields } from "../field-definition/field-values";
 import { checkItem } from "./check-item";
 import { itemEmbeddable } from "./embeddable";
 import { insertItem } from "./insert-item";
-import { planComposition, writeComposition } from "./item-composition";
+import { replaceCustomisationGroups } from "./item-customisation-groups";
+import { replaceParts } from "./item-parts";
 import { loadItemType } from "./item-rules";
 import { replaceSetups } from "./item-setups";
 import { ItemCreateInputSchema, ItemSchema, ItemUpdateInputSchema } from "./schema";
@@ -34,8 +35,8 @@ export const updateItem = defineOperation({
   kind: "command",
   description:
     "Update an item. Omitted properties are unchanged; `fields` is merged by key (null " +
-    "clears a value); `setups`, `parts` and `customisationGroups` replace the whole set (groups " +
-    "are kept when only parts change). The type cannot be changed.",
+    "clears a value); `setups`, `parts` and `customisationGroups` each replace the whole set. " +
+    "The type cannot be changed.",
   input: ItemUpdateInputSchema,
   output: ItemSchema,
   permission: "item:write",
@@ -47,14 +48,12 @@ export const updateItem = defineOperation({
     if (!before) return notFound({ entity: "Item" });
     const type = await loadItemType({ context, entityTypeId: before.entityTypeId });
     if (!type.ok) return type;
-    const composition = planComposition({ before, parts, customisationGroups });
     const checked = await checkItem({
       context,
       type: type.value,
       itemId: id,
       customerId: before.customerId,
       data: { ...data, setups, parts, customisationGroups },
-      composition,
       fields: patch ? mergeFields({ before: before.fields, patch }) : undefined,
     });
     if (!checked.ok) return checked;
@@ -65,8 +64,10 @@ export const updateItem = defineOperation({
     });
     await updateRecord({ context, id, change: { fields: json, links: checked.value?.links } });
     if (setups) await replaceSetups({ context, itemId: id, setups });
-    const partsChanged = parts !== undefined;
-    await writeComposition({ context, itemId: id, partsChanged, composition });
+    if (parts) await replaceParts({ context, itemId: id, parts });
+    if (customisationGroups) {
+      await replaceCustomisationGroups({ context, itemId: id, customisationGroups });
+    }
     const item = await loadItem({ context, id });
     if (!item) return notFound({ entity: "Item" });
     context.recordChange({ entityId: id, before, after: item });
