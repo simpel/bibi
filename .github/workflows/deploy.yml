@@ -25,13 +25,24 @@ jobs:
       COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
       SHA: ${{ inputs.sha }}
     steps:
+      - name: Skip when Coolify is not configured
+        id: cfg
+        run: |
+          if [ -z "$COOLIFY_URL" ]; then
+            echo "::warning::COOLIFY_URL is not set; skipping deploy (production only until the first paying venue, ADR 0031)."
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
       - name: Check that the images exist
+        if: steps.cfg.outputs.configured == 'true'
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
           for app in web mcp; do
             docker manifest inspect "ghcr.io/${GITHUB_REPOSITORY}-${app}:${SHA}" > /dev/null
           done
       - name: Set image tag and trigger rollout in Coolify
+        if: steps.cfg.outputs.configured == 'true'
         run: |
           for uuid in "${{ secrets.COOLIFY_WEB_UUID }}" "${{ secrets.COOLIFY_MCP_UUID }}"; do
             curl -fsS -X PATCH "$COOLIFY_URL/api/v1/applications/$uuid" \
@@ -41,6 +52,7 @@ jobs:
               -H "Authorization: Bearer $COOLIFY_TOKEN"
           done
       - name: Health gate
+        if: steps.cfg.outputs.configured == 'true'
         run: |
           for url in "${{ vars.WEB_URL }}/api/health" "${{ vars.MCP_URL }}/health"; do
             ok=false
