@@ -1,7 +1,6 @@
 import type { Result } from "../../errors/result";
 import { ok } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { conflict } from "../../shared/errors";
 import { inUseConflict } from "../../shared/in-use";
 
 export type ItemsInUseInput = {
@@ -32,7 +31,9 @@ export async function checkItemsUnused({ context, items }: ItemsInUseInput): Pro
   const templated = await context.db.ticketTemplateLine.count({
     where: { ...where, template: { status: "ACTIVE" } },
   });
-  if (templated > 0)
-    return conflict({ message: `${what} is used by ${templated} predefined ticket lines` });
+  if (templated > 0) {
+    const message = `${what} is used by ${templated} predefined ticket lines`;
+    return inUseConflict({ context, feature: "template", message });
+  }
   return ok({ value: true });
 }

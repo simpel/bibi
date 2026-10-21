@@ -2,13 +2,10 @@ import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { REQUIREMENT_INCLUDE, toRequirementDto } from "./to-requirement-dto";
 
+/** Exactly one parent: the ticket (its own requirements and those on its lines) or one line. */
 export type ArchiveRequirementsInput = {
   context: OperationContext;
-  /** Archives the ticket's requirements, its own and those on its lines. */
-  ticketId?: string;
-  /** Archives the requirements registered on this one line. */
-  lineId?: string;
-};
+} & ({ ticketId: string; lineId?: never } | { lineId: string; ticketId?: never });
 
 /**
  * Archives every active requirement under an archived parent (a line or a ticket), one audit row
