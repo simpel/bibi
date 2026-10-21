@@ -10,6 +10,7 @@ export const itemRoutes = [
   }),
   restRoute({ operation: "item.get", method: "GET", path: "/items/{id}" }),
   restRoute({ operation: "item.resolve", method: "GET", path: "/items/{id}/resolved" }),
+  restRoute({ operation: "item.freeUnits", method: "GET", path: "/items/free-units" }),
   restRoute({ operation: "item.create", method: "POST", path: "/items" }),
   restRoute({
     operation: "item.create",

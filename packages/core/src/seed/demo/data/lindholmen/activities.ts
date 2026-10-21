@@ -17,6 +17,16 @@ const equipment = ({ name, kr, inventory }: EquipmentInput): DemoItem => ({
 
 const guides = ["Emma Lind", "Oskar Ahl", "Nora Falk"].map((name) => ({ name }));
 
+/** Ten interchangeable units of one bookable type: a pool (ADR 0059, `docs/demo-seed.md`). */
+const microphones: readonly DemoItem[] = Array.from({ length: 10 }, (_, index) => {
+  const number = String(index + 1).padStart(2, "0");
+  return {
+    type: "Wireless microphone",
+    name: `Wireless microphone ${number}`,
+    fields: { "Inventory number": `LEC-MIC-0${number}` },
+  };
+});
+
 /**
  * Lindholmen's guides, tours and equipment (`docs/demo-seed.md`, Guides and tours, Equipment).
  * A tour picks one bookable guide; the Design workshop contains the room Knippla.
@@ -49,4 +59,5 @@ export const lindholmenActivities: readonly DemoItem[] = [
   equipment({ name: "Mobile sound system", kr: 900, inventory: "LEC-AV-002" }),
   equipment({ name: "Extra whiteboard", kr: 150, inventory: "LEC-FU-001" }),
   equipment({ name: "Hearing loop", kr: 0, inventory: "LEC-AV-003" }),
+  ...microphones,
 ];

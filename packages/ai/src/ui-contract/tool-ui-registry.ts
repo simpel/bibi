@@ -127,6 +127,8 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   conversation_archive: "chat bookkeeping",
   message_list: "chat history UI, not a tool card",
   message_append: "chat bookkeeping",
+  item_freeUnits:
+    "a list of unit names with the prepick; shown as JSON until the allocation UI (#384)",
   skill_export: "SKILL.md text; shown as code/JSON",
   ticket_export: "versioned JSON document for handover; shown as code/JSON",
   graphql_schema: "SDL text",

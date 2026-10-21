@@ -54,6 +54,7 @@ const NAMES = [
   "inboundEmail.list",
   "item.archive",
   "item.create",
+  "item.freeUnits",
   "item.get",
   "item.list",
   "item.resolve",

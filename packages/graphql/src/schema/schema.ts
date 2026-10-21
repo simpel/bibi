@@ -8,6 +8,7 @@ import "../features/responsibility/graphql";
 import "../features/sheet-definition/graphql";
 import "../features/configuration/graphql";
 import "../features/item/graphql";
+import "../features/item/pool-graphql";
 import "../features/item/resolve-graphql";
 import "../features/customer/graphql";
 import "../features/contact/graphql";

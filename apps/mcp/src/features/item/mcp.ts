@@ -4,6 +4,7 @@ export const itemMcpTools = [
   mcpTool({ operation: "item.list" }),
   mcpTool({ operation: "item.get" }),
   mcpTool({ operation: "item.resolve" }),
+  mcpTool({ operation: "item.freeUnits" }),
   mcpTool({
     operation: "item.create",
     summary: ({ input }) =>

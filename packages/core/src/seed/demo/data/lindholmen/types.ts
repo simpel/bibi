@@ -73,6 +73,14 @@ export const lindholmenTypes: readonly DemoType[] = [
   },
   {
     base: "ITEM",
+    name: "Wireless microphone",
+    states: "bookable",
+    capabilities: ["BOOKABLE"],
+    ...{ setupMinutes: 5, teardownMinutes: 5, pool: true },
+    fields: [{ name: "Inventory number", kind: "TEXT" }],
+  },
+  {
+    base: "ITEM",
     name: "Bundle",
     capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS"],
     fields: [{ name: "Minimum quantity", kind: "NUMBER" }],

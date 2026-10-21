@@ -4,6 +4,11 @@ export type UiExempt = { operation: string; reason: string };
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
   {
+    operation: "item.freeUnits",
+    reason:
+      "The allocation UI (#384) lists a pool's free units with the prepick; until then bundle parts, options and demands do not target pools in the web app.",
+  },
+  {
     operation: "changeSet.apply",
     reason:
       "The assistant proposes change sets for requests that need several commands (ADR 0049); every step has its own page in the app.",

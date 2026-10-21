@@ -13,6 +13,7 @@ import { checkDemoHolds } from "./hold-checks";
 import { checkDemoPayments } from "./payment-checks";
 import { checkDemoPermissions } from "./permission-checks";
 import { checkDemoPipeline } from "./pipeline-checks";
+import { checkDemoPools } from "./pool-checks";
 import { checkDemoPrices } from "./price-checks";
 import { checkDemoQuoteEvents } from "./quote-event-checks";
 import { reconcileProjections } from "./reconcile-checks";
@@ -82,6 +83,7 @@ export async function checkDemoOrg({
   const listed = members.value.items;
   failures.push(...(await checkDemoPermissions({ context, org, members: listed })));
   failures.push(...(await checkDemoConfig({ context, org, skipPipeline })));
+  failures.push(...(await checkDemoPools({ context, org })));
   failures.push(...(await checkDemoResponsibilities({ context, org })));
   failures.push(...(await checkDemoRecords({ context, org })));
   failures.push(...(await checkDemoSetupNeed({ context, org, skipPipeline })));
