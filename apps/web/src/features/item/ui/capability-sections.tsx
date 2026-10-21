@@ -1,5 +1,6 @@
 import type { EntityTypeDto } from "@okazi/core";
 import type { UseFormReturn } from "react-hook-form";
+import { BufferFields } from "@/components/form/buffer-fields";
 import { BookableSection } from "./bookable-section";
 import { CustomisationGroupsSection } from "./customisation-groups-section";
 import { hasCapability } from "./has-capability";
@@ -18,7 +19,7 @@ export type CapabilitySectionsProps = {
   itemId?: string | undefined;
 };
 
-/** One form section per capability the item's type has. */
+/** One form section per capability the item's type has, and the buffers every item has. */
 export function CapabilitySections({ form, type, data, itemId }: CapabilitySectionsProps) {
   const parts = data.parts.filter(({ id }) => id !== itemId);
   return (
@@ -34,6 +35,7 @@ export function CapabilitySections({ form, type, data, itemId }: CapabilitySecti
       {hasCapability({ type, capability: "CUSTOMISATIONS" }) ? (
         <CustomisationGroupsSection form={form} parts={parts} />
       ) : null}
+      <BufferFields form={form} inherits="type" />
     </>
   );
 }

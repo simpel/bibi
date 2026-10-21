@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { PageInputShape } from "../../shared/page-input";
+import {
+  BufferMinutesShape,
+  bufferMinutesInputShape,
+  EffectiveBuffersShape,
+} from "../../shared/buffers";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import { LineEffectiveShape } from "./effective-schema";
@@ -16,6 +20,8 @@ export const LineRecordSchema = z.object({
   endsAt: z.date().nullable(),
   itemId: z.string().nullable(),
   setupId: z.string().nullable(),
+  /** Own buffers around the booking (ADR 0059); null = the item's, else its type's. */
+  ...BufferMinutesShape,
   /** Null = the ticket's headcount. */
   quantity: z.number().int().nullable(),
   /** Overrides; null = inherit (see the effective values). */
@@ -38,8 +44,8 @@ export const LineRecordSchema = z.object({
   createdBy: z.string().nullable(),
 });
 
-/** A line with its effective quantity, price, discount and VAT and where each comes from. */
-export const LineSchema = LineRecordSchema.extend(LineEffectiveShape);
+/** A line with its effective quantity, price, discount, VAT and buffers and where each comes from. */
+export const LineSchema = LineRecordSchema.extend(LineEffectiveShape).extend(EffectiveBuffersShape);
 
 const LineDetailsShape = {
   name: z.string().trim().min(1).max(200).describe("What happens, e.g. Morning session or Lunch"),
@@ -63,7 +69,8 @@ const LineDetailsShape = {
     .string()
     .min(1)
     .nullish()
-    .describe("Id of one of the item's setups (needs itemId); adds its changeover time before"),
+    .describe("Id of one of the item's setups (needs itemId); its changeover is the least setup"),
+  ...bufferMinutesInputShape({ inherits: "the item's, else its type's" }),
   quantity: z
     .number()
     .int()
@@ -125,20 +132,6 @@ export const LineFollowPhaseInputSchema = z.object({
 });
 
 export const LineIdInputSchema = z.object({ id: z.string().min(1) });
-
-export const LineListInputSchema = z.object({
-  ticketId: z.string().optional().describe("Only the program of this ticket"),
-  itemId: z.string().optional().describe("Only lines held in this item"),
-  stateId: z.string().optional().describe("Only lines in this item state (itemState.list)"),
-  from: z.coerce.date().optional().describe("Only lines that end after this time"),
-  to: z.coerce.date().optional().describe("Only lines that start before this time"),
-  ...PageInputShape,
-});
-
-export const LineListOutputSchema = z.object({
-  items: z.array(LineSchema),
-  nextCursor: z.string().nullable(),
-});
 
 export type LineRecord = z.infer<typeof LineRecordSchema>;
 export type LineDto = z.infer<typeof LineSchema>;

@@ -21,6 +21,9 @@ export type DemoType = {
   fields?: readonly DemoField[];
   /** Item types: the states the type gets from a template (ADR 0044); default one "Active". */
   states?: ItemStateTemplateKey;
+  /** Item types: default setup and teardown minutes around each booking (ADR 0059). */
+  setupMinutes?: number;
+  teardownMinutes?: number;
 };
 
 /** A part of a BUNDLE demo item, by the name of an item seeded before it. */
@@ -55,6 +58,9 @@ export type DemoItem = {
   customisations?: readonly DemoCustomisationGroup[];
   /** BOOKABLE: default booking length in minutes. */
   durationMinutes?: number;
+  /** Overrides of the type's setup and teardown minutes (ADR 0059). */
+  setupMinutes?: number;
+  teardownMinutes?: number;
 };
 
 /** Slice 2 of ADR 0025: what the organization configures (`docs/demo-seed.md`). */

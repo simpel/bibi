@@ -54,7 +54,7 @@ describe("line holds are a trigger-written projection (ADR 0053)", () => {
     const past = await lineAt({ setup, from: 10, to: 12, past: true });
     const future = await lineAt({ setup, from: 10, to: 12 });
     expect(await rowsOf({ context, lineId: future.id })).toEqual([
-      "SETUP:- 09:00",
+      "SETUP:HARD 09:00",
       "HOLD:HARD 10:00",
     ]);
     const block = { itemId: room.id, type: "MAINTENANCE" as const, ...hours({ from: 7, to: 8 }) };
@@ -62,12 +62,12 @@ describe("line holds are a trigger-written projection (ADR 0053)", () => {
     const longer = { id: setup.setup.id, changeoverMinutes: 90 };
     unwrap({ result: await execute({ operation: updateSetup, input: longer, context }) });
     expect(await rowsOf({ context, lineId: future.id })).toEqual([
-      "SETUP:- 08:30",
+      "SETUP:HARD 08:30",
       "HOLD:HARD 10:00",
     ]);
     // The past is frozen: an ended line keeps its old buffer.
     expect(await rowsOf({ context, lineId: past.id })).toEqual([
-      "SETUP:- 09:00",
+      "SETUP:HARD 09:00",
       "HOLD:HARD 10:00",
     ]);
     const clash = { id: setup.setup.id, changeoverMinutes: 150 };
@@ -89,9 +89,11 @@ describe("line holds are a trigger-written projection (ADR 0053)", () => {
     const stateId = future.stateId ?? "";
     const soft = { id: stateId, hold: "SOFT" as const };
     unwrap({ result: await execute({ operation: updateItemState, input: soft, context }) });
-    expect(await rowsOf({ context, lineId: future.id })).toEqual(["HOLD:SOFT 10:00"]);
+    // A soft hold keeps its buffer, of its own kind (ADR 0059).
+    const softRows = ["SETUP:SOFT 09:00", "HOLD:SOFT 10:00"];
+    expect(await rowsOf({ context, lineId: future.id })).toEqual(softRows);
     expect(await rowsOf({ context, lineId: past.id })).toEqual([
-      "SETUP:- 09:00",
+      "SETUP:HARD 09:00",
       "HOLD:HARD 10:00",
     ]);
     const second = await lineAt({ setup, from: 11, to: 13 });
@@ -102,7 +104,7 @@ describe("line holds are a trigger-written projection (ADR 0053)", () => {
     const paths = refused.ok ? [] : refused.error.issues.map((issue) => issue.path);
     expect(paths).toHaveLength(1);
     expect([`lines.${future.id}`, `lines.${second.id}`]).toContain(paths[0]);
-    expect(await rowsOf({ context, lineId: future.id })).toEqual(["HOLD:SOFT 10:00"]);
+    expect(await rowsOf({ context, lineId: future.id })).toEqual(softRows);
     expect(await reconcile({ context })).toEqual([]);
   });
 

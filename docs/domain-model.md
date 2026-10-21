@@ -32,7 +32,7 @@ What changes:
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
 - **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. *Done:* `Record` (`id`, `entityTypeId`, `base`, `fields`, `status`) is the supertable of `Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line` and `Requirement`, which share its id (composite foreign key with `organizationId`); core writes both rows in one transaction (`packages/core/src/records/`). `base` is the entity base, or `TICKET_TEMPLATE` for a predefined ticket. *Done:* `LINK` values are `RecordLink` rows (`recordId`, `fieldId`, `targetRecordId`, `position`; composite foreign keys, several rows for several targets), never ids in `fields` JSON; core merges them into `fields` on read. Id lists are join tables. *Target:* polymorphic pairs point at `Record`.
 - **Money is derived** ([ADR 0057](decisions/0057-money-balance-is-derived.md)): a payment settles one receivable (sent quote, deposit or invoice); no balance is stored. External calls run after commit (ADR 0058).
-- **Capabilities, demands and buffers** ([ADR 0059](decisions/0059-capabilities-demands-and-buffers.md), accepted, partly built): the keys are renamed end to end (`capabilities`, `BUNDLE`, `CUSTOMISATIONS`, `ItemPart`, `ItemCustomisationGroup`); still to come are capability sections in the type editor, setup and teardown minutes on type, item and line, bundles expanded into linked part lines with per-rate VAT, `ItemDemand` and `LineAllocation` for pooled equipment and staff, working hours, and `item:write` for managers.
+- **Capabilities, demands and buffers** ([ADR 0059](decisions/0059-capabilities-demands-and-buffers.md), accepted, partly built): the keys are renamed end to end (`capabilities`, `BUNDLE`, `CUSTOMISATIONS`, `ItemPart`, `ItemCustomisationGroup`); setup and teardown minutes on type, item and line are built (soft and hard buffers, `TEARDOWN`, the larger-of rule); still to come are capability sections in the type editor, bundles expanded into linked part lines with per-rate VAT, `ItemDemand` and `LineAllocation` for pooled equipment and staff, working hours, and `item:write` for managers.
 
 ## ER diagram (MVP)
 
@@ -118,7 +118,9 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · The organization's own type for a base entity: item, customer, contact, ticket, requirement or line.
 
-> **Target (ADR 0059):** customisations no longer need a bundle. An item type is Equipment or Person. Nullable `setupMinutes` and `teardownMinutes` are the type default.
+> **Target (ADR 0059):** customisations no longer need a bundle. An item type is Equipment or Person.
+
+> **Done (ADR 0059):** item types have nullable `setupMinutes` and `teardownMinutes` (owned): the default buffers of their items, null = none (`VALIDATION` on other bases). Changing them re-derives the holds of lines that have not ended (by trigger; a collision is `CONFLICT`).
 
 **Attributes**
 - base entity (`ITEM | CUSTOMER | CONTACT | TICKET | REQUIREMENT | LINE`)
@@ -455,7 +457,9 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A line on a ticket: a room, a meal, an activity or a break, with its own time and state ([ADR 0044](decisions/0044-line-states-and-the-phase-grid.md)). Created, among other cases, when a composite item is added to the ticket.
 
-> **Target (ADR 0059):** `parentLineId` links a part line to its bundle line (part lines do not count in the total), nullable `setupMinutes` and `teardownMinutes` overrides, and `LineAllocation` rows (which unit of a pool the line got). Derived: effective minutes and `warnings`.
+> **Target (ADR 0059):** `parentLineId` links a part line to its bundle line (part lines do not count in the total) and `LineAllocation` rows (which unit of a pool the line got). Derived: `warnings`.
+
+> **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` overrides (owned, null = the item's, else its type's). Derived on every read: `effectiveSetupMinutes` (the inherited minutes or the setup's changeover time, whichever is larger, never the sum) and `effectiveTeardownMinutes`, each with its source (`LINE`, `ITEM`, `TYPE`, or `SETUP` when the changeover wins; null = no buffer).
 
 > **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`; derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
 
@@ -466,6 +470,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - start – end (`startsAt`, `endsAt`; `[start, end)`; both or neither: an untimed line, e.g. a fee, never holds and is not on the calendar, [ADR 0052](decisions/0052-the-line-is-the-booking.md))
 - item (`itemId`, optional; any active item, e.g. a venue space or a dish; only a `BOOKABLE` item on a timed line is held)
 - setup (`setupId`, optional; one of the item's setups, requires the item)
+- buffers (`setupMinutes`, `teardownMinutes`; null = the item's, else its type's; ADR 0059)
 - quantity (`quantity`; null = the ticket's headcount, guaranteed if set, else estimated)
 - commercial overrides (`unitPriceMinor`, `discountPercent`, `vatRatePercent`; null = inherit). Derived on every read, never stored: the unit price is the line's own, else the customer's price list valid on the line's day (else the ticket's desired start, else today; the newest start wins) with an agreed price for the item, else the item's price; the discount is the line's own, else that price list's general discount on the item's price, else 0; VAT is the line's own, else the item's, else the item's venue default. Each effective value comes with its source (`LINE` = own, anything else = inherited), so a changed price list or headcount shows on the line at once
 - state (`stateId`, an `ItemState` of the item's type; null for a line without an item), `stateOverridden` (set by hand, skipped by phase moves)
@@ -565,15 +570,15 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A time block on a bookable item. The basis for conflict checking.
 
-> **Target (ADR 0059):** a `TEARDOWN` type, setup and teardown buffers also for soft holds (non-blocking), and allocation windows (setup, booking, teardown) projected by the same trigger, so the key grows beyond `(lineId, type)`.
+> **Target (ADR 0059):** allocation windows (setup, booking, teardown) on other items, projected by the same trigger.
 
-> **Ownership (ADR 0053):** manual blocks (`MAINTENANCE`, `INTERNAL`) are owned; line holds and their setup buffers (`HOLD`, `SETUP`) are a projection with `lineId` (FK), written only by the triggers in `packages/db/sql/sync_line_occupancy.sql` (check `line-holds`).
+> **Ownership (ADR 0053, 0059):** manual blocks (`MAINTENANCE`, `INTERNAL`) are owned; line holds and their buffers (`HOLD`, `SETUP`, `TEARDOWN`) are a projection with `lineId` (FK), written only by the triggers in `packages/db/sql/sync_line_occupancy.sql` (check `line-holds`).
 
 **Attributes**
 - item (with the `BOOKABLE` capability)
 - start – end (`startsAt`, `endsAt`; the period is `[start, end)`, so back-to-back blocks do not overlap)
-- type (`HOLD`, `SETUP`, `MAINTENANCE`, `INTERNAL`); a `HOLD` has a kind, `SOFT` or `HARD`, derived from the line's state (ADR 0044)
-- line (`lineId`: the line whose hold or buffer this is; null for manual blocks; one `HOLD` and at most one `SETUP` per line)
+- type (`HOLD`, `SETUP`, `TEARDOWN`, `MAINTENANCE`, `INTERNAL`); a line's rows have a kind, `SOFT` or `HARD`, derived from the line's state (ADR 0044); manual blocks have none
+- line (`lineId`: the line whose hold or buffer this is; null for manual blocks; one row per line, item and type, so one `HOLD` and at most one `SETUP` and one `TEARDOWN` per line today)
 - note
 - status (active / archived = released; released rows no longer block)
 
@@ -581,7 +586,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:1` Line reserves this
 - `N:1` Item has this
 
-> ★ Active rows of all types except soft holds may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`. `HOLD` and `SETUP` are written only by database triggers (ADR 0053), in the same transaction as the change to the line, its state, setup, item type, ticket or phase: a line holds while it and its ticket are active, the ticket's phase is not terminal, it is timed, its item's type is `BOOKABLE` and its state holds and is not released. Changeover time is added as `SETUP` right before a hard hold, based on the setup's changeover time (`changeoverMinutes`). Changing a state's `hold`/`released`, a setup's changeover time, a type's capabilities or a phase's `terminal` re-derives only lines that have not ended (the past calendar is frozen); an overlap refuses the change with `CONFLICT` and one issue per line (`lines.<id>`). Application code never writes line holds (a test enforces it).
+> ★ Active rows of all types except soft ones (soft holds and their buffers) may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`. `HOLD`, `SETUP` and `TEARDOWN` are written only by database triggers (ADR 0053), in the same transaction as the change to the line, its state, setup, item, item type, ticket or phase: a line holds while it and its ticket are active, the ticket's phase is not terminal, it is timed, its item's type is `BOOKABLE` and its state holds and is not released. A hold of either kind gets a `SETUP` right before and a `TEARDOWN` right after, of its own kind, when their effective minutes are above zero (ADR 0059): setup is the line's, else the item's, else the type's `setupMinutes`, or the setup's changeover time (`changeoverMinutes`) when that is larger; teardown is the line's, else the item's, else the type's `teardownMinutes`. Changing a state's `hold`/`released`, a setup's changeover time, an item's or a type's buffer minutes, a type's capabilities or a phase's `terminal` re-derives only lines that have not ended (the past calendar is frozen); an overlap refuses the change with `CONFLICT` and one issue per line (`lines.<id>`). Application code never writes line holds (a test enforces it).
 
 ## Items
 
@@ -589,7 +594,9 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · Everything that can be sold or booked: dish, drink, venue space, equipment, guide, bundle.
 
-> **Target (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` (an override of the type default; effective setup is the larger of it and the layout's changeover), `ItemDemand` rows (what the item asks of a pool), and working hours for a bookable item. Customisations work on any item.
+> **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` (owned, an override of the type default, on any item); derived on read `effectiveSetupMinutes` and `effectiveTeardownMinutes` with their source (`ITEM` or `TYPE`). A line's effective setup is the larger of these and its setup's changeover.
+
+> **Target (ADR 0059):** `ItemDemand` rows (what the item asks of a pool), and working hours for a bookable item. Customisations work on any item.
 
 **Attributes**
 - type (the organization's own) and custom fields (`fields` as JSON)
@@ -601,6 +608,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
   - `CUSTOMISATIONS`: customisation groups among the parts (requires `BUNDLE`)
   - `BOOKABLE`: occupancy in time, conflict protection, `defaultDurationMinutes`
   - `SETUPS`: capacity per setup (requires `BOOKABLE`)
+- buffers (`setupMinutes`, `teardownMinutes`; any item, null = the type's; ADR 0059)
 - venue (optional)
 - customerId (`null` = catalog item; set = a customer-specific bundle, created by `item.saveAsBundle` and listed by `item.list` only together with its customer)
 

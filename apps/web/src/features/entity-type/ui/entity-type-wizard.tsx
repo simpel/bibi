@@ -8,7 +8,7 @@ import { WizardFooter } from "@/components/wizard/wizard-footer";
 import { WizardProgress } from "@/components/wizard/wizard-progress";
 import { ROUTES } from "@/lib/routes";
 import { BaseSelectField } from "./base-select-field";
-import { CapabilityField } from "./capability-field";
+import { ItemTypeFields } from "./item-type-fields";
 import { useEntityTypeWizard } from "./use-entity-type-wizard";
 
 /** Create a type step by step: base and name, then (item types) capabilities; fields come next. */
@@ -29,7 +29,7 @@ export function EntityTypeWizard() {
             <TextField form={form} name="name" label={t("fields.name")} required />
           </>
         ) : (
-          <CapabilityField control={form.control} />
+          <ItemTypeFields form={form} />
         )}
         <WizardFooter
           first={index === 0}

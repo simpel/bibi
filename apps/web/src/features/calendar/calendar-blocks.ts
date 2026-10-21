@@ -38,8 +38,8 @@ export type ToCalendarBlocksInput = {
 };
 
 /**
- * Joins occupancies with their line (ADR 0053): a line's hold and setup time belong to the line's
- * ticket; a manual block has no line and no ticket.
+ * Joins occupancies with their line (ADR 0053): a line's hold and its setup and teardown buffers
+ * belong to the line's ticket; a manual block has no line and no ticket.
  */
 export function toCalendarBlocks({
   occupancies,
@@ -56,6 +56,8 @@ export function toCalendarBlocks({
     const ticket = ticketId ? ticketById.get(ticketId) : undefined;
     const state = program?.stateId ? stateById.get(program.stateId) : undefined;
     const soft = occupancy.holdKind === "SOFT";
+    // Held since and expiry belong to the hold; its buffers (ADR 0059) are labelled by type.
+    const softHold = soft && occupancy.type === "HOLD";
     return {
       id: occupancy.id,
       itemId: occupancy.itemId,
@@ -66,12 +68,12 @@ export function toCalendarBlocks({
       reference: ticket?.reference ?? null,
       title: program?.name ?? occupancy.note,
       soft,
-      heldAt: soft ? (program?.heldAt ?? null) : null,
+      heldAt: softHold ? (program?.heldAt ?? null) : null,
       stateId: state?.id ?? null,
       stateName: state?.name ?? null,
       stateColor: state?.color ?? null,
       phaseId: ticket?.phaseId ?? null,
-      expiresAt: soft && state?.expires ? (ticket?.holdsUntil ?? null) : null,
+      expiresAt: softHold && state?.expires ? (ticket?.holdsUntil ?? null) : null,
     };
   });
 }

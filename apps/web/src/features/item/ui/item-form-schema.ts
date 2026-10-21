@@ -1,6 +1,7 @@
 import type { EntityTypeDto, VocabularyDto } from "@okazi/core";
 import { buildFieldsSchema, type FieldSpec, ItemCreateInputSchema } from "@okazi/core/schemas";
 import type { z } from "zod";
+import { bufferFormToInput } from "@/components/form/buffer-values";
 import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsToInput } from "@/components/typed-fields/raw-fields";
 import { blankToNull, numberOrNull } from "@/lib/blank";
@@ -91,6 +92,7 @@ export function itemFormToInput({ values, type, specs }: ItemInputArgs) {
     name: values.name.trim(),
     description: blankToNull({ value: values.description }),
     fields: fieldsToInput({ values, specs }),
+    ...bufferFormToInput({ values }),
     ...capabilityInput({ values, type }),
   };
 }

@@ -36,7 +36,7 @@ export function LineForm({ line, ...props }: LineFormProps) {
             }
           />
         )}
-        {type ? <ProgramCoreFields form={form} data={data} /> : null}
+        {type ? <ProgramCoreFields form={form} data={data} line={line} /> : null}
         {type ? <TypeFields control={form.control} type={type} data={data} /> : null}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>

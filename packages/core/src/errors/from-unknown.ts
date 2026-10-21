@@ -40,7 +40,7 @@ const LINE_OCCUPANCY_CONFLICT = "line_occupancy_conflict";
  */
 function lineConflict({ cause }: { cause: PostgresCause }): Mapped | undefined {
   if (cause.message !== LINE_OCCUPANCY_CONFLICT || typeof cause.detail !== "string") return;
-  const message = "The line's hold overlaps another booking, setup time or block on its item";
+  const message = "The line's hold or buffers overlap another booking, buffer or block on its item";
   const issues = cause.detail
     .split(",")
     .filter((id) => id.length > 0)

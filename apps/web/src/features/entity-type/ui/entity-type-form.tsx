@@ -11,13 +11,13 @@ import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { createEntityTypeAction, updateEntityTypeAction } from "../actions";
 import { BaseSelectField } from "./base-select-field";
-import { CapabilityField } from "./capability-field";
 import {
   type EntityTypeFormOutput,
   type EntityTypeFormValues,
   entityTypeFormDefaults,
   entityTypeFormSchema,
 } from "./entity-type-form-schema";
+import { ItemTypeFields } from "./item-type-fields";
 
 export type EntityTypeFormProps = {
   /** Present = edit mode (inline on the detail page), absent = create mode (dialog). */
@@ -31,11 +31,14 @@ type SaveInput = { entityType: EntityTypeDto | undefined; values: EntityTypeForm
 const save = ({ entityType, values }: SaveInput) =>
   entityType
     ? updateEntityTypeAction({
-        input: { id: entityType.id, name: values.name, capabilities: values.capabilities },
+        input: {
+          ...{ id: entityType.id, name: values.name, capabilities: values.capabilities },
+          ...{ setupMinutes: values.setupMinutes, teardownMinutes: values.teardownMinutes },
+        },
       })
     : createEntityTypeAction({ input: values });
 
-/** Create (base, name, capabilities) or edit (name, capabilities) a type. A CONFLICT shows as a toast. */
+/** Create (base, name, capabilities, buffers) or edit (name, capabilities, buffers) a type. A CONFLICT shows as a toast. */
 export function EntityTypeForm({ entityType, onDone }: EntityTypeFormProps) {
   const t = useTranslations("entityType");
   const common = useTranslations("common");
@@ -58,7 +61,7 @@ export function EntityTypeForm({ entityType, onDone }: EntityTypeFormProps) {
       <form onSubmit={submit} noValidate className="grid gap-4">
         {entityType ? null : <BaseSelectField control={form.control} />}
         <TextField form={form} name="name" label={t("fields.name")} required />
-        {form.watch("base") === "ITEM" ? <CapabilityField control={form.control} /> : null}
+        {form.watch("base") === "ITEM" ? <ItemTypeFields form={form} /> : null}
         <div className="flex justify-end gap-2">
           {onDone ? (
             <Button type="button" variant="outline" onClick={onDone}>

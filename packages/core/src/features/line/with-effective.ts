@@ -1,5 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { HandlerInput, OperationContext } from "../../operations/types";
+import { effectiveBuffers } from "../../shared/buffers";
 import { loadPriceTerms } from "../price-list/customer-price-terms";
 import { effectiveOf } from "./effective-values";
 import type { LineDto, LineRecord } from "./schema";
@@ -8,10 +9,21 @@ type Db = { context: Pick<OperationContext, "db"> };
 
 export type WithEffectiveInput = Db & { lines: readonly LineRecord[] };
 
+/** The changeover time of each setup the lines use, by setup id (archived ones included). */
+async function loadChangeovers({ context, lines }: WithEffectiveInput) {
+  const setupIds = [...new Set(lines.flatMap((line) => (line.setupId ? [line.setupId] : [])))];
+  if (setupIds.length === 0) return new Map<string, number>();
+  const setups = await context.db.setup.findMany({
+    where: { id: { in: setupIds }, status: { in: ["ACTIVE", "ARCHIVED"] } },
+    select: { id: true, changeoverMinutes: true },
+  });
+  return new Map(setups.map((setup) => [setup.id, setup.changeoverMinutes]));
+}
+
 async function loadSources({ context, lines }: WithEffectiveInput) {
   const ticketIds = [...new Set(lines.map((line) => line.ticketId))];
   const itemIds = [...new Set(lines.flatMap((line) => (line.itemId ? [line.itemId] : [])))];
-  const [tickets, items] = await Promise.all([
+  const [tickets, items, changeovers] = await Promise.all([
     context.db.ticket.findMany({
       where: { id: { in: ticketIds } },
       select: {
@@ -23,9 +35,12 @@ async function loadSources({ context, lines }: WithEffectiveInput) {
       where: { id: { in: itemIds } },
       select: {
         ...{ id: true, priceMinor: true, vatRatePercent: true },
+        ...{ setupMinutes: true, teardownMinutes: true },
         venue: { select: { defaultVatRatePercent: true } },
+        entityType: { select: { setupMinutes: true, teardownMinutes: true } },
       },
     }),
+    loadChangeovers({ context, lines }),
   ]);
   const terms = await loadPriceTerms({
     context,
@@ -39,6 +54,7 @@ async function loadSources({ context, lines }: WithEffectiveInput) {
         { ...item, venueVatRatePercent: venue?.defaultVatRatePercent ?? null },
       ]),
     ),
+    changeovers,
     terms,
   };
 }
@@ -52,14 +68,25 @@ const NO_HEADCOUNT = { estimatedHeadcount: null, guaranteedHeadcount: null };
  */
 export async function withEffective({ context, lines }: WithEffectiveInput): Promise<LineDto[]> {
   if (lines.length === 0) return [];
-  const { tickets, items, terms } = await loadSources({ context, lines });
+  const { tickets, items, changeovers, terms } = await loadSources({ context, lines });
   return lines.map((line) => {
     const ticket = tickets.get(line.ticketId);
     const item = line.itemId ? (items.get(line.itemId) ?? null) : null;
     const on = line.startsAt ?? ticket?.desiredStartsAt ?? new Date();
     const priceTerms = ticket ? terms({ customerId: ticket.customerId, on }) : null;
     const headcount = ticket ?? NO_HEADCOUNT;
-    return { ...line, ...effectiveOf({ line, ticket: headcount, item, terms: priceTerms }) };
+    const changeoverMinutes = line.setupId ? (changeovers.get(line.setupId) ?? null) : null;
+    const buffers = effectiveBuffers({
+      line,
+      item,
+      type: item?.entityType ?? null,
+      changeoverMinutes,
+    });
+    return {
+      ...line,
+      ...effectiveOf({ line, ticket: headcount, item, terms: priceTerms }),
+      ...buffers,
+    };
   });
 }
 

@@ -5,6 +5,7 @@ import { checkDemoAlternatives } from "./alternative-checks";
 import { checkDemoArchive } from "./archive-checks";
 import { checkDemoAssignments } from "./assignment-checks";
 import { checkDemoBoard } from "./board-checks";
+import { checkDemoBuffers } from "./buffer-checks";
 import { checkDemoConfig } from "./config-checks";
 import { checkDemoFactGuards } from "./fact-guard-checks";
 import { checkDemoGrid } from "./grid-checks";
@@ -38,6 +39,7 @@ const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoFactGuards,
   checkDemoGrid,
   checkDemoPrices,
+  checkDemoBuffers,
   checkDemoPayments,
 ];
 
@@ -53,7 +55,8 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPip
  * quote events that moved the tickets (`checkDemoQuoteEvents`), that a phase requiring an
  * accepted quote refuses a ticket without one (`checkDemoFactGuards`, ADR 0054), the phase
  * moves the grid drives (`checkDemoGrid`), every line's effective price and inherited quantity
- * (`checkDemoPrices`, ADR 0052), the derived balances (`checkDemoPayments`, ADR 0057), every projection against its owned data
+ * (`checkDemoPrices`, ADR 0052), every line's setup and teardown buffers (`checkDemoBuffers`, ADR
+ * 0059), the derived balances (`checkDemoPayments`, ADR 0057), every projection against its owned data
  * (`reconcileProjections`, ADR 0051), and every write
  * was audited as SYSTEM. Returns failure messages.
  */

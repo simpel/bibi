@@ -1,5 +1,6 @@
 import type { AppErrorIssue } from "../../errors/app-error";
 import type { OperationContext } from "../../operations/types";
+import { effectiveBuffers } from "../../shared/buffers";
 import type { ItemStateFlags } from "../item-state/schema";
 import type { LineRecord } from "./schema";
 
@@ -13,13 +14,31 @@ export type HoldCollisionsInput = Db & {
 
 const day = ({ at }: { at: Date }) => at.toISOString().slice(0, 10);
 
-/** The period the line would block: its own, plus its setup's changeover time right before. */
-async function blockedPeriod({ context, line }: Db & { line: TimedLine }) {
-  const setup = line.setupId
-    ? await context.db.setup.findFirst({ where: { id: line.setupId } })
-    : null;
-  const before = (setup?.changeoverMinutes ?? 0) * 60_000;
-  return { startsAt: new Date(line.startsAt.getTime() - before), endsAt: line.endsAt };
+/**
+ * The period the line would block (ADR 0059): its own, plus its effective setup right before and
+ * teardown right after, as the trigger derives them.
+ */
+async function blockedPeriod({ context, line }: Db & { line: TimedLine & { itemId: string } }) {
+  const [item, setup] = await Promise.all([
+    context.db.item.findFirst({
+      where: { id: line.itemId },
+      select: {
+        ...{ setupMinutes: true, teardownMinutes: true },
+        entityType: { select: { setupMinutes: true, teardownMinutes: true } },
+      },
+    }),
+    line.setupId ? context.db.setup.findFirst({ where: { id: line.setupId } }) : null,
+  ]);
+  const buffers = effectiveBuffers({
+    line,
+    item,
+    type: item?.entityType ?? null,
+    changeoverMinutes: setup?.changeoverMinutes ?? null,
+  });
+  return {
+    startsAt: new Date(line.startsAt.getTime() - buffers.effectiveSetupMinutes * 60_000),
+    endsAt: new Date(line.endsAt.getTime() + buffers.effectiveTeardownMinutes * 60_000),
+  };
 }
 
 type TimedLine = LineRecord & { startsAt: Date; endsAt: Date };
@@ -38,8 +57,8 @@ async function ticketRefs({ context, holders }: Db & { holders: readonly Holder[
 
 /**
  * What a line moving into a state would collide with (ADR 0044): only a `HARD` hold on a
- * `BOOKABLE` item can collide, with another hard hold, setup time or block on the item in the same
- * period. One issue per collision, e.g. "Knippla is booked by ticket #42 on 2026-03-14". The
+ * `BOOKABLE` item can collide, with another hard hold or buffer or a block on the item in the
+ * period it would block with its buffers. One issue per collision, e.g. "Knippla is booked by ticket #42 on 2026-03-14". The
  * database's exclusion constraint stays the guarantee; this names the blockers up front.
  */
 export async function holdCollisions({
@@ -56,14 +75,16 @@ export async function holdCollisions({
     select: { name: true },
   });
   if (!item) return [];
-  const period = await blockedPeriod({ context, line: { ...line, startsAt, endsAt } });
+  const timed = { ...line, itemId: line.itemId, startsAt, endsAt };
+  const period = await blockedPeriod({ context, line: timed });
   const holders = await context.db.occupancy.findMany({
     where: {
       itemId: line.itemId,
       startsAt: { lt: period.endsAt },
       endsAt: { gt: period.startsAt },
       AND: [
-        { OR: [{ type: { not: "HOLD" } }, { holdKind: "HARD" }] },
+        // Soft holds and soft buffers never block; manual blocks have no kind.
+        { OR: [{ holdKind: null }, { holdKind: "HARD" }] },
         // Not the line's own rows; manual blocks have no line.
         { OR: [{ lineId: null }, { lineId: { not: line.id } }] },
       ],

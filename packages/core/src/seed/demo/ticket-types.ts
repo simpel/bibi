@@ -78,6 +78,9 @@ export type DemoLine = {
   state?: string;
   quantity?: number;
   unitPriceKr?: number;
+  /** Overrides of the item's setup and teardown minutes (ADR 0059). */
+  setupMinutes?: number;
+  teardownMinutes?: number;
 };
 
 /**

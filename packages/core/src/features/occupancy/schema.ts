@@ -4,11 +4,12 @@ import { RecordStatusSchema } from "../../shared/record-status";
 import { HoldKindSchema } from "../item-state/hold-kind";
 
 /**
- * Why a bookable item is occupied (ADR 0022, 0044). `HOLD` comes from a line's state; every row
- * except a `SOFT` hold is collision-free. `HOLD` and `SETUP` rows are a projection of the line,
- * written only by database triggers (ADR 0053).
+ * Why a bookable item is occupied (ADR 0022, 0044, 0059). `HOLD` comes from a line's state, and
+ * `SETUP` and `TEARDOWN` are its buffers right before and after; every row except a `SOFT` one is
+ * collision-free. These three are a projection of the line, written only by database triggers
+ * (ADR 0053).
  */
-export const OCCUPANCY_TYPES = ["HOLD", "SETUP", "MAINTENANCE", "INTERNAL"] as const;
+export const OCCUPANCY_TYPES = ["HOLD", "SETUP", "TEARDOWN", "MAINTENANCE", "INTERNAL"] as const;
 export const OccupancyTypeSchema = z.enum(OCCUPANCY_TYPES);
 export type OccupancyType = z.infer<typeof OccupancyTypeSchema>;
 
@@ -21,11 +22,11 @@ export const OccupancySchema = z.object({
   organizationId: z.string(),
   itemId: z.string(),
   type: OccupancyTypeSchema,
-  /** `HOLD` only: `SOFT` (may overlap) or `HARD` (blocks), from the line's state. */
+  /** Line rows only: `SOFT` (may overlap) or `HARD` (blocks), from the line's state. */
   holdKind: HoldKindSchema.nullable(),
   startsAt: z.date(),
   endsAt: z.date(),
-  /** The line whose hold (or setup buffer) this is; null for a manual block (ADR 0053). */
+  /** The line whose hold (or buffer) this is; null for a manual block (ADR 0053). */
   lineId: z.string().nullable(),
   note: z.string().nullable(),
   status: RecordStatusSchema,

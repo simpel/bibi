@@ -16,6 +16,7 @@ import {
   EntityTypeSchema,
   EntityTypeUpdateInputSchema,
 } from "./schema";
+import { checkTypeBuffers } from "./type-buffers";
 
 type NameTakenInput = {
   context: Pick<OperationContext, "db">;
@@ -49,8 +50,10 @@ export const updateEntityType = defineOperation({
   name: "entityType.update",
   kind: "command",
   description:
-    "Rename a type, replace its capabilities or set an item type's expiry state (where lines in " +
-    "an expiring state fall when the ticket's holdsUntil passes). Switching a capability off while items of the " +
+    "Rename a type, replace its capabilities, set an item type's expiry state (where lines in " +
+    "an expiring state fall when the ticket's holdsUntil passes) or its default setup and " +
+    "teardown minutes (held around bookings; a hard hold that would then collide is CONFLICT). " +
+    "Switching a capability off while items of the " +
     "type have data for it (e.g. prices for PRICED) is refused with CONFLICT.",
   input: EntityTypeUpdateInputSchema,
   output: EntityTypeSchema,
@@ -61,6 +64,8 @@ export const updateEntityType = defineOperation({
     const capabilities = data.capabilities ?? before.capabilities;
     const valid = checkCapabilities({ base: before.base, capabilities });
     if (!valid.ok) return valid;
+    const buffered = checkTypeBuffers({ base: before.base, ...data });
+    if (!buffered.ok) return buffered;
     const removed = before.capabilities.filter((capability) => !capabilities.includes(capability));
     const removable = await checkCapabilitiesRemovable({ context, entityTypeId: id, removed });
     if (!removable.ok) return removable;

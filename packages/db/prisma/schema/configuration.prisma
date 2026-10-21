@@ -32,8 +32,9 @@ enum FieldKind {
 }
 
 /// Type – an organization's own type for a base entity, e.g. Conference room, Dish or Boat.
-/// Trigger (ADR 0053): changing `capabilities` (gaining or losing `BOOKABLE`) re-derives the holds
-/// of every line on an item of the type that has not ended (`sync_line_occupancy.sql`).
+/// Trigger (ADR 0053): changing `capabilities` (gaining or losing `BOOKABLE`), `setupMinutes` or
+/// `teardownMinutes` re-derives the holds of every line on an item of the type that has not ended
+/// (`sync_line_occupancy.sql`).
 model EntityType {
   id               String                      @id @default(cuid(2))
   organizationId   String
@@ -42,6 +43,10 @@ model EntityType {
   capabilities     ItemCapability[]
   /// Item types: where lines in an `expires` state fall when the ticket's `holdsUntil` passes.
   expiryStateId    String?
+  /// Item types: default buffers before and after a booking, in minutes (ADR 0059, owned);
+  /// null = none. An item or a line overrides them.
+  setupMinutes     Int?
+  teardownMinutes  Int?
   status           RecordStatus                @default(ACTIVE)
   createdAt        DateTime                    @default(now())
   updatedAt        DateTime                    @updatedAt

@@ -7,17 +7,27 @@ import {
 
 describe("entity type form schema", () => {
   it("keeps capabilities for item types only", () => {
-    const item: EntityTypeFormValues = { base: "ITEM", name: " Rum ", capabilities: ["BOOKABLE"] };
-    expect(entityTypeFormToInput({ values: item })).toMatchObject({ capabilities: ["BOOKABLE"] });
+    const item: EntityTypeFormValues = {
+      ...{ base: "ITEM", name: " Rum ", capabilities: ["BOOKABLE"] },
+      ...{ setupMinutes: "30", teardownMinutes: "" },
+    };
+    expect(entityTypeFormToInput({ values: item })).toMatchObject({
+      ...{ capabilities: ["BOOKABLE"], setupMinutes: 30, teardownMinutes: null },
+    });
     const customer: EntityTypeFormValues = { ...item, base: "CUSTOMER" };
-    expect(entityTypeFormToInput({ values: customer }).capabilities).toBeUndefined();
+    const input = entityTypeFormToInput({ values: customer });
+    expect(input.capabilities).toBeUndefined();
+    expect(input).not.toHaveProperty("setupMinutes");
   });
 
   it("validates with core's type schema", () => {
-    expect(
-      entityTypeFormSchema.safeParse({ base: "ITEM", name: "", capabilities: [] }).success,
-    ).toBe(false);
-    const ok = entityTypeFormSchema.safeParse({ base: "ITEM", name: "Rum", capabilities: [] });
+    const blank = { capabilities: [], setupMinutes: "", teardownMinutes: "" };
+    expect(entityTypeFormSchema.safeParse({ base: "ITEM", name: "", ...blank }).success).toBe(
+      false,
+    );
+    const ok = entityTypeFormSchema.safeParse({ base: "ITEM", name: "Rum", ...blank });
     expect(ok.success).toBe(true);
+    const negative = { base: "ITEM", name: "Rum", ...blank, setupMinutes: "-5" };
+    expect(entityTypeFormSchema.safeParse(negative).success).toBe(false);
   });
 });

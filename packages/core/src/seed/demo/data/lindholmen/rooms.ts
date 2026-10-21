@@ -8,9 +8,21 @@ type RoomInput = {
   view: string;
   setups: Record<string, number>;
   kr: number;
+  /** ADR 0059: overrides the room type's teardown minutes. */
+  teardownMinutes?: number;
 };
 
-const room = ({ name, floor, area, daylight, view, setups, kr }: RoomInput): DemoItem => ({
+const room = ({
+  name,
+  floor,
+  area,
+  daylight,
+  view,
+  setups,
+  kr,
+  ...buffers
+}: RoomInput): DemoItem => ({
+  ...buffers,
   type: "Conference room",
   name,
   fields: { Floor: floor, "Area m²": area, Daylight: daylight, View: view },
@@ -23,6 +35,7 @@ const room = ({ name, floor, area, daylight, view, setups, kr }: RoomInput): Dem
 export const lindholmenRooms: readonly DemoItem[] = [
   room({
     ...{ name: "Vinga (auditorium)", floor: 1, area: 260, daylight: true, view: "River", kr: 4500 },
+    teardownMinutes: 30,
     setups: { Theatre: 220, Classroom: 120, Banquet: 160, Reception: 250 },
   }),
   room({

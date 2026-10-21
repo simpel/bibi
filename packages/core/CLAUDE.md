@@ -46,6 +46,7 @@ The parity core: every capability is defined **once** as an operation and then e
 - Field values live in `Item.fields` (JSON) under the field's `key`; `buildFieldsSchema({ specs })` (client-safe) validates them.
 - "Data exists → `CONFLICT`" is enforced in `entity-type/capabilities.ts`, `field-definition/field-rules.ts` and in the archiving operations.
 - `BUNDLE` parts (`ItemPart`) are replaced as a set via `parts`; `item/part-graph.ts` rejects cycles and more than 5 levels. Capabilities, demands and buffers are accepted but only partly built: plan and issues in `docs/plans/type-capabilities-and-resources.md`.
+- Setup and teardown buffers (ADR 0059): derive effective minutes only with `effectiveBuffers` (`shared/buffers.ts`); `sync_line_occupancy.sql` applies the same rule to holds, so change both together.
 - Templates are data (`templates/vocabularies/`, `templates/configuration/`) imported through the shared insert helpers; imports are idempotent (existing names are skipped).
 
 ## Assignments and responsibilities (ADR 0034, 0055, 0056)
