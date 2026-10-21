@@ -21,12 +21,12 @@ export const lindholmenAlternativeTickets: readonly DemoTicket[] = [
   },
   {
     ...quoted,
-    ...{ ref: "L14", customer: "Älvstrand Tech AB", type: "Conference", day: 25, from: "13:00" },
-    ...{ to: "16:00", phase: "Confirmed", headcount: 16, assignee: "Johan Ek" },
+    ...{ ref: "L14", customer: "Älvstrand Tech AB", type: "Conference", day: 25, from: "09:00" },
+    ...{ to: "12:00", phase: "Confirmed", headcount: 16, assignee: "Johan Ek" },
     fields: { Purpose: "Planning day" },
     lines: [
-      { item: "Hönö", name: "Planning in Hönö", from: "13:00", to: "16:00" },
-      { item: "Styrsö", name: "Planning in Styrsö", from: "13:00", to: "16:00" },
+      { item: "Hönö", name: "Planning in Hönö", from: "09:00", to: "12:00" },
+      { item: "Styrsö", name: "Planning in Styrsö", from: "09:00", to: "12:00" },
     ],
     alternatives: [
       {

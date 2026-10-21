@@ -12,7 +12,7 @@ export type CheckDemoHoldsInput = { context: ExecuteContext; org: DemoOrg };
  * `initial`: the line should still be in its type's initial state (a lead without override).
  * `expired`: it should be released after expiry, or already by the customer's pick (ADR 0052).
  */
-type Expected = DemoLine & { expired: boolean; initial: boolean };
+type Expected = DemoLine & { day: number; expired: boolean; initial: boolean };
 
 /** An option the customer did not pick in a chosen alternative group (released, ADR 0052). */
 const pickedAway = ({ ticket, line }: { ticket: DemoTicket; line: DemoLine }) =>
@@ -45,7 +45,7 @@ type Loaded = Awaited<ReturnType<typeof loadLines>>;
  */
 function checkOverlaps({ loaded }: { loaded: Loaded }) {
   const failures: string[] = [];
-  const key = ({ line }: { line: DemoLine }) => `${line.item} ${line.from}-${line.to}`;
+  const key = ({ line }: { line: Expected }) => `${line.day} ${line.item} ${line.from}-${line.to}`;
   const keys = [...new Set(loaded.map(({ line }) => key({ line })))];
   for (const label of keys) {
     const group = loaded.filter(({ line }) => key({ line }) === label);
@@ -70,6 +70,7 @@ export async function checkDemoHolds({ context, org }: CheckDemoHoldsInput): Pro
   const lines = org.tickets.flatMap((ticket) =>
     (ticket.lines ?? []).map((line) => ({
       ...line,
+      day: ticket.day,
       expired: (ticket.holdsUntilDay ?? 0) < 0 || pickedAway({ ticket, line }),
       initial: !ticket.phase && !line.state,
     })),
