@@ -1,5 +1,6 @@
 import type { EntityTypeDto, ItemDto } from "@okazi/core";
 import type { PRICE_UNITS } from "@okazi/core/schemas";
+import { type BufferFormValues, bufferFormDefaults } from "@/components/form/buffer-values";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 
 export type PriceUnitValue = (typeof PRICE_UNITS)[number];
@@ -22,7 +23,7 @@ export type CustomisationGroupFormValue = {
 };
 
 /** Raw values of the item form: inputs are strings; kr, not minor units; one entry per field key. */
-export type ItemFormValues = {
+export type ItemFormValues = BufferFormValues & {
   entityTypeId: string;
   venueId: string;
   name: string;
@@ -58,6 +59,7 @@ export function itemFormDefaults({ type, item }: ItemDefaultsInput): ItemFormVal
     priceUnit: item?.priceUnit ?? "PER_UNIT",
     vatRatePercent: text({ value: item?.vatRatePercent }),
     defaultDurationMinutes: text({ value: item?.defaultDurationMinutes }),
+    ...bufferFormDefaults({ stored: item }),
     setups,
     parts: (item?.parts ?? []).map((part) => ({
       itemId: part.itemId,

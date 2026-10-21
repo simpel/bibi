@@ -14,7 +14,8 @@ export const lindholmenAlternativeTickets: readonly DemoTicket[] = [
     ...{ to: "12:00", phase: "Quote sent", headcount: 14, assignee: "Maria Holm" },
     fields: { Purpose: "Design workshop" },
     lines: [
-      { item: "Hönö", name: "Workshop in Hönö", from: "09:00", to: "12:00" },
+      // ADR 0059: its own setup (30 min) wins over the room type's 15; a soft hold's buffer.
+      { item: "Hönö", name: "Workshop in Hönö", from: "09:00", to: "12:00", setupMinutes: 30 },
       { item: "Styrsö", name: "Workshop in Styrsö", from: "09:00", to: "12:00" },
     ],
     alternatives: [{ name: "Workshop room", lines: ["Workshop in Hönö", "Workshop in Styrsö"] }],

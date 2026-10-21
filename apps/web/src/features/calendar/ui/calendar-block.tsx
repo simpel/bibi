@@ -15,9 +15,12 @@ const BASE =
 const TYPE_CLASS: Record<OccupancyType, string> = {
   HOLD: "border-primary bg-primary text-primary-foreground hover:opacity-90",
   SETUP: "border-border bg-muted text-muted-foreground",
+  TEARDOWN: "border-border bg-muted text-muted-foreground",
   MAINTENANCE: "border-warning bg-warning/20 text-foreground",
   INTERNAL: "border-border bg-secondary text-secondary-foreground",
 };
+
+const BUFFER_TYPES: ReadonlySet<OccupancyType> = new Set(["SETUP", "TEARDOWN"]);
 
 /** Soft holds are dashed because they may overlap (ADR 0044). */
 const SOFT_CLASS = "border-dashed border-primary bg-primary/10 text-foreground hover:bg-primary/20";
@@ -47,6 +50,8 @@ export function CalendarBlockView({ block, row, col, first, positioned }: Calend
   const className = cn(
     BASE,
     block.color ? "hover:opacity-90" : block.soft ? SOFT_CLASS : TYPE_CLASS[block.type],
+    // A line's setup and teardown buffers are drawn fainter than its hold (ADR 0059).
+    BUFFER_TYPES.has(block.type) ? "opacity-60" : null,
     positioned ? "absolute z-10" : "relative z-10",
   );
   const focus = { [GRID_ITEM]: "", "data-row": row, "data-col": col, tabIndex: first ? 0 : -1 };

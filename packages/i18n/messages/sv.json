@@ -658,6 +658,7 @@
     "types": {
       "HOLD": "Reservation",
       "SETUP": "Ställtid",
+      "TEARDOWN": "Nedplock",
       "MAINTENANCE": "Underhåll",
       "INTERNAL": "Internt bruk"
     },
@@ -673,6 +674,17 @@
       "endsAt": "Slutar",
       "note": "Anteckning"
     }
+  },
+  "buffers": {
+    "legend": "Ställtid och nedplock",
+    "setupMinutes": "Ställtid före (minuter)",
+    "teardownMinutes": "Nedplock efter (minuter)",
+    "inherits": {
+      "none": "Standard för typens artiklar, hålls runt varje bokning av en bokningsbar artikel. Tomt = ingen.",
+      "type": "Hålls runt varje bokning av en bokningsbar artikel. Tomt = artikeltypens.",
+      "item": "Hålls runt bokningen. Tomt = artikelns, annars dess typs. Uppställningens ställtid är minsta ställtid."
+    },
+    "inEffect": "Gäller nu: {setup} min ställtid, {teardown} min nedplock."
   },
   "line": {
     "singular": "Programpunkt",
@@ -1333,6 +1345,8 @@
         "defaultDurationMinutes": "Standardlängd (min)",
         "setups": "Uppställningar",
         "changeoverMinutes": "Ställtid (min)",
+        "setupMinutes": "Ställtid (min)",
+        "teardownMinutes": "Nedplock (min)",
         "entityTypeIds": "Artikeltyper (id)",
         "fieldIds": "Fält (id)",
         "vocabularyIds": "Listor (id)",

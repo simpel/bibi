@@ -1,25 +1,27 @@
-/// Why a bookable item is occupied (ADR 0022, 0044). `HOLD` comes from a line's state, with its
-/// `holdKind`. Every row except a `SOFT` hold is collision-free per item: an exclusion constraint
-/// (`btree_gist`) rejects overlapping active rows. Soft holds may overlap.
+/// Why a bookable item is occupied (ADR 0022, 0044, 0059). `HOLD` comes from a line's state, and
+/// `SETUP` and `TEARDOWN` are the line's buffers right before and after it; all three carry the
+/// line's `holdKind`. Every row except a `SOFT` one is collision-free per item: an exclusion
+/// constraint (`btree_gist`) rejects overlapping active rows. Soft holds and buffers may overlap.
 enum OccupancyType {
   HOLD
   SETUP
+  TEARDOWN
   MAINTENANCE
   INTERNAL
 }
 
 /// Occupancy – a `BOOKABLE` item is taken for `[startsAt, endsAt)`. Released rows are `ARCHIVED`
 /// and no longer block. Two kinds of rows (ADR 0053): manual blocks (`MAINTENANCE`, `INTERNAL`,
-/// no `lineId`) are owned data written by `occupancy.*`; line holds (`HOLD` and its `SETUP`
-/// buffer, with `lineId`) are a projection written ONLY by database triggers
+/// no `lineId`) are owned data written by `occupancy.*`; line holds (`HOLD` and its `SETUP` and
+/// `TEARDOWN` buffers, with `lineId`) are a projection written ONLY by database triggers
 /// (`packages/db/sql/sync_line_occupancy.sql`), never by application code.
 model Occupancy {
   id             String        @id @default(cuid(2))
   organizationId String
   itemId         String
   type           OccupancyType
-  /// `HOLD` only: `SOFT` (may overlap) or `HARD` (blocks), copied from the line's state by the
-  /// trigger; nothing else writes it.
+  /// Line rows only: `SOFT` (may overlap) or `HARD` (blocks), copied from the line's state by the
+  /// trigger; nothing else writes it. Null on a manual block.
   holdKind       HoldKind?
   startsAt       DateTime
   endsAt         DateTime
@@ -34,7 +36,8 @@ model Occupancy {
   line           Line?         @relation(fields: [lineId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([id, organizationId])
-  /// One `HOLD` and at most one `SETUP` row per line; the trigger upserts on it.
-  @@unique([lineId, type])
+  /// One row per line, held item and window (ADR 0059); the trigger upserts on it. The item is in
+  /// the key so a line can later also hold other items (resource allocations).
+  @@unique([lineId, itemId, type])
   @@index([organizationId, itemId, startsAt])
 }

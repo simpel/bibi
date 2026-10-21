@@ -16,7 +16,10 @@ import {
 
 export type EntityTypeStep = "base" | "capabilities";
 
-const STEP_FIELDS = { base: ["base", "name"], capabilities: ["capabilities"] } as const;
+const STEP_FIELDS = {
+  base: ["base", "name"],
+  capabilities: ["capabilities", "setupMinutes", "teardownMinutes"],
+} as const;
 
 /** Form and steps of the create-type wizard; only item types have the capabilities step. */
 export function useEntityTypeWizard() {

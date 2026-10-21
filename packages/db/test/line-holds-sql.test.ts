@@ -27,3 +27,22 @@ describe("trigger SQL (ADR 0053, 0054)", () => {
     expect(sql.slice(start + 1, end)).toBe(source);
   });
 });
+
+describe("line hold rows (ADR 0059)", () => {
+  it("upsert on the Occupancy key the schema declares: one row per line, item and window", () => {
+    const source = readFileSync(join(root, "sql", "sync_line_occupancy.sql"), "utf8");
+    const schema = readFileSync(join(root, "prisma/schema/occupancy.prisma"), "utf8");
+    expect(source).toContain('ON CONFLICT ("lineId", "itemId", "type")');
+    expect(schema).toContain("@@unique([lineId, itemId, type])");
+  });
+
+  it("re-derives holds when the buffer minutes of a line, item or type change", () => {
+    const source = readFileSync(join(root, "sql", "sync_line_occupancy.sql"), "utf8");
+    for (const table of ["Line", "Item", "EntityType"]) {
+      const trigger = source.slice(source.indexOf(`AFTER UPDATE ON "${table}"`));
+      const when = trigger.slice(0, trigger.indexOf("EXECUTE FUNCTION"));
+      expect(when).toContain('OLD."setupMinutes"');
+      expect(when).toContain('OLD."teardownMinutes"');
+    }
+  });
+});

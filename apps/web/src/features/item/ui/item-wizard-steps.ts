@@ -17,6 +17,8 @@ export const STEP_FIELDS: Record<WizardStep, Fields> = {
     "priceUnit",
     "vatRatePercent",
     "defaultDurationMinutes",
+    "setupMinutes",
+    "teardownMinutes",
     "setups",
     "parts",
     "customisationGroups",

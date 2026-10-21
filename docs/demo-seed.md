@@ -19,9 +19,10 @@ The script ends with checks that make CI fail if the demo does not show what it 
 6. Ticket F6's `holdsUntil` has passed and its line is still `Prebooked` until `ticket.expireHolds` runs.
 7. Every write has a row in `AuditLog` with actor `SYSTEM`.
 8. Lindholmen's phase grid drives phase moves: moving L11 to Confirmed books its room line and skips its overridden lunch line, and moving L12 to Confirmed is refused because L4 has a hard hold on the same room, and nothing changes.
-9. Every projection matches what is rebuilt from owned data (ADR 0051): `reconcile-checks.ts` registers a `rebuild` query and a `compare` function per projection (`reconcile.ts`), and `checks.ts` runs them all and fails with the first differing rows. Today: line holds in `Occupancy` (`HOLD` and `SETUP` with `lineId`, written only by the database trigger `sync_line_occupancy`, ADR 0053) against the lines that have not ended (same item, kind and period; a hard hold with a setup also its changeover buffer), the `Record` supertable rows against the seven tables that extend them (same base, type, status and fields, ADR 0056), and every ticket's `phaseId` and every line's `stateId` against its newest `TicketPhaseChange` and `LineStateChange` (`history-reconcile.ts`, ADR 0054; a ticket without history, or a line with a state but no history, differs). Vitest calls the same `reconcileProjections`.
+9. Every projection matches what is rebuilt from owned data (ADR 0051): `reconcile-checks.ts` registers a `rebuild` query and a `compare` function per projection (`reconcile.ts`), and `checks.ts` runs them all and fails with the first differing rows. Today: line holds in `Occupancy` (`HOLD`, `SETUP` and `TEARDOWN` with `lineId`, written only by the database trigger `sync_line_occupancy`, ADR 0053, 0059) against the lines that have not ended (same item, kind and period; a soft or hard hold also its setup and teardown buffers of the same kind, ADR 0059), the `Record` supertable rows against the seven tables that extend them (same base, type, status and fields, ADR 0056), and every ticket's `phaseId` and every line's `stateId` against its newest `TicketPhaseChange` and `LineStateChange` (`history-reconcile.ts`, ADR 0054; a ticket without history, or a line with a state but no history, differs). Vitest calls the same `reconcileProjections`.
 10. Lindholmen's alternative groups (ADR 0052, `alternative-checks.ts`): L13's "Workshop room" (Hönö or Styrsö) is open after its quote was sent, and both options are soft holds; L14's "Planning room" was chosen when its quote was accepted (`quote.accept` with `chosenLineIds`), so Planning in Hönö is the group's `chosenLineId` and still holds (Booked by the grid), and Planning in Styrsö is `Released` and holds nothing. `checkDemoHolds` expects the Styrsö option released too.
 11. Phase history is owned data (ADR 0054), made by the same operations as the moves: every ticket's history starts without a from phase, by `TEMPLATE` for the tickets made from a predefined ticket and by `MANUAL` otherwise; a ticket in a quote-event phase got there by `QUOTE_EVENT` (or started there from a template); every board card's time in phase is its newest change (`pipeline-checks.ts`, `board-checks.ts`). Lindholmen's "Final count locked" requires an accepted quote: moving the first open ticket without one there is refused with that blocker and changes nothing (`fact-guard-checks.ts`).
+12. Setup and teardown buffers (ADR 0059, `buffer-checks.ts`): every line's effective setup and teardown minutes and their sources follow line → item → type, and the setup is the larger of that and its setup's changeover time, never the sum. Lindholmen's Conference room type has 15/15, Vinga (auditorium) overrides the teardown with 30, L13's Workshop in Hönö (a soft hold) has its own setup of 30, Meal has 30/15 and Equipment 10/10. The room lines of the predefined tickets (L7, L10) use the Boardroom setup, whose changeover (20) is longer than the type's 15, so their setup is 20 with source `SETUP`. The soft and hard holds on rooms then have `SETUP` and `TEARDOWN` rows of their own kind (check 9).
 
 
 The checks that run today:
@@ -101,15 +102,17 @@ Seeded in part 2 via `responsibility.create` as SYSTEM, after the item types. Fo
 Theatre (15 min), Classroom (30), U-shape (30), Boardroom (20), Cabaret (40), Banquet (60), Reception (15).
 
 ### Item types
+Setup and teardown minutes are the type's defaults (ADR 0059); an item or a line overrides them.
+
 | Type | Capabilities | Own fields |
 |---|---|---|
-| Conference room | `BOOKABLE`, `SETUPS`, `PRICED` | Floor (number), Area m² (number), Ceiling height m (number), Daylight (yes/no), View (choice: View) |
+| Conference room | `BOOKABLE`, `SETUPS`, `PRICED`; setup 15, teardown 15 min | Floor (number), Area m² (number), Ceiling height m (number), Daylight (yes/no), View (choice: View) |
 | Dish | – | Allergens (multi-choice: Allergens), Diet (multi-choice: Diet) |
 | Drink | `PRICED` | Allergens (multi-choice), Alcoholic (yes/no) |
-| Meal | `PRICED`, `BUNDLE`, `CUSTOMISATIONS` | Service style (choice: Buffet, Plated, Finger food) |
+| Meal | `PRICED`, `BUNDLE`, `CUSTOMISATIONS`; setup 30, teardown 15 min | Service style (choice: Buffet, Plated, Finger food) |
 | Tour | `PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE` | Language (multi-choice: Swedish, English, German) |
 | Guide | `BOOKABLE` | Language (multi-choice) |
-| Equipment | `BOOKABLE`, `PRICED` | Inventory number (text) |
+| Equipment | `BOOKABLE`, `PRICED`; setup 10, teardown 10 min | Inventory number (text) |
 | Bundle | `PRICED`, `BUNDLE`, `CUSTOMISATIONS` | Minimum quantity (number) |
 
 ### Other types
@@ -164,7 +167,7 @@ L7 and L10 are created with `ticket.createFromTemplate` from these (see Tickets)
 ## Catalog
 
 ### Conference rooms (10)
-Price per hour excl. VAT. Capacity per setup.
+Price per hour excl. VAT. Capacity per setup. Vinga (auditorium) has its own teardown of 30 minutes (the type's is 15).
 
 | Room | Floor | m² | Daylight | View | Capacity | SEK/h |
 |---|---|---|---|---|---|---|

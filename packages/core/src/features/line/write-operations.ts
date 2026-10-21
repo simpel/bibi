@@ -23,8 +23,9 @@ import { effectiveHandler } from "./with-effective";
 const OCCUPY_NOTE =
   "A line with an item starts in the item type's initial state (itemState.list). With a " +
   "bookable item it holds the item for the period as its state says (SOFT holds may overlap, " +
-  "HARD holds block), and a setup adds its changeover time right before a hard hold; an " +
-  "overlap with another hard hold, setup time or block gives CONFLICT.";
+  "HARD holds block), with setup and teardown buffers of the same kind right before and after " +
+  "(setupMinutes and teardownMinutes, else the item's, else its type's; the setup's changeover " +
+  "time is the least setup); an overlap with another hard hold, buffer or block gives CONFLICT.";
 
 export const createLine = defineOperation({
   name: "line.create",

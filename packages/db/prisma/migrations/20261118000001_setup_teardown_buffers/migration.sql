@@ -1,0 +1,288 @@
+-- ADR 0059: setup and teardown buffers on type, item and line; buffers for soft holds too.
+
+-- AlterTable
+ALTER TABLE "EntityType" ADD COLUMN     "setupMinutes" INTEGER,
+ADD COLUMN     "teardownMinutes" INTEGER;
+
+-- AlterTable
+ALTER TABLE "Item" ADD COLUMN     "setupMinutes" INTEGER,
+ADD COLUMN     "teardownMinutes" INTEGER;
+
+-- AlterTable
+ALTER TABLE "Line" ADD COLUMN     "setupMinutes" INTEGER,
+ADD COLUMN     "teardownMinutes" INTEGER;
+
+-- Buffers are never negative.
+ALTER TABLE "EntityType" ADD CONSTRAINT "EntityType_buffer_minutes_check"
+  CHECK ("setupMinutes" >= 0 AND "teardownMinutes" >= 0);
+ALTER TABLE "Item" ADD CONSTRAINT "Item_buffer_minutes_check"
+  CHECK ("setupMinutes" >= 0 AND "teardownMinutes" >= 0);
+ALTER TABLE "Line" ADD CONSTRAINT "Line_buffer_minutes_check"
+  CHECK ("setupMinutes" >= 0 AND "teardownMinutes" >= 0);
+
+-- DropIndex
+DROP INDEX "Occupancy_lineId_type_key";
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Occupancy_lineId_itemId_type_key" ON "Occupancy"("lineId", "itemId", "type");
+
+-- Every line row (hold and buffers) carries the line's hold kind; manual blocks have none. Only
+-- hard holds had a setup buffer before.
+ALTER TABLE "Occupancy" DROP CONSTRAINT "Occupancy_hold_kind_check";
+ALTER TABLE "Occupancy" DROP CONSTRAINT "Occupancy_line_check";
+UPDATE "Occupancy" SET "holdKind" = 'HARD' WHERE "type" = 'SETUP';
+ALTER TABLE "Occupancy" ADD CONSTRAINT "Occupancy_hold_kind_check"
+  CHECK (("lineId" IS NOT NULL) = ("holdKind" IS NOT NULL AND "holdKind" <> 'NONE'));
+ALTER TABLE "Occupancy" ADD CONSTRAINT "Occupancy_line_check"
+  CHECK (("type" IN ('MAINTENANCE', 'INTERNAL')) = ("lineId" IS NULL));
+
+-- BEGIN packages/db/sql/sync_line_occupancy.sql
+-- Line holds are a projection of line state (ADR 0053, 0059). This file is the source of the
+-- functions and triggers; the latest migration that includes it applies it verbatim
+-- (`packages/db/test/line-holds-sql.test.ts` keeps the two in step).
+--
+-- A line holds its item when: the line and its ticket are ACTIVE, the ticket's phase is not
+-- terminal, the line is timed, its item's type is BOOKABLE and its state is not released and
+-- holds (SOFT or HARD). It then has one HOLD row of the state's kind for [startsAt, endsAt), a
+-- SETUP row right before and a TEARDOWN row right after, each of the same kind and only when its
+-- minutes are above zero. Setup minutes are the line's, else the item's, else the type's, and
+-- the larger of that and the setup's changeover time (never the sum); teardown minutes are the
+-- line's, else the item's, else the type's. SOFT buffers never block, like SOFT holds. Rows that
+-- no longer hold are ARCHIVED; one row per (lineId, itemId, type) is kept and reactivated.
+--
+-- An overlap rejected by "Occupancy_no_overlap" is raised again as SQLSTATE 23P01 with the
+-- message `line_occupancy_conflict` and the conflicting line ids, comma separated, in DETAIL.
+-- Core maps it to CONFLICT with one issue per line (`lines.<id>`).
+
+DROP FUNCTION IF EXISTS sync_line_occupancy_row(text, "OccupancyType", "HoldKind",
+  timestamp(3), timestamp(3));
+
+-- Writes one active line row, reactivating the line's row for the same item and window.
+CREATE OR REPLACE FUNCTION sync_line_occupancy_row(target_line_id text, item_id text,
+  kind "OccupancyType", hold "HoldKind", starts_at timestamp(3), ends_at timestamp(3))
+RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  INSERT INTO "Occupancy" ("id", "organizationId", "itemId", "type", "holdKind", "startsAt",
+    "endsAt", "lineId", "status", "createdAt", "updatedAt", "createdBy")
+  SELECT gen_random_uuid()::text, l."organizationId", item_id, kind, hold, starts_at, ends_at,
+    l."id", 'ACTIVE', now() AT TIME ZONE 'UTC', now() AT TIME ZONE 'UTC', l."createdBy"
+    FROM "Line" l WHERE l."id" = target_line_id
+  ON CONFLICT ("lineId", "itemId", "type") DO UPDATE
+    SET "holdKind" = EXCLUDED."holdKind", "startsAt" = EXCLUDED."startsAt",
+        "endsAt" = EXCLUDED."endsAt", "status" = 'ACTIVE', "updatedAt" = (now() AT TIME ZONE 'UTC')
+    WHERE ("Occupancy"."holdKind", "Occupancy"."startsAt", "Occupancy"."endsAt",
+           "Occupancy"."status")
+      IS DISTINCT FROM
+          (EXCLUDED."holdKind", EXCLUDED."startsAt", EXCLUDED."endsAt", 'ACTIVE'::"RecordStatus");
+END $$;
+
+-- Derives one line's HOLD, SETUP and TEARDOWN rows from the line, its ticket, phase, item, item
+-- type, state and setup. Raises `line_occupancy_conflict` with the line id on an overlap.
+CREATE OR REPLACE FUNCTION sync_line_occupancy(target_line_id text)
+RETURNS void LANGUAGE plpgsql AS $$
+DECLARE
+  held record;
+  hold_kind "HoldKind";
+  setup_from timestamp(3);
+  teardown_to timestamp(3);
+BEGIN
+  SELECT l."itemId", l."startsAt", l."endsAt", s."hold",
+         GREATEST(COALESCE(l."setupMinutes", i."setupMinutes", et."setupMinutes", 0),
+                  COALESCE(su."changeoverMinutes", 0)) AS setup_minutes,
+         COALESCE(l."teardownMinutes", i."teardownMinutes", et."teardownMinutes", 0)
+           AS teardown_minutes
+    INTO held
+    FROM "Line" l
+    JOIN "Ticket" t ON t."id" = l."ticketId" AND t."organizationId" = l."organizationId"
+    JOIN "TicketPhase" p ON p."id" = t."phaseId" AND p."organizationId" = t."organizationId"
+    JOIN "Item" i ON i."id" = l."itemId" AND i."organizationId" = l."organizationId"
+    JOIN "EntityType" et ON et."id" = i."entityTypeId" AND et."organizationId" = i."organizationId"
+    JOIN "ItemState" s ON s."id" = l."stateId" AND s."organizationId" = l."organizationId"
+    LEFT JOIN "Setup" su ON su."id" = l."setupId" AND su."organizationId" = l."organizationId"
+   WHERE l."id" = target_line_id
+     AND l."status" = 'ACTIVE' AND t."status" = 'ACTIVE' AND NOT p."terminal"
+     AND l."startsAt" IS NOT NULL AND l."endsAt" IS NOT NULL
+     AND 'BOOKABLE' = ANY (et."capabilities")
+     AND NOT s."released" AND s."hold" <> 'NONE';
+  hold_kind := CASE WHEN FOUND THEN held."hold" ELSE NULL END;
+  IF hold_kind IS NOT NULL AND held.setup_minutes > 0 THEN
+    setup_from := held."startsAt" - make_interval(mins => held.setup_minutes);
+  END IF;
+  IF hold_kind IS NOT NULL AND held.teardown_minutes > 0 THEN
+    teardown_to := held."endsAt" + make_interval(mins => held.teardown_minutes);
+  END IF;
+  -- Every row that is not wanted exactly as it is goes first, so a line moving its rows never
+  -- collides with its own old rows.
+  UPDATE "Occupancy" o SET "status" = 'ARCHIVED', "updatedAt" = (now() AT TIME ZONE 'UTC')
+   WHERE o."lineId" = target_line_id AND o."status" <> 'ARCHIVED'
+     AND NOT COALESCE(
+       hold_kind IS NOT NULL AND o."itemId" = held."itemId" AND o."holdKind" = hold_kind
+       AND (o."type", o."startsAt", o."endsAt") IN (
+         ('HOLD'::"OccupancyType", held."startsAt", held."endsAt"),
+         ('SETUP'::"OccupancyType", setup_from, held."startsAt"),
+         ('TEARDOWN'::"OccupancyType", held."endsAt", teardown_to)),
+       false);
+  IF hold_kind IS NULL THEN
+    RETURN;
+  END IF;
+  PERFORM sync_line_occupancy_row(target_line_id, held."itemId", 'HOLD', hold_kind,
+    held."startsAt", held."endsAt");
+  IF setup_from IS NOT NULL THEN
+    PERFORM sync_line_occupancy_row(target_line_id, held."itemId", 'SETUP', hold_kind,
+      setup_from, held."startsAt");
+  END IF;
+  IF teardown_to IS NOT NULL THEN
+    PERFORM sync_line_occupancy_row(target_line_id, held."itemId", 'TEARDOWN', hold_kind,
+      held."endsAt", teardown_to);
+  END IF;
+EXCEPTION WHEN exclusion_violation THEN
+  RAISE EXCEPTION USING ERRCODE = 'exclusion_violation', MESSAGE = 'line_occupancy_conflict',
+    DETAIL = target_line_id;
+END $$;
+
+-- Re-derives a set of lines and collects every line that collides, so a configuration change
+-- (state flags, changeover time, buffer minutes, capabilities, terminal flag) is refused with all
+-- of them listed.
+CREATE OR REPLACE FUNCTION sync_line_occupancies(line_ids text[])
+RETURNS void LANGUAGE plpgsql AS $$
+DECLARE
+  line_id text;
+  conflicts text[] := '{}';
+BEGIN
+  FOREACH line_id IN ARRAY COALESCE(line_ids, '{}') LOOP
+    BEGIN
+      PERFORM sync_line_occupancy(line_id);
+    EXCEPTION WHEN exclusion_violation THEN
+      conflicts := conflicts || line_id;
+    END;
+  END LOOP;
+  IF cardinality(conflicts) > 0 THEN
+    RAISE EXCEPTION USING ERRCODE = 'exclusion_violation', MESSAGE = 'line_occupancy_conflict',
+      DETAIL = array_to_string(conflicts, ',');
+  END IF;
+END $$;
+
+-- Only lines that have not ended are re-derived by configuration changes (ADR 0053, rule 8):
+-- the past calendar is frozen. Untimed lines hold nothing and are included so they stay empty.
+CREATE OR REPLACE FUNCTION line_not_ended(ends_at timestamp(3))
+RETURNS boolean LANGUAGE sql STABLE AS $$
+  SELECT ends_at IS NULL OR ends_at > (now() AT TIME ZONE 'UTC')
+$$;
+
+CREATE OR REPLACE FUNCTION line_occupancy_on_line() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM sync_line_occupancy(NEW."id");
+  RETURN NULL;
+END $$;
+
+CREATE OR REPLACE FUNCTION line_occupancy_on_item_state() RETURNS trigger
+LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM sync_line_occupancies(ARRAY(
+    SELECT l."id" FROM "Line" l
+     WHERE l."stateId" = NEW."id" AND l."organizationId" = NEW."organizationId"
+       AND line_not_ended(l."endsAt") ORDER BY l."id"));
+  RETURN NULL;
+END $$;
+
+CREATE OR REPLACE FUNCTION line_occupancy_on_setup() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM sync_line_occupancies(ARRAY(
+    SELECT l."id" FROM "Line" l
+     WHERE l."setupId" = NEW."id" AND l."organizationId" = NEW."organizationId"
+       AND line_not_ended(l."endsAt") ORDER BY l."id"));
+  RETURN NULL;
+END $$;
+
+CREATE OR REPLACE FUNCTION line_occupancy_on_entity_type() RETURNS trigger
+LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM sync_line_occupancies(ARRAY(
+    SELECT l."id" FROM "Line" l
+      JOIN "Item" i ON i."id" = l."itemId" AND i."organizationId" = l."organizationId"
+     WHERE i."entityTypeId" = NEW."id" AND i."organizationId" = NEW."organizationId"
+       AND line_not_ended(l."endsAt") ORDER BY l."id"));
+  RETURN NULL;
+END $$;
+
+CREATE OR REPLACE FUNCTION line_occupancy_on_item() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM sync_line_occupancies(ARRAY(
+    SELECT l."id" FROM "Line" l
+     WHERE l."itemId" = NEW."id" AND l."organizationId" = NEW."organizationId"
+       AND line_not_ended(l."endsAt") ORDER BY l."id"));
+  RETURN NULL;
+END $$;
+
+CREATE OR REPLACE FUNCTION line_occupancy_on_ticket() RETURNS trigger LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM sync_line_occupancies(ARRAY(
+    SELECT l."id" FROM "Line" l
+     WHERE l."ticketId" = NEW."id" AND l."organizationId" = NEW."organizationId"
+     ORDER BY l."id"));
+  RETURN NULL;
+END $$;
+
+CREATE OR REPLACE FUNCTION line_occupancy_on_ticket_phase() RETURNS trigger
+LANGUAGE plpgsql AS $$
+BEGIN
+  PERFORM sync_line_occupancies(ARRAY(
+    SELECT l."id" FROM "Line" l
+      JOIN "Ticket" t ON t."id" = l."ticketId" AND t."organizationId" = l."organizationId"
+     WHERE t."phaseId" = NEW."id" AND t."organizationId" = NEW."organizationId"
+       AND line_not_ended(l."endsAt") ORDER BY l."id"));
+  RETURN NULL;
+END $$;
+
+DROP TRIGGER IF EXISTS line_occupancy_insert ON "Line";
+CREATE TRIGGER line_occupancy_insert AFTER INSERT ON "Line"
+  FOR EACH ROW EXECUTE FUNCTION line_occupancy_on_line();
+
+DROP TRIGGER IF EXISTS line_occupancy_update ON "Line";
+CREATE TRIGGER line_occupancy_update AFTER UPDATE ON "Line"
+  FOR EACH ROW WHEN (
+    (OLD."itemId", OLD."setupId", OLD."setupMinutes", OLD."teardownMinutes", OLD."startsAt",
+     OLD."endsAt", OLD."stateId", OLD."ticketId", OLD."status")
+    IS DISTINCT FROM
+    (NEW."itemId", NEW."setupId", NEW."setupMinutes", NEW."teardownMinutes", NEW."startsAt",
+     NEW."endsAt", NEW."stateId", NEW."ticketId", NEW."status"))
+  EXECUTE FUNCTION line_occupancy_on_line();
+
+DROP TRIGGER IF EXISTS line_occupancy_item_state ON "ItemState";
+CREATE TRIGGER line_occupancy_item_state AFTER UPDATE ON "ItemState"
+  FOR EACH ROW WHEN ((OLD."hold", OLD."released") IS DISTINCT FROM (NEW."hold", NEW."released"))
+  EXECUTE FUNCTION line_occupancy_on_item_state();
+
+DROP TRIGGER IF EXISTS line_occupancy_setup ON "Setup";
+CREATE TRIGGER line_occupancy_setup AFTER UPDATE ON "Setup"
+  FOR EACH ROW WHEN (OLD."changeoverMinutes" IS DISTINCT FROM NEW."changeoverMinutes")
+  EXECUTE FUNCTION line_occupancy_on_setup();
+
+DROP TRIGGER IF EXISTS line_occupancy_entity_type ON "EntityType";
+CREATE TRIGGER line_occupancy_entity_type AFTER UPDATE ON "EntityType"
+  FOR EACH ROW WHEN (
+    (OLD."capabilities", OLD."setupMinutes", OLD."teardownMinutes")
+    IS DISTINCT FROM (NEW."capabilities", NEW."setupMinutes", NEW."teardownMinutes"))
+  EXECUTE FUNCTION line_occupancy_on_entity_type();
+
+DROP TRIGGER IF EXISTS line_occupancy_item ON "Item";
+CREATE TRIGGER line_occupancy_item AFTER UPDATE ON "Item"
+  FOR EACH ROW WHEN (
+    (OLD."setupMinutes", OLD."teardownMinutes")
+    IS DISTINCT FROM (NEW."setupMinutes", NEW."teardownMinutes"))
+  EXECUTE FUNCTION line_occupancy_on_item();
+
+DROP TRIGGER IF EXISTS line_occupancy_ticket ON "Ticket";
+CREATE TRIGGER line_occupancy_ticket AFTER UPDATE ON "Ticket"
+  FOR EACH ROW WHEN ((OLD."phaseId", OLD."status") IS DISTINCT FROM (NEW."phaseId", NEW."status"))
+  EXECUTE FUNCTION line_occupancy_on_ticket();
+
+DROP TRIGGER IF EXISTS line_occupancy_ticket_phase ON "TicketPhase";
+CREATE TRIGGER line_occupancy_ticket_phase AFTER UPDATE ON "TicketPhase"
+  FOR EACH ROW WHEN (OLD."terminal" IS DISTINCT FROM NEW."terminal")
+  EXECUTE FUNCTION line_occupancy_on_ticket_phase();
+-- END packages/db/sql/sync_line_occupancy.sql
+
+-- Soft holds gain their buffers.
+SELECT sync_line_occupancies(ARRAY(
+  SELECT "id" FROM "Line" WHERE line_not_ended("endsAt") ORDER BY "id"));

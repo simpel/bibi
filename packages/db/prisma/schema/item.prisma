@@ -8,6 +8,8 @@ enum PriceUnit {
 
 /// Artikel – anything that can be sold or booked (ADR 0021). Its type decides the capabilities;
 /// the capability columns are null unless the type has the capability.
+/// Trigger (ADR 0053, 0059): changing `setupMinutes` or `teardownMinutes` re-derives the holds of
+/// the item's lines that have not ended (`sync_line_occupancy.sql`).
 model Item {
   id                     String                   @id
   organizationId         String
@@ -25,6 +27,9 @@ model Item {
   vatRatePercent         Int?
   /// BOOKABLE: default length of a booking.
   defaultDurationMinutes Int?
+  /// Buffers before and after a booking, in minutes (ADR 0059, owned); null = the type's.
+  setupMinutes           Int?
+  teardownMinutes        Int?
   status                 RecordStatus             @default(ACTIVE)
   createdAt              DateTime                 @default(now())
   updatedAt              DateTime                 @updatedAt

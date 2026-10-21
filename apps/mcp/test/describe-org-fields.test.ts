@@ -28,6 +28,8 @@ const type = ({ ...over }: Partial<EntityTypeDto>): EntityTypeDto => ({
   name: "Konferensrum",
   capabilities: ["BOOKABLE"],
   expiryStateId: null,
+  setupMinutes: null,
+  teardownMinutes: null,
   fields: [],
   status: "ACTIVE",
   createdAt: now,

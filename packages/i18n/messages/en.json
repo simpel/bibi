@@ -658,6 +658,7 @@
     "types": {
       "HOLD": "Hold",
       "SETUP": "Setup time",
+      "TEARDOWN": "Teardown",
       "MAINTENANCE": "Maintenance",
       "INTERNAL": "Internal use"
     },
@@ -673,6 +674,17 @@
       "endsAt": "Ends",
       "note": "Note"
     }
+  },
+  "buffers": {
+    "legend": "Setup and teardown",
+    "setupMinutes": "Setup before (minutes)",
+    "teardownMinutes": "Teardown after (minutes)",
+    "inherits": {
+      "none": "Default for the type's items, held around each booking of a bookable item. Empty = none.",
+      "type": "Held around each booking of a bookable item. Empty = the item type's.",
+      "item": "Held around this booking. Empty = the item's, else its type's. The setup's changeover time is the least setup time."
+    },
+    "inEffect": "In effect: {setup} min setup, {teardown} min teardown."
   },
   "line": {
     "singular": "Line",
@@ -1333,6 +1345,8 @@
         "defaultDurationMinutes": "Default duration (min)",
         "setups": "Setups",
         "changeoverMinutes": "Changeover (min)",
+        "setupMinutes": "Setup (min)",
+        "teardownMinutes": "Teardown (min)",
         "entityTypeIds": "Item types (ids)",
         "fieldIds": "Fields (ids)",
         "vocabularyIds": "Lists (ids)",

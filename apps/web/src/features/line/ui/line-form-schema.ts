@@ -1,6 +1,7 @@
 import type { EntityTypeDto, LineDto, LineUpdateInput, VocabularyDto } from "@okazi/core";
 import { buildFieldsSchema, LineCreateInputSchema } from "@okazi/core/schemas";
 import type { z } from "zod";
+import { bufferFormToInput } from "@/components/form/buffer-values";
 import { NONE } from "@/components/form/option-select-field";
 import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsPatch, fieldsToInput } from "@/components/typed-fields/raw-fields";
@@ -36,6 +37,7 @@ export function lineFormSchema({ ticketId, type, vocabularies }: LineSchemaInput
         endsAt: fromLocalInputValue({ value: values.endsAt }) ?? null,
         itemId,
         setupId: itemId ? picked({ value: values.setupId }) : null,
+        ...bufferFormToInput({ values }),
         quantity: numberOrNull({ value: values.quantity }),
         unitPriceMinor: minorOrNull({ value: values.unitPrice }),
         discountPercent: numberOrNull({ value: values.discountPercent }),

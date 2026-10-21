@@ -5,10 +5,15 @@ import {
   type ItemCapability,
 } from "@okazi/core/schemas";
 import type { z } from "zod";
+import {
+  type BufferFormValues,
+  bufferFormDefaults,
+  bufferFormToInput,
+} from "@/components/form/buffer-values";
 import { formSchema } from "@/lib/form-schema";
 
-/** Raw values of the type form. Capabilities only apply to ITEM types. */
-export type EntityTypeFormValues = {
+/** Raw values of the type form. Capabilities and buffer minutes only apply to ITEM types. */
+export type EntityTypeFormValues = BufferFormValues & {
   base: EntityBase;
   name: string;
   capabilities: ItemCapability[];
@@ -21,10 +26,12 @@ export type EntityTypeFormInput = { values: EntityTypeFormValues };
 
 /** Form values → the shape core's `entityType.create` input schema validates. */
 export function entityTypeFormToInput({ values }: EntityTypeFormInput) {
+  const item = values.base === "ITEM";
   return {
     base: values.base,
     name: values.name.trim(),
-    capabilities: values.base === "ITEM" ? values.capabilities : undefined,
+    capabilities: item ? values.capabilities : undefined,
+    ...(item ? bufferFormToInput({ values }) : {}),
   };
 }
 
@@ -42,5 +49,6 @@ export function entityTypeFormDefaults({
     base: entityType?.base ?? "ITEM",
     name: entityType?.name ?? "",
     capabilities: entityType?.capabilities ?? [],
+    ...bufferFormDefaults({ stored: entityType }),
   };
 }

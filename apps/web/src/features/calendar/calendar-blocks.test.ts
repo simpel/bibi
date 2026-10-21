@@ -66,7 +66,7 @@ describe("calendar blocks", () => {
   it("links a line's setup time to its ticket and leaves manual blocks unlinked", () => {
     const blocks = toCalendarBlocks({
       occupancies: [
-        occupancy({ overrides: { id: "setup", type: "SETUP", holdKind: null, lineId: "p1" } }),
+        occupancy({ overrides: { id: "setup", type: "SETUP", lineId: "p1" } }),
         occupancy({ overrides: { id: "manual", type: "MAINTENANCE", note: "Paint" } }),
       ],
       lines: [line],
@@ -77,5 +77,15 @@ describe("calendar blocks", () => {
       { ticketId: "b1", title: "Lunch" },
       { ticketId: null, title: "Paint" },
     ]);
+  });
+
+  it("draws a soft hold's teardown soft, labelled by its type rather than held since", () => {
+    const [block] = toCalendarBlocks({
+      occupancies: [occupancy({ overrides: { type: "TEARDOWN", holdKind: "SOFT", lineId: "p1" } })],
+      lines: [{ ...line, heldAt: day }],
+      tickets: [ticket],
+      states: [],
+    });
+    expect(block).toMatchObject({ type: "TEARDOWN", soft: true, heldAt: null, expiresAt: null });
   });
 });

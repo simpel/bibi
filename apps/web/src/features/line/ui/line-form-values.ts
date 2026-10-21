@@ -1,10 +1,11 @@
 import type { EntityTypeDto, LineDto } from "@okazi/core";
+import { type BufferFormValues, bufferFormDefaults } from "@/components/form/buffer-values";
 import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 import { toLocalInputValue } from "../../occupancy/ui/local-date-time";
 
 /** Raw values of the line form: inputs are strings, `NONE` = no item/setup. */
-export type LineFormValues = {
+export type LineFormValues = BufferFormValues & {
   entityTypeId: string;
   name: string;
   startsAt: string;
@@ -40,6 +41,7 @@ export function lineFormDefaults({ type, line, startsAt }: LineDefaultsInput): L
     endsAt: local({ date: line ? line.endsAt : new Date(startsAt.getTime() + 3_600_000) }),
     itemId: line?.itemId ?? NONE,
     setupId: line?.setupId ?? NONE,
+    ...bufferFormDefaults({ stored: line }),
     quantity: text({ value: line?.quantity }),
     unitPrice: text({ value: line?.unitPriceMinor == null ? null : line.unitPriceMinor / 100 }),
     discountPercent: text({ value: line?.discountPercent }),

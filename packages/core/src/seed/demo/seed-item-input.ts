@@ -89,6 +89,7 @@ export function itemInput({ item, refs, venueId, seeded }: ItemInputArgs) {
       ...(item.priceKr === undefined ? {} : { priceMinor: Math.round(item.priceKr * 100) }),
       ...(item.priceUnit ? { priceUnit: item.priceUnit } : {}),
       ...(item.durationMinutes ? { defaultDurationMinutes: item.durationMinutes } : {}),
+      ...{ setupMinutes: item.setupMinutes ?? null, teardownMinutes: item.teardownMinutes ?? null },
       ...(setups.value.length ? { setups: setups.value } : {}),
       ...(parts.length ? { parts } : {}),
       ...(customisationGroups.length ? { customisationGroups } : {}),

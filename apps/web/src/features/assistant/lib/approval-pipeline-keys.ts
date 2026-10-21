@@ -1,6 +1,6 @@
 /**
- * Approval label keys of the pipeline (ADR 0043, 0044): phases, item states and line states, kept
- * apart so `approval-labels.ts` stays within the size limit.
+ * Approval label keys of the pipeline (ADR 0043, 0044, 0059): phases, item states, line states
+ * and hold buffers, kept apart so `approval-labels.ts` stays within the size limit.
  */
 export const PIPELINE_FIELD_KEYS = [
   "color",
@@ -27,6 +27,9 @@ export const PIPELINE_FIELD_KEYS = [
   "stateId",
   "holdsUntil",
   "expiryStateId",
+  // Setup and teardown buffers around holds (ADR 0059).
+  "setupMinutes",
+  "teardownMinutes",
   "templateId",
   "lines",
   "startsAt",

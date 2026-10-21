@@ -10,6 +10,8 @@ export const lindholmenTypes: readonly DemoType[] = [
     name: "Conference room",
     states: "bookable",
     capabilities: ["BOOKABLE", "SETUPS", "PRICED"],
+    // ADR 0059: a room's setup is at least this, or its setup's changeover when that is longer.
+    ...{ setupMinutes: 15, teardownMinutes: 15 },
     fields: [
       { name: "Floor", kind: "NUMBER" },
       { name: "Area m²", kind: "NUMBER" },
@@ -42,6 +44,7 @@ export const lindholmenTypes: readonly DemoType[] = [
     name: "Meal",
     states: "food",
     capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS"],
+    ...{ setupMinutes: 30, teardownMinutes: 15 },
     fields: [
       { name: "Service style", kind: "CHOICE", options: ["Buffet", "Plated", "Finger food"] },
     ],
@@ -65,6 +68,7 @@ export const lindholmenTypes: readonly DemoType[] = [
     name: "Equipment",
     states: "bookable",
     capabilities: ["BOOKABLE", "PRICED"],
+    ...{ setupMinutes: 10, teardownMinutes: 10 },
     fields: [{ name: "Inventory number", kind: "TEXT" }],
   },
   {

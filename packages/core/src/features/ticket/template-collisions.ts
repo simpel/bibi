@@ -22,6 +22,7 @@ const asLine = ({ line, index }: { line: PlannedLine; index: number }): LineReco
   ...{ entityTypeId: line.entityTypeId, name: line.name, fields: {}, note: null },
   ...{ startsAt: line.startsAt, endsAt: line.endsAt, quantity: line.quantity ?? null },
   ...{ itemId: line.itemId ?? null, setupId: line.setupId ?? null, alternativeGroupId: null },
+  ...{ setupMinutes: null, teardownMinutes: null },
   ...{ unitPriceMinor: null, discountPercent: null, vatRatePercent: null },
   ...{
     stateId: null,

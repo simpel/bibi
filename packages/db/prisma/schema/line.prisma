@@ -1,10 +1,12 @@
 /// Line – a row in a ticket's run schedule (ADR 0022), e.g. a meeting, a break or lunch.
 /// Its type (base `LINE`) decides its own fields. A line with an item has a state of the
 /// item's type (ADR 0044). With a bookable item in a `SOFT` or `HARD` state it holds a `HOLD`
-/// occupancy for `[startsAt, endsAt)`, and with a setup also a `SETUP` occupancy for the
-/// changeover right before; both have `lineId` set and follow the row. A database trigger writes
-/// them (ADR 0053, `packages/db/sql/sync_line_occupancy.sql`) on insert and on every change of
-/// item, setup, time, state, ticket or status; application code never does. An untimed line
+/// occupancy for `[startsAt, endsAt)` of the state's kind, plus a `SETUP` buffer right before
+/// and a `TEARDOWN` buffer right after when its effective minutes are above zero (ADR 0059: setup
+/// is the larger of the inherited `setupMinutes` and the setup's changeover time). All have
+/// `lineId` set and follow the row. A database trigger writes them (ADR 0053,
+/// `packages/db/sql/sync_line_occupancy.sql`) on insert and on every change of item, setup,
+/// buffer minutes, time, state, ticket or status; application code never does. An untimed line
 /// (no `startsAt`/`endsAt`, e.g. a fee) never holds and is not drawn on the calendar (ADR 0052).
 /// The price columns are overrides: null = inherit (price list, then item; VAT: item, then venue).
 /// `alternativeGroupId` (owned) makes the line one option of an `AlternativeGroup` (ADR 0052).
@@ -21,6 +23,9 @@ model Line {
   itemId             String?
   /// How the item is set up; one of the item's setups. Requires `itemId`.
   setupId            String?
+  /// Buffers before and after, in minutes (ADR 0059, owned); null = the item's, else its type's.
+  setupMinutes       Int?
+  teardownMinutes    Int?
   /// How many; null = the ticket's headcount (guaranteed if set, else estimated).
   quantity           Int?
   /// Override of the unit price in minor units (1/100 kr); null = inherit.

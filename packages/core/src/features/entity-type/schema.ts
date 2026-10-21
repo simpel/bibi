@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { BufferMinutesShape, bufferMinutesInputShape } from "../../shared/buffers";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldDefinitionSchema } from "../field-definition/schema";
@@ -12,6 +13,8 @@ export const EntityTypeSchema = z.object({
   capabilities: z.array(ItemCapabilitySchema),
   /** Item types: the state lines in an `expires` state fall to when `holdsUntil` passes. */
   expiryStateId: z.string().nullable(),
+  /** Item types: default buffers around a booking (ADR 0059); items and lines override them. */
+  ...BufferMinutesShape,
   /** Active fields of the type, in display order. */
   fields: z.array(FieldDefinitionSchema),
   status: RecordStatusSchema,
@@ -27,10 +30,14 @@ const NameSchema = z
   .max(100)
   .describe("Type name as staff see it, e.g. Conference room, Dish, Boat or Company");
 
+/** Item types only: the default buffers of the type's items (ADR 0059). */
+const TypeBufferInputShape = bufferMinutesInputShape({ inherits: "none (item types only)" });
+
 export const EntityTypeCreateInputSchema = z.object({
   base: EntityBaseSchema,
   name: NameSchema,
   capabilities: ItemCapabilitiesSchema.optional(),
+  ...TypeBufferInputShape,
 });
 
 export const EntityTypeUpdateInputSchema = z.object({
@@ -48,6 +55,7 @@ export const EntityTypeUpdateInputSchema = z.object({
       "Item types: the state (itemState.list) lines in an expiring state fall to when the " +
         "ticket's holdsUntil date passes; null clears it",
     ),
+  ...TypeBufferInputShape,
 });
 
 export const EntityTypeIdInputSchema = z.object({ id: z.string().min(1) });

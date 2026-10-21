@@ -27,7 +27,8 @@ export const LineRef = objectFromSchema<LineDto>({
   description:
     "Line – a row in a ticket's run schedule: type and fields, time, the " +
     "item and setup it uses, its state (ADR 0044), quantity, price overrides and a note, and " +
-    "the effective quantity, unit price, discount and VAT with their sources (ADR 0052).",
+    "the effective quantity, unit price, discount and VAT with their sources (ADR 0052), and the " +
+    "effective setup and teardown minutes with theirs (ADR 0059).",
 });
 const LinePageRef = pageType({ name: "LinePage", item: LineRef });
 

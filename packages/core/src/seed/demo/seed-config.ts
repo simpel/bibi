@@ -74,7 +74,10 @@ async function seedField({ context, refs, typeId, field }: FieldInput) {
 type TypeInput = { context: ExecuteContext; refs: DemoRefs; type: DemoType; skipStates: boolean };
 
 async function seedType({ context, refs, type, skipStates }: TypeInput): Promise<Result<TypeRef>> {
-  const input = { base: type.base, name: type.name, capabilities: [...(type.capabilities ?? [])] };
+  const input = {
+    ...{ base: type.base, name: type.name, capabilities: [...(type.capabilities ?? [])] },
+    ...{ setupMinutes: type.setupMinutes ?? null, teardownMinutes: type.teardownMinutes ?? null },
+  };
   const created = await execute({ operation: createEntityType, input, context });
   if (!created.ok) return created;
   const fields = new Map<string, FieldRef>();

@@ -61,6 +61,7 @@ export async function seedDemoLines({
         : {}),
       ...(line.quantity === undefined ? {} : { quantity: line.quantity }),
       ...(line.unitPriceKr === undefined ? {} : { unitPriceMinor: line.unitPriceKr * 100 }),
+      ...{ setupMinutes: line.setupMinutes ?? null, teardownMinutes: line.teardownMinutes ?? null },
     };
     const created = await execute({ operation: createLine, input, context });
     if (!created.ok) return created;
