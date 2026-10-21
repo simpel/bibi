@@ -11,16 +11,18 @@ const data = [
 
 function Demo() {
   return (
-    <ChartContainer label="Tickets and options per week">
-      <BarChart data={data}>
-        <CartesianGrid vertical={false} />
-        <XAxis dataKey="week" tickLine={false} axisLine={false} />
-        <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={24} />
-        <ChartTooltip />
-        <Bar dataKey="tickets" fill={chartSeriesColor({ index: 0 })} radius={4} />
-        <Bar dataKey="options" fill={chartSeriesColor({ index: 1 })} radius={4} />
-      </BarChart>
-    </ChartContainer>
+    <div className="w-[480px] max-w-full">
+      <ChartContainer label="Tickets and options per week">
+        <BarChart data={data}>
+          <CartesianGrid vertical={false} />
+          <XAxis dataKey="week" tickLine={false} axisLine={false} />
+          <YAxis allowDecimals={false} tickLine={false} axisLine={false} width={24} />
+          <ChartTooltip />
+          <Bar dataKey="tickets" fill={chartSeriesColor({ index: 0 })} radius={4} />
+          <Bar dataKey="options" fill={chartSeriesColor({ index: 1 })} radius={4} />
+        </BarChart>
+      </ChartContainer>
+    </div>
   );
 }
 

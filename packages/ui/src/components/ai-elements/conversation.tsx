@@ -58,15 +58,14 @@ export function ConversationEmptyState({
       )}
       {...props}
     >
-      {children ?? (
-        <>
-          {icon ? <div className="text-primary">{icon}</div> : null}
-          <div className="grid gap-1">
-            <h3 className="font-serif text-lg">{title}</h3>
-            {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
-          </div>
-        </>
-      )}
+      {icon ? <div className="text-primary">{icon}</div> : null}
+      <div className="grid gap-1">
+        <h3 className="font-serif text-xl font-normal tracking-tight text-black dark:text-white">
+          {title}
+        </h3>
+        {description ? <p className="text-sm text-muted-foreground">{description}</p> : null}
+      </div>
+      {children}
     </div>
   );
 }

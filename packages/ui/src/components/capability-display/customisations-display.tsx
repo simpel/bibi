@@ -7,6 +7,7 @@ export type CustomisationsDisplayProps = Omit<CapabilityDisplayProps, "capabilit
 
 /** CUSTOMISATIONS capability: the customisation groups among the parts. */
 export function CustomisationsDisplay({ groups, ...rest }: CustomisationsDisplayProps) {
+  if (groups.length === 0) return null;
   return (
     <CapabilityDisplay
       capability="CUSTOMISATIONS"

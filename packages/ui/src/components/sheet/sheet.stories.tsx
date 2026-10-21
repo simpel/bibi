@@ -18,7 +18,7 @@ export const AssistantPanel: Story = {
   render: () => (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Open assistant</Button>
+        <Button variant="outline">Öppna assistent</Button>
       </SheetTrigger>
       <SheetContent side="right">
         <SheetHeader>

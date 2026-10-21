@@ -59,7 +59,7 @@ function Demo() {
           )}
         />
         <EmailField />
-        <Button type="submit">Save</Button>
+        <Button type="submit">Spara uppgifter</Button>
       </form>
     </Form>
   );

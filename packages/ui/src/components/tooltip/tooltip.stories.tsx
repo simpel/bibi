@@ -12,7 +12,7 @@ export const Default: Story = {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <Button variant="outline">Hovra</Button>
+          <Button variant="outline">Visa information</Button>
         </TooltipTrigger>
         <TooltipContent>Shows more information</TooltipContent>
       </Tooltip>

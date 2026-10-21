@@ -25,7 +25,7 @@ export function PermissionChipList({ title, chips, tone, className }: Permission
   if (chips.length === 0) return null;
   return (
     <section data-slot="permission-chip-list" className={cn("grid gap-1", className)}>
-      <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <h4 className="font-sans text-xs font-semibold uppercase tracking-wide text-muted-foreground">
         {title}
       </h4>
       <ul className="flex flex-wrap gap-1">

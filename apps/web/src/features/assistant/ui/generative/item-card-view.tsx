@@ -44,15 +44,16 @@ function Capabilities({ item }: CapabilitiesProps) {
   });
   return (
     <>
-      <PricedDisplay title={t("sections.price")} price={price} />
-      <BookableDisplay title={t("sections.bookable")} duration={duration} />
+      <PricedDisplay title={t("sections.price")} price={price} variant="plain" />
+      <BookableDisplay title={t("sections.bookable")} duration={duration} variant="plain" />
       <CapabilityDisplay
         capability="SETUPS"
         title={t("sections.setups")}
         rows={setups.map((value) => ({ value }))}
+        variant="plain"
       />
-      <BundleDisplay title={t("sections.parts")} parts={parts} />
-      <CustomisationsDisplay title={t("sections.customisations")} groups={groups} />
+      <BundleDisplay title={t("sections.parts")} parts={parts} variant="plain" />
+      <CustomisationsDisplay title={t("sections.customisations")} groups={groups} variant="plain" />
     </>
   );
 }

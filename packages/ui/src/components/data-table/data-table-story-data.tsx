@@ -43,7 +43,13 @@ export const baseColumns: ColumnDef<Room>[] = [
   { accessorKey: "name", header: "Name" },
   { accessorKey: "floor", header: "Floor" },
   { accessorKey: "status", header: "Status" },
-  { accessorKey: "seats", header: "Seats" },
+  {
+    accessorKey: "seats",
+    header: () => <div className="text-right">Seats</div>,
+    cell: ({ row }) => (
+      <div className="text-right font-sans tabular-nums">{row.getValue("seats")}</div>
+    ),
+  },
 ];
 
 export const columnsWithActions: ColumnDef<Room>[] = [

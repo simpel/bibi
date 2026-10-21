@@ -11,6 +11,7 @@ export * from "./components/capability-display/bookable-display";
 export * from "./components/capability-display/bundle-display";
 export * from "./components/capability-display/capability-display";
 export * from "./components/capability-display/customisations-display";
+export * from "./components/capability-display/parse-price";
 export * from "./components/capability-display/priced-display";
 export * from "./components/capability-display/setups-display";
 export * from "./components/card/card";
@@ -30,6 +31,7 @@ export {
   CommandItem,
   CommandList,
   CommandSeparator,
+  CommandShortcut,
 } from "./components/command/command";
 export {
   DataTable,
@@ -71,6 +73,7 @@ export { FormItem } from "./components/form/form-item";
 export { FormLabel } from "./components/form/form-label";
 export { FormDescription, FormMessage } from "./components/form/form-message";
 export { FormField, type FormFieldProps } from "./components/form-field/form-field";
+export * from "./components/hero-number/hero-number";
 export * from "./components/hover-card/hover-card";
 export { Input, type InputProps } from "./components/input/input";
 export * from "./components/kanban/kanban-board";
@@ -144,4 +147,9 @@ export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs/tabs
 export { Textarea, type TextareaProps } from "./components/textarea/textarea";
 export { Toaster, type ToasterProps, toast } from "./components/toast/toast";
 export * from "./components/tooltip/tooltip";
+export {
+  Wordmark,
+  type WordmarkProps,
+  wordmarkVariants,
+} from "./components/wordmark/wordmark";
 export { cn } from "./lib/cn";

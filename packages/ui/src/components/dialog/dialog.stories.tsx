@@ -19,7 +19,7 @@ export const Default: Story = {
   render: () => (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Open dialog</Button>
+        <Button variant="outline">Visa bokningsdetaljer</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -27,7 +27,7 @@ export const Default: Story = {
           <DialogDescription>Check the details before you continue.</DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button>Confirm</Button>
+          <Button>Bekräfta bokning</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

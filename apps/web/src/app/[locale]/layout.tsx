@@ -1,5 +1,6 @@
 import { resolveLocale } from "@okazi/i18n";
 import { routing } from "@okazi/i18n/routing";
+import { Cherry_Bomb_One, Fraunces, Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -7,6 +8,27 @@ import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
 import { DevUserSwitcherSlot } from "@/features/dev/ui/dev-user-switcher-slot";
 import "../globals.css";
+
+const sans = Inter({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
+
+const serif = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+  axes: ["opsz"],
+  style: ["normal", "italic"],
+});
+
+const cherryBombOne = Cherry_Bomb_One({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-cherry-bomb",
+  display: "swap",
+});
 
 type LocaleLayoutProps = { children: ReactNode; params: Promise<{ locale: string }> };
 
@@ -28,7 +50,11 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   if (!hasLocale(routing.locales, locale)) notFound();
   setRequestLocale(locale);
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html
+      lang={locale}
+      className={`${sans.variable} ${serif.variable} ${cherryBombOne.variable}`}
+      suppressHydrationWarning
+    >
       <body>
         <NextIntlClientProvider>
           <Providers>{children}</Providers>

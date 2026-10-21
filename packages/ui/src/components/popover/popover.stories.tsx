@@ -18,7 +18,7 @@ export const Default: Story = {
   render: () => (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline">Open</Button>
+        <Button variant="outline">Visa dimensioner</Button>
       </PopoverTrigger>
       <PopoverContent>
         <PopoverHeader>
