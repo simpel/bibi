@@ -12,13 +12,14 @@ import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 
 export type InsertLineInput = {
   context: OperationContext;
-  input: LineCreateInput;
+  /** `parentLineId` is set only by `line.expandBundle` (ADR 0059). */
+  input: LineCreateInput & { parentLineId?: string };
 };
 
 /**
  * Creates a line in the state the phase grid gives it for the ticket's phase (else its
  * type's initial state), holds its bookable item as the state says and records the change.
- * Shared by `line.create`.
+ * Shared by `line.create` and `line.expandBundle`.
  */
 export async function insertLine({
   context,

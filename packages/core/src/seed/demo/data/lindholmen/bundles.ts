@@ -62,6 +62,19 @@ export const lindholmenBundles: readonly DemoItem[] = [
   }),
 ];
 
+/**
+ * ADR 0059: a bundle without customisations, expanded on L15 into a bundle line and three part
+ * lines: the room at the venue's 25 % VAT, coffee and lunch at 12 %.
+ */
+export const conferenceDayBundle: DemoItem = pkg({
+  ...{ name: "Conference day", kr: 695 },
+  parts: [
+    { name: "Vrångö", offsetMinutes: 0, durationMinutes: 8 * hour },
+    { name: "Morning break", offsetMinutes: 90, durationMinutes: 30 },
+    { name: "Conference lunch", offsetMinutes: 210, durationMinutes: hour },
+  ],
+});
+
 /** Nordkust Logistik's own bundle (`item.saveAsBundle`), seeded with the customer. */
 export const nordkustBundle: DemoItem = pkg({
   ...{ name: "Nordkust management team", kr: 595 },

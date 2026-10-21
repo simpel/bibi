@@ -4,6 +4,7 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { changeLineState } from "./change-state-operation";
+import { expandLineBundle } from "./expand-operation";
 import { followLinePhase } from "./follow-phase-operation";
 import { LineListInputSchema, LineListOutputSchema } from "./list-schema";
 import { LineIdInputSchema, LineSchema } from "./schema";
@@ -18,7 +19,7 @@ export const listLines = defineOperation({
   description:
     "List lines (the run schedule: sessions, breaks, meals, activities), earliest " +
     "first (lines on one item and start: the oldest held-since date first). Filter by ticket, " +
-    "item, item state and a time window (from/to).",
+    "item, item state, bundle line (its part lines) and a time window (from/to).",
   input: LineListInputSchema,
   output: LineListOutputSchema,
   permission: "program:read",
@@ -28,6 +29,7 @@ export const listLines = defineOperation({
         ...(input.ticketId ? { ticketId: input.ticketId } : {}),
         ...(input.itemId ? { itemId: input.itemId } : {}),
         ...(input.stateId ? { stateId: input.stateId } : {}),
+        ...(input.parentLineId ? { parentLineId: input.parentLineId } : {}),
         ...(input.from ? { endsAt: { gt: input.from } } : {}),
         ...(input.to ? { startsAt: { lt: input.to } } : {}),
       },
@@ -65,6 +67,7 @@ export const lineOperations = [
   listLines,
   getLine,
   createLine,
+  expandLineBundle,
   updateLine,
   archiveLine,
   changeLineState,

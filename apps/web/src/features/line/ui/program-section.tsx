@@ -8,6 +8,7 @@ import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { loadProgramData } from "../load-program-data";
 import { CreateLineButton } from "./create-line-button";
+import { ExpandBundleButton } from "./expand-bundle-button";
 import type { ProgramAccess } from "./program-row-actions";
 import { ProgramTable } from "./program-table";
 
@@ -34,17 +35,21 @@ export async function ProgramSection({ locale, ticket }: ProgramSectionProps) {
   }
   if (!data.ok) return <ErrorState errorKey={handleLoadError({ error: data.error, locale })} />;
   const items = lines.value.items;
+  const start = {
+    data: data.value,
+    ticketId: ticket.id,
+    startsAt: ticket.desiredStartsAt ?? new Date(),
+  };
   return (
     <>
       <section className="grid gap-4">
         <div className="flex items-center justify-between gap-4">
           <h2 className="text-lg font-semibold">{t("plural")}</h2>
           {access.canEdit ? (
-            <CreateLineButton
-              data={data.value}
-              ticketId={ticket.id}
-              startsAt={ticket.desiredStartsAt ?? new Date()}
-            />
+            <div className="flex flex-wrap gap-2">
+              <ExpandBundleButton {...start} />
+              <CreateLineButton {...start} />
+            </div>
           ) : null}
         </div>
         {items.length === 0 ? (

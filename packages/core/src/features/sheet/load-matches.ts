@@ -4,6 +4,7 @@ import { effectiveRequirements } from "../requirement/effective";
 import type { SheetDefinitionDto } from "../sheet-definition/schema";
 import { type MatchedLine, matchRequirements } from "./match-requirements";
 import type { SheetMatch } from "./schema";
+import { sheetLinesWhere } from "./sheet-lines";
 
 export type LoadMatchesInput = {
   context: Pick<OperationContext, "db">;
@@ -18,12 +19,7 @@ async function loadLines({
   definition,
 }: LoadMatchesInput): Promise<MatchedLine[]> {
   const rows = await context.db.line.findMany({
-    where: {
-      ticketId,
-      item: { status: "ACTIVE", entityTypeId: { in: definition.entityTypeIds } },
-      // Only lines whose state the organization marked as sendable (ADR 0044).
-      state: { inSheets: true },
-    },
+    where: sheetLinesWhere({ ticketId, entityTypeIds: definition.entityTypeIds }),
     select: { id: true, name: true, itemId: true },
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
   });

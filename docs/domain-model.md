@@ -457,11 +457,13 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A line on a ticket: a room, a meal, an activity or a break, with its own time and state ([ADR 0044](decisions/0044-line-states-and-the-phase-grid.md)). Created, among other cases, when a composite item is added to the ticket.
 
-> **Target (ADR 0059):** `parentLineId` links a part line to its bundle line (part lines do not count in the total) and `LineAllocation` rows (which unit of a pool the line got). Derived: `warnings`.
+> **Target (ADR 0059):** `LineAllocation` rows (which unit of a pool the line got). Derived: `warnings`.
+
+> **Done (ADR 0059):** `parentLineId` (owned, set only by `line.expandBundle`) links a part line to its bundle line. `line.expandBundle` adds a `BUNDLE` item as one bundle line that carries the price plus one part line per part that is not a customisation option: a part starts at the bundle's start plus its `offsetMinutes` and lasts its `durationMinutes`, else to the bundle's end (an untimed bundle has untimed parts); its quantity is the part's quantity per bundle, and a part of one per bundle counts the headcount like its bundle line. Times and quantities are defaults that `line.update` can change per event. Moving a bundle line moves its timed parts by the same delta in one operation; removing it removes them; a bundle line with parts keeps its item. Part lines show their own effective prices but never count in the totals; a quote splits the bundle price's VAT per rate across them (`allocateBundleVat`). Sheets include part lines (in states with `inSheets`) and leave out their bundle line.
 
 > **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` overrides (owned, null = the item's, else its type's). Derived on every read: `effectiveSetupMinutes` (the inherited minutes or the setup's changeover time, whichever is larger, never the sum) and `effectiveTeardownMinutes`, each with its source (`LINE`, `ITEM`, `TYPE`, or `SETUP` when the changeover wins; null = no buffer).
 
-> **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`; derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
+> **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`, `parentLineId`; derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
 
 > **Done:** holds are written by triggers (ADR 0053); `stateId` is a projection of `LineStateChange` (ADR 0054; check `line states`) and "held since" is read from the newest change. Alternative groups: `alternativeGroupId` (ADR 0052).
 
@@ -476,6 +478,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - state (`stateId`, an `ItemState` of the item's type; null for a line without an item), `stateOverridden` (set by hand, skipped by phase moves)
 - held since (`heldAt`, derived: when the line entered its current state, its newest `LineStateChange`; shown oldest first where soft holds overlap, no queue or rank); the line has no expiry of its own, see Ticket `holdsUntil`
 - alternative group (`alternativeGroupId`, optional): the line is one option of an `AlternativeGroup`
+- bundle line (`parentLineId`, optional): the line is a part line of that bundle line (ADR 0059)
 - internal note
 
 **Relations**
@@ -487,6 +490,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` adjusts → Requirement
 - `1:N` is charged via → OrderLine
 - `N:0..1` is an option of → AlternativeGroup
+- `N:0..1` is a part of → Line (its bundle line)
 - `1:0..1` holds → Occupancy (derived from the state's `hold`)
 - `1:N` requires → Task
 - `1:N` AccessCode opens for this
@@ -631,14 +635,14 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A part of a bundle.
 
-> **Target (ADR 0059):** parts expand onto a ticket as part lines linked by `Line.parentLineId`; `offsetMinutes` and `durationMinutes` are defaults that an event's lines can change.
+> **Done (ADR 0059):** parts expand onto a ticket as part lines linked by `Line.parentLineId` (`line.expandBundle`); `offsetMinutes` and `durationMinutes` are defaults that an event's lines can change.
 
 **Attributes**
 - parent item
 - item (the part), unique per parent
 - quantity (default 1)
 - offsetMinutes from the parent's start (default 0)
-- durationMinutes (null = the parent's length)
+- durationMinutes (null = until the end of the parent)
 - required (default) or optional
 - customisation group (`customisationGroupId`, with `CUSTOMISATIONS`; null = not an option)
 - position (order on the item, from the input order; sorts parts with the same offset)
@@ -741,6 +745,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - VAT (`vatRatePercent`, effective: line, else item, else the venue's default)
 - tags (the list values the item contains per `item.resolve`, copied)
 - total excl. VAT and VAT (`totalExclVatMinor`, `vatMinor`)
+- VAT per rate (`vatRows`, snapshot, ADR 0059): `[{ vatRatePercent, totalExclVatMinor, vatMinor }]`, one row for an ordinary line; for a bundle line one row per rate of its part lines, the bundle price allocated across them in proportion to effective price × quantity with largest-remainder rounding so the rows sum exactly, and `vatMinor` is their sum
+- bundle line (`parentLineId`, snapshot): set on a part line, which never counts in the totals (`inTotal` false)
 - alternative group (`alternativeGroupId`, `alternativeGroupName`, `alternativeGroupChosen`; null on an ordinary line) and whether the line counts in the totals (`inTotal`), all snapshots (ADR 0052)
 - status (quoted / confirmed / delivered) – *later*
 - invoiced (yes/no) – *later*

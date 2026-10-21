@@ -24,6 +24,8 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   // The phase and state history (ADR 0054) points at the lines, tickets, phases and states.
   db.lineStateChange.deleteMany({ where }),
   db.ticketPhaseChange.deleteMany({ where }),
+  // A part line points at its bundle line (ADR 0059): cut that link before deleting either.
+  db.line.updateMany({ where, data: { parentLineId: null } }),
   db.line.deleteMany({ where }),
   db.alternativeGroup.deleteMany({ where }),
   db.ticketTemplateLine.deleteMany({ where }),

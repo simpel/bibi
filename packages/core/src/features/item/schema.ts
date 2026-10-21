@@ -34,7 +34,7 @@ export const ItemPartSchema = z.object({
     .positive()
     .max(7 * 24 * 60)
     .nullable()
-    .describe("Length of the part in minutes; null = the parent's length"),
+    .describe("Length of the part in minutes; null = until the end of the parent"),
   required: z.boolean().describe("true = mandatory part, false = optional part"),
 });
 

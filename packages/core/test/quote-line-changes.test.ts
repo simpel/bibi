@@ -17,6 +17,8 @@ const line = ({ overrides = {} }: { overrides?: Partial<OrderLineDto> } = {}): O
   tags: [],
   totalExclVatMinor: 500_000,
   vatMinor: 60_000,
+  vatRows: [{ vatRatePercent: 12, totalExclVatMinor: 500_000, vatMinor: 60_000 }],
+  parentLineId: null,
   alternativeGroupId: null,
   alternativeGroupName: null,
   alternativeGroupChosen: null,

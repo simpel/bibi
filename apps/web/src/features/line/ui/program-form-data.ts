@@ -14,6 +14,8 @@ export type ProgramFormData = TypedFormData & {
   /** The caller may not view items: their names show as hidden and the picker is disabled. */
   itemsHidden: boolean;
   setups: NamedOption[];
+  /** `BUNDLE` items that can be added as a bundle line with its parts (ADR 0059). */
+  bundles: NamedOption[];
   /** Every item state, so a line shows its state and the states it may move to. */
   states: LineStateOption[];
 };

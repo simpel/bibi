@@ -11,6 +11,8 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "ticket.phaseHistory", route: "/tickets/[id]" },
   // Overdue soft holds (ADR 0044) are expired by hand from the ticket list.
   { operation: "ticket.expireHolds", route: "/tickets" },
+  // A bundle is added from the run schedule as a bundle line with its part lines (ADR 0059).
+  { operation: "line.expandBundle", route: "/tickets/[id]" },
   // Alternatives (ADR 0052): grouped and chosen on the ticket page.
   { operation: "alternativeGroup.list", route: "/tickets/[id]" },
   { operation: "alternativeGroup.create", route: "/tickets/[id]" },

@@ -4,14 +4,15 @@ import { createLine } from "../../features/line/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { seedDemoAlternatives } from "./seed-alternatives";
+import { seedDemoBundleLines } from "./seed-bundle-lines";
 import { missing } from "./seed-fields";
 import type { DemoLine, DemoTicket } from "./ticket-types";
 
 export type SeedLinesInput = {
   context: ExecuteContext;
   ticketId: string;
-  /** Its `lines`, then its `alternatives` (ADR 0052). */
-  ticket: Pick<DemoTicket, "lines" | "alternatives">;
+  /** Its `bundles` (ADR 0059), its `lines`, then its `alternatives` (ADR 0052). */
+  ticket: Pick<DemoTicket, "bundles" | "lines" | "alternatives">;
   /** Local time `HH:MM` on the ticket's day → instant. */
   at: (input: { time: string }) => Date;
 };
@@ -39,7 +40,7 @@ async function overrideState({ context, line, lineId, item }: OverrideInput) {
  * type: each starts in the entry phase's cell of the phase grid (else its type's initial state), so a room
  * line is a soft hold, and a line with `state` is then overridden to it. A line without times is
  * untimed and holds nothing; its own quantity and price are set only when the data gives them.
- * Lines named in `alternatives` are then grouped (ADR 0052).
+ * Lines named in `alternatives` are then grouped (ADR 0052). Bundles are expanded first.
  */
 export async function seedDemoLines({
   context,
@@ -47,6 +48,8 @@ export async function seedDemoLines({
   ticket,
   at,
 }: SeedLinesInput): Promise<Result<true>> {
+  const bundles = await seedDemoBundleLines({ context, ticketId, ticket, at });
+  if (!bundles.ok) return bundles;
   const lines = ticket.lines ?? [];
   if (lines.length === 0) return ok({ value: true });
   const type = await context.db.entityType.findFirst({ where: { base: "LINE" } });

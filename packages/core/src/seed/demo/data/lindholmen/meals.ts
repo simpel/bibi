@@ -9,7 +9,8 @@ const meal = ({ name, kr, style, parts, customisations }: MealInput): DemoItem =
   type: "Meal",
   name,
   fields: { "Service style": style },
-  ...{ priceKr: kr, priceUnit: "PER_PERSON" },
+  // Food is sold at 12 % VAT (the venue's default is 25 %), so bundles mix rates (ADR 0059).
+  ...{ priceKr: kr, priceUnit: "PER_PERSON", vatRatePercent: 12 },
   ...(parts ? { parts } : {}),
   ...(customisations ? { customisations } : {}),
 });

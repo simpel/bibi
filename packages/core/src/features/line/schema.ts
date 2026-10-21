@@ -30,6 +30,12 @@ export const LineRecordSchema = z.object({
   vatRatePercent: z.number().int().nullable(),
   /** The alternative group (alternativeGroup.get) the line is an option of (ADR 0052). */
   alternativeGroupId: z.string().nullable(),
+  /**
+   * The bundle line (line.get) this part line belongs to (ADR 0059); null for any other line.
+   * Set by `line.expandBundle` only. A part line shows its own price but does not count in the
+   * totals: its bundle line carries the price, with VAT per rate of its parts.
+   */
+  parentLineId: z.string().nullable(),
   note: z.string().nullable(),
   fields: FieldValuesSchema,
   /** The line's state (one of its item type's states, ADR 0044); null without an item. */

@@ -38,7 +38,7 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     ]);
     const items = ({ organizationId }: { organizationId?: string }) =>
       db.item.count({ where: { organizationId, status: "ACTIVE" } });
-    expect(await items({ organizationId: lind?.organizationId })).toBe(71);
+    expect(await items({ organizationId: lind?.organizationId })).toBe(72);
     expect(await items({ organizationId: vinga?.organizationId })).toBe(9);
     const dinner = await db.item.findFirst({
       where: { organizationId: lind?.organizationId, name: "Three-course dinner" },
@@ -87,8 +87,8 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       where: { organizationId: lind?.organizationId },
       orderBy: { reference: "asc" },
     });
-    // L1–L14 and the leads F2, F3 and F6 with their room lines (ADR 0044, 0052).
-    expect(tickets).toHaveLength(17);
+    // L1–L15 and the leads F2, F3 and F6 with their room lines (ADR 0044, 0052, 0059).
+    expect(tickets).toHaveLength(18);
     const johan = await db.member.findFirst({
       where: { organizationId: lind?.organizationId, user: { name: "Johan Ek" } },
     });

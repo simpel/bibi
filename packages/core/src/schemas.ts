@@ -31,6 +31,7 @@ export * from "./features/item/resolve-schema";
 export * from "./features/item/schema";
 export * from "./features/item-state/hold-kind";
 export * from "./features/item-state/schema";
+export * from "./features/line/expand-schema";
 export * from "./features/line/list-schema";
 export * from "./features/line/schema";
 export * from "./features/member/schema";

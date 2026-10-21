@@ -7,6 +7,7 @@ import { LineStateCell, stateOf } from "./line-state-cell";
 import { placeOf } from "./place-of";
 import { amountColumns } from "./program-amount-columns";
 import type { ProgramFormData } from "./program-form-data";
+import { nameColumn } from "./program-name-column";
 import { type ProgramAccess, ProgramRowActions } from "./program-row-actions";
 
 type Translator = ReturnType<typeof useTranslations<"line">>;
@@ -26,7 +27,7 @@ type DataInput = {
 /** The data columns (without the row actions). */
 function dataColumns({ data, t, format, locale, hidden }: DataInput): Column[] {
   return [
-    { id: "name", header: t("columns.name"), accessorFn: (item) => item.name },
+    nameColumn({ t }),
     {
       id: "type",
       header: t("columns.type"),

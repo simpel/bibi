@@ -29,9 +29,9 @@ Current behaviour, checked against the code. Why: ADR 0021, 0026. Direction (par
 | `SETUPS` | Capacity per setup and setup time (`ItemSetup` rows). Requires `BOOKABLE` |
 
 - Capability data lives in ordinary columns on `Item` and has values only if the type has the capability (otherwise `VALIDATION`). Setups are replaced as a set through `item.create|update`.
-- The part graph is acyclic; core rejects cycles and more than 5 levels. In a bundle the bundle's price is charged and VAT is distributed over the parts in proportion to their list prices.
+- The part graph is acyclic; core rejects cycles and more than 5 levels. In a bundle the bundle's price is charged and its VAT is distributed over the part lines in proportion to their effective price × quantity, with largest-remainder rounding, one VAT row per rate (ADR 0059).
 - `customerId = null` is a catalog item; set means a customer-specific bundle (`item.saveAsBundle` creates one from a quote).
-- Adding an item to a ticket expands it into lines, occupancy and order lines that copy name, price, VAT and tags (snapshot). Bundle expansion into linked part lines is accepted in ADR 0059 and not built yet.
+- Adding an item to a ticket expands it into lines, occupancy and order lines that copy name, price, VAT and tags (snapshot). `line.expandBundle` adds a bundle as one bundle line that carries the price plus part lines linked by `Line.parentLineId`, which show their own prices but do not count in the totals (ADR 0059); customisation options are not expanded yet.
 
 ## Matching and tags
 - A requirement is compared with the items on the ticket tagged with the same vocabulary value. A hit on a mandatory part without an alternative is flagged and blocks the sheet.

@@ -4,9 +4,11 @@ import {
   archiveLine,
   changeLineState,
   createLine,
+  expandLineBundle,
   followLinePhase,
   type LineCreateInput,
   type LineDto,
+  type LineExpandBundleInput,
   type LineUpdateInput,
   updateLine,
 } from "@okazi/core";
@@ -59,4 +61,13 @@ export async function followLinePhaseAction({
   return toActionResult({
     result: await runOperation({ operation: followLinePhase, input: { lineId } }),
   });
+}
+
+export type ExpandBundleActionInput = { input: LineExpandBundleInput };
+
+/** Adds a bundle as a bundle line with its part lines (ADR 0059). */
+export async function expandBundleAction({
+  input,
+}: ExpandBundleActionInput): Promise<ActionResult<{ items: LineDto[] }>> {
+  return toActionResult({ result: await runOperation({ operation: expandLineBundle, input }) });
 }

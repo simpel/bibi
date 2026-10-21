@@ -729,7 +729,15 @@
       "unitPrice": "Styckpris"
     },
     "untimed": "Ingen tid",
-    "inherited": "(ärvt)"
+    "inherited": "(ärvt)",
+    "part": "Del",
+    "expandBundle": "Lägg till paket",
+    "expandBundleDescription": "Lägg till ett paket som en rad som bär priset, plus en rad per del med delens tid räknat från paketets start. Delarna visar sina egna priser men räknas inte i summan; offerten visar moms per sats. Lämna tiderna tomma för rader utan tid.",
+    "bundleExpanded": "Paketet och dess delar har lagts till.",
+    "bundleFields": {
+      "itemId": "Paket",
+      "name": "Namn (paketets om tomt)"
+    }
   },
   "alternativeGroup": {
     "plural": "Alternativ",
@@ -1499,6 +1507,7 @@
         "line_update": "Uppdatera rad",
         "line_archive": "Ta bort rad",
         "line_changeState": "Byt läge på rad",
+        "line_expandBundle": "Lägg till paket med delar",
         "line_followPhase": "Låt raden följa fasen",
         "alternativeGroup_create": "Skapa alternativ",
         "alternativeGroup_update": "Ändra alternativ",

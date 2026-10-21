@@ -55,6 +55,8 @@ export type DemoTicket = {
   holdsUntilDay?: number;
   /** The ticket's lines, on the ticket's day. */
   lines?: readonly DemoLine[];
+  /** Bundles expanded onto the ticket as a bundle line with part lines (ADR 0059). */
+  bundles?: readonly DemoBundleLine[];
   /** Lines (by name) grouped as alternatives the customer picks one of (ADR 0052). */
   alternatives?: readonly DemoAlternative[];
   /**
@@ -89,3 +91,9 @@ export type DemoLine = {
  * without it the group stays open and every option keeps its soft hold.
  */
 export type DemoAlternative = { name: string; lines: readonly string[]; chosen?: string };
+
+/**
+ * A bundle (ADR 0059) by item name, expanded with `line.expandBundle` at local times on the
+ * ticket's day: a bundle line that carries the price and one part line per part.
+ */
+export type DemoBundleLine = { item: string; from: string; to: string };

@@ -41,10 +41,11 @@ export type WriteOrderLinesInput = {
 /** The only writer of `OrderLine` rows (ADR 0052), for a sent quote or a new invoice. */
 export async function writeOrderLines({ context, owner, lines }: WriteOrderLinesInput) {
   await context.db.orderLine.createMany({
-    data: lines.map(({ id: _id, tags, ...line }) => ({
+    data: lines.map(({ id: _id, tags, vatRows, ...line }) => ({
       ...line,
       ...owner,
       tags: toJson({ value: tags }) ?? [],
+      vatRows: toJson({ value: vatRows }) ?? [],
       organizationId: context.organizationId,
     })),
   });
