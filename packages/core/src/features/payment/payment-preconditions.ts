@@ -42,7 +42,7 @@ export async function loadChargeTarget({
   const ticket = await loadChargeableTicket({ context, ticketId });
   if (!ticket.ok) return ticket;
   const account = await context.db.paymentAccount.findFirst({});
-  if (account?.status !== "ACTIVE") {
+  if (account?.status !== "ACTIVE" || !account.stripeAccountId) {
     return conflict({
       message: "The payment account is not active; finish Stripe onboarding in settings first",
     });

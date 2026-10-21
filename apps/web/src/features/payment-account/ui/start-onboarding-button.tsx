@@ -15,7 +15,9 @@ export function StartOnboardingButton({ connected }: StartOnboardingButtonProps)
     run({
       action: startPaymentOnboardingAction,
       messages: { pending: t("starting"), success: t("redirecting") },
-      onSuccess: ({ value }) => window.location.assign(value.onboardingUrl),
+      onSuccess: ({ value }) => {
+        if (value.onboardingUrl) window.location.assign(value.onboardingUrl);
+      },
     });
   return (
     <Button disabled={pending} onClick={start}>

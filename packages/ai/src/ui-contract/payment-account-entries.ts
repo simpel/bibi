@@ -7,8 +7,8 @@ import { uiEntry } from "./ui-entry";
 export const PaymentAccountWireSchema = PaymentAccountSchema.extend({
   createdAt: z.string().nullable(),
   updatedAt: z.string().nullable(),
-  onboardingUrl: z.string().optional(),
-  onboardingExpiresAt: z.string().optional(),
+  onboardingUrl: z.string().nullish(),
+  onboardingExpiresAt: z.string().nullish(),
 });
 
 export type PaymentAccountWire = z.infer<typeof PaymentAccountWireSchema>;
