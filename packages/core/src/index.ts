@@ -35,6 +35,7 @@ export * from "./features/invoice/operations";
 export * from "./features/item/bundle-operations";
 export { itemEmbeddable } from "./features/item/embeddable";
 export * from "./features/item/lifecycle-operations";
+export * from "./features/item/pool-operations";
 export * from "./features/item/read-operations";
 export * from "./features/item/resolve-operation";
 export * from "./features/item/write-operations";

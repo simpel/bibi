@@ -24,6 +24,8 @@ export type DemoType = {
   /** Item types: default setup and teardown minutes around each booking (ADR 0059). */
   setupMinutes?: number;
   teardownMinutes?: number;
+  /** Item types: the items of the type are interchangeable units of one pool (ADR 0059). */
+  pool?: boolean;
 };
 
 /** A part of a BUNDLE demo item, by the name of an item seeded before it. */

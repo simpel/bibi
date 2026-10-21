@@ -26,6 +26,7 @@ export * from "./features/invoice/schema";
 export * from "./features/item/bundle-schema";
 export * from "./features/item/customisation-group-schema";
 export * from "./features/item/list-schema";
+export * from "./features/item/pool-schema";
 export * from "./features/item/resolve-schema";
 export * from "./features/item/schema";
 export * from "./features/item-state/hold-kind";
