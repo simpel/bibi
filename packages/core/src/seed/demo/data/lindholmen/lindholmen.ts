@@ -1,7 +1,8 @@
 import type { DemoOrg } from "../../types";
 import { lindholmenActivities } from "./activities";
 import { lindholmenAlternativeTickets } from "./alternative-tickets";
-import { lindholmenBundles } from "./bundles";
+import { lindholmenBundleTickets } from "./bundle-tickets";
+import { conferenceDayBundle, lindholmenBundles } from "./bundles";
 import { lindholmenLists } from "./config";
 import { lindholmenCustomers } from "./customers";
 import { lindholmenDishes } from "./dishes";
@@ -58,6 +59,7 @@ export const lindholmen: DemoOrg = {
       ...lindholmenMeals,
       ...lindholmenActivities,
       ...lindholmenBundles,
+      conferenceDayBundle,
     ],
     checks: { listSizes: { Allergens: 14 } },
   },
@@ -65,5 +67,5 @@ export const lindholmen: DemoOrg = {
   customers: lindholmenCustomers,
   pipeline: lindholmenPipeline,
   templates: lindholmenTemplates,
-  tickets: [...lindholmenTickets, ...lindholmenAlternativeTickets],
+  tickets: [...lindholmenTickets, ...lindholmenAlternativeTickets, ...lindholmenBundleTickets],
 };

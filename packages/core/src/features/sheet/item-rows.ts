@@ -3,6 +3,7 @@ import { recordFields, WITH_RECORD_LINKS } from "../../records/record-links";
 import { effectiveQuantity } from "../line/effective-values";
 import type { SheetDefinitionDto } from "../sheet-definition/schema";
 import type { SheetRow } from "./schema";
+import { sheetLinesWhere } from "./sheet-lines";
 
 const HEADCOUNT = { estimatedHeadcount: true, guaranteedHeadcount: true } as const;
 
@@ -14,7 +15,8 @@ export type ItemRowsInput = {
 
 /**
  * One row per line of the ticket that uses an item of an included type and is in a state
- * with `inSheets` (ADR 0044), with the included fields of that item's type, earliest first
+ * with `inSheets` (ADR 0044), part lines included and their bundle line not (ADR 0059), with
+ * the included fields of that item's type, earliest first
  * (untimed lines last). A line without a quantity counts the ticket's headcount (ADR 0052).
  */
 export async function itemRows({
@@ -29,12 +31,7 @@ export async function itemRows({
       orderBy: [{ position: "asc" }, { id: "asc" }],
     }),
     context.db.line.findMany({
-      where: {
-        ticketId,
-        item: { status: "ACTIVE", entityTypeId: { in: definition.entityTypeIds } },
-        // Only lines whose state the organization marked as sendable (ADR 0044).
-        state: { inSheets: true },
-      },
+      where: sheetLinesWhere({ ticketId, entityTypeIds: definition.entityTypeIds }),
       include: { item: { include: WITH_RECORD_LINKS } },
       orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     }),

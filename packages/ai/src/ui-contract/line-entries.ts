@@ -37,6 +37,12 @@ export const LINE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   line_update: lineCard,
   line_archive: lineCard,
   line_changeState: lineCard,
+  // The bundle line and its part lines (ADR 0059).
+  line_expandBundle: uiEntry({
+    component: "line-table",
+    schema: z.object({ items: z.array(LineWireSchema) }),
+    toProps: ({ value }) => ({ items: value.items, nextCursor: null }),
+  }),
   line_followPhase: lineCard,
   // The lines `ticket.expireHolds` moved to their expiry state (ADR 0044).
   ticket_expireHolds: uiEntry({

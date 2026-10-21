@@ -46,6 +46,7 @@ export * from "./features/item-state/order-operations";
 export * from "./features/item-state/read-operations";
 export * from "./features/item-state/write-operations";
 export * from "./features/line/change-state-operation";
+export * from "./features/line/expand-operation";
 export * from "./features/line/follow-phase-operation";
 export * from "./features/line/operations";
 export * from "./features/line/write-operations";

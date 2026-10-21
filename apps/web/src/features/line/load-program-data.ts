@@ -23,13 +23,14 @@ async function loadStates(): Promise<LineStateOption[]> {
 }
 
 /**
- * Line types and lists, bookable items, setups and item states (one page each). Without
+ * Line types and lists, bookable items, bundles, setups and item states (one page each). Without
  * `item:read` the items are hidden (ADR 0050 feature scope), not an error.
  */
 export async function loadProgramData(): Promise<Result<ProgramFormData>> {
-  const [typed, items, setups, states] = await Promise.all([
+  const [typed, items, bundles, setups, states] = await Promise.all([
     loadTypedFormData({ base: "LINE" }),
     runOperation({ operation: listItems, input: { capability: "BOOKABLE", limit: LIMIT } }),
+    runOperation({ operation: listItems, input: { capability: "BUNDLE", limit: LIMIT } }),
     runOperation({ operation: listSetups, input: { limit: LIMIT } }),
     loadStates(),
   ]);
@@ -48,6 +49,7 @@ export async function loadProgramData(): Promise<Result<ProgramFormData>> {
           }))
         : [],
       itemsHidden: !items.ok,
+      bundles: bundles.ok ? bundles.value.items.map(({ id, name }) => ({ id, name })) : [],
       setups: setups.value.items.map(({ id, name }) => ({ id, name })),
       states,
     },

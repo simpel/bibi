@@ -36,6 +36,9 @@ model Line {
   vatRatePercent     Int?
   /// The alternative group this line is an option of; null for an ordinary line (ADR 0052).
   alternativeGroupId String?
+  /// The bundle line this part line belongs to (ADR 0059, owned): set only when a bundle is
+  /// expanded (`line.expandBundle`), never changed. A part line does not count in the totals.
+  parentLineId       String?
   /// Internal note.
   note               String?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
@@ -57,9 +60,13 @@ model Line {
   state              ItemState?         @relation(fields: [stateId, organizationId], references: [id, organizationId])
   requirements       Requirement[]
   occupancies        Occupancy[]
-  orderLines         OrderLine[]
+  orderLines         OrderLine[]        @relation("OrderLineLine")
   alternativeGroup   AlternativeGroup?  @relation("AlternativeGroupOptions", fields: [alternativeGroupId, organizationId], references: [id, organizationId])
   chosenIn           AlternativeGroup[] @relation("AlternativeGroupChoice")
+  parentLine         Line?              @relation("LineParts", fields: [parentLineId, organizationId], references: [id, organizationId])
+  partLines          Line[]             @relation("LineParts")
+  /// Order lines whose bundle line this is (snapshot of `parentLineId`).
+  partOrderLines     OrderLine[]        @relation("OrderLineParent")
   stateChanges       LineStateChange[]
   /// The supertable row this record extends (ADR 0056).
   record             Record             @relation(fields: [id, organizationId], references: [id, organizationId])
@@ -69,4 +76,5 @@ model Line {
   @@index([organizationId, entityTypeId])
   @@index([organizationId, stateId])
   @@index([organizationId, alternativeGroupId])
+  @@index([organizationId, parentLineId])
 }

@@ -91,7 +91,8 @@ model ItemPart {
   quantity             Int                     @default(1)
   /// Start of the part relative to the start of the parent, in minutes.
   offsetMinutes        Int                     @default(0)
-  /// Length of the part; null = the parent's length.
+  /// Length of the part; null = until the end of the parent. Both are defaults: a part line
+  /// gets its times from them when the bundle is expanded and keeps its own after (ADR 0059).
   durationMinutes      Int?
   /// Mandatory part (true) or optional part (false).
   required             Boolean                 @default(true)

@@ -2,6 +2,7 @@ import {
   archiveLine,
   changeLineState,
   createLine,
+  expandLineBundle,
   expireTicketHolds,
   followLinePhase,
   getLine,
@@ -39,6 +40,15 @@ mutationFromOperation({ operation: updateLine, type: LineRef });
 mutationFromOperation({ operation: archiveLine, type: LineRef });
 mutationFromOperation({ operation: changeLineState, type: LineRef });
 mutationFromOperation({ operation: followLinePhase, type: LineRef });
+
+const ExpandBundleRef = builder.objectRef<{ items: LineDto[] }>("LineExpandBundleResult");
+ExpandBundleRef.implement({
+  description: "The lines `line.expandBundle` created: the bundle line first, then its parts.",
+  fields: (t) => ({
+    items: t.field({ type: [LineRef], resolve: (result) => result.items }),
+  }),
+});
+mutationFromOperation({ operation: expandLineBundle, type: ExpandBundleRef });
 
 const ExpireHoldsRef = builder.objectRef<{ items: LineDto[] }>("TicketExpireHoldsResult");
 ExpireHoldsRef.implement({

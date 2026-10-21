@@ -8,6 +8,13 @@ export const OrderLineTagSchema = z.object({
   name: z.string(),
 });
 
+/** The VAT of one rate on an order line (ADR 0059): the part of the total at that rate. */
+export const VatRowSchema = z.object({
+  vatRatePercent: z.number().int(),
+  totalExclVatMinor: z.number().int().describe("The part of the line total at this rate"),
+  vatMinor: z.number().int().describe("VAT at this rate, minor units"),
+});
+
 /**
  * What is charged for one priced ticket line (ADR 0052): its name, effective price, VAT and the
  * item's tags. Frozen on a sent quote; on a DRAFT derived live from the line (`id` = `lineId`).
@@ -27,7 +34,17 @@ export const OrderLineSchema = z.object({
     .array(OrderLineTagSchema)
     .describe("List values the item contained (item.resolve `contains`), e.g. allergens"),
   totalExclVatMinor: z.number().int().describe("quantity × unit price − discount, minor units"),
-  vatMinor: z.number().int().describe("VAT on the line total, minor units"),
+  vatMinor: z.number().int().describe("VAT on the line total, minor units: the sum of vatRows"),
+  vatRows: z
+    .array(VatRowSchema)
+    .describe(
+      "VAT per rate: one row for an ordinary line; for a bundle line one per rate of its parts, " +
+        "its price allocated across them by effective price × quantity (ADR 0059)",
+    ),
+  parentLineId: z
+    .string()
+    .nullable()
+    .describe("The bundle line (line.get) of a part line, which never counts in the totals"),
   alternativeGroupId: z
     .string()
     .nullable()
@@ -43,10 +60,12 @@ export const OrderLineSchema = z.object({
   inTotal: z
     .boolean()
     .describe(
-      "Counts in the quote's totals: false for a group's options other than the chosen one " +
-        "(or, until one is chosen, other than the cheapest one)",
+      "Counts in the quote's totals: false for a part line (its bundle line carries the price) " +
+        "and for a group's options other than the chosen one (or, until one is chosen, other " +
+        "than the cheapest one)",
     ),
 });
 
 export type OrderLineTag = z.infer<typeof OrderLineTagSchema>;
+export type VatRow = z.infer<typeof VatRowSchema>;
 export type OrderLineDto = z.infer<typeof OrderLineSchema>;

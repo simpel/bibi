@@ -53,6 +53,7 @@ export const PIPELINE_OPERATION_KEYS = [
   "itemState_setTransitions",
   "line_changeState",
   "line_followPhase",
+  "line_expandBundle",
   "alternativeGroup_create",
   "alternativeGroup_update",
   "alternativeGroup_archive",

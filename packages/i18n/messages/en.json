@@ -729,7 +729,15 @@
       "unitPrice": "Unit price"
     },
     "untimed": "No time",
-    "inherited": "(inherited)"
+    "inherited": "(inherited)",
+    "part": "Part",
+    "expandBundle": "Add bundle",
+    "expandBundleDescription": "Add a bundle as one line that carries its price, plus one line per part with the part's time from the bundle's start. The parts show their own prices but do not count in the total; the quote shows VAT per rate. Leave the times empty for lines without time.",
+    "bundleExpanded": "The bundle and its parts have been added.",
+    "bundleFields": {
+      "itemId": "Bundle",
+      "name": "Name (default the bundle's)"
+    }
   },
   "alternativeGroup": {
     "plural": "Alternatives",
@@ -1499,6 +1507,7 @@
         "line_update": "Update line",
         "line_archive": "Remove line",
         "line_changeState": "Change line state",
+        "line_expandBundle": "Add bundle with its parts",
         "line_followPhase": "Let line follow the phase",
         "alternativeGroup_create": "Create alternatives",
         "alternativeGroup_update": "Change alternatives",

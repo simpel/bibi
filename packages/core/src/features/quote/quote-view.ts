@@ -1,13 +1,16 @@
 import type { OrderLine, Quote } from "@okazi/db";
 import { markLineChanges } from "./line-changes";
 import { quoteTotals, totalIsFrom } from "./line-totals";
-import type { OrderLineDto, OrderLineTag } from "./order-line-schema";
+import type { OrderLineDto, OrderLineTag, VatRow } from "./order-line-schema";
 import type { QuoteDto, QuoteLineDto } from "./schema";
 
 export type QuoteRow = Quote & { lines: OrderLine[] };
 
 const asTags = ({ value }: { value: unknown }): OrderLineTag[] =>
   Array.isArray(value) ? (value as OrderLineTag[]) : [];
+
+const asVatRows = ({ value }: { value: unknown }): VatRow[] =>
+  Array.isArray(value) ? (value as VatRow[]) : [];
 
 export const toOrderLineDto = ({ row }: { row: OrderLine }): OrderLineDto => ({
   id: row.id,
@@ -23,6 +26,8 @@ export const toOrderLineDto = ({ row }: { row: OrderLine }): OrderLineDto => ({
   tags: asTags({ value: row.tags }),
   totalExclVatMinor: row.totalExclVatMinor,
   vatMinor: row.vatMinor,
+  vatRows: asVatRows({ value: row.vatRows }),
+  parentLineId: row.parentLineId,
   alternativeGroupId: row.alternativeGroupId,
   alternativeGroupName: row.alternativeGroupName,
   alternativeGroupChosen: row.alternativeGroupChosen,

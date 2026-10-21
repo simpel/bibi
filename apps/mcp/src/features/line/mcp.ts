@@ -12,6 +12,13 @@ export const lineMcpTools = [
         : "without a time"),
   }),
   mcpTool({
+    operation: "line.expandBundle",
+    summary: ({ input }) =>
+      `Add bundle ${text({ value: input.itemId })} to ticket ${text({ value: input.ticketId })} ` +
+      "as a bundle line with its part lines" +
+      (input.startsAt ? ` from ${text({ value: input.startsAt })}` : ", without a time"),
+  }),
+  mcpTool({
     operation: "line.update",
     idempotent: true,
     summary: ({ input }) =>

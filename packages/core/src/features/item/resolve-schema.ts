@@ -16,7 +16,11 @@ export const ResolvedItemNodeSchema = z.object({
   quantity: z.number().int().describe("How many per parent (1 for the resolved item)"),
   totalQuantity: z.number().int().describe("How many per one of the resolved item"),
   offsetMinutes: z.number().int().describe("Start relative to the start of the resolved item"),
-  durationMinutes: z.number().int().nullable().describe("Own length; null = the parent's length"),
+  durationMinutes: z
+    .number()
+    .int()
+    .nullable()
+    .describe("Own length; null = until the end of the parent"),
   required: z.boolean().describe("The part is mandatory in its parent (true for the root)"),
   customisationGroup: z
     .string()

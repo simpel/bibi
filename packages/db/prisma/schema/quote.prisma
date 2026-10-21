@@ -78,7 +78,13 @@ model OrderLine {
   /// The list values the item contains (`item.resolve`): `[{ valueId, vocabularyId, name }]`.
   tags                   Json              @default("[]")
   totalExclVatMinor      Int
+  /// VAT on the line total: the sum of `vatRows`.
   vatMinor               Int
+  /// VAT per rate (ADR 0059): `[{ vatRatePercent, totalExclVatMinor, vatMinor }]`, one row for an
+  /// ordinary line and one per rate of its parts for a bundle line (`allocateBundleVat`).
+  vatRows                Json              @default("[]")
+  /// Snapshot of the line's bundle line (ADR 0059); set on a part line, which never counts.
+  parentLineId           String?
   /// Snapshot of the line's alternative group (ADR 0052): its id and name; null on an ordinary line.
   alternativeGroupId     String?
   alternativeGroupName   String?
@@ -93,7 +99,8 @@ model OrderLine {
   createdBy              String?
   quote                  Quote?            @relation(fields: [quoteId, organizationId], references: [id, organizationId])
   invoice                Invoice?          @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
-  line                   Line              @relation(fields: [lineId, organizationId], references: [id, organizationId])
+  line                   Line              @relation("OrderLineLine", fields: [lineId, organizationId], references: [id, organizationId])
+  parentLine             Line?             @relation("OrderLineParent", fields: [parentLineId, organizationId], references: [id, organizationId])
   item                   Item?             @relation(fields: [itemId, organizationId], references: [id, organizationId])
   alternativeGroup       AlternativeGroup? @relation(fields: [alternativeGroupId, organizationId], references: [id, organizationId])
 
@@ -101,5 +108,6 @@ model OrderLine {
   @@index([organizationId, invoiceId])
   @@index([organizationId, alternativeGroupId])
   @@index([organizationId, lineId])
+  @@index([organizationId, parentLineId])
   @@index([organizationId, itemId])
 }

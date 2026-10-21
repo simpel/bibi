@@ -55,6 +55,8 @@ export type DemoItem = {
   fields?: DemoFieldValues;
   priceKr?: number;
   priceUnit?: (typeof PRICE_UNITS)[number];
+  /** VAT in percent; left out = the venue's default (25 %). */
+  vatRatePercent?: number;
   setups?: Readonly<Record<string, number>>;
   parts?: readonly DemoPart[];
   customisations?: readonly DemoCustomisationGroup[];
