@@ -55,7 +55,7 @@ export async function createVenue({
   await expect(page.getByRole("link", { name })).toBeVisible();
 }
 
-/** Creates an item type with the "Bokningsbar" capability and one number field on its page. */
+/** Creates an item type with the "Tillgänglighet" section and one number field on its page. */
 export async function createItemType({
   page,
   name,
@@ -66,7 +66,7 @@ export async function createItemType({
   await page.getByRole("link", { name: "Skapa typ" }).first().click();
   await page.getByLabel("Namn").fill(name);
   await page.getByRole("button", { name: "Nästa" }).click();
-  await page.getByRole("checkbox", { name: "Bokningsbar" }).click();
+  await page.getByRole("switch", { name: "Tillgänglighet" }).click();
   await page.getByRole("button", { name: "Spara" }).click();
   await expect(page.getByRole("heading", { name, level: 1 })).toBeVisible();
   await page.getByRole("button", { name: "Lägg till fält" }).click();

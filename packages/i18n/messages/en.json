@@ -853,13 +853,11 @@
     "fieldCount": "{count, plural, one {# field} other {# fields}}",
     "noCapabilities": "No capabilities",
     "capabilitiesHeading": "Capabilities",
-    "capabilitiesHint": "Capabilities switch on general features for items of the type. A capability cannot be switched off while items have data for it.",
-    "requires": "Requires {capability}.",
     "fieldsHeading": "Fields",
     "fields": {
       "base": "Applies to",
       "name": "Name",
-      "capabilities": "Capabilities"
+      "sections": "Sections"
     },
     "columns": {
       "name": "Name",
@@ -881,13 +879,6 @@
       "BOOKABLE": "Bookable",
       "SETUPS": "Setups"
     },
-    "capabilityHints": {
-      "PRICED": "Price, price unit and VAT.",
-      "BUNDLE": "Contains other items.",
-      "CUSTOMISATIONS": "Customisation groups to choose between.",
-      "BOOKABLE": "Occupies time and has a default length.",
-      "SETUPS": "Capacity per setup."
-    },
     "wizard": {
       "progress": "Steps",
       "steps": {
@@ -897,6 +888,30 @@
       "descriptions": {
         "base": "Choose what the type is for and name it.",
         "capabilities": "Pick what items of this type can do. You add its fields next."
+      }
+    },
+    "sectionsHint": "Switch on the parts an item of this type needs. A section cannot be switched off while items have data for it.",
+    "needs": "Needs {section}.",
+    "sections": {
+      "PRICED": {
+        "title": "Pricing",
+        "description": "Items have a price, a price unit and VAT."
+      },
+      "BOOKABLE": {
+        "title": "Availability",
+        "description": "Items take up time and have a default length. Set the default setup and teardown time here."
+      },
+      "SETUPS": {
+        "title": "Room layouts",
+        "description": "Each item has layouts with a capacity per layout."
+      },
+      "BUNDLE": {
+        "title": "Bundle",
+        "description": "An item contains other items."
+      },
+      "CUSTOMISATIONS": {
+        "title": "Customisations",
+        "description": "Groups of options the customer can choose between."
       }
     }
   },
