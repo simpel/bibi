@@ -67,13 +67,21 @@ describe("worker (ADR 0027)", () => {
     expect(schedules[0]?.cron).toBe("0 3 * * *");
     expect(schedules[0]?.timezone).toBe("Europe/Stockholm");
 
+    const completedVenueEvents = () =>
+      logs
+        .events({ event: "operation.completed" })
+        .filter((entry) => entry.operation === "venue.create");
+
     await boss.send(QUEUE);
+    // The audit row is committed before `operation.completed` is logged, so wait for both.
     const rows = await waitFor({
       probe: async () => {
         const found = await db.auditLog.findMany({
           where: { organizationId: { in: orgIds }, operation: "venue.create" },
         });
-        return found.length >= orgIds.length ? found : undefined;
+        const settled =
+          found.length >= orgIds.length && completedVenueEvents().length >= orgIds.length;
+        return settled ? found : undefined;
       },
     });
     expect(rows).toHaveLength(orgIds.length);
@@ -85,9 +93,7 @@ describe("worker (ADR 0027)", () => {
     }
     expect(new Set(rows.map((row) => row.requestId)).size).toBe(1);
 
-    const completed = logs
-      .events({ event: "operation.completed" })
-      .filter((entry) => entry.operation === "venue.create");
+    const completed = completedVenueEvents();
     expect(completed.length).toBeGreaterThanOrEqual(orgIds.length);
     expect(completed[0]).toMatchObject({ surface: "system", actorType: "system" });
     expect(completed[0]?.requestId).toBe(rows[0]?.requestId);
