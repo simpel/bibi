@@ -1,10 +1,10 @@
 import type { EntityTypeDto, ItemDto } from "@bibi/core";
-import { Link } from "@bibi/i18n/navigation";
 import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";
 import { itemRoute } from "@/lib/configuration-routes";
+import { Link } from "@/lib/navigation";
 import { priceText } from "./price-text";
 
 type Column = ColumnDef<ItemDto>;

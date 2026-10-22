@@ -1,6 +1,6 @@
-import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import type { ActionResult } from "@/lib/action-result";
+import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { sendDepositAction, voidDepositAction } from "../../deposit/actions";
 import { sendInvoiceAction, voidInvoiceAction } from "../../invoice/actions";

@@ -1,8 +1,8 @@
 "use client";
 
 import type { CustomerDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
+import { useRouter } from "@/lib/navigation";
 import { customerRoute } from "@/lib/routes";
 import { CustomerForm } from "./customer-form";
 

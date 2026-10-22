@@ -1,7 +1,7 @@
 # 0045 – Soft-landing onboarding with the assistant
 
 - **Date:** 2026-10-19
-- **Status:** Accepted
+- **Status:** Superseded by 0061
 - **Related:** 0007 (AI-first UX), 0044 (line states and the phase grid), 0021 (configurable items), 0043 (ticket and phases), 0004 (multi-tenancy), 0015 (superadmin)
 - **Spec:** `docs/specs/onboarding.md`
 

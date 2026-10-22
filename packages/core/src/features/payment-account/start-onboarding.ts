@@ -1,5 +1,5 @@
 import { getEnv } from "@bibi/config";
-import type { PaymentAccount } from "@bibi/db";
+import { getDb, type PaymentAccount } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { toPaymentAccountDto } from "./to-payment-account-dto";
 
@@ -24,8 +24,18 @@ export async function ensurePaymentAccountRow({
   return row;
 }
 
-/** Where Stripe sends the venue back; both lead to the payments settings page. */
-export function onboardingReturnUrls() {
-  const url = `${getEnv().WEB_URL}/settings/payments`;
+export type OnboardingReturnUrlsInput = { organizationId: string };
+
+/**
+ * Where Stripe sends the venue back; both lead to the payments settings page under the
+ * organization's slug (ADR 0062). The slug is read outside the org-scoped client.
+ */
+export async function onboardingReturnUrls({ organizationId }: OnboardingReturnUrlsInput) {
+  const organization = await getDb().organization.findUnique({
+    where: { id: organizationId },
+    select: { slug: true },
+  });
+  const slug = encodeURIComponent(organization?.slug ?? "");
+  const url = `${getEnv().WEB_URL}/${slug}/settings/payments`;
   return { returnUrl: url, refreshUrl: url };
 }

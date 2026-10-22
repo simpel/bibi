@@ -60,6 +60,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Invitation",
   "Apikey",
   "OauthGrantRevocation",
+  "OrganizationProfile",
 ]);
 
 /** Global tables (ADR 0006): Better Auth's, shared across organizations, refused by `scopedDb`. */
@@ -87,7 +88,11 @@ export const PLATFORM_MODELS = new Set<string>(["SystemLog", "AiSetting", "Strip
  * UI preferences and settings. `scopedDb` pins every query to its `actorId` instead of the organization and
  * refuses them for the system actor. No `organizationId`, `status` or `createdBy`.
  */
-export const USER_SCOPED_MODELS = new Set<string>(["UserPreference", "UserSettings"]);
+export const USER_SCOPED_MODELS = new Set<string>([
+  "UserPreference",
+  "UserProfile",
+  "UserWorkingHours",
+]);
 
 /** Every model that is deliberately not org-scoped. Each Prisma model is here or org-scoped. */
 export const UNSCOPED_MODELS = new Set<string>([
@@ -123,6 +128,7 @@ export const SOFT_DELETE_DEFAULTS: ReadonlyMap<string, unknown> = new Map<string
   ["Requirement", "ACTIVE"],
   ["Quote", "ACTIVE"],
   ["Conversation", "ACTIVE"],
+  ["OrganizationProfile", "ACTIVE"],
   ["Skill", { not: "ARCHIVED" }],
 ]);
 

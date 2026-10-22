@@ -1,11 +1,11 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import { WizardFooter } from "@/components/wizard/wizard-footer";
 import { WizardProgress } from "@/components/wizard/wizard-progress";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { BaseSelectField } from "./base-select-field";
 import { ItemTypeFields } from "./item-type-fields";

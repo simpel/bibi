@@ -34,10 +34,6 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "phaseGrid.get", route: "/settings/pipeline" },
   { operation: "phaseGrid.setCell", route: "/settings/pipeline" },
   { operation: "phaseGrid.importTemplate", route: "/settings/pipeline" },
-  // The first setup (ADR 0045): the assistant on /onboarding previews, activates and starts from a preset.
-  { operation: "pipelineSetup.preview", route: "/onboarding" },
-  { operation: "pipelineSetup.activate", route: "/onboarding" },
-  { operation: "pipelineSetup.presetDraft", route: "/onboarding" },
   { operation: "itemState.list", route: "/settings/item-states" },
   { operation: "itemState.get", route: "/settings/item-states" },
   { operation: "itemState.create", route: "/new/item-state" },

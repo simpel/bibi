@@ -1,6 +1,6 @@
-import { usePathname, useRouter } from "@bibi/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
+import { usePathname, useRouter } from "@/lib/navigation";
 import { type LogHrefInput, logQueryString } from "./log-params";
 
 /** Updates the log view's URL state; `pending` while the server renders the new page. */

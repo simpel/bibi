@@ -1,5 +1,6 @@
 import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { venueEmbeddable } from "../src/features/venue/embeddable";
 import {
   createIndexingHook,
   createVenue,
@@ -7,7 +8,6 @@ import {
   execute,
   indexEntity,
   updateVenue,
-  venueEmbeddable,
 } from "../src/index";
 import { fakeEmbed } from "./fake-embed";
 import { testContext, unwrap } from "./helpers";

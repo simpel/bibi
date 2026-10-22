@@ -1,9 +1,9 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { desiredPeriod } from "@/features/ticket/ui/desired-period";
+import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";

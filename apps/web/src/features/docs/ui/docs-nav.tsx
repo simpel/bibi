@@ -1,6 +1,5 @@
 "use client";
 
-import { Link, usePathname } from "@bibi/i18n/navigation";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,6 +9,7 @@ import {
   SidebarMenuItem,
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/lib/navigation";
 import { DOC_SECTIONS, docHref, MCP_REFERENCE_HREF, REST_REFERENCE_HREF } from "../pages";
 
 /** `external` links leave the locale-prefixed app routes (e.g. the API's own Scalar page). */

@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { syncPaymentAccountAction } from "../actions";
 

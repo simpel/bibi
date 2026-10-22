@@ -1,9 +1,9 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { PaymentStatusBadge } from "@/features/payment-account/ui/payment-status-badge";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 

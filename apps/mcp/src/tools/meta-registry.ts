@@ -10,6 +10,7 @@ import { customerMcpTools } from "../features/customer/mcp";
 import { depositMcpTools } from "../features/deposit/mcp";
 import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
+import { fileMcpTools } from "../features/file/mcp";
 import { inboundEmailMcpTools } from "../features/inbound-email/mcp";
 import { invoiceMcpTools } from "../features/invoice/mcp";
 import { itemMcpTools } from "../features/item/mcp";
@@ -19,6 +20,7 @@ import { memberMcpTools } from "../features/member/mcp";
 import { messageMcpTools } from "../features/message/mcp";
 import { oauthGrantMcpTools } from "../features/oauth-grant/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
+import { organizationProfileMcpTools } from "../features/organization-profile/mcp";
 import { paymentMcpTools } from "../features/payment/mcp";
 import { paymentAccountMcpTools } from "../features/payment-account/mcp";
 import { permissionMcpTools } from "../features/permission/mcp";
@@ -26,6 +28,7 @@ import { phaseGridMcpTools } from "../features/phase-grid/mcp";
 import { pipelineMcpTools } from "../features/pipeline/mcp";
 import { pipelineSetupMcpTools } from "../features/pipeline-setup/mcp";
 import { priceListMcpTools } from "../features/price-list/mcp";
+import { profileMcpTools } from "../features/profile/mcp";
 import { quoteMcpTools } from "../features/quote/mcp";
 import { requirementMcpTools } from "../features/requirement/mcp";
 import { responsibilityMcpTools } from "../features/responsibility/mcp";
@@ -45,6 +48,7 @@ import type { McpToolMeta } from "./meta";
 const accessMcpTools = [...memberMcpTools, ...apiKeyMcpTools, ...permissionMcpTools];
 const gridAndSetupMcpTools = [...phaseGridMcpTools, ...pipelineSetupMcpTools, ...changeSetMcpTools];
 const lineAndGroupMcpTools = [...lineMcpTools, ...alternativeGroupMcpTools];
+const selfMcpTools = [...userPreferenceMcpTools, ...profileMcpTools, ...fileMcpTools];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
 const moneyMcpTools = [
@@ -89,7 +93,8 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...auditLogMcpTools,
     ...accessMcpTools,
     ...oauthGrantMcpTools,
-    ...userPreferenceMcpTools,
+    ...selfMcpTools,
+    ...organizationProfileMcpTools,
     ...searchMcpTools,
   ];
 }

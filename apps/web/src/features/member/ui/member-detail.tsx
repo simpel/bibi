@@ -1,6 +1,5 @@
 import { getMember } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { Link } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getFormatter, getTranslations } from "next-intl/server";
@@ -8,6 +7,7 @@ import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { FactList } from "@/components/typed-fields/fact-list";
+import { Link } from "@/lib/navigation";
 import { memberPermissionsRoute, memberRoute, ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";

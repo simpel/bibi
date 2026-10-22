@@ -1,5 +1,4 @@
 import type { AlternativeGroupDto } from "@bibi/core/schemas";
-import { useRouter } from "@bibi/i18n/navigation";
 import {
   DataTableRowActions,
   DropdownMenuItem,
@@ -9,6 +8,7 @@ import {
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { chooseAlternativeAction } from "../actions";
 import { ArchiveAlternativeGroupDialog } from "./archive-alternative-group-dialog";

@@ -1,0 +1,28 @@
+/// Where an organization is in its first setup (ADR 0061). `PENDING` from creation until an
+/// admin activates or skips the setup in the welcome flow.
+enum SetupStatus {
+  PENDING
+  COMPLETED
+  SKIPPED
+}
+
+/// The organization's own facts (ADR 0061): setup status, legal and contact data and address.
+/// One row per organization, created `PENDING` by `provisionOrganization`. Org-scoped.
+model OrganizationProfile {
+  id             String       @id @default(cuid(2))
+  organizationId String       @unique
+  setupStatus    SetupStatus  @default(PENDING)
+  legalName      String?
+  orgNumber      String?
+  streetAddress  String?
+  postalCode     String?
+  city           String?
+  country        String       @default("SE")
+  website        String?
+  contactEmail   String?
+  contactPhone   String?
+  status         RecordStatus @default(ACTIVE)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+}

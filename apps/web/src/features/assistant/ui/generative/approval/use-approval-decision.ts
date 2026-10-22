@@ -1,10 +1,10 @@
 "use client";
 
 import type { Approval } from "@bibi/ai";
-import { useRouter } from "@bibi/i18n/navigation";
 import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { useRouter } from "@/lib/navigation";
 import { type ApprovalErrorKey, approvalErrorKey } from "../../../lib/approval-error";
 import type { StoredDecision } from "../../../lib/stored-messages";
 import { type Decision, postDecision } from "./post-decision";

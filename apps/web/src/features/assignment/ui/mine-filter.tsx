@@ -1,6 +1,6 @@
-import { Link } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/lib/navigation";
 
 /** `?mine=` on the ticket list (ADR 0034). */
 export const MINE_FILTERS = ["assigned", "following"] as const;

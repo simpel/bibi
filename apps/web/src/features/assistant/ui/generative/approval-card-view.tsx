@@ -9,9 +9,6 @@ import { ApprovalHeader } from "./approval/approval-header";
 import { useApprovalDecision } from "./approval/use-approval-decision";
 import { useCountdown } from "./approval/use-countdown";
 import type { GenerativeProps } from "./generative-props";
-import { SetupApprovalCardView } from "./setup-approval-card-view";
-
-const SETUP_OPERATION = "pipelineSetup.activate";
 
 export type ApprovalCardViewProps = GenerativeProps<"approval-card">;
 
@@ -20,7 +17,6 @@ export type ApprovalCardViewProps = GenerativeProps<"approval-card">;
  * `/api/assistant/approval`, which executes it as the user) or rejects. Decided cards are locked.
  */
 export function ApprovalCardView(props: ApprovalCardViewProps) {
-  if (props.approval.operation === SETUP_OPERATION) return <SetupApprovalCardView {...props} />;
   return <OperationApprovalCard {...props} />;
 }
 

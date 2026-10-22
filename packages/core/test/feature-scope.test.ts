@@ -27,6 +27,9 @@ const PERMISSION_EXCEPTIONS: Readonly<Record<string, string>> = {
   "skill.share":
     "copies the caller's own (self) skill into the organization's shared skills, which is " +
     "managing the organization's assistant (assistant:write)",
+  "organizationProfile.setSetupStatus":
+    "the first setup status gates activating a pipeline (ADR 0061), so who may set up the " +
+    "pipeline (pipeline:write) may finish or skip it; the profile itself is configuration",
 };
 
 /** Key prefix → the feature that owns data named like that. */
@@ -54,6 +57,8 @@ const FOREIGN_KEY =
 const OUTPUT_EXCEPTIONS: Readonly<Record<string, string>> = {
   "venue:contactEmail": "the venue's own contact details, not a customer contact",
   "venue:contactPhone": "the venue's own contact details, not a customer contact",
+  "organizationProfile:contactEmail": "the organization's own contact details (ADR 0061)",
+  "organizationProfile:contactPhone": "the organization's own contact details (ADR 0061)",
   "sheet:itemName": "sheet rows are a snapshot copied with item:read at generate time",
   "sheet:programItemName": "sheet rows are a snapshot copied with program:read at generate time",
 };

@@ -1,5 +1,12 @@
 import "server-only";
-import { type AnyOperation, AppError, createCoreOperations, registerOperations } from "@bibi/core";
+import {
+  type AnyOperation,
+  AppError,
+  createCoreOperations,
+  registerOperations,
+  setFileStore,
+} from "@bibi/core";
+import { getStorage } from "@bibi/storage";
 import { embed } from "./embed";
 
 const holder = globalThis as typeof globalThis & { __bibiWebOperations?: AnyOperation[] };
@@ -10,7 +17,11 @@ const holder = globalThis as typeof globalThis & { __bibiWebOperations?: AnyOper
  * bundle route handlers and server components with separate module instances.
  */
 export function ensureOperations(): readonly AnyOperation[] {
-  holder.__bibiWebOperations ??= createCoreOperations({ embed });
+  if (!holder.__bibiWebOperations) {
+    // Core reaches file storage through this port (ADR 0063): `file.upload`, `file.get`.
+    setFileStore({ store: getStorage() });
+    holder.__bibiWebOperations = createCoreOperations({ embed });
+  }
   registerOperations({ operations: holder.__bibiWebOperations });
   return holder.__bibiWebOperations;
 }

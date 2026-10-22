@@ -1,7 +1,7 @@
-import { Link } from "@bibi/i18n/navigation";
 import { DropdownMenuItem } from "@bibi/ui";
 import { UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
 /** First entry of the user menu (ADR 0036): opens the profile page. */

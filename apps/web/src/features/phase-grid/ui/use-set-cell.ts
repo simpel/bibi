@@ -1,5 +1,5 @@
-import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { setPhaseGridCellAction } from "../actions";
 

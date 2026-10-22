@@ -1,7 +1,7 @@
 import type { CustomerDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { archiveCustomerAction } from "../actions";

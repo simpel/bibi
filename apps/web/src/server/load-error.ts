@@ -1,9 +1,9 @@
 import "server-only";
 import type { AppError } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { redirect } from "@bibi/i18n/navigation";
 import { notFound } from "next/navigation";
 import { type ErrorKey, errorKeyForCode } from "@/lib/error-key";
+import { redirect } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
 export type HandleLoadErrorInput = { error: AppError; locale: Locale };

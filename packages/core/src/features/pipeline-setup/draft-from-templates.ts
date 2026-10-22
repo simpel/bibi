@@ -8,7 +8,11 @@ import {
   type ItemStateTemplateState,
 } from "../../templates/item-states/item-state-templates";
 import { getPhaseGridTemplate } from "../../templates/phase-grid/phase-grid-templates";
-import { getSetupPreset, type SetupPresetKey } from "../../templates/setup-presets/setup-presets";
+import {
+  getSetupPreset,
+  type SetupPresetKey,
+  type SetupPresetPhases,
+} from "../../templates/setup-presets/setup-presets";
 import { getTicketPhaseTemplate } from "../../templates/ticket-phases/ticket-phase-templates";
 import type {
   PipelineCellDraft,
@@ -101,18 +105,34 @@ export type DraftFromPresetInput = {
   existingTypes: readonly ExistingSetupType[];
 };
 
-/**
- * A whole draft from a setup preset (ADR 0045), by name: existing item types are kept, the
- * preset's missing ones are added, and states, phases and grid come from the templates.
- */
+/** A whole draft from a setup preset (ADR 0061): `draftFromTypes` with the preset's types. */
 export function draftFromPreset({ key, existingTypes }: DraftFromPresetInput): PipelineSetupDraft {
   const preset = getSetupPreset({ key });
+  return draftFromTypes({ phases: preset.phases, types: preset.itemTypes, existingTypes });
+}
+
+export type DraftFromTypesInput = {
+  phases: SetupPresetPhases;
+  /** The new types by name, e.g. a preset's types as the user ticked and named them. */
+  types: readonly { name: string; bookable: boolean }[];
+  existingTypes: readonly ExistingSetupType[];
+};
+
+/**
+ * A whole draft from chosen types (ADR 0061): existing item types are kept, chosen types not
+ * there yet (by name) are added, and states, phases and the grid come from the templates.
+ */
+export function draftFromTypes({
+  phases: template,
+  types,
+  existingTypes,
+}: DraftFromTypesInput): PipelineSetupDraft {
   const known = new Set(existingTypes.map((type) => type.name.toLowerCase()));
   const wanted = [
     ...existingTypes.map((type) => ({ ...type, entityTypeId: type.id })),
-    ...preset.itemTypes
+    ...types
       .filter((type) => !known.has(type.name.toLowerCase()))
-      .map((type) => ({ ...type, entityTypeId: undefined })),
+      .map(({ name, bookable }) => ({ name, bookable, entityTypeId: undefined })),
   ];
   const itemTypes = wanted.map(({ entityTypeId, name, bookable }): PipelineTypeDraft => {
     const states = statesFromTemplate({ template: defaultStateTemplate({ bookable }), bookable });
@@ -123,7 +143,6 @@ export function draftFromPreset({ key, existingTypes }: DraftFromPresetInput): P
         : {};
     return { ...identity, name, ...states };
   });
-  const template = preset.phases;
   const phases = phasesFromTemplate({ template });
   return { itemTypes, phases, cells: cellsFromTemplate({ template, phases, itemTypes }) };
 }

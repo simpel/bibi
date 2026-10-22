@@ -1,11 +1,11 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { SheetMatches } from "@/features/sheet/ui/sheet-matches";
 import { SheetRowsView } from "@/features/sheet/ui/sheet-rows-view";
 import { SheetStatus } from "@/features/sheet/ui/sheet-status";
+import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 

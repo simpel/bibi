@@ -5,17 +5,16 @@ import { provisionOrganization } from "../../organization/provision";
 import { grantAll } from "../../permissions/permission-set";
 import { lindholmen } from "./data/lindholmen/lindholmen";
 import { vingaleden } from "./data/vingaleden/vingaleden";
-import type { DemoRefs } from "./demo-refs";
 import { refuseProduction } from "./guard";
 import { postSeedLogging } from "./post-seed";
 import { resetDemoOrg } from "./reset";
 import { runPlatformSeed } from "./run-platform-seed";
 import { seedDemoConfig } from "./seed-config";
-import { type DemoCatalog, seedDemoItems } from "./seed-items";
-import { seedDemoPipeline } from "./seed-pipeline";
+import { seedDemoItems } from "./seed-items";
+import { seedPipelineAndSales } from "./seed-pipeline-and-sales";
+import { seedDemoProfiles } from "./seed-profiles";
 import { seedDemoResponsibilities } from "./seed-responsibilities";
 import { seedDemoRoles } from "./seed-roles";
-import { seedDemoSales } from "./seed-sales";
 import type { DemoOrg } from "./types";
 import { bootstrapDemoOrg } from "./users";
 
@@ -42,23 +41,6 @@ type SeedSlicesInput = {
   userIds: Awaited<ReturnType<typeof bootstrapDemoOrg>>["userIds"];
   skipPipeline: boolean;
 };
-
-type PipelineAndSalesInput = Omit<SeedSlicesInput, "members"> & {
-  refs: DemoRefs;
-  catalog: DemoCatalog;
-};
-
-/** The pipeline, then customers and tickets; without a pipeline (ADR 0044) only customers. */
-async function seedPipelineAndSales({ skipPipeline, ...input }: PipelineAndSalesInput) {
-  if (!skipPipeline) {
-    const pipeline = await seedDemoPipeline({
-      context: input.context,
-      pipeline: input.org.pipeline,
-    });
-    if (!pipeline.ok) return pipeline;
-  }
-  return seedDemoSales({ ...input, skipPipeline });
-}
 
 /** Runs the slices in order. Each reports its part number once it has run. */
 async function seedSlices({
@@ -100,7 +82,14 @@ async function seedOne({ db, org, skipPipeline }: SeedOneInput): Promise<Result<
   await resetDemoOrg({ db, org });
   const { organizationId, members, userIds } = await bootstrapDemoOrg({ db, org });
   // What Better Auth's afterCreateOrganization hook does for a real signup.
-  const provisioned = await provisionOrganization({ organizationId, db, pipeline: "none" });
+  // `--skip-pipeline` leaves the welcome setup to do (ADR 0061).
+  const setupStatus = skipPipeline ? "PENDING" : "COMPLETED";
+  const provisioned = await provisionOrganization({
+    organizationId,
+    db,
+    pipeline: "none",
+    setupStatus,
+  });
   if (!provisioned.ok) return provisioned;
   const context = createExecuteContext({
     organizationId,
@@ -109,6 +98,8 @@ async function seedOne({ db, org, skipPipeline }: SeedOneInput): Promise<Result<
     actor: { type: "system", userId: null },
     db,
   });
+  const profiles = await seedDemoProfiles({ db, context, org, userIds });
+  if (!profiles.ok) return profiles;
   const slices = await seedSlices({ context, org, members, userIds, skipPipeline });
   if (!slices.ok) return slices;
   const ranParts = slices.value;

@@ -38,3 +38,15 @@ describe("parseEnv", () => {
     ).toThrow();
   });
 });
+
+describe("parseEnv storage", () => {
+  it("defaults to the disk driver", () => {
+    const env = parseEnv({ source: base });
+    expect(env.STORAGE_DRIVER).toBe("disk");
+    expect(env.STORAGE_DISK_DIR).toBe("./.storage");
+  });
+
+  it("requires the S3 settings when STORAGE_DRIVER=s3", () => {
+    expect(() => parseEnv({ source: { ...base, STORAGE_DRIVER: "s3" } })).toThrow(/S3_BUCKET/);
+  });
+});

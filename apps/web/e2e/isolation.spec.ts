@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { gotoApp } from "./goto-app";
 import { createOrganization, createVenue, signUp, uniqueCredentials } from "./steps";
 
 const VENUE_A = "Venue in Org A";
@@ -26,7 +27,7 @@ test("cross-organization isolation: cannot access another org's venue from URL",
   await createOrganization({ page, name: "Organization B" });
 
   // Try to access the venue from org A - should be not found
-  await page.goto(`/sv/venues/${venueId}`);
+  await gotoApp({ page, path: `/venues/${venueId}` });
   // Should show the 404 not found page
   await expect(page.getByText("Vi hittade inte det du letade efter.")).toBeVisible();
 });

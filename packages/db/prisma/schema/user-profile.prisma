@@ -1,0 +1,33 @@
+/// The person behind a user (ADR 0061): name, phone and avatar, entered once in the welcome flow
+/// and shared across organizations. User-scoped like `UserSettings`: no `organizationId`, reached
+/// only through `scopedDb`, which pins every query to the acting user (`USER_SCOPED_MODELS`).
+/// Trigger: `sync_user_name.sql` projects `firstName lastName` into `user.name` on insert/update.
+model UserProfile {
+  id        String   @id @default(cuid(2))
+  userId    String   @unique
+  firstName String
+  lastName  String
+  phone     String
+  /// Key in `@bibi/storage` (ADR 0063); null shows initials.
+  avatarKey String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// One working day of a user (ADR 0061), at most one row per weekday. Times are minutes after
+/// midnight in the organization's time zone; a missing weekday is a day off. User-scoped like
+/// `UserProfile`. Replaced as a whole by `workingHours.set`.
+model UserWorkingHours {
+  id               String   @id @default(cuid(2))
+  userId           String
+  /// 0 = Monday … 6 = Sunday (`weekdayOf` in core `recurrence`).
+  weekday          Int
+  startMinute      Int
+  endMinute        Int
+  breakStartMinute Int?
+  breakEndMinute   Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([userId, weekday])
+}

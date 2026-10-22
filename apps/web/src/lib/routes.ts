@@ -5,7 +5,6 @@ export const ROUTES = {
   dashboard: "/dashboard",
   login: "/login",
   signUp: "/sign-up",
-  selectOrganization: "/select-organization",
   venues: "/venues",
   profile: "/profile",
   skills: "/skills",
@@ -36,7 +35,8 @@ export const ROUTES = {
   settingsSheets: "/settings/sheets",
   settingsPriceLists: "/settings/price-lists",
   settingsPipeline: "/settings/pipeline",
-  onboarding: "/onboarding",
+  /** The welcome flow (ADR 0061); under an organization it is `/:org/welcome`. */
+  welcome: "/welcome",
   settingsItemStates: "/settings/item-states",
   settingsTicketTemplates: "/settings/ticket-templates",
   settingsMembers: "/admin/members",

@@ -1,7 +1,7 @@
-import { Link } from "@bibi/i18n/navigation";
 import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import type { TicketTemplateTableViewProps } from "./ticket-template-table-view";
 

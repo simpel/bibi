@@ -20,6 +20,7 @@ import { QUOTE_UI_ENTRIES } from "./quote-entries";
 import { RECEIVABLE_UI_ENTRIES } from "./receivable-entries";
 import { REQUIREMENT_UI_ENTRIES } from "./requirement-entries";
 import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
+import { SELF_GENERIC_UI_TOOLS } from "./self-generic-tools";
 import { SHEET_DEFINITION_UI_ENTRIES } from "./sheet-definition-entries";
 import { SHEET_UI_ENTRIES } from "./sheet-entries";
 import { TICKET_UI_ENTRIES } from "./ticket-entries";
@@ -138,10 +139,5 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   apiKey_revoke: "credentials are managed on /settings/integrations, not in chat",
   apiKey_get: "credentials are managed on /settings/integrations, not in chat",
   apiKey_update: "credentials are managed on /settings/integrations, not in chat",
-  oauthGrant_list: "connected apps are managed on /profile, not in chat",
-  oauthGrant_revoke: "connected apps are managed on /profile, not in chat",
-  userPreference_list: "UI preference bookkeeping (e.g. table column order), not a tool card",
-  userPreference_set: "UI preference bookkeeping (e.g. table column order), not a tool card",
-  userSettings_get: "User settings bookkeeping (first setup state), not a tool card",
-  userSettings_update: "User settings bookkeeping (first setup state), not a tool card",
+  ...SELF_GENERIC_UI_TOOLS,
 };

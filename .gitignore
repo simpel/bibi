@@ -12,3 +12,4 @@ playwright-report
 test-results
 packages/db/src/generated
 .DS_Store
+.storage

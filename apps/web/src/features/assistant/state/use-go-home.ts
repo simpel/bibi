@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import { useCallback } from "react";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
 /** Navigates to the start page, where the assistant lives (ADR 0035). */

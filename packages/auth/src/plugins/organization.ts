@@ -1,6 +1,8 @@
 import { ADMIN_ROLE } from "@bibi/core";
+import type { Db } from "@bibi/db";
 import { APIError } from "better-auth/api";
 import { organization } from "better-auth/plugins";
+import { enforceSlugHook } from "../organization/enforce-slug-hook";
 import { accessControl, orgRoles } from "../permissions";
 import { assertFixedRole } from "./check-member-roles";
 import { provisionOrganizationHook } from "./provision-organization-hook";
@@ -13,13 +15,14 @@ const closed = ({ operation }: { operation: string }): never => {
  * Organization = venue customer (ADR 0004). `Organization.id` is the `organizationId`
  * stored on every business row (Venue, Item, ...) and pinned by `scopedDb`.
  */
-export function organizationPlugin() {
+export function organizationPlugin({ db }: { db: Db }) {
   return organization({
     ac: accessControl,
     roles: orgRoles,
     creatorRole: ADMIN_ROLE,
     // Fixed roles only (ADR 0034): no `organizationRole` table, no dynamic access control.
     organizationHooks: {
+      beforeCreateOrganization: enforceSlugHook({ db }),
       // Default ticket phases etc. are created by core as SYSTEM (ADR 0043).
       afterCreateOrganization: provisionOrganizationHook,
       beforeAddMember: async ({ member }) => {

@@ -1,8 +1,8 @@
-import { Link } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { PlusIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { RowAccess } from "@/lib/can";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import type { TypeStates } from "../load-item-state-data";
 import { ItemStateTable } from "./item-state-table";

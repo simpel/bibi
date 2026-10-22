@@ -1,7 +1,7 @@
 "use client";
 
 import type { VenueDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
+import { useRouter } from "@/lib/navigation";
 import { venueRoute } from "@/lib/routes";
 import { VenueForm } from "./venue-form";
 

@@ -1,12 +1,12 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import { Card, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { PriceListPricing, PriceListValidity } from "@/features/price-list/ui/price-list-terms";
 import { priceListsRoute } from "@/lib/configuration-routes";
+import { Link } from "@/lib/navigation";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 

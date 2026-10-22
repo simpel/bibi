@@ -3,13 +3,13 @@
 Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `@bibi/ui`. The surface for venue staff. See ADR 0003, 0005, 0007, 0009 and 0010.
 
 ## Structure
-- `src/app/[locale]/`: `(auth)` = sign-in flows, `(app)` = protected shell. `/` is the assistant (ADR 0035), `/settings` the settings hub. `page.tsx`/`layout.tsx`/`route.ts` are thin: they read params and render a feature.
-- Page width (ADR 0038): `(app)/(contained)/` pages sit in `PageContainer` (`@bibi/ui`); `(app)/(canvas)/` pages (`/`, `/calendar`) are full width and own their gutter and scrolling. A new page goes into one of the two groups; `AppShell` adds no container.
+- `src/app/[locale]/`: `(auth)` = sign-in flows, `[org]/(app)` = protected shell under the organization slug (ADR 0062). `/` is the assistant (ADR 0035), `/settings` the settings hub. `page.tsx`/`layout.tsx`/`route.ts` are thin: they read params and render a feature.
+- Page width (ADR 0038): `[org]/(app)/(contained)/` pages sit in `PageContainer` (`@bibi/ui`); `(app)/(canvas)/` pages (`/`, `/calendar`) are full width and own their gutter and scrolling. A new page goes into one of the two groups; `AppShell` adds no container.
 - `settings/*` is for admins only (ADR 0034): `settings/layout.tsx` shows a forbidden state and the sidebar hides the entry. Pages, navigation, the settings hub and the assistant follow the caller's effective permissions: a feature whose `view` is denied is hidden, not just disabled (`server/caller-abilities.ts`). Detail pages name their breadcrumb crumb with `CrumbName`.
 - API routes: `api/auth/[...all]` (Better Auth), `api/graphql`, `api/v1/[...path]` (REST), `api/chat`, `api/assistant/approval`, `api/webhooks/resend` and `api/webhooks/stripe`, plus the `.well-known/oauth-*` discovery routes forwarded to Better Auth. Chat and approval routes set `runtime = "nodejs"`, `dynamic = "force-dynamic"` and `maxDuration`. New HTTP entry points are wrapped in `withRequestLogging`.
 - `src/features/<entity>/ui/` = components per entity; `actions.ts` next to `ui/` = server actions. `features/web-surfaces.ts` lists which operations have UI (`UI_EXEMPT` in `ui-exempt.ts` lists operations deliberately without UI, with a reason).
 - `src/components/` = app-level (`shell/`, `form/`, `data-table/`, `states/`, `confirm-dialog`). `src/server/` = server code only. `src/lib/` = pure helpers, tested with Vitest.
-- `src/proxy.ts` is next-intl routing (Next 16's name for middleware). `src/i18n/request.config.ts` is `*.config.ts` to allow a default export.
+- `src/proxy.ts` is next-intl routing (Next 16's name for middleware, Node runtime), then it makes the URL's organization active for members (`server/sync-active-organization.ts`). `src/i18n/request.config.ts` is `*.config.ts` to allow a default export.
 
 ## Data access (a single path)
 - Reads in server components: `runOperation({ operation, input })`. Commands: server action → `runOperation` → `toActionResult`. The caller comes from `resolveExecuteContext({ headers: await headers() })`, the same as GraphQL, REST and MCP.
@@ -26,7 +26,8 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 5. Text in `packages/i18n/messages/sv.json` and `en.json` (key parity is tested).
 
 ## i18n
-- All text via `useTranslations` / `getTranslations`; no hardcoded strings or colors. Links and router from `@bibi/i18n/navigation`, not `next/link`.
+- All text via `useTranslations` / `getTranslations`; no hardcoded strings or colors. Links, router, `usePathname` and `redirect` from `@/lib/navigation`, never `next/link`, `next/navigation`'s router or `@bibi/i18n/navigation` directly. Why: ADR 0062.
+- App routes live under `app/[locale]/[org]/` (the organization slug). The wrapper prefixes scoped paths with the current slug and `usePathname` returns the path without it; server `redirect` needs `org` passed. A new top-level route outside `[org]` goes into `RESERVED_SLUGS` (`@bibi/auth`), or `lib/reserved-slugs.test.ts` fails.
 - Server components and layouts call `setRequestLocale(locale)`; convert `locale` with `resolveLocale`.
 - `sv.json` is the source of truth for typed keys. Dynamic keys must be unions (see `ErrorKey`).
 

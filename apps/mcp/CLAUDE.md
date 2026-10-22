@@ -23,24 +23,24 @@ The MCP server (ADR 0003, 0007). Thin adapter: all logic and permissions live in
 - Errors on confirmation: `FORBIDDEN` (invalid/expired/wrong user/AI caller), `CONFLICT` (already used), `NOT_FOUND` (unknown operation) and the operation's own errors.
 
 ## HTTP
-- `src/http.ts`: `node:http` server (`PORT`, default 3331) that translates to Web Request/Response (`src/http/`). Stateless Streamable HTTP, one server + transport per call.
+- `src/http.ts`: `node:http` server (`PORT`, default 3001) that translates to Web Request/Response (`src/http/`). Stateless Streamable HTTP, one server + transport per call.
 - `POST /mcp` – authenticates with `@bibi/auth` `resolveExecuteContext({ headers })` (session, API key `bib_…`, OAuth bearer). Missing/invalid login → 401 with `WWW-Authenticate: Bearer resource_metadata="<MCP_URL>/.well-known/oauth-protected-resource"`; FORBIDDEN → 403.
 - `GET /.well-known/oauth-protected-resource` (RFC 9728): `resource` = `<MCP_URL>/mcp`, `authorization_servers` = Better Auth base (`BETTER_AUTH_URL` + `/api/auth`).
 - `GET /health`. Other methods on `/mcp` → 405. Browser calls (header `Origin`) are allowed only from `WEB_URL`; CORS preflight is supported.
 
 ## Connecting a client
-- HTTP (Inspector): `npx @modelcontextprotocol/inspector`, choose Streamable HTTP, URL `http://localhost:3331/mcp`, header `Authorization: Bearer bib_<api-key>` (or OAuth).
+- HTTP (Inspector): `npx @modelcontextprotocol/inspector`, choose Streamable HTTP, URL `http://localhost:3001/mcp`, header `Authorization: Bearer bib_<api-key>` (or OAuth).
 - stdio (Claude Desktop `claude_desktop_config.json`):
   ```json
   { "mcpServers": { "bibi": {
     "command": "pnpm", "args": ["--filter", "@bibi/mcp", "dev:stdio"],
     "cwd": "/path/to/bibi",
-    "env": { "BIBI_API_KEY": "bib_…", "DATABASE_URL": "…", "BETTER_AUTH_SECRET": "…", "BETTER_AUTH_URL": "http://localhost:3330" } } } }
+    "env": { "BIBI_API_KEY": "bib_…", "DATABASE_URL": "…", "BETTER_AUTH_SECRET": "…", "BETTER_AUTH_URL": "http://localhost:3000" } } } }
   ```
   `src/stdio.ts` resolves the key once at startup (stdout is the protocol, logging goes to stderr).
 
 ## Environment variables (all via `@bibi/config`)
-`DATABASE_URL`, `BETTER_AUTH_SECRET` (signs approval tokens), `BETTER_AUTH_URL`, `MCP_URL`, `WEB_URL`, `PORT` (3331), `BIBI_API_KEY` (stdio only), `WEB_OAUTH_CLIENT_ID` (AI actor).
+`DATABASE_URL`, `BETTER_AUTH_SECRET` (signs approval tokens), `BETTER_AUTH_URL`, `MCP_URL`, `WEB_URL`, `PORT` (3001), `BIBI_API_KEY` (stdio only), `WEB_OAUTH_CLIENT_ID` (AI actor).
 
 ## Scripts
 `dev` (tsx watch), `dev:stdio`, `build` (tsup → `dist/`, workspace packages are bundled, npm packages are external and listed in package.json), `start` (`node dist/http.js`), `start:stdio`, `typecheck`, `test`.

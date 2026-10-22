@@ -1,7 +1,7 @@
 import type { VocabularyValueDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { archiveValueAction } from "../actions";
 

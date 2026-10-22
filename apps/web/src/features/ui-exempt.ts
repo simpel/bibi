@@ -80,14 +80,4 @@ export const UI_EXEMPT: readonly UiExempt[] = [
     reason:
       "No page of its own: UI that remembers a choice (e.g. table column order) saves it with saveUserPreference",
   },
-  {
-    operation: "userSettings.get",
-    reason:
-      "No page of its own: the app layout reads the first setup state with loadUserSettings to decide where the user lands",
-  },
-  {
-    operation: "userSettings.update",
-    reason:
-      "No page of its own: the first setup (start, skip, finish) saves its state with setOnboardingStatus",
-  },
 ];

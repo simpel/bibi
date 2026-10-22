@@ -1,21 +1,21 @@
 import "server-only";
-import { getUserSettings, type OnboardingStatus } from "@bibi/core";
+import { getOrganizationProfile, type SetupStatus } from "@bibi/core";
 import { getLogger } from "@bibi/logger";
 import { unstable_rethrow } from "next/navigation";
 import { runOperation } from "@/server/run-operation";
 
 /**
- * Where the signed-in user is in the first setup (ADR 0046), or `null` when it never applied.
- * Like preferences this is a convenience: on any error the app renders as if nothing is pending,
- * so it never throws (Next's own control-flow errors are rethrown).
+ * Where the active organization is in its first setup (ADR 0061), or `null` when it cannot be
+ * read. A convenience for routing: on any error the app renders as if nothing is pending, so it
+ * never throws (Next's own control-flow errors are rethrown).
  */
-export async function loadOnboardingStatus(): Promise<OnboardingStatus | null> {
+export async function loadSetupStatus(): Promise<SetupStatus | null> {
   try {
-    const result = await runOperation({ operation: getUserSettings, input: {} });
-    return result.ok ? result.value.onboardingStatus : null;
+    const result = await runOperation({ operation: getOrganizationProfile, input: {} });
+    return result.ok ? result.value.setupStatus : null;
   } catch (error) {
     unstable_rethrow(error);
-    getLogger().warn({ event: "userSettings.loadFailed", err: error });
+    getLogger().warn({ event: "organizationProfile.loadFailed", err: error });
     return null;
   }
 }

@@ -1,17 +1,18 @@
 import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
+import { gotoApp } from "./goto-app";
 import { signUpWithOrganization } from "./steps";
 
 test("create a personal skill, export it and import it back", async ({ page }) => {
   await signUpWithOrganization({ page, name: "Skills AB" });
   await page.getByRole("button", { name: "Användarmeny" }).click();
   await page.getByRole("menuitem", { name: "Mina färdigheter" }).click();
-  await expect(page).toHaveURL(/\/sv\/skills$/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/skills$/);
   await expect(page.getByRole("heading", { name: "Färdigheter", level: 1 })).toBeVisible();
 
   await page.getByRole("link", { name: "Skapa färdighet" }).click();
   // Until the page has changed, /^Namn/ also matches the list's "Namn" sort button.
-  await expect(page).toHaveURL(/\/sv\/new\/skill$/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/new\/skill$/);
   await page.getByRole("textbox", { name: /^Namn/ }).fill("Round trip");
   await page
     .getByLabel(/^När ska den användas\?/)
@@ -25,7 +26,7 @@ test("create a personal skill, export it and import it back", async ({ page }) =
   await page.getByLabel("Innehåll").fill("- keys");
   await page.getByRole("button", { name: "Spara" }).click();
 
-  await expect(page).toHaveURL(/\/sv\/skills\/[^/]+$/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/skills\/[^/]+$/);
   await expect(page.getByRole("heading", { name: "Round trip", level: 1 })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Steps" })).toBeVisible();
   await expect(page.getByText("venues", { exact: true })).toBeVisible();
@@ -62,7 +63,7 @@ test("create a personal skill, export it and import it back", async ({ page }) =
 
 test("edit, publish, filter and archive a skill; English strings", async ({ page }) => {
   await signUpWithOrganization({ page, name: "Skills Two AB" });
-  await page.goto("/en/new/skill");
+  await gotoApp({ page, path: "/new/skill", locale: "en" });
   await page.getByLabel(/^Name/).fill("Greeting");
   await page.getByLabel(/^When should it be used\?/).fill("When a guest arrives");
   await page.getByLabel(/^Instructions \(markdown\)/).fill("Say hello.");
@@ -92,6 +93,6 @@ test("edit, publish, filter and archive a skill; English strings", async ({ page
   await page.getByRole("link", { name: "Greeting" }).click();
   await page.getByRole("button", { name: "Archive skill" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Archive skill" }).click();
-  await expect(page).toHaveURL(/\/en\/skills$/);
+  await expect(page).toHaveURL(/\/en\/[^/]+\/skills$/);
   await expect(page.getByRole("link", { name: "Greeting" })).toHaveCount(0);
 });

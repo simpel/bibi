@@ -1,8 +1,8 @@
 import type { Locale } from "@bibi/i18n";
-import { Link } from "@bibi/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { FormPageShell } from "@/components/wizard/form-page-shell";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { handleLoadError } from "@/server/load-error";
 import { loadTemplateTicketData } from "../load-template-ticket-data";

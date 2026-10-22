@@ -1,11 +1,11 @@
 "use client";
 
 import type { PermissionSet } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { CommandGroup, CommandItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { VenueShortcut } from "@/features/venue/actions";
 import { canPermission } from "@/lib/can";
+import { useRouter } from "@/lib/navigation";
 import { ACTION_ENTRIES, type CommandEntry, NAVIGATE_ENTRIES } from "./command-entries";
 import { VenueCommandGroup } from "./venue-command-group";
 

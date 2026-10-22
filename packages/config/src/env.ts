@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+const S3_REQUIRED = ["S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"] as const;
+
 const envSchema = z
   .object({
     DATABASE_URL: z.string().url(),
@@ -9,6 +11,16 @@ const envSchema = z
     MAIL_FROM: z.string().default("Bibi <no-reply@bibi.local>"),
     /** Mail adapter (ADR 0012): `smtp` (Mailpit in dev, uses SMTP_URL) or `resend` (production). */
     MAIL_PROVIDER: z.enum(["smtp", "resend"]).default("smtp"),
+    /** File storage adapter (ADR 0063): `disk` (dev and tests) or `s3` (any S3-compatible service). */
+    STORAGE_DRIVER: z.enum(["disk", "s3"]).default("disk"),
+    /** Root directory of the `disk` adapter; relative paths resolve from the repo root. */
+    STORAGE_DISK_DIR: z.string().default("./.storage"),
+    /** S3 settings; all but the endpoint are required when STORAGE_DRIVER=s3. */
+    S3_ENDPOINT: z.string().url().optional(),
+    S3_REGION: z.string().optional(),
+    S3_BUCKET: z.string().optional(),
+    S3_ACCESS_KEY_ID: z.string().optional(),
+    S3_SECRET_ACCESS_KEY: z.string().optional(),
     /** Resend API key; required when MAIL_PROVIDER=resend. Empty counts as unset. */
     RESEND_API_KEY: z.string().optional(),
     /** Signing secret (`whsec_...`) of the Resend inbound webhook; inbound mail is refused without it. */
@@ -75,6 +87,17 @@ const envSchema = z
   .refine((env) => env.MAIL_PROVIDER !== "resend" || env.RESEND_API_KEY, {
     message: "RESEND_API_KEY is required when MAIL_PROVIDER=resend",
     path: ["RESEND_API_KEY"],
+  })
+  .superRefine((env, ctx) => {
+    if (env.STORAGE_DRIVER !== "s3") return;
+    for (const key of S3_REQUIRED) {
+      if (env[key]) continue;
+      ctx.addIssue({
+        code: "custom",
+        message: `${key} is required when STORAGE_DRIVER=s3`,
+        path: [key],
+      });
+    }
   });
 
 export type Env = z.infer<typeof envSchema>;

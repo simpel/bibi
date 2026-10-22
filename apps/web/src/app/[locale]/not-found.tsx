@@ -1,6 +1,6 @@
-import { Link } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
 // biome-ignore lint/style/noDefaultExport: Next.js requires a default export for not-found.

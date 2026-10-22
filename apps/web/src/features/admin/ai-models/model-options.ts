@@ -3,7 +3,6 @@ import type { AiFeatureId, AiFeatureSetting, AiModel } from "@bibi/core/schemas"
 /** i18n key under `admin.aiModels.features` (next-intl keys cannot contain dots). */
 export const FEATURE_KEY = {
   "assistant.chat": "assistantChat",
-  onboarding: "onboarding",
   "search.embedding": "searchEmbedding",
 } as const satisfies Record<AiFeatureId, string>;
 

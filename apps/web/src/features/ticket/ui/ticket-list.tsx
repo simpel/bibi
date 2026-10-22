@@ -1,6 +1,5 @@
 import { listTickets, type TicketDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { Link } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
@@ -13,6 +12,7 @@ import {
   MineFilterLinks,
   minePageInput,
 } from "@/features/assignment/ui/mine-filter";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";

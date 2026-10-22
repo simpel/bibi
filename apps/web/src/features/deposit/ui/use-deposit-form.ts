@@ -1,11 +1,11 @@
 import { DepositCreateInputSchema } from "@bibi/core/schemas";
-import { useRouter } from "@bibi/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 import { blankToNull, minorOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
+import { useRouter } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";

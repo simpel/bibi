@@ -1,10 +1,10 @@
 "use client";
 
-import { usePathname, useRouter } from "@bibi/i18n/navigation";
 import { cn } from "@bibi/ui";
 import { SquarePenIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useAssistant } from "@/features/assistant/state/assistant-context";
+import { usePathname, useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { RecentConversations } from "./recent-conversations";
 import { isActive } from "./sidebar-link";

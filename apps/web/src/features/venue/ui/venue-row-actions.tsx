@@ -1,11 +1,11 @@
 "use client";
 
 import type { VenueDto } from "@bibi/core";
-import { Link } from "@bibi/i18n/navigation";
 import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
+import { Link } from "@/lib/navigation";
 import { updateRoute, venueRoute } from "@/lib/routes";
 import { ArchiveVenueDialog } from "./archive-venue-dialog";
 

@@ -1,5 +1,5 @@
-import { Link } from "@bibi/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/lib/navigation";
 import type { ListDay, ListEntry } from "../calendar-list-model";
 
 const markerStyle = ({ entry }: { entry: ListEntry }) =>

@@ -1,4 +1,4 @@
-import { getAuth, isDevEnvironment, listDevPlatformAdmins, listDevUsers } from "@bibi/auth";
+import { getAuth, listDevPlatformAdmins, listDevUsers } from "@bibi/auth";
 import { getEnv } from "@bibi/config";
 import { headers } from "next/headers";
 import { devServices } from "@/lib/dev-services";

@@ -1,7 +1,7 @@
 "use client";
 
 import type { ResponsibilityDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { ResponsibilityForm } from "./responsibility-form";
 import type { ResponsibilityOptions } from "./responsibility-options";
