@@ -5,10 +5,12 @@
  * - "1 500 SEK / day" -> { amount: "1 500 SEK", unit: "/ day" }
  * - "500 kr" -> { amount: "500 kr" }
  */
-export function parsePrice(
-  raw: string,
-  explicitUnit?: string | null,
-): { amount: string; unit?: string } {
+export type ParsePriceInput = { raw: string; explicitUnit?: string | null };
+
+export function parsePrice({ raw, explicitUnit }: ParsePriceInput): {
+  amount: string;
+  unit?: string;
+} {
   if (explicitUnit) {
     return { amount: raw.trim(), unit: explicitUnit.trim() };
   }

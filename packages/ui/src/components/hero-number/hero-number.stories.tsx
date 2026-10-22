@@ -16,6 +16,39 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+type FinancialAdjustmentsProps = { setAmount: (update: (value: number) => number) => void };
+
+const ADJUSTMENT_CLASS =
+  "rounded-md border bg-muted/40 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted";
+
+function FinancialAdjustments({ setAmount }: FinancialAdjustmentsProps) {
+  const actions: ReadonlyArray<{ label: string; apply: (value: number) => number }> = [
+    { label: "+12 500 SEK (Tillägg F&B)", apply: (v) => v + 12500 },
+    { label: "-15 000 SEK (Rabatt)", apply: (v) => Math.max(0, v - 15000) },
+    { label: "Sätt till 248 000 SEK", apply: () => 248000 },
+    { label: "Återställ", apply: () => 184500 },
+  ];
+  return (
+    <div className="flex flex-col gap-2 border-t pt-4">
+      <span className="text-xs text-muted-foreground">
+        Justera belopp (Number Flow transition):
+      </span>
+      <div className="flex flex-wrap items-center gap-2">
+        {actions.map(({ label, apply }) => (
+          <button
+            key={label}
+            type="button"
+            onClick={() => setAmount(apply)}
+            className={ADJUSTMENT_CLASS}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function InteractiveFinancialDemo() {
   const [amount, setAmount] = useState(184500);
 
@@ -29,41 +62,7 @@ function InteractiveFinancialDemo() {
         size="xl"
       />
 
-      <div className="flex flex-col gap-2 border-t pt-4">
-        <span className="text-xs text-muted-foreground">
-          Justera belopp (Number Flow transition):
-        </span>
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setAmount((v) => v + 12500)}
-            className="rounded-md border bg-muted/40 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-          >
-            +12 500 SEK (Tillägg F&B)
-          </button>
-          <button
-            type="button"
-            onClick={() => setAmount((v) => Math.max(0, v - 15000))}
-            className="rounded-md border bg-muted/40 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-          >
-            -15 000 SEK (Rabatt)
-          </button>
-          <button
-            type="button"
-            onClick={() => setAmount(248000)}
-            className="rounded-md border bg-muted/40 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-          >
-            Sätt till 248 000 SEK
-          </button>
-          <button
-            type="button"
-            onClick={() => setAmount(184500)}
-            className="rounded-md border bg-muted/40 px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-muted"
-          >
-            Återställ
-          </button>
-        </div>
-      </div>
+      <FinancialAdjustments setAmount={setAmount} />
     </div>
   );
 }

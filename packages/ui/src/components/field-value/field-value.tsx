@@ -36,10 +36,7 @@ export function FieldValue({ kind, value, empty = "–" }: FieldValueProps) {
   }
   const isTabular = kind === "NUMBER" || kind === "DATE";
   return (
-    <span
-      data-slot="field-value"
-      className={isTabular ? "font-sans tabular-nums" : undefined}
-    >
+    <span data-slot="field-value" className={isTabular ? "font-sans tabular-nums" : undefined}>
       {list.join(", ")}
     </span>
   );

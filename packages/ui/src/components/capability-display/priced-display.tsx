@@ -11,6 +11,45 @@ export type PricedDisplayProps = Omit<CapabilityDisplayProps, "capability" | "ro
   vatLabel?: string;
 };
 
+type PriceBodyProps = {
+  amount: string;
+  unit?: string;
+  vat?: string | null;
+  vatLabel?: string;
+  isPlain: boolean;
+};
+
+function PriceBody({ amount, unit, vat, vatLabel, isPlain }: PriceBodyProps) {
+  return (
+    <div className={isPlain ? "flex flex-col gap-0.5" : "flex flex-col gap-1.5"}>
+      <div className="flex flex-wrap items-baseline gap-1.5">
+        <span
+          className={
+            isPlain
+              ? "font-sans text-base font-semibold tracking-tight text-foreground tabular-nums"
+              : "font-sans text-2xl font-semibold tracking-tight text-foreground tabular-nums sm:text-3xl"
+          }
+        >
+          {amount}
+        </span>
+        {unit ? (
+          <span className="font-sans text-xs font-normal text-muted-foreground sm:text-sm">
+            {unit}
+          </span>
+        ) : null}
+      </div>
+
+      {vat ? (
+        <div className="flex items-center gap-1.5 pt-0.5">
+          <span className="inline-flex items-center rounded-sm border border-border/50 bg-muted/40 px-1.5 py-0.5 font-sans text-[11px] font-normal text-muted-foreground">
+            {vatLabel ? `${vatLabel}: ${vat}` : `VAT: ${vat}`}
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 /** PRICED capability: price and unit, plus VAT when set. */
 export function PricedDisplay({
   price,
@@ -24,7 +63,7 @@ export function PricedDisplay({
 }: PricedDisplayProps) {
   if (!price) return null;
 
-  const { amount, unit } = parsePrice(price, explicitUnit);
+  const { amount, unit } = parsePrice({ raw: price, explicitUnit });
   const isPlain = variant === "plain";
 
   return (
@@ -35,32 +74,7 @@ export function PricedDisplay({
       className={className}
       {...rest}
     >
-      <div className={isPlain ? "flex flex-col gap-0.5" : "flex flex-col gap-1.5"}>
-        <div className="flex flex-wrap items-baseline gap-1.5">
-          <span
-            className={
-              isPlain
-                ? "font-sans text-base font-semibold tracking-tight text-foreground tabular-nums"
-                : "font-sans text-2xl font-semibold tracking-tight text-foreground tabular-nums sm:text-3xl"
-            }
-          >
-            {amount}
-          </span>
-          {unit ? (
-            <span className="font-sans text-xs font-normal text-muted-foreground sm:text-sm">
-              {unit}
-            </span>
-          ) : null}
-        </div>
-
-        {vat ? (
-          <div className="flex items-center gap-1.5 pt-0.5">
-            <span className="inline-flex items-center rounded-sm border border-border/50 bg-muted/40 px-1.5 py-0.5 font-sans text-[11px] font-normal text-muted-foreground">
-              {vatLabel ? `${vatLabel}: ${vat}` : `VAT: ${vat}`}
-            </span>
-          </div>
-        ) : null}
-      </div>
+      <PriceBody amount={amount} unit={unit} vat={vat} vatLabel={vatLabel} isPlain={isPlain} />
     </CapabilityDisplay>
   );
 }

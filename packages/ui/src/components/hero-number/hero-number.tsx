@@ -28,6 +28,22 @@ const SIZE_CLASSES: Record<HeroNumberSize, string> = {
   xl: "text-5xl",
 };
 
+type HeroNumberHeaderProps = Pick<HeroNumberProps, "label" | "statusBadge">;
+
+function HeroNumberHeader({ label, statusBadge }: HeroNumberHeaderProps) {
+  if (!label && !statusBadge) return null;
+  return (
+    <div className="flex items-center justify-between gap-3">
+      {label ? <span className="text-xs text-muted-foreground">{label}</span> : <span />}
+      {statusBadge ? (
+        <span className="rounded-sm bg-success/15 px-2 py-0.5 text-xs font-medium text-success">
+          {statusBadge}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
 export function HeroNumber({
   value,
   label,
@@ -48,16 +64,7 @@ export function HeroNumber({
       className={cn("flex flex-col gap-1.5 font-sans", className)}
       {...props}
     >
-      {label || statusBadge ? (
-        <div className="flex items-center justify-between gap-3">
-          {label ? <span className="text-xs text-muted-foreground">{label}</span> : <span />}
-          {statusBadge ? (
-            <span className="rounded-sm bg-success/15 px-2 py-0.5 text-xs font-medium text-success">
-              {statusBadge}
-            </span>
-          ) : null}
-        </div>
-      ) : null}
+      <HeroNumberHeader label={label} statusBadge={statusBadge} />
       <div className="flex items-baseline gap-2">
         <NumberFlow
           value={value}
