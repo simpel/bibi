@@ -3,25 +3,18 @@
 import { Button, cn } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { SlugCheckState } from "./use-slug-check";
+import { useSlugMessage } from "./use-slug-message";
 
-export type SlugStatusProps = { check: SlugCheckState; onUse: (slug: string) => void };
+export type SlugStatusProps = {
+  check: SlugCheckState;
+  onUse: ({ value }: { value: string }) => void;
+};
 
 /** The live message under the address field, with a button that takes the suggestion. */
 export function SlugStatus({ check, onUse }: SlugStatusProps) {
   const t = useTranslations("welcome.new");
-  const slug = check.slug;
   const suggestion = check.status === "checking" ? null : check.suggestion;
-  const message =
-    check.status === "checking"
-      ? t("slugChecking", { slug })
-      : check.status === "free"
-        ? t("slugFree", { slug })
-        : check.status === "invalid"
-          ? t("slugInvalid")
-          : t(check.status === "taken" ? "slugTaken" : "slugReserved", {
-              slug,
-              suggestion: suggestion ?? "",
-            });
+  const message = useSlugMessage({ check });
   return (
     <div className="flex flex-wrap items-center gap-2" aria-live="polite">
       <p
@@ -36,7 +29,12 @@ export function SlugStatus({ check, onUse }: SlugStatusProps) {
         {message}
       </p>
       {suggestion ? (
-        <Button type="button" size="sm" variant="outline" onClick={() => onUse(suggestion)}>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={() => onUse({ value: suggestion })}
+        >
           {t("useSuggestion", { suggestion })}
         </Button>
       ) : null}

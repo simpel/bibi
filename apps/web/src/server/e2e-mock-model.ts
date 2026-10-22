@@ -2,7 +2,6 @@
 // tested "with a mocked model"). It is imported dynamically from `assistant-handlers.ts` and only
 // when `E2E_MOCK_MODEL` is on outside production (`mock-model-policy.ts`). Never use it elsewhere.
 import { MockLanguageModelV4 } from "ai/test";
-import { firstSetupStep, isFirstSetup } from "./e2e-mock-first-setup";
 import {
   lastToolResult,
   lastUserText,
@@ -13,13 +12,11 @@ import {
 } from "./e2e-mock-steps";
 
 /**
- * Script: on `/onboarding` the first setup (`e2e-mock-first-setup.ts`); elsewhere "create venue
- * <name>", "set capacity <itemId> <setupId> <n>",
+ * Script: "create venue <name>", "set capacity <itemId> <setupId> <n>",
  * "rename responsibility <id> <name>", "list venues", "list skills"; anything else
  * gets a canned reply.
  */
 function respond({ prompt }: PromptInput): StreamResult {
-  if (isFirstSetup({ prompt })) return firstSetupStep({ prompt });
   if (lastToolResult({ prompt }) !== null) return textStep({ text: "Klart. Se resultatet ovan." });
   const text = lastUserText({ prompt }).trim();
   const create = /create venue (.+)/i.exec(text);

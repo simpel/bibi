@@ -200,7 +200,6 @@
     "integrations": "Integrations",
     "itemStates": "Item states",
     "ticketTemplates": "Predefined tickets",
-    "onboarding": "Guided setup",
     "apiKeys": "API keys",
     "permissions": "Permissions"
   },
@@ -2060,9 +2059,9 @@
     "allUsers": "All users ({count})",
     "currentUser": "Signed in",
     "switchTo": "Switch to {name}",
-    "resetOnboarding": "Reset onboarding",
-    "resettingOnboarding": "Resetting onboarding…",
-    "onboardingReset": "Onboarding reset for {name}. They see it on their next page.",
+    "resetOnboarding": "Reset welcome setup",
+    "resettingOnboarding": "Resetting welcome setup…",
+    "onboardingReset": "Welcome setup reset for {name}'s organization. They see it on their next page.",
     "platformAdmin": "Superadmin"
   },
   "shell": {
@@ -2209,10 +2208,6 @@
         "assistantChat": {
           "name": "Assistant",
           "description": "The language model answering in the chat and ⌘K."
-        },
-        "onboarding": {
-          "name": "First setup",
-          "description": "The language model that interviews a new organization on its first setup and drafts its first version."
         },
         "searchEmbedding": {
           "name": "Semantic search",
@@ -2864,45 +2859,14 @@
       "blocked": "Cannot move as the grid says"
     }
   },
-  "onboarding": {
-    "skip": "Skip for now",
-    "welcomeTitle": "Let's set up your first version",
-    "welcomeDescription": "Tell me a little about your place and I will sketch a starting point.",
-    "panelEmpty": "Your first version appears here as we talk",
-    "panelSell": "What you sell",
-    "panelPath": "How a request moves",
-    "panelNote": "A starting point. You can change anything later.",
-    "panelUnsaved": "Nothing is saved yet",
-    "starters": {
-      "start": "Let's get started",
-      "conference": "We run a conference venue",
-      "restaurant": "We run a restaurant with private rooms"
-    },
-    "followUps": {
-      "looksGood": "Looks good",
-      "changeSell": "I want to change what we sell",
-      "changeMoves": "I want to change how a request moves"
-    },
-    "skipped": "You can set things up later by asking the assistant, or in Settings.",
-    "panelHint": "Click a phase or something you sell to tell me what to change.",
-    "comment": {
-      "title": {
-        "phase": "Phase: {name}",
-        "itemType": "What you sell: {name}"
-      },
-      "placeholder": "What should change?",
-      "send": "Send",
-      "message": {
-        "phase": "About the phase “{name}”: {instruction}",
-        "itemType": "About “{name}” in what we sell: {instruction}"
-      }
-    }
-  },
   "welcome": {
     "stepOf": "Step {step} of {total}",
     "back": "Back",
     "continue": "Continue",
     "skipForNow": "Skip for now",
+    "saved": "Saved",
+    "skipped": "Setup skipped. You can finish it later in Settings.",
+    "activated": "{organization} is set up",
     "logoAlt": "Bibi",
     "start": {
       "title": "Welcome to Bibi",

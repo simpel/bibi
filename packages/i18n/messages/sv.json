@@ -200,7 +200,6 @@
     "integrations": "Integrationer",
     "itemStates": "Artikelstatusar",
     "ticketTemplates": "Fördefinierade ärenden",
-    "onboarding": "Guidad uppsättning",
     "apiKeys": "API-nycklar",
     "permissions": "Behörigheter"
   },
@@ -2060,9 +2059,9 @@
     "allUsers": "Alla användare ({count})",
     "currentUser": "Inloggad",
     "switchTo": "Byt till {name}",
-    "resetOnboarding": "Återställ introduktionen",
-    "resettingOnboarding": "Återställer introduktionen…",
-    "onboardingReset": "Introduktionen är återställd för {name}. Den visas vid nästa sidvisning.",
+    "resetOnboarding": "Återställ välkomstuppsättning",
+    "resettingOnboarding": "Återställer välkomstuppsättning…",
+    "onboardingReset": "Välkomstuppsättningen återställd för {name}s organisation. De ser den på nästa sida.",
     "platformAdmin": "Superadmin"
   },
   "shell": {
@@ -2209,10 +2208,6 @@
         "assistantChat": {
           "name": "Assistenten",
           "description": "Språkmodellen som svarar i chatten och ⌘K."
-        },
-        "onboarding": {
-          "name": "Första uppsättningen",
-          "description": "Språkmodellen som intervjuar en ny organisation vid första uppsättningen och tar fram dess första version."
         },
         "searchEmbedding": {
           "name": "Semantisk sökning",
@@ -2864,45 +2859,14 @@
       "blocked": "Kan inte flyttas som rutnätet anger"
     }
   },
-  "onboarding": {
-    "skip": "Hoppa över just nu",
-    "welcomeTitle": "Vi sätter upp din första version",
-    "welcomeDescription": "Berätta lite om er verksamhet så skissar jag ett första förslag.",
-    "panelEmpty": "Din första version dyker upp här medan vi pratar",
-    "panelSell": "Det ni säljer",
-    "panelPath": "Så går en förfrågan",
-    "panelNote": "En startpunkt. Du kan ändra allt senare.",
-    "panelUnsaved": "Inget är sparat än",
-    "starters": {
-      "start": "Nu sätter vi igång",
-      "conference": "Vi driver en konferensanläggning",
-      "restaurant": "Vi driver en restaurang med privata rum"
-    },
-    "followUps": {
-      "looksGood": "Ser bra ut",
-      "changeSell": "Jag vill ändra vad vi säljer",
-      "changeMoves": "Jag vill ändra hur en förfrågan rör sig"
-    },
-    "skipped": "Du kan ställa in allt senare genom att fråga assistenten, eller under Inställningar.",
-    "panelHint": "Klicka på en fas eller något ni säljer för att säga vad som ska ändras.",
-    "comment": {
-      "title": {
-        "phase": "Fas: {name}",
-        "itemType": "Det ni säljer: {name}"
-      },
-      "placeholder": "Vad ska ändras?",
-      "send": "Skicka",
-      "message": {
-        "phase": "Om fasen ”{name}”: {instruction}",
-        "itemType": "Om ”{name}” i det vi säljer: {instruction}"
-      }
-    }
-  },
   "welcome": {
     "stepOf": "Steg {step} av {total}",
     "back": "Tillbaka",
     "continue": "Fortsätt",
     "skipForNow": "Hoppa över just nu",
+    "saved": "Sparat",
+    "skipped": "Uppsättningen hoppades över. Du kan göra klart den senare under Inställningar.",
+    "activated": "{organization} är uppsatt",
     "logoAlt": "Bibi",
     "start": {
       "title": "Välkommen till Bibi",

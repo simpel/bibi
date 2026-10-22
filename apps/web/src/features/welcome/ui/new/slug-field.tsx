@@ -11,7 +11,7 @@ export type SlugFieldProps = {
   form: UseFormReturn<NewOrganizationValues>;
   check: SlugCheckState;
   /** The user typed or picked a slug: it stops following the name. */
-  onTake: (slug: string) => void;
+  onTake: ({ value }: { value: string }) => void;
 };
 
 /** `bibi.se/<slug>` with the live check under it (ADR 0062). */
@@ -32,7 +32,7 @@ export function SlugField({ form, check, onTake }: SlugFieldProps) {
                 className="border-0 pl-0.5 shadow-none focus-visible:ring-0"
                 autoCapitalize="none"
                 spellCheck={false}
-                onChange={(event) => onTake(event.target.value.toLowerCase())}
+                onChange={(event) => onTake({ value: event.target.value.toLowerCase() })}
               />
             </FormControl>
           </div>

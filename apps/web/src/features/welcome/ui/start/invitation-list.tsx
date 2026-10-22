@@ -10,7 +10,7 @@ import { type UserInvitation, useUserInvitations } from "./use-user-invitations"
 
 const ROLE_KEYS = ["member", "manager", "admin"] as const;
 type RoleKey = (typeof ROLE_KEYS)[number];
-const roleKey = (role: string): RoleKey | "unknown" =>
+const roleKey = ({ role }: { role: string }): RoleKey | "unknown" =>
   (ROLE_KEYS as readonly string[]).includes(role) ? (role as RoleKey) : "unknown";
 
 /** Invitations to accept. Accepting opens `/`, which redirects to the joined organization. */
@@ -57,7 +57,7 @@ function InvitationRow({ invitation }: { invitation: UserInvitation }) {
       <div className="grid">
         <span className="font-medium">{invitation.organizationName}</span>
         <span className="text-sm text-muted-foreground">
-          {t("invitedAs", { role: role(roleKey(invitation.role)) })}
+          {t("invitedAs", { role: role(roleKey({ role: invitation.role })) })}
         </span>
       </div>
       <Button type="button" disabled={pending} onClick={accept}>

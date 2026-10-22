@@ -1,6 +1,5 @@
 import type { Result } from "@bibi/core";
 import type { connectMcp } from "../mcp/connect-mcp";
-import { assistantMode, MODE_FEATURE } from "../prompt/assistant-mode";
 import { errorResponse } from "../server/error-response";
 import { resolveUser } from "../server/resolve-user";
 import type { ResolvedServerOptions } from "../server/server-options";
@@ -32,8 +31,7 @@ export async function handleChat({ request, runtime }: HandleChatInput): Promise
   const input = await parseChatInput({ request });
   if (!input.ok) return errorResponse({ error: input.error });
   // Before anything is stored: an unconfigured model fails the turn (503) instead of half of it.
-  const feature = MODE_FEATURE[assistantMode({ page: input.value.page })];
-  const chosen = await runtime.chooseModel({ feature });
+  const chosen = await runtime.chooseModel({ feature: "assistant.chat" });
   if (!chosen.ok) return errorResponse({ error: chosen.error });
   const conversation = await ensureConversation({
     user: user.value,

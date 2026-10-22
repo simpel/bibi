@@ -39,7 +39,7 @@ export function useNewOrganization() {
       onSuccess: () => afterNewOrganization({ router, slug: values.slug }),
     }),
   );
-  const takeSlug = (value: string) => {
+  const takeSlug = ({ value }: { value: string }) => {
     setSlugEdited(true);
     form.setValue("slug", value, { shouldValidate: true });
   };

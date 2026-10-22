@@ -25,7 +25,6 @@ describe("SYSTEM skills", () => {
       expect.arrayContaining([
         "create-venue-with-items",
         "find-available-space",
-        "first-setup",
         "propose-configuration",
         "summarize-ticket-risks",
       ]),
@@ -50,20 +49,6 @@ describe("SYSTEM skills", () => {
     for (const tool of skill?.allowedTools ?? []) {
       expect(tool).toMatch(/^(entityType|fieldDefinition|vocabulary|setup|configuration)_/);
     }
-  });
-
-  it("limits first-setup to reading and previewing: it never saves anything", async () => {
-    unwrap({ result: await seedSystemSkills() });
-    const input = { q: "first-setup" };
-    const listed = await execute({ operation: listSkills, input, context: testContext() });
-    const skill = unwrap({ result: listed }).items.find((item) => item.slug === "first-setup");
-    expect(skill?.status).toBe("PUBLISHED");
-    expect([...(skill?.allowedTools ?? [])].sort()).toEqual([
-      "ask_question",
-      "entityType_list",
-      "pipelineSetup_presetDraft",
-      "pipelineSetup_preview",
-    ]);
   });
 
   it("bumps the version only when the content changes", async () => {
