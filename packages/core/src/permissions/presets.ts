@@ -15,6 +15,9 @@ const MANAGER_FEATURES: readonly Feature[] = [
   "sheet",
 ];
 
+/** Managers also maintain items (demands, setup times, working hours) but never archive them (ADR 0059). */
+const MANAGER_ITEM_WRITE = grantAll({ features: ["item"], only: "write" });
+
 const member = grantAll({
   features: FEATURES.filter((feature) => !ADMIN_VIEW.includes(feature)),
   only: "read",
@@ -26,7 +29,9 @@ const member = grantAll({
  */
 export const PRESET_PERMISSIONS: Readonly<Record<FixedRole, PermissionSet>> = {
   member,
-  manager: unionPermissions({ sets: [member, grantAll({ features: MANAGER_FEATURES })] }),
+  manager: unionPermissions({
+    sets: [member, grantAll({ features: MANAGER_FEATURES }), MANAGER_ITEM_WRITE],
+  }),
   admin: grantAll({}),
 };
 
