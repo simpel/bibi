@@ -16,7 +16,7 @@ const handler = createRestHandler({
 const get = async ({ key }: { key: string }) =>
   (
     await handler(
-      new Request("http://localhost:3000/api/v1/venues", { headers: { "x-api-key": key } }),
+      new Request("http://localhost:3330/api/v1/venues", { headers: { "x-api-key": key } }),
     )
   ).status;
 

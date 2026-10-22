@@ -36,10 +36,12 @@ const envSchema = z
      */
     STRIPE_APPLICATION_FEE_BPS: z.coerce.number().int().min(0).max(10_000).optional(),
     AI_GATEWAY_API_KEY: z.string().optional(),
-    WEB_URL: z.string().url().default("http://localhost:3000"),
-    MCP_URL: z.string().url().default("http://localhost:3001"),
+    WEB_URL: z.string().url().default("http://localhost:3330"),
+    MCP_URL: z.string().url().default("http://localhost:3331"),
+    /** Storybook of `@bibi/ui` (`pnpm --filter @bibi/ui dev`), shown in the dev banner. */
+    STORYBOOK_URL: z.string().url().default("http://localhost:3332"),
     /** Listen port of `apps/mcp` (Streamable HTTP). */
-    PORT: z.coerce.number().int().min(1).max(65535).default(3001),
+    PORT: z.coerce.number().int().min(1).max(65535).default(3331),
     /** API key used by the stdio MCP server (`apps/mcp`), resolved once at startup. */
     BIBI_API_KEY: z.string().min(1).optional(),
     /** OAuth client id of the web app (first-party); only it may act as `ai` actor. */

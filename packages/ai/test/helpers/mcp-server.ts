@@ -12,8 +12,8 @@ export async function startMcpServer(): Promise<RunningMcp> {
   const server = createHttpServer({
     resolveContext: resolveExecuteContext,
     embed: createEmbed(),
-    baseUrl: "http://localhost:3001",
-    authorizationServer: "http://localhost:3000/api/auth",
+    baseUrl: "http://localhost:3331",
+    authorizationServer: "http://localhost:3330/api/auth",
     allowedOrigins: [],
   });
   await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));

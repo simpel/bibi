@@ -4,7 +4,7 @@ import { parseEnv } from "../src/env";
 const base = {
   DATABASE_URL: "postgresql://bibi:bibi@localhost:5432/bibi",
   BETTER_AUTH_SECRET: "x".repeat(32),
-  BETTER_AUTH_URL: "http://localhost:3000",
+  BETTER_AUTH_URL: "http://localhost:3330",
 };
 
 describe("parseEnv", () => {

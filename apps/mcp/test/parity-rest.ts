@@ -16,7 +16,7 @@ export function createRestClient({ context }: RestClientInput) {
   });
   return {
     async get({ path }: { path: string }): Promise<Json> {
-      const response = await handler(new Request(`http://localhost:3000/api/v1${path}`));
+      const response = await handler(new Request(`http://localhost:3330/api/v1${path}`));
       if (response.status !== 200) throw new Error(`REST GET ${path}: ${response.status}`);
       return response.json();
     },
@@ -24,7 +24,7 @@ export function createRestClient({ context }: RestClientInput) {
     async send({ method, path, body }: RestSendInput): Promise<number> {
       const init: RequestInit = { method, headers: { "content-type": "application/json" } };
       if (body !== undefined) init.body = JSON.stringify(body);
-      return (await handler(new Request(`http://localhost:3000/api/v1${path}`, init))).status;
+      return (await handler(new Request(`http://localhost:3330/api/v1${path}`, init))).status;
     },
   };
 }

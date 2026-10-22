@@ -9,8 +9,8 @@ export async function DevUserSwitcherSlot() {
   const [users, admins] = await Promise.all([listDevUsers(), listDevPlatformAdmins()]);
   if (users.length === 0 && admins.length === 0) return null;
   const session = await getAuth().api.getSession({ headers: await headers() });
-  const { WEB_URL, MCP_URL } = getEnv();
-  const services = devServices({ webUrl: WEB_URL, mcpUrl: MCP_URL });
+  const { WEB_URL, MCP_URL, STORYBOOK_URL } = getEnv();
+  const services = devServices({ webUrl: WEB_URL, mcpUrl: MCP_URL, storybookUrl: STORYBOOK_URL });
   return (
     <DevUserSwitcher
       users={users}

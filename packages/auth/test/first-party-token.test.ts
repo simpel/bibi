@@ -23,7 +23,7 @@ async function registerWebClient(): Promise<void> {
   const clientId = getEnv().WEB_OAUTH_CLIENT_ID ?? "";
   const redirectUris = [
     new URL("/api/assistant/oauth/callback", getEnv().WEB_URL).toString(),
-    "http://localhost:3000/oauth/callback",
+    "http://localhost:3330/oauth/callback",
   ];
   const now = new Date();
   await db.oauthClient.upsert({

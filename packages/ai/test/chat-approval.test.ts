@@ -29,7 +29,7 @@ type DecideInput = { user: TestUser; body: Record<string, unknown> };
 
 const decide = ({ user, body }: DecideInput) =>
   approvalHandler()(
-    new Request("http://localhost:3000/api/assistant/approval", {
+    new Request("http://localhost:3330/api/assistant/approval", {
       method: "POST",
       headers: { cookie: user.cookies.get("cookie") ?? "", "content-type": "application/json" },
       body: JSON.stringify(body),

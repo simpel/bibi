@@ -5,7 +5,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { getAuth, mcpResourceUrl } from "../src/index";
 import { OAUTH_SCOPES } from "../src/plugins/mcp";
 
-const REDIRECT_URI = "http://localhost:3000/oauth/callback";
+const REDIRECT_URI = "http://localhost:3330/oauth/callback";
 
 export type RegisterClientInput = { clientId?: string };
 

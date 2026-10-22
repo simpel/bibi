@@ -51,7 +51,7 @@ describe("OpenAPI document", () => {
   });
 
   it("needs no authentication and serves the docs page", async () => {
-    const docs = await handler(new Request("http://localhost:3000/api/v1/docs"));
+    const docs = await handler(new Request("http://localhost:3330/api/v1/docs"));
     expect(docs.status).toBe(200);
     expect(docs.headers.get("content-type")).toContain("text/html");
     expect(await docs.text()).toContain("/api/v1/openapi.json");

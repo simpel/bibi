@@ -34,9 +34,10 @@ services:
     environment:
       DATABASE_URL: postgresql://bibi:bibi@postgres:5432/bibi
       SMTP_URL: smtp://mailpit:1025
-      MCP_URL: http://mcp:3001
+      MCP_URL: http://mcp:3331
+      WEB_PORT: "3330"
     ports:
-      - "3000:3000"
+      - "3330:3330"
     depends_on:
       postgres: { condition: service_healthy }
 
@@ -49,9 +50,9 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://bibi:bibi@postgres:5432/bibi
-      WEB_URL: http://web:3000
+      WEB_URL: http://web:3330
     ports:
-      - "3001:3001"
+      - "3331:3331"
     depends_on:
       postgres: { condition: service_healthy }
 
