@@ -4,8 +4,8 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
-import { appendRun, minutesBetween, readRuns } from "./metrics-store.mjs";
 import { report } from "./metrics-report.mjs";
+import { appendRun, minutesBetween, readRuns } from "./metrics-store.mjs";
 
 test("minutes are measured between two timestamps, null without a start", () => {
   assert.equal(minutesBetween({ since: "2026-10-22T10:00:00Z", at: "2026-10-22T11:43:00Z" }), 103);
@@ -23,7 +23,10 @@ test("runs are appended and read back, a missing file is empty", () => {
 test("the report counts runs per path and gate refusals", () => {
   const file = join(mkdtempSync(join(tmpdir(), "metrics-")), "runs.jsonl");
   assert.match(report({ file }), /No runs recorded/);
-  appendRun({ file, run: { path: "inline", minutes: 20, tickets: [{ number: 1, outcome: "armed" }] } });
+  appendRun({
+    file,
+    run: { path: "inline", minutes: 20, tickets: [{ number: 1, outcome: "armed" }] },
+  });
   appendRun({ file, run: { path: "gate-inline", minutes: null, tickets: [] } });
   const text = report({ file });
   assert.match(text, /inline 1/);
