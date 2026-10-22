@@ -34,7 +34,8 @@ services:
     environment:
       DATABASE_URL: postgresql://bibi:bibi@postgres:5432/bibi
       SMTP_URL: smtp://mailpit:1025
-      MCP_URL: http://mcp:3001
+      MCP_URL: http://mcp:3331
+      WEB_PORT: "3330"
       STORAGE_DISK_DIR: /app/.storage
     volumes:
       - storage-data:/app/.storage
@@ -52,7 +53,7 @@ services:
     env_file: .env
     environment:
       DATABASE_URL: postgresql://bibi:bibi@postgres:5432/bibi
-      WEB_URL: http://web:3000
+      WEB_URL: http://web:3330
     ports:
       - "3331:3331"
     depends_on:
