@@ -1,12 +1,12 @@
 import { resolveLocale } from "@okazi/i18n";
-import { setRequestLocale } from "next-intl/server";
-import { PermissionPage } from "@/features/permission/ui/permission-page";
+import { redirect } from "@okazi/i18n/navigation";
+import { memberPermissionsRoute } from "@/lib/routes";
 
 type MemberPermissionsPageProps = { params: Promise<{ locale: string; id: string }> };
 
-export default async function MemberPermissionsPage({ params }: MemberPermissionsPageProps) {
-  const { locale: rawLocale, id } = await params;
-  const locale = resolveLocale({ value: rawLocale });
-  setRequestLocale(locale);
-  return <PermissionPage locale={locale} subjectType="member" subjectId={id} />;
+export default async function SettingsMemberPermissionsRedirect({
+  params,
+}: MemberPermissionsPageProps) {
+  const { locale, id } = await params;
+  redirect({ href: memberPermissionsRoute({ id }), locale: resolveLocale({ value: locale }) });
 }

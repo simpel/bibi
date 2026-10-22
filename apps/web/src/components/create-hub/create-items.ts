@@ -106,7 +106,7 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
   {
     key: "member",
     group: "settings",
-    href: ROUTES.settingsMembers,
+    href: ROUTES.adminMembers,
     icon: UserPlusIcon,
     permission: "member:write",
   },

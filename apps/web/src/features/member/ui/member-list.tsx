@@ -36,7 +36,7 @@ async function MemberContent({ page, cursor, role, access }: MemberContentProps)
         <MemberTable members={page.items} roles={roles} caller={role} access={access} />
       ) : null}
       <CursorPagination
-        pathname={ROUTES.settingsMembers}
+        pathname={ROUTES.adminMembers}
         cursor={cursor}
         nextCursor={page.nextCursor}
       />

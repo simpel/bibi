@@ -30,7 +30,7 @@ function emailColumn<TRow extends InvitationRow>({
     accessorFn: (i) => i.email,
     cell: ({ row }) =>
       linkNames ? (
-        <Link href={ROUTES.settingsMembers} className="font-medium hover:underline">
+        <Link href={ROUTES.adminMembers} className="font-medium hover:underline">
           {row.original.email}
         </Link>
       ) : (

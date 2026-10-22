@@ -4,8 +4,7 @@ import { ROUTES } from "@/lib/routes";
 
 type ApiKeysPageProps = { params: Promise<{ locale: string }> };
 
-/** The keys are listed on the integrations page; this path only serves the breadcrumb. */
-export default async function ApiKeysPage({ params }: ApiKeysPageProps) {
+export default async function SettingsApiKeysRedirect({ params }: ApiKeysPageProps) {
   const { locale } = await params;
-  redirect({ href: ROUTES.settingsIntegrations, locale: resolveLocale({ value: locale }) });
+  redirect({ href: ROUTES.adminApiKeys, locale: resolveLocale({ value: locale }) });
 }

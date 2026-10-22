@@ -1,4 +1,11 @@
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@okazi/ui";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarRail,
+  Wordmark,
+} from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { AssistantNav } from "./assistant-nav";
 import { PlatformAdminCard } from "./platform-admin-card";
@@ -6,7 +13,11 @@ import type { ShellAccess, ShellUser } from "./shell-types";
 import { SidebarNav } from "./sidebar-nav";
 import { UserMenu } from "./user-menu";
 
-export type AppSidebarProps = { organizationId: string; user: ShellUser; access: ShellAccess };
+export type AppSidebarProps = {
+  organizationId: string;
+  user: ShellUser;
+  access: ShellAccess;
+};
 
 /**
  * The app's shadcn sidebar (ADR 0036): the assistant on top, then the daily work in collapsible
@@ -19,8 +30,10 @@ export function AppSidebar({ organizationId, user, access }: AppSidebarProps) {
   const shell = useTranslations("shell");
   return (
     <Sidebar mobileTitle={nav("openMenu")} mobileDescription={nav("openMenu")}>
-      <SidebarHeader>
-        <span className="px-2 py-1.5 font-serif text-xl font-semibold">{common("appName")}</span>
+      <SidebarHeader className="flex items-center">
+        <Wordmark className="px-2 py-1.5" size="lg" name={common("appName")}>
+          {common("appName")}
+        </Wordmark>
       </SidebarHeader>
       <SidebarContent>
         <AssistantNav />
@@ -31,7 +44,7 @@ export function AppSidebar({ organizationId, user, access }: AppSidebarProps) {
       </SidebarContent>
       <SidebarFooter>
         <nav aria-label={shell("adminNavigation")}>
-          <SidebarNav groups={["admin"]} access={access} headings closed={["admin"]} />
+          <SidebarNav groups={["admin"]} access={access} headings={false} />
         </nav>
         {access.platformAdmin ? <PlatformAdminCard /> : null}
         <UserMenu user={user} organizationId={organizationId} />

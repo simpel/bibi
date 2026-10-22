@@ -197,7 +197,8 @@
     "recent": "Recent",
     "chats": "Chats",
     "showMore": "Show more",
-    "platformAdmin": "Superadmin",
+    "platformAdmin": "Mothership",
+    "admin": "Administration",
     "groups": {
       "primary": "Overview",
       "work": "Work",
@@ -2087,9 +2088,28 @@
     "adminNavigation": "Administration",
     "mySkills": "My skills",
     "profile": "Profile",
-    "platformAdminTitle": "Superadmin",
+    "platformAdminTitle": "Mothership",
     "platformAdminDescription": "System log and AI models for the whole platform.",
-    "platformAdminOpen": "Open system admin"
+    "platformAdminOpen": "Open mothership"
+  },
+  "administration": {
+    "title": "Administration",
+    "description": "Manage your organization members, API keys, and settings.",
+    "members": {
+      "title": "Members",
+      "description": "Manage organization staff, roles, invitations, and fine-grained permissions.",
+      "action": "Manage members"
+    },
+    "apiKeys": {
+      "title": "API keys",
+      "description": "Generate and manage keys for external integrations and the REST API.",
+      "action": "Manage API keys"
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Configure entity types, item states, ticket templates, price lists, and pipelines.",
+      "action": "Open settings"
+    }
   },
   "settingsHub": {
     "title": "Settings",
@@ -2128,12 +2148,12 @@
     "openAssistant": "Open the assistant"
   },
   "admin": {
-    "title": "System admin",
-    "navLabel": "System admin",
+    "title": "Mothership",
+    "navLabel": "Mothership",
     "backToApp": "Back to app",
     "toggleSidebar": "Show or hide the sidebar",
-    "sidebarTitle": "System admin",
-    "sidebarDescription": "System administration navigation",
+    "sidebarTitle": "Mothership",
+    "sidebarDescription": "Mothership navigation",
     "nav": {
       "logs": "System log",
       "aiModels": "AI models"

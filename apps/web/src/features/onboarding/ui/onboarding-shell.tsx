@@ -1,3 +1,4 @@
+import { Wordmark } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { AssistantProvider } from "@/features/assistant/state/assistant-provider";
@@ -10,7 +11,9 @@ export function OnboardingShell({ children }: { children: ReactNode }) {
     <AssistantProvider>
       <div className="flex h-screen flex-col bg-background">
         <header className="flex h-14 shrink-0 items-center justify-between border-b px-6">
-          <span className="font-serif text-xl font-semibold">{common("appName")}</span>
+          <Wordmark size="md" name={common("appName")}>
+            {common("appName")}
+          </Wordmark>
           <SkipOnboardingButton />
         </header>
         <main className="min-h-0 flex-1">{children}</main>

@@ -197,7 +197,8 @@
     "recent": "Senaste",
     "chats": "Chattar",
     "showMore": "Visa fler",
-    "platformAdmin": "Superadmin",
+    "platformAdmin": "Mothership",
+    "admin": "Administration",
     "groups": {
       "primary": "Översikt",
       "work": "Arbete",
@@ -2087,9 +2088,28 @@
     "adminNavigation": "Administration",
     "mySkills": "Mina färdigheter",
     "profile": "Profil",
-    "platformAdminTitle": "Superadmin",
+    "platformAdminTitle": "Mothership",
     "platformAdminDescription": "Systemlogg och AI-modeller för hela plattformen.",
-    "platformAdminOpen": "Öppna systemadmin"
+    "platformAdminOpen": "Öppna mothership"
+  },
+  "administration": {
+    "title": "Administration",
+    "description": "Hantera organisationens medlemmar, API-nycklar och inställningar.",
+    "members": {
+      "title": "Medlemmar",
+      "description": "Hantera personal, roller, inbjudningar och detaljerade behörigheter.",
+      "action": "Hantera medlemmar"
+    },
+    "apiKeys": {
+      "title": "API-nycklar",
+      "description": "Skapa och hantera nycklar för externa integrationer och REST API:et.",
+      "action": "Hantera API-nycklar"
+    },
+    "settings": {
+      "title": "Inställningar",
+      "description": "Konfigurera artikeltyper, artikelstatusar, ärendemallar, prislistor och pipeline.",
+      "action": "Öppna inställningar"
+    }
   },
   "settingsHub": {
     "title": "Inställningar",
@@ -2128,12 +2148,12 @@
     "openAssistant": "Öppna assistenten"
   },
   "admin": {
-    "title": "Systemadmin",
-    "navLabel": "Systemadmin",
+    "title": "Mothership",
+    "navLabel": "Mothership",
     "backToApp": "Till appen",
     "toggleSidebar": "Visa eller dölj sidomenyn",
-    "sidebarTitle": "Systemadmin",
-    "sidebarDescription": "Navigering för systemadministration",
+    "sidebarTitle": "Mothership",
+    "sidebarDescription": "Navigering för mothership",
     "nav": {
       "logs": "Systemlogg",
       "aiModels": "AI-modeller"

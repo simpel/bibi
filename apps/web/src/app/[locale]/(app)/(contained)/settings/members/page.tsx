@@ -1,16 +1,10 @@
 import { resolveLocale } from "@okazi/i18n";
-import { setRequestLocale } from "next-intl/server";
-import { MemberList } from "@/features/member/ui/member-list";
-import { readCursor } from "@/lib/page-cursor";
+import { redirect } from "@okazi/i18n/navigation";
+import { ROUTES } from "@/lib/routes";
 
-type MembersPageProps = {
-  params: Promise<{ locale: string }>;
-  searchParams: Promise<{ cursor?: string | string[] }>;
-};
+type MembersPageProps = { params: Promise<{ locale: string }> };
 
-export default async function MembersPage({ params, searchParams }: MembersPageProps) {
-  const locale = resolveLocale({ value: (await params).locale });
-  const { cursor } = await searchParams;
-  setRequestLocale(locale);
-  return <MemberList locale={locale} cursor={readCursor({ value: cursor })} />;
+export default async function SettingsMembersRedirect({ params }: MembersPageProps) {
+  const { locale } = await params;
+  redirect({ href: ROUTES.adminMembers, locale: resolveLocale({ value: locale }) });
 }

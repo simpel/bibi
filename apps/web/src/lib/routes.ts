@@ -39,13 +39,18 @@ export const ROUTES = {
   onboarding: "/onboarding",
   settingsItemStates: "/settings/item-states",
   settingsTicketTemplates: "/settings/ticket-templates",
-  settingsMembers: "/settings/members",
+  settingsMembers: "/admin/members",
   settingsPayments: "/settings/payments",
-  settingsIntegrations: "/settings/integrations",
-  settingsApiKeys: "/settings/api-keys",
+  settingsIntegrations: "/admin/api-keys",
+  settingsApiKeys: "/admin/api-keys",
   admin: "/admin",
-  adminLogs: "/admin/logs",
-  adminAiModels: "/admin/ai-models",
+  adminMembers: "/admin/members",
+  adminApiKeys: "/admin/api-keys",
+  mothership: "/mothership",
+  mothershipLogs: "/mothership/logs",
+  mothershipAiModels: "/mothership/ai-models",
+  adminLogs: "/mothership/logs",
+  adminAiModels: "/mothership/ai-models",
 } as const;
 
 export type ItemRouteInput = { id: string };
@@ -114,27 +119,27 @@ export function withNext({ path, next }: WithNextInput): string {
 
 export type SubjectRouteInput = { id: string };
 
-/** `/settings/members/<id>`: a member's detail page. */
+/** `/admin/members/<id>`: a member's detail page. */
 export function memberRoute({ id }: SubjectRouteInput): string {
-  return `${ROUTES.settingsMembers}/${encodeURIComponent(id)}`;
+  return `${ROUTES.adminMembers}/${encodeURIComponent(id)}`;
 }
 
-/** `/settings/api-keys/<id>`: an API key's crumb; the page leads to its permissions. */
+/** `/admin/api-keys/<id>`: an API key's crumb; the page leads to its permissions. */
 export function apiKeyRoute({ id }: SubjectRouteInput): string {
-  return `${ROUTES.settingsApiKeys}/${encodeURIComponent(id)}`;
+  return `${ROUTES.adminApiKeys}/${encodeURIComponent(id)}`;
 }
 
-/** `/settings/members/<id>/permissions`: a member's permission grid (ADR 0050). */
+/** `/admin/members/<id>/permissions`: a member's permission grid (ADR 0050). */
 export function memberPermissionsRoute({ id }: SubjectRouteInput): string {
   return `${memberRoute({ id })}/permissions`;
 }
 
-/** `/settings/api-keys/<id>/permissions`: an API key's permission grid (ADR 0050). */
+/** `/admin/api-keys/<id>/permissions`: an API key's permission grid (ADR 0050). */
 export function apiKeyPermissionsRoute({ id }: SubjectRouteInput): string {
   return `${apiKeyRoute({ id })}/permissions`;
 }
 
-/** `/settings/api-keys/<id>/update`: rename a key and change its preset. */
+/** `/admin/api-keys/<id>/update`: rename a key and change its preset. */
 export function apiKeyUpdateRoute({ id }: SubjectRouteInput): string {
   return updateRoute({ detail: apiKeyRoute({ id }) });
 }

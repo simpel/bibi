@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { hasOAuthQuery } from "./oauth-query";
 import { readCursor } from "./page-cursor";
-import { venueRoute, withNext } from "./routes";
+import {
+  apiKeyPermissionsRoute,
+  apiKeyRoute,
+  memberPermissionsRoute,
+  memberRoute,
+  venueRoute,
+  withNext,
+} from "./routes";
 
 describe("routes", () => {
   it("builds venue and next links", () => {
@@ -9,6 +16,10 @@ describe("routes", () => {
     expect(withNext({ path: "/login", next: "/venues/1?x=1" })).toBe(
       "/login?next=%2Fvenues%2F1%3Fx%3D1",
     );
+    expect(memberRoute({ id: "123" })).toBe("/admin/members/123");
+    expect(memberPermissionsRoute({ id: "123" })).toBe("/admin/members/123/permissions");
+    expect(apiKeyRoute({ id: "456" })).toBe("/admin/api-keys/456");
+    expect(apiKeyPermissionsRoute({ id: "456" })).toBe("/admin/api-keys/456/permissions");
   });
 
   it("detects the signed OAuth query and reads cursors", () => {

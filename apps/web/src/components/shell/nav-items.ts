@@ -6,11 +6,9 @@ import {
   CalendarRangeIcon,
   ContactIcon,
   KanbanIcon,
-  KeyRoundIcon,
   LayoutDashboardIcon,
   type LucideIcon,
-  SettingsIcon,
-  UsersIcon,
+  ShieldCheckIcon,
 } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 
@@ -24,7 +22,8 @@ export type NavLabelKey =
   | "venues"
   | "members"
   | "apiKeys"
-  | "settings";
+  | "settings"
+  | "admin";
 
 /** Who sees an entry: everyone (subject to its permission) or settings viewers. */
 export type NavAudience = "everyone" | "configure";
@@ -101,21 +100,12 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
     },
   ],
   admin: [
-    // Members (each row links to their permissions) and API keys, so admins find them directly.
     {
-      href: ROUTES.settingsMembers,
-      labelKey: "members",
-      icon: UsersIcon,
+      href: ROUTES.admin,
+      labelKey: "admin",
+      icon: ShieldCheckIcon,
       audience: "everyone",
       permission: "member:write",
     },
-    {
-      href: ROUTES.settingsIntegrations,
-      labelKey: "apiKeys",
-      icon: KeyRoundIcon,
-      audience: "everyone",
-      permission: "apiKey:read",
-    },
-    { href: ROUTES.settings, labelKey: "settings", icon: SettingsIcon, audience: "configure" },
   ],
 };

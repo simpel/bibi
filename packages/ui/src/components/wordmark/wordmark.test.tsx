@@ -3,28 +3,45 @@ import { describe, expect, it } from "vitest";
 import { Wordmark } from "./wordmark";
 
 describe("Wordmark", () => {
-  it("renders the default app name Bibi", () => {
+  it("renders as an svg with viewBox and accessibility label", () => {
     const html = renderToString(<Wordmark />);
-    expect(html).toContain("Bibi");
+    expect(html).toContain("<svg");
+    expect(html).toContain('viewBox="0 0 189 125"');
+    expect(html).toContain('role="img"');
+    expect(html).toContain('aria-label="Bibi"');
+    expect(html).toContain("<title>Bibi</title>");
     expect(html).toContain('data-slot="wordmark"');
-    expect(html).toContain("font-wordmark");
   });
 
-  it("renders custom children", () => {
-    const html = renderToString(<Wordmark>Custom</Wordmark>);
-    expect(html).toContain("Custom");
-  });
-
-  it("renders with custom name prop", () => {
-    const html = renderToString(<Wordmark name="Bibi App" />);
-    expect(html).toContain("Bibi App");
-  });
-
-  it("applies size variant classes", () => {
+  it("applies preset size classes", () => {
     const smHtml = renderToString(<Wordmark size="sm" />);
-    expect(smHtml).toContain("text-lg");
+    expect(smHtml).toContain("h-6");
 
     const xlHtml = renderToString(<Wordmark size="xl" />);
-    expect(xlHtml).toContain("text-4xl");
+    expect(xlHtml).toContain("h-12");
+  });
+
+  it("applies numeric height as inline style", () => {
+    const html = renderToString(<Wordmark size={48} />);
+    expect(html).toContain("height:48px");
+    expect(html).toContain("width:auto");
+  });
+
+  it("applies custom CSS height string as inline style", () => {
+    const html = renderToString(<Wordmark size="3.5rem" />);
+    expect(html).toContain("height:3.5rem");
+    expect(html).toContain("width:auto");
+  });
+
+  it("allows custom aria label", () => {
+    const html = renderToString(<Wordmark label="Custom Brand" />);
+    expect(html).toContain('aria-label="Custom Brand"');
+    expect(html).toContain("<title>Custom Brand</title>");
+  });
+
+  it("merges custom className and preserves fill-current", () => {
+    const html = renderToString(<Wordmark className="text-primary" />);
+    expect(html).toContain("text-primary");
+    expect(html).toContain("fill-current");
   });
 });

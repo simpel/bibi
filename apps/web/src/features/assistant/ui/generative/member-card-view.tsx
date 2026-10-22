@@ -14,7 +14,7 @@ export function MemberCardView({ member }: MemberCardViewProps) {
     <Card data-slot="member-card" className="shadow-none">
       <CardHeader className="gap-1 p-4 pb-2">
         <CardTitle className="text-base">
-          <Link href={ROUTES.settingsMembers} className="hover:underline">
+          <Link href={ROUTES.adminMembers} className="hover:underline">
             {member.name}
           </Link>
         </CardTitle>

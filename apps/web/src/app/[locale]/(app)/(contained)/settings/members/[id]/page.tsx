@@ -1,12 +1,10 @@
 import { resolveLocale } from "@okazi/i18n";
-import { setRequestLocale } from "next-intl/server";
-import { MemberDetail } from "@/features/member/ui/member-detail";
+import { redirect } from "@okazi/i18n/navigation";
+import { memberRoute } from "@/lib/routes";
 
 type MemberPageProps = { params: Promise<{ locale: string; id: string }> };
 
-export default async function MemberPage({ params }: MemberPageProps) {
-  const { locale: rawLocale, id } = await params;
-  const locale = resolveLocale({ value: rawLocale });
-  setRequestLocale(locale);
-  return <MemberDetail locale={locale} id={id} />;
+export default async function SettingsMemberRedirect({ params }: MemberPageProps) {
+  const { locale, id } = await params;
+  redirect({ href: memberRoute({ id }), locale: resolveLocale({ value: locale }) });
 }

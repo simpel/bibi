@@ -13,8 +13,8 @@ import { useTranslations } from "next-intl";
 import { ROUTES } from "@/lib/routes";
 
 const ITEMS = [
-  { href: ROUTES.adminLogs, labelKey: "logs", icon: ScrollTextIcon },
-  { href: ROUTES.adminAiModels, labelKey: "aiModels", icon: BotIcon },
+  { href: ROUTES.mothershipLogs, labelKey: "logs", icon: ScrollTextIcon },
+  { href: ROUTES.mothershipAiModels, labelKey: "aiModels", icon: BotIcon },
 ] as const;
 
 /** Sections of the superadmin area. */

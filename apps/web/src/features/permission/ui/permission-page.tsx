@@ -50,7 +50,7 @@ export async function PermissionPage({ locale, subjectType, subjectId }: Permiss
   const { preset, effective } = profile.value;
   return (
     <FormPageShell
-      backHref={isMember ? detailHref : ROUTES.settingsIntegrations}
+      backHref={isMember ? detailHref : ROUTES.adminApiKeys}
       title={t("title", { name })}
       description={t(isMember ? "memberDescription" : "apiKeyDescription")}
     >

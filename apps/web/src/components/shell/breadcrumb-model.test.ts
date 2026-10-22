@@ -12,6 +12,15 @@ describe("buildCrumbs", () => {
       { href: "/settings/price-lists", labelKey: "priceLists" },
       { href: "/settings/price-lists/abc", labelKey: "detail" },
     ]);
+    expect(buildCrumbs({ pathname: "/admin/api-keys" })).toEqual([
+      { href: "/admin", labelKey: "admin" },
+      { href: "/admin/api-keys", labelKey: "apiKeys" },
+    ]);
+    expect(buildCrumbs({ pathname: "/admin/members/abc" })).toEqual([
+      { href: "/admin", labelKey: "admin" },
+      { href: "/admin/members", labelKey: "members" },
+      { href: "/admin/members/abc", labelKey: "detail" },
+    ]);
   });
 
   it("puts a /new/<thing> page under the thing's list", () => {

@@ -39,7 +39,7 @@ export async function MemberDetail({ locale, id }: MemberDetailProps) {
     <div className="grid gap-6">
       <CrumbName href={memberRoute({ id })} name={name} />
       <Link
-        href={ROUTES.settingsMembers}
+        href={ROUTES.adminMembers}
         className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeftIcon className="size-4" />

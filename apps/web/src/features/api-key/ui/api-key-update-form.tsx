@@ -22,7 +22,7 @@ export function ApiKeyUpdateForm({ apiKey, roles }: ApiKeyUpdateFormProps) {
   const common = useTranslations("common");
   const roleLabel = useTranslations("role");
   const router = useRouter();
-  const back = () => router.push(ROUTES.settingsIntegrations);
+  const back = () => router.push(ROUTES.adminApiKeys);
   const form = useForm<ApiKeyUpdateValues, unknown, ApiKeyUpdateInput>({
     resolver: zodResolver(apiKeyUpdateSchema({ id: apiKey.id }), useZodMessages()),
     defaultValues: { name: apiKey.name, role: apiKey.role },

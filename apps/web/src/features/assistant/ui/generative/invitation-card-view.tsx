@@ -21,7 +21,7 @@ export function InvitationCardView({ invitation }: InvitationCardViewProps) {
     <Card data-slot="invitation-card" className="shadow-none">
       <CardHeader className="flex-row items-start justify-between gap-2 p-4 pb-2">
         <CardTitle className="text-base">
-          <Link href={ROUTES.settingsMembers} className="hover:underline">
+          <Link href={ROUTES.adminMembers} className="hover:underline">
             {invitation.email}
           </Link>
         </CardTitle>
