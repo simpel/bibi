@@ -32,7 +32,7 @@ export function parallelCount({ ready }) {
   for (const ticket of ready) {
     const adrs = adrsOf({ ticket });
     if (adrs.some((a) => taken.has(a))) continue;
-    adrs.forEach((a) => taken.add(a));
+    for (const a of adrs) taken.add(a);
     count++;
   }
   return count;
