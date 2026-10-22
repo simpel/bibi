@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
-import {
-  execute,
-  exportSkill,
-  importSkill,
-  parseSkillMarkdown,
-  renderSkillMarkdown,
-} from "../src/index";
+import { execute, exportSkill, importSkill } from "../src/index";
+import { parseSkillMarkdown } from "../src/skills/markdown/parse-skill-markdown";
+import { renderSkillMarkdown } from "../src/skills/markdown/render-skill-markdown";
 import { errorCode, testContext, unwrap } from "./helpers";
 
 const SKILL_MD = `---

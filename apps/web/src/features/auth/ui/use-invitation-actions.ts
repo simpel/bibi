@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { useAuthFormAction } from "./use-auth-form-action";
 

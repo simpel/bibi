@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { StepWizard } from "@/components/wizard/step-wizard";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { createSheetDefinitionAction } from "../actions";

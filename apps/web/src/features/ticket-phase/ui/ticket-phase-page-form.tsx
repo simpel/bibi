@@ -1,7 +1,7 @@
 "use client";
 
 import type { TicketPhaseDto } from "@bibi/core/schemas";
-import { useRouter } from "@bibi/i18n/navigation";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { TicketPhaseForm } from "./ticket-phase-form";
 

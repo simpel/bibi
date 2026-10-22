@@ -40,7 +40,7 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 
 ## OAuth/MCP
 - Tokens are JWTs with `aud` = `${MCP_URL}/mcp`, `iss` = `${BETTER_AUTH_URL}/api/auth`, 15 min lifetime. Only `authorization_code` + `refresh_token` (no `client_credentials`). DPoP-bound and opaque tokens are rejected.
-- If the session has no active org, the user is sent to `/select-organization` before consent. The web app needs the pages `/login`, `/oauth/consent`, `/select-organization`, `/accept-invitation/[id]`.
+- If the session has no active org, the user is sent to `/welcome` (pick, join or create, ADR 0061) before consent. The web app needs the pages `/login`, `/oauth/consent`, `/welcome`, `/accept-invitation/[id]`.
 - Users may not create OAuth clients via the API. The web client is provisioned by ops and its id is set in `WEB_OAUTH_CLIENT_ID`.
 
 ## Roles and permissions (ADR 0034, 0050)

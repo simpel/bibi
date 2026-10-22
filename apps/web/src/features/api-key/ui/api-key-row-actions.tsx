@@ -1,11 +1,11 @@
 "use client";
 
 import type { ApiKeyDto } from "@bibi/core";
-import { Link } from "@bibi/i18n/navigation";
 import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ConfirmActionDialog } from "@/components/confirm-action-dialog";
+import { Link } from "@/lib/navigation";
 import { apiKeyPermissionsRoute, apiKeyUpdateRoute } from "@/lib/routes";
 import { revokeApiKeyAction } from "../actions";
 

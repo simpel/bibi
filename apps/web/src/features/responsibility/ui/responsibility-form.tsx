@@ -1,8 +1,8 @@
 import type { ResponsibilityCreateInput, ResponsibilityDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
+import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { createResponsibilityAction, updateResponsibilityAction } from "../actions";
 import { ResponsibilityFormFields } from "./responsibility-form-fields";

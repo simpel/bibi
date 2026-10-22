@@ -1,5 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
-import { redirect } from "@bibi/i18n/navigation";
+import { redirect } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
 type AdminPageProps = { params: Promise<{ locale: string }> };

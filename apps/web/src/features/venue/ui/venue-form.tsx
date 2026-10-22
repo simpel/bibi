@@ -1,9 +1,9 @@
 "use client";
 
 import type { VenueCreateInput, VenueDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { createVenueAction, updateVenueAction } from "../actions";
 import { useVenueForm } from "./use-venue-form";

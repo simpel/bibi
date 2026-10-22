@@ -1,7 +1,7 @@
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
+import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { createAlternativeGroupAction } from "../actions";
 import { LineOptionsField } from "./line-options-field";

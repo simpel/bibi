@@ -1,8 +1,8 @@
-import { Link } from "@bibi/i18n/navigation";
 import { cn } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
 const RECENT_LIMIT = 5;

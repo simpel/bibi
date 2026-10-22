@@ -1,8 +1,8 @@
 import { resolveLocale } from "@bibi/i18n";
-import { Link } from "@bibi/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthCard } from "@/features/auth/ui/auth-card";
 import { LoginTabs } from "@/features/auth/ui/login-tabs";
+import { Link } from "@/lib/navigation";
 import { ROUTES, withNext } from "@/lib/routes";
 import { safePath } from "@/lib/safe-redirect";
 import { redirectIfSignedIn } from "@/server/auth-pages";

@@ -1,5 +1,6 @@
 import { join } from "node:path";
 import { expect, type Page, test } from "@playwright/test";
+import { gotoApp } from "./goto-app";
 import { openAssistant, PANEL, sendChat, signUpWithOrganization } from "./steps";
 
 // Visual review helper, not part of the regular suite: set E2E_SCREENSHOTS_DIR to a folder to
@@ -63,13 +64,13 @@ async function assistantShots({ page, mode }: { page: Page; mode: Mode }) {
 }
 
 async function skillShots({ page, mode }: { page: Page; mode: Mode }) {
-  await page.goto("/sv/skills");
+  await gotoApp({ page, path: "/skills" });
   await expect(page.getByRole("link", { name: "Round trip" })).toBeVisible();
   await shot({ page, mode, name: "skills-list" });
   await page.getByRole("link", { name: "Round trip" }).click();
   await expect(page.getByRole("heading", { name: "Round trip", level: 1 })).toBeVisible();
   await shot({ page, mode, name: "skill-detail" });
-  await page.goto("/sv/new/skill");
+  await gotoApp({ page, path: "/new/skill" });
   await shot({ page, mode, name: "skill-form" });
 }
 
@@ -81,7 +82,7 @@ for (const mode of MODES) {
     await page.setViewportSize({ width: mode.width, height: mode.height });
     await signUpWithOrganization({ page, name: "Solvik Konferens AB" });
     await seed({ page });
-    await page.goto("/sv/venues");
+    await gotoApp({ page, path: "/venues" });
     await shot({ page, mode, name: "venues" });
     await page.keyboard.press("Control+k");
     await page.getByPlaceholder("Sök eller skriv ett kommando...").fill("which rooms are there");

@@ -1,8 +1,8 @@
-import { Link } from "@bibi/i18n/navigation";
 import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { responsibilitiesRoute } from "@/lib/configuration-routes";
+import { Link } from "@/lib/navigation";
 import type { GenerativeProps } from "./generative-props";
 
 export type ResponsibilityCardRow = GenerativeProps<"responsibility-table">["items"][number];

@@ -1,8 +1,8 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { RoleBadge } from "@/features/member/ui/role-badge";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 

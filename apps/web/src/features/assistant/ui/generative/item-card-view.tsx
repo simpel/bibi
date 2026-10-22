@@ -1,6 +1,5 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import {
   Badge,
   BookableDisplay,
@@ -16,6 +15,7 @@ import {
 import { useFormatter, useTranslations } from "next-intl";
 import { customisationGroupLines } from "@/features/item/ui/customisation-group-lines";
 import { itemRoute } from "@/lib/configuration-routes";
+import { Link } from "@/lib/navigation";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";
 

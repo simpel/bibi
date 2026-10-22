@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname, useRouter } from "@bibi/i18n/navigation";
 import { SelectFilter } from "@/components/select-filter";
+import { usePathname, useRouter } from "@/lib/navigation";
 
 export type QueryFilterProps = {
   /** The query key this filter owns, e.g. `venue` or `type`. */

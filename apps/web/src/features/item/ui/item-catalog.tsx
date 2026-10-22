@@ -1,11 +1,11 @@
 import type { ItemDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { Link } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";
 import { PageHeader } from "@/components/states/page-header";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { CreateItemButton } from "./create-item-button";
 import type { ItemFormData } from "./item-form-data";

@@ -62,7 +62,7 @@ export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
     },
     plugins: [
       adminPlugin(),
-      organizationPlugin(),
+      organizationPlugin({ db }),
       apiKeyPlugin(),
       devSwitchUserPlugin(),
       ...emailLoginPlugins(),

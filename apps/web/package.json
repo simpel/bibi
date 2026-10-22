@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "@ai-sdk/react": "4.0.143",
-    "@hookform/resolvers": "5.9.1",
     "@bibi/ai": "workspace:*",
     "@bibi/api": "workspace:*",
     "@bibi/auth": "workspace:*",
@@ -25,7 +24,9 @@
     "@bibi/i18n": "workspace:*",
     "@bibi/logger": "workspace:*",
     "@bibi/mail": "workspace:*",
+    "@bibi/storage": "workspace:*",
     "@bibi/ui": "workspace:*",
+    "@hookform/resolvers": "5.9.1",
     "@prisma/client": "7.10.0",
     "ai": "7.0.140",
     "lucide-react": "1.57.0",

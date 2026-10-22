@@ -1,9 +1,9 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { DownloadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { importTicketPhaseTemplateAction } from "../actions";
 

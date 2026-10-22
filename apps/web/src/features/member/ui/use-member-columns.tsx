@@ -1,8 +1,8 @@
 import type { MemberDto } from "@bibi/core";
-import { Link } from "@bibi/i18n/navigation";
 import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { Link } from "@/lib/navigation";
 import { memberRoute } from "@/lib/routes";
 import { RoleBadge } from "./role-badge";
 

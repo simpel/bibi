@@ -1,7 +1,7 @@
 "use client";
 
 import type { SheetDefinitionDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { SheetDefinitionForm } from "./sheet-definition-form";
 import type { SheetOptions } from "./sheet-options";

@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import {
   Button,
   Dialog,
@@ -12,6 +11,7 @@ import {
   Form,
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/navigation";
 import { skillRoute } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { importSkillAction } from "../actions";

@@ -1,11 +1,11 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import { Badge, Card, Skeleton } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { InlineLoadError } from "@/components/states/inline-load-error";
 import { hitRoute, type SearchHitView } from "@/features/search/search-hit-view";
 import type { ErrorKey } from "@/lib/error-key";
+import { Link } from "@/lib/navigation";
 
 export type VenueSearchResultsProps = {
   hits: SearchHitView[] | null;

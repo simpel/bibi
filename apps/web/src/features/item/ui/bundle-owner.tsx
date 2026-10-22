@@ -1,6 +1,6 @@
 import { getCustomer } from "@bibi/core";
-import { Link } from "@bibi/i18n/navigation";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/lib/navigation";
 import { customerRoute } from "@/lib/routes";
 import { runOperation } from "@/server/run-operation";
 

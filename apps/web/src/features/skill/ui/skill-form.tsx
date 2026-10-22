@@ -1,9 +1,9 @@
 "use client";
 
 import type { SkillDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/navigation";
 import { skillRoute } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { createSkillAction, updateSkillAction } from "../actions";

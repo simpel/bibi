@@ -1,9 +1,9 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { entityTypeRoute, vocabularyRoute } from "@/lib/configuration-routes";
+import { Link } from "@/lib/navigation";
 import type { GenerativeProps } from "./generative-props";
 
 export type FieldDefinitionCardViewProps = GenerativeProps<"field-definition-card">;

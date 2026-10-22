@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import type { ActionResult } from "@/lib/action-result";
+import { useRouter } from "@/lib/navigation";
 import type { ToastMessages } from "@/lib/submit-with-toast";
 import { useToastAction } from "@/lib/use-toast-action";
 import { ConfirmDialog } from "./confirm-dialog";

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { gotoApp } from "./goto-app";
 import {
   addItem,
   createItemType,
@@ -31,7 +32,7 @@ test("sign up, create org, venue, type and item, search, switch locale, archive"
     value: "40",
     venue: VENUE,
   });
-  await page.goto("/sv/venues");
+  await gotoApp({ page, path: "/venues" });
   await page.getByRole("link", { name: VENUE }).click();
   await expect(page.getByRole("link", { name: item })).toBeVisible();
 
@@ -42,7 +43,7 @@ test("sign up, create org, venue, type and item, search, switch locale, archive"
   await page.getByRole("button", { name: "Användarmeny" }).click();
   await page.getByRole("menuitem", { name: "Språk" }).click();
   await page.getByRole("menuitem", { name: "English" }).click();
-  await expect(page).toHaveURL(/\/en\/venues/);
+  await expect(page).toHaveURL(/\/en\/[^/]+\/venues/);
   await expect(page.getByRole("link", { name: "Create venue" }).first()).toBeVisible();
 
   await page.getByRole("button", { name: "Actions" }).click();
@@ -78,5 +79,5 @@ test("theme toggle, localized validation messages and mapped sign-in errors", as
   await page.waitForTimeout(10_500);
   await page.getByRole("textbox", { name: "Lösenord" }).fill(credentials.password);
   await page.getByRole("button", { name: "Logga in" }).click();
-  await expect(page).toHaveURL(/\/sv$/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+$/);
 });

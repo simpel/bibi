@@ -1,8 +1,8 @@
 import type { TicketDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { useTypedResolver } from "@/components/typed-fields/use-typed-resolver";
+import { useRouter } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { createTicketAction, updateTicketAction } from "../actions";

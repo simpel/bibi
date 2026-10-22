@@ -1,6 +1,6 @@
-import { Link } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/lib/navigation";
 
 export type CursorPaginationProps = {
   pathname: string;

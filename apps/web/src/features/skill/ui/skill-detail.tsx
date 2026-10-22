@@ -1,12 +1,12 @@
 import { getSkill } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { Link } from "@bibi/i18n/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { MarkdownView } from "@/components/markdown-view";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { canPermission } from "@/lib/can";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";

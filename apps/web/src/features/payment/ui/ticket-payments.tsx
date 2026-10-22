@@ -1,10 +1,10 @@
 import { getTicketBalance, listDeposits, listInvoices, listPayments } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { Link } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { HandCoinsIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
+import { Link } from "@/lib/navigation";
 import { depositNewRoute } from "@/lib/routes";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";

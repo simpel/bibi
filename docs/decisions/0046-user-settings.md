@@ -27,3 +27,6 @@
 - One new table and migration; the demo seed is unchanged (seeded users have no row).
 - The onboarding no longer relies on routing alone: a user who closes the tab mid-setup is sent back to it next time, until they finish or skip.
 - Operations and adapters sit next to the preference ones (`features/user-preference/`, `settings-schema.ts`), because both are the caller's own data and `packages/core/src/index.ts` is at its line limit.
+
+## Addendum 2026-10-22 – setup status moves to the organization
+- `onboardingStatus` is removed. The setup status is `OrganizationProfile.setupStatus`, and the AI onboarding is replaced by the welcome flow (ADR 0061).

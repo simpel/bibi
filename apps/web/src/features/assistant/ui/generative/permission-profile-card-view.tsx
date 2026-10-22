@@ -1,8 +1,8 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import { PermissionProfileCard } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 import { apiKeyPermissionsRoute, memberPermissionsRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { buildPermissionModel } from "./permission-profile-model";

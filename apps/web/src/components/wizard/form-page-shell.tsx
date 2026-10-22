@@ -1,8 +1,8 @@
-import { Link } from "@bibi/i18n/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { PageHeader } from "@/components/states/page-header";
+import { Link } from "@/lib/navigation";
 
 export type FormPageShellProps = {
   backHref: string;

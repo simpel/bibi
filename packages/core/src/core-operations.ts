@@ -10,6 +10,7 @@ import { customerOperations } from "./features/customer/operations";
 import { depositOperations } from "./features/deposit/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
+import { fileOperations } from "./features/file/operations";
 import { inboundEmailOperations } from "./features/inbound-email/operations";
 import { invoiceOperations } from "./features/invoice/operations";
 import { itemOperations } from "./features/item/operations";
@@ -19,6 +20,7 @@ import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
 import { oauthGrantOperations } from "./features/oauth-grant/operations";
 import { occupancyOperations } from "./features/occupancy/operations";
+import { organizationProfileOperations } from "./features/organization-profile/operations";
 import { paymentOperations } from "./features/payment/operations";
 import { paymentAccountOperations } from "./features/payment-account/operations";
 import { permissionOperations } from "./features/permission/operations";
@@ -26,6 +28,7 @@ import { phaseGridOperations } from "./features/phase-grid/operations";
 import { pipelineOperations } from "./features/pipeline/operations";
 import { pipelineSetupOperations } from "./features/pipeline-setup/operations";
 import { priceListOperations } from "./features/price-list/operations";
+import { profileOperations } from "./features/profile/operations";
 import { quoteOperations } from "./features/quote/operations";
 import { requirementOperations } from "./features/requirement/operations";
 import { responsibilityOperations } from "./features/responsibility/operations";
@@ -59,6 +62,9 @@ const moneyOperations = [
   ...depositOperations,
   ...invoiceOperations,
 ];
+
+/** The caller's own data: preferences, profile, working hours and files (ADR 0039, 0061, 0063). */
+const selfOperations = [...userPreferenceOperations, ...profileOperations, ...fileOperations];
 
 /** Every operation that does not depend on the app's `embed` (all but `search`). */
 function staticOperations(): AnyOperation[] {
@@ -97,7 +103,8 @@ function staticOperations(): AnyOperation[] {
     ...auditLogOperations,
     ...apiKeyOperations,
     ...oauthGrantOperations,
-    ...userPreferenceOperations,
+    ...selfOperations,
+    ...organizationProfileOperations,
   ];
 }
 

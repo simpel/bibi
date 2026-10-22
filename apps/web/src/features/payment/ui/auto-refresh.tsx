@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { useRouter } from "@/lib/navigation";
 
 const INTERVAL_MS = 3000;
 const MAX_REFRESHES = 20;

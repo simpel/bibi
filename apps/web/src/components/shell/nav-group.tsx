@@ -1,4 +1,3 @@
-import { Link } from "@bibi/i18n/navigation";
 import {
   Collapsible,
   CollapsibleContent,
@@ -12,6 +11,7 @@ import {
 } from "@bibi/ui";
 import { ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 import type { NavItem } from "./nav-items";
 
 export type NavGroupProps = {

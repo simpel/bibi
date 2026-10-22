@@ -110,7 +110,9 @@ describe("entity read parity: core -> GraphQL, REST, MCP return equal data", () 
     const made: Record<string, Json> = { memberSeed: await seedOrgMember({ context }) };
     for (const entity of ENTITIES) {
       const created = await entity.create({ mcp, made, context });
-      expect(created?.id ?? created?.subjectId, `${entity.name}: create via MCP`).toBeTruthy();
+      // Singletons without an id (a file's key, a user's working days) are told apart by those.
+      const identity = created?.id ?? created?.subjectId ?? created?.key ?? created?.days;
+      expect(identity, `${entity.name}: create via MCP`).toBeTruthy();
       made[entity.name] = created;
       const keys = Object.keys(created).filter((key) => key !== "organizationId");
       const input = { context, mcp, created, keys };

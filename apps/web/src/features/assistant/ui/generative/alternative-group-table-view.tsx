@@ -1,10 +1,10 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import { Card, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
+import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";

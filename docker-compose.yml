@@ -35,6 +35,9 @@ services:
       DATABASE_URL: postgresql://bibi:bibi@postgres:5432/bibi
       SMTP_URL: smtp://mailpit:1025
       MCP_URL: http://mcp:3001
+      STORAGE_DISK_DIR: /app/.storage
+    volumes:
+      - storage-data:/app/.storage
     ports:
       - "3000:3000"
     depends_on:
@@ -72,3 +75,4 @@ services:
 
 volumes:
   postgres-data:
+  storage-data:

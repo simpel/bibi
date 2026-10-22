@@ -1,11 +1,11 @@
 import { getTicket } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
-import { Link } from "@bibi/i18n/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { AssignmentSection } from "@/features/assignment/ui/assignment-section";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";

@@ -34,7 +34,7 @@ export function mcpPlugins() {
       // Stateless JWTs: keep them short so revocation (membership/refresh token) bites quickly.
       accessTokenExpiresIn: 15 * 60,
       postLogin: {
-        page: "/select-organization",
+        page: "/welcome",
         shouldRedirect: ({ session }) => activeOrganizationOf({ session }) === undefined,
         consentReferenceId: ({ session }) => activeOrganizationOf({ session }),
       },

@@ -16,12 +16,23 @@ export const INTEGRATION_NAMES = [
 /** Operations the AI actor may never run (`aiAllowed: false`, #88). */
 export const AI_FORBIDDEN_NAMES = ["apiKey.create"];
 
-/** The caller's own preferences and settings (`self`, ADR 0039, 0046). */
+/** The caller's own preferences, profile, working hours and files (`self`, ADR 0039, 0061, 0063). */
 const SELF_NAMES = [
   "userPreference.list",
   "userPreference.set",
-  "userSettings.get",
-  "userSettings.update",
+  "profile.get",
+  "profile.update",
+  "workingHours.get",
+  "workingHours.set",
+  "file.upload",
+  "file.get",
+];
+
+/** The organization's own facts and first setup status (ADR 0061). */
+const ORGANIZATION_NAMES = [
+  "organizationProfile.get",
+  "organizationProfile.update",
+  "organizationProfile.setSetupStatus",
 ];
 
 /** The audit trail and the change layer that applies approved change sets (ADR 0049). */
@@ -33,5 +44,6 @@ export const EXTRA_NAMES = [
   ...MONEY_NAMES,
   ...INTEGRATION_NAMES,
   ...SELF_NAMES,
+  ...ORGANIZATION_NAMES,
   ...CHANGE_NAMES,
 ];

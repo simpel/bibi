@@ -1,7 +1,7 @@
-import { Link } from "@bibi/i18n/navigation";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { ShieldCheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
 /**

@@ -1,7 +1,6 @@
 import type { PermissionSet } from "@bibi/core";
 import type { PromptSkill } from "../skills/skill-wire";
 import { accessSection } from "./access-section";
-import { assistantMode, modeSection } from "./assistant-mode";
 import { assistantRules } from "./assistant-rules";
 import { contextSection, skillsSection } from "./context-sections";
 import type { AssistantLocale, PageContext } from "./page-context-schema";
@@ -31,13 +30,11 @@ export function buildSystemPrompt({
   now = new Date(),
 }: BuildSystemPromptInput): string {
   const rules = assistantRules({ locale }).map((rule) => `- ${rule}`);
-  const mode = modeSection({ mode: assistantMode({ page }) });
   return [
     PRODUCT_CONTEXT,
     ["## Rules", ...rules].join("\n"),
     contextSection({ organizationId, now, ...(page ? { page } : {}) }),
     accessSection(access),
     skillsSection({ skills }),
-    ...(mode ? [mode] : []),
   ].join("\n\n");
 }

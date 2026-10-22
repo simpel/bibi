@@ -1,5 +1,4 @@
 import { LOCALES } from "@bibi/i18n";
-import { usePathname, useRouter } from "@bibi/i18n/navigation";
 import {
   DropdownMenuItem,
   DropdownMenuSub,
@@ -9,6 +8,7 @@ import {
 import { CheckIcon, LanguagesIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import { usePathname, useRouter } from "@/lib/navigation";
 
 const LABEL_KEY = { sv: "languageSv", en: "languageEn" } as const;
 

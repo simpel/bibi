@@ -1,8 +1,8 @@
 "use client";
 
-import { Link } from "@bibi/i18n/navigation";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
 import { formatKr } from "../../../item/ui/format-price";
 import type { GenerativeProps } from "./generative-props";

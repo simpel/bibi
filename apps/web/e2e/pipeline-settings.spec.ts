@@ -1,7 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { gotoApp } from "./goto-app";
 import { createItemType, signUpWithOrganization } from "./steps";
 
-const SETTINGS = "/sv/settings/pipeline";
+const SETTINGS = "/settings/pipeline";
 
 async function createPhase({
   page,
@@ -12,13 +13,13 @@ async function createPhase({
   name: string;
   flag?: string;
 }) {
-  await page.goto(SETTINGS);
+  await gotoApp({ page, path: SETTINGS });
   await page.getByRole("link", { name: "Skapa fas" }).first().click();
-  await expect(page).toHaveURL(/\/sv\/new\/ticket-phase$/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/new\/ticket-phase$/);
   await page.getByLabel("Namn").fill(name);
   if (flag) await page.getByRole("checkbox", { name: flag }).click();
   await page.getByRole("button", { name: "Spara" }).click();
-  await expect(page).toHaveURL(/\/sv\/settings\/pipeline$/, { timeout: 15_000 });
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline$/, { timeout: 15_000 });
   await expect(page.getByRole("cell", { name }).first()).toBeVisible();
 }
 
@@ -48,7 +49,7 @@ test("an admin edits phases and the grid on step pages", async ({ page }) => {
   await createPhase({ page, name: "Spare" });
 
   await rowAction({ page, row: "Booked", item: "Redigera fas" });
-  await expect(page).toHaveURL(/\/sv\/settings\/pipeline\/[^/]+\/update$/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline\/[^/]+\/update$/);
   await page.getByLabel("Namn").fill("Reserved");
   await page.getByRole("button", { name: "Spara" }).click();
   await expect(page.getByRole("cell", { name: "Reserved" }).first()).toBeVisible();
@@ -81,19 +82,19 @@ test("an admin edits item states on step pages", async ({ page }) => {
   await signUpWithOrganization({ page, name: "States AB" });
   await createItemType({ page, name: "Conference room", numberField: "Max guests" });
 
-  await page.goto("/sv/settings/item-states");
+  await gotoApp({ page, path: "/settings/item-states" });
   await expect(page.getByRole("heading", { name: "Artikelstatusar", level: 1 })).toBeVisible();
   await expect(page.getByRole("cell", { name: "Active" }).first()).toBeVisible();
 
   await page.getByRole("link", { name: "Skapa status" }).click();
-  await expect(page).toHaveURL(/\/sv\/new\/item-state\?type=/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/new\/item-state\?type=/);
   await page.getByLabel("Namn").fill("Prebooked");
   await page.getByRole("button", { name: "Spara" }).click();
-  await expect(page).toHaveURL(/\/sv\/settings\/item-states$/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/item-states$/);
   await expect(page.getByRole("cell", { name: "Prebooked" }).first()).toBeVisible();
 
   await rowAction({ page, row: "Prebooked", item: "Redigera status" });
-  await expect(page).toHaveURL(/\/sv\/settings\/item-states\/[^/]+\/update$/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/item-states\/[^/]+\/update$/);
   await page.getByLabel("Namn").fill("Tentative");
   await page.getByRole("button", { name: "Spara" }).click();
   await expect(page.getByRole("cell", { name: "Tentative" }).first()).toBeVisible();

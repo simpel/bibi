@@ -1,7 +1,7 @@
 import type { ItemStateDto } from "@bibi/core/schemas";
-import { Link } from "@bibi/i18n/navigation";
 import { DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
 import { useMoveState } from "./use-move-state";
 

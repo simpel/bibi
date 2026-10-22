@@ -1,8 +1,8 @@
 import type { TicketTemplateCreateInput, TicketTemplateDto } from "@bibi/core/schemas";
-import { useRouter } from "@bibi/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";

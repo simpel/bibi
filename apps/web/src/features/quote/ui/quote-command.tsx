@@ -1,10 +1,10 @@
 import type { QuoteDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import type { ActionResult } from "@/lib/action-result";
+import { useRouter } from "@/lib/navigation";
 import { quoteRoute } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import {

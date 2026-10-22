@@ -1,9 +1,9 @@
 import { PHASE_FLAGS } from "@bibi/core/schemas";
-import { Link } from "@bibi/i18n/navigation";
 import { ColorSwatch, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { ticketPhasesRoute } from "@/lib/configuration-routes";
+import { Link } from "@/lib/navigation";
 import type { TicketPhaseTableViewProps } from "./ticket-phase-table-view";
 
 type Row = TicketPhaseTableViewProps["items"][number];

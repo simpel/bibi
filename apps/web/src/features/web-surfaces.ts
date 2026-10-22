@@ -1,19 +1,18 @@
 import { MONEY_SURFACES } from "./money-surfaces";
 import { SALES_SURFACES } from "./sales-surfaces";
 import { SETTINGS_SURFACES } from "./settings-surfaces";
+import { WELCOME_SURFACES } from "./welcome-surfaces";
 
 /**
- * Which core operations have a UI surface in the web app. The parity test in
- * `web-surfaces.test.ts` validates this list: a new operation must either appear in
- * `WEB_SURFACES` (with the route or component that exposes it) or be listed in `UI_EXEMPT`
- * (`ui-exempt.ts`) with a reason.
+ * Which core operations have a UI surface in the web app (checked by `web-surfaces.test.ts`): a
+ * new operation appears in `WEB_SURFACES` or in `UI_EXEMPT` (`ui-exempt.ts`) with a reason.
  */
 export type WebSurface = {
   /** Core operation name, e.g. `venue.create`. */
   operation: string;
   /**
-   * Route pattern below `src/app/[locale]/(app)`, e.g. `/venues/[id]`, or `"*"` for UI that
-   * lives in the app shell on every page (then `component` names the file).
+   * Route pattern below `src/app/[locale]/[org]/(app)` or `[org]` (the welcome flow), e.g.
+   * `/venues/[id]`, or `"*"` for UI in the app shell on every page (`component` names the file).
    */
   route: string;
   /** With `route: "*"`: the component file below `src/` that provides the UI. */
@@ -82,6 +81,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   ...SALES_SURFACES,
   ...MONEY_SURFACES,
   ...SETTINGS_SURFACES,
+  ...WELCOME_SURFACES,
   { operation: "entityType.list", route: "/settings/types" },
   { operation: "entityType.create", route: "/new/type" },
   { operation: "configuration.importTemplate", route: "/settings/types" },

@@ -1,3 +1,4 @@
+import { getOrganizationProfile } from "../../features/organization-profile/operations";
 import { listTicketPhases } from "../../features/ticket-phase/read-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
@@ -6,15 +7,21 @@ import type { DemoOrg } from "./types";
 export type CheckSetupNeedInput = { context: ExecuteContext; org: DemoOrg; skipPipeline: boolean };
 
 /**
- * The first setup (ADR 0045) is for an organization without phases, detected as
- * `ticketPhase.list` being empty. With `--skip-pipeline` the organization must need it,
- * with no grid cells and only each item type's default state; otherwise it must not.
+ * The welcome setup (ADR 0061) is for an organization whose setup is PENDING and that has no
+ * phases. With `--skip-pipeline` the organization must need it, with no grid cells and only each
+ * item type's default state; otherwise it must be COMPLETED with phases.
  */
 export async function checkDemoSetupNeed({
   context,
   org,
   skipPipeline,
 }: CheckSetupNeedInput): Promise<string[]> {
+  const profile = await execute({ operation: getOrganizationProfile, input: {}, context });
+  if (!profile.ok) return [`${org.slug}: could not read the organization profile`];
+  const expected = skipPipeline ? "PENDING" : "COMPLETED";
+  if (profile.value.setupStatus !== expected) {
+    return [`${org.slug}: setup is ${profile.value.setupStatus}, expected ${expected}`];
+  }
   const phases = await execute({ operation: listTicketPhases, input: { limit: 1 }, context });
   if (!phases.ok) return [`${org.slug}: could not read phases`];
   const needsSetup = phases.value.items.length === 0;

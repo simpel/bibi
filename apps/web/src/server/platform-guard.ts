@@ -1,8 +1,8 @@
 import "server-only";
 import { isPlatformAdmin } from "@bibi/auth";
 import type { Locale } from "@bibi/i18n";
-import { redirect } from "@bibi/i18n/navigation";
 import { notFound } from "next/navigation";
+import { redirect } from "@/lib/navigation";
 import { ROUTES, withNext } from "@/lib/routes";
 import { getSessionState } from "./session";
 

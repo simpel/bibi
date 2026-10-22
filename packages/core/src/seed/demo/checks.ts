@@ -98,10 +98,20 @@ export async function checkDemoOrg({
   return [...failures, ...(await auditFailures({ context, org }))];
 }
 
-/** Check 7 (ADR 0025): every write (organization-scoped) must have an audit row as SYSTEM. */
+/** Entities the seed writes as each user, because `self:*` operations refuse SYSTEM. */
+const SELF_SEEDED = ["profile", "workingHours"] as const;
+
+/**
+ * Check 7 (ADR 0025): every write must have an audit row as SYSTEM, except each user's own
+ * profile and hours (ADR 0061), which `self:*` operations save as that user.
+ */
 async function auditFailures({ context, org }: CheckDemoOrgInput): Promise<string[]> {
   const notSystem = await context.db.auditLog.count({
-    where: { organizationId: context.organizationId, actorType: { not: "SYSTEM" } },
+    where: {
+      organizationId: context.organizationId,
+      actorType: { not: "SYSTEM" },
+      NOT: { actorType: "USER", entityType: { in: [...SELF_SEEDED] } },
+    },
   });
   return notSystem > 0 ? [`${org.slug}: ${notSystem} audit rows not by SYSTEM`] : [];
 }
