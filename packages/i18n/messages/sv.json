@@ -853,13 +853,11 @@
     "fieldCount": "{count, plural, one {# fält} other {# fält}}",
     "noCapabilities": "Inga förmågor",
     "capabilitiesHeading": "Förmågor",
-    "capabilitiesHint": "Förmågor slår på generella funktioner för artiklar av typen. En förmåga kan inte stängas av så länge artiklar har data för det.",
-    "requires": "Kräver {capability}.",
     "fieldsHeading": "Fält",
     "fields": {
       "base": "Gäller",
       "name": "Namn",
-      "capabilities": "Förmågor"
+      "sections": "Avsnitt"
     },
     "columns": {
       "name": "Namn",
@@ -881,13 +879,6 @@
       "BOOKABLE": "Bokningsbar",
       "SETUPS": "Uppställningar"
     },
-    "capabilityHints": {
-      "PRICED": "Pris, prisenhet och moms.",
-      "BUNDLE": "Innehåller andra artiklar.",
-      "CUSTOMISATIONS": "Anpassningsgrupper att välja mellan.",
-      "BOOKABLE": "Upptar tid och har standardlängd.",
-      "SETUPS": "Kapacitet per uppställning."
-    },
     "wizard": {
       "progress": "Steg",
       "steps": {
@@ -897,6 +888,30 @@
       "descriptions": {
         "base": "Välj vad typen är till för och namnge den.",
         "capabilities": "Välj vad artiklar av typen kan göra. Fälten lägger du till härnäst."
+      }
+    },
+    "sectionsHint": "Slå på de delar som artiklar av den här typen behöver. Ett avsnitt kan inte stängas av så länge artiklar har data för det.",
+    "needs": "Kräver {section}.",
+    "sections": {
+      "PRICED": {
+        "title": "Pris",
+        "description": "Artiklar har pris, prisenhet och moms."
+      },
+      "BOOKABLE": {
+        "title": "Tillgänglighet",
+        "description": "Artiklar upptar tid och har en standardlängd. Ange standardtid för iordningställande och återställning här."
+      },
+      "SETUPS": {
+        "title": "Rumsuppställningar",
+        "description": "Varje artikel har uppställningar med en kapacitet per uppställning."
+      },
+      "BUNDLE": {
+        "title": "Paket",
+        "description": "En artikel innehåller andra artiklar."
+      },
+      "CUSTOMISATIONS": {
+        "title": "Anpassningar",
+        "description": "Grupper av alternativ som kunden kan välja mellan."
       }
     }
   },

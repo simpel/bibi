@@ -7,12 +7,12 @@ export type ItemTypeFieldsProps = {
   form: UseFormReturn<EntityTypeFormValues, unknown, EntityTypeFormOutput>;
 };
 
-/** What only item types have: capabilities and the default setup and teardown (ADR 0059). */
+/** What only item types have: capability sections, with setup and teardown inside Availability (ADR 0059). */
 export function ItemTypeFields({ form }: ItemTypeFieldsProps) {
   return (
-    <>
-      <CapabilityField control={form.control} />
-      <BufferFields form={form} inherits={null} />
-    </>
+    <CapabilityField
+      control={form.control}
+      settings={{ BOOKABLE: <BufferFields form={form} inherits={null} /> }}
+    />
   );
 }
