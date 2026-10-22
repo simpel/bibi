@@ -1,4 +1,4 @@
-import { EMBEDDING_DIMENSIONS } from "@okazi/db";
+import { EMBEDDING_DIMENSIONS } from "@bibi/db";
 import { MockEmbeddingModelV4 } from "ai/test";
 import { describe, expect, it, vi } from "vitest";
 import { createEmbed, isPlaceholderEmbed } from "../src/embeddings/create-embed";

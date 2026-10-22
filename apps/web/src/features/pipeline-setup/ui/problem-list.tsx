@@ -1,5 +1,5 @@
-import type { PipelineProblem } from "@okazi/core/schemas";
-import { Badge } from "@okazi/ui";
+import type { PipelineProblem } from "@bibi/core/schemas";
+import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type ProblemListProps = { ready: boolean; problems: PipelineProblem[] };

@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname, useRouter } from "@okazi/i18n/navigation";
-import { cn } from "@okazi/ui";
+import { usePathname, useRouter } from "@bibi/i18n/navigation";
+import { cn } from "@bibi/ui";
 import { SquarePenIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useAssistant } from "@/features/assistant/state/assistant-context";

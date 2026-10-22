@@ -1,4 +1,4 @@
-import { addDays, fromZonedParts, type PlainDate } from "@okazi/core/schemas";
+import { addDays, fromZonedParts, type PlainDate } from "@bibi/core/schemas";
 import type { CalendarBlock } from "./calendar-blocks";
 import { type CalendarParams, calendarDays, dayStart } from "./calendar-params";
 

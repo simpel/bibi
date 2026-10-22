@@ -1,6 +1,6 @@
 "use client";
 
-import type { ItemStateDto } from "@okazi/core/schemas";
+import type { ItemStateDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";

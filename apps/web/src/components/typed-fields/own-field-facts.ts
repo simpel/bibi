@@ -1,4 +1,4 @@
-import type { EntityTypeDto, VocabularyDto } from "@okazi/core";
+import type { EntityTypeDto, VocabularyDto } from "@bibi/core";
 import type { Fact } from "./fact-list";
 import { displayValue } from "./field-display";
 import type { LinkTargets } from "./typed-form-data";

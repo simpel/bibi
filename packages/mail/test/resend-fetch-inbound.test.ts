@@ -11,7 +11,7 @@ const emailId = "4ef9a417-02e9-4d39-ad75-9611e0fcc33c";
 const received = {
   object: "email",
   id: emailId,
-  to: ["ticket-abc@in.okazi.test"],
+  to: ["ticket-abc@in.bibi.test"],
   from: "Guest <guest@example.test>",
   created_at: "2026-10-15T10:00:00.000Z",
   subject: "Re: your ticket",
@@ -20,7 +20,7 @@ const received = {
   cc: [],
   bcc: [],
   reply_to: [],
-  received_for: ["ticket-abc@in.okazi.test"],
+  received_for: ["ticket-abc@in.bibi.test"],
   message_id: "<111@example.test>",
   attachments: [
     { id: "att_1", filename: "menu.pdf", content_type: "application/pdf", size: 13264 },
@@ -31,7 +31,7 @@ const providerWith = ({ status, body }: { status: number; body: unknown }) => {
   const calls: ResendRequest[] = [];
   const provider = createResendProvider({
     apiKey: "re_key",
-    from: "a@okazi.test",
+    from: "a@bibi.test",
     transport: async ({ url, init }) => {
       calls.push({ url, init });
       return new Response(JSON.stringify(body), { status });
@@ -50,9 +50,9 @@ describe("Resend provider: fetchInbound", () => {
       providerEmailId: emailId,
       messageId: "<111@example.test>",
       from: "Guest <guest@example.test>",
-      to: ["ticket-abc@in.okazi.test"],
+      to: ["ticket-abc@in.bibi.test"],
       cc: [],
-      receivedFor: ["ticket-abc@in.okazi.test"],
+      receivedFor: ["ticket-abc@in.bibi.test"],
       subject: "Re: your ticket",
       receivedAt: "2026-10-15T10:00:00.000Z",
       text: null,

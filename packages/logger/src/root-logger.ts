@@ -1,4 +1,4 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 import { type DestinationStream, pino } from "pino";
 import { PinoPretty } from "pino-pretty";
 import { createBetterStackSink } from "./better-stack-sink";
@@ -16,11 +16,11 @@ export type InitLoggerInput = {
 
 type State = { settings: InitLoggerInput; root?: Logger | undefined };
 
-const KEY = Symbol.for("okazi.logger.root");
+const KEY = Symbol.for("bibi.logger.root");
 
 // Shared per process, even if bundlers load this module more than once (Next route bundles).
 const holder = globalThis as typeof globalThis & { [KEY]?: State };
-holder[KEY] ??= { settings: { service: "okazi" } };
+holder[KEY] ??= { settings: { service: "bibi" } };
 const state = holder[KEY];
 
 function defaultLevel(): LogLevel {

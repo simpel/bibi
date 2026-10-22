@@ -1,4 +1,4 @@
-import { Checkbox, FormControl, FormController, FormItem, FormLabel, FormMessage } from "@okazi/ui";
+import { Checkbox, FormControl, FormController, FormItem, FormLabel, FormMessage } from "@bibi/ui";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 export type CheckFieldProps<V extends FieldValues, O> = {

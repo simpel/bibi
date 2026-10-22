@@ -1,5 +1,5 @@
-import type { LineDto } from "@okazi/core";
-import { LineChooseOptionsInputSchema } from "@okazi/core/schemas";
+import type { LineDto } from "@bibi/core";
+import { LineChooseOptionsInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
 import type { CustomisableItem } from "./program-form-data";
 

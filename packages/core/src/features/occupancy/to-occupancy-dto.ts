@@ -1,4 +1,4 @@
-import type { Occupancy } from "@okazi/db";
+import type { Occupancy } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { OccupancyDto } from "./schema";
 

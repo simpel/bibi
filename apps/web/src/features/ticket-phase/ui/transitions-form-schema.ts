@@ -1,5 +1,5 @@
-import type { TicketPhaseDto } from "@okazi/core/schemas";
-import { TicketPhaseSetTransitionsInputSchema } from "@okazi/core/schemas";
+import type { TicketPhaseDto } from "@bibi/core/schemas";
+import { TicketPhaseSetTransitionsInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { formSchema } from "@/lib/form-schema";
 

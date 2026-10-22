@@ -1,7 +1,7 @@
-import type { MessageDto } from "@okazi/core";
+import type { MessageDto } from "@bibi/core";
 import type { UIMessage } from "ai";
 
-/** An approval decision stored as a TOOL message (`data-okazi-approval` part + result text). */
+/** An approval decision stored as a TOOL message (`data-bibi-approval` part + result text). */
 export type StoredDecision = {
   toolCallId: string;
   decision: "approved" | "rejected" | "failed";
@@ -28,7 +28,7 @@ const parseResult = ({ message }: PartInput): unknown => {
 };
 
 const toDecision = ({ message }: PartInput): StoredDecision | null => {
-  const part = message.parts.find((candidate) => candidate.type === "data-okazi-approval");
+  const part = message.parts.find((candidate) => candidate.type === "data-bibi-approval");
   const data = (part as { data?: { toolCallId?: unknown; decision?: unknown } } | undefined)?.data;
   if (typeof data?.toolCallId !== "string" || !DECISIONS.has(String(data.decision))) return null;
   const decision = data.decision as StoredDecision["decision"];

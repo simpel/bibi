@@ -13,13 +13,13 @@ import {
   SkillSchema,
   VenueSchema,
   VocabularySchema,
-} from "@okazi/core/schemas";
+} from "@bibi/core/schemas";
 import { z } from "zod";
 import { ResponsibilityWireSchema } from "./responsibility-entries";
 
 /**
  * JSON ("wire") forms of core output schemas as tool results carry them (dates = ISO strings).
- * Derived from `@okazi/core/schemas` (zod only, client-safe: the core barrel pulls in Prisma),
+ * Derived from `@bibi/core/schemas` (zod only, client-safe: the core barrel pulls in Prisma),
  * so a field added in core flows through here by construction. Only the date fields are
  * overridden; `skill` shapes are projections of `SkillSchema`.
  */

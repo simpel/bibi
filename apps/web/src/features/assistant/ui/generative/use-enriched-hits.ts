@@ -1,6 +1,6 @@
 "use client";
 
-import type { SearchHitWire } from "@okazi/ai";
+import type { SearchHitWire } from "@bibi/ai";
 import { useEffect, useState } from "react";
 import { enrichSearchHitsAction } from "@/features/search/actions";
 import type { SearchHitView } from "@/features/search/search-hit-view";

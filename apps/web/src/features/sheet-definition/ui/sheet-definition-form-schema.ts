@@ -1,5 +1,5 @@
-import type { SheetDefinitionDto } from "@okazi/core";
-import { SheetDefinitionCreateInputSchema } from "@okazi/core/schemas";
+import type { SheetDefinitionDto } from "@bibi/core";
+import { SheetDefinitionCreateInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
 
 /** Raw values of the sheet form. */

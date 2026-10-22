@@ -1,4 +1,4 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import { checkDemoAiModels } from "./ai-model-checks";

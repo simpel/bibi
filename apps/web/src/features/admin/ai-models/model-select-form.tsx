@@ -1,4 +1,4 @@
-import { Form } from "@okazi/ui";
+import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { type AiFeatureRow, FEATURE_KEY } from "./model-options";

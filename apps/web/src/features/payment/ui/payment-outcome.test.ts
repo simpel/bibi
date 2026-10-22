@@ -1,4 +1,4 @@
-import type { PublicPaymentDto } from "@okazi/core/schemas";
+import type { PublicPaymentDto } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { paymentOutcome } from "./payment-outcome";
 

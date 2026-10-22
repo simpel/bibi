@@ -4,7 +4,7 @@
  */
 /**
  * The three actions (ADR 0050): `read` sees the feature, `write` creates and changes it
- * (including sending, exporting and moving a ticket's phase), `delete` archives it. Okazi never
+ * (including sending, exporting and moving a ticket's phase), `delete` archives it. Bibi never
  * hard-deletes; `delete` is the archive action.
  */
 export const PERMISSION_ACTIONS = ["read", "write", "delete"] as const;

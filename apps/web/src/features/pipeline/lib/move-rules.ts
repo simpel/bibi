@@ -1,4 +1,4 @@
-import type { PipelineCard, PipelineColumn } from "@okazi/core";
+import type { PipelineCard, PipelineColumn } from "@bibi/core";
 
 export type MoveRuleInput = {
   card: PipelineCard;

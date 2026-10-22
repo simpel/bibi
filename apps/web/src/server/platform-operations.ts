@@ -3,8 +3,8 @@ import {
   createEmbeddingProbe,
   createListCompatibleModels,
   createListGatewayModels,
-} from "@okazi/ai";
-import { createPlatformOperations, type PlatformOperations } from "@okazi/core";
+} from "@bibi/ai";
+import { createPlatformOperations, type PlatformOperations } from "@bibi/core";
 
 // Module-level (not globalThis): rebuilt when this module reloads, so dev never runs stale ops.
 let operations: PlatformOperations | undefined;

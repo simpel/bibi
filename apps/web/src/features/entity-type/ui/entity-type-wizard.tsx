@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "@okazi/i18n/navigation";
-import { Form } from "@okazi/ui";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import { WizardFooter } from "@/components/wizard/wizard-footer";

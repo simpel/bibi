@@ -1,5 +1,5 @@
-import { type AfterCommitHook, InvitationSchema, inviteMember } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { type AfterCommitHook, InvitationSchema, inviteMember } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { sendAuthMail } from "../mail";
 import { webUrl } from "../urls";
 
@@ -23,7 +23,7 @@ export const invitationMailHook: AfterCommitHook = async ({ operation, output })
   await sendAuthMail({
     kind: "auth.invitation",
     to: invitation.email,
-    subject: `Invitation to ${organization.name} on Okazi`,
+    subject: `Invitation to ${organization.name} on Bibi`,
     text: `${inviter.name} has invited you to ${organization.name}.\n\nAccept: ${url}`,
   });
 };

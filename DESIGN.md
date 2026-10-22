@@ -1,5 +1,5 @@
 ---
-name: "Okazi Design System"
+name: "Bibi Design System"
 version: "1.0.0"
 theme: "Nordic Manor & Heritage"
 audience: "B2B conference estates, museums, cultural experience centers, and manor houses"
@@ -40,15 +40,15 @@ tokens:
     full: "9999px"
 ---
 
-# Okazi Design Guidelines (`DESIGN.md`)
+# Bibi Design Guidelines (`DESIGN.md`)
 
-This document defines the visual conventions, design tokens, and interface principles for **Okazi** according to the `@google/design.md` specification. It provides both human-readable rationale and machine-readable tokens for engineers and AI coding assistants.
+This document defines the visual conventions, design tokens, and interface principles for **Bibi** according to the `@google/design.md` specification. It provides both human-readable rationale and machine-readable tokens for engineers and AI coding assistants.
 
 ---
 
 ## 1. Overview & Atmosphere
 
-Okazi is a booking and operations system for venues that sell conferences with food and beverage: experience centers (e.g. World of Volvo), museums, conference estates, and manor houses (*herrgårdar*).
+Bibi is a booking and operations system for venues that sell conferences with food and beverage: experience centers (e.g. World of Volvo), museums, conference estates, and manor houses (*herrgårdar*).
 
 - **Visual Tone**: Dignified, calm, crafted, and tactfully high-end. It balances the quiet luxury of Scandinavian hospitality with the unrelenting operational clarity needed for complex runsheets, quotes, and kitchen orders.
 - **Atmosphere**: Luminous alabaster and clean chalk daylight surfaces, deep Nordic Spruce primary accents, aged brass warmth, and rich espresso slate typography.
@@ -64,7 +64,7 @@ Good software design is rooted in restraint, honesty, and usability. We adapt Di
    Employs modern web platform standards (native semantic elements, OKLCH color space, container queries, modern CSS) to solve real workflow problems, rather than adopting technical gimmicks or chasing visual fads for novelty's sake.
 
 2. **Good web design makes a product useful**
-   Software exists to be used. In Okazi, every screen, table, and form optimizes for workflow efficiency, data legibility, and high-stakes operational accuracy. Form strictly serves functional task completion.
+   Software exists to be used. In Bibi, every screen, table, and form optimizes for workflow efficiency, data legibility, and high-stakes operational accuracy. Form strictly serves functional task completion.
 
 3. **Good web design is aesthetic**
    Visual harmony directly reduces cognitive fatigue during intense 12-hour event shifts. Dignified typography, disciplined spatial rhythm, and a serene Nordic palette create an interface that is calming, clear, and reassuring.
@@ -93,7 +93,7 @@ Good software design is rooted in restraint, honesty, and usability. We adapt Di
 ### Accessibility as a Fundamental Requirement (WCAG 2.2)
 Under Dieter Rams' principles of usefulness, clarity, and thoroughness, **accessibility is non-negotiable**. Good design is inherently inclusive:
 - **Always follow WCAG 2.2 Level AA standards as an absolute baseline** (targeting AAA where feasible for text contrast).
-- **Perceivable**: Maintain strict contrast ratios (minimum 4.5:1 for normal text, 3:1 for large text and UI components; Okazi targets > 15:1 for foreground canvas text). Ensure information is never conveyed by color alone.
+- **Perceivable**: Maintain strict contrast ratios (minimum 4.5:1 for normal text, 3:1 for large text and UI components; Bibi targets > 15:1 for foreground canvas text). Ensure information is never conveyed by color alone.
 - **Operable**: All functionality must be 100% accessible via keyboard alone. Interactive components must display clear, high-contrast focus rings (`focus-visible:ring-2 ring-ring`). Support screen readers with logical heading hierarchies and semantic landmarks (`<main>`, `<nav>`, `<aside>`, `<dialog>`).
 - **Understandable**: Consistent terminology, predictable navigation, informative error states with inline remediation, and clear form labeling (`label[for]`, `aria-describedby`).
 - **Robust**: Valid, standards-compliant HTML; respect user system preferences including `prefers-reduced-motion`, `prefers-color-scheme`, and `prefers-contrast`.
@@ -102,7 +102,7 @@ Under Dieter Rams' principles of usefulness, clarity, and thoroughness, **access
 
 ## 3. Color System & Semantic Roles
 
-All color definitions are declared in [`packages/ui/src/styles/tokens.css`](file:///Users/joelsanden/Code/okazi/packages/ui/src/styles/tokens.css) using the perceptual OKLCH color space.
+All color definitions are declared in [`packages/ui/src/styles/tokens.css`](file:///Users/joelsanden/Code/bibi/packages/ui/src/styles/tokens.css) using the perceptual OKLCH color space.
 
 ```yaml
 colors:
@@ -131,7 +131,7 @@ colors:
 
 ## 4. Typography & Hierarchy (Editorial Estate)
 
-Okazi pairs two typefaces—**Fraunces** and **Inter**—mapped strictly by functional purpose:
+Bibi pairs two typefaces—**Fraunces** and **Inter**—mapped strictly by functional purpose:
 
 ```yaml
 typography:
@@ -173,7 +173,7 @@ typography:
 
 ### Hero Numbers & Number Flow Design Element
 
-In Okazi, a **Hero Number** represents the operational or financial climax of an experience—such as a grand quotation total (`184 500 SEK`), master venue capacity (`380 gäster`), or year-to-date conference turnover.
+In Bibi, a **Hero Number** represents the operational or financial climax of an experience—such as a grand quotation total (`184 500 SEK`), master venue capacity (`380 gäster`), or year-to-date conference turnover.
 
 ```yaml
 hero_numbers:
@@ -183,7 +183,7 @@ hero_numbers:
     scale: "text-2xl (24px) to text-5xl (48px)"
   flow_element:
     engine: "@number-flow/react (https://number-flow.barvian.me/)"
-    component: "HeroNumber & NumberFlow (@okazi/ui)"
+    component: "HeroNumber & NumberFlow (@bibi/ui)"
     behavior: "Smooth, organic rolling digit transitions when totals or guest counts update"
     accessibility: "Full WCAG compliance and automatic prefers-reduced-motion support"
 ```

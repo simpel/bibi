@@ -1,4 +1,4 @@
-import { AppError, err, ok, type Result } from "@okazi/core";
+import { AppError, err, ok, type Result } from "@bibi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 import { getAuth } from "../get-auth";
@@ -30,7 +30,7 @@ const redirectTarget = async ({ response }: { response: Response }): Promise<str
 /**
  * Authorization request (code + PKCE) run in-process through Better Auth's handler with the
  * user's session cookie. The first-party client skips consent, so the redirect carries the code
- * bound to the session's active organization (claim `okazi_org`).
+ * bound to the session's active organization (claim `bibi_org`).
  */
 export async function authorizeCode({
   headers,

@@ -19,7 +19,7 @@ export function AppScreenHeader({ pageTitle, breadcrumbs, headerActions }: AppSc
           aria-label="Breadcrumb"
           className="flex items-center gap-1.5 text-xs text-muted-foreground"
         >
-          <span>Okazi</span>
+          <span>Bibi</span>
           <span>/</span>
           {breadcrumbs.map((crumb) => (
             <span key={crumb} className="flex items-center gap-1.5">

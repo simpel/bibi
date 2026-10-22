@@ -1,4 +1,4 @@
-import type { Vocabulary } from "@okazi/db";
+import type { Vocabulary } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { VocabularyDto } from "./schema";
 

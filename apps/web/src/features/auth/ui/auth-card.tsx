@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@okazi/ui";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import type { ReactNode } from "react";
 
 export type AuthCardProps = {

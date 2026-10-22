@@ -1,4 +1,4 @@
-import type { AiModel } from "@okazi/core/schemas";
+import type { AiModel } from "@bibi/core/schemas";
 import { useFormatter, useTranslations } from "next-intl";
 import { perMillion } from "./model-options";
 

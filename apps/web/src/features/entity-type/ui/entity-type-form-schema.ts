@@ -1,9 +1,9 @@
-import type { EntityTypeDto } from "@okazi/core";
+import type { EntityTypeDto } from "@bibi/core";
 import {
   type EntityBase,
   EntityTypeCreateInputSchema,
   type ItemCapability,
-} from "@okazi/core/schemas";
+} from "@bibi/core/schemas";
 import type { z } from "zod";
 import {
   type BufferFormValues,

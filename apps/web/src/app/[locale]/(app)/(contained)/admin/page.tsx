@@ -1,6 +1,6 @@
-import { resolveLocale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@okazi/ui";
+import { resolveLocale } from "@bibi/i18n";
+import { Link } from "@bibi/i18n/navigation";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import {
   ArrowRightIcon,
   KeyRoundIcon,

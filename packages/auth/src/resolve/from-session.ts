@@ -1,4 +1,4 @@
-import { ok, type Result } from "@okazi/core";
+import { ok, type Result } from "@bibi/core";
 import { getAuth } from "../get-auth";
 import { forbidden, unauthenticated } from "./errors";
 import { loadMembership } from "./membership";

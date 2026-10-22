@@ -4,10 +4,10 @@ How customer replies reach a booking (ADR 0012). Each booking has its own addres
 `booking-<bookingId>@<MAIL_INBOUND_DOMAIN>`, shown on the booking page.
 
 ## DNS
-Use a dedicated subdomain for inbound mail (e.g. `in.okazi.se`): Resend receives *all* mail for a
+Use a dedicated subdomain for inbound mail (e.g. `in.bibi.se`): Resend receives *all* mail for a
 domain with receiving enabled, so the apex domain's own mail (MX, inboxes) must stay untouched.
 Add the subdomain as a domain in Resend (EU region, see the ADR 0012 addendum), toggle
-**Receiving** on its page and copy the exact records Resend shows. Their shape, for `in.okazi.se`:
+**Receiving** on its page and copy the exact records Resend shows. Their shape, for `in.bibi.se`:
 
 | Record | Name | Value | Why |
 | --- | --- | --- | --- |

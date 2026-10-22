@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
-import { getEnv } from "@okazi/config";
-import { getDb } from "@okazi/db";
+import { getEnv } from "@bibi/config";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { getAuth, mcpResourceUrl } from "../src/index";
 import { OAUTH_SCOPES } from "../src/plugins/mcp";

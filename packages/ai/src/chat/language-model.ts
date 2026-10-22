@@ -1,5 +1,5 @@
-import { getEnv } from "@okazi/config";
-import { type AiFeatureId, ok, type Result, resolveAiModel } from "@okazi/core";
+import { getEnv } from "@bibi/config";
+import { type AiFeatureId, ok, type Result, resolveAiModel } from "@bibi/core";
 import { createGateway, type LanguageModel } from "ai";
 
 export type GatewayLanguageModelInput = { modelId: string };

@@ -1,4 +1,4 @@
-import { type Db, getDb } from "@okazi/db";
+import { type Db, getDb } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import { createExecuteContext } from "../../operations/context";
 import { provisionOrganization } from "../../organization/provision";
@@ -118,7 +118,7 @@ async function seedOne({ db, org, skipPipeline }: SeedOneInput): Promise<Result<
 }
 
 /**
- * `pnpm --filter @okazi/core seed:demo` (ADR 0025): deletes and recreates the demo
+ * `pnpm --filter @bibi/core seed:demo` (ADR 0025): deletes and recreates the demo
  * organizations through core operations as SYSTEM, then runs the checks. Refuses production.
  */
 export async function seedDemo({

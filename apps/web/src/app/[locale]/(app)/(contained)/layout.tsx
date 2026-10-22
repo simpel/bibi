@@ -1,4 +1,4 @@
-import { PageContainer } from "@okazi/ui";
+import { PageContainer } from "@bibi/ui";
 import type { ReactNode } from "react";
 
 /** Lists, details, forms and settings: centred content (ADR 0038). Pages pick a narrower or wider tier themselves. */

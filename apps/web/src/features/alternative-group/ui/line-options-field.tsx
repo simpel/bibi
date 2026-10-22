@@ -1,4 +1,4 @@
-import { Checkbox, FormController, FormItem, FormLabel, FormMessage, Label } from "@okazi/ui";
+import { Checkbox, FormController, FormItem, FormLabel, FormMessage, Label } from "@bibi/ui";
 import type { UseFormReturn } from "react-hook-form";
 import type { OptionLine } from "./option-line";
 import type { AlternativeGroupFormValues } from "./use-alternative-group-form";

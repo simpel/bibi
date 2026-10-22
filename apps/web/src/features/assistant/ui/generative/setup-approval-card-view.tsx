@@ -8,7 +8,7 @@ import {
   ConfirmationRejected,
   ConfirmationRequest,
   ConfirmationTitle,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ApprovalErrorLine } from "./approval/approval-error-line";
 import type { ApprovalCardViewProps } from "./approval-card-view";

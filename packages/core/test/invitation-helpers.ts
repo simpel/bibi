@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { type ExecuteContext, execute, type FixedRole, inviteMember } from "../src/index";
 import { testOrg } from "./org-helpers";

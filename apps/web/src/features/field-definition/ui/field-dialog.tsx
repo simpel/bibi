@@ -1,5 +1,5 @@
-import type { FieldDefinitionDto } from "@okazi/core";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
+import type { FieldDefinitionDto } from "@bibi/core";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { FieldForm } from "./field-form";
 import type { VocabularyChoice } from "./field-source-fields";

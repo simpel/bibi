@@ -1,7 +1,7 @@
 "use client";
 
-import type { VocabularyValueDto } from "@okazi/core";
-import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
+import type { VocabularyValueDto } from "@bibi/core";
+import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";

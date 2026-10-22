@@ -1,4 +1,4 @@
-import type { EntityTypeDto } from "@okazi/core";
+import type { EntityTypeDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { rawFields } from "@/components/typed-fields/raw-fields";

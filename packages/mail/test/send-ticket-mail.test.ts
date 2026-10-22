@@ -1,4 +1,4 @@
-import { ticketReplyAddress } from "@okazi/core";
+import { ticketReplyAddress } from "@bibi/core";
 import { afterEach, describe, expect, it } from "vitest";
 import { createMemoryMailProvider, sendTicketMail, setMailProvider } from "../src/index";
 
@@ -12,10 +12,10 @@ describe("sendTicketMail", () => {
   it("sets the ticket's inbound address as reply-to", async () => {
     const memory = createMemoryMailProvider();
     setMailProvider({ provider: memory.provider });
-    const inboundAddress = ticketReplyAddress({ ticketId: "abc123", domain: "in.okazi.test" });
+    const inboundAddress = ticketReplyAddress({ ticketId: "abc123", domain: "in.bibi.test" });
     const result = await sendTicketMail({ ...message, ticket: { inboundAddress } });
     expect(result.ok).toBe(true);
-    expect(memory.outbox).toEqual([{ ...message, replyTo: "ticket-abc123@in.okazi.test" }]);
+    expect(memory.outbox).toEqual([{ ...message, replyTo: "ticket-abc123@in.bibi.test" }]);
   });
 
   it("sends without reply-to when inbound mail is not configured", async () => {

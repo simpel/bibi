@@ -1,5 +1,5 @@
-import { type ExecuteContext, ok } from "@okazi/core";
-import { createGraphqlHandler } from "@okazi/graphql";
+import { type ExecuteContext, ok } from "@bibi/core";
+import { createGraphqlHandler } from "@bibi/graphql";
 import { fakeEmbed } from "./fake-embed";
 import type { Json } from "./helpers";
 

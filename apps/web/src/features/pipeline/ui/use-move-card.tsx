@@ -1,4 +1,4 @@
-import type { PipelineCard, PipelineColumn } from "@okazi/core";
+import type { PipelineCard, PipelineColumn } from "@bibi/core";
 import { useState } from "react";
 import type { ActionError } from "@/lib/action-result";
 import { MoveBlockersDialog } from "./move-blockers-dialog";

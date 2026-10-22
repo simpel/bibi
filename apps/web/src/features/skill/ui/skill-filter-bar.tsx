@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Form, Label, Switch } from "@okazi/ui";
+import { Button, Form, Label, Switch } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useId } from "react";
 import { useForm } from "react-hook-form";

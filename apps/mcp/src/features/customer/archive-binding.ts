@@ -1,4 +1,4 @@
-import { execute, getCustomer, ok, type Result } from "@okazi/core";
+import { execute, getCustomer, ok, type Result } from "@bibi/core";
 import { type SummaryInput, text } from "../../tools/meta";
 
 /**

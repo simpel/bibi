@@ -6,8 +6,8 @@ import {
   type SetupCreateInput,
   type SetupDto,
   updateSetup,
-} from "@okazi/core";
-import type { SetupUpdateInputSchema } from "@okazi/core/schemas";
+} from "@bibi/core";
+import type { SetupUpdateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";

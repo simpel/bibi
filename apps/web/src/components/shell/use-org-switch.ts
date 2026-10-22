@@ -1,5 +1,5 @@
-import { useRouter } from "@okazi/i18n/navigation";
-import { toast } from "@okazi/ui";
+import { useRouter } from "@bibi/i18n/navigation";
+import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
 import { ROUTES } from "@/lib/routes";

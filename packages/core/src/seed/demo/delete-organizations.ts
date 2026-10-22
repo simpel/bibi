@@ -1,4 +1,4 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 
 export type DeleteOrganizationsInput = { db: Db; organizationIds: string[] };
 

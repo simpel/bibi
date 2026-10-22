@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Form } from "@okazi/ui";
+import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useFormAction } from "@/lib/use-form-action";
 import type { ConversationSummary } from "../actions";

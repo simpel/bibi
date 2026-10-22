@@ -1,4 +1,4 @@
-import type { TicketDto } from "@okazi/core";
+import type { TicketDto } from "@bibi/core";
 import { getFormatter, getLocale, getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
 import { FactList } from "@/components/typed-fields/fact-list";

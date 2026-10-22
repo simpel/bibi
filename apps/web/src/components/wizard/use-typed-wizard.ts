@@ -1,4 +1,4 @@
-import type { EntityTypeDto } from "@okazi/core";
+import type { EntityTypeDto } from "@bibi/core";
 import type { FieldPath, Path, UseFormReturn } from "react-hook-form";
 import { typedStepFields, typedStepsFor } from "./typed-steps";
 import type { TypedValues } from "./typed-wizard-step";

@@ -1,6 +1,6 @@
 import "server-only";
-import type { Locale } from "@okazi/i18n";
-import { redirect } from "@okazi/i18n/navigation";
+import type { Locale } from "@bibi/i18n";
+import { redirect } from "@bibi/i18n/navigation";
 import { ROUTES } from "@/lib/routes";
 import { getSessionState, type SessionState } from "./session";
 

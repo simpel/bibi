@@ -1,4 +1,4 @@
-import { AppError, type Err, err } from "@okazi/core";
+import { AppError, type Err, err } from "@bibi/core";
 
 export type DenyInput = { message: string };
 

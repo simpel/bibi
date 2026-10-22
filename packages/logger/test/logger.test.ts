@@ -42,7 +42,7 @@ describe("logger", () => {
     logger.info({
       event: "leak.attempt",
       password: "hunter22",
-      headers: { authorization: "Bearer x", "x-api-key": "okz_1" },
+      headers: { authorization: "Bearer x", "x-api-key": "bib_1" },
       deep: { body: { token: "t" } },
     });
     expect(entries()[0]).toMatchObject({

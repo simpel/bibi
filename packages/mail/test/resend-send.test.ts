@@ -29,7 +29,7 @@ describe("Resend provider: send", () => {
     const { calls, transport } = fakeFetch({ status: 200, body: { id: "re_123" } });
     const provider = createResendProvider({
       apiKey: "re_key",
-      from: "Okazi <a@okazi.test>",
+      from: "Bibi <a@bibi.test>",
       transport,
     });
     const result = await provider.send({ message });
@@ -37,7 +37,7 @@ describe("Resend provider: send", () => {
     expect(calls[0]?.url).toBe(`${RESEND_API_URL}/emails`);
     expect(new Headers(calls[0]?.init.headers).get("authorization")).toBe("Bearer re_key");
     expect(JSON.parse(String(calls[0]?.init.body))).toEqual({
-      from: "Okazi <a@okazi.test>",
+      from: "Bibi <a@bibi.test>",
       to: ["guest@example.test"],
       subject: "Confirmation",
       text: "Plain",
@@ -49,7 +49,7 @@ describe("Resend provider: send", () => {
 
   it("maps a rejected request to UNAVAILABLE", async () => {
     const { transport } = fakeFetch({ status: 422, body: { message: "invalid" } });
-    const provider = createResendProvider({ apiKey: "re_key", from: "a@okazi.test", transport });
+    const provider = createResendProvider({ apiKey: "re_key", from: "a@bibi.test", transport });
     const result = await provider.send({ message });
     expect(result.ok ? "OK" : result.error.code).toBe("UNAVAILABLE");
   });
@@ -58,7 +58,7 @@ describe("Resend provider: send", () => {
     const transport: ResendTransport = async () => {
       throw new TypeError("fetch failed");
     };
-    const provider = createResendProvider({ apiKey: "re_key", from: "a@okazi.test", transport });
+    const provider = createResendProvider({ apiKey: "re_key", from: "a@bibi.test", transport });
     const result = await provider.send({ message });
     expect(result.ok ? "OK" : result.error.code).toBe("UNAVAILABLE");
   });

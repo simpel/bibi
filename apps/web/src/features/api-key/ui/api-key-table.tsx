@@ -1,6 +1,6 @@
 "use client";
 
-import type { ApiKeyDto } from "@okazi/core";
+import type { ApiKeyDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { useApiKeyColumns } from "./use-api-key-columns";

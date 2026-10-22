@@ -1,5 +1,5 @@
-import { draftFromPreset } from "@okazi/core/pipeline-setup-templates";
-import { seedSystemSkills } from "@okazi/core/seed";
+import { draftFromPreset } from "@bibi/core/pipeline-setup-templates";
+import { seedSystemSkills } from "@bibi/core/seed";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { registerWebClient, signUpWithOrg, type TestUser } from "./helpers/auth";
 import {
@@ -43,7 +43,7 @@ async function turn({ harness, user, text, conversationId }: TurnInput) {
     ...(conversationId ? { conversationId } : {}),
   });
   const response = await harness.handler(request);
-  const id = response.headers.get("x-okazi-conversation-id") ?? "";
+  const id = response.headers.get("x-bibi-conversation-id") ?? "";
   return { chunks: await readChunks({ response }), conversationId: id };
 }
 

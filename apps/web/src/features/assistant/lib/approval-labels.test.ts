@@ -1,6 +1,6 @@
-import { createCoreOperations, type EmbedFn } from "@okazi/core";
-import en from "@okazi/i18n/messages/en.json";
-import sv from "@okazi/i18n/messages/sv.json";
+import { createCoreOperations, type EmbedFn } from "@bibi/core";
+import en from "@bibi/i18n/messages/en.json";
+import sv from "@bibi/i18n/messages/sv.json";
 import { describe, expect, it } from "vitest";
 import { FIELD_KEYS, fieldKey, OPERATION_KEYS, operationKey } from "./approval-labels";
 

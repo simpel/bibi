@@ -1,10 +1,10 @@
-# @okazi/logger – context for Claude
+# @bibi/logger – context for Claude
 
 The system log (ADR 0014). pino, one JSON line per event to stdout (stderr for stdio MCP).
 
 ## API
 - `getLogger().info({ event: "mail.sent", ...fields })`. Levels: trace, debug, info, warn, error, fatal. `err` is serialized with stack and cause. `msg` becomes `event` if it is missing.
-- `initLogger({ service, stream?, sinks? })` once per process. `sinks` = extra destinations from info level, today `createSystemLogSink` from `@okazi/db`. (web: `instrumentation-node.ts`, mcp: `http.ts`/`stdio.ts`). `installProcessHandlers({ exitOnUncaught })` logs `process.*`.
+- `initLogger({ service, stream?, sinks? })` once per process. `sinks` = extra destinations from info level, today `createSystemLogSink` from `@bibi/db`. (web: `instrumentation-node.ts`, mcp: `http.ts`/`stdio.ts`). `installProcessHandlers({ exitOnUncaught })` logs `process.*`.
 - `withRequestLogging({ surface, handler })`: opens the request context, logs `http.request` (status, durationMs; 4xx = warn, 5xx = error) and returns `x-request-id`. An incoming valid `x-request-id` is reused.
 - `runWithLogContext({ context, fn })`, `getLogContext()`, `addToLogContext({ fields })`. `resolveExecuteContext` adds `organizationId`, `userId`, `actorType` and `conversationId`.
 - `maskEmail({ email })` → `***@domain.se`.

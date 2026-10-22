@@ -1,4 +1,4 @@
-import type { TicketPhaseDto } from "@okazi/core";
+import type { TicketPhaseDto } from "@bibi/core";
 import type { NamedOption } from "@/components/form/named-option";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
 

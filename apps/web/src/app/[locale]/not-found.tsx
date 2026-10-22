@@ -1,5 +1,5 @@
-import { Link } from "@okazi/i18n/navigation";
-import { Button } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ROUTES } from "@/lib/routes";
 

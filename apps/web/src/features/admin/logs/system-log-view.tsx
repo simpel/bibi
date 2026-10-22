@@ -1,5 +1,5 @@
-import { getEnv } from "@okazi/config";
-import type { Locale } from "@okazi/i18n";
+import { getEnv } from "@bibi/config";
+import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";

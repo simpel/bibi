@@ -6,7 +6,7 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
   type SetupTarget,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import type { ChatStatus } from "ai";
 import { useTranslations } from "next-intl";
 import { commentMessage } from "../lib/comment-message";

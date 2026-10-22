@@ -3,7 +3,7 @@ import {
   type InboundEmailDto,
   InboundEmailSchema,
   listInboundEmails,
-} from "@okazi/core";
+} from "@bibi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";

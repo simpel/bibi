@@ -1,6 +1,6 @@
-import type { VenueDto } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
-import { Badge } from "@okazi/ui";
+import type { VenueDto } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
+import { Badge } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/states/page-header";

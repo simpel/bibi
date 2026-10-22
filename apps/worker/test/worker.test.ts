@@ -1,7 +1,7 @@
-import { getEnv } from "@okazi/config";
-import { createVenue, execute, ok } from "@okazi/core";
-import { getDb } from "@okazi/db";
-import { type CapturedLogs, captureLogs } from "@okazi/logger";
+import { getEnv } from "@bibi/config";
+import { createVenue, execute, ok } from "@bibi/core";
+import { getDb } from "@bibi/db";
+import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { PgBoss } from "pg-boss";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";

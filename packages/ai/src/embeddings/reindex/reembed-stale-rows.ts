@@ -1,5 +1,5 @@
-import type { EmbedFn } from "@okazi/core";
-import { type Db, embeddingKeyOf, GLOBAL_EMBEDDING_SCOPE, upsertEmbedding } from "@okazi/db";
+import type { EmbedFn } from "@bibi/core";
+import { type Db, embeddingKeyOf, GLOBAL_EMBEDDING_SCOPE, upsertEmbedding } from "@bibi/db";
 
 export type ReembedStaleRowsInput = {
   db: Db;

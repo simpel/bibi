@@ -8,7 +8,7 @@ import {
   type PermissionAction,
   type PermissionOverride,
   type PermissionSet,
-} from "@okazi/core/schemas";
+} from "@bibi/core/schemas";
 
 /** One row of the grid: a feature with the actions it has (ADR 0050). */
 export type GridRow = {

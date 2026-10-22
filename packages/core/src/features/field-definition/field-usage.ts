@@ -1,4 +1,4 @@
-import type { RecordFieldMatch, RecordMatches } from "@okazi/db";
+import type { RecordFieldMatch, RecordMatches } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 
 type Db = Pick<OperationContext, "db">;

@@ -11,7 +11,7 @@ export type LogContext = {
   conversationId?: string;
 };
 
-const KEY = Symbol.for("okazi.logger.context");
+const KEY = Symbol.for("bibi.logger.context");
 
 // One store per process, even if bundlers load this module more than once (Next route bundles).
 const holder = globalThis as typeof globalThis & { [KEY]?: AsyncLocalStorage<LogContext> };

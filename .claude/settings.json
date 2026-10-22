@@ -14,7 +14,7 @@
       "Bash(gh project item-list:*)",
       "Bash(gh project item-edit:*)",
       "Bash(gh project field-list:*)",
-      "Bash(gh api repos/simpel/okazi/issues/:*)",
+      "Bash(gh api repos/simpel/bibi/issues/:*)",
       "Bash(pnpm:*)",
       "Bash(docker compose up -d)",
       "Bash(docker compose ps:*)"

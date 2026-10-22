@@ -1,6 +1,6 @@
 import { createMCPClient, type MCPClient } from "@ai-sdk/mcp";
-import { ACTOR_HEADER, CONVERSATION_HEADER, mcpResourceUrl } from "@okazi/auth";
-import { getLogContext, REQUEST_ID_HEADER } from "@okazi/logger";
+import { ACTOR_HEADER, CONVERSATION_HEADER, mcpResourceUrl } from "@bibi/auth";
+import { getLogContext, REQUEST_ID_HEADER } from "@bibi/logger";
 
 export type McpCaller =
   /** The assistant acting for the user in one conversation: commands become proposals. */
@@ -32,7 +32,7 @@ export function mcpHeaders({ accessToken, caller }: McpHeadersInput): Record<str
 /** AI SDK MCP client over Streamable HTTP against apps/mcp. Callers must `close()` it. */
 export function connectMcp({ accessToken, caller, url }: ConnectMcpInput): Promise<MCPClient> {
   return createMCPClient({
-    clientName: "okazi-assistant",
+    clientName: "bibi-assistant",
     transport: {
       type: "http",
       url: url ?? mcpResourceUrl(),

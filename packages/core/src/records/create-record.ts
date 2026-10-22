@@ -1,4 +1,4 @@
-import type { RecordBase } from "@okazi/db";
+import type { RecordBase } from "@bibi/db";
 import type { OperationContext } from "../operations/types";
 import { toJson } from "../shared/to-json";
 import { type LinkValue, replaceRecordLinks } from "./record-links";

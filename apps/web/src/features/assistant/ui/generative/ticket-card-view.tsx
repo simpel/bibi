@@ -1,7 +1,7 @@
 "use client";
 
-import { Link } from "@okazi/i18n/navigation";
-import { Badge, Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { desiredPeriod } from "@/features/ticket/ui/desired-period";
 import { ticketRoute } from "@/lib/routes";

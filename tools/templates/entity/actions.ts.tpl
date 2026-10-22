@@ -6,8 +6,8 @@ import {
   type {{Pascal}}CreateInput,
   type {{Pascal}}Dto,
   update{{Pascal}},
-} from "@okazi/core";
-import type { {{Pascal}}UpdateInputSchema } from "@okazi/core/schemas";
+} from "@bibi/core";
+import type { {{Pascal}}UpdateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";

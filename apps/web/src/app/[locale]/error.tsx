@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@okazi/ui";
+import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 type ErrorPageProps = { reset: () => void };

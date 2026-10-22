@@ -1,4 +1,4 @@
-import type { AppErrorIssue } from "@okazi/core";
+import type { AppErrorIssue } from "@bibi/core";
 import {
   Button,
   Dialog,
@@ -7,7 +7,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type MoveBlockersDialogProps = {

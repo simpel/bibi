@@ -1,4 +1,4 @@
-import type { Conversation } from "@okazi/db";
+import type { Conversation } from "@bibi/db";
 import { hasPermission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 

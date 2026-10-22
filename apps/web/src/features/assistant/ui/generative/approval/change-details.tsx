@@ -1,4 +1,4 @@
-import type { ChangePreview } from "@okazi/core/schemas";
+import type { ChangePreview } from "@bibi/core/schemas";
 import { ChangeTable } from "./change-table";
 import { ConsequenceList } from "./consequence-list";
 import { InputList } from "./input-list";

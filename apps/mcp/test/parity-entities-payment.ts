@@ -1,4 +1,4 @@
-import { createMemoryPaymentProvider, setPaymentProvider } from "@okazi/core";
+import { createMemoryPaymentProvider, setPaymentProvider } from "@bibi/core";
 import { installFakeStripe } from "./fake-stripe";
 import { byId, type ParityEntity, tool } from "./parity-entities";
 import { gqlQuery } from "./parity-graphql";

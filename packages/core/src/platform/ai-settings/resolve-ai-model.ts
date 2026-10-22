@@ -1,5 +1,5 @@
-import { type Db, getDb } from "@okazi/db";
-import { getLogger } from "@okazi/logger";
+import { type Db, getDb } from "@bibi/db";
+import { getLogger } from "@bibi/logger";
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import type { AiFeatureId } from "./ai-features";

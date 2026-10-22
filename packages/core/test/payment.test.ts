@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   createPayment,
@@ -48,7 +48,7 @@ describe("payment", () => {
     expect(provider.charges[0]).toMatchObject({
       kind: "checkout",
       connectedAccountId: account.stripeAccountId,
-      idempotencyKey: `okazi-payment-${payment.id}`,
+      idempotencyKey: `bibi-payment-${payment.id}`,
       metadata: { paymentId: payment.id, ticketId },
     });
     const { publicToken } = await getDb().payment.findUniqueOrThrow({ where: { id: payment.id } });

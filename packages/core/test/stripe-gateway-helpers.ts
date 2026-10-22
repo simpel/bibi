@@ -1,4 +1,4 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach, vi } from "vitest";
 
 export type Call = { url: string; method: string; headers: Record<string, string>; body?: string };
@@ -30,7 +30,7 @@ export function useStripeEnv() {
   beforeEach(() => {
     Object.assign(getEnv(), {
       STRIPE_SECRET_KEY: "sk_test_x",
-      STRIPE_PLATFORM_ACCOUNT_ID: "acct_okazi",
+      STRIPE_PLATFORM_ACCOUNT_ID: "acct_bibi",
     });
   });
   afterEach(() => {

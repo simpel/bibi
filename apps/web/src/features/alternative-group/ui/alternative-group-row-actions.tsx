@@ -1,12 +1,12 @@
-import type { AlternativeGroupDto } from "@okazi/core/schemas";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { AlternativeGroupDto } from "@bibi/core/schemas";
+import { useRouter } from "@bibi/i18n/navigation";
 import {
   DataTableRowActions,
   DropdownMenuItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useToastAction } from "@/lib/use-toast-action";

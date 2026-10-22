@@ -1,4 +1,4 @@
-import type { AiFeatureId, AiFeatureSetting, AiModel } from "@okazi/core/schemas";
+import type { AiFeatureId, AiFeatureSetting, AiModel } from "@bibi/core/schemas";
 
 /** i18n key under `admin.aiModels.features` (next-intl keys cannot contain dots). */
 export const FEATURE_KEY = {

@@ -1,5 +1,5 @@
 import "server-only";
-import { type ItemDto, listItems } from "@okazi/core";
+import { type ItemDto, listItems } from "@bibi/core";
 import { runOperation } from "@/server/run-operation";
 import type { CustomisableItem } from "./ui/program-form-data";
 

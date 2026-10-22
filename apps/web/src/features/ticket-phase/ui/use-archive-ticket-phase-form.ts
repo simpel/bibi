@@ -1,7 +1,7 @@
+import type { TicketPhaseArchiveInput } from "@bibi/core/schemas";
+import { TicketPhaseArchiveInputSchema } from "@bibi/core/schemas";
+import { useRouter } from "@bibi/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { TicketPhaseArchiveInput } from "@okazi/core/schemas";
-import { TicketPhaseArchiveInputSchema } from "@okazi/core/schemas";
-import { useRouter } from "@okazi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useForm, useWatch } from "react-hook-form";
 import { useArchivePreview } from "@/components/archive-preview/use-archive-preview";

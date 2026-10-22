@@ -1,4 +1,4 @@
-import type { Item } from "@okazi/db";
+import type { Item } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { isChoiceKind } from "../field-definition/field-kinds";
 import { asFieldValues } from "../field-definition/field-usage";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Message, MessageContent } from "@okazi/ui";
+import { Button, Message, MessageContent } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { assistantErrorKey } from "../lib/assistant-error";
 

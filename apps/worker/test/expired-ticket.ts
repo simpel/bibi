@@ -12,8 +12,8 @@ import {
   grantAll,
   provisionOrganization,
   updateEntityType,
-} from "@okazi/core";
-import { getDb } from "@okazi/db";
+} from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 
 type RunInput = { context: ExecuteContext; operation: AnyOperation; input: unknown };

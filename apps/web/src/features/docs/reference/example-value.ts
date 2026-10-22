@@ -1,4 +1,4 @@
-import type { JsonObject } from "@okazi/api";
+import type { JsonObject } from "@bibi/api";
 import { objectProperties, type SchemaInput, variants } from "./schema-type";
 
 type ExampleInput = SchemaInput & { depth?: number };

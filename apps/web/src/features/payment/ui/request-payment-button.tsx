@@ -9,7 +9,7 @@ import {
   DialogHeader,
   DialogTitle,
   Form,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { CreditCardIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

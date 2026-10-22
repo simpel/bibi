@@ -1,4 +1,4 @@
-import { execute, listInboundEmails, ticketInboundAddress } from "@okazi/core";
+import { execute, listInboundEmails, ticketInboundAddress } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import {
   createInboundWebhookHandler,
@@ -8,7 +8,7 @@ import {
 } from "../src/index";
 import { ticketFixture } from "./ticket-fixture";
 
-const domain = "in.okazi.test";
+const domain = "in.bibi.test";
 const secret = `whsec_${Buffer.from("inbound-test-secret").toString("base64")}`;
 
 /** Resend's API answering `GET /emails/receiving/{id}` with the fetched mail. */
@@ -58,7 +58,7 @@ const handlerFor = ({ to }: { to: string }) =>
     domain,
     provider: createResendProvider({
       apiKey: "re_key",
-      from: "a@okazi.test",
+      from: "a@bibi.test",
       webhookSecret: secret,
       transport: resendApi({ to }),
     }),

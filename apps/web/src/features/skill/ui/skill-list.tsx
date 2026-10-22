@@ -1,4 +1,4 @@
-import type { Locale } from "@okazi/i18n";
+import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";

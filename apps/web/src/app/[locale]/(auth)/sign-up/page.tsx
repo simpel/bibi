@@ -1,5 +1,5 @@
-import { resolveLocale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
+import { resolveLocale } from "@bibi/i18n";
+import { Link } from "@bibi/i18n/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthCard } from "@/features/auth/ui/auth-card";
 import { SignUpForm } from "@/features/auth/ui/sign-up-form";

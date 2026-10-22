@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Create a worktree with its own environment: pnpm wt:new <name> [--base <ref>] [--branch <branch>]
-# Lands in ../okazi-worktrees/<name> on branch wt/<name> (from main) unless told otherwise.
+# Lands in ../bibi-worktrees/<name> on branch wt/<name> (from main) unless told otherwise.
 set -euo pipefail
 SCRIPTS="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPTS/lib.sh"

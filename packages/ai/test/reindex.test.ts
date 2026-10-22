@@ -1,5 +1,5 @@
-import { createExecuteContext, createVenue, grantAll } from "@okazi/core";
-import { EMBEDDING_DIMENSIONS, getDb, scopedDb } from "@okazi/db";
+import { createExecuteContext, createVenue, grantAll } from "@bibi/core";
+import { EMBEDDING_DIMENSIONS, getDb, scopedDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { MockEmbeddingModelV4 } from "ai/test";
 import { describe, expect, it } from "vitest";

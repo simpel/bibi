@@ -1,12 +1,12 @@
 import { defaultKeyHasher } from "@better-auth/api-key";
-import { hashApiKey } from "@okazi/core";
+import { hashApiKey } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { getAuth } from "../src/index";
 import { createOrg, signUp } from "./helpers";
 
 describe("Better Auth API key plugin", () => {
   it("hashes keys exactly like core apiKey.create", async () => {
-    const key = "okz_TheQuickBrownFoxJumpsOverTheLazyDog";
+    const key = "bib_TheQuickBrownFoxJumpsOverTheLazyDog";
     expect(hashApiKey({ key })).toBe(await defaultKeyHasher(key));
   });
 

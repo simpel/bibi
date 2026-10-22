@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import type { RawCalendarParams } from "@/features/calendar/calendar-params";
 import { CalendarPage } from "@/features/calendar/ui/calendar-page";

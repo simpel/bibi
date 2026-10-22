@@ -1,7 +1,7 @@
 "use client";
 
-import type { TicketTemplateCreateInput, TicketTemplateDto } from "@okazi/core/schemas";
-import { Button, Form } from "@okazi/ui";
+import type { TicketTemplateCreateInput, TicketTemplateDto } from "@bibi/core/schemas";
+import { Button, Form } from "@bibi/ui";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type UseFormReturn, useFieldArray } from "react-hook-form";

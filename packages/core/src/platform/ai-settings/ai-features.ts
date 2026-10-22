@@ -5,7 +5,7 @@
  * unconfigured feature fails (UNAVAILABLE). Client-safe: no config or database imports.
  *
  * `requires` is what makes a model *possible* for the feature; only such models are offered and
- * accepted. `dimensions` must equal `EMBEDDING_DIMENSIONS` in `@okazi/db` (asserted in a test).
+ * accepted. `dimensions` must equal `EMBEDDING_DIMENSIONS` in `@bibi/db` (asserted in a test).
  */
 export const AI_FEATURES = [
   {

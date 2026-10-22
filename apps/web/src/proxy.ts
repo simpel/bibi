@@ -1,4 +1,4 @@
-import { routing } from "@okazi/i18n/routing";
+import { routing } from "@bibi/i18n/routing";
 import createMiddleware from "next-intl/middleware";
 
 /** next-intl locale routing (`/` → `/sv`, `/en/...`). Next 16 calls this file `proxy`. */

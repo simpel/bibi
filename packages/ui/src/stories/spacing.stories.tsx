@@ -7,7 +7,7 @@ function SpacingPage() {
     <div className="flex w-[64rem] max-w-full flex-col gap-10 p-6 font-sans">
       <PageHeader
         title="Rhythm, Radii & Depth"
-        description="The geometric skeleton of Okazi: a strict 4px baseline grid, tailored architectural corner radii, and warm-tinted depth shadows designed to give tactile elegance to operational surfaces."
+        description="The geometric skeleton of Bibi: a strict 4px baseline grid, tailored architectural corner radii, and warm-tinted depth shadows designed to give tactile elegance to operational surfaces."
       />
       <SpacingScaleSection />
       <RadiusSection />

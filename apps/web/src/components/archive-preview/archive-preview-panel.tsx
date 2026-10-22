@@ -1,4 +1,4 @@
-import type { ArchivePreview } from "@okazi/core/schemas";
+import type { ArchivePreview } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import type { ErrorKey } from "@/lib/error-key";
 import { InlineLoadError } from "../states/inline-load-error";

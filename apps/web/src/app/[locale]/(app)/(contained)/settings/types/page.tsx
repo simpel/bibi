@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { EntityTypeList } from "@/features/entity-type/ui/entity-type-list";
 import { readCursor } from "@/lib/page-cursor";

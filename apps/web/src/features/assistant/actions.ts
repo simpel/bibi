@@ -6,7 +6,7 @@ import {
   listMessages,
   type MessageDto,
   renameConversation,
-} from "@okazi/core";
+} from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";

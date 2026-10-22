@@ -1,8 +1,8 @@
 "use client";
 
-import type { Approval } from "@okazi/ai";
-import { useRouter } from "@okazi/i18n/navigation";
-import { toast } from "@okazi/ui";
+import type { Approval } from "@bibi/ai";
+import { useRouter } from "@bibi/i18n/navigation";
+import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { type ApprovalErrorKey, approvalErrorKey } from "../../../lib/approval-error";

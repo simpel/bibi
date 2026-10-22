@@ -1,4 +1,4 @@
-import { type CapturedLogs, captureLogs, runWithLogContext } from "@okazi/logger";
+import { type CapturedLogs, captureLogs, runWithLogContext } from "@bibi/logger";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createVenue, defineOperation, execute, listVenues, updateVenue } from "../src/index";
 import { testContext } from "./helpers";

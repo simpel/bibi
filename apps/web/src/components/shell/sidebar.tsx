@@ -5,7 +5,7 @@ import {
   SidebarHeader,
   SidebarRail,
   Wordmark,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { AssistantNav } from "./assistant-nav";
 import { PlatformAdminCard } from "./platform-admin-card";

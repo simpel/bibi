@@ -1,4 +1,4 @@
-import type { Contact } from "@okazi/db";
+import type { Contact } from "@bibi/db";
 import { recordFields, type WithRecordLinks } from "../../records/record-links";
 import type { Embeddable } from "../../search/embeddable";
 import {

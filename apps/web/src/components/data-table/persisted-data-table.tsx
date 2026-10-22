@@ -1,6 +1,6 @@
 "use client";
 
-import { DataTable, type DataTableProps } from "@okazi/ui";
+import { DataTable, type DataTableProps } from "@bibi/ui";
 import { useDataTableTextLabels } from "@/lib/use-data-table-text-labels";
 import { useColumnOrder } from "./use-column-order";
 

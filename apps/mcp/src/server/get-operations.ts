@@ -1,4 +1,4 @@
-import { type AnyOperation, createCoreOperations, type EmbedFn } from "@okazi/core";
+import { type AnyOperation, createCoreOperations, type EmbedFn } from "@bibi/core";
 
 const cache = new WeakMap<EmbedFn, AnyOperation[]>();
 

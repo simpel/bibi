@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import type { Control, FieldValues, Path } from "react-hook-form";
 
 export type ApiKeySelectFieldProps<V extends FieldValues, O> = {

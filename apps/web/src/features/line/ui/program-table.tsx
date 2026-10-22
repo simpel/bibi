@@ -1,6 +1,6 @@
 "use client";
 
-import type { LineDto } from "@okazi/core";
+import type { LineDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { ProgramFormData } from "./program-form-data";

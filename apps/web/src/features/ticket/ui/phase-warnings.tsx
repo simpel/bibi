@@ -1,4 +1,4 @@
-import type { TicketPhaseWarning } from "@okazi/core/schemas";
+import type { TicketPhaseWarning } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 
 export type PhaseWarningsProps = { warnings: readonly TicketPhaseWarning[] };

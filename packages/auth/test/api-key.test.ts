@@ -6,8 +6,8 @@ import {
   removeMember,
   revokeApiKey,
   updatePermissions,
-} from "@okazi/core";
-import { getDb } from "@okazi/db";
+} from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { resolveExecuteContext } from "../src/index";
 import { issueKey, issueKeyOrThrow, keyHeaders } from "./api-key-helpers";
@@ -30,9 +30,9 @@ const resolveKey = async ({ key }: { key: string }) => {
 };
 
 describe("resolveExecuteContext – API keys", () => {
-  it("resolves org, preset and the key as actor from x-api-key and Bearer okz_", async () => {
+  it("resolves org, preset and the key as actor from x-api-key and Bearer bib_", async () => {
     const { organizationId, key, id } = await ownerWithKey();
-    expect(key.startsWith("okz_")).toBe(true);
+    expect(key.startsWith("bib_")).toBe(true);
     const viaHeader = await resolveExecuteContext({ headers: keyHeaders({ key }) });
     const viaBearer = await resolveExecuteContext({
       headers: new Headers({ authorization: `Bearer ${key}` }),
@@ -48,7 +48,7 @@ describe("resolveExecuteContext – API keys", () => {
   });
 
   it("rejects unknown and revoked keys at once", async () => {
-    const result = await resolveExecuteContext({ headers: keyHeaders({ key: "okz_nope" }) });
+    const result = await resolveExecuteContext({ headers: keyHeaders({ key: "bib_nope" }) });
     expect(codeOf({ result })).toBe("UNAUTHENTICATED");
     const { owner, key, id } = await ownerWithKey();
     const session = await resolveExecuteContext({ headers: owner.headers });

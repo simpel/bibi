@@ -9,13 +9,13 @@ const ROOT = resolve(import.meta.dirname, "../../..");
 const readManifest = ({ path }: { path: string }): Manifest =>
   JSON.parse(readFileSync(resolve(ROOT, path), "utf8")) as Manifest;
 
-const workspaceDir = ({ name }: { name: string }) => `packages/${name.replace("@okazi/", "")}`;
+const workspaceDir = ({ name }: { name: string }) => `packages/${name.replace("@bibi/", "")}`;
 
-/** npm (non-workspace) dependencies of every @okazi package reachable from `start`. */
+/** npm (non-workspace) dependencies of every @bibi package reachable from `start`. */
 function bundledNpmDependencies({ start }: { start: Manifest }): Set<string> {
   const npm = new Set<string>();
   const seen = new Set<string>();
-  const queue = Object.keys(start.dependencies ?? {}).filter((dep) => dep.startsWith("@okazi/"));
+  const queue = Object.keys(start.dependencies ?? {}).filter((dep) => dep.startsWith("@bibi/"));
   while (queue.length > 0) {
     const name = queue.shift() as string;
     if (seen.has(name)) continue;
@@ -23,7 +23,7 @@ function bundledNpmDependencies({ start }: { start: Manifest }): Set<string> {
     const deps = Object.keys(
       readManifest({ path: `${workspaceDir({ name })}/package.json` }).dependencies ?? {},
     );
-    for (const dep of deps) dep.startsWith("@okazi/") ? queue.push(dep) : npm.add(dep);
+    for (const dep of deps) dep.startsWith("@bibi/") ? queue.push(dep) : npm.add(dep);
   }
   return npm;
 }

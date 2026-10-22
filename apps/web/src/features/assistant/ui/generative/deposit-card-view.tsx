@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@okazi/ui";
+import { Card } from "@bibi/ui";
 import { DepositEntry } from "@/features/payment/ui/deposit-entry";
 import type { GenerativeProps } from "./generative-props";
 

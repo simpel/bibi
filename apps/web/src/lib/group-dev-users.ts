@@ -1,4 +1,4 @@
-import type { DevUser } from "@okazi/auth";
+import type { DevUser } from "@bibi/auth";
 
 export type DevUserGroup = {
   organization: string;

@@ -1,5 +1,5 @@
-import { type TicketPhaseDto, ticketPhaseHistory } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { type TicketPhaseDto, ticketPhaseHistory } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { handleLoadError } from "@/server/load-error";

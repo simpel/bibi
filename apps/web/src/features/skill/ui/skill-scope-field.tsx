@@ -1,6 +1,6 @@
 "use client";
 
-import { FormController, FormDescription, FormItem, FormLabel, FormMessage } from "@okazi/ui";
+import { FormController, FormDescription, FormItem, FormLabel, FormMessage } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import type { SkillScopeChoice } from "../skill-types";

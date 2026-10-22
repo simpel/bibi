@@ -1,4 +1,4 @@
-import type { Item } from "@okazi/db";
+import type { Item } from "@bibi/db";
 import { recordFields, type WithRecordLinks } from "../../records/record-links";
 import type { Embeddable } from "../../search/embeddable";
 import {

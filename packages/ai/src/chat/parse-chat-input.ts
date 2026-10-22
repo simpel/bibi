@@ -1,4 +1,4 @@
-import { AppError, err, ok, type Result } from "@okazi/core";
+import { AppError, err, ok, type Result } from "@bibi/core";
 import type { AssistantLocale, PageContext } from "../prompt/page-context-schema";
 import { readJsonBody } from "../server/read-json-body";
 import { ASSISTANT_LIMITS } from "./assistant-limits";

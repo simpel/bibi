@@ -1,4 +1,4 @@
-import type { EntityTypeDto, FieldDefinitionDto, VocabularyDto } from "@okazi/core";
+import type { EntityTypeDto, FieldDefinitionDto, VocabularyDto } from "@bibi/core";
 
 export const MAX_ORG_SECTION_CHARS = 4000;
 const TRUNCATED = "(truncated, use entityType_list)";

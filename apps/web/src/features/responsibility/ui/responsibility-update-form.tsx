@@ -1,7 +1,7 @@
 "use client";
 
-import type { ResponsibilityDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { ResponsibilityDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import { ROUTES } from "@/lib/routes";
 import { ResponsibilityForm } from "./responsibility-form";
 import type { ResponsibilityOptions } from "./responsibility-options";

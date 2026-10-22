@@ -1,4 +1,4 @@
-import { SkillImportInputSchema } from "@okazi/core/schemas";
+import { SkillImportInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
 import type { SkillScopeChoice } from "./skill-types";
 

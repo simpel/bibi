@@ -1,7 +1,7 @@
 import "server-only";
-import { resolvePlatformContext } from "@okazi/auth";
-import { executePlatform, type PlatformOperation, type Result } from "@okazi/core";
-import { runWithLogContext } from "@okazi/logger";
+import { resolvePlatformContext } from "@bibi/auth";
+import { executePlatform, type PlatformOperation, type Result } from "@bibi/core";
+import { runWithLogContext } from "@bibi/logger";
 import { headers } from "next/headers";
 import type { z } from "zod";
 import { webLogContext } from "./request-log-context";

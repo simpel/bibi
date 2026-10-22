@@ -7,7 +7,7 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputTools,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import type { ChatStatus } from "ai";
 import { useTranslations } from "next-intl";
 import type { ComposerDraft } from "../state/use-prefill";

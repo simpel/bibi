@@ -1,6 +1,6 @@
 "use client";
 
-import { Form, FormController, FormItem, FormMessage } from "@okazi/ui";
+import { Form, FormController, FormItem, FormMessage } from "@bibi/ui";
 import { PermissionGrid } from "./permission-grid";
 import { type UsePermissionFormInput, usePermissionForm } from "./use-permission-form";
 

@@ -1,4 +1,4 @@
-import type { Line } from "@okazi/db";
+import type { Line } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";
 import type { LineRecord } from "./schema";

@@ -1,6 +1,6 @@
-import type { PipelineCard, PipelineColumn } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
-import { toast } from "@okazi/ui";
+import type { PipelineCard, PipelineColumn } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
+import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { changeTicketPhaseAction } from "@/features/ticket/actions";
 import type { ActionError } from "@/lib/action-result";

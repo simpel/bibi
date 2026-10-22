@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { VocabularyList } from "@/features/vocabulary/ui/vocabulary-list";
 import { readCursor } from "@/lib/page-cursor";

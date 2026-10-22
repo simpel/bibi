@@ -1,6 +1,6 @@
-import { getEnv } from "@okazi/config";
-import { createSystemLogSink, getDb } from "@okazi/db";
-import { getLogger, initLogger, installProcessHandlers } from "@okazi/logger";
+import { getEnv } from "@bibi/config";
+import { createSystemLogSink, getDb } from "@bibi/db";
+import { getLogger, initLogger, installProcessHandlers } from "@bibi/logger";
 import { createBoss } from "./create-boss";
 import { JOBS } from "./jobs";
 import { registerJobs } from "./register-jobs";
@@ -13,7 +13,7 @@ async function main(): Promise<void> {
   const boss = createBoss();
   await boss.start();
   await registerJobs({ boss, db: getDb(), jobs: JOBS });
-  getLogger().info({ event: "process.started", msg: "@okazi/worker started", jobs: JOBS.length });
+  getLogger().info({ event: "process.started", msg: "@bibi/worker started", jobs: JOBS.length });
 
   let stopping = false;
   const shutdown = async ({ signal }: { signal: string }): Promise<void> => {

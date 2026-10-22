@@ -1,5 +1,5 @@
+import type { EntityTypeDto } from "@bibi/core";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { EntityTypeDto } from "@okazi/core";
 import type { FieldValues, Resolver } from "react-hook-form";
 import type { z } from "zod";
 import { useZodMessages } from "@/lib/use-zod-messages";

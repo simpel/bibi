@@ -1,5 +1,5 @@
-import { execute, getLine } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { execute, getLine } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { JOBS } from "../src/jobs";
 import { expireTicketHoldsJob } from "../src/jobs/expire-ticket-holds";

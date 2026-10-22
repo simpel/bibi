@@ -1,4 +1,4 @@
-import { getLogger } from "@okazi/logger";
+import { getLogger } from "@bibi/logger";
 import { getAuth } from "../get-auth";
 import { isDevEnvironment } from "./dev-users";
 

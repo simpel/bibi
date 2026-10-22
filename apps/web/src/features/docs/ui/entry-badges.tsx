@@ -1,4 +1,4 @@
-import { Badge } from "@okazi/ui";
+import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReferenceEntry } from "../reference/types";
 

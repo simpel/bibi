@@ -1,4 +1,4 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import { ticketIdFromAddress } from "./address";
 
 export type ResolveInboundTicketInput = { db: Db; recipients: readonly string[]; domain: string };

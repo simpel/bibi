@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
+import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { ArrowRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Fragment } from "react";

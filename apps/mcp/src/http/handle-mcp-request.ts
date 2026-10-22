@@ -1,5 +1,5 @@
+import { type EmbedFn, type ExecuteContext, type Result, toHttpStatus } from "@bibi/core";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
-import { type EmbedFn, type ExecuteContext, type Result, toHttpStatus } from "@okazi/core";
 import { createMcpServer } from "../server/create-mcp-server";
 import { wwwAuthenticate } from "./protected-resource";
 

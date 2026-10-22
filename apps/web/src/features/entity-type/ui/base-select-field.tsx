@@ -1,4 +1,4 @@
-import { ENTITY_BASES } from "@okazi/core/schemas";
+import { ENTITY_BASES } from "@bibi/core/schemas";
 import {
   FormControl,
   FormController,
@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control } from "react-hook-form";
 import type { EntityTypeFormOutput, EntityTypeFormValues } from "./entity-type-form-schema";

@@ -1,9 +1,9 @@
-import { getDb } from "@okazi/db";
-import { runWithLogContext } from "@okazi/logger";
+import { getDb } from "@bibi/db";
+import { runWithLogContext } from "@bibi/logger";
 import { refuseProduction } from "./guard";
 import { cleanupTestLeftovers } from "./test-leftovers";
 
-// `pnpm --filter @okazi/core cleanup:test-orgs` – opt-in, never run automatically. Lists the
+// `pnpm --filter @bibi/core cleanup:test-orgs` – opt-in, never run automatically. Lists the
 // organizations (and their test-domain users) that old test runs left in the database `.env`
 // points at; `-- --yes` deletes them. The canonical demo organizations and every organization
 // with a real member are kept. Tests use their own `<db>_test` database now (`pnpm test:db`).

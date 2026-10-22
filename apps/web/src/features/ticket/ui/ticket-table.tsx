@@ -1,6 +1,6 @@
 "use client";
 
-import type { TicketDto } from "@okazi/core";
+import type { TicketDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { type TicketLookups, useTicketColumns } from "./use-ticket-columns";

@@ -1,5 +1,5 @@
-import type { EntityTypeDto } from "@okazi/core";
-import { Badge } from "@okazi/ui";
+import type { EntityTypeDto } from "@bibi/core";
+import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type CapabilityBadgesProps = { capabilities: EntityTypeDto["capabilities"] };

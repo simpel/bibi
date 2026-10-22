@@ -1,5 +1,5 @@
-import type { ReceivableProgress, ReceivableStatus } from "@okazi/core/schemas";
-import { Badge } from "@okazi/ui";
+import type { ReceivableProgress, ReceivableStatus } from "@bibi/core/schemas";
+import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type ReceivableBadgesProps = { status?: ReceivableStatus; progress: ReceivableProgress };

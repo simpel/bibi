@@ -1,7 +1,7 @@
 "use client";
 
-import type { OauthGrantDto } from "@okazi/core";
-import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
+import type { OauthGrantDto } from "@bibi/core";
+import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ConfirmActionDialog } from "@/components/confirm-action-dialog";

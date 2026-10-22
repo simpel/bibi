@@ -1,4 +1,4 @@
-import { type AppError, toHttpStatus } from "@okazi/core";
+import { type AppError, toHttpStatus } from "@bibi/core";
 
 export type ErrorResponseInput = { error: AppError };
 

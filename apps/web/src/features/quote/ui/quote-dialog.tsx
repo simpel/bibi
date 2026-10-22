@@ -1,4 +1,4 @@
-import type { QuoteDto } from "@okazi/core";
+import type { QuoteDto } from "@bibi/core";
 import {
   Button,
   Dialog,
@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   Form,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import type { QuoteFormTarget } from "./quote-form-schema";

@@ -5,8 +5,8 @@ import {
   listEntityTypes,
   listVocabularies,
   type VocabularyDto,
-} from "@okazi/core";
-import { getLogger } from "@okazi/logger";
+} from "@bibi/core";
+import { getLogger } from "@bibi/logger";
 import { describeOrgFields } from "./describe-org-fields";
 import type { McpTool } from "./types";
 

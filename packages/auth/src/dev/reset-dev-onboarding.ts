@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { DEV_EMAIL_SUFFIX, isDevEnvironment } from "./dev-users";
 
 export type ResetDevOnboardingInput = { userId: string };

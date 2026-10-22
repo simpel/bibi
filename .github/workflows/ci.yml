@@ -11,15 +11,15 @@ jobs:
       postgres:
         image: pgvector/pgvector:pg17
         env:
-          POSTGRES_USER: okazi
-          POSTGRES_PASSWORD: okazi
-          POSTGRES_DB: okazi
+          POSTGRES_USER: bibi
+          POSTGRES_PASSWORD: bibi
+          POSTGRES_DB: bibi
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U okazi" --health-interval 5s
+          --health-cmd "pg_isready -U bibi" --health-interval 5s
           --health-timeout 3s --health-retries 10
     env:
-      DATABASE_URL: postgresql://okazi:okazi@localhost:5432/okazi
+      DATABASE_URL: postgresql://bibi:bibi@localhost:5432/bibi
       BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-123
       BETTER_AUTH_URL: http://localhost:3000
     steps:
@@ -66,15 +66,15 @@ jobs:
       postgres:
         image: pgvector/pgvector:pg17
         env:
-          POSTGRES_USER: okazi
-          POSTGRES_PASSWORD: okazi
-          POSTGRES_DB: okazi
+          POSTGRES_USER: bibi
+          POSTGRES_PASSWORD: bibi
+          POSTGRES_DB: bibi
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U okazi" --health-interval 5s
+          --health-cmd "pg_isready -U bibi" --health-interval 5s
           --health-timeout 3s --health-retries 10
     env:
-      DATABASE_URL: postgresql://okazi:okazi@localhost:5432/okazi
+      DATABASE_URL: postgresql://bibi:bibi@localhost:5432/bibi
       BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-123
       BETTER_AUTH_URL: http://localhost:3000
       WEB_URL: http://localhost:3000
@@ -90,26 +90,26 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm db:generate
       - run: pnpm db:migrate
-      - run: pnpm --filter @okazi/core seed:skills
+      - run: pnpm --filter @bibi/core seed:skills
       - name: Provision the assistant's OAuth client
         run: |
-          pnpm --filter @okazi/web provision:oauth | tee provision.log
+          pnpm --filter @bibi/web provision:oauth | tee provision.log
           grep -E '^WEB_OAUTH_CLIENT_ID=' provision.log >> "$GITHUB_ENV"
-      - run: pnpm --filter @okazi/mcp build
-      - run: pnpm --filter @okazi/web build
+      - run: pnpm --filter @bibi/mcp build
+      - run: pnpm --filter @bibi/web build
       - name: Get Playwright version
         id: pw
-        run: echo "version=$(pnpm --filter @okazi/web exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+        run: echo "version=$(pnpm --filter @bibi/web exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         id: pw-cache
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.pw.outputs.version }}
       - if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: pnpm --filter @okazi/web exec playwright install --with-deps chromium
+        run: pnpm --filter @bibi/web exec playwright install --with-deps chromium
       - if: steps.pw-cache.outputs.cache-hit == 'true'
-        run: pnpm --filter @okazi/web exec playwright install-deps chromium
-      - run: pnpm --filter @okazi/web test:e2e
+        run: pnpm --filter @bibi/web exec playwright install-deps chromium
+      - run: pnpm --filter @bibi/web test:e2e
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
         with:

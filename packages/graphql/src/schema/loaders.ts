@@ -12,8 +12,8 @@ import {
   type VocabularyValueDto,
   WITH_STATE_TRANSITIONS,
   WITH_TRANSITIONS,
-} from "@okazi/core";
-import type { ScopedDb } from "@okazi/db";
+} from "@bibi/core";
+import type { ScopedDb } from "@bibi/db";
 import { type BatchLoader, createBatchLoader } from "./batch-loader";
 
 type VenueRow = NonNullable<Awaited<ReturnType<ScopedDb["venue"]["findFirst"]>>>;

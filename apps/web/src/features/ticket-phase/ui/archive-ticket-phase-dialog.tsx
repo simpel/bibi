@@ -1,5 +1,5 @@
-import type { TicketPhaseDto } from "@okazi/core/schemas";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
+import type { TicketPhaseDto } from "@bibi/core/schemas";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ArchiveTicketPhaseForm } from "./archive-ticket-phase-form";
 

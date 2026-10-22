@@ -1,4 +1,4 @@
-import type { TicketPhase } from "@okazi/db";
+import type { TicketPhase } from "@bibi/db";
 import type { AppErrorIssue } from "../../errors/app-error";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";

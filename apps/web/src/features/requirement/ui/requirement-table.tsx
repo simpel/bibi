@@ -1,6 +1,6 @@
 "use client";
 
-import type { RequirementDto } from "@okazi/core";
+import type { RequirementDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { RowAccess } from "@/lib/can";

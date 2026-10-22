@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@okazi/ui";
+import { Button } from "@bibi/ui";
 import { UploadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

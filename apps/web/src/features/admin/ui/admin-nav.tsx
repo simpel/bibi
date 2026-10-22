@@ -1,13 +1,13 @@
 "use client";
 
-import { Link, usePathname } from "@okazi/i18n/navigation";
+import { Link, usePathname } from "@bibi/i18n/navigation";
 import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { BotIcon, ScrollTextIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ROUTES } from "@/lib/routes";

@@ -1,4 +1,4 @@
-import { PLATFORM_SCOPE } from "@okazi/db";
+import { PLATFORM_SCOPE } from "@bibi/db";
 import { ok, type Result } from "../errors/result";
 import { auditRows } from "../operations/audit-rows";
 import { parseWith } from "../operations/parse-with";

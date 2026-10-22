@@ -1,6 +1,6 @@
+import type { PermissionSet, PermissionUpdateInput } from "@bibi/core/schemas";
+import { useRouter } from "@bibi/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { PermissionSet, PermissionUpdateInput } from "@okazi/core/schemas";
-import { useRouter } from "@okazi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";

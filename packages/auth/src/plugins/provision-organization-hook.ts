@@ -1,4 +1,4 @@
-import { provisionOrganization } from "@okazi/core";
+import { provisionOrganization } from "@bibi/core";
 import { APIError } from "better-auth/api";
 
 export type ProvisionHookInput = { organization: { id: string } };

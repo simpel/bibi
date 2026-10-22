@@ -1,4 +1,4 @@
-import type { Customer } from "@okazi/db";
+import type { Customer } from "@bibi/db";
 import { hasPermission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";

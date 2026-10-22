@@ -1,5 +1,5 @@
-import type { QuoteDto } from "@okazi/core";
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@okazi/ui";
+import type { QuoteDto } from "@bibi/core";
+import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { QuoteLinesTable } from "./quote-lines-table";
 

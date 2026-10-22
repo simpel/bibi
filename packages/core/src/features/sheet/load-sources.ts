@@ -1,4 +1,4 @@
-import type { Ticket } from "@okazi/db";
+import type { Ticket } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid, notFound } from "../../shared/errors";

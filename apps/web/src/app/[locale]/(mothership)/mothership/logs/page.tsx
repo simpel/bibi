@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import type { LogSearchParams } from "@/features/admin/logs/log-params";
 import { SystemLogView } from "@/features/admin/logs/system-log-view";

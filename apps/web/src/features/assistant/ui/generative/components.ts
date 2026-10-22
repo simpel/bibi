@@ -1,4 +1,4 @@
-import type { UiComponent } from "@okazi/ai";
+import type { UiComponent } from "@bibi/ai";
 import type { ComponentType } from "react";
 import { AlternativeGroupCardView } from "./alternative-group-card-view";
 import { AlternativeGroupTableView } from "./alternative-group-table-view";
@@ -71,7 +71,7 @@ import { VocabularyCardView } from "./vocabulary-card-view";
 import { VocabularyTableView } from "./vocabulary-table-view";
 
 /**
- * One React component per generative-UI key of `@okazi/ai/ui` (`UI_COMPONENTS`). The mapped type
+ * One React component per generative-UI key of `@bibi/ai/ui` (`UI_COMPONENTS`). The mapped type
  * makes this exhaustive at compile time: a new key without a component is a type error, and the
  * component's props are the key's `ToolUiProps`.
  */

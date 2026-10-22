@@ -1,5 +1,5 @@
 import "server-only";
-import { type AuthSession, requireSession } from "@okazi/auth";
+import { type AuthSession, requireSession } from "@bibi/auth";
 import { headers } from "next/headers";
 
 export type SessionState =

@@ -1,8 +1,8 @@
+import type { AlternativeGroupDto, AlternativeGroupUpdateInput } from "@bibi/core/schemas";
+import { AlternativeGroupUpdateInputSchema } from "@bibi/core/schemas";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { AlternativeGroupDto, AlternativeGroupUpdateInput } from "@okazi/core/schemas";
-import { AlternativeGroupUpdateInputSchema } from "@okazi/core/schemas";
-import { useRouter } from "@okazi/i18n/navigation";
-import { Button, DialogFooter, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";

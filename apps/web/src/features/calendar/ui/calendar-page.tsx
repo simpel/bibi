@@ -1,6 +1,6 @@
-import { DEFAULT_TIME_ZONE, type Locale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
-import { Button } from "@okazi/ui";
+import { DEFAULT_TIME_ZONE, type Locale } from "@bibi/i18n";
+import { Link } from "@bibi/i18n/navigation";
+import { Button } from "@bibi/ui";
 import { getFormatter, getTranslations } from "next-intl/server";
 import type { ComponentProps, ReactNode } from "react";
 import { EmptyState } from "@/components/states/empty-state";

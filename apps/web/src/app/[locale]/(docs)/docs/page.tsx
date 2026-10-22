@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { loadDocText } from "@/features/docs/server/doc-text";
 import { DocArticle } from "@/features/docs/ui/doc-article";
@@ -12,7 +12,7 @@ type DocsHomeProps = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: DocsHomeProps) {
   const { locale } = await params;
   const text = await loadDocText({ locale, key: "home" });
-  return { title: `${text.title} · Okazi`, description: text.lead };
+  return { title: `${text.title} · Bibi`, description: text.lead };
 }
 
 /** Docs start page: one card per audience (staff guide, developers, reference). */

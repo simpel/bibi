@@ -11,7 +11,7 @@ x-logging: &logging
 
 x-app-env: &app-env
   NODE_ENV: production
-  DATABASE_URL: postgresql://okazi:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/okazi
+  DATABASE_URL: postgresql://bibi:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/bibi
   BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set BETTER_AUTH_SECRET}
   BETTER_AUTH_URL: ${BETTER_AUTH_URL:?set BETTER_AUTH_URL}
   WEB_URL: ${WEB_URL:?set WEB_URL}
@@ -31,13 +31,13 @@ services:
     image: pgvector/pgvector:pg17
     restart: unless-stopped
     environment:
-      POSTGRES_USER: okazi
+      POSTGRES_USER: bibi
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
-      POSTGRES_DB: okazi
+      POSTGRES_DB: bibi
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U okazi -d okazi"]
+      test: ["CMD-SHELL", "pg_isready -U bibi -d bibi"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -46,17 +46,17 @@ services:
   # One-off step: applies pending migrations and exits. web and mcp wait for it.
   # Migrations must be backward compatible (expand/contract), see docs/decisions/0013-hosting-and-deploy.md.
   migrate:
-    image: ${IMAGE_REPO:-ghcr.io/simpel/okazi}-web:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
+    image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-web:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: "no"
-    command: ["pnpm", "--filter", "@okazi/db", "migrate"]
+    command: ["pnpm", "--filter", "@bibi/db", "migrate"]
     environment:
-      DATABASE_URL: postgresql://okazi:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/okazi
+      DATABASE_URL: postgresql://bibi:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}@postgres:5432/bibi
     depends_on:
       postgres: { condition: service_healthy }
     logging: *logging
 
   web:
-    image: ${IMAGE_REPO:-ghcr.io/simpel/okazi}-web:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
+    image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-web:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: unless-stopped
     environment: *app-env
     ports:
@@ -73,7 +73,7 @@ services:
     logging: *logging
 
   mcp:
-    image: ${IMAGE_REPO:-ghcr.io/simpel/okazi}-mcp:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
+    image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-mcp:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: unless-stopped
     environment: *app-env
     ports:
@@ -92,7 +92,7 @@ services:
   # Job scheduler and queue (pg-boss, ADR 0027). No HTTP port. pg-boss migrates its own `pgboss`
   # schema on start. Graceful stop: SIGTERM runs `boss.stop()`, so give running jobs time to finish.
   worker:
-    image: ${IMAGE_REPO:-ghcr.io/simpel/okazi}-worker:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
+    image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-worker:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: unless-stopped
     environment: *app-env
     stop_grace_period: 30s
@@ -112,9 +112,9 @@ services:
     restart: unless-stopped
     environment:
       PGHOST: postgres
-      PGUSER: okazi
+      PGUSER: bibi
       PGPASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
-      PGDATABASE: okazi
+      PGDATABASE: bibi
       BACKUP_S3_BUCKET: ${BACKUP_S3_BUCKET:?set BACKUP_S3_BUCKET}
       BACKUP_S3_ENDPOINT: ${BACKUP_S3_ENDPOINT:?set BACKUP_S3_ENDPOINT}
       BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-30}

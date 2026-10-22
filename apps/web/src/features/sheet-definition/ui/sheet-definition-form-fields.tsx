@@ -1,4 +1,4 @@
-import type { SheetDefinitionCreateInput } from "@okazi/core";
+import type { SheetDefinitionCreateInput } from "@bibi/core";
 import {
   ChoiceControl,
   FormControl,
@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
   MultiChoiceControl,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import type { SheetDefinitionFormValues } from "./sheet-definition-form-schema";

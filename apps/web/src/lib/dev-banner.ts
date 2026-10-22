@@ -12,7 +12,7 @@ export function formatDevBanner({ services }: FormatDevBannerInput): string {
   return [
     "",
     rule,
-    " Okazi dev environment",
+    " Bibi dev environment",
     rule,
     ...lines,
     "",

@@ -1,7 +1,7 @@
 "use client";
 
-import type { PermissionSet } from "@okazi/core";
-import { CommandDialog, CommandEmpty, CommandInput, CommandList } from "@okazi/ui";
+import type { PermissionSet } from "@bibi/core";
+import { CommandDialog, CommandEmpty, CommandInput, CommandList } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useCallback, useState } from "react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";

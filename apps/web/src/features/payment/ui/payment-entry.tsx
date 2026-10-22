@@ -1,4 +1,4 @@
-import type { PaymentDto } from "@okazi/core/schemas";
+import type { PaymentDto } from "@bibi/core/schemas";
 import { useFormatter, useTranslations } from "next-intl";
 import { PaymentStatusBadge } from "./payment-status-badge";
 import { useMoney } from "./use-money";
@@ -17,7 +17,7 @@ const settles = ({ payment }: PaymentEntryProps) =>
 
 /**
  * One requested payment: method, amount, what it settles, status, when it was requested or paid,
- * Okazi's application fee on it and its link.
+ * Bibi's application fee on it and its link.
  */
 export function PaymentEntry({ payment }: PaymentEntryProps) {
   const t = useTranslations("payment");

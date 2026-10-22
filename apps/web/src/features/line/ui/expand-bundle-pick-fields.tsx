@@ -1,4 +1,4 @@
-import type { LineExpandBundleInput } from "@okazi/core/schemas";
+import type { LineExpandBundleInput } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { OptionSelectField } from "@/components/form/option-select-field";

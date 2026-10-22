@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "@okazi/i18n/navigation";
-import { Form } from "@okazi/ui";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Form } from "@bibi/ui";
 import type { ReactNode } from "react";
 import type { FieldPath, FieldValues, UseFormReturn } from "react-hook-form";
 import { useWizard } from "./use-wizard";

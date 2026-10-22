@@ -1,5 +1,5 @@
 import type { MCPClient } from "@ai-sdk/mcp";
-import { APP_ERROR_CODES, AppError, err, fromUnknown, ok, type Result } from "@okazi/core";
+import { APP_ERROR_CODES, AppError, err, fromUnknown, ok, type Result } from "@bibi/core";
 import { z } from "zod";
 
 const McpErrorSchema = z.object({

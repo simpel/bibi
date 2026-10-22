@@ -1,4 +1,4 @@
-import type { KanbanLabels } from "@okazi/ui";
+import type { KanbanLabels } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 /** The board's drag-and-drop texts (screen reader announcements and the empty lane). */

@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { elapsedMs, getLogger, runWithLogContext } from "@okazi/logger";
+import { elapsedMs, getLogger, runWithLogContext } from "@bibi/logger";
 
 export type RunJobInput = { name: string; run: () => Promise<void> };
 

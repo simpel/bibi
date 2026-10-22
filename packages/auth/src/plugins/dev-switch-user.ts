@@ -8,7 +8,7 @@ const BodySchema = z.object({ userId: z.string().min(1) });
 /**
  * Development only: starts a session for a seeded demo user without mail or password. The endpoint
  * is `SERVER_ONLY` (not reachable over HTTP, only via `auth.api` from a server action), refuses
- * outside `NODE_ENV=development`, and only accepts seeded `*.okazi.test` users.
+ * outside `NODE_ENV=development`, and only accepts seeded `*.bibi.test` users.
  */
 export function devSwitchUserPlugin() {
   return {

@@ -1,19 +1,19 @@
-# @okazi/ui – design system
+# @bibi/ui – design system
 
-Shared component package for all UI in Okazi. Apps import **only** from here (`@okazi/ui`); no raw colors, radii or fonts in apps.
+Shared component package for all UI in Bibi. Apps import **only** from here (`@bibi/ui`); no raw colors, radii or fonts in apps.
 
 ## Structure
 - `src/styles/tokens.css` – the ONLY place for design tokens (colors, radius, spacing, fonts, shadows; light + `.dark`).
 - `src/styles/base.css` – base styles (body, headings) via token utilities.
-- `src/styles/index.css` – `@import "tailwindcss"` + tokens + base. Exported as `@okazi/ui/styles.css`.
+- `src/styles/index.css` – `@import "tailwindcss"` + tokens + base. Exported as `@bibi/ui/styles.css`.
 - `src/components/<name>/<name>.tsx` – one component family per file (≤150 lines, functions ≤40 lines), plus `<name>.stories.tsx`.
 - `src/lib/cn.ts` – `cn()` (clsx + tailwind-merge).
 - `src/index.ts` – the only barrel file. Add each new component here.
 
 ## Consuming in an app
-Source export (no build step): add `@okazi/ui` to `transpilePackages` (Next) and import the CSS once in the app's global CSS:
+Source export (no build step): add `@bibi/ui` to `transpilePackages` (Next) and import the CSS once in the app's global CSS:
 ```css
-@import "@okazi/ui/styles.css";
+@import "@bibi/ui/styles.css";
 ```
 `index.css` has `@source "../"` so Tailwind finds the classes in the package.
 
@@ -22,7 +22,7 @@ Source export (no build step): add `@okazi/ui` to `transpilePackages` (Next) and
 2. Change `--font-sans`/`--font-serif` (and purpose aliases), `--radius`, `--shadow-*` in `@theme` if needed.
 3. Load web fonts in the app (e.g. `next/font`) – not in the package.
 4. New semantic token: add both the `:root`/`.dark` value AND the `--color-*` mapping in `@theme inline`.
-5. Run `pnpm --filter @okazi/ui build-storybook` and review Foundations/Tokens in light and dark mode.
+5. Run `pnpm --filter @bibi/ui build-storybook` and review Foundations/Tokens in light and dark mode.
 
 Nothing outside `tokens.css` may contain hardcoded colors (hex/rgb/oklch), radii or fonts.
 
@@ -37,5 +37,5 @@ Nothing outside `tokens.css` may contain hardcoded colors (hex/rgb/oklch), radii
 8. Helper functions (non-components) take a single typed object: `fn({ a, b }: FnInput)`. The only exception is `cn(...inputs)`.
 
 ## Commands
-- `pnpm --filter @okazi/ui typecheck` (`build` runs the same typecheck)
-- `pnpm --filter @okazi/ui storybook` / `build-storybook` – dark mode is toggled in the toolbar.
+- `pnpm --filter @bibi/ui typecheck` (`build` runs the same typecheck)
+- `pnpm --filter @bibi/ui storybook` / `build-storybook` – dark mode is toggled in the toolbar.

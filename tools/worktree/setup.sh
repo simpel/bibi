@@ -12,7 +12,7 @@ if [ ! -f .env ]; then
     # The main client id belongs to the main database; drop it so it is provisioned below.
     grep -v '^WEB_OAUTH_CLIENT_ID=' "$MAIN_ROOT/.env" > .env
   elif [ -f .exampleenv ]; then
-    # Empty optional keys (OKAZI_API_KEY=) fail the Zod env schema; leave them unset instead.
+    # Empty optional keys (BIBI_API_KEY=) fail the Zod env schema; leave them unset instead.
     { grep -vE '^[A-Z_]+=$' .exampleenv || true; } > .env
   fi
 fi
@@ -30,7 +30,7 @@ if ! is_main_checkout; then
   WEB_PORT=$((3100 + SLOT))
   MCP_PORT=$((3200 + SLOT))
   set_env WORKTREE_SLOT "$SLOT"
-  set_env DATABASE_URL "postgresql://okazi:okazi@localhost:5432/$DB"
+  set_env DATABASE_URL "postgresql://bibi:bibi@localhost:5432/$DB"
   set_env WEB_PORT "$WEB_PORT"
   set_env PORT "$MCP_PORT"
   set_env WEB_URL "http://localhost:$WEB_PORT"
@@ -48,9 +48,9 @@ fi
 
 load_env
 pnpm db:migrate
-pnpm --filter @okazi/core seed:skills
+pnpm --filter @bibi/core seed:skills
 if [ -z "$(env_value WEB_OAUTH_CLIENT_ID .env)" ]; then
-  CLIENT_LINE="$(pnpm --filter @okazi/web provision:oauth | grep '^WEB_OAUTH_CLIENT_ID=' | tail -1)"
+  CLIENT_LINE="$(pnpm --filter @bibi/web provision:oauth | grep '^WEB_OAUTH_CLIENT_ID=' | tail -1)"
   [ -n "$CLIENT_LINE" ] && set_env WEB_OAUTH_CLIENT_ID "${CLIENT_LINE#WEB_OAUTH_CLIENT_ID=}"
 fi
 

@@ -1,5 +1,5 @@
-import { type EmbedFn, fromZodError } from "@okazi/core";
-import { printSchemaSdl } from "@okazi/graphql";
+import { type EmbedFn, fromZodError } from "@bibi/core";
+import { printSchemaSdl } from "@bibi/graphql";
 import { z } from "zod";
 import { assertReadOnly, MAX_QUERY_LENGTH } from "../graphql/read-only";
 import { runGraphqlQuery } from "../graphql/run-query";
@@ -23,7 +23,7 @@ export function createGraphqlSchemaTool(): McpTool {
   return {
     name: "graphql_schema",
     description:
-      "Returns the GraphQL schema (SDL) of the Okazi graph. Read it once, then use graphql_query " +
+      "Returns the GraphQL schema (SDL) of the Bibi graph. Read it once, then use graphql_query " +
       "to read related data (e.g. venues with their items) in a single call.",
     inputSchema: { type: "object", properties: {} },
     outputSchema: {
@@ -45,7 +45,7 @@ export function createGraphqlQueryTool({ embed }: GraphqlQueryToolInput): McpToo
   return {
     name: "graphql_query",
     description:
-      "Runs a read-only GraphQL query against the Okazi graph with your permissions and " +
+      "Runs a read-only GraphQL query against the Bibi graph with your permissions and " +
       "organization. Mutations and subscriptions are rejected; use the curated tools to change data.",
     inputSchema: toJsonSchema({ schema: GraphqlQueryInputSchema, io: "input" }),
     outputSchema: {

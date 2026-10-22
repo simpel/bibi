@@ -1,8 +1,8 @@
 "use client";
 
-import type { TicketTemplateDto } from "@okazi/core/schemas";
-import { Link } from "@okazi/i18n/navigation";
-import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
+import type { TicketTemplateDto } from "@bibi/core/schemas";
+import { Link } from "@bibi/i18n/navigation";
+import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";

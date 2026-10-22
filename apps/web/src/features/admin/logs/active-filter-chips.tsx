@@ -1,5 +1,5 @@
-import type { SystemLogListQuery } from "@okazi/core/schemas";
-import { Button } from "@okazi/ui";
+import type { SystemLogListQuery } from "@bibi/core/schemas";
+import { Button } from "@bibi/ui";
 import { XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useLogNavigation } from "./use-log-navigation";

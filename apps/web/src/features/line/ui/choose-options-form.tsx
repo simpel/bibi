@@ -1,4 +1,4 @@
-import type { LineChooseOptionsInput } from "@okazi/core/schemas";
+import type { LineChooseOptionsInput } from "@bibi/core/schemas";
 import {
   Button,
   DialogFooter,
@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
   MultiChoiceControl,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import type { ChooseOptionsFormValues } from "./choose-options-schema";

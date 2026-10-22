@@ -1,5 +1,5 @@
-import { appError, err } from "@okazi/core";
-import { type CapturedLogs, captureLogs } from "@okazi/logger";
+import { appError, err } from "@bibi/core";
+import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   createMemoryMailProvider,

@@ -1,5 +1,5 @@
-import type { Locale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
+import type { Locale } from "@bibi/i18n";
+import { Link } from "@bibi/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { FormPageShell } from "@/components/wizard/form-page-shell";

@@ -1,4 +1,4 @@
-import type { Result, TicketDto } from "@okazi/core";
+import type { Result, TicketDto } from "@bibi/core";
 import type { MailMessage, SentMail } from "./schema";
 import { sendMail } from "./send-mail";
 

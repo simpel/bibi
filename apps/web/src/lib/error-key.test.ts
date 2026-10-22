@@ -1,5 +1,5 @@
-import { APP_ERROR_CODES } from "@okazi/core";
-import messages from "@okazi/i18n/messages/sv.json";
+import { APP_ERROR_CODES } from "@bibi/core";
+import messages from "@bibi/i18n/messages/sv.json";
 import { describe, expect, it } from "vitest";
 import { errorKeyForCode } from "./error-key";
 

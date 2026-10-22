@@ -1,5 +1,5 @@
-import type { SystemLogEntry } from "@okazi/core/schemas";
-import type { ColumnDef } from "@okazi/ui";
+import type { SystemLogEntry } from "@bibi/core/schemas";
+import type { ColumnDef } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { LevelBadge } from "./level-badge";

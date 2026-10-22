@@ -1,4 +1,4 @@
-# @okazi/worker – context for Claude
+# @bibi/worker – context for Claude
 
 Job scheduler and queue worker: pg-boss, with queue and cron in Postgres (ADR 0027).
 
@@ -9,4 +9,4 @@ Job scheduler and queue worker: pg-boss, with queue and cron in Postgres (ADR 00
 - Jobs run in `runWithLogContext` (`src/run-job.ts` does it). Log via `getLogger()` only.
 
 ## Commands
-- `pnpm --filter @okazi/worker dev | build | start | typecheck | test`
+- `pnpm --filter @bibi/worker dev | build | start | typecheck | test`

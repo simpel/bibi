@@ -1,7 +1,7 @@
 "use client";
 
-import type { ItemStateDto } from "@okazi/core/schemas";
-import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
+import type { ItemStateDto } from "@bibi/core/schemas";
+import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";

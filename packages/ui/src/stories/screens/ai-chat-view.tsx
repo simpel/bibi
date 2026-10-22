@@ -11,7 +11,7 @@ function AIChatBanner() {
     <div className="flex items-center justify-between border-b border-border bg-muted/20 px-6 py-2.5 text-xs">
       <div className="flex items-center gap-2">
         <SparklesIcon className="size-4 text-primary" />
-        <span className="font-serif font-medium text-foreground">Okazi Intelligence</span>
+        <span className="font-serif font-medium text-foreground">Bibi Intelligence</span>
         <span className="text-muted-foreground">
           • Connected to Hesselby Slott booking pipeline & venue availability
         </span>

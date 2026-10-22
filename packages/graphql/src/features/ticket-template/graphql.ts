@@ -6,7 +6,7 @@ import {
   type TicketTemplateDto,
   TicketTemplateSchema,
   updateTicketTemplate,
-} from "@okazi/core";
+} from "@bibi/core";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";

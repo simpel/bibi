@@ -1,4 +1,4 @@
-import { Suggestion, Suggestions } from "@okazi/ui";
+import { Suggestion, Suggestions } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useAssistant } from "@/features/assistant/state/assistant-context";
 import { latestSetupDraft } from "../lib/latest-setup-draft";

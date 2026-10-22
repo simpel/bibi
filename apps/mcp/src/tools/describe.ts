@@ -1,4 +1,4 @@
-import type { AnyOperation } from "@okazi/core";
+import type { AnyOperation } from "@bibi/core";
 
 export type DescribeInput = { operation: AnyOperation };
 
@@ -9,7 +9,7 @@ export function describeOperation({ operation }: DescribeInput): string {
   else if (operation.approval) {
     lines.push(
       "Changes data. When called by the AI assistant it is NOT executed: the result is " +
-        "`status: approval_required` with a summary, and the user must approve it in the Okazi UI. " +
+        "`status: approval_required` with a summary, and the user must approve it in the Bibi UI. " +
         "Do not retry or call it again; tell the user a proposal is waiting for approval.",
     );
   }

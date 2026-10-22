@@ -1,5 +1,5 @@
 import "server-only";
-import { ok, type Result, type VenueDto } from "@okazi/core";
+import { ok, type Result, type VenueDto } from "@bibi/core";
 import { type FilterBlocksInput, filterBlocks } from "./calendar-block-filter";
 import {
   type CalendarBlock,

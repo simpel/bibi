@@ -1,5 +1,5 @@
-import { type Db, getDb } from "@okazi/db";
-import { getLogger, maskEmail } from "@okazi/logger";
+import { type Db, getDb } from "@bibi/db";
+import { getLogger, maskEmail } from "@bibi/logger";
 import { ok, type Result } from "../../errors/result";
 import { createExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";

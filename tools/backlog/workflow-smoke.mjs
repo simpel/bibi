@@ -31,7 +31,7 @@ async function runScript({ args = {}, tickets, impl, review, hook }) {
       if (opts.label.startsWith("merge")) return { state: "merged", sha: "abc1234", pr: 101 };
       if (/^(resolve|land-fix|ci-fix)/.test(opts.label) && prompt.includes("merge.sh"))
         return { state: "merged", sha: "abc1234", pr: 101 };
-      return { state: "opened", pr: 101, url: "https://github.com/simpel/okazi/pull/101" };
+      return { state: "opened", pr: 101, url: "https://github.com/simpel/bibi/pull/101" };
     }
     if (opts.phase === "Park") return { state: "parked", branch: "parked/x" };
     return { created: [] };
@@ -98,7 +98,7 @@ const check = (name, ok, detail = "") => {
   );
   check(
     "codemod script lives outside the git tree",
-    impl4?.prompt.includes("okazi-worktrees/.scratch/t-4"),
+    impl4?.prompt.includes("bibi-worktrees/.scratch/t-4"),
   );
   const rev4 = calls.find((c) => c.phase === "Review" && c.label === "tenancy #4");
   const rev1 = calls.find((c) => c.phase === "Review" && c.label === "tenancy #1");
@@ -386,7 +386,7 @@ const check = (name, ok, detail = "") => {
   );
   check(
     "the result carries the PR",
-    feature.result.landed[0]?.pr === "https://github.com/simpel/okazi/pull/101",
+    feature.result.landed[0]?.pr === "https://github.com/simpel/bibi/pull/101",
     JSON.stringify(feature.result.landed),
   );
 

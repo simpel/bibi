@@ -1,6 +1,6 @@
 "use client";
 
-import type { VocabularyDto } from "@okazi/core";
+import type { VocabularyDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { RowAccess } from "@/lib/can";

@@ -1,5 +1,5 @@
 import { verifyJwsAccessToken } from "@better-auth/core/oauth2";
-import { ok, type Result } from "@okazi/core";
+import { ok, type Result } from "@bibi/core";
 import { z } from "zod";
 import { clientAllowsAiActor } from "../first-party/clients";
 import { getAuth } from "../get-auth";

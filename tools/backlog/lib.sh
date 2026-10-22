@@ -7,7 +7,7 @@ MAIN="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
 CO_AUTHOR="${CO_AUTHOR:-Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>}"
 
 # The ticket worktree for issue $1.
-ticket_dir() { echo "$(dirname "$MAIN")/okazi-worktrees/t-$1"; }
+ticket_dir() { echo "$(dirname "$MAIN")/bibi-worktrees/t-$1"; }
 
 # One JSON line on stdout. emit state key=value ...  (values are strings; use emit_raw for json)
 emit() {
@@ -36,7 +36,7 @@ rebase_in_progress() {
 
 conflicted_files() { git diff --name-only --diff-filter=U | paste -sd, -; }
 
-REPO="${REPO:-simpel/okazi}"
+REPO="${REPO:-simpel/bibi}"
 
 # Conventional Commits type from the ticket's Kind (ADR 0060); release-please reads it on main, and
 # .github/workflows/pr-title.yml checks the PR title, which becomes the squash commit.

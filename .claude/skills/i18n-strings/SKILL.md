@@ -9,4 +9,4 @@ description: Add or change UI text in sv and en with next-intl. Use for every ne
 - No hardcoded strings in components. Use `useTranslations`/`getTranslations`.
 - Error keys: AppError code → `errors.*` (`apps/web/src/lib/error-key.ts`), Zod errors via `lib/issue-message-key.ts`.
 - Word choice follows the glossary in `docs/domain-model.md` (sv↔en).
-- Verify: `pnpm --filter @okazi/i18n test` (`check-messages` compares the key sets). Then run `pnpm typecheck`.
+- Verify: `pnpm --filter @bibi/i18n test` (`check-messages` compares the key sets). Then run `pnpm typecheck`.

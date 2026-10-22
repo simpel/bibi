@@ -1,4 +1,4 @@
-import type { EntityType } from "@okazi/db";
+import type { EntityType } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { EntityTypeDto } from "./schema";
 

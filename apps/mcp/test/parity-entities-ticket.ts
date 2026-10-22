@@ -1,4 +1,4 @@
-import { deliverInboundEmail, ticketInboundAddress } from "@okazi/core";
+import { deliverInboundEmail, ticketInboundAddress } from "@bibi/core";
 import type { Json } from "./helpers";
 import { byId, type ParityEntity, tool } from "./parity-entities";
 import { assignment } from "./parity-entities-assignment";

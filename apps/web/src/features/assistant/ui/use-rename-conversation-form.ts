@@ -1,7 +1,7 @@
 "use client";
 
+import { ConversationRenameInputSchema } from "@bibi/core/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ConversationRenameInputSchema } from "@okazi/core/schemas";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";

@@ -1,5 +1,5 @@
-import type { CustomerDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { CustomerDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";

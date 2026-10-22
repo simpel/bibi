@@ -1,4 +1,4 @@
-import type { PhaseGridCellDto, TicketPhaseDto } from "@okazi/core/schemas";
+import type { PhaseGridCellDto, TicketPhaseDto } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { toGridRows } from "./grid-rows";
 

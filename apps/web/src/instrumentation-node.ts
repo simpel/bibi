@@ -1,7 +1,7 @@
-import { isDevEnvironment } from "@okazi/auth";
-import { getEnv } from "@okazi/config";
-import { createSystemLogSink } from "@okazi/db";
-import { getLogger, initLogger, installProcessHandlers } from "@okazi/logger";
+import { isDevEnvironment } from "@bibi/auth";
+import { getEnv } from "@bibi/config";
+import { createSystemLogSink } from "@bibi/db";
+import { getLogger, initLogger, installProcessHandlers } from "@bibi/logger";
 import { formatDevBanner } from "@/lib/dev-banner";
 import { devServices } from "@/lib/dev-services";
 import { ensureOperations } from "@/server/operations";
@@ -17,7 +17,7 @@ export function registerLogging(): void {
   // stdout for ops + the SystemLog table for the superadmin view (ADR 0014, 0015).
   initLogger({ service: "web", sinks: [createSystemLogSink({ retentionDays })] });
   installProcessHandlers({ exitOnUncaught: false });
-  getLogger().info({ event: "process.started", msg: "@okazi/web started" });
+  getLogger().info({ event: "process.started", msg: "@bibi/web started" });
 }
 
 /** `pnpm dev` only: prints the local services to the terminal. */

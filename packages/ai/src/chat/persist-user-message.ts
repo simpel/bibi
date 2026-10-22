@@ -1,4 +1,4 @@
-import { appendMessage, type EmbedFn, type MessageDto, type Result } from "@okazi/core";
+import { appendMessage, type EmbedFn, type MessageDto, type Result } from "@bibi/core";
 import type { PageContext } from "../prompt/page-context-schema";
 import type { UserContext } from "../server/resolve-user";
 import { runCore } from "../server/run-core";

@@ -1,4 +1,4 @@
-import type { TicketBalanceDto } from "@okazi/core/schemas";
+import type { TicketBalanceDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useMoney } from "./use-money";
 

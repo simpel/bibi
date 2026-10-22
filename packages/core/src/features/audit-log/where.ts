@@ -1,4 +1,4 @@
-import type { Prisma } from "@okazi/db";
+import type { Prisma } from "@bibi/db";
 import type { AuditLogListInput } from "./schema";
 
 type Filters = Omit<AuditLogListInput, "limit" | "cursor">;

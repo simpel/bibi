@@ -1,5 +1,5 @@
-import { type AssignmentDto, listAssignments, listResponsibilities } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { type AssignmentDto, listAssignments, listResponsibilities } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { type NamedOption, nameOf } from "@/components/form/named-option";
 import { ErrorState } from "@/components/states/error-state";

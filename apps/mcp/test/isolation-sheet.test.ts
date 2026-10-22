@@ -1,4 +1,4 @@
-import type { ExecuteContext } from "@okazi/core";
+import type { ExecuteContext } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { call, connect, type Json, testContext } from "./helpers";
 import { seedResponsibility } from "./seed-responsibility";

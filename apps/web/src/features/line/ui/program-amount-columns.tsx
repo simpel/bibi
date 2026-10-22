@@ -1,5 +1,5 @@
-import type { LineDto } from "@okazi/core";
-import type { ColumnDef } from "@okazi/ui";
+import type { LineDto } from "@bibi/core";
+import type { ColumnDef } from "@bibi/ui";
 import type { useTranslations } from "next-intl";
 import { formatKr } from "../../item/ui/format-price";
 

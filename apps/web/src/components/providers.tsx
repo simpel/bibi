@@ -1,6 +1,6 @@
 "use client";
 
-import { Toaster, TooltipProvider } from "@okazi/ui";
+import { Toaster, TooltipProvider } from "@bibi/ui";
 import { ThemeProvider, useTheme } from "next-themes";
 import type { ReactNode } from "react";
 

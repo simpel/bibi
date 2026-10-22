@@ -1,4 +1,4 @@
-import type { EntityTypeDto, VocabularyDto } from "@okazi/core";
+import type { EntityTypeDto, VocabularyDto } from "@bibi/core";
 
 /** One record a LINK field can point to, as the UI shows it. */
 export type LinkTarget = { value: string; label: string };

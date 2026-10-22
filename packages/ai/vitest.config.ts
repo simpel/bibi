@@ -1,4 +1,4 @@
-import { loadTestEnv } from "@okazi/config/load-test-env";
+import { loadTestEnv } from "@bibi/config/load-test-env";
 import { defineConfig } from "vitest/config";
 
 // Root `.env` with DATABASE_URL moved to `<db>_test` (never the dev database), AI key blanked.
@@ -12,7 +12,7 @@ export default defineConfig({
     fileParallelism: false,
     testTimeout: 30_000,
     // First-party web client id (tests register it) + no Gateway key: no network, ever.
-    env: { WEB_OAUTH_CLIENT_ID: "okazi-web-test", AI_GATEWAY_API_KEY: "" },
+    env: { WEB_OAUTH_CLIENT_ID: "bibi-web-test", AI_GATEWAY_API_KEY: "" },
     // The in-process MCP server (apps/mcp) pulls graphql, which ships CJS + ESM copies.
     server: { deps: { inline: [/graphql/, /@pothos/, /@envelop/, /@escape\.tech/] } },
   },

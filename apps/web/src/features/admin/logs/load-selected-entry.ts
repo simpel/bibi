@@ -1,5 +1,5 @@
 import "server-only";
-import type { SystemLogEntry } from "@okazi/core";
+import type { SystemLogEntry } from "@bibi/core";
 import { platformOperations } from "@/server/platform-operations";
 import { runPlatformOperation } from "@/server/run-platform-operation";
 

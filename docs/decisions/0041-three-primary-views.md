@@ -19,5 +19,5 @@
 
 ## Consequences
 - The sidebar gets a `primary` group in `nav-items.ts`, between the assistant zone and Work (ADR 0036).
-- `@okazi/ui` has a kanban component (on the `@dnd-kit` packages already used by data tables) and a chart component.
+- `@bibi/ui` has a kanban component (on the `@dnd-kit` packages already used by data tables) and a chart component.
 - Revenue reporting needs its own decision (payments, accepted quotes or ticket totals) before the dashboard shows money.

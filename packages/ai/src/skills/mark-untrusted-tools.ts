@@ -1,4 +1,4 @@
-import { UNTRUSTED_OUTPUT_META_KEY } from "@okazi/core";
+import { UNTRUSTED_OUTPUT_META_KEY } from "@bibi/core";
 import type { ToolSet } from "ai";
 
 type ModelOutputOptions = { toolCallId: string; input: unknown; output: unknown };

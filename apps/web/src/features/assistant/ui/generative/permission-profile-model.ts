@@ -4,7 +4,7 @@ import {
   type OverrideEffect,
   type PermissionAction,
   type PermissionProfile,
-} from "@okazi/core/schemas";
+} from "@bibi/core/schemas";
 
 export type BuildPermissionModelInput = {
   profile: PermissionProfile;

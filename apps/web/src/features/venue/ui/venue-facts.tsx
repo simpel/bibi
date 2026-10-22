@@ -1,5 +1,5 @@
-import type { VenueDto } from "@okazi/core";
-import { Card, CardContent } from "@okazi/ui";
+import type { VenueDto } from "@bibi/core";
+import { Card, CardContent } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 
 export type VenueFactsProps = { venue: VenueDto };

@@ -1,5 +1,5 @@
-import type { PriceListDto } from "@okazi/core";
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import type { PriceListDto } from "@bibi/core";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { NamedOption } from "@/components/form/named-option";
 import { PriceListItemRows } from "./price-list-item-rows";

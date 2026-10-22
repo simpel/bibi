@@ -1,4 +1,4 @@
-import { ResponsibilitySchema } from "@okazi/core/schemas";
+import { ResponsibilitySchema } from "@bibi/core/schemas";
 import { z } from "zod";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";

@@ -69,7 +69,7 @@ function DemoIntro() {
         Hero Numbers with Number Flow
       </h2>
       <p className="max-w-2xl text-sm text-muted-foreground leading-relaxed">
-        Hero numbers in Okazi represent the financial climax of an offer. Powered by{" "}
+        Hero numbers in Bibi represent the financial climax of an offer. Powered by{" "}
         <code className="text-primary font-medium">@number-flow/react</code>, numbers transition
         with smooth rolling digit animations while staying in Fraunces Light numerals in pitch
         black.

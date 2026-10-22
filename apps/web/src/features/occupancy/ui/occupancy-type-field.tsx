@@ -1,4 +1,4 @@
-import { MANUAL_OCCUPANCY_TYPES } from "@okazi/core/schemas";
+import { MANUAL_OCCUPANCY_TYPES } from "@bibi/core/schemas";
 import {
   FormControl,
   FormController,
@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control } from "react-hook-form";
 import type { OccupancyFormOutput, OccupancyFormValues } from "./occupancy-form-schema";

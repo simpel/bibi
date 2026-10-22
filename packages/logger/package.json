@@ -1,5 +1,5 @@
 {
-  "name": "@okazi/logger",
+  "name": "@bibi/logger",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@okazi/config": "workspace:*",
+    "@bibi/config": "workspace:*",
     "pino": "10.4.0",
     "pino-pretty": "13.2.0"
   },

@@ -19,7 +19,7 @@ model Payment {
   amountMinor         Int
   /// ISO 4217, upper case.
   currency            String        @default("SEK")
-  /// Okazi's application fee on the charge in minor units; null = no fee.
+  /// Bibi's application fee on the charge in minor units; null = no fee.
   applicationFeeMinor Int?
   /// Connected account the charge was made on (`acct_...`).
   providerAccountId   String

@@ -1,7 +1,7 @@
 "use client";
 
-import type { RequirementDto } from "@okazi/core";
-import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
+import type { RequirementDto } from "@bibi/core";
+import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { nameOf } from "@/components/form/named-option";

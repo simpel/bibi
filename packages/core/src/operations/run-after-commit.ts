@@ -1,4 +1,4 @@
-import { getLogger } from "@okazi/logger";
+import { getLogger } from "@bibi/logger";
 import type { AfterCommitHook, AfterCommitInput } from "./execute";
 
 export type RunAfterCommitInput = AfterCommitInput & { hooks: readonly AfterCommitHook[] };

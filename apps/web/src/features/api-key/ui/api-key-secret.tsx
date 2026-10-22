@@ -1,5 +1,5 @@
-import type { ApiKeyCreated } from "@okazi/core";
-import { Button, DialogFooter, Input, Label, toast } from "@okazi/ui";
+import type { ApiKeyCreated } from "@bibi/core";
+import { Button, DialogFooter, Input, Label, toast } from "@bibi/ui";
 import { CopyIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 

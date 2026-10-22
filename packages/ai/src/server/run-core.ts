@@ -5,7 +5,7 @@ import {
   execute,
   type Operation,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 import type { z } from "zod";
 
 export type RunCoreInput<I extends z.ZodType, O extends z.ZodType> = {

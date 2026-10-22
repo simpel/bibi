@@ -1,4 +1,4 @@
-import { applyChangeSetOperation, type ChangeSetApplyOutput } from "@okazi/core";
+import { applyChangeSetOperation, type ChangeSetApplyOutput } from "@bibi/core";
 import { builder } from "../../schema/builder";
 import { mutationFromOperation } from "../../schema/from-operation";
 

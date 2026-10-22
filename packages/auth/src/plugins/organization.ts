@@ -1,4 +1,4 @@
-import { ADMIN_ROLE } from "@okazi/core";
+import { ADMIN_ROLE } from "@bibi/core";
 import { APIError } from "better-auth/api";
 import { organization } from "better-auth/plugins";
 import { accessControl, orgRoles } from "../permissions";

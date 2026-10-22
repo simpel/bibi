@@ -1,4 +1,4 @@
-import { type AnyOperation, AppError } from "@okazi/core";
+import { type AnyOperation, AppError } from "@bibi/core";
 import type { RestRoute } from "../rest-route";
 import { type JsonObject, type PropertyKind, propertyKind, toJsonSchema } from "./json-schema";
 

@@ -1,5 +1,5 @@
-import { resolveExecuteContext } from "@okazi/auth";
-import { createSkill, publishSkill } from "@okazi/core";
+import { resolveExecuteContext } from "@bibi/auth";
+import { createSkill, publishSkill } from "@bibi/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createEmbed } from "../src/embeddings/create-embed";
 import { resolveUser } from "../src/server/resolve-user";

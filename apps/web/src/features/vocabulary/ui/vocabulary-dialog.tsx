@@ -1,5 +1,5 @@
-import type { VocabularyDto } from "@okazi/core";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
+import type { VocabularyDto } from "@bibi/core";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { VocabularyForm } from "./vocabulary-form";
 

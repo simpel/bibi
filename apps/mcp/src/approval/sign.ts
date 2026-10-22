@@ -2,7 +2,7 @@ import { createHmac, randomUUID } from "node:crypto";
 import { hashInput } from "./canonical-json";
 import { APPROVAL_TTL_SECONDS, type ApprovalClaims } from "./types";
 
-const DOMAIN = "okazi.mcp.approval.v1";
+const DOMAIN = "bibi.mcp.approval.v1";
 
 export type MacInput = { body: string; secret: string };
 

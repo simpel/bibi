@@ -10,7 +10,7 @@ import {
   listVenues,
   ok,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 import { listAll } from "@/server/list-all";
 
 export type CalendarWindow = {

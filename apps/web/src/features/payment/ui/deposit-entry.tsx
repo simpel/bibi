@@ -1,4 +1,4 @@
-import type { DepositDto } from "@okazi/core/schemas";
+import type { DepositDto } from "@bibi/core/schemas";
 import type { ReactNode } from "react";
 import { PaidOf } from "./paid-of";
 import { ReceivableBadges } from "./receivable-badges";

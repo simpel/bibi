@@ -11,7 +11,7 @@ import {
   type TicketPhaseImportResult,
   TicketPhaseSchema,
   updateTicketPhase,
-} from "@okazi/core";
+} from "@bibi/core";
 import { ArchivePreviewRef } from "../../schema/archive-preview";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";

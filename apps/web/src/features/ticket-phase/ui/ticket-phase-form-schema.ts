@@ -1,5 +1,5 @@
-import type { PhaseEvent, TicketPhaseDto } from "@okazi/core/schemas";
-import { TicketPhaseCreateInputSchema } from "@okazi/core/schemas";
+import type { PhaseEvent, TicketPhaseDto } from "@bibi/core/schemas";
+import { TicketPhaseCreateInputSchema } from "@bibi/core/schemas";
 import { NONE } from "@/components/form/option-select-field";
 import { formSchema } from "@/lib/form-schema";
 

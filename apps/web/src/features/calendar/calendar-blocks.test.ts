@@ -1,4 +1,4 @@
-import type { ItemStateDto, LineDto, OccupancyDto, TicketDto } from "@okazi/core/schemas";
+import type { ItemStateDto, LineDto, OccupancyDto, TicketDto } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { toCalendarBlocks } from "./calendar-blocks";
 

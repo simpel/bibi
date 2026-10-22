@@ -1,4 +1,4 @@
-import type { LineDto } from "@okazi/core";
+import type { LineDto } from "@bibi/core";
 import { nameOf } from "@/components/form/named-option";
 import type { ProgramFormData } from "./program-form-data";
 

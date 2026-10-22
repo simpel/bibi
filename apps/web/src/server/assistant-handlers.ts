@@ -1,8 +1,8 @@
 import "server-only";
-import { createApprovalHandler, createChatHandler } from "@okazi/ai";
-import { resolveExecuteContext } from "@okazi/auth";
-import { getEnv } from "@okazi/config";
-import { getLogger } from "@okazi/logger";
+import { createApprovalHandler, createChatHandler } from "@bibi/ai";
+import { resolveExecuteContext } from "@bibi/auth";
+import { getEnv } from "@bibi/config";
+import { getLogger } from "@bibi/logger";
 import { embed } from "./embed";
 import { shouldUseMockModel } from "./mock-model-policy";
 import { ensureOperations } from "./operations";
@@ -10,8 +10,8 @@ import { ensureOperations } from "./operations";
 type Handler = (request: Request) => Promise<Response>;
 
 const holder = globalThis as typeof globalThis & {
-  __okaziChat?: Promise<Handler>;
-  __okaziApproval?: Handler;
+  __bibiChat?: Promise<Handler>;
+  __bibiApproval?: Handler;
 };
 
 async function buildChatHandler(): Promise<Handler> {
@@ -29,19 +29,19 @@ async function buildChatHandler(): Promise<Handler> {
   return createChatHandler({ ...base, model: createE2eMockModel(), modelId: "e2e-mock-model" });
 }
 
-/** `POST /api/chat`: the assistant turn (AI SDK UI message stream), see `@okazi/ai`. */
+/** `POST /api/chat`: the assistant turn (AI SDK UI message stream), see `@bibi/ai`. */
 export function chatHandler(): Handler {
   return async (request) => {
-    holder.__okaziChat ??= buildChatHandler();
-    return (await holder.__okaziChat)(request);
+    holder.__bibiChat ??= buildChatHandler();
+    return (await holder.__bibiChat)(request);
   };
 }
 
 /** `POST /api/assistant/approval`: the user's decision on a proposed change. */
 export function approvalHandler(): Handler {
-  holder.__okaziApproval ??= createApprovalHandler({
+  holder.__bibiApproval ??= createApprovalHandler({
     resolveContext: resolveExecuteContext,
     embed,
   });
-  return holder.__okaziApproval;
+  return holder.__bibiApproval;
 }

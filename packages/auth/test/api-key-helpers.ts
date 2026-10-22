@@ -1,4 +1,4 @@
-import { createApiKey, execute } from "@okazi/core";
+import { createApiKey, execute } from "@bibi/core";
 import { resolveExecuteContext } from "../src/index";
 
 export type IssueKeyInput = { headers: Headers; role: string; name?: string };

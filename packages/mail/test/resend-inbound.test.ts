@@ -4,7 +4,7 @@ import { createResendProvider, signSvixPayload } from "../src/index";
 const secret = `whsec_${Buffer.from("test-signing-secret").toString("base64")}`;
 const provider = createResendProvider({
   apiKey: "re_key",
-  from: "a@okazi.test",
+  from: "a@bibi.test",
   webhookSecret: secret,
 });
 
@@ -16,7 +16,7 @@ const received = {
     created_at: "2026-10-15T10:00:00.000Z",
     message_id: "<111@example.test>",
     from: "Guest <guest@example.test>",
-    to: ["ticket-abc@in.okazi.test"],
+    to: ["ticket-abc@in.bibi.test"],
     subject: "Re: your ticket",
   },
 };
@@ -49,7 +49,7 @@ describe("Resend provider: parseInbound", () => {
       providerEmailId: received.data.email_id,
       messageId: "<111@example.test>",
       from: "Guest <guest@example.test>",
-      to: ["ticket-abc@in.okazi.test"],
+      to: ["ticket-abc@in.bibi.test"],
       subject: "Re: your ticket",
       receivedAt: "2026-10-15T10:00:00.000Z",
     });
@@ -92,7 +92,7 @@ describe("Resend provider: parseInbound", () => {
   });
 
   it("is unavailable without a webhook secret", async () => {
-    const unsigned = createResendProvider({ apiKey: "re_key", from: "a@okazi.test" });
+    const unsigned = createResendProvider({ apiKey: "re_key", from: "a@bibi.test" });
     const result = await unsigned.parseInbound({ request: signed({ payload: received }) });
     expect(codeOf({ result })).toBe("UNAVAILABLE");
   });

@@ -1,4 +1,4 @@
-import { getLogger } from "@okazi/logger";
+import { getLogger } from "@bibi/logger";
 import type { Result } from "../errors/result";
 import type { Actor, OperationKind } from "./types";
 

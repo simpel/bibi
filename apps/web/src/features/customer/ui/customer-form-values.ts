@@ -1,4 +1,4 @@
-import type { CustomerDto, EntityTypeDto } from "@okazi/core";
+import type { CustomerDto, EntityTypeDto } from "@bibi/core";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 
 /** Raw values of the customer form: inputs are strings; the credit limit in kr. */

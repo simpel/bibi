@@ -18,7 +18,7 @@ export function hashApiKey({ key }: HashApiKeyInput): string {
   return createHash("sha256").update(key).digest("base64url");
 }
 
-/** A new random key (`okz_` + 64 letters, like the plugin's generator) and what is stored. */
+/** A new random key (`bib_` + 64 letters, like the plugin's generator) and what is stored. */
 export function generateApiKey(): KeySecret {
   const body = Array.from({ length: KEY_LENGTH }, () => ALPHABET[randomInt(ALPHABET.length)]);
   const key = `${API_KEY_PREFIX}${body.join("")}`;

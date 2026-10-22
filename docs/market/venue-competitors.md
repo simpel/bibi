@@ -44,7 +44,7 @@ Segment: venues that sell conferences with coffee breaks, food and rooms (e.g. W
 
 **Momentus** (formerly Ungerboeck). Arenas and trade fairs. No Nordic customers found.
 
-**Venjue** (Odense, 1–10 employees). Closest to Okazi's concept: allergens per dish and guest that flow through to the kitchen order, table seating, Stripe prepayment, a confirmed booking becomes an invoice draft. Danish integrations only (e-conomic, Dinero, Billy).
+**Venjue** (Odense, 1–10 employees). Closest to Bibi's concept: allergens per dish and guest that flow through to the kitchen order, table seating, Stripe prepayment, a confirmed booking becomes an invoice draft. Danish integrations only (e-conomic, Dinero, Billy).
 
 **Tripleseat / Perfect Venue** (USA). Full venue flows for restaurants and event venues. No Nordic presence.
 

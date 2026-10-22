@@ -1,8 +1,8 @@
 import "server-only";
-import { type AnyOperation, AppError, createCoreOperations, registerOperations } from "@okazi/core";
+import { type AnyOperation, AppError, createCoreOperations, registerOperations } from "@bibi/core";
 import { embed } from "./embed";
 
-const holder = globalThis as typeof globalThis & { __okaziWebOperations?: AnyOperation[] };
+const holder = globalThis as typeof globalThis & { __bibiWebOperations?: AnyOperation[] };
 
 /**
  * Registers core operations (idempotent: same objects) and returns them. Called from
@@ -10,9 +10,9 @@ const holder = globalThis as typeof globalThis & { __okaziWebOperations?: AnyOpe
  * bundle route handlers and server components with separate module instances.
  */
 export function ensureOperations(): readonly AnyOperation[] {
-  holder.__okaziWebOperations ??= createCoreOperations({ embed });
-  registerOperations({ operations: holder.__okaziWebOperations });
-  return holder.__okaziWebOperations;
+  holder.__bibiWebOperations ??= createCoreOperations({ embed });
+  registerOperations({ operations: holder.__bibiWebOperations });
+  return holder.__bibiWebOperations;
 }
 
 /** The registered `search` operation (it closes over `embed`, so it is not a static export). */

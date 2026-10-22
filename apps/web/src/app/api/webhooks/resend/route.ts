@@ -1,4 +1,4 @@
-import { createInboundWebhookHandler } from "@okazi/mail";
+import { createInboundWebhookHandler } from "@bibi/mail";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

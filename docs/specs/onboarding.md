@@ -10,7 +10,7 @@ Current behaviour. Why: ADR 0045 (replaces the wizard of ADR 0044).
 - There is no non-AI fallback. The AI feature `onboarding` (`AI_FEATURES`) has its model chosen in `/admin/ai-models`; without one it returns `UNAVAILABLE` and the user can skip.
 
 ## Presets
-- Template data in core (`templates/setup-presets`, exported as `@okazi/core/setup-presets`): conference estate, restaurant with private rooms, experience centre or museum, and empty. Each names its item types (and which are bookable) and a phase template. Domain words live only there.
+- Template data in core (`templates/setup-presets`, exported as `@bibi/core/setup-presets`): conference estate, restaurant with private rooms, experience centre or museum, and empty. Each names its item types (and which are bookable) and a phase template. Domain words live only there.
 - `draftFromPreset({ key, existingTypes })` (exposed as the query `pipelineSetup.presetDraft`) returns a `PipelineSetupDraft`: types the organization already has are kept, missing ones are added, and states, phases and the grid come from the existing templates.
 
 ## The panel

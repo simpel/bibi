@@ -1,5 +1,5 @@
-import type { AlternativeGroupDto } from "@okazi/core/schemas";
-import { actionsColumn, Badge, type ColumnDef } from "@okazi/ui";
+import type { AlternativeGroupDto } from "@bibi/core/schemas";
+import { actionsColumn, Badge, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { AlternativeGroupRowActions } from "./alternative-group-row-actions";

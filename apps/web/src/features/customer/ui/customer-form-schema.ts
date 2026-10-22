@@ -1,5 +1,5 @@
-import type { CustomerDto, CustomerUpdateInput, EntityTypeDto, VocabularyDto } from "@okazi/core";
-import { buildFieldsSchema, CustomerCreateInputSchema } from "@okazi/core/schemas";
+import type { CustomerDto, CustomerUpdateInput, EntityTypeDto, VocabularyDto } from "@bibi/core";
+import { buildFieldsSchema, CustomerCreateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsPatch, fieldsToInput } from "@/components/typed-fields/raw-fields";

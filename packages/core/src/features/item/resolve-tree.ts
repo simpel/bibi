@@ -1,4 +1,4 @@
-import type { Item } from "@okazi/db";
+import type { Item } from "@bibi/db";
 import type { ItemEdge, ItemGraph } from "./resolve-graph";
 import type { ResolvedItemNode } from "./resolve-schema";
 

@@ -1,4 +1,4 @@
-import { withRequestLogging } from "@okazi/logger";
+import { withRequestLogging } from "@bibi/logger";
 import { toNextJsHandler } from "better-auth/next-js";
 import { getAuth } from "./get-auth";
 

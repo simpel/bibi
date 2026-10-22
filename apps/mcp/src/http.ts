@@ -1,7 +1,7 @@
-import { AUTH_BASE_PATH, resolveExecuteContext } from "@okazi/auth";
-import { getEnv } from "@okazi/config";
-import { createSystemLogSink } from "@okazi/db";
-import { getLogger, initLogger, installProcessHandlers } from "@okazi/logger";
+import { AUTH_BASE_PATH, resolveExecuteContext } from "@bibi/auth";
+import { getEnv } from "@bibi/config";
+import { createSystemLogSink } from "@bibi/db";
+import { getLogger, initLogger, installProcessHandlers } from "@bibi/logger";
 import { embed } from "./embed";
 import { createHttpServer } from "./http/create-http-server";
 
@@ -22,5 +22,5 @@ const server = createHttpServer({
 });
 
 server.listen(env.PORT, () => {
-  getLogger().info({ event: "process.started", msg: "@okazi/mcp listening", port: env.PORT });
+  getLogger().info({ event: "process.started", msg: "@bibi/mcp listening", port: env.PORT });
 });

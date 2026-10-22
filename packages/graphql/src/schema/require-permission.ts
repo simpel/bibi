@@ -1,4 +1,4 @@
-import { appError, hasPermission, type Permission } from "@okazi/core";
+import { appError, hasPermission, type Permission } from "@bibi/core";
 import type { GraphqlContext } from "./context";
 import { toGraphqlError } from "./to-graphql-error";
 

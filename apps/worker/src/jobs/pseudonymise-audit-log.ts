@@ -1,6 +1,6 @@
-import { getEnv } from "@okazi/config";
-import { pseudonymiseAuditLog } from "@okazi/db";
-import { getLogger } from "@okazi/logger";
+import { getEnv } from "@bibi/config";
+import { pseudonymiseAuditLog } from "@bibi/db";
+import { getLogger } from "@bibi/logger";
 import type { JobDefinition } from "../job-definition";
 
 const DAY = 86_400_000;

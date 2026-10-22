@@ -1,4 +1,4 @@
-import { SYSTEM_ACTOR_ID, scopedDb } from "@okazi/db";
+import { SYSTEM_ACTOR_ID, scopedDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import { createVenue, execute } from "../src/index";

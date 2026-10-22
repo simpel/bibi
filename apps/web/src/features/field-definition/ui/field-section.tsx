@@ -1,5 +1,5 @@
-import { type EntityTypeDto, listEntityTypes, listVocabularies } from "@okazi/core";
-import { isLinkableBase } from "@okazi/core/schemas";
+import { type EntityTypeDto, listEntityTypes, listVocabularies } from "@bibi/core";
+import { isLinkableBase } from "@bibi/core/schemas";
 import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/states/empty-state";
 import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";

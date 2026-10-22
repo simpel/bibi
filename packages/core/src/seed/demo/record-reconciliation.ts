@@ -1,4 +1,4 @@
-import type { RecordBase } from "@okazi/db";
+import type { RecordBase } from "@bibi/db";
 import { defineReconciliation, type ReconcileContext } from "./reconcile";
 
 type MirrorRow = {

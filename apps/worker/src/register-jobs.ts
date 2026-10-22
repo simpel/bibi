@@ -1,4 +1,4 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import type { PgBoss } from "pg-boss";
 import { type JobDefinition, SCHEDULE_TIME_ZONE } from "./job-definition";
 import { runJob } from "./run-job";

@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { DOC_SECTIONS, findDocPage } from "@/features/docs/pages";
@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: DocPageProps) {
   const page = findDocPage({ section, slug });
   if (!page) return {};
   const text = await loadDocText({ locale, key: `pages.${page.section}.${page.slug}` });
-  return { title: `${text.title} · Okazi`, description: text.lead };
+  return { title: `${text.title} · Bibi`, description: text.lead };
 }
 
 /** A guide or developer page; the text comes from i18n (`docs.pages.<section>.<slug>`). */

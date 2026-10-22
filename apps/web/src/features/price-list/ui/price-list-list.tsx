@@ -1,5 +1,5 @@
-import { listPriceLists } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { listPriceLists } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { CursorPagination } from "@/components/cursor-pagination";
 import { EmptyState } from "@/components/states/empty-state";

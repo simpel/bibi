@@ -1,5 +1,5 @@
-import { resolveLocale } from "@okazi/i18n";
-import { redirect } from "@okazi/i18n/navigation";
+import { resolveLocale } from "@bibi/i18n";
+import { redirect } from "@bibi/i18n/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { InvitationCard } from "@/features/auth/ui/invitation-card";
 import { ROUTES, withNext } from "@/lib/routes";

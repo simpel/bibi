@@ -1,10 +1,10 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 import { describe, expect, it } from "vitest";
 import { resolveExecuteContext } from "../src/index";
 import { codeOf, createOrg, signUp } from "./helpers";
 import { obtainAccessToken, registerClient } from "./oauth-flow";
 
-const AI_HEADERS = { "x-okazi-actor": "ai", "x-okazi-conversation-id": "conv_123" };
+const AI_HEADERS = { "x-bibi-actor": "ai", "x-bibi-conversation-id": "conv_123" };
 
 const bearer = ({ token, extra = {} }: { token: string; extra?: Record<string, string> }) =>
   new Headers({ authorization: `Bearer ${token}`, ...extra });
@@ -47,7 +47,7 @@ describe("resolveExecuteContext – OAuth access tokens (MCP)", () => {
 
   it("requires a conversation id for AI requests", async () => {
     const web = await setup({ clientId: getEnv().WEB_OAUTH_CLIENT_ID });
-    const headers = bearer({ token: web.token, extra: { "x-okazi-actor": "ai" } });
+    const headers = bearer({ token: web.token, extra: { "x-bibi-actor": "ai" } });
     expect(codeOf({ result: await resolveExecuteContext({ headers }) })).toBe("FORBIDDEN");
   });
 

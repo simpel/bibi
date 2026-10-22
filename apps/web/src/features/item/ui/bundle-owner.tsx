@@ -1,5 +1,5 @@
-import { getCustomer } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
+import { getCustomer } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { customerRoute } from "@/lib/routes";
 import { runOperation } from "@/server/run-operation";

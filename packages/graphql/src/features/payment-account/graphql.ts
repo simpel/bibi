@@ -6,7 +6,7 @@ import {
   PaymentAccountSchema,
   startPaymentOnboarding,
   syncPaymentAccount,
-} from "@okazi/core";
+} from "@bibi/core";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 

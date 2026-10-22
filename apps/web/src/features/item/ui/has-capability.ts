@@ -1,5 +1,5 @@
-import type { EntityTypeDto } from "@okazi/core";
-import type { ItemCapability } from "@okazi/core/schemas";
+import type { EntityTypeDto } from "@bibi/core";
+import type { ItemCapability } from "@bibi/core/schemas";
 
 export type HasCapabilityInput = { type: EntityTypeDto | undefined; capability: ItemCapability };
 

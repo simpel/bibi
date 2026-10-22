@@ -1,4 +1,4 @@
-import { toast } from "@okazi/ui";
+import { toast } from "@bibi/ui";
 import type { ActionResult } from "./action-result";
 import { type ErrorKey, errorKeyForCode } from "./error-key";
 import { submitWithToast, type ToastMessages } from "./submit-with-toast";

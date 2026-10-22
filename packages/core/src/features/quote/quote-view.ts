@@ -1,4 +1,4 @@
-import type { OrderLine, Quote } from "@okazi/db";
+import type { OrderLine, Quote } from "@bibi/db";
 import { markLineChanges } from "./line-changes";
 import { quoteTotals, totalIsFrom } from "./line-totals";
 import type { OrderLineDto, OrderLineTag, VatRow } from "./order-line-schema";

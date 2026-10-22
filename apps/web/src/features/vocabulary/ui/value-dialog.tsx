@@ -1,5 +1,5 @@
-import type { VocabularyValueDto } from "@okazi/core";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@okazi/ui";
+import type { VocabularyValueDto } from "@bibi/core";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ValueForm } from "./value-form";
 

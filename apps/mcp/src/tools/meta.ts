@@ -1,4 +1,4 @@
-import type { ExecuteContext, Result } from "@okazi/core";
+import type { ExecuteContext, Result } from "@bibi/core";
 import { toToolName } from "./tool-name";
 
 /** `context` is the proposing caller's, for summaries that must read data (e.g. counts). */

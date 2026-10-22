@@ -1,4 +1,4 @@
-import { type CapturedLogs, captureLogs } from "@okazi/logger";
+import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setPaymentProvider, setStripeConnectGateway } from "../src/index";
 import { paidEvent, pendingPayment, postEvent, stripeEvent } from "./stripe-webhook-helpers";

@@ -1,4 +1,4 @@
-import type { TicketDto } from "@okazi/core";
+import type { TicketDto } from "@bibi/core";
 import type { TicketFormData } from "./ticket-form-data";
 import { TicketTable } from "./ticket-table";
 

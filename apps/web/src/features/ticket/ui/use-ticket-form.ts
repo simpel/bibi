@@ -1,5 +1,5 @@
-import type { TicketDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { TicketDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { useTypedResolver } from "@/components/typed-fields/use-typed-resolver";

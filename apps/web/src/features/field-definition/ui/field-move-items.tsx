@@ -1,5 +1,5 @@
-import type { FieldDefinitionDto } from "@okazi/core";
-import { DropdownMenuItem } from "@okazi/ui";
+import type { FieldDefinitionDto } from "@bibi/core";
+import { DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMoveField } from "./use-move-field";
 

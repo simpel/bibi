@@ -1,10 +1,10 @@
-# @okazi/web – context for Claude
+# @bibi/web – context for Claude
 
-Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `@okazi/ui`. The surface for venue staff. See ADR 0003, 0005, 0007, 0009 and 0010.
+Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `@bibi/ui`. The surface for venue staff. See ADR 0003, 0005, 0007, 0009 and 0010.
 
 ## Structure
 - `src/app/[locale]/`: `(auth)` = sign-in flows, `(app)` = protected shell. `/` is the assistant (ADR 0035), `/settings` the settings hub. `page.tsx`/`layout.tsx`/`route.ts` are thin: they read params and render a feature.
-- Page width (ADR 0038): `(app)/(contained)/` pages sit in `PageContainer` (`@okazi/ui`); `(app)/(canvas)/` pages (`/`, `/calendar`) are full width and own their gutter and scrolling. A new page goes into one of the two groups; `AppShell` adds no container.
+- Page width (ADR 0038): `(app)/(contained)/` pages sit in `PageContainer` (`@bibi/ui`); `(app)/(canvas)/` pages (`/`, `/calendar`) are full width and own their gutter and scrolling. A new page goes into one of the two groups; `AppShell` adds no container.
 - `settings/*` is for admins only (ADR 0034): `settings/layout.tsx` shows a forbidden state and the sidebar hides the entry. Pages, navigation, the settings hub and the assistant follow the caller's effective permissions: a feature whose `view` is denied is hidden, not just disabled (`server/caller-abilities.ts`). Detail pages name their breadcrumb crumb with `CrumbName`.
 - API routes: `api/auth/[...all]` (Better Auth), `api/graphql`, `api/v1/[...path]` (REST), `api/chat`, `api/assistant/approval`, `api/webhooks/resend` and `api/webhooks/stripe`, plus the `.well-known/oauth-*` discovery routes forwarded to Better Auth. Chat and approval routes set `runtime = "nodejs"`, `dynamic = "force-dynamic"` and `maxDuration`. New HTTP entry points are wrapped in `withRequestLogging`.
 - `src/features/<entity>/ui/` = components per entity; `actions.ts` next to `ui/` = server actions. `features/web-surfaces.ts` lists which operations have UI (`UI_EXEMPT` in `ui-exempt.ts` lists operations deliberately without UI, with a reason).
@@ -13,9 +13,9 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 
 ## Data access (a single path)
 - Reads in server components: `runOperation({ operation, input })`. Commands: server action → `runOperation` → `toActionResult`. The caller comes from `resolveExecuteContext({ headers: await headers() })`, the same as GraphQL, REST and MCP.
-- Never `@okazi/db`, a custom `ExecuteContext` or `fetch` against `/api/graphql` in the web app. Why: ADR 0010.
+- Never `@bibi/db`, a custom `ExecuteContext` or `fetch` against `/api/graphql` in the web app. Why: ADR 0010.
 - Errors: `Result` → `handleLoadError` (401 → login, 404 → not-found, otherwise `ErrorState`), or `ActionResult` → toast. AppError code → `errors.*` in `lib/error-key.ts`.
-- Client components must not import values from `@okazi/core` (the barrel pulls in Prisma). Zod schemas come from `@okazi/core/schemas`; `import type` from `@okazi/core` is free.
+- Client components must not import values from `@bibi/core` (the barrel pulls in Prisma). Zod schemas come from `@bibi/core/schemas`; `import type` from `@bibi/core` is free.
 - The assistant does **not** go through `runOperation`: `/api/chat` runs the MCP client against `apps/mcp` as the user (ADR 0007).
 
 ## Adding a page/feature
@@ -26,12 +26,12 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 5. Text in `packages/i18n/messages/sv.json` and `en.json` (key parity is tested).
 
 ## i18n
-- All text via `useTranslations` / `getTranslations`; no hardcoded strings or colors. Links and router from `@okazi/i18n/navigation`, not `next/link`.
+- All text via `useTranslations` / `getTranslations`; no hardcoded strings or colors. Links and router from `@bibi/i18n/navigation`, not `next/link`.
 - Server components and layouts call `setRequestLocale(locale)`; convert `locale` with `resolveLocale`.
 - `sv.json` is the source of truth for typed keys. Dynamic keys must be unions (see `ErrorKey`).
 
 ## Forms (all input in the UI)
-- Every form is a shadcn form: `Form`, `FormController` (shadcn's `FormField`), `FormItem`, `FormLabel`, `FormControl` and `FormMessage` from `@okazi/ui`, with react-hook-form and `zodResolver` with localised messages (`useZodMessages`). The schema comes from core (`@okazi/core/schemas`, via `formSchema({ schema, toInput })` when needed), never a hand-written duplicate.
+- Every form is a shadcn form: `Form`, `FormController` (shadcn's `FormField`), `FormItem`, `FormLabel`, `FormControl` and `FormMessage` from `@bibi/ui`, with react-hook-form and `zodResolver` with localised messages (`useZodMessages`). The schema comes from core (`@bibi/core/schemas`, via `formSchema({ schema, toInput })` when needed), never a hand-written duplicate.
 - Fields: `TextField` and `CheckField` (`components/form/`) require `<Form {...form}>` around the form. Other controls are built with `FormController` directly.
 - Field errors show in `FormMessage` under the field. Server field errors (`AppError.issues`, `path` = field name) are set with `form.setError`.
 - **Create and update are pages, not dialogs** (except tiny actions: archive, rename, assign, confirm). Create lives at `/new/<thing>`, update at `/<things>/<id>/update`. Multi-step creates use `components/wizard/`; add the thing to `NEW_PARENTS` in `breadcrumb-model.ts`.
@@ -49,7 +49,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - `ErrorBanner`, `useActionSubmit` and `useAuthSubmit` are removed. Do not reintroduce equivalent patterns.
 
 ## Tables (ADR 0040)
-- Every table is a shadcn TanStack table, rendered with `PersistedDataTable` (`components/data-table/`, on `DataTable` in `@okazi/ui`) with a stable `tableId`. Columns live in a `use-<entity>-columns` hook; the assistant's card has its own hook and `tableId` with the same cells. Never a raw `<table>`, never the `Table*` primitives directly, never another table library. Only exception: the calendar grid.
+- Every table is a shadcn TanStack table, rendered with `PersistedDataTable` (`components/data-table/`, on `DataTable` in `@bibi/ui`) with a stable `tableId`. Columns live in a `use-<entity>-columns` hook; the assistant's card has its own hook and `tableId` with the same cells. Never a raw `<table>`, never the `Table*` primitives directly, never another table library. Only exception: the calendar grid.
 - All columns are sortable. Default order: multiselect checkbox (only if bulk editing helps), main title, descriptive columns in the organization's order, status, dates and times, numbers and amounts, row actions (far right).
 - Users reorder columns by drag and drop (always on); the checkbox and row actions stay pinned. The order is saved per user and per table as a server-side user preference, not in `localStorage`.
 - Row actions go in a `DropdownMenu` submenu, each with a text label. Never an icon-only action button.
@@ -59,21 +59,21 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 
 ## The assistant (ADR 0007, 0008)
 - `features/assistant/`: `AssistantProvider` in the shell holds ONE `useChat` for the home page and ⌘K. The assistant exists only on `/` (ADR 0035); `ask` and `prefill` start a conversation and navigate there.
-- Generative UI: `resolveToolUi` (`@okazi/ai/ui`) gives `{ component, props }`; `ui/generative/components.ts` is exhaustive at compile time, so a new key in `@okazi/ai` is a type error here until the component exists. Cards are built from `@okazi/ui`.
+- Generative UI: `resolveToolUi` (`@bibi/ai/ui`) gives `{ component, props }`; `ui/generative/components.ts` is exhaustive at compile time, so a new key in `@bibi/ai` is a type error here until the component exists. Cards are built from `@bibi/ui`.
 - Approval cards POST the decision to `/api/assistant/approval`; the client adds nothing to the chat, the server saves a TOOL message and the next turn reads history from the database.
-- `WEB_OAUTH_CLIENT_ID` + `x-okazi-actor: ai` are handled by `packages/auth` (only this client may act as AI). `provision:oauth` registers a redirect URI that is never followed (the code is read in-process), so **no callback route exists or is needed**.
+- `WEB_OAUTH_CLIENT_ID` + `x-bibi-actor: ai` are handled by `packages/auth` (only this client may act as AI). `provision:oauth` registers a redirect URI that is never followed (the code is read in-process), so **no callback route exists or is needed**.
 
 ## Superadmin (ADR 0015)
 - `src/app/[locale]/(admin)/admin/` with its own shell. `server/platform-guard.ts`: anonymous → login, otherwise 404 unless superadmin. Platform data goes through `runPlatformOperation`, never `runOperation`. AI models are chosen only in `/admin/ai-models`.
-- Granting: `pnpm --filter @okazi/auth grant-superadmin <email>`.
+- Granting: `pnpm --filter @bibi/auth grant-superadmin <email>`.
 
 ## Webhooks
 - `POST /api/webhooks/resend`: inbound mail, stored as `InboundEmail` on the ticket for `ticket-<id>@<domain>` (ADR 0012, `packages/mail`).
 - `POST /api/webhooks/stripe`: signed with `STRIPE_WEBHOOK_SECRET`; runs the SYSTEM-only `payment.applySignal` and `paymentAccount.applySignal` (ADR 0028).
 
 ## Commands and environment
-- `pnpm --filter @okazi/web dev | build | start | typecheck | test`. First time: `docker compose up -d postgres`, `pnpm db:migrate`, `pnpm --filter @okazi/core seed:skills`, `pnpm --filter @okazi/web provision:oauth` (prints `WEB_OAUTH_CLIENT_ID=...` for `.env`).
-- Environment variables are read only via `@okazi/config`. `E2E_MOCK_MODEL` is ignored in production. E2E: see `e2e/README.md`.
+- `pnpm --filter @bibi/web dev | build | start | typecheck | test`. First time: `docker compose up -d postgres`, `pnpm db:migrate`, `pnpm --filter @bibi/core seed:skills`, `pnpm --filter @bibi/web provision:oauth` (prints `WEB_OAUTH_CLIENT_ID=...` for `.env`).
+- Environment variables are read only via `@bibi/config`. `E2E_MOCK_MODEL` is ignored in production. E2E: see `e2e/README.md`.
 
 ## Pitfalls
 - `loading.tsx`/`error.tsx`/`not-found.tsx` need `// biome-ignore lint/style/noDefaultExport` (see `[locale]/error.tsx`).

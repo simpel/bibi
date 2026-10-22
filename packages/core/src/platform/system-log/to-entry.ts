@@ -1,4 +1,4 @@
-import type { SystemLog } from "@okazi/db";
+import type { SystemLog } from "@bibi/db";
 import type { SystemLogEntry } from "./schema";
 
 export type ToEntryInput = { row: SystemLog };

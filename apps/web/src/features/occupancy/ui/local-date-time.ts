@@ -1,5 +1,5 @@
-import { fromZonedParts, toZonedParts } from "@okazi/core/schemas";
-import { DEFAULT_TIME_ZONE } from "@okazi/i18n";
+import { fromZonedParts, toZonedParts } from "@bibi/core/schemas";
+import { DEFAULT_TIME_ZONE } from "@bibi/i18n";
 
 export type ToLocalInputValueInput = { date: Date; timeZone?: string };
 

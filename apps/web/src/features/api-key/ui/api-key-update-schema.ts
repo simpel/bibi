@@ -1,4 +1,4 @@
-import { ApiKeyUpdateInputSchema } from "@okazi/core/schemas";
+import { ApiKeyUpdateInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
 
 /** Raw values of the update page: the key's name and preset. */

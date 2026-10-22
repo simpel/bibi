@@ -4,7 +4,7 @@
 - **Status:** Accepted
 
 ## Context
-Okazi has many entities that link to each other across organization and company boundaries. Data must be traceable, recoverable and auditable. IDs must work in URLs, in external systems and in AI tools without revealing counts or ordering.
+Bibi has many entities that link to each other across organization and company boundaries. Data must be traceable, recoverable and auditable. IDs must work in URLs, in external systems and in AI tools without revealing counts or ordering.
 
 ## Decision
 - IDs are cuid2 strings.

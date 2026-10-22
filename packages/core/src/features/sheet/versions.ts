@@ -1,5 +1,5 @@
 import { isDeepStrictEqual } from "node:util";
-import type { Ticket } from "@okazi/db";
+import type { Ticket } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { toJson } from "../../shared/to-json";
 import type { SheetDefinitionDto } from "../sheet-definition/schema";

@@ -1,4 +1,4 @@
-import type { SheetDefinitionCreateInput } from "@okazi/core";
+import type { SheetDefinitionCreateInput } from "@bibi/core";
 import type { UseFormReturn } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";
 import type { WizardStepDef } from "@/components/wizard/step-wizard";

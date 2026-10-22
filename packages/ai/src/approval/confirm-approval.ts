@@ -1,4 +1,4 @@
-import type { Result } from "@okazi/core";
+import type { Result } from "@bibi/core";
 import { callMcpTool } from "../mcp/call-mcp-tool";
 import { connectMcp } from "../mcp/connect-mcp";
 import { resolveUser, type UserContext } from "../server/resolve-user";
@@ -14,7 +14,7 @@ export type ConfirmApprovalInput = AssistantServerOptions & {
 
 /**
  * Executes an AI proposal the user approved: MCP `approval_confirm` with the user's OWN token and
- * WITHOUT `x-okazi-actor: ai` (apps/mcp refuses AI callers). The server runs the operation as
+ * WITHOUT `x-bibi-actor: ai` (apps/mcp refuses AI callers). The server runs the operation as
  * actor `ai` + conversation id with `approvedBy` = this user, so the audit trail stays honest.
  */
 export async function confirmApproval({

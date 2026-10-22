@@ -1,4 +1,4 @@
-import { Prisma } from "@okazi/db";
+import { Prisma } from "@bibi/db";
 import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";

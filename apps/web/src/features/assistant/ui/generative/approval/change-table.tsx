@@ -1,4 +1,4 @@
-import type { ChangePreview } from "@okazi/core/schemas";
+import type { ChangePreview } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { describeFieldChange } from "../../../lib/describe-change";

@@ -1,7 +1,7 @@
-import { createRestHandler } from "@okazi/api";
-import { getAuth, resolveExecuteContext } from "@okazi/auth";
-import { createApiKey, createCoreOperations, execute, revokeApiKey } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { createRestHandler } from "@bibi/api";
+import { getAuth, resolveExecuteContext } from "@bibi/auth";
+import { createApiKey, createCoreOperations, execute, revokeApiKey } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import { fakeEmbed } from "./fake-embed";

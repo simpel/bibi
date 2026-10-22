@@ -1,4 +1,4 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import { SUPERADMIN_ROLE } from "../../permissions/fixed-roles";
 import { MEGA_ADMIN_EMAIL } from "./seed-mega-admin";
 

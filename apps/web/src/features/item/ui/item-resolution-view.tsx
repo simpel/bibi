@@ -1,5 +1,5 @@
-import type { ItemResolution, ResolvedItemNode, ResolvedTag } from "@okazi/core/schemas";
-import { Badge } from "@okazi/ui";
+import type { ItemResolution, ResolvedItemNode, ResolvedTag } from "@bibi/core/schemas";
+import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type ItemResolutionViewProps = { resolution: ItemResolution };

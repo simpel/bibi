@@ -12,7 +12,7 @@ export function devServices({ webUrl, mcpUrl }: DevServicesInput): DevService[] 
       url: "http://localhost:8025",
       note: "Inbox for all outgoing mail (SMTP :1025)",
     },
-    { name: "Storybook", url: "http://localhost:6006", note: "Component library (@okazi/ui)" },
+    { name: "Storybook", url: "http://localhost:6006", note: "Component library (@bibi/ui)" },
     { name: "Postgres", url: "localhost:5432", note: "Database (pgvector), started by docker:up" },
   ];
 }

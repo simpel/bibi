@@ -1,5 +1,5 @@
-import { fromUnknown, ok } from "@okazi/core";
-import { getLogger, withRequestLogging } from "@okazi/logger";
+import { fromUnknown, ok } from "@bibi/core";
+import { getLogger, withRequestLogging } from "@bibi/logger";
 import type { LanguageModel } from "ai";
 import { connectMcp } from "../mcp/connect-mcp";
 import { errorResponse } from "../server/error-response";
@@ -32,7 +32,7 @@ const fixedModel = ({ model, modelId }: FixedModelInput) => {
 /**
  * Chat endpoint as a Web `(request: Request) => Promise<Response>`, mountable in a Next route
  * (`export const POST = createChatHandler({ resolveContext: resolveExecuteContext })`).
- * Response: AI SDK UI message stream (SSE) + `x-okazi-conversation-id` header; errors are JSON
+ * Response: AI SDK UI message stream (SSE) + `x-bibi-conversation-id` header; errors are JSON
  * `{ error: { code, message } }` with the shared AppError → HTTP status map.
  */
 export function createChatHandler({

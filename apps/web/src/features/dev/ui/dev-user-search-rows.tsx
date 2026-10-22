@@ -1,5 +1,5 @@
-import type { DevUser } from "@okazi/auth";
-import { CommandItem } from "@okazi/ui";
+import type { DevUser } from "@bibi/auth";
+import { CommandItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type DevUserSearchRowsProps = {

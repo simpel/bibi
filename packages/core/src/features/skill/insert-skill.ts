@@ -1,4 +1,4 @@
-import type { Skill } from "@okazi/db";
+import type { Skill } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { toJson } from "../../shared/to-json";
 import { skillContentHash } from "./content-hash";

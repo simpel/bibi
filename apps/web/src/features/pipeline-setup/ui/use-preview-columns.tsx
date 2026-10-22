@@ -1,5 +1,5 @@
-import type { PipelinePreviewLine, PipelinePreviewStep } from "@okazi/core/schemas";
-import { ColorSwatch, type ColumnDef } from "@okazi/ui";
+import type { PipelinePreviewLine, PipelinePreviewStep } from "@bibi/core/schemas";
+import { ColorSwatch, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 

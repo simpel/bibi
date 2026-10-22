@@ -1,6 +1,6 @@
-import type { Feature, PermissionAction } from "@okazi/core/schemas";
-import { ALWAYS_VISIBLE_FEATURES, isLocked } from "@okazi/core/schemas";
-import { Checkbox } from "@okazi/ui";
+import type { Feature, PermissionAction } from "@bibi/core/schemas";
+import { ALWAYS_VISIBLE_FEATURES, isLocked } from "@bibi/core/schemas";
+import { Checkbox } from "@bibi/ui";
 import { Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cellKey, type GridRow, isOn } from "../permission-grid";

@@ -1,4 +1,4 @@
-# @okazi/mail – context for Claude
+# @bibi/mail – context for Claude
 
 Email behind one interface (ADR 0012). The only package that talks to nodemailer or Resend.
 
@@ -11,7 +11,7 @@ Email behind one interface (ADR 0012). The only package that talks to nodemailer
 ## Adapters
 - `smtp` (default): nodemailer over `SMTP_URL`, Mailpit locally. No inbound (`UNAVAILABLE`).
 - `resend`: REST `POST https://api.resend.com/emails` with `RESEND_API_KEY`; received mail from `GET /emails/receiving/{id}`. Inbound is the Svix-signed `email.received` webhook, verified with `RESEND_WEBHOOK_SECRET` (5 minute tolerance). The payload has metadata only; body and attachments are fetched from Resend by `providerEmailId`.
-- Chosen by `MAIL_PROVIDER` in `@okazi/config`. `MAIL_PROVIDER=resend` without `RESEND_API_KEY` fails env validation.
+- Chosen by `MAIL_PROVIDER` in `@bibi/config`. `MAIL_PROVIDER=resend` without `RESEND_API_KEY` fails env validation.
 
 ## Tests
 - `createMemoryMailProvider()` + `setMailProvider({ provider })`; restore with `setMailProvider({ provider: undefined })`.

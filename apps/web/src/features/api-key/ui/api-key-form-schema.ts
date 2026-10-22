@@ -1,4 +1,4 @@
-import { ApiKeyCreateInputSchema } from "@okazi/core/schemas";
+import { ApiKeyCreateInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
 
 export const API_KEY_EXPIRY_CHOICES = ["never", "30", "90", "365"] as const;

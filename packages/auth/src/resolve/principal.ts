@@ -1,4 +1,4 @@
-import type { PermissionSet } from "@okazi/core";
+import type { PermissionSet } from "@bibi/core";
 
 /** Authenticated caller after credential checks, before the execute context is built. */
 export type Principal = {
@@ -11,6 +11,6 @@ export type Principal = {
   roles: string[] | null;
   /** Effective permissions: preset plus overrides (ADR 0050). */
   permissions: PermissionSet;
-  /** Whether `x-okazi-actor: ai` may be honoured (first-party web client tokens only). */
+  /** Whether `x-bibi-actor: ai` may be honoured (first-party web client tokens only). */
   aiAllowed: boolean;
 };

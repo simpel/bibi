@@ -12,7 +12,7 @@ Users at venues (sales staff, coordinators, kitchen) work through many steps bet
 - v1 UI:
   - Assistant panel on all pages, with page context (active organization, route and entity).
   - ⌘K command bar for natural language.
-  - Generative UI: a registry maps result types to `@okazi/ui` components.
+  - Generative UI: a registry maps result types to `@bibi/ui` components.
   - Approval: mutations are shown as proposals on a card. The user confirms or cancels. Audit logs `actor=ai` and the conversation ID.
 - Conversations and messages are stored per organization and user. They are core operations and follow the parity rule (ADR 0003).
 - Models and prompts for features are configured in `packages/ai`, not in app code.

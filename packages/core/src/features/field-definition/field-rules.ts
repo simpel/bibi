@@ -1,4 +1,4 @@
-import type { FieldDefinition, RecordMatches } from "@okazi/db";
+import type { FieldDefinition, RecordMatches } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { mergeUsage, usageConflict } from "../../records/blocking-issues";

@@ -1,5 +1,5 @@
-import { resolveLocale } from "@okazi/i18n";
-import { routing } from "@okazi/i18n/routing";
+import { resolveLocale } from "@bibi/i18n";
+import { routing } from "@bibi/i18n/routing";
 import { Cherry_Bomb_One, Fraunces, Inter } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";

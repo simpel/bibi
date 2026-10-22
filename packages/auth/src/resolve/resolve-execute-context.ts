@@ -1,4 +1,4 @@
-import { createExecuteContext, type ExecuteContext, ok, type Result } from "@okazi/core";
+import { createExecuteContext, type ExecuteContext, ok, type Result } from "@bibi/core";
 import { buildActor } from "./ai-actor";
 import { forbidden } from "./errors";
 import { principalFromAccessToken } from "./from-access-token";
@@ -39,7 +39,7 @@ async function resolve({ headers, credential }: ResolveInput): Promise<Result<Ex
 
 /**
  * THE caller resolution for every surface (web, GraphQL, REST, MCP). Accepts a session cookie,
- * an API key (`x-api-key` or `Authorization: Bearer okz_…`) or an MCP OAuth access token
+ * an API key (`x-api-key` or `Authorization: Bearer bib_…`) or an MCP OAuth access token
  * (`Authorization: Bearer <jwt>`). Fails with UNAUTHENTICATED (no/invalid credential) or
  * FORBIDDEN (no organization, not a member, untrusted AI actor request). Logs the outcome and
  * puts the caller on the request's log context (ADR 0014).

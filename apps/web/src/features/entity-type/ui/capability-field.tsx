@@ -1,4 +1,4 @@
-import { CAPABILITY_REQUIRES, ITEM_CAPABILITIES, type ItemCapability } from "@okazi/core/schemas";
+import { CAPABILITY_REQUIRES, ITEM_CAPABILITIES, type ItemCapability } from "@bibi/core/schemas";
 import {
   Checkbox,
   FormController,
@@ -6,7 +6,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control } from "react-hook-form";
 import { toggleCapability } from "./capability-model";

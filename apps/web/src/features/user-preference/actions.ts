@@ -1,10 +1,6 @@
 "use server";
 
-import {
-  setUserPreference,
-  type UserPreferenceDto,
-  type UserPreferenceSetInput,
-} from "@okazi/core";
+import { setUserPreference, type UserPreferenceDto, type UserPreferenceSetInput } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";

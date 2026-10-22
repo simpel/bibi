@@ -1,6 +1,6 @@
 import "server-only";
-import { getEnv } from "@okazi/config";
-import { resolveLocale } from "@okazi/i18n";
+import { getEnv } from "@bibi/config";
+import { resolveLocale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 
 export type DocTextInput = { locale: string; key: string };

@@ -7,8 +7,8 @@ import {
   listMembers,
   listVenues,
   removeMember,
-} from "@okazi/core";
-import { getDb } from "@okazi/db";
+} from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { resolveExecuteContext } from "../src/index";
 import { codeOf, signUp } from "./helpers";

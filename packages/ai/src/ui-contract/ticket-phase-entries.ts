@@ -1,4 +1,4 @@
-import { TicketPhaseSchema } from "@okazi/core/schemas";
+import { TicketPhaseSchema } from "@bibi/core/schemas";
 import { z } from "zod";
 import { archivePreviewEntry } from "./archive-preview-entry";
 import type { ToolUiEntry } from "./tool-ui-types";

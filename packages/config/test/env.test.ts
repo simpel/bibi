@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { parseEnv } from "../src/env";
 
 const base = {
-  DATABASE_URL: "postgresql://okazi:okazi@localhost:5432/okazi",
+  DATABASE_URL: "postgresql://bibi:bibi@localhost:5432/bibi",
   BETTER_AUTH_SECRET: "x".repeat(32),
   BETTER_AUTH_URL: "http://localhost:3000",
 };
@@ -11,13 +11,13 @@ describe("parseEnv", () => {
   it("falls back to the defaults when SMTP_URL and MAIL_FROM are unset", () => {
     const env = parseEnv({ source: base });
     expect(env.SMTP_URL).toBe("smtp://localhost:1025");
-    expect(env.MAIL_FROM).toBe("Okazi <no-reply@okazi.local>");
+    expect(env.MAIL_FROM).toBe("Bibi <no-reply@bibi.local>");
   });
 
   it("treats empty SMTP_URL and MAIL_FROM as unset", () => {
     const env = parseEnv({ source: { ...base, SMTP_URL: "", MAIL_FROM: "" } });
     expect(env.SMTP_URL).toBe("smtp://localhost:1025");
-    expect(env.MAIL_FROM).toBe("Okazi <no-reply@okazi.local>");
+    expect(env.MAIL_FROM).toBe("Bibi <no-reply@bibi.local>");
   });
 
   it("treats empty optional and defaulted vars as unset", () => {

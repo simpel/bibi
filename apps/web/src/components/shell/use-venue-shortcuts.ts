@@ -1,6 +1,6 @@
 "use client";
 
-import type { PermissionSet } from "@okazi/core";
+import type { PermissionSet } from "@bibi/core";
 import { useEffect, useState } from "react";
 import { listVenueShortcutsAction, type VenueShortcut } from "@/features/venue/actions";
 import { canPermission } from "@/lib/can";

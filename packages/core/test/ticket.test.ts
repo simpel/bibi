@@ -1,4 +1,4 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 import { describe, expect, it } from "vitest";
 import {
   createTicket,

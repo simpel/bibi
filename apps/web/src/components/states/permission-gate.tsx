@@ -1,4 +1,4 @@
-import type { Permission } from "@okazi/core";
+import type { Permission } from "@bibi/core";
 import type { ReactNode } from "react";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { ErrorState } from "./error-state";

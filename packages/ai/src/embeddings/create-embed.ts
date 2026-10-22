@@ -1,6 +1,6 @@
-import { getEnv } from "@okazi/config";
-import { AppError, type EmbedFn } from "@okazi/core";
-import { getLogger } from "@okazi/logger";
+import { getEnv } from "@bibi/config";
+import { AppError, type EmbedFn } from "@bibi/core";
+import { getLogger } from "@bibi/logger";
 import type { EmbeddingModel } from "ai";
 import { configuredEmbed } from "./configured-embed";
 import { DEFAULT_EMBED_BATCH_SIZE, embedTexts } from "./embed-texts";
@@ -11,7 +11,7 @@ export type CreateEmbedInput = {
   model?: Exclude<EmbeddingModel, string>;
   /** Stored model id with an explicit `model`; default `model.modelId`. */
   modelId?: string;
-  /** Overrides for tests; default from `@okazi/config`. `null` = no key. */
+  /** Overrides for tests; default from `@bibi/config`. `null` = no key. */
   apiKey?: string | null;
   nodeEnv?: string;
   maxBatchSize?: number;
@@ -38,9 +38,9 @@ function placeholderEmbed({ warn }: PlaceholderInput): EmbedFn {
     warned = true;
     warn({
       message:
-        "[@okazi/ai] AI_GATEWAY_API_KEY is not set: using the placeholder hash embedder " +
+        "[@bibi/ai] AI_GATEWAY_API_KEY is not set: using the placeholder hash embedder " +
         `(${PLACEHOLDER_EMBEDDING_MODEL}). Semantic search is keyword-like until a key is set ` +
-        "and `pnpm --filter @okazi/ai reindex` has run.",
+        "and `pnpm --filter @bibi/ai reindex` has run.",
     });
   }
   const fn: EmbedFn = async ({ texts }) => ({

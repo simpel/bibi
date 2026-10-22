@@ -1,7 +1,7 @@
 import type { AddressInfo } from "node:net";
-import { resolveExecuteContext } from "@okazi/auth";
+import { resolveExecuteContext } from "@bibi/auth";
 // The real apps/mcp HTTP host, imported by path: a package dependency would make a cycle
-// (apps/mcp depends on @okazi/ai for its embedder).
+// (apps/mcp depends on @bibi/ai for its embedder).
 import { createHttpServer } from "../../../../apps/mcp/src/http/create-http-server";
 import { createEmbed } from "../../src/embeddings/create-embed";
 

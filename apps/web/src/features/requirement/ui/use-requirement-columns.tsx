@@ -1,5 +1,5 @@
-import type { RequirementDto } from "@okazi/core";
-import { actionsColumn, type ColumnDef } from "@okazi/ui";
+import type { RequirementDto } from "@bibi/core";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";

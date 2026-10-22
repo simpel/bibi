@@ -1,4 +1,4 @@
-import type { AppErrorCode, AppErrorIssue } from "@okazi/core";
+import type { AppErrorCode, AppErrorIssue } from "@bibi/core";
 
 /** Serializable error crossing the server-action boundary (AppError itself cannot). */
 export type ActionError = {

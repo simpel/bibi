@@ -11,7 +11,7 @@
 ## Decision
 A page is either **contained** or a **canvas**. The choice is made by the route group, not by each page.
 
-- **Contained** (`app/[locale]/(app)/(contained)/`): lists, detail pages, forms, settings. Its layout wraps the page in `PageContainer` (`@okazi/ui`, cva `width`):
+- **Contained** (`app/[locale]/(app)/(contained)/`): lists, detail pages, forms, settings. Its layout wraps the page in `PageContainer` (`@bibi/ui`, cva `width`):
   - `default` (`max-w-5xl`): the normal width, supplied by the layout.
   - `narrow` (`max-w-2xl`): a form or reading page. The page nests `<PageContainer width="narrow" gutter={false}>`.
   - `wide` (`max-w-7xl`): a table with many columns. Nested the same way.

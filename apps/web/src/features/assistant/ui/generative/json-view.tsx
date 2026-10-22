@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@okazi/ui";
+import { Card } from "@bibi/ui";
 import type { GenerativeProps } from "./generative-props";
 
 export type JsonViewProps = GenerativeProps<"json">;

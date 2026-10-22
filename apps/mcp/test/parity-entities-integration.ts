@@ -1,5 +1,5 @@
-import { createApiKey, execute } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { createApiKey, execute } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import type { Json } from "./helpers";
 import { type CreateInput, type ParityEntity, tool } from "./parity-entities";

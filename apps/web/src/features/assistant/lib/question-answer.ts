@@ -1,4 +1,4 @@
-import type { AskedQuestion } from "@okazi/ai";
+import type { AskedQuestion } from "@bibi/ai";
 
 export type AnswerTextInput = {
   /** `multiple` is missing on questions stored before checkboxes existed. */

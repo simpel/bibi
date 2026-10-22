@@ -1,5 +1,5 @@
-import { getDb, pseudonymiseAuditLog, REDACTED } from "@okazi/db";
-import { type CapturedLogs, captureLogs } from "@okazi/logger";
+import { getDb, pseudonymiseAuditLog, REDACTED } from "@bibi/db";
+import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { JOBS } from "../src/jobs";

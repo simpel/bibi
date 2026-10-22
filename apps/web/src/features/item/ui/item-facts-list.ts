@@ -1,4 +1,4 @@
-import type { EntityTypeDto, ItemDto } from "@okazi/core";
+import type { EntityTypeDto, ItemDto } from "@bibi/core";
 import { nameOf } from "@/components/form/named-option";
 import type { Fact } from "@/components/typed-fields/fact-list";
 import { ownFieldFacts } from "@/components/typed-fields/own-field-facts";

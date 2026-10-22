@@ -1,4 +1,4 @@
-import { listOperations } from "@okazi/core";
+import { listOperations } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { listGraphqlOperationNames, printSchemaSdl } from "../src/index";
 import { createClient, createItemType, testContext } from "./helpers";

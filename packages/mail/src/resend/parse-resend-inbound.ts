@@ -1,4 +1,4 @@
-import { appError, err, ok, type Result } from "@okazi/core";
+import { appError, err, ok, type Result } from "@bibi/core";
 import { z } from "zod";
 import type { InboundMail, InboundRequest } from "../schema";
 import { verifySvixSignature } from "./verify-svix-signature";

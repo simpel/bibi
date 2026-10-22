@@ -1,4 +1,4 @@
-import { createCoreOperations, PRESET_PERMISSIONS } from "@okazi/core";
+import { createCoreOperations, PRESET_PERMISSIONS } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { fakeEmbed } from "./fake-embed";
 import { call, connect, testContext } from "./helpers";
@@ -39,7 +39,7 @@ describe("MCP tools", () => {
     const client = await connect({ context: testContext() });
     const { tools } = await client.listTools();
     const byName = new Map(tools.map((tool) => [tool.name, tool]));
-    expect(byName.get("inboundEmail_get")?._meta?.["okazi/untrustedOutput"]).toBe(true);
+    expect(byName.get("inboundEmail_get")?._meta?.["bibi/untrustedOutput"]).toBe(true);
     expect(byName.get("venue_list")?._meta).toBeUndefined();
   });
 

@@ -1,6 +1,6 @@
-import { listRestOperationNames } from "@okazi/api";
-import { createCoreOperations, listOperations, registerOperations } from "@okazi/core";
-import { listGraphqlOperationNames } from "@okazi/graphql";
+import { listRestOperationNames } from "@bibi/api";
+import { createCoreOperations, listOperations, registerOperations } from "@bibi/core";
+import { listGraphqlOperationNames } from "@bibi/graphql";
 import { describe, expect, it } from "vitest";
 import { listMcpOperationNames, listMcpToolNames } from "../src/list-mcp-tool-names";
 import { toToolName } from "../src/tools/tool-name";

@@ -1,4 +1,4 @@
-import { Button, FormController, FormItem, FormMessage } from "@okazi/ui";
+import { Button, FormController, FormItem, FormMessage } from "@bibi/ui";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { type UseFormReturn, useFieldArray } from "react-hook-form";

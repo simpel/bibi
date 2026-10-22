@@ -1,4 +1,4 @@
-import type { PageContext } from "@okazi/ai";
+import type { PageContext } from "@bibi/ai";
 
 export type BuildPageContextInput = { pathname: string; locale: "sv" | "en" };
 

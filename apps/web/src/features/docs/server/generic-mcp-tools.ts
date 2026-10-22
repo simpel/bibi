@@ -9,7 +9,7 @@ export const GENERIC_MCP_TOOLS: ReferenceEntry[] = [
     id: "graphql_schema",
     toolName: "graphql_schema",
     summary:
-      "Returns the GraphQL schema (SDL) of the Okazi graph. Read it once, then use graphql_query to read related data in a single call.",
+      "Returns the GraphQL schema (SDL) of the Bibi graph. Read it once, then use graphql_query to read related data in a single call.",
     permission: "authenticated",
     input: { type: "object", properties: {} },
     output: { type: "object", properties: { sdl: { type: "string" }, usage: { type: "string" } } },

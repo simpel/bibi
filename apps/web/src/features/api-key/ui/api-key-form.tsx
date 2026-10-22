@@ -1,5 +1,5 @@
-import type { ApiKeyCreated, FixedRole } from "@okazi/core";
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import type { ApiKeyCreated, FixedRole } from "@bibi/core";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import { API_KEY_EXPIRY_CHOICES } from "./api-key-form-schema";

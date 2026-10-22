@@ -1,5 +1,5 @@
-import { getEnv } from "@okazi/config";
-import type { PaymentAccount } from "@okazi/db";
+import { getEnv } from "@bibi/config";
+import type { PaymentAccount } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { toPaymentAccountDto } from "./to-payment-account-dto";
 

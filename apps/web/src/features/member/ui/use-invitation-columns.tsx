@@ -1,6 +1,6 @@
-import type { InvitationDto } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
-import { actionsColumn, type ColumnDef } from "@okazi/ui";
+import type { InvitationDto } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { ROUTES } from "@/lib/routes";

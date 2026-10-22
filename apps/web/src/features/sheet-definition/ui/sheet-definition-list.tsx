@@ -1,5 +1,5 @@
-import { listSheetDefinitions, type SheetDefinitionDto } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { listSheetDefinitions, type SheetDefinitionDto } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { CursorPagination } from "@/components/cursor-pagination";

@@ -11,7 +11,7 @@ import {
   SkillSchema,
   shareSkill,
   updateSkill,
-} from "@okazi/core";
+} from "@bibi/core";
 import type { z } from "zod";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";

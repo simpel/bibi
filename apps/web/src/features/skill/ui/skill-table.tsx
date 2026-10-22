@@ -1,6 +1,6 @@
 "use client";
 
-import type { SkillDto } from "@okazi/core";
+import type { SkillDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { useSkillColumns } from "./use-skill-columns";

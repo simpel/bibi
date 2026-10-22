@@ -1,5 +1,5 @@
-import { getEnv } from "@okazi/config";
-import { getLogger } from "@okazi/logger";
+import { getEnv } from "@bibi/config";
+import { getLogger } from "@bibi/logger";
 import { PgBoss } from "pg-boss";
 
 /** pg-boss on the app database; it migrates its own `pgboss` schema outside Prisma (ADR 0027). */

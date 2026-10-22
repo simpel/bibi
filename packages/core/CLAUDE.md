@@ -1,4 +1,4 @@
-# @okazi/core – context for Claude
+# @bibi/core – context for Claude
 
 The parity core: every capability is defined **once** as an operation and then exposed the same way in web, GraphQL, REST and MCP (ADR 0003). Operations are the only way to read or change data.
 
@@ -14,9 +14,9 @@ The parity core: every capability is defined **once** as an operation and then e
 - `context.db` is `scopedDb`: org scoping cannot be bypassed. Build the context with `createExecuteContext({ organizationId, actor, roles, permissions })`. `permissions` is resolved by `packages/auth`; `roles` are names for display only.
 - AI actor: commands require human approval by default (`approval: true`, `requiresApproval`). `aiAllowed: false` means the AI actor may never run the operation (`authorize` refuses it, also after approval; MCP hides the tool). `Actor.approvedBy` is set only by the approval flow. Conversation bookkeeping uses `approval: false`.
 - `context.credential` (`session`, `accessToken`, `apiKey`) is set by `packages/auth`. `apiKey.create` requires `session` and refuses the AI actor (the secret must not enter a chat). An API key caller has `actor = { type: "apiKey", userId: null, apiKeyId }` and cannot run `self:*` operations.
-- Client-safe subpackage `@okazi/core/schemas` (`src/schemas.ts`): only zod files. Import it in client code and in `@okazi/ai/ui`; add one line per new entity's `schema.ts`. Never Prisma, fs or operations in it.
+- Client-safe subpackage `@bibi/core/schemas` (`src/schemas.ts`): only zod files. Import it in client code and in `@bibi/ai/ui`; add one line per new entity's `schema.ts`. Never Prisma, fs or operations in it.
 - Adapters generate tools and endpoints from the registry (`registerOperations`, `listOperations`, `getOperation`).
-- `seedSystemSkills` and `seedDemo` are imported from `@okazi/core/seed` and `@okazi/core/seed/demo`, never from the index: they read files and must not end up in the web bundle.
+- `seedSystemSkills` and `seedDemo` are imported from `@bibi/core/seed` and `@bibi/core/seed/demo`, never from the index: they read files and must not end up in the web bundle.
 
 ## Errors
 - `AppError` codes: `NOT_FOUND | FORBIDDEN | UNAUTHENTICATED | VALIDATION | CONFLICT | INTERNAL | UNAVAILABLE` (503: the feature lacks configuration, e.g. an AI model). Build them with `shared/errors.ts` (`notFound`, `conflict`, `invalid`).
@@ -62,7 +62,7 @@ The parity core: every capability is defined **once** as an operation and then e
 ## AI data layer
 - Conversations are private to `ownerUserId`; an admin (`assistant:read`) and the system actor may read all, only the owner renames and appends. Rule in `features/conversation/access.ts`.
 - `message.append`: `parts` are AI SDK `UIMessage` parts stored as is (max 256 kB); the AI actor may only append `ASSISTANT`/`TOOL` in its own conversation.
-- Skills: SYSTEM is read-only, ORGANIZATION requires admin, PERSONAL only the owner (`features/skill/access.ts`). SYSTEM skills are English markdown in `src/skills/system/`, seeded with `pnpm --filter @okazi/core seed:skills`.
+- Skills: SYSTEM is read-only, ORGANIZATION requires admin, PERSONAL only the owner (`features/skill/access.ts`). SYSTEM skills are English markdown in `src/skills/system/`, seeded with `pnpm --filter @bibi/core seed:skills`.
 
 ## Search
 - A searchable entity implements `Embeddable` and is registered in `search/embeddables.ts`. `embed` is injected by the app; core has no AI SDK dependency.

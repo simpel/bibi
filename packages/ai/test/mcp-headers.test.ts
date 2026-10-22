@@ -1,4 +1,4 @@
-import { runWithLogContext } from "@okazi/logger";
+import { runWithLogContext } from "@bibi/logger";
 import { describe, expect, it } from "vitest";
 import { mcpHeaders } from "../src/mcp/connect-mcp";
 

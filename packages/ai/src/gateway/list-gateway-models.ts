@@ -1,6 +1,6 @@
-import { getEnv } from "@okazi/config";
-import { type AiModel, AiModelTypeSchema, AppError } from "@okazi/core";
-import { getLogger } from "@okazi/logger";
+import { getEnv } from "@bibi/config";
+import { type AiModel, AiModelTypeSchema, AppError } from "@bibi/core";
+import { getLogger } from "@bibi/logger";
 import { type GatewayCatalog, GatewayCatalogSchema } from "./gateway-catalog-schema";
 
 export const GATEWAY_MODELS_URL = "https://ai-gateway.vercel.sh/v1/models";

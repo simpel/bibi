@@ -1,6 +1,6 @@
 import "server-only";
-import type { Result } from "@okazi/core";
-import { listEntityTypes, listResponsibilities, listVocabularies } from "@okazi/core";
+import type { Result } from "@bibi/core";
+import { listEntityTypes, listResponsibilities, listVocabularies } from "@bibi/core";
 import { runOperation } from "@/server/run-operation";
 import type { SheetOptions } from "./ui/sheet-options";
 

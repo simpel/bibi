@@ -1,6 +1,6 @@
-import { getEnv } from "@okazi/config";
-import type { Db } from "@okazi/db";
-import { withRequestLogging } from "@okazi/logger";
+import { getEnv } from "@bibi/config";
+import type { Db } from "@bibi/db";
+import { withRequestLogging } from "@bibi/logger";
 import { toHttpStatus } from "../../errors/to-http-status";
 import { receiveStripeEvent } from "./receive-stripe-event";
 import { verifyStripeSignature } from "./stripe-signature";

@@ -1,5 +1,5 @@
 import type { MCPClient } from "@ai-sdk/mcp";
-import { resolveExecuteContext } from "@okazi/auth";
+import { resolveExecuteContext } from "@bibi/auth";
 import type { LanguageModel } from "ai";
 import { createChatHandler } from "../../src/chat/create-chat-handler";
 import { createEmbed } from "../../src/embeddings/create-embed";

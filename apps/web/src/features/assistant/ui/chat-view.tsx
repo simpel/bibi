@@ -1,6 +1,6 @@
 "use client";
 
-import { Conversation, ConversationScrollButton } from "@okazi/ui";
+import { Conversation, ConversationScrollButton } from "@bibi/ui";
 import { Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";

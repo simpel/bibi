@@ -11,7 +11,7 @@ const meta = {
     docs: {
       description: {
         component:
-          "End-to-end application screen stories demonstrating the Okazi shell, sidebar navigation, wordmark, and realistic estate workflows.",
+          "End-to-end application screen stories demonstrating the Bibi shell, sidebar navigation, wordmark, and realistic estate workflows.",
       },
     },
   },

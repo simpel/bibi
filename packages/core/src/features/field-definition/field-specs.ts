@@ -1,4 +1,4 @@
-import type { FieldDefinition } from "@okazi/db";
+import type { FieldDefinition } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { FieldSpec } from "./fields-schema";
 

@@ -1,5 +1,5 @@
-import { resolveLocale } from "@okazi/i18n";
-import { Separator } from "@okazi/ui";
+import { resolveLocale } from "@bibi/i18n";
+import { Separator } from "@bibi/ui";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { AuthCard } from "@/features/auth/ui/auth-card";
 import { CreateOrganizationForm } from "@/features/auth/ui/create-organization-form";

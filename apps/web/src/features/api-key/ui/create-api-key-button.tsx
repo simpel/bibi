@@ -1,6 +1,6 @@
 "use client";
 
-import type { ApiKeyCreated, FixedRole } from "@okazi/core";
+import type { ApiKeyCreated, FixedRole } from "@bibi/core";
 import {
   Button,
   Dialog,
@@ -8,7 +8,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

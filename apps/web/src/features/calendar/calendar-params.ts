@@ -6,7 +6,7 @@ import {
   toIsoDate,
   toZonedParts,
   weekdayOf,
-} from "@okazi/core/schemas";
+} from "@bibi/core/schemas";
 
 export const CALENDAR_VIEWS = ["day", "week"] as const;
 export type CalendarView = (typeof CALENDAR_VIEWS)[number];

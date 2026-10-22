@@ -1,7 +1,7 @@
 "use client";
 
-import type { EntityTypeDto } from "@okazi/core";
-import { Button } from "@okazi/ui";
+import type { EntityTypeDto } from "@bibi/core";
+import { Button } from "@bibi/ui";
 import { ArchiveIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

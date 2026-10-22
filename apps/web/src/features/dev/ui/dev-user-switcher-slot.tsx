@@ -1,5 +1,5 @@
-import { getAuth, listDevPlatformAdmins, listDevUsers } from "@okazi/auth";
-import { getEnv } from "@okazi/config";
+import { getAuth, listDevPlatformAdmins, listDevUsers } from "@bibi/auth";
+import { getEnv } from "@bibi/config";
 import { headers } from "next/headers";
 import { devServices } from "@/lib/dev-services";
 import { DevUserSwitcher } from "./dev-user-switcher";

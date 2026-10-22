@@ -7,13 +7,13 @@
 - `AuditLog` (ADR 0006) logs successful mutations in the database. It is the business trail: who changed what.
 - Everything else was invisible: queries, denied and invalid calls, internal errors, sign-ins, emails, AI runs and afterCommit failures (which were swallowed silently). Debugging relied on scattered `console.*`.
 - A call often passes through several surfaces (web chat → AI → MCP → core). Without a common ID the chain cannot be followed.
-- Okazi does not store health data per guest, only aggregates (for example 13 guests, of which 3 with allergies). Logs must still not become a leak of personal data such as names and emails.
+- Bibi does not store health data per guest, only aggregates (for example 13 guests, of which 3 with allergies). Logs must still not become a leak of personal data such as names and emails.
 
 ## Decision
 - **Two layers, different purposes.**
   - `AuditLog` (database): successful mutations, in the same transaction as the change. Unchanged, but the row gets `requestId` and `surface`.
   - System log (stdout, JSON): **every** operation and every system event. Collected by the operations environment (ADR 0013).
-- **Package `@okazi/logger`** (pino). The only way to log. `console.*` is forbidden in app code (Biome `noConsole`).
+- **Package `@bibi/logger`** (pino). The only way to log. `console.*` is forbidden in app code (Biome `noConsole`).
 - **Events, not sentences.** Every line has a stable `event` (`<area>.<event>`, for example `operation.completed`, `http.request`, `auth.request`, `mail.sent`). Fields are structured, so the log can be queried.
 - **Request context via `AsyncLocalStorage`.** Every entry point (web, GraphQL, REST, MCP, chat, CLI) opens a context with `requestId` and `surface`. After authentication, `organizationId`, `userId` and `actorType` are added. All lines within the call get the fields automatically.
 - **Correlation.** An incoming `x-request-id` is reused if valid, otherwise a new one is created. The response sends it back. The assistant passes it on to MCP, so the whole AI chain shares the ID.
@@ -24,7 +24,7 @@
   - `operation.afterCommitFailed` (error): an after-commit hook threw. Search indexing catches its own errors and logs `search.index_failed` instead (ADR 0030).
   - Fields: operation, kind, entityType, outcome, error code, `durationMs` and actor.
 - **No payload in the log.** Input and output are never logged. That belongs in `AuditLog`, which is org-scoped and permission-controlled. As an extra safeguard, known secret fields (password, token, cookie, API key) are redacted. Email addresses are logged only as the domain.
-- **Level and format via `@okazi/config`.** `LOG_LEVEL` (default `info`, `silent` in test). `LOG_FORMAT` `json` or `pretty` (default `pretty` in development).
+- **Level and format via `@bibi/config`.** `LOG_LEVEL` (default `info`, `silent` in test). `LOG_FORMAT` `json` or `pretty` (default `pretty` in development).
 - **Process errors.** Next `onRequestError` and Node `uncaughtException`/`unhandledRejection` are logged as `process.*`/`http.unhandledError`.
 
 ## Addendum 2026-10-14

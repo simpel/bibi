@@ -1,4 +1,4 @@
-import messages from "@okazi/i18n/messages/sv.json";
+import messages from "@bibi/i18n/messages/sv.json";
 import { describe, expect, it } from "vitest";
 import { authErrorKey } from "./auth-error-key";
 

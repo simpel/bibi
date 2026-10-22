@@ -7,7 +7,7 @@
 
 ## Context
 - ADR 0044 built the first setup as a seven-step wizard: accurate and complete, and far too detailed for someone who has just created an organization. States, holds, "bookable" and the grid are concepts a new user has not met.
-- Okazi is AI-first; the assistant is the way in, not an add-on (ADR 0007).
+- Bibi is AI-first; the assistant is the way in, not an add-on (ADR 0007).
 - The first setup is a marketing moment. Its job is a believable baseline so the board is not empty, not the final configuration.
 
 ## Decision

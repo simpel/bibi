@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { recordsMatching } from "../src/features/field-definition/field-usage";
 import { createTypeWithField } from "./customer-helpers";

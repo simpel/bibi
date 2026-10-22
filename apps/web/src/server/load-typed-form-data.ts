@@ -1,5 +1,5 @@
 import "server-only";
-import { listEntityTypes, listVocabularies, type Result } from "@okazi/core";
+import { listEntityTypes, listVocabularies, type Result } from "@bibi/core";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
 import { loadLinkTargets } from "./load-link-targets";
 import { runOperation } from "./run-operation";

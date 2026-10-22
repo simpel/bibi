@@ -2,7 +2,7 @@ import {
   createMemoryPaymentProvider,
   setPaymentProvider,
   setStripeConnectGateway,
-} from "@okazi/core";
+} from "@bibi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
@@ -66,7 +66,7 @@ describe("approval flow: payments (ADR 0058)", () => {
     expect(provider.charges).toHaveLength(1);
     expect(provider.charges[0]).toMatchObject({
       kind: "invoice",
-      idempotencyKey: `okazi-payment-${confirmed.data.id}`,
+      idempotencyKey: `bibi-payment-${confirmed.data.id}`,
     });
     expect(confirmed.data.providerReference).toMatch(/^in_test_/);
   });

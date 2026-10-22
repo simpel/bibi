@@ -1,5 +1,5 @@
-import type { QuoteDto } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
+import type { QuoteDto } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import { ticketRoute } from "@/lib/routes";
 

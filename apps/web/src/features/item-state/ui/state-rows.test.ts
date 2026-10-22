@@ -1,4 +1,4 @@
-import type { ItemStateDto } from "@okazi/core/schemas";
+import type { ItemStateDto } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { toStateRows } from "./state-rows";
 

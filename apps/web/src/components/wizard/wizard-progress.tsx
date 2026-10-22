@@ -1,4 +1,4 @@
-import { cn } from "@okazi/ui";
+import { cn } from "@bibi/ui";
 
 export type WizardProgressStep = { id: string; label: string };
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Link, useRouter } from "@okazi/i18n/navigation";
+import { Link, useRouter } from "@bibi/i18n/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { BookOpenIcon, LogOutIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";

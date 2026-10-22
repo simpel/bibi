@@ -1,4 +1,4 @@
-import { CONVERSATION_HEADER } from "@okazi/auth";
+import { CONVERSATION_HEADER } from "@bibi/auth";
 import {
   consumeStream,
   createUIMessageStream,
@@ -16,8 +16,8 @@ import type { PreparedTools } from "./prepare-tools";
 
 /** Response header with the conversation id (also sent as a transient data part). */
 export const CONVERSATION_ID_HEADER = CONVERSATION_HEADER;
-/** Transient UI stream data part: `{ type: "data-okazi-conversation", data: { conversationId, created } }`. */
-export const CONVERSATION_DATA_PART = "data-okazi-conversation";
+/** Transient UI stream data part: `{ type: "data-bibi-conversation", data: { conversationId, created } }`. */
+export const CONVERSATION_DATA_PART = "data-bibi-conversation";
 
 export type RunFinish = { parts: readonly unknown[]; finishReason: string | undefined };
 

@@ -1,4 +1,4 @@
-import type { FieldDefinitionDto } from "@okazi/core";
+import type { FieldDefinitionDto } from "@bibi/core";
 import {
   BooleanControl,
   ChoiceControl,
@@ -12,7 +12,7 @@ import {
   MultiChoiceControl,
   NumberControl,
   TextControl,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control, Path } from "react-hook-form";
 import type { FieldChoice } from "./field-specs";

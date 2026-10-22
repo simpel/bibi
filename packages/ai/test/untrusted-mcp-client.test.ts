@@ -1,6 +1,6 @@
 import { createMCPClient } from "@ai-sdk/mcp";
+import { resolveExecuteContext } from "@bibi/auth";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { resolveExecuteContext } from "@okazi/auth";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 // The real apps/mcp server, imported by path (a package dependency would make a cycle).
 import { createMcpServer } from "../../../apps/mcp/src/server/create-mcp-server";
@@ -44,8 +44,8 @@ beforeAll(async () => {
 describe("untrusted output through the real AI SDK MCP client", () => {
   it("keeps _meta on the tools the client returns", async () => {
     const tools = (await client.tools()) as Record<string, { _meta?: Record<string, unknown> }>;
-    expect(tools.inboundEmail_get?._meta?.["okazi/untrustedOutput"]).toBe(true);
-    expect(tools.venue_list?._meta?.["okazi/untrustedOutput"]).toBeUndefined();
+    expect(tools.inboundEmail_get?._meta?.["bibi/untrustedOutput"]).toBe(true);
+    expect(tools.venue_list?._meta?.["bibi/untrustedOutput"]).toBeUndefined();
   });
 
   it("wraps inboundEmail_get output for the model after prepareTools", async () => {

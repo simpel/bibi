@@ -1,4 +1,4 @@
-import { AppError, err, fromZodError, ok, type Result } from "@okazi/core";
+import { AppError, err, fromZodError, ok, type Result } from "@bibi/core";
 import type { z } from "zod";
 
 export type ReadJsonBodyInput<S extends z.ZodType> = { request: Request; schema: S };

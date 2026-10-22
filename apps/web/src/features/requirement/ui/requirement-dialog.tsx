@@ -1,5 +1,5 @@
-import type { RequirementDto } from "@okazi/core";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
+import type { RequirementDto } from "@bibi/core";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { RequirementForm } from "./requirement-form";
 import type { RequirementFormData } from "./requirement-form-data";

@@ -1,6 +1,6 @@
-import { STATE_FLAGS } from "@okazi/core/schemas";
-import { Link } from "@okazi/i18n/navigation";
-import { ColorSwatch, type ColumnDef } from "@okazi/ui";
+import { STATE_FLAGS } from "@bibi/core/schemas";
+import { Link } from "@bibi/i18n/navigation";
+import { ColorSwatch, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo } from "react";
 import { entityTypeRoute } from "@/lib/configuration-routes";

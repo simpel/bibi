@@ -1,7 +1,7 @@
 "use client";
 
-import type { ReceivableStatus } from "@okazi/core/schemas";
-import { Button } from "@okazi/ui";
+import type { ReceivableStatus } from "@bibi/core/schemas";
+import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";

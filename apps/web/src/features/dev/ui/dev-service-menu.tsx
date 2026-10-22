@@ -3,7 +3,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { ServerIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { DevService } from "@/lib/dev-services";

@@ -1,12 +1,12 @@
-import type { LineDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { LineDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import {
   ColorSwatch,
   DropdownMenuItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useToastAction } from "@/lib/use-toast-action";
 import { changeLineStateAction, followLinePhaseAction } from "../actions";

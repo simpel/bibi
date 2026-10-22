@@ -51,8 +51,8 @@ export function buildOperationObject({ compiled }: OperationObjectInput): JsonOb
       ),
     },
     security: SECURITY_REQUIREMENTS,
-    "x-okazi-operation": operation.name,
-    "x-okazi-permission": operation.permission,
-    "x-okazi-approval-required-for-ai": operation.kind === "command" && operation.approval,
+    "x-bibi-operation": operation.name,
+    "x-bibi-permission": operation.permission,
+    "x-bibi-approval-required-for-ai": operation.kind === "command" && operation.approval,
   };
 }

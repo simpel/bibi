@@ -1,5 +1,5 @@
-import { getEnv } from "@okazi/config";
-import { getLogger } from "@okazi/logger";
+import { getEnv } from "@bibi/config";
+import { getLogger } from "@bibi/logger";
 import { createGateway } from "ai";
 import { embedTexts } from "../embeddings/embed-texts";
 

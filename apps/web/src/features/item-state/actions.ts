@@ -10,8 +10,8 @@ import {
   reorderItemStates,
   setItemStateTransitions,
   updateItemState,
-} from "@okazi/core";
-import type { ArchivePreview } from "@okazi/core/schemas";
+} from "@bibi/core";
+import type { ArchivePreview } from "@bibi/core/schemas";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";

@@ -1,5 +1,5 @@
-import { getEnv } from "@okazi/config";
-import type { Ticket } from "@okazi/db";
+import { getEnv } from "@bibi/config";
+import type { Ticket } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";
 import { ticketReplyAddress } from "../inbound-email/address";

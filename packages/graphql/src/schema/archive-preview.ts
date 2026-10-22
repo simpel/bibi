@@ -1,4 +1,4 @@
-import { type ArchivePreview, ArchivePreviewSchema } from "@okazi/core/schemas";
+import { type ArchivePreview, ArchivePreviewSchema } from "@bibi/core/schemas";
 import { objectFromSchema } from "./object-from-schema";
 
 export const ArchivePreviewRef = objectFromSchema<ArchivePreview>({

@@ -6,7 +6,7 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [
         "--filter",
-        "@okazi/web",
+        "@bibi/web",
         "dev"
       ],
       "port": 3000
@@ -16,7 +16,7 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [
         "--filter",
-        "@okazi/ui",
+        "@bibi/ui",
         "storybook",
         "--no-open"
       ],
@@ -27,7 +27,7 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": [
         "--filter",
-        "@okazi/mcp",
+        "@bibi/mcp",
         "dev"
       ],
       "port": 3001
@@ -39,7 +39,7 @@
         "E2E_MOCK_MODEL=1",
         "pnpm",
         "--filter",
-        "@okazi/web",
+        "@bibi/web",
         "dev"
       ],
       "port": 3000

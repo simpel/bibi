@@ -1,6 +1,6 @@
 "use client";
 
-import type { InvitationDto } from "@okazi/core";
+import type { InvitationDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { InvitationRowActions } from "./invitation-row-actions";

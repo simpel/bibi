@@ -1,8 +1,8 @@
-import { getDb } from "@okazi/db";
-import { initLogger } from "@okazi/logger";
+import { getDb } from "@bibi/db";
+import { initLogger } from "@bibi/logger";
 import { setPlatformAdmin } from "./set-platform-admin";
 
-// `pnpm --filter @okazi/auth grant-superadmin <email> [--revoke]` – the only way to make someone a
+// `pnpm --filter @bibi/auth grant-superadmin <email> [--revoke]` – the only way to make someone a
 // superadmin (ADR 0015). The admin plugin's HTTP endpoints are disabled.
 initLogger({ service: "cli" });
 

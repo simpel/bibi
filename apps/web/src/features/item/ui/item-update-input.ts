@@ -1,4 +1,4 @@
-import type { EntityTypeDto, ItemDto, ItemUpdateInput } from "@okazi/core";
+import type { EntityTypeDto, ItemDto, ItemUpdateInput } from "@bibi/core";
 import { fieldsPatch } from "@/components/typed-fields/raw-fields";
 import type { ItemFormOutput } from "./item-form-schema";
 

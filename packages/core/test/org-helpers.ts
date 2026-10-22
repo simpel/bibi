@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import type { ExecuteContext, PermissionSet } from "../src/index";
 import { type TestAccess, testContext } from "./helpers";

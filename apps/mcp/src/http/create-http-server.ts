@@ -1,5 +1,5 @@
 import { createServer, type Server } from "node:http";
-import { getLogger, withRequestLogging } from "@okazi/logger";
+import { getLogger, withRequestLogging } from "@bibi/logger";
 import { corsHeaders, isOriginAllowed } from "./cors";
 import { sendWebResponse, toWebRequest } from "./node-adapter";
 import { jsonResponse, type RouteRequestInput, routeRequest } from "./route-request";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@okazi/ui";
+import { Card } from "@bibi/ui";
 import { AuditEntry } from "@/features/audit-log/ui/audit-entry";
 import type { GenerativeProps } from "./generative-props";
 

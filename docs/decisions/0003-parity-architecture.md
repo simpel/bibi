@@ -4,7 +4,7 @@
 - **Status:** Accepted
 
 ## Context
-Okazi must be usable through the web UI, GraphQL, REST and MCP. Without a common source, rules for permissions, validation and audit would diverge between surfaces. This matters most when the AI assistant must be able to perform the same actions as the user.
+Bibi must be usable through the web UI, GraphQL, REST and MCP. Without a common source, rules for permissions, validation and audit would diverge between surfaces. This matters most when the AI assistant must be able to perform the same actions as the user.
 
 ## Decision
 - Core operations in `packages/core` are the single source of truth. Each operation has a Zod schema for input and output, a permission check and a handler. Operations are defined with `defineOperation`.

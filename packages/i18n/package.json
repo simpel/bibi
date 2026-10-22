@@ -1,5 +1,5 @@
 {
-  "name": "@okazi/i18n",
+  "name": "@bibi/i18n",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -22,7 +22,7 @@
     "use-intl": "4.14.9"
   },
   "devDependencies": {
-    "@okazi/config": "workspace:*",
+    "@bibi/config": "workspace:*",
     "@types/react": "19.3.0",
     "next": "16.4.0",
     "react": "19.3.0",

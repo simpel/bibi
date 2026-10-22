@@ -1,4 +1,4 @@
-import type { TicketPhase } from "@okazi/db";
+import type { TicketPhase } from "@bibi/db";
 import { acceptQuote } from "../../features/quote/lifecycle-operations";
 import { changeTicketPhase } from "../../features/ticket/change-phase-operation";
 import type { ExecuteContext } from "../../operations/context";

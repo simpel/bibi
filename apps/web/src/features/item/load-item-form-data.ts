@@ -1,6 +1,6 @@
 import "server-only";
-import type { Result } from "@okazi/core";
-import { listEntityTypes, listItems, listSetups, listVenues, listVocabularies } from "@okazi/core";
+import type { Result } from "@bibi/core";
+import { listEntityTypes, listItems, listSetups, listVenues, listVocabularies } from "@bibi/core";
 import { loadLinkTargets } from "@/server/load-link-targets";
 import { runOperation } from "@/server/run-operation";
 import type { ItemFormData } from "./ui/item-form-data";

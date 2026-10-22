@@ -1,6 +1,6 @@
 "use client";
 
-import type { OauthGrantDto } from "@okazi/core";
+import type { OauthGrantDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { useOauthGrantColumns } from "./use-oauth-grant-columns";

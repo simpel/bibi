@@ -1,4 +1,4 @@
-import { execute, listOauthGrants, revokeOauthGrant } from "@okazi/core";
+import { execute, listOauthGrants, revokeOauthGrant } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { resolveExecuteContext } from "../src/index";
 import { codeOf, createOrg, signUp } from "./helpers";

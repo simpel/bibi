@@ -10,7 +10,7 @@ import {
   type MemberDto,
   MemberSchema,
   removeMember,
-} from "@okazi/core";
+} from "@bibi/core";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";

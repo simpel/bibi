@@ -1,4 +1,4 @@
-import { createMemoryMailProvider, type MailMessage, setMailProvider } from "@okazi/mail";
+import { createMemoryMailProvider, type MailMessage, setMailProvider } from "@bibi/mail";
 
 /** Captures mails in memory instead of sending them through the env-selected provider. */
 export function installFakeMail(): MailMessage[] {

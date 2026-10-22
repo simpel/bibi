@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 # Shared helpers for the worktree scripts. Source this file; do not run it.
 #
-# One shared Postgres + Mailpit (compose project "okazi") serves every worktree. Each worktree
+# One shared Postgres + Mailpit (compose project "bibi") serves every worktree. Each worktree
 # gets its own database, its own ports and its own `.env`, so migrations, tests and dev servers
-# never collide. The main checkout keeps the defaults (database "okazi", ports 3000/3001).
+# never collide. The main checkout keeps the defaults (database "bibi", ports 3000/3001).
 #
 # ROOT is the checkout the current directory belongs to, so the scripts can set up a worktree
 # whose branch does not contain them yet.
 
 ROOT="$(git rev-parse --show-toplevel)"
 MAIN_ROOT="$(git -C "$ROOT" worktree list --porcelain | awk '/^worktree /{print $2; exit}')"
-WORKTREES_DIR="$(dirname "$MAIN_ROOT")/okazi-worktrees"
-COMPOSE_PROJECT="okazi"
+WORKTREES_DIR="$(dirname "$MAIN_ROOT")/bibi-worktrees"
+COMPOSE_PROJECT="bibi"
 
 is_main_checkout() { [ "$ROOT" = "$MAIN_ROOT" ]; }
 
@@ -30,7 +30,7 @@ worktree_slug() {
 }
 
 db_name() {
-  if is_main_checkout; then echo "okazi"; else echo "okazi_$(worktree_slug)"; fi
+  if is_main_checkout; then echo "bibi"; else echo "bibi_$(worktree_slug)"; fi
 }
 
 # Read KEY from a .env file (empty if missing).
@@ -62,7 +62,7 @@ set_env() {
   mv "$ROOT/.env.tmp" "$ROOT/.env"
 }
 
-# Export every KEY=VALUE line of $ROOT/.env. Not `source`: values such as `Okazi <a@b>` break bash.
+# Export every KEY=VALUE line of $ROOT/.env. Not `source`: values such as `Bibi <a@b>` break bash.
 load_env() {
   local line
   while IFS= read -r line || [ -n "$line" ]; do
@@ -71,4 +71,4 @@ load_env() {
   done < "$ROOT/.env"
 }
 
-psql_admin() { compose exec -T postgres psql -U okazi -d postgres -v ON_ERROR_STOP=1 "$@"; }
+psql_admin() { compose exec -T postgres psql -U bibi -d postgres -v ON_ERROR_STOP=1 "$@"; }

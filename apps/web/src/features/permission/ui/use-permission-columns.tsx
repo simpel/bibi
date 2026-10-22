@@ -1,5 +1,5 @@
-import { PERMISSION_ACTIONS, type PermissionAction } from "@okazi/core/schemas";
-import type { ColumnDef } from "@okazi/ui";
+import { PERMISSION_ACTIONS, type PermissionAction } from "@bibi/core/schemas";
+import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { type GridRow, isOn } from "../permission-grid";

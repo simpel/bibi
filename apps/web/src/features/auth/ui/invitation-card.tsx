@@ -1,7 +1,7 @@
 "use client";
 
-import { FIXED_ROLES } from "@okazi/core/schemas";
-import { Button, Skeleton } from "@okazi/ui";
+import { FIXED_ROLES } from "@bibi/core/schemas";
+import { Button, Skeleton } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { AuthCard } from "./auth-card";
 import { useInvitation } from "./use-invitation";

@@ -1,8 +1,8 @@
 "use client";
 
-import type { CustomerDto } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
-import { Button } from "@okazi/ui";
+import type { CustomerDto } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
+import { Button } from "@bibi/ui";
 import { ArchiveIcon, PencilIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

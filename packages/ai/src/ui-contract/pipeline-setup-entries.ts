@@ -1,4 +1,4 @@
-import { PipelinePreviewSchema, PipelineSetupDraftSchema } from "@okazi/core/schemas";
+import { PipelinePreviewSchema, PipelineSetupDraftSchema } from "@bibi/core/schemas";
 import { z } from "zod";
 import { PhaseGridWireSchema } from "./phase-grid-entries";
 import type { ToolUiEntry } from "./tool-ui-types";

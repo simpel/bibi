@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@okazi/ui";
+import { Card } from "@bibi/ui";
 import { useState } from "react";
 import { useApprovalContext } from "../../state/approval-context";
 import { ApprovalBody } from "./approval/approval-body";

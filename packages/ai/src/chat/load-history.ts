@@ -1,4 +1,4 @@
-import { type EmbedFn, listMessages, type MessageDto, ok, type Result } from "@okazi/core";
+import { type EmbedFn, listMessages, type MessageDto, ok, type Result } from "@bibi/core";
 import type { UIMessage } from "ai";
 import type { UserContext } from "../server/resolve-user";
 import { runCore } from "../server/run-core";

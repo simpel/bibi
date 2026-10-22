@@ -1,8 +1,8 @@
 "use client";
 
-import type { PermissionSet } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
-import { CommandGroup, CommandItem } from "@okazi/ui";
+import type { PermissionSet } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
+import { CommandGroup, CommandItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { VenueShortcut } from "@/features/venue/actions";
 import { canPermission } from "@/lib/can";

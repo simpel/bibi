@@ -1,5 +1,5 @@
 {
-  "name": "@okazi/ai",
+  "name": "@bibi/ai",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "@ai-sdk/mcp": "2.0.74",
-    "@okazi/auth": "workspace:*",
-    "@okazi/config": "workspace:*",
-    "@okazi/core": "workspace:*",
-    "@okazi/db": "workspace:*",
-    "@okazi/logger": "workspace:*",
+    "@bibi/auth": "workspace:*",
+    "@bibi/config": "workspace:*",
+    "@bibi/core": "workspace:*",
+    "@bibi/db": "workspace:*",
+    "@bibi/logger": "workspace:*",
     "ai": "7.0.140",
     "zod": "4.6.7"
   },

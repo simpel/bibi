@@ -19,7 +19,7 @@ describe("untrusted inbound mail", () => {
     const output_ = { content: [{ type: "text", text: JSON.stringify({ text: injection }) }] };
     const other = { toModelOutput: () => ({ type: "text", value: "plain" }) };
     const mcpLike = {
-      _meta: { "okazi/untrustedOutput": true },
+      _meta: { "bibi/untrustedOutput": true },
       toModelOutput: ({ output }: { output: typeof output_ }) => ({
         type: "content",
         value: output.content,

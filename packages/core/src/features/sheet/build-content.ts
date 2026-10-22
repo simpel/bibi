@@ -1,4 +1,4 @@
-import type { Ticket } from "@okazi/db";
+import type { Ticket } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { SheetDefinitionDto } from "../sheet-definition/schema";
 import { itemRows } from "./item-rows";

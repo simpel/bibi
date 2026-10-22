@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { deleteOrganizations } from "../src/seed/demo/delete-organizations";
 import { findTestLeftoverOrgs } from "../src/seed/demo/test-leftovers";

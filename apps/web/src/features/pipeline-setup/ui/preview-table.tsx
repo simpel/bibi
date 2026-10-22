@@ -1,4 +1,4 @@
-import type { PipelinePreviewStep } from "@okazi/core/schemas";
+import type { PipelinePreviewStep } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { usePreviewColumns } from "./use-preview-columns";

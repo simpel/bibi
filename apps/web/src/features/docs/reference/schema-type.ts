@@ -1,4 +1,4 @@
-import type { JsonObject } from "@okazi/api";
+import type { JsonObject } from "@bibi/api";
 
 export type SchemaInput = { schema: JsonObject };
 

@@ -1,4 +1,4 @@
-import type { Contact } from "@okazi/db";
+import type { Contact } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";
 import type { ContactDto } from "./schema";

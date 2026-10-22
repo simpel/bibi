@@ -1,4 +1,4 @@
-import { TicketChangePhaseInputSchema } from "@okazi/core/schemas";
+import { TicketChangePhaseInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { formSchema } from "@/lib/form-schema";
 

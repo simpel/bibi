@@ -1,8 +1,8 @@
 "use client";
 
+import { useRouter } from "@bibi/i18n/navigation";
+import { Button, Form, Input } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "@okazi/i18n/navigation";
-import { Button, Form, Input } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";

@@ -1,6 +1,6 @@
 import type { AddressInfo } from "node:net";
-import { createExecuteContext, grantAll, ok } from "@okazi/core";
-import { type CapturedLogs, captureLogs } from "@okazi/logger";
+import { createExecuteContext, grantAll, ok } from "@bibi/core";
+import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createHttpServer } from "../src/http/create-http-server";

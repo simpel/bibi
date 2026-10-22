@@ -1,8 +1,8 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { createEmbed } from "./create-embed";
 import { reindexAll } from "./reindex/reindex-all";
 
-// `pnpm --filter @okazi/ai reindex [--org <organizationId>]` – re-embeds index rows written by
+// `pnpm --filter @bibi/ai reindex [--org <organizationId>]` – re-embeds index rows written by
 // another embedding model and indexes missing or stale entities. Not exported from the package index.
 type OrgArgInput = { args: readonly string[] };
 

@@ -6,8 +6,8 @@ import {
   listDevUsers,
   resetDevOnboarding,
   switchDevUser,
-} from "@okazi/auth";
-import { seedDemo } from "@okazi/core/seed/demo";
+} from "@bibi/auth";
+import { seedDemo } from "@bibi/core/seed/demo";
 import { headers } from "next/headers";
 import type { ActionResult } from "@/lib/action-result";
 

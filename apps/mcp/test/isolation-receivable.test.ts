@@ -2,7 +2,7 @@ import {
   createMemoryPaymentProvider,
   setPaymentProvider,
   setStripeConnectGateway,
-} from "@okazi/core";
+} from "@bibi/core";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";

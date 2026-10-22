@@ -1,4 +1,4 @@
-import type { Payment } from "@okazi/db";
+import type { Payment } from "@bibi/db";
 import type { PaymentDto } from "./schema";
 
 export type ToPaymentDtoInput = { row: Payment };

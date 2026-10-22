@@ -1,4 +1,4 @@
-import { Separator, SidebarTrigger } from "@okazi/ui";
+import { Separator, SidebarTrigger } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { Breadcrumb } from "./breadcrumb";
 import { CommandBar } from "./command-bar";

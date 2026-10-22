@@ -1,4 +1,4 @@
-import { ADMIN_ROLE, FIXED_ROLES, type FixedRole } from "@okazi/core";
+import { ADMIN_ROLE, FIXED_ROLES, type FixedRole } from "@bibi/core";
 import { createAccessControl } from "better-auth/plugins/access";
 import { defaultStatements, ownerAc } from "better-auth/plugins/organization/access";
 
@@ -22,7 +22,7 @@ type OrgRoles = Record<FixedRole, ReturnType<typeof accessControl.newRole>>;
 
 /**
  * The fixed roles as Better Auth roles. Only `admin` gets Better Auth statements (updating or
- * deleting the organization itself); every Okazi permission comes from the presets and overrides in core (ADR 0050).
+ * deleting the organization itself); every Bibi permission comes from the presets and overrides in core (ADR 0050).
  */
 export const orgRoles = Object.fromEntries(
   FIXED_ROLES.map((role) => [

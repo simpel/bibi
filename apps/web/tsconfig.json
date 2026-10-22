@@ -1,5 +1,5 @@
 {
-  "extends": "@okazi/config/tsconfig.next.json",
+  "extends": "@bibi/config/tsconfig.next.json",
   "compilerOptions": {
     "jsx": "react-jsx",
     "types": ["node"],

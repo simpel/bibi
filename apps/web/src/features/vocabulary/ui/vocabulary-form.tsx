@@ -1,7 +1,7 @@
+import type { VocabularyCreateInput, VocabularyDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { VocabularyCreateInput, VocabularyDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
-import { Button, DialogFooter, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@okazi/ui";
+import { Card } from "@bibi/ui";
 import { InboundEmailEntry } from "@/features/inbound-email/ui/inbound-email-entry";
 import type { GenerativeProps } from "./generative-props";
 

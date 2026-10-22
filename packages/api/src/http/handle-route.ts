@@ -1,4 +1,4 @@
-import { type AfterCommitHook, type ExecuteContext, execute, type Result } from "@okazi/core";
+import { type AfterCommitHook, type ExecuteContext, execute, type Result } from "@bibi/core";
 import type { BuildInputInput } from "./build-input";
 import { buildInput } from "./build-input";
 import { errorResponse } from "./error-response";

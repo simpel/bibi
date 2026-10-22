@@ -5,7 +5,7 @@ import {
   type PipelineBoard,
   pipelineBoard,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { runOperation } from "@/server/run-operation";
 

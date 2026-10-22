@@ -1,6 +1,6 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@okazi/ui";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { MagicLinkForm } from "./magic-link-form";
 import { OtpForm } from "./otp-form";

@@ -1,4 +1,4 @@
-import { getLogContext } from "@okazi/logger";
+import { getLogContext } from "@bibi/logger";
 import { toJson } from "../shared/to-json";
 import type { Actor, RecordedChange } from "./types";
 

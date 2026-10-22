@@ -1,6 +1,6 @@
 "use client";
 
-import { Form } from "@okazi/ui";
+import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { useVenueSearch } from "./use-venue-search";

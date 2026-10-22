@@ -1,4 +1,4 @@
-import type { ScopedDbClient } from "@okazi/db";
+import type { ScopedDbClient } from "@bibi/db";
 import type { z } from "zod";
 import type { Consequence } from "../change-preview/schema";
 import type { Result } from "../errors/result";

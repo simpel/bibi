@@ -1,11 +1,11 @@
-import { type Db, type ScopedDb, SYSTEM_ACTOR_ID, scopedDb } from "@okazi/db";
+import { type Db, type ScopedDb, SYSTEM_ACTOR_ID, scopedDb } from "@bibi/db";
 import type { OperationContext } from "./types";
 
 /** What callers (adapters) hand to `execute`; `db` must be a full `ScopedDb`. */
 export type ExecuteContext = Omit<OperationContext, "db" | "recordChange"> & { db: ScopedDb };
 
 export type CreateExecuteContextInput = Omit<ExecuteContext, "db"> & {
-  /** Base client; defaults to the process singleton from `@okazi/db`. */
+  /** Base client; defaults to the process singleton from `@bibi/db`. */
   db?: Db;
 };
 

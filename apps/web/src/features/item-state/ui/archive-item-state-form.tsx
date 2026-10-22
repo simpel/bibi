@@ -1,5 +1,5 @@
-import type { ItemStateDto } from "@okazi/core/schemas";
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import type { ItemStateDto } from "@bibi/core/schemas";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ArchivePreviewPanel } from "@/components/archive-preview/archive-preview-panel";
 import { OptionSelectField } from "@/components/form/option-select-field";

@@ -10,7 +10,7 @@ import {
   type ItemDto,
   type SkillDto,
   type VenueDto,
-} from "@okazi/core";
+} from "@bibi/core";
 import { ContactRef } from "../features/contact/graphql";
 import { ConversationRef } from "../features/conversation/graphql";
 import { CustomerRef } from "../features/customer/graphql";

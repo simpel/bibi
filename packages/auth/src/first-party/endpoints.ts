@@ -1,5 +1,5 @@
-import { getEnv } from "@okazi/config";
-import { AppError, err, ok, type Result } from "@okazi/core";
+import { getEnv } from "@bibi/config";
+import { AppError, err, ok, type Result } from "@bibi/core";
 import { AUTH_BASE_PATH } from "../urls";
 import { FIRST_PARTY_CLIENTS, type FirstPartyClient } from "./clients";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@okazi/ui";
+import { Card } from "@bibi/ui";
 import { ArchivePreviewPanel } from "@/components/archive-preview/archive-preview-panel";
 import type { GenerativeProps } from "./generative-props";
 

@@ -1,9 +1,9 @@
-import { type Actor, ok, type Result } from "@okazi/core";
+import { type Actor, ok, type Result } from "@bibi/core";
 import { z } from "zod";
 import { forbidden } from "./errors";
 
-export const ACTOR_HEADER = "x-okazi-actor";
-export const CONVERSATION_HEADER = "x-okazi-conversation-id";
+export const ACTOR_HEADER = "x-bibi-actor";
+export const CONVERSATION_HEADER = "x-bibi-conversation-id";
 
 const AiRequestSchema = z.object({
   actor: z.literal("ai"),
@@ -20,7 +20,7 @@ export type BuildActorInput = {
 };
 
 /**
- * `apiKey` actor for API key requests (ADR 0050), else `user` by default. `x-okazi-actor: ai` (+ conversation id) yields an `ai` actor acting
+ * `apiKey` actor for API key requests (ADR 0050), else `user` by default. `x-bibi-actor: ai` (+ conversation id) yields an `ai` actor acting
  * for `userId`, which makes commands require human approval. An AI request we cannot honour is
  * rejected, never silently downgraded to `user` (that would skip the approval step).
  */
@@ -33,7 +33,7 @@ export function buildActor({
   const requested = headers.get(ACTOR_HEADER);
   if (apiKeyId) {
     if (requested !== null && requested !== "user") {
-      return forbidden({ message: "AI actor is only accepted from the Okazi web app" });
+      return forbidden({ message: "AI actor is only accepted from the Bibi web app" });
     }
     return ok({ value: { type: "apiKey", userId: null, apiKeyId } });
   }
@@ -46,7 +46,7 @@ export function buildActor({
   if (!parsed.success) {
     return forbidden({ message: `${ACTOR_HEADER} must be "ai" with ${CONVERSATION_HEADER}` });
   }
-  if (!aiAllowed) return forbidden({ message: "AI actor is only accepted from the Okazi web app" });
+  if (!aiAllowed) return forbidden({ message: "AI actor is only accepted from the Bibi web app" });
   const { conversationId } = parsed.data;
   return ok({ value: { type: "ai", userId, conversationId } });
 }

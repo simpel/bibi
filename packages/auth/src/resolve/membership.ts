@@ -1,5 +1,5 @@
-import { applyOverrides, type FixedRole, type PermissionSet, parseMemberRole } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { applyOverrides, type FixedRole, type PermissionSet, parseMemberRole } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { loadSubjectOverrides } from "./load-overrides";
 
 /** `role` is `null` when the stored role is not a preset; it then grants nothing. */

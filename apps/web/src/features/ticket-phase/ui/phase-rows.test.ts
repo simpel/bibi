@@ -1,4 +1,4 @@
-import type { TicketPhaseDto } from "@okazi/core/schemas";
+import type { TicketPhaseDto } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { toPhaseRows } from "./phase-rows";
 

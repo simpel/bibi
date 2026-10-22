@@ -1,4 +1,4 @@
-import type { AlternativeGroup } from "@okazi/db";
+import type { AlternativeGroup } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { AlternativeGroupDto } from "./schema";
 

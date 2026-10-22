@@ -1,7 +1,7 @@
 "use client";
 
-import { Link } from "@okazi/i18n/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { QuoteLinesTable } from "@/features/quote/ui/quote-lines-table";
 import { QuoteStatusBadge } from "@/features/quote/ui/quote-status-badge";

@@ -5,7 +5,7 @@ import {
   listMembers,
   listTicketPhases,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import { runOperation } from "@/server/run-operation";
 import type { TicketFormData } from "./ui/ticket-form-data";

@@ -1,4 +1,4 @@
-import { createConversation, type EmbedFn, getConversation, ok, type Result } from "@okazi/core";
+import { createConversation, type EmbedFn, getConversation, ok, type Result } from "@bibi/core";
 import type { UserContext } from "../server/resolve-user";
 import { runCore } from "../server/run-core";
 import { ASSISTANT_LIMITS } from "./assistant-limits";

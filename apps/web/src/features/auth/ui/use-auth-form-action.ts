@@ -1,4 +1,4 @@
-import { toast } from "@okazi/ui";
+import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { type AuthClientError, authErrorKey } from "@/lib/auth-error-key";

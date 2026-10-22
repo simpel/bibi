@@ -1,4 +1,4 @@
-import type { RecordBase, RecordMatches } from "@okazi/db";
+import type { RecordBase, RecordMatches } from "@bibi/db";
 import type { AppErrorIssue } from "../errors/app-error";
 import type { OperationContext } from "../operations/types";
 import type { Feature } from "../permissions/features";

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "@okazi/i18n/navigation";
+import { useRouter } from "@bibi/i18n/navigation";
 import type { ActionResult } from "@/lib/action-result";
 import type { ToastMessages } from "@/lib/submit-with-toast";
 import { useToastAction } from "@/lib/use-toast-action";

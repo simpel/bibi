@@ -6,10 +6,10 @@ description: Debug a red parity test or verify 1:1 parity between web, GraphQL, 
 # Parity check
 
 Parity is tested at multiple surfaces; each has its own test:
-- **REST, GraphQL, MCP:** `pnpm --filter @okazi/mcp test -- parity` (tests `apps/mcp/test/parity.test.ts`, `parity-graphql.ts`, `parity-rest.ts`, `parity-entities.ts`).
-- **Web surfaces:** `pnpm --filter @okazi/web test -- web-surfaces` (tests `apps/web/src/features/web-surfaces.test.ts`, validates `web-surfaces.ts`).
-- **REST (double-check):** `pnpm --filter @okazi/api test -- parity`.
-- **Generative UI:** `pnpm --filter @okazi/ai test -- ui-contract`.
+- **REST, GraphQL, MCP:** `pnpm --filter @bibi/mcp test -- parity` (tests `apps/mcp/test/parity.test.ts`, `parity-graphql.ts`, `parity-rest.ts`, `parity-entities.ts`).
+- **Web surfaces:** `pnpm --filter @bibi/web test -- web-surfaces` (tests `apps/web/src/features/web-surfaces.test.ts`, validates `web-surfaces.ts`).
+- **REST (double-check):** `pnpm --filter @bibi/api test -- parity`.
+- **Generative UI:** `pnpm --filter @bibi/ai test -- ui-contract`.
 
 To fix a failure, map it to the missing surface:
 - Missing in REST: add a `restRoute` in `packages/api/src/features/<entity>/rest.ts`.

@@ -14,21 +14,21 @@ has() { if grep -qF -- "$3" <<<"$2"; then pass "$1"; else fail "$1" "missing [$3
 
 # ---- sandbox --------------------------------------------------------------
 git init -q --bare -b main "$ROOT/origin.git"
-git clone -q "$ROOT/origin.git" "$ROOT/okazi" 2>/dev/null
-cd "$ROOT/okazi" || exit 1
+git clone -q "$ROOT/origin.git" "$ROOT/bibi" 2>/dev/null
+cd "$ROOT/bibi" || exit 1
 git config user.email t@t; git config user.name t
 mkdir -p tools/backlog && cp "$SRC"/tools/backlog/*.sh tools/backlog/; mkdir -p tools/ci && cp "$SRC"/tools/ci/checks.json "$SRC"/tools/ci/verify.mjs tools/ci/
 echo base > a.txt; echo base > b.txt; echo "old name here" > c.txt
 git add -A && git commit -qm "base" && git push -q origin HEAD:main
-mkdir -p "$ROOT/okazi-worktrees/.locks"
+mkdir -p "$ROOT/bibi-worktrees/.locks"
 STATE="$ROOT/state"; mkdir -p "$STATE" "$ROOT/bin"
 
 cat >"$ROOT/bin/pnpm" <<EOF
 #!/usr/bin/env bash
 # fake pnpm: wt:rm removes the worktree and branch; everything else succeeds
 if [ "\$1" = "wt:rm" ]; then
-  git -C "$ROOT/okazi" worktree remove --force "$ROOT/okazi-worktrees/\$2" 2>/dev/null
-  git -C "$ROOT/okazi" branch -D "ticket/\${2#t-}" >/dev/null 2>&1
+  git -C "$ROOT/bibi" worktree remove --force "$ROOT/bibi-worktrees/\$2" 2>/dev/null
+  git -C "$ROOT/bibi" branch -D "ticket/\${2#t-}" >/dev/null 2>&1
   exit 0
 fi
 echo "\$@" >>"$STATE/pnpm.log"; exit \${PNPM_FAIL:-0}
@@ -58,23 +58,23 @@ chmod +x "$ROOT/bin/"*
 export PATH="$ROOT/bin:$PATH"
 
 new_ticket() { # new_ticket <N> : a worktree with one changed file
-  git -C "$ROOT/okazi" fetch -q origin
-  git -C "$ROOT/okazi" worktree add -q -b "ticket/$1" "$ROOT/okazi-worktrees/t-$1" origin/main
-  mkdir -p "$ROOT/okazi-worktrees/.locks/t-$1"
-  echo "work for $1" >"$ROOT/okazi-worktrees/t-$1/work-$1.txt"
+  git -C "$ROOT/bibi" fetch -q origin
+  git -C "$ROOT/bibi" worktree add -q -b "ticket/$1" "$ROOT/bibi-worktrees/t-$1" origin/main
+  mkdir -p "$ROOT/bibi-worktrees/.locks/t-$1"
+  echo "work for $1" >"$ROOT/bibi-worktrees/t-$1/work-$1.txt"
 }
-run() { (cd "$ROOT/okazi" && "$@"); }
+run() { (cd "$ROOT/bibi" && "$@"); }
 main_commit() { # main_commit <file> <content> <message>
-  (cd "$ROOT/okazi" && git pull -q --rebase origin main && echo "$2" >"$1" && git commit -qam "$3" && git push -q origin HEAD:main)
+  (cd "$ROOT/bibi" && git pull -q --rebase origin main && echo "$2" >"$1" && git commit -qam "$3" && git push -q origin HEAD:main)
 }
-S="$ROOT/okazi/tools/backlog"
+S="$ROOT/bibi/tools/backlog"
 
 # ---- ship: commit, conventional title, PR ------------------------------------
 new_ticket 1
 OUT="$(run env KIND=Bugfix CO_AUTHOR='Co-Authored-By: Test <t@t>' "$S/ship.sh" 1 --title "Fix the thing" <<<"What changed")"
 eq "ship opens a PR" "$(jq -r .state <<<"$OUT")" opened
 eq "PR title carries the conventional type" "$(cat "$STATE/pr-title")" "fix: Fix the thing"
-MSG="$(git -C "$ROOT/okazi-worktrees/t-1" log -1 --format=%B)"
+MSG="$(git -C "$ROOT/bibi-worktrees/t-1" log -1 --format=%B)"
 has "commit says Closes" "$MSG" "Closes #1"
 has "commit is conventional" "$MSG" "fix: Fix the thing"
 eq "branch is pushed" "$(git -C "$ROOT/origin.git" rev-parse --verify -q ticket/1 >/dev/null && echo yes)" yes
@@ -98,38 +98,38 @@ eq "squash commit subject" "$(sed -n 1p "$STATE/log.txt")" "fix: Fix the thing (
 eq "main stays a single line of commits" "$(git -C "$ROOT/origin.git" log --merges --oneline main | wc -l | tr -d ' ')" 0
 has "squash body closes the issue" "$(git -C "$ROOT/origin.git" log -1 --format=%B main)" "Closes #1"
 eq "remote ticket branch is gone" "$(git -C "$ROOT/origin.git" rev-parse --verify -q ticket/1 >/dev/null && echo yes || echo no)" no
-eq "worktree is removed" "$([ -d "$ROOT/okazi-worktrees/t-1" ] && echo yes || echo no)" no
-eq "lock is released" "$([ -d "$ROOT/okazi-worktrees/.locks/t-1" ] && echo yes || echo no)" no
+eq "worktree is removed" "$([ -d "$ROOT/bibi-worktrees/t-1" ] && echo yes || echo no)" no
+eq "lock is released" "$([ -d "$ROOT/bibi-worktrees/.locks/t-1" ] && echo yes || echo no)" no
 
 # ---- ship conflict ---------------------------------------------------------------
 new_ticket 1
-echo "ticket edit" >"$ROOT/okazi-worktrees/t-1/a.txt"
+echo "ticket edit" >"$ROOT/bibi-worktrees/t-1/a.txt"
 main_commit a.txt "main edit" "main edits a"
 OUT="$(run env KIND=Feature "$S/ship.sh" 1 --title "Edit a" <<<"s")"
 eq "ship reports a rebase conflict" "$(jq -r .state <<<"$OUT")" conflict
 has "conflict names the file" "$(jq -r .files <<<"$OUT")" "a.txt"
-git -C "$ROOT/okazi-worktrees/t-1" rebase --abort >/dev/null 2>&1
-run env PNPM_FAIL=0 "$ROOT/bin/pnpm" wt:rm t-1 >/dev/null; rm -rf "$ROOT/okazi-worktrees/.locks/t-1"
+git -C "$ROOT/bibi-worktrees/t-1" rebase --abort >/dev/null 2>&1
+run env PNPM_FAIL=0 "$ROOT/bin/pnpm" wt:rm t-1 >/dev/null; rm -rf "$ROOT/bibi-worktrees/.locks/t-1"
 
 # ---- red checks block the PR ------------------------------------------------------
 new_ticket 1
-echo "x" >"$ROOT/okazi-worktrees/t-1/new.txt"
+echo "x" >"$ROOT/bibi-worktrees/t-1/new.txt"
 main_commit b.txt moved "move main"
 OUT="$(run env KIND=Feature PNPM_FAIL=1 "$S/ship.sh" 1 --title "Red" <<<"s")"
 eq "red checks after a rebase are reported" "$(jq -r .state <<<"$OUT")" red
 
 # ---- review only, light checks, other kinds -----------------------------------------
-run env PNPM_FAIL=0 "$ROOT/bin/pnpm" wt:rm t-1 >/dev/null; rm -rf "$ROOT/okazi-worktrees/.locks/t-1"; rm -f "$STATE/pr-1"
+run env PNPM_FAIL=0 "$ROOT/bin/pnpm" wt:rm t-1 >/dev/null; rm -rf "$ROOT/bibi-worktrees/.locks/t-1"; rm -f "$STATE/pr-1"
 new_ticket 1
 OUT="$(run env KIND=Docs REVIEW_ONLY=1 CHECKS_ARGS=--light "$S/ship.sh" 1 --title "Docs ADR" <<<"s")"
 eq "review-only ticket is opened" "$(jq -r .state <<<"$OUT")" opened
 eq "PR title for docs" "$(cat "$STATE/pr-title")" "docs: Docs ADR"
-eq "review-only removes the worktree" "$([ -d "$ROOT/okazi-worktrees/t-1" ] && echo yes || echo no)" no
+eq "review-only removes the worktree" "$([ -d "$ROOT/bibi-worktrees/t-1" ] && echo yes || echo no)" no
 rm -f "$STATE/pr-1"
 new_ticket 1
 run env KIND="Tech debt" "$S/ship.sh" 1 --title "Tidy" <<<"s" >/dev/null
 eq "tech debt becomes refactor" "$(cat "$STATE/pr-title")" "refactor: Tidy"
-rm -f "$STATE/pr-1"; run env "$ROOT/bin/pnpm" wt:rm t-1 >/dev/null; rm -rf "$ROOT/okazi-worktrees/.locks/t-1"
+rm -f "$STATE/pr-1"; run env "$ROOT/bin/pnpm" wt:rm t-1 >/dev/null; rm -rf "$ROOT/bibi-worktrees/.locks/t-1"
 
 # ---- park closes the PR -----------------------------------------------------------------
 new_ticket 1
@@ -139,8 +139,8 @@ eq "park reports parked" "$(jq -r .state <<<"$OUT")" parked
 has "park closed the PR" "$(cat "$STATE/gh.log")" "pr close 101"
 
 # ---- main-ci: CI of main after the merges -----------------------------------------------------
-git -C "$ROOT/okazi" fetch -q origin
-MAIN_SHA="$(git -C "$ROOT/okazi" rev-parse origin/main)"
+git -C "$ROOT/bibi" fetch -q origin
+MAIN_SHA="$(git -C "$ROOT/bibi" rev-parse origin/main)"
 echo "[{\"headSha\":\"$MAIN_SHA\",\"status\":\"completed\",\"conclusion\":\"success\",\"url\":\"https://x/run/1\"}]" >"$STATE/main-run.json"
 eq "main-ci green" "$(jq -r .state <<<"$(run "$S/main-ci.sh" --timeout 1)")" green
 echo "[{\"headSha\":\"$MAIN_SHA\",\"status\":\"completed\",\"conclusion\":\"failure\",\"url\":\"https://x/run/2\"}]" >"$STATE/main-run.json"

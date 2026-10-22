@@ -19,7 +19,7 @@
 
 ## Consequences
 - `Room` became an `Item` of a bookable type with setups; `room.*` was replaced by `item.*`. Participants were dropped from the MVP, since self-registration with allergies per person is no longer a differentiator.
-- Operations are generic. GraphQL and REST expose `fields: JSON` plus definitions; the MCP tools describe the organization's fields dynamically. Each capability and field kind has its own Zod schema and `@okazi/ui` component.
+- Operations are generic. GraphQL and REST expose `fields: JSON` plus definitions; the MCP tools describe the organization's fields dynamically. Each capability and field kind has its own Zod schema and `@bibi/ui` component.
 - Reports build on capabilities and phases, never on type names.
 
 ## Addendum 2026-10-20 – capabilities and resources

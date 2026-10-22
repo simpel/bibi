@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@okazi/ui";
+import { Button } from "@bibi/ui";
 import { ArchiveIcon, PencilIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import type { ConversationSummary } from "../actions";

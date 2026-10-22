@@ -1,4 +1,4 @@
-import { execute, getCustomer } from "@okazi/core";
+import { execute, getCustomer } from "@bibi/core";
 import { type SummaryInput, text } from "../../tools/meta";
 
 const ticketsText = ({ count }: { count: unknown }) => {

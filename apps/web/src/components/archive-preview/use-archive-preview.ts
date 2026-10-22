@@ -1,4 +1,4 @@
-import type { ArchivePreview } from "@okazi/core/schemas";
+import type { ArchivePreview } from "@bibi/core/schemas";
 import { useEffect, useState } from "react";
 import type { ActionResult } from "@/lib/action-result";
 import { type ErrorKey, errorKeyForCode } from "@/lib/error-key";

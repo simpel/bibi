@@ -1,4 +1,4 @@
-import { Link } from "@okazi/i18n/navigation";
+import { Link } from "@bibi/i18n/navigation";
 import {
   Separator,
   Sidebar,
@@ -8,7 +8,7 @@ import {
   SidebarProvider,
   SidebarRail,
   SidebarTrigger,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { BookOpenIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";

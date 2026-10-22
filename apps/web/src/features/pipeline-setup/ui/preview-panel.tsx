@@ -1,4 +1,4 @@
-import type { PipelinePreview } from "@okazi/core/schemas";
+import type { PipelinePreview } from "@bibi/core/schemas";
 import { MiniCalendar } from "./mini-calendar";
 import { PreviewTable } from "./preview-table";
 import { ProblemList } from "./problem-list";

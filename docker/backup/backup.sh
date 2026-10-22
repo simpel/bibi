@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # One backup run: pg_dump (custom format) -> S3-compatible storage, then prune by retention.
 # Env: PGHOST PGUSER PGPASSWORD PGDATABASE, BACKUP_S3_BUCKET, BACKUP_S3_ENDPOINT (optional),
-#      BACKUP_PREFIX (default okazi/db), BACKUP_RETENTION_DAYS (default 30),
+#      BACKUP_PREFIX (default bibi/db), BACKUP_RETENTION_DAYS (default 30),
 #      BACKUP_LOCAL_DIR (if set, write there instead of uploading; used by the restore test).
 set -euo pipefail
 
-prefix="${BACKUP_PREFIX:-okazi/db}"
+prefix="${BACKUP_PREFIX:-bibi/db}"
 retention="${BACKUP_RETENTION_DAYS:-30}"
 stamp="$(date -u +%Y%m%dT%H%M%SZ)"
-file="okazi-${stamp}.dump"
+file="bibi-${stamp}.dump"
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 
@@ -29,7 +29,7 @@ echo "backup.done file=$file target=s3"
 cutoff="$(date -u -d "-${retention} days" +%Y%m%d 2>/dev/null || true)"
 [ -n "$cutoff" ] || exit 0
 s3 ls "s3://$BACKUP_S3_BUCKET/$prefix/" | awk '{print $4}' | while read -r name; do
-  day="${name#okazi-}"; day="${day%%T*}"
+  day="${name#bibi-}"; day="${day%%T*}"
   if [[ "$day" =~ ^[0-9]{8}$ ]] && [ "$day" -lt "$cutoff" ]; then
     s3 rm "s3://$BACKUP_S3_BUCKET/$prefix/$name" --only-show-errors
     echo "backup.pruned file=$name"

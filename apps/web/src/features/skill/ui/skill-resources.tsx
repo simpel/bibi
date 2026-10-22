@@ -1,5 +1,5 @@
-import type { SkillResource } from "@okazi/core";
-import { Card } from "@okazi/ui";
+import type { SkillResource } from "@bibi/core";
+import { Card } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 
 export type SkillResourcesProps = { resources: SkillResource[] };

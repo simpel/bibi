@@ -1,5 +1,5 @@
 import "server-only";
-import { listCustomers, listItems } from "@okazi/core";
+import { listCustomers, listItems } from "@bibi/core";
 import type { NamedOption } from "@/components/form/named-option";
 import { runOperation } from "@/server/run-operation";
 

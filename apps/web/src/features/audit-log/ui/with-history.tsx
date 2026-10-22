@@ -1,4 +1,4 @@
-import type { Locale } from "@okazi/i18n";
+import type { Locale } from "@bibi/i18n";
 import type { ReactNode } from "react";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { EntityHistory } from "./entity-history";

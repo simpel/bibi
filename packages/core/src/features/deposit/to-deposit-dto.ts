@@ -1,4 +1,4 @@
-import type { Deposit } from "@okazi/db";
+import type { Deposit } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { paidByReceivable, settlementOf } from "../payment/settlement";
 import type { DepositDto } from "./schema";

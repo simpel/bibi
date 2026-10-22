@@ -1,4 +1,4 @@
-import type { PriceEffect } from "@okazi/core/schemas";
+import type { PriceEffect } from "@bibi/core/schemas";
 import type { NamedOption } from "@/components/form/named-option";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
 import type { LineStateOption } from "./line-state-option";

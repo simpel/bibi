@@ -1,4 +1,4 @@
-import { type AuditLogDto, AuditLogSchema, getAuditLog, listAuditLogs } from "@okazi/core";
+import { type AuditLogDto, AuditLogSchema, getAuditLog, listAuditLogs } from "@bibi/core";
 import { fieldFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { pageType } from "../../schema/page";

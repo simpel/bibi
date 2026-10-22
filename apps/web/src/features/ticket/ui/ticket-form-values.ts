@@ -1,4 +1,4 @@
-import type { EntityTypeDto, TicketDto } from "@okazi/core";
+import type { EntityTypeDto, TicketDto } from "@bibi/core";
 import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 import { toLocalInputValue } from "../../occupancy/ui/local-date-time";

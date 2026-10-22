@@ -1,5 +1,5 @@
-import type { VocabularyDto } from "@okazi/core";
-import { VocabularyCreateInputSchema } from "@okazi/core/schemas";
+import type { VocabularyDto } from "@bibi/core";
+import { VocabularyCreateInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
 
 /** Raw values of the list form: name plus the initial values, one per line (create only). */

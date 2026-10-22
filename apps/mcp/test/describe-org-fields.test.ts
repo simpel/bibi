@@ -1,4 +1,4 @@
-import type { EntityTypeDto, FieldDefinitionDto, VocabularyDto } from "@okazi/core";
+import type { EntityTypeDto, FieldDefinitionDto, VocabularyDto } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { describeOrgFields } from "../src/tools/describe-org-fields";
 

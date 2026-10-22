@@ -1,5 +1,5 @@
-import { SUPERADMIN_ROLE } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { SUPERADMIN_ROLE } from "@bibi/core";
+import { getDb } from "@bibi/db";
 
 export type IsPlatformAdminInput = { userId: string };
 

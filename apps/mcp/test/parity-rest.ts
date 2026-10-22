@@ -1,5 +1,5 @@
-import { createRestHandler } from "@okazi/api";
-import { createCoreOperations, type ExecuteContext, ok } from "@okazi/core";
+import { createRestHandler } from "@bibi/api";
+import { createCoreOperations, type ExecuteContext, ok } from "@bibi/core";
 import { fakeEmbed } from "./fake-embed";
 import type { Json } from "./helpers";
 

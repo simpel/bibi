@@ -22,7 +22,7 @@ export const Default: Story = {
     <SidebarProvider className="min-h-96">
       <Sidebar collapsible="icon">
         <SidebarHeader className="px-3 py-2">
-          <Wordmark size="sm" name="Okazi" />
+          <Wordmark size="sm" name="Bibi" />
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>

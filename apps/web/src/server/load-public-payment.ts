@@ -1,7 +1,7 @@
 import "server-only";
-import { getPublicPayment } from "@okazi/core";
-import type { PublicPaymentDto } from "@okazi/core/schemas";
-import { runWithLogContext } from "@okazi/logger";
+import { getPublicPayment } from "@bibi/core";
+import type { PublicPaymentDto } from "@bibi/core/schemas";
+import { runWithLogContext } from "@bibi/logger";
 import { webLogContext } from "./request-log-context";
 
 export type LoadPublicPaymentInput = { token: string };

@@ -1,5 +1,5 @@
-import { Link } from "@okazi/i18n/navigation";
-import { Card, CardDescription, CardHeader, CardTitle } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { Card, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { BookOpenIcon, BracesIcon, CodeIcon, type LucideIcon, PlugIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DOC_SECTIONS, docHref, MCP_REFERENCE_HREF, REST_REFERENCE_HREF } from "../pages";

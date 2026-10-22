@@ -1,4 +1,4 @@
-import type { TicketPhaseDto } from "@okazi/core/schemas";
+import type { TicketPhaseDto } from "@bibi/core/schemas";
 import {
   Checkbox,
   ColorSwatch,
@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
   Label,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control } from "react-hook-form";
 import type { TransitionsFormOutput, TransitionsFormValues } from "./transitions-form-schema";

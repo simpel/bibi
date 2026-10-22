@@ -1,5 +1,5 @@
-import { getEnv } from "@okazi/config";
-import { getDb } from "@okazi/db";
+import { getEnv } from "@bibi/config";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { beforeAll, describe, expect, it } from "vitest";
 import { clientAllowsAiActor } from "../src/first-party/clients";
@@ -13,7 +13,7 @@ import {
 import { codeOf, createOrg, signUp } from "./helpers";
 import { obtainAccessToken, registerClient } from "./oauth-flow";
 
-const AI_HEADERS = { "x-okazi-actor": "ai", "x-okazi-conversation-id": "conv_assistant" };
+const AI_HEADERS = { "x-bibi-actor": "ai", "x-bibi-conversation-id": "conv_assistant" };
 
 /** The first-party client as `provision:oauth` creates it (assistant redirect URI added). */
 async function registerWebClient(): Promise<void> {

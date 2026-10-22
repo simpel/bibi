@@ -1,4 +1,4 @@
-import { loadRootEnv } from "@okazi/config/load-root-env";
+import { loadRootEnv } from "@bibi/config/load-root-env";
 import { defineConfig, env } from "prisma/config";
 
 loadRootEnv();

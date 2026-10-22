@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Create or update tickets on the okazi board with every required field in one step.
+// Create or update tickets on the bibi board with every required field in one step.
 //   node tools/backlog/ticket.mjs create --spec spec.json [--dry-run]
 //     spec: { title, body, labels?, status? (default Backlog), priority?, size, kind, model?, effort? }
 //   node tools/backlog/ticket.mjs set <number[,number...]> [--status S] [--priority P] [--size Z] [--kind K] [--model M] [--effort E]
@@ -12,9 +12,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 const OWNER = "simpel";
-const REPO = "simpel/okazi";
+const REPO = "simpel/bibi";
 const PROJECT = "8";
-const CACHE = join(tmpdir(), "okazi-board-fields.json");
+const CACHE = join(tmpdir(), "bibi-board-fields.json");
 const CACHE_MAX_AGE_MS = 60 * 60 * 1000;
 const FIELD_OF = {
   status: "Status",
@@ -117,7 +117,7 @@ function itemIdFor({ number, url }) {
     return JSON.parse(gh(args)).id;
   } catch {
     // The project may have auto-added the issue already.
-    const query = `query($n:Int!){repository(owner:"${OWNER}",name:"okazi"){issue(number:$n){projectItems(first:10){nodes{id project{number}}}}}}`;
+    const query = `query($n:Int!){repository(owner:"${OWNER}",name:"bibi"){issue(number:$n){projectItems(first:10){nodes{id project{number}}}}}}`;
     const out = JSON.parse(gh(["api", "graphql", "-f", `query=${query}`, "-F", `n=${number}`]));
     const nodes = out.data.repository.issue.projectItems.nodes;
     return nodes.find((n) => n.project.number === Number(PROJECT)).id;

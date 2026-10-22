@@ -9,7 +9,7 @@ import {
   grantAll,
   provisionOrganization,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 
 const value = <T>({ result }: { result: Result<T> }): T => {
   if (!result.ok) throw result.error;

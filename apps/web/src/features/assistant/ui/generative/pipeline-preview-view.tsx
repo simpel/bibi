@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@okazi/ui";
+import { Card } from "@bibi/ui";
 import { PreviewPanel } from "@/features/pipeline-setup/ui/preview-panel";
 import type { GenerativeProps } from "./generative-props";
 

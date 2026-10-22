@@ -1,6 +1,6 @@
+import type { QuoteDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { QuoteDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { quoteRoute } from "@/lib/routes";

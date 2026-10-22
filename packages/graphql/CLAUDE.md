@@ -1,6 +1,6 @@
-# @okazi/graphql – context for Claude
+# @bibi/graphql – context for Claude
 
-The GraphQL adapter (Pothos + GraphQL Yoga). Thin: all logic and permissions live in `@okazi/core` (ADR 0003).
+The GraphQL adapter (Pothos + GraphQL Yoga). Thin: all logic and permissions live in `@bibi/core` (ADR 0003).
 
 ## The parity mechanism
 - Mutations and primary reads are created with `mutationFromOperation({ operation, type, name? })` / `fieldFromOperation(...)`. They derive arguments/input and description from the operation's Zod schema and always run `execute` with the request's `ExecuteContext` (`schema/run-operation.ts`). A new operation ≈ 1 line.
@@ -12,7 +12,7 @@ The GraphQL adapter (Pothos + GraphQL Yoga). Thin: all logic and permissions liv
 - Enum/unknown Zod types become `String`/`JSON`; nested objects become `JSON`. Write a custom type when needed.
 
 ## Handler
-- `createGraphqlHandler({ resolveContext, embed, development? }): (Request) => Promise<Response>`. `resolveContext({ headers })` is injected (the real one comes from `@okazi/auth`); `Err` → HTTP status from `AppError` (401 on UNAUTHENTICATED).
+- `createGraphqlHandler({ resolveContext, embed, development? }): (Request) => Promise<Response>`. `resolveContext({ headers })` is injected (the real one comes from `@bibi/auth`); `Err` → HTTP status from `AppError` (401 on UNAUTHENTICATED).
 - Production (default): GraphiQL and introspection off, masked errors. `development: true` turns them on.
 - Limits: depth 10 (`limits/depth-limit.ts`), cost 25,000 (`limits/cost-limit.ts`, lists are multiplied by `limit`). Custom rules, not the armor packages: they throw instead of reporting and Yoga masks them.
 - Errors: `toGraphqlError` uses core `toGraphqlExtensions` (`extensions.code/httpStatus/issues`).

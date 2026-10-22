@@ -1,5 +1,5 @@
 import "server-only";
-import { getApiKey, getMember } from "@okazi/core";
+import { getApiKey, getMember } from "@bibi/core";
 import { runOperation } from "@/server/run-operation";
 
 export type SubjectType = "member" | "apiKey";

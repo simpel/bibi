@@ -1,4 +1,4 @@
-import type { Prisma } from "@okazi/db";
+import type { Prisma } from "@bibi/db";
 import type { OperationContext } from "../operations/types";
 
 /** One `LINK` field value as `RecordLink` rows (ADR 0056): the field and its targets, in order. */

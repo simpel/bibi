@@ -1,4 +1,4 @@
-import type { EntityTypeDto, LineDto } from "@okazi/core";
+import type { EntityTypeDto, LineDto } from "@bibi/core";
 import { type BufferFormValues, bufferFormDefaults } from "@/components/form/buffer-values";
 import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";

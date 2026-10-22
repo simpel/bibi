@@ -1,4 +1,4 @@
-import { Badge } from "@okazi/ui";
+import { Badge } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 
 export type SkillToolsProps = { tools: string[] };

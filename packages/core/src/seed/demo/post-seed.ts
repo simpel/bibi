@@ -1,4 +1,4 @@
-import { getLogger } from "@okazi/logger";
+import { getLogger } from "@bibi/logger";
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import type { ExecuteContext } from "../../operations/context";

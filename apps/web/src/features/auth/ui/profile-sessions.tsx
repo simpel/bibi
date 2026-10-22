@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Button } from "@okazi/ui";
+import { Badge, Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { InlineLoadError } from "@/components/states/inline-load-error";

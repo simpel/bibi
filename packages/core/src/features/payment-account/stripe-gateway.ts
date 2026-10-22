@@ -1,4 +1,4 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 import { z } from "zod";
 import { ok } from "../../errors/result";
 import { stripeBadResponse as badResponse } from "../payment/stripe-bad-response";
@@ -37,7 +37,7 @@ export const stripeConnectGateway: StripeConnectGateway = {
     const result = await stripeRequest({
       method: "POST",
       path: "/core/accounts",
-      idempotencyKey: `okazi-connected-account-${organizationId}`,
+      idempotencyKey: `bibi-connected-account-${organizationId}`,
       body: {
         display_name: displayName,
         ...(contactEmail ? { contact_email: contactEmail } : {}),

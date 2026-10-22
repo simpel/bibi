@@ -1,4 +1,4 @@
-import type { PriceList, PriceListItem } from "@okazi/db";
+import type { PriceList, PriceListItem } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { PriceListDto } from "./schema";
 

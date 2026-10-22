@@ -1,6 +1,6 @@
 "use client";
 
-import { FormControl, FormController, FormItem, FormLabel, Input } from "@okazi/ui";
+import { FormControl, FormController, FormItem, FormLabel, Input } from "@bibi/ui";
 import { SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";

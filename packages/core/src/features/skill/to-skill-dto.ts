@@ -1,4 +1,4 @@
-import type { Skill } from "@okazi/db";
+import type { Skill } from "@bibi/db";
 import type { SkillDto, SkillResource } from "./schema";
 
 export type ToSkillDtoInput = { skill: Skill };

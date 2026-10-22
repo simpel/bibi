@@ -1,13 +1,13 @@
 ---
 name: new-ticket
-description: Create a ticket on the okazi board (project 8) with every required field (Status, Priority, Size, Kind, optional Model), a Seed data section and Depends on. Use whenever work needs an issue, including follow-ups and the tickets that come out of an ADR.
+description: Create a ticket on the bibi board (project 8) with every required field (Status, Priority, Size, Kind, optional Model), a Seed data section and Depends on. Use whenever work needs an issue, including follow-ups and the tickets that come out of an ADR.
 ---
 
 # New ticket
 
 The ticket creator knows the scope, so the creator decides how the work is run. The `work-backlog` workflow follows the board fields, falls back to its own defaults when they are empty, and says so in its log when they look contradictory.
 
-1. **Check for a duplicate:** `gh issue list -R simpel/okazi --state all --search "<keywords>"`. Update an existing issue instead of creating a second one.
+1. **Check for a duplicate:** `gh issue list -R simpel/bibi --state all --search "<keywords>"`. Update an existing issue instead of creating a second one.
 2. **Decide the execution profile** (board fields, one value each):
    - **Kind** picks the path the run takes:
      - `Feature` (default): the `new-feature` skill; implement, fix, tenancy review, pull request.

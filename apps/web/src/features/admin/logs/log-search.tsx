@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Form, FormControl, FormController, FormItem, FormLabel, Input } from "@okazi/ui";
+import { Button, Form, FormControl, FormController, FormItem, FormLabel, Input } from "@bibi/ui";
 import { SearchIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";

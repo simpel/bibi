@@ -9,8 +9,8 @@ const TEST_SUFFIX = "_test";
 
 /**
  * The database tests run against: `TEST_DATABASE_URL` if set, else `DATABASE_URL` with `_test`
- * appended to the database name (`okazi` → `okazi_test`, a worktree's `okazi_<name>` →
- * `okazi_<name>_test`). Idempotent, so a URL that already names a `_test` database is kept.
+ * appended to the database name (`bibi` → `bibi_test`, a worktree's `bibi_<name>` →
+ * `bibi_<name>_test`). Idempotent, so a URL that already names a `_test` database is kept.
  * Tests never write into the dev database.
  */
 export function testDatabaseUrl({

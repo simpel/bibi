@@ -1,4 +1,4 @@
-import type { Permission, PermissionAction, PermissionSet } from "@okazi/core";
+import type { Permission, PermissionAction, PermissionSet } from "@bibi/core";
 
 export type CanPermissionInput = { permissions: PermissionSet; permission: Permission };
 

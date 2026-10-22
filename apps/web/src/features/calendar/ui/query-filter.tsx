@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "@okazi/i18n/navigation";
+import { usePathname, useRouter } from "@bibi/i18n/navigation";
 import { SelectFilter } from "@/components/select-filter";
 
 export type QueryFilterProps = {

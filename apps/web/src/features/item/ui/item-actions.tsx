@@ -1,6 +1,6 @@
-import type { ItemDto } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
-import { Button } from "@okazi/ui";
+import type { ItemDto } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
+import { Button } from "@bibi/ui";
 import { PencilIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { itemRoute, updateRoute } from "@/lib/routes";

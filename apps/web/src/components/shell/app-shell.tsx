@@ -1,4 +1,4 @@
-import { SidebarInset, SidebarProvider } from "@okazi/ui";
+import { SidebarInset, SidebarProvider } from "@bibi/ui";
 import type { ReactNode } from "react";
 import { AssistantProvider } from "@/features/assistant/state/assistant-provider";
 import { CrumbNamesProvider } from "./crumb-names";

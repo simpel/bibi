@@ -1,4 +1,4 @@
-import { type AppError, toGraphqlExtensions } from "@okazi/core";
+import { type AppError, toGraphqlExtensions } from "@bibi/core";
 import { GraphQLError } from "graphql";
 
 export type ToGraphqlErrorInput = { error: AppError; withHttpStatus?: boolean };

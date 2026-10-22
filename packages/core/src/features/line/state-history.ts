@@ -1,4 +1,4 @@
-import type { StateChangeTrigger } from "@okazi/db";
+import type { StateChangeTrigger } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 
 /** `include` for the newest state change of a line: "held since" (ADR 0054). */

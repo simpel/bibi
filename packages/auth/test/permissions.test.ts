@@ -1,5 +1,5 @@
-import { grantAll, PRESET_PERMISSIONS } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { grantAll, PRESET_PERMISSIONS } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { getAuth, resolveExecuteContext } from "../src/index";
 import { createOrg, signUp } from "./helpers";

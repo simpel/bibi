@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { EMBEDDING_DIMENSIONS } from "@okazi/db";
+import { EMBEDDING_DIMENSIONS } from "@bibi/db";
 import type { EmbedFn } from "../src/index";
 
 type VectorInput = { text: string };

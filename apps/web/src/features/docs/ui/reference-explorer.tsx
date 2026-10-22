@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "@okazi/ui";
+import { Input } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import { type EntryGroup, filterEntries } from "../reference/filter-entries";
