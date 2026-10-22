@@ -5,7 +5,7 @@ import { createId } from "@paralleldrive/cuid2";
 
 const PASSWORD = "correct-horse-battery";
 /** Redirect used by packages/auth's OAuth tests for the same client id (shared test database). */
-const AUTH_TEST_REDIRECT = "http://localhost:3000/oauth/callback";
+const AUTH_TEST_REDIRECT = "http://localhost:3330/oauth/callback";
 /** Same default as `provision:oauth` and `@bibi/auth` (assistant token minting). */
 const assistantRedirectUri = () =>
   new URL("/api/assistant/oauth/callback", getEnv().WEB_URL).toString();

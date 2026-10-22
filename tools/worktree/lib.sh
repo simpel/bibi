@@ -3,7 +3,7 @@
 #
 # One shared Postgres + Mailpit (compose project "bibi") serves every worktree. Each worktree
 # gets its own database, its own ports and its own `.env`, so migrations, tests and dev servers
-# never collide. The main checkout keeps the defaults (database "bibi", ports 3000/3001).
+# never collide. The main checkout keeps the defaults (database "bibi", ports 3330/3331/3332).
 #
 # ROOT is the checkout the current directory belongs to, so the scripts can set up a worktree
 # whose branch does not contain them yet.
