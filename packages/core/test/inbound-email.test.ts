@@ -1,12 +1,12 @@
 import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { receiveInboundEmail } from "../src/features/inbound-email/receive-operation";
 import {
   deliverInboundEmail,
   execute,
   getInboundEmail,
   listInboundEmails,
-  receiveInboundEmail,
   ticketInboundAddress,
 } from "../src/index";
 import { errorCode, peer, unwrap } from "./helpers";

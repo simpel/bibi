@@ -2,8 +2,8 @@ import type { PageContext } from "@bibi/ai";
 
 export type BuildPageContextInput = { pathname: string; locale: "sv" | "en" };
 
-/** `/sv/venues/<id>` → `{ type: "venue", id }`. Only detail pages carry an entity. */
-const ENTITY_ROUTE = /^\/(?:sv|en)\/(venues|skills)\/([^/?#]+)\/?$/;
+/** `/sv/<org>/venues/<id>` → `{ type: "venue", id }`. Only detail pages carry an entity. */
+const ENTITY_ROUTE = /^\/(?:sv|en)\/[^/?#]+\/(venues|skills)\/([^/?#]+)\/?$/;
 const ENTITY_TYPE: Record<string, string> = { venues: "venue", skills: "skill" };
 const RESERVED_SEGMENTS = new Set(["new", "import"]);
 

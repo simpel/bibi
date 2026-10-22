@@ -1,12 +1,12 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button, Form, Input } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "@/lib/navigation";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { ProfileNameSchema, type ProfileNameValues } from "./auth-schemas";
 import { useAuthFormAction } from "./use-auth-form-action";

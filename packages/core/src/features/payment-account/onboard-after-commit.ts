@@ -56,7 +56,7 @@ export async function onboardAfterCommit({
   }
   const link = await gateway.createOnboardingLink({
     stripeAccountId: row.stripeAccountId ?? "",
-    ...onboardingReturnUrls(),
+    ...(await onboardingReturnUrls({ organizationId: context.organizationId })),
   });
   if (!link.ok) return err({ error: link.error });
   const dto = toPaymentAccountDto({ row, organizationId: context.organizationId });

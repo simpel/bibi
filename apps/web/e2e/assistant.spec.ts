@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { gotoApp } from "./goto-app";
 import { listVenueNames, openAssistant, PANEL, sendChat, signUpWithOrganization } from "./steps";
 
 const HISTORY_ROW = '[data-slot="conversation-row"]';
@@ -48,7 +49,7 @@ test("a proposed venue needs approval: nothing is created until the user approve
     .getByRole("button", { name: "Ny chatt" })
     .click();
   await expect(card).toHaveCount(0);
-  await page.goto("/sv/chats");
+  await gotoApp({ page, path: "/chats" });
   await page.locator(HISTORY_ROW).first().getByRole("button").first().click();
   const restored = panel.locator('[data-slot="approval-card"]');
   await expect(restored).toHaveAttribute("data-state", "approved");
@@ -78,12 +79,12 @@ test("a read tool renders as a venue table with links; history keeps the convers
   await expect(table.getByRole("link", { name: "The Hall" })).toBeVisible();
   await expect(page.getByText("Klart. Se resultatet ovan.")).toBeVisible();
   await table.getByRole("link", { name: "The Hall" }).click();
-  await expect(page).toHaveURL(/\/sv\/venues\/[^/]+$/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/venues\/[^/]+$/);
   await expect(page.getByRole("heading", { name: "The Hall" })).toBeVisible();
 
   // The full history is its own page (/chats): open, rename, archive or start a new one.
   const history = page.locator('[data-slot="assistant-history"]');
-  await page.goto("/sv/chats");
+  await gotoApp({ page, path: "/chats" });
   await expect(history.locator(HISTORY_ROW)).toHaveCount(1);
   await history.getByRole("button", { name: "Byt namn" }).click();
   await history.getByLabel("Konversationens namn").fill("My venues");
@@ -92,11 +93,11 @@ test("a read tool renders as a venue table with links; history keeps the convers
 
   await history.getByRole("button", { name: "Ny konversation" }).click();
   await expect(page.getByText("Vad kan jag hjälpa dig med?")).toBeVisible();
-  await page.goto("/sv/chats");
+  await gotoApp({ page, path: "/chats" });
   await history.getByText("My venues").click();
   await expect(page.locator(PANEL).locator('[data-slot="venue-table"]')).toBeVisible();
 
-  await page.goto("/sv/chats");
+  await gotoApp({ page, path: "/chats" });
   await history.getByRole("button", { name: "Arkivera konversation" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Arkivera konversation" }).click();
   await expect(history.getByText("Inga konversationer ännu.")).toBeVisible();
@@ -126,7 +127,7 @@ test("⌘K asks the assistant a one-shot question and opens the panel on it", as
 
 test("English strings, and the assistant only lives on the start page", async ({ page }) => {
   await signUpWithOrganization({ page, name: "English AB" });
-  await page.goto("/en/venues");
+  await gotoApp({ page, path: "/venues", locale: "en" });
   await expect(page.locator(PANEL)).toHaveCount(0);
   await page.goto("/en");
   const panel = page.locator(PANEL);

@@ -14,8 +14,10 @@ describe("pipelineSetup.presetDraft (ADR 0045)", () => {
     expect(draft.itemTypes.map((type) => type.name)).toEqual([
       "Room",
       "Private room",
+      "Set menu",
       "Dish",
       "Drink",
+      "Wine package",
     ]);
     expect(draft.itemTypes[0]?.entityTypeId).toBe(room.id);
     const preview = await execute({ operation: previewPipelineSetup, input: draft, context });

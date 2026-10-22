@@ -1,9 +1,9 @@
 "use client";
 
 import type { VenueWire } from "@bibi/ai";
-import { Link } from "@bibi/i18n/navigation";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 import { venueRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 

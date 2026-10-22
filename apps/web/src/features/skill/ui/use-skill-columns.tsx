@@ -1,7 +1,7 @@
 import type { SkillDto } from "@bibi/core";
-import { Link } from "@bibi/i18n/navigation";
 import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 import { skillRoute } from "@/lib/routes";
 import { scopeKey } from "@/lib/skill-labels";
 import { SkillBadges } from "./skill-badges";

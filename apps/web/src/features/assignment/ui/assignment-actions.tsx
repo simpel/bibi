@@ -1,11 +1,11 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { BellIcon, BellOffIcon, UserCogIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { NamedOption } from "@/components/form/named-option";
+import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { followAction, unfollowAction } from "../actions";
 import { AssignDialog } from "./assign-dialog";

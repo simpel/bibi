@@ -1,4 +1,5 @@
 import { expect, type Page } from "@playwright/test";
+import { gotoApp } from "./goto-app";
 
 export type Credentials = { name: string; email: string; password: string };
 
@@ -32,7 +33,7 @@ export async function createOrganization({ page, name }: PageInput & { name: str
   await expect(page.locator('[data-slot="assistant-chat"]')).toBeVisible();
   await page.getByRole("button", { name: "Hoppa över just nu" }).click();
   await expect(page).not.toHaveURL(/\/onboarding/);
-  await page.goto("/sv/venues");
+  await gotoApp({ page, path: "/venues" });
   await expect(page.getByText("Inga anläggningar ännu.")).toBeVisible();
 }
 
@@ -49,7 +50,7 @@ export async function createVenue({
   await page.getByRole("button", { name: "Nästa" }).click();
   await page.getByRole("button", { name: "Spara" }).click();
   await expect(page.getByRole("heading", { name, level: 1 })).toBeVisible();
-  await page.goto("/sv/venues");
+  await gotoApp({ page, path: "/venues" });
   await expect(page.getByRole("link", { name })).toBeVisible();
 }
 
@@ -59,7 +60,7 @@ export async function createItemType({
   name,
   numberField,
 }: PageInput & { name: string; numberField: string }) {
-  await page.goto("/sv/settings/types");
+  await gotoApp({ page, path: "/settings/types" });
   // Create is a step page (/new/type): base and name, then capabilities; it opens the new type.
   await page.getByRole("link", { name: "Skapa typ" }).first().click();
   await page.getByLabel("Namn").fill(name);
@@ -84,7 +85,7 @@ export async function addItem({
   value,
   venue,
 }: PageInput & { type: string; name: string; numberField: string; value: string; venue: string }) {
-  await page.goto("/sv/items");
+  await gotoApp({ page, path: "/items" });
   await page.getByRole("link", { name: "Skapa artikel" }).first().click();
   await page.getByLabel("Typ", { exact: true }).click();
   await page.getByRole("option", { name: type }).click();

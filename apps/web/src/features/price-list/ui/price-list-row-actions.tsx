@@ -1,11 +1,11 @@
 "use client";
 
 import type { PriceListDto } from "@bibi/core";
-import { Link } from "@bibi/i18n/navigation";
 import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";
+import { Link } from "@/lib/navigation";
 import { listItemRoute, ROUTES, updateRoute } from "@/lib/routes";
 import { ArchivePriceListDialog } from "./archive-price-list-dialog";
 import type { PriceListFormData } from "./load-price-list-form-data";

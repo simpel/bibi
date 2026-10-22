@@ -8,7 +8,8 @@ export type AuthErrorKey =
   | "passwordTooShort"
   | "invalidCode"
   | "tooManyRequests"
-  | "invitationInvalid";
+  | "invitationInvalid"
+  | "slugUnavailable";
 
 /** Shape of `error` in Better Auth client results (all fields optional on purpose). */
 export type AuthClientError = { code?: string | undefined; status?: number | undefined };
@@ -26,6 +27,9 @@ const KEY_BY_CODE: Record<string, AuthErrorKey> = {
   TOO_MANY_ATTEMPTS: "tooManyRequests",
   INVALID_TOKEN: "invalidCode",
   INVITATION_NOT_FOUND: "invitationInvalid",
+  SLUG_TAKEN: "slugUnavailable",
+  SLUG_RESERVED: "slugUnavailable",
+  SLUG_INVALID: "slugUnavailable",
 };
 
 const KEY_BY_STATUS: Record<number, AuthErrorKey> = {

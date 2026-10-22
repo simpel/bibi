@@ -1,7 +1,7 @@
 "use client";
 
 import type { TicketDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
+import { useRouter } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
 import { TicketForm } from "./ticket-form";
 import type { TicketFormData } from "./ticket-form-data";

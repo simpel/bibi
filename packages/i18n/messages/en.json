@@ -84,12 +84,7 @@
     "haveAccount": "Already have an account?",
     "passwordHint": "At least 10 characters.",
     "continue": "Continue",
-    "selectOrganizationTitle": "Choose organization",
-    "selectOrganizationDescription": "Pick the organization you want to work in, or create a new one.",
     "yourOrganizations": "Your organizations",
-    "noOrganizations": "You don't belong to an organization yet.",
-    "organizationName": "Organization name",
-    "createOrganizationDescription": "An organization is your company or business in Bibi.",
     "organizationCreated": "The organization has been created.",
     "consentTitle": "Give {client} access?",
     "consentDescription": "{client} wants to act in Bibi as you, with your permissions.",
@@ -117,9 +112,6 @@
     "accountCreated": "Your account has been created.",
     "linkSent": "The sign-in link has been sent.",
     "verifyingCode": "Checking the code…",
-    "creatingOrganization": "Creating organization…",
-    "switchingOrganization": "Switching organization…",
-    "organizationSelected": "You are now working in {organization}.",
     "acceptingInvitation": "Accepting invitation…",
     "decliningInvitation": "Declining invitation…",
     "consentAllowing": "Granting access…",
@@ -2051,7 +2043,8 @@
     "textTooShort": "The text is too short.",
     "approvalUsed": "This proposal has already been used.",
     "approvalExpired": "The proposal has expired or cannot be approved. Ask the assistant to propose it again.",
-    "unavailable": "This feature is not available right now. An administrator needs to configure it."
+    "unavailable": "This feature is not available right now. An administrator needs to configure it.",
+    "slugUnavailable": "That address was just taken. Use the suggestion or pick another."
   },
   "dev": {
     "services": "Services",
@@ -2903,6 +2896,208 @@
         "phase": "About the phase “{name}”: {instruction}",
         "itemType": "About “{name}” in what we sell: {instruction}"
       }
+    }
+  },
+  "welcome": {
+    "stepOf": "Step {step} of {total}",
+    "back": "Back",
+    "continue": "Continue",
+    "skipForNow": "Skip for now",
+    "logoAlt": "Bibi",
+    "start": {
+      "title": "Welcome to Bibi",
+      "description": "Join your team or set up Bibi for your venue.",
+      "yourOrganizations": "Your organizations",
+      "open": "Open",
+      "invitations": "Invitations",
+      "invitedAs": "Invited as {role}",
+      "accept": "Accept",
+      "accepting": "Joining {organization}…",
+      "noInvitations": "No invitations for {email}. Ask your admin to invite this email.",
+      "createTitle": "Create a new organization",
+      "createDescription": "Set up Bibi for your venue.",
+      "create": "Create organization"
+    },
+    "new": {
+      "title": "Name your organization",
+      "description": "This is also the address your team uses.",
+      "name": "Name",
+      "slug": "Address",
+      "slugPrefix": "bibi.se/",
+      "submit": "Create",
+      "creating": "Creating {organization}…",
+      "slugChecking": "Checking bibi.se/{slug}…",
+      "slugFree": "bibi.se/{slug} is yours",
+      "slugTaken": "/{slug} is taken. We picked /{suggestion}. Use it or change it.",
+      "slugReserved": "/{slug} is reserved. Use /{suggestion} or change it.",
+      "slugInvalid": "Use 3–40 letters, numbers or dashes",
+      "useSuggestion": "Use /{suggestion}"
+    },
+    "profile": {
+      "title": "About you",
+      "description": "Your team sees this on tickets and assignments.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "phone": "Phone",
+      "avatar": "Photo",
+      "avatarHint": "PNG, JPEG or WebP, at most 2 MB. Optional.",
+      "uploadAvatar": "Upload photo",
+      "changeAvatar": "Change photo",
+      "removeAvatar": "Remove",
+      "uploading": "Uploading…",
+      "avatarTooLarge": "The photo is larger than 2 MB",
+      "avatarWrongType": "Use a PNG, JPEG or WebP image"
+    },
+    "hours": {
+      "title": "Your working hours",
+      "description": "Used to show when you are available. You can change them later in your profile.",
+      "weekdays": "Mon–Fri",
+      "weekend": "Sat–Sun",
+      "off": "Off",
+      "lunch": "Lunch {start}–{end}",
+      "change": "Change",
+      "done": "Done",
+      "workday": "Works",
+      "start": "Start",
+      "end": "End",
+      "breakStart": "Break from",
+      "breakEnd": "Break to",
+      "day": {
+        "0": "Monday",
+        "1": "Tuesday",
+        "2": "Wednesday",
+        "3": "Thursday",
+        "4": "Friday",
+        "5": "Saturday",
+        "6": "Sunday"
+      }
+    },
+    "setup": {
+      "organization": {
+        "title": "About {organization}",
+        "description": "Shown on quotes and invoices.",
+        "legalName": "Legal name",
+        "orgNumber": "Organization number",
+        "streetAddress": "Street address",
+        "postalCode": "Postal code",
+        "city": "City",
+        "country": "Country",
+        "website": "Website",
+        "contactEmail": "Email",
+        "contactPhone": "Phone",
+        "alsoVenue": "This address is also our first venue"
+      },
+      "kind": {
+        "title": "What kind of place do you run?",
+        "description": "We prefill what you book and sell. You can change everything.",
+        "startEmpty": "Start empty instead"
+      },
+      "bookable": {
+        "title": "Things you book",
+        "description": "Held in time, so they can never be double-booked.",
+        "later": "You can add, rename or remove these any time in Settings → Types."
+      },
+      "sellable": {
+        "title": "Things you sell",
+        "description": "Food, drink, activities and other things on a ticket.",
+        "later": "You can add more later, for example when you build your menu."
+      },
+      "addAnother": "Add another",
+      "newTypeName": "Name",
+      "review": {
+        "title": "Here's your setup",
+        "description": "A starting point. Nothing is saved until you activate it.",
+        "book": "Things you book",
+        "sell": "Things you sell",
+        "path": "How a request moves",
+        "none": "None yet",
+        "activate": "Activate",
+        "activating": "Setting up {organization}…"
+      }
+    },
+    "done": {
+      "title": "You're all set",
+      "readyDescription": "{organization} is ready.",
+      "pendingTitle": "Almost there",
+      "pendingDescription": "Your admin is still setting up {organization}. You can look around in the meantime.",
+      "goToBoard": "Go to the board"
+    },
+    "kinds": {
+      "conference-estate": {
+        "name": "Conference estate",
+        "example": "Meeting rooms, day conferences, lunch"
+      },
+      "manor-house": {
+        "name": "Manor house",
+        "example": "Weddings, dinners, a few large rooms"
+      },
+      "experience-centre": {
+        "name": "Experience centre",
+        "example": "Halls, guided tours, groups and food"
+      },
+      "museum": {
+        "name": "Museum",
+        "example": "Guided tours, event spaces, café"
+      },
+      "restaurant": {
+        "name": "Restaurant with private rooms",
+        "example": "Private rooms, set menus, drinks"
+      },
+      "event-hall": {
+        "name": "Event & congress hall",
+        "example": "Large halls, exhibitor stands, catering"
+      },
+      "arena-hospitality": {
+        "name": "Arena hospitality",
+        "example": "Lodges and match-day packages"
+      },
+      "theatre": {
+        "name": "Theatre & concert hall",
+        "example": "Foyers, pre-show dinners, rentals"
+      },
+      "meeting-space": {
+        "name": "Meeting space",
+        "example": "Bookable rooms, coffee, equipment"
+      },
+      "empty": {
+        "name": "Start empty",
+        "example": "Set up everything yourself"
+      }
+    },
+    "types": {
+      "conferenceRoom": "Conference room",
+      "breakoutRoom": "Breakout room",
+      "equipment": "Equipment",
+      "coffeeBreak": "Coffee break",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "drink": "Drink",
+      "activity": "Activity",
+      "banquetHall": "Banquet hall",
+      "meetingRoom": "Meeting room",
+      "garden": "Garden",
+      "dinnerMenu": "Dinner menu",
+      "drinkPackage": "Drink package",
+      "hall": "Hall",
+      "guide": "Guide",
+      "tour": "Tour",
+      "workshop": "Workshop",
+      "meal": "Meal",
+      "eventSpace": "Event space",
+      "guidedTour": "Guided tour",
+      "privateRoom": "Private room",
+      "setMenu": "Set menu",
+      "dish": "Dish",
+      "winePackage": "Wine package",
+      "exhibitionStand": "Exhibition stand",
+      "catering": "Catering",
+      "lodge": "Lodge",
+      "lounge": "Lounge",
+      "matchDayPackage": "Match-day package",
+      "foyer": "Foyer",
+      "rehearsalRoom": "Rehearsal room",
+      "preShowDinner": "Pre-show dinner",
+      "intervalPackage": "Interval package"
     }
   },
   "permissions": {

@@ -100,7 +100,12 @@ async function seedOne({ db, org, skipPipeline }: SeedOneInput): Promise<Result<
   await resetDemoOrg({ db, org });
   const { organizationId, members, userIds } = await bootstrapDemoOrg({ db, org });
   // What Better Auth's afterCreateOrganization hook does for a real signup.
-  const provisioned = await provisionOrganization({ organizationId, db, pipeline: "none" });
+  const provisioned = await provisionOrganization({
+    organizationId,
+    db,
+    pipeline: "none",
+    setupStatus: "COMPLETED",
+  });
   if (!provisioned.ok) return provisioned;
   const context = createExecuteContext({
     organizationId,

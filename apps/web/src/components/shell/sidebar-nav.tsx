@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { canPermission } from "@/lib/can";
+import { usePathname } from "@/lib/navigation";
 import { NavGroup } from "./nav-group";
 import { NAV_GROUPS, type NavAudience, type NavGroupId, type NavItem } from "./nav-items";
 import type { ShellAccess } from "./shell-types";

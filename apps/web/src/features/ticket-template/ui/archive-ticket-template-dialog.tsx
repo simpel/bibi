@@ -1,9 +1,9 @@
 "use client";
 
 import type { TicketTemplateDto } from "@bibi/core/schemas";
-import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { archiveTicketTemplateAction } from "../actions";
 

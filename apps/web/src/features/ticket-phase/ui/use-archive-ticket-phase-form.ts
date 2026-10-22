@@ -1,12 +1,12 @@
 import type { TicketPhaseArchiveInput } from "@bibi/core/schemas";
 import { TicketPhaseArchiveInputSchema } from "@bibi/core/schemas";
-import { useRouter } from "@bibi/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm, useWatch } from "react-hook-form";
 import { useArchivePreview } from "@/components/archive-preview/use-archive-preview";
 import { NONE } from "@/components/form/option-select-field";
 import { formSchema } from "@/lib/form-schema";
+import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { archiveTicketPhaseAction, previewArchiveTicketPhaseAction } from "../actions";

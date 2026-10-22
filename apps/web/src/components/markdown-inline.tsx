@@ -1,6 +1,6 @@
-import { Link } from "@bibi/i18n/navigation";
 import type { ReactNode } from "react";
 import type { Inline } from "@/lib/markdown/types";
+import { Link } from "@/lib/navigation";
 
 export type MarkdownInlineProps = { nodes: Inline[] };
 

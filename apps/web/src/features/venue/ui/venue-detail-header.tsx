@@ -1,10 +1,10 @@
 import type { VenueDto } from "@bibi/core";
-import { Link } from "@bibi/i18n/navigation";
 import { Badge } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/states/page-header";
 import type { RowAccess } from "@/lib/can";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { VenueRowActions } from "./venue-row-actions";
 

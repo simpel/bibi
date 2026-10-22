@@ -1,4 +1,3 @@
-import { Link } from "@bibi/i18n/navigation";
 import {
   Separator,
   Sidebar,
@@ -12,6 +11,7 @@ import {
 import { BookOpenIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { DocsNav } from "./docs-nav";
 

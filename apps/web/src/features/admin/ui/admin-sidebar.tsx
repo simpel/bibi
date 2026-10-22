@@ -1,4 +1,3 @@
-import { Link } from "@bibi/i18n/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -11,6 +10,7 @@ import {
 } from "@bibi/ui";
 import { ArrowLeftIcon, ShieldCheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { AdminNav } from "./admin-nav";
 

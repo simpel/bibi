@@ -1,7 +1,7 @@
 "use client";
 
 import type { PriceListDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import type { PriceListFormData } from "./load-price-list-form-data";
 import { PriceListForm } from "./price-list-form";

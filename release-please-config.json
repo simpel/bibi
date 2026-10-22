@@ -55,6 +55,10 @@
       "release-type": "node",
       "component": "@bibi/mail"
     },
+    "packages/storage": {
+      "release-type": "node",
+      "component": "@bibi/storage"
+    },
     "packages/ui": {
       "release-type": "node",
       "component": "@bibi/ui"

@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { setOnboardingStatus } from "@/features/user-preference/settings-actions";
+import { setSetupStatus } from "@/features/user-preference/settings-actions";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { useApprovalContext } from "../../state/approval-context";
 import { useAssistant } from "../../state/assistant-context";
@@ -21,7 +21,7 @@ export function useSetupApproval({ approval, toolCallId }: ApprovalCardViewProps
   const { conversationId, decisions } = useApprovalContext();
   // Mark the first setup done before leaving, or the app would send the user straight back.
   const finish = async () => {
-    await setOnboardingStatus({ onboardingStatus: "COMPLETED" });
+    await setSetupStatus({ setupStatus: "COMPLETED" });
     router.push(ROUTES.pipeline);
   };
   const stored = decisions.find((decision) => decision.toolCallId === toolCallId);

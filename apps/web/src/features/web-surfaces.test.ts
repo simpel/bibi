@@ -9,7 +9,9 @@ const stubEmbed = async () => ({ model: "stub", embeddings: [] });
 const operationNames = createCoreOperations({ embed: stubEmbed }).map(({ name }) => name);
 const srcDir = join(import.meta.dirname, "..");
 const appDirs = [
-  ...["(contained)", "(canvas)"].map((group) => join(srcDir, "app", "[locale]", "(app)", group)),
+  ...["(contained)", "(canvas)"].map((group) =>
+    join(srcDir, "app", "[locale]", "[org]", "(app)", group),
+  ),
   // The full-screen first setup (ADR 0045) has its own route group.
   join(srcDir, "app", "[locale]", "(onboarding)"),
 ];

@@ -16,6 +16,18 @@ export {
 export { getAuth } from "./get-auth";
 export { invitationMailHook } from "./invitations/invitation-mail-hook";
 export { authHandler, handleAuthRequest } from "./next";
+export {
+  type CheckOrganizationSlugInput,
+  checkOrganizationSlug,
+  SLUG_PATTERN,
+  type SlugCheck,
+  type SlugStatus,
+} from "./organization/check-slug";
+export {
+  type IsReservedSlugInput,
+  isReservedSlug,
+  RESERVED_SLUGS,
+} from "./organization/reserved-slugs";
 export { accessControl, orgRoles } from "./permissions";
 export { type IsPlatformAdminInput, isPlatformAdmin } from "./platform/is-platform-admin";
 export {

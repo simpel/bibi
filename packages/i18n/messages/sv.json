@@ -84,12 +84,7 @@
     "haveAccount": "Har du redan ett konto?",
     "passwordHint": "Minst 10 tecken.",
     "continue": "Fortsätt",
-    "selectOrganizationTitle": "Välj organisation",
-    "selectOrganizationDescription": "Välj vilken organisation du vill arbeta i, eller skapa en ny.",
     "yourOrganizations": "Dina organisationer",
-    "noOrganizations": "Du tillhör ingen organisation ännu.",
-    "organizationName": "Organisationens namn",
-    "createOrganizationDescription": "En organisation är ditt företag eller din verksamhet i Bibi.",
     "organizationCreated": "Organisationen har skapats.",
     "consentTitle": "Ge {client} åtkomst?",
     "consentDescription": "{client} vill agera i Bibi som du, med samma behörigheter.",
@@ -117,9 +112,6 @@
     "accountCreated": "Kontot har skapats.",
     "linkSent": "Inloggningslänken har skickats.",
     "verifyingCode": "Kontrollerar koden…",
-    "creatingOrganization": "Skapar organisation…",
-    "switchingOrganization": "Byter organisation…",
-    "organizationSelected": "Du arbetar nu i {organization}.",
     "acceptingInvitation": "Accepterar inbjudan…",
     "decliningInvitation": "Avböjer inbjudan…",
     "consentAllowing": "Ger åtkomst…",
@@ -2051,7 +2043,8 @@
     "textTooShort": "Texten är för kort.",
     "approvalUsed": "Förslaget har redan använts.",
     "approvalExpired": "Förslaget har gått ut eller kan inte godkännas. Be assistenten föreslå på nytt.",
-    "unavailable": "Funktionen är inte tillgänglig just nu. En administratör behöver konfigurera den."
+    "unavailable": "Funktionen är inte tillgänglig just nu. En administratör behöver konfigurera den.",
+    "slugUnavailable": "Den adressen togs precis. Använd förslaget eller välj en annan."
   },
   "dev": {
     "services": "Tjänster",
@@ -2903,6 +2896,208 @@
         "phase": "Om fasen ”{name}”: {instruction}",
         "itemType": "Om ”{name}” i det vi säljer: {instruction}"
       }
+    }
+  },
+  "welcome": {
+    "stepOf": "Steg {step} av {total}",
+    "back": "Tillbaka",
+    "continue": "Fortsätt",
+    "skipForNow": "Hoppa över just nu",
+    "logoAlt": "Bibi",
+    "start": {
+      "title": "Välkommen till Bibi",
+      "description": "Gå med i ditt team eller sätt upp Bibi för din anläggning.",
+      "yourOrganizations": "Dina organisationer",
+      "open": "Öppna",
+      "invitations": "Inbjudningar",
+      "invitedAs": "Inbjuden som {role}",
+      "accept": "Acceptera",
+      "accepting": "Går med i {organization}…",
+      "noInvitations": "Inga inbjudningar för {email}. Be din admin att bjuda in den här e-postadressen.",
+      "createTitle": "Skapa en ny organisation",
+      "createDescription": "Sätt upp Bibi för din anläggning.",
+      "create": "Skapa organisation"
+    },
+    "new": {
+      "title": "Namnge din organisation",
+      "description": "Det blir också adressen ditt team använder.",
+      "name": "Namn",
+      "slug": "Adress",
+      "slugPrefix": "bibi.se/",
+      "submit": "Skapa",
+      "creating": "Skapar {organization}…",
+      "slugChecking": "Kontrollerar bibi.se/{slug}…",
+      "slugFree": "bibi.se/{slug} är din",
+      "slugTaken": "/{slug} är upptagen. Vi valde /{suggestion}. Använd den eller ändra.",
+      "slugReserved": "/{slug} är reserverad. Använd /{suggestion} eller ändra.",
+      "slugInvalid": "Använd 3–40 bokstäver, siffror eller bindestreck",
+      "useSuggestion": "Använd /{suggestion}"
+    },
+    "profile": {
+      "title": "Om dig",
+      "description": "Ditt team ser det här på ärenden och tilldelningar.",
+      "firstName": "Förnamn",
+      "lastName": "Efternamn",
+      "phone": "Telefon",
+      "avatar": "Foto",
+      "avatarHint": "PNG, JPEG eller WebP, högst 2 MB. Valfritt.",
+      "uploadAvatar": "Ladda upp foto",
+      "changeAvatar": "Byt foto",
+      "removeAvatar": "Ta bort",
+      "uploading": "Laddar upp…",
+      "avatarTooLarge": "Fotot är större än 2 MB",
+      "avatarWrongType": "Använd en PNG-, JPEG- eller WebP-bild"
+    },
+    "hours": {
+      "title": "Dina arbetstider",
+      "description": "Visar när du är tillgänglig. Du kan ändra dem senare i din profil.",
+      "weekdays": "Mån–fre",
+      "weekend": "Lör–sön",
+      "off": "Ledig",
+      "lunch": "Lunch {start}–{end}",
+      "change": "Ändra",
+      "done": "Klar",
+      "workday": "Arbetar",
+      "start": "Start",
+      "end": "Slut",
+      "breakStart": "Rast från",
+      "breakEnd": "Rast till",
+      "day": {
+        "0": "Måndag",
+        "1": "Tisdag",
+        "2": "Onsdag",
+        "3": "Torsdag",
+        "4": "Fredag",
+        "5": "Lördag",
+        "6": "Söndag"
+      }
+    },
+    "setup": {
+      "organization": {
+        "title": "Om {organization}",
+        "description": "Visas på offerter och fakturor.",
+        "legalName": "Juridiskt namn",
+        "orgNumber": "Organisationsnummer",
+        "streetAddress": "Gatuadress",
+        "postalCode": "Postnummer",
+        "city": "Ort",
+        "country": "Land",
+        "website": "Webbplats",
+        "contactEmail": "E-post",
+        "contactPhone": "Telefon",
+        "alsoVenue": "Den här adressen är också vår första anläggning"
+      },
+      "kind": {
+        "title": "Vilken sorts plats driver ni?",
+        "description": "Vi fyller i vad ni bokar och säljer. Du kan ändra allt.",
+        "startEmpty": "Börja tomt i stället"
+      },
+      "bookable": {
+        "title": "Det ni bokar",
+        "description": "Hålls i tid, så det kan aldrig dubbelbokas.",
+        "later": "Du kan lägga till, byta namn på eller ta bort dessa när som helst under Inställningar → Typer."
+      },
+      "sellable": {
+        "title": "Det ni säljer",
+        "description": "Mat, dryck, aktiviteter och annat på ett ärende.",
+        "later": "Du kan lägga till fler senare, till exempel när du bygger din meny."
+      },
+      "addAnother": "Lägg till fler",
+      "newTypeName": "Namn",
+      "review": {
+        "title": "Så här ser er uppsättning ut",
+        "description": "En startpunkt. Inget sparas förrän du aktiverar.",
+        "book": "Det ni bokar",
+        "sell": "Det ni säljer",
+        "path": "Hur en förfrågan går vidare",
+        "none": "Inget än",
+        "activate": "Aktivera",
+        "activating": "Sätter upp {organization}…"
+      }
+    },
+    "done": {
+      "title": "Allt är klart",
+      "readyDescription": "{organization} är redo.",
+      "pendingTitle": "Nästan klart",
+      "pendingDescription": "Din admin håller fortfarande på att sätta upp {organization}. Du kan titta runt så länge.",
+      "goToBoard": "Gå till tavlan"
+    },
+    "kinds": {
+      "conference-estate": {
+        "name": "Konferensgård",
+        "example": "Mötesrum, dagkonferenser, lunch"
+      },
+      "manor-house": {
+        "name": "Herrgård",
+        "example": "Bröllop, middagar, några stora salar"
+      },
+      "experience-centre": {
+        "name": "Upplevelsecenter",
+        "example": "Hallar, guidade turer, grupper och mat"
+      },
+      "museum": {
+        "name": "Museum",
+        "example": "Guidade visningar, eventytor, kafé"
+      },
+      "restaurant": {
+        "name": "Restaurang med privata rum",
+        "example": "Privata rum, menyer, dryck"
+      },
+      "event-hall": {
+        "name": "Event- och kongresshall",
+        "example": "Stora hallar, utställarmontrar, catering"
+      },
+      "arena-hospitality": {
+        "name": "Arena och hospitality",
+        "example": "Loger och matchpaket"
+      },
+      "theatre": {
+        "name": "Teater och konserthus",
+        "example": "Foajéer, middag före föreställning, uthyrning"
+      },
+      "meeting-space": {
+        "name": "Mötesplats",
+        "example": "Bokningsbara rum, fika, utrustning"
+      },
+      "empty": {
+        "name": "Börja tomt",
+        "example": "Sätt upp allt själv"
+      }
+    },
+    "types": {
+      "conferenceRoom": "Konferensrum",
+      "breakoutRoom": "Grupprum",
+      "equipment": "Utrustning",
+      "coffeeBreak": "Fika",
+      "lunch": "Lunch",
+      "dinner": "Middag",
+      "drink": "Dryck",
+      "activity": "Aktivitet",
+      "banquetHall": "Bankettsal",
+      "meetingRoom": "Mötesrum",
+      "garden": "Trädgård",
+      "dinnerMenu": "Middagsmeny",
+      "drinkPackage": "Dryckespaket",
+      "hall": "Hall",
+      "guide": "Guide",
+      "tour": "Tur",
+      "workshop": "Workshop",
+      "meal": "Måltid",
+      "eventSpace": "Eventyta",
+      "guidedTour": "Guidad visning",
+      "privateRoom": "Privat rum",
+      "setMenu": "Meny",
+      "dish": "Rätt",
+      "winePackage": "Vinpaket",
+      "exhibitionStand": "Utställarmonter",
+      "catering": "Catering",
+      "lodge": "Loge",
+      "lounge": "Lounge",
+      "matchDayPackage": "Matchpaket",
+      "foyer": "Foajé",
+      "rehearsalRoom": "Repetitionsrum",
+      "preShowDinner": "Middag före föreställning",
+      "intervalPackage": "Pauspaket"
     }
   },
   "permissions": {

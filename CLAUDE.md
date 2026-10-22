@@ -38,7 +38,7 @@
 - UI: Tailwind v4 (CSS-first tokens), cva, shadcn primitives and shadcn AI Elements (chat, message, prompt input, suggestion, confirmation, questionnaire), React Flow for the onboarding path (ADR 0045), Storybook for `packages/ui`.
 - i18n: next-intl, Swedish and English.
 - Tooling: Biome (lint + format), Vitest (unit/service layer against real Postgres), Playwright (e2e).
-- Email (`packages/mail`), Stripe webhook (`apps/web`), jobs (`apps/worker`, pg-boss), logging (`packages/logger`, pino): see each folder's `CLAUDE.md`.
+- Email (`packages/mail`), file storage (`packages/storage`), Stripe webhook (`apps/web`), jobs (`apps/worker`, pg-boss), logging (`packages/logger`, pino): see each folder's `CLAUDE.md`.
 - Ops: Docker (compose with Postgres and Mailpit, `--profile app` for web + mcp), GitHub Actions for CI.
 - Decisions: `docs/decisions/0002-tech-stack-and-monorepo.md` and others.
 
@@ -89,6 +89,7 @@
 - `packages/ai`: AI SDK setup, MCP client, the generative UI registry and system skills.
 - `packages/config`: environment variables (typed and validated) plus shared tsconfig and Biome config.
 - `packages/mail`: `MailProvider` with SMTP and Resend adapters.
+- `packages/storage`: `StorageProvider` with disk and S3 adapters (ADR 0063).
 - `packages/logger`: the system log (pino) and request context.
 
 ## Working with subagents

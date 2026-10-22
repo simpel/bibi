@@ -1,7 +1,6 @@
 "use client";
 
 import type { EntityTypeDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import {
   Form,
   FormController,
@@ -15,6 +14,7 @@ import {
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
 export type ItemTypeFilterProps = { types: EntityTypeDto[]; typeId?: string | undefined };

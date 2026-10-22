@@ -1,8 +1,8 @@
 import type { VenueDto } from "@bibi/core";
-import { Link } from "@bibi/i18n/navigation";
 import { actionsColumn, Badge, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { Link } from "@/lib/navigation";
 import { venueRoute } from "@/lib/routes";
 
 export type VenueRow = Pick<

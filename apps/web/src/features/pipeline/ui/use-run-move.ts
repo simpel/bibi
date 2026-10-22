@@ -1,10 +1,10 @@
 import type { PipelineCard, PipelineColumn } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { changeTicketPhaseAction } from "@/features/ticket/actions";
 import type { ActionError } from "@/lib/action-result";
 import { errorKeyForCode } from "@/lib/error-key";
+import { useRouter } from "@/lib/navigation";
 
 export type RunMoveInput = { card: PipelineCard; to: PipelineColumn; reason?: string };
 export type UseRunMoveInput = {

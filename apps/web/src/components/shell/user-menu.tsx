@@ -1,6 +1,5 @@
 "use client";
 
-import { Link, useRouter } from "@bibi/i18n/navigation";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +11,7 @@ import {
 import { BookOpenIcon, LogOutIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
+import { Link, useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { LocaleMenu } from "./locale-menu";
 import { OrgMenu } from "./org-menu";

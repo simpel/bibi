@@ -1,12 +1,12 @@
 "use client";
 
 import type { EntityTypeDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import type { FieldPath, UseFormReturn } from "react-hook-form";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
+import { useRouter } from "@/lib/navigation";
 import { type TypedValues, TypedWizardStep } from "./typed-wizard-step";
 import { useTypedWizard } from "./use-typed-wizard";
 import { WizardFooter } from "./wizard-footer";

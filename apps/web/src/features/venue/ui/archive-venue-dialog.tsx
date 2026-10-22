@@ -1,9 +1,9 @@
 "use client";
 
 import type { VenueDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { useToastAction } from "@/lib/use-toast-action";
 import { archiveVenueAction } from "../actions";

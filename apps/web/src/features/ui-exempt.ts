@@ -81,13 +81,39 @@ export const UI_EXEMPT: readonly UiExempt[] = [
       "No page of its own: UI that remembers a choice (e.g. table column order) saves it with saveUserPreference",
   },
   {
-    operation: "userSettings.get",
-    reason:
-      "No page of its own: the app layout reads the first setup state with loadUserSettings to decide where the user lands",
+    operation: "profile.get",
+    reason: "Welcome flow page, ticket #418",
   },
   {
-    operation: "userSettings.update",
-    reason:
-      "No page of its own: the first setup (start, skip, finish) saves its state with setOnboardingStatus",
+    operation: "profile.update",
+    reason: "Welcome flow page, ticket #418",
+  },
+  {
+    operation: "workingHours.get",
+    reason: "Welcome flow page, ticket #418",
+  },
+  {
+    operation: "workingHours.set",
+    reason: "Welcome flow page, ticket #418",
+  },
+  {
+    operation: "file.upload",
+    reason: "Welcome flow page, ticket #418",
+  },
+  {
+    operation: "file.get",
+    reason: "Welcome flow page, ticket #418",
+  },
+  {
+    operation: "organizationProfile.get",
+    reason: "Welcome flow page, ticket #418",
+  },
+  {
+    operation: "organizationProfile.update",
+    reason: "Welcome flow page, ticket #418",
+  },
+  {
+    operation: "organizationProfile.setSetupStatus",
+    reason: "Welcome flow page, ticket #418",
   },
 ];

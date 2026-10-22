@@ -1,7 +1,7 @@
-import { Link } from "@bibi/i18n/navigation";
 import { Card, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/states/page-header";
+import { Link } from "@/lib/navigation";
 import { getCallerAbilities } from "@/server/caller-abilities";
 import type { CreateGroup } from "./create-item-types";
 import { creatableItems } from "./create-items";

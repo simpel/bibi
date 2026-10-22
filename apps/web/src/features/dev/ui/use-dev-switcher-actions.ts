@@ -1,9 +1,9 @@
 "use client";
 
 import type { DevUser } from "@bibi/auth";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
+import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { reseedDevDatabaseAction, resetDevOnboardingAction, switchDevUserAction } from "../actions";
 
@@ -13,13 +13,16 @@ export function useDevSwitcherActions() {
   const router = useRouter();
   const { run, pending } = useToastAction();
   const [open, setOpen] = useState(false);
+  const locale = useLocale();
   const refresh = () => router.refresh();
+  // The other user's active organization decides the slug: reload from the locale root.
+  const reopen = () => window.location.assign(`/${locale}`);
   const switchTo = ({ user }: { user: DevUser }) => {
     setOpen(false);
     return run({
       action: () => switchDevUserAction({ userId: user.id }),
       messages: { pending: t("switching"), success: t("switched", { name: user.name }) },
-      onSuccess: refresh,
+      onSuccess: reopen,
     });
   };
   const resetOnboarding = ({ user }: { user: DevUser }) => {

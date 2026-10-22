@@ -1,9 +1,9 @@
-import { Link } from "@bibi/i18n/navigation";
 import type { ColumnDef } from "@bibi/ui";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { formatKr } from "@/features/item/ui/format-price";
 import { QuoteStatusBadge } from "@/features/quote/ui/quote-status-badge";
+import { Link } from "@/lib/navigation";
 import { quoteRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";
 

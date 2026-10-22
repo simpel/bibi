@@ -89,7 +89,8 @@ erDiagram
   Responsibility }o--o{ EntityType : "covers"
   User ||--o{ Invitation : "invites"
   User ||--o{ UserPreference : "saves"
-  User ||--o| UserSettings : "has"
+  User ||--o| UserProfile : "has"
+  User ||--o{ UserWorkingHours : "works"
   Deposit ||--o{ Payment : "is paid with"
   Quote ||--o{ Payment : "is paid with"
   Invoice ||--o{ Payment : "is settled with"
@@ -268,7 +269,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 **Relations**
 - `N:1` TicketPhase sets this; `N:1` EntityType is set by this; `N:1` ItemState is the result
 
-> Cells are optional: no cell means "keep the state". A new line gets the cell for the ticket's current phase, else the type's initial state. Terminal phases ignore the grid and release every line. Entering a phase is atomic: any blocker (a hard-hold collision, a disallowed state transition, a missing assignee) refuses the move and lists every blocking line. A line set by hand (`stateOverridden`) is skipped by phase moves until `line.followPhase`. A phase move never changes `holdsUntil`. Terminal phases have no cells (`setCell` refuses them). Archiving a state moves its cells to the target state (or clears them); archiving a phase clears its cells. Operations (`pipeline:read|write`): `phaseGrid.get` (the set cells with names, optionally of one phase) and `phaseGrid.setCell({ phaseId, entityTypeId, stateId | null })` (null clears the cell), audited per cell; `phaseGrid.importTemplate({ template })` (`default`, `conference-estate`) fills the empty cells by state name and keeps cells that are set. The first setup (the assistant onboarding at `/onboarding`, ADR 0045, started from a preset in `@bibi/core/setup-presets`) works on a draft by name (item types with their states, phases in order, grid cells): `pipelineSetup.presetDraft({ key })` (`pipeline:read`, no writes) returns a whole draft from a preset, keeping the organization's active item types by id (only for a caller with `configuration:read`) and adding the preset's missing ones; `pipelineSetup.preview` (`pipeline:read`, no writes) lists the configuration problems (errors: no or several entry phases, no terminal phase, a type without exactly one initial state, contradicting flags, unknown cells, a line the grid cannot move; warning: a state nothing can leave) and steps a simulated ticket with one line per type through every phase; `pipelineSetup.activate` (`pipeline:write`, plus the edit permission on every part it changes) refuses a draft with errors and otherwise runs the normal `entityType.*`, `itemState.*`, `ticketPhase.*` and `phaseGrid.setCell` commands in one transaction, all audited under `pipelineSetup.activate`: states and phases are matched by name, the types' other states and the other phases are archived (lines move to the initial state, tickets to the entry phase), and the default transitions are set.
+> Cells are optional: no cell means "keep the state". A new line gets the cell for the ticket's current phase, else the type's initial state. Terminal phases ignore the grid and release every line. Entering a phase is atomic: any blocker (a hard-hold collision, a disallowed state transition, a missing assignee) refuses the move and lists every blocking line. A line set by hand (`stateOverridden`) is skipped by phase moves until `line.followPhase`. A phase move never changes `holdsUntil`. Terminal phases have no cells (`setCell` refuses them). Archiving a state moves its cells to the target state (or clears them); archiving a phase clears its cells. Operations (`pipeline:read|write`): `phaseGrid.get` (the set cells with names, optionally of one phase) and `phaseGrid.setCell({ phaseId, entityTypeId, stateId | null })` (null clears the cell), audited per cell; `phaseGrid.importTemplate({ template })` (`default`, `conference-estate`) fills the empty cells by state name and keeps cells that are set. The first setup (the welcome flow at `/:org/welcome/setup`, ADR 0061, started from a venue kind in `@bibi/core/setup-presets`) works on a draft by name (item types with their states, phases in order, grid cells): `pipelineSetup.presetDraft({ key })` (`pipeline:read`, no writes) returns a whole draft from a preset, keeping the organization's active item types by id (only for a caller with `configuration:read`) and adding the preset's missing ones; `pipelineSetup.preview` (`pipeline:read`, no writes) lists the configuration problems (errors: no or several entry phases, no terminal phase, a type without exactly one initial state, contradicting flags, unknown cells, a line the grid cannot move; warning: a state nothing can leave) and steps a simulated ticket with one line per type through every phase; `pipelineSetup.activate` (`pipeline:write`, plus the edit permission on every part it changes) refuses a draft with errors and otherwise runs the normal `entityType.*`, `itemState.*`, `ticketPhase.*` and `phaseGrid.setCell` commands in one transaction, all audited under `pipelineSetup.activate`: states and phases are matched by name, the types' other states and the other phases are archived (lines move to the initial state, tickets to the entry phase), and the default transitions are set.
 
 ### TicketTemplate (`TicketTemplate`) – predefined ticket
 
@@ -870,7 +871,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `1:N` follows → Assignment (`AssignmentFollower`)
 - `1:N` is responsible for → Task
 - `1:N` saves → UserPreference
-- `1:1` has → UserSettings (optional)
+- `1:1` has → UserProfile (optional until the welcome flow)
+- `1:N` works → UserWorkingHours (one per weekday)
 
 | Preset | Can |
 |---|---|
@@ -960,18 +962,45 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Operations (`self:read|write`, which every member has): `userPreference.list({ prefix? })` lists the caller's own preferences, `userPreference.set({ key, value })` saves one (upsert, audited). The data layer pins every row to the acting user (`USER_SCOPED_MODELS`).
 
-### UserSettings (`UserSettings`)
+### UserProfile (`UserProfile`)
 
-*MVP* · The typed settings of one user ([ADR 0046](decisions/0046-user-settings.md)), separate from the free-form `UserPreference`. First one: where the user is in the first setup of an organization. User-scoped like `UserPreference`; no row means nothing is pending.
+*MVP* · The person behind a user ([ADR 0061](decisions/0061-welcome-flow-without-ai.md)): entered once in the welcome flow and shared across organizations. User-scoped like `UserPreference`.
 
 **Attributes**
-- onboardingStatus (`PENDING`, `COMPLETED` or `SKIPPED`)
-- updated
+- firstName, lastName (owned; `User.name` is their projection, written only by the `sync_user_name.sql` trigger)
+- phone
+- avatarKey (a file in `@bibi/storage`, [ADR 0063](decisions/0063-file-storage.md); none shows initials)
 
 **Relations**
 - `1:1` belongs to → User
 
-> Operations (`self:read|write`): `userSettings.get` and `userSettings.update({ onboardingStatus })` (upsert, audited). Creating an organization sets `PENDING`; the app layout sends a pending user to `/onboarding`; skipping sets `SKIPPED`, approving the first setup `COMPLETED` ([ADR 0045](decisions/0045-soft-landing-onboarding.md)).
+> Operations (`self:read|write`): `profile.get` (with `complete`: names, phone and at least one working day) and `profile.update`. The welcome flow (`/:org/welcome/profile`) asks for it until it is complete.
+
+### UserWorkingHours (`UserWorkingHours`)
+
+*MVP* · One working day of a user ([ADR 0061](decisions/0061-welcome-flow-without-ai.md)). A missing weekday is a day off. User-scoped.
+
+**Attributes**
+- weekday (0 = Monday … 6 = Sunday), unique per user
+- startMinute, endMinute (minutes after midnight)
+- breakStartMinute, breakEndMinute (both or neither, inside the day)
+
+**Relations**
+- `N:1` belongs to → User
+
+> Operations (`self:read|write`): `workingHours.get` and `workingHours.set({ days })` (replaces the week). Default in the welcome flow: Monday–Friday 08–17 with lunch 12–13.
+
+### OrganizationProfile (`OrganizationProfile`)
+
+*MVP* · The organization's own facts and where it is in its first setup ([ADR 0061](decisions/0061-welcome-flow-without-ai.md)). One row per organization, created `PENDING` with it.
+
+**Attributes**
+- setupStatus (`PENDING`, `COMPLETED` or `SKIPPED`)
+- legalName, orgNumber
+- streetAddress, postalCode, city, country (default `SE`)
+- website, contactEmail, contactPhone
+
+> Operations: `organizationProfile.get` and `organizationProfile.update` (setup feature), `organizationProfile.setSetupStatus` (`pipeline:write`). While the status is `PENDING`, `/:org/welcome` sends members who can do the setup through it and everyone else to a waiting page.
 
 ### Task
 
@@ -1151,6 +1180,8 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | User | Användare |
 | Invitation | Inbjudan |
 | UserPreference | Användarinställning |
-| UserSettings | Användarens inställningar |
+| UserProfile | Användarprofil |
+| UserWorkingHours | Arbetstider |
+| OrganizationProfile | Organisationsprofil |
 | SystemLog | Systemlogg |
 | AiSetting | AI-inställning |

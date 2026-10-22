@@ -79,6 +79,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "PaymentAccount",
   "Payment",
   "Deposit",
+  "OrganizationProfile",
   "Invoice",
   "Conversation",
   "Message",

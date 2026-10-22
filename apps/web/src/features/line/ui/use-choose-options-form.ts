@@ -1,9 +1,9 @@
 import type { LineChooseOptionsInput } from "@bibi/core/schemas";
-import { useRouter } from "@bibi/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { chooseLineOptionsAction } from "../actions";

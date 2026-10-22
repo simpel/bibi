@@ -42,14 +42,14 @@
 
 | Column | Kind (ADR 0051) |
 |---|---|
-| `User.firstName`, `lastName`, `phone`, `avatarKey` | owned |
-| `User.name` | projection of first + last, written only by `profile.update` |
+| `UserProfile.firstName`, `lastName`, `phone`, `avatarKey` (user-scoped, one row per user) | owned |
+| `User.name` | projection of first + last, written only by the `sync_user_name.sql` trigger |
 | `UserWorkingHours.weekday`, `start`, `end`, `breakStart`, `breakEnd` | owned |
 | `OrganizationProfile.setupStatus`, `legalName`, `orgNumber`, `streetAddress`, `postalCode`, `city`, `country`, `website`, `contactEmail`, `contactPhone` | owned |
 
 7. **Operations on every surface** (ADR 0003):
    - `profile.get` / `profile.update` and `workingHours.get` / `workingHours.set`: permission `self:read|write`.
-   - `organizationProfile.get` / `organizationProfile.update`: `organization:read|write`.
+   - `organizationProfile.get` / `organizationProfile.update`: `configuration:read|write` (there is no `organization` feature; configuration is the setup-group feature, ADR 0050).
    - `organizationProfile.setSetupStatus`: `pipeline:write`.
 
 ## Consequences
@@ -59,7 +59,7 @@
   - the assistant's first-setup mode, the setup approval card and the e2e mock
 
   `Questionnaire` and `pipeline-setup/ui` stay because other features use them. The assistant can still change the setup later (`change-setup` skill).
-- New tables: `UserWorkingHours` and `OrganizationProfile`. New Better Auth user fields. The demo seed fills all of them.
+- New tables: `UserProfile`, `UserWorkingHours` (user-scoped) and `OrganizationProfile`; `UserSettings` is dropped. `User` is Better Auth's global table and `scopedDb` refuses it, so profile data lives in its own user-scoped table. The demo seed fills all of them.
 - Onboarding works with no AI model configured.
 
 ## Alternatives rejected

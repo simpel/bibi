@@ -1,7 +1,9 @@
 import { AUTH_BASE_PATH, resolveExecuteContext } from "@bibi/auth";
 import { getEnv } from "@bibi/config";
+import { setFileStore } from "@bibi/core";
 import { createSystemLogSink } from "@bibi/db";
 import { getLogger, initLogger, installProcessHandlers } from "@bibi/logger";
+import { getStorage } from "@bibi/storage";
 import { embed } from "./embed";
 import { createHttpServer } from "./http/create-http-server";
 
@@ -12,6 +14,8 @@ initLogger({
   sinks: [createSystemLogSink({ retentionDays: env.SYSTEM_LOG_RETENTION_DAYS })],
 });
 installProcessHandlers({ exitOnUncaught: true });
+// Core reaches file storage through this port (ADR 0063): `file.upload`, `file.get`.
+setFileStore({ store: getStorage() });
 
 const server = createHttpServer({
   resolveContext: resolveExecuteContext,

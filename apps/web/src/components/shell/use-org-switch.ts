@@ -1,7 +1,7 @@
-import { useRouter } from "@bibi/i18n/navigation";
 import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import type { OrgOption } from "./org-menu-items";
 
@@ -10,11 +10,12 @@ export function useOrgSwitch() {
   const t = useTranslations("shell");
   const router = useRouter();
   const { data, isPending } = authClient.useListOrganizations();
-  const select = async ({ id, name }: OrgOption) => {
+  // The URL names the organization (ADR 0062): switching opens its pipeline.
+  const select = async ({ id, name, slug }: OrgOption) => {
     await authClient.organization.setActive({ organizationId: id });
     toast.success(t("switchedOrganization", { name }));
-    router.refresh();
+    router.push(ROUTES.pipeline, { org: slug });
   };
-  const create = () => router.push(ROUTES.selectOrganization);
+  const create = () => router.push(`${ROUTES.welcome}/new`);
   return { organizations: data ?? [], isPending, select, create };
 }

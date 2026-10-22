@@ -1,8 +1,8 @@
 import type { TicketDto } from "@bibi/core";
-import { Link } from "@bibi/i18n/navigation";
 import { Button } from "@bibi/ui";
 import { PencilIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { Link } from "@/lib/navigation";
 import { ticketRoute, updateRoute } from "@/lib/routes";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
 import { ChangePhaseButton } from "./change-phase-button";

@@ -1,6 +1,5 @@
 "use client";
 
-import { Link, usePathname } from "@bibi/i18n/navigation";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -10,6 +9,7 @@ import {
 } from "@bibi/ui";
 import { BotIcon, ScrollTextIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 
 const ITEMS = [

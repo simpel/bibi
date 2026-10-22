@@ -1,5 +1,4 @@
 import type { LineDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import {
   ColorSwatch,
   DropdownMenuItem,
@@ -8,6 +7,7 @@ import {
   DropdownMenuSubTrigger,
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
 import { changeLineStateAction, followLinePhaseAction } from "../actions";
 import type { LineStateOption } from "./line-state-option";

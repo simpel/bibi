@@ -27,7 +27,7 @@ Locale prefix (`/sv`, `/en`) omitted.
 
 ## `/welcome`
 - **Your organizations:** each one links to `/:slug/welcome`.
-- **Invitations:** pending invitations for the signed-in email, each showing the organization, the inviter and the role, with Accept. With none: "No invitations for a•••@example.se. Ask your admin to invite this email."
+- **Invitations:** pending invitations for the signed-in email, each showing the organization and the role, with Accept. With none: "No invitations for anna@example.se. Ask your admin to invite this email."
 - **Create a new organization:** goes to `/welcome/new`.
 
 ## `/welcome/new`

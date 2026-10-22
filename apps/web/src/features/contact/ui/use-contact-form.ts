@@ -1,9 +1,9 @@
 import type { ContactDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
 import { useTypedResolver } from "@/components/typed-fields/use-typed-resolver";
+import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { createContactAction, updateContactAction } from "../actions";
 import {

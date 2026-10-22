@@ -1,12 +1,12 @@
 "use client";
 
 import type { EntityTypeDto } from "@bibi/core";
-import { useRouter } from "@bibi/i18n/navigation";
 import { Button, Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";
+import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { createEntityTypeAction, updateEntityTypeAction } from "../actions";

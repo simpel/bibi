@@ -1,13 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { slugify } from "./slugify";
 
-describe("slugify", () => {
-  it("lowercases, strips diacritics and appends the suffix", () => {
-    expect(slugify({ name: "World of Volvo AB", suffix: "ab12" })).toBe("world-of-volvo-ab-ab12");
-    expect(slugify({ name: "Herrgården Åre", suffix: "x" })).toBe("herrgarden-are-x");
+describe("slugify (ADR 0062)", () => {
+  it("lowercases and strips diacritics", () => {
+    expect(slugify({ name: "World of Volvo AB" })).toBe("world-of-volvo-ab");
+    expect(slugify({ name: "Säröhus Konferens" })).toBe("sarohus-konferens");
+    expect(slugify({ name: "STR" })).toBe("str");
   });
 
-  it("falls back for names without usable characters", () => {
-    expect(slugify({ name: "!!!", suffix: "x1" })).toBe("org-x1");
+  it("cuts at 40 characters without a trailing dash", () => {
+    expect(slugify({ name: `${"a".repeat(39)} b` })).toBe("a".repeat(39));
+  });
+
+  it("is empty for names without usable characters", () => {
+    expect(slugify({ name: "!!!" })).toBe("");
   });
 });

@@ -4,7 +4,7 @@ import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@bib
 import { CheckIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export type OrgOption = { id: string; name: string };
+export type OrgOption = { id: string; name: string; slug: string };
 
 export type OrgMenuItemsProps = {
   organizations: readonly OrgOption[];

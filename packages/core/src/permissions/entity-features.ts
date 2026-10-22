@@ -34,6 +34,7 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   vocabulary: "configuration",
   vocabularyValue: "configuration",
   setup: "configuration",
+  organizationProfile: "configuration",
   ticketPhase: "pipeline",
   itemState: "pipeline",
   phaseGrid: "pipeline",
@@ -52,7 +53,9 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   skill: "self",
   oauthGrant: "self",
   userPreference: "self",
-  userSettings: "self",
+  profile: "self",
+  workingHours: "self",
+  file: "self",
   changeSet: "self",
   search: "self",
 };
