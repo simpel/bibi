@@ -80,40 +80,4 @@ export const UI_EXEMPT: readonly UiExempt[] = [
     reason:
       "No page of its own: UI that remembers a choice (e.g. table column order) saves it with saveUserPreference",
   },
-  {
-    operation: "profile.get",
-    reason: "Welcome flow page, ticket #418",
-  },
-  {
-    operation: "profile.update",
-    reason: "Welcome flow page, ticket #418",
-  },
-  {
-    operation: "workingHours.get",
-    reason: "Welcome flow page, ticket #418",
-  },
-  {
-    operation: "workingHours.set",
-    reason: "Welcome flow page, ticket #418",
-  },
-  {
-    operation: "file.upload",
-    reason: "Welcome flow page, ticket #418",
-  },
-  {
-    operation: "file.get",
-    reason: "Welcome flow page, ticket #418",
-  },
-  {
-    operation: "organizationProfile.get",
-    reason: "Welcome flow page, ticket #418",
-  },
-  {
-    operation: "organizationProfile.update",
-    reason: "Welcome flow page, ticket #418",
-  },
-  {
-    operation: "organizationProfile.setSetupStatus",
-    reason: "Welcome flow page, ticket #418",
-  },
 ];

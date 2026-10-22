@@ -22,6 +22,7 @@ export default async function ReviewStepPage({ params }: ReviewStepPageProps) {
       title={t("title")}
       description={t("description")}
       progress={welcomeProgress({ step: "setup/review", state })}
+      width="wide"
     >
       <ReviewStep organization={session.organizationName} />
     </WelcomeStepFrame>

@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { gotoApp } from "./goto-app";
+import { completeProfile, nameOrganization } from "./welcome-steps";
 
 export type Credentials = { name: string; email: string; password: string };
 
@@ -10,7 +11,7 @@ export function uniqueCredentials(): Credentials {
 
 export type PageInput = { page: Page };
 
-/** Sign up with email + password; a new user has no organization, so we land on the picker. */
+/** Sign up with email + password; a new user has no organization, so we land on /welcome. */
 export async function signUp({ page, credentials }: PageInput & { credentials: Credentials }) {
   await page.goto("/");
   await expect(page).toHaveURL(/\/sv\/login/);
@@ -20,19 +21,19 @@ export async function signUp({ page, credentials }: PageInput & { credentials: C
   await page.getByLabel("Lösenord").fill(credentials.password);
   await page.getByRole("button", { name: "Skapa konto" }).click();
   // Sign-up creates the account and session before redirecting; slow under load.
-  await expect(page).toHaveURL(/\/sv\/select-organization/, { timeout: 15_000 });
+  await expect(page).toHaveURL(/\/sv\/welcome$/, { timeout: 15_000 });
 }
 
+/**
+ * Creates an organization through the welcome flow (ADR 0061): name, profile, hours, then
+ * "Skip for now" on the setup, so the steps that follow start from the empty venue list.
+ */
 export async function createOrganization({ page, name }: PageInput & { name: string }) {
-  await page.getByLabel("Organisationens namn").fill(name);
-  await page.getByRole("button", { name: "Skapa organisation" }).click();
-  // A new organization continues to the first setup (ADR 0045). The app sends a user with a
-  // pending first setup back there (ADR 0046), so skip it; the steps that follow start from the
-  // venue list.
-  await expect(page).toHaveURL(/\/sv\/onboarding$/);
-  await expect(page.locator('[data-slot="assistant-chat"]')).toBeVisible();
+  const slug = await nameOrganization({ page, name });
+  await completeProfile({ page, slug });
+  await expect(page).toHaveURL(new RegExp(`/sv/${slug}/welcome/setup/organization$`));
   await page.getByRole("button", { name: "Hoppa över just nu" }).click();
-  await expect(page).not.toHaveURL(/\/onboarding/);
+  await expect(page).toHaveURL(new RegExp(`/sv/${slug}/pipeline$`));
   await gotoApp({ page, path: "/venues" });
   await expect(page.getByText("Inga anläggningar ännu.")).toBeVisible();
 }

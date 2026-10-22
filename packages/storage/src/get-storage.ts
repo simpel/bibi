@@ -1,10 +1,9 @@
 import { isAbsolute, resolve } from "node:path";
 import { type Env, getEnv } from "@bibi/config";
 import { createDiskProvider } from "./disk/create-disk-provider";
+import { repoRoot } from "./repo-root";
 import { createS3Provider } from "./s3/create-s3-provider";
 import type { StorageProvider } from "./storage-provider";
-
-const repoRoot = new URL("../../../", import.meta.url).pathname;
 
 let configured: StorageProvider | undefined;
 let override: StorageProvider | undefined;
@@ -24,7 +23,9 @@ export function storageFromEnv({ env }: StorageFromEnvInput): StorageProvider {
     });
   }
   const dir = env.STORAGE_DISK_DIR;
-  return createDiskProvider({ root: isAbsolute(dir) ? dir : resolve(repoRoot, dir) });
+  return createDiskProvider({
+    root: isAbsolute(dir) ? dir : resolve(repoRoot({ from: process.cwd() }), dir),
+  });
 }
 
 /** The process-wide provider: a test override if set, otherwise the env-selected adapter. */
