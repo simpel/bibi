@@ -697,6 +697,34 @@ const check = (name, ok, detail = "") => {
   );
 }
 
+// 12d. fix rounds are recorded per ticket
+{
+  let first = true;
+  const hook = (opts) => {
+    if (opts.phase === "Implement")
+      return { status: "done", summary: "ok", files: ["a.ts"], checks: red("boom") };
+    if (opts.phase === "Verify") {
+      const r = first
+        ? { status: "done", summary: "ok", files: ["a.ts"], checks: green }
+        : undefined;
+      first = false;
+      return r;
+    }
+    return undefined;
+  };
+  const r = await runScript({
+    tickets: [T(1, "One", [], "S", { kind: "Feature" })],
+    impl: done,
+    hook,
+  });
+  const call = r.calls.find((c) => c.label === "metrics");
+  check(
+    "the metrics line carries the fix rounds of the ticket",
+    call?.prompt.includes('"fixRounds":1') && call.prompt.includes('"landRounds":0'),
+    call?.prompt,
+  );
+}
+
 // 13. the run does not start while main is red
 {
   const t = [T(1, "One", [], "S", { kind: "Feature" })];

@@ -74,6 +74,8 @@ export function report({ file }) {
     .filter((t) => t.pr)
     .map((t) => prFacts({ pr: t.pr }))
     .filter(Boolean);
+  const roundsAvg = (key) =>
+    avg({ values: tickets.map((t) => t[key]).filter((n) => typeof n === "number") });
   const lines = [
     `Runs: ${runs.length} (${Object.entries(byPath)
       .map(([p, r]) => `${p} ${r.length}`)
@@ -90,6 +92,7 @@ export function report({ file }) {
     `Tickets: ${tickets.length}; outcomes ${JSON.stringify(Object.fromEntries(Object.entries(Object.groupBy(tickets, (t) => t.outcome)).map(([k, v]) => [k, v.length])))}`,
   );
   lines.push(
+    `Rounds per ticket: ${roundsAvg("fixRounds")} fix (red checks before the PR), ${roundsAvg("landRounds")} land (conflict or red after rebase)`,
     `PRs read from GitHub: ${facts.length}; median open-to-merge ${median({ values: facts.map((f) => f.minutes).filter((m) => m !== null) })} min; ${sum({ values: facts.map((f) => f.redRuns) })} red CI runs (${avg({ values: facts.map((f) => f.redRuns) })} per PR); ${avg({ values: facts.map((f) => f.lines) })} changed lines per PR`,
   );
   const tokens = done.map((r) => r.outputTokens).filter((n) => typeof n === "number");

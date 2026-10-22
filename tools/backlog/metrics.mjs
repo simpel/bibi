@@ -2,7 +2,7 @@
 // Run log for work-backlog and the work-tickets skill, so the way of working can be evaluated later with real numbers.
 //   node tools/backlog/metrics.mjs start                      prints the current ISO time (the inline path keeps it)
 //   node tools/backlog/metrics.mjs record --path <workflow|inline|gate-inline|gate-none> [--since <iso>] [--note <text>]
-//                                          (a JSON payload on stdin: { tickets: [{ number, size, kind, model, outcome, pr }],
+//                                          (a JSON payload on stdin: { tickets: [{ number, size, kind, model, outcome, pr, fixRounds, landRounds }],
 //                                          gate?, outputTokens? })
 //   node tools/backlog/metrics.mjs report                     summary of all runs, PR facts read from GitHub
 // The log is bibi-worktrees/.metrics/runs.jsonl. It is a local file on purpose: nothing here may push to main (ADR 0065).

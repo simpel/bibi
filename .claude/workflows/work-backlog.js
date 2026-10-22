@@ -369,6 +369,14 @@ Return the created issue numbers.`
 // The run never merges: it arms GitHub auto-merge and main (protected, PR + green checks required) moves when GitHub
 // merges. Tickets therefore run fully in parallel; a dependent ticket becomes selectable in a later run.
 
+// Rounds a model had to work after the first attempt, per ticket, for the metrics log: fixRounds = red checks before
+// shipping, landRounds = conflicts or red checks after the rebase.
+const roundsBy = {}
+const bump = (t, key) => {
+  roundsBy[t.number] = { fixRounds: 0, landRounds: 0, ...roundsBy[t.number] }
+  roundsBy[t.number][key]++
+}
+
 async function park(t, dir, reason, model) {
   const p = await agent(runnerPrompt(parkCmd(t, reason, model)), { label: `park #${t.number}`, phase: 'Park', schema: PARK, model: 'haiku', effort: 'low' })
   log(`#${t.number} parked${p && p.branch ? ` on ${p.branch}` : ''}: ${reason.split('\n')[0]}`)
@@ -380,6 +388,7 @@ const step = (t, prompt, model, label) => agent(prompt, { label: `${label} #${t.
 // A rebase conflict or red checks go to a model, then the script runs again with --resume (up to two rounds).
 async function resolveLoop(t, dir, r, ok, resumeCommand) {
   for (let round = 1; r && r.state !== ok && round <= 2; round++) {
+    bump(t, 'landRounds')
     if (r.state === 'conflict') r = await step(t, resolvePrompt(t, dir, r.files, resumeCommand), 'sonnet', `resolve r${round}`)
     else if (r.state === 'red' && r.checks) r = await step(t, landFixPrompt(t, dir, r.checks, resumeCommand), 'sonnet', `land-fix r${round}`)
     else break
@@ -449,6 +458,7 @@ async function fixLoop(t, dir, state, collect, checks) {
   for (let round = 1; !v.green && round <= rounds; round++) {
     if (before !== null && failureKey(v) === before) break
     before = failureKey(v)
+    bump(t, 'fixRounds')
     if (round === rounds) {
       state.model = assertModel(escalate(state.model))
       state.effort = raiseEffort(state.effort)
@@ -595,7 +605,7 @@ for (let n = 1; n <= MAX_BATCHES; n++) {
 }
 
 phase('Record')
-const record = results.map((r) => ({ number: r.t.number, size: r.t.size || '', kind: r.t.kind || '', model: r.model || '', outcome: r.outcome, pr: prNumber(r.pr), reason: r.reason || '' }))
+const record = results.map((r) => ({ number: r.t.number, size: r.t.size || '', kind: r.t.kind || '', model: r.model || '', outcome: r.outcome, pr: prNumber(r.pr), fixRounds: (roundsBy[r.t.number] || {}).fixRounds || 0, landRounds: (roundsBy[r.t.number] || {}).landRounds || 0, reason: r.reason || '' }))
 await agent(runnerPrompt(metricsCmd('workflow', startedAt, { tickets: record, outputTokens: spentTokens() })), { label: 'metrics', phase: 'Record', model: 'haiku', effort: 'low' })
 
 const pick = (o) => results.filter((r) => r.outcome === o).map((r) => ({ number: r.t.number, title: r.t.title, sha: r.sha, pr: r.pr, branch: r.branch, reason: r.reason, model: r.model }))

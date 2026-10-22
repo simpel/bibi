@@ -33,3 +33,13 @@ test("the report counts runs per path and gate refusals", () => {
   assert.match(text, /20 min per ticket/);
   assert.match(text, /1 runs sent inline/);
 });
+
+test("the report averages fix rounds per ticket", () => {
+  const file = join(mkdtempSync(join(tmpdir(), "metrics-")), "runs.jsonl");
+  const tickets = [
+    { number: 1, outcome: "armed", fixRounds: 2, landRounds: 0 },
+    { number: 2, outcome: "armed", fixRounds: 0, landRounds: 1 },
+  ];
+  appendRun({ file, run: { path: "inline", minutes: 10, tickets } });
+  assert.match(report({ file }), /Rounds per ticket: 1 fix .*, 0\.5 land/);
+});

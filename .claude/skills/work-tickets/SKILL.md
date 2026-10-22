@@ -19,6 +19,6 @@ The `work-backlog` workflow pays a fixed cost per ticket (worktree, agents, CI w
 6. **If CI goes red**, read `gh run view <run> --log-failed`, fix on the same branch, push. Retry a known flaky e2e once before changing code.
 7. **Board:** move each card to `In progress` when you start it. `Closes #N` closes the issue on merge. Out-of-scope findings become `source:agent` tickets (`new-ticket` skill), never scope creep.
 
-8. **Record the run** so the way of working can be evaluated later: `echo '{"tickets":[{"number":N,"size":"S","kind":"Feature","model":"sonnet","outcome":"armed","pr":PR}]}' | node tools/backlog/metrics.mjs record --path inline --since <timestamp>` (one ticket object per ticket, all with the same PR number). Add `--note` for anything unusual (a flaky test, a long wait).
+8. **Record the run** so the way of working can be evaluated later: `echo '{"tickets":[{"number":N,"size":"S","kind":"Feature","model":"sonnet","outcome":"armed","pr":PR,"fixRounds":0,"landRounds":0}]}' | node tools/backlog/metrics.mjs record --path inline --since <timestamp>` (one ticket object per ticket, all with the same PR number; `fixRounds` = times its checks were red and you fixed them before committing, `landRounds` = conflicts or red checks after pushing). Add `--note` for anything unusual (a flaky test, a long wait).
 
 Cost trade-off: the squash merge makes the whole PR one commit on main, so release-please sees one change entry for it. Use the workflow, or one PR per ticket, when separate changelog entries matter.
