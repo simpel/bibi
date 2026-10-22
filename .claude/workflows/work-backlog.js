@@ -1,15 +1,17 @@
 export const meta = {
   name: 'work-backlog',
-  description: 'Work unblocked tickets from project 8, one isolated worktree per ticket, landing each on main',
-  whenToUse: 'Run to let agents implement ready tickets from the bibi board until none are left. Args: { batchSize?: 3, maxBatches?: unlimited (safety cap 50), includeBacklog?: false, only?: [issueNumbers], adopt?: [issueNumbers] }',
+  description: 'Work unblocked tickets from project 8, one isolated worktree per ticket, opening a PR per ticket with auto-merge armed',
+  whenToUse: 'Run to let agents implement ready tickets from the bibi board until none are left. Args: { batchSize?: 3, maxBatches?: unlimited (safety cap 50), includeBacklog?: false, only?: [issueNumbers], adopt?: [issueNumbers], force?: false (skip the workload gate) }. A small workload is refused by the gate: use the work-tickets skill (one session, one PR) instead.',
   phases: [
+    { title: 'Gate', detail: 'refuse small workloads (fewer than 3 parallel tickets): the work-tickets skill does them in one PR' },
     { title: 'Select', detail: 'read board + blockers, pick a batch' },
     { title: 'Implement', detail: 'one agent per ticket: creates its worktree, implements, runs the full checks' },
     { title: 'Verify', detail: 'fix loop with escalation when the implementer reports red checks' },
     { title: 'Review', detail: 'tenancy review for core/db/auth/mcp changes (Opus; Sonnet for codemod tickets)' },
-    { title: 'Land', detail: 'open a PR, wait for CI, squash-merge one at a time (decision PRs stay open for review)' },
+    { title: 'Land', detail: 'open a PR, arm GitHub auto-merge at once, never wait for CI (decision PRs stay open for review); the run never merges itself' },
     { title: 'Park', detail: 'push a failed ticket to parked/<N>, comment, card to Parked' },
-    { title: 'Main', detail: 'after merges, wait for CI on main; stop the run when it is red' },
+    { title: 'Main', detail: 'before the run: refuse to start while CI on main is red' },
+    { title: 'Record', detail: 'append the run to the local metrics log (tools/backlog/metrics.mjs) for later evaluation' },
     { title: 'Follow-ups', detail: 'file out-of-scope findings as source:agent issues in Backlog' },
   ],
 }
@@ -25,10 +27,7 @@ const ONLY = (args && args.only) || null
 const ADOPT = (args && args.adopt) || []
 if (ADOPT.length) STATUSES.push('In progress')
 const adopting = (t) => ADOPT.includes(t.number)
-const CI_POLLS = 6 // ci.sh waits up to 9 minutes per call, so a PR may wait about 54 minutes for CI
-const CI_FIX_ROUNDS = 2
-const MAIN_POLLS = 2 // main-ci.sh waits up to 9 minutes per call
-const MAIN_CHECK = !(args && args.mainCheck === false) // args.mainCheck: false skips the main-health step
+const MAIN_CHECK = !(args && args.mainCheck === false) // args.mainCheck: false skips the start check (main must not be red)
 const BASE_FIX_ROUNDS = 2 // XL and codemod tickets get 3, see fixRounds
 const TIERS = ['haiku', 'sonnet', 'opus'] // fable is never used
 // Board ids are fixed: agents never run gh project field-list / item-list to find them (GraphQL rate limit).
@@ -195,11 +194,11 @@ const REVIEW = {
   properties: { ok: { type: 'boolean' }, findings: { type: 'array', items: { type: 'string' } }, followUps: FOLLOW_UPS },
   required: ['ok', 'findings'],
 }
-// One result shape for ship.sh, ci.sh and merge.sh (each prints a subset).
+// One result shape for ship.sh, ci.sh and arm.sh (each prints a subset).
 const LAND = {
   type: 'object',
   properties: {
-    state: { type: 'string', enum: ['opened', 'green', 'pending', 'merged', 'conflict', 'red', 'failed'] },
+    state: { type: 'string', enum: ['opened', 'green', 'pending', 'armed', 'conflict', 'red', 'failed'] },
     pr: { type: 'number' },
     url: { type: 'string' },
     sha: { type: 'string' },
@@ -210,6 +209,16 @@ const LAND = {
     checks: VERIFY,
   },
   required: ['state'],
+}
+const GATE = {
+  type: 'object',
+  properties: {
+    path: { type: 'string', enum: ['workflow', 'inline', 'none', 'failed'] },
+    reason: { type: 'string' },
+    ready: { type: 'array', items: { type: 'number' } },
+    bundle: { type: 'array', items: { type: 'number' } },
+  },
+  required: ['path', 'reason', 'ready'],
 }
 const RESIDUE = {
   type: 'object',
@@ -263,7 +272,7 @@ const scratchDir = (t) => `${REPO}-worktrees/.scratch/${wtName(t)}`
 const codemodRules = (t) => `This ticket is a mechanical rename: follow the codemod skill, which is the rulebook for it (inventory, database, TypeScript symbols through the compiler, text, residue check). Do not edit files one at a time. Work in ${scratchDir(t)}, outside the git tree, so scripts are never committed. The ticket's "### Renames" table is the inventory, and a script checks that no old name is left (applied migrations, ADR history, node_modules and generated code are excluded).`
 // ---- Paths: what a ticket's Kind changes ---------------------------------------
 // feature is the default. A path sets its prompt rules, which checks run, whether the tenancy review runs, and whether
-// the run merges the PR itself (decision PRs stay open: a person accepts an ADR). Gates that go with a path are in
+// the run arms auto-merge on the PR (decision PRs stay open: a person accepts an ADR). Gates that go with a path are in
 // pathGates below. `skill` = follows the new-feature skill and runs seed:demo.
 const BUGFIX_RULES = () => `This is a bug fix: follow the fix-bug skill (reproduce first: a failing test, then the fix, then the same test passing). Return repro = { test, failedBefore: true }. If the bug cannot be covered by a test, return repro = { test: "", failedBefore: false, skippedReason } with the reason.`
 const TECH_DEBT_RULES = () => `This is a behaviour-preserving refactor: follow the refactor skill. Existing tests must pass unmodified; if you touch a test, say which and why in notes. No new features, no new dependencies.`
@@ -318,9 +327,9 @@ const reviewPrompt = (t, dir) => `Use the tenancy-review skill on the uncommitte
 ${inWorktree(dir)}
 Check org scoping, permissions, AuditLog, and AI approval, plus the new-feature gates: referenced ids checked for org and read permission, read permission on search and UI, archive/rename/removal lifecycle, races returning CONFLICT. Do not edit files. ok=false only for a real tenancy/permission/audit defect in this ticket's changes; list each with file:line. Defects in code this ticket did not touch go in followUps instead (they must not block the ticket).${isCodemod(t) ? '\nThis ticket is a mechanical rename done by a script. Review the hand-written parts (the migration, SQL functions and triggers, anything that is not a pure identifier substitution) and skip the substituted lines.' : ''}`
 
-// Shipping, waiting for CI, merging and parking are scripts (tools/backlog/ship.sh, ci.sh, merge.sh, park.sh, tested in
+// Shipping, waiting for CI, arming auto-merge and parking are scripts (tools/backlog/ship.sh, ci.sh, arm.sh, park.sh, tested in
 // a sandbox by scripts-smoke.sh): commit, rebase, the skip-checks-when-main-did-not-move rule, the pull request, the
-// squash merge, board move and cleanup are deterministic. The agent that runs them is a one-command runner; a model
+// auto-merge arming, board move and cleanup are deterministic. The agent that runs them is a one-command runner; a model
 // only works where judgment is needed (conflicts, red checks, red CI).
 const sh = (v) => `'${String(v).replace(/'/g, `'\\''`)}'`
 // A decision ticket's PR is a docs change whatever its Kind, so it never triggers a release (ADR 0060).
@@ -329,9 +338,9 @@ const shipEnv = (t, model) => `${boardEnv(t, model)} CHECKS_ARGS=${sh(pathOfTick
 const withStdin = (cmd, text) => `${cmd} <<'BIBI_EOF'\n${text}\nBIBI_EOF`
 const runnerPrompt = (cmd) => `Run exactly this one command from ${REPO} and nothing else. Its last line of output is one JSON object; return that object unchanged. If it prints no JSON, return state="failed" with the last 20 lines as reason.\n${cmd}`
 const shipCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/ship.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
-const mergeCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/merge.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
+const armCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/arm.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
 const mainCiCmd = () => 'tools/backlog/main-ci.sh --timeout 540'
-const ciCmd = (t) => `tools/backlog/ci.sh ${t.number} --timeout 540`
+const metricsCmd = (path, since, payload) => withStdin(`node tools/backlog/metrics.mjs record --path ${path}${since ? ` --since ${since}` : ''}`, JSON.stringify(payload))
 const residueCmd = (t, dir) => `tools/backlog/residue.sh ${dir} ${(t.renames || []).map(sh).join(' ')}`
 
 const resolvePrompt = (t, dir, files, resumeCommand) => `Rebasing issue #${t.number} ("${t.title}") onto origin/main stopped on conflicts in: ${files}. Tickets in a batch often touch the same registries, index files, i18n messages or role templates.
@@ -346,12 +355,6 @@ ${inWorktree(dir)}
 ${checks.failures.map((f) => `### ${f.check}\n${f.output}`).join('\n\n')}
 Fix the cause in the worktree. ${READING_RULES} Do not run git add, commit, amend or push: the script amends the ticket's commit. Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCommand}`
 
-const ciFixPrompt = (t, dir, ci, resumeCommand) => `CI failed on the pull request of issue #${t.number} ("${t.title}") although the local checks were green. Failed checks: ${ci.failed || 'unknown'}.
-${inWorktree(dir)}
-CI log (the failed run, last lines):
-${ci.log || '(no log was available: reproduce with the checks CI runs: pnpm lint, check:structure, typecheck, test, build)'}
-Fix the cause in the worktree. ${READING_RULES} Do not run git add, commit, amend or push: the script amends the ticket's commit and pushes. Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCommand}`
-
 const parkCmd = (t, reason, model) => withStdin(`${boardEnv(t, model)} tools/backlog/park.sh ${t.number} ${sh(t.title)}`, reason)
 
 const followUpPrompt = (items) => `File follow-up issues on simpel/bibi for problems agents found outside their ticket's scope. Work in ${REPO}; do not edit files.
@@ -363,13 +366,15 @@ Findings (JSON): ${JSON.stringify(items)}
 Return the created issue numbers.`
 
 // ---- Ticket pipeline ---------------------------------------------------------
-// Merging is serialised: each ticket is rebased on what the previous one merged. Opening a PR and waiting for CI
-// run in parallel.
-let mergeQueue = Promise.resolve()
-function serially(fn) {
-  const run = mergeQueue.then(fn)
-  mergeQueue = run.catch(() => {})
-  return run
+// The run never merges: it arms GitHub auto-merge and main (protected, PR + green checks required) moves when GitHub
+// merges. Tickets therefore run fully in parallel; a dependent ticket becomes selectable in a later run.
+
+// Rounds a model had to work after the first attempt, per ticket, for the metrics log: fixRounds = red checks before
+// shipping, landRounds = conflicts or red checks after the rebase.
+const roundsBy = {}
+const bump = (t, key) => {
+  roundsBy[t.number] = { fixRounds: 0, landRounds: 0, ...roundsBy[t.number] }
+  roundsBy[t.number][key]++
 }
 
 async function park(t, dir, reason, model) {
@@ -383,6 +388,7 @@ const step = (t, prompt, model, label) => agent(prompt, { label: `${label} #${t.
 // A rebase conflict or red checks go to a model, then the script runs again with --resume (up to two rounds).
 async function resolveLoop(t, dir, r, ok, resumeCommand) {
   for (let round = 1; r && r.state !== ok && round <= 2; round++) {
+    bump(t, 'landRounds')
     if (r.state === 'conflict') r = await step(t, resolvePrompt(t, dir, r.files, resumeCommand), 'sonnet', `resolve r${round}`)
     else if (r.state === 'red' && r.checks) r = await step(t, landFixPrompt(t, dir, r.checks, resumeCommand), 'sonnet', `land-fix r${round}`)
     else break
@@ -395,23 +401,9 @@ async function shipTicket(t, dir, summary, model) {
   return resolveLoop(t, dir, r, 'opened', shipCmd(t, summary, model, true))
 }
 
-// CI runs on the pull request. Waiting happens outside the merge queue; red CI is fixed on the same branch.
-async function ciGreen(t, dir, summary, model) {
-  for (let fixes = 0; ; fixes++) {
-    let c = null
-    for (let poll = 1; poll <= CI_POLLS; poll++) {
-      c = await step(t, runnerPrompt(ciCmd(t)), 'haiku', `ci p${poll}`)
-      if (!c || c.state !== 'pending') break
-    }
-    if (!c || c.state !== 'red' || fixes === CI_FIX_ROUNDS) return c
-    const r = await step(t, ciFixPrompt(t, dir, c, shipCmd(t, summary, model, true)), 'sonnet', `ci-fix r${fixes + 1}`)
-    if (!r || r.state !== 'opened') return r
-  }
-}
-
-async function mergeTicket(t, dir, summary, model) {
-  const r = await step(t, runnerPrompt(mergeCmd(t, summary, model)), 'haiku', 'merge')
-  return resolveLoop(t, dir, r, 'merged', mergeCmd(t, summary, model, true))
+async function armTicket(t, dir, summary, model) {
+  const r = await step(t, runnerPrompt(armCmd(t, summary, model)), 'haiku', 'arm')
+  return resolveLoop(t, dir, r, 'armed', armCmd(t, summary, model, true))
 }
 
 const stepFailure = (r, what) => {
@@ -466,6 +458,7 @@ async function fixLoop(t, dir, state, collect, checks) {
   for (let round = 1; !v.green && round <= rounds; round++) {
     if (before !== null && failureKey(v) === before) break
     before = failureKey(v)
+    bump(t, 'fixRounds')
     if (round === rounds) {
       state.model = assertModel(escalate(state.model))
       state.effort = raiseEffort(state.effort)
@@ -515,23 +508,10 @@ async function runTicket(t) {
     log(`#${t.number} pull request opened for review: ${opened.url}`)
     return { t, outcome: 'opened', pr: opened.url, model: state.model }
   }
-  const ci = await ciGreen(t, dir, impl.summary, state.model)
-  if (!ci || ci.state !== 'green') return park(t, dir, stepFailure(ci, 'CI'), state.model)
-  const merged = await serially(() => mergeTicket(t, dir, impl.summary, state.model))
-  if (!merged || merged.state !== 'merged') return park(t, dir, stepFailure(merged, 'merge'), state.model)
-  log(`#${t.number} merged ${merged.sha || ''} via ${opened.url} (${state.model})`)
-  return { t, outcome: 'landed', sha: merged.sha, pr: opened.url, model: state.model }
-}
-
-// Two tickets that were each green can still break each other once both are squash-merged, so after a batch with merges
-// the run waits for CI on main and stops when it is red (rollback.yml and a person take it from there).
-async function mainHealth() {
-  let r = null
-  for (let poll = 1; poll <= MAIN_POLLS; poll++) {
-    r = await agent(runnerPrompt(mainCiCmd()), { label: `main-ci p${poll}`, phase: 'Main', schema: LAND, model: 'haiku', effort: 'low' })
-    if (!r || r.state !== 'pending') break
-  }
-  return r
+  const armed = await armTicket(t, dir, impl.summary, state.model)
+  if (!armed || armed.state !== 'armed') return park(t, dir, stepFailure(armed, 'auto-merge'), state.model)
+  log(`#${t.number} auto-merge armed on ${opened.url} (${state.model})`)
+  return { t, outcome: 'armed', pr: opened.url, model: state.model }
 }
 
 // ---- Main loop -------------------------------------------------------------
@@ -561,6 +541,24 @@ function packBatch(tickets) {
   return batch
 }
 
+// Workload gate: the workflow costs a worktree, CI and agents per ticket, so a small workload is refused and left to the
+// work-tickets skill (one session, one PR). force: true or adopt skips it; a gate that fails to run lets the run continue.
+let startedAt = null // the gate's timestamp: scripts have no clock, so the run's start comes from gate.mjs
+const prNumber = (url) => (url && Number((/\/pull\/(\d+)/.exec(url) || [])[1])) || null
+const spentTokens = () => (typeof budget !== 'undefined' && budget.total ? budget.spent() : null)
+if (!(args && args.force) && !ADOPT.length) {
+  phase('Gate')
+  const only = ONLY ? ` --only ${ONLY.join(',')}` : ''
+  const g = await agent(runnerPrompt(`node tools/backlog/gate.mjs --statuses ${STATUSES.join(',')}${only}`), { label: 'gate', phase: 'Gate', schema: GATE, model: 'haiku', effort: 'low' })
+  if (g && g.at) startedAt = g.at
+  if (g && (g.path === 'inline' || g.path === 'none')) {
+    await agent(runnerPrompt(metricsCmd(`gate-${g.path}`, g.at, { gate: { ready: g.ready, reason: g.reason }, tickets: [] })), { label: 'metrics', phase: 'Gate', model: 'haiku', effort: 'low' })
+    log(`Gate: ${g.path}. ${g.reason}${g.bundle && g.bundle.length ? ` Small docs/test tickets that fit one PR: ${g.bundle.map((n) => `#${n}`).join(', ')}.` : ''}`)
+    return { gate: g, fallback: g.path === 'inline' ? `run the work-tickets skill for ${g.ready.map((n) => `#${n}`).join(', ')}` : null, armed: [], opened: [], parked: [], failed: [], followUpIssues: [] }
+  }
+  if (!g || g.path === 'failed') log(`Gate could not decide (${g ? g.reason : 'agent failed'}); continuing with the workflow.`)
+}
+
 // A red main would make every ticket's PR red too, so the run does not start while CI on main is red (a person fixes
 // main first, or starts with ignoreMainRed: true, for example to run the ticket that fixes it).
 if (MAIN_CHECK && !(args && args.ignoreMainRed)) {
@@ -568,7 +566,7 @@ if (MAIN_CHECK && !(args && args.ignoreMainRed)) {
   const h0 = await agent(runnerPrompt('tools/backlog/main-ci.sh --timeout 60'), { label: 'main-ci start', phase: 'Main', schema: LAND, model: 'haiku', effort: 'low' })
   if (h0 && h0.state === 'red') {
     log(`Not started: CI on main is red at ${h0.sha} (${h0.url || 'no run url'}). Fix main first, or run with ignoreMainRed: true.`)
-    return { mainRed: h0, landed: [], opened: [], parked: [], failed: [], followUpIssues: [] }
+    return { mainRed: h0, armed: [], opened: [], parked: [], failed: [], followUpIssues: [] }
   }
 }
 
@@ -576,7 +574,6 @@ const results = []
 const followUps = []
 const filed = []
 const tried = [] // every ticket attempted this run; never reselected, so the loop always ends
-let mainRed = null
 for (let n = 1; n <= MAX_BATCHES; n++) {
   phase('Select')
   const sel = await agent(selectPrompt(tried), { label: `select #${n}`, schema: TICKETS, model: 'haiku', effort: 'low' })
@@ -597,18 +594,6 @@ for (let n = 1; n <= MAX_BATCHES; n++) {
   const out = await parallel(batch.map((t) => () => runTicket(t)))
   out.forEach((r, i) => results.push(r || { t: batch[i], outcome: 'failed', reason: 'pipeline error' }))
 
-  let stop = false
-  if (MAIN_CHECK && out.some((r) => r && r.outcome === 'landed')) {
-    phase('Main')
-    const h = await mainHealth()
-    if (h && h.state === 'red') {
-      mainRed = h
-      stop = true
-      log(`Stopped: CI on main is red at ${h.sha} (${h.url || 'no run url'}) after the merges of batch ${n}.`)
-    } else if (h && h.state === 'pending') log(`CI on main was still running after ${MAIN_POLLS} waits at ${h.sha}; continuing.`)
-    else if (!h || h.state !== 'green') log('The main CI check did not finish; continuing.')
-  }
-
   // Barrier on purpose: dedup needs every finding of the batch.
   if (followUps.length) {
     phase('Follow-ups')
@@ -617,8 +602,11 @@ for (let n = 1; n <= MAX_BATCHES; n++) {
     if (f) filed.push(...f.created)
     log(`Follow-ups: ${items.length} found, ${f ? f.created.length : 0} filed (source:agent, Backlog)${f && f.duplicates && f.duplicates.length ? `, ${f.duplicates.length} already tracked` : ''}`)
   }
-  if (stop) break
 }
 
+phase('Record')
+const record = results.map((r) => ({ number: r.t.number, size: r.t.size || '', kind: r.t.kind || '', model: r.model || '', outcome: r.outcome, pr: prNumber(r.pr), fixRounds: (roundsBy[r.t.number] || {}).fixRounds || 0, landRounds: (roundsBy[r.t.number] || {}).landRounds || 0, reason: r.reason || '' }))
+await agent(runnerPrompt(metricsCmd('workflow', startedAt, { tickets: record, outputTokens: spentTokens() })), { label: 'metrics', phase: 'Record', model: 'haiku', effort: 'low' })
+
 const pick = (o) => results.filter((r) => r.outcome === o).map((r) => ({ number: r.t.number, title: r.t.title, sha: r.sha, pr: r.pr, branch: r.branch, reason: r.reason, model: r.model }))
-return { mainRed, landed: pick('landed'), opened: pick('opened'), parked: pick('parked'), failed: pick('failed'), followUpIssues: filed }
+return { armed: pick('armed'), opened: pick('opened'), parked: pick('parked'), failed: pick('failed'), followUpIssues: filed }
