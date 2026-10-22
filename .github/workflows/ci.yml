@@ -43,6 +43,7 @@ jobs:
         with:
           node-version: 22
       - run: node --test tools/ci/verify.test.mjs
+      - run: node --test tools/backlog/gate.test.mjs
       - run: node tools/backlog/workflow-smoke.mjs
       - run: bash tools/backlog/scripts-smoke.sh
 

@@ -18,6 +18,7 @@ async function runScript({ args = {}, tickets, impl, review, hook }) {
     calls.push({ prompt, ...opts });
     const custom = hook?.(opts, prompt);
     if (custom !== undefined) return custom;
+    if (opts.label === "gate") return { path: "workflow", reason: "test", ready: [] };
     if (opts.label.startsWith("select")) {
       const excluded = (prompt.match(/--exclude ([\d,]+)/)?.[1] ?? "").split(",").map(Number);
       return { ok: true, tickets: tickets.filter((t) => !excluded.includes(t.number)) };
@@ -28,9 +29,9 @@ async function runScript({ args = {}, tickets, impl, review, hook }) {
     if (opts.phase === "Review") return review ? review(opts) : { ok: true, findings: [] };
     if (opts.phase === "Land") {
       if (opts.label.startsWith("ci p")) return { state: "green" };
-      if (opts.label.startsWith("merge")) return { state: "merged", sha: "abc1234", pr: 101 };
-      if (/^(resolve|land-fix|ci-fix)/.test(opts.label) && prompt.includes("merge.sh"))
-        return { state: "merged", sha: "abc1234", pr: 101 };
+      if (opts.label.startsWith("arm")) return { state: "armed", pr: 101 };
+      if (/^(resolve|land-fix|ci-fix)/.test(opts.label) && prompt.includes("arm.sh"))
+        return { state: "armed", pr: 101 };
       return { state: "opened", pr: 101, url: "https://github.com/simpel/bibi/pull/101" };
     }
     if (opts.phase === "Park") return { state: "parked", branch: "parked/x" };
@@ -380,14 +381,14 @@ const check = (name, ok, detail = "") => {
   });
   const labels = feature.calls.filter((c) => c.phase === "Land").map((c) => c.label);
   check(
-    "a feature is shipped, CI-checked and merged",
-    labels.join(",") === "ship #1,ci p1 #1,merge #1",
+    "a feature is shipped, CI-checked and armed",
+    labels.join(",") === "ship #1,ci p1 #1,arm #1",
     labels.join(","),
   );
   check(
     "the result carries the PR",
-    feature.result.landed[0]?.pr === "https://github.com/simpel/bibi/pull/101",
-    JSON.stringify(feature.result.landed),
+    feature.result.armed[0]?.pr === "https://github.com/simpel/bibi/pull/101",
+    JSON.stringify(feature.result.armed),
   );
 
   const docs = await runScript({
@@ -415,7 +416,7 @@ const check = (name, ok, detail = "") => {
     "a code file in a docs ticket fails the docs-only gate and goes to a fix round",
     fix3?.prompt.includes("docs-only") && fix3.prompt.includes("a.ts"),
   );
-  check("the docs ticket then ships", docsBad.result.landed.length === 1);
+  check("the docs ticket then ships", docsBad.result.armed.length === 1);
 
   const tests = await runScript({
     tickets: [T(4, "Tests", ["area:core"], "S", { kind: "Test" })],
@@ -475,7 +476,7 @@ const check = (name, ok, detail = "") => {
     "a bugfix without a failing test first is sent back for a repro",
     bug.calls.find((c) => c.phase === "Verify")?.prompt.includes("No failing test was shown"),
   );
-  check("a bugfix with a repro ships", bug.result.landed.length === 1);
+  check("a bugfix with a repro ships", bug.result.armed.length === 1);
   const bugOk = await runScript({
     tickets: [T(8, "Fix it", [], "S", { kind: "Bugfix" })],
     impl: () => ({ ...done(), repro: { test: "a.test.ts", failedBefore: true } }),
@@ -531,7 +532,7 @@ const check = (name, ok, detail = "") => {
     "leftover old names go to a fix round, then ship",
     r.calls
       .find((c) => c.phase === "Verify" && c.label.startsWith("fix"))
-      ?.prompt.includes("rename residue") && r.result.landed.length === 1,
+      ?.prompt.includes("rename residue") && r.result.armed.length === 1,
   );
 
   const noRenames = await runScript({
@@ -563,7 +564,7 @@ const check = (name, ok, detail = "") => {
       fix.prompt.includes("ship.sh 3 --title") &&
       fix.prompt.includes("--resume"),
   );
-  check("after the CI fix the PR is merged", ci.result.landed.length === 1);
+  check("after the CI fix auto-merge is armed", ci.result.armed.length === 1);
 
   const stuck = await runScript({
     tickets: [T(4, "CI never green", [], "S", { kind: "Feature" })],
@@ -590,10 +591,10 @@ const check = (name, ok, detail = "") => {
 
   let merges = 0;
   const mergeHook = (opts) =>
-    opts.label.startsWith("merge #")
+    opts.label.startsWith("arm #")
       ? merges++ === 0
         ? { state: "conflict", files: "a.ts" }
-        : { state: "merged", sha: "def" }
+        : { state: "armed", pr: 6 }
       : undefined;
   const conflict = await runScript({
     tickets: [T(6, "Merge conflict", [], "S", { kind: "Feature" })],
@@ -602,10 +603,10 @@ const check = (name, ok, detail = "") => {
   });
   const resolve = conflict.calls.find((c) => c.label.startsWith("resolve"));
   check(
-    "a merge conflict is resolved and the merge script resumed",
-    resolve?.prompt.includes("merge.sh 6 --title") &&
+    "a conflict is resolved and the arm script resumed",
+    resolve?.prompt.includes("arm.sh 6 --title") &&
       resolve.prompt.includes("--resume") &&
-      conflict.result.landed.length === 1,
+      conflict.result.armed.length === 1,
   );
 
   const two = await runScript({
@@ -613,72 +614,89 @@ const check = (name, ok, detail = "") => {
     tickets: [T(7, "One", [], "S", { kind: "Feature" }), T(8, "Two", [], "S", { kind: "Feature" })],
     impl: done,
   });
-  const order = two.calls.filter((c) => c.label.startsWith("merge")).map((c) => c.label);
-  check("both tickets are merged", order.length === 2, order.join(","));
+  const order = two.calls.filter((c) => c.label.startsWith("arm")).map((c) => c.label);
+  check("both tickets are armed", order.length === 2, order.join(","));
 }
 
-// 12. main health after merges
+// 12. the run never merges and never waits for main after a ticket
 {
-  const alone = (n) => T(n, `Big ${n}`, [], "XL", { kind: "Feature" });
   const green = await runScript({
     tickets: [T(1, "One", [], "S", { kind: "Feature" })],
     impl: done,
   });
   check(
-    "after a merge the run checks CI on main",
-    green.calls.some((c) => c.label === "main-ci p1"),
-  );
-  check("a green main is not reported", green.result.mainRed === null);
-
-  const red = await runScript({
-    tickets: [alone(1), alone(2)],
-    impl: done,
-    hook: (opts) =>
-      opts.label.startsWith("main-ci p")
-        ? { state: "red", sha: "abc", url: "https://x/run/9" }
-        : undefined,
-  });
-  check(
-    "red CI on main stops the run before the next batch",
-    red.calls.filter((c) => c.phase === "Implement").length === 1,
-    String(red.calls.filter((c) => c.phase === "Implement").length),
+    "no merge or main wait after a ticket",
+    !green.calls.some((c) => /^(merge|main-ci p)/.test(c.label)),
   );
   check(
-    "the red main is reported",
-    red.result.mainRed?.sha === "abc" &&
-      red.logs.some((l) => l.startsWith("Stopped: CI on main is red")),
+    "the ticket's PR gets auto-merge armed",
+    green.calls.some((c) => c.label === "arm #1" && c.prompt.includes("arm.sh 1 --title")) &&
+      green.result.armed.length === 1,
   );
-
-  const pending = await runScript({
-    tickets: [alone(1), alone(2)],
-    impl: done,
-    hook: (opts) =>
-      opts.label.startsWith("main-ci p") ? { state: "pending", sha: "abc" } : undefined,
-  });
-  check(
-    "pending main CI is polled twice, then the run continues",
-    pending.calls.filter((c) => c.label.startsWith("main-ci p")).length === 4 &&
-      pending.calls.filter((c) => c.phase === "Implement").length === 2,
-  );
-
-  const off = await runScript({
-    args: { mainCheck: false },
-    tickets: [T(1, "One", [], "S", { kind: "Feature" })],
-    impl: done,
-  });
-  check(
-    "mainCheck: false skips the check",
-    !off.calls.some((c) => c.label.startsWith("main-ci p")),
-  );
-
   const decision = await runScript({
     tickets: [T(2, "Choose", ["type:decision"], "S")],
     impl: () => ({ ...done(), files: ["docs/decisions/0063-z.md"] }),
   });
   check(
-    "an opened decision PR does not trigger a main check",
-    !decision.calls.some((c) => c.label.startsWith("main-ci p")),
+    "a decision PR is opened, never armed",
+    !decision.calls.some((c) => c.label.startsWith("arm")) && decision.result.opened.length === 1,
   );
+}
+
+// 12b. the workload gate
+{
+  const t = [T(1, "One", [], "S", { kind: "Feature" })];
+  const inline = await runScript({
+    tickets: t,
+    impl: done,
+    hook: (opts) =>
+      opts.label === "gate"
+        ? { path: "inline", reason: "1 ready", ready: [1], bundle: [] }
+        : undefined,
+  });
+  check(
+    "a small workload is refused before anything runs",
+    !inline.calls.some((c) => c.phase === "Implement" || c.label.startsWith("select")) &&
+      inline.result.fallback?.includes("work-tickets") &&
+      inline.result.gate.path === "inline",
+  );
+  const none = await runScript({
+    tickets: t,
+    impl: done,
+    hook: (opts) =>
+      opts.label === "gate" ? { path: "none", reason: "empty", ready: [] } : undefined,
+  });
+  check("an empty board ends at the gate", none.result.fallback === null);
+  const forced = await runScript({
+    args: { force: true },
+    tickets: t,
+    impl: done,
+    hook: (opts) =>
+      opts.label === "gate" ? { path: "inline", reason: "x", ready: [1] } : undefined,
+  });
+  check(
+    "force skips the gate",
+    !forced.calls.some((c) => c.label === "gate") &&
+      forced.calls.some((c) => c.phase === "Implement"),
+  );
+  const broken = await runScript({
+    tickets: t,
+    impl: done,
+    hook: (opts) =>
+      opts.label === "gate" ? { path: "failed", reason: "gh down", ready: [] } : undefined,
+  });
+  check(
+    "a gate that cannot decide lets the run continue",
+    broken.calls.some((c) => c.phase === "Implement"),
+  );
+  const adopt = await runScript({
+    args: { adopt: [1] },
+    tickets: [T(1, "One", [], "S", { kind: "Feature", status: "In progress" })],
+    impl: done,
+    hook: (opts) =>
+      opts.label === "gate" ? { path: "inline", reason: "x", ready: [1] } : undefined,
+  });
+  check("adopt skips the gate", !adopt.calls.some((c) => c.label === "gate"));
 }
 
 // 13. the run does not start while main is red

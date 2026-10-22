@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smoke test for ship.sh, ci.sh, merge.sh, park.sh and residue.sh in a sandbox: a bare "origin", a main checkout, a
+# Smoke test for ship.sh, ci.sh, arm.sh, park.sh and residue.sh in a sandbox: a bare "origin", a main checkout, a
 # worktree per ticket, and fake gh, pnpm and docker commands. Nothing touches GitHub or the real repo.
 # Run: bash tools/backlog/scripts-smoke.sh
 set -uo pipefail
@@ -43,11 +43,8 @@ case "\$1 \$2" in
   "pr create") args=("\$@"); for i in "\${!args[@]}"; do case "\${args[\$i]}" in --title) echo "\${args[\$((i+1))]}" >"$STATE/pr-title";; --head) h="\${args[\$((i+1))]}";; esac; done
                echo 101 >"$STATE/pr-\${h#ticket/}"; echo https://github.com/x/y/pull/101 ;;
   "pr checks") cat "$STATE/checks.json" ;;
-  "pr merge") args=("\$@"); for i in "\${!args[@]}"; do case "\${args[\$i]}" in --subject) subj="\${args[\$((i+1))]}";; --body) body="\${args[\$((i+1))]}";; esac; done
-              t="\$(mktemp -d)"; git clone -q "$ROOT/origin.git" "\$t"; cd "\$t"; git config user.email t@t; git config user.name t
-              git merge --squash origin/ticket/1 >/dev/null 2>&1 || exit 1
-              git commit -q -m "\$subj" -m "\$body" && git push -q origin HEAD:main; rm -f "$STATE/pr-1" ;;
-  "pr view") git -C "$ROOT/origin.git" rev-parse main ;;
+  "pr merge") echo "\$*" >"$STATE/pr-merge-args" ;;
+  "pr view") if [[ "\$*" == *mergeable* ]]; then cat "$STATE/mergeable" 2>/dev/null || echo MERGEABLE; else git -C "$ROOT/origin.git" rev-parse main; fi ;;
   "pr close") rm -f "$STATE/pr-1" ;;
   "run list") if [[ "\$*" == *--workflow* ]]; then cat "$STATE/main-run.json"; else echo 77; fi ;;
   "run view") echo "FAIL packages/core test: boom" ;;
@@ -89,15 +86,16 @@ has "ci red carries the log" "$(jq -r .log <<<"$OUT")" "boom"
 echo '[{"name":"check","bucket":"pending"}]' >"$STATE/checks.json"
 eq "ci pending when the budget runs out" "$(jq -r .state <<<"$(CI_POLL_SECONDS=1 run "$S/ci.sh" 1 --timeout 1)")" pending
 
-# ---- merge: main moved, squash, one commit -----------------------------------
+# ---- arm: auto-merge is enabled, nothing is merged by the run ------------------------------------
 main_commit b.txt other "other work"
-OUT="$(run env KIND=Bugfix CO_AUTHOR='Co-Authored-By: Test <t@t>' MERGE_RETRY_SECONDS=0 "$S/merge.sh" 1 --title "Fix the thing" <<<"What changed")"
-eq "merge succeeds" "$(jq -r .state <<<"$OUT")" merged
-git -C "$ROOT/origin.git" log --format=%s main | head -3 >"$STATE/log.txt"
-eq "squash commit subject" "$(sed -n 1p "$STATE/log.txt")" "fix: Fix the thing (#101)"
-eq "main stays a single line of commits" "$(git -C "$ROOT/origin.git" log --merges --oneline main | wc -l | tr -d ' ')" 0
-has "squash body closes the issue" "$(git -C "$ROOT/origin.git" log -1 --format=%B main)" "Closes #1"
-eq "remote ticket branch is gone" "$(git -C "$ROOT/origin.git" rev-parse --verify -q ticket/1 >/dev/null && echo yes || echo no)" no
+OUT="$(run env KIND=Bugfix CO_AUTHOR='Co-Authored-By: Test <t@t>' "$S/arm.sh" 1 --title "Fix the thing" <<<"What changed")"
+eq "arm succeeds" "$(jq -r .state <<<"$OUT")" armed
+ARGS="$(cat "$STATE/pr-merge-args")"
+has "auto-merge is requested" "$ARGS" "--auto"
+has "as a squash with the conventional subject" "$ARGS" "fix: Fix the thing (#101)"
+has "the body closes the issue" "$ARGS" "Closes #1"
+eq "main is untouched by the run" "$(git -C "$ROOT/origin.git" log --format=%s main | head -1)" "other work"
+eq "a branch that is only behind main is not rebased" "$(git -C "$ROOT/origin.git" merge-base ticket/1 main | cut -c1-7)" "$(git -C "$ROOT/origin.git" rev-parse ticket/1~1 | cut -c1-7)"
 eq "worktree is removed" "$([ -d "$ROOT/bibi-worktrees/t-1" ] && echo yes || echo no)" no
 eq "lock is released" "$([ -d "$ROOT/bibi-worktrees/.locks/t-1" ] && echo yes || echo no)" no
 
