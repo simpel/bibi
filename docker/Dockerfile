@@ -29,10 +29,10 @@ FROM base AS run
 ARG APP
 ENV NODE_ENV=production APP=${APP}
 COPY --from=build /deploy .
-EXPOSE 3000 3001
+EXPOSE 3330 3331
 # web: /api/health on WEB_PORT, mcp: /health on PORT (both without auth or database).
 # worker: no HTTP port; its compose services disable this check (it logs and exits on failure).
 HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=5 \
-  CMD sh -c 'if [ "$APP" = worker ]; then exit 0; fi; if [ "$APP" = mcp ]; then u="http://127.0.0.1:${PORT:-3001}/health"; else u="http://127.0.0.1:${WEB_PORT:-3000}/api/health"; fi; wget -q -O /dev/null "$u"'
+  CMD sh -c 'if [ "$APP" = worker ]; then exit 0; fi; if [ "$APP" = mcp ]; then u="http://127.0.0.1:${PORT:-3331}/health"; else u="http://127.0.0.1:${WEB_PORT:-3330}/api/health"; fi; wget -q -O /dev/null "$u"'
 # Runs the same commands as each app's `start` script, without pnpm: /deploy is not a workspace.
-CMD ["sh", "-c", "case \"$APP\" in web) exec node_modules/.bin/next start -p ${WEB_PORT:-3000};; mcp) exec node dist/http.js;; worker) exec node dist/main.js;; esac"]
+CMD ["sh", "-c", "case \"$APP\" in web) exec node_modules/.bin/next start -p ${WEB_PORT:-3330};; mcp) exec node dist/http.js;; worker) exec node dist/main.js;; esac"]
