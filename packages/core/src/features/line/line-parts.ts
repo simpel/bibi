@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
 import { invalid } from "../../shared/errors";
+import { syncAllocations } from "../line-allocation/sync-allocations";
 import { archiveRequirements } from "../requirement/archive-requirements";
 import type { LinePeriod } from "./line-rules";
 import type { LineRecord } from "./schema";
@@ -65,7 +66,7 @@ export async function moveParts({ context, before, after }: MovePartsInput) {
 
 export type ArchiveLineRowInput = { context: Context; before: LineRecord };
 
-/** Archives one line with its record and requirements, and records the change. */
+/** Archives one line with its record, requirements and allocations, and records the change. */
 export async function archiveLineRow({ context, before }: ArchiveLineRowInput) {
   const row = await context.db.line.update({
     where: { id: before.id },
@@ -74,6 +75,7 @@ export async function archiveLineRow({ context, before }: ArchiveLineRowInput) {
   });
   await archiveRecords({ context, ids: [before.id] });
   await archiveRequirements({ context, lineId: before.id });
+  await syncAllocations({ context, lineId: before.id });
   const line = toLineRecord({ row });
   context.recordChange({ entityId: before.id, before, after: line });
   return line;

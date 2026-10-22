@@ -3,6 +3,20 @@ export type UiExempt = { operation: string; reason: string };
 
 /** Operations deliberately without UI. Every entry needs a reason; remove it when UI ships. */
 export const UI_EXEMPT: readonly UiExempt[] = [
+  ...[
+    "itemDemand.list",
+    "itemDemand.get",
+    "itemDemand.create",
+    "itemDemand.update",
+    "itemDemand.archive",
+    "lineAllocation.list",
+    "lineAllocation.get",
+    "lineAllocation.assign",
+  ].map((operation) => ({
+    operation,
+    reason:
+      "The Resources and Staffing lists on the item and the unit picker on a booking ship with the allocation UI (#384); lines get their demands' slots and prepicked units automatically until then.",
+  })),
   {
     operation: "item.freeUnits",
     reason:

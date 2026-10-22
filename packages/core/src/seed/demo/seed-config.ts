@@ -77,6 +77,7 @@ async function seedType({ context, refs, type, skipStates }: TypeInput): Promise
   const input = {
     ...{ base: type.base, name: type.name, capabilities: [...(type.capabilities ?? [])] },
     ...{ setupMinutes: type.setupMinutes ?? null, teardownMinutes: type.teardownMinutes ?? null },
+    ...(type.resourceKind ? { resourceKind: type.resourceKind } : {}),
   };
   const created = await execute({ operation: createEntityType, input, context });
   if (!created.ok) return created;

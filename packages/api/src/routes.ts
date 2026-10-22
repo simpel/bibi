@@ -14,8 +14,10 @@ import { fileRoutes } from "./features/file/rest";
 import { inboundEmailRoutes } from "./features/inbound-email/rest";
 import { invoiceRoutes } from "./features/invoice/rest";
 import { itemRoutes } from "./features/item/rest";
+import { itemDemandRoutes } from "./features/item-demand/rest";
 import { itemStateRoutes } from "./features/item-state/rest";
 import { lineRoutes } from "./features/line/rest";
+import { lineAllocationRoutes } from "./features/line-allocation/rest";
 import { memberRoutes } from "./features/member/rest";
 import { messageRoutes } from "./features/message/rest";
 import { oauthGrantRoutes } from "./features/oauth-grant/rest";
@@ -47,7 +49,7 @@ import { searchRoutes } from "./search-rest";
 
 const accessRoutes = [...memberRoutes, ...apiKeyRoutes, ...permissionRoutes];
 const gridAndSetupRoutes = [...phaseGridRoutes, ...pipelineSetupRoutes, ...changeSetRoutes];
-const lineAndGroupRoutes = [...lineRoutes, ...alternativeGroupRoutes];
+const lineAndGroupRoutes = [...lineRoutes, ...lineAllocationRoutes, ...alternativeGroupRoutes];
 const selfRoutes = [...userPreferenceRoutes, ...profileRoutes, ...fileRoutes];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
@@ -66,6 +68,7 @@ export function listRestRoutes(): RestRoute[] {
     ...sheetDefinitionRoutes,
     ...configurationRoutes,
     ...itemRoutes,
+    ...itemDemandRoutes,
     ...customerRoutes,
     ...priceListRoutes,
     ...contactRoutes,

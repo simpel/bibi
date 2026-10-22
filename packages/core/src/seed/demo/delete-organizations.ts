@@ -24,6 +24,9 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   // The phase and state history (ADR 0054) points at the lines, tickets, phases and states.
   db.lineStateChange.deleteMany({ where }),
   db.ticketPhaseChange.deleteMany({ where }),
+  // Allocations point at their lines, demands and each other (ADR 0059); their holds cascade.
+  db.lineAllocation.updateMany({ where, data: { parentAllocationId: null } }),
+  db.lineAllocation.deleteMany({ where }),
   // A part line points at its bundle line (ADR 0059): cut that link before deleting either.
   db.line.updateMany({ where, data: { parentLineId: null } }),
   db.line.deleteMany({ where }),
@@ -52,6 +55,15 @@ const configLinks = ({ db, where }: ScopeInput) => [
   db.sheetDefinition.deleteMany({ where }),
   db.responsibilityEntityType.deleteMany({ where }),
   db.responsibilityDefaultFollower.deleteMany({ where }),
+];
+
+/** What an item owns besides its record (ADR 0021, 0059); after the allocations and lines. */
+const itemChildren = ({ db, where }: ScopeInput) => [
+  db.itemDemandTag.deleteMany({ where }),
+  db.itemDemand.deleteMany({ where }),
+  db.itemPart.deleteMany({ where }),
+  db.itemCustomisationGroup.deleteMany({ where }),
+  db.itemSetup.deleteMany({ where }),
 ];
 
 /** Contacts, customers and the `Record` supertable rows (ADR 0056), after every table that extends them. */
@@ -83,9 +95,7 @@ export async function deleteOrganizations({
     ...configLinks({ db, where }),
     db.priceListItem.deleteMany({ where }),
     db.priceList.deleteMany({ where }),
-    db.itemPart.deleteMany({ where }),
-    db.itemCustomisationGroup.deleteMany({ where }),
-    db.itemSetup.deleteMany({ where }),
+    ...itemChildren({ db, where }),
     db.occupancy.deleteMany({ where }),
     db.item.deleteMany({ where }),
     db.assignmentFollower.deleteMany({ where }),

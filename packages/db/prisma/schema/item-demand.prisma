@@ -1,0 +1,103 @@
+/// Whether an item type's items are things or people (ADR 0059, owned). It decides whether a demand
+/// on the type is listed under Resources (equipment) or Staffing (people); item types only.
+enum ResourceKind {
+  EQUIPMENT
+  PERSON
+}
+
+/// A window of a line a demanded unit is held for (ADR 0059): the line's setup buffer, the
+/// booking itself or its teardown buffer.
+enum DemandWindow {
+  SETUP
+  BOOKING
+  TEARDOWN
+}
+
+/// Item demand – what an item asks of a pool (ADR 0059, owned, `itemDemand.*`): `quantity` units
+/// of one specific item (`targetItemId`) or of a pool (`entityTypeId` plus the list values every
+/// unit carries, `ItemDemandTag`), held for `windows` of every line that books the item.
+/// `required` = mandatory: met only when a unit is allocated (`LineAllocation`).
+/// Trigger (ADR 0053): changing `windows` or `status` re-derives the holds of the lines with an
+/// allocation of the demand that have not ended (`sync_line_occupancy.sql`).
+model ItemDemand {
+  id             String           @id @default(cuid(2))
+  organizationId String
+  /// The item that needs the units.
+  itemId         String
+  /// Target one specific bookable item; null for a pool. Exactly one of this and `entityTypeId`.
+  targetItemId   String?
+  /// Target a pool: every bookable catalog item of this item type; null for a specific item.
+  entityTypeId   String?
+  required       Boolean          @default(true)
+  quantity       Int              @default(1)
+  /// The line windows each unit is held for; at least one.
+  windows        DemandWindow[]
+  status         RecordStatus     @default(ACTIVE)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  createdBy      String?
+  item           Item             @relation("ItemDemandOf", fields: [itemId, organizationId], references: [id, organizationId])
+  targetItem     Item?            @relation("ItemDemandTarget", fields: [targetItemId, organizationId], references: [id, organizationId])
+  entityType     EntityType?      @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  tags           ItemDemandTag[]
+  allocations    LineAllocation[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, itemId])
+  @@index([organizationId, entityTypeId])
+}
+
+/// Item demand tag – a list value every unit of a demand's pool must carry (ADR 0056: a join
+/// row, never an id list). Replaced as a set with the demand by `itemDemand.*`.
+model ItemDemandTag {
+  id             String          @id @default(cuid(2))
+  organizationId String
+  demandId       String
+  valueId        String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  createdBy      String?
+  demand         ItemDemand      @relation(fields: [demandId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  value          VocabularyValue @relation(fields: [valueId, organizationId], references: [id, organizationId])
+
+  @@unique([demandId, valueId])
+  @@index([organizationId, demandId])
+  @@index([organizationId, valueId])
+}
+
+/// Line allocation – which unit fills one slot of a demand on a line (ADR 0059, owned). A line
+/// has `quantity` slots per demand of its item (`slot` 0, 1, ...), and per demand of each unit
+/// allocated to it (`parentAllocationId`, the chained check: AV needs a technician). Written by
+/// core when the line is added or changed (prepick: the first free unit in pool order) and by
+/// `lineAllocation.assign`. `unitId` is null while the slot is unfilled. Not a line: never on
+/// customer documents. A unit fills at most one active slot per line.
+/// Trigger (ADR 0053): inserting or changing `unitId` or `status` re-derives the line's holds;
+/// each filled slot holds its unit for the demand's windows with the line's hold kind.
+model LineAllocation {
+  id                 String           @id @default(cuid(2))
+  organizationId     String
+  lineId             String
+  demandId           String
+  /// The allocation whose unit brings this demand; null for a demand of the line's own item.
+  parentAllocationId String?
+  /// Which of the demand's `quantity` units this is, from 0.
+  slot               Int
+  /// The allocated unit (an item); null while unfilled.
+  unitId             String?
+  status             RecordStatus     @default(ACTIVE)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  createdBy          String?
+  line               Line             @relation(fields: [lineId, organizationId], references: [id, organizationId])
+  demand             ItemDemand       @relation(fields: [demandId, organizationId], references: [id, organizationId])
+  unit               Item?            @relation("LineAllocationUnit", fields: [unitId, organizationId], references: [id, organizationId])
+  parentAllocation   LineAllocation?  @relation("LineAllocationChain", fields: [parentAllocationId, organizationId], references: [id, organizationId])
+  childAllocations   LineAllocation[] @relation("LineAllocationChain")
+  /// The holds this allocation's unit gets (projection, written only by the trigger).
+  occupancies        Occupancy[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, lineId])
+  @@index([organizationId, unitId])
+  @@index([organizationId, demandId])
+}

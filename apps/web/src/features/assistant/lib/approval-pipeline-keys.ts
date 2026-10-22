@@ -1,6 +1,6 @@
 /**
  * Approval label keys of the pipeline (ADR 0043, 0044, 0059): phases, item states, line states
- * and hold buffers, kept apart so `approval-labels.ts` stays within the size limit.
+ * hold buffers, demands and allocations, kept apart so `approval-labels.ts` stays within the size limit.
  */
 export const PIPELINE_FIELD_KEYS = [
   "color",
@@ -36,6 +36,13 @@ export const PIPELINE_FIELD_KEYS = [
   "itemTypes",
   "phases",
   "cells",
+  // Demands and allocations (ADR 0059).
+  "itemId",
+  "targetItemId",
+  "tagValueIds",
+  "windows",
+  "unitId",
+  "resourceKind",
 ] as const;
 
 /** Pipeline operations with a localized label in `assistant.approval.operations`. */
@@ -67,4 +74,8 @@ export const PIPELINE_OPERATION_KEYS = [
   "ticketTemplate_update",
   "ticketTemplate_archive",
   "pipelineSetup_activate",
+  "itemDemand_create",
+  "itemDemand_update",
+  "itemDemand_archive",
+  "lineAllocation_assign",
 ] as const;

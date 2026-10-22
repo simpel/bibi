@@ -13,17 +13,32 @@ const problem = ({ path, message }: { path: string; message: string }) =>
 type FreeInput = Pick<PoolFreeUnitsInput, "startsAt" | "endsAt">;
 
 /** A unit is taken by a hard hold or buffer, or a manual block, that overlaps the window. */
-const taken = ({ startsAt, endsAt }: FreeInput): Prisma.OccupancyWhereInput => ({
+export const takenIn = ({ startsAt, endsAt }: FreeInput): Prisma.OccupancyWhereInput => ({
   status: "ACTIVE",
   startsAt: { lt: endsAt },
   endsAt: { gt: startsAt },
   OR: [{ holdKind: null }, { holdKind: { not: "SOFT" } }],
 });
 
+/** A target as `PoolTargetShape` gives it: one item, or a type with its tags. */
+export type PoolTarget = {
+  itemId?: string | null | undefined;
+  entityTypeId?: string | null | undefined;
+  tagValueIds: readonly string[];
+};
+
+export type PoolUnitsWhereInput = { context: Pick<OperationContext, "db">; input: PoolTarget };
+
 type TargetInput = { context: OperationContext; input: PoolFreeUnitsInput };
 
-/** The units the target names, before availability: one item, or a type with its tags. */
-async function unitsWhere({ context, input }: TargetInput): Promise<Result<Prisma.ItemWhereInput>> {
+/**
+ * The units the target names, before availability: one bookable catalog item, or the active
+ * catalog items of a bookable item type that carry every tag. Also checks the target.
+ */
+export async function poolUnitsWhere({
+  context,
+  input,
+}: PoolUnitsWhereInput): Promise<Result<Prisma.ItemWhereInput>> {
   const { itemId, entityTypeId, tagValueIds } = input;
   if (Boolean(itemId) === Boolean(entityTypeId)) {
     return problem({ path: "itemId", message: "Give either itemId or entityTypeId" });
@@ -70,14 +85,14 @@ export async function poolFreeUnits({
   context,
   input,
 }: TargetInput): Promise<Result<PoolFreeUnits>> {
-  const base = await unitsWhere({ context, input });
+  const base = await poolUnitsWhere({ context, input });
   if (!base.ok) return base;
   if (input.endsAt <= input.startsAt) {
     return problem({ path: "endsAt", message: "The window must end after it starts" });
   }
   const where: Prisma.ItemWhereInput = {
     ...base.value,
-    occupancies: { none: taken(input) },
+    occupancies: { none: takenIn(input) },
   };
   const select = { id: true, name: true, entityTypeId: true } as const;
   const orderBy = [{ name: "asc" }, { id: "asc" }] as const;

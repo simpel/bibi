@@ -1,65 +1,36 @@
 import { effectiveBuffers } from "../../shared/buffers";
+import { type HoldRow, isLineRowType, type LineRowType, rowsOf } from "./line-holds-rows";
 import { defineReconciliation, type ReconcileContext } from "./reconcile";
-
-const LINE_ROW_TYPES = ["HOLD", "SETUP", "TEARDOWN"] as const;
-type LineRowType = (typeof LINE_ROW_TYPES)[number];
-
-const isLineRowType = ({ type }: { type: string }): boolean =>
-  (LINE_ROW_TYPES as readonly string[]).includes(type);
-
-type HoldRow = {
-  lineId: string;
-  type: LineRowType;
-  itemId: string;
-  holdKind: string | null;
-  startsAt: Date;
-  endsAt: Date;
-};
 
 const keyOf = ({ lineId, itemId, type }: Pick<HoldRow, "lineId" | "itemId" | "type">) =>
   `${lineId} ${itemId} ${type}`;
 
-const describeRow = ({ type, itemId, holdKind, startsAt, endsAt }: HoldRow) =>
-  `${type} ${itemId} ${holdKind ?? "-"} ${startsAt.toISOString()}-${endsAt.toISOString()}`;
+const describeRow = ({ type, itemId, allocationId, holdKind, startsAt, endsAt }: HoldRow) =>
+  `${type} ${itemId}${allocationId ? ` (allocation ${allocationId})` : ""} ${holdKind ?? "-"} ` +
+  `${startsAt.toISOString()}-${endsAt.toISOString()}`;
 
 const sameRow = ({ a, b }: { a: HoldRow; b: HoldRow }) => describeRow(a) === describeRow(b);
 
 const minutes = { setupMinutes: true, teardownMinutes: true } as const;
 
-type Timed = { lineId: string; itemId: string; holdKind: string; startsAt: Date; endsAt: Date };
-
-/** A held line's rows: the hold, and each buffer whose minutes are above zero. */
-function rowsOf({ hold, setup, teardown }: { hold: Timed; setup: number; teardown: number }) {
-  const rows: HoldRow[] = [{ ...hold, type: "HOLD" }];
-  const { startsAt, endsAt } = hold;
-  if (setup > 0) {
-    rows.push({
-      ...hold,
-      type: "SETUP",
-      startsAt: shift({ at: startsAt, minutes: -setup }),
-      endsAt: startsAt,
-    });
-  }
-  if (teardown > 0) {
-    rows.push({
-      ...hold,
-      type: "TEARDOWN",
-      startsAt: endsAt,
-      endsAt: shift({ at: endsAt, minutes: teardown }),
-    });
-  }
-  return rows;
-}
-
-const shift = ({ at, minutes }: { at: Date; minutes: number }) =>
-  new Date(at.getTime() + minutes * 60_000);
+/** The active filled allocations whose units can be held (ADR 0059). */
+const HELD_ALLOCATIONS = {
+  where: {
+    status: "ACTIVE",
+    unitId: { not: null },
+    demand: { status: "ACTIVE" },
+    unit: { status: "ACTIVE", entityType: { capabilities: { has: "BOOKABLE" } } },
+  },
+  select: { id: true, unitId: true, demand: { select: { windows: true } } },
+} as const;
 
 /**
  * What the lines say should be held (ADR 0044, 0053, 0059): an active, timed line of an active
  * ticket outside a terminal phase, on a `BOOKABLE` item, in a state that holds and is not
  * released, has a `HOLD` of the state's kind and, of the same kind, a `SETUP` right before and a
- * `TEARDOWN` right after when their effective minutes are above zero. Only lines that have not
- * ended: the past calendar is frozen (ADR 0053, rule 8).
+ * `TEARDOWN` right after when their effective minutes are above zero, and holds each allocated
+ * unit for its demand's windows. Only lines that have not ended: the past calendar is frozen
+ * (ADR 0053, rule 8).
  */
 async function rebuildLineHolds({ context }: ReconcileContext): Promise<HoldRow[]> {
   const lines = await context.db.line.findMany({
@@ -75,9 +46,11 @@ async function rebuildLineHolds({ context }: ReconcileContext): Promise<HoldRow[
       state: { select: { hold: true } },
       setup: { select: { changeoverMinutes: true } },
       item: { select: { ...minutes, entityType: { select: minutes } } },
+      allocations: HELD_ALLOCATIONS,
     },
   });
-  return lines.flatMap(({ id: lineId, itemId, startsAt, endsAt, state, setup, item, ...line }) => {
+  return lines.flatMap(({ id: lineId, itemId, startsAt, endsAt, state, setup, item, ...rest }) => {
+    const { allocations, ...line } = rest;
     if (!itemId || !state || !startsAt || !endsAt) return [];
     const buffers = effectiveBuffers({
       line,
@@ -86,9 +59,12 @@ async function rebuildLineHolds({ context }: ReconcileContext): Promise<HoldRow[
       changeoverMinutes: setup?.changeoverMinutes ?? null,
     });
     return rowsOf({
-      hold: { lineId, itemId, holdKind: state.hold, startsAt, endsAt },
+      line: { lineId, itemId, holdKind: state.hold, startsAt, endsAt },
       setup: buffers.effectiveSetupMinutes,
       teardown: buffers.effectiveTeardownMinutes,
+      units: allocations.flatMap(({ id, unitId, demand }) =>
+        unitId ? [{ allocationId: id, unitId, windows: demand.windows }] : [],
+      ),
     });
   });
 }
@@ -101,6 +77,7 @@ async function storedLineHolds({ context }: ReconcileContext): Promise<HoldRow[]
       lineId: true,
       type: true,
       itemId: true,
+      allocationId: true,
       holdKind: true,
       startsAt: true,
       endsAt: true,
@@ -111,7 +88,10 @@ async function storedLineHolds({ context }: ReconcileContext): Promise<HoldRow[]
   );
 }
 
-/** Line holds and buffers (`Occupancy` with a `lineId`) against the lines they are derived from. */
+/**
+ * Line holds, buffers and allocation holds (`Occupancy` with a `lineId`) against the lines and
+ * allocations they are derived from.
+ */
 export const lineHoldsReconciliation = defineReconciliation({
   name: "line-holds",
   rebuild: rebuildLineHolds,

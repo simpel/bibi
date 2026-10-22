@@ -47,6 +47,8 @@ model EntityType {
   /// null = none. An item or a line overrides them.
   setupMinutes     Int?
   teardownMinutes  Int?
+  /// Item types: Equipment or Person (ADR 0059, owned); null on every other base.
+  resourceKind     ResourceKind?
   status           RecordStatus                @default(ACTIVE)
   createdAt        DateTime                    @default(now())
   updatedAt        DateTime                    @updatedAt
@@ -66,6 +68,8 @@ model EntityType {
   templateLines    TicketTemplateLine[]
   responsibilities ResponsibilityEntityType[]
   sheetDefinitions SheetDefinitionEntityType[]
+  /// Demands whose pool is this item type (ADR 0059).
+  demands          ItemDemand[]
   expiryState      ItemState?                  @relation("ExpiryState", fields: [expiryStateId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
@@ -122,17 +126,19 @@ model Vocabulary {
 
 /// List value – one value of a list, e.g. Gluten.
 model VocabularyValue {
-  id             String        @id @default(cuid(2))
+  id             String          @id @default(cuid(2))
   organizationId String
   vocabularyId   String
   name           String
-  position       Int           @default(0)
-  status         RecordStatus  @default(ACTIVE)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  position       Int             @default(0)
+  status         RecordStatus    @default(ACTIVE)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   createdBy      String?
-  vocabulary     Vocabulary    @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
+  vocabulary     Vocabulary      @relation(fields: [vocabularyId, organizationId], references: [id, organizationId])
   requirements   Requirement[]
+  /// Demands whose pool units must carry this value (ADR 0059).
+  demandTags     ItemDemandTag[]
 
   @@unique([id, organizationId])
   @@index([organizationId, vocabularyId, status])

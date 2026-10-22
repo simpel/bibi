@@ -857,7 +857,12 @@
     "fields": {
       "base": "Applies to",
       "name": "Name",
-      "sections": "Sections"
+      "sections": "Sections",
+      "resourceKind": "Equipment or person"
+    },
+    "resourceKinds": {
+      "EQUIPMENT": "Equipment",
+      "PERSON": "Person"
     },
     "columns": {
       "name": "Name",
@@ -1451,6 +1456,12 @@
         "itemTypes": "Item types",
         "phases": "Phases",
         "cells": "Grid cells",
+        "itemId": "Item",
+        "targetItemId": "Specific item",
+        "tagValueIds": "Required list values",
+        "windows": "Windows",
+        "unitId": "Unit",
+        "resourceKind": "Equipment or person",
         "amountMinor": "Amount (öre)",
         "dueDate": "Due date",
         "method": "Method",
@@ -1530,6 +1541,10 @@
         "line_changeState": "Change line state",
         "line_expandBundle": "Add bundle with its parts",
         "line_chooseOptions": "Choose line options",
+        "itemDemand_create": "Add demand to item",
+        "itemDemand_update": "Change item demand",
+        "itemDemand_archive": "Remove item demand",
+        "lineAllocation_assign": "Choose unit for line",
         "line_followPhase": "Let line follow the phase",
         "alternativeGroup_create": "Create alternatives",
         "alternativeGroup_update": "Change alternatives",

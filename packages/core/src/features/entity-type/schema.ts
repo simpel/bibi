@@ -3,7 +3,12 @@ import { BufferMinutesShape, bufferMinutesInputShape } from "../../shared/buffer
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldDefinitionSchema } from "../field-definition/schema";
-import { EntityBaseSchema, ItemCapabilitiesSchema, ItemCapabilitySchema } from "./capability-kinds";
+import {
+  EntityBaseSchema,
+  ItemCapabilitiesSchema,
+  ItemCapabilitySchema,
+  ResourceKindSchema,
+} from "./capability-kinds";
 
 export const EntityTypeSchema = z.object({
   id: z.string(),
@@ -15,6 +20,8 @@ export const EntityTypeSchema = z.object({
   expiryStateId: z.string().nullable(),
   /** Item types: default buffers around a booking (ADR 0059); items and lines override them. */
   ...BufferMinutesShape,
+  /** Item types: EQUIPMENT or PERSON (ADR 0059); null on every other base. */
+  resourceKind: ResourceKindSchema.nullable(),
   /** Active fields of the type, in display order. */
   fields: z.array(FieldDefinitionSchema),
   status: RecordStatusSchema,
@@ -38,6 +45,9 @@ export const EntityTypeCreateInputSchema = z.object({
   name: NameSchema,
   capabilities: ItemCapabilitiesSchema.optional(),
   ...TypeBufferInputShape,
+  resourceKind: ResourceKindSchema.optional().describe(
+    "Item types only: EQUIPMENT (default) or PERSON (ADR 0059)",
+  ),
 });
 
 export const EntityTypeUpdateInputSchema = z.object({
@@ -56,6 +66,7 @@ export const EntityTypeUpdateInputSchema = z.object({
         "ticket's holdsUntil date passes; null clears it",
     ),
   ...TypeBufferInputShape,
+  resourceKind: ResourceKindSchema.optional(),
 });
 
 export const EntityTypeIdInputSchema = z.object({ id: z.string().min(1) });

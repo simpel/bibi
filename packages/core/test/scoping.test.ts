@@ -59,10 +59,10 @@ describe("organization scoping", () => {
   it("rejects an item pointing at another org's venue or type at the database level", async () => {
     const venue = await orgA.db.venue.create({ data: { name: "A", organizationId: "" } });
     const typeA = await orgA.db.entityType.create({
-      data: { base: "ITEM", name: "T", organizationId: "" },
+      data: { base: "ITEM", name: "T", resourceKind: "EQUIPMENT", organizationId: "" },
     });
     const typeB = await orgB.db.entityType.create({
-      data: { base: "ITEM", name: "T", organizationId: "" },
+      data: { base: "ITEM", name: "T", resourceKind: "EQUIPMENT", organizationId: "" },
     });
     const record = await orgB.db.record.create({
       data: { base: "ITEM", entityTypeId: typeB.id, organizationId: "" },
@@ -81,10 +81,10 @@ describe("organization scoping", () => {
 
   it("rejects a record row extending another org's supertable row", async () => {
     const typeA = await orgA.db.entityType.create({
-      data: { base: "ITEM", name: "T", organizationId: "" },
+      data: { base: "ITEM", name: "T", resourceKind: "EQUIPMENT", organizationId: "" },
     });
     const typeB = await orgB.db.entityType.create({
-      data: { base: "ITEM", name: "T", organizationId: "" },
+      data: { base: "ITEM", name: "T", resourceKind: "EQUIPMENT", organizationId: "" },
     });
     const recordA = await orgA.db.record.create({
       data: { base: "ITEM", entityTypeId: typeA.id, organizationId: "" },

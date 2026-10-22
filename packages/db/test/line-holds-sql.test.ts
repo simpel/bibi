@@ -45,4 +45,11 @@ describe("line hold rows (ADR 0059)", () => {
       expect(when).toContain('OLD."teardownMinutes"');
     }
   });
+
+  it("re-derives a line's holds when its allocations or their demands change (ADR 0059)", () => {
+    const source = readFileSync(join(root, "sql", "sync_line_occupancy.sql"), "utf8");
+    expect(source).toContain('AFTER INSERT ON "LineAllocation"');
+    expect(source).toContain('AFTER UPDATE ON "LineAllocation"');
+    expect(source).toContain('AFTER UPDATE ON "ItemDemand"');
+  });
 });

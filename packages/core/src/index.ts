@@ -40,6 +40,7 @@ export * from "./features/item/pool-operations";
 export * from "./features/item/read-operations";
 export * from "./features/item/resolve-operation";
 export * from "./features/item/write-operations";
+export * from "./features/item-demand/operations";
 export * from "./features/item-state/archive-operation";
 export * from "./features/item-state/archive-preview-operation";
 export { toItemStateDto, WITH_STATE_TRANSITIONS } from "./features/item-state/load-item-state";
@@ -51,6 +52,7 @@ export * from "./features/line/expand-operation";
 export * from "./features/line/follow-phase-operation";
 export * from "./features/line/operations";
 export * from "./features/line/write-operations";
+export * from "./features/line-allocation/operations";
 export * from "./features/member/invitation-operations";
 export { parseMemberRole } from "./features/member/member-roles";
 export * from "./features/member/operations";
@@ -124,15 +126,7 @@ export type * from "./operations/types";
 export { UNTRUSTED_OUTPUT_META_KEY } from "./operations/untrusted-output";
 export { type ProvisionOrganizationInput, provisionOrganization } from "./organization/provision";
 export * from "./permissions/fixed-roles";
-export {
-  grantAll,
-  intersectPermissions,
-  isPermissionSubset,
-  normalizePermissions,
-  type PermissionSet,
-  PermissionSetSchema,
-  unionPermissions,
-} from "./permissions/permission-set";
+export * from "./permissions/permission-set";
 export * from "./permissions/presets";
 export * from "./platform/ai-settings/resolve-ai-model";
 export { type CreatePlatformContextInput, createPlatformContext } from "./platform/context";

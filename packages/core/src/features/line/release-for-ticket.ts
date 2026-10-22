@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { archiveRecords } from "../../records/update-record";
+import { syncAllocations } from "../line-allocation/sync-allocations";
 import { releaseLineStates } from "./release-line-states";
 import { LINE_INCLUDE, toLineRecord } from "./to-line-record";
 
@@ -18,7 +19,8 @@ export const releaseLinesOfTicket = ({
 }: ReleaseForTicketInput): Promise<Result<true>> => releaseLineStates({ context, ticketId });
 
 /**
- * Archives every active line of the ticket (one audit row each); their holds go by trigger.
+ * Archives every active line of the ticket (one audit row each) with its allocations; their
+ * holds go by trigger.
  * Used when the ticket itself is archived.
  */
 export async function archiveLinesOfTicket({
@@ -33,6 +35,7 @@ export async function archiveLinesOfTicket({
       include: LINE_INCLUDE,
     });
     await archiveRecords({ context, ids: [row.id] });
+    await syncAllocations({ context, lineId: row.id });
     context.recordChange({
       entityType: "line",
       entityId: row.id,

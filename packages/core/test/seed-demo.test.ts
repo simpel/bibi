@@ -38,7 +38,7 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     ]);
     const items = ({ organizationId }: { organizationId?: string }) =>
       db.item.count({ where: { organizationId, status: "ACTIVE" } });
-    expect(await items({ organizationId: lind?.organizationId })).toBe(74);
+    expect(await items({ organizationId: lind?.organizationId })).toBe(76);
     expect(await items({ organizationId: vinga?.organizationId })).toBe(9);
     const dinner = await db.item.findFirst({
       where: { organizationId: lind?.organizationId, name: "Three-course dinner" },
