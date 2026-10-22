@@ -28,7 +28,6 @@ async function runScript({ args = {}, tickets, impl, review, hook }) {
     if (opts.phase === "Verify") return impl(opts, prompt);
     if (opts.phase === "Review") return review ? review(opts) : { ok: true, findings: [] };
     if (opts.phase === "Land") {
-      if (opts.label.startsWith("ci p")) return { state: "green" };
       if (opts.label.startsWith("arm")) return { state: "armed", pr: 101 };
       if (/^(resolve|land-fix|ci-fix)/.test(opts.label) && prompt.includes("arm.sh"))
         return { state: "armed", pr: 101 };
@@ -381,8 +380,8 @@ const check = (name, ok, detail = "") => {
   });
   const labels = feature.calls.filter((c) => c.phase === "Land").map((c) => c.label);
   check(
-    "a feature is shipped, CI-checked and armed",
-    labels.join(",") === "ship #1,ci p1 #1,arm #1",
+    "a feature is shipped, armed without waiting for CI",
+    labels.join(",") === "ship #1,arm #1",
     labels.join(","),
   );
   check(
@@ -544,49 +543,16 @@ const check = (name, ok, detail = "") => {
     !noRenames.calls.some((c) => c.label.startsWith("residue")),
   );
 
-  let polls = 0;
-  const ciHook = (opts) => {
-    if (opts.label.startsWith("ci p"))
-      return polls++ === 0
-        ? { state: "red", failed: "check", log: "FAIL packages/core boom" }
-        : { state: "green" };
-    return undefined;
-  };
-  const ci = await runScript({
-    tickets: [T(3, "CI flaky", [], "S", { kind: "Feature" })],
+  const noWait = await runScript({
+    tickets: [T(3, "No CI wait", [], "S", { kind: "Feature" })],
     impl: done,
-    hook: ciHook,
-  });
-  const fix = ci.calls.find((c) => c.label.startsWith("ci-fix"));
-  check(
-    "red CI goes to a fix round with the log",
-    fix?.prompt.includes("FAIL packages/core boom") &&
-      fix.prompt.includes("ship.sh 3 --title") &&
-      fix.prompt.includes("--resume"),
-  );
-  check("after the CI fix auto-merge is armed", ci.result.armed.length === 1);
-
-  const stuck = await runScript({
-    tickets: [T(4, "CI never green", [], "S", { kind: "Feature" })],
-    impl: done,
-    hook: (opts) =>
-      opts.label.startsWith("ci p") ? { state: "red", failed: "check", log: "x" } : undefined,
   });
   check(
-    "CI that stays red parks the ticket after two fixes",
-    stuck.result.parked.length === 1 &&
-      stuck.calls.filter((c) => c.label.startsWith("ci-fix")).length === 2,
-  );
-
-  const slow = await runScript({
-    tickets: [T(5, "CI slow", [], "S", { kind: "Feature" })],
-    impl: done,
-    hook: (opts) => (opts.label.startsWith("ci p") ? { state: "pending" } : undefined),
-  });
-  check(
-    "CI that stays pending is polled six times, then parked",
-    slow.calls.filter((c) => c.label.startsWith("ci p")).length === 6 &&
-      slow.result.parked.length === 1,
+    "the run never polls CI: arm follows ship",
+    noWait.calls
+      .filter((c) => c.phase === "Land")
+      .map((c) => c.label)
+      .join(",") === "ship #3,arm #3" && noWait.result.armed.length === 1,
   );
 
   let merges = 0;
@@ -697,6 +663,38 @@ const check = (name, ok, detail = "") => {
       opts.label === "gate" ? { path: "inline", reason: "x", ready: [1] } : undefined,
   });
   check("adopt skips the gate", !adopt.calls.some((c) => c.label === "gate"));
+}
+
+// 12c. every run is recorded for later evaluation
+{
+  const rec = await runScript({
+    tickets: [T(1, "One", [], "S", { kind: "Feature" })],
+    impl: done,
+    hook: (opts) =>
+      opts.label === "gate"
+        ? { path: "workflow", reason: "t", ready: [1], at: "2026-10-22T10:00:00.000Z" }
+        : undefined,
+  });
+  const call = rec.calls.find((c) => c.label === "metrics");
+  check(
+    "a finished run is appended to the metrics log with its start",
+    call?.prompt.includes("metrics.mjs record --path workflow --since 2026-10-22T10:00:00.000Z") &&
+      call.prompt.includes('"outcome":"armed"') &&
+      call.prompt.includes('"pr":101'),
+    call?.prompt,
+  );
+  const refused = await runScript({
+    tickets: [T(1, "One", [], "S", { kind: "Feature" })],
+    impl: done,
+    hook: (opts) =>
+      opts.label === "gate"
+        ? { path: "inline", reason: "1 ready", ready: [1], at: "2026-10-22T10:00:00.000Z" }
+        : undefined,
+  });
+  check(
+    "a gate refusal is recorded too",
+    refused.calls.some((c) => c.label === "metrics" && c.prompt.includes("--path gate-inline")),
+  );
 }
 
 // 13. the run does not start while main is red

@@ -8,9 +8,10 @@ export const meta = {
     { title: 'Implement', detail: 'one agent per ticket: creates its worktree, implements, runs the full checks' },
     { title: 'Verify', detail: 'fix loop with escalation when the implementer reports red checks' },
     { title: 'Review', detail: 'tenancy review for core/db/auth/mcp changes (Opus; Sonnet for codemod tickets)' },
-    { title: 'Land', detail: 'open a PR, wait for CI, arm GitHub auto-merge (decision PRs stay open for review); the run never merges itself' },
+    { title: 'Land', detail: 'open a PR, arm GitHub auto-merge at once, never wait for CI (decision PRs stay open for review); the run never merges itself' },
     { title: 'Park', detail: 'push a failed ticket to parked/<N>, comment, card to Parked' },
     { title: 'Main', detail: 'before the run: refuse to start while CI on main is red' },
+    { title: 'Record', detail: 'append the run to the local metrics log (tools/backlog/metrics.mjs) for later evaluation' },
     { title: 'Follow-ups', detail: 'file out-of-scope findings as source:agent issues in Backlog' },
   ],
 }
@@ -26,8 +27,6 @@ const ONLY = (args && args.only) || null
 const ADOPT = (args && args.adopt) || []
 if (ADOPT.length) STATUSES.push('In progress')
 const adopting = (t) => ADOPT.includes(t.number)
-const CI_POLLS = 6 // ci.sh waits up to 9 minutes per call, so a PR may wait about 54 minutes for CI
-const CI_FIX_ROUNDS = 2
 const MAIN_CHECK = !(args && args.mainCheck === false) // args.mainCheck: false skips the start check (main must not be red)
 const BASE_FIX_ROUNDS = 2 // XL and codemod tickets get 3, see fixRounds
 const TIERS = ['haiku', 'sonnet', 'opus'] // fable is never used
@@ -341,7 +340,7 @@ const runnerPrompt = (cmd) => `Run exactly this one command from ${REPO} and not
 const shipCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/ship.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
 const armCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/arm.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
 const mainCiCmd = () => 'tools/backlog/main-ci.sh --timeout 540'
-const ciCmd = (t) => `tools/backlog/ci.sh ${t.number} --timeout 540`
+const metricsCmd = (path, since, payload) => withStdin(`node tools/backlog/metrics.mjs record --path ${path}${since ? ` --since ${since}` : ''}`, JSON.stringify(payload))
 const residueCmd = (t, dir) => `tools/backlog/residue.sh ${dir} ${(t.renames || []).map(sh).join(' ')}`
 
 const resolvePrompt = (t, dir, files, resumeCommand) => `Rebasing issue #${t.number} ("${t.title}") onto origin/main stopped on conflicts in: ${files}. Tickets in a batch often touch the same registries, index files, i18n messages or role templates.
@@ -355,12 +354,6 @@ const landFixPrompt = (t, dir, checks, resumeCommand) => `After rebasing issue #
 ${inWorktree(dir)}
 ${checks.failures.map((f) => `### ${f.check}\n${f.output}`).join('\n\n')}
 Fix the cause in the worktree. ${READING_RULES} Do not run git add, commit, amend or push: the script amends the ticket's commit. Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCommand}`
-
-const ciFixPrompt = (t, dir, ci, resumeCommand) => `CI failed on the pull request of issue #${t.number} ("${t.title}") although the local checks were green. Failed checks: ${ci.failed || 'unknown'}.
-${inWorktree(dir)}
-CI log (the failed run, last lines):
-${ci.log || '(no log was available: reproduce with the checks CI runs: pnpm lint, check:structure, typecheck, test, build)'}
-Fix the cause in the worktree. ${READING_RULES} Do not run git add, commit, amend or push: the script amends the ticket's commit and pushes. Then run exactly this from ${REPO} and return its JSON unchanged: ${resumeCommand}`
 
 const parkCmd = (t, reason, model) => withStdin(`${boardEnv(t, model)} tools/backlog/park.sh ${t.number} ${sh(t.title)}`, reason)
 
@@ -397,20 +390,6 @@ async function resolveLoop(t, dir, r, ok, resumeCommand) {
 async function shipTicket(t, dir, summary, model) {
   const r = await step(t, runnerPrompt(shipCmd(t, summary, model)), 'haiku', 'ship')
   return resolveLoop(t, dir, r, 'opened', shipCmd(t, summary, model, true))
-}
-
-// CI runs on the pull request. Red CI is fixed on the same branch.
-async function ciGreen(t, dir, summary, model) {
-  for (let fixes = 0; ; fixes++) {
-    let c = null
-    for (let poll = 1; poll <= CI_POLLS; poll++) {
-      c = await step(t, runnerPrompt(ciCmd(t)), 'haiku', `ci p${poll}`)
-      if (!c || c.state !== 'pending') break
-    }
-    if (!c || c.state !== 'red' || fixes === CI_FIX_ROUNDS) return c
-    const r = await step(t, ciFixPrompt(t, dir, c, shipCmd(t, summary, model, true)), 'sonnet', `ci-fix r${fixes + 1}`)
-    if (!r || r.state !== 'opened') return r
-  }
 }
 
 async function armTicket(t, dir, summary, model) {
@@ -519,8 +498,6 @@ async function runTicket(t) {
     log(`#${t.number} pull request opened for review: ${opened.url}`)
     return { t, outcome: 'opened', pr: opened.url, model: state.model }
   }
-  const ci = await ciGreen(t, dir, impl.summary, state.model)
-  if (!ci || ci.state !== 'green') return park(t, dir, stepFailure(ci, 'CI'), state.model)
   const armed = await armTicket(t, dir, impl.summary, state.model)
   if (!armed || armed.state !== 'armed') return park(t, dir, stepFailure(armed, 'auto-merge'), state.model)
   log(`#${t.number} auto-merge armed on ${opened.url} (${state.model})`)
@@ -556,11 +533,16 @@ function packBatch(tickets) {
 
 // Workload gate: the workflow costs a worktree, CI and agents per ticket, so a small workload is refused and left to the
 // work-tickets skill (one session, one PR). force: true or adopt skips it; a gate that fails to run lets the run continue.
+let startedAt = null // the gate's timestamp: scripts have no clock, so the run's start comes from gate.mjs
+const prNumber = (url) => (url && Number((/\/pull\/(\d+)/.exec(url) || [])[1])) || null
+const spentTokens = () => (typeof budget !== 'undefined' && budget.total ? budget.spent() : null)
 if (!(args && args.force) && !ADOPT.length) {
   phase('Gate')
   const only = ONLY ? ` --only ${ONLY.join(',')}` : ''
   const g = await agent(runnerPrompt(`node tools/backlog/gate.mjs --statuses ${STATUSES.join(',')}${only}`), { label: 'gate', phase: 'Gate', schema: GATE, model: 'haiku', effort: 'low' })
+  if (g && g.at) startedAt = g.at
   if (g && (g.path === 'inline' || g.path === 'none')) {
+    await agent(runnerPrompt(metricsCmd(`gate-${g.path}`, g.at, { gate: { ready: g.ready, reason: g.reason }, tickets: [] })), { label: 'metrics', phase: 'Gate', model: 'haiku', effort: 'low' })
     log(`Gate: ${g.path}. ${g.reason}${g.bundle && g.bundle.length ? ` Small docs/test tickets that fit one PR: ${g.bundle.map((n) => `#${n}`).join(', ')}.` : ''}`)
     return { gate: g, fallback: g.path === 'inline' ? `run the work-tickets skill for ${g.ready.map((n) => `#${n}`).join(', ')}` : null, armed: [], opened: [], parked: [], failed: [], followUpIssues: [] }
   }
@@ -611,6 +593,10 @@ for (let n = 1; n <= MAX_BATCHES; n++) {
     log(`Follow-ups: ${items.length} found, ${f ? f.created.length : 0} filed (source:agent, Backlog)${f && f.duplicates && f.duplicates.length ? `, ${f.duplicates.length} already tracked` : ''}`)
   }
 }
+
+phase('Record')
+const record = results.map((r) => ({ number: r.t.number, size: r.t.size || '', kind: r.t.kind || '', model: r.model || '', outcome: r.outcome, pr: prNumber(r.pr), reason: r.reason || '' }))
+await agent(runnerPrompt(metricsCmd('workflow', startedAt, { tickets: record, outputTokens: spentTokens() })), { label: 'metrics', phase: 'Record', model: 'haiku', effort: 'low' })
 
 const pick = (o) => results.filter((r) => r.outcome === o).map((r) => ({ number: r.t.number, title: r.t.title, sha: r.sha, pr: r.pr, branch: r.branch, reason: r.reason, model: r.model }))
 return { armed: pick('armed'), opened: pick('opened'), parked: pick('parked'), failed: pick('failed'), followUpIssues: filed }

@@ -86,6 +86,7 @@ function main() {
     console.log(
       JSON.stringify({
         ...decision,
+        at: new Date().toISOString(),
         tickets: tickets.filter((t) => decision.ready.includes(t.number)),
       }),
     );
