@@ -1,5 +1,5 @@
-import type { AnyOperation, Result } from "@okazi/core";
-import { getLogger } from "@okazi/logger";
+import type { AnyOperation, Result } from "@bibi/core";
+import { getLogger } from "@bibi/logger";
 import type { ApprovalRequired } from "./types";
 
 export type LogProposalInput = { operation: AnyOperation; proposal: Result<ApprovalRequired> };

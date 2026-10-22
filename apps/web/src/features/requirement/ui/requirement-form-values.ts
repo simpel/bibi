@@ -1,4 +1,4 @@
-import type { EntityTypeDto, RequirementDto } from "@okazi/core";
+import type { EntityTypeDto, RequirementDto } from "@bibi/core";
 import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 

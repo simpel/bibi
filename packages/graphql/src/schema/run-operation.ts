@@ -1,4 +1,4 @@
-import { type AnyOperation, execute } from "@okazi/core";
+import { type AnyOperation, execute } from "@bibi/core";
 import type { GraphqlContext } from "./context";
 import { toGraphqlError } from "./to-graphql-error";
 

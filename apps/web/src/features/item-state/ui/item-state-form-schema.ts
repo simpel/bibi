@@ -1,5 +1,5 @@
-import type { HoldKind, ItemStateDto } from "@okazi/core/schemas";
-import { ItemStateCreateInputSchema } from "@okazi/core/schemas";
+import type { HoldKind, ItemStateDto } from "@bibi/core/schemas";
+import { ItemStateCreateInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
 
 /** Raw values of the state form: name, color and the generic state flags (ADR 0044). */

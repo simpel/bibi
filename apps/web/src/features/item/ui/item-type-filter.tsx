@@ -1,7 +1,7 @@
 "use client";
 
-import type { EntityTypeDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { EntityTypeDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import {
   Form,
   FormController,
@@ -12,7 +12,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { ROUTES } from "@/lib/routes";

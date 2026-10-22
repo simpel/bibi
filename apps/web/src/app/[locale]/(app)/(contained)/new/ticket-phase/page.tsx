@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionGate } from "@/components/states/permission-gate";
 import { TicketPhaseCreate } from "@/features/ticket-phase/ui/ticket-phase-create";

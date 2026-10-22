@@ -1,4 +1,4 @@
-import { appError, err, ok, type Result } from "@okazi/core";
+import { appError, err, ok, type Result } from "@bibi/core";
 import { z } from "zod";
 import type { InboundMailContent } from "../schema";
 import { RESEND_API_URL, type ResendTransport } from "./resend-transport";

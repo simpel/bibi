@@ -43,9 +43,9 @@ if [ -n "$PR" ]; then
 fi
 
 COMMENT="The work-backlog run parked this ticket."
-[ -n "$BRANCH" ] && COMMENT+=" Branch: https://github.com/simpel/okazi/tree/$BRANCH"
+[ -n "$BRANCH" ] && COMMENT+=" Branch: https://github.com/simpel/bibi/tree/$BRANCH"
 COMMENT+=$'\n\nReason:\n'"$REASON"
-gh issue comment "$N" -R simpel/okazi --body "$COMMENT" >/dev/null 2>&1 || true
+gh issue comment "$N" -R simpel/bibi --body "$COMMENT" >/dev/null 2>&1 || true
 move_card "${PARKED_OPTION:-}"
 
 cd "$MAIN" || true

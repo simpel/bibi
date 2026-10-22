@@ -1,4 +1,4 @@
-import type { ChangePreview } from "@okazi/core/schemas";
+import type { ChangePreview } from "@bibi/core/schemas";
 import { InfoIcon, TriangleAlertIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { consequenceKey } from "../../../lib/consequence-keys";

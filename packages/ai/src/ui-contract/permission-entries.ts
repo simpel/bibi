@@ -1,4 +1,4 @@
-import { PermissionProfileSchema } from "@okazi/core/schemas";
+import { PermissionProfileSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";

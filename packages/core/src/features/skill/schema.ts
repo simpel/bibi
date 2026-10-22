@@ -6,7 +6,7 @@ export const WritableSkillScopeSchema = z.enum(["ORGANIZATION", "PERSONAL"]);
 export const SkillStatusSchema = z.enum(["DRAFT", "PUBLISHED", "ARCHIVED"]);
 
 export const SKILL_SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
-const RESOURCE_END = "<!-- /okazi:resource -->";
+const RESOURCE_END = "<!-- /bibi:resource -->";
 
 export const SkillSlugSchema = z
   .string()

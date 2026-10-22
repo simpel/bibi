@@ -1,5 +1,5 @@
-import type { SetupDto } from "@okazi/core";
-import { SetupCreateInputSchema } from "@okazi/core/schemas";
+import type { SetupDto } from "@bibi/core";
+import { SetupCreateInputSchema } from "@bibi/core/schemas";
 import { numberOrUndefined } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 

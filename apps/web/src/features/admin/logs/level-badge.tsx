@@ -1,4 +1,4 @@
-import { Badge, type BadgeProps } from "@okazi/ui";
+import { Badge, type BadgeProps } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 const VARIANT: Record<string, BadgeProps["variant"]> = {

@@ -1,4 +1,4 @@
-import type { AiModel } from "@okazi/core";
+import type { AiModel } from "@bibi/core";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   clearGatewayModelCache,

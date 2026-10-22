@@ -1,6 +1,6 @@
 "use client";
 
-import type { CustomerDto, EntityTypeDto } from "@okazi/core";
+import type { CustomerDto, EntityTypeDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { useCustomerColumns } from "./use-customer-columns";

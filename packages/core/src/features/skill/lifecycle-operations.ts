@@ -1,4 +1,4 @@
-import type { SkillStatus } from "@okazi/db";
+import type { SkillStatus } from "@bibi/db";
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { HandlerInput } from "../../operations/types";

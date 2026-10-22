@@ -1,4 +1,4 @@
-import { LineExpandBundleInputSchema } from "@okazi/core/schemas";
+import { LineExpandBundleInputSchema } from "@bibi/core/schemas";
 import { blankToNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 import { fromLocalInputValue, toLocalInputValue } from "../../occupancy/ui/local-date-time";

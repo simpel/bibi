@@ -23,7 +23,7 @@ describe("buildSystemPrompt", () => {
       skills: [skill],
       now,
     });
-    expect(prompt).toContain("Okazi");
+    expect(prompt).toContain("Bibi");
     expect(prompt).toContain("approval_required");
     expect(prompt).toContain("Never say or imply that such an action is done");
     expect(prompt).toContain("Answer in Swedish");

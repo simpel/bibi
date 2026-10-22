@@ -5,7 +5,7 @@ export type InstallProcessHandlersInput = {
   exitOnUncaught: boolean;
 };
 
-const KEY = Symbol.for("okazi.logger.processHandlers");
+const KEY = Symbol.for("bibi.logger.processHandlers");
 
 /** Crashes and forgotten promises end up in the system log, not only on a terminal (ADR 0014). */
 export function installProcessHandlers({ exitOnUncaught }: InstallProcessHandlersInput): void {

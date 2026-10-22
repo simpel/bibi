@@ -1,4 +1,4 @@
-import { getDb, pseudonymiseAuditLog } from "@okazi/db";
+import { getDb, pseudonymiseAuditLog } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { createTestTicket, moveToPhase, ticketSetup } from "./ticket-helpers";
 

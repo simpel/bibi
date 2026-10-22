@@ -1,4 +1,4 @@
-import { createApiKey, execute } from "@okazi/core";
+import { createApiKey, execute } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 import { seedOrgMember } from "./seed-org-member";

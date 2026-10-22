@@ -1,4 +1,4 @@
-import { DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from "@okazi/ui";
+import { DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from "@bibi/ui";
 import { Building2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { OrgMenuItems } from "./org-menu-items";

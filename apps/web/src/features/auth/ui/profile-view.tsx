@@ -1,5 +1,5 @@
-import type { Locale } from "@okazi/i18n";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@okazi/ui";
+import type { Locale } from "@bibi/i18n";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/states/page-header";
 import { OauthGrantSection } from "@/features/oauth-grant/ui/oauth-grant-section";

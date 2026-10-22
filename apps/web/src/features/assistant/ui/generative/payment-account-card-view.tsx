@@ -1,7 +1,7 @@
 "use client";
 
-import { Link } from "@okazi/i18n/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { PaymentStatusBadge } from "@/features/payment-account/ui/payment-status-badge";
 import { ROUTES } from "@/lib/routes";

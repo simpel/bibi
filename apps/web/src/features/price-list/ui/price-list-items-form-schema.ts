@@ -1,5 +1,5 @@
-import type { PriceListDto } from "@okazi/core";
-import { PriceListSetItemsInputSchema } from "@okazi/core/schemas";
+import type { PriceListDto } from "@bibi/core";
+import { PriceListSetItemsInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";

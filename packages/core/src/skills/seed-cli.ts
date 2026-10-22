@@ -1,8 +1,8 @@
-import { getDb } from "@okazi/db";
-import { runWithLogContext } from "@okazi/logger";
+import { getDb } from "@bibi/db";
+import { runWithLogContext } from "@bibi/logger";
 import { seedSystemSkills } from "./seed-system-skills";
 
-// `pnpm --filter @okazi/core seed:skills` – seeds SYSTEM skills (no search indexing: core has no
+// `pnpm --filter @bibi/core seed:skills` – seeds SYSTEM skills (no search indexing: core has no
 // embedder; apps call `seedSystemSkills({ embed })` at startup to index them).
 await runWithLogContext({
   context: { surface: "cli" },

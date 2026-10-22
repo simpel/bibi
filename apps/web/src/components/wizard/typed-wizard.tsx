@@ -1,8 +1,8 @@
 "use client";
 
-import type { EntityTypeDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
-import { Form } from "@okazi/ui";
+import type { EntityTypeDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import type { FieldPath, UseFormReturn } from "react-hook-form";

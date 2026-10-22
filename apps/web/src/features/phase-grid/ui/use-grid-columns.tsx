@@ -1,5 +1,5 @@
-import type { ColumnDef } from "@okazi/ui";
-import { ColorSwatch } from "@okazi/ui";
+import type { ColumnDef } from "@bibi/ui";
+import { ColorSwatch } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { TypeStates } from "@/features/item-state/load-item-state-data";

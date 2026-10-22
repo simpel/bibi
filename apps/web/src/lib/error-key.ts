@@ -1,4 +1,4 @@
-import type { AppErrorCode } from "@okazi/core";
+import type { AppErrorCode } from "@bibi/core";
 
 /** Keys of the `errors` message namespace that an AppError code can map to. */
 export type ErrorKey =

@@ -1,4 +1,4 @@
-import { usePathname, useRouter } from "@okazi/i18n/navigation";
+import { usePathname, useRouter } from "@bibi/i18n/navigation";
 import { useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 import { type LogHrefInput, logQueryString } from "./log-params";

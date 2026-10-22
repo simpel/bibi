@@ -1,4 +1,4 @@
-import { Tooltip, TooltipContent, TooltipTrigger } from "@okazi/ui";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@bibi/ui";
 import type { ReactElement } from "react";
 
 export type HintTooltipProps = {

@@ -1,4 +1,4 @@
-import { ok } from "@okazi/core";
+import { ok } from "@bibi/core";
 import { inboundUnsupported } from "./inbound-unsupported";
 import type { MailProvider } from "./mail-provider";
 import type { MailMessage } from "./schema";

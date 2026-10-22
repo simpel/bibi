@@ -1,6 +1,6 @@
-import { pipelineBoard } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
-import { Badge } from "@okazi/ui";
+import { pipelineBoard } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
+import { Badge } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { handleLoadError } from "@/server/load-error";

@@ -1,6 +1,6 @@
 import "server-only";
-import { getPhaseGrid, listTicketPhases, type Result } from "@okazi/core";
-import type { PhaseGridCellDto, TicketPhaseDto } from "@okazi/core/schemas";
+import { getPhaseGrid, listTicketPhases, type Result } from "@bibi/core";
+import type { PhaseGridCellDto, TicketPhaseDto } from "@bibi/core/schemas";
 import { loadItemStateData, type TypeStates } from "@/features/item-state/load-item-state-data";
 import { runOperation } from "@/server/run-operation";
 

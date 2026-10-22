@@ -1,4 +1,4 @@
-import { getLogger } from "@okazi/logger";
+import { getLogger } from "@bibi/logger";
 import type { ApprovalRequest } from "./approval-request";
 
 export type LogDecisionInput = { body: ApprovalRequest; status: number };

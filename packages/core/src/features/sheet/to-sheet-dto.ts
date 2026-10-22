@@ -1,4 +1,4 @@
-import type { Sheet } from "@okazi/db";
+import type { Sheet } from "@bibi/db";
 import type { SheetChange, SheetContent, SheetDto, SheetMatch } from "./schema";
 
 /** Recipients in the order they were snapshotted; load every sheet with it. */

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@okazi/ui";
+import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useToastAction } from "@/lib/use-toast-action";
 import { startPaymentOnboardingAction } from "../actions";

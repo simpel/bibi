@@ -1,4 +1,4 @@
-import { CardFooter } from "@okazi/ui";
+import { CardFooter } from "@bibi/ui";
 import { ApprovalActions } from "./approval-actions";
 import { ApprovalStatus } from "./approval-status";
 import type { Decision } from "./post-decision";

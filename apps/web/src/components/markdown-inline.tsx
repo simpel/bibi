@@ -1,4 +1,4 @@
-import { Link } from "@okazi/i18n/navigation";
+import { Link } from "@bibi/i18n/navigation";
 import type { ReactNode } from "react";
 import type { Inline } from "@/lib/markdown/types";
 

@@ -1,4 +1,4 @@
-import { EMBEDDING_DIMENSIONS } from "@okazi/db";
+import { EMBEDDING_DIMENSIONS } from "@bibi/db";
 import type { EmbedFn } from "../../src/index";
 import { fakeEmbed } from "../fake-embed";
 

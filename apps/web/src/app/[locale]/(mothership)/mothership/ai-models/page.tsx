@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { AiModelsView } from "@/features/admin/ai-models/ai-models-view";
 

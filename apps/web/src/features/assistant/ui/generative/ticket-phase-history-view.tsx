@@ -1,6 +1,6 @@
 "use client";
 
-import { Card } from "@okazi/ui";
+import { Card } from "@bibi/ui";
 import { PhaseHistoryList } from "@/features/ticket/ui/phase-history-list";
 import { PhaseWarnings } from "@/features/ticket/ui/phase-warnings";
 import type { GenerativeProps } from "./generative-props";

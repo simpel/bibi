@@ -1,5 +1,5 @@
+import type { ResponsibilityCreateInput, ResponsibilityDto } from "@bibi/core";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { ResponsibilityCreateInput, ResponsibilityDto } from "@okazi/core";
 import { useForm } from "react-hook-form";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import {

@@ -1,4 +1,4 @@
-import type { EntityTypeDto, SetupDto, VocabularyDto } from "@okazi/core";
+import type { EntityTypeDto, SetupDto, VocabularyDto } from "@bibi/core";
 import type { LinkTargets } from "@/components/typed-fields/typed-form-data";
 
 /**

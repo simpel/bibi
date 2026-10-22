@@ -1,5 +1,5 @@
 import type { MCPClient } from "@ai-sdk/mcp";
-import { getLogger } from "@okazi/logger";
+import { getLogger } from "@bibi/logger";
 import { persistAssistantMessage } from "./persist-assistant-message";
 
 export type RunErrorReporter = (input: { stage: string; error: unknown }) => void;

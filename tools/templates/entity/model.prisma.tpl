@@ -1,4 +1,4 @@
-/// {{Pascal}} (ADR 0006). TODO: add domain fields and relations, then run pnpm db:generate and pnpm --filter @okazi/db migrate:dev.
+/// {{Pascal}} (ADR 0006). TODO: add domain fields and relations, then run pnpm db:generate and pnpm --filter @bibi/db migrate:dev.
 model {{Pascal}} {
   id             String       @id @default(cuid(2))
   organizationId String

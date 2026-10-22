@@ -10,7 +10,7 @@ afterAll(() => server.close());
 
 describe("SMTP provider", () => {
   it("delivers text, html and attachments over SMTP", async () => {
-    const provider = createSmtpProvider({ url: server.url, from: "Okazi <no-reply@okazi.test>" });
+    const provider = createSmtpProvider({ url: server.url, from: "Bibi <no-reply@bibi.test>" });
     const result = await provider.send({
       message: {
         to: "guest@example.test",
@@ -30,7 +30,7 @@ describe("SMTP provider", () => {
   });
 
   it("returns UNAVAILABLE when the server cannot be reached", async () => {
-    const provider = createSmtpProvider({ url: "smtp://127.0.0.1:1", from: "a@okazi.test" });
+    const provider = createSmtpProvider({ url: "smtp://127.0.0.1:1", from: "a@bibi.test" });
     const result = await provider.send({
       message: { to: "guest@example.test", subject: "Hi", text: "Body" },
     });
@@ -38,7 +38,7 @@ describe("SMTP provider", () => {
   });
 
   it("does not support inbound mail", async () => {
-    const provider = createSmtpProvider({ url: server.url, from: "a@okazi.test" });
+    const provider = createSmtpProvider({ url: server.url, from: "a@bibi.test" });
     const result = await provider.parseInbound({ request: { headers: new Headers(), body: "{}" } });
     expect(result.ok ? "OK" : result.error.code).toBe("UNAVAILABLE");
   });

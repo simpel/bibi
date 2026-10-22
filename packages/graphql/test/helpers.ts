@@ -9,7 +9,7 @@ import {
   type PermissionSet,
   PRESET_PERMISSIONS,
   registerOperations,
-} from "@okazi/core";
+} from "@bibi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { createGraphqlHandler } from "../src/index";
 import { fakeEmbed } from "./fake-embed";

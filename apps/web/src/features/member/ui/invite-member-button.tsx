@@ -1,6 +1,6 @@
 "use client";
 
-import type { FixedRole } from "@okazi/core/schemas";
+import type { FixedRole } from "@bibi/core/schemas";
 import {
   Button,
   Dialog,
@@ -8,7 +8,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { MailPlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

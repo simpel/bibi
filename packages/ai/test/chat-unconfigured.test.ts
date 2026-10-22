@@ -1,7 +1,7 @@
-import { resolveExecuteContext } from "@okazi/auth";
-import { clearAiModelCache } from "@okazi/core";
-import { getDb } from "@okazi/db";
-import { captureLogs } from "@okazi/logger";
+import { resolveExecuteContext } from "@bibi/auth";
+import { clearAiModelCache } from "@bibi/core";
+import { getDb } from "@bibi/db";
+import { captureLogs } from "@bibi/logger";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createChatHandler } from "../src/chat/create-chat-handler";
 import { signUpWithOrg } from "./helpers/auth";

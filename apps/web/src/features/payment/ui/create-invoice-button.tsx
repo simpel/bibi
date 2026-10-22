@@ -1,7 +1,7 @@
 "use client";
 
-import { useRouter } from "@okazi/i18n/navigation";
-import { Button } from "@okazi/ui";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Button } from "@bibi/ui";
 import { FileTextIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

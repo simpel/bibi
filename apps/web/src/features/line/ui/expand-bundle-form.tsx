@@ -1,4 +1,4 @@
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import { ExpandBundlePickFields } from "./expand-bundle-pick-fields";

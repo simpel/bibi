@@ -1,4 +1,4 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 
 export type FirstPartyClientConfig = {
   /** OAuth client id (provisioned by ops); `undefined` = not configured. */
@@ -11,7 +11,7 @@ export type FirstPartyClientConfig = {
    */
   redirectPath: string;
   /**
-   * Whether tokens issued to this client may carry `x-okazi-actor: ai`. Only the assistant: an
+   * Whether tokens issued to this client may carry `x-bibi-actor: ai`. Only the assistant: an
    * AI request makes commands proposals, so the flag must only be set for clients that run the
    * approval flow.
    */
@@ -21,7 +21,7 @@ export type FirstPartyClientConfig = {
 };
 
 /**
- * Okazi's own OAuth clients for server-side token acquisition (`getFirstPartyAccessToken`).
+ * Bibi's own OAuth clients for server-side token acquisition (`getFirstPartyAccessToken`).
  * Adding a client (⌘K, scheduled skills, integrations) = one entry here + provisioning.
  */
 export const FIRST_PARTY_CLIENTS = {
@@ -31,7 +31,7 @@ export const FIRST_PARTY_CLIENTS = {
     redirectPath: "/api/assistant/oauth/callback",
     allowsAiActor: true,
     missingHint:
-      "WEB_OAUTH_CLIENT_ID is not set: run `pnpm --filter @okazi/web provision:oauth` and add it to .env",
+      "WEB_OAUTH_CLIENT_ID is not set: run `pnpm --filter @bibi/web provision:oauth` and add it to .env",
   },
 } as const satisfies Record<string, FirstPartyClientConfig>;
 

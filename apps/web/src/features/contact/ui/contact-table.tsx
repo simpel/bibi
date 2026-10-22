@@ -1,6 +1,6 @@
 "use client";
 
-import type { ContactDto } from "@okazi/core";
+import type { ContactDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";

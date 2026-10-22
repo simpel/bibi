@@ -1,7 +1,7 @@
 "use client";
 
-import type { TicketDto, TicketPhaseDto } from "@okazi/core";
-import { Button } from "@okazi/ui";
+import type { TicketDto, TicketPhaseDto } from "@bibi/core";
+import { Button } from "@bibi/ui";
 import { ArrowRightLeftIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

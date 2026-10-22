@@ -1,4 +1,4 @@
-import type { SkillDto } from "@okazi/core";
+import type { SkillDto } from "@bibi/core";
 
 export type SkillAbilities = { edit: boolean; publish: boolean; archive: boolean; share: boolean };
 

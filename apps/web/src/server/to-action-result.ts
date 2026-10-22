@@ -1,5 +1,5 @@
 import "server-only";
-import type { Result } from "@okazi/core";
+import type { Result } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 
 export type ToActionResultInput<T> = { result: Result<T> };

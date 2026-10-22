@@ -1,4 +1,4 @@
-import type { PermissionSet } from "@okazi/core";
+import type { PermissionSet } from "@bibi/core";
 import type { PromptSkill } from "../skills/skill-wire";
 import { accessSection } from "./access-section";
 import { assistantMode, modeSection } from "./assistant-mode";

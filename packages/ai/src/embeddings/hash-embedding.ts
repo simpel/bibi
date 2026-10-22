@@ -1,10 +1,10 @@
-import { EMBEDDING_DIMENSIONS } from "@okazi/db";
+import { EMBEDDING_DIMENSIONS } from "@bibi/db";
 
 /**
  * Model id of the deterministic placeholder embedder. Same id (and algorithm) as the web app's
  * former placeholder, so rows written by either are recognised and re-embedded by `reindexAll`.
  */
-export const PLACEHOLDER_EMBEDDING_MODEL = "okazi-placeholder-hash-v1";
+export const PLACEHOLDER_EMBEDDING_MODEL = "bibi-placeholder-hash-v1";
 
 const WORD = /[\p{L}\p{N}]+/gu;
 

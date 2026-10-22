@@ -8,6 +8,6 @@ export default defineConfig({
   platform: "node",
   target: "node22",
   clean: true,
-  noExternal: [/^@okazi\//],
-  external: [/^(?!@okazi\/|\.|\/)/],
+  noExternal: [/^@bibi\//],
+  external: [/^(?!@bibi\/|\.|\/)/],
 });

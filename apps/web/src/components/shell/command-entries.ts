@@ -1,4 +1,4 @@
-import type { Permission } from "@okazi/core";
+import type { Permission } from "@bibi/core";
 import { BoxIcon, BuildingIcon, type LucideIcon, PlusIcon } from "lucide-react";
 import { ROUTES } from "@/lib/routes";
 

@@ -13,7 +13,7 @@ export const SPECIMENS: TypeSpecimen[] = [
     tokenClass: "font-wordmark text-2xl text-foreground",
     font: "Cherry Bomb One",
     size: "24px / 1.5rem",
-    sample: "Okazi",
+    sample: "Bibi",
     meta: "App wordmark, brand logos, top navigation identity",
   },
   {

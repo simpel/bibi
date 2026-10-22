@@ -1,5 +1,5 @@
-import type { TicketPhaseDto } from "@okazi/core/schemas";
-import { ColorSwatch } from "@okazi/ui";
+import type { TicketPhaseDto } from "@bibi/core/schemas";
+import { ColorSwatch } from "@bibi/ui";
 
 export type TicketPhaseLabelProps = { phases: readonly TicketPhaseDto[]; id: string };
 

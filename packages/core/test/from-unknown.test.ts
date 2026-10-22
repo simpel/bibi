@@ -1,4 +1,4 @@
-import { Prisma } from "@okazi/db";
+import { Prisma } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { fromUnknown } from "../src/errors/from-unknown";
 

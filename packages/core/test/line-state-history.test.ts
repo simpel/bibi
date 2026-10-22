@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { fromUnknown } from "../src/errors/from-unknown";
 import { execute, updateLine } from "../src/index";

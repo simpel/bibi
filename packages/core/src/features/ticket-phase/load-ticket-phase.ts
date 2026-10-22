@@ -1,4 +1,4 @@
-import type { Prisma, TicketPhase } from "@okazi/db";
+import type { Prisma, TicketPhase } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { TicketPhaseDto } from "./schema";
 

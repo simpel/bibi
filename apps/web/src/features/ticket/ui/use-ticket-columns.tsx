@@ -1,6 +1,6 @@
-import type { TicketDto } from "@okazi/core";
-import type { TicketPhaseDto } from "@okazi/core/schemas";
-import type { ColumnDef } from "@okazi/ui";
+import type { TicketDto } from "@bibi/core";
+import type { TicketPhaseDto } from "@bibi/core/schemas";
+import type { ColumnDef } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { namedOptionColumn } from "@/components/data-table/named-option-column";

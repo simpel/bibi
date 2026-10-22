@@ -1,13 +1,13 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { ADMIN_ROLE } from "../../permissions/fixed-roles";
 import type { DemoOrg, DemoUser } from "./types";
 
 export type DemoEmailDomainInput = { org: DemoOrg };
 
-/** `lindholmen-demo.okazi.test`: reserved TLD, so mail never leaves Mailpit. */
+/** `lindholmen-demo.bibi.test`: reserved TLD, so mail never leaves Mailpit. */
 export function demoEmailDomain({ org }: DemoEmailDomainInput): string {
-  return `${org.slug}.okazi.test`;
+  return `${org.slug}.bibi.test`;
 }
 
 const toAscii = ({ value }: { value: string }): string =>
@@ -19,7 +19,7 @@ const toAscii = ({ value }: { value: string }): string =>
 
 export type DemoEmailInput = { org: DemoOrg; user: DemoUser };
 
-/** "Peter Sjoberg" → `peter.sjoberg@lindholmen-demo.okazi.test` (sign in with magic link or code). */
+/** "Peter Sjoberg" → `peter.sjoberg@lindholmen-demo.bibi.test` (sign in with magic link or code). */
 export function demoEmail({ org, user }: DemoEmailInput): string {
   return `${toAscii({ value: user.name })}@${demoEmailDomain({ org })}`;
 }

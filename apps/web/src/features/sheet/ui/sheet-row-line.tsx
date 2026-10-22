@@ -1,4 +1,4 @@
-import type { SheetChange, SheetRow } from "@okazi/core/schemas";
+import type { SheetChange, SheetRow } from "@bibi/core/schemas";
 import { useFormatter, useTranslations } from "next-intl";
 
 type RowFacts = Pick<

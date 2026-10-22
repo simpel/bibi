@@ -1,5 +1,5 @@
-import type { CustomerDto } from "@okazi/core";
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import type { CustomerDto } from "@bibi/core";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { rawFields } from "@/components/typed-fields/raw-fields";
 import { TypeFields } from "@/components/typed-fields/type-fields";

@@ -1,7 +1,7 @@
 import type { AddressInfo } from "node:net";
+import { appError, createExecuteContext, err, grantAll, ok } from "@bibi/core";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { appError, createExecuteContext, err, grantAll, ok } from "@okazi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createHttpServer } from "../src/http/create-http-server";

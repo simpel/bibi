@@ -1,6 +1,6 @@
 /**
- * Client-safe subpath (`@okazi/core/schemas`): ONLY the zod schema files of every feature.
- * No Prisma, fs or operation imports, so client components and `@okazi/ai/ui` can use them
+ * Client-safe subpath (`@bibi/core/schemas`): ONLY the zod schema files of every feature.
+ * No Prisma, fs or operation imports, so client components and `@bibi/ai/ui` can use them
  * without pulling the server into the browser bundle. Add each new feature's `schema.ts` here.
  */
 

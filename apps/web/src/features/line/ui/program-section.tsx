@@ -1,5 +1,5 @@
-import { listLines, type TicketDto } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { listLines, type TicketDto } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { AlternativeGroupSection } from "@/features/alternative-group/ui/alternative-group-section";

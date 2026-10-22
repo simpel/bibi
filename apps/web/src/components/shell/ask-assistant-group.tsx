@@ -1,6 +1,6 @@
 "use client";
 
-import { CommandGroup, CommandItem } from "@okazi/ui";
+import { CommandGroup, CommandItem } from "@bibi/ui";
 import { SparklesIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 

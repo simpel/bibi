@@ -1,7 +1,7 @@
 "use client";
 
-import type { FixedRole } from "@okazi/core/schemas";
-import { Form } from "@okazi/ui";
+import type { FixedRole } from "@bibi/core/schemas";
+import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { RoleSelectField } from "@/features/member/ui/role-select-field";

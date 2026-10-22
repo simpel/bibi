@@ -1,4 +1,4 @@
-import { HOLD_KINDS, type ItemStateCreateInput, STATE_FLAGS } from "@okazi/core/schemas";
+import { HOLD_KINDS, type ItemStateCreateInput, STATE_FLAGS } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { CheckField } from "@/components/form/check-field";

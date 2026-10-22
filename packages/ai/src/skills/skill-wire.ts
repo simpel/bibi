@@ -1,4 +1,4 @@
-import { SkillResourceSchema, SkillScopeSchema, SkillStatusSchema } from "@okazi/core";
+import { SkillResourceSchema, SkillScopeSchema, SkillStatusSchema } from "@bibi/core";
 import { z } from "zod";
 
 /** Skill as listed to the model (progressive disclosure: no instructions). */

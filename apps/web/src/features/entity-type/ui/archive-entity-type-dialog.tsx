@@ -1,5 +1,5 @@
-import type { EntityTypeDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { EntityTypeDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ROUTES } from "@/lib/routes";

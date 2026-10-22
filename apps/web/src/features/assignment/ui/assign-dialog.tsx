@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   Form,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { NamedOption } from "@/components/form/named-option";
 import { OptionSelectField } from "@/components/form/option-select-field";

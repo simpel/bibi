@@ -79,7 +79,7 @@ describe("entity generator", () => {
 
   it("points the UI note at the client-safe schemas entry point", () => {
     const note = readGenerated({ rel: "apps/web/src/features/gen-probe-thing/ui/README.md" });
-    expect(note).toContain("@okazi/core/schemas");
+    expect(note).toContain("@bibi/core/schemas");
     expect(note).not.toContain("@core-schema");
   });
 

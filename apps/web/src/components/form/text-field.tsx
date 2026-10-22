@@ -6,7 +6,7 @@ import {
   FormMessage,
   Input,
   Textarea,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 
 export type TextFieldProps<V extends FieldValues, O> = {

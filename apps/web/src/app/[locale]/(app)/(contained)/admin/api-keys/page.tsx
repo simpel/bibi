@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";

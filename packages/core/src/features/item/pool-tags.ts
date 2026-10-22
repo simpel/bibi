@@ -1,4 +1,4 @@
-import type { Prisma } from "@okazi/db";
+import type { Prisma } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";

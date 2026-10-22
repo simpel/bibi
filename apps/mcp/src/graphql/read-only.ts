@@ -1,4 +1,4 @@
-import { appError, err, ok, type Result } from "@okazi/core";
+import { appError, err, ok, type Result } from "@bibi/core";
 import { GraphQLError, Kind, parse } from "graphql";
 
 export const MAX_QUERY_LENGTH = 10_000;

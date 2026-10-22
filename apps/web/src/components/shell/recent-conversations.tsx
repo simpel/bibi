@@ -1,5 +1,5 @@
-import { Link } from "@okazi/i18n/navigation";
-import { cn } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { cn } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";

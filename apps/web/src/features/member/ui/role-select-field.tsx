@@ -1,4 +1,4 @@
-import type { FixedRole } from "@okazi/core/schemas";
+import type { FixedRole } from "@bibi/core/schemas";
 import {
   FormControl,
   FormController,
@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { Control, FieldValues, Path } from "react-hook-form";

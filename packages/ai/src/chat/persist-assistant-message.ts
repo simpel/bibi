@@ -1,5 +1,5 @@
 import type { MCPClient } from "@ai-sdk/mcp";
-import { ok, type Result } from "@okazi/core";
+import { ok, type Result } from "@bibi/core";
 import { callMcpTool } from "../mcp/call-mcp-tool";
 import { fitParts } from "./fit-parts";
 

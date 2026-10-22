@@ -1,4 +1,4 @@
-import type { OauthGrantRow } from "@okazi/db";
+import type { OauthGrantRow } from "@bibi/db";
 import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";

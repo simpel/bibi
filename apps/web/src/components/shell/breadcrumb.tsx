@@ -1,6 +1,6 @@
 "use client";
 
-import { Link, usePathname } from "@okazi/i18n/navigation";
+import { Link, usePathname } from "@bibi/i18n/navigation";
 import { ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { buildCrumbs } from "./breadcrumb-model";

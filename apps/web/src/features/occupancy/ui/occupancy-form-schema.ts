@@ -1,5 +1,5 @@
-import type { OccupancyDto, OccupancyUpdateInput } from "@okazi/core";
-import { OccupancyCreateInputSchema } from "@okazi/core/schemas";
+import type { OccupancyDto, OccupancyUpdateInput } from "@bibi/core";
+import { OccupancyCreateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { blankToNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";

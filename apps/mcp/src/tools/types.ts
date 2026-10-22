@@ -1,4 +1,4 @@
-import type { AnyOperation, ExecuteContext } from "@okazi/core";
+import type { AnyOperation, ExecuteContext } from "@bibi/core";
 
 /** Wire shape of an MCP tool result (`CallToolResult`), kept local so adapters stay SDK-free. */
 export type ToolResult = {

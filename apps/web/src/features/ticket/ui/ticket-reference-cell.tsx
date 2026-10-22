@@ -1,5 +1,5 @@
-import type { TicketDto } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
+import type { TicketDto } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
 import { ticketRoute } from "@/lib/routes";
 
 export type TicketReferenceCellProps = {

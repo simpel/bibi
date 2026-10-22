@@ -1,6 +1,6 @@
-import type { EntityTypeDto } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
-import type { ColumnDef } from "@okazi/ui";
+import type { EntityTypeDto } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
+import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { entityTypeRoute } from "@/lib/configuration-routes";

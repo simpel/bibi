@@ -1,5 +1,5 @@
 import "server-only";
-import { listItemStates, listItems, listSetups, type Result } from "@okazi/core";
+import { listItemStates, listItems, listSetups, type Result } from "@bibi/core";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import { runOperation } from "@/server/run-operation";
 import { loadCustomisableItems } from "./customisable-items";

@@ -1,7 +1,7 @@
 "use client";
 
-import type { QuoteDto } from "@okazi/core";
-import { Button } from "@okazi/ui";
+import type { QuoteDto } from "@bibi/core";
+import { Button } from "@bibi/ui";
 import {
   CheckCircleIcon,
   CopyPlusIcon,

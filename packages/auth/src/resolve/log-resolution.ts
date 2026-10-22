@@ -1,5 +1,5 @@
-import type { ExecuteContext, Result } from "@okazi/core";
-import { addToLogContext, getLogger } from "@okazi/logger";
+import type { ExecuteContext, Result } from "@bibi/core";
+import { addToLogContext, getLogger } from "@bibi/logger";
 import type { Credential } from "./read-credential";
 
 export type LogResolutionInput = {

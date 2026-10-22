@@ -1,4 +1,4 @@
-import type { Skill } from "@okazi/db";
+import type { Skill } from "@bibi/db";
 import { z } from "zod";
 import { type SkillContent, SkillResourceSchema } from "./schema";
 

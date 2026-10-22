@@ -1,11 +1,11 @@
-import { useDisableIntrospection } from "@graphql-yoga/plugin-disable-introspection";
 import {
   type AfterCommitHook,
   createCoreOperations,
   createIndexingHook,
   type EmbedFn,
-} from "@okazi/core";
-import { withRequestLogging } from "@okazi/logger";
+} from "@bibi/core";
+import { withRequestLogging } from "@bibi/logger";
+import { useDisableIntrospection } from "@graphql-yoga/plugin-disable-introspection";
 import { createYoga, type Plugin } from "graphql-yoga";
 import { costLimitRule } from "../limits/cost-limit";
 import { depthLimitRule } from "../limits/depth-limit";

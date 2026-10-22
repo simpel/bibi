@@ -1,4 +1,4 @@
-import { getDb, type PermissionSubject } from "@okazi/db";
+import { getDb, type PermissionSubject } from "@bibi/db";
 
 export type LoadSubjectOverridesInput = {
   organizationId: string;

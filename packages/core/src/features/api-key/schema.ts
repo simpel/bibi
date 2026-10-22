@@ -2,8 +2,8 @@ import { z } from "zod";
 import { FixedRoleSchema } from "../../permissions/fixed-roles";
 import { PageInputShape } from "../../shared/page-input";
 
-/** Prefix of every Okazi API key; `Authorization: Bearer okz_…` is routed to key auth. */
-export const API_KEY_PREFIX = "okz_";
+/** Prefix of every Bibi API key; `Authorization: Bearer bib_…` is routed to key auth. */
+export const API_KEY_PREFIX = "bib_";
 
 /** Per-key rate limit, shared by core (issuing) and the Better Auth plugin (verifying). */
 export const API_KEY_RATE_LIMIT = { timeWindow: 60_000, maxRequests: 600 } as const;
@@ -16,7 +16,7 @@ export const ApiKeySchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   name: z.string(),
-  /** First characters of the key (e.g. `okz_Ab`), to tell keys apart. */
+  /** First characters of the key (e.g. `bib_Ab`), to tell keys apart. */
   start: z.string().nullable(),
   /** The preset the key acts with (ADR 0050), fine-tuned with `permission.update`; empty for a key without a valid preset. */
   role: z.string(),

@@ -1,4 +1,4 @@
-import type { PipelineColumn } from "@okazi/core";
+import type { PipelineColumn } from "@bibi/core";
 import {
   Button,
   Dialog,
@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
   Textarea,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 

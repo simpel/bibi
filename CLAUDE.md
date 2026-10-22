@@ -1,4 +1,4 @@
-# Okazi – context for Claude
+# Bibi – context for Claude
 
 ## Product
 - SaaS booking system for conferences + food & drink at venues without a hotel PMS: experience centres, museums, conference estates, manor houses, restaurants with private rooms.
@@ -6,13 +6,13 @@
 - Main competitor: Lega Online (Multinet Interactive AB). See `docs/market/`.
 
 ## Differentiators (drive prioritisation)
-- Predefined tickets for smaller meetings: staff create a ticket with its lines in one step without a quote, and the customer pays via a Swish or card link or by invoice. Okazi is an internal tool for staff. Guests and customers never use the app; they only see the payment page.
+- Predefined tickets for smaller meetings: staff create a ticket with its lines in one step without a quote, and the customer pays via a Swish or card link or by invoice. Bibi is an internal tool for staff. Guests and customers never use the app; they only see the payment page.
 - Needs as counts against the organization's own lists (e.g. the EU's 14 allergens as an importable template), matched against items and compiled into sheets. No personal data about guests.
 - Versioned sheets (e.g. kitchen order) sent to a responsibility (e.g. head of kitchen), plus export (json, pdf, csv) for handover outside the system.
 - Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses three fixed roles as presets (member, manager, admin) of `<feature>:<action>` permissions, which admins fine-tune per member or API key with allow/deny overrides (ADR 0034, 0050).
 - A ticket moves through the organization's own phases, and each line (room, food, activity) has a state per phase set in a grid: soft holds with a held-since date and one expiry date per ticket, hard holds that block (ADR 0043, 0044).
 - Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Fortnox, Visma and Peppol deferred, ADR 0028 and 0029).
-- Okazi's own prices are published and venues can sign up without talking to sales.
+- Bibi's own prices are published and venues can sign up without talking to sales.
 
 ## Domain model
 - Source: `docs/domain-model.md`. Update it and `docs/artifacts/domain-model.html` together.
@@ -26,7 +26,7 @@
 
 ## Conventions
 - **Rules live in the nearest `CLAUDE.md`** (root only for what crosses packages), written as short imperatives, never as catalogs the code already shows. **ADRs** (`docs/decisions/NNNN-title.md`) record why: a decision with a rejected alternative or a costly reversal. A rule links its reason in one line (`Why: ADR NNNN`). Behaviour specs go in `docs/specs/` (entities in `docs/domain-model.md`), not in an ADR.
-- **Versioning (ADR 0060).** Every app and package has its own semver, from Conventional Commits by path (`feat:` minor, `fix:` patch, `!` major). Commit and PR titles are `<type>: <summary>`. release-please opens a release PR that bumps each changed `package.json` and its `CHANGELOG.md`; merging it creates the `@okazi/<name>-vX.Y.Z` tags and GitHub releases. Never edit versions or changelogs by hand.
+- **Versioning (ADR 0060).** Every app and package has its own semver, from Conventional Commits by path (`feat:` minor, `fix:` patch, `!` major). Commit and PR titles are `<type>: <summary>`. release-please opens a release PR that bumps each changed `package.json` and its `CHANGELOG.md`; merging it creates the `@bibi/<name>-vX.Y.Z` tags and GitHub releases. Never edit versions or changelogs by hand.
 
 ## Tech stack
 - Monorepo: pnpm workspaces + Turborepo, TypeScript (strict).
@@ -49,7 +49,7 @@
 - **AI-first.**
   - The assistant uses the app's own MCP server as the signed-in user. It gets no special path into the service layer.
   - Mutations require human approval. AI proposes, the user confirms. Audit logs `actor=ai|user` and the conversation id.
-  - Every result type has a generative UI component in `@okazi/ui`.
+  - Every result type has a generative UI component in `@bibi/ui`.
   - Searchable entities implement `Embeddable`.
   - Reusable AI behaviour lives as skills (System / Organization / Personal), not as ad hoc prompts.
   - See `docs/decisions/0007-ai-first-ux.md` and `docs/decisions/0008-semantic-search-and-skills.md`.
@@ -66,12 +66,12 @@
 - Functions take ONE typed object parameter, e.g. `fn({ a, b }: FnInput)`. No positional parameters.
 - Strict TypeScript. No `any`.
 - Zod at every boundary: HTTP, GraphQL arguments, MCP tool input, env and AI output.
-- Environment variables are read only via `@okazi/config`.
+- Environment variables are read only via `@bibi/config`.
 - Errors are typed `AppError` and returned as `Result`. No thrown strings.
-- Log only via `getLogger()` from `@okazi/logger`, with a stable `event` (`<area>.<event>`). Never `console.*` (Biome `noConsole`). Never log input or output, passwords, tokens or full email addresses (`maskEmail`).
+- Log only via `getLogger()` from `@bibi/logger`, with a stable `event` (`<area>.<event>`). Never `console.*` (Biome `noConsole`). Never log input or output, passwords, tokens or full email addresses (`maskEmail`).
 - A new HTTP entry point is wrapped in `withRequestLogging({ surface, handler })`. Other entry points (CLI, jobs) run in `runWithLogContext`.
 - Feature folders have fixed file names: `schema.ts`, `operations.ts`, `graphql.ts`, `rest.ts`, `mcp.ts` and `ui/`.
-- UI is built only from `@okazi/ui`. Variants use cva. Tokens live in one file.
+- UI is built only from `@bibi/ui`. Variants use cva. Tokens live in one file.
 - UI rules (forms, tables, `"use client"`, i18n): `apps/web/CLAUDE.md`.
 - Verified with `pnpm check:structure`.
 
@@ -106,20 +106,20 @@
 - `docker compose up -d`: starts Postgres and Mailpit (mail at http://localhost:8025).
 - `pnpm install`: installs dependencies.
 - `pnpm db:migrate`: runs database migrations.
-- `pnpm --filter @okazi/core seed:skills`: seeds system skills.
-- `pnpm --filter @okazi/core seed:demo`: creates two demo organizations via core operations (spec: `docs/demo-seed.md`, built in slices per ADR 0025).
-- `pnpm --filter @okazi/web provision:oauth`: creates the assistant's OAuth client and prints `WEB_OAUTH_CLIENT_ID=...` (put it in `.env`, read by web and MCP).
+- `pnpm --filter @bibi/core seed:skills`: seeds system skills.
+- `pnpm --filter @bibi/core seed:demo`: creates two demo organizations via core operations (spec: `docs/demo-seed.md`, built in slices per ADR 0025).
+- `pnpm --filter @bibi/web provision:oauth`: creates the assistant's OAuth client and prints `WEB_OAUTH_CLIENT_ID=...` (put it in `.env`, read by web and MCP).
 - `pnpm dev`: starts the web app (:3000) and the MCP server (:3001) via Turborepo.
-- `pnpm wt:new <name> [--base <ref>] [--branch <branch>]`: a git worktree in `../okazi-worktrees/<name>` with its own database (`okazi_<name>`), ports (3100+/3200+) and `.env`. `pnpm wt:rm <name> [--force] [--delete-branch]` drops it, `pnpm wt:list` lists them. Scripts in `tools/worktree/` (Superset's `.superset/*.sh` just call them).
-- Tests load the root `.env` via `loadTestEnv()` (`@okazi/config/load-test-env`) in every `vitest.config.ts`, with `AI_GATEWAY_API_KEY` blanked: tests never call paid AI. `DATABASE_URL` is replaced by the test database: `TEST_DATABASE_URL` if set, else `<db>_test` (`okazi_test` in the main checkout, `okazi_<name>_test` in a worktree), so tests never write into the dev database.
-- `pnpm test:db`: creates the test database if missing and applies migrations (pgvector included). `pnpm test` runs it first (Turbo `@okazi/db#migrate:test`); run it yourself before `vitest` in a single package after a new migration.
-- `pnpm --filter @okazi/core cleanup:test-orgs`: opt-in dry run listing organizations left by old test runs in the dev database; `-- --yes` deletes them. Organizations with a real member are kept.
+- `pnpm wt:new <name> [--base <ref>] [--branch <branch>]`: a git worktree in `../bibi-worktrees/<name>` with its own database (`bibi_<name>`), ports (3100+/3200+) and `.env`. `pnpm wt:rm <name> [--force] [--delete-branch]` drops it, `pnpm wt:list` lists them. Scripts in `tools/worktree/` (Superset's `.superset/*.sh` just call them).
+- Tests load the root `.env` via `loadTestEnv()` (`@bibi/config/load-test-env`) in every `vitest.config.ts`, with `AI_GATEWAY_API_KEY` blanked: tests never call paid AI. `DATABASE_URL` is replaced by the test database: `TEST_DATABASE_URL` if set, else `<db>_test` (`bibi_test` in the main checkout, `bibi_<name>_test` in a worktree), so tests never write into the dev database.
+- `pnpm test:db`: creates the test database if missing and applies migrations (pgvector included). `pnpm test` runs it first (Turbo `@bibi/db#migrate:test`); run it yourself before `vitest` in a single package after a new migration.
+- `pnpm --filter @bibi/core cleanup:test-orgs`: opt-in dry run listing organizations left by old test runs in the dev database; `-- --yes` deletes them. Organizations with a real member are kept.
 - `pnpm lint`: Biome check.
 - `node tools/ci/verify.mjs [--all | --light | --only <id>]`: the checks CI runs (lint, structure, typecheck, migrate, test, build), defined once in `tools/ci/checks.json`; by default scoped to the files you changed (`build` only when apps or shared packages changed).
 - `pnpm check:structure`: checks file size, function size, exports, barrel files and feature files.
 - `pnpm typecheck`: TypeScript for all packages.
 - `pnpm test`: Vitest and the parity test.
-- `pnpm --filter @okazi/web test:e2e`: Playwright with a scripted model (`E2E_MOCK_MODEL`), see `apps/web/CLAUDE.md`.
+- `pnpm --filter @bibi/web test:e2e`: Playwright with a scripted model (`E2E_MOCK_MODEL`), see `apps/web/CLAUDE.md`.
 
 ## Open questions
 - Pricing model (per venue, per room, per ticket) not decided.

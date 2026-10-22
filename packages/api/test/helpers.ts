@@ -7,7 +7,7 @@ import {
   ok,
   PRESET_PERMISSIONS,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 import { createId } from "@paralleldrive/cuid2";
 import { createRestHandler } from "../src/index";
 import { fakeEmbed } from "./fake-embed";

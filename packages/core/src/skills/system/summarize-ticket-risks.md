@@ -14,7 +14,7 @@ Goal: a short, prioritised risk list that a coordinator can act on before confir
 
 - From the user: date and time, participant count, items or venue, setup, catering
   (meals, special diets and allergies), technical needs and anyone outside the venue who needs a handoff.
-- From Okazi: use `item_get` / `item_list` and `venue_get` for setups with capacity, field
+- From Bibi: use `item_get` / `item_list` and `venue_get` for setups with capacity, field
   values, price and contact details. Use `entityType_list` to know what the item's fields mean
   and `setup_list` for setup names. Use `search` if the user names an item or venue loosely.
 

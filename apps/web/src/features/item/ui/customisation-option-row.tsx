@@ -1,4 +1,4 @@
-import type { PriceEffect } from "@okazi/core/schemas";
+import type { PriceEffect } from "@bibi/core/schemas";
 import {
   Button,
   FormControl,
@@ -11,7 +11,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";

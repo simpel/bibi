@@ -1,5 +1,5 @@
-import type { PipelinePreviewLine, PipelinePreviewStep } from "@okazi/core/schemas";
-import { cn } from "@okazi/ui";
+import type { PipelinePreviewLine, PipelinePreviewStep } from "@bibi/core/schemas";
+import { cn } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type MiniCalendarProps = { steps: PipelinePreviewStep[] };

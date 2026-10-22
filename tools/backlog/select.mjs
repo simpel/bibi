@@ -7,7 +7,7 @@
 import { execFileSync } from "node:child_process";
 
 const OWNER = "simpel";
-const REPO = "simpel/okazi";
+const REPO = "simpel/bibi";
 const PROJECT = "8";
 
 function run({ cmd, args }) {

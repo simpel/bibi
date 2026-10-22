@@ -1,5 +1,5 @@
-import type { QuoteStatus } from "@okazi/core/schemas";
-import { Badge, type BadgeProps } from "@okazi/ui";
+import type { QuoteStatus } from "@bibi/core/schemas";
+import { Badge, type BadgeProps } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 const VARIANT: Record<QuoteStatus, BadgeProps["variant"]> = {

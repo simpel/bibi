@@ -1,6 +1,6 @@
 "use client";
 
-import type { TicketTemplateDto } from "@okazi/core/schemas";
+import type { TicketTemplateDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { NamedOption } from "@/components/form/named-option";

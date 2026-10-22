@@ -12,7 +12,7 @@ import {
   QuestionnaireItem,
   QuestionnaireSubmit,
   QuestionnaireTitle,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { GenerativeProps } from "./generative-props";
 import { useQuestionAnswer } from "./use-question-answer";

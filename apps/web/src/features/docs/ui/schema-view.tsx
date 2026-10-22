@@ -1,5 +1,5 @@
-import type { JsonObject } from "@okazi/api";
-import { Badge } from "@okazi/ui";
+import type { JsonObject } from "@bibi/api";
+import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import {
   isNullable,

@@ -1,5 +1,5 @@
-import type { LineChange, OrderLineDto } from "@okazi/core/schemas";
-import { Badge, type BadgeProps, type ColumnDef } from "@okazi/ui";
+import type { LineChange, OrderLineDto } from "@bibi/core/schemas";
+import { Badge, type BadgeProps, type ColumnDef } from "@bibi/ui";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { formatKr } from "../../item/ui/format-price";

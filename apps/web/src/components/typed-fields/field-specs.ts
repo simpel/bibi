@@ -1,5 +1,5 @@
-import type { EntityTypeDto, FieldDefinitionDto, VocabularyDto } from "@okazi/core";
-import { type FieldSpec, isChoiceKind } from "@okazi/core/schemas";
+import type { EntityTypeDto, FieldDefinitionDto, VocabularyDto } from "@bibi/core";
+import { type FieldSpec, isChoiceKind } from "@bibi/core/schemas";
 import type { LinkTargets } from "./typed-form-data";
 
 export type FieldChoice = { value: string; label: string };

@@ -1,4 +1,4 @@
-import { CAPABILITY_REQUIRES, ITEM_CAPABILITIES, type ItemCapability } from "@okazi/core/schemas";
+import { CAPABILITY_REQUIRES, ITEM_CAPABILITIES, type ItemCapability } from "@bibi/core/schemas";
 
 export type ToggleCapabilityInput = {
   current: readonly ItemCapability[];

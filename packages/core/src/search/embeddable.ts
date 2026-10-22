@@ -1,4 +1,4 @@
-import type { ScopedDbClient } from "@okazi/db";
+import type { ScopedDbClient } from "@bibi/db";
 import type { Permission } from "../operations/permission";
 
 export type ToTextInput<E> = { entity: E };

@@ -1,7 +1,7 @@
 "use client";
 
-import { Link } from "@okazi/i18n/navigation";
-import { PermissionProfileCard } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { PermissionProfileCard } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { apiKeyPermissionsRoute, memberPermissionsRoute } from "@/lib/routes";
 import type { GenerativeProps } from "./generative-props";

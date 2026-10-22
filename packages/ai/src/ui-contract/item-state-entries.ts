@@ -1,4 +1,4 @@
-import { ItemStateSchema } from "@okazi/core/schemas";
+import { ItemStateSchema } from "@bibi/core/schemas";
 import { z } from "zod";
 import { archivePreviewEntry } from "./archive-preview-entry";
 import type { ToolUiEntry } from "./tool-ui-types";

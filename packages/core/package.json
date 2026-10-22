@@ -1,5 +1,5 @@
 {
-  "name": "@okazi/core",
+  "name": "@bibi/core",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -19,9 +19,9 @@
     "cleanup:test-orgs": "tsx --env-file-if-exists=../../.env src/seed/demo/cleanup-cli.ts"
   },
   "dependencies": {
-    "@okazi/config": "workspace:*",
-    "@okazi/db": "workspace:*",
-    "@okazi/logger": "workspace:*",
+    "@bibi/config": "workspace:*",
+    "@bibi/db": "workspace:*",
+    "@bibi/logger": "workspace:*",
     "@paralleldrive/cuid2": "3.3.0",
     "zod": "4.6.7"
   },

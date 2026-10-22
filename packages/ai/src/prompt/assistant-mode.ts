@@ -1,4 +1,4 @@
-import type { AiFeatureId } from "@okazi/core";
+import type { AiFeatureId } from "@bibi/core";
 import type { PageContext } from "./page-context-schema";
 
 /** What the assistant is doing in this run; decided by the page the user asks from. */

@@ -1,6 +1,6 @@
-import { createExecuteContext, type ExecuteContext, grantAll, type Result } from "@okazi/core";
-import type { Db } from "@okazi/db";
-import { getLogger } from "@okazi/logger";
+import { createExecuteContext, type ExecuteContext, grantAll, type Result } from "@bibi/core";
+import type { Db } from "@bibi/db";
+import { getLogger } from "@bibi/logger";
 
 export type OrganizationRun = (input: { context: ExecuteContext }) => Promise<Result<unknown>>;
 

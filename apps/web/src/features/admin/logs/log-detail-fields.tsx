@@ -1,4 +1,4 @@
-import type { SystemLogEntry } from "@okazi/core/schemas";
+import type { SystemLogEntry } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 
 const FIELDS = [

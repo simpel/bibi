@@ -1,4 +1,4 @@
-import { Link } from "@okazi/i18n/navigation";
+import { Link } from "@bibi/i18n/navigation";
 import { getTranslations } from "next-intl/server";
 import type { ListDay, ListEntry } from "../calendar-list-model";
 

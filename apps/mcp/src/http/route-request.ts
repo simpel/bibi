@@ -1,4 +1,4 @@
-import type { EmbedFn } from "@okazi/core";
+import type { EmbedFn } from "@bibi/core";
 import { handleMcpRequest, type ResolveContext } from "./handle-mcp-request";
 import {
   MCP_ENDPOINT_PATH,

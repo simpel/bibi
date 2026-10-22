@@ -1,5 +1,5 @@
-import type { RequirementDto } from "@okazi/core";
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import type { RequirementDto } from "@bibi/core";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import { TypeFields } from "@/components/typed-fields/type-fields";

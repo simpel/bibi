@@ -1,10 +1,10 @@
-import type { DevUser } from "@okazi/auth";
+import type { DevUser } from "@bibi/auth";
 import {
   DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { UsersIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { groupDevUsers } from "@/lib/group-dev-users";

@@ -1,6 +1,6 @@
-import { getItem } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
+import { getItem } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
+import { Link } from "@bibi/i18n/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";

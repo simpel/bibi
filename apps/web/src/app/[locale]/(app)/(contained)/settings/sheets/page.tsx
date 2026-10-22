@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { SheetDefinitionList } from "@/features/sheet-definition/ui/sheet-definition-list";
 import { readCursor } from "@/lib/page-cursor";

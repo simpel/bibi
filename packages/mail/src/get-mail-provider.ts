@@ -1,4 +1,4 @@
-import { type Env, getEnv } from "@okazi/config";
+import { type Env, getEnv } from "@bibi/config";
 import type { MailProvider } from "./mail-provider";
 import { createResendProvider } from "./resend/create-resend-provider";
 import { createSmtpProvider } from "./smtp/create-smtp-provider";
@@ -11,7 +11,7 @@ export type ProviderFromEnvInput = { env: Env };
 /** The adapter `MAIL_PROVIDER` selects: `smtp` (default, Mailpit in dev) or `resend`. */
 export function providerFromEnv({ env }: ProviderFromEnvInput): MailProvider {
   if (env.MAIL_PROVIDER === "resend") {
-    // `@okazi/config` refuses MAIL_PROVIDER=resend without RESEND_API_KEY.
+    // `@bibi/config` refuses MAIL_PROVIDER=resend without RESEND_API_KEY.
     return createResendProvider({
       apiKey: env.RESEND_API_KEY ?? "",
       from: env.MAIL_FROM,

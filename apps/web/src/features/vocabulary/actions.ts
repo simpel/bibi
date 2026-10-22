@@ -10,7 +10,7 @@ import {
   updateVocabularyValue,
   type VocabularyCreateInput,
   type VocabularyDto,
-} from "@okazi/core";
+} from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";

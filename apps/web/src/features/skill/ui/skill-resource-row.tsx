@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@okazi/ui";
+import { Button } from "@bibi/ui";
 import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";

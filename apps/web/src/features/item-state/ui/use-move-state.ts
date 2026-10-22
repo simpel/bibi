@@ -1,5 +1,5 @@
-import type { ItemStateDto } from "@okazi/core/schemas";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { ItemStateDto } from "@bibi/core/schemas";
+import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useToastAction } from "@/lib/use-toast-action";
 import { reorderItemStatesAction } from "../actions";

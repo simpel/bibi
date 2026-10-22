@@ -1,5 +1,5 @@
-import { createExecuteContext, type ExecuteContext } from "@okazi/core";
-import { type Db, getDb } from "@okazi/db";
+import { createExecuteContext, type ExecuteContext } from "@bibi/core";
+import { type Db, getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { createClient, createItemType, testContext } from "./helpers";
 

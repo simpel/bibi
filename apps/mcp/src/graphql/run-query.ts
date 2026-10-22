@@ -1,4 +1,4 @@
-import { appError, type EmbedFn, type ExecuteContext, err, ok, type Result } from "@okazi/core";
+import { appError, type EmbedFn, type ExecuteContext, err, ok, type Result } from "@bibi/core";
 import { holdContext, RELAY_HEADER } from "./context-relay";
 import { getGraphqlHandler } from "./get-handler";
 

@@ -1,4 +1,4 @@
-import type { SkillCreateInputSchema, SkillUpdateInputSchema } from "@okazi/core/schemas";
+import type { SkillCreateInputSchema, SkillUpdateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 
 /** Validated inputs of `skill.create` / `skill.update` (defaults applied). */

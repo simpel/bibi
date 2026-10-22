@@ -1,4 +1,4 @@
-import type { FixedRole } from "@okazi/core";
+import type { FixedRole } from "@bibi/core";
 import { getAuth } from "../src/index";
 import { createOrg, signIn, signUp } from "./helpers";
 

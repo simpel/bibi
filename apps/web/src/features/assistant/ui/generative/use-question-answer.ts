@@ -1,4 +1,4 @@
-import type { AskedQuestion } from "@okazi/ai";
+import type { AskedQuestion } from "@bibi/ai";
 import { isToolUIPart, type UIMessage } from "ai";
 import { useContext } from "react";
 import { answerText } from "../../lib/question-answer";

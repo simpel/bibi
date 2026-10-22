@@ -4,8 +4,8 @@ const ALLOWED_HEADERS = [
   "mcp-protocol-version",
   "mcp-session-id",
   "x-api-key",
-  "x-okazi-actor",
-  "x-okazi-conversation-id",
+  "x-bibi-actor",
+  "x-bibi-conversation-id",
 ].join(", ");
 
 export type CorsInput = { request: Request; allowedOrigins: readonly string[] };

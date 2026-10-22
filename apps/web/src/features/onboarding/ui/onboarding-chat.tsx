@@ -1,6 +1,6 @@
 "use client";
 
-import { ConversationEmptyState, Suggestion, Suggestions } from "@okazi/ui";
+import { ConversationEmptyState, Suggestion, Suggestions } from "@bibi/ui";
 import { SparklesIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ChatView } from "@/features/assistant/ui/chat-view";

@@ -1,4 +1,4 @@
-import type { JsonObject } from "@okazi/api";
+import type { JsonObject } from "@bibi/api";
 
 /** One MCP tool, flattened for the public reference page (serializable). */
 export type ReferenceEntry = {

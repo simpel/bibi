@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { createApiKey, execute, removeMember, updatePermissions } from "../src/index";
 import { testContext, unwrap } from "./helpers";

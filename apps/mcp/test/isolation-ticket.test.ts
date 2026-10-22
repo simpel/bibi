@@ -1,4 +1,4 @@
-import { deliverInboundEmail, ticketInboundAddress } from "@okazi/core";
+import { deliverInboundEmail, ticketInboundAddress } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 import { gqlQuery } from "./parity-graphql";

@@ -1,4 +1,4 @@
-import type { Invoice, OrderLine } from "@okazi/db";
+import type { Invoice, OrderLine } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { paidByReceivable, settlementOf } from "../payment/settlement";
 import { toOrderLineDto } from "../quote/quote-view";

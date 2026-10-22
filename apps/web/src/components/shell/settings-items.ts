@@ -1,4 +1,4 @@
-import type { Permission, PermissionSet } from "@okazi/core";
+import type { Permission, PermissionSet } from "@bibi/core";
 import {
   BookOpenIcon,
   CircleDotIcon,

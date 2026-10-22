@@ -1,12 +1,12 @@
 import "server-only";
-import { resolveExecuteContext } from "@okazi/auth";
+import { resolveExecuteContext } from "@bibi/auth";
 import {
   type Feature,
   type FixedRole,
   highestRole,
   type Permission,
   type PermissionSet,
-} from "@okazi/core";
+} from "@bibi/core";
 import { headers } from "next/headers";
 import { canPermission, type RowAccess } from "@/lib/can";
 

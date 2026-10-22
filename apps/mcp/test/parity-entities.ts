@@ -1,5 +1,5 @@
+import type { ExecuteContext } from "@bibi/core";
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import type { ExecuteContext } from "@okazi/core";
 import { call, type Json } from "./helpers";
 import { accessEntities } from "./parity-entities-access";
 import { configurationEntities } from "./parity-entities-config";

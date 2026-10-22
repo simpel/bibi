@@ -9,7 +9,7 @@ import {
   ok,
   previewChange,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 import type { McpToolMeta } from "../tools/meta";
 import { toJsonValue } from "../tools/results";
 import { bindProposal } from "./bind";

@@ -1,5 +1,5 @@
-import type { SheetDto } from "@okazi/core/schemas";
-import { Badge } from "@okazi/ui";
+import type { SheetDto } from "@bibi/core/schemas";
+import { Badge } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 
 /** A sheet as the server (Date) or a tool result (ISO string) carries it. */

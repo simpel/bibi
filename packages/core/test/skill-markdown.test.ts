@@ -24,9 +24,9 @@ metadata:
 
 1. Read the venue with \`venue_get\`.
 
-<!-- okazi:resource name="template.md" -->
+<!-- bibi:resource name="template.md" -->
 Hello {customer},
-<!-- /okazi:resource -->
+<!-- /bibi:resource -->
 `;
 
 describe("SKILL.md import/export", () => {

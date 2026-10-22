@@ -5,8 +5,8 @@ export const SECURITY_SCHEMES: JsonObject = {
   apiKey: {
     type: "http",
     scheme: "bearer",
-    bearerFormat: "okz_<key>",
-    description: "Organization API key: `Authorization: Bearer okz_…`.",
+    bearerFormat: "bib_<key>",
+    description: "Organization API key: `Authorization: Bearer bib_…`.",
   },
   session: {
     type: "apiKey",
@@ -21,7 +21,7 @@ export const SECURITY_SCHEMES: JsonObject = {
       authorizationCode: {
         authorizationUrl: "/api/auth/oauth2/authorize",
         tokenUrl: "/api/auth/oauth2/token",
-        scopes: { "okazi:read": "Read data", "okazi:write": "Change data" },
+        scopes: { "bibi:read": "Read data", "bibi:write": "Change data" },
       },
     },
   },
@@ -30,5 +30,5 @@ export const SECURITY_SCHEMES: JsonObject = {
 export const SECURITY_REQUIREMENTS: JsonObject[] = [
   { apiKey: [] },
   { session: [] },
-  { oauth2: ["okazi:read", "okazi:write"] },
+  { oauth2: ["bibi:read", "bibi:write"] },
 ];

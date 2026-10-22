@@ -1,4 +1,4 @@
-import type { PipelineSetupDraft } from "@okazi/core/schemas";
+import type { PipelineSetupDraft } from "@bibi/core/schemas";
 import type { UIMessage } from "ai";
 import { getToolName, isToolUIPart } from "ai";
 

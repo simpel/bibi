@@ -1,4 +1,4 @@
-import { cn } from "@okazi/ui";
+import { cn } from "@bibi/ui";
 import { PlusIcon } from "lucide-react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";
 import type { GridCell } from "../calendar-grid-model";

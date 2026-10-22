@@ -1,4 +1,4 @@
-import { type AppError, toMcpError } from "@okazi/core";
+import { type AppError, toMcpError } from "@bibi/core";
 import type { ToolResult } from "./types";
 
 export type ToJsonValueInput = { value: unknown };

@@ -1,6 +1,6 @@
 "use server";
 
-import { createPayment, type PaymentCreateInput, type PaymentDto } from "@okazi/core";
+import { createPayment, type PaymentCreateInput, type PaymentDto } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";

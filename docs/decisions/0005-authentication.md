@@ -4,7 +4,7 @@
 - **Status:** Accepted
 
 ## Context
-Okazi has several kinds of clients: staff in the web UI, REST integrations from other systems, the AI assistant and MCP clients such as Claude Desktop. Each needs its own sign-in path, but all must produce the same permission result. Swedish requirements such as BankID are used for signing, not for regular sign-in in the MVP.
+Bibi has several kinds of clients: staff in the web UI, REST integrations from other systems, the AI assistant and MCP clients such as Claude Desktop. Each needs its own sign-in path, but all must produce the same permission result. Swedish requirements such as BankID are used for signing, not for regular sign-in in the MVP.
 
 ## Decision
 - Better Auth is the authentication solution.

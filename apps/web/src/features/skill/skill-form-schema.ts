@@ -1,5 +1,5 @@
-import type { SkillDto } from "@okazi/core";
-import { SkillCreateInputSchema } from "@okazi/core/schemas";
+import type { SkillDto } from "@bibi/core";
+import { SkillCreateInputSchema } from "@bibi/core/schemas";
 import { blankToUndefined } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 import type { SkillScopeChoice } from "./skill-types";

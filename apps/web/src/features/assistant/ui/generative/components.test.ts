@@ -1,4 +1,4 @@
-import { UI_COMPONENTS } from "@okazi/ai";
+import { UI_COMPONENTS } from "@bibi/ai";
 import { describe, expect, it } from "vitest";
 import { GENERATIVE_COMPONENTS } from "./components";
 

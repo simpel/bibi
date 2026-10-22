@@ -6,7 +6,7 @@
 - **Spec:** `docs/specs/change-layer.md`
 
 ## Context
-- Okazi is a fixed system with a conversation on top. Every change is a proposal the user confirms (ADR 0007).
+- Bibi is a fixed system with a conversation on top. Every change is a proposal the user confirms (ADR 0007).
 - Comparable products show the real effect rather than a summary, render it from the system rather than the model, keep the preview free of side effects, and gate changes but not reads.
 - The approval card showed the proposed input only, with no before/after and nothing about what else the change touches. A request needing several commands became several cards that could be confirmed one by one, leaving a half-done change.
 

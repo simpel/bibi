@@ -1,4 +1,4 @@
-import { Button } from "@okazi/ui";
+import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type WizardFooterProps = {

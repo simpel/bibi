@@ -1,4 +1,4 @@
-import { Link } from "@okazi/i18n/navigation";
+import { Link } from "@bibi/i18n/navigation";
 import {
   Collapsible,
   CollapsibleContent,
@@ -9,7 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { ChevronRightIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { NavItem } from "./nav-items";

@@ -1,7 +1,7 @@
 "use client";
 
-import { extractPendingApprovals } from "@okazi/ai/approvals";
-import { MessageResponse } from "@okazi/ui";
+import { extractPendingApprovals } from "@bibi/ai/approvals";
+import { MessageResponse } from "@bibi/ui";
 import { isTextUIPart, isToolUIPart, type UIMessage } from "ai";
 import { ApprovalCardView } from "./generative/approval-card-view";
 import { ToolPartView } from "./tool-part-view";

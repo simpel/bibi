@@ -1,7 +1,7 @@
 "use client";
 
-import { Link } from "@okazi/i18n/navigation";
-import { Badge, Card, Skeleton } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { Badge, Card, Skeleton } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { InlineLoadError } from "@/components/states/inline-load-error";
 import { hitRoute, type SearchHitView } from "@/features/search/search-hit-view";

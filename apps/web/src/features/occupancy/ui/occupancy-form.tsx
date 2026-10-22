@@ -1,5 +1,5 @@
-import type { OccupancyDto } from "@okazi/core";
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import type { OccupancyDto } from "@bibi/core";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import { OccupancyTypeField } from "./occupancy-type-field";

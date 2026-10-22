@@ -26,10 +26,10 @@ BEGIN
     RAISE EXCEPTION USING MESSAGE = 'history_stale', DETAIL = NEW."ticketId";
   END IF;
   IF current_phase IS DISTINCT FROM NEW."toPhaseId" THEN
-    PERFORM set_config('okazi.history_projection', 'on', true);
+    PERFORM set_config('bibi.history_projection', 'on', true);
     UPDATE "Ticket" SET "phaseId" = NEW."toPhaseId", "updatedAt" = CURRENT_TIMESTAMP
      WHERE "id" = NEW."ticketId" AND "organizationId" = NEW."organizationId";
-    PERFORM set_config('okazi.history_projection', 'off', true);
+    PERFORM set_config('bibi.history_projection', 'off', true);
   END IF;
   RETURN NULL;
 END $$;
@@ -45,17 +45,17 @@ BEGIN
     RAISE EXCEPTION USING MESSAGE = 'history_stale', DETAIL = NEW."lineId";
   END IF;
   IF current_state IS DISTINCT FROM NEW."toStateId" THEN
-    PERFORM set_config('okazi.history_projection', 'on', true);
+    PERFORM set_config('bibi.history_projection', 'on', true);
     UPDATE "Line" SET "stateId" = NEW."toStateId", "updatedAt" = CURRENT_TIMESTAMP
      WHERE "id" = NEW."lineId" AND "organizationId" = NEW."organizationId";
-    PERFORM set_config('okazi.history_projection', 'off', true);
+    PERFORM set_config('bibi.history_projection', 'off', true);
   END IF;
   RETURN NULL;
 END $$;
 
 CREATE OR REPLACE FUNCTION history_projection_only() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN
-  IF current_setting('okazi.history_projection', true) IS DISTINCT FROM 'on' THEN
+  IF current_setting('bibi.history_projection', true) IS DISTINCT FROM 'on' THEN
     RAISE EXCEPTION USING MESSAGE = 'history_projection_only',
       DETAIL = TG_TABLE_NAME || ' ' || NEW."id";
   END IF;

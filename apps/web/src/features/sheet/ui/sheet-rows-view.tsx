@@ -1,4 +1,4 @@
-import type { SheetChange, SheetContent } from "@okazi/core/schemas";
+import type { SheetChange, SheetContent } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { SheetRowLine } from "./sheet-row-line";
 

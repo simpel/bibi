@@ -7,7 +7,7 @@ import {
   listItems,
   listTickets,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 import type { LinkTarget, LinkTargets } from "@/components/typed-fields/typed-form-data";
 import { runOperation } from "./run-operation";
 

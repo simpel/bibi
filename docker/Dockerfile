@@ -6,15 +6,15 @@ WORKDIR /app
 FROM base AS prune
 ARG APP
 COPY . .
-RUN pnpm dlx turbo@2.11.8 prune @okazi/${APP} --docker
+RUN pnpm dlx turbo@2.11.8 prune @bibi/${APP} --docker
 
 FROM base AS build
 ARG APP
 COPY --from=prune /app/out/json/ .
 RUN pnpm install --frozen-lockfile
 COPY --from=prune /app/out/full/ .
-RUN pnpm exec turbo run build --filter=@okazi/${APP}
-RUN pnpm --filter @okazi/${APP} deploy --prod --legacy /deploy
+RUN pnpm exec turbo run build --filter=@bibi/${APP}
+RUN pnpm --filter @bibi/${APP} deploy --prod --legacy /deploy
 # deploy drops `.next/node_modules` (hash-named links Turbopack uses for serverExternalPackages);
 # recreate them against the deployed node_modules.
 RUN cd apps/${APP} && if [ -d .next/node_modules ]; then \

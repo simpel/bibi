@@ -1,4 +1,4 @@
-import { elapsedMs } from "@okazi/logger";
+import { elapsedMs } from "@bibi/logger";
 import type { z } from "zod";
 import { fromUnknown } from "../errors/from-unknown";
 import { err, type Result } from "../errors/result";

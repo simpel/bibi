@@ -1,5 +1,5 @@
 {
-  "extends": "@okazi/config/tsconfig.base.json",
+  "extends": "@bibi/config/tsconfig.base.json",
   "compilerOptions": {
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "jsx": "react-jsx",

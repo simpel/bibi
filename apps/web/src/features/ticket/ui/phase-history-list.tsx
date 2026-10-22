@@ -1,4 +1,4 @@
-import type { TicketPhaseChangeDto } from "@okazi/core/schemas";
+import type { TicketPhaseChangeDto } from "@bibi/core/schemas";
 import { useFormatter, useTranslations } from "next-intl";
 
 /** A phase change as the server (Date) or a tool result (ISO string) carries it. */

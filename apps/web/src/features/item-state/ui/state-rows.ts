@@ -1,5 +1,5 @@
-import type { ItemStateDto } from "@okazi/core/schemas";
-import { STATE_FLAGS } from "@okazi/core/schemas";
+import type { ItemStateDto } from "@bibi/core/schemas";
+import { STATE_FLAGS } from "@bibi/core/schemas";
 
 export type StateFlagKey = (typeof STATE_FLAGS)[number] | "hold";
 

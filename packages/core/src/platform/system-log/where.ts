@@ -1,4 +1,4 @@
-import type { Prisma } from "@okazi/db";
+import type { Prisma } from "@bibi/db";
 import { LOG_LEVELS, type LogLevelName, type SystemLogListQuery } from "./schema";
 
 type Filters = Omit<SystemLogListQuery, "page" | "pageSize">;

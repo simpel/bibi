@@ -1,7 +1,7 @@
 "use client";
 
-import type { VenueDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { VenueDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import { venueRoute } from "@/lib/routes";
 import { VenueForm } from "./venue-form";
 

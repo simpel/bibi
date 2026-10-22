@@ -1,4 +1,4 @@
-import { type ConfigurationImportResult, importConfigurationTemplate } from "@okazi/core";
+import { type ConfigurationImportResult, importConfigurationTemplate } from "@bibi/core";
 import { builder } from "../../schema/builder";
 import { mutationFromOperation } from "../../schema/from-operation";
 import { EntityTypeRef } from "../entity-type/graphql";

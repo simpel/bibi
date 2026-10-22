@@ -1,4 +1,4 @@
-import type { EntityTypeDto } from "@okazi/core";
+import type { EntityTypeDto } from "@bibi/core";
 import type { UseFormReturn } from "react-hook-form";
 import { BufferFields } from "@/components/form/buffer-fields";
 import { BookableSection } from "./bookable-section";

@@ -1,4 +1,4 @@
-import type { ItemStateDto } from "@okazi/core/schemas";
+import type { ItemStateDto } from "@bibi/core/schemas";
 import {
   Checkbox,
   ColorSwatch,
@@ -8,7 +8,7 @@ import {
   FormLabel,
   FormMessage,
   Label,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control } from "react-hook-form";
 

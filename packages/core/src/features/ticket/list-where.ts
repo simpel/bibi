@@ -1,4 +1,4 @@
-import type { Prisma } from "@okazi/db";
+import type { Prisma } from "@bibi/db";
 import type { z } from "zod";
 import type { TicketListInputSchema } from "./schema";
 

@@ -1,5 +1,5 @@
-import type { ResponsibilityDto } from "@okazi/core";
-import { ResponsibilityCreateInputSchema } from "@okazi/core/schemas";
+import type { ResponsibilityDto } from "@bibi/core";
+import { ResponsibilityCreateInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
 
 /** Raw values of the responsibility form. */

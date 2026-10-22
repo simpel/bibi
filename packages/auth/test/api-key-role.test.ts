@@ -1,5 +1,5 @@
-import { PRESET_PERMISSIONS } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { PRESET_PERMISSIONS } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { resolveExecuteContext } from "../src/index";
 import { issueKey, issueKeyOrThrow, keyHeaders } from "./api-key-helpers";

@@ -1,4 +1,4 @@
-import type { PageContext } from "@okazi/ai";
+import type { PageContext } from "@bibi/ai";
 import { DefaultChatTransport, type UIMessage } from "ai";
 
 export type ChatTransportInput = {
@@ -7,7 +7,7 @@ export type ChatTransportInput = {
 };
 
 /**
- * `POST /api/chat` with the contract of `@okazi/ai`: `{ conversationId?, messages, pageContext }`.
+ * `POST /api/chat` with the contract of `@bibi/ai`: `{ conversationId?, messages, pageContext }`.
  * Only the newest message is sent (the server rebuilds history from the database, so the browser
  * cannot forge earlier turns). Values are read per request, so one transport serves every
  * conversation and page.

@@ -1,6 +1,6 @@
 "use client";
 
-import { Form } from "@okazi/ui";
+import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";

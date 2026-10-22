@@ -27,7 +27,7 @@ export const PaymentSchema = z.object({
     .number()
     .int()
     .nullable()
-    .describe("Okazi's application fee on this charge in minor units, agreed at charge time"),
+    .describe("Bibi's application fee on this charge in minor units, agreed at charge time"),
   providerReference: z
     .string()
     .nullable()

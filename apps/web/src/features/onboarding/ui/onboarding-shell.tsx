@@ -1,4 +1,4 @@
-import { Wordmark } from "@okazi/ui";
+import { Wordmark } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { AssistantProvider } from "@/features/assistant/state/assistant-provider";

@@ -20,7 +20,7 @@ export function AIChatFooter() {
 
         <PromptInput onSubmit={() => undefined}>
           <PromptInputBody>
-            <PromptInputTextarea placeholder="Ask Okazi about venue availability, catering orders, runsheets…" />
+            <PromptInputTextarea placeholder="Ask Bibi about venue availability, catering orders, runsheets…" />
           </PromptInputBody>
           <PromptInputFooter>
             <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">

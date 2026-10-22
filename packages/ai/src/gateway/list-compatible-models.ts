@@ -1,4 +1,4 @@
-import { type AiModel, aiFeature, type ListCompatibleModels } from "@okazi/core";
+import { type AiModel, aiFeature, type ListCompatibleModels } from "@bibi/core";
 import type { ListGatewayModels } from "./list-gateway-models";
 import type { ProbeEmbedding } from "./probe-embedding";
 

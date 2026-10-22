@@ -1,4 +1,4 @@
-import type { Result } from "@okazi/core";
+import type { Result } from "@bibi/core";
 import type { connectMcp } from "../mcp/connect-mcp";
 import { assistantMode, MODE_FEATURE } from "../prompt/assistant-mode";
 import { errorResponse } from "../server/error-response";

@@ -22,7 +22,7 @@
 - **Coolify security (see Context):** the admin UI is not exposed publicly. It is reached through VPN (Tailscale/WireGuard) or an SSH tunnel. Coolify is kept updated to the latest 4.x version, with few administrators, and Coolify's own instance data is included in the backup.
 - **Migrations:** `prisma migrate deploy` runs as a one-off step before new containers take traffic. Migrations must be backward compatible (expand/contract).
 - **Domains:** `app.` for the web app and `mcp.` for the MCP server (OAuth requires a stable public HTTPS URL).
-- **Secrets:** GitHub environment secrets and Coolify's secret management. Never in the repo. All are read through `@okazi/config`.
+- **Secrets:** GitHub environment secrets and Coolify's secret management. Never in the repo. All are read through `@bibi/config`.
 - **Hardening:** Hetzner Cloud Firewall (80, 443 and SSH), SSH keys only, unattended-upgrades.
 - **Operations:** health endpoints for web and mcp as a deploy gate, Docker log rotation, uptime monitoring and error tracking.
 

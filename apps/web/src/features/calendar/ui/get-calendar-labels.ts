@@ -1,5 +1,5 @@
 import "server-only";
-import { toIsoDate, toZonedParts } from "@okazi/core/schemas";
+import { toIsoDate, toZonedParts } from "@bibi/core/schemas";
 import { getFormatter, getTranslations } from "next-intl/server";
 import type { CalendarBlock } from "../calendar-blocks";
 import type { CalendarLabels } from "../calendar-grid-model";

@@ -12,7 +12,7 @@ ARGS=(--json --base origin/main)
 if [ "${1:-}" = "--light" ]; then
   ARGS+=(--light)
 else
-  docker compose -p okazi -f "$MAIN/docker-compose.yml" up -d --wait postgres >/dev/null 2>&1 || true
+  docker compose -p bibi -f "$MAIN/docker-compose.yml" up -d --wait postgres >/dev/null 2>&1 || true
   # Storybook has its own CI job; a ticket that changes packages/ui builds it here too.
   CHANGED="$(git diff --name-only origin/main...HEAD; git diff --name-only HEAD; git ls-files --others --exclude-standard)"
   if grep -q '^packages/ui/' <<<"$CHANGED"; then STORYBOOK=1; fi

@@ -1,4 +1,4 @@
-import type { FieldDefinitionDto, VocabularyDto } from "@okazi/core";
+import type { FieldDefinitionDto, VocabularyDto } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { displayValue } from "./field-display";
 

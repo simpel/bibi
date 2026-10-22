@@ -1,4 +1,4 @@
-import type { FieldDefinitionDto } from "@okazi/core";
+import type { FieldDefinitionDto } from "@bibi/core";
 import type { useTranslations } from "next-intl";
 import type { VocabularyChoice } from "./field-source-fields";
 

@@ -1,5 +1,5 @@
-import { AppError, type EmbedOutput } from "@okazi/core";
-import { EMBEDDING_DIMENSIONS } from "@okazi/db";
+import { AppError, type EmbedOutput } from "@bibi/core";
+import { EMBEDDING_DIMENSIONS } from "@bibi/db";
 import { type EmbeddingModel, embedMany } from "ai";
 import { z } from "zod";
 

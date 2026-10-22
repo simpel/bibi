@@ -1,10 +1,10 @@
-import { getEnv } from "@okazi/config";
-import { SUPERADMIN_ROLE } from "@okazi/core";
-import { DEMO_ORGS } from "@okazi/core/seed/demo";
-import { getDb } from "@okazi/db";
+import { getEnv } from "@bibi/config";
+import { SUPERADMIN_ROLE } from "@bibi/core";
+import { DEMO_ORGS } from "@bibi/core/seed/demo";
+import { getDb } from "@bibi/db";
 
-/** Seeded demo users have `@<slug>.okazi.test` addresses (reserved TLD, docs/demo-seed.md). */
-export const DEV_EMAIL_SUFFIX = ".okazi.test";
+/** Seeded demo users have `@<slug>.bibi.test` addresses (reserved TLD, docs/demo-seed.md). */
+export const DEV_EMAIL_SUFFIX = ".bibi.test";
 
 export type DevUser = {
   id: string;

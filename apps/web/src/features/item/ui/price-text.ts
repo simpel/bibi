@@ -1,4 +1,4 @@
-import type { ItemDto } from "@okazi/core";
+import type { ItemDto } from "@bibi/core";
 import type { useTranslations } from "next-intl";
 import { formatKr } from "./format-price";
 

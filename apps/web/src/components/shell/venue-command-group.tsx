@@ -1,6 +1,6 @@
 "use client";
 
-import { CommandGroup, CommandItem, CommandSeparator } from "@okazi/ui";
+import { CommandGroup, CommandItem, CommandSeparator } from "@bibi/ui";
 import { BuildingIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { VenueShortcut } from "@/features/venue/actions";

@@ -1,5 +1,5 @@
-import type { PaymentAccountDto } from "@okazi/core/schemas";
-import { Badge } from "@okazi/ui";
+import type { PaymentAccountDto } from "@bibi/core/schemas";
+import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type PaymentStatusBadgeProps = { status: PaymentAccountDto["status"] };

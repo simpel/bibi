@@ -1,5 +1,5 @@
+import { CustomerArchiveInputSchema } from "@bibi/core/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CustomerArchiveInputSchema } from "@okazi/core/schemas";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";

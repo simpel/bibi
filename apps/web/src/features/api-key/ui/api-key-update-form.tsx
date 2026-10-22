@@ -1,9 +1,9 @@
 "use client";
 
+import type { ApiKeyDto, ApiKeyUpdateInput, FixedRole } from "@bibi/core/schemas";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Button, Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { ApiKeyDto, ApiKeyUpdateInput, FixedRole } from "@okazi/core/schemas";
-import { useRouter } from "@okazi/i18n/navigation";
-import { Button, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";

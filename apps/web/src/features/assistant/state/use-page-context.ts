@@ -1,6 +1,6 @@
 "use client";
 
-import type { PageContext } from "@okazi/ai";
+import type { PageContext } from "@bibi/ai";
 import { usePathname } from "next/navigation";
 import { useLocale } from "next-intl";
 import { useMemo } from "react";

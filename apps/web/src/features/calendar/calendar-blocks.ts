@@ -4,7 +4,7 @@ import type {
   OccupancyDto,
   OccupancyType,
   TicketDto,
-} from "@okazi/core/schemas";
+} from "@bibi/core/schemas";
 
 /** One occupancy on the calendar, with the ticket it belongs to (when it has one). */
 export type CalendarBlock = {

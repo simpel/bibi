@@ -1,5 +1,5 @@
-import type { ResponsibilityDto } from "@okazi/core";
-import { actionsColumn, type ColumnDef } from "@okazi/ui";
+import type { ResponsibilityDto } from "@bibi/core";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { namesOf } from "@/features/sheet-definition/ui/sheet-options";

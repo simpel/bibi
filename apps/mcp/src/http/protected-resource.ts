@@ -12,7 +12,7 @@ export function protectedResourceMetadata({
     resource,
     authorization_servers: [authorizationServer],
     bearer_methods_supported: ["header"],
-    resource_name: "Okazi MCP",
+    resource_name: "Bibi MCP",
   };
 }
 

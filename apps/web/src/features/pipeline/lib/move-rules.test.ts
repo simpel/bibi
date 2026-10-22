@@ -1,4 +1,4 @@
-import type { PipelineCard, PipelineColumn } from "@okazi/core";
+import type { PipelineCard, PipelineColumn } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { canMoveCard } from "./move-rules";
 

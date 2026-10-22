@@ -4,7 +4,7 @@
 - **Status:** Accepted
 
 ## Context
-Okazi must expose the same functionality in web, GraphQL, REST and MCP, and the AI assistant must use the same surfaces. That requires a shared codebase with shared packages. The tech stack has been open in CLAUDE.md.
+Bibi must expose the same functionality in web, GraphQL, REST and MCP, and the AI assistant must use the same surfaces. That requires a shared codebase with shared packages. The tech stack has been open in CLAUDE.md.
 
 ## Decision
 - Monorepo with pnpm workspaces and Turborepo.

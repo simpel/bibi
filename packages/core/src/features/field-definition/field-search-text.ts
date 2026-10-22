@@ -1,4 +1,4 @@
-import type { ScopedDbClient } from "@okazi/db";
+import type { ScopedDbClient } from "@bibi/db";
 import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";
 import { asFieldValues } from "./field-usage";
 

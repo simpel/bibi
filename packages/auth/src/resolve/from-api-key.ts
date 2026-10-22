@@ -1,4 +1,4 @@
-import { applyOverrides, ok, parseMemberRole, type Result } from "@okazi/core";
+import { applyOverrides, ok, parseMemberRole, type Result } from "@bibi/core";
 import { z } from "zod";
 import { getAuth } from "../get-auth";
 import { forbidden, unauthenticated } from "./errors";

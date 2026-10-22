@@ -1,4 +1,4 @@
-import type { PhaseGridCellDto, TicketPhaseDto } from "@okazi/core/schemas";
+import type { PhaseGridCellDto, TicketPhaseDto } from "@bibi/core/schemas";
 
 /** One table row: a phase and the state each item type's cell sets (null = keep). */
 export type GridRow = { phase: TicketPhaseDto; cells: Record<string, string | null> };

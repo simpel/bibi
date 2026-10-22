@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "@okazi/i18n/navigation";
+import { usePathname } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { canPermission } from "@/lib/can";
 import { NavGroup } from "./nav-group";

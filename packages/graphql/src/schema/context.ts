@@ -1,4 +1,4 @@
-import type { AfterCommitHook, AnyOperation, ExecuteContext } from "@okazi/core";
+import type { AfterCommitHook, AnyOperation, ExecuteContext } from "@bibi/core";
 import type { Loaders } from "./loaders";
 
 /** Per-request GraphQL context. `core` is the org-scoped ExecuteContext handed to `execute`. */

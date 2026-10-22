@@ -1,4 +1,4 @@
-import type { ScopedDbClient } from "@okazi/db";
+import type { ScopedDbClient } from "@bibi/db";
 import { auditRows } from "./audit-rows";
 import type { Actor, AnyOperation, RecordedChange } from "./types";
 

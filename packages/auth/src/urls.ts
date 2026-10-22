@@ -1,4 +1,4 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 
 /** Mount path of the Better Auth handler in the web app (`app/api/auth/[...all]/route.ts`). */
 export const AUTH_BASE_PATH = "/api/auth";

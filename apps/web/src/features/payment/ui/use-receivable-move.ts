@@ -1,4 +1,4 @@
-import { useRouter } from "@okazi/i18n/navigation";
+import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import type { ActionResult } from "@/lib/action-result";
 import { useToastAction } from "@/lib/use-toast-action";

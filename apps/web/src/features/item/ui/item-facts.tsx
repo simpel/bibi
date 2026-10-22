@@ -1,4 +1,4 @@
-import type { EntityTypeDto, ItemDto } from "@okazi/core";
+import type { EntityTypeDto, ItemDto } from "@bibi/core";
 import { getTranslations } from "next-intl/server";
 import { FactList } from "@/components/typed-fields/fact-list";
 import { itemFacts } from "./item-facts-list";

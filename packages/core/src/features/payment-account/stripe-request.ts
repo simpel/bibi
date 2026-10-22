@@ -1,4 +1,4 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 

@@ -1,5 +1,5 @@
-import type { EntityTypeDto, LineDto, LineUpdateInput, VocabularyDto } from "@okazi/core";
-import { buildFieldsSchema, LineCreateInputSchema } from "@okazi/core/schemas";
+import type { EntityTypeDto, LineDto, LineUpdateInput, VocabularyDto } from "@bibi/core";
+import { buildFieldsSchema, LineCreateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { bufferFormToInput } from "@/components/form/buffer-values";
 import { NONE } from "@/components/form/option-select-field";

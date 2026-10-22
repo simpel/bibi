@@ -6,7 +6,7 @@ import {
   listQuotes,
   type QuoteDto,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 import type { NamedOption } from "@/components/form/named-option";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { runOperation } from "@/server/run-operation";

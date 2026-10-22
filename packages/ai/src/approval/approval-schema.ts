@@ -1,4 +1,4 @@
-import { ChangePreviewSchema } from "@okazi/core/schemas";
+import { ChangePreviewSchema } from "@bibi/core/schemas";
 import { z } from "zod";
 
 /** `structuredContent` of an MCP command the AI actor proposed (apps/mcp approval flow). */

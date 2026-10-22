@@ -1,5 +1,5 @@
-import { Link } from "@okazi/i18n/navigation";
-import { DropdownMenuItem } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { DropdownMenuItem } from "@bibi/ui";
 import { UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ROUTES } from "@/lib/routes";

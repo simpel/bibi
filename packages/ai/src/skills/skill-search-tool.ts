@@ -21,7 +21,7 @@ export function createSkillSearchTool({ client, published }: CreateSkillSearchTo
   const byId = new Map(published.map((skill) => [skill.id, skill]));
   return tool({
     description:
-      "Find a skill (a saved, step-by-step way of doing a task in Okazi) for what the user wants. " +
+      "Find a skill (a saved, step-by-step way of doing a task in Bibi) for what the user wants. " +
       "Returns id, slug, name and description; call load_skill to get its instructions.",
     inputSchema: SkillSearchInputSchema,
     execute: async ({ query }) => {

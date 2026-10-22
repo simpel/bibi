@@ -1,4 +1,4 @@
-import type { Customer } from "@okazi/db";
+import type { Customer } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";

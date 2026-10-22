@@ -1,11 +1,11 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { afterAll, describe, expect, it } from "vitest";
 import { checkDemoMegaAdmin } from "../src/seed/demo/mega-admin-checks";
 import { seedMegaAdmin } from "../src/seed/demo/seed-mega-admin";
 
 const db = getDb();
-const email = `mega-${createId().slice(0, 8)}@admin.okazi.test`;
+const email = `mega-${createId().slice(0, 8)}@admin.bibi.test`;
 const organizationIds: string[] = [];
 
 const newOrg = async () => {

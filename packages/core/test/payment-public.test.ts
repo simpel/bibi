@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   createCoreOperations,

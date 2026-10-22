@@ -1,9 +1,5 @@
-import type { FieldDefinitionDto } from "@okazi/core";
-import {
-  FieldDefinitionCreateInputSchema,
-  type FieldKind,
-  isChoiceKind,
-} from "@okazi/core/schemas";
+import type { FieldDefinitionDto } from "@bibi/core";
+import { FieldDefinitionCreateInputSchema, type FieldKind, isChoiceKind } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { blankToUndefined } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";

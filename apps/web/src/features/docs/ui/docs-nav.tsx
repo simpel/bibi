@@ -1,6 +1,6 @@
 "use client";
 
-import { Link, usePathname } from "@okazi/i18n/navigation";
+import { Link, usePathname } from "@bibi/i18n/navigation";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -8,7 +8,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { DOC_SECTIONS, docHref, MCP_REFERENCE_HREF, REST_REFERENCE_HREF } from "../pages";
 

@@ -1,4 +1,4 @@
-import { Checkbox, Label } from "@okazi/ui";
+import { Checkbox, Label } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useId } from "react";
 

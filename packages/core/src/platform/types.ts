@@ -1,15 +1,15 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import type { z } from "zod";
 import type { Result } from "../errors/result";
 import type { OperationKind, RecordedChange } from "../operations/types";
 import type { SUPERADMIN_ROLE } from "../permissions/fixed-roles";
 
-/** A superadmin (verified by `@okazi/auth`) or trusted system code. Never the AI actor. */
+/** A superadmin (verified by `@bibi/auth`) or trusted system code. Never the AI actor. */
 export type PlatformActor = { type: "user"; userId: string } | { type: "system"; userId: null };
 
 /**
  * Caller of a platform operation (ADR 0015). Not tied to an organization. `platformRole` is
- * set only by `resolvePlatformContext` in `@okazi/auth` after reading `user.role` live.
+ * set only by `resolvePlatformContext` in `@bibi/auth` after reading `user.role` live.
  */
 export type PlatformContext = {
   actor: PlatformActor;

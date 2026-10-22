@@ -1,7 +1,7 @@
-import { type SendMailInput, sendMail } from "@okazi/mail";
+import { type SendMailInput, sendMail } from "@bibi/mail";
 
 /**
- * Sends an auth mail through `@okazi/mail`. Better Auth callbacks and after-commit hooks report
+ * Sends an auth mail through `@bibi/mail`. Better Auth callbacks and after-commit hooks report
  * failure by throwing, so a failed send rethrows the typed `AppError` (already logged as
  * `mail.failed`).
  */

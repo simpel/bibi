@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "@okazi/i18n/navigation";
+import { usePathname, useRouter } from "@bibi/i18n/navigation";
 import { type SkillFilters, skillFilterQuery } from "../skill-filters";
 
 /** Applying filters = replacing the URL query; the server component re-renders the list. */

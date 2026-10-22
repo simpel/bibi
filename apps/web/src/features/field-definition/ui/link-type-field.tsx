@@ -9,7 +9,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control } from "react-hook-form";
 import type { FieldFormOutput, FieldFormValues } from "./field-form-schema";

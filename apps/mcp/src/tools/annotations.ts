@@ -1,4 +1,4 @@
-import type { AnyOperation } from "@okazi/core";
+import type { AnyOperation } from "@bibi/core";
 import type { McpToolMeta } from "./meta";
 import type { ToolAnnotations } from "./types";
 

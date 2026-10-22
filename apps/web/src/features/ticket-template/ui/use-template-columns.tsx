@@ -1,5 +1,5 @@
-import type { TicketTemplateDto } from "@okazi/core/schemas";
-import { actionsColumn, type ColumnDef } from "@okazi/ui";
+import type { TicketTemplateDto } from "@bibi/core/schemas";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { NamedOption } from "@/components/form/named-option";

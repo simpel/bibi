@@ -1,4 +1,4 @@
-import { provisionOrganization } from "@okazi/core";
+import { provisionOrganization } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { createClient, testContext } from "./helpers";
 

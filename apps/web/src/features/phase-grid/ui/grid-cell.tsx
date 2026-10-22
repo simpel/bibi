@@ -1,7 +1,7 @@
 "use client";
 
-import type { ItemStateDto } from "@okazi/core/schemas";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@okazi/ui";
+import type { ItemStateDto } from "@bibi/core/schemas";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { KEEP, useSetCell } from "./use-set-cell";
 

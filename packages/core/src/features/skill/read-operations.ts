@@ -1,4 +1,4 @@
-import type { Prisma } from "@okazi/db";
+import type { Prisma } from "@bibi/db";
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { paginate } from "../../shared/paginate";
@@ -27,7 +27,7 @@ export const listSkills = defineOperation({
   name: "skill.list",
   kind: "query",
   description:
-    "List skills you can use: SYSTEM skills shipped with Okazi, your organization's skills and " +
+    "List skills you can use: SYSTEM skills shipped with Bibi, your organization's skills and " +
     "your personal ones. Filter by scope, status (e.g. PUBLISHED) and text.",
   input: SkillListInputSchema,
   output: SkillListOutputSchema,

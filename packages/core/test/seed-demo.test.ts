@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import { lindholmen } from "../src/seed/demo/data/lindholmen/lindholmen";

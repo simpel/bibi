@@ -1,11 +1,11 @@
-import type { AfterCommitHook, AnyOperation, ExecuteContext, Result } from "@okazi/core";
+import type { AfterCommitHook, AnyOperation, ExecuteContext, Result } from "@bibi/core";
 import type { GraphqlContext } from "../schema/context";
 import { createLoaders } from "../schema/loaders";
 import { toGraphqlError } from "../schema/to-graphql-error";
 
 export type ResolveContextInput = { headers: Headers };
 
-/** Injected by the host; the real implementation comes from @okazi/auth. */
+/** Injected by the host; the real implementation comes from @bibi/auth. */
 export type ResolveContext = (input: ResolveContextInput) => Promise<Result<ExecuteContext>>;
 
 export type BuildContextInput = {

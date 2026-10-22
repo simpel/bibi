@@ -1,4 +1,4 @@
-import { Separator, SidebarInset, SidebarProvider, SidebarTrigger } from "@okazi/ui";
+import { Separator, SidebarInset, SidebarProvider, SidebarTrigger } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { AdminSidebar } from "./admin-sidebar";

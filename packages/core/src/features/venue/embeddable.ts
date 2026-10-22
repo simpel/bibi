@@ -1,4 +1,4 @@
-import type { Venue } from "@okazi/db";
+import type { Venue } from "@bibi/db";
 import type { Embeddable } from "../../search/embeddable";
 
 export const venueEmbeddable: Embeddable<Venue> = {

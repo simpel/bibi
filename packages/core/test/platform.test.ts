@@ -1,5 +1,5 @@
-import { EMBEDDING_DIMENSIONS, getDb, PLATFORM_SCOPE } from "@okazi/db";
-import { captureLogs } from "@okazi/logger";
+import { EMBEDDING_DIMENSIONS, getDb, PLATFORM_SCOPE } from "@bibi/db";
+import { captureLogs } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import {

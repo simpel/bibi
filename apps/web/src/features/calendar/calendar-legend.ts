@@ -1,4 +1,4 @@
-import type { ItemStateDto } from "@okazi/core/schemas";
+import type { ItemStateDto } from "@bibi/core/schemas";
 import type { TypeOption } from "./calendar-types";
 
 /** One legend entry: a state that draws a block (hold SOFT or HARD); released states never do. */

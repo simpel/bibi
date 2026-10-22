@@ -1,5 +1,5 @@
-import { type FixedRole, getPermissions, presetPermissions } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { type FixedRole, getPermissions, presetPermissions } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";

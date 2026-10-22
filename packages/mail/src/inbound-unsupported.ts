@@ -1,4 +1,4 @@
-import { appError, err } from "@okazi/core";
+import { appError, err } from "@bibi/core";
 
 export type InboundUnsupportedInput = { provider: string };
 

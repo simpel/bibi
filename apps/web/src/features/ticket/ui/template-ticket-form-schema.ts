@@ -1,4 +1,4 @@
-import { TicketCreateFromTemplateInputSchema } from "@okazi/core/schemas";
+import { TicketCreateFromTemplateInputSchema } from "@bibi/core/schemas";
 import { NONE } from "@/components/form/option-select-field";
 import { numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";

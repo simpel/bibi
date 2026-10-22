@@ -1,6 +1,6 @@
 "use client";
 
-import { SetupPanel, type SetupTarget } from "@okazi/ui";
+import { SetupPanel, type SetupTarget } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";

@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@okazi/ui";
+import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { formatCountdown } from "../../../lib/format-countdown";
 import type { DecisionState } from "./use-approval-decision";

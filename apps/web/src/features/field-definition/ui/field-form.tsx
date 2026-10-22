@@ -1,6 +1,6 @@
-import type { FieldDefinitionDto } from "@okazi/core";
-import { isChoiceKind } from "@okazi/core/schemas";
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import type { FieldDefinitionDto } from "@bibi/core";
+import { isChoiceKind } from "@bibi/core/schemas";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { CheckField } from "@/components/form/check-field";
 import { TextField } from "@/components/form/text-field";

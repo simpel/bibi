@@ -1,6 +1,6 @@
 "use server";
 
-import type { AiFeatureId, AiFeatureSetting } from "@okazi/core";
+import type { AiFeatureId, AiFeatureSetting } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { platformOperations } from "@/server/platform-operations";
 import { runPlatformOperation } from "@/server/run-platform-operation";

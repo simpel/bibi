@@ -1,5 +1,5 @@
-import type { QuoteDto } from "@okazi/core";
-import { QuoteCreateInputSchema, QuoteUpdateInputSchema } from "@okazi/core/schemas";
+import type { QuoteDto } from "@bibi/core";
+import { QuoteCreateInputSchema, QuoteUpdateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { blankToNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";

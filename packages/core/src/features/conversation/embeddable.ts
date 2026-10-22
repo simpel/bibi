@@ -1,4 +1,4 @@
-import type { Conversation } from "@okazi/db";
+import type { Conversation } from "@bibi/db";
 import type { Embeddable } from "../../search/embeddable";
 
 /** Titles are searchable, but only by the owner (search passes `viewer`). */

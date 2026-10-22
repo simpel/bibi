@@ -4,7 +4,7 @@
 - **Multinet Interactive AB (Lega Online) is profitable:** SEK 64.6M revenue, SEK 19.3M profit after financial items, ≈30% margin (annual accounts 2025-04). Profit has been flat at ≈SEK 19M for three years.
 - **Lega is a B2B system** for conference and meeting rooms and venue rental, not a municipal leisure booking system.
 - **Two markets:**
-  - (A) Conference/venue rental B2B: fragmented, low barriers. **Okazi's choice**, see [decision 0001](../decisions/0001-primary-target-group.md).
+  - (A) Conference/venue rental B2B: fragmented, low barriers. **Bibi's choice**, see [decision 0001](../decisions/0001-primary-target-group.md).
   - (B) Municipal venue booking + association grants: concentrated (Pinea, Rbok, Multisoft), public procurement (LOU).
 - **Time window:** Adda's framework agreement *Booking and grant solutions 2022* expires 2027-08-27 without renewal.
 

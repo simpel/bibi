@@ -1,4 +1,4 @@
-import type { Invitation } from "@okazi/db";
+import type { Invitation } from "@bibi/db";
 import { parseMemberRole } from "./member-roles";
 import { type InvitationDto, InvitationStatusSchema } from "./schema";
 

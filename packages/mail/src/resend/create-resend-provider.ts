@@ -1,4 +1,4 @@
-import { appError, err, ok, type Result } from "@okazi/core";
+import { appError, err, ok, type Result } from "@bibi/core";
 import { z } from "zod";
 import type { MailProvider } from "../mail-provider";
 import type { MailMessage, SentMail } from "../schema";

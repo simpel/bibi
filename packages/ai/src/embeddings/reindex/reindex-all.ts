@@ -1,5 +1,5 @@
-import type { EmbedFn } from "@okazi/core";
-import { type Db, getDb } from "@okazi/db";
+import type { EmbedFn } from "@bibi/core";
+import { type Db, getDb } from "@bibi/db";
 import { indexStaleEntities } from "./index-stale-entities";
 import { reembedStaleRows } from "./reembed-stale-rows";
 
@@ -22,7 +22,7 @@ export type ReindexReport = {
   organizations: number;
 };
 
-const PROBE_TEXT = "okazi";
+const PROBE_TEXT = "bibi";
 
 type ListOrgsInput = { db: Db; organizationId?: string };
 
@@ -36,7 +36,7 @@ const listOrganizationIds = async ({ db, organizationId }: ListOrgsInput): Promi
  * Brings the search index in line with the current embedding model: re-embeds every row whose
  * `model` differs (e.g. placeholder → Gateway model) and indexes entities whose row is missing or
  * stale (e.g. after `search.index_failed`).
- * Idempotent; safe to re-run. CLI: `pnpm --filter @okazi/ai reindex [--org <id>]`.
+ * Idempotent; safe to re-run. CLI: `pnpm --filter @bibi/ai reindex [--org <id>]`.
  */
 export async function reindexAll({
   embed,

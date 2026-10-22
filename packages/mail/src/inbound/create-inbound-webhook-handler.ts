@@ -1,11 +1,11 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 import {
   type AppError,
   type DeliverInboundEmailInput,
   deliverInboundEmail,
   toHttpStatus,
-} from "@okazi/core";
-import { withRequestLogging } from "@okazi/logger";
+} from "@bibi/core";
+import { withRequestLogging } from "@bibi/logger";
 import { getMailProvider } from "../get-mail-provider";
 import type { MailProvider } from "../mail-provider";
 import { toInboundMail } from "./to-inbound-mail";

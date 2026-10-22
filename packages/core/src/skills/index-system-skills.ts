@@ -1,4 +1,4 @@
-import { type Db, deleteEmbedding, GLOBAL_EMBEDDING_SCOPE, upsertEmbedding } from "@okazi/db";
+import { type Db, deleteEmbedding, GLOBAL_EMBEDDING_SCOPE, upsertEmbedding } from "@bibi/db";
 import { skillEmbeddable } from "../features/skill/embeddable";
 import { contentHash } from "../search/content-hash";
 import type { EmbedFn } from "../search/embed";

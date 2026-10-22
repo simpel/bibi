@@ -1,4 +1,4 @@
-import { SUPERADMIN_ROLE } from "@okazi/core";
+import { SUPERADMIN_ROLE } from "@bibi/core";
 import { admin } from "better-auth/plugins";
 import { adminAc, userAc } from "better-auth/plugins/admin/access";
 

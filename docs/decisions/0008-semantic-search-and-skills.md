@@ -38,4 +38,4 @@ Users and the assistant need to find entities (venues, rooms and later bookings)
 ## Addenda (current behaviour is in `packages/core/CLAUDE.md`, "AI data layer" and "Search")
 - 2026-10-13: SYSTEM skills are global rows (`organizationId = null`) that only the seeder writes; a personal skill is shared by copying it to the organization as a draft (admin only). The MCP tools are `skill_list` and `skill_get`. Search filters hits per user and conversations are private to the owner.
 - 2026-10-14: `Room` is replaced by `Item` with the `BOOKABLE` capability (ADR 0021).
-- 2026-10-15: "asynchronous" means an in-process `afterCommit` hook, not a queue (ADR 0030). An indexing error never changes the command's result; it logs `search.index_failed`, and `pnpm --filter @okazi/ai reindex` repairs missing or stale rows idempotently.
+- 2026-10-15: "asynchronous" means an in-process `afterCommit` hook, not a queue (ADR 0030). An indexing error never changes the command's result; it logs `search.index_failed`, and `pnpm --filter @bibi/ai reindex` repairs missing or stale rows idempotently.

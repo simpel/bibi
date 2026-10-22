@@ -1,4 +1,4 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 import { describe, expect, it, vi } from "vitest";
 import { stripeConnectGateway } from "../src/features/payment-account/stripe-gateway";
 import { STRIPE_API_VERSION } from "../src/features/payment-account/stripe-request";
@@ -23,7 +23,7 @@ describe("stripeConnectGateway", () => {
     expect(call?.url).toBe("https://api.stripe.com/v2/core/accounts");
     expect(call?.method).toBe("POST");
     expect(call?.headers["Stripe-Version"]).toBe(STRIPE_API_VERSION);
-    expect(call?.headers["Idempotency-Key"]).toBe("okazi-connected-account-org_1");
+    expect(call?.headers["Idempotency-Key"]).toBe("bibi-connected-account-org_1");
     expect(call?.headers["Content-Type"]).toBe("application/json");
     expect(JSON.parse(call?.body ?? "{}")).toMatchObject({
       display_name: "Venue",
@@ -32,7 +32,7 @@ describe("stripeConnectGateway", () => {
       identity: { country: "se" },
       defaults: { responsibilities: { fees_collector: "stripe", losses_collector: "stripe" } },
       configuration: { merchant: { capabilities: { card_payments: { requested: true } } } },
-      metadata: { organizationId: "org_1", platformAccountId: "acct_okazi" },
+      metadata: { organizationId: "org_1", platformAccountId: "acct_bibi" },
     });
   });
 
@@ -79,8 +79,8 @@ describe("stripeConnectGateway", () => {
     const link = unwrap({
       result: await stripeConnectGateway.createOnboardingLink({
         stripeAccountId: "acct_1",
-        returnUrl: "https://okazi.test/ok",
-        refreshUrl: "https://okazi.test/retry",
+        returnUrl: "https://bibi.test/ok",
+        refreshUrl: "https://bibi.test/retry",
       }),
     });
     expect(link).toEqual({
@@ -94,8 +94,8 @@ describe("stripeConnectGateway", () => {
         type: "account_onboarding",
         account_onboarding: {
           configurations: ["merchant"],
-          return_url: "https://okazi.test/ok",
-          refresh_url: "https://okazi.test/retry",
+          return_url: "https://bibi.test/ok",
+          refresh_url: "https://bibi.test/retry",
         },
       },
     });

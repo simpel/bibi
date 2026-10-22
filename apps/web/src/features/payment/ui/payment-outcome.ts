@@ -1,4 +1,4 @@
-import type { PublicPaymentDto } from "@okazi/core/schemas";
+import type { PublicPaymentDto } from "@bibi/core/schemas";
 
 export type PaymentOutcome = "pay" | "processing" | "invoice" | "paid" | "expired" | "unavailable";
 

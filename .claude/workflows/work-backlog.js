@@ -1,7 +1,7 @@
 export const meta = {
   name: 'work-backlog',
   description: 'Work unblocked tickets from project 8, one isolated worktree per ticket, landing each on main',
-  whenToUse: 'Run to let agents implement ready tickets from the okazi board until none are left. Args: { batchSize?: 3, maxBatches?: unlimited (safety cap 50), includeBacklog?: false, only?: [issueNumbers], adopt?: [issueNumbers] }',
+  whenToUse: 'Run to let agents implement ready tickets from the bibi board until none are left. Args: { batchSize?: 3, maxBatches?: unlimited (safety cap 50), includeBacklog?: false, only?: [issueNumbers], adopt?: [issueNumbers] }',
   phases: [
     { title: 'Select', detail: 'read board + blockers, pick a batch' },
     { title: 'Implement', detail: 'one agent per ticket: creates its worktree, implements, runs the full checks' },
@@ -15,7 +15,7 @@ export const meta = {
 }
 
 // ---- Config ---------------------------------------------------------------
-const REPO = '/Users/joelsanden/Code/okazi'
+const REPO = '/Users/joelsanden/Code/bibi'
 const BATCH_SIZE = (args && args.batchSize) || 3
 const SAFETY_CAP = 50 // hard stop against runaway loops
 const MAX_BATCHES = Math.min((args && args.maxBatches) || SAFETY_CAP, SAFETY_CAP)
@@ -297,7 +297,7 @@ Setup (run exactly these two commands first):
 2. ${moveCard(t, 'In progress')}
 Then work only in the worktree:
 ${inWorktree(dir)}
-${adopting(t) ? `- ADOPTED TICKET: an earlier run died and left its work, uncommitted, in this worktree. Do not start over and do not reset anything. First run git status --short | wc -l and git diff --stat | tail -5, compare what exists with the issue's "To do", and continue from there. ${isCodemod(t) ? `The codemod script may still be in ${scratchDir(t)}; reuse it if it is there. ` : ''}Run the full checks early to see where it stands.\n` : ''}- Read the issue: gh issue view ${t.number} -R simpel/okazi. Its "To do" and "Done when" sections are the spec. Read the linked ADR in docs/decisions/.
+${adopting(t) ? `- ADOPTED TICKET: an earlier run died and left its work, uncommitted, in this worktree. Do not start over and do not reset anything. First run git status --short | wc -l and git diff --stat | tail -5, compare what exists with the issue's "To do", and continue from there. ${isCodemod(t) ? `The codemod script may still be in ${scratchDir(t)}; reuse it if it is there. ` : ''}Run the full checks early to see where it stands.\n` : ''}- Read the issue: gh issue view ${t.number} -R simpel/bibi. Its "To do" and "Done when" sections are the spec. Read the linked ADR in docs/decisions/.
 ${pathOfTicket(t).skill ? `- Start with the new-feature skill: it fixes the order of work and the gates (isolation test, referenced-id checks, read permission, lifecycle, concurrency, approval labels) that belong to this ticket. Then use the skill it names for each step (new-entity, new-core-operation, db-migration, i18n-strings, new-ui-component, structure-fix). Migrations are fine: your database is yours alone.\n` : ''}- While working, run the cheap checks after every coherent group of edits: pnpm lint and pnpm check:structure (seconds), pnpm --filter <package> typecheck for the package you touched, and the targeted pnpm test for it. A structure or type error found now costs one edit; found at the end it costs a whole fix round. Pipe long output through tail or grep.
 - ${READING_RULES}
 - Do NOT run git add/commit/push/rebase/stash/checkout/reset. The ship step commits and opens the pull request.
@@ -326,7 +326,7 @@ const sh = (v) => `'${String(v).replace(/'/g, `'\\''`)}'`
 // A decision ticket's PR is a docs change whatever its Kind, so it never triggers a release (ADR 0060).
 const boardEnv = (t, model) => `ITEM_ID=${t.itemId} PROJECT_ID=${PROJECT_ID} STATUS_FIELD=${STATUS_FIELD} DONE_OPTION=${STATUS_OPTION.Done} PARKED_OPTION=${STATUS_OPTION.Parked} CO_AUTHOR=${sh(coAuthor(model))} KIND=${sh(pathOf(t) === 'decision' ? 'Docs' : t.kind || '')}`
 const shipEnv = (t, model) => `${boardEnv(t, model)} CHECKS_ARGS=${sh(pathOfTicket(t).checks)}${pathOfTicket(t).merge ? '' : ' REVIEW_ONLY=1'}`
-const withStdin = (cmd, text) => `${cmd} <<'OKAZI_EOF'\n${text}\nOKAZI_EOF`
+const withStdin = (cmd, text) => `${cmd} <<'BIBI_EOF'\n${text}\nBIBI_EOF`
 const runnerPrompt = (cmd) => `Run exactly this one command from ${REPO} and nothing else. Its last line of output is one JSON object; return that object unchanged. If it prints no JSON, return state="failed" with the last 20 lines as reason.\n${cmd}`
 const shipCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/ship.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
 const mergeCmd = (t, summary, model, resume) => withStdin(`${shipEnv(t, model)} tools/backlog/merge.sh ${t.number} --title ${sh(t.title)}${resume ? ' --resume' : ''}`, summary)
@@ -354,10 +354,10 @@ Fix the cause in the worktree. ${READING_RULES} Do not run git add, commit, amen
 
 const parkCmd = (t, reason, model) => withStdin(`${boardEnv(t, model)} tools/backlog/park.sh ${t.number} ${sh(t.title)}`, reason)
 
-const followUpPrompt = (items) => `File follow-up issues on simpel/okazi for problems agents found outside their ticket's scope. Work in ${REPO}; do not edit files.
+const followUpPrompt = (items) => `File follow-up issues on simpel/bibi for problems agents found outside their ticket's scope. Work in ${REPO}; do not edit files.
 Findings (JSON): ${JSON.stringify(items)}
 1. Merge findings that describe the same problem.
-2. Drop a finding if an open issue already covers it: search with gh issue list -R simpel/okazi --state open --search "<keywords>" (try 2-3 keyword sets). Add its number to duplicates as "#N: <title>".
+2. Drop a finding if an open issue already covers it: search with gh issue list -R simpel/bibi --state open --search "<keywords>" (try 2-3 keyword sets). Add its number to duplicates as "#N: <title>".
 3. Verify each remaining finding by reading the code at "where". Drop it if it is not real.
 4. Create each one with the helper, never with bare gh. Write a JSON spec { title, body, labels, size, kind } to a temp file and run: node tools/backlog/ticket.mjs create --spec <file>. It creates the issue, adds it to the board and sets Status Backlog (a human triages agent findings), Size and Kind. Leave priority unset. Labels: "source:agent" plus a type label (type:tech-debt, type:feature, type:docs; bug and security use the "bug" label) and area:* label(s) from the path. kind: bug or security -> "Bugfix", tech-debt -> "Tech debt", docs -> "Docs", test-gap -> "Test", feature -> "Feature". size: your estimate (XS, S, M, L, XL). The body is in English with the sections "### Background" (start with "Found by an agent while working on #<from>."), "### Current state" (with file:line), "### To do" (checkboxes), "### Seed data" ("No seed change expected" unless the fix touches data) and "### Done when". The helper prints {ok, number} or {ok:false, errors}: fix the errors and run it again.
 Return the created issue numbers.`

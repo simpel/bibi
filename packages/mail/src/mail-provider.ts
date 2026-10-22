@@ -1,4 +1,4 @@
-import type { Result } from "@okazi/core";
+import type { Result } from "@bibi/core";
 import type {
   InboundMail,
   InboundMailContent,

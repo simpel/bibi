@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, CardHeader, CardTitle } from "@okazi/ui";
+import { Badge, CardHeader, CardTitle } from "@bibi/ui";
 import { ShieldCheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ApprovalOperation } from "./approval-operation";

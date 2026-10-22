@@ -72,7 +72,7 @@ export function nextSteps({ names, plan }) {
     ...plan.map((f) => `  ${f.relPath}`),
     "",
     "Checklist of files to change by hand (all required for parity, structure and type checks):",
-    `  [ ] packages/db/prisma/schema/${kebab}.prisma: add domain fields, then pnpm db:generate and pnpm --filter @okazi/db migrate:dev.`,
+    `  [ ] packages/db/prisma/schema/${kebab}.prisma: add domain fields, then pnpm db:generate and pnpm --filter @bibi/db migrate:dev.`,
     `  [ ] packages/db/src/scoped/models.ts: add "${Pascal}" to ORG_SCOPED_MODELS and to SOFT_DELETE_DEFAULTS (["${Pascal}", "ACTIVE"]).`,
     `  [ ] packages/core/src/index.ts, core-operations.ts and schemas.ts: export ${Pascal}Schema, the types and the operations; register ${camel}Operations. Add "${camel}" to FEATURE_SPECS (permissions/features.ts) or reuse a feature and ${camel}Embeddable to search/embeddables.ts.`,
     `  [ ] packages/graphql/src/schema/schema.ts: add import "../features/${kebab}/graphql";`,

@@ -1,7 +1,7 @@
 "use client";
 
-import { LOG_LEVELS, type SystemLogListQuery } from "@okazi/core/schemas";
-import { SURFACES } from "@okazi/logger/surfaces";
+import { LOG_LEVELS, type SystemLogListQuery } from "@bibi/core/schemas";
+import { SURFACES } from "@bibi/logger/surfaces";
 import { useTranslations } from "next-intl";
 import { ActiveFilterChips } from "./active-filter-chips";
 import { FilterSelect } from "./filter-select";

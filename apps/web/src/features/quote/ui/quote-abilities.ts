@@ -1,4 +1,4 @@
-import { canQuoteTransition, type QuoteDto } from "@okazi/core";
+import { canQuoteTransition, type QuoteDto } from "@bibi/core";
 import type { QuoteAbilities } from "./quote-actions";
 
 export type QuoteAbilitiesInput = {

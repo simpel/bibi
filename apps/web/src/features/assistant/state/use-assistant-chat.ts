@@ -11,7 +11,7 @@ export type UseAssistantChatInput = { onConversationChanged: () => void };
 
 /**
  * The assistant's `useChat` plus conversation bookkeeping: remembers the id the server reports
- * (`data-okazi-conversation`), switches conversations by loading stored messages, starts new ones.
+ * (`data-bibi-conversation`), switches conversations by loading stored messages, starts new ones.
  */
 export function useAssistantChat({ onConversationChanged }: UseAssistantChatInput) {
   const pageContext = usePageContext();

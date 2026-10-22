@@ -34,7 +34,7 @@ type Scoped<T> = Omit<T, "organizationId">;
 
 function extend({ organizationId, actorId, db }: Required<ScopedDbInput>) {
   return db.$extends({
-    name: "okazi-org-scope",
+    name: "bibi-org-scope",
     query: {
       $allModels: {
         $allOperations({ model, operation, args, query }) {

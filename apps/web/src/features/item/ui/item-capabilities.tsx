@@ -1,11 +1,11 @@
-import type { ItemDto } from "@okazi/core";
+import type { ItemDto } from "@bibi/core";
 import {
   BookableDisplay,
   BundleDisplay,
   CustomisationsDisplay,
   PricedDisplay,
   SetupsDisplay,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { customisationGroupLines } from "./customisation-group-lines";
 import { formatKr } from "./format-price";
@@ -13,7 +13,7 @@ import type { ItemFormData } from "./item-form-data";
 
 export type ItemCapabilitiesProps = { item: ItemDto; data: ItemFormData; locale: string };
 
-/** The capability values of an item (price, length, setups, parts, customisations), shown with `@okazi/ui` displays. */
+/** The capability values of an item (price, length, setups, parts, customisations), shown with `@bibi/ui` displays. */
 export async function ItemCapabilities({ item, data, locale }: ItemCapabilitiesProps) {
   const t = await getTranslations("item");
   const price =

@@ -43,5 +43,5 @@ Anything that would make existing values invalid is refused: turning off a capab
 ## Surfaces
 - Operations are generic (`item.*`, `entityType.*`, `fieldDefinition.*`, `vocabulary.*`, `requirement.*`, `sheet.*`, `setup.*`). GraphQL and REST expose fields as `fields: JSON` plus the definitions.
 - The MCP tools `item_list|get|create|update` describe the organization's types, fields and allowed values per call (read through `entityType.list` as the caller; static description without `configuration:read`).
-- Each field kind and capability has its own Zod schema and its own component in `@okazi/ui`. Reports build on capabilities and phase flags, never on type names.
+- Each field kind and capability has its own Zod schema and its own component in `@bibi/ui`. Reports build on capabilities and phase flags, never on type names.
 - Permissions: `item:*` for items, `configuration:*` for types, fields, vocabularies and setups.

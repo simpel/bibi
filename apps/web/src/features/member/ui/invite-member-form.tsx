@@ -1,5 +1,5 @@
-import type { FixedRole } from "@okazi/core/schemas";
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import type { FixedRole } from "@bibi/core/schemas";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import { RoleField } from "./role-field";

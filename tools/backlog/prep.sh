@@ -2,10 +2,10 @@
 # Worktree preparation for the work-backlog workflow: tools/backlog/prep.sh [--adopt] <issue-number>
 # --adopt takes over the worktree and lock of a run that died, KEEPING its uncommitted work, and prints
 # WORKTREE_DIR=<path>. Use it only when the run that holds the lock is dead; it never deletes anything.
-# Creates ../okazi-worktrees/t-<N> on branch ticket/<N> from origin/main, after clearing leftovers
+# Creates ../bibi-worktrees/t-<N> on branch ticket/<N> from origin/main, after clearing leftovers
 # from an earlier run that hold no work. Prints WORKTREE_DIR=<path> on success, PROBLEM=<reason>
 # and exit 1 otherwise. Run from the main checkout.
-# Refuses closed issues, and takes a per-ticket lock (a directory in okazi-worktrees/.locks, atomic mkdir)
+# Refuses closed issues, and takes a per-ticket lock (a directory in bibi-worktrees/.locks, atomic mkdir)
 # so two runs or agents never prepare or write in the same worktree. The land and park steps release it with
 # tools/backlog/release.sh. A lock older than LOCK_MAX_AGE_MIN (default 720) is treated as stale.
 set -uo pipefail
@@ -19,16 +19,16 @@ fi
 MAIN="$(git rev-parse --show-toplevel)"
 NAME="t-$N"
 BRANCH="ticket/$N"
-DIR="$(dirname "$MAIN")/okazi-worktrees/$NAME"
+DIR="$(dirname "$MAIN")/bibi-worktrees/$NAME"
 fail() { echo "PROBLEM=$1"; exit 1; }
 
 cd "$MAIN" || fail "no main checkout"
 git fetch origin --quiet || fail "git fetch failed"
 
-STATE="$(gh issue view "$N" -R simpel/okazi --json state --jq .state 2>/dev/null)" || fail "could not read state of issue #$N"
+STATE="$(gh issue view "$N" -R simpel/bibi --json state --jq .state 2>/dev/null)" || fail "could not read state of issue #$N"
 [ "$STATE" = "OPEN" ] || fail "issue #$N is $STATE, not OPEN"
 
-LOCKS="$(dirname "$MAIN")/okazi-worktrees/.locks"
+LOCKS="$(dirname "$MAIN")/bibi-worktrees/.locks"
 LOCK="$LOCKS/$NAME"
 mkdir -p "$LOCKS" || fail "could not create $LOCKS"
 if [ "$ADOPT" = 1 ]; then

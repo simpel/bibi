@@ -1,5 +1,5 @@
-import type { SkillDto } from "@okazi/core";
-import { Badge } from "@okazi/ui";
+import type { SkillDto } from "@bibi/core";
+import { Badge } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { SkillBadges } from "./skill-badges";
 

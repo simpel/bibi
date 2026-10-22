@@ -6,7 +6,7 @@ const envSchema = z
     BETTER_AUTH_SECRET: z.string().min(32),
     BETTER_AUTH_URL: z.string().url(),
     SMTP_URL: z.string().default("smtp://localhost:1025"),
-    MAIL_FROM: z.string().default("Okazi <no-reply@okazi.local>"),
+    MAIL_FROM: z.string().default("Bibi <no-reply@bibi.local>"),
     /** Mail adapter (ADR 0012): `smtp` (Mailpit in dev, uses SMTP_URL) or `resend` (production). */
     MAIL_PROVIDER: z.enum(["smtp", "resend"]).default("smtp"),
     /** Resend API key; required when MAIL_PROVIDER=resend. Empty counts as unset. */
@@ -15,7 +15,7 @@ const envSchema = z
     RESEND_WEBHOOK_SECRET: z.string().optional(),
     /**
      * Inbound subdomain for ticket reply addresses (`ticket-<id>@<domain>`, ADR 0012), e.g.
-     * `in.okazi.se`. Unset: no reply address is shown and the inbound webhook answers 503.
+     * `in.bibi.se`. Unset: no reply address is shown and the inbound webhook answers 503.
      */
     MAIL_INBOUND_DOMAIN: z
       .string()
@@ -23,7 +23,7 @@ const envSchema = z
       .optional(),
     /** Platform Stripe secret key (`sk_...`) for Connect (ADR 0028); payment operations are UNAVAILABLE without it. */
     STRIPE_SECRET_KEY: z.string().min(1).optional(),
-    /** Id of Okazi's own Stripe platform account (`acct_...`), recorded on every connected account. */
+    /** Id of Bibi's own Stripe platform account (`acct_...`), recorded on every connected account. */
     STRIPE_PLATFORM_ACCOUNT_ID: z
       .string()
       .regex(/^acct_[A-Za-z0-9]+$/)
@@ -31,7 +31,7 @@ const envSchema = z
     /** Signing secret (`whsec_...`) of the Stripe webhook endpoint (ADR 0028); the endpoint answers 503 without it. */
     STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
     /**
-     * Okazi's application fee on every payment, in basis points of the amount (250 = 2.5 %).
+     * Bibi's application fee on every payment, in basis points of the amount (250 = 2.5 %).
      * Unset or 0: no fee (ADR 0028; the pricing model is not decided yet).
      */
     STRIPE_APPLICATION_FEE_BPS: z.coerce.number().int().min(0).max(10_000).optional(),
@@ -41,7 +41,7 @@ const envSchema = z
     /** Listen port of `apps/mcp` (Streamable HTTP). */
     PORT: z.coerce.number().int().min(1).max(65535).default(3001),
     /** API key used by the stdio MCP server (`apps/mcp`), resolved once at startup. */
-    OKAZI_API_KEY: z.string().min(1).optional(),
+    BIBI_API_KEY: z.string().min(1).optional(),
     /** OAuth client id of the web app (first-party); only it may act as `ai` actor. */
     WEB_OAUTH_CLIENT_ID: z.string().min(1).optional(),
     /** Runtime mode; `production` disables dev-only fallbacks (e.g. the placeholder embedder). */

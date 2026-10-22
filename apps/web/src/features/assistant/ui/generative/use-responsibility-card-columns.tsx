@@ -1,5 +1,5 @@
-import { Link } from "@okazi/i18n/navigation";
-import type { ColumnDef } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { responsibilitiesRoute } from "@/lib/configuration-routes";

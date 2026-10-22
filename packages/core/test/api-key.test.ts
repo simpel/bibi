@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import {
   createApiKey,
@@ -28,7 +28,7 @@ describe("apiKey operations (ADR 0005)", () => {
   it("returns the secret once, stores only its hash and keeps it out of the audit", async () => {
     const context = await testOrg();
     const created = unwrap({ result: await create({ context }) });
-    expect(created.secret).toMatch(/^okz_[a-zA-Z]{64}$/);
+    expect(created.secret).toMatch(/^bib_[a-zA-Z]{64}$/);
     expect(created.apiKey).toMatchObject({ name: "CRM", role: "manager" });
     expect(created.apiKey.start).toBe(created.secret.slice(0, 6));
     const row = await getDb().apikey.findUniqueOrThrow({ where: { id: created.apiKey.id } });

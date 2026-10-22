@@ -1,5 +1,5 @@
-import { provisionOrganization } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { provisionOrganization } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { createClient, testContext } from "./helpers";
 

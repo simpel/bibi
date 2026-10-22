@@ -3,7 +3,7 @@ import {
   type PermissionProfile,
   PermissionProfileSchema,
   updatePermissions,
-} from "@okazi/core";
+} from "@bibi/core";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 

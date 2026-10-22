@@ -1,11 +1,11 @@
-import { appendMessage, type EmbedFn, type MessageDto, type Result } from "@okazi/core";
+import { appendMessage, type EmbedFn, type MessageDto, type Result } from "@bibi/core";
 import type { UserContext } from "../server/resolve-user";
 import { runCore } from "../server/run-core";
 
 export type ApprovalDecision = "approved" | "rejected" | "failed";
 
 /** Data part stored with the note; the web can render it, the model sees the text part. */
-export const APPROVAL_DATA_PART = "data-okazi-approval";
+export const APPROVAL_DATA_PART = "data-bibi-approval";
 
 const MAX_RESULT_CHARS = 4000;
 

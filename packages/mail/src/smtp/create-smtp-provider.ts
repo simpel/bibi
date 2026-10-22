@@ -1,4 +1,4 @@
-import { appError, err, ok } from "@okazi/core";
+import { appError, err, ok } from "@bibi/core";
 import { createTransport, type Transporter } from "nodemailer";
 import { inboundUnsupported } from "../inbound-unsupported";
 import type { MailProvider } from "../mail-provider";

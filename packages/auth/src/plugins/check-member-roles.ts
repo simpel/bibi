@@ -1,4 +1,4 @@
-import { isFixedRole } from "@okazi/core";
+import { isFixedRole } from "@bibi/core";
 import { APIError } from "better-auth/api";
 
 export type AssertFixedRoleInput = { role: string | readonly string[] };

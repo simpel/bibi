@@ -1,5 +1,5 @@
-import { listItems } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { listItems } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";

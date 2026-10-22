@@ -1,8 +1,8 @@
 import { resolve } from "node:path";
+import { mcpResourceUrl } from "@bibi/auth";
+import { getEnv } from "@bibi/config";
+import { type Db, getDb } from "@bibi/db";
 import nextEnv from "@next/env";
-import { mcpResourceUrl } from "@okazi/auth";
-import { getEnv } from "@okazi/config";
-import { type Db, getDb } from "@okazi/db";
 import { createId } from "@paralleldrive/cuid2";
 
 /**
@@ -10,13 +10,13 @@ import { createId } from "@paralleldrive/cuid2";
  * public client, PKCE, consent skipped, linked to the MCP resource. Idempotent: re-running
  * updates the redirect URI. Prints `WEB_OAUTH_CLIENT_ID=...` for `.env`.
  *
- *   pnpm --filter @okazi/web provision:oauth [--redirect-uri <url>]
+ *   pnpm --filter @bibi/web provision:oauth [--redirect-uri <url>]
  *
  * The redirect URI (default `${WEB_URL}/api/assistant/oauth/callback`) only has to be registered:
  * `getFirstPartyAccessToken` runs authorization code + PKCE in-process and reads the code from
  * the authorize response, so the redirect is never followed and no callback route exists.
  */
-const CLIENT_NAME = "Okazi Web Assistant";
+const CLIENT_NAME = "Bibi Web Assistant";
 // Keep in sync with OAUTH_SCOPES in packages/auth/src/plugins/mcp.ts.
 const SCOPES = ["openid", "profile", "email", "offline_access"];
 
@@ -32,7 +32,7 @@ const resolveClientId = async ({ db }: { db: Db }): Promise<string> => {
   const configured = getEnv().WEB_OAUTH_CLIENT_ID;
   if (configured) return configured;
   const existing = await db.oauthClient.findFirst({ where: { name: CLIENT_NAME } });
-  return existing?.clientId ?? `okazi-web-${createId()}`;
+  return existing?.clientId ?? `bibi-web-${createId()}`;
 };
 
 const upsertClient = async ({ db, redirectUri }: ProvisionInput): Promise<string> => {
@@ -66,7 +66,7 @@ const linkMcpResource = async ({ db, clientId }: { db: Db; clientId: string }): 
       data: {
         id: createId(),
         identifier: resourceId,
-        name: "Okazi MCP",
+        name: "Bibi MCP",
         allowedScopes: SCOPES,
         createdAt: now,
         updatedAt: now,

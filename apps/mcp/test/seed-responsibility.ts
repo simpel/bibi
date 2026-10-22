@@ -1,5 +1,5 @@
+import type { ExecuteContext } from "@bibi/core";
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import type { ExecuteContext } from "@okazi/core";
 import { expect } from "vitest";
 import { call } from "./helpers";
 import { seedOrgMember } from "./seed-org-member";

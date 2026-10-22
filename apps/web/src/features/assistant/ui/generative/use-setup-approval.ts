@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "@okazi/i18n/navigation";
+import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { setOnboardingStatus } from "@/features/user-preference/settings-actions";
 import { ROUTES } from "@/lib/routes";

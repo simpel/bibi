@@ -26,15 +26,15 @@ jobs:
       postgres:
         image: pgvector/pgvector:pg17
         env:
-          POSTGRES_USER: okazi
-          POSTGRES_PASSWORD: okazi
-          POSTGRES_DB: okazi
+          POSTGRES_USER: bibi
+          POSTGRES_PASSWORD: bibi
+          POSTGRES_DB: bibi
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U okazi" --health-interval 5s
+          --health-cmd "pg_isready -U bibi" --health-interval 5s
           --health-timeout 3s --health-retries 10
     env:
-      DATABASE_URL: postgresql://okazi:okazi@localhost:5432/okazi
+      DATABASE_URL: postgresql://bibi:bibi@localhost:5432/bibi
       BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-123
       BETTER_AUTH_URL: http://localhost:3000
     steps:
@@ -49,15 +49,15 @@ jobs:
       - name: Seed the database (migrations and system skills)
         run: |
           pnpm db:migrate
-          pnpm --filter @okazi/core seed:skills
+          pnpm --filter @bibi/core seed:skills
       - name: Build the backup image
-        run: docker build -f docker/backup/Dockerfile -t okazi-backup .
+        run: docker build -f docker/backup/Dockerfile -t bibi-backup .
       - name: Dump with backup.sh in local mode
         run: |
           mkdir -p "$RUNNER_TEMP/dumps"
           docker run --rm --network host --entrypoint backup.sh \
-            -e PGHOST=localhost -e PGUSER=okazi -e PGPASSWORD=okazi -e PGDATABASE=okazi \
-            -e BACKUP_LOCAL_DIR=/dumps -v "$RUNNER_TEMP/dumps:/dumps" okazi-backup
+            -e PGHOST=localhost -e PGUSER=bibi -e PGPASSWORD=bibi -e PGDATABASE=bibi \
+            -e BACKUP_LOCAL_DIR=/dumps -v "$RUNNER_TEMP/dumps:/dumps" bibi-backup
           ls -l "$RUNNER_TEMP/dumps"
       - name: Restore test
-        run: tools/backup/restore-test.sh "$(ls "$RUNNER_TEMP"/dumps/okazi-*.dump | tail -1)"
+        run: tools/backup/restore-test.sh "$(ls "$RUNNER_TEMP"/dumps/bibi-*.dump | tail -1)"

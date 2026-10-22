@@ -1,4 +1,4 @@
-import type { Payment } from "@okazi/db";
+import type { Payment } from "@bibi/db";
 import type { PaymentSignal } from "./webhook-schema";
 
 export type PaymentChange = Pick<Payment, "status" | "paidAt" | "refundedMinor">;

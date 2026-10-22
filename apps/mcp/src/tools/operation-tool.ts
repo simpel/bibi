@@ -4,7 +4,7 @@ import {
   execute,
   requiresApproval,
   UNTRUSTED_OUTPUT_META_KEY,
-} from "@okazi/core";
+} from "@bibi/core";
 import { logProposal } from "../approval/log-proposal";
 import { proposeApproval } from "../approval/propose";
 import { toAnnotations } from "./annotations";

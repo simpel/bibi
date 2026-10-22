@@ -7,7 +7,7 @@ export function AppSidebarHeader() {
     <SidebarHeader className="border-b border-sidebar-border px-3 py-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Wordmark size="sm" name="Okazi" />
+          <Wordmark size="sm" name="Bibi" />
           <Badge variant="outline" className="text-[10px] tracking-wide uppercase">
             Estate
           </Badge>

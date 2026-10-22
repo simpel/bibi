@@ -1,5 +1,5 @@
-import type { FieldDefinitionDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { FieldDefinitionDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { useToastAction } from "@/lib/use-toast-action";
 import { moveFieldAction } from "../actions";

@@ -1,4 +1,4 @@
-import type { AiModel } from "@okazi/core/schemas";
+import type { AiModel } from "@bibi/core/schemas";
 import {
   FormControl,
   FormController,
@@ -9,7 +9,7 @@ import {
   SelectContent,
   SelectTrigger,
   SelectValue,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import type { Control } from "react-hook-form";
 import { ModelSelectItems } from "./model-select-items";
 

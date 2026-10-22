@@ -1,7 +1,7 @@
-import { getTicketBalance, listDeposits, listInvoices, listPayments } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
-import { Button } from "@okazi/ui";
+import { getTicketBalance, listDeposits, listInvoices, listPayments } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
+import { Link } from "@bibi/i18n/navigation";
+import { Button } from "@bibi/ui";
 import { HandCoinsIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";

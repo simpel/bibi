@@ -1,5 +1,5 @@
-import type { ContactDto } from "@okazi/core";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
+import type { ContactDto } from "@bibi/core";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
 import { ContactForm } from "./contact-form";

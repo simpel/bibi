@@ -1,4 +1,4 @@
-import type { Message } from "@okazi/db";
+import type { Message } from "@bibi/db";
 import type { MessageDto, MessagePart } from "./schema";
 
 export type ToMessageDtoInput = { message: Message };

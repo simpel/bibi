@@ -1,4 +1,4 @@
-import { grantAll } from "@okazi/core";
+import { grantAll } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { createClient, createItemType, testContext } from "./helpers";
 

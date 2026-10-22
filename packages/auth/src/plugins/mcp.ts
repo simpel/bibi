@@ -8,7 +8,7 @@ import { mcpResourceUrl } from "../urls";
 export const OAUTH_SCOPES = ["openid", "profile", "email", "offline_access"];
 
 /** Claim carrying the organization the token was granted for (active org at consent). */
-export const ORG_CLAIM = "okazi_org";
+export const ORG_CLAIM = "bibi_org";
 
 const activeOrganizationOf = ({ session }: { session: Record<string, unknown> }) => {
   const id = session.activeOrganizationId;
@@ -25,7 +25,7 @@ export function mcpPlugins() {
     mcp({
       resource: mcpResourceUrl(),
       // Explicit allowedScopes: Prisma list columns cannot store the plugin's `null` default.
-      resources: [{ identifier: mcpResourceUrl(), name: "Okazi MCP", allowedScopes: OAUTH_SCOPES }],
+      resources: [{ identifier: mcpResourceUrl(), name: "Bibi MCP", allowedScopes: OAUTH_SCOPES }],
       scopes: OAUTH_SCOPES,
       loginPage: "/login",
       consentPage: "/oauth/consent",

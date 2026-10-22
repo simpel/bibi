@@ -1,6 +1,6 @@
-import { invitationMailHook } from "@okazi/auth";
-import type { EmbedFn } from "@okazi/core";
-import { createGraphqlHandler } from "@okazi/graphql";
+import { invitationMailHook } from "@bibi/auth";
+import type { EmbedFn } from "@bibi/core";
+import { createGraphqlHandler } from "@bibi/graphql";
 import { resolveRelayedContext } from "./context-relay";
 
 type Handler = (request: Request) => Promise<Response>;

@@ -1,6 +1,6 @@
 "use client";
 
-import type { FieldDefinitionDto } from "@okazi/core";
+import type { FieldDefinitionDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { RowAccess } from "@/lib/can";

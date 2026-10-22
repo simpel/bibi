@@ -1,7 +1,7 @@
 "use client";
 
-import type { SetupDto } from "@okazi/core";
-import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
+import type { SetupDto } from "@bibi/core";
+import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";

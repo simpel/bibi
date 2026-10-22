@@ -1,4 +1,4 @@
-import type { Prisma } from "@okazi/db";
+import type { Prisma } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { ResponsibilityContents, ResponsibilityDto } from "./schema";
 

@@ -1,4 +1,4 @@
-import type { ColumnDef } from "@okazi/ui";
+import type { ColumnDef } from "@bibi/ui";
 import { type NamedOption, nameOf } from "@/components/form/named-option";
 
 export type NamedOptionColumnInput<TData> = {

@@ -1,8 +1,8 @@
+import type { ItemStateDto } from "@bibi/core/schemas";
+import { ItemStateSetTransitionsInputSchema } from "@bibi/core/schemas";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { ItemStateDto } from "@okazi/core/schemas";
-import { ItemStateSetTransitionsInputSchema } from "@okazi/core/schemas";
-import { useRouter } from "@okazi/i18n/navigation";
-import { Button, DialogFooter, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";

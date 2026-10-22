@@ -1,7 +1,7 @@
 "use client";
 
+import { Button, Form } from "@bibi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, Form } from "@okazi/ui";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";

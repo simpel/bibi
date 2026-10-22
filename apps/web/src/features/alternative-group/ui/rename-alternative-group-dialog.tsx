@@ -1,5 +1,5 @@
-import type { AlternativeGroupDto } from "@okazi/core/schemas";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@okazi/ui";
+import type { AlternativeGroupDto } from "@bibi/core/schemas";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { RenameAlternativeGroupForm } from "./rename-alternative-group-form";
 

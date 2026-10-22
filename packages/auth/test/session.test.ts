@@ -43,7 +43,7 @@ describe("resolveExecuteContext – session cookie", () => {
     await createOrg({ headers: user.headers });
     const headers = withHeaders({
       headers: user.headers,
-      extra: { "x-okazi-actor": "ai", "x-okazi-conversation-id": "conv_1" },
+      extra: { "x-bibi-actor": "ai", "x-bibi-conversation-id": "conv_1" },
     });
     expect(codeOf({ result: await resolveExecuteContext({ headers }) })).toBe("FORBIDDEN");
   });

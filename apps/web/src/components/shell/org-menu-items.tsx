@@ -1,6 +1,6 @@
 "use client";
 
-import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@okazi/ui";
+import { DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@bibi/ui";
 import { CheckIcon, PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 

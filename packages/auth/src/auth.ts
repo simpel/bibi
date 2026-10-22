@@ -1,5 +1,5 @@
-import { getEnv } from "@okazi/config";
-import type { Db } from "@okazi/db";
+import { getEnv } from "@bibi/config";
+import type { Db } from "@bibi/db";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
@@ -30,11 +30,11 @@ const HARDENING = {
   disabledPaths: [...DISABLED_ADMIN_PATHS, ...DISABLED_API_KEY_PATHS],
 };
 
-/** Better Auth instance for Okazi. Use `getAuth()`; call this directly only in tests/CLI. */
+/** Better Auth instance for Bibi. Use `getAuth()`; call this directly only in tests/CLI. */
 export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
   const env = getEnv();
   return betterAuth({
-    appName: "Okazi",
+    appName: "Bibi",
     secret: env.BETTER_AUTH_SECRET,
     baseURL: env.BETTER_AUTH_URL,
     basePath: AUTH_BASE_PATH,

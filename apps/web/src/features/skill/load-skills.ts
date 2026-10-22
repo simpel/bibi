@@ -1,5 +1,5 @@
 import "server-only";
-import { getSkill, listSkills, ok, type Result, type SkillDto } from "@okazi/core";
+import { getSkill, listSkills, ok, type Result, type SkillDto } from "@bibi/core";
 import { searchOperation } from "@/server/operations";
 import { runOperation } from "@/server/run-operation";
 import type { SkillFilters } from "./skill-filters";

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormControl, FormController, FormItem, FormLabel, FormMessage, Input } from "@okazi/ui";
+import { FormControl, FormController, FormItem, FormLabel, FormMessage, Input } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import type { RenameInput, RenameValues } from "./use-rename-conversation-form";

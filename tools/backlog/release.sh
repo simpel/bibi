@@ -8,4 +8,4 @@ if ! [[ "$N" =~ ^[0-9]+$ ]]; then
   exit 1
 fi
 MAIN="$(git rev-parse --show-toplevel)"
-rmdir "$(dirname "$MAIN")/okazi-worktrees/.locks/t-$N" 2>/dev/null || true
+rmdir "$(dirname "$MAIN")/bibi-worktrees/.locks/t-$N" 2>/dev/null || true

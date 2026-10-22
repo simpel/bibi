@@ -1,4 +1,4 @@
-import type { EntityTypeDto } from "@okazi/core";
+import type { EntityTypeDto } from "@bibi/core";
 import type { Control } from "react-hook-form";
 import { FieldController } from "./field-controller";
 import { choicesOf } from "./field-specs";

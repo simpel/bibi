@@ -9,7 +9,7 @@
 - Staff scan the same lists every day and want them the way they set them up.
 
 ## Decision
-Every table is a shadcn TanStack table: the `DataTable` in `@okazi/ui`, rendered in the web app through `PersistedDataTable`. Never a raw `<table>`, never another table library.
+Every table is a shadcn TanStack table: the `DataTable` in `@bibi/ui`, rendered in the web app through `PersistedDataTable`. Never a raw `<table>`, never another table library.
 
 - **Sorting:** every data column is sortable (ascending, descending, none). A column sorts by the value the user sees (`accessorFn`).
 - **Column order, left to right:** optional multiselect checkbox (only where bulk editing helps; no bulk operation exists yet, so it is off everywhere), the main title, name or identifier, descriptive columns in the organization's own order, status, dates and times, numbers and amounts, row actions.

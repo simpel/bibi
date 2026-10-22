@@ -1,4 +1,4 @@
-import { embeddingWhere, type ScopedDbClient } from "@okazi/db";
+import { embeddingWhere, type ScopedDbClient } from "@bibi/db";
 import { AppError } from "../errors/app-error";
 import { contentHash } from "./content-hash";
 import type { EmbedFn } from "./embed";

@@ -1,5 +1,5 @@
 import "server-only";
-import type { LineDto, Result } from "@okazi/core";
+import type { LineDto, Result } from "@bibi/core";
 import { loadTypedFormData } from "@/server/load-typed-form-data";
 import type { RequirementFormData } from "./ui/requirement-form-data";
 

@@ -1,6 +1,6 @@
-import { getEnv } from "@okazi/config";
-import { createApiKey, type ExecuteContext, execute } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { getEnv } from "@bibi/config";
+import { createApiKey, type ExecuteContext, execute } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import { signApprovalToken } from "../src/approval/sign";

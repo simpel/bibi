@@ -1,5 +1,5 @@
 import { timingSafeEqual } from "node:crypto";
-import { AppError, err, ok, type Result } from "@okazi/core";
+import { AppError, err, ok, type Result } from "@bibi/core";
 import { hashInput } from "./canonical-json";
 import { mac } from "./sign";
 import { type ApprovalClaims, ApprovalClaimsSchema } from "./types";

@@ -1,4 +1,4 @@
-import type { Prisma, TicketTemplate, TicketTemplateLine } from "@okazi/db";
+import type { Prisma, TicketTemplate, TicketTemplateLine } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { WITH_RECORD_LINKS, type WithRecordLinks, withLinks } from "../../records/record-links";
 import type { TicketTemplateDto } from "./schema";

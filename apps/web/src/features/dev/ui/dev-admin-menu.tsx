@@ -1,5 +1,5 @@
-import type { DevUser } from "@okazi/auth";
-import { DropdownMenuSeparator } from "@okazi/ui";
+import type { DevUser } from "@bibi/auth";
+import { DropdownMenuSeparator } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { DevUserMenuItem } from "./dev-user-menu-item";
 

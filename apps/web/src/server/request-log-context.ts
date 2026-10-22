@@ -1,5 +1,5 @@
 import "server-only";
-import { type LogContext, requestIdFrom } from "@okazi/logger";
+import { type LogContext, requestIdFrom } from "@bibi/logger";
 import { headers } from "next/headers";
 import { cache } from "react";
 

@@ -1,4 +1,4 @@
-import type { FieldDefinitionDto, VocabularyDto } from "@okazi/core";
+import type { FieldDefinitionDto, VocabularyDto } from "@bibi/core";
 import { choicesOf } from "./field-specs";
 import type { LinkTargets } from "./typed-form-data";
 

@@ -1,4 +1,4 @@
-import { elapsedMs } from "@okazi/logger";
+import { elapsedMs } from "@bibi/logger";
 import type { z } from "zod";
 import { AppError } from "../errors/app-error";
 import { fromUnknown } from "../errors/from-unknown";
@@ -15,7 +15,7 @@ export type ExecutePlatformInput<I extends z.ZodType, O extends z.ZodType> = {
   context: PlatformContext;
 };
 
-/** Trusted system code, or a user whose platform role was verified by `@okazi/auth`. */
+/** Trusted system code, or a user whose platform role was verified by `@bibi/auth`. */
 function authorizePlatform({ context }: { context: PlatformContext }): Result<true> {
   const { actor, platformRole } = context;
   if (actor.type === "system") return ok({ value: true });

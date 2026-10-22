@@ -29,7 +29,7 @@ ADR 0008 requires hybrid search to be tested on real examples. The test is
 
 ```sh
 RELEVANCE_GATEWAY_KEY=... RELEVANCE_EMBEDDING_MODEL=openai/text-embedding-3-small \
-  pnpm --filter @okazi/core exec vitest run test/search-relevance.test.ts
+  pnpm --filter @bibi/core exec vitest run test/search-relevance.test.ts
 ```
 
 ## Adding a case

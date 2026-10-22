@@ -1,6 +1,6 @@
 "use client";
 
-import type { VenueCreateInput } from "@okazi/core";
+import type { VenueCreateInput } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";

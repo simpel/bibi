@@ -1,5 +1,5 @@
-import { createSystemLogSink, getDb } from "@okazi/db";
-import { createLogger } from "@okazi/logger";
+import { createSystemLogSink, getDb } from "@bibi/db";
+import { createLogger } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 

@@ -1,4 +1,4 @@
-import type { PipelineCard } from "@okazi/core";
+import type { PipelineCard } from "@bibi/core";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 
 export type PipelineCardContentProps = {

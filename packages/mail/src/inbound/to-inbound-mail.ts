@@ -1,4 +1,4 @@
-import type { InboundMailContent as CoreInboundMail } from "@okazi/core";
+import type { InboundMailContent as CoreInboundMail } from "@bibi/core";
 import type { InboundMail, InboundMailContent } from "../schema";
 
 export type ToInboundMailInput = { event: InboundMail; content: InboundMailContent };

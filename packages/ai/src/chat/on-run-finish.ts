@@ -1,5 +1,5 @@
 import type { MCPClient } from "@ai-sdk/mcp";
-import { elapsedMs, getLogContext, getLogger, runWithLogContext } from "@okazi/logger";
+import { elapsedMs, getLogContext, getLogger, runWithLogContext } from "@bibi/logger";
 import { finishRun } from "./finish-run";
 import type { ChatRuntime } from "./handle-chat";
 import type { RunFinish } from "./stream-chat";

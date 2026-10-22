@@ -42,7 +42,7 @@ import type {
 } from "./wire-schemas";
 
 /**
- * Generative-UI contract: component key → props. The web maps each key to an `@okazi/ui`
+ * Generative-UI contract: component key → props. The web maps each key to an `@bibi/ui`
  * component; this package only decides which key and validated props a tool result gets.
  */
 export type ToolUiProps = {

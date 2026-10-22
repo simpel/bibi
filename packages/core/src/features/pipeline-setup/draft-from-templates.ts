@@ -1,5 +1,5 @@
 /**
- * Client-safe (`@okazi/core/pipeline-setup-templates`): builds guided-setup drafts (ADR 0044) from
+ * Client-safe (`@bibi/core/pipeline-setup-templates`): builds guided-setup drafts (ADR 0044) from
  * the template data only, so the wizard can refill a step in the browser. No Prisma imports.
  */
 import {

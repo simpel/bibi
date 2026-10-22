@@ -1,16 +1,19 @@
+# The project name is the app name, so the rename codemod keeps it in step with tools/worktree.
+name: bibi
+
 services:
   postgres:
     image: pgvector/pgvector:pg17
     environment:
-      POSTGRES_USER: okazi
-      POSTGRES_PASSWORD: okazi
-      POSTGRES_DB: okazi
+      POSTGRES_USER: bibi
+      POSTGRES_PASSWORD: bibi
+      POSTGRES_DB: bibi
     ports:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U okazi -d okazi"]
+      test: ["CMD-SHELL", "pg_isready -U bibi -d bibi"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -29,7 +32,7 @@ services:
       args: { APP: web }
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://okazi:okazi@postgres:5432/okazi
+      DATABASE_URL: postgresql://bibi:bibi@postgres:5432/bibi
       SMTP_URL: smtp://mailpit:1025
       MCP_URL: http://mcp:3001
     ports:
@@ -45,7 +48,7 @@ services:
       args: { APP: mcp }
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://okazi:okazi@postgres:5432/okazi
+      DATABASE_URL: postgresql://bibi:bibi@postgres:5432/bibi
       WEB_URL: http://web:3000
     ports:
       - "3001:3001"
@@ -60,7 +63,7 @@ services:
       args: { APP: worker }
     env_file: .env
     environment:
-      DATABASE_URL: postgresql://okazi:okazi@postgres:5432/okazi
+      DATABASE_URL: postgresql://bibi:bibi@postgres:5432/bibi
     stop_grace_period: 30s
     healthcheck:
       disable: true

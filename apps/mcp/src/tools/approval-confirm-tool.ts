@@ -1,4 +1,4 @@
-import { type AfterCommitHook, type AnyOperation, fromZodError } from "@okazi/core";
+import { type AfterCommitHook, type AnyOperation, fromZodError } from "@bibi/core";
 import { z } from "zod";
 import { confirmApproval } from "../approval/confirm";
 import { toJsonSchema } from "./json-schema";
@@ -16,7 +16,7 @@ export type ApprovalConfirmToolInput = {
 };
 
 /**
- * `approval_confirm`: executes a proposal the user approved. Called by the Okazi web app with the
+ * `approval_confirm`: executes a proposal the user approved. Called by the Bibi web app with the
  * user's own (non-AI) credentials; the assistant never sees or calls it.
  */
 export function createApprovalConfirmTool({
@@ -27,7 +27,7 @@ export function createApprovalConfirmTool({
   return {
     name: "approval_confirm",
     description:
-      "Executes a command the user approved. Only the Okazi web app calls this, after the user " +
+      "Executes a command the user approved. Only the Bibi web app calls this, after the user " +
       "clicked Approve on an approval_required proposal. AI assistants must never call it.",
     inputSchema: toJsonSchema({ schema: ApprovalConfirmInputSchema, io: "input" }),
     outputSchema: { type: "object" },

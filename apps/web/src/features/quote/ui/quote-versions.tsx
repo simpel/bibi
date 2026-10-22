@@ -1,6 +1,6 @@
 "use client";
 
-import type { QuoteDto } from "@okazi/core";
+import type { QuoteDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { useQuoteVersionColumns } from "./use-quote-version-columns";

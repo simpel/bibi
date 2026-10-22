@@ -1,4 +1,4 @@
-import type { Item } from "@okazi/db";
+import type { Item } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { loadRecordLinks, withLinks } from "../../records/record-links";
 import { effectiveBuffers } from "../../shared/buffers";

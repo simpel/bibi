@@ -13,8 +13,8 @@
 ## Decision
 - **Stripe** is the provider. Cards first; Swish through Stripe may be enabled later without a new provider.
 - **Swish Handel direct is deferred.** It needs per-venue onboarding with a bank and is not required for the first venues.
-- **Stripe Connect, one connected account per organization.** Venues get paid directly; Okazi never holds venue funds and can take an application fee later. Accounts v2, not the legacy account types.
-- **Direct charges** on the connected account, so the venue is the merchant and Stripe carries the loss risk. Rejected: destination charges, which put negative-balance liability on Okazi. Never mix both.
+- **Stripe Connect, one connected account per organization.** Venues get paid directly; Bibi never holds venue funds and can take an application fee later. Accounts v2, not the legacy account types.
+- **Direct charges** on the connected account, so the venue is the merchant and Stripe carries the loss risk. Rejected: destination charges, which put negative-balance liability on Bibi. Never mix both.
 - **A public payment page** outside login, addressed by an unguessable token, shows the amount and a Stripe-hosted checkout.
 - **A signed webhook** runs a SYSTEM-only core operation, deduplicated on the Stripe event id; no surface can mark a payment paid.
 - **A `PaymentProvider` interface** keeps the adapter replaceable (like `MailProvider`, ADR 0012). Invoices (ADR 0029) use the same Connect model.

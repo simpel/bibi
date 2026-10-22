@@ -4,7 +4,7 @@
 - **Status:** Accepted
 
 ## Context
-- Venues should be able to sign up without talking to sales (CLAUDE.md). They need a place to read how Okazi works before and after they sign up.
+- Venues should be able to sign up without talking to sales (CLAUDE.md). They need a place to read how Bibi works before and after they sign up.
 - Integrators need to know how to authenticate and call REST, GraphQL and MCP. The only reference today is the Scalar page at `/api/v1/docs`, which covers REST only and says nothing about MCP or AI approvals.
 - Hand-written endpoint lists drift. The parity architecture (ADR 0003) already gives us one list of operations with Zod schemas, permissions and approval flags.
 

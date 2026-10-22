@@ -41,7 +41,7 @@
     {
       "id": "storybook",
       "name": "build-storybook",
-      "command": "pnpm --filter @okazi/ui build-storybook",
+      "command": "pnpm --filter @bibi/ui build-storybook",
       "stage": "last",
       "job": "storybook",
       "paths": ["^packages/ui/", "^(package\\.json|pnpm-lock\\.yaml)$"]

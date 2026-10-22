@@ -1,7 +1,7 @@
 "use client";
 
-import type { SystemLogEntry } from "@okazi/core/schemas";
-import { cn, type DataTableLabels } from "@okazi/ui";
+import type { SystemLogEntry } from "@bibi/core/schemas";
+import { cn, type DataTableLabels } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { useLogColumns } from "./use-log-columns";

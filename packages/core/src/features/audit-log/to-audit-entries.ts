@@ -1,4 +1,4 @@
-import type { AuditLog } from "@okazi/db";
+import type { AuditLog } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { AuditLogDto } from "./schema";
 

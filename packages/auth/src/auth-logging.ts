@@ -1,4 +1,4 @@
-import { getLogger } from "@okazi/logger";
+import { getLogger } from "@bibi/logger";
 import { createAuthMiddleware } from "better-auth/api";
 
 const LEVELS = {

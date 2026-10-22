@@ -1,4 +1,4 @@
-import type { EmbeddingHit, ScopedDbClient } from "@okazi/db";
+import type { EmbeddingHit, ScopedDbClient } from "@bibi/db";
 import { hasPermission } from "../operations/permission";
 import type { PermissionSet } from "../permissions/permission-set";
 import type { Embeddable, SearchViewer } from "./embeddable";

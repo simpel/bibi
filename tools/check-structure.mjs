@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Structure check for Okazi. Run with `pnpm check:structure` from the repo root.
+// Structure check for Bibi. Run with `pnpm check:structure` from the repo root.
 // Checks apps/* and packages/*: files max 150 lines, functions max 40 lines,
 // default export only in Next files/config/stories, barrel files only as
 // packages/*/src/index.ts, one typed object parameter per function, and feature folders with required files.

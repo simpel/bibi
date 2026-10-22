@@ -1,4 +1,4 @@
-import { createStripeWebhookHandler } from "@okazi/core";
+import { createStripeWebhookHandler } from "@bibi/core";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

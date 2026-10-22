@@ -4,7 +4,7 @@
 - **Status:** Accepted
 
 ## Context
-- Okazi needs to send email (confirmations, options, sheets) and receive email (replies linked to a booking).
+- Bibi needs to send email (confirmations, options, sheets) and receive email (replies linked to a booking).
 - Running our own mail server was rejected: port 25 is blocked at many VPS providers, and IP reputation and deliverability to Gmail and Microsoft are a risk for the product.
 - Hosting is one or more of our own VPSs (see the upcoming hosting ADR). The mail server should not be part of it.
 
@@ -15,7 +15,7 @@
 - **Outgoing:** via API (alternatively SMTP).
 - **Incoming:** `email.received` webhook, signed with Svix. The payload contains metadata only. Body and attachments are fetched through Resend's API. The webhook verifies the signature (Zod at the boundary) and runs as a core operation per ADR 0003.
 - **Address per booking** on a dedicated inbound subdomain, so replies can be linked to the right `organizationId` and booking.
-- **`MailProvider` interface** in its own package with `send` and `parseInbound`. An adapter is chosen via env in `@okazi/config`. Mailpit is used in dev through the same interface.
+- **`MailProvider` interface** in its own package with `send` and `parseInbound`. An adapter is chosen via env in `@bibi/config`. Mailpit is used in dev through the same interface.
 - **Fallback:** Amazon SES (cheapest) behind the same interface if price or EU requirements justify a switch.
 
 ## Alternatives considered

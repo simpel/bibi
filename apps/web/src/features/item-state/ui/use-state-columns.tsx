@@ -1,5 +1,5 @@
-import type { ItemStateDto } from "@okazi/core/schemas";
-import { actionsColumn, Badge, ColorSwatch, type ColumnDef } from "@okazi/ui";
+import type { ItemStateDto } from "@bibi/core/schemas";
+import { actionsColumn, Badge, ColorSwatch, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { RowAccess } from "@/lib/can";

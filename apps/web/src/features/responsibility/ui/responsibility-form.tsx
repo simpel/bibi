@@ -1,6 +1,6 @@
-import type { ResponsibilityCreateInput, ResponsibilityDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import type { ResponsibilityCreateInput, ResponsibilityDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import { useFormAction } from "@/lib/use-form-action";

@@ -1,5 +1,5 @@
-import type { FixedRole } from "@okazi/core/schemas";
-import { Badge } from "@okazi/ui";
+import type { FixedRole } from "@bibi/core/schemas";
+import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type RoleBadgeProps = { role: FixedRole | null };

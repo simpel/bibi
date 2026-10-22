@@ -1,4 +1,4 @@
-import type { InboundEmail } from "@okazi/db";
+import type { InboundEmail } from "@bibi/db";
 import { z } from "zod";
 import { InboundAttachmentSchema, type InboundEmailDto } from "./schema";
 

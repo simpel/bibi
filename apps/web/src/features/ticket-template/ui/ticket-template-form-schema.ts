@@ -1,5 +1,5 @@
-import type { TicketTemplateDto } from "@okazi/core/schemas";
-import { TicketTemplateCreateInputSchema } from "@okazi/core/schemas";
+import type { TicketTemplateDto } from "@bibi/core/schemas";
+import { TicketTemplateCreateInputSchema } from "@bibi/core/schemas";
 import { NONE } from "@/components/form/option-select-field";
 import { numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";

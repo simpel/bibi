@@ -1,6 +1,6 @@
 "use client";
 
-import { Table, TableBody, TableCaption, TableHead, TableHeader, TableRow } from "@okazi/ui";
+import { Table, TableBody, TableCaption, TableHead, TableHeader, TableRow } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { GridModel } from "../calendar-grid-model";
 import { LANE_REM } from "./calendar-block";

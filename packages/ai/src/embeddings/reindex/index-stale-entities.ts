@@ -1,5 +1,5 @@
-import { type EmbedFn, indexEntity, SEARCHABLE_ENTITIES } from "@okazi/core";
-import { type Db, type ScopedDbClient, SYSTEM_ACTOR_ID, scopedDb } from "@okazi/db";
+import { type EmbedFn, indexEntity, SEARCHABLE_ENTITIES } from "@bibi/core";
+import { type Db, type ScopedDbClient, SYSTEM_ACTOR_ID, scopedDb } from "@bibi/db";
 
 type IdRow = { id: string };
 type ListIds = (input: { db: ScopedDbClient }) => Promise<IdRow[]>;

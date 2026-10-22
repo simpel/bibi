@@ -1,4 +1,4 @@
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@okazi/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@bibi/ui";
 
 export const ALL = "all";
 

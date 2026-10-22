@@ -1,6 +1,6 @@
-import { AppError, type ExecuteContext, err, ok, type Result } from "@okazi/core";
+import { AppError, type ExecuteContext, err, ok, type Result } from "@bibi/core";
 
-/** `resolveExecuteContext` from `@okazi/auth` in the web app; injectable for tests. */
+/** `resolveExecuteContext` from `@bibi/auth` in the web app; injectable for tests. */
 export type ResolveContext = (input: { headers: Headers }) => Promise<Result<ExecuteContext>>;
 
 /** Execute context of a signed-in human user (never the AI actor). */

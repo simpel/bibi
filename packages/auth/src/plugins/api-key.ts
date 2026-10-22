@@ -1,5 +1,5 @@
 import { apiKey } from "@better-auth/api-key";
-import { API_KEY_PREFIX, API_KEY_RATE_LIMIT } from "@okazi/core";
+import { API_KEY_PREFIX, API_KEY_RATE_LIMIT } from "@bibi/core";
 
 /**
  * Every HTTP endpoint the API key plugin adds. All are disabled: keys are issued, listed and

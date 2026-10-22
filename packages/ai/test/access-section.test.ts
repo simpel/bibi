@@ -1,4 +1,4 @@
-import { grantAll, PRESET_PERMISSIONS } from "@okazi/core";
+import { grantAll, PRESET_PERMISSIONS } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { accessSection } from "../src/prompt/access-section";
 

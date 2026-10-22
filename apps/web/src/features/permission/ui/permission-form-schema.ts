@@ -1,4 +1,4 @@
-import { type PermissionSet, PermissionUpdateInputSchema } from "@okazi/core/schemas";
+import { type PermissionSet, PermissionUpdateInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
 import { toOverrides } from "../permission-grid";
 

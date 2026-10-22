@@ -1,4 +1,4 @@
-import { APP_ERROR_CODES } from "@okazi/core";
+import { APP_ERROR_CODES } from "@bibi/core";
 import type { CompiledRoute } from "../http/compile-routes";
 import type { JsonObject } from "../http/json-schema";
 import { buildOperationObject } from "./build-operation";
@@ -42,10 +42,10 @@ export function buildOpenApiDocument({ compiled, basePath }: BuildOpenApiInput):
   return {
     openapi: "3.1.0",
     info: {
-      title: "Okazi API",
+      title: "Bibi API",
       version: "1.0.0",
       description:
-        "REST API for Okazi (conference + food & beverage ticket). Derived from the same operations as GraphQL and MCP.",
+        "REST API for Bibi (conference + food & beverage ticket). Derived from the same operations as GraphQL and MCP.",
     },
     servers: [{ url: basePath }],
     paths,

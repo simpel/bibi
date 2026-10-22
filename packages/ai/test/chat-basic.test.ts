@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { registerWebClient, signUpWithOrg } from "./helpers/auth";
 import { chatRequest, createHarness, readChunks } from "./helpers/chat";
@@ -21,12 +21,12 @@ describe("createChatHandler – plain answers", () => {
     const { handler, clients } = createHarness({ model, mcpUrl: mcp.url });
     const response = await handler(chatRequest({ cookies: user.cookies, text: "Hej\nmer text" }));
     expect(response.status).toBe(200);
-    const conversationId = response.headers.get("x-okazi-conversation-id") ?? "";
+    const conversationId = response.headers.get("x-bibi-conversation-id") ?? "";
     expect(conversationId).not.toBe("");
     const chunks = await readChunks({ response });
     expect(chunks).toContainEqual(
       expect.objectContaining({
-        type: "data-okazi-conversation",
+        type: "data-bibi-conversation",
         data: { conversationId, created: true },
       }),
     );
@@ -83,7 +83,7 @@ describe("createChatHandler – plain answers", () => {
     });
     const { handler } = createHarness({ model, mcpUrl: mcp.url });
     const first = await handler(chatRequest({ cookies: user.cookies, text: "Question one" }));
-    const conversationId = first.headers.get("x-okazi-conversation-id") ?? "";
+    const conversationId = first.headers.get("x-bibi-conversation-id") ?? "";
     await readChunks({ response: first });
     await storedMessages({ conversationId, minCount: 2 });
     const second = await handler(

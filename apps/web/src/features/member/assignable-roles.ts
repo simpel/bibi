@@ -1,4 +1,4 @@
-import { FIXED_ROLES, type FixedRole, roleRank } from "@okazi/core/schemas";
+import { FIXED_ROLES, type FixedRole, roleRank } from "@bibi/core/schemas";
 
 export type AssignableRolesInput = { caller: FixedRole | null };
 

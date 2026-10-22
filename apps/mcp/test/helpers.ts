@@ -1,12 +1,12 @@
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import {
   type Actor,
   createExecuteContext,
   type ExecuteContext,
   type PermissionSet,
   PRESET_PERMISSIONS,
-} from "@okazi/core";
+} from "@bibi/core";
+import { Client } from "@modelcontextprotocol/sdk/client/index.js";
+import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createId } from "@paralleldrive/cuid2";
 import { createMcpServer } from "../src/server/create-mcp-server";
 import { fakeEmbed } from "./fake-embed";

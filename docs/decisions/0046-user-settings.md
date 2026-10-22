@@ -21,7 +21,7 @@
   - The app layout sends a user whose status is `PENDING` to `/onboarding` before anything else.
   - Skip sets `SKIPPED`; approving the first-setup card sets `COMPLETED` and opens the board.
   - Invited members never get a row, so they go straight to the app.
-- **Dev switcher:** each user in the dev menu is a sub-menu with "Switch to" and "Reset onboarding". Reset sets that user's row to `PENDING` through `resetDevOnboarding` in `@okazi/auth` (dev environment only, seeded dev users only). It writes another user's row directly, which no operation may do, so it is dev tooling and not an operation.
+- **Dev switcher:** each user in the dev menu is a sub-menu with "Switch to" and "Reset onboarding". Reset sets that user's row to `PENDING` through `resetDevOnboarding` in `@bibi/auth` (dev environment only, seeded dev users only). It writes another user's row directly, which no operation may do, so it is dev tooling and not an operation.
 
 ## Consequences
 - One new table and migration; the demo seed is unchanged (seeded users have no row).

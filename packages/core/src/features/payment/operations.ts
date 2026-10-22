@@ -1,4 +1,4 @@
-import { type Db, getDb } from "@okazi/db";
+import { type Db, getDb } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import { createExecuteContext } from "../../operations/context";
 import { defineOperation } from "../../operations/define-operation";

@@ -1,6 +1,6 @@
-import { SUPERADMIN_ROLE } from "@okazi/core";
-import { getDb, PLATFORM_SCOPE } from "@okazi/db";
-import { getLogger } from "@okazi/logger";
+import { SUPERADMIN_ROLE } from "@bibi/core";
+import { getDb, PLATFORM_SCOPE } from "@bibi/db";
+import { getLogger } from "@bibi/logger";
 
 export type SetPlatformAdminInput = { email: string; admin: boolean };
 

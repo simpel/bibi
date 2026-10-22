@@ -1,4 +1,4 @@
-import type { ItemDto } from "@okazi/core";
+import type { ItemDto } from "@bibi/core";
 
 /** Values of the `customisationGroupValue` message. */
 export type CustomisationGroupValues = {

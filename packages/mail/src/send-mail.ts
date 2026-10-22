@@ -1,5 +1,5 @@
-import { appError, err, fromZodError, type Result } from "@okazi/core";
-import { elapsedMs, getLogger, maskEmail } from "@okazi/logger";
+import { appError, err, fromZodError, type Result } from "@bibi/core";
+import { elapsedMs, getLogger, maskEmail } from "@bibi/logger";
 import { getMailProvider } from "./get-mail-provider";
 import { type MailMessage, MailMessageSchema, type SentMail } from "./schema";
 

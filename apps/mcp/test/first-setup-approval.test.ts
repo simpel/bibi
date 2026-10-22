@@ -1,4 +1,4 @@
-import { draftFromPreset } from "@okazi/core/pipeline-setup-templates";
+import { draftFromPreset } from "@bibi/core/pipeline-setup-templates";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";

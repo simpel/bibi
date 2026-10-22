@@ -1,6 +1,6 @@
 import "server-only";
-import { toJsonSchema } from "@okazi/api";
-import type { AnyOperation } from "@okazi/core";
+import { toJsonSchema } from "@bibi/api";
+import type { AnyOperation } from "@bibi/core";
 import { ensureOperations } from "@/server/operations";
 import type { ReferenceEntry } from "../reference/types";
 import { GENERIC_MCP_TOOLS } from "./generic-mcp-tools";

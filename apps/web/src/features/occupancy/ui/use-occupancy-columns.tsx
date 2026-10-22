@@ -1,6 +1,6 @@
-import type { OccupancyDto } from "@okazi/core";
-import { MANUAL_OCCUPANCY_TYPES } from "@okazi/core/schemas";
-import { actionsColumn, type ColumnDef } from "@okazi/ui";
+import type { OccupancyDto } from "@bibi/core";
+import { MANUAL_OCCUPANCY_TYPES } from "@bibi/core/schemas";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { RowAccess } from "@/lib/can";

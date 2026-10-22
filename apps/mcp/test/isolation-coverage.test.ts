@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { createCoreOperations, listOperations, registerOperations } from "@okazi/core";
+import { createCoreOperations, listOperations, registerOperations } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { toToolName } from "../src/tools/tool-name";
 import { fakeEmbed } from "./fake-embed";

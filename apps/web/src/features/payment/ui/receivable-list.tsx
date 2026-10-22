@@ -3,7 +3,7 @@ import type {
   InvoiceDto,
   ReceivableSettlement,
   TicketBalanceDto,
-} from "@okazi/core/schemas";
+} from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { DepositEntry } from "./deposit-entry";
 import { InvoiceEntry } from "./invoice-entry";

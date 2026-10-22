@@ -3,7 +3,7 @@ import {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { CheckIcon, SunMoonIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";

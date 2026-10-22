@@ -1,6 +1,6 @@
-import type { QuoteDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
-import { Button } from "@okazi/ui";
+import type { QuoteDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { type ReactNode, useState } from "react";
 import { ConfirmDialog } from "@/components/confirm-dialog";

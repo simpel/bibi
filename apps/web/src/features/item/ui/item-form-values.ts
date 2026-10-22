@@ -1,5 +1,5 @@
-import type { EntityTypeDto, ItemDto } from "@okazi/core";
-import type { PRICE_UNITS, PriceEffect } from "@okazi/core/schemas";
+import type { EntityTypeDto, ItemDto } from "@bibi/core";
+import type { PRICE_UNITS, PriceEffect } from "@bibi/core/schemas";
 import { type BufferFormValues, bufferFormDefaults } from "@/components/form/buffer-values";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 

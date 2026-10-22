@@ -1,4 +1,4 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import { skillContentHash } from "../features/skill/content-hash";
 import type { SkillContent } from "../features/skill/schema";
 import { toJson } from "../shared/to-json";

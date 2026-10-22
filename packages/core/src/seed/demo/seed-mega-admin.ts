@@ -1,9 +1,9 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { ADMIN_ROLE, SUPERADMIN_ROLE } from "../../permissions/fixed-roles";
 
 /** Reserved TLD like the other demo users (`docs/demo-seed.md`): mail never leaves Mailpit. */
-export const MEGA_ADMIN_EMAIL = "mega.admin@admin.okazi.test";
+export const MEGA_ADMIN_EMAIL = "mega.admin@admin.bibi.test";
 
 export type SeedMegaAdminInput = {
   db: Db;

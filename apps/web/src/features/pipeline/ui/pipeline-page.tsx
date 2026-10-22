@@ -1,4 +1,4 @@
-import type { Locale } from "@okazi/i18n";
+import type { Locale } from "@bibi/i18n";
 import { ErrorState } from "@/components/states/error-state";
 import { handleLoadError } from "@/server/load-error";
 import { loadPipelineData } from "../load-pipeline-data";

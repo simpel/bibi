@@ -1,5 +1,5 @@
-import { execute, expireTicketHolds } from "@okazi/core";
-import { getLogger } from "@okazi/logger";
+import { execute, expireTicketHolds } from "@bibi/core";
+import { getLogger } from "@bibi/logger";
 import { forEachOrganization } from "../for-each-organization";
 import type { JobDefinition } from "../job-definition";
 

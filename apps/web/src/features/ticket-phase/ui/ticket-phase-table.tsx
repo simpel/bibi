@@ -1,6 +1,6 @@
 "use client";
 
-import type { TicketPhaseDto } from "@okazi/core/schemas";
+import type { TicketPhaseDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";

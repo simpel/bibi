@@ -1,6 +1,6 @@
 "use client";
 
-import { ConversationContent, Message, MessageContent } from "@okazi/ui";
+import { ConversationContent, Message, MessageContent } from "@bibi/ui";
 import type { ChatStatus, UIMessage } from "ai";
 import { isTextUIPart } from "ai";
 import { ChatError } from "./chat-error";

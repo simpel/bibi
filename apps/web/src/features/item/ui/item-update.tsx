@@ -1,5 +1,5 @@
-import { getItem } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { getItem } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { FormPageShell } from "@/components/wizard/form-page-shell";

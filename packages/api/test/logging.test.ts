@@ -1,5 +1,5 @@
-import { createExecuteContext, grantAll } from "@okazi/core";
-import { type CapturedLogs, captureLogs } from "@okazi/logger";
+import { createExecuteContext, grantAll } from "@bibi/core";
+import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { handler, newOrgId } from "./helpers";
 

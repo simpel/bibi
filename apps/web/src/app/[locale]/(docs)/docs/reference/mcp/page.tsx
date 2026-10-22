@@ -1,4 +1,4 @@
-import { resolveLocale } from "@okazi/i18n";
+import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { loadDocText } from "@/features/docs/server/doc-text";
 import { mcpReference } from "@/features/docs/server/mcp-reference";
@@ -13,7 +13,7 @@ type McpReferencePageProps = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: McpReferencePageProps) {
   const { locale } = await params;
   const text = await loadDocText({ locale, key: "reference.mcp" });
-  return { title: `${text.title} · Okazi`, description: text.lead };
+  return { title: `${text.title} · Bibi`, description: text.lead };
 }
 
 /** Generated from the core operations, so it always matches what the MCP server lists. */

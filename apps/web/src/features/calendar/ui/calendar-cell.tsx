@@ -1,4 +1,4 @@
-import { cn, TableCell } from "@okazi/ui";
+import { cn, TableCell } from "@bibi/ui";
 import type { GridCell } from "../calendar-grid-model";
 import { BookSlotButton } from "./book-slot-button";
 import { CalendarBlockView } from "./calendar-block";

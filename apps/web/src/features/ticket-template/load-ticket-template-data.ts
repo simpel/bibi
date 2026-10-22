@@ -1,5 +1,5 @@
 import "server-only";
-import { listEntityTypes, listItems, listTicketPhases, type Result } from "@okazi/core";
+import { listEntityTypes, listItems, listTicketPhases, type Result } from "@bibi/core";
 import { runOperation } from "@/server/run-operation";
 import type { TicketTemplateFormData } from "./ui/ticket-template-form-data";
 

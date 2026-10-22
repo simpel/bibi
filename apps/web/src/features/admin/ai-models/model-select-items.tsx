@@ -1,5 +1,5 @@
-import type { AiModel } from "@okazi/core/schemas";
-import { SelectGroup, SelectItem, SelectLabel } from "@okazi/ui";
+import type { AiModel } from "@bibi/core/schemas";
+import { SelectGroup, SelectItem, SelectLabel } from "@bibi/ui";
 import { groupByProvider } from "./model-options";
 import { ModelPrice } from "./model-price";
 

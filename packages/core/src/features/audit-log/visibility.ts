@@ -1,4 +1,4 @@
-import type { Prisma } from "@okazi/db";
+import type { Prisma } from "@bibi/db";
 import { hasPermission, type Permission } from "../../operations/permission";
 import type { OperationContext } from "../../operations/types";
 import { ENTITY_FEATURE } from "../../permissions/entity-features";

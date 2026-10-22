@@ -30,7 +30,7 @@
   | Embeddings | queued on change |
   | Outgoing email with retries | queued on send |
 - **Idempotency:** jobs must tolerate being run again. `ticket.expireHolds` touches only lines that are still in an `expires` state.
-- **Configuration:** `DATABASE_URL` is read through `@okazi/config` as in the other apps. No new secrets.
+- **Configuration:** `DATABASE_URL` is read through `@bibi/config` as in the other apps. No new secrets.
 
 ## Consequences
 - One more container in `docker-compose.prod.yml`, but no new infrastructure (no Redis).

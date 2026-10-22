@@ -1,5 +1,5 @@
-import type { EntityTypeDto } from "@okazi/core";
-import type { FieldSpec } from "@okazi/core/schemas";
+import type { EntityTypeDto } from "@bibi/core";
+import type { FieldSpec } from "@bibi/core/schemas";
 
 /** A type's own field as a form control holds it: text inputs are strings. */
 export type RawFieldValue = string | boolean | string[];

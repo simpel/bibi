@@ -1,4 +1,4 @@
-import type { Permission } from "@okazi/core";
+import type { Permission } from "@bibi/core";
 import {
   BoxIcon,
   BuildingIcon,

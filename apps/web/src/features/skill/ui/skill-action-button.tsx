@@ -1,8 +1,8 @@
 "use client";
 
-import type { SkillDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
-import { Button } from "@okazi/ui";
+import type { SkillDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import type { ActionResult } from "@/lib/action-result";

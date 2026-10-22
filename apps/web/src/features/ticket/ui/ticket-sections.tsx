@@ -1,5 +1,5 @@
-import type { Permission, TicketDto, TicketPhaseDto } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import type { Permission, TicketDto, TicketPhaseDto } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { TicketInbox } from "@/features/inbound-email/ui/ticket-inbox";
 import { ProgramSection } from "@/features/line/ui/program-section";
 import { TicketPayments } from "@/features/payment/ui/ticket-payments";

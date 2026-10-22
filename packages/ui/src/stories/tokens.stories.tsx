@@ -12,7 +12,7 @@ import {
 function OverviewTitle() {
   return (
     <div className="flex items-center gap-3">
-      <Wordmark size="lg" name="Okazi" />
+      <Wordmark size="lg" name="Bibi" />
       <span className="font-serif text-3xl font-light tracking-tight text-black dark:text-white">
         Design System
       </span>

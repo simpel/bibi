@@ -1,6 +1,6 @@
 import "server-only";
-import { listEntityTypes, listItemStates, type Result } from "@okazi/core";
-import type { EntityTypeDto, ItemStateDto } from "@okazi/core/schemas";
+import { listEntityTypes, listItemStates, type Result } from "@bibi/core";
+import type { EntityTypeDto, ItemStateDto } from "@bibi/core/schemas";
 import { runOperation } from "@/server/run-operation";
 
 export type TypeStates = { type: EntityTypeDto; states: ItemStateDto[] };

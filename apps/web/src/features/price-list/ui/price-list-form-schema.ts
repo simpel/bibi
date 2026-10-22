@@ -1,5 +1,5 @@
-import type { PriceListDto } from "@okazi/core";
-import { PriceListCreateInputSchema } from "@okazi/core/schemas";
+import type { PriceListDto } from "@bibi/core";
+import { PriceListCreateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { NONE } from "@/components/form/option-select-field";
 import { blankToNull, numberOrNull } from "@/lib/blank";

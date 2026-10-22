@@ -1,4 +1,4 @@
-import type { InboundEmailDto } from "@okazi/core/schemas";
+import type { InboundEmailDto } from "@bibi/core/schemas";
 import { PaperclipIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 

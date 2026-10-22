@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ChooseOptionsForm } from "./choose-options-form";
 import type { CustomisableItem } from "./program-form-data";

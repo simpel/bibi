@@ -1,4 +1,4 @@
-import type { Skill } from "@okazi/db";
+import type { Skill } from "@bibi/db";
 import type { Embeddable } from "../../search/embeddable";
 import { visibleSkillWhere } from "./access";
 

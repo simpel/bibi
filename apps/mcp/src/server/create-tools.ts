@@ -1,6 +1,6 @@
-import { invitationMailHook } from "@okazi/auth";
-import { getEnv } from "@okazi/config";
-import { createIndexingHook, type EmbedFn } from "@okazi/core";
+import { invitationMailHook } from "@bibi/auth";
+import { getEnv } from "@bibi/config";
+import { createIndexingHook, type EmbedFn } from "@bibi/core";
 import { createApprovalConfirmTool } from "../tools/approval-confirm-tool";
 import { createGraphqlQueryTool, createGraphqlSchemaTool } from "../tools/graphql-tools";
 import { findMcpToolMeta } from "../tools/meta-registry";

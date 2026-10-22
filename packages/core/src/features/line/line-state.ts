@@ -1,4 +1,4 @@
-import type { StateChangeTrigger } from "@okazi/db";
+import type { StateChangeTrigger } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";

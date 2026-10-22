@@ -1,5 +1,5 @@
-import type { ItemStateDto } from "@okazi/core/schemas";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
+import type { ItemStateDto } from "@bibi/core/schemas";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ArchiveItemStateForm } from "./archive-item-state-form";
 

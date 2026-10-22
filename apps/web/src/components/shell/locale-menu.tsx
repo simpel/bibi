@@ -1,11 +1,11 @@
-import { LOCALES } from "@okazi/i18n";
-import { usePathname, useRouter } from "@okazi/i18n/navigation";
+import { LOCALES } from "@bibi/i18n";
+import { usePathname, useRouter } from "@bibi/i18n/navigation";
 import {
   DropdownMenuItem,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { CheckIcon, LanguagesIcon } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";

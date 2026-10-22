@@ -1,5 +1,5 @@
-import type { DevUser } from "@okazi/auth";
-import { Command, CommandEmpty, CommandInput, CommandList } from "@okazi/ui";
+import type { DevUser } from "@bibi/auth";
+import { Command, CommandEmpty, CommandInput, CommandList } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { DevUserSearchRows } from "./dev-user-search-rows";

@@ -1,7 +1,7 @@
 "use client";
 
+import type { VenueCreateInput, VenueDto } from "@bibi/core";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { VenueCreateInput, VenueDto } from "@okazi/core";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { zodMessageMap } from "@/lib/zod-error-map";

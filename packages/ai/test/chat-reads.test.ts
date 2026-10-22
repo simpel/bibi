@@ -1,5 +1,5 @@
-import { resolveExecuteContext } from "@okazi/auth";
-import { createVenue } from "@okazi/core";
+import { resolveExecuteContext } from "@bibi/auth";
+import { createVenue } from "@bibi/core";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createEmbed } from "../src/embeddings/create-embed";
 import { resolveUser } from "../src/server/resolve-user";
@@ -77,7 +77,7 @@ describe("read tools through the assistant", () => {
       model: mockModel({ steps: [textStep({ text: "ok" })] }),
       mcpUrl: mcp.url,
     }).handler(chatRequest({ cookies: owner.cookies, text: "Hej" }));
-    const conversationId = first.headers.get("x-okazi-conversation-id") ?? "";
+    const conversationId = first.headers.get("x-bibi-conversation-id") ?? "";
     await readChunks({ response: first });
 
     const stranger = await signUpWithOrg();

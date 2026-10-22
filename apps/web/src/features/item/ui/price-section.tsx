@@ -1,4 +1,4 @@
-import { PRICE_UNITS } from "@okazi/core/schemas";
+import { PRICE_UNITS } from "@bibi/core/schemas";
 import {
   FormControl,
   FormController,
@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";

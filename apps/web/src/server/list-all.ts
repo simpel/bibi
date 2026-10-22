@@ -1,5 +1,5 @@
 import "server-only";
-import { type Operation, ok, type Result } from "@okazi/core";
+import { type Operation, ok, type Result } from "@bibi/core";
 import type { z } from "zod";
 import { runOperation } from "./run-operation";
 

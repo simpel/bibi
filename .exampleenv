@@ -1,8 +1,8 @@
 # Rename to .env.example (tracked template) or copy to .env and fill in.
-# Read only through @okazi/config (never process.env in app code).
+# Read only through @bibi/config (never process.env in app code).
 
 # --- Database (docker compose: postgres) ---
-DATABASE_URL=postgresql://okazi:okazi@localhost:5432/okazi
+DATABASE_URL=postgresql://bibi:bibi@localhost:5432/bibi
 
 # --- Better Auth ---
 # Generate with: openssl rand -base64 32   (min 32 chars)
@@ -11,13 +11,13 @@ BETTER_AUTH_URL=http://localhost:3000
 
 # --- Mail (docker compose: mailpit; SMTP 1025, UI http://localhost:8025) ---
 SMTP_URL=smtp://localhost:1025
-MAIL_FROM=Okazi <no-reply@okazi.local>
+MAIL_FROM=Bibi <no-reply@bibi.local>
 # Adapter (ADR 0012): smtp (default, uses SMTP_URL) or resend (production, needs RESEND_API_KEY).
 MAIL_PROVIDER=smtp
 RESEND_API_KEY=
 # Signing secret (whsec_...) of the Resend email.received webhook.
 RESEND_WEBHOOK_SECRET=
-# Inbound subdomain for ticket reply addresses, e.g. in.okazi.se (docs/runbooks/inbound-email.md).
+# Inbound subdomain for ticket reply addresses, e.g. in.bibi.se (docs/runbooks/inbound-email.md).
 MAIL_INBOUND_DOMAIN=
 
 # --- App URLs / ports ---
@@ -31,12 +31,12 @@ PORT=3001
 AI_GATEWAY_API_KEY=
 
 # --- Assistant OAuth client ---
-# Printed by: pnpm --filter @okazi/web provision:oauth   (read by web and mcp)
+# Printed by: pnpm --filter @bibi/web provision:oauth   (read by web and mcp)
 WEB_OAUTH_CLIENT_ID=
 
 # --- Optional ---
 # API key for the stdio MCP server
-OKAZI_API_KEY=
+BIBI_API_KEY=
 # E2E only: scripted mock chat model. Ignored when NODE_ENV=production.
 E2E_MOCK_MODEL=false
 # System log (ADR 0014). Level: trace|debug|info|warn|error|fatal|silent (default info, silent in tests).
@@ -55,5 +55,5 @@ STRIPE_SECRET_KEY=
 STRIPE_PLATFORM_ACCOUNT_ID=
 # Signing secret of the webhook endpoint /api/webhooks/stripe (`stripe listen` prints one for dev).
 STRIPE_WEBHOOK_SECRET=
-# Okazi's application fee in basis points of each payment (250 = 2.5 %); empty = no fee.
+# Bibi's application fee in basis points of each payment (250 = 2.5 %); empty = no fee.
 STRIPE_APPLICATION_FEE_BPS=

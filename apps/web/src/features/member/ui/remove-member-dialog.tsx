@@ -1,7 +1,7 @@
 "use client";
 
-import type { MemberDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { MemberDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { useToastAction } from "@/lib/use-toast-action";

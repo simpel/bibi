@@ -1,6 +1,6 @@
 "use client";
 
-import { Input, Label } from "@okazi/ui";
+import { Input, Label } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { type ChangeEvent, useId } from "react";
 import type { UseFormReturn } from "react-hook-form";

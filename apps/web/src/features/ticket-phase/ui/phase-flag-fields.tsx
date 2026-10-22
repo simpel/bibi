@@ -1,5 +1,5 @@
-import type { TicketPhaseCreateInput } from "@okazi/core/schemas";
-import { PHASE_EVENTS, PHASE_FLAGS } from "@okazi/core/schemas";
+import type { TicketPhaseCreateInput } from "@bibi/core/schemas";
+import { PHASE_EVENTS, PHASE_FLAGS } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { CheckField } from "@/components/form/check-field";

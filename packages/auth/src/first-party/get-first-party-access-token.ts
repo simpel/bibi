@@ -1,4 +1,4 @@
-import { ok, type Result } from "@okazi/core";
+import { ok, type Result } from "@bibi/core";
 import { authorizeCode } from "./authorize-code";
 import type { FirstPartyClient } from "./clients";
 import { resolveClient } from "./endpoints";
@@ -15,7 +15,7 @@ export type GetFirstPartyAccessTokenInput = {
   caller: { userId: string; organizationId: string };
 };
 
-/** Mints (or reuses) an MCP access token for the signed-in user, as an Okazi first-party client. */
+/** Mints (or reuses) an MCP access token for the signed-in user, as an Bibi first-party client. */
 export type GetFirstPartyAccessToken = (
   input: GetFirstPartyAccessTokenInput,
 ) => Promise<Result<string>>;
@@ -23,7 +23,7 @@ export type GetFirstPartyAccessToken = (
 /**
  * OAuth access token for `${MCP_URL}/mcp`, issued to a first-party client for the user behind
  * the session cookie: authorization code + PKCE run in-process through Better Auth (no browser
- * round-trip, no custom signing). The token carries `okazi_org` = the session's active org and
+ * round-trip, no custom signing). The token carries `bibi_org` = the session's active org and
  * `azp` = the client; whether it may act as the AI actor is the client's `allowsAiActor` flag.
  *
  * Trust boundary: whoever holds the session cookie can already do everything the token allows.

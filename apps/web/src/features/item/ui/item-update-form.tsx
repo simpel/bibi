@@ -1,7 +1,7 @@
 "use client";
 
-import type { ItemDto } from "@okazi/core";
-import { useRouter } from "@okazi/i18n/navigation";
+import type { ItemDto } from "@bibi/core";
+import { useRouter } from "@bibi/i18n/navigation";
 import { itemRoute } from "@/lib/routes";
 import { ItemForm } from "./item-form";
 import type { ItemFormData } from "./item-form-data";

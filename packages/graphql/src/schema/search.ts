@@ -1,4 +1,4 @@
-import { createSearchOperation, type SearchHit, SearchHitSchema } from "@okazi/core";
+import { createSearchOperation, type SearchHit, SearchHitSchema } from "@bibi/core";
 import { builder, type ObjectRefOf } from "./builder";
 import { fieldFromOperation } from "./from-operation";
 import { objectFromSchema } from "./object-from-schema";

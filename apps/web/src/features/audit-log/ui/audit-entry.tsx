@@ -1,5 +1,5 @@
-import type { AuditLogDto } from "@okazi/core/schemas";
-import { Badge } from "@okazi/ui";
+import type { AuditLogDto } from "@bibi/core/schemas";
+import { Badge } from "@bibi/ui";
 import { SparklesIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { auditDiff } from "../audit-diff";

@@ -1,6 +1,6 @@
 "use client";
 
-import type { DevUser } from "@okazi/auth";
+import type { DevUser } from "@bibi/auth";
 import {
   Button,
   DropdownMenu,
@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { DatabaseIcon, UsersIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { DevService } from "@/lib/dev-services";

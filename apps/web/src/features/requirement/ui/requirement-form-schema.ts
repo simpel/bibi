@@ -3,8 +3,8 @@ import type {
   RequirementDto,
   RequirementUpdateInput,
   VocabularyDto,
-} from "@okazi/core";
-import { buildFieldsSchema, RequirementCreateInputSchema } from "@okazi/core/schemas";
+} from "@bibi/core";
+import { buildFieldsSchema, RequirementCreateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { NONE } from "@/components/form/option-select-field";
 import { specsOf } from "@/components/typed-fields/field-specs";

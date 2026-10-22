@@ -1,4 +1,4 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 import { err, ok, type Result } from "../../errors/result";
 import type { ChargeTarget } from "./payment-preconditions";
 import type { ChargeBase } from "./provider";
@@ -10,7 +10,7 @@ export const DEFAULT_INVOICE_DAYS = 30;
 
 export type ApplicationFeeInput = { amountMinor: number };
 
-/** Okazi's cut from `STRIPE_APPLICATION_FEE_BPS`; undefined when no fee is configured. */
+/** Bibi's cut from `STRIPE_APPLICATION_FEE_BPS`; undefined when no fee is configured. */
 export function applicationFee({ amountMinor }: ApplicationFeeInput): number | undefined {
   const bps = getEnv().STRIPE_APPLICATION_FEE_BPS;
   if (!bps) return undefined;
@@ -51,7 +51,7 @@ export async function requestCharge({
     currency: input.currency,
     applicationFeeMinor,
     description: input.description ?? `Ticket #${target.ticket.reference}`,
-    idempotencyKey: `okazi-payment-${paymentId}`,
+    idempotencyKey: `bibi-payment-${paymentId}`,
     metadata: { paymentId, ticketId: target.ticket.id, organizationId },
   };
   const provider = getPaymentProvider();

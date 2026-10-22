@@ -4,8 +4,8 @@ import {
   type PlatformContext,
   type Result,
   SUPERADMIN_ROLE,
-} from "@okazi/core";
-import { addToLogContext, getLogger } from "@okazi/logger";
+} from "@bibi/core";
+import { addToLogContext, getLogger } from "@bibi/logger";
 import { getAuth } from "../get-auth";
 import { forbidden, unauthenticated } from "../resolve/errors";
 import { readCredential } from "../resolve/read-credential";

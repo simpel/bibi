@@ -1,5 +1,5 @@
-import type { LineDto } from "@okazi/core";
-import { ColorSwatch } from "@okazi/ui";
+import type { LineDto } from "@bibi/core";
+import { ColorSwatch } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { ProgramFormData } from "./program-form-data";
 

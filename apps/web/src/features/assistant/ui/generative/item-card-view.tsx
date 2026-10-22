@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@okazi/i18n/navigation";
+import { Link } from "@bibi/i18n/navigation";
 import {
   Badge,
   BookableDisplay,
@@ -12,7 +12,7 @@ import {
   CardTitle,
   CustomisationsDisplay,
   PricedDisplay,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { customisationGroupLines } from "@/features/item/ui/customisation-group-lines";
 import { itemRoute } from "@/lib/configuration-routes";

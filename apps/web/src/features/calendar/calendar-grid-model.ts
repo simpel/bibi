@@ -1,4 +1,4 @@
-import type { OccupancyType } from "@okazi/core/schemas";
+import type { OccupancyType } from "@bibi/core/schemas";
 import { ticketRoute } from "@/lib/routes";
 import type { CalendarBlock } from "./calendar-blocks";
 import type { CalendarColumn, PlacedBlock } from "./calendar-layout";

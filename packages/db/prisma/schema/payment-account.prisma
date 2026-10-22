@@ -1,5 +1,5 @@
 /// Where the organization gets paid: its Stripe connected account (Accounts v2, ADR 0028). One per
-/// organization, created by `paymentAccount.startOnboarding`. Okazi never holds venue funds.
+/// organization, created by `paymentAccount.startOnboarding`. Bibi never holds venue funds.
 /// `status` mirrors the account's card payments capability and is refreshed by
 /// `paymentAccount.sync`; no row at all means "not connected". `stripeAccountId` is null from the
 /// committed row until the Stripe call after the commit stored it (ADR 0058); a second

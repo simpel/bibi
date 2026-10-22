@@ -1,5 +1,5 @@
-import type { VocabularyValueDto } from "@okazi/core";
-import { actionsColumn, type ColumnDef } from "@okazi/ui";
+import type { VocabularyValueDto } from "@bibi/core";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { RowAccess } from "@/lib/can";

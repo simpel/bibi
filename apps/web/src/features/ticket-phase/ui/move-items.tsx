@@ -1,5 +1,5 @@
-import type { TicketPhaseDto } from "@okazi/core/schemas";
-import { DropdownMenuItem } from "@okazi/ui";
+import type { TicketPhaseDto } from "@bibi/core/schemas";
+import { DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMovePhase } from "./use-move-phase";
 

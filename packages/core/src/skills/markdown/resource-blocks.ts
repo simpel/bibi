@@ -1,11 +1,11 @@
 import type { SkillResource } from "../../features/skill/schema";
 
-const BLOCK = /<!-- okazi:resource name="([^"\n]+)" -->\n([\s\S]*?)\n?<!-- \/okazi:resource -->/g;
+const BLOCK = /<!-- bibi:resource name="([^"\n]+)" -->\n([\s\S]*?)\n?<!-- \/bibi:resource -->/g;
 
 export type ExtractResourceBlocksInput = { body: string };
 export type ExtractResourceBlocksOutput = { body: string; resources: SkillResource[] };
 
-/** Pulls `<!-- okazi:resource name="x" -->…<!-- /okazi:resource -->` blocks out of a SKILL.md body. */
+/** Pulls `<!-- bibi:resource name="x" -->…<!-- /bibi:resource -->` blocks out of a SKILL.md body. */
 export function extractResourceBlocks({
   body,
 }: ExtractResourceBlocksInput): ExtractResourceBlocksOutput {
@@ -23,7 +23,7 @@ export function renderResourceBlocks({ resources }: RenderResourceBlocksInput): 
   return resources
     .map(
       ({ name, content }) =>
-        `<!-- okazi:resource name="${name}" -->\n${content}\n<!-- /okazi:resource -->`,
+        `<!-- bibi:resource name="${name}" -->\n${content}\n<!-- /bibi:resource -->`,
     )
     .join("\n\n");
 }

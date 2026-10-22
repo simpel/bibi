@@ -7,7 +7,7 @@ import {
   listApiKeys,
   revokeApiKey,
   updateApiKey,
-} from "@okazi/core";
+} from "@bibi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";

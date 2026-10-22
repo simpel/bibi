@@ -1,4 +1,4 @@
-import type { EntityTypeDto } from "@okazi/core";
+import type { EntityTypeDto } from "@bibi/core";
 import type { ReactNode } from "react";
 import type { Control, FieldValues, Path, PathValue, UseFormReturn } from "react-hook-form";
 import { rawFields, type WithRawFields } from "@/components/typed-fields/raw-fields";

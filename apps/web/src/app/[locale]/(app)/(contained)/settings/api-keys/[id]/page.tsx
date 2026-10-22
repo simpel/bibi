@@ -1,5 +1,5 @@
-import { resolveLocale } from "@okazi/i18n";
-import { redirect } from "@okazi/i18n/navigation";
+import { resolveLocale } from "@bibi/i18n";
+import { redirect } from "@bibi/i18n/navigation";
 import { apiKeyRoute } from "@/lib/routes";
 
 type ApiKeyPageProps = { params: Promise<{ locale: string; id: string }> };

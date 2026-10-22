@@ -7,7 +7,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { PackagePlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

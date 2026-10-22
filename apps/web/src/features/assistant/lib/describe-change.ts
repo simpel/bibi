@@ -1,4 +1,4 @@
-import type { ChangePreview } from "@okazi/core/schemas";
+import type { ChangePreview } from "@bibi/core/schemas";
 import { fieldKey } from "./approval-labels";
 
 type FieldChange = ChangePreview["changes"][number]["fields"][number];

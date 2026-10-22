@@ -1,5 +1,5 @@
-import type { ApprovalRequired } from "@okazi/ai";
-import { CardContent } from "@okazi/ui";
+import type { ApprovalRequired } from "@bibi/ai";
+import { CardContent } from "@bibi/ui";
 import { ToolResultView } from "../tool-result-view";
 import { ApprovalErrorLine } from "./approval-error-line";
 import { ChangeDetails } from "./change-details";

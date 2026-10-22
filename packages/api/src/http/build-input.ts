@@ -1,4 +1,4 @@
-import { type AppError, appError, err, ok, type Result } from "@okazi/core";
+import { type AppError, appError, err, ok, type Result } from "@bibi/core";
 import type { CompiledRoute } from "./compile-routes";
 
 export type BuildInputInput = {

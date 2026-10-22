@@ -1,4 +1,4 @@
-import { ok, setStripeConnectGateway } from "@okazi/core";
+import { ok, setStripeConnectGateway } from "@bibi/core";
 import { createId } from "@paralleldrive/cuid2";
 
 /** Stripe stand-in: the account is created through the real operation, only Stripe is faked. */

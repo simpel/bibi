@@ -1,4 +1,4 @@
-import type { SetupTarget, SetupTargetKind } from "@okazi/ui";
+import type { SetupTarget, SetupTargetKind } from "@bibi/ui";
 
 /** The localized message template per kind, e.g. `About the phase “{name}”: {instruction}`. */
 export type CommentTemplate = (input: {

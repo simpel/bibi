@@ -1,5 +1,5 @@
 import "server-only";
-import { listEntityTypes, listMembers, type Result } from "@okazi/core";
+import { listEntityTypes, listMembers, type Result } from "@bibi/core";
 import { runOperation } from "@/server/run-operation";
 import type { ResponsibilityOptions } from "./ui/responsibility-options";
 

@@ -1,4 +1,4 @@
-import type { LineDto } from "@okazi/core";
+import type { LineDto } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { BufferFields } from "@/components/form/buffer-fields";

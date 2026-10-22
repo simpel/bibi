@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
-import { appError, type ExecuteContext, err, ok, type Result } from "@okazi/core";
+import { appError, type ExecuteContext, err, ok, type Result } from "@bibi/core";
 
-export const RELAY_HEADER = "x-okazi-mcp-relay";
+export const RELAY_HEADER = "x-bibi-mcp-relay";
 
 const pending = new Map<string, ExecuteContext>();
 

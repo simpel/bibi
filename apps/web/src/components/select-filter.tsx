@@ -1,6 +1,6 @@
 "use client";
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@okazi/ui";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@bibi/ui";
 
 export type SelectFilterProps = {
   label: string;

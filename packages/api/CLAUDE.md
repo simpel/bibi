@@ -1,10 +1,10 @@
-# @okazi/api – context for Claude
+# @bibi/api – context for Claude
 
 The REST adapter under `/api/v1`. Thin: no business logic, everything goes through core operations and `execute` (ADR 0003).
 
 ## Usage
 - `createRestHandler({ operations, resolveContext, basePath = "/api/v1" })` → `(request: Request) => Promise<Response>`. Mounted in Next: `app/api/v1/[...path]/route.ts` exports `GET/POST/PATCH/DELETE` that call the handler.
-- `resolveContext({ headers })` is injected (the real one from `@okazi/auth`, tests use `createExecuteContext`). Called only after a route has matched; `openapi.json` and `docs` need no sign-in.
+- `resolveContext({ headers })` is injected (the real one from `@bibi/auth`, tests use `createExecuteContext`). Called only after a route has matched; `openapi.json` and `docs` need no sign-in.
 - `GET /openapi.json` (OpenAPI 3.1, generated) and `GET /docs` (Scalar via CDN).
 
 ## Routes
@@ -17,7 +17,7 @@ The REST adapter under `/api/v1`. Thin: no business logic, everything goes throu
 - The test resolver also takes `x-test-user` (another user in the same org).
 
 ## OpenAPI
-- Built in `src/openapi/` from route metadata + Zod via `z.toJSONSchema` (dates → `date-time`). The security schemes (API key `okz_…`, cookie, OAuth2) are descriptive only.
+- Built in `src/openapi/` from route metadata + Zod via `z.toJSONSchema` (dates → `date-time`). The security schemes (API key `bib_…`, cookie, OAuth2) are descriptive only.
 
 ## Parity
 - `listRestRoutes()` / `listRestOperationNames()` are used by the parity test: every operation in the registry must have a REST route.

@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 
 export type StoredMessagesInput = { conversationId: string; minCount?: number };
 

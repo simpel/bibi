@@ -1,8 +1,8 @@
 "use client";
 
-import type { SheetDefinitionDto } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
-import { DataTableRowActions, DropdownMenuItem } from "@okazi/ui";
+import type { SheetDefinitionDto } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
+import { DataTableRowActions, DropdownMenuItem } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { RowAccess } from "@/lib/can";

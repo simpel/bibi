@@ -205,28 +205,28 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: 1.32.1
         version: 1.32.1(zod@4.6.7)
-      '@okazi/ai':
+      '@bibi/ai':
         specifier: workspace:*
         version: link:../../packages/ai
-      '@okazi/auth':
+      '@bibi/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@okazi/core':
+      '@bibi/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@okazi/db':
+      '@bibi/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@okazi/graphql':
+      '@bibi/graphql':
         specifier: workspace:*
         version: link:../../packages/graphql
-      '@okazi/logger':
+      '@bibi/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      '@okazi/mail':
+      '@bibi/mail':
         specifier: workspace:*
         version: link:../../packages/mail
       '@paralleldrive/cuid2':
@@ -269,7 +269,7 @@ importers:
         specifier: 4.6.7
         version: 4.6.7
     devDependencies:
-      '@okazi/api':
+      '@bibi/api':
         specifier: workspace:*
         version: link:../../packages/api
       '@types/node':
@@ -296,37 +296,37 @@ importers:
       '@hookform/resolvers':
         specifier: 5.9.1
         version: 5.9.1(@standard-schema/spec@1.1.0)(ajv@8.20.0)(effect@3.20.0)(react-hook-form@7.90.0(@types/react@19.3.0)(react@19.3.0))(valibot@1.4.2(typescript@7.0.2))(zod@4.6.7)
-      '@okazi/ai':
+      '@bibi/ai':
         specifier: workspace:*
         version: link:../../packages/ai
-      '@okazi/api':
+      '@bibi/api':
         specifier: workspace:*
         version: link:../../packages/api
-      '@okazi/auth':
+      '@bibi/auth':
         specifier: workspace:*
         version: link:../../packages/auth
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@okazi/core':
+      '@bibi/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@okazi/db':
+      '@bibi/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@okazi/graphql':
+      '@bibi/graphql':
         specifier: workspace:*
         version: link:../../packages/graphql
-      '@okazi/i18n':
+      '@bibi/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
-      '@okazi/logger':
+      '@bibi/logger':
         specifier: workspace:*
         version: link:../../packages/logger
-      '@okazi/mail':
+      '@bibi/mail':
         specifier: workspace:*
         version: link:../../packages/mail
-      '@okazi/ui':
+      '@bibi/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       '@prisma/client':
@@ -414,16 +414,16 @@ importers:
 
   apps/worker:
     dependencies:
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@okazi/core':
+      '@bibi/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@okazi/db':
+      '@bibi/db':
         specifier: workspace:*
         version: link:../../packages/db
-      '@okazi/logger':
+      '@bibi/logger':
         specifier: workspace:*
         version: link:../../packages/logger
       '@paralleldrive/cuid2':
@@ -469,19 +469,19 @@ importers:
       '@ai-sdk/mcp':
         specifier: 2.0.74
         version: 2.0.74(zod@4.6.7)
-      '@okazi/auth':
+      '@bibi/auth':
         specifier: workspace:*
         version: link:../auth
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../config
-      '@okazi/core':
+      '@bibi/core':
         specifier: workspace:*
         version: link:../core
-      '@okazi/db':
+      '@bibi/db':
         specifier: workspace:*
         version: link:../db
-      '@okazi/logger':
+      '@bibi/logger':
         specifier: workspace:*
         version: link:../logger
       ai:
@@ -512,10 +512,10 @@ importers:
 
   packages/api:
     dependencies:
-      '@okazi/core':
+      '@bibi/core':
         specifier: workspace:*
         version: link:../core
-      '@okazi/logger':
+      '@bibi/logger':
         specifier: workspace:*
         version: link:../logger
       zod:
@@ -525,10 +525,10 @@ importers:
       '@apidevtools/swagger-parser':
         specifier: 13.1.0
         version: 13.1.0(openapi-types@12.1.3)
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../config
-      '@okazi/db':
+      '@bibi/db':
         specifier: workspace:*
         version: link:../db
       '@paralleldrive/cuid2':
@@ -564,19 +564,19 @@ importers:
       '@better-auth/utils':
         specifier: 0.4.2
         version: 0.4.2
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../config
-      '@okazi/core':
+      '@bibi/core':
         specifier: workspace:*
         version: link:../core
-      '@okazi/db':
+      '@bibi/db':
         specifier: workspace:*
         version: link:../db
-      '@okazi/logger':
+      '@bibi/logger':
         specifier: workspace:*
         version: link:../logger
-      '@okazi/mail':
+      '@bibi/mail':
         specifier: workspace:*
         version: link:../mail
       '@paralleldrive/cuid2':
@@ -632,13 +632,13 @@ importers:
 
   packages/core:
     dependencies:
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../config
-      '@okazi/db':
+      '@bibi/db':
         specifier: workspace:*
         version: link:../db
-      '@okazi/logger':
+      '@bibi/logger':
         specifier: workspace:*
         version: link:../logger
       '@paralleldrive/cuid2':
@@ -663,7 +663,7 @@ importers:
 
   packages/db:
     dependencies:
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../config
       '@paralleldrive/cuid2':
@@ -694,13 +694,13 @@ importers:
       '@graphql-yoga/plugin-disable-introspection':
         specifier: 2.25.5
         version: 2.25.5(graphql-yoga@5.24.5(graphql@17.0.2))(graphql@17.0.2)
-      '@okazi/core':
+      '@bibi/core':
         specifier: workspace:*
         version: link:../core
-      '@okazi/db':
+      '@bibi/db':
         specifier: workspace:*
         version: link:../db
-      '@okazi/logger':
+      '@bibi/logger':
         specifier: workspace:*
         version: link:../logger
       '@pothos/core':
@@ -716,7 +716,7 @@ importers:
         specifier: 4.6.7
         version: 4.6.7
     devDependencies:
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../config
       '@paralleldrive/cuid2':
@@ -741,7 +741,7 @@ importers:
         specifier: 4.14.9
         version: 4.14.9(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../config
       '@types/react':
@@ -765,7 +765,7 @@ importers:
 
   packages/logger:
     dependencies:
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../config
       pino:
@@ -787,13 +787,13 @@ importers:
 
   packages/mail:
     dependencies:
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../config
-      '@okazi/core':
+      '@bibi/core':
         specifier: workspace:*
         version: link:../core
-      '@okazi/logger':
+      '@bibi/logger':
         specifier: workspace:*
         version: link:../logger
       nodemailer:
@@ -879,7 +879,7 @@ importers:
         specifier: 1.1.6
         version: 1.1.6(react@19.3.0)
     devDependencies:
-      '@okazi/config':
+      '@bibi/config':
         specifier: workspace:*
         version: link:../config
       '@storybook/addon-docs':

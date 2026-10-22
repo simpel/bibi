@@ -1,4 +1,4 @@
-import type { Assignment } from "@okazi/db";
+import type { Assignment } from "@bibi/db";
 import type { AssignmentDto, AssignmentSubjectType } from "./schema";
 
 /** A stored choice with its explicit follows and unfollows (ADR 0055). */

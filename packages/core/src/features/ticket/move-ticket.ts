@@ -1,4 +1,4 @@
-import type { PhaseChangeTrigger, TicketPhase } from "@okazi/db";
+import type { PhaseChangeTrigger, TicketPhase } from "@bibi/db";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";

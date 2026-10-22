@@ -1,4 +1,4 @@
-import { type CapturedLogs, captureLogs } from "@okazi/logger";
+import { type CapturedLogs, captureLogs } from "@bibi/logger";
 import { createId } from "@paralleldrive/cuid2";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
@@ -13,7 +13,7 @@ import { errorCode, peer, unwrap } from "./helpers";
 import { inboundMail } from "./inbound-email-helpers";
 import { createTestTicket, ticketSetup } from "./ticket-helpers";
 
-const domain = "in.okazi.test";
+const domain = "in.bibi.test";
 
 let logs: CapturedLogs;
 beforeEach(() => {

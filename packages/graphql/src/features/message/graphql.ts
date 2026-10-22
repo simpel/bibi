@@ -1,4 +1,4 @@
-import { appendMessage, listMessages, type MessageDto, MessageSchema } from "@okazi/core";
+import { appendMessage, listMessages, type MessageDto, MessageSchema } from "@bibi/core";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";

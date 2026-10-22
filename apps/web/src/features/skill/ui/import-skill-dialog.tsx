@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "@okazi/i18n/navigation";
+import { useRouter } from "@bibi/i18n/navigation";
 import {
   Button,
   Dialog,
@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
   Form,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { skillRoute } from "@/lib/routes";
 import { useFormAction } from "@/lib/use-form-action";

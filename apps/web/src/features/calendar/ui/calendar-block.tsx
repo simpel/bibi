@@ -1,6 +1,6 @@
-import type { OccupancyType } from "@okazi/core/schemas";
-import { Link } from "@okazi/i18n/navigation";
-import { cn } from "@okazi/ui";
+import type { OccupancyType } from "@bibi/core/schemas";
+import { Link } from "@bibi/i18n/navigation";
+import { cn } from "@bibi/ui";
 import type { GridBlock } from "../calendar-grid-model";
 import { GRID_ITEM } from "./grid-keys";
 import { stateStyle } from "./state-style";

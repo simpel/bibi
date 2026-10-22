@@ -1,4 +1,4 @@
-import type { ResponsibilityCreateInput } from "@okazi/core";
+import type { ResponsibilityCreateInput } from "@bibi/core";
 import type { UseFormReturn } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";
 import type { WizardStepDef } from "@/components/wizard/step-wizard";

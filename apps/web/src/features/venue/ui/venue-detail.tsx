@@ -1,5 +1,5 @@
-import { getVenue } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { getVenue } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { WithHistory } from "@/features/audit-log/ui/with-history";

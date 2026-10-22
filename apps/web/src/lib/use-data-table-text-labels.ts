@@ -1,4 +1,4 @@
-import type { DataTableTextLabels } from "@okazi/ui";
+import type { DataTableTextLabels } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 /** Sorting, column reorder and selection texts for `DataTable` (`common.table`). */

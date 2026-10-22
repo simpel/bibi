@@ -1,4 +1,4 @@
-import type { PhaseChangeTrigger } from "@okazi/db";
+import type { PhaseChangeTrigger } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 
 /** `include` for the newest phase change of a ticket: when it entered its phase, and why (ADR 0054). */

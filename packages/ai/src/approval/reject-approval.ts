@@ -1,5 +1,5 @@
-import type { EmbedFn } from "@okazi/core";
-import { ok, type Result } from "@okazi/core";
+import type { EmbedFn } from "@bibi/core";
+import { ok, type Result } from "@bibi/core";
 import type { UserContext } from "../server/resolve-user";
 import { recordApprovalDecision } from "./record-approval-decision";
 

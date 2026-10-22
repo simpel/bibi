@@ -1,4 +1,4 @@
-import { Link } from "@okazi/i18n/navigation";
+import { Link } from "@bibi/i18n/navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { ArrowLeftIcon, ShieldCheckIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ROUTES } from "@/lib/routes";

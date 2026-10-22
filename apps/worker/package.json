@@ -1,5 +1,5 @@
 {
-  "name": "@okazi/worker",
+  "name": "@bibi/worker",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,10 +11,10 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@okazi/config": "workspace:*",
-    "@okazi/core": "workspace:*",
-    "@okazi/db": "workspace:*",
-    "@okazi/logger": "workspace:*",
+    "@bibi/config": "workspace:*",
+    "@bibi/core": "workspace:*",
+    "@bibi/db": "workspace:*",
+    "@bibi/logger": "workspace:*",
     "@paralleldrive/cuid2": "3.3.0",
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",

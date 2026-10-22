@@ -7,5 +7,5 @@ export type EmbedOutput = {
   embeddings: number[][];
 };
 
-/** Injected by the app (AI SDK lives in @okazi/ai); core never calls a provider directly. */
+/** Injected by the app (AI SDK lives in @bibi/ai); core never calls a provider directly. */
 export type EmbedFn = (input: EmbedInput) => Promise<EmbedOutput>;

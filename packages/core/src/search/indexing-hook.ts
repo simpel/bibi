@@ -1,4 +1,4 @@
-import { getLogger } from "@okazi/logger";
+import { getLogger } from "@bibi/logger";
 import type { AfterCommitHook } from "../operations/execute";
 import type { AnyOperation } from "../operations/types";
 import type { EmbedFn } from "./embed";

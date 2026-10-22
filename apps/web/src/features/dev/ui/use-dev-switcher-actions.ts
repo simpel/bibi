@@ -1,6 +1,6 @@
 "use client";
 
-import type { DevUser } from "@okazi/auth";
+import type { DevUser } from "@bibi/auth";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

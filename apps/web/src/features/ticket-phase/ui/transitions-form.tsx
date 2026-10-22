@@ -1,6 +1,6 @@
-import type { TicketPhaseDto } from "@okazi/core/schemas";
-import { useRouter } from "@okazi/i18n/navigation";
-import { Button, DialogFooter, Form } from "@okazi/ui";
+import type { TicketPhaseDto } from "@bibi/core/schemas";
+import { useRouter } from "@bibi/i18n/navigation";
+import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useFormAction } from "@/lib/use-form-action";
 import { setTicketPhaseTransitionsAction } from "../actions";

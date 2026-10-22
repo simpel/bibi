@@ -1,4 +1,4 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import { AI_FEATURE_IDS } from "../../platform/ai-settings/ai-features";
 import { DEMO_AI_MODELS } from "./ai-models";
 

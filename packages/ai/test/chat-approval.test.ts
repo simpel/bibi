@@ -1,5 +1,5 @@
-import { resolveExecuteContext } from "@okazi/auth";
-import { getDb } from "@okazi/db";
+import { resolveExecuteContext } from "@bibi/auth";
+import { getDb } from "@bibi/db";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { createApprovalHandler } from "../src/approval/create-approval-handler";
 import { extractPendingApprovals } from "../src/approval/extract-pending-approvals";
@@ -46,7 +46,7 @@ async function propose({ user, name }: { user: TestUser; name: string }) {
   });
   const { handler } = createHarness({ model, mcpUrl: mcp.url });
   const response = await handler(chatRequest({ cookies: user.cookies, text: `Create ${name}` }));
-  const conversationId = response.headers.get("x-okazi-conversation-id") ?? "";
+  const conversationId = response.headers.get("x-bibi-conversation-id") ?? "";
   const chunks = await readChunks({ response });
   const rows = await storedMessages({ conversationId, minCount: 2 });
   const assistant = rows.find((row) => row.role === "ASSISTANT");

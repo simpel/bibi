@@ -1,4 +1,4 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import { ok, type Result } from "../errors/result";
 import { importPhaseGridTemplate } from "../features/phase-grid/operations";
 import { importTicketPhaseTemplate } from "../features/ticket-phase/import-template-operation";
@@ -8,7 +8,7 @@ import { grantAll } from "../permissions/permission-set";
 
 export type ProvisionOrganizationInput = {
   organizationId: string;
-  /** Base client; defaults to the process singleton from `@okazi/db`. */
+  /** Base client; defaults to the process singleton from `@bibi/db`. */
   db?: Db;
   /** `none` leaves the pipeline to the caller (the demo seed sets up its own); default `default`. */
   pipeline?: "default" | "none";

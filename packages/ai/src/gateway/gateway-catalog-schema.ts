@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-/** Vercel AI Gateway `GET /v1/models` (only the fields Okazi uses; unknown types are skipped). */
+/** Vercel AI Gateway `GET /v1/models` (only the fields Bibi uses; unknown types are skipped). */
 export const GatewayCatalogSchema = z.object({
   data: z.array(
     z.object({

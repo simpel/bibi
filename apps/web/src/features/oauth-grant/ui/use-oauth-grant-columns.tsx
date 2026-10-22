@@ -1,5 +1,5 @@
-import type { OauthGrantDto } from "@okazi/core";
-import { actionsColumn, type ColumnDef } from "@okazi/ui";
+import type { OauthGrantDto } from "@bibi/core";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { OauthGrantRowActions } from "./oauth-grant-row-actions";

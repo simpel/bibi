@@ -1,5 +1,5 @@
-import type { ItemDto } from "@okazi/core";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@okazi/ui";
+import type { ItemDto } from "@bibi/core";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ItemForm } from "./item-form";
 import type { ItemFormData } from "./item-form-data";

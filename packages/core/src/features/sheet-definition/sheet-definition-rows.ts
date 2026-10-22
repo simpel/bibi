@@ -1,4 +1,4 @@
-import type { Prisma } from "@okazi/db";
+import type { Prisma } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import type { SheetDefinitionContents, SheetDefinitionDto } from "./schema";
 

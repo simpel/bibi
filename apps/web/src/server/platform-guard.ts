@@ -1,7 +1,7 @@
 import "server-only";
-import { isPlatformAdmin } from "@okazi/auth";
-import type { Locale } from "@okazi/i18n";
-import { redirect } from "@okazi/i18n/navigation";
+import { isPlatformAdmin } from "@bibi/auth";
+import type { Locale } from "@bibi/i18n";
+import { redirect } from "@bibi/i18n/navigation";
 import { notFound } from "next/navigation";
 import { ROUTES, withNext } from "@/lib/routes";
 import { getSessionState } from "./session";

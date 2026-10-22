@@ -1,11 +1,5 @@
-import {
-  createExecuteContext,
-  createVenue,
-  type EmbedFn,
-  grantAll,
-  updateVenue,
-} from "@okazi/core";
-import { getDb } from "@okazi/db";
+import { createExecuteContext, createVenue, type EmbedFn, grantAll, updateVenue } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import { createEmbed } from "../src/embeddings/create-embed";

@@ -24,7 +24,7 @@ export const AiFeatureIdSchema = z.enum(AI_FEATURE_IDS);
 
 /**
  * The models that are *possible* for a feature (meet `AI_FEATURES[].requires`), sorted by id.
- * Injected by the app (`@okazi/ai`, gateway catalog + embedding probe): core has no network
+ * Injected by the app (`@bibi/ai`, gateway catalog + embedding probe): core has no network
  * or AI SDK dependency.
  */
 export type ListCompatibleModels = (input: { feature: AiFeatureId }) => Promise<AiModel[]>;

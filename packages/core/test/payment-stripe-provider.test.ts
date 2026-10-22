@@ -1,4 +1,4 @@
-import { getEnv } from "@okazi/config";
+import { getEnv } from "@bibi/config";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { stripePaymentProvider } from "../src/features/payment/stripe-provider";
 import { unwrap } from "./helpers";
@@ -26,14 +26,14 @@ const base = {
   amountMinor: 125_000,
   currency: "SEK",
   description: "Ticket #7",
-  idempotencyKey: "okazi-payment-p1",
+  idempotencyKey: "bibi-payment-p1",
   metadata: { paymentId: "p1" },
 };
 
 beforeEach(() => {
   Object.assign(getEnv(), {
     STRIPE_SECRET_KEY: "sk_test_x",
-    STRIPE_PLATFORM_ACCOUNT_ID: "acct_okazi",
+    STRIPE_PLATFORM_ACCOUNT_ID: "acct_bibi",
   });
 });
 afterEach(() => {
@@ -52,8 +52,8 @@ describe("stripePaymentProvider", () => {
       result: await stripePaymentProvider.createCheckout({
         ...base,
         applicationFeeMinor: 3_125,
-        successUrl: "https://okazi.test/pay/p1",
-        cancelUrl: "https://okazi.test/pay/p1",
+        successUrl: "https://bibi.test/pay/p1",
+        cancelUrl: "https://bibi.test/pay/p1",
       }),
     });
     expect(checkout).toEqual({
@@ -65,7 +65,7 @@ describe("stripePaymentProvider", () => {
     expect(call?.url).toBe("https://api.stripe.com/v1/checkout/sessions");
     expect(call?.headers).toMatchObject({
       "Stripe-Account": "acct_venue",
-      "Idempotency-Key": "okazi-payment-p1",
+      "Idempotency-Key": "bibi-payment-p1",
     });
     expect(call?.body.get("payment_intent_data[application_fee_amount]")).toBe("3125");
     expect(call?.body.get("line_items[0][price_data][unit_amount]")).toBe("125000");

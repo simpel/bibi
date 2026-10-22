@@ -1,4 +1,4 @@
-import type { AssignmentWire } from "@okazi/ai";
+import type { AssignmentWire } from "@bibi/ai";
 import { itemRoute } from "@/lib/configuration-routes";
 import { ticketRoute } from "@/lib/routes";
 

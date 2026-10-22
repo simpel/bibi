@@ -1,4 +1,4 @@
-import { FEATURES, featureActions, type PermissionSet } from "@okazi/core";
+import { FEATURES, featureActions, type PermissionSet } from "@bibi/core";
 
 export type AccessSectionInput = { roles: readonly string[]; permissions: PermissionSet };
 

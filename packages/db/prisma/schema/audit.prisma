@@ -5,7 +5,7 @@ enum ActorType {
   SYSTEM
 }
 
-/// Append-only log of every command executed through @okazi/core.
+/// Append-only log of every command executed through @bibi/core.
 model AuditLog {
   id              String    @id @default(cuid(2))
   organizationId  String

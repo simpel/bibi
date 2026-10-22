@@ -1,6 +1,6 @@
-import { isPlatformAdmin } from "@okazi/auth";
-import { resolveLocale } from "@okazi/i18n";
-import { redirect } from "@okazi/i18n/navigation";
+import { isPlatformAdmin } from "@bibi/auth";
+import { resolveLocale } from "@bibi/i18n";
+import { redirect } from "@bibi/i18n/navigation";
 import { setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { TablePreferencesProvider } from "@/components/data-table/table-preferences-provider";

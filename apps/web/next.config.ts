@@ -3,7 +3,7 @@ import { loadEnvConfig } from "@next/env";
 import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
-// The repo keeps one `.env` at the root; load it before @okazi/config reads the environment.
+// The repo keeps one `.env` at the root; load it before @bibi/config reads the environment.
 // forceReload: Next has already called loadEnvConfig for apps/web, and @next/env caches that result.
 loadEnvConfig(
   resolve(import.meta.dirname, "../.."),
@@ -18,17 +18,17 @@ const withNextIntl = createNextIntlPlugin("./src/i18n/request.config.ts");
 const config: NextConfig = {
   // Workspace packages ship TypeScript sources (no build step).
   transpilePackages: [
-    "@okazi/api",
-    "@okazi/auth",
-    "@okazi/config",
-    "@okazi/ai",
-    "@okazi/core",
-    "@okazi/db",
-    "@okazi/graphql",
-    "@okazi/i18n",
-    "@okazi/logger",
-    "@okazi/mail",
-    "@okazi/ui",
+    "@bibi/api",
+    "@bibi/auth",
+    "@bibi/config",
+    "@bibi/ai",
+    "@bibi/core",
+    "@bibi/db",
+    "@bibi/graphql",
+    "@bibi/i18n",
+    "@bibi/logger",
+    "@bibi/mail",
+    "@bibi/ui",
   ],
   serverExternalPackages: ["pg", "nodemailer", "pino", "pino-pretty"],
 };

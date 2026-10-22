@@ -1,4 +1,4 @@
-import type { PermissionSet } from "@okazi/core";
+import type { PermissionSet } from "@bibi/core";
 
 /**
  * What the signed-in member may see in the shell; navigation only, pages check again.

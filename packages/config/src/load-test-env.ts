@@ -1,6 +1,6 @@
 // Package self-reference: Node loads this config file natively and needs a resolvable specifier.
-import { loadRootEnv } from "@okazi/config/load-root-env";
-import { testDatabaseUrl } from "@okazi/config/test-database-url";
+import { loadRootEnv } from "@bibi/config/load-root-env";
+import { testDatabaseUrl } from "@bibi/config/test-database-url";
 
 /**
  * Environment for Vitest: the root `.env`, with `DATABASE_URL` pointed at the test database

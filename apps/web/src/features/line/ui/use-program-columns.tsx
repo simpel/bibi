@@ -1,5 +1,5 @@
-import type { LineDto } from "@okazi/core";
-import { actionsColumn, type ColumnDef } from "@okazi/ui";
+import type { LineDto } from "@bibi/core";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";

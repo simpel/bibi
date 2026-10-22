@@ -1,7 +1,7 @@
 "use client";
 
-import type { PipelineBoard } from "@okazi/core";
-import { KanbanBoard } from "@okazi/ui";
+import type { PipelineBoard } from "@bibi/core";
+import { KanbanBoard } from "@bibi/ui";
 import { canMoveCard } from "../lib/move-rules";
 import { PipelineCardContent } from "./pipeline-card";
 import { useMoveCard } from "./use-move-card";

@@ -1,4 +1,4 @@
-import type { MessageDto } from "@okazi/core";
+import type { MessageDto } from "@bibi/core";
 import { describe, expect, it } from "vitest";
 import { toStoredConversation } from "./stored-messages";
 
@@ -38,7 +38,7 @@ describe("toStoredConversation", () => {
         text: 'Approval update: the user APPROVED venue.create. Result: {"id":"v1"}',
       },
       {
-        type: "data-okazi-approval",
+        type: "data-bibi-approval",
         data: { toolCallId: "call_1", operation: "venue.create", decision: "approved" },
       },
     ];
@@ -50,7 +50,7 @@ describe("toStoredConversation", () => {
 
   it("ignores notes without a tool call id", () => {
     const parts = [
-      { type: "data-okazi-approval", data: { toolCallId: null, decision: "rejected" } },
+      { type: "data-bibi-approval", data: { toolCallId: null, decision: "rejected" } },
     ];
     const result = toStoredConversation({ messages: [message({ id: "t", role: "TOOL", parts })] });
     expect(result.decisions).toEqual([]);

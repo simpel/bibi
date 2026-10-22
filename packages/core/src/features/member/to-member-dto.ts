@@ -1,4 +1,4 @@
-import type { Member } from "@okazi/db";
+import type { Member } from "@bibi/db";
 import { parseMemberRole } from "./member-roles";
 import type { MemberDto } from "./schema";
 

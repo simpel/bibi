@@ -1,5 +1,5 @@
-import { getFirstPartyAccessToken } from "@okazi/auth";
-import type { EmbedFn, Result } from "@okazi/core";
+import { getFirstPartyAccessToken } from "@bibi/auth";
+import type { EmbedFn, Result } from "@bibi/core";
 import { createEmbed } from "../embeddings/create-embed";
 import type { ResolveContext } from "./resolve-user";
 
@@ -15,7 +15,7 @@ const assistantAccessToken: GetAccessToken = ({ headers, caller }) =>
 
 /** Dependencies shared by the chat and approval handlers (all injectable for tests). */
 export type AssistantServerOptions = {
-  /** Resolves the caller from request headers: `resolveExecuteContext` from `@okazi/auth`. */
+  /** Resolves the caller from request headers: `resolveExecuteContext` from `@bibi/auth`. */
   resolveContext: ResolveContext;
   /** MCP token for the user; default `getFirstPartyAccessToken({ client: "assistant" })`. */
   getAccessToken?: GetAccessToken;

@@ -7,7 +7,7 @@
 > **2026-10-19:** ADR 0050 supersedes the access levels and `RESOURCE_LEVELS`: permissions are `<feature>:<action>`, the roles are presets (`PRESET_PERMISSIONS` in core) and admins add per-member overrides. The assistant and the approval card follow the effective permissions. Kept below for history.
 
 ## Context
-- Staff change Okazi by talking to the assistant, and every change is a proposal the user confirms (ADR 0007). Who may confirm what must be clear to the user, the assistant and the code.
+- Staff change Bibi by talking to the assistant, and every change is a proposal the user confirms (ADR 0007). Who may confirm what must be clear to the user, the assistant and the code.
 - ADR 0034 fixed the access roles (since renamed `member`, `manager`, `admin`). Which resources a role writes was only implicit in a list in `packages/auth`, and the docs listed it incompletely (items, venues and ticket templates were missing from configuration; contacts, assignments and occupancy from operational data).
 - The assistant saw every tool whatever the user's role, and did not know the role. A manager asking for a new price got a card that failed, or a FORBIDDEN error after the fact.
 
@@ -33,4 +33,4 @@
 ## Consequences
 - No change in what any role may do; the permission sets are pinned by a test in `packages/auth`.
 - Members and managers see fewer tools and get an explanation instead of a failing card.
-- A manager cannot hand a configuration change to an admin inside Okazi yet (no request queue); that is a possible follow-up.
+- A manager cannot hand a configuration change to an admin inside Bibi yet (no request queue); that is a possible follow-up.

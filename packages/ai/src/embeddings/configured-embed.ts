@@ -1,4 +1,4 @@
-import { type EmbedFn, resolveAiModel } from "@okazi/core";
+import { type EmbedFn, resolveAiModel } from "@bibi/core";
 import { createGateway } from "ai";
 import { embedTexts } from "./embed-texts";
 

@@ -1,4 +1,4 @@
-import type { ToolUiProps, UiComponent } from "@okazi/ai";
+import type { ToolUiProps, UiComponent } from "@bibi/ai";
 
 /** Where a tool result came from; set by the chat, absent when rendered elsewhere. */
 export type ToolContext = {

@@ -1,5 +1,5 @@
-import { fromUnknown } from "@okazi/core";
-import { getLogger, withRequestLogging } from "@okazi/logger";
+import { fromUnknown } from "@bibi/core";
+import { getLogger, withRequestLogging } from "@bibi/logger";
 import { errorResponse } from "../server/error-response";
 import { readJsonBody } from "../server/read-json-body";
 import { resolveUser, type UserContext } from "../server/resolve-user";

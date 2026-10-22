@@ -1,7 +1,7 @@
-import { getEntityType } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
-import { Badge } from "@okazi/ui";
+import { getEntityType } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
+import { Link } from "@bibi/i18n/navigation";
+import { Badge } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";

@@ -1,7 +1,7 @@
 "use client";
 
-import { Link } from "@okazi/i18n/navigation";
-import { Badge, Card, CardContent, CardHeader, CardTitle } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { entityTypeRoute } from "@/lib/configuration-routes";
 import type { GenerativeProps } from "./generative-props";

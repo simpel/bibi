@@ -1,4 +1,4 @@
-import { loadTestEnv } from "@okazi/config/load-test-env";
+import { loadTestEnv } from "@bibi/config/load-test-env";
 import { defineConfig } from "vitest/config";
 
 // Config modules read validated env; load the root `.env` before tests run.

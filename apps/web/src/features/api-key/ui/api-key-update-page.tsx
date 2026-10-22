@@ -1,5 +1,5 @@
-import { listApiKeys } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { listApiKeys } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";

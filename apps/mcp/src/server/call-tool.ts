@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { appError, type ExecuteContext, toMcpError } from "@okazi/core";
-import { elapsedMs, getLogContext, getLogger, runWithLogContext } from "@okazi/logger";
+import { appError, type ExecuteContext, toMcpError } from "@bibi/core";
+import { elapsedMs, getLogContext, getLogger, runWithLogContext } from "@bibi/logger";
 import type { McpTool, ToolResult } from "../tools/types";
 
 export type CallToolInput = {

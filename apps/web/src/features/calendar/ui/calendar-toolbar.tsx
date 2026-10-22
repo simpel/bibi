@@ -1,5 +1,5 @@
-import { Link } from "@okazi/i18n/navigation";
-import { Button, cn } from "@okazi/ui";
+import { Link } from "@bibi/i18n/navigation";
+import { Button, cn } from "@bibi/ui";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { ROUTES } from "@/lib/routes";

@@ -1,5 +1,5 @@
+import type { SetupCreateInput, SetupDto } from "@bibi/core";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { SetupCreateInput, SetupDto } from "@okazi/core";
 import { useForm } from "react-hook-form";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { type SetupFormValues, setupFormDefaults, setupFormSchema } from "./setup-form-schema";

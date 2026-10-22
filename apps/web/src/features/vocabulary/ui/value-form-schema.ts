@@ -1,4 +1,4 @@
-import { VocabularyAddValueInputSchema } from "@okazi/core/schemas";
+import { VocabularyAddValueInputSchema } from "@bibi/core/schemas";
 import { formSchema } from "@/lib/form-schema";
 
 /** Raw values of the list-value form: just the name. */

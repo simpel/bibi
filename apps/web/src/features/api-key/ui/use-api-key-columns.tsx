@@ -1,5 +1,5 @@
-import { type ApiKeyDto, parseFixedRole } from "@okazi/core/schemas";
-import { actionsColumn, type ColumnDef } from "@okazi/ui";
+import { type ApiKeyDto, parseFixedRole } from "@bibi/core/schemas";
+import { actionsColumn, type ColumnDef } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { ApiKeyRowActions } from "./api-key-row-actions";

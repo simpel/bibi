@@ -1,7 +1,7 @@
-import { getMember } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
-import { Button } from "@okazi/ui";
+import { getMember } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
+import { Link } from "@bibi/i18n/navigation";
+import { Button } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";

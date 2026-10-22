@@ -1,6 +1,6 @@
-import type { QuoteDto } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
-import type { ColumnDef } from "@okazi/ui";
+import type { QuoteDto } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
+import type { ColumnDef } from "@bibi/ui";
 import { useFormatter, useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { quoteRoute } from "@/lib/routes";

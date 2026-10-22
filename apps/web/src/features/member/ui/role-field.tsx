@@ -1,4 +1,4 @@
-import type { FixedRole } from "@okazi/core/schemas";
+import type { FixedRole } from "@bibi/core/schemas";
 import {
   ChoiceControl,
   FormControl,
@@ -7,7 +7,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control, FieldValues, Path } from "react-hook-form";
 

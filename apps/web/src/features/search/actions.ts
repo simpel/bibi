@@ -1,6 +1,6 @@
 "use server";
 
-import type { Result, SearchHit } from "@okazi/core";
+import type { Result, SearchHit } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
 import { searchOperation } from "@/server/operations";
 import { runOperation } from "@/server/run-operation";

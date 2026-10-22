@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { err, ok, type Result } from "../../errors/result";
 import type { ExternalInput } from "../../operations/types";
 import { notFound } from "../../shared/errors";

@@ -1,4 +1,4 @@
-import type { EntityTypeDto } from "@okazi/core";
+import type { EntityTypeDto } from "@bibi/core";
 import {
   FormControl,
   FormController,
@@ -10,7 +10,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control, Path } from "react-hook-form";
 

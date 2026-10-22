@@ -1,5 +1,5 @@
-import type { LineDto } from "@okazi/core";
-import { Badge, type ColumnDef } from "@okazi/ui";
+import type { LineDto } from "@bibi/core";
+import { Badge, type ColumnDef } from "@bibi/ui";
 import type { useTranslations } from "next-intl";
 
 type Translator = ReturnType<typeof useTranslations<"line">>;

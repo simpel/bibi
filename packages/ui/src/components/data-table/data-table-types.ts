@@ -11,7 +11,7 @@ export type DataTableLabels = {
   total: (count: number) => string;
 };
 
-/** Texts for sorting, column reordering and selection. `@okazi/ui` has no i18n, so apps pass them. */
+/** Texts for sorting, column reordering and selection. `@bibi/ui` has no i18n, so apps pass them. */
 export type DataTableTextLabels = {
   sortAscending: string;
   sortDescending: string;

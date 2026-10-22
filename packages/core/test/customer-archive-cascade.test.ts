@@ -1,4 +1,4 @@
-import { getDb } from "@okazi/db";
+import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { archiveCustomer, type ExecuteContext, execute, getTicket, grantAll } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";

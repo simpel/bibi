@@ -1,4 +1,4 @@
-import type { Db } from "@okazi/db";
+import type { Db } from "@bibi/db";
 import { deleteOrganizations } from "./delete-organizations";
 import type { DemoOrg } from "./types";
 import { demoEmailDomain } from "./users";

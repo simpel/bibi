@@ -7,7 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   PromptInputButton,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { SlashSquareIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

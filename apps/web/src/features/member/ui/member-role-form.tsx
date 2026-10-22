@@ -1,5 +1,5 @@
-import type { FixedRole, MemberDto } from "@okazi/core";
-import { Form } from "@okazi/ui";
+import type { FixedRole, MemberDto } from "@bibi/core";
+import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { RoleSelectField } from "./role-select-field";
 import { useAssignRoleForm } from "./use-assign-role-form";

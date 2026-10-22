@@ -1,4 +1,4 @@
-import { Prisma, ScopeViolationError } from "@okazi/db";
+import { Prisma, ScopeViolationError } from "@bibi/db";
 import { ZodError } from "zod";
 import { AppError, type AppErrorIssue } from "./app-error";
 import { fromZodError } from "./from-zod-error";

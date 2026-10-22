@@ -1,4 +1,4 @@
-import type { InvoiceDto } from "@okazi/core/schemas";
+import type { InvoiceDto } from "@bibi/core/schemas";
 import { useFormatter, useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { PaidOf } from "./paid-of";

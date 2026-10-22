@@ -1,5 +1,5 @@
-import type { EntityTypeDto, TicketDto, TicketUpdateInput, VocabularyDto } from "@okazi/core";
-import { buildFieldsSchema, TicketCreateInputSchema } from "@okazi/core/schemas";
+import type { EntityTypeDto, TicketDto, TicketUpdateInput, VocabularyDto } from "@bibi/core";
+import { buildFieldsSchema, TicketCreateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { NONE } from "@/components/form/option-select-field";
 import { specsOf } from "@/components/typed-fields/field-specs";

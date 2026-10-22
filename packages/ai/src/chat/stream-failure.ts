@@ -1,4 +1,4 @@
-import { getLogContext, getLogger, runWithLogContext } from "@okazi/logger";
+import { getLogContext, getLogger, runWithLogContext } from "@bibi/logger";
 
 /** What the user sees; the real cause only goes to the system log. */
 export const SAFE_ERROR = "The assistant could not finish the answer. Please try again.";

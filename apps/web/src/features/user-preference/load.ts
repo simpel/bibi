@@ -1,6 +1,6 @@
 import "server-only";
-import { type JsonValue, listUserPreferences } from "@okazi/core";
-import { getLogger } from "@okazi/logger";
+import { type JsonValue, listUserPreferences } from "@bibi/core";
+import { getLogger } from "@bibi/logger";
 import { unstable_rethrow } from "next/navigation";
 import { runOperation } from "@/server/run-operation";
 

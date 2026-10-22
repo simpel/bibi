@@ -1,4 +1,4 @@
-import { setStripeConnectGateway } from "@okazi/core";
+import { setStripeConnectGateway } from "@bibi/core";
 import { afterEach, describe, expect, it } from "vitest";
 import { installFakeStripe } from "./fake-stripe";
 import { call, connect, testContext } from "./helpers";

@@ -1,6 +1,6 @@
 "use client";
 
-import type { SystemLogEntry } from "@okazi/core/schemas";
+import type { SystemLogEntry } from "@bibi/core/schemas";
 import {
   Button,
   Sheet,
@@ -9,7 +9,7 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@okazi/ui";
+} from "@bibi/ui";
 import { ListTreeIcon } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { LevelBadge } from "./level-badge";

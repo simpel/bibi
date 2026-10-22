@@ -1,4 +1,4 @@
-import type { Prisma, Skill } from "@okazi/db";
+import type { Prisma, Skill } from "@bibi/db";
 import { AppError } from "../../errors/app-error";
 import { err, ok, type Result } from "../../errors/result";
 import { hasPermission } from "../../operations/permission";

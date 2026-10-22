@@ -1,6 +1,6 @@
 "use client";
 
-import { Shimmer } from "@okazi/ui";
+import { Shimmer } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 /** "Thinking…" while the model has not produced output yet. */

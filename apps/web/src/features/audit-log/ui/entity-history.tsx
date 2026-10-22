@@ -1,5 +1,5 @@
-import { listAuditLogs } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
+import { listAuditLogs } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
 import { ErrorState } from "@/components/states/error-state";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";

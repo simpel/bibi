@@ -1,4 +1,4 @@
-# Okazi
+# Bibi
 
 Booking system for businesses that sell conferences with food and drink: experience centers, museums, conference estates, manor houses and restaurants with private rooms (e.g. World of Volvo).
 
@@ -18,8 +18,8 @@ docker compose up -d                          # Postgres (pgvector) and Mailpit
 pnpm install
 touch .env                                    # create .env in the repo root, see the table below
 pnpm db:migrate                               # database migrations
-pnpm --filter @okazi/core seed:skills         # system skills (the assistant's skills)
-pnpm --filter @okazi/web provision:oauth      # creates the assistant's OAuth client, prints WEB_OAUTH_CLIENT_ID=...
+pnpm --filter @bibi/core seed:skills         # system skills (the assistant's skills)
+pnpm --filter @bibi/web provision:oauth      # creates the assistant's OAuth client, prints WEB_OAUTH_CLIENT_ID=...
 # put WEB_OAUTH_CLIENT_ID=<value> and AI_GATEWAY_API_KEY=<key> in .env
 pnpm dev                                      # web on :3000 and the MCP server on :3001
 ```
@@ -37,7 +37,7 @@ Other commands:
 | `pnpm check:structure` | File size, function size, exports, barrel files and feature files |
 | `pnpm typecheck` | TypeScript for all packages |
 | `pnpm test` | Vitest and parity tests |
-| `pnpm --filter @okazi/web test:e2e` | Playwright (requires built web and MCP, see `apps/web/CLAUDE.md`) |
+| `pnpm --filter @bibi/web test:e2e` | Playwright (requires built web and MCP, see `apps/web/CLAUDE.md`) |
 | `pnpm gen entity <Name>` | Creates a new feature folder for an entity |
 
 ### Environment variables
@@ -46,7 +46,7 @@ Create `.env` in the repo root (there is no `.env.example` yet). The web app, th
 
 | Variable | Description |
 |---|---|
-| `DATABASE_URL` | Postgres connection, e.g. `postgresql://okazi:okazi@localhost:5432/okazi` |
+| `DATABASE_URL` | Postgres connection, e.g. `postgresql://bibi:bibi@localhost:5432/bibi` |
 | `BETTER_AUTH_SECRET` | Secret for sessions and approval tokens (at least 32 characters) |
 | `BETTER_AUTH_URL` | Public base URL for authentication, e.g. `http://localhost:3000` |
 | `SMTP_URL` | SMTP connection for email (`MAIL_PROVIDER=smtp`), locally Mailpit at `smtp://localhost:1025` |
@@ -60,11 +60,11 @@ Create `.env` in the repo root (there is no `.env.example` yet). The web app, th
 | `MCP_URL` | Base URL of the MCP server, e.g. `http://localhost:3001` |
 | `PORT` | Listening port for the MCP server (default 3001) |
 | `WEB_OAUTH_CLIENT_ID` | The web app's first-party client for the assistant (from `provision:oauth`). Read by the web app and the MCP server; only that client may act as the AI actor |
-| `OKAZI_API_KEY` | API key for MCP over stdio (`okz_...`) |
+| `BIBI_API_KEY` | API key for MCP over stdio (`bib_...`) |
 | `NODE_ENV` | `production` disables dev fallbacks (placeholder embedding, E2E model) |
 | `E2E_MOCK_MODEL` | E2E only: `1` makes the chat route use the scripted test model instead of a real LLM. Off by default and ignored when `NODE_ENV=production` |
 
-Environment variables are read only via `@okazi/config`.
+Environment variables are read only via `@bibi/config`.
 
 ## Documentation
 

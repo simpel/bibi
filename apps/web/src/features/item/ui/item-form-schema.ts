@@ -1,5 +1,5 @@
-import type { EntityTypeDto, VocabularyDto } from "@okazi/core";
-import { buildFieldsSchema, type FieldSpec, ItemCreateInputSchema } from "@okazi/core/schemas";
+import type { EntityTypeDto, VocabularyDto } from "@bibi/core";
+import { buildFieldsSchema, type FieldSpec, ItemCreateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { bufferFormToInput } from "@/components/form/buffer-values";
 import { specsOf } from "@/components/typed-fields/field-specs";

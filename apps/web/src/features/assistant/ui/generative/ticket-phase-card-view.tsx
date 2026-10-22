@@ -1,8 +1,8 @@
 "use client";
 
-import { PHASE_FLAGS } from "@okazi/core/schemas";
-import { Link } from "@okazi/i18n/navigation";
-import { Badge, Card, CardContent, CardHeader, CardTitle, ColorSwatch } from "@okazi/ui";
+import { PHASE_FLAGS } from "@bibi/core/schemas";
+import { Link } from "@bibi/i18n/navigation";
+import { Badge, Card, CardContent, CardHeader, CardTitle, ColorSwatch } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ticketPhasesRoute } from "@/lib/configuration-routes";
 import type { GenerativeProps } from "./generative-props";

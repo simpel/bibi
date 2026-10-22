@@ -1,5 +1,5 @@
+import type { TicketPhaseDto } from "@bibi/core/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { TicketPhaseDto } from "@okazi/core/schemas";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useZodMessages } from "@/lib/use-zod-messages";

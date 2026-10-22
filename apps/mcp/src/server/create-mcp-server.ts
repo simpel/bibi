@@ -1,6 +1,6 @@
+import { type EmbedFn, type ExecuteContext, hasPermission } from "@bibi/core";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-import { type EmbedFn, type ExecuteContext, hasPermission } from "@okazi/core";
 import { withOrgDescriptions } from "../tools/org-tool-descriptions";
 import type { McpTool, ToolResult } from "../tools/types";
 import { callTool } from "./call-tool";
@@ -8,7 +8,7 @@ import { createTools } from "./create-tools";
 
 export type CreateMcpServerInput = { context: ExecuteContext; embed: EmbedFn };
 
-export const SERVER_INFO = { name: "okazi", version: "0.0.0" };
+export const SERVER_INFO = { name: "bibi", version: "0.0.0" };
 
 type VisibleInput = { tools: McpTool[]; context: ExecuteContext };
 

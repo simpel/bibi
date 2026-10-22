@@ -1,4 +1,4 @@
-import type { ChangePreview } from "@okazi/core";
+import type { ChangePreview } from "@bibi/core";
 import { z } from "zod";
 
 export const APPROVAL_TTL_SECONDS = 10 * 60;

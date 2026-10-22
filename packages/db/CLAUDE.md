@@ -1,4 +1,4 @@
-# @okazi/db – context for Claude
+# @bibi/db – context for Claude
 
 Prisma 7 (the `prisma-client` generator, driver adapter `@prisma/adapter-pg`) against Postgres 17 with pgvector.
 
@@ -24,12 +24,12 @@ Prisma 7 (the `prisma-client` generator, driver adapter `@prisma/adapter-pg`) ag
   - Nested `include` does not filter out archived children – filter explicitly.
 - Exception from `scopedDb`: platform code (core `platform/`, ADR 0015) and its tables `SystemLog` and `AiSetting` (`platform.prisma`). They are not org-scoped and `scopedDb` refuses them. `PLATFORM_SCOPE` (`__platform__`) is `AuditLog.organizationId` for platform commands and reserved in `scopedDb`.
 - `createSystemLogSink({ retentionDays })` is the logger's sink into `SystemLog`: batches, has a buffer limit and purges old rows every hour.
-- Conventions per model: `id String @id @default(cuid(2))`, `organizationId`, `status RecordStatus`, `createdAt`, `updatedAt`, `createdBy`. Exceptions are listed in `src/scoped/conventions.ts` (`COLUMN_EXCEPTIONS`, `APP_ID_MODELS`, `HARD_DELETE_MODELS`) and in ADR 0006; `pnpm --filter @okazi/db test` fails for an unlisted violation.
+- Conventions per model: `id String @id @default(cuid(2))`, `organizationId`, `status RecordStatus`, `createdAt`, `updatedAt`, `createdBy`. Exceptions are listed in `src/scoped/conventions.ts` (`COLUMN_EXCEPTIONS`, `APP_ID_MODELS`, `HARD_DELETE_MODELS`) and in ADR 0006; `pnpm --filter @bibi/db test` fails for an unlisted violation.
 - Skill invariants in the migration `ai_data_layer` (hand-written SQL, Prisma's differ does not touch them): CHECK that SYSTEM ⇔ org null/owner null, ORGANIZATION ⇔ org set/owner null, PERSONAL ⇔ both set; slug format; partial unique indexes for slug per scope among non-archived rows and for `source` among SYSTEM.
 - The search index for global entities has `organizationId = GLOBAL_EMBEDDING_SCOPE` (`__global__`); `searchEmbeddings` includes them in every org. `scopedDb` refuses that id.
-- Migrations: `pnpm --filter @okazi/db migrate:dev --name <name>`; review the SQL. The vector index (HNSW) is partial (`WHERE embedding IS NOT NULL`) so that Prisma's differ ignores it; `search` is a generated tsvector column (`simple` config, sv+en).
+- Migrations: `pnpm --filter @bibi/db migrate:dev --name <name>`; review the SQL. The vector index (HNSW) is partial (`WHERE embedding IS NOT NULL`) so that Prisma's differ ignores it; `search` is a generated tsvector column (`simple` config, sv+en).
 - Expand/contract (ADR 0013): production runs `prisma migrate deploy` (`migrate` service in `docker-compose.prod.yml`) before new containers take traffic, and the previous release keeps running against the new schema during rollout and rollback. Every migration must therefore be backward compatible. Expand: add nullable columns, new tables or indexes, and write both old and new shape. Contract: drop or rename columns, add NOT NULL, or tighten constraints only in a later release, after no running code uses the old shape. Never rename or drop in the same release that stops using it.
-- `process.env` is never read here – use `getEnv()` from `@okazi/config`.
+- `process.env` is never read here – use `getEnv()` from `@bibi/config`.
 
 ## Database triggers (projections, ADR 0053)
 - Triggers are invisible to Prisma and `check:structure`, so they are listed here. SQL lives one file per function under `sql/` and is applied verbatim by a migration (`test/line-holds-sql.test.ts`); each table with a trigger says so in its Prisma doc comment. Application code never writes what a trigger writes.

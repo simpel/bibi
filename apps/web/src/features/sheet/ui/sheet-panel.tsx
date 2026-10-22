@@ -1,4 +1,4 @@
-import type { SheetDto } from "@okazi/core";
+import type { SheetDto } from "@bibi/core";
 import { getTranslations } from "next-intl/server";
 import { GenerateSheetButton } from "./generate-sheet-button";
 import { SendSheetButton } from "./send-sheet-button";

@@ -1,6 +1,6 @@
 // E2E ONLY. The scripted first setup (ADR 0045) on `/onboarding`: load the skill, three questions,
 // a preset draft and its preview. Used by `e2e-mock-model.ts`; never elsewhere.
-import { draftFromPreset } from "@okazi/core/pipeline-setup-templates";
+import { draftFromPreset } from "@bibi/core/pipeline-setup-templates";
 import {
   lastToolResult,
   lastUserText,

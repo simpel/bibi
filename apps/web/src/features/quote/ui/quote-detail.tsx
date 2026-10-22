@@ -1,5 +1,5 @@
-import type { Locale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
+import type { Locale } from "@bibi/i18n";
+import { Link } from "@bibi/i18n/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 import { getFormatter, getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";

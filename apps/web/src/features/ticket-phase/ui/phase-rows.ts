@@ -1,5 +1,5 @@
-import type { TicketPhaseDto } from "@okazi/core/schemas";
-import { PHASE_FLAGS, type PhaseFlag } from "@okazi/core/schemas";
+import type { TicketPhaseDto } from "@bibi/core/schemas";
+import { PHASE_FLAGS, type PhaseFlag } from "@bibi/core/schemas";
 
 /** One table row: a phase with the names it may move to and the flags it has. */
 export type PhaseRow = {

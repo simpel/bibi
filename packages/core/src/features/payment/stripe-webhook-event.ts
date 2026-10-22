@@ -42,7 +42,7 @@ function paymentKind({ type, object }: { type: string; object: z.infer<typeof Ob
 }
 
 /**
- * The effect an event has on Okazi, or null for events we do not act on (acknowledged and
+ * The effect an event has on Bibi, or null for events we do not act on (acknowledged and
  * ignored). Payments are matched by the Checkout Session or Invoice id; refunds arrive on a charge,
  * which names its invoice or carries our `paymentId` metadata.
  */

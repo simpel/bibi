@@ -1,6 +1,6 @@
 "use client";
 
-import type { OrderLineDto, QuoteLineDto } from "@okazi/core/schemas";
+import type { OrderLineDto, QuoteLineDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";

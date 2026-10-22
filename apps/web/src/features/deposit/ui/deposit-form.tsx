@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Form } from "@okazi/ui";
+import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { TextField } from "@/components/form/text-field";
 import { useDepositForm } from "./use-deposit-form";

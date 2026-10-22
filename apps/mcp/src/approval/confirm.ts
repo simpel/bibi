@@ -6,7 +6,7 @@ import {
   err,
   execute,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 import { consumeApproval } from "./consumed";
 import { verifyApprovalToken } from "./verify";
 

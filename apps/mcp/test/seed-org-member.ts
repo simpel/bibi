@@ -1,5 +1,5 @@
-import type { ExecuteContext } from "@okazi/core";
-import { getDb } from "@okazi/db";
+import type { ExecuteContext } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 
 export type SeedOrgMemberInput = { context: ExecuteContext };

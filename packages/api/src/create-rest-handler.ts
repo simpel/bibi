@@ -6,8 +6,8 @@ import {
   type EmbedFn,
   type ExecuteContext,
   type Result,
-} from "@okazi/core";
-import { withRequestLogging } from "@okazi/logger";
+} from "@bibi/core";
+import { withRequestLogging } from "@bibi/logger";
 import { compileRoutes } from "./http/compile-routes";
 import { errorResponse } from "./http/error-response";
 import { handleRoute } from "./http/handle-route";

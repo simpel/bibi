@@ -1,6 +1,6 @@
-import type { SkillDto } from "@okazi/core";
-import { Link } from "@okazi/i18n/navigation";
-import type { ColumnDef } from "@okazi/ui";
+import type { SkillDto } from "@bibi/core";
+import { Link } from "@bibi/i18n/navigation";
+import type { ColumnDef } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { skillRoute } from "@/lib/routes";
 import { scopeKey } from "@/lib/skill-labels";

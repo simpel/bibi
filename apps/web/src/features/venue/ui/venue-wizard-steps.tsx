@@ -1,4 +1,4 @@
-import type { VenueCreateInput } from "@okazi/core";
+import type { VenueCreateInput } from "@bibi/core";
 import type { UseFormReturn } from "react-hook-form";
 import type { WizardStepDef } from "@/components/wizard/step-wizard";
 import type { VenueFormValues } from "./venue-form-schema";

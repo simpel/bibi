@@ -5,13 +5,13 @@ Implements the backup part of [ADR 0013](../decisions/0013-hosting-and-deploy.md
 ## What is backed up
 | What | How | Where | Retention |
 | --- | --- | --- | --- |
-| Postgres `okazi` database | `backup` service in `docker-compose.prod.yml`: `pg_dump --format=custom` nightly at 02:30 UTC | Hetzner Object Storage bucket `BACKUP_S3_BUCKET`, prefix `okazi/db/` | `BACKUP_RETENTION_DAYS` (default 30), older dumps are deleted after each run |
+| Postgres `bibi` database | `backup` service in `docker-compose.prod.yml`: `pg_dump --format=custom` nightly at 02:30 UTC | Hetzner Object Storage bucket `BACKUP_S3_BUCKET`, prefix `bibi/db/` | `BACKUP_RETENTION_DAYS` (default 30), older dumps are deleted after each run |
 | Whole server | Hetzner server backup (enabled in the Hetzner console) | Hetzner | Hetzner's rotation (7 slots) |
 | Coolify instance data | Coolify's own backup (see below) | Same bucket, prefix `coolify/` | Same as above |
 
-The dump covers the whole `okazi` database, including the `pgboss` schema (the worker's queue, schedules and job history, ADR 0027). pg-boss lives outside Prisma, so the Prisma migration check does not see it; keep `pg_dump` unfiltered (no `--schema` or `--exclude-schema`). On restore, the worker recreates or migrates the schema on its next start.
+The dump covers the whole `bibi` database, including the `pgboss` schema (the worker's queue, schedules and job history, ADR 0027). pg-boss lives outside Prisma, so the Prisma migration check does not see it; keep `pg_dump` unfiltered (no `--schema` or `--exclude-schema`). On restore, the worker recreates or migrates the schema on its next start.
 
-Dumps are named `okazi-<UTC timestamp>.dump`. The service writes `backup.done`, `backup.pruned` and `backup.failed` lines to the container log (`docker logs <project>-backup-1`).
+Dumps are named `bibi-<UTC timestamp>.dump`. The service writes `backup.done`, `backup.pruned` and `backup.failed` lines to the container log (`docker logs <project>-backup-1`).
 
 ## Configuration
 Set in Coolify (secrets) or `.env.prod`: `BACKUP_S3_BUCKET`, `BACKUP_S3_ENDPOINT` (for example `https://fsn1.your-objectstorage.com`), `BACKUP_S3_ACCESS_KEY`, `BACKUP_S3_SECRET_KEY`, optional `BACKUP_S3_REGION`, `BACKUP_RETENTION_DAYS`, `BACKUP_HOUR_UTC`. Use a bucket-scoped key. Enable bucket versioning or object lock if ransomware protection is wanted.
@@ -42,7 +42,7 @@ Coolify keeps its configuration (applications, secrets, server keys) in its own 
 tools/backup/restore-test.sh --latest
 
 # From a local file
-tools/backup/restore-test.sh ./okazi-20261015T023000Z.dump
+tools/backup/restore-test.sh ./bibi-20261015T023000Z.dump
 ```
 
 CI runs this automatically (`.github/workflows/backup-restore.yml`): it builds the backup image, dumps a migrated database with `backup.sh` in local mode and runs the restore test on the dump. It runs on changes to `docker/backup/`, `tools/backup/` and the workflow itself, and weekly (Monday 05:00 UTC), so a Postgres or pgvector image upgrade that breaks dump or restore fails CI. When you change the Postgres image tag, update it in `docker/backup/Dockerfile`, `tools/backup/restore-test.sh` and the workflow together.
@@ -52,8 +52,8 @@ Repeat the test against production dumps after changing the backup setup, after 
 ## Restoring production
 1. Stop `web`, `mcp` (and the worker) so nothing writes during the restore.
 2. Download the dump you want and copy it into the postgres container.
-3. Recreate the database: `dropdb -U okazi okazi && createdb -U okazi okazi`.
-4. `pg_restore -U okazi -d okazi --no-owner --exit-on-error /tmp/okazi.dump`
+3. Recreate the database: `dropdb -U bibi bibi && createdb -U bibi bibi`.
+4. `pg_restore -U bibi -d bibi --no-owner --exit-on-error /tmp/bibi.dump`
 5. Start the services. The `migrate` step applies any migration newer than the dump.
 
 Data written after the dump (up to 24 hours) is lost. The server backup is the fallback when the bucket is unavailable.

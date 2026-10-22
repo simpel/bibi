@@ -1,7 +1,7 @@
-import { listTickets, type TicketDto } from "@okazi/core";
-import type { Locale } from "@okazi/i18n";
-import { Link } from "@okazi/i18n/navigation";
-import { Button } from "@okazi/ui";
+import { listTickets, type TicketDto } from "@bibi/core";
+import type { Locale } from "@bibi/i18n";
+import { Link } from "@bibi/i18n/navigation";
+import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { CursorPagination } from "@/components/cursor-pagination";

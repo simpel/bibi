@@ -6,7 +6,7 @@ import {
   fromZodError,
   ok,
   type Result,
-} from "@okazi/core";
+} from "@bibi/core";
 import type { McpToolMeta } from "../tools/meta";
 
 export type BindProposalInput = {

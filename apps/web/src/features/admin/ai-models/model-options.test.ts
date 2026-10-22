@@ -1,4 +1,4 @@
-import type { AiModel } from "@okazi/core/schemas";
+import type { AiModel } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { groupByProvider, perMillion } from "./model-options";
 

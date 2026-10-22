@@ -15,9 +15,9 @@ Board ids (fixed, same board as `work-backlog`; never run `gh project field-list
 
 ## 1. Select
 
-1. `git fetch origin` in `/Users/joelsanden/Code/okazi`.
+1. `git fetch origin` in `/Users/joelsanden/Code/bibi`.
 2. `gh project item-list 8 --owner simpel --format json -L 300`, keep open issues with Status `Parked`. Note each item's `itemId` (`PVTI_...`), priority, labels.
-3. For each, `gh issue view N -R simpel/okazi --json title,body,labels,comments` plus `gh api repos/simpel/okazi/issues/N/dependencies/blocked_by`. `openBlockers` = issues named under "Depends on" in the body, plus native blocked-by, that are still open. Find the parking comment (posted by the `work-backlog` run) for the branch link and reason.
+3. For each, `gh issue view N -R simpel/bibi --json title,body,labels,comments` plus `gh api repos/simpel/bibi/issues/N/dependencies/blocked_by`. `openBlockers` = issues named under "Depends on" in the body, plus native blocked-by, that are still open. Find the parking comment (posted by the `work-backlog` run) for the branch link and reason.
 4. Rank candidates: `openBlockers.length === 0` first, then by board Priority (P0 > P1 > P2), then lowest issue number. Read each parking reason — prefer one whose blocker has since landed or whose failure looks narrow (a specific red check, not "needs a human decision"). Skip (don't force-pick) a ticket whose reason is a genuine open design question for the human.
 5. If nothing is workable, report why (e.g. "#71 still blocked on #80, open") and stop here.
 6. State which ticket you picked and why, in one or two sentences, before moving on.
@@ -35,7 +35,7 @@ In the worktree:
 1. Read the issue's "To do"/"Done when" spec and any linked ADR in `docs/decisions/` and the spec it names.
 2. `git log origin/main..HEAD --stat` and `git diff origin/main..HEAD` to see what already exists.
 3. Re-read the parking reason comment from step 1.3 — that's the thing to actually fix.
-4. Run `docker compose -p okazi -f /Users/joelsanden/Code/okazi/docker-compose.yml up -d --wait postgres` then `CHECKS`, to see the current red/green state and exactly what's failing now (blockers may have landed since parking, so the picture can have changed).
+4. Run `docker compose -p bibi -f /Users/joelsanden/Code/bibi/docker-compose.yml up -d --wait postgres` then `CHECKS`, to see the current red/green state and exactly what's failing now (blockers may have landed since parking, so the picture can have changed).
 5. Check whether the matching repo skill applies (`new-entity`, `new-core-operation`, `db-migration`, `i18n-strings`, `new-ui-component`, `structure-fix`) and note it in the plan.
 
 ## 4. Plan (human checkpoint)
@@ -54,6 +54,6 @@ Call `EnterPlanMode`, then write the recovery plan: what was wrong, what you'll 
 1. `git add -A` and commit. Subject: the ticket title; body: `Closes #<N>`, a short summary, blank line, then this session's commit attribution line (not the workflow's hardcoded one).
 2. `git fetch origin`, `git rebase origin/main` (abort and report on conflict, don't force through it). If `origin/main` moved, re-run `CHECKS`.
 3. `git push -u origin <branch>`. Never force-push over anyone else's work; force is fine here only if this is the only pusher to that branch (it is, by convention).
-4. `gh pr create -R simpel/okazi` with that same summary as the body, `Closes #<N>`, base `main`. Check for a PR template first (`pull_request_template.md` / `.github/PULL_REQUEST_TEMPLATE/`) and follow it if present.
+4. `gh pr create -R simpel/bibi` with that same summary as the body, `Closes #<N>`, base `main`. Check for a PR template first (`pull_request_template.md` / `.github/PULL_REQUEST_TEMPLATE/`) and follow it if present.
 5. Comment on the issue with the PR link.
 6. Stop. Do not merge, do not move the card past `In progress`, do not remove the worktree — leave it for review/iteration until the human closes the PR.

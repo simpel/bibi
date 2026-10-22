@@ -1,5 +1,5 @@
-import type { PublicPaymentDto } from "@okazi/core/schemas";
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@okazi/ui";
+import type { PublicPaymentDto } from "@bibi/core/schemas";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { AutoRefresh } from "./auto-refresh";
 import { type PaymentOutcome, paymentOutcome } from "./payment-outcome";

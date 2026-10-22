@@ -1,4 +1,4 @@
-import { SystemLogListInputSchema, type SystemLogListQuery } from "@okazi/core/schemas";
+import { SystemLogListInputSchema, type SystemLogListQuery } from "@bibi/core/schemas";
 
 /** URL search params of `/admin/logs`; the URL is the single source of the view state. */
 export type LogSearchParams = Record<string, string | string[] | undefined>;

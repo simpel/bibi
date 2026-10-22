@@ -1,6 +1,6 @@
 "use client";
 
-import type { AlternativeGroupDto } from "@okazi/core/schemas";
+import type { AlternativeGroupDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import type { OptionLine } from "./option-line";

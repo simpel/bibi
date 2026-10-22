@@ -1,4 +1,4 @@
-import type { AnyOperation } from "@okazi/core";
+import type { AnyOperation } from "@bibi/core";
 import { argsFromSchema } from "./args-from-schema";
 import { builder, type ObjectRefOf } from "./builder";
 import { markExposed } from "./exposed-operations";
