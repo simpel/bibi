@@ -68,7 +68,7 @@ export function chatRequest({
     pageContext: { route, locale: "sv" },
     conversationId,
   };
-  return new Request("http://localhost:3000/api/assistant/chat", {
+  return new Request("http://localhost:3330/api/assistant/chat", {
     method: "POST",
     headers,
     body: JSON.stringify(body),

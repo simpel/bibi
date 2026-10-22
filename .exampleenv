@@ -7,7 +7,7 @@ DATABASE_URL=postgresql://bibi:bibi@localhost:5432/bibi
 # --- Better Auth ---
 # Generate with: openssl rand -base64 32   (min 32 chars)
 BETTER_AUTH_SECRET=
-BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_URL=http://localhost:3330
 
 # --- Mail (docker compose: mailpit; SMTP 1025, UI http://localhost:8025) ---
 SMTP_URL=smtp://localhost:1025
@@ -21,9 +21,9 @@ RESEND_WEBHOOK_SECRET=
 MAIL_INBOUND_DOMAIN=
 
 # --- App URLs / ports ---
-WEB_URL=http://localhost:3000
-MCP_URL=http://localhost:3001
-PORT=3001
+WEB_URL=http://localhost:3330
+MCP_URL=http://localhost:3331
+PORT=3331
 
 # --- AI (Vercel AI Gateway) ---
 # Unset = deterministic placeholder embedder in dev; the chat model needs a real key.

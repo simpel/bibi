@@ -23,8 +23,8 @@ export function registerLogging(): void {
 /** `pnpm dev` only: prints the local services to the terminal. */
 export function registerDevBanner(): void {
   if (!isDevEnvironment()) return;
-  const { WEB_URL, MCP_URL } = getEnv();
-  const services = devServices({ webUrl: WEB_URL, mcpUrl: MCP_URL });
+  const { WEB_URL, MCP_URL, STORYBOOK_URL } = getEnv();
+  const services = devServices({ webUrl: WEB_URL, mcpUrl: MCP_URL, storybookUrl: STORYBOOK_URL });
   process.stdout.write(formatDevBanner({ services }));
 }
 

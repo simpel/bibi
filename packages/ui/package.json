@@ -15,8 +15,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "build": "tsc --noEmit",
-    "dev": "storybook dev -p 6006 --no-open",
-    "storybook": "storybook dev -p 6006",
+    "dev": "storybook dev -p ${STORYBOOK_PORT:-3332} --no-open",
+    "storybook": "storybook dev -p ${STORYBOOK_PORT:-3332}",
     "build-storybook": "storybook build -o storybook-static"
   },
   "dependencies": {

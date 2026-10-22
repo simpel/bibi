@@ -36,7 +36,7 @@ jobs:
     env:
       DATABASE_URL: postgresql://bibi:bibi@localhost:5432/bibi
       BETTER_AUTH_SECRET: ci-secret-ci-secret-ci-secret-123
-      BETTER_AUTH_URL: http://localhost:3000
+      BETTER_AUTH_URL: http://localhost:3330
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

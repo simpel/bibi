@@ -10,7 +10,7 @@ export type RouteRequestInput = {
   request: Request;
   resolveContext: ResolveContext;
   embed: EmbedFn;
-  /** Public base URL of this server, e.g. `http://localhost:3001` (`MCP_URL`). */
+  /** Public base URL of this server, e.g. `http://localhost:3331` (`MCP_URL`). */
   baseUrl: string;
   /** Issuer of the OAuth authorization server (Better Auth base URL incl. base path). */
   authorizationServer: string;

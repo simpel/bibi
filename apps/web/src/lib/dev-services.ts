@@ -1,9 +1,9 @@
 export type DevService = { name: string; url: string; note: string };
 
-export type DevServicesInput = { webUrl: string; mcpUrl: string };
+export type DevServicesInput = { webUrl: string; mcpUrl: string; storybookUrl: string };
 
 /** Local services a developer wants to find: the app plus what `docker compose up` runs. */
-export function devServices({ webUrl, mcpUrl }: DevServicesInput): DevService[] {
+export function devServices({ webUrl, mcpUrl, storybookUrl }: DevServicesInput): DevService[] {
   return [
     { name: "Web", url: webUrl, note: "The app" },
     { name: "MCP", url: mcpUrl, note: "MCP server for the assistant" },

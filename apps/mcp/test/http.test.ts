@@ -32,9 +32,9 @@ async function resolveContext({ headers }: ResolveInput) {
 const server = createHttpServer({
   resolveContext,
   embed: fakeEmbed,
-  baseUrl: "http://localhost:3001",
-  authorizationServer: "http://localhost:3000/api/auth",
-  allowedOrigins: ["http://localhost:3000"],
+  baseUrl: "http://localhost:3331",
+  authorizationServer: "http://localhost:3330/api/auth",
+  allowedOrigins: ["http://localhost:3330"],
 });
 let url = "";
 
@@ -59,7 +59,7 @@ describe("HTTP transport", () => {
     });
     expect(response.status).toBe(401);
     expect(response.headers.get("www-authenticate")).toBe(
-      'Bearer resource_metadata="http://localhost:3001/.well-known/oauth-protected-resource"',
+      'Bearer resource_metadata="http://localhost:3331/.well-known/oauth-protected-resource"',
     );
   });
 
@@ -77,8 +77,8 @@ describe("HTTP transport", () => {
   it("serves RFC 9728 protected-resource metadata without credentials", async () => {
     const response = await fetch(`${url}/.well-known/oauth-protected-resource`);
     expect(await response.json()).toMatchObject({
-      resource: "http://localhost:3001/mcp",
-      authorization_servers: ["http://localhost:3000/api/auth"],
+      resource: "http://localhost:3331/mcp",
+      authorization_servers: ["http://localhost:3330/api/auth"],
     });
   });
 
@@ -107,10 +107,10 @@ describe("HTTP transport", () => {
     expect(evil.status).toBe(403);
     const preflight = await fetch(`${url}/mcp`, {
       method: "OPTIONS",
-      headers: { origin: "http://localhost:3000" },
+      headers: { origin: "http://localhost:3330" },
     });
     expect(preflight.status).toBe(204);
-    expect(preflight.headers.get("access-control-allow-origin")).toBe("http://localhost:3000");
+    expect(preflight.headers.get("access-control-allow-origin")).toBe("http://localhost:3330");
     expect((await fetch(`${url}/mcp`)).status).toBe(405);
     expect((await fetch(`${url}/nope`)).status).toBe(404);
   });

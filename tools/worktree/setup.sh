@@ -27,12 +27,16 @@ DB="$(db_name)"
 # Worktrees get their own database and ports; the main checkout keeps the defaults.
 if ! is_main_checkout; then
   SLOT="$(worktree_slot)"
-  WEB_PORT=$((3100 + SLOT))
-  MCP_PORT=$((3200 + SLOT))
+  # Ten ports per checkout: the main one has 3330-3339, slot N starts at 3330 + 10N.
+  WEB_PORT=$((3330 + SLOT * 10))
+  MCP_PORT=$((WEB_PORT + 1))
+  STORYBOOK_PORT=$((WEB_PORT + 2))
   set_env WORKTREE_SLOT "$SLOT"
   set_env DATABASE_URL "postgresql://bibi:bibi@localhost:5432/$DB"
   set_env WEB_PORT "$WEB_PORT"
   set_env PORT "$MCP_PORT"
+  set_env STORYBOOK_PORT "$STORYBOOK_PORT"
+  set_env STORYBOOK_URL "http://localhost:$STORYBOOK_PORT"
   set_env WEB_URL "http://localhost:$WEB_PORT"
   set_env BETTER_AUTH_URL "http://localhost:$WEB_PORT"
   set_env MCP_URL "http://localhost:$MCP_PORT"

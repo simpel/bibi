@@ -5,7 +5,7 @@ import { FIRST_PARTY_CLIENTS, type FirstPartyClient } from "./clients";
 
 export type AuthEndpointInput = { path: string };
 
-/** Absolute Better Auth endpoint, e.g. `/oauth2/token` → `http://localhost:3000/api/auth/oauth2/token`. */
+/** Absolute Better Auth endpoint, e.g. `/oauth2/token` → `http://localhost:3330/api/auth/oauth2/token`. */
 export function authEndpoint({ path }: AuthEndpointInput): string {
   return `${getEnv().BETTER_AUTH_URL}${AUTH_BASE_PATH}${path}`;
 }

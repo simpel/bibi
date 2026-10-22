@@ -71,7 +71,7 @@ export async function call({
   if (org) headers.set("x-test-org", org);
   if (access) headers.set("x-test-access", access);
   if (user) headers.set("x-test-user", user);
-  const request = new Request(`http://localhost:3000/api/v1${path}`, {
+  const request = new Request(`http://localhost:3330/api/v1${path}`, {
     method,
     headers,
     ...(body === undefined ? {} : { body: typeof body === "string" ? body : JSON.stringify(body) }),

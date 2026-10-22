@@ -36,7 +36,8 @@ db_name() {
 # Read KEY from a .env file (empty if missing).
 env_value() { { grep -E "^$1=" "$2" 2>/dev/null || true; } | tail -1 | cut -d= -f2-; }
 
-# Port offset 1-99. Reuses this worktree's slot, else takes the first one no other worktree holds.
+# Port block 1-99 (ten ports each, see setup.sh). Reuses this worktree's slot, else takes the
+# first one no other worktree holds.
 worktree_slot() {
   local own used wt slot
   own="$(env_value WORKTREE_SLOT "$ROOT/.env")"

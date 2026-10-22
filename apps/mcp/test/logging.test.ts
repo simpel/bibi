@@ -23,9 +23,9 @@ async function resolveContext() {
 const server = createHttpServer({
   resolveContext,
   embed: fakeEmbed,
-  baseUrl: "http://localhost:3001",
-  authorizationServer: "http://localhost:3000/api/auth",
-  allowedOrigins: ["http://localhost:3000"],
+  baseUrl: "http://localhost:3331",
+  authorizationServer: "http://localhost:3330/api/auth",
+  allowedOrigins: ["http://localhost:3330"],
 });
 let url = "";
 let logs: CapturedLogs;

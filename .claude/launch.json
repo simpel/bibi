@@ -9,7 +9,7 @@
         "@bibi/web",
         "dev"
       ],
-      "port": 3000
+      "port": 3330
     },
     {
       "name": "storybook",
@@ -20,7 +20,7 @@
         "storybook",
         "--no-open"
       ],
-      "port": 6006
+      "port": 3332
     },
     {
       "name": "mcp",
@@ -30,7 +30,7 @@
         "@bibi/mcp",
         "dev"
       ],
-      "port": 3001
+      "port": 3331
     },
     {
       "name": "web-e2e",
@@ -42,7 +42,7 @@
         "@bibi/web",
         "dev"
       ],
-      "port": 3000
+      "port": 3330
     }
   ]
 }

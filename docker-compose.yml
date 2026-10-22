@@ -39,7 +39,7 @@ services:
     volumes:
       - storage-data:/app/.storage
     ports:
-      - "3000:3000"
+      - "3330:3330"
     depends_on:
       postgres: { condition: service_healthy }
 
@@ -54,7 +54,7 @@ services:
       DATABASE_URL: postgresql://bibi:bibi@postgres:5432/bibi
       WEB_URL: http://web:3000
     ports:
-      - "3001:3001"
+      - "3331:3331"
     depends_on:
       postgres: { condition: service_healthy }
 
