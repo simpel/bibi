@@ -1,3 +1,6 @@
+# The project name is the app name, so the rename codemod keeps it in step with tools/worktree.
+name: okazi
+
 services:
   postgres:
     image: pgvector/pgvector:pg17
