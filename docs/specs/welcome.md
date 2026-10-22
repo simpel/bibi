@@ -43,6 +43,7 @@ Locale prefix (`/sv`, `/en`) omitted.
 | invalid | Use 3–40 letters, numbers or dashes |
 
 - The server checks again on create.
+- **Time zone** (ADR 0064, accepted, not built yet): a searchable dropdown of IANA zones after name and URL, defaulting to the browser's zone (fallback `Europe/Stockholm`). Stored on the organization's profile; editable later in settings.
 
 ## Profile (per user, entered once)
 - **`profile`:** first name and last name (prefilled by splitting the sign-up name), phone (required), and an optional avatar (png, jpeg or webp, at most 2 MB; initials when there is none).

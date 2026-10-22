@@ -28,6 +28,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 ## i18n
 - All text via `useTranslations` / `getTranslations`; no hardcoded strings or colors. Links, router, `usePathname` and `redirect` from `@/lib/navigation`, never `next/link`, `next/navigation`'s router or `@bibi/i18n/navigation` directly. Why: ADR 0062.
 - App routes live under `app/[locale]/[org]/` (the organization slug). The wrapper prefixes scoped paths with the current slug and `usePathname` returns the path without it; server `redirect` needs `org` passed. A new top-level route outside `[org]` goes into `RESERVED_SLUGS` (`@bibi/auth`), or `lib/reserved-slugs.test.ts` fails.
+- Query strings are a last resort: a date or period goes in the path (the calendar is `/calendar/{from}/{to}`, inclusive plain dates; the view is derived from the range), only optional filters stay a query. Why: ADR 0064.
 - Server components and layouts call `setRequestLocale(locale)`; convert `locale` with `resolveLocale`.
 - `sv.json` is the source of truth for typed keys. Dynamic keys must be unions (see `ErrorKey`).
 

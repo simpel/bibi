@@ -565,6 +565,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A building or site. Bookable items belong to a venue.
 
+> **Target (ADR 0064):** `timeZone` (owned, nullable, `null` = the organization's) and structured opening hours (a weekly pattern with dated exceptions, advisory, replacing the free-text `openingHours`), with the same shape as user and item working hours.
+
 **Attributes**
 - name
 - address
@@ -999,6 +1001,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - legalName, orgNumber
 - streetAddress, postalCode, city, country (default `SE`)
 - website, contactEmail, contactPhone
+
+> **Target (ADR 0064):** `timeZone` (owned, IANA name, required): the zone of ticket-level times and the default of every venue. Chosen when the organization is created, editable in settings.
 
 > Operations: `organizationProfile.get` and `organizationProfile.update` (setup feature), `organizationProfile.setSetupStatus` (`pipeline:write`). While the status is `PENDING`, `/:org/welcome` sends members who can do the setup through it and everyone else to a waiting page.
 
