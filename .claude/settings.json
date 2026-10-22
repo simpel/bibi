@@ -3,22 +3,43 @@
     "allow": [
       "Bash(git status:*)",
       "Bash(git diff:*)",
+      "Bash(node tools/backlog/select.mjs:*)",
+      "Bash(node tools/ci/verify.mjs:*)",
+      "Bash(bash tools/backlog/main-ci.sh:*)",
+      "Bash(bash tools/backlog/ci.sh:*)",
       "Bash(git log:*)",
+      "Bash(git fetch:*)",
+      "Bash(git show:*)",
+      "Bash(git grep:*)",
+      "Bash(git branch:*)",
+      "Bash(git worktree list:*)",
+      "Bash(git rev-list:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git pull --ff-only origin main)",
       "Bash(git pull --rebase origin main)",
       "Bash(git push origin main)",
       "Bash(gh issue view:*)",
+      "Bash(gh issue list:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run view:*)",
       "Bash(gh issue comment:*)",
       "Bash(gh project item-list:*)",
       "Bash(gh project item-edit:*)",
       "Bash(gh project field-list:*)",
+      "Bash(node tools/backlog/ticket.mjs:*)",
       "Bash(gh api repos/simpel/bibi/issues/:*)",
       "Bash(pnpm:*)",
       "Bash(docker compose up -d)",
       "Bash(docker compose ps:*)"
     ],
-    "deny": ["Bash(git push --force:*)", "Bash(git push -f:*)", "Bash(git reset --hard:*)"]
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)"
+    ]
   }
 }
