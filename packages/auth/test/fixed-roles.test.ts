@@ -1,12 +1,15 @@
 import {
+  archiveItem,
   createConversation,
   createCustomer,
   createEntityType,
+  createItem,
   type ExecuteContext,
   execute,
   listMembers,
   listVenues,
   removeMember,
+  updateItem,
 } from "@bibi/core";
 import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
@@ -68,6 +71,29 @@ describe("fixed roles on core operations (ADR 0034)", () => {
       codeOf({ result: await newCustomer({ context: caller, entityTypeId: customerTypeId }) }),
     ).toBe("OK");
     expect(codeOf({ result: await newType({ context: caller }) })).toBe("FORBIDDEN");
+  });
+
+  it("lets a manager create and edit items but not archive them (ADR 0059)", async () => {
+    const { caller, owner } = await setup({ role: "manager" });
+    const type = await execute({
+      operation: createEntityType,
+      input: { base: "ITEM", name: "Dish" },
+      context: owner,
+    });
+    if (!type.ok) throw type.error;
+    const input = { entityTypeId: type.value.id, name: "Soup" };
+    const created = await execute({ operation: createItem, input, context: caller });
+    if (!created.ok) throw created.error;
+    const update = { id: created.value.id, name: "Stew" };
+    expect(
+      codeOf({ result: await execute({ operation: updateItem, input: update, context: caller }) }),
+    ).toBe("OK");
+    const archive = await execute({
+      operation: archiveItem,
+      input: { id: created.value.id },
+      context: caller,
+    });
+    expect(codeOf({ result: archive })).toBe("FORBIDDEN");
   });
 
   it("lets an admin configure and manage members, but never remove the last admin", async () => {

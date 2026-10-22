@@ -4,7 +4,8 @@ import { applyOverrides, isValidOverride, PRESET_PERMISSIONS } from "../src/inde
 describe("presets and overrides (ADR 0050)", () => {
   it("gives managers the daily work and members only views", () => {
     expect(PRESET_PERMISSIONS.manager.quote).toEqual(["read", "write", "delete"]);
-    expect(PRESET_PERMISSIONS.manager.item).toEqual(["read"]);
+    expect(PRESET_PERMISSIONS.manager.item).toEqual(["read", "write"]);
+    expect(PRESET_PERMISSIONS.member.item).toEqual(["read"]);
     expect(PRESET_PERMISSIONS.member.ticket).toEqual(["read"]);
     expect(PRESET_PERMISSIONS.member.audit).toBeUndefined();
     expect(PRESET_PERMISSIONS.admin.member).toEqual(["read", "write", "delete"]);

@@ -59,14 +59,24 @@ test("an admin edits phases and the grid on step pages", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: "Rutnätet" })).toBeVisible();
   await expect(page.getByText("Släpper alla rader").first()).toBeVisible();
-  // The grid re-renders after the reorder; reopen the select until its options show.
+  // The grid re-renders after the reorder (router.refresh). Wait for the new order to show, so no
+  // later refresh can close the select mid-click, then reopen it until its options show.
+  await expect
+    .poll(async () =>
+      (await page.getByRole("combobox").evaluateAll((els) => els.map((el) => el.ariaLabel ?? "")))
+        .filter((label) => /^(Spare|Reserved): /.test(label))
+        .map((label) => label.split(":")[0]),
+    )
+    .toEqual(["Spare", "Reserved"]);
+  await page.waitForLoadState("networkidle");
   const cell = page.getByRole("combobox", { name: "Reserved: Conference room" });
   const active = page.getByRole("option", { name: "Active" });
+  // Open and pick inside one retried block: a late re-render can close the select between the
+  // visibility check and the click.
   await expect(async () => {
-    if (!(await active.isVisible())) await cell.click();
-    await expect(active).toBeVisible({ timeout: 1_000 });
-  }).toPass();
-  await active.click();
+    if (!(await active.isVisible())) await cell.click({ timeout: 2_000 });
+    await active.click({ timeout: 2_000 });
+  }).toPass({ timeout: 30_000 });
   await expect(
     page.getByText(
       "När ett ärende går in i Reserved flyttas rader av Conference room till Active.",

@@ -88,7 +88,8 @@ describe("MCP tools", () => {
     });
     const memberNames = (await member.listTools()).tools.map((tool) => tool.name);
     expect(memberNames).toEqual(expect.arrayContaining(["ticket_create", "item_list"]));
-    expect(memberNames).not.toContain("item_update");
+    expect(memberNames).toContain("item_update");
+    expect(memberNames).not.toContain("item_archive");
     const admin = await names({ access: "admin" });
     expect(admin).toEqual(expect.arrayContaining(["venue_create", "item_update", "venue_list"]));
   });
