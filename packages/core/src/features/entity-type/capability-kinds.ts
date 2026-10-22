@@ -41,3 +41,14 @@ export const ItemCapabilitiesSchema = z
 export const CAPABILITY_REQUIRES: Partial<Record<ItemCapability, ItemCapability>> = {
   SETUPS: "BOOKABLE",
 };
+
+/**
+ * Item types: what the items are (ADR 0059). A demand on an EQUIPMENT type is listed under
+ * Resources, one on a PERSON type under Staffing; both run on the same allocation engine.
+ */
+export const RESOURCE_KINDS = ["EQUIPMENT", "PERSON"] as const;
+export type ResourceKind = (typeof RESOURCE_KINDS)[number];
+
+export const ResourceKindSchema = z
+  .enum(RESOURCE_KINDS)
+  .describe("Item types only: EQUIPMENT (things, listed as Resources) or PERSON (Staffing)");

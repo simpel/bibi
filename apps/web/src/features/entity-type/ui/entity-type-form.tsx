@@ -33,12 +33,13 @@ const save = ({ entityType, values }: SaveInput) =>
     ? updateEntityTypeAction({
         input: {
           ...{ id: entityType.id, name: values.name, capabilities: values.capabilities },
+          ...{ resourceKind: values.resourceKind },
           ...{ setupMinutes: values.setupMinutes, teardownMinutes: values.teardownMinutes },
         },
       })
     : createEntityTypeAction({ input: values });
 
-/** Create (base, name, capabilities, buffers) or edit (name, capabilities, buffers) a type. A CONFLICT shows as a toast. */
+/** Create (base, name, kind, capabilities, buffers) or edit (all but the base) a type. A CONFLICT shows as a toast. */
 export function EntityTypeForm({ entityType, onDone }: EntityTypeFormProps) {
   const t = useTranslations("entityType");
   const common = useTranslations("common");

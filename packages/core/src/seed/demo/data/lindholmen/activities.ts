@@ -17,6 +17,16 @@ const equipment = ({ name, kr, inventory }: EquipmentInput): DemoItem => ({
 
 const guides = ["Emma Lind", "Oskar Ahl", "Nora Falk"].map((name) => ({ name }));
 
+/** ADR 0059: AV equipment needs one technician (a pool of two) for its setup and teardown. */
+const needsTechnician = [
+  { pool: "Technician", windows: ["SETUP", "TEARDOWN"] },
+] as const satisfies DemoItem["demands"];
+
+const technicians: readonly DemoItem[] = ["Technician 1", "Technician 2"].map((name) => ({
+  type: "Technician",
+  name,
+}));
+
 /** Ten interchangeable units of one bookable type: a pool (ADR 0059, `docs/demo-seed.md`). */
 const microphones: readonly DemoItem[] = Array.from({ length: 10 }, (_, index) => {
   const number = String(index + 1).padStart(2, "0");
@@ -30,7 +40,8 @@ const microphones: readonly DemoItem[] = Array.from({ length: 10 }, (_, index) =
 /**
  * Lindholmen's guides, tours and equipment (`docs/demo-seed.md`, Guides and tours, Equipment).
  * A tour picks one bookable guide; the Design workshop contains the room Knippla; the Projector
- * offers an Installation group (Our technician as a priced extra, or Self-install).
+ * offers an Installation group (Our technician as a priced extra, or Self-install); the Projector
+ * and the Mobile sound system each need a technician from the pool of two for setup and teardown.
  */
 export const lindholmenActivities: readonly DemoItem[] = [
   guide({ name: "Emma Lind", languages: ["Swedish", "English"] }),
@@ -61,6 +72,7 @@ export const lindholmenActivities: readonly DemoItem[] = [
   { type: "Service", name: "Self-install" },
   {
     ...equipment({ name: "Projector", kr: 450, inventory: "LEC-AV-001" }),
+    demands: needsTechnician,
     customisations: [
       {
         name: "Installation",
@@ -71,8 +83,12 @@ export const lindholmenActivities: readonly DemoItem[] = [
       },
     ],
   },
-  equipment({ name: "Mobile sound system", kr: 900, inventory: "LEC-AV-002" }),
+  {
+    ...equipment({ name: "Mobile sound system", kr: 900, inventory: "LEC-AV-002" }),
+    demands: needsTechnician,
+  },
   equipment({ name: "Extra whiteboard", kr: 150, inventory: "LEC-FU-001" }),
   equipment({ name: "Hearing loop", kr: 0, inventory: "LEC-AV-003" }),
   ...microphones,
+  ...technicians,
 ];

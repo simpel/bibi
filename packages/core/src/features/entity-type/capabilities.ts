@@ -51,7 +51,10 @@ const DATA_COUNTS: Record<ItemCapability, (input: CountInput) => Promise<number>
 
 export type CheckRemovableInput = CountInput & { removed: readonly ItemCapability[] };
 
-/** A capability cannot be switched off while items of the type have data for it (ADR 0021). */
+/**
+ * A capability cannot be switched off while items of the type have data for it (ADR 0021), nor
+ * BOOKABLE while demands use the type as a pool (ADR 0059).
+ */
 export async function checkCapabilitiesRemovable({
   context,
   entityTypeId,
@@ -60,6 +63,11 @@ export async function checkCapabilitiesRemovable({
   for (const capability of removed) {
     const count = await DATA_COUNTS[capability]({ context, entityTypeId });
     if (count > 0) return conflict({ message: `${count} items have ${capability} data` });
+  }
+  // ADR 0059: a pool must stay bookable while demands target it.
+  if (removed.includes("BOOKABLE")) {
+    const demands = await context.db.itemDemand.count({ where: { entityTypeId } });
+    if (demands > 0) return conflict({ message: `${demands} demands use the type as a pool` });
   }
   return ok({ value: true });
 }

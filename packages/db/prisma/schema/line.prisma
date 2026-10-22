@@ -73,6 +73,8 @@ model Line {
   /// Order lines whose bundle line this is (snapshot of `parentLineId`).
   partOrderLines     OrderLine[]        @relation("OrderLineParent")
   stateChanges       LineStateChange[]
+  /// The units allocated to the line's demands (ADR 0059).
+  allocations        LineAllocation[]
   /// The supertable row this record extends (ADR 0056).
   record             Record             @relation(fields: [id, organizationId], references: [id, organizationId])
 

@@ -18,7 +18,7 @@ Ticket (moves through the organization's phases) → Lines with states (prebooke
 |---|---|---|
 | Owned | The fact itself, in one place | `Line` price overrides, `TicketPhaseChange`, manual `Occupancy` blocks, explicit `Assignment` |
 | Derived | Computed on read, never stored | a draft quote, balances, which responsibilities apply, effective price and VAT |
-| Projection | Stored for a constraint or index, written only by the database | line holds in `Occupancy` (ADR 0053), `Ticket.phaseId` and `Line.stateId` (ADR 0054) |
+| Projection | Stored for a constraint or index, written only by the database | line holds and allocation holds in `Occupancy` (ADR 0053, 0059), `Ticket.phaseId` and `Line.stateId` (ADR 0054) |
 | Snapshot | Frozen copy at a moment that matters | sent quote lines, invoices, sent sheets and their recipients |
 
 **Ownership line.** Once the ticket for an entity lands, its section gets one line right under the heading, in this format (a projection names its reconciliation check in `packages/core/src/seed/demo/reconcile-checks.ts`):
@@ -32,7 +32,7 @@ What changes:
 - **Assignments store only choices** ([ADR 0055](decisions/0055-assignments-store-only-choices.md)); the rest is derived from responsibilities and lines.
 - **One `Record` table** ([ADR 0056](decisions/0056-records-and-relations.md)) for every entity with a type and fields, with `fields` JSON behind a GIN index. *Done:* `Record` (`id`, `entityTypeId`, `base`, `fields`, `status`) is the supertable of `Item`, `Customer`, `Contact`, `Ticket`, `TicketTemplate`, `Line` and `Requirement`, which share its id (composite foreign key with `organizationId`); core writes both rows in one transaction (`packages/core/src/records/`). `base` is the entity base, or `TICKET_TEMPLATE` for a predefined ticket. *Done:* `LINK` values are `RecordLink` rows (`recordId`, `fieldId`, `targetRecordId`, `position`; composite foreign keys, several rows for several targets), never ids in `fields` JSON; core merges them into `fields` on read. Id lists are join tables. *Target:* polymorphic pairs point at `Record`.
 - **Money is derived** ([ADR 0057](decisions/0057-money-balance-is-derived.md)): a payment settles one receivable (sent quote, deposit or invoice); no balance is stored. External calls run after commit (ADR 0058).
-- **Capabilities, demands and buffers** ([ADR 0059](decisions/0059-capabilities-demands-and-buffers.md), accepted, partly built): the keys are renamed end to end (`capabilities`, `BUNDLE`, `CUSTOMISATIONS`, `ItemPart`, `ItemCustomisationGroup`); customisations work on any item, each option an item with a price effect (`ItemCustomisationOption`, `line.chooseOptions`); setup and teardown minutes on type, item and line are built (soft and hard buffers, `TEARDOWN`, the larger-of rule); the pool target selector is built as a derived read, `item.freeUnits` (a specific item, or an item type plus required list values; free units in name order, the first is the prepick); the type editor shows one section per capability with a plain-language switch (Pricing, Availability, Room layouts, Bundle, Customisations; sections for Resources and Staffing land with their slices); still to come are bundles expanded into linked part lines with per-rate VAT, `ItemDemand` and `LineAllocation` for pooled equipment and staff, working hours, and `item:write` for managers.
+- **Capabilities, demands and buffers** ([ADR 0059](decisions/0059-capabilities-demands-and-buffers.md), accepted, partly built): the keys are renamed end to end (`capabilities`, `BUNDLE`, `CUSTOMISATIONS`, `ItemPart`, `ItemCustomisationGroup`); customisations work on any item, each option an item with a price effect (`ItemCustomisationOption`, `line.chooseOptions`); setup and teardown minutes on type, item and line are built (soft and hard buffers, `TEARDOWN`, the larger-of rule); the pool target selector is built as a derived read, `item.freeUnits` (a specific item, or an item type plus required list values; free units in name order, the first is the prepick); the type editor shows one section per capability with a plain-language switch (Pricing, Availability, Room layouts, Bundle, Customisations; sections for Resources and Staffing land with their slices); item types are Equipment or Person (`resourceKind`), items ask pools for units (`ItemDemand`, `itemDemand.*`) and lines get them as `LineAllocation` rows (prepicked, `lineAllocation.*`), held for the demand's windows by the line holds trigger, with the chained pool check (an AV unit needs a free technician); still to come are the allocation UI (#384), derived warnings for unfilled optional demands (#385), working hours, and `item:write` for managers.
 
 ## ER diagram (MVP)
 
@@ -80,6 +80,14 @@ erDiagram
   ItemCustomisationGroup ||--o{ ItemCustomisationOption : "offers"
   Item ||--o{ ItemCustomisationOption : "is an option in"
   Item ||--o{ Occupancy : "has"
+  Item ||--o{ ItemDemand : "asks"
+  ItemDemand }o--o| EntityType : "targets the pool of"
+  ItemDemand }o--o| Item : "targets"
+  ItemDemand }o--o{ VocabularyValue : "requires"
+  Line ||--o{ LineAllocation : "gets"
+  ItemDemand ||--o{ LineAllocation : "is filled by"
+  LineAllocation }o--o| Item : "allocates"
+  LineAllocation ||--o{ Occupancy : "holds"
   Item ||--o{ ItemSetup : "has"
   Setup ||--o{ ItemSetup : "is used in"
   Item }o--o{ VocabularyValue : "is tagged with"
@@ -122,7 +130,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > **Done (ADR 0059):** customisations no longer need a bundle (`CUSTOMISATIONS` stands alone; only `SETUPS` requires `BOOKABLE`).
 
-> **Target (ADR 0059):** an item type is Equipment or Person.
+> **Done (ADR 0059):** an item type is Equipment or Person (`resourceKind`, owned, `EQUIPMENT` by default, null on other bases, a database check keeps it so); it decides whether a demand on the type is listed under Resources or Staffing.
 
 > **Done (ADR 0059):** item types have nullable `setupMinutes` and `teardownMinutes` (owned): the default buffers of their items, null = none (`VALIDATION` on other bases). Changing them re-derives the holds of lines that have not ended (by trigger; a collision is `CONFLICT`).
 
@@ -583,7 +591,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A time block on a bookable item. The basis for conflict checking.
 
-> **Target (ADR 0059):** allocation windows (setup, booking, teardown) on other items, projected by the same trigger.
+> **Done (ADR 0059):** allocation holds: each filled `LineAllocation` of a held line holds its unit for the demand's windows (setup as `SETUP`, booking as `HOLD`, teardown as `TEARDOWN`) with the line's kind and `allocationId`, projected by the same trigger.
 
 > **Ownership (ADR 0053, 0059):** manual blocks (`MAINTENANCE`, `INTERNAL`) are owned; line holds and their buffers (`HOLD`, `SETUP`, `TEARDOWN`) are a projection with `lineId` (FK), written only by the triggers in `packages/db/sql/sync_line_occupancy.sql` (check `line-holds`).
 
@@ -591,7 +599,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - item (with the `BOOKABLE` capability)
 - start – end (`startsAt`, `endsAt`; the period is `[start, end)`, so back-to-back blocks do not overlap)
 - type (`HOLD`, `SETUP`, `TEARDOWN`, `MAINTENANCE`, `INTERNAL`); a line's rows have a kind, `SOFT` or `HARD`, derived from the line's state (ADR 0044); manual blocks have none
-- line (`lineId`: the line whose hold or buffer this is; null for manual blocks; one row per line, item and type, so one `HOLD` and at most one `SETUP` and one `TEARDOWN` per line today)
+- line (`lineId`: the line whose hold or buffer this is; null for manual blocks; one row per line, item and type: the line's own item, and each allocated unit, since a unit fills at most one slot per line)
+- allocation (`allocationId`: set on an allocated unit's rows; projection)
 - note
 - status (active / archived = released; released rows no longer block)
 
@@ -599,7 +608,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:1` Line reserves this
 - `N:1` Item has this
 
-> ★ Active rows of all types except soft ones (soft holds and their buffers) may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`. `HOLD`, `SETUP` and `TEARDOWN` are written only by database triggers (ADR 0053), in the same transaction as the change to the line, its state, setup, item, item type, ticket or phase: a line holds while it and its ticket are active, the ticket's phase is not terminal, it is timed, its item's type is `BOOKABLE` and its state holds and is not released. A hold of either kind gets a `SETUP` right before and a `TEARDOWN` right after, of its own kind, when their effective minutes are above zero (ADR 0059): setup is the line's, else the item's, else the type's `setupMinutes`, or the setup's changeover time (`changeoverMinutes`) when that is larger; teardown is the line's, else the item's, else the type's `teardownMinutes`. Changing a state's `hold`/`released`, a setup's changeover time, an item's or a type's buffer minutes, a type's capabilities or a phase's `terminal` re-derives only lines that have not ended (the past calendar is frozen); an overlap refuses the change with `CONFLICT` and one issue per line (`lines.<id>`). Application code never writes line holds (a test enforces it).
+> ★ Active rows of all types except soft ones (soft holds and their buffers) may not overlap on the same item. This is enforced with an exclusion constraint in Postgres (`btree_gist`), so it also holds for concurrent transactions; core maps a violation to `CONFLICT`. Staff block items by hand with `occupancy.list|get|create|update|archive` (resource `occupancy`), which only create and change the types `MAINTENANCE` and `INTERNAL`. `HOLD`, `SETUP` and `TEARDOWN` are written only by database triggers (ADR 0053), in the same transaction as the change to the line, its state, setup, item, item type, ticket or phase: a line holds while it and its ticket are active, the ticket's phase is not terminal, it is timed, its item's type is `BOOKABLE` and its state holds and is not released. A hold of either kind gets a `SETUP` right before and a `TEARDOWN` right after, of its own kind, when their effective minutes are above zero (ADR 0059): setup is the line's, else the item's, else the type's `setupMinutes`, or the setup's changeover time (`changeoverMinutes`) when that is larger; teardown is the line's, else the item's, else the type's `teardownMinutes`. A held line also holds the unit of each active, filled `LineAllocation` of an active demand whose unit's type is `BOOKABLE`, for the demand's non-empty windows, with the line's kind; the unit's own buffers do not apply. Filling, changing or removing an allocation re-derives its line; changing a demand's windows or archiving it re-derives its lines. Changing a state's `hold`/`released`, a setup's changeover time, an item's or a type's buffer minutes, a type's capabilities or a phase's `terminal` re-derives only lines that have not ended (the past calendar is frozen); an overlap refuses the change with `CONFLICT` and one issue per line (`lines.<id>`). Application code never writes line holds (a test enforces it).
 
 ## Items
 
@@ -609,7 +618,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` (owned, an override of the type default, on any item); derived on read `effectiveSetupMinutes` and `effectiveTeardownMinutes` with their source (`ITEM` or `TYPE`). A line's effective setup is the larger of these and its setup's changeover.
 
-> **Target (ADR 0059):** `ItemDemand` rows (what the item asks of a pool), and working hours for a bookable item.
+> **Done (ADR 0059):** `ItemDemand` rows (what the item asks of a pool). **Target:** working hours for a bookable item.
 
 > **Done (ADR 0059):** customisation groups hang on any item whose type has `CUSTOMISATIONS`, not only bundles; each option is another item with a price effect (`ItemCustomisationOption`).
 
@@ -636,12 +645,14 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` has → ItemCustomisationGroup
 - `1:N` is an option in → ItemCustomisationOption
 - `1:N` has → Occupancy
+- `1:N` asks → ItemDemand
+- `1:N` is allocated as a unit in → LineAllocation
 - `1:N` has → ItemSetup
 - Tagged via fields that select from a vocabulary
 - `1:N` OrderLine refers to this
 - `1:N` PriceListItem refers to this
 
-> Room = item with `BOOKABLE` + `SETUPS` (often also `PRICED`). A capability cannot be turned off on the type as long as any active item of the type has data for it (`CONFLICT`). Free units of a pool (`item.freeUnits`, derived on read, nothing stored): a target is one bookable item or a bookable item type plus list values every unit carries; a unit is free when no hard hold, buffer or manual block overlaps the window (soft holds do not count); units come in name order and the first is the prepick. Stored targets on parts, options and demands come with those slices. Inherited tags (`item.resolve`, the only place they are computed): the item and required parts at every level give "contains"; optional parts and customisation-group options give "may contain" per alternative. An option in a group that must pick all of its options has no alternative and counts as required. On expansion onto a ticket: core creates lines, occupancy and order lines, which copy name, price, VAT and tags (snapshot).
+> Room = item with `BOOKABLE` + `SETUPS` (often also `PRICED`). A capability cannot be turned off on the type as long as any active item of the type has data for it (`CONFLICT`). Free units of a pool (`item.freeUnits`, derived on read, nothing stored): a target is one bookable item or a bookable item type plus list values every unit carries; a unit is free when no hard hold, buffer or manual block overlaps the window (soft holds do not count); units come in name order and the first is the prepick. Demands store the same target (`ItemDemand`); the prepick of an allocation also needs the unit's own mandatory demands to be met (the chained check). Inherited tags (`item.resolve`, the only place they are computed): the item and required parts at every level give "contains"; optional parts and customisation-group options give "may contain" per alternative. An option in a group that must pick all of its options has no alternative and counts as required. On expansion onto a ticket: core creates lines, occupancy and order lines, which copy name, price, VAT and tags (snapshot).
 
 ### ItemPart (`ItemPart`)
 
@@ -699,6 +710,49 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `N:1` refers to → Item
 
 > Unique per group and item; deleted with its group. `line.chooseOptions` only offers options whose item is active. Chosen on a line by `line.chooseOptions`; the choice is a set of option lines (see Line).
+
+### ItemDemand (`ItemDemand`)
+
+*MVP* · What an item asks of a pool (ADR 0059), e.g. a projector needs one technician for its setup and teardown.
+
+> **Ownership (ADR 0051):** owned `itemId`, target (`targetItemId` or `entityTypeId`), `required`, `quantity`, `windows`; the required list values are `ItemDemandTag` join rows (ADR 0056), replaced as a set with the demand.
+
+**Attributes**
+- item (`itemId`): the needing item
+- target: one bookable item (`targetItemId`) or a pool (`entityTypeId` of a bookable item type plus the list values every unit carries, `tagValueIds`), the selector of `item.freeUnits`; exactly one (a database check)
+- required (mandatory, default) or optional
+- quantity (units per line, at least 1)
+- windows (`SETUP`, `BOOKING`, `TEARDOWN`, at least one): the line's setup buffer, its own time, its teardown buffer
+- status (active / archived)
+
+**Relations**
+- `N:1` Item asks this
+- `N:0..1` targets → Item or → EntityType (the pool)
+- `N:M` requires → VocabularyValue (`ItemDemandTag`)
+- `1:N` is filled by → LineAllocation
+
+> `itemDemand.list|get|create|update|archive` (feature `item`: reads need `item:read`, changes `item:write`). The target is checked like `item.freeUnits` (bookable, the type's own list fields; another organization's id is `NOT_FOUND`) and is never the item itself; `update` changes `required`, `quantity`, `windows` and the tags, not the target. Every change re-derives the allocations of the lines that have not ended and book the item or hold it as an allocated unit; a mandatory demand with no free unit refuses it with `CONFLICT` naming the pool and window. Archiving removes its allocations on those lines; past lines keep theirs. A refusal names the pool only to callers with `item:read` and the window times only to callers with `program:read`; re-deriving allocations under `item:write` is engine work (ADR 0059 addendum). The target type's `resourceKind` says Resources (Equipment) or Staffing (Person). An item that a demand targets, or that is allocated on a line that has not ended, cannot be archived (`CONFLICT`); neither can `BOOKABLE` be switched off on a type that demands use as a pool, nor a list value a demand's pool requires.
+
+### LineAllocation (`LineAllocation`)
+
+*MVP* · Which unit fills one slot of a demand on a line (ADR 0059). Not a line: never on customer documents.
+
+> **Ownership (ADR 0051):** owned `lineId`, `demandId`, `parentAllocationId`, `slot`, `unitId`; the holds of its unit are a projection in `Occupancy`.
+
+**Attributes**
+- line, demand
+- parent allocation (`parentAllocationId`): the allocation whose unit has the demand (a chained demand, e.g. the technician of a room's AV unit); null for a demand of the line's own item
+- slot (which of the demand's `quantity` units, from 0)
+- unit (`unitId`, an item of the demand's target; null while unfilled)
+- status (active / archived)
+
+**Relations**
+- `N:1` Line gets this
+- `N:1` ItemDemand is filled by this
+- `N:0..1` allocates → Item (the unit)
+- `1:N` holds → Occupancy (projection)
+
+> Core keeps a line's allocations in step whenever the line is added, changed or removed, and when a demand changes: one slot per `quantity` of each active demand of the line's item, then of each allocated unit (at most 3 levels), depth first. An empty slot of a timed line gets the prepick: the first free unit in pool order (no hard hold, buffer or block in the demand's windows; soft holds do not take a unit) whose own mandatory demands its pools can meet (the chained check: an AV unit needs a free technician). A mandatory demand is met only when a unit is allocated: with none, the change is `CONFLICT` naming the pool and windows (`lines.<id>.demands.<id>`); an optional one stays empty. A unit fills at most one active slot per line (a partial unique index). `lineAllocation.list|get` (feature `program`, only ids) and `lineAllocation.assign` (`program:write` plus `item:read`, ADR 0059 decision 17) choose another unit or empty an optional slot; a unit not of the target, already on the line, not free or whose own demands cannot be met is refused. The old unit's chained allocations go and the new unit's come.
 
 ### Sheet ★ (`Sheet`)
 
@@ -1151,6 +1205,8 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | ItemPart | Artikeldel |
 | ItemCustomisationGroup | Anpassningsgrupp |
 | ItemCustomisationOption | Tillval |
+| ItemDemand | Resursbehov |
+| LineAllocation | Allokering |
 | Customer | Kund |
 | Contact | Kontaktperson |
 | Ticket | Ärende |

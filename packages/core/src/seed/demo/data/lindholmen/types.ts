@@ -87,6 +87,14 @@ export const lindholmenTypes: readonly DemoType[] = [
     fields: [{ name: "Inventory number", kind: "TEXT" }],
   },
   {
+    // ADR 0059: staff are bookable items of a Person type, allocated to lines by demands.
+    base: "ITEM",
+    name: "Technician",
+    states: "bookable",
+    capabilities: ["BOOKABLE"],
+    ...{ resourceKind: "PERSON", pool: true },
+  },
+  {
     base: "ITEM",
     name: "Bundle",
     capabilities: ["PRICED", "BUNDLE", "CUSTOMISATIONS"],

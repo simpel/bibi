@@ -6,6 +6,7 @@ import { conflict, notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { groupHardHoldBlocker } from "../alternative-group/hard-hold";
 import { mergeFields, validateFields } from "../field-definition/field-values";
+import { syncAllocations } from "../line-allocation/sync-allocations";
 import { moveWithState } from "./item-state-move";
 import { checkBundleItem, moveParts } from "./line-parts";
 import { checkLinePeriod, checkPlace } from "./line-rules";
@@ -80,5 +81,6 @@ export async function updateLineRow({
   const line = toLineRecord({ row });
   context.recordChange({ entityId: id, before, after: line });
   await moveParts({ context, before, after });
-  return ok({ value: line });
+  const allocated = await syncAllocations({ context, lineId: id });
+  return allocated.ok ? ok({ value: line }) : allocated;
 }

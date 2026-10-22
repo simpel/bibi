@@ -46,6 +46,12 @@ model Item {
   customisationGroups    ItemCustomisationGroup[]
   /// The customisation groups this item is an option in.
   optionIn               ItemCustomisationOption[]
+  /// What the item asks of pools (ADR 0059).
+  demands                ItemDemand[]              @relation("ItemDemandOf")
+  /// The demands that target this item specifically.
+  demandedBy             ItemDemand[]              @relation("ItemDemandTarget")
+  /// The line slots this item fills as a unit (ADR 0059).
+  allocations            LineAllocation[]          @relation("LineAllocationUnit")
   /// BOOKABLE: the periods the item is held (ADR 0022).
   occupancies            Occupancy[]
   /// BOOKABLE: the lines held in this item.

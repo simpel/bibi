@@ -21,6 +21,8 @@ export const LINDHOLMEN_LINE_STATES = [
   ["Product launch", "Prebooked", false],
   ["Projector hire", "Booked", false],
   ["Small meeting room", "Booked", false],
+  // L4's sound system, with a technician allocated for its setup and teardown (ADR 0059).
+  ["Sound for the conference", "Booked", false],
   ["Strategy meeting", "Prebooked", false],
   ["Team day", "Released", false],
   ["Vrångö", "Prebooked", false],

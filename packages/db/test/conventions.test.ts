@@ -5,8 +5,8 @@ import {
   COLUMN_EXCEPTIONS,
   CONVENTION_COLUMNS,
   CREATED_BY_MODELS,
-  HARD_DELETE_MODELS,
 } from "../src/scoped/conventions";
+import { HARD_DELETE_MODELS } from "../src/scoped/hard-delete-models";
 import { ORG_SCOPED_MODELS, SOFT_DELETE_MODELS, UNSCOPED_MODELS } from "../src/scoped/models";
 import { fieldOf, readSchemaModels } from "./read-schema";
 

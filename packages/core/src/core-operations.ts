@@ -14,8 +14,10 @@ import { fileOperations } from "./features/file/operations";
 import { inboundEmailOperations } from "./features/inbound-email/operations";
 import { invoiceOperations } from "./features/invoice/operations";
 import { itemOperations } from "./features/item/operations";
+import { itemDemandOperations } from "./features/item-demand/operations";
 import { itemStateOperations } from "./features/item-state/operations";
 import { lineOperations } from "./features/line/operations";
+import { lineAllocationOperations } from "./features/line-allocation/operations";
 import { memberOperations } from "./features/member/operations";
 import { messageOperations } from "./features/message/operations";
 import { oauthGrantOperations } from "./features/oauth-grant/operations";
@@ -53,7 +55,13 @@ const pipelineGroupOperations = [
   ...pipelineSetupOperations,
   ...changeSetOperations,
 ];
-const lineGroupOperations = [...lineOperations, ...alternativeGroupOperations];
+/** Items and what they ask of pools (ADR 0059). */
+const itemGroupOperations = [...itemOperations, ...itemDemandOperations];
+const lineGroupOperations = [
+  ...lineOperations,
+  ...lineAllocationOperations,
+  ...alternativeGroupOperations,
+];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
 const moneyOperations = [
@@ -78,7 +86,7 @@ function staticOperations(): AnyOperation[] {
     ...responsibilityOperations,
     ...sheetDefinitionOperations,
     ...configurationOperations,
-    ...itemOperations,
+    ...itemGroupOperations,
     ...customerOperations,
     ...contactOperations,
     ...priceListOperations,

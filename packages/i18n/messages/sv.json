@@ -857,7 +857,12 @@
     "fields": {
       "base": "Gäller",
       "name": "Namn",
-      "sections": "Avsnitt"
+      "sections": "Avsnitt",
+      "resourceKind": "Utrustning eller person"
+    },
+    "resourceKinds": {
+      "EQUIPMENT": "Utrustning",
+      "PERSON": "Person"
     },
     "columns": {
       "name": "Namn",
@@ -1451,6 +1456,12 @@
         "itemTypes": "Artikeltyper",
         "phases": "Faser",
         "cells": "Rutor i rutnätet",
+        "itemId": "Artikel",
+        "targetItemId": "Specifik artikel",
+        "tagValueIds": "Krävda listvärden",
+        "windows": "Tidsfönster",
+        "unitId": "Enhet",
+        "resourceKind": "Utrustning eller person",
         "amountMinor": "Belopp (öre)",
         "dueDate": "Förfallodag",
         "method": "Betalsätt",
@@ -1530,6 +1541,10 @@
         "line_changeState": "Byt läge på rad",
         "line_expandBundle": "Lägg till paket med delar",
         "line_chooseOptions": "Välj tillval för rad",
+        "itemDemand_create": "Lägg till resursbehov på artikel",
+        "itemDemand_update": "Ändra resursbehov",
+        "itemDemand_archive": "Ta bort resursbehov",
+        "lineAllocation_assign": "Välj enhet för rad",
         "line_followPhase": "Låt raden följa fasen",
         "alternativeGroup_create": "Skapa alternativ",
         "alternativeGroup_update": "Ändra alternativ",

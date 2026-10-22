@@ -14,9 +14,10 @@ enum OccupancyType {
 /// and no longer block. Two kinds of rows (ADR 0053): manual blocks (`MAINTENANCE`, `INTERNAL`,
 /// no `lineId`) are owned data written by `occupancy.*`; line holds (`HOLD` and its `SETUP` and
 /// `TEARDOWN` buffers, with `lineId`) are a projection written ONLY by database triggers
-/// (`packages/db/sql/sync_line_occupancy.sql`), never by application code.
+/// (`packages/db/sql/sync_line_occupancy.sql`), never by application code; so are the holds of a
+/// line's allocated units (same types, with `lineId` and `allocationId`, ADR 0059).
 model Occupancy {
-  id             String        @id @default(cuid(2))
+  id             String          @id @default(cuid(2))
   organizationId String
   itemId         String
   type           OccupancyType
@@ -27,17 +28,23 @@ model Occupancy {
   endsAt         DateTime
   /// The line whose hold this is; null for a manual block. Written only by the trigger.
   lineId         String?
+  /// Set on the holds of an allocated unit (ADR 0059): the allocation they come from, on its
+  /// line (`lineId`). Written only by the trigger.
+  allocationId   String?
   note           String?
-  status         RecordStatus  @default(ACTIVE)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  status         RecordStatus    @default(ACTIVE)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   createdBy      String?
-  item           Item          @relation(fields: [itemId, organizationId], references: [id, organizationId])
-  line           Line?         @relation(fields: [lineId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  item           Item            @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  line           Line?           @relation(fields: [lineId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  allocation     LineAllocation? @relation(fields: [allocationId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([id, organizationId])
   /// One row per line, held item and window (ADR 0059); the trigger upserts on it. The item is in
-  /// the key so a line can later also hold other items (resource allocations).
+  /// the key so a line also holds the units allocated to it (a unit fills at most one slot per
+  /// line, so `allocationId` follows from the key).
   @@unique([lineId, itemId, type])
+  @@index([organizationId, allocationId])
   @@index([organizationId, itemId, startsAt])
 }

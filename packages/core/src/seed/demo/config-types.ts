@@ -1,4 +1,8 @@
-import type { EntityBase, ItemCapability } from "../../features/entity-type/capability-kinds";
+import type {
+  EntityBase,
+  ItemCapability,
+  ResourceKind,
+} from "../../features/entity-type/capability-kinds";
 import type { FieldKind } from "../../features/field-definition/field-kinds";
 import type { PRICE_EFFECTS } from "../../features/item/customisation-group-schema";
 import type { PRICE_UNITS } from "../../features/item/schema";
@@ -27,6 +31,19 @@ export type DemoType = {
   teardownMinutes?: number;
   /** Item types: the items of the type are interchangeable units of one pool (ADR 0059). */
   pool?: boolean;
+  /** Item types: EQUIPMENT (default) or PERSON (ADR 0059). */
+  resourceKind?: ResourceKind;
+};
+
+/**
+ * What a demo item asks of a pool (ADR 0059): `quantity` (default 1) units of the item type
+ * named `pool`, held for `windows` of every line booking the item; mandatory unless `optional`.
+ */
+export type DemoDemand = {
+  pool: string;
+  windows: readonly ("SETUP" | "BOOKING" | "TEARDOWN")[];
+  quantity?: number;
+  optional?: boolean;
 };
 
 /** A part of a BUNDLE demo item, by the name of an item seeded before it. */
@@ -77,6 +94,8 @@ export type DemoItem = {
   /** Overrides of the type's setup and teardown minutes (ADR 0059). */
   setupMinutes?: number;
   teardownMinutes?: number;
+  /** What the item asks of pools (ADR 0059), seeded with `itemDemand.create` after the item. */
+  demands?: readonly DemoDemand[];
 };
 
 /** Slice 2 of ADR 0025: what the organization configures (`docs/demo-seed.md`). */

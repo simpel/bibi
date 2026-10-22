@@ -6,3 +6,15 @@ export const ASSIGNMENT_NAMES = [
   "assignment.listMine",
   "assignment.unfollow",
 ];
+
+/** Demand and allocation operations (ADR 0059), kept apart so `operation-names.ts` fits its file. */
+export const ALLOCATION_NAMES = [
+  "itemDemand.archive",
+  "itemDemand.create",
+  "itemDemand.get",
+  "itemDemand.list",
+  "itemDemand.update",
+  "lineAllocation.assign",
+  "lineAllocation.get",
+  "lineAllocation.list",
+];

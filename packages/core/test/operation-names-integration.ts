@@ -1,3 +1,4 @@
+import { ALLOCATION_NAMES } from "./operation-names-assignment";
 import { MONEY_NAMES, SALES_NAMES } from "./operation-names-sales";
 
 /** API key, OAuth grant and permission operations (ADR 0005, 0050), kept apart so `operation-names.ts` fits. */
@@ -41,6 +42,7 @@ const CHANGE_NAMES = ["auditLog.get", "auditLog.list", "changeSet.apply"];
 /** Every name kept outside `operation-names.ts`. */
 export const EXTRA_NAMES = [
   ...SALES_NAMES,
+  ...ALLOCATION_NAMES,
   ...MONEY_NAMES,
   ...INTEGRATION_NAMES,
   ...SELF_NAMES,

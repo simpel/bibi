@@ -3,6 +3,7 @@ import {
   type EntityBase,
   EntityTypeCreateInputSchema,
   type ItemCapability,
+  type ResourceKind,
 } from "@bibi/core/schemas";
 import type { z } from "zod";
 import {
@@ -12,11 +13,13 @@ import {
 } from "@/components/form/buffer-values";
 import { formSchema } from "@/lib/form-schema";
 
-/** Raw values of the type form. Capabilities and buffer minutes only apply to ITEM types. */
+/** Raw values of the type form. Capabilities, buffers and resource kind only apply to ITEM types. */
 export type EntityTypeFormValues = BufferFormValues & {
   base: EntityBase;
   name: string;
   capabilities: ItemCapability[];
+  /** Item types: Equipment or Person (ADR 0059). */
+  resourceKind: ResourceKind;
 };
 
 /** What the resolver outputs: core's create input. */
@@ -31,6 +34,7 @@ export function entityTypeFormToInput({ values }: EntityTypeFormInput) {
     base: values.base,
     name: values.name.trim(),
     capabilities: item ? values.capabilities : undefined,
+    resourceKind: item ? values.resourceKind : undefined,
     ...(item ? bufferFormToInput({ values }) : {}),
   };
 }
@@ -49,6 +53,7 @@ export function entityTypeFormDefaults({
     base: entityType?.base ?? "ITEM",
     name: entityType?.name ?? "",
     capabilities: entityType?.capabilities ?? [],
+    resourceKind: entityType?.resourceKind ?? "EQUIPMENT",
     ...bufferFormDefaults({ stored: entityType }),
   };
 }

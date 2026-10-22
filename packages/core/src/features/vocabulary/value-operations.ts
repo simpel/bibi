@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { usageConflict } from "../../records/blocking-issues";
 import { conflict, notFound } from "../../shared/errors";
+import { inUseConflict } from "../../shared/in-use";
 import { loadVocabulary } from "./load-vocabulary";
 import {
   VocabularyAddValueInputSchema,
@@ -63,7 +64,8 @@ export const archiveVocabularyValue = defineOperation({
   name: "vocabulary.archiveValue",
   kind: "command",
   description:
-    "Archive a list value. Refused while a record still carries it or a requirement counts it.",
+    "Archive a list value. Refused while a record still carries it, a requirement counts it " +
+    "or a demand's pool requires it.",
   input: VocabularyArchiveValueInputSchema,
   output: VocabularySchema,
   permission: "configuration:delete",
@@ -75,6 +77,11 @@ export const archiveVocabularyValue = defineOperation({
     const usage = await recordsUsingValue({ context, vocabularyId, valueId: id });
     const message = `${usage.total} records carry "${before.name}"`;
     if (usage.total > 0) return usageConflict({ context, usage, message });
+    const demands = await context.db.itemDemandTag.count({
+      where: { valueId: id, demand: { status: "ACTIVE" } },
+    });
+    const tagged = `${demands} demands require "${before.name}"`;
+    if (demands > 0) return inUseConflict({ context, feature: "item", message: tagged });
     const row = await context.db.vocabularyValue.update({
       where: { id },
       data: { status: "ARCHIVED" },

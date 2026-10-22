@@ -30,6 +30,7 @@ const type = ({ ...over }: Partial<EntityTypeDto>): EntityTypeDto => ({
   expiryStateId: null,
   setupMinutes: null,
   teardownMinutes: null,
+  resourceKind: "EQUIPMENT",
   fields: [],
   status: "ACTIVE",
   createdAt: now,

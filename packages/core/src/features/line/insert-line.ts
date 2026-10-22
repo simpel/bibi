@@ -5,6 +5,7 @@ import { toJson } from "../../shared/to-json";
 import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { validateFields } from "../field-definition/field-values";
 import type { PriceEffect } from "../item/customisation-group-schema";
+import { syncAllocations } from "../line-allocation/sync-allocations";
 import { checkLinePeriod, checkPlace, checkTicket } from "./line-rules";
 import { initialStateOf } from "./line-state";
 import type { LineCreateInput, LineRecord } from "./schema";
@@ -16,6 +17,25 @@ export type InsertLineInput = {
   /** Set only by `line.expandBundle` (a part line) and `line.chooseOptions` (ADR 0059). */
   input: LineCreateInput & { parentLineId?: string; priceEffect?: PriceEffect };
 };
+
+type AfterInsertInput = {
+  context: OperationContext;
+  row: Parameters<typeof toLineRecord>[0]["row"];
+  stateId: string | null;
+};
+
+/**
+ * The first state history row (ADR 0054) and the item's demand slots, filled with the prepick
+ * (ADR 0059); holds follow by trigger, an overlap is CONFLICT (ADR 0053).
+ */
+async function afterInsert({ context, row, stateId }: AfterInsertInput) {
+  await recordFirstState({ context, lineId: row.id, stateId });
+  const allocated = await syncAllocations({ context, lineId: row.id });
+  if (!allocated.ok) return allocated;
+  const line = (await loadLine({ context, id: row.id })) ?? toLineRecord({ row });
+  context.recordChange({ entityId: row.id, after: line });
+  return ok({ value: line });
+}
 
 /**
  * Creates a line in the state the phase grid gives it for the ticket's phase (else its
@@ -56,9 +76,5 @@ export async function insertLine({
         include: LINE_INCLUDE,
       }),
   });
-  // First state history row (ADR 0054); holds follow by trigger, an overlap is CONFLICT (0053).
-  await recordFirstState({ context, lineId: row.id, stateId });
-  const line = (await loadLine({ context, id: row.id })) ?? toLineRecord({ row });
-  context.recordChange({ entityId: row.id, after: line });
-  return ok({ value: line });
+  return afterInsert({ context, row, stateId });
 }

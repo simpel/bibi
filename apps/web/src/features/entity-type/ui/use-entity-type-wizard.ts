@@ -18,7 +18,7 @@ export type EntityTypeStep = "base" | "capabilities";
 
 const STEP_FIELDS = {
   base: ["base", "name"],
-  capabilities: ["capabilities", "setupMinutes", "teardownMinutes"],
+  capabilities: ["resourceKind", "capabilities", "setupMinutes", "teardownMinutes"],
 } as const;
 
 /** Form and steps of the create-type wizard; only item types have the capabilities step. */

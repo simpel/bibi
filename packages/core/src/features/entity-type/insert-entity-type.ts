@@ -3,7 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
 import { insertItemState } from "../item-state/insert-item-state";
 import { checkCapabilities } from "./capabilities";
-import type { EntityBase, ItemCapability } from "./capability-kinds";
+import type { EntityBase, ItemCapability, ResourceKind } from "./capability-kinds";
 import { toEntityTypeDto } from "./load-entity-type";
 import type { EntityTypeDto } from "./schema";
 import { checkTypeBuffers } from "./type-buffers";
@@ -16,6 +16,8 @@ export type InsertEntityTypeInput = {
   /** Item types: default buffers (ADR 0059); null = none. */
   setupMinutes?: number | null;
   teardownMinutes?: number | null;
+  /** Item types: EQUIPMENT (default) or PERSON (ADR 0059). */
+  resourceKind?: ResourceKind;
 };
 
 type DefaultStateInput = { context: OperationContext; type: EntityTypeDto };
@@ -42,11 +44,12 @@ export async function insertEntityType({
   base,
   name,
   capabilities = [],
+  resourceKind,
   ...buffers
 }: InsertEntityTypeInput): Promise<Result<EntityTypeDto>> {
   const valid = checkCapabilities({ base, capabilities });
   if (!valid.ok) return valid;
-  const buffered = checkTypeBuffers({ base, ...buffers });
+  const buffered = checkTypeBuffers({ base, resourceKind, ...buffers });
   if (!buffered.ok) return buffered;
   if (await context.db.entityType.findFirst({ where: { base, name } })) {
     return conflict({ message: `A type named "${name}" exists` });
@@ -54,6 +57,7 @@ export async function insertEntityType({
   const row = await context.db.entityType.create({
     data: {
       ...{ base, name, capabilities: [...capabilities], ...buffers },
+      resourceKind: base === "ITEM" ? (resourceKind ?? "EQUIPMENT") : null,
       organizationId: context.organizationId,
     },
   });

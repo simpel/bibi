@@ -1,6 +1,7 @@
 import { deliverInboundEmail, ticketInboundAddress } from "@bibi/core";
 import type { Json } from "./helpers";
 import { byId, type ParityEntity, tool } from "./parity-entities";
+import { allocationEntities } from "./parity-entities-allocation";
 import { assignment } from "./parity-entities-assignment";
 import { requirement } from "./parity-entities-requirement";
 
@@ -139,5 +140,5 @@ const inboundEmail = (): ParityEntity => ({
 /** Tickets and what hangs off them; a function so the parity-entities import cycle resolves. */
 export function ticketEntities(): ParityEntity[] {
   const sales = [inboundEmail(), assignment()];
-  return [ticket(), ticketTemplate(), line(), requirement(), ...sales];
+  return [ticket(), ticketTemplate(), line(), ...allocationEntities(), requirement(), ...sales];
 }

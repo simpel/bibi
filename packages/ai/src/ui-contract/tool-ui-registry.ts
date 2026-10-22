@@ -1,4 +1,5 @@
 import { ACCESS_UI_ENTRIES } from "./access-entries";
+import { ALLOCATION_GENERIC_UI_TOOLS } from "./allocation-generic-tools";
 import { ALTERNATIVE_GROUP_UI_ENTRIES } from "./alternative-group-entries";
 import { ASSIGNMENT_UI_ENTRIES } from "./assignment-entries";
 import { CONFIGURATION_UI_ENTRIES } from "./configuration-entries";
@@ -140,4 +141,5 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   apiKey_get: "credentials are managed on /settings/integrations, not in chat",
   apiKey_update: "credentials are managed on /settings/integrations, not in chat",
   ...SELF_GENERIC_UI_TOOLS,
+  ...ALLOCATION_GENERIC_UI_TOOLS,
 };
