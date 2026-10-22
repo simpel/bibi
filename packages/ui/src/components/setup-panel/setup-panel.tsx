@@ -36,7 +36,10 @@ function EmptyState({ text }: { text: string }) {
 function SellSection({ itemTypes, label }: { itemTypes: string[]; label: string }) {
   return (
     <section aria-labelledby="setup-sell" className="flex flex-col gap-3">
-      <h2 id="setup-sell" className="font-serif text-xl">
+      <h2
+        id="setup-sell"
+        className="font-serif text-2xl font-normal tracking-tight text-black dark:text-white"
+      >
         {label}
       </h2>
       <ul className="grid gap-3 sm:grid-cols-2">
@@ -60,7 +63,10 @@ function PathSection({ phases, label }: { phases: PathPhase[]; label: string }) 
   const readOnly = useSetupSelection() === null;
   return (
     <section aria-labelledby="setup-path" className="flex flex-col gap-3">
-      <h2 id="setup-path" className="font-serif text-xl">
+      <h2
+        id="setup-path"
+        className="font-serif text-2xl font-normal tracking-tight text-black dark:text-white"
+      >
         {label}
       </h2>
       <PhasePath phases={phases} label={label} />

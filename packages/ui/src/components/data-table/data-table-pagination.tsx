@@ -21,7 +21,9 @@ export function DataTablePagination(props: DataTablePaginationProps) {
       data-slot="data-table-pagination"
       className={cn("flex flex-wrap items-center justify-between gap-4 px-2 py-3", props.className)}
     >
-      <span className="text-sm text-muted-foreground">{labels.total(props.totalCount)}</span>
+      <span className="font-sans text-sm tabular-nums text-muted-foreground">
+        {labels.total(props.totalCount)}
+      </span>
       <div className="flex flex-wrap items-center gap-4">
         <DataTablePageSize
           pageSize={pageSize}
@@ -29,7 +31,9 @@ export function DataTablePagination(props: DataTablePaginationProps) {
           label={labels.rowsPerPage}
           onChange={(next) => onPaginationChange({ pageIndex: 0, pageSize: next })}
         />
-        <span className="text-sm">{labels.pageOf(pageIndex + 1, Math.max(pageCount, 1))}</span>
+        <span className="font-sans text-sm tabular-nums">
+          {labels.pageOf(pageIndex + 1, Math.max(pageCount, 1))}
+        </span>
         <DataTableNav
           pageIndex={pageIndex}
           pageCount={pageCount}

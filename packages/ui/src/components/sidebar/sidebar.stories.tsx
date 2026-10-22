@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { HomeIcon, SettingsIcon } from "lucide-react";
+import { Wordmark } from "../wordmark/wordmark";
 import { Sidebar, SidebarInset, SidebarTrigger } from "./sidebar";
 import { SidebarProvider } from "./sidebar-context";
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel } from "./sidebar-group";
@@ -20,7 +21,9 @@ export const Default: Story = {
   render: () => (
     <SidebarProvider className="min-h-96">
       <Sidebar collapsible="icon">
-        <SidebarHeader>Okazi</SidebarHeader>
+        <SidebarHeader className="px-3 py-2">
+          <Wordmark size="sm" name="Okazi" />
+        </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>Menu</SidebarGroupLabel>

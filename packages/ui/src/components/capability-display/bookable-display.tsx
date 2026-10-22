@@ -6,12 +6,34 @@ export type BookableDisplayProps = Omit<CapabilityDisplayProps, "capability" | "
 };
 
 /** BOOKABLE capability: the default booking length. */
-export function BookableDisplay({ duration, ...rest }: BookableDisplayProps) {
+export function BookableDisplay({
+  duration,
+  variant,
+  density,
+  className,
+  ...rest
+}: BookableDisplayProps) {
+  if (!duration) return null;
+  const isPlain = variant === "plain";
   return (
     <CapabilityDisplay
       capability="BOOKABLE"
-      rows={duration ? [{ value: duration }] : []}
+      variant={variant}
+      density={density}
+      className={className}
       {...rest}
-    />
+    >
+      <div className="flex items-baseline gap-1.5">
+        <span
+          className={
+            isPlain
+              ? "font-sans text-base font-medium tracking-tight text-foreground tabular-nums"
+              : "font-sans text-2xl font-medium tracking-tight text-foreground tabular-nums sm:text-3xl"
+          }
+        >
+          {duration}
+        </span>
+      </div>
+    </CapabilityDisplay>
   );
 }

@@ -12,17 +12,17 @@ export const Default: Story = {
       <TableHeader>
         <TableRow>
           <TableHead>Rooms</TableHead>
-          <TableHead>Seats</TableHead>
+          <TableHead className="text-right">Seats</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         <TableRow>
           <TableCell>Great hall</TableCell>
-          <TableCell>120</TableCell>
+          <TableCell className="text-right font-sans tabular-nums">120</TableCell>
         </TableRow>
         <TableRow>
           <TableCell>The library</TableCell>
-          <TableCell>16</TableCell>
+          <TableCell className="text-right font-sans tabular-nums">16</TableCell>
         </TableRow>
       </TableBody>
     </Table>

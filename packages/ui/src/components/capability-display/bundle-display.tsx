@@ -7,6 +7,7 @@ export type BundleDisplayProps = Omit<CapabilityDisplayProps, "capability" | "ro
 
 /** BUNDLE capability: the parts an item contains. */
 export function BundleDisplay({ parts, ...rest }: BundleDisplayProps) {
+  if (parts.length === 0) return null;
   return (
     <CapabilityDisplay capability="BUNDLE" rows={parts.map((value) => ({ value }))} {...rest} />
   );

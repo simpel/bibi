@@ -47,7 +47,13 @@ export function PopoverHeader({ className, ...props }: ComponentProps<"div">) {
 }
 
 export function PopoverTitle({ className, ...props }: ComponentProps<"div">) {
-  return <div data-slot="popover-title" className={cn("font-medium", className)} {...props} />;
+  return (
+    <div
+      data-slot="popover-title"
+      className={cn("font-medium text-foreground", className)}
+      {...props}
+    />
+  );
 }
 
 export function PopoverDescription({ className, ...props }: ComponentProps<"p">) {

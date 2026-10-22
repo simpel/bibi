@@ -1,81 +1,53 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Wordmark } from "../components/wordmark/wordmark";
+import { PageHeader } from "./foundations/page-header";
+import { SectionHeading } from "./foundations/section-heading";
+import { BookingCompositionCard } from "./foundations/tokens-booking-card";
+import {
+  CorePaletteSection,
+  GeometrySection,
+  TypographyPurposeSection,
+} from "./foundations/tokens-sections";
 
-const COLOR_TOKENS = [
-  "background",
-  "foreground",
-  "card",
-  "popover",
-  "primary",
-  "primary-foreground",
-  "secondary",
-  "muted",
-  "muted-foreground",
-  "accent",
-  "destructive",
-  "success",
-  "warning",
-  "border",
-  "input",
-  "ring",
-] as const;
-
-const RADIUS_TOKENS = ["sm", "md", "lg", "xl"] as const;
-const SHADOW_TOKENS = ["xs", "sm", "md", "lg"] as const;
-const FONT_TOKENS = ["sans", "serif", "mono"] as const;
-
-function Swatch({ name }: { name: string }) {
+function OverviewTitle() {
   return (
     <div className="flex items-center gap-3">
-      <div className="size-10 rounded-md border" style={{ background: `var(--${name})` }} />
-      <code className="text-xs">--{name}</code>
+      <Wordmark size="lg" name="Okazi" />
+      <span className="font-serif text-3xl font-light tracking-tight text-black dark:text-white">
+        Design System
+      </span>
     </div>
   );
 }
 
-function TokensPage() {
+function OverviewPage() {
   return (
-    <div className="grid w-[48rem] max-w-full gap-8 p-4">
-      <section className="grid grid-cols-2 gap-3">
-        {COLOR_TOKENS.map((name) => (
-          <Swatch key={name} name={name} />
-        ))}
+    <div className="flex w-[64rem] max-w-full flex-col gap-10 p-6 font-sans">
+      <PageHeader
+        title={<OverviewTitle />}
+        description="The Nordic Manor & Heritage visual foundation. Built on luminous alabaster surfaces, deep Nordic Spruce brand accents, Fraunces serif headings and grand totals, and Inter interface copy with OpenType tabular figures."
+      />
+
+      <section className="flex flex-col gap-4">
+        <SectionHeading
+          title="Harmonized Composition (Editorial Estate)"
+          description="A realistic conference booking card showing typography, color, spacing, and elevation working in unison without decorative clutter."
+        />
+        <BookingCompositionCard />
       </section>
-      <section className="flex gap-4">
-        {RADIUS_TOKENS.map((name) => (
-          <div
-            key={name}
-            className="flex size-16 items-center justify-center border bg-muted text-xs"
-            style={{ borderRadius: `var(--radius-${name})` }}
-          >
-            {name}
-          </div>
-        ))}
-      </section>
-      <section className="flex gap-4">
-        {SHADOW_TOKENS.map((name) => (
-          <div
-            key={name}
-            className="flex size-16 items-center justify-center rounded-lg bg-card text-xs"
-            style={{ boxShadow: `var(--shadow-${name})` }}
-          >
-            {name}
-          </div>
-        ))}
-      </section>
-      <section className="grid gap-2">
-        {FONT_TOKENS.map((name) => (
-          <p key={name} className="text-lg" style={{ fontFamily: `var(--font-${name})` }}>
-            --font-{name}: Venues and rooms
-          </p>
-        ))}
-      </section>
+
+      <CorePaletteSection />
+      <TypographyPurposeSection />
+      <GeometrySection />
     </div>
   );
 }
 
-const meta = { title: "Foundations/Tokens", component: TokensPage } satisfies Meta<
-  typeof TokensPage
->;
+const meta = {
+  title: "Foundations/Overview",
+  component: OverviewPage,
+  parameters: { layout: "padded" },
+} satisfies Meta<typeof OverviewPage>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

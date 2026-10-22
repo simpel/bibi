@@ -13,7 +13,7 @@ export function KanbanColumnHeader({ column, count }: KanbanColumnHeaderProps) {
         />
       ) : null}
       <span className="truncate">{column.title}</span>
-      <span className="ml-auto text-xs text-muted-foreground">{count}</span>
+      <span className="ml-auto font-sans text-xs tabular-nums text-muted-foreground">{count}</span>
     </header>
   );
 }

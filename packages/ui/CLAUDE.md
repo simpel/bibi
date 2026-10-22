@@ -19,7 +19,7 @@ Source export (no build step): add `@okazi/ui` to `transpilePackages` (Next) and
 
 ## Replacing tokens (Claude Design export)
 1. Replace the values in `:root` and `.dark` in `tokens.css` (same variable names: `--background`, `--primary`, ...).
-2. Change `--font-sans`/`--font-serif`/`--font-mono`, `--radius`, `--shadow-*` in `@theme` if needed.
+2. Change `--font-sans`/`--font-serif` (and purpose aliases), `--radius`, `--shadow-*` in `@theme` if needed.
 3. Load web fonts in the app (e.g. `next/font`) – not in the package.
 4. New semantic token: add both the `:root`/`.dark` value AND the `--color-*` mapping in `@theme inline`.
 5. Run `pnpm --filter @okazi/ui build-storybook` and review Foundations/Tokens in light and dark mode.
