@@ -14,7 +14,7 @@ One ticket, one commit, pushed to `main`. No branch, no pull request. You are th
 
 ## 2. Understand before you build
 - Read the issue (`gh issue view <N> -R simpel/bibi`): "To do", "Seed data", "Done when", "Depends on". Read the ADR and the `docs/specs/` file it names, and the `CLAUDE.md` of every package you will touch.
-- If the ticket needs a human decision (an open question, a Proposed ADR, unclear scope) or an open blocker, stop and ask. Never guess a rule.
+- If the ticket needs a human decision (an open question, a Proposed ADR, unclear scope) or has an open blocker, stop: comment the reason on the issue, set the card back (`--status Backlog` for a decision, `--status Todo` for a blocker, and add the blocker under `### Depends on`), and tell the user. Never guess a rule. When picking the next ticket yourself, move on to the next one instead of stopping.
 - Reuse first: search for an existing helper, schema or pattern before writing one. Extract shared code at the second duplicate.
 
 ## 3. Alone or with subagents
@@ -59,5 +59,8 @@ Decide from the ticket before you build. The test is how many independent pieces
 - `git push origin main`, then `node tools/backlog/ticket.mjs set <N> --status Done`.
 - Check CI on main: `gh run list -R simpel/bibi --branch main -L 1`. If it goes red, fixing it comes before the next ticket.
 
-## 8. Report
+## 8. Ticket state
+The card always says what is true: `In progress` only while you work on it, `Done` once it is on `main`, back in `Todo` or `Backlog` with a comment when you stop. Tickets you create go to `Backlog` (`new-ticket`). Never leave a card in `In progress` when you end your turn.
+
+## 9. Report
 In a few lines, tell the user: the commit, what changed, what was verified, which subagents you used for what, and any tickets you created.
