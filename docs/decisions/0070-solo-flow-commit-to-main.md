@@ -15,7 +15,7 @@
 ## Decision
 1. **Two skills.**
    - `new-ticket` creates a ticket.
-   - `implement-ticket` builds one ticket in the main checkout, runs the CI checks locally (`node tools/ci/verify.mjs`), makes one commit `<type>: <summary>` with `Closes #N` and pushes it to `main`.
+   - `implement-ticket` builds one ticket in its own worktree (`pnpm wt:new ticket-<N>`, own `.env`, database and ports), runs the CI checks locally (`node tools/ci/verify.mjs`), makes one commit `<type>: <summary>` with `Closes #N` and pushes it to `main`.
    - The rules the other skills held (operations, migrations, tenancy, seed) are kept in short form in `implement-ticket` and in the package `CLAUDE.md` files.
 2. **No pull requests for ticket work.**
    - `main` has no branch protection. The local checks are the gate, and CI still runs on every push to `main`.
@@ -29,7 +29,7 @@
 
 ## Consequences
 - A bad commit reaches `main` before CI has seen it. The local checks are the same as CI's, so this happens only when a test is flaky or depends on the environment.
-- One ticket at a time, in the main checkout. No parallel agents.
+- Each run has its own worktree and environment, so runs never share a database or ports and the main checkout stays free for the user. Runs meet only at the push: the rebase onto `origin/main` and a rerun of the checks.
 - Commits on `main` are one per ticket, so release-please keeps one changelog entry per ticket.
 
 ## Rejected

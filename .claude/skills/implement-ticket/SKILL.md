@@ -5,11 +5,15 @@ description: Implement one ticket from the bibi board (project 8) and commit it 
 
 # Implement a ticket
 
-One ticket, one commit, pushed to `main`. No branch, no pull request. You are the only gate before main, so run the checks.
+One ticket, one commit, pushed to `main`. No pull request. You are the only gate before main, so run the checks.
+
+Every run works in its own worktree with its own environment: a fresh `.env`, database (`bibi_ticket_<N>`, test database `bibi_ticket_<N>_test`) and port block. Never build in the main checkout; it may hold the user's own work.
 
 ## 1. Pick and start
 - The user names `#N`, or take the next one: `node tools/backlog/select.mjs` lists open `Todo` tickets with `openBlockers`. Take the first with no open blockers, by Priority (P0 first), then smaller Size, then lower number.
-- `git switch main && git pull --ff-only origin main`. The tree must be clean; if it is not, stop and ask.
+- From the main checkout: `git fetch origin main && pnpm wt:new ticket-<N> --base origin/main`. It creates `../bibi-worktrees/ticket-<N>` on branch `wt/ticket-<N>`, then installs, migrates and provisions its environment (`tools/worktree/`). Docker must be running.
+- If `ticket-<N>` already exists (`pnpm wt:list`), another run owns it or left it behind: stop and ask. Never reuse or remove it yourself.
+- From here on, run every command inside the worktree (`cd ../bibi-worktrees/ticket-<N>`), and give every subagent that path as its only place to work.
 - `node tools/backlog/ticket.mjs set <N> --status "In progress"`.
 
 ## 2. Understand before you build
@@ -22,7 +26,7 @@ Decide from the ticket before you build. The test is how many independent pieces
 - **Do it alone** when it is XS or S, touches one package, or each step needs the previous one's result (a migration, then the operation that uses it). This is the default: a subagent knows only its brief, and you pay for every handoff.
 - **Use subagents** when it is L or XL, or spans packages that can be built at the same time once the core is in place (GraphQL, REST, MCP, web, i18n, seed). Build the shared core yourself first (schema, migration, core operation), then start one subagent per independent package, all in one message so they run in parallel.
 - **Pick the model per piece** (root `CLAUDE.md`, "Working with subagents"): Sonnet by default; Opus for auth, tenancy scoping, `packages/core` operations, MCP auth and the approval flow; Haiku for mechanical work (i18n strings, boilerplate, doc sync).
-- **Brief each one fully:** the ticket number and the part it owns, the files and package `CLAUDE.md` to read, the core API you built, and what done looks like. A subagent edits only its own package, never commits or pushes, and reports the files it changed and anything left open.
+- **Brief each one fully:** the worktree path it works in, the ticket number and the part it owns, the files and package `CLAUDE.md` to read, the core API you built, and what done looks like. A subagent edits only its own package, never commits or pushes, and reports the files it changed and anything left open.
 - **For a second opinion** on a change in core, db, auth or MCP, start one Opus subagent with the diff and the tenancy rules in section 5. Give it the diff, not your conclusions.
 - **You own the rest:** integration, the parity and isolation tests, `verify.mjs`, the commit and the push.
 
@@ -55,12 +59,13 @@ Decide from the ticket before you build. The test is how many independent pieces
 
 ## 7. Commit and push
 - One commit: `<type>: <summary>`. The type comes from Kind: Feature `feat`, Bugfix `fix`, Tech debt and Codemod `refactor`, Docs `docs`, Test `test` (ADR 0060). Drop a type the issue title already has. Body: what changed and why in a few lines, `Closes #<N>`, then the Co-Authored-By line.
-- `git pull --rebase origin main`. After a rebase that brought in changes, run `node tools/ci/verify.mjs` again.
-- `git push origin main`, then `node tools/backlog/ticket.mjs set <N> --status Done`.
+- `git fetch origin main && git rebase origin/main`. After a rebase that brought in changes, run `node tools/ci/verify.mjs` again.
+- `git push origin HEAD:main`, then `node tools/backlog/ticket.mjs set <N> --status Done`.
 - Check CI on main: `gh run list -R simpel/bibi --branch main -L 1`. If it goes red, fixing it comes before the next ticket.
+- Remove the worktree from the main checkout: `pnpm wt:rm ticket-<N> --delete-branch`. It drops both databases and frees the port block. When you stop without pushing (section 2), keep the worktree and tell the user its path.
 
 ## 8. Ticket state
 The card always says what is true: `In progress` only while you work on it, `Done` once it is on `main`, back in `Todo` or `Backlog` with a comment when you stop. Tickets you create go to `Backlog` (`new-ticket`). Never leave a card in `In progress` when you end your turn.
 
 ## 9. Report
-In a few lines, tell the user: the commit, what changed, what was verified, which subagents you used for what, and any tickets you created.
+In a few lines, tell the user: the commit, what changed, whether the worktree was removed, what was verified, which subagents you used for what, and any tickets you created.
