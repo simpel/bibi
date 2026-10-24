@@ -1,7 +1,7 @@
 # 0043 – The ticket: one record through organization-defined phases
 
 - **Date:** 2026-10-18
-- **Status:** Accepted
+- **Status:** Superseded by 0067
 - **Related:** 0021 (configurable domain), 0022 (quotes and occupancy), 0034 (assignments), 0041 (three primary views), 0044 (line states and the phase grid), 0054 (history)
 - **Spec:** `docs/specs/tickets-phases-and-states.md`
 
