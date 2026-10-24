@@ -1,8 +1,8 @@
-# 0066 – Recurring series
+# 0069 – Recurring series
 
 - **Date:** 2026-10-24
 - **Status:** Proposed
-- **Related:** 0042 (superseded by this ADR), 0043 (phases and states), 0044 (line states), 0051 (single source of truth), 0052 (the line is the booking), 0057 (money is derived), 0059 (capabilities, buffers), 0064 (time and time zones)
+- **Related:** 0042 (superseded by this ADR), 0043 (phases, replaced by ticket statuses in ADR 0067, #462), 0044 (line states), 0027 (job scheduler), 0051 (single source of truth), 0052 (the line is the booking), 0057 (money is derived), 0059 (capabilities, buffers), 0064 (time and time zones)
 - **Spec:** `docs/specs/series.md` (to write when accepted)
 
 ## Context
@@ -20,14 +20,14 @@
 ### Shape
 1. A **Series** is a new owned entity with a rule, an end and skipped dates. It stores no ticket data: items, headcount, assignee and prices stay on tickets and lines (ADR 0051).
    - Rule: `interval` (n), `unit` (`DAY` or `WEEK`), `weekdays` (for `WEEK`), a wall-clock `startTime` and `endTime`, a first date. No RRULE string: the three shapes we offer are columns we can validate and query.
-   - End: exactly one of `untilDate` or `count`, with a hard cap of 52 occurrences per series.
+   - End: at most one of `untilDate` or `count`. With neither, the series is open-ended. There is no cap on the total number of occurrences; the horizon in rule 3 bounds how many exist at a time.
    - Skipped dates: `SeriesSkip(seriesId, date)`, one row per skipped date, never a date list in JSON (ADR 0056).
 2. Occurrence times are **wall-clock times in the venue's zone** (`effectiveTimeZone`, ADR 0064). Each occurrence is resolved to instants when it is generated, so a weekly 09:00 stays 09:00 across DST. Gap and ambiguity rules are ADR 0064 rules 5 and 6. Stored values are instants; the plain dates are code-level keys.
-3. **Occurrences are real rows, generated up front** (as the old series did, up to the cap), never computed on read. The first date and rule are the only recurrence state; changing them regenerates only untouched occurrences (rule 7).
+3. **Occurrences are real rows, generated up to a rolling horizon of 12 months ahead**, never computed on read. Creating a series generates every occurrence inside the horizon at once. A daily job (pg-boss, ADR 0027) extends every series that has not ended up to the horizon, running as SYSTEM, and reports clashes the same way an edit does (rule 7). A weekly booking for several years is one series, not a chain of them. The first date and rule are the only recurrence state; changing them regenerates only untouched occurrences (rule 7).
 
 ### Two modes, chosen per series
-4. `mode = TICKETS`: one ticket per occurrence. `Ticket.seriesId` (nullable FK) and `Ticket.occurrenceStart` (owned instant, unique with `seriesId`). Each ticket has its own phase, quote and invoice. ADR 0057 is untouched.
-5. `mode = LINES`: one ticket. Its lines carry `Line.seriesId` and `Line.occurrenceStart`; all repeat lines of one occurrence share the start. The ticket has one phase and one assignee. Per-occurrence state lives on the line (ADR 0044), so a single day can be released or moved without a new ticket.
+4. `mode = TICKETS`: one ticket per occurrence. `Ticket.seriesId` (nullable FK) and `Ticket.occurrenceStart` (owned instant, unique with `seriesId`). Each ticket has its own status, quote and invoice. ADR 0057 is untouched.
+5. `mode = LINES`: one ticket. Its lines carry `Line.seriesId` and `Line.occurrenceStart`; all repeat lines of one occurrence share the start. The ticket has one status and one assignee. Per-occurrence state lives on the line (ADR 0044), so a single day can be released or moved without a new ticket.
 6. A series has a **template**: the first occurrence is authored as an ordinary ticket (or its lines), and the series copies it. The copy is made once at generation; later template edits reach occurrences only through an edit scope (rule 7). The series does not hold a live link to a template (no inheritance of ticket data).
 
 ### Editing
@@ -62,17 +62,17 @@
 | Number of occurrences, next occurrence | derived |
 
 ## Consequences
-- Supersedes ADR 0042: set it to "Superseded by 0066" when this is accepted.
+- Supersedes ADR 0042: set it to "Superseded by 0069" when this is accepted.
 - ADR 0057's "at most one invoice per ticket that is not VOID" becomes "a line is on at most one non-VOID invoice". Add an Addendum to 0057 and change `Invoice_ticketId_open_key` in a migration (`db-migration` skill).
 - Files to change on acceptance:
   - `packages/core/CLAUDE.md`: series operations, the invoice-by-lines rule, edit scopes and the skipped list.
   - `packages/db/CLAUDE.md`: the new constraint or trigger on invoiced lines.
   - `apps/web/CLAUDE.md`: series form and scope picker (this, following, all).
   - `docs/specs/series.md` (new): rule, end, skips, modes, scopes, clash and skipped handling, billing. Also `docs/specs/tickets-phases-and-states.md` for line `occurrenceStart`, and `docs/specs/payments.md` for per-period invoices.
-  - `docs/domain-model.md` and `docs/artifacts/domain-model.html`: a **Target (ADR 0066)** note on Ticket, Line, Invoice and a new Series entity.
+  - `docs/domain-model.md` and `docs/artifacts/domain-model.html`: a **Target (ADR 0069)** note on Ticket, Line, Invoice and a new Series entity.
   - Root `CLAUDE.md`: a short differentiator line. Depends on ADR 0064 being built for the zone.
-- Cost: occurrences are rows, so 52 tickets or 52 line sets per series; the cap bounds it. `FOLLOWING` splits create a second series row.
-- Tickets to create after acceptance: Series entity and operations, per-period invoicing (with the migration), edit scopes, series UI, demo seed.
+- Cost: occurrences are rows, so a weekly series holds about 52 tickets or line sets at a time (the 12-month horizon); the daily job adds the rest as time passes. `apps/worker/CLAUDE.md` lists the extension job. `FOLLOWING` splits create a second series row.
+- Implementation tickets already exist: #452 (tickets mode, edit scopes, the extension job) and #453 (lines mode and per-period invoicing, with the migration). The demo seed is #457.
 
 ## Alternatives rejected
 - **Keep ADR 0042 (no recurrence):** staff keep copying tickets; the stated target volume makes this the largest manual chore.
