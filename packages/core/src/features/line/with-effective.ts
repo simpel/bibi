@@ -3,6 +3,7 @@ import type { HandlerInput, OperationContext } from "../../operations/types";
 import { effectiveBuffers } from "../../shared/buffers";
 import { loadPriceTerms } from "../price-list/customer-price-terms";
 import { effectiveOf } from "./effective-values";
+import { loadLineWarnings } from "./line-warnings";
 import type { LineDto, LineRecord } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
@@ -62,13 +63,16 @@ async function loadSources({ context, lines }: WithEffectiveInput) {
 const NO_HEADCOUNT = { estimatedHeadcount: null, guaranteedHeadcount: null };
 
 /**
- * The lines with their effective quantity, price, discount and VAT (ADR 0052), derived from the
+ * The lines with their effective quantity, price, discount and VAT (ADR 0052) and warnings (ADR 0059), derived from the
  * ticket's headcount, the customer's price list valid on the line's day (else the ticket's desired
  * start, else today), the item and its venue. A fixed number of queries for any number of lines.
  */
 export async function withEffective({ context, lines }: WithEffectiveInput): Promise<LineDto[]> {
   if (lines.length === 0) return [];
-  const { tickets, items, changeovers, terms } = await loadSources({ context, lines });
+  const [{ tickets, items, changeovers, terms }, warnings] = await Promise.all([
+    loadSources({ context, lines }),
+    loadLineWarnings({ context, lineIds: lines.map((line) => line.id) }),
+  ]);
   return lines.map((line) => {
     const ticket = tickets.get(line.ticketId);
     const item = line.itemId ? (items.get(line.itemId) ?? null) : null;
@@ -86,6 +90,7 @@ export async function withEffective({ context, lines }: WithEffectiveInput): Pro
       ...line,
       ...effectiveOf({ line, ticket: headcount, item, terms: priceTerms }),
       ...buffers,
+      warnings: warnings.get(line.id) ?? [],
     };
   });
 }

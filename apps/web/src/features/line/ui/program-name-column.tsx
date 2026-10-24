@@ -16,16 +16,24 @@ export function nameColumn({ t, effects }: NameColumnInput): ColumnDef<LineDto> 
     id: "name",
     header: t("columns.name"),
     accessorFn: (item) => item.name,
-    cell: ({ row: { original } }) =>
-      original.parentLineId ? (
-        <span className="flex items-center gap-2 pl-4">
-          {original.name}
+    cell: ({ row: { original } }) => (
+      <span
+        className={
+          original.parentLineId ? "flex items-center gap-2 pl-4" : "flex items-center gap-2"
+        }
+      >
+        {original.name}
+        {original.parentLineId ? (
           <Badge variant="outline">
             {original.priceEffect ? effects(original.priceEffect) : t("part")}
           </Badge>
-        </span>
-      ) : (
-        original.name
-      ),
+        ) : null}
+        {original.warnings.map((warning) => (
+          <Badge key={warning.id} variant="warning">
+            {t(`warnings.${warning.kind}`)}
+          </Badge>
+        ))}
+      </span>
+    ),
   };
 }
