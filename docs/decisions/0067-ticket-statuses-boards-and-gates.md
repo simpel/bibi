@@ -1,7 +1,7 @@
 # 0067 – Ticket statuses, boards with phases as columns, and gates on transitions
 
 - **Date:** 2026-10-24
-- **Status:** Proposed
+- **Status:** Accepted
 - **Related:** 0043 (supersedes), 0044 and 0054 (phase parts superseded, addenda on acceptance), 0021, 0034, 0045, 0051, 0052, 0053, 0057
 - **Spec:** `docs/specs/tickets-phases-and-states.md`
 
