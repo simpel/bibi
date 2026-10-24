@@ -5,8 +5,6 @@
       "Bash(git diff:*)",
       "Bash(node tools/backlog/select.mjs:*)",
       "Bash(node tools/ci/verify.mjs:*)",
-      "Bash(bash tools/backlog/main-ci.sh:*)",
-      "Bash(bash tools/backlog/ci.sh:*)",
       "Bash(git log:*)",
       "Bash(git fetch:*)",
       "Bash(git show:*)",
