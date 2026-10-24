@@ -82,7 +82,7 @@ one_ticket() {
   outcome="$(ship_or_park "$t" "$s")"
   record "$t" "$s" "$outcome" "$since"
   release "$n"
-  log "#$n $outcome ($(jq -r '.costUsd // "?"' <<<"$s") USD)"
+  log "#$n $outcome ($(jq -r '.costUsd // "?"' <<<"$s") USD) $(jq -r '.reason // ""' <<<"$s" | head -1)"
   [ "$outcome" = opened ] && PARKED_ROW=0 || PARKED_ROW=$((PARKED_ROW + 1))
 }
 

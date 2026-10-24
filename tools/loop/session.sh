@@ -29,6 +29,7 @@ prompt() {
 You work on this issue in the current worktree: branch ticket/$N, fresh from origin/main, with its own databases.
 1. Read .claude/skills/$(pf skill)/SKILL.md and follow it. Open other skills it names only when you need them.
 2. Stay in scope. Mention out-of-scope problems in your final message instead of fixing them.
+   Change files with the Edit and Write tools, not shell redirects. Run one command per Bash call; never cd.
 3. Run $HERE/verify.sh until it prints GREEN. Never commit, push or call gh: the loop ships your change.
 4. If the issue cannot be done (unclear, blocked, needs a human decision), stop and start your final message with
    BLOCKED: <reason>.
