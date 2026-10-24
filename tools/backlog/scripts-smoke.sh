@@ -114,8 +114,9 @@ eq "PR title for docs" "$(cat "$STATE/pr-title")" "docs: Docs ADR"
 eq "review-only removes the worktree" "$([ -d "$ROOT/bibi-worktrees/t-1" ] && echo yes || echo no)" no
 rm -f "$STATE/pr-1"
 new_ticket 1
-run env KIND="Tech debt" "$S/ship.sh" 1 --title "Tidy" <<<"s" >/dev/null
-eq "tech debt becomes refactor" "$(cat "$STATE/pr-title")" "refactor: Tidy"
+run env KIND="Tech debt" "$S/ship.sh" 1 --title "feat(core)!: Tidy" <<<"s" >/dev/null
+eq "tech debt becomes refactor, and a type in the issue title is dropped" "$(cat "$STATE/pr-title")" "refactor: Tidy"
+eq "the commit has one type too" "$(git -C "$ROOT/bibi-worktrees/t-1" log -1 --format=%s)" "refactor: Tidy"
 rm -f "$STATE/pr-1"; run env "$ROOT/bin/pnpm" wt:rm t-1 >/dev/null; rm -rf "$ROOT/bibi-worktrees/.locks/t-1"
 
 # ---- park closes the PR -----------------------------------------------------------------

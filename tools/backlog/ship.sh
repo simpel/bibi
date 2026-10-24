@@ -19,6 +19,8 @@ N="${1:-}"
 TITLE=""
 RESUME=0
 [ "${2:-}" = "--title" ] && TITLE="${3:-}"
+# Issue titles sometimes carry a Conventional Commits type already ("feat: ..."); the type comes from KIND only.
+TITLE="$(sed -E 's/^[a-z]+(\([^)]*\))?!?:[[:space:]]*//' <<<"$TITLE")"
 [ "${4:-}" = "--resume" ] && RESUME=1
 if ! [[ "$N" =~ ^[0-9]+$ ]] || [ -z "$TITLE" ]; then
   emit failed "reason=usage: ship.sh <N> --title <title> [--resume]"
