@@ -3,6 +3,7 @@ import { Badge, type BadgeProps, type ColumnDef } from "@bibi/ui";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { formatKr } from "../../item/ui/format-price";
+import { LineVatRows } from "./line-vat-rows";
 
 const CHANGE_VARIANT: Record<LineChange, BadgeProps["variant"]> = {
   ADDED: "success",
@@ -60,6 +61,18 @@ const itemColumn = ({ t }: { t: Translate }): Column => ({
   ),
 });
 
+const vatColumn = ({ t }: { t: Translate }): Column => ({
+  id: "vat",
+  header: t("lines.vat"),
+  accessorFn: ({ line }) => line.vatRatePercent,
+  cell: ({ row: { original } }) => (
+    <span className={original.removed ? STRUCK : undefined}>
+      {original.line.vatRatePercent} %
+      <LineVatRows line={original.line} />
+    </span>
+  ),
+});
+
 const changeColumn = ({ t }: { t: Translate }): Column => ({
   id: "change",
   header: t("lines.change"),
@@ -93,12 +106,7 @@ export function useQuoteLineColumns(): Column[] {
         sort: (l) => l.discountPercent ?? 0,
         show: (l) => (l.discountPercent ? `${l.discountPercent} %` : "–"),
       }),
-      valueColumn({
-        t,
-        id: "vat",
-        sort: (l) => l.vatRatePercent,
-        show: (l) => `${l.vatRatePercent} %`,
-      }),
+      vatColumn({ t }),
       valueColumn({
         t,
         id: "total",

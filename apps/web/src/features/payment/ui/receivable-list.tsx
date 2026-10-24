@@ -7,6 +7,7 @@ import type {
 import { useTranslations } from "next-intl";
 import { DepositEntry } from "./deposit-entry";
 import { InvoiceEntry } from "./invoice-entry";
+import { InvoiceLines } from "./invoice-lines";
 import { PaidOf } from "./paid-of";
 import { ReceivableActions } from "./receivable-actions";
 import { ReceivableBadges } from "./receivable-badges";
@@ -55,6 +56,7 @@ function InvoiceRow({ invoice, canWrite }: { invoice: InvoiceDto; canWrite: bool
   return (
     <li>
       <InvoiceEntry invoice={invoice} actions={actions} />
+      <InvoiceLines invoice={invoice} />
     </li>
   );
 }
