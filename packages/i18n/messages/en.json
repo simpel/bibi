@@ -729,6 +729,9 @@
     "untimed": "No time",
     "inherited": "(inherited)",
     "part": "Part",
+    "warnings": {
+      "UNFILLED_OPTIONAL_DEMAND": "An optional need has no unit"
+    },
     "expandBundle": "Add bundle",
     "expandBundleDescription": "Add a bundle as one line that carries its price, plus one line per part with the part's time from the bundle's start. The parts show their own prices but do not count in the total; the quote shows VAT per rate. Leave the times empty for lines without time.",
     "bundleExpanded": "The bundle and its parts have been added.",

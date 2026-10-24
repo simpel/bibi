@@ -729,6 +729,9 @@
     "untimed": "Ingen tid",
     "inherited": "(ärvt)",
     "part": "Del",
+    "warnings": {
+      "UNFILLED_OPTIONAL_DEMAND": "Ett valfritt behov saknar enhet"
+    },
     "expandBundle": "Lägg till paket",
     "expandBundleDescription": "Lägg till ett paket som en rad som bär priset, plus en rad per del med delens tid räknat från paketets start. Delarna visar sina egna priser men räknas inte i summan; offerten visar moms per sats. Lämna tiderna tomma för rader utan tid.",
     "bundleExpanded": "Paketet och dess delar har lagts till.",
