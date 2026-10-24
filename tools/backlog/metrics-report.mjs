@@ -68,7 +68,7 @@ export function report({ file }) {
   const runs = readRuns({ file });
   if (!runs.length) return `No runs recorded in ${file} yet.`;
   const byPath = Object.groupBy(runs, (r) => r.path);
-  const done = runs.filter((r) => r.path === "workflow" || r.path === "inline");
+  const done = runs.filter((r) => ["loop", "workflow", "inline"].includes(r.path));
   const tickets = done.flatMap((r) => r.tickets);
   const facts = tickets
     .filter((t) => t.pr)
@@ -81,7 +81,7 @@ export function report({ file }) {
       .map(([p, r]) => `${p} ${r.length}`)
       .join(", ")})`,
   ];
-  for (const path of ["workflow", "inline"]) {
+  for (const path of ["loop", "workflow", "inline"]) {
     const rs = (byPath[path] ?? []).filter((r) => r.minutes !== null);
     const n = sum({ values: rs.map((r) => r.tickets.length) });
     lines.push(
@@ -97,6 +97,9 @@ export function report({ file }) {
   );
   const tokens = done.map((r) => r.outputTokens).filter((n) => typeof n === "number");
   if (tokens.length) lines.push(`Output tokens per workflow run: ${avg({ values: tokens })}`);
+  const costs = tickets.map((t) => t.costUsd).filter((n) => typeof n === "number");
+  if (costs.length)
+    lines.push(`Cost per loop ticket: ${avg({ values: costs })} USD (${costs.length} tickets)`);
   lines.push(
     `Gate: ${(byPath["gate-inline"] ?? []).length} runs sent inline, ${(byPath["gate-none"] ?? []).length} found nothing ready`,
   );

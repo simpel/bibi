@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Shared helpers for ship.sh, ci.sh, merge.sh and park.sh (sourced, not run).
-# Board ids arrive as environment variables from the workflow so they live in one place (work-backlog.js):
-# ITEM_ID, PROJECT_ID, STATUS_FIELD and the option id for the target status. Missing ITEM_ID skips the card move.
+# Board ids come from board.env (the environment wins); ITEM_ID arrives from the caller. Missing ITEM_ID skips the card move.
 
 MAIN="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
+# shellcheck source=board.env
+. "$(dirname "${BASH_SOURCE[0]}")/board.env"
 CO_AUTHOR="${CO_AUTHOR:-Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>}"
 
-# The ticket worktree for issue $1.
-ticket_dir() { echo "$(dirname "$MAIN")/bibi-worktrees/t-$1"; }
+# The ticket worktree for issue $1. TICKET_DIR overrides it (the loop's fixed slot worktrees).
+ticket_dir() { echo "${TICKET_DIR:-$(dirname "$MAIN")/bibi-worktrees/t-$1}"; }
 
 # One JSON line on stdout. emit state key=value ...  (values are strings; use emit_raw for json)
 emit() {

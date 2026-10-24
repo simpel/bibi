@@ -16,4 +16,4 @@ description: Fix a bug test-first. Reproduce it with a failing test, find the ro
 4. **Fix minimally.** No unrelated cleanup.
 5. **Show the same test passes**, then run the neighbouring tests. Add one edge-case test when the bug class has an obvious twin.
 6. **Report the proof:** `repro = { test, failedBefore: true }`. When a test is impossible (a layout, a race you cannot force, a missing environment), return `repro.skippedReason` with why, and add the closest guard you can (a test of the extracted logic, an assertion).
-7. The commit and PR title is `fix: <summary>` (ADR 0060). The `work-backlog` run sends a Bugfix ticket back when it shows no failing test first.
+7. The commit and PR title is `fix: <summary>` (ADR 0060).

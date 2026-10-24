@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Ships a ticket as a pull request for the work-backlog workflow. Run from the main checkout:
+# Ships a ticket as a pull request for the ticket loop. Run from the main checkout:
 #   tools/backlog/ship.sh <N> --title "<issue title>" [--resume]   (PR summary on stdin)
 # One commit per ticket, titled "<type>: <issue title>" (type from KIND, see lib.sh) with "Closes #N". Commits,
 # rebases on origin/main, re-runs the checks only when the rebase had something to rebase onto (a no-op rebase leaves

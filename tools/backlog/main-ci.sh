@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Waits for CI of the current origin/main, for the work-backlog workflow's main-health step (two tickets that were each
+# Waits for CI of the current origin/main, for the ticket loop's main-health check (two tickets that were each
 # green can still break each other after a squash merge). Run from the main checkout:
 #   tools/backlog/main-ci.sh [--timeout <seconds>]   (default 540, so one call stays under a 10 minute tool limit)
 # Finds the ci.yml run of origin/main's head commit and polls every 30 seconds. Prints one JSON line:

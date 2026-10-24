@@ -31,11 +31,11 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # The checks (lint, structure, typecheck, migrate, test, build) are defined once in tools/ci/checks.json and
-      # also run by the work-backlog run (tools/backlog/checks.sh).
+      # also run by the ticket loop (tools/backlog/checks.sh).
       - run: node tools/ci/verify.mjs --all
 
   tools:
-    # The check runner, the work-backlog workflow and its scripts have their own tests (no database needed).
+    # The check runner, the ticket loop and its scripts have their own tests (no database needed).
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -17,7 +17,7 @@ git init -q --bare -b main "$ROOT/origin.git"
 git clone -q "$ROOT/origin.git" "$ROOT/bibi" 2>/dev/null
 cd "$ROOT/bibi" || exit 1
 git config user.email t@t; git config user.name t
-mkdir -p tools/backlog && cp "$SRC"/tools/backlog/*.sh tools/backlog/; mkdir -p tools/ci && cp "$SRC"/tools/ci/checks.json "$SRC"/tools/ci/verify.mjs tools/ci/
+mkdir -p tools/backlog && cp "$SRC"/tools/backlog/*.sh "$SRC"/tools/backlog/board.env tools/backlog/; mkdir -p tools/ci && cp "$SRC"/tools/ci/checks.json "$SRC"/tools/ci/verify.mjs tools/ci/
 echo base > a.txt; echo base > b.txt; echo "old name here" > c.txt
 git add -A && git commit -qm "base" && git push -q origin HEAD:main
 mkdir -p "$ROOT/bibi-worktrees/.locks"
@@ -135,6 +135,17 @@ run env KIND=Feature "$S/ship.sh" 1 --title "Parked one" <<<"s" >/dev/null
 OUT="$(run "$S/park.sh" 1 "Parked one" <<<"checks stayed red")"
 eq "park reports parked" "$(jq -r .state <<<"$OUT")" parked
 has "park closed the PR" "$(cat "$STATE/gh.log")" "pr close 101"
+
+# ---- the loop's slot worktree: TICKET_DIR, and park keeps the worktree ---------------------------
+rm -f "$STATE/pr-7"
+git -C "$ROOT/bibi" fetch -q origin
+git -C "$ROOT/bibi" worktree add -q -b ticket/7 "$ROOT/bibi-worktrees/slot-1" origin/main
+echo "slot work" >"$ROOT/bibi-worktrees/slot-1/slot.txt"
+OUT="$(run env TICKET_DIR="$ROOT/bibi-worktrees/slot-1" KIND=Feature "$S/ship.sh" 7 --title "Slot one" <<<"s")"
+eq "ship works on a slot worktree" "$(jq -r .state <<<"$OUT")" opened
+OUT="$(run env TICKET_DIR="$ROOT/bibi-worktrees/slot-1" KEEP_WORKTREE=1 "$S/park.sh" 7 "Slot one" <<<"red")"
+eq "park on a slot reports parked" "$(jq -r .state <<<"$OUT")" parked
+eq "park keeps the slot worktree" "$([ -d "$ROOT/bibi-worktrees/slot-1" ] && echo kept)" kept
 
 # ---- main-ci: CI of main after the merges -----------------------------------------------------
 git -C "$ROOT/bibi" fetch -q origin

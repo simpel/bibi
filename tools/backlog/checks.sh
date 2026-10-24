@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# The checks for the work-backlog workflow: run from inside a ticket worktree. The checks are defined once in
+# The checks for the ticket loop (tools/loop/verify.sh) and ship.sh: run from inside a ticket worktree. The checks are defined once in
 # tools/ci/checks.json and run by tools/ci/verify.mjs (CI runs the same file with --all), scoped here to the files the
 # ticket changed: lint, check:structure and typecheck always run and are all reported; db:migrate and the tests run when
 # those are green; the build runs when apps or shared packages changed, and Storybook when packages/ui changed.

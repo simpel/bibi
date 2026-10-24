@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Counts what is left of the old names after a rename ticket, for the work-backlog workflow's codemod gate:
+# Counts what is left of the old names after a rename ticket, for the codemod skill's residue gate:
 #   tools/backlog/residue.sh <worktree-dir> <old-name>...
 # Applied migrations, ADR history, node_modules, generated code and lockfiles may keep old names and are skipped.
 # A name with an internal capital, digit, underscore or hyphen (an identifier or file name) matches as a substring;

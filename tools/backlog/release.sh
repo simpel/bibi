@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Releases the per-ticket lock taken by prep.sh: tools/backlog/release.sh <issue-number>
-# Called by the work-backlog land and park steps once the worktree is gone. Safe to run when no lock exists.
+# Called by park.sh once the worktree is gone. Safe to run when no lock exists.
 set -uo pipefail
 N="${1:-}"
 if ! [[ "$N" =~ ^[0-9]+$ ]]; then

@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Parks a ticket that could not land, for the work-backlog workflow. An open pull request is closed. Run from the main checkout:
+# Parks a ticket that could not land, for the ticket loop. An open pull request is closed. Run from the main checkout:
 #   tools/backlog/park.sh <N> "<issue title>"   (reason on stdin, max 30 lines are used)
 # Aborts a stopped rebase, commits the work as WIP, pushes it to parked/<N> (never force), comments on the issue,
 # moves the card to Parked, removes the worktree (keeps the branch) and releases the lock.
+# KEEP_WORKTREE=1 (the loop's slot worktrees) keeps the worktree and lock: the slot resets it for its next ticket.
 # Prints one JSON line {"state":"parked","branch"} ("" when the ticket had no commits to push). Exit code is always 0.
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -38,17 +39,19 @@ fi
 # An open pull request of this ticket is closed: its work now lives on the parked branch.
 PR="$(pr_number_for "$N")"
 if [ -n "$PR" ]; then
-  gh pr close "$PR" -R "$REPO" --comment "Parked by the work-backlog run; the reason is on the issue." >/dev/null 2>&1 || true
+  gh pr close "$PR" -R "$REPO" --comment "Parked by the ticket loop; the reason is on the issue." >/dev/null 2>&1 || true
   git push origin --delete "ticket/$N" >/dev/null 2>&1 || true
 fi
 
-COMMENT="The work-backlog run parked this ticket."
+COMMENT="The ticket loop parked this ticket."
 [ -n "$BRANCH" ] && COMMENT+=" Branch: https://github.com/simpel/bibi/tree/$BRANCH"
 COMMENT+=$'\n\nReason:\n'"$REASON"
 gh issue comment "$N" -R simpel/bibi --body "$COMMENT" >/dev/null 2>&1 || true
 move_card "${PARKED_OPTION:-}"
 
 cd "$MAIN" || true
-pnpm wt:rm "t-$N" --force >/dev/null 2>&1 || true
-"$HERE/release.sh" "$N" >/dev/null 2>&1 || true
+if [ "${KEEP_WORKTREE:-}" != 1 ]; then
+  pnpm wt:rm "t-$N" --force >/dev/null 2>&1 || true
+  "$HERE/release.sh" "$N" >/dev/null 2>&1 || true
+fi
 emit parked "branch=$BRANCH"

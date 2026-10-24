@@ -13,7 +13,7 @@
 - **Conventional Commits drive the bump**, per package, from the files a commit touches: `fix:` is a patch, `feat:` a minor, `<type>!:` or a `BREAKING CHANGE:` footer a major (a minor while the package is `0.x`). `docs:`, `chore:`, `test:`, `refactor:` and `ci:` do not release on their own. A commit that touches several packages counts for each of them.
 - **Dependents follow.** The `node-workspace` plugin bumps a package (patch) when a workspace dependency it uses (`workspace:*`) is released, so `@bibi/web` is released when `@bibi/core` is.
 - **release-please** (`.github/workflows/release.yml`, config in `release-please-config.json`, state in `.release-please-manifest.json`) runs on every push to `main`. It keeps one open release PR that bumps each changed package's `package.json` and prepends to its own `CHANGELOG.md`. Merging it creates a git tag and GitHub release per released package, `@bibi/<name>-vX.Y.Z`. Nobody edits versions or changelogs by hand.
-- **Commit titles must be conventional.** PR titles are checked by `.github/workflows/pr-title.yml` (squash-merge keeps the title). The `work-backlog` landing step prefixes the issue title with a type from the ticket's Kind: Feature `feat`, Bugfix `fix`, Codemod and Tech debt `refactor`, Docs `docs`, Test `test`.
+- **Commit titles must be conventional.** PR titles are checked by `.github/workflows/pr-title.yml` (squash-merge keeps the title). The ticket loop's `ship.sh` (formerly the `work-backlog` landing step) prefixes the issue title with a type from the ticket's Kind: Feature `feat`, Bugfix `fix`, Codemod and Tech debt `refactor`, Docs `docs`, Test `test`.
 - History before this ADR is excluded from the changelogs (`bootstrap-sha`).
 
 ## Consequences
