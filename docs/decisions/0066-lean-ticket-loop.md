@@ -1,7 +1,7 @@
 # 0066 – A lean ticket loop instead of the work-backlog workflow
 
 - **Date:** 2026-10-24
-- **Status:** Accepted
+- **Status:** Superseded by 0070
 - **Supersedes:** 0065 points 2 (auto-merge) and 3 (the workload gate). Point 1 (main only moves through a PR) and point 4 (metrics) stay.
 - **Related:** 0060 (versioning from Conventional Commits)
 
