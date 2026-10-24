@@ -42,7 +42,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: node --test tools/ci/verify.test.mjs
+      - run: node --test tools/ci/verify.test.mjs tools/lib/time-rules.test.mjs
       - run: node --test tools/backlog/metrics.test.mjs tools/loop/loop.test.mjs
       - run: bash tools/backlog/scripts-smoke.sh
 

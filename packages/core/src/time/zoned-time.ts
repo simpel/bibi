@@ -44,16 +44,20 @@ function offsetMs({ instant, timeZone }: ZonedInput): number {
   return asUtc - Math.floor(instant.getTime() / 1000) * 1000;
 }
 
+const DAY_MS = 86_400_000;
+
 /**
  * The instant at which `timeZone` shows `date` + `time`. A wall time skipped by a daylight saving
- * change (e.g. 02:30 on the spring-forward night) resolves to the instant one hour later.
+ * change (e.g. 02:30 on the spring-forward night) resolves to the instant one hour later. An
+ * ambiguous wall time (the autumn overlap) resolves to the earlier of its two instants.
  */
 export function fromZonedParts({ date, time, timeZone }: ZonedParts & { timeZone: string }): Date {
   const asUtc = Date.UTC(date.year, date.month - 1, date.day, time.hour, time.minute, time.second);
-  const first = offsetMs({ instant: new Date(asUtc), timeZone });
-  const guess = offsetMs({ instant: new Date(asUtc - first), timeZone });
-  if (guess === first) return new Date(asUtc - first);
-  const retry = offsetMs({ instant: new Date(asUtc - guess), timeZone });
-  if (retry === guess) return new Date(asUtc - guess);
-  return new Date(asUtc - Math.min(first, guess));
+  const before = offsetMs({ instant: new Date(asUtc - DAY_MS), timeZone });
+  const after = offsetMs({ instant: new Date(asUtc + DAY_MS), timeZone });
+  const valid = [...new Set([before, after])]
+    .map((offset) => asUtc - offset)
+    .filter((ms) => offsetMs({ instant: new Date(ms), timeZone }) === asUtc - ms);
+  if (valid.length > 0) return new Date(Math.min(...valid));
+  return new Date(asUtc - before);
 }
