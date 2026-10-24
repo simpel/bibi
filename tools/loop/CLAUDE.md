@@ -13,6 +13,7 @@ The ticket loop: picks ready `Todo` tickets from board 8 and delivers each as on
 - Sessions never push, merge or call `gh`. Only `ship.sh`, `park.sh` and `rescue.sh` touch GitHub.
 - Keep the session's tool list and allowlist short (`LOOP_TOOLS`, `LOOP_ALLOWED`). Every tool adds to every turn's context.
 - A fix goes back into the same session (`--resume`), never into a new one.
+- Checks take turns: `tools/backlog/checks.sh` holds a machine-wide lock (`checks-lock.sh`) while the tests run, because parallel test runs on the shared Postgres time out. Never bypass it to save time.
 - Reset a slot's databases with `prep-slot.sh`, never with a plain migrate: an unmerged migration from the slot's last ticket must not survive.
 - Selection rules live in `pick-rules.mjs` and are tested in `loop.test.mjs`. Keep them pure.
 

@@ -137,6 +137,20 @@ OUT="$(run env TICKET_DIR="$ROOT/bibi-worktrees/slot-1" KEEP_WORKTREE=1 "$S/park
 eq "park on a slot reports parked" "$(jq -r .state <<<"$OUT")" parked
 eq "park keeps the slot worktree" "$([ -d "$ROOT/bibi-worktrees/slot-1" ] && echo kept)" kept
 
+# ---- checks lock: one check run at a time, a stale lock is taken over --------------------------
+LOCKTEST="$ROOT/bibi/tools/backlog/checks-lock.sh"
+( MAIN="$ROOT/bibi" CHECKS_LOCK_POLL=1; . "$LOCKTEST"; take_checks_lock; sleep 3 ) &
+sleep 1
+START="$(date +%s)"
+( MAIN="$ROOT/bibi" CHECKS_LOCK_POLL=1; . "$LOCKTEST"; take_checks_lock ) 2>/dev/null
+eq "a second run waits for the lock" "$([ $(( $(date +%s) - START )) -ge 1 ] && echo waited)" waited
+wait
+mkdir -p "$ROOT/bibi-worktrees/.locks/checks" && echo 999999 >"$ROOT/bibi-worktrees/.locks/checks/pid"
+START="$(date +%s)"
+( MAIN="$ROOT/bibi" CHECKS_LOCK_POLL=5; . "$LOCKTEST"; take_checks_lock )
+eq "a lock whose holder is dead is taken over" "$([ $(( $(date +%s) - START )) -lt 2 ] && echo fast)" fast
+eq "the lock is released when the run exits" "$([ -d "$ROOT/bibi-worktrees/.locks/checks" ] && echo held || echo free)" free
+
 # ---- main-ci: CI of main after the merges -----------------------------------------------------
 git -C "$ROOT/bibi" fetch -q origin
 MAIN_SHA="$(git -C "$ROOT/bibi" rev-parse origin/main)"
