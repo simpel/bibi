@@ -1,4 +1,4 @@
-# 0066 – Member profiles, positions and shifts
+# 0068 – Member profiles, positions and shifts
 
 - **Date:** 2026-10-24
 - **Status:** Proposed
@@ -45,7 +45,7 @@
 - Specs: new `docs/specs/member-profiles.md` (profile, links, schedule kinds, shifts, collision); update `docs/specs/welcome.md` (hours step writes the profile) and the staffing and allocation spec.
 - Docs: Target notes in `docs/domain-model.md` and `docs/artifacts/domain-model.html` together; addenda in ADR 0059 (rule 9, staff are linked to a member profile) and 0061 (working hours are org-scoped).
 - Cost: a data migration that copies hours per organization, and a second exclusion constraint on a hot table.
-- Tickets to create after acceptance (adr:0066 label): schema and migration, core operations and parity, collision constraint and trigger, ranking and warnings, web editor, seed.
+- Tickets to create after acceptance (adr:0068 label): schema and migration, core operations and parity, collision constraint and trigger, ranking and warnings, web editor, seed.
 
 ## Alternatives rejected
 - **Keep hours on the global user.** One schedule cannot serve two employers.
