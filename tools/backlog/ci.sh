@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Waits for the CI checks of a ticket's pull request, for the work-backlog workflow. Run from the main checkout:
+# Waits for the CI checks of a ticket's pull request, for the ticket loop and by hand. Run from the main checkout:
 #   tools/backlog/ci.sh <N> [--timeout <seconds>]   (default 540, so one call stays under a 10 minute tool limit)
 # Polls every 30 seconds. Prints one JSON line:
 #   {"state":"green"}  {"state":"red","failed":"<names>","log":"<last lines of the failed run>"}

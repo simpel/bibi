@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Board selection for the work-backlog workflow. Read-only: changes nothing on GitHub.
+// Board read for the ticket loop (tools/loop/pick.mjs) and the work-tickets skill. Read-only: changes nothing on GitHub.
 // Usage: node tools/backlog/select.mjs [--statuses Todo,Backlog] [--only 12,34] [--exclude 56]
 // Prints one JSON object: { ok, problem?, tickets: [{ number, title, labels, itemId, priority, size, kind, model, effort, renames, status, openBlockers }] }.
 // renames = the old names in the body's "### Renames" table (first column, in backticks; text in parentheses is ignored), used by the codemod gate.

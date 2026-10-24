@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smoke test for ship.sh, ci.sh, arm.sh, park.sh and residue.sh in a sandbox: a bare "origin", a main checkout, a
+# Smoke test for ship.sh, ci.sh, park.sh, main-ci.sh and residue.sh in a sandbox: a bare "origin", a main checkout, a
 # worktree per ticket, and fake gh, pnpm and docker commands. Nothing touches GitHub or the real repo.
 # Run: bash tools/backlog/scripts-smoke.sh
 set -uo pipefail
@@ -17,7 +17,7 @@ git init -q --bare -b main "$ROOT/origin.git"
 git clone -q "$ROOT/origin.git" "$ROOT/bibi" 2>/dev/null
 cd "$ROOT/bibi" || exit 1
 git config user.email t@t; git config user.name t
-mkdir -p tools/backlog && cp "$SRC"/tools/backlog/*.sh tools/backlog/; mkdir -p tools/ci && cp "$SRC"/tools/ci/checks.json "$SRC"/tools/ci/verify.mjs tools/ci/
+mkdir -p tools/backlog && cp "$SRC"/tools/backlog/*.sh "$SRC"/tools/backlog/board.env tools/backlog/; mkdir -p tools/ci && cp "$SRC"/tools/ci/checks.json "$SRC"/tools/ci/verify.mjs tools/ci/
 echo base > a.txt; echo base > b.txt; echo "old name here" > c.txt
 git add -A && git commit -qm "base" && git push -q origin HEAD:main
 mkdir -p "$ROOT/bibi-worktrees/.locks"
@@ -86,18 +86,7 @@ has "ci red carries the log" "$(jq -r .log <<<"$OUT")" "boom"
 echo '[{"name":"check","bucket":"pending"}]' >"$STATE/checks.json"
 eq "ci pending when the budget runs out" "$(jq -r .state <<<"$(CI_POLL_SECONDS=1 run "$S/ci.sh" 1 --timeout 1)")" pending
 
-# ---- arm: auto-merge is enabled, nothing is merged by the run ------------------------------------
-main_commit b.txt other "other work"
-OUT="$(run env KIND=Bugfix CO_AUTHOR='Co-Authored-By: Test <t@t>' "$S/arm.sh" 1 --title "Fix the thing" <<<"What changed")"
-eq "arm succeeds" "$(jq -r .state <<<"$OUT")" armed
-ARGS="$(cat "$STATE/pr-merge-args")"
-has "auto-merge is requested" "$ARGS" "--auto"
-has "as a squash with the conventional subject" "$ARGS" "fix: Fix the thing (#101)"
-has "the body closes the issue" "$ARGS" "Closes #1"
-eq "main is untouched by the run" "$(git -C "$ROOT/origin.git" log --format=%s main | head -1)" "other work"
-eq "a branch that is only behind main is not rebased" "$(git -C "$ROOT/origin.git" merge-base ticket/1 main | cut -c1-7)" "$(git -C "$ROOT/origin.git" rev-parse ticket/1~1 | cut -c1-7)"
-eq "worktree is removed" "$([ -d "$ROOT/bibi-worktrees/t-1" ] && echo yes || echo no)" no
-eq "lock is released" "$([ -d "$ROOT/bibi-worktrees/.locks/t-1" ] && echo yes || echo no)" no
+rm -f "$STATE/pr-1"; run "$ROOT/bin/pnpm" wt:rm t-1 >/dev/null; rm -rf "$ROOT/bibi-worktrees/.locks/t-1"
 
 # ---- ship conflict ---------------------------------------------------------------
 new_ticket 1
@@ -125,8 +114,9 @@ eq "PR title for docs" "$(cat "$STATE/pr-title")" "docs: Docs ADR"
 eq "review-only removes the worktree" "$([ -d "$ROOT/bibi-worktrees/t-1" ] && echo yes || echo no)" no
 rm -f "$STATE/pr-1"
 new_ticket 1
-run env KIND="Tech debt" "$S/ship.sh" 1 --title "Tidy" <<<"s" >/dev/null
-eq "tech debt becomes refactor" "$(cat "$STATE/pr-title")" "refactor: Tidy"
+run env KIND="Tech debt" "$S/ship.sh" 1 --title "feat(core)!: Tidy" <<<"s" >/dev/null
+eq "tech debt becomes refactor, and a type in the issue title is dropped" "$(cat "$STATE/pr-title")" "refactor: Tidy"
+eq "the commit has one type too" "$(git -C "$ROOT/bibi-worktrees/t-1" log -1 --format=%s)" "refactor: Tidy"
 rm -f "$STATE/pr-1"; run env "$ROOT/bin/pnpm" wt:rm t-1 >/dev/null; rm -rf "$ROOT/bibi-worktrees/.locks/t-1"
 
 # ---- park closes the PR -----------------------------------------------------------------
@@ -135,6 +125,17 @@ run env KIND=Feature "$S/ship.sh" 1 --title "Parked one" <<<"s" >/dev/null
 OUT="$(run "$S/park.sh" 1 "Parked one" <<<"checks stayed red")"
 eq "park reports parked" "$(jq -r .state <<<"$OUT")" parked
 has "park closed the PR" "$(cat "$STATE/gh.log")" "pr close 101"
+
+# ---- the loop's slot worktree: TICKET_DIR, and park keeps the worktree ---------------------------
+rm -f "$STATE/pr-7"
+git -C "$ROOT/bibi" fetch -q origin
+git -C "$ROOT/bibi" worktree add -q -b ticket/7 "$ROOT/bibi-worktrees/slot-1" origin/main
+echo "slot work" >"$ROOT/bibi-worktrees/slot-1/slot.txt"
+OUT="$(run env TICKET_DIR="$ROOT/bibi-worktrees/slot-1" KIND=Feature "$S/ship.sh" 7 --title "Slot one" <<<"s")"
+eq "ship works on a slot worktree" "$(jq -r .state <<<"$OUT")" opened
+OUT="$(run env TICKET_DIR="$ROOT/bibi-worktrees/slot-1" KEEP_WORKTREE=1 "$S/park.sh" 7 "Slot one" <<<"red")"
+eq "park on a slot reports parked" "$(jq -r .state <<<"$OUT")" parked
+eq "park keeps the slot worktree" "$([ -d "$ROOT/bibi-worktrees/slot-1" ] && echo kept)" kept
 
 # ---- main-ci: CI of main after the merges -----------------------------------------------------
 git -C "$ROOT/bibi" fetch -q origin

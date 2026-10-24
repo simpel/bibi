@@ -5,7 +5,7 @@ description: Create a ticket on the bibi board (project 8) with every required f
 
 # New ticket
 
-The ticket creator knows the scope, so the creator decides how the work is run. The `work-backlog` workflow follows the board fields, falls back to its own defaults when they are empty, and says so in its log when they look contradictory.
+The ticket creator knows the scope, so the creator decides how the work is run. The ticket loop (`tools/loop/`) follows the board fields and falls back to its own defaults (`tools/loop/model.mjs`) when they are empty.
 
 1. **Check for a duplicate:** `gh issue list -R simpel/bibi --state all --search "<keywords>"`. Update an existing issue instead of creating a second one.
 2. **Decide the execution profile** (board fields, one value each):
@@ -29,7 +29,7 @@ The ticket creator knows the scope, so the creator decides how the work is run. 
    - `### Done when`: observable outcome, plus the gates line (`pnpm lint`, `check:structure`, `typecheck`, `test`).
    - `### Execution` (optional): why this Kind or Model, the risky spots (for example `sync_line_occupancy.sql`).
    - `### Renames` (required for `Codemod`): a table with the old names in the first column, each in backticks (text in parentheses is ignored), then the new name and the kind (identifier, Prisma, string, file, SQL). The codemod works from it and the residue gate searches for every old name. A plain lowercase word matches as a whole word, an identifier or file name as a substring.
-4. **Labels:** `type:*` and `area:*` from the paths. An `adr:NNNN` label links the ticket to its ADR, and `work-backlog` runs tickets with the same ADR label one per batch, so add it only to tickets that edit the same code.
+4. **Labels:** `type:*` and `area:*` from the paths. An `adr:NNNN` label links the ticket to its ADR, for traceability. The loop keeps tickets with a shared `area:*` label out of parallel slots.
 5. **Create it** with the helper, never with bare `gh issue create` (it validates the board options, the Seed data and Renames sections, and handles the project auto-add):
    ```bash
    node tools/backlog/ticket.mjs create --spec spec.json --dry-run
@@ -37,5 +37,5 @@ The ticket creator knows the scope, so the creator decides how the work is run. 
    ```
    `spec.json`: `{ "title", "body", "labels": [], "priority": "P1", "size": "M", "kind": "Feature", "model": "Auto", "effort": "Auto" }`. Status defaults to `Backlog`.
 6. **Change fields later:** `node tools/backlog/ticket.mjs set <number[,number...]> --status Todo --size L --model Opus --effort High`.
-7. **Move to `Todo` only when it can start:** its blockers are done and its ADR is accepted. `source:agent` tickets are never picked by the run until a human moves them. Every ticket the run finishes becomes a pull request that is squash-merged when CI is green (a decision ticket's PR stays open), so the title you give the issue becomes the commit line on `main`: write it as a clear summary.
+7. **Move to `Todo` only when it can start:** its blockers are done and its ADR is accepted. `source:agent` tickets are never picked by the run until a human moves them. Every ticket the loop finishes becomes a pull request that a person squash-merges, so the title you give the issue becomes the commit line on `main`: write it as a clear summary.
 8. **Tell the user** the issue numbers, and link them from any plan or ADR that spawned them.

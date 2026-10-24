@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Worktree preparation for the work-backlog workflow: tools/backlog/prep.sh [--adopt] <issue-number>
+# Worktree preparation for one ticket in its own worktree (t-<N>): tools/backlog/prep.sh [--adopt] <issue-number>
 # --adopt takes over the worktree and lock of a run that died, KEEPING its uncommitted work, and prints
 # WORKTREE_DIR=<path>. Use it only when the run that holds the lock is dead; it never deletes anything.
 # Creates ../bibi-worktrees/t-<N> on branch ticket/<N> from origin/main, after clearing leftovers

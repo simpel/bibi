@@ -102,7 +102,7 @@
 
 ## Issues and project board
 - Every piece of work has an issue on https://github.com/users/simpel/projects/8 (not project 7); create one with the `new-ticket` skill. PRs link it with `Closes #NN`. A ticket that adds or changes data or behaviour has a **Seed data** section and is not done until `seed:demo` runs from an empty database with green checks.
-- Board states, the `work-backlog` workflow and its scripts: `tools/backlog/CLAUDE.md`.
+- Board states and scripts: `tools/backlog/CLAUDE.md`. The ticket loop that turns `Todo` tickets into PRs: `tools/loop/CLAUDE.md`.
 
 ## Commands
 - `docker compose up -d`: starts Postgres and Mailpit (mail at http://localhost:8025).
@@ -116,6 +116,7 @@
 - Tests load the root `.env` via `loadTestEnv()` (`@bibi/config/load-test-env`) in every `vitest.config.ts`, with `AI_GATEWAY_API_KEY` blanked: tests never call paid AI. `DATABASE_URL` is replaced by the test database: `TEST_DATABASE_URL` if set, else `<db>_test` (`bibi_test` in the main checkout, `bibi_<name>_test` in a worktree), so tests never write into the dev database.
 - `pnpm test:db`: creates the test database if missing and applies migrations (pgvector included). `pnpm test` runs it first (Turbo `@bibi/db#migrate:test`); run it yourself before `vitest` in a single package after a new migration.
 - `pnpm --filter @bibi/core cleanup:test-orgs`: opt-in dry run listing organizations left by old test runs in the dev database; `-- --yes` deletes them. Organizations with a real member are kept.
+- `tools/loop/run.sh --slot <k> [--once] [--dry-run]`: the ticket loop, one PR per ready `Todo` ticket, never merges (ADR 0066).
 - `pnpm lint`: Biome check.
 - `node tools/ci/verify.mjs [--all | --light | --only <id>]`: the checks CI runs (lint, structure, typecheck, migrate, test, build), defined once in `tools/ci/checks.json`; by default scoped to the files you changed (`build` only when apps or shared packages changed).
 - `pnpm check:structure`: checks file size, function size, exports, barrel files and feature files.

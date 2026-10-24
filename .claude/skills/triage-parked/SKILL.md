@@ -5,9 +5,9 @@ description: Pick the most workable ticket from the board's Parked column, analy
 
 # Triage a parked ticket
 
-Recovery path for tickets `work-backlog` could not land. One ticket per run, picked for workability, with a human-approved plan before any code changes. Never moves a card to Done and never merges — a human closes the PR.
+Recovery path for tickets the ticket loop could not land. One ticket per run, picked for workability, with a human-approved plan before any code changes. Never moves a card to Done and never merges — a human closes the PR.
 
-Board ids (fixed, same board as `work-backlog`; never run `gh project field-list`/`item-list` to rediscover them):
+Board ids (fixed, same board as the ticket loop, also in `tools/backlog/board.env`; never run `gh project field-list`/`item-list` to rediscover them):
 - `PROJECT_ID=PVT_kwHOAAOKWM4BnFHj`, `STATUS_FIELD=PVTSSF_lAHOAAOKWM4BnFHjzhlrXtM`
 - Status option ids: `Parked=a84a90a0`, `In progress=47fc9ee4`
 - Move a card: `gh project item-edit --id <itemId> --project-id PVT_kwHOAAOKWM4BnFHj --field-id PVTSSF_lAHOAAOKWM4BnFHjzhlrXtM --single-select-option-id <optionId>`
@@ -17,7 +17,7 @@ Board ids (fixed, same board as `work-backlog`; never run `gh project field-list
 
 1. `git fetch origin` in `/Users/joelsanden/Code/bibi`.
 2. `gh project item-list 8 --owner simpel --format json -L 300`, keep open issues with Status `Parked`. Note each item's `itemId` (`PVTI_...`), priority, labels.
-3. For each, `gh issue view N -R simpel/bibi --json title,body,labels,comments` plus `gh api repos/simpel/bibi/issues/N/dependencies/blocked_by`. `openBlockers` = issues named under "Depends on" in the body, plus native blocked-by, that are still open. Find the parking comment (posted by the `work-backlog` run) for the branch link and reason.
+3. For each, `gh issue view N -R simpel/bibi --json title,body,labels,comments` plus `gh api repos/simpel/bibi/issues/N/dependencies/blocked_by`. `openBlockers` = issues named under "Depends on" in the body, plus native blocked-by, that are still open. Find the parking comment (posted by `park.sh`) for the branch link and reason.
 4. Rank candidates: `openBlockers.length === 0` first, then by board Priority (P0 > P1 > P2), then lowest issue number. Read each parking reason — prefer one whose blocker has since landed or whose failure looks narrow (a specific red check, not "needs a human decision"). Skip (don't force-pick) a ticket whose reason is a genuine open design question for the human.
 5. If nothing is workable, report why (e.g. "#71 still blocked on #80, open") and stop here.
 6. State which ticket you picked and why, in one or two sentences, before moving on.
