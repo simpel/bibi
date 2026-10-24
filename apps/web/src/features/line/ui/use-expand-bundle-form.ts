@@ -10,24 +10,33 @@ import { expandBundleAction } from "../actions";
 import {
   type ExpandBundleDefaultsInput,
   type ExpandBundleFormValues,
+  type ExpandBundleSchemaInput,
   expandBundleDefaults,
   expandBundleSchema,
 } from "./expand-bundle-schema";
+import { lineTimeZone } from "./line-time-zone";
 
-export type UseExpandBundleFormInput = ExpandBundleDefaultsInput & {
+export type UseExpandBundleFormInput = Omit<ExpandBundleDefaultsInput, "timeZone"> & {
   ticketId: string;
+  zones: ExpandBundleSchemaInput["zones"];
   onDone: () => void;
 };
 
 /** The form state of `line.expandBundle`; the ticket page reloads with the new lines. */
-export function useExpandBundleForm({ ticketId, onDone, ...defaults }: UseExpandBundleFormInput) {
+export function useExpandBundleForm({
+  ticketId,
+  zones,
+  onDone,
+  ...defaults
+}: UseExpandBundleFormInput) {
   const t = useTranslations("line");
   const common = useTranslations("common");
   const router = useRouter();
-  const schema = useMemo(() => expandBundleSchema({ ticketId }), [ticketId]);
+  const schema = useMemo(() => expandBundleSchema({ ticketId, zones }), [ticketId, zones]);
+  const timeZone = lineTimeZone({ data: zones, itemId: defaults.itemId });
   const form = useForm<ExpandBundleFormValues, unknown, LineExpandBundleInput>({
     resolver: zodResolver(schema, useZodMessages()),
-    defaultValues: expandBundleDefaults(defaults),
+    defaultValues: expandBundleDefaults({ ...defaults, timeZone }),
   });
   const { submit, pending } = useFormAction({
     form,

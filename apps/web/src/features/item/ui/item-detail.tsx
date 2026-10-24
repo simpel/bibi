@@ -55,7 +55,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         <DemandsSection locale={locale} itemId={item.value.id} />
         {type?.capabilities.includes("BOOKABLE") &&
         can({ abilities, permission: "ticket:read" }) ? (
-          <OccupancySection locale={locale} itemId={item.value.id} />
+          <OccupancySection locale={locale} itemId={item.value.id} timeZone={item.value.timeZone} />
         ) : null}
       </WithHistory>
     </div>

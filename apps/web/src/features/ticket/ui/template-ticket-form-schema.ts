@@ -13,16 +13,18 @@ export type TemplateTicketFormValues = {
   assigneeId: string;
 };
 
-export const templateTicketFormSchema = formSchema({
-  schema: TicketCreateFromTemplateInputSchema,
-  toInput: ({ values }: { values: TemplateTicketFormValues }) => ({
-    templateId: values.templateId,
-    customerId: values.customerId,
-    startsAt: fromLocalInputValue({ value: values.startsAt }),
-    headcount: numberOrNull({ value: values.headcount }),
-    assigneeId: values.assigneeId === NONE || values.assigneeId === "" ? null : values.assigneeId,
-  }),
-});
+/** `timeZone`: the organization's, the start is a ticket-level time (ADR 0064). */
+export const templateTicketFormSchema = ({ timeZone }: { timeZone: string }) =>
+  formSchema({
+    schema: TicketCreateFromTemplateInputSchema,
+    toInput: ({ values }: { values: TemplateTicketFormValues }) => ({
+      templateId: values.templateId,
+      customerId: values.customerId,
+      startsAt: fromLocalInputValue({ value: values.startsAt, timeZone }),
+      headcount: numberOrNull({ value: values.headcount }),
+      assigneeId: values.assigneeId === NONE || values.assigneeId === "" ? null : values.assigneeId,
+    }),
+  });
 
 export const templateTicketDefaults: TemplateTicketFormValues = {
   templateId: "",

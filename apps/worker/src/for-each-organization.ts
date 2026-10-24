@@ -4,7 +4,12 @@ import { getLogger } from "@bibi/logger";
 
 export type OrganizationRun = (input: { context: ExecuteContext }) => Promise<Result<unknown>>;
 
-export type ForEachOrganizationInput = { db: Db; run: OrganizationRun };
+export type ForEachOrganizationInput = {
+  db: Db;
+  run: OrganizationRun;
+  /** Only these organizations; left out = every one (production). */
+  organizationIds?: readonly string[] | undefined;
+};
 
 export type ForEachOrganizationOutput = { succeeded: number; failed: number };
 
@@ -26,8 +31,10 @@ function systemContext({ db, organizationId }: { db: Db; organizationId: string 
 export async function forEachOrganization({
   db,
   run,
+  organizationIds,
 }: ForEachOrganizationInput): Promise<ForEachOrganizationOutput> {
   const organizations = await db.organization.findMany({
+    ...(organizationIds ? { where: { id: { in: [...organizationIds] } } } : {}),
     select: { id: true },
     orderBy: { id: "asc" },
   });

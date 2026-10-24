@@ -2,6 +2,7 @@ import type { Item } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { loadRecordLinks, withLinks } from "../../records/record-links";
 import { effectiveBuffers } from "../../shared/buffers";
+import { loadVenueZones } from "../../shared/time-zones";
 import type { ItemDto } from "./schema";
 
 type Db = Pick<OperationContext, "db">;
@@ -57,9 +58,11 @@ export async function toItemDtos({ context, rows }: ToItemDtosInput): Promise<It
   const groupsOf = await customisationGroupsOf({ context, ids });
   const links = await loadRecordLinks({ context, recordIds: ids });
   const types = await typeBuffers({ context, rows });
+  const zoneOf = await loadVenueZones({ context, venueIds: rows.map((row) => row.venueId) });
   return rows.map((row) => ({
     ...row,
     ...effectiveBuffers({ item: row, type: types.get(row.entityTypeId) ?? null }),
+    timeZone: zoneOf({ venueId: row.venueId }),
     fields: withLinks({ fields: row.fields, links: links.filter((l) => l.recordId === row.id) }),
     setups: setups
       .filter((setup) => setup.itemId === row.id)

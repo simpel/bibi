@@ -14,7 +14,8 @@ export const getOrganizationProfile = defineOperation({
   kind: "query",
   description:
     "Read the organization's profile: first setup status (PENDING, COMPLETED, SKIPPED), legal " +
-    "name, org number, address, website and contact details. Defaults when never saved.",
+    "name, org number, address, website, contact details and time zone. Defaults when never " +
+    "saved.",
   input: OrganizationProfileGetInputSchema,
   output: OrganizationProfileSchema,
   permission: "configuration:read",
@@ -28,8 +29,9 @@ export const updateOrganizationProfile = defineOperation({
   name: "organizationProfile.update",
   kind: "command",
   description:
-    "Change the organization's legal name, org number, address, country (ISO-2), website or " +
-    "contact email and phone. Omitted fields keep their value; null clears one.",
+    "Change the organization's legal name, org number, address, country (ISO-2), website, " +
+    "contact email and phone, or time zone (IANA). Omitted fields keep their value; null clears " +
+    "one. A new zone changes how times display and are entered; no stored time moves.",
   input: OrganizationProfileUpdateInputSchema,
   output: OrganizationProfileSchema,
   permission: "configuration:write",

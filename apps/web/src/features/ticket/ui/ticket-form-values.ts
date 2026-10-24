@@ -23,16 +23,21 @@ export type TicketFormValues = {
 export type TicketDefaultsInput = {
   type: EntityTypeDto | undefined;
   ticket?: TicketDto | undefined;
+  /** The organization's zone: ticket-level times show in it (ADR 0064). */
+  timeZone: string;
 };
 
 const text = ({ value }: { value: number | null | undefined }) =>
   value === null || value === undefined ? "" : String(value);
 
-const local = ({ date }: { date: Date | null | undefined }) =>
-  date ? toLocalInputValue({ date }) : "";
-
-export function ticketFormDefaults({ type, ticket }: TicketDefaultsInput): TicketFormValues {
+export function ticketFormDefaults({
+  type,
+  ticket,
+  timeZone,
+}: TicketDefaultsInput): TicketFormValues {
   const budget = ticket?.budgetMinor;
+  const local = ({ date }: { date: Date | null | undefined }) =>
+    date ? toLocalInputValue({ date, timeZone }) : "";
   return {
     entityTypeId: type?.id ?? "",
     customerId: ticket?.customerId ?? "",

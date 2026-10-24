@@ -1,6 +1,7 @@
 import type { Permission, PermissionSet } from "@bibi/core";
 import {
   BookOpenIcon,
+  Building2Icon,
   CircleDotIcon,
   ClipboardListIcon,
   CopyPlusIcon,
@@ -19,6 +20,7 @@ import { canPermission } from "@/lib/can";
 import { ROUTES } from "@/lib/routes";
 
 export type SettingsKey =
+  | "organization"
   | "types"
   | "lists"
   | "setups"
@@ -43,6 +45,12 @@ export type SettingsItem = {
 
 /** The configuration pages listed on the `/settings` hub (ADR 0036). */
 export const SETTINGS_ITEMS: readonly SettingsItem[] = [
+  {
+    href: ROUTES.settingsOrganization,
+    key: "organization",
+    icon: Building2Icon,
+    permission: "configuration:read",
+  },
   { href: ROUTES.settingsTypes, key: "types", icon: ShapesIcon, permission: "configuration:read" },
   { href: ROUTES.settingsLists, key: "lists", icon: ListIcon, permission: "configuration:read" },
   {

@@ -1,5 +1,6 @@
 import type { VenueDto } from "@bibi/core";
 import { VenueCreateInputSchema } from "@bibi/core/schemas";
+import { NONE } from "@/components/form/option-select-field";
 import { blankToNull, blankToUndefined, numberOrUndefined } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 
@@ -14,6 +15,8 @@ export type VenueFormValues = {
   contactEmail: string;
   contactPhone: string;
   openingHours: string;
+  /** An IANA zone, or `NONE` = the organization's zone (ADR 0064). */
+  timeZone: string;
   defaultVatRatePercent: string;
 };
 
@@ -31,6 +34,7 @@ export function venueFormToInput({ values }: VenueFormInput) {
     contactEmail: blankToNull({ value: values.contactEmail }),
     contactPhone: blankToNull({ value: values.contactPhone }),
     openingHours: blankToNull({ value: values.openingHours }),
+    timeZone: values.timeZone === NONE ? null : blankToNull({ value: values.timeZone }),
     defaultVatRatePercent: numberOrUndefined({ value: values.defaultVatRatePercent }),
   };
 }
@@ -54,6 +58,7 @@ export function venueFormDefaults({ venue }: VenueDefaultsInput): VenueFormValue
     contactEmail: venue?.contactEmail ?? "",
     contactPhone: venue?.contactPhone ?? "",
     openingHours: venue?.openingHours ?? "",
+    timeZone: venue?.timeZone ?? NONE,
     defaultVatRatePercent: String(venue?.defaultVatRatePercent ?? 12),
   };
 }

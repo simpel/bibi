@@ -25,6 +25,7 @@ import { checkDemoResponsibilities } from "./responsibility-checks";
 import { checkDemoSetupNeed } from "./setup-need-checks";
 import { checkDemoTemplates } from "./template-checks";
 import { checkDemoTickets } from "./ticket-checks";
+import { checkDemoTimeZones } from "./time-zone-checks";
 import type { DemoOrg } from "./types";
 
 type OrgCheck = (input: { context: ExecuteContext; org: DemoOrg }) => Promise<string[]>;
@@ -63,7 +64,7 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPip
  * moves the grid drives (`checkDemoGrid`), every line's effective price and inherited quantity
  * (`checkDemoPrices`, ADR 0052), the expanded bundles' part lines and per-rate VAT
  * (`checkDemoBundles`, ADR 0059), every line's setup and teardown buffers (`checkDemoBuffers`, ADR
- * 0059), the allocated units' holds (`checkDemoAllocations`, ADR 0059), the derived balances (`checkDemoPayments`, ADR 0057), every projection against its owned data
+ * 0059), the allocated units' holds (`checkDemoAllocations`, ADR 0059), the derived balances (`checkDemoPayments`, ADR 0057), the organization's and venue's zones (`checkDemoTimeZones`, ADR 0064), every projection against its owned data
  * (`reconcileProjections`, ADR 0051), and every write
  * was audited as SYSTEM. Returns failure messages.
  */
@@ -94,6 +95,7 @@ export async function checkDemoOrg({
   failures.push(...(await checkDemoResponsibilities({ context, org })));
   failures.push(...(await checkDemoRecords({ context, org })));
   failures.push(...(await checkDemoSetupNeed({ context, org, skipPipeline })));
+  failures.push(...(await checkDemoTimeZones({ context, org })));
   if (skipPipeline) return [...failures, ...(await auditFailures({ context, org }))];
   for (const check of PIPELINE_CHECKS) failures.push(...(await check({ context, org })));
   failures.push(...(await reconcileProjections({ context })));

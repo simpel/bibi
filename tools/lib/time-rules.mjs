@@ -6,12 +6,8 @@
 const TIME_MODULE = /^(packages\/core\/src\/time|apps\/web\/src\/lib\/time)\//;
 // Tests and stories need fixed instants and zone names.
 const EXEMPT = /\.(test|stories)\.tsx?$|(^|\/)test\/|(^|\/)stories\//;
-// Zone constants that ADR 0064 decision 3 removes with the zone resolver (`effectiveTimeZone`).
-const ZONE_CONSTANTS = new Set([
-  "packages/i18n/src/time-zone.ts",
-  "apps/worker/src/job-definition.ts",
-  "packages/core/src/seed/demo/seed-tickets.ts",
-]);
+// Demo organizations choose their zones as data, like a real organization does (ADR 0064).
+const ZONE_DATA = /^packages\/core\/src\/seed\/demo\/data\//;
 
 const LOCAL_ACCESSOR =
   /\.(?:get|set)(?:FullYear|Month|Date|Day|Hours|Minutes|Seconds|Milliseconds)\(/;
@@ -40,7 +36,7 @@ export function checkTime({ relPath, content }) {
   const problems = [];
   lines.forEach((line, index) => {
     for (const rule of RULES) {
-      if (rule.zoneRule && ZONE_CONSTANTS.has(relPath)) continue;
+      if (rule.zoneRule && ZONE_DATA.test(relPath)) continue;
       if (rule.pattern.test(line)) {
         problems.push(`line ${index + 1}: ${rule.message} outside the time module (ADR 0064)`);
       }

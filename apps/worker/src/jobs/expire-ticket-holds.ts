@@ -7,9 +7,10 @@ import type { JobDefinition } from "../job-definition";
 export const expireTicketHoldsJob: JobDefinition = {
   name: "ticket.expireHolds",
   cron: "*/15 * * * *",
-  handler: async ({ db }) => {
+  handler: async ({ db, organizationIds }) => {
     const { succeeded, failed } = await forEachOrganization({
       db,
+      organizationIds,
       run: ({ context }) => execute({ operation: expireTicketHolds, input: {}, context }),
     });
     getLogger().info({ event: "ticket.expireHoldsRun", succeeded, failed });

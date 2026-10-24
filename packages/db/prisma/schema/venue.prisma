@@ -11,6 +11,9 @@ model Venue {
   contactEmail          String?
   contactPhone          String?
   openingHours          String?
+  /// Owned, IANA name, `null` = the organization's zone (ADR 0064, 0051). Read only through core's
+  /// `effectiveTimeZone`: the zone of this venue's lines, occupancy and calendar.
+  timeZone              String?
   defaultVatRatePercent Int          @default(25)
   status                RecordStatus @default(ACTIVE)
   createdAt             DateTime     @default(now())

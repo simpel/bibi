@@ -6,6 +6,7 @@ import { execute } from "../../operations/execute";
 import { addDays } from "../../time/plain-date";
 import { fromZonedParts, toZonedParts } from "../../time/zoned-time";
 import type { DemoRefs } from "./demo-refs";
+import type { DemoTimeZones } from "./demo-time-zones";
 import { missing, resolveDemoFields } from "./seed-fields";
 import { seedDemoLines } from "./seed-lines";
 import { seedTicketMoney } from "./seed-money";
@@ -15,38 +16,38 @@ import { movePhase } from "./seed-ticket-phase";
 import type { DemoTicket } from "./ticket-types";
 import type { DemoUserIds } from "./users";
 
-const TIME_ZONE = "Europe/Stockholm";
-
 export type SeedTicketsInput = {
   context: ExecuteContext;
   tickets: readonly DemoTicket[];
   refs: DemoRefs;
   userIds: DemoUserIds;
+  /** The zones the local times are read in (ADR 0064). */
+  zones: DemoTimeZones;
   /** The day of the run (D in `docs/demo-seed.md`); defaults to now. */
   now?: Date;
 };
 
-type AtInput = { now: Date; day: number; time: string };
+type AtInput = { now: Date; day: number; time: string; timeZone: string };
 
-/** D + `day` at the local time `HH:MM` in Stockholm. */
-function at({ now, day, time }: AtInput): Date {
+/** D + `day` at the local time `HH:MM` in `timeZone`. */
+function at({ now, day, time, timeZone }: AtInput): Date {
   const [hour = 0, minute = 0] = time.split(":").map(Number);
-  const today = toZonedParts({ instant: now, timeZone: TIME_ZONE }).date;
+  const today = toZonedParts({ instant: now, timeZone }).date;
   const date = addDays({ date: today, days: day });
-  return fromZonedParts({ date, time: { hour, minute, second: 0 }, timeZone: TIME_ZONE });
+  return fromZonedParts({ date, time: { hour, minute, second: 0 }, timeZone });
 }
 
-type PeriodInput = { ticket: DemoTicket; now: Date };
+type PeriodInput = { ticket: DemoTicket; now: Date; timeZone: string };
 
 /** The desired period on the ticket's day and, for leads with soft holds, `holdsUntil`. */
-function periodOf({ ticket, now }: PeriodInput) {
+function periodOf({ ticket, now, timeZone }: PeriodInput) {
   const holdsUntil =
     ticket.holdsUntilDay === undefined
       ? {}
-      : { holdsUntil: at({ now, day: ticket.holdsUntilDay, time: "23:59" }) };
+      : { holdsUntil: at({ now, day: ticket.holdsUntilDay, time: "23:59", timeZone }) };
   return {
-    desiredStartsAt: at({ now, day: ticket.day, time: ticket.from }),
-    desiredEndsAt: at({ now, day: ticket.day, time: ticket.to }),
+    desiredStartsAt: at({ now, day: ticket.day, time: ticket.from, timeZone }),
+    desiredEndsAt: at({ now, day: ticket.day, time: ticket.to, timeZone }),
     ...holdsUntil,
   };
 }
@@ -81,7 +82,7 @@ type TicketInput = Omit<SeedTicketsInput, "tickets" | "now"> & {
   now: Date;
 };
 
-async function seedTicket({ context, refs, userIds, ticket, now }: TicketInput) {
+async function seedTicket({ context, refs, userIds, zones, ticket, now }: TicketInput) {
   const type = refs.ticketTypes.get(ticket.type);
   if (!type) return missing({ what: `ticket type ${ticket.type}` });
   const customer = await context.db.customer.findFirst({ where: { name: ticket.customer } });
@@ -90,16 +91,20 @@ async function seedTicket({ context, refs, userIds, ticket, now }: TicketInput) 
   if (!people.ok) return people;
   const fields = await resolveDemoFields({ context, fields: ticket.fields, type });
   if (!fields.ok) return fields;
+  // Lines (and a template's line times) are local to the venue (ADR 0064).
+  const lineAt = ({ time }: { time: string }) =>
+    at({ now, day: ticket.day, time, timeZone: zones.lines });
   const created = ticket.template
     ? await createDemoTicketFromTemplate({
         ...{ context, template: ticket.template, customerId: customer.id },
-        ...{ startsAt: at({ now, day: ticket.day, time: ticket.from }) },
+        ...{ startsAt: lineAt({ time: ticket.from }) },
         ...{ headcount: ticket.headcount, assigneeId: people.value.assigneeId },
       })
     : await execute({
         operation: createTicket,
         input: {
-          ...{ entityTypeId: type.id, customerId: customer.id, ...periodOf({ ticket, now }) },
+          ...{ entityTypeId: type.id, customerId: customer.id },
+          ...periodOf({ ticket, now, timeZone: zones.ticket }),
           ...{ estimatedHeadcount: ticket.headcount, assigneeId: people.value.assigneeId },
           fields: fields.value,
         },
@@ -109,12 +114,7 @@ async function seedTicket({ context, refs, userIds, ticket, now }: TicketInput) 
   const ticketId = created.value.id;
   const followed = await follow({ context, ticketId, userIds: people.value.followerIds });
   if (!followed.ok) return followed;
-  const lines = await seedDemoLines({
-    context,
-    ticketId,
-    ticket,
-    at: ({ time }) => at({ now, day: ticket.day, time }),
-  });
+  const lines = await seedDemoLines({ context, ticketId, ticket, at: lineAt });
   if (!lines.ok) return lines;
   const chosen = await seedTicketChoices({ ...{ context, ticketId, userIds }, ticket });
   if (!chosen.ok) return chosen;

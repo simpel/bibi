@@ -15,23 +15,27 @@ export type TicketFormOutput = z.infer<typeof TicketCreateInputSchema>;
 export type TicketSchemaInput = {
   type: EntityTypeDto | undefined;
   vocabularies: VocabularyDto[];
+  /** The organization's zone: ticket-level times are entered in it (ADR 0064). */
+  timeZone: string;
 };
 
 /** Core's ticket schema with `fields` checked against the type; the server validates again. */
-export function ticketFormSchema({ type, vocabularies }: TicketSchemaInput) {
+export function ticketFormSchema({ type, vocabularies, timeZone }: TicketSchemaInput) {
   const specs = specsOf({ type, vocabularies });
+  const instant = ({ value }: { value: string }) =>
+    fromLocalInputValue({ value, timeZone }) ?? null;
   return formSchema({
     schema: TicketCreateInputSchema.extend({ fields: buildFieldsSchema({ specs }) }),
     toInput: ({ values }: { values: TicketFormValues }) => ({
       entityTypeId: values.entityTypeId,
       customerId: values.customerId,
       contactId: values.contactId === NONE || values.contactId === "" ? null : values.contactId,
-      desiredStartsAt: fromLocalInputValue({ value: values.desiredStartsAt }) ?? null,
-      desiredEndsAt: fromLocalInputValue({ value: values.desiredEndsAt }) ?? null,
+      desiredStartsAt: instant({ value: values.desiredStartsAt }),
+      desiredEndsAt: instant({ value: values.desiredEndsAt }),
       estimatedHeadcount: numberOrNull({ value: values.estimatedHeadcount }),
       guaranteedHeadcount: numberOrNull({ value: values.guaranteedHeadcount }),
       budgetMinor: minorOrNull({ value: values.budget }),
-      holdsUntil: fromLocalInputValue({ value: values.holdsUntil }) ?? null,
+      holdsUntil: instant({ value: values.holdsUntil }),
       fields: fieldsToInput({ values, specs }),
     }),
   });

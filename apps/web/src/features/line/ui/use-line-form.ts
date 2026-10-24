@@ -7,6 +7,7 @@ import { useFormAction } from "@/lib/use-form-action";
 import { createLineAction, updateLineAction } from "../actions";
 import { type LineFormOutput, lineFormSchema, toLineUpdate } from "./line-form-schema";
 import { type LineFormValues, lineFormDefaults } from "./line-form-values";
+import { lineTimeZone } from "./line-time-zone";
 import type { ProgramFormData } from "./program-form-data";
 
 export type UseLineFormInput = {
@@ -39,12 +40,14 @@ export function useLineForm({ data, ticketId, startsAt, line, onDone }: UseLineF
   const typeOf = ({ id }: { id: string }) => data.types.find((type) => type.id === id);
   const resolver = useTypedResolver<LineFormValues, LineFormOutput>({
     types: data.types,
-    schemaFor: ({ type }) => lineFormSchema({ ticketId, type, vocabularies: data.vocabularies }),
+    schemaFor: ({ type }) =>
+      lineFormSchema({ ticketId, type, vocabularies: data.vocabularies, zones: data, line }),
   });
   const initial = typeOf({ id: line?.entityTypeId ?? data.types[0]?.id ?? "" });
+  const timeZone = lineTimeZone({ data, itemId: line?.itemId, line });
   const form = useForm<LineFormValues, unknown, LineFormOutput>({
     resolver,
-    defaultValues: lineFormDefaults({ type: initial, line, startsAt }),
+    defaultValues: lineFormDefaults({ type: initial, line, startsAt, timeZone }),
   });
   const { submit, pending } = useFormAction({
     form,

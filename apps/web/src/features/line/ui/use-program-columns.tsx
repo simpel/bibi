@@ -61,6 +61,7 @@ function dataColumns({ data, t, effects, format, locale, hidden }: DataInput): C
             ? format.dateTimeRange(original.startsAt, original.endsAt, {
                 dateStyle: "short",
                 timeStyle: "short",
+                timeZone: original.timeZone,
               })
             : t("untimed")}
         </span>

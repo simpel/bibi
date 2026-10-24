@@ -116,6 +116,16 @@ describe("worker (ADR 0027)", () => {
     expect(failed.map((entry) => entry.organizationId)).toEqual([orgIds[0]]);
   });
 
+  it("runs only the given organizations when asked", async () => {
+    const seen: string[] = [];
+    const only = orgIds.slice(0, 1);
+    const run = async ({ context }: { context: { organizationId: string } }) =>
+      ({ ok: true, value: seen.push(context.organizationId) }) as never;
+    const output = await forEachOrganization({ db, run, organizationIds: only });
+    expect(seen).toEqual(only);
+    expect(output).toEqual({ succeeded: 1, failed: 0 });
+  });
+
   it("gives each job its own request id and logs failures", async () => {
     const ids: unknown[] = [];
     for (let i = 0; i < 2; i++) {

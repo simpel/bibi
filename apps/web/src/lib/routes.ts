@@ -28,6 +28,7 @@ export const ROUTES = {
   calendar: "/calendar",
   quotes: "/quotes",
   settings: "/settings",
+  settingsOrganization: "/settings/organization",
   settingsTypes: "/settings/types",
   settingsLists: "/settings/lists",
   settingsSetups: "/settings/setups",

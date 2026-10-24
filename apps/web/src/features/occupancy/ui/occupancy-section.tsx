@@ -8,10 +8,14 @@ import { runOperation } from "@/server/run-operation";
 import { CreateOccupancyButton } from "./create-occupancy-button";
 import { OccupancyTable } from "./occupancy-table";
 
-export type OccupancySectionProps = { locale: Locale; itemId: string };
+/** `timeZone`: the item's own (derived by core from its venue, ADR 0064). */
+export type OccupancySectionProps = { locale: Locale; itemId: string; timeZone: string };
 
-/** A bookable item's current and upcoming occupancy, with blocks staff add by hand. */
-export async function OccupancySection({ locale, itemId }: OccupancySectionProps) {
+/**
+ * A bookable item's current and upcoming occupancy, with blocks staff add by hand. Times show
+ * and are entered in the item's zone.
+ */
+export async function OccupancySection({ locale, itemId, timeZone }: OccupancySectionProps) {
   const t = await getTranslations("occupancy");
   const abilities = await getCallerAbilities();
   const access = {
@@ -31,13 +35,13 @@ export async function OccupancySection({ locale, itemId }: OccupancySectionProps
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-lg font-semibold">{t("plural")}</h2>
         {can({ abilities, permission: "ticket:write" }) ? (
-          <CreateOccupancyButton itemId={itemId} />
+          <CreateOccupancyButton itemId={itemId} timeZone={timeZone} />
         ) : null}
       </div>
       {occupancies.value.items.length === 0 ? (
         <p className="text-sm text-muted-foreground">{t("empty")}</p>
       ) : (
-        <OccupancyTable occupancies={occupancies.value.items} access={access} />
+        <OccupancyTable occupancies={occupancies.value.items} access={access} timeZone={timeZone} />
       )}
     </section>
   );

@@ -177,6 +177,7 @@
     "members": "Members",
     "ticketPhases": "Phases",
     "payments": "Payments",
+    "organization": "Organization",
     "priceLists": "Price lists",
     "assistant": "Assistant",
     "profile": "Profile",
@@ -225,6 +226,8 @@
       "contactEmail": "Contact email",
       "contactPhone": "Contact phone",
       "openingHours": "Opening hours",
+      "timeZone": "Time zone",
+      "timeZoneInherit": "The organization's zone ({zone})",
       "defaultVatRatePercent": "VAT (%)"
     },
     "listDescription": "Buildings and sites with items to book.",
@@ -2143,6 +2146,7 @@
     "title": "Settings",
     "description": "How your organization is set up. Changes here affect everyone.",
     "items": {
+      "organization": "The organization's time zone, used by every venue without its own.",
       "types": "The kinds of items you offer and the fields they have.",
       "lists": "Your own value lists, such as allergens or equipment.",
       "setups": "Room setups like theatre, classroom or boardroom.",
@@ -2157,6 +2161,18 @@
       "itemStates": "The states a line can be in, per item type.",
       "ticketTemplates": "Ready-made tickets that staff create a ticket from in one step."
     }
+  },
+  "organizationSettings": {
+    "title": "Organization",
+    "description": "Settings that apply to the whole organization.",
+    "timeZone": "Time zone",
+    "timeZoneHint": "Ticket times and every venue without its own zone use this zone. Changing it changes how times are shown and entered; saved times stay the same.",
+    "saved": "The time zone has been saved."
+  },
+  "timeZone": {
+    "placeholder": "Choose a time zone",
+    "search": "Search time zones",
+    "empty": "No time zone found"
   },
   "commandBar": {
     "title": "Command bar",

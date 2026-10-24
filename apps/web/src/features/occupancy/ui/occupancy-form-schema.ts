@@ -17,27 +17,28 @@ export type OccupancyFormValues = {
 
 export type OccupancyFormOutput = z.infer<typeof OccupancyCreateInputSchema>;
 
-export type OccupancyDefaultsInput = { occupancy?: OccupancyDto | undefined };
+/** `timeZone` is the zone of the item's venue (ADR 0064). */
+export type OccupancyDefaultsInput = { occupancy?: OccupancyDto | undefined; timeZone: string };
 
-export const occupancyFormDefaults = ({ occupancy }: OccupancyDefaultsInput) =>
+export const occupancyFormDefaults = ({ occupancy, timeZone }: OccupancyDefaultsInput) =>
   ({
     type: occupancy?.type === "INTERNAL" ? "INTERNAL" : "MAINTENANCE",
-    startsAt: occupancy ? toLocalInputValue({ date: occupancy.startsAt }) : "",
-    endsAt: occupancy ? toLocalInputValue({ date: occupancy.endsAt }) : "",
+    startsAt: occupancy ? toLocalInputValue({ date: occupancy.startsAt, timeZone }) : "",
+    endsAt: occupancy ? toLocalInputValue({ date: occupancy.endsAt, timeZone }) : "",
     note: occupancy?.note ?? "",
   }) satisfies OccupancyFormValues;
 
-export type OccupancySchemaInput = { itemId: string };
+export type OccupancySchemaInput = { itemId: string; timeZone: string };
 
 /** Core's create schema is the single source of validation rules for the form. */
-export const occupancyFormSchema = ({ itemId }: OccupancySchemaInput) =>
+export const occupancyFormSchema = ({ itemId, timeZone }: OccupancySchemaInput) =>
   formSchema({
     schema: OccupancyCreateInputSchema,
     toInput: ({ values }: { values: OccupancyFormValues }) => ({
       itemId,
       type: values.type,
-      startsAt: fromLocalInputValue({ value: values.startsAt }),
-      endsAt: fromLocalInputValue({ value: values.endsAt }),
+      startsAt: fromLocalInputValue({ value: values.startsAt, timeZone }),
+      endsAt: fromLocalInputValue({ value: values.endsAt, timeZone }),
       note: blankToNull({ value: values.note }),
     }),
   });
