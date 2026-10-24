@@ -134,12 +134,12 @@
       "cancelled": "Flytten av {card} avbröts."
     },
     "moving": "Flyttar…",
-    "inStatus": "I statusen <time></time>",
+    "inStatus": "I ärendestatusen <time></time>",
     "heldLines": "{count, plural, one {# rad reserverad} other {# rader reserverade}}",
     "bookedLines": "{count, plural, one {# rad bokad} other {# rader bokade}}",
     "reason": {
       "title": "Flytta till {column}",
-      "description": "Den här statusen kräver en anledning.",
+      "description": "Den här ärendestatusen kräver en anledning.",
       "label": "Anledning",
       "confirm": "Flytta"
     },
@@ -154,7 +154,7 @@
     "description": "Aktuellt läge i verksamheten.",
     "openTickets": "Öppna ärenden",
     "closedTickets": "Nyligen stängda",
-    "byStatus": "Ärenden per status",
+    "byStatus": "Ärenden per ärendestatus",
     "empty": "Inga ärenden ännu."
   },
   "nav": {
@@ -177,7 +177,7 @@
     "members": "Medlemmar",
     "payments": "Betalningar",
     "organization": "Organisation",
-    "ticketStatuses": "Statusar",
+    "ticketStatuses": "Ärendestatusar",
     "priceLists": "Prislistor",
     "assistant": "Assistent",
     "profile": "Profil",
@@ -452,22 +452,22 @@
   "ticket": {
     "singular": "Ärende",
     "plural": "Ärenden",
-    "listDescription": "Kundförfrågningar från första kontakt till genomfört event, var och ett i en av era statusar. Typen avgör vilka fält ett ärende har.",
+    "listDescription": "Kundförfrågningar från första kontakt till genomfört event, var och ett i en av era ärendestatusar. Typen avgör vilka fält ett ärende har.",
     "reference": "Ärende {reference}",
     "create": "Skapa ärende",
     "edit": "Redigera ärende",
     "createDescription": "Välj typ och kund; resten kan vänta. Ärendet startar i er startstatus.",
-    "editDescription": "Ändra kund, kontaktperson, önskade datum, antal, budget och typens fält. Status och ansvarig ändras separat.",
+    "editDescription": "Ändra kund, kontaktperson, önskade datum, antal, budget och typens fält. Ärendestatus och ansvarig ändras separat.",
     "created": "Ärendet har skapats.",
     "updated": "Ärendet har uppdaterats.",
-    "changeStatus": "Byt status",
-    "changeStatusDescription": "Flytta ärendet till en av de statusar som organisationen tillåter från nuvarande status. Vissa statusar kräver en anledning eller en ansvarig, och en avslutande status frigör ärendets lokaler och resurser.",
-    "statusChanged": "Statusen har ändrats.",
+    "changeStatus": "Byt ärendestatus",
+    "changeStatusDescription": "Flytta ärendet till en av de ärendestatusar som organisationen tillåter från nuvarande ärendestatus. Vissa ärendestatusar kräver en anledning eller en ansvarig, och en avslutande ärendestatus frigör ärendets lokaler och resurser.",
+    "statusChanged": "Ärendestatusen har ändrats.",
     "transitionRefused": "Er organisation tillåter inte den här flytten.",
     "linesBlocked": "{count, plural, one {# rad kan inte flyttas: en reservation krockar eller lägesbytet är inte tillåtet.} other {# rader kan inte flyttas: en reservation krockar eller lägesbytet är inte tillåtet.}}",
-    "assigneeRequired": "Statusen kräver en ansvarig. Tilldela en på ärendet först.",
-    "acceptedQuoteRequired": "Statusen kräver en accepterad offert. Acceptera ärendets offert först.",
-    "reasonRequired": "Statusen kräver en anledning.",
+    "assigneeRequired": "Ärendestatusen kräver en ansvarig. Tilldela en på ärendet först.",
+    "acceptedQuoteRequired": "Ärendestatusen kräver en accepterad offert. Acceptera ärendets offert först.",
+    "reasonRequired": "Ärendestatusen kräver en anledning.",
     "export": "Exportera",
     "exported": "Ärendet har exporterats.",
     "empty": "Inga ärenden ännu.",
@@ -485,8 +485,8 @@
       "estimatedHeadcount": "Beräknat antal",
       "guaranteedHeadcount": "Garanterat antal",
       "budget": "Budget (kr)",
-      "status": "Status",
-      "newStatus": "Ny status",
+      "status": "Ärendestatus",
+      "newStatus": "Ny ärendestatus",
       "statusReason": "Anledning",
       "holdsUntil": "Håll till",
       "template": "Fördefinierat ärende",
@@ -498,7 +498,7 @@
       "reference": "Nummer",
       "customer": "Kund",
       "type": "Typ",
-      "status": "Status",
+      "status": "Ärendestatus",
       "when": "Önskade datum",
       "quantity": "Antal"
     },
@@ -515,7 +515,7 @@
       "title": "Statushistorik",
       "empty": "Inga statusbyten ännu.",
       "entered": "Gick till {status}",
-      "changed": "Bytte status",
+      "changed": "Bytte ärendestatus",
       "trigger": {
         "MANUAL": "För hand",
         "QUOTE_EVENT": "Av en offerthändelse",
@@ -523,7 +523,7 @@
         "SYSTEM": "Av systemet"
       },
       "warnings": {
-        "QUOTE_ACCEPTED_IN_EARLIER_STATUS": "Offerten är accepterad, men ärendet är kvar i en tidigare status. Flytta ärendet eller kontrollera offerten."
+        "QUOTE_ACCEPTED_IN_EARLIER_STATUS": "Offerten är accepterad, men ärendet är kvar i en tidigare ärendestatus. Flytta ärendet eller kontrollera offerten."
       }
     }
   },
@@ -558,8 +558,8 @@
     "expires": "Går ut {date}",
     "state": "Status",
     "allStates": "Alla statusar",
-    "status": "Status",
-    "allStatuses": "Alla statusar",
+    "status": "Ärendestatus",
+    "allStatuses": "Alla ärendestatusar",
     "ticket": "Ärende",
     "allTickets": "Alla ärenden",
     "legend": "Förklaring",
@@ -593,7 +593,7 @@
     "revised": "En ny version har skapats.",
     "confirm": {
       "send": "Markera version {version} som skickad till kunden? Ärendets rader fryses i den, den kan inte längre redigeras och äldre skickade versioner förfaller.",
-      "accept": "Registrera att kunden godkände version {version}? Ärendet flyttas om pipelinen har en status för det.",
+      "accept": "Registrera att kunden godkände version {version}? Ärendet flyttas om pipelinen har en ärendestatus för det.",
       "decline": "Registrera att kunden avböjde version {version}?",
       "expire": "Låta version {version} gå ut? Kunden kan inte längre acceptera den."
     },
@@ -704,7 +704,7 @@
     "created": "Programpunkten har lagts till.",
     "updated": "Programpunkten har uppdaterats.",
     "changeState": "Byt läge",
-    "followStatus": "Följ statusen igen",
+    "followStatus": "Följ ärendestatusen igen",
     "stateChanged": "Radens läge har ändrats.",
     "overridden": "(manuellt)",
     "empty": "Ärendet har inga programpunkter än.",
@@ -1235,30 +1235,30 @@
     "blockedDescription": "Inget ändras förrän alla hinder är lösta."
   },
   "ticketStatus": {
-    "singular": "Status",
-    "plural": "Statusar",
-    "listDescription": "Era egna statusar för ärenden, i tavlans ordning. Flaggorna avgör vad systemet gör; inget annat om en status är fast. Ni behöver en startstatus och minst en status som avslutar ärendet.",
-    "create": "Skapa status",
-    "edit": "Redigera status",
-    "createDescription": "Namnge statusen, välj en färg och vad den gör.",
-    "editDescription": "Byt namn eller färg eller ändra vad statusen gör.",
-    "archive": "Arkivera status",
-    "archiveConfirm": "Vill du arkivera statusen {name}? Dess övergångar tas bort. Ärenden i den flyttas till den status du väljer.",
-    "archived": "Statusen har arkiverats.",
-    "created": "Statusen har skapats.",
-    "updated": "Statusen har uppdaterats.",
-    "empty": "Inga statusar ännu.",
+    "singular": "Ärendestatus",
+    "plural": "Ärendestatusar",
+    "listDescription": "Era egna ärendestatusar för ärenden, i tavlans ordning. Flaggorna avgör vad systemet gör; inget annat om en ärendestatus är fast. Ni behöver en startstatus och minst en ärendestatus som avslutar ärendet.",
+    "create": "Skapa ärendestatus",
+    "edit": "Redigera ärendestatus",
+    "createDescription": "Namnge ärendestatusen, välj en färg och vad den gör.",
+    "editDescription": "Byt namn eller färg eller ändra vad ärendestatusen gör.",
+    "archive": "Arkivera ärendestatus",
+    "archiveConfirm": "Vill du arkivera ärendestatusen {name}? Dess övergångar tas bort. Ärenden i den flyttas till den ärendestatus du väljer.",
+    "archived": "Ärendestatusen har arkiverats.",
+    "created": "Ärendestatusen har skapats.",
+    "updated": "Ärendestatusen har uppdaterats.",
+    "empty": "Inga ärendestatusar ännu.",
     "emptyDescription": "Importera mallen för att komma igång.",
-    "saving": "Sparar status…",
-    "archiving": "Arkiverar status…",
+    "saving": "Sparar ärendestatus…",
+    "archiving": "Arkiverar ärendestatus…",
     "importTemplate": "Importera mallen Konferensgård",
-    "importing": "Importerar statusar…",
-    "imported": "{created} statusar skapades, {skipped} fanns redan.",
+    "importing": "Importerar ärendestatusar…",
+    "imported": "{created} ärendestatusar skapades, {skipped} fanns redan.",
     "editTransitions": "Redigera övergångar",
-    "transitionsDescription": "Välj vilka statusar ett ärende i {name} får gå till.",
+    "transitionsDescription": "Välj vilka ärendestatusar ett ärende i {name} får gå till.",
     "transitionsSaved": "Övergångarna har sparats.",
     "noTransitions": "Inga",
-    "noTargets": "Det finns inga andra statusar att gå till.",
+    "noTargets": "Det finns inga andra ärendestatusar att gå till.",
     "noTarget": "Inga ärenden att flytta",
     "moveUp": "Flytta vänster",
     "moveDown": "Flytta höger",
@@ -1437,7 +1437,7 @@
         "discountPercent": "Rabatt (%)",
         "budgetMinor": "Budget (ören)",
         "ticketId": "Ärende (id)",
-        "statusId": "Status (id)",
+        "statusId": "Ärendestatus (id)",
         "reason": "Anledning",
         "color": "Färg",
         "entry": "Nya ärenden startar här",
@@ -1447,8 +1447,8 @@
         "requiresAcceptedQuote": "Kräver en accepterad offert",
         "invoiceable": "Kan faktureras",
         "event": "Offerthändelse",
-        "targetStatusId": "Flytta ärenden till (status-id)",
-        "toStatusIds": "Får gå till (status-id:n)",
+        "targetStatusId": "Flytta ärenden till (ärendestatus-id)",
+        "toStatusIds": "Får gå till (ärendestatus-id:n)",
         "ids": "Ordning (id:n)",
         "initial": "Nya rader startar här",
         "hold": "Reservation",
@@ -1467,7 +1467,7 @@
         "lines": "Rader",
         "startsAt": "Startar",
         "itemTypes": "Artikeltyper",
-        "statuses": "Statusar",
+        "statuses": "Ärendestatusar",
         "cells": "Rutor i rutnätet",
         "itemId": "Artikel",
         "targetItemId": "Specifik artikel",
@@ -1501,11 +1501,11 @@
         "contact_archive": "Arkivera kontaktperson",
         "ticket_create": "Skapa ärende",
         "ticket_update": "Uppdatera ärende",
-        "ticket_changeStatus": "Byt status på ärende",
-        "ticketStatus_create": "Skapa status",
-        "ticketStatus_update": "Uppdatera status",
-        "ticketStatus_archive": "Arkivera status",
-        "ticketStatus_reorder": "Ändra ordning på statusar",
+        "ticket_changeStatus": "Byt ärendestatus på ärende",
+        "ticketStatus_create": "Skapa ärendestatus",
+        "ticketStatus_update": "Uppdatera ärendestatus",
+        "ticketStatus_archive": "Arkivera ärendestatus",
+        "ticketStatus_reorder": "Ändra ordning på ärendestatusar",
         "ticketStatus_setTransitions": "Ange statusövergångar",
         "ticketStatus_importTemplate": "Importera statusmall",
         "entityType_create": "Skapa typ",
@@ -1558,7 +1558,7 @@
         "itemDemand_update": "Ändra resursbehov",
         "itemDemand_archive": "Ta bort resursbehov",
         "lineAllocation_assign": "Välj enhet för rad",
-        "line_followStatus": "Låt raden följa statusen",
+        "line_followStatus": "Låt raden följa ärendestatusen",
         "alternativeGroup_create": "Skapa alternativ",
         "alternativeGroup_update": "Ändra alternativ",
         "alternativeGroup_archive": "Lös upp alternativ",
@@ -1580,7 +1580,7 @@
       "setup": {
         "title": "Skapa min första version",
         "request": "Inget sparas förrän du godkänner. Du kan ändra allt senare genom att fråga assistenten, eller i Inställningar och Pipeline.",
-        "archiveNote": "Om du redan har statusar eller tillstånd som inte finns i den här versionen arkiveras de, de tas inte bort.",
+        "archiveNote": "Om du redan har ärendestatusar eller tillstånd som inte finns i den här versionen arkiveras de, de tas inte bort.",
         "accepted": "Din första version är sparad. Öppnar din tavla.",
         "rejected": "Inte sparat. Berätta för assistenten vad som ska ändras.",
         "approve": "Skapa min första version",
@@ -1894,9 +1894,9 @@
         }
       },
       "ticketStatus": {
-        "singular": "Status",
-        "empty": "Inga statusar hittades.",
-        "open": "Öppna statusarna",
+        "singular": "Ärendestatus",
+        "empty": "Inga ärendestatusar hittades.",
+        "open": "Öppna ärendestatusarna",
         "archived": "Arkiverad",
         "transitions": "{count, plural, =0 {Inga övergångar} one {# övergång} other {# övergångar}}",
         "columns": {
@@ -1918,9 +1918,9 @@
         }
       },
       "statusGrid": {
-        "empty": "Inga celler är satta: raderna behåller sitt läge när statusen byts.",
+        "empty": "Inga celler är satta: raderna behåller sitt läge när ärendestatusen byts.",
         "columns": {
-          "status": "Status",
+          "status": "Ärendestatus",
           "type": "Artikeltyp",
           "state": "Raderna flyttas till"
         }
@@ -2157,7 +2157,7 @@
       "responsibilities": "Vad någon svarar för, till exempel kökschef, och vem det går till som standard.",
       "sheets": "Bladdefinitioner, till exempel köksbeställningen, och vem som får dem.",
       "priceLists": "Priser per kundgrupp eller säsong.",
-      "ticketStatuses": "De statusar ett ärende går igenom.",
+      "ticketStatuses": "De ärendestatusar ett ärende går igenom.",
       "members": "Vem som har åtkomst och med vilken roll.",
       "payments": "Stripe-konto för kortbetalningar och fakturor.",
       "skills": "Återanvändbara instruktioner för assistenten.",
@@ -2563,12 +2563,12 @@
         "introduction": {
           "title": "Introduktion",
           "lead": "Bibi är ett bokningssystem för konferens, mat och dryck på platser utan hotellsystem. Det är personalen som använder det. Gäster och kunder loggar aldrig in.",
-          "body": "# Vad Bibi är till för\n\nBibi hjälper personalen på en anläggning att hantera ärenden från första kontakt till genomfört event. Det är byggt för platser som upplevelsecenter, museer, konferensgårdar, herrgårdar och restauranger med enskilda rum.\n\nDe som använder systemet är säljare, koordinatorer, kökschefer och administratörer. Kunder och gäster använder aldrig appen. Den enda sida en kund ser är betalsidan som ni skickar.\n\n# Vad du kan göra\n\n- **Följa varje förfrågan på ett ställe.** Ett ärende skapas så snart en kund hör av sig och går genom era egna statusar tills det är klart eller förlorat. Se [Ärenden](/docs/guide/tickets).\n- **Planera programmet.** Lägg till programpunkter på ett ärende, med lokal, uppställning och antal personer. Lokaler kan inte dubbelbokas.\n- **Registrera behov som antal.** Till exempel \"Gluten x 3\" eller \"Rullstol x 2\", aldrig kopplat till en namngiven person. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Skicka blad till dem som behöver dem.** Ett blad är en versionerad sammanställning, till exempel en köksorder, och Bibi markerar vad som ändrats sedan den version ni senast skickade.\n- **Ta betalt.** Kunden betalar via en länk eller en faktura, och pengarna går direkt till ert eget Stripe-konto. Se [Betalningar](/docs/guide/payments).\n- **Fråga assistenten.** Det mesta går att göra genom att chatta. Assistenten föreslår ändringar och du godkänner dem. Se [Assistenten](/docs/guide/assistant).\n\n# Er organisation bestämmer orden\n\nBibi bestämmer inte vad ni kallar saker. Varje organisation definierar sina egna typer, fält, listor, statusar, blad och ansvar. En konferensgård kan ha \"Konferensrum\" och \"Rätt\". Ett museum kan ha \"Galleri\" och \"Guidad visning\". Den här guiden använder exempel som allergener och köksorder, men de är bara exempel. Vad du ser i ditt eget konto beror på hur det är uppsatt. Se [Konfiguration](/docs/guide/configuration).\n\n# Var du börjar\n\n1. Läs [Komma igång](/docs/guide/getting-started) för att logga in och hitta runt.\n2. Är du administratör: ställ först in era typer, listor och statusar.\n3. Skapa ett ärende, antingen från Ärenden eller genom att be assistenten.\n\n# För utvecklare\n\nVill ni koppla ihop egna system finns [dokumentationen för utvecklare](/docs/developers/overview)."
+          "body": "# Vad Bibi är till för\n\nBibi hjälper personalen på en anläggning att hantera ärenden från första kontakt till genomfört event. Det är byggt för platser som upplevelsecenter, museer, konferensgårdar, herrgårdar och restauranger med enskilda rum.\n\nDe som använder systemet är säljare, koordinatorer, kökschefer och administratörer. Kunder och gäster använder aldrig appen. Den enda sida en kund ser är betalsidan som ni skickar.\n\n# Vad du kan göra\n\n- **Följa varje förfrågan på ett ställe.** Ett ärende skapas så snart en kund hör av sig och går genom era egna ärendestatusar tills det är klart eller förlorat. Se [Ärenden](/docs/guide/tickets).\n- **Planera programmet.** Lägg till programpunkter på ett ärende, med lokal, uppställning och antal personer. Lokaler kan inte dubbelbokas.\n- **Registrera behov som antal.** Till exempel \"Gluten x 3\" eller \"Rullstol x 2\", aldrig kopplat till en namngiven person. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Skicka blad till dem som behöver dem.** Ett blad är en versionerad sammanställning, till exempel en köksorder, och Bibi markerar vad som ändrats sedan den version ni senast skickade.\n- **Ta betalt.** Kunden betalar via en länk eller en faktura, och pengarna går direkt till ert eget Stripe-konto. Se [Betalningar](/docs/guide/payments).\n- **Fråga assistenten.** Det mesta går att göra genom att chatta. Assistenten föreslår ändringar och du godkänner dem. Se [Assistenten](/docs/guide/assistant).\n\n# Er organisation bestämmer orden\n\nBibi bestämmer inte vad ni kallar saker. Varje organisation definierar sina egna typer, fält, listor, ärendestatusar, blad och ansvar. En konferensgård kan ha \"Konferensrum\" och \"Rätt\". Ett museum kan ha \"Galleri\" och \"Guidad visning\". Den här guiden använder exempel som allergener och köksorder, men de är bara exempel. Vad du ser i ditt eget konto beror på hur det är uppsatt. Se [Konfiguration](/docs/guide/configuration).\n\n# Var du börjar\n\n1. Läs [Komma igång](/docs/guide/getting-started) för att logga in och hitta runt.\n2. Är du administratör: ställ först in era typer, listor och ärendestatusar.\n3. Skapa ett ärende, antingen från Ärenden eller genom att be assistenten.\n\n# För utvecklare\n\nVill ni koppla ihop egna system finns [dokumentationen för utvecklare](/docs/developers/overview)."
         },
         "getting-started": {
           "title": "Komma igång",
           "lead": "Logga in, välj organisation och lär dig var du hittar saker i menyn.",
-          "body": "# Logga in\n\n1. Öppna Bibi och välj **Logga in**. Du kan använda lösenord, en **Inloggningslänk** som skickas med e-post eller en **Engångskod**.\n2. Är du ny, välj **Skapa konto**. Lösenordet ska vara minst 10 tecken.\n3. Har en kollega bjudit in dig: öppna länken i inbjudningsmejlet, logga in med den inbjudna e-postadressen och välj **Acceptera inbjudan**.\n\nTillhör du flera organisationer hamnar du på **Välj organisation**. Välj en, eller välj **Skapa organisation** för att starta en ny. Du kan byta senare från användarmenyn.\n\n# Startsidan är assistenten\n\nNär du loggat in landar du i en chatt. Det är assistenten, och det är det snabbaste sättet att hitta saker eller göra en ändring. Välj **Ny chatt** för att börja om. Tidigare konversationer listas i vänstermenyn under **Assistent**. Se [Assistenten](/docs/guide/assistant).\n\n# Vänstermenyn\n\nMenyn har tre delar.\n\n- **Assistent** överst: startsidan, **Ny chatt** och dina senaste konversationer.\n- **Arbete**: **Ärenden** och **Kunder**.\n- **Katalog**: **Artiklar** och **Anläggningar**.\n\nLängst ned till vänster finns **Inställningar** (bara för administratörer) och din användarmeny. Användarmenyn innehåller tema (ljust, mörkt eller system), språk (svenska eller engelska), byte av organisation, **Mina färdigheter** och **Logga ut**.\n\nUppe till höger finns ett kommandofält. Tryck Cmd+K (Ctrl+K i Windows) för att söka eller hoppa till en sida. Till vänster om det visar en brödsmula var du är. Assistenten finns på startsidan.\n\n# En första checklista\n\nÄr din organisation ny och du är administratör, gå igenom listan nedan. Varje steg länkar till en sida med detaljer.\n\n1. Skapa era typer under **Inställningar, Typer**, eller importera en mall. Se [Konfiguration](/docs/guide/configuration).\n2. Lägg till era listor, till exempel allergener, under **Inställningar, Listor**.\n3. Se över era statusar under **Inställningar, Statusar**.\n4. Skapa en anläggning och lägg sedan till lokaler och andra artiklar. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n5. Bjud in kollegor under **Inställningar, Medlemmar**. Se [Medlemmar och roller](/docs/guide/members-and-roles).\n6. Koppla Stripe under **Inställningar, Betalningar** om kunderna ska kunna betala online. Se [Betalningar](/docs/guide/payments).\n7. Lägg till en kund och skapa ett ärende. Se [Ärenden](/docs/guide/tickets).\n\nÄr du inte administratör ser du inte **Inställningar**. Be en administratör i din organisation ställa in det du behöver."
+          "body": "# Logga in\n\n1. Öppna Bibi och välj **Logga in**. Du kan använda lösenord, en **Inloggningslänk** som skickas med e-post eller en **Engångskod**.\n2. Är du ny, välj **Skapa konto**. Lösenordet ska vara minst 10 tecken.\n3. Har en kollega bjudit in dig: öppna länken i inbjudningsmejlet, logga in med den inbjudna e-postadressen och välj **Acceptera inbjudan**.\n\nTillhör du flera organisationer hamnar du på **Välj organisation**. Välj en, eller välj **Skapa organisation** för att starta en ny. Du kan byta senare från användarmenyn.\n\n# Startsidan är assistenten\n\nNär du loggat in landar du i en chatt. Det är assistenten, och det är det snabbaste sättet att hitta saker eller göra en ändring. Välj **Ny chatt** för att börja om. Tidigare konversationer listas i vänstermenyn under **Assistent**. Se [Assistenten](/docs/guide/assistant).\n\n# Vänstermenyn\n\nMenyn har tre delar.\n\n- **Assistent** överst: startsidan, **Ny chatt** och dina senaste konversationer.\n- **Arbete**: **Ärenden** och **Kunder**.\n- **Katalog**: **Artiklar** och **Anläggningar**.\n\nLängst ned till vänster finns **Inställningar** (bara för administratörer) och din användarmeny. Användarmenyn innehåller tema (ljust, mörkt eller system), språk (svenska eller engelska), byte av organisation, **Mina färdigheter** och **Logga ut**.\n\nUppe till höger finns ett kommandofält. Tryck Cmd+K (Ctrl+K i Windows) för att söka eller hoppa till en sida. Till vänster om det visar en brödsmula var du är. Assistenten finns på startsidan.\n\n# En första checklista\n\nÄr din organisation ny och du är administratör, gå igenom listan nedan. Varje steg länkar till en sida med detaljer.\n\n1. Skapa era typer under **Inställningar, Typer**, eller importera en mall. Se [Konfiguration](/docs/guide/configuration).\n2. Lägg till era listor, till exempel allergener, under **Inställningar, Listor**.\n3. Se över era ärendestatusar under **Inställningar, Ärendestatusar**.\n4. Skapa en anläggning och lägg sedan till lokaler och andra artiklar. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n5. Bjud in kollegor under **Inställningar, Medlemmar**. Se [Medlemmar och roller](/docs/guide/members-and-roles).\n6. Koppla Stripe under **Inställningar, Betalningar** om kunderna ska kunna betala online. Se [Betalningar](/docs/guide/payments).\n7. Lägg till en kund och skapa ett ärende. Se [Ärenden](/docs/guide/tickets).\n\nÄr du inte administratör ser du inte **Inställningar**. Be en administratör i din organisation ställa in det du behöver."
         },
         "assistant": {
           "title": "Assistenten",
@@ -2577,8 +2577,8 @@
         },
         "tickets": {
           "title": "Ärenden",
-          "lead": "Ett ärende är en kundförfrågan, från första kontakt till genomfört event. Här ser du hur du skapar ett och för det genom era statusar.",
-          "body": "# Skapa ett ärende\n\n1. Öppna **Ärenden** och välj **Skapa ärende**.\n2. Välj typ och kund. Resten kan vänta: kontaktperson, önskade datum, antal, gästantal och budget kan läggas till nu eller senare.\n3. Spara. Ärendet får nästa nummer och startar i er startstatus, till exempel **Lead**.\n\n# Ärendesidan\n\n- **Offerter**: versioner av offerten till kunden.\n- **Program**: ärendets rader. Välj **Lägg till programpunkt** och ange namn, tid, lokal, uppställning och antal. En lokal hålls under den tiden, och uppställningens ställtid blockeras precis före.\n- **Behov**: antal per listvärde. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Blad**: versioner som du kan skapa och skicka.\n- **Betalningar**: betalningsbegäranden för ärendet. Se [Betalningar](/docs/guide/payments).\n- **Mottagen e-post**: svar från kunden, när er organisation har inkommande e-post.\n- **Exportera**: laddar ner ärendet som en json-fil till någon utanför Bibi.\n\n# För det genom era statusar\n\nEra administratörer bestämmer statusarna, deras namn och ordning under **Inställningar, Statusar**. Välj **Byt status** på ärendesidan, eller dra kortet på tavlan **Pipeline**.\n\nVad en status gör ställs in med några flaggor:\n\n- **Nya ärenden startar här**: startstatusen.\n- **Kräver en anledning**: du måste ange varför, till exempel när ett ärende är förlorat.\n- **Kräver en ansvarig**: ärendet måste ha en ansvarig först.\n- **Avslutar ärendet**: inget lämnar statusen, och ärendets lokaler och resurser frigörs.\n- **Kan faktureras**: betalningar kan fortfarande begäras.\n\nVilka flyttar som är tillåtna från varje status bestämmer också era administratörer. Nekas en flytt visar Bibi alla skäl på en gång och inget ändras. Använd **Byt ansvarig** för att välja vem som ansvarar för ärendet och **Följ** för att hållas informerad.\n\n# Kommer senare\n\nRadstatusar (preliminärt, bokat, beställt), färdiga ärenden för små möten och signering med BankID är beslutade men inte byggda än."
+          "lead": "Ett ärende är en kundförfrågan, från första kontakt till genomfört event. Här ser du hur du skapar ett och för det genom era ärendestatusar.",
+          "body": "# Skapa ett ärende\n\n1. Öppna **Ärenden** och välj **Skapa ärende**.\n2. Välj typ och kund. Resten kan vänta: kontaktperson, önskade datum, antal, gästantal och budget kan läggas till nu eller senare.\n3. Spara. Ärendet får nästa nummer och startar i er startstatus, till exempel **Lead**.\n\n# Ärendesidan\n\n- **Offerter**: versioner av offerten till kunden.\n- **Program**: ärendets rader. Välj **Lägg till programpunkt** och ange namn, tid, lokal, uppställning och antal. En lokal hålls under den tiden, och uppställningens ställtid blockeras precis före.\n- **Behov**: antal per listvärde. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Blad**: versioner som du kan skapa och skicka.\n- **Betalningar**: betalningsbegäranden för ärendet. Se [Betalningar](/docs/guide/payments).\n- **Mottagen e-post**: svar från kunden, när er organisation har inkommande e-post.\n- **Exportera**: laddar ner ärendet som en json-fil till någon utanför Bibi.\n\n# För det genom era ärendestatusar\n\nEra administratörer bestämmer ärendestatusarna, deras namn och ordning under **Inställningar, Ärendestatusar**. Välj **Byt ärendestatus** på ärendesidan, eller dra kortet på tavlan **Pipeline**.\n\nVad en ärendestatus gör ställs in med några flaggor:\n\n- **Nya ärenden startar här**: startstatusen.\n- **Kräver en anledning**: du måste ange varför, till exempel när ett ärende är förlorat.\n- **Kräver en ansvarig**: ärendet måste ha en ansvarig först.\n- **Avslutar ärendet**: inget lämnar ärendestatusen, och ärendets lokaler och resurser frigörs.\n- **Kan faktureras**: betalningar kan fortfarande begäras.\n\nVilka flyttar som är tillåtna från varje ärendestatus bestämmer också era administratörer. Nekas en flytt visar Bibi alla skäl på en gång och inget ändras. Använd **Byt ansvarig** för att välja vem som ansvarar för ärendet och **Följ** för att hållas informerad.\n\n# Kommer senare\n\nRadstatusar (preliminärt, bokat, beställt), färdiga ärenden för små möten och signering med BankID är beslutade men inte byggda än."
         },
         "items-and-venues": {
           "title": "Artiklar och anläggningar",
@@ -2588,22 +2588,22 @@
         "needs-and-sheets": {
           "title": "Behov och blad",
           "lead": "Registrera vad ett ärende behöver som antal och skicka versionerade blad till dem som förbereder den. Inga personuppgifter om gäster sparas.",
-          "body": "# Behov är antal\n\nEtt behov är ett antal mot ett värde i en av era egna listor. Har er organisation till exempel en lista med allergener betyder \"Gluten x 3\" att tre gäster behöver glutenfri mat. \"Rullstol x 2\" fungerar likadant med en tillgänglighetslista.\n\nBehov kopplas aldrig till en namngiven person. Du anger aldrig en gästs namn eller hälsouppgifter.\n\n# Lägg till ett behov på ett ärende\n\n1. Öppna ärendet och gå till **Behov**.\n2. Välj **Lägg till behov**.\n3. Välj listvärde och ange antal.\n4. Välj var det gäller: **Hela ärendet** eller en programpunkt.\n\nDu kan bara ha ett antal per listvärde på varje plats. Försöker du lägga till ett till får du uppmaningen att redigera det befintliga antalet. Ett antal på en programpunkt ersätter ärendets antal för den punkten, värde för värde. Antalet 0 på en programpunkt betyder \"inga här\".\n\nHar era administratörer gett behovstypen extra fält, till exempel allvarlighetsgrad, kan du fylla i dem också. Använd **Ta bort behov** om ett antal inte behövs längre.\n\n# Matchning mot artiklar\n\nBibi jämför varje behov med de artiklar på ärendet som har samma listvärde. Resultatet visas som en av två sorters träffar.\n\n- **Innehåller**: artikeln, eller en obligatorisk del av den, är märkt med värdet.\n- **Kan innehålla**: bara valfria delar eller valalternativ har det.\n\nEn träff som **Innehåller** och saknar alternativ **blockerar** bladet. Bladet visar **Blockerad: kan inte skickas** tills du rättat ärendet, till exempel genom att välja ett alternativ.\n\n# Blad\n\nEtt blad är en sammanställning till ett ansvar, till exempel en köksorder till kökschefen. Era administratörer definierar vilka blad som finns, vad varje blad tar med och vem som tar emot det. Se [Konfiguration](/docs/guide/configuration).\n\n1. Öppna ärendet och gå till **Blad**.\n2. Välj **Skapa version**. Bibi tar en ögonblicksbild av ärendet med det bladet ska ta med.\n3. Granska raderna, antalen och eventuella träffar.\n4. Välj **Skicka**.\n\n# Versioner och ändringar\n\nVarje gång ärendet ändras kan du skapa en ny version. Bibi markerar vad som är **Tillagd**, **Ändrad** eller **Borttagen sedan senast skickade version**, så att köket ser vad som är nytt. En version redigeras eller tas aldrig bort, och varje version kan skickas en gång.\n\nBlad kan skickas medan ärendet är öppet. När det har nått en status som avslutar det kan du fortfarande läsa bladen men inte skicka dem. Bara den senaste versionen kan skickas.\n\n# Kommer senare\n\nExport av ett blad som JSON, PDF eller CSV för överlämning utanför systemet är planerat men finns inte än."
+          "body": "# Behov är antal\n\nEtt behov är ett antal mot ett värde i en av era egna listor. Har er organisation till exempel en lista med allergener betyder \"Gluten x 3\" att tre gäster behöver glutenfri mat. \"Rullstol x 2\" fungerar likadant med en tillgänglighetslista.\n\nBehov kopplas aldrig till en namngiven person. Du anger aldrig en gästs namn eller hälsouppgifter.\n\n# Lägg till ett behov på ett ärende\n\n1. Öppna ärendet och gå till **Behov**.\n2. Välj **Lägg till behov**.\n3. Välj listvärde och ange antal.\n4. Välj var det gäller: **Hela ärendet** eller en programpunkt.\n\nDu kan bara ha ett antal per listvärde på varje plats. Försöker du lägga till ett till får du uppmaningen att redigera det befintliga antalet. Ett antal på en programpunkt ersätter ärendets antal för den punkten, värde för värde. Antalet 0 på en programpunkt betyder \"inga här\".\n\nHar era administratörer gett behovstypen extra fält, till exempel allvarlighetsgrad, kan du fylla i dem också. Använd **Ta bort behov** om ett antal inte behövs längre.\n\n# Matchning mot artiklar\n\nBibi jämför varje behov med de artiklar på ärendet som har samma listvärde. Resultatet visas som en av två sorters träffar.\n\n- **Innehåller**: artikeln, eller en obligatorisk del av den, är märkt med värdet.\n- **Kan innehålla**: bara valfria delar eller valalternativ har det.\n\nEn träff som **Innehåller** och saknar alternativ **blockerar** bladet. Bladet visar **Blockerad: kan inte skickas** tills du rättat ärendet, till exempel genom att välja ett alternativ.\n\n# Blad\n\nEtt blad är en sammanställning till ett ansvar, till exempel en köksorder till kökschefen. Era administratörer definierar vilka blad som finns, vad varje blad tar med och vem som tar emot det. Se [Konfiguration](/docs/guide/configuration).\n\n1. Öppna ärendet och gå till **Blad**.\n2. Välj **Skapa version**. Bibi tar en ögonblicksbild av ärendet med det bladet ska ta med.\n3. Granska raderna, antalen och eventuella träffar.\n4. Välj **Skicka**.\n\n# Versioner och ändringar\n\nVarje gång ärendet ändras kan du skapa en ny version. Bibi markerar vad som är **Tillagd**, **Ändrad** eller **Borttagen sedan senast skickade version**, så att köket ser vad som är nytt. En version redigeras eller tas aldrig bort, och varje version kan skickas en gång.\n\nBlad kan skickas medan ärendet är öppet. När det har nått en ärendestatus som avslutar det kan du fortfarande läsa bladen men inte skicka dem. Bara den senaste versionen kan skickas.\n\n# Kommer senare\n\nExport av ett blad som JSON, PDF eller CSV för överlämning utanför systemet är planerat men finns inte än."
         },
         "payments": {
           "title": "Betalningar",
           "lead": "Be en kund betala med kortlänk eller mot faktura. Pengarna går direkt till ert eget Stripe-konto, och Bibi håller dem aldrig.",
-          "body": "# Koppla Stripe först\n\nInnan du kan begära en betalning måste en administratör koppla er organisation till Stripe.\n\n1. Öppna **Inställningar** och välj **Betalningar**.\n2. Välj **Koppla till Stripe**. Du skickas till Stripe för att verifiera ert företag.\n3. När du kommer tillbaka väljer du **Uppdatera status**. Är registreringen inte klar, välj **Fortsätt registreringen**.\n\nStatusen visar **Inte kopplat**, **Registrering pågår**, **Aktivt** eller **Begränsat**. Betalningar fungerar när den är **Aktivt**. Är den **Begränsat** behöver Stripe fler uppgifter från er, så fortsätt registreringen.\n\nBetalningarna dras på ert eget anslutna konto, så ni är säljare och utbetalningen går till er.\n\n# Begär en betalning\n\n1. Öppna ärendet och hitta **Betalningar**.\n2. Välj **Begär betalning**.\n3. Välj metod och belopp.\n4. Spara.\n\nDet finns två metoder.\n\n- **Kort**: Bibi skapar en betallänk. Välj **Öppna betalningslänken** för att kopiera eller öppna den, och skicka den till kunden.\n- **Faktura**: Stripe mejlar en faktura till kunden. Kunden behöver en e-postadress på kundposten. Förfallodagen följer kundens betalningsvillkor, 30 dagar om inget är angivet.\n\nDu kan begära en betalning för ett öppet ärende, eller för ett i en avslutande status som kan faktureras.\n\n# Vad kunden ser\n\nKunden öppnar länken och kommer till en enkel sida med er organisations namn, bokningsnumret, beloppet och en knapp **Betala nu**. Stripe hanterar kortuppgifterna. Kunden behöver inget konto och ser aldrig Bibis app.\n\nHar länken gått ut säger sidan det och ber kunden kontakta er. Ni kan då begära en ny betalning.\n\n# Betalningsstatus\n\nVarje betalning har en status: **Väntar**, **Betald**, **Misslyckad**, **Avbruten** eller **Återbetald**. Statusen uppdateras av sig själv när Stripe rapporterar tillbaka. Du behöver inte markera något som betalt.\n\n# Betald flyttar inte ärendet\n\nEn betald betalning ändrar bara betalningens status. Ärendet stannar i sin status, och du flyttar det själv när ni är redo.\n\n# Kommer senare\n\nSwish för kunder, prislistor som tillämpas på fakturor och fakturor som skickas till Fortnox, Visma eller Peppol är beslutade men finns inte än."
+          "body": "# Koppla Stripe först\n\nInnan du kan begära en betalning måste en administratör koppla er organisation till Stripe.\n\n1. Öppna **Inställningar** och välj **Betalningar**.\n2. Välj **Koppla till Stripe**. Du skickas till Stripe för att verifiera ert företag.\n3. När du kommer tillbaka väljer du **Uppdatera status**. Är registreringen inte klar, välj **Fortsätt registreringen**.\n\nStatusen visar **Inte kopplat**, **Registrering pågår**, **Aktivt** eller **Begränsat**. Betalningar fungerar när den är **Aktivt**. Är den **Begränsat** behöver Stripe fler uppgifter från er, så fortsätt registreringen.\n\nBetalningarna dras på ert eget anslutna konto, så ni är säljare och utbetalningen går till er.\n\n# Begär en betalning\n\n1. Öppna ärendet och hitta **Betalningar**.\n2. Välj **Begär betalning**.\n3. Välj metod och belopp.\n4. Spara.\n\nDet finns två metoder.\n\n- **Kort**: Bibi skapar en betallänk. Välj **Öppna betalningslänken** för att kopiera eller öppna den, och skicka den till kunden.\n- **Faktura**: Stripe mejlar en faktura till kunden. Kunden behöver en e-postadress på kundposten. Förfallodagen följer kundens betalningsvillkor, 30 dagar om inget är angivet.\n\nDu kan begära en betalning för ett öppet ärende, eller för ett i en avslutande ärendestatus som kan faktureras.\n\n# Vad kunden ser\n\nKunden öppnar länken och kommer till en enkel sida med er organisations namn, bokningsnumret, beloppet och en knapp **Betala nu**. Stripe hanterar kortuppgifterna. Kunden behöver inget konto och ser aldrig Bibis app.\n\nHar länken gått ut säger sidan det och ber kunden kontakta er. Ni kan då begära en ny betalning.\n\n# Betalningsstatus\n\nVarje betalning har en status: **Väntar**, **Betald**, **Misslyckad**, **Avbruten** eller **Återbetald**. Statusen uppdateras av sig själv när Stripe rapporterar tillbaka. Du behöver inte markera något som betalt.\n\n# Betald flyttar inte ärendet\n\nEn betald betalning ändrar bara betalningens status. Ärendet stannar i sin ärendestatus, och du flyttar det själv när ni är redo.\n\n# Kommer senare\n\nSwish för kunder, prislistor som tillämpas på fakturor och fakturor som skickas till Fortnox, Visma eller Peppol är beslutade men finns inte än."
         },
         "configuration": {
           "title": "Konfiguration",
           "lead": "Administratörer ställer in vad saker heter och hur de fungerar i er organisation. Allt här är era egna data.",
-          "body": "# Vem kan konfigurera\n\nBara administratörer ser **Inställningar** i vänstermenyn. Den öppnar en sida som listar alla konfigurationsområden. Ändringar påverkar alla i organisationen.\n\n# Typer och fält\n\nUnder **Inställningar, Typer** definierar du vilka sorters poster ni arbetar med: artiklar, kunder, kontakter, ärenden, behov och programpunkter. Till exempel \"Konferensrum\", \"Rätt\", \"Företag\" eller \"Konferens\".\n\n1. Välj **Skapa typ**, ange vad den gäller och namnge den.\n2. För en artikeltyp slår du på förmågor som **Prissatt**, **Bokningsbar** eller **Uppställningar**. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n3. Lägg till fält. Ett fält kan vara text, tal, ja/nej, datum, val, flerval eller en länk till en annan post. Markera det som obligatoriskt om det alltid måste fyllas i.\n\nEn typ kan inte arkiveras så länge den används, och ett fält kan inte byta sort när det har data.\n\n# Listor\n\nUnder **Inställningar, Listor** håller du era egna ordlistor, som allergener, kostval eller tillgänglighetsbehov. Fält och behov pekar på en lista. För att komma igång väljer du **Importera EU:s 14 allergener**. Du kan redigera listan efteråt. En lista eller ett värde kan inte arkiveras så länge ett fält använder det eller ett behov räknar det.\n\n# Uppställningar\n\nUnder **Inställningar, Uppställningar** namnger du era lokalupplägg och anger ställtid. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n\n# Statusar\n\nUnder **Inställningar, Statusar** bestämmer du vilka statusar era ärenden går igenom, vad de heter och i vilken ordning de visas på tavlan. Inget om en status är fast: varje status har ett namn, en färg och några flaggor som avgör vad Bibi gör. Ni behöver en startstatus och minst en status som avslutar ärendet. Se [Ärenden](/docs/guide/tickets).\n\n1. Välj **Skapa status**, eller **Importera mallen Konferensgård** för en färdig uppsättning.\n2. Använd **Redigera övergångar** för att välja vilka statusar ett ärende får gå till från varje status.\n3. Ändra ordning med pilarna.\n\nEn status arkiveras, den tas aldrig bort. Finns det ärenden i den väljer du vilken status de flyttas till.\n\n# Blad\n\nUnder **Inställningar, Blad** definierar du ett blad som \"Köksorder\": namnge det, välj vilka artikeltyper och fält det tar med, vilka listors behov det räknar och vilken roll som tar emot det. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Prislistor\n\nUnder **Inställningar, Prislistor** skapar du en lista för en kund eller för alla, med en giltighetstid. Välj antingen en generell rabatt i procent eller ett pris per artikel, inte båda. Nya orderrader använder listans priser, och en arkiverad lista gäller inte längre.\n\n# Betalningar och färdigheter\n\n**Inställningar, Betalningar** kopplar Stripe. Se [Betalningar](/docs/guide/payments). **Inställningar, Färdigheter** innehåller organisationens färdigheter för assistenten. Se [Assistenten](/docs/guide/assistant).\n\n# Mallar och assistenten\n\nMallar som startuppsättningen Konferensgård är valfria. De är bara data, så du kan ändra allt efteråt. Du kan också be assistenten föreslå en uppsättning, till exempel \"Vi är en herrgård med restaurang\". Du godkänner varje ändring."
+          "body": "# Vem kan konfigurera\n\nBara administratörer ser **Inställningar** i vänstermenyn. Den öppnar en sida som listar alla konfigurationsområden. Ändringar påverkar alla i organisationen.\n\n# Typer och fält\n\nUnder **Inställningar, Typer** definierar du vilka sorters poster ni arbetar med: artiklar, kunder, kontakter, ärenden, behov och programpunkter. Till exempel \"Konferensrum\", \"Rätt\", \"Företag\" eller \"Konferens\".\n\n1. Välj **Skapa typ**, ange vad den gäller och namnge den.\n2. För en artikeltyp slår du på förmågor som **Prissatt**, **Bokningsbar** eller **Uppställningar**. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n3. Lägg till fält. Ett fält kan vara text, tal, ja/nej, datum, val, flerval eller en länk till en annan post. Markera det som obligatoriskt om det alltid måste fyllas i.\n\nEn typ kan inte arkiveras så länge den används, och ett fält kan inte byta sort när det har data.\n\n# Listor\n\nUnder **Inställningar, Listor** håller du era egna ordlistor, som allergener, kostval eller tillgänglighetsbehov. Fält och behov pekar på en lista. För att komma igång väljer du **Importera EU:s 14 allergener**. Du kan redigera listan efteråt. En lista eller ett värde kan inte arkiveras så länge ett fält använder det eller ett behov räknar det.\n\n# Uppställningar\n\nUnder **Inställningar, Uppställningar** namnger du era lokalupplägg och anger ställtid. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n\n# Ärendestatusar\n\nUnder **Inställningar, Ärendestatusar** bestämmer du vilka ärendestatusar era ärenden går igenom, vad de heter och i vilken ordning de visas på tavlan. Inget om en ärendestatus är fast: varje ärendestatus har ett namn, en färg och några flaggor som avgör vad Bibi gör. Ni behöver en startstatus och minst en ärendestatus som avslutar ärendet. Se [Ärenden](/docs/guide/tickets).\n\n1. Välj **Skapa ärendestatus**, eller **Importera mallen Konferensgård** för en färdig uppsättning.\n2. Använd **Redigera övergångar** för att välja vilka ärendestatusar ett ärende får gå till från varje ärendestatus.\n3. Ändra ordning med pilarna.\n\nEn ärendestatus arkiveras, den tas aldrig bort. Finns det ärenden i den väljer du vilken ärendestatus de flyttas till.\n\n# Blad\n\nUnder **Inställningar, Blad** definierar du ett blad som \"Köksorder\": namnge det, välj vilka artikeltyper och fält det tar med, vilka listors behov det räknar och vilken roll som tar emot det. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Prislistor\n\nUnder **Inställningar, Prislistor** skapar du en lista för en kund eller för alla, med en giltighetstid. Välj antingen en generell rabatt i procent eller ett pris per artikel, inte båda. Nya orderrader använder listans priser, och en arkiverad lista gäller inte längre.\n\n# Betalningar och färdigheter\n\n**Inställningar, Betalningar** kopplar Stripe. Se [Betalningar](/docs/guide/payments). **Inställningar, Färdigheter** innehåller organisationens färdigheter för assistenten. Se [Assistenten](/docs/guide/assistant).\n\n# Mallar och assistenten\n\nMallar som startuppsättningen Konferensgård är valfria. De är bara data, så du kan ändra allt efteråt. Du kan också be assistenten föreslå en uppsättning, till exempel \"Vi är en herrgård med restaurang\". Du godkänner varje ändring."
         },
         "members-and-roles": {
           "title": "Medlemmar och roller",
           "lead": "Bjud in kollegor, ge dem rätt behörighetsnivå och ta bort dem när de slutar.",
-          "body": "# Behörighetsnivåer\n\nVarje medlem har en förinställning som en administratör kan finjustera per person. Förinställningarna är fasta och går från minst till mest åtkomst.\n\n- **Medlem**: kan läsa allt men ändrar ingenting.\n- **Bokningsansvarig**: kan också hantera bokningar och den dagliga datan, som kunder, ärenden, programpunkter, behov, betalningar och blad.\n- **Administratör**: allt i organisationen: konfiguration (typer, listor, statusar, blad, prislistor), medlemmar, API-nycklar och själva organisationen. En organisation har alltid minst en administratör.\n\n# Finjustera för en person\n\nEn administratör kan ge en person mer eller mindre än förinställningen, per del av appen.\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Behörigheter** på personens rad.\n3. Slå på eller av **Läsa**, **Skriva** eller **Ta bort**, till exempel låt en medlem också skriva artiklar, eller dölj betalningar för en bokningsansvarig. **Skriva** omfattar att skapa, ändra, skicka och exportera, och att flytta ett ärende till en annan status. Stänger du av **Läsa** döljs den delen av appen för personen.\n4. Välj **Spara**.\n\nÄndrade celler markeras, och **Återställ** går tillbaka till förinställningen. Att hantera medlemmar, API-nycklar och betalkontot ligger alltid kvar hos administratörer.\n\nDu ser bara de delar av appen du får visa. Sidorna kontrollerar själva din behörighet, så att dölja menyn är bara en bekvämlighet.\n\n# Bjud in en kollega\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Bjud in medlem** och ange e-postadress och roll.\n3. Välj **Skicka inbjudan**.\n\nBibi mejlar en länk. Personen loggar in eller skapar ett konto med samma e-postadress och väljer **Acceptera inbjudan**. Därefter går hen med i den inbjudna rollen. En inbjudan går ut efter 48 timmar.\n\nUnder **Väntande inbjudningar** ser du vem som inte svarat än. Välj **Återkalla** för att avbryta en inbjudan, så slutar länken fungera. Du kan inte ge någon mer åtkomst än du själv har, och en e-postadress som redan är medlem kan inte bjudas in igen.\n\n# Byt roll eller ta bort någon\n\nPå medlemssidan kan du byta en medlems roll. Du kan inte ändra eller ta bort någon vars roll är över din egen. För att ta bort någon väljer du **Ta bort**. Hen förlorar åtkomsten direkt, och det hen skapat finns kvar i historiken.\n\n# Vem som ansvarar för vad på ett ärende\n\nÅtkomstrollerna avgör vad du får göra i appen. En separat idé avgör vem som ansvarar för ett ärende.\n\n- Varje ärende har en ansvarig, som måste vara medlem. Andra medlemmar kan följa den för att hållas informerade.\n- Vissa statusar kräver en ansvarig innan ett ärende kan gå in i dem, till exempel Bekräftad.\n- Byt ansvarig med **Byt ansvarig** och välj **Följ** eller **Sluta följa** för dig själv. Listan över ärenden kan visa bara det som är **Tilldelade mig** eller det du **Följer**.\n\nAdministratörer definierar ansvar som \"Kökschef\" under **Inställningar, Ansvar**. Ett ansvar täcker vissa artikeltyper och har en standardperson och följare. Kommer senare: ett ärende får automatiskt en ansvarig per ansvar utifrån sina artiklar, och de matchande bladen går till den personen och följarna.\n\n# Assistenten och API-åtkomst\n\nAssistenten agerar med dina behörigheter, så den kan aldrig göra mer än du. Verktyg ni kopplar med OAuth agerar också som du. API-nycklar tillhör organisationen och har egna behörigheter som en administratör sätter. Se [Autentisering](/docs/developers/authentication)."
+          "body": "# Behörighetsnivåer\n\nVarje medlem har en förinställning som en administratör kan finjustera per person. Förinställningarna är fasta och går från minst till mest åtkomst.\n\n- **Medlem**: kan läsa allt men ändrar ingenting.\n- **Bokningsansvarig**: kan också hantera bokningar och den dagliga datan, som kunder, ärenden, programpunkter, behov, betalningar och blad.\n- **Administratör**: allt i organisationen: konfiguration (typer, listor, ärendestatusar, blad, prislistor), medlemmar, API-nycklar och själva organisationen. En organisation har alltid minst en administratör.\n\n# Finjustera för en person\n\nEn administratör kan ge en person mer eller mindre än förinställningen, per del av appen.\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Behörigheter** på personens rad.\n3. Slå på eller av **Läsa**, **Skriva** eller **Ta bort**, till exempel låt en medlem också skriva artiklar, eller dölj betalningar för en bokningsansvarig. **Skriva** omfattar att skapa, ändra, skicka och exportera, och att flytta ett ärende till en annan ärendestatus. Stänger du av **Läsa** döljs den delen av appen för personen.\n4. Välj **Spara**.\n\nÄndrade celler markeras, och **Återställ** går tillbaka till förinställningen. Att hantera medlemmar, API-nycklar och betalkontot ligger alltid kvar hos administratörer.\n\nDu ser bara de delar av appen du får visa. Sidorna kontrollerar själva din behörighet, så att dölja menyn är bara en bekvämlighet.\n\n# Bjud in en kollega\n\n1. Öppna **Inställningar** och välj **Medlemmar**.\n2. Välj **Bjud in medlem** och ange e-postadress och roll.\n3. Välj **Skicka inbjudan**.\n\nBibi mejlar en länk. Personen loggar in eller skapar ett konto med samma e-postadress och väljer **Acceptera inbjudan**. Därefter går hen med i den inbjudna rollen. En inbjudan går ut efter 48 timmar.\n\nUnder **Väntande inbjudningar** ser du vem som inte svarat än. Välj **Återkalla** för att avbryta en inbjudan, så slutar länken fungera. Du kan inte ge någon mer åtkomst än du själv har, och en e-postadress som redan är medlem kan inte bjudas in igen.\n\n# Byt roll eller ta bort någon\n\nPå medlemssidan kan du byta en medlems roll. Du kan inte ändra eller ta bort någon vars roll är över din egen. För att ta bort någon väljer du **Ta bort**. Hen förlorar åtkomsten direkt, och det hen skapat finns kvar i historiken.\n\n# Vem som ansvarar för vad på ett ärende\n\nÅtkomstrollerna avgör vad du får göra i appen. En separat idé avgör vem som ansvarar för ett ärende.\n\n- Varje ärende har en ansvarig, som måste vara medlem. Andra medlemmar kan följa den för att hållas informerade.\n- Vissa ärendestatusar kräver en ansvarig innan ett ärende kan gå in i dem, till exempel Bekräftad.\n- Byt ansvarig med **Byt ansvarig** och välj **Följ** eller **Sluta följa** för dig själv. Listan över ärenden kan visa bara det som är **Tilldelade mig** eller det du **Följer**.\n\nAdministratörer definierar ansvar som \"Kökschef\" under **Inställningar, Ansvar**. Ett ansvar täcker vissa artikeltyper och har en standardperson och följare. Kommer senare: ett ärende får automatiskt en ansvarig per ansvar utifrån sina artiklar, och de matchande bladen går till den personen och följarna.\n\n# Assistenten och API-åtkomst\n\nAssistenten agerar med dina behörigheter, så den kan aldrig göra mer än du. Verktyg ni kopplar med OAuth agerar också som du. API-nycklar tillhör organisationen och har egna behörigheter som en administratör sätter. Se [Autentisering](/docs/developers/authentication)."
         }
       },
       "developers": {
@@ -2676,7 +2676,7 @@
     "assign": "Byt ansvarig",
     "assignDescription": "Välj den medlem som ansvarar för detta. Följare hålls informerade.",
     "assigned": "Ansvarig har uppdaterats.",
-    "required": "I nuvarande status måste det finnas en ansvarig.",
+    "required": "I nuvarande ärendestatus måste det finnas en ansvarig.",
     "follow": "Följ",
     "unfollow": "Sluta följa",
     "followed": "Du följer nu detta.",
@@ -2818,7 +2818,7 @@
         "description": "Ett underlag som köksordern, och vem som får det."
       },
       "ticketStatus": {
-        "title": "Status",
+        "title": "Ärendestatus",
         "description": "Ett steg som ett ärende går igenom."
       },
       "member": {
@@ -2829,11 +2829,11 @@
   },
   "statusGrid": {
     "title": "Rutnätet",
-    "description": "Vad som händer med varje artikeltyps rader när ett ärende går in i en status. Välj en status, eller behåll för att lämna raderna som de är.",
-    "status": "Status",
+    "description": "Vad som händer med varje artikeltyps rader när ett ärende går in i en ärendestatus. Välj en status, eller behåll för att lämna raderna som de är.",
+    "status": "Ärendestatus",
     "keep": "Behåll",
     "closes": "Släpper alla rader",
-    "empty": "Inga statusar ännu.",
+    "empty": "Inga ärendestatusar ännu.",
     "saving": "Sparar cell…",
     "saved": "Cellen har sparats.",
     "cellLabel": "{status}: {type}",
@@ -2864,7 +2864,7 @@
     "fields": {
       "name": "Namn",
       "ticketType": "Ärendetyp",
-      "status": "Startar i status",
+      "status": "Startar i ärendestatus",
       "lineName": "Namn",
       "lineType": "Radtyp",
       "item": "Artikel",
@@ -2888,25 +2888,25 @@
         "warning": "Varning"
       },
       "problems": {
-        "NO_ENTRY_STATUS": "Ingen status där nya ärenden börjar",
-        "MANY_ENTRY_STATUSES": "Mer än en status där nya ärenden börjar",
-        "NO_CLOSING_STATUS": "Ingen status som avslutar ärendet",
-        "INVALID_STATUS_FLAGS": "En status kan inte både starta och avsluta ett ärende",
+        "NO_ENTRY_STATUS": "Ingen ärendestatus där nya ärenden börjar",
+        "MANY_ENTRY_STATUSES": "Mer än en ärendestatus där nya ärenden börjar",
+        "NO_CLOSING_STATUS": "Ingen ärendestatus som avslutar ärendet",
+        "INVALID_STATUS_FLAGS": "En ärendestatus kan inte både starta och avsluta ett ärende",
         "DUPLICATE_NAME": "Samma namn används två gånger",
         "NO_INITIAL_STATE": "En artikeltyp saknar status som nya rader börjar i",
         "MANY_INITIAL_STATES": "En artikeltyp har mer än en status som nya rader börjar i",
         "INVALID_STATE_FLAGS": "Valen för en status motsäger varandra eller typen",
         "UNKNOWN_EXPIRY_STATE": "Förfallostatusen är inte en av typens statusar",
-        "UNKNOWN_CELL": "En ruta i rutnätet anger en status, typ eller en status som inte finns",
-        "CLOSING_CELL": "En status som avslutar ärendet kan inte ha rutor i rutnätet",
+        "UNKNOWN_CELL": "En ruta i rutnätet anger en ärendestatus, typ eller en status som inte finns",
+        "CLOSING_CELL": "En ärendestatus som avslutar ärendet kan inte ha rutor i rutnätet",
         "STATE_CANNOT_LEAVE": "Rader i den här statusen kan aldrig gå vidare",
         "LINE_BLOCKED": "En rad kan inte flyttas till statusen som rutnätet anger"
       },
       "calendar": "Hållningar under ärendets liv",
       "slot": "{status}: {state}",
       "legend": "Fylld: hård hållning. Randig: mjuk hållning. Kontur: ingen hållning.",
-      "status": "Status",
-      "empty": "Inga statusar.",
+      "status": "Ärendestatus",
+      "empty": "Inga ärendestatusar.",
       "released": "Släppt",
       "holds": {
         "NONE": "Ingen hållning",
@@ -3163,7 +3163,7 @@
       "venue": "Lokaler",
       "priceList": "Prislistor",
       "configuration": "Typer, fält och listor",
-      "pipeline": "Statusar och tillstånd",
+      "pipeline": "Ärendestatusar och tillstånd",
       "template": "Mallar",
       "responsibility": "Ansvar",
       "member": "Medlemmar",
@@ -3173,7 +3173,7 @@
       "assistant": "Assistent och organisationens färdigheter"
     },
     "featureDescriptions": {
-      "ticket": "Bokningar med sina rader (rum, mat, aktiviteter), statusar och reservationer.",
+      "ticket": "Bokningar med sina rader (rum, mat, aktiviteter), ärendestatusar och reservationer.",
       "program": "Bokningens schema: vad som händer när, och var.",
       "customer": "Företag och personer som bokar, med sina kontaktpersoner.",
       "quote": "Erbjudanden med priser som skickas till kunder.",
@@ -3183,7 +3183,7 @@
       "venue": "Era lokaler och de utrymmen i dem som går att boka.",
       "priceList": "Prislistor med priserna för era artiklar.",
       "configuration": "Era egna typer, fält och listor, till exempel allergener.",
-      "pipeline": "Statusarna en bokning går igenom och lägena för dess rader.",
+      "pipeline": "Ärendestatusarna en bokning går igenom och lägena för dess rader.",
       "template": "Färdiga bokningar att utgå från när ni skapar nya.",
       "responsibility": "Vem som ansvarar för vilka artiklar, till exempel köksansvarig.",
       "member": "Personalen i organisationen, deras förval och behörigheter.",
@@ -3200,7 +3200,7 @@
       "hidden": "Dolt",
       "open": "Öppna behörigheter"
     },
-    "explanation": "Varje funktion har tre åtgärder: Läsa, Skriva (skapa, ändra, skicka, exportera, byta status) och Ta bort. Skriva och Ta bort kräver också Läsa, så att stänga av Läsa döljer hela funktionen. Gråa celler kommer från förinställningen och kan inte ändras här.",
+    "explanation": "Varje funktion har tre åtgärder: Läsa, Skriva (skapa, ändra, skicka, exportera, byta ärendestatus) och Ta bort. Skriva och Ta bort kräver också Läsa, så att stänga av Läsa döljer hela funktionen. Gråa celler kommer från förinställningen och kan inte ändras här.",
     "overridden": "Ändrad",
     "reset": "Återställ",
     "resetAll": "Återställ allt till förinställningen",

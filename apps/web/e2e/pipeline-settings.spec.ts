@@ -14,7 +14,7 @@ async function createStatus({
   flag?: string;
 }) {
   await gotoApp({ page, path: SETTINGS });
-  await page.getByRole("link", { name: "Skapa fas" }).first().click();
+  await page.getByRole("link", { name: "Skapa ärendestatus" }).first().click();
   await expect(page).toHaveURL(/\/sv\/[^/]+\/new\/ticket-status$/);
   await page.getByLabel("Namn").fill(name);
   if (flag) await page.getByRole("checkbox", { name: flag }).click();
@@ -48,7 +48,7 @@ test("an admin edits statuses and the grid on step pages", async ({ page }) => {
   await createStatus({ page, name: "Booked" });
   await createStatus({ page, name: "Spare" });
 
-  await rowAction({ page, row: "Booked", item: "Redigera fas" });
+  await rowAction({ page, row: "Booked", item: "Redigera ärendestatus" });
   await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline\/[^/]+\/update$/);
   await page.getByLabel("Namn").fill("Reserved");
   await page.getByRole("button", { name: "Spara" }).click();
@@ -83,8 +83,8 @@ test("an admin edits statuses and the grid on step pages", async ({ page }) => {
     ),
   ).toBeVisible();
 
-  await rowAction({ page, row: "Spare", item: "Arkivera fas" });
-  await page.getByRole("dialog").getByRole("button", { name: "Arkivera fas" }).click();
+  await rowAction({ page, row: "Spare", item: "Arkivera ärendestatus" });
+  await page.getByRole("dialog").getByRole("button", { name: "Arkivera ärendestatus" }).click();
   await expect(page.getByRole("cell", { name: "Spare" })).toHaveCount(0);
 });
 
