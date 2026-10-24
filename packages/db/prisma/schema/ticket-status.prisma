@@ -1,0 +1,65 @@
+// Ticket statuses per organization (ADR 0043): the organization's own statuses, in its own order.
+// Behaviour comes only from the generic status flags. Transitions between statuses are data too.
+
+/// Quote event that moves a ticket into a status (ADR 0043). At most one active status per event.
+enum StatusEvent {
+  QUOTE_SENT
+  QUOTE_ACCEPTED
+}
+
+/// Ticket status – an organization's own status, e.g. Lead, Quote sent or Lost. Exactly one active
+/// status is the default `entry` (the first by `position`), and at least one is `closes`.
+/// Trigger (ADR 0053): changing `closes` re-derives the holds of the lines that have not ended
+/// on tickets in the status (`sync_line_occupancy.sql`).
+model TicketStatus {
+  id                    String                   @id @default(cuid(2))
+  organizationId        String
+  name                  String
+  color                 String
+  position              Int                      @default(0)
+  /// New tickets start here.
+  entry                 Boolean                  @default(false)
+  /// No move leaves this status; entering it releases every line.
+  closes                Boolean                  @default(false)
+  /// A reason is required to enter.
+  requiresReason        Boolean                  @default(false)
+  /// The ticket must have its main assignee (ADR 0034) to enter.
+  requiresAssignee      Boolean                  @default(false)
+  /// The ticket must have an accepted quote to enter (ADR 0054: statuses guard facts).
+  requiresAcceptedQuote Boolean                  @default(false)
+  /// Invoices can be created in this status.
+  invoiceable           Boolean                  @default(false)
+  /// Entered by this quote event instead of by hand; at most one active status per event.
+  event                 StatusEvent?
+  status                RecordStatus             @default(ACTIVE)
+  createdAt             DateTime                 @default(now())
+  updatedAt             DateTime                 @updatedAt
+  createdBy             String?
+  transitionsFrom       TicketStatusTransition[] @relation("TransitionFrom")
+  transitionsTo         TicketStatusTransition[] @relation("TransitionTo")
+  tickets               Ticket[]
+  stateRules            StatusStateRule[]
+  templates             TicketTemplate[]
+  changesFrom           TicketStatusChange[]     @relation("StatusChangeFrom")
+  changesTo             TicketStatusChange[]     @relation("StatusChangeTo")
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status, position])
+}
+
+/// Ticket status transition – an allowed move from one status to another (from → to). Replaced as a
+/// set per `from` status by `ticketStatus.setTransitions`.
+model TicketStatusTransition {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  fromStatusId   String
+  toStatusId     String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  fromStatus     TicketStatus @relation("TransitionFrom", fields: [fromStatusId, organizationId], references: [id, organizationId])
+  toStatus       TicketStatus @relation("TransitionTo", fields: [toStatusId, organizationId], references: [id, organizationId])
+
+  @@unique([fromStatusId, toStatusId])
+  @@index([organizationId, fromStatusId])
+}

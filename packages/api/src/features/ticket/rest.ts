@@ -11,15 +11,15 @@ export const ticketRoutes = [
   }),
   restRoute({ operation: "ticket.update", method: "PATCH", path: "/tickets/{id}" }),
   restRoute({
-    operation: "ticket.changePhase",
+    operation: "ticket.changeStatus",
     method: "POST",
-    path: "/tickets/{ticketId}/phase",
+    path: "/tickets/{ticketId}/status",
   }),
   restRoute({ operation: "ticket.export", method: "GET", path: "/tickets/{id}/export" }),
   restRoute({
-    operation: "ticket.phaseHistory",
+    operation: "ticket.statusHistory",
     method: "GET",
-    path: "/tickets/{ticketId}/phase-history",
+    path: "/tickets/{ticketId}/status-history",
   }),
   restRoute({ operation: "ticket.expireHolds", method: "POST", path: "/tickets/expire-holds" }),
 ];

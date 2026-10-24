@@ -8,7 +8,7 @@ Current behaviour. Why: ADR 0028 (provider and Connect), 0029 (invoicing), 0057 
 - A `PaymentProvider` interface keeps the adapter replaceable (like `MailProvider`).
 - A payment settles exactly one receivable: a sent quote, a deposit request or an invoice (`quoteId`, `depositId` or `invoiceId`). `payment.create` takes the receivable; the amount defaults to the open balance and may be lower.
 - Nothing stores a balance. Paid = `SUCCEEDED` payments minus refunds; receivable progress (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`) and the ticket balance are derived (`payment.balance`). `status`, `paidAt` and `refundedMinor` mirror Stripe and are written only by `payment.applySignal`. The application fee is stored per payment and shown to the venue.
-- A paid payment only sets the payment to `SUCCEEDED`; staff change the ticket's phase. Payments never move a ticket.
+- A paid payment only sets the payment to `SUCCEEDED`; staff change the ticket's status. Payments never move a ticket.
 - `payment.create` inserts the `PENDING` row first and calls Stripe in its `external` step after commit, with the row id as idempotency key. A refused charge leaves the row `FAILED`. A change preview never creates a checkout or sends an invoice.
 
 ## Webhook

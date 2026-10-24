@@ -6,7 +6,7 @@ import {
 } from "../src/index";
 import { unwrap } from "./helpers";
 import { createTestItem } from "./item-helpers";
-import { addLine, gridSetup } from "./phase-grid-helpers";
+import { addLine, gridSetup } from "./status-grid-helpers";
 
 type Ctx = { context: ExecuteContext };
 

@@ -1,7 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
-import { handCellsOver } from "../phase-grid/cell-lifecycle";
+import { handCellsOver } from "../status-grid/cell-lifecycle";
 import { moveLinesToState } from "./lines-in-state";
 import { loadItemState, toItemStateDto } from "./load-item-state";
 import type { ItemStateArchiveInput, ItemStateDto } from "./schema";

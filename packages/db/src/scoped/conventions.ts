@@ -19,7 +19,7 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   // Append-only: a received mail never changes; written by the inbound webhook (SYSTEM).
   ["InboundEmail", ["updatedAt"]],
   // Append-only domain history (ADR 0054): `changedAt` and `changedBy` say when and who.
-  ["TicketPhaseChange", ["createdAt", "updatedAt", "createdBy"]],
+  ["TicketStatusChange", ["createdAt", "updatedAt", "createdBy"]],
   ["LineStateChange", ["createdAt", "updatedAt", "createdBy"]],
   // Derived search index, rebuilt from its entity; not authored by anyone.
   ["Embedding", ["createdBy"]],
@@ -62,11 +62,11 @@ export const CREATED_BY_MODELS = new Set<string>([
   "PriceList",
   "PriceListItem",
   "Occupancy",
-  "TicketPhase",
-  "TicketPhaseTransition",
+  "TicketStatus",
+  "TicketStatusTransition",
   "ItemState",
   "ItemStateTransition",
-  "PhaseStateRule",
+  "StatusStateRule",
   "Ticket",
   "TicketTemplate",
   "TicketTemplateLine",

@@ -3,12 +3,12 @@ import type { OperationContext } from "../../operations/types";
 import { loadStatesById } from "../item-state/load-item-state";
 import { holdCollisions } from "../line/hold-collisions";
 import type { LineRecord } from "../line/schema";
-import { cellsOfPhase } from "../phase-grid/load-grid";
+import { cellsOfStatus } from "../status-grid/load-grid";
 import type { PlannedLine } from "./plan-template-lines";
 
 export type TemplateCollisionsInput = {
   context: Pick<OperationContext, "db">;
-  phaseId: string;
+  statusId: string;
   lines: readonly PlannedLine[];
 };
 
@@ -37,12 +37,12 @@ const asLine = ({ line, index }: { line: PlannedLine; index: number }): LineReco
 
 /**
  * Every hard-hold collision the planned lines would cause (ADR 0044), found before anything is
- * created: each line gets the state the phase grid gives its item's type for the start phase
+ * created: each line gets the state the status grid gives its item's type for the start status
  * (else the type's initial state) and is checked as the move into that state would be.
  */
 export async function templateCollisions({
   context,
-  phaseId,
+  statusId,
   lines,
 }: TemplateCollisionsInput): Promise<AppErrorIssue[]> {
   const items = await context.db.item.findMany({
@@ -51,7 +51,7 @@ export async function templateCollisions({
   });
   const typeOf = new Map(items.map((item) => [item.id, item.entityTypeId]));
   const typeIds = unique({ ids: items.map((item) => item.entityTypeId) });
-  const cells = await cellsOfPhase({ context, phaseId, entityTypeIds: typeIds });
+  const cells = await cellsOfStatus({ context, statusId, entityTypeIds: typeIds });
   const initials = await context.db.itemState.findMany({
     where: { entityTypeId: { in: typeIds }, initial: true },
     select: { id: true, entityTypeId: true },

@@ -5,7 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/navigation";
 import { ticketRoute, updateRoute } from "@/lib/routes";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
-import { ChangePhaseButton } from "./change-phase-button";
+import { ChangeStatusButton } from "./change-status-button";
 import { ExportTicketButton } from "./export-ticket-button";
 import type { TicketFormData } from "./ticket-form-data";
 
@@ -15,7 +15,7 @@ export type TicketActionsProps = {
   abilities: CallerAbilities;
 };
 
-/** Export, edit (own page) and change-phase buttons of the ticket page, each by its permission. */
+/** Export, edit (own page) and change-status buttons of the ticket page, each by its permission. */
 export async function TicketActions({ ticket, data, abilities }: TicketActionsProps) {
   const t = await getTranslations("ticket");
   return (
@@ -32,7 +32,7 @@ export async function TicketActions({ ticket, data, abilities }: TicketActionsPr
         </Button>
       ) : null}
       {can({ abilities, permission: "ticket:write" }) ? (
-        <ChangePhaseButton ticket={ticket} phases={data.phases} />
+        <ChangeStatusButton ticket={ticket} statuses={data.statuses} />
       ) : null}
     </>
   );

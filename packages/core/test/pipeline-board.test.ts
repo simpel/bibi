@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { type ExecuteContext, execute, pipelineBoard } from "../src/index";
 import { unwrap } from "./helpers";
 import { testOrg } from "./org-helpers";
-import { createTestTicket, memberUser, moveToPhase, ticketSetup } from "./ticket-helpers";
+import { createTestTicket, memberUser, moveToStatus, ticketSetup } from "./ticket-helpers";
 
 type BoardInput = { context: ExecuteContext; input?: Record<string, unknown> };
 
@@ -11,7 +11,7 @@ async function board({ context, input = {} }: BoardInput) {
 }
 
 describe("pipeline.board (ADR 0043)", () => {
-  it("has one column per phase in order, terminal phases last as closed lanes", async () => {
+  it("has one column per status in order, closing statuses last as closed lanes", async () => {
     const { context } = await ticketSetup();
     const { columns } = await board({ context });
     expect(columns.map((column) => column.title)).toEqual([
@@ -24,7 +24,7 @@ describe("pipeline.board (ADR 0043)", () => {
     expect(columns.find((c) => c.title === "Lost")?.requiresReason).toBe(true);
   });
 
-  it("puts tickets in their phase's column and moves them with ticket.changePhase", async () => {
+  it("puts tickets in their status's column and moves them with ticket.changeStatus", async () => {
     const { context, type, customer } = await ticketSetup();
     const ticket = await createTestTicket({
       context,
@@ -36,7 +36,7 @@ describe("pipeline.board (ADR 0043)", () => {
     expect(first.cards).toEqual([
       expect.objectContaining({
         id: ticket.id,
-        columnId: ticket.phaseId,
+        columnId: ticket.statusId,
         reference: ticket.reference,
         customerId: customer.id,
         quantity: 20,
@@ -44,9 +44,9 @@ describe("pipeline.board (ADR 0043)", () => {
       }),
     ]);
     const lost = { context, ticketId: ticket.id, name: "Lost", reason: "Went elsewhere" };
-    const moved = unwrap({ result: await moveToPhase(lost) });
+    const moved = unwrap({ result: await moveToStatus(lost) });
     const after = await board({ context });
-    expect(after.cards[0]?.columnId).toBe(moved.phaseId);
+    expect(after.cards[0]?.columnId).toBe(moved.statusId);
     const recent = await board({ context, input: { closedWithinDays: 1 } });
     expect(recent.cards).toHaveLength(1);
   });

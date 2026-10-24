@@ -23,7 +23,7 @@ export const listTicketTemplates = defineOperation({
   kind: "query",
   description:
     "List the organization's predefined tickets (templates), ordered by name, each with its " +
-    "ticket type, start phase, default field values and lines. Make a ticket from one with " +
+    "ticket type, start status, default field values and lines. Make a ticket from one with " +
     "ticket.createFromTemplate.",
   input: TicketTemplateListInputSchema,
   output: TicketTemplateListOutputSchema,
@@ -61,7 +61,7 @@ export const createTicketTemplate = defineOperation({
   name: "ticketTemplate.create",
   kind: "command",
   description:
-    "Create a predefined ticket: a name, a ticket type, the (non-terminal) phase tickets start " +
+    "Create a predefined ticket: a name, a ticket type, the (non-closing) status tickets start " +
     `in, default own-field values and lines. ${LINE_NOTE}`,
   input: TicketTemplateCreateInputSchema,
   output: TicketTemplateSchema,
@@ -98,7 +98,7 @@ export const updateTicketTemplate = defineOperation({
     const checked = await checkTemplate({
       context,
       entityTypeId: data.entityTypeId ?? before.entityTypeId,
-      phaseId: data.phaseId ?? before.phaseId,
+      statusId: data.statusId ?? before.statusId,
       fields: fields ?? before.fields,
       lines: lines ?? before.lines,
     });

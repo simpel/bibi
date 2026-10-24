@@ -17,7 +17,7 @@ const hall = book({ key: "hall", name: "Hall" });
  */
 export const VENUE_KIND_PRESETS = {
   "conference-estate": {
-    phases: "conference-estate",
+    statuses: "conference-estate",
     itemTypes: [
       book({ key: "conferenceRoom", name: "Conference room" }),
       book({ key: "breakoutRoom", name: "Breakout room" }),
@@ -30,7 +30,7 @@ export const VENUE_KIND_PRESETS = {
     ],
   },
   "manor-house": {
-    phases: "conference-estate",
+    statuses: "conference-estate",
     itemTypes: [
       book({ key: "banquetHall", name: "Banquet hall" }),
       meetingRoom,
@@ -42,7 +42,7 @@ export const VENUE_KIND_PRESETS = {
     ],
   },
   "experience-centre": {
-    phases: "conference-estate",
+    statuses: "conference-estate",
     itemTypes: [
       hall,
       guide,
@@ -53,7 +53,7 @@ export const VENUE_KIND_PRESETS = {
     ],
   },
   museum: {
-    phases: "default",
+    statuses: "default",
     itemTypes: [
       book({ key: "eventSpace", name: "Event space" }),
       guide,
@@ -63,7 +63,7 @@ export const VENUE_KIND_PRESETS = {
     ],
   },
   restaurant: {
-    phases: "default",
+    statuses: "default",
     itemTypes: [
       book({ key: "privateRoom", name: "Private room" }),
       sell({ key: "setMenu", name: "Set menu" }),
@@ -73,7 +73,7 @@ export const VENUE_KIND_PRESETS = {
     ],
   },
   "event-hall": {
-    phases: "conference-estate",
+    statuses: "conference-estate",
     itemTypes: [
       hall,
       meetingRoom,
@@ -85,7 +85,7 @@ export const VENUE_KIND_PRESETS = {
     ],
   },
   "arena-hospitality": {
-    phases: "default",
+    statuses: "default",
     itemTypes: [
       book({ key: "lodge", name: "Lodge" }),
       book({ key: "lounge", name: "Lounge" }),
@@ -95,7 +95,7 @@ export const VENUE_KIND_PRESETS = {
     ],
   },
   theatre: {
-    phases: "default",
+    statuses: "default",
     itemTypes: [
       book({ key: "foyer", name: "Foyer" }),
       book({ key: "rehearsalRoom", name: "Rehearsal room" }),
@@ -105,8 +105,8 @@ export const VENUE_KIND_PRESETS = {
     ],
   },
   "meeting-space": {
-    phases: "default",
+    statuses: "default",
     itemTypes: [meetingRoom, equipment, coffeeBreak, sell({ key: "lunch", name: "Lunch" })],
   },
-  empty: { phases: "default", itemTypes: [] },
+  empty: { statuses: "default", itemTypes: [] },
 } as const satisfies Record<string, Omit<SetupPreset, "key">>;

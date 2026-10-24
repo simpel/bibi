@@ -9,7 +9,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/lib/navigation";
 import { useToastAction } from "@/lib/use-toast-action";
-import { changeLineStateAction, followLinePhaseAction } from "../actions";
+import { changeLineStateAction, followLineStatusAction } from "../actions";
 import type { LineStateOption } from "./line-state-option";
 
 export type LineStateMenuProps = { line: LineDto; states: LineStateOption[] };
@@ -36,7 +36,7 @@ function StateTargets({ targets, onPick }: TargetsProps) {
 
 /**
  * Row-menu entries for a line's state (ADR 0044): move it to a state its current state allows
- * (an override phase moves skip) and, when overridden, let it follow the phase again.
+ * (an override status moves skip) and, when overridden, let it follow the status again.
  */
 export function LineStateMenu({ line, states }: LineStateMenuProps) {
   const t = useTranslations("line");
@@ -52,12 +52,12 @@ export function LineStateMenu({ line, states }: LineStateMenuProps) {
   const pick = ({ stateId }: { stateId: string }) =>
     run({ action: () => changeLineStateAction({ lineId, stateId }), messages, onSuccess });
   const follow = () =>
-    run({ action: () => followLinePhaseAction({ lineId }), messages, onSuccess });
+    run({ action: () => followLineStatusAction({ lineId }), messages, onSuccess });
   return (
     <>
       {targets.length > 0 ? <StateTargets targets={targets} onPick={pick} /> : null}
       {line.stateOverridden ? (
-        <DropdownMenuItem onSelect={follow}>{t("followPhase")}</DropdownMenuItem>
+        <DropdownMenuItem onSelect={follow}>{t("followStatus")}</DropdownMenuItem>
       ) : null}
     </>
   );

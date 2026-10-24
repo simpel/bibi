@@ -2,18 +2,18 @@ import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { archiveCustomer, type ExecuteContext, execute, getTicket, grantAll } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
-import { createTestTicket, placeInPhase, ticketSetup } from "./ticket-helpers";
-import { phases } from "./ticket-phase-helpers";
+import { createTestTicket, placeInStatus, ticketSetup } from "./ticket-helpers";
+import { statuses } from "./ticket-status-helpers";
 
 type TicketsInput = { context: ExecuteContext; entityTypeId: string; customerId: string };
 
-/** One ticket in each phase (Lead, Confirmed, Completed, Lost). */
-async function ticketPerPhase({ context, ...input }: TicketsInput): Promise<string[]> {
+/** One ticket in each status (Lead, Confirmed, Completed, Lost). */
+async function ticketPerStatus({ context, ...input }: TicketsInput): Promise<string[]> {
   const ids: string[] = [];
-  for (const phase of await phases({ context })) {
+  for (const ticketStatus of await statuses({ context })) {
     const ticket = await createTestTicket({ context, ...input });
-    // Placed directly: the phase rules are not what this test is about.
-    await placeInPhase({ ticket, phaseId: phase.id });
+    // Placed directly: the status rules are not what this test is about.
+    await placeInStatus({ ticket, statusId: ticketStatus.id });
     ids.push(ticket.id);
   }
   return ids;
@@ -22,7 +22,7 @@ async function ticketPerPhase({ context, ...input }: TicketsInput): Promise<stri
 async function setupWithTickets() {
   const setup = await ticketSetup();
   const { context, type, customer } = setup;
-  const ids = await ticketPerPhase({ context, entityTypeId: type.id, customerId: customer.id });
+  const ids = await ticketPerStatus({ context, entityTypeId: type.id, customerId: customer.id });
   return { ...setup, ids };
 }
 
@@ -30,7 +30,7 @@ const archivedStatus = async ({ ids }: { ids: string[] }) =>
   (await getDb().ticket.findMany({ where: { id: { in: ids } } })).map((row) => row.status);
 
 describe("customer.archive with the customer's tickets (#134)", () => {
-  it("is blocked by tickets in every phase, with the count, unless archiveTickets is set", async () => {
+  it("is blocked by tickets in every status, with the count, unless archiveTickets is set", async () => {
     const { context, customer, ids } = await setupWithTickets();
     expect(ids).toHaveLength(4);
     const refused = await execute({

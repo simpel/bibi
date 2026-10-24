@@ -5,7 +5,7 @@ Policy: root `CLAUDE.md`, "Conventions". Rules go to the nearest `CLAUDE.md` wit
 ## Done: spec moved out, ADR shortened
 | ADR | Spec |
 |---|---|
-| 0043, 0044, 0054 | `docs/specs/tickets-phases-and-states.md` |
+| 0043, 0044, 0054 | `docs/specs/tickets-statuses-and-states.md` |
 | 0034, 0050, 0055 | `docs/specs/permissions.md`, `docs/specs/assignments-and-responsibilities.md` |
 | 0021, 0026 | `docs/specs/configurable-domain.md` |
 | 0045 | `docs/specs/onboarding.md` |

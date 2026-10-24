@@ -6,8 +6,8 @@ import { assignment } from "./parity-entities-assignment";
 import { requirement } from "./parity-entities-requirement";
 
 /**
- * A ticket (ADR 0043) for the customer created earlier. It starts in the entry phase, so it comes
- * after the ticket phase entity.
+ * A ticket (ADR 0043) for the customer created earlier. It starts in the entry status, so it comes
+ * after the ticket status entity.
  */
 const ticket = (): ParityEntity => ({
   ...byId({ name: "ticket", field: "ticket", list: "tickets", createTool: "", args: {} }),
@@ -66,7 +66,7 @@ const line = (): ParityEntity => ({
   },
 });
 
-/** A predefined ticket (ADR 0043): its own types, the phase made earlier and the item as a line. */
+/** A predefined ticket (ADR 0043): its own types, the status made earlier and the item as a line. */
 const ticketTemplate = (): ParityEntity => ({
   ...byId({
     name: "ticketTemplate",
@@ -86,7 +86,7 @@ const ticketTemplate = (): ParityEntity => ({
       args: {
         name: "Parity template",
         entityTypeId: ticketType.id,
-        phaseId: made.ticketPhase.id,
+        statusId: made.ticketStatus.id,
         lines: [
           {
             entityTypeId: lineType.id,

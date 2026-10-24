@@ -53,7 +53,7 @@ export const sendQuote = defineOperation({
     "lines as the quote's snapshot: one order line per line with its effective price, VAT, " +
     "tags and totals; later line changes never touch it. It needs at least one priced line, " +
     "each with a quantity and VAT, and a future `validUntil`, and the ticket must not be in a " +
-    "terminal phase. Older SENT versions expire. The ticket's phase does not change. Any other " +
+    "closing status. Older SENT versions expire. The ticket's status does not change. Any other " +
     "starting status is a CONFLICT. Needs program:read and item:read (the lines are copied).",
   input: QuoteIdInputSchema,
   output: QuoteSchema,

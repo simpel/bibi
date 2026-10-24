@@ -35,7 +35,7 @@ const filtersOf = ({ params }: { params: CalendarParams }) => ({
   venueId: params.venueId,
   typeId: params.typeId,
   stateId: params.stateId,
-  phaseId: params.phaseId,
+  statusId: params.statusId,
   ticketId: params.ticketId,
 });
 

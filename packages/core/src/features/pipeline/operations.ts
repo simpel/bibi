@@ -9,9 +9,9 @@ export const pipelineBoard = defineOperation({
   name: "pipeline.board",
   kind: "query",
   description:
-    "The pipeline board (ADR 0041, 0043): one column per active ticket phase in the " +
-    "organization's order, terminal phases last as closed lanes, and one card per ticket in its " +
-    "phase's column. Filter by assignee or type. Tickets in terminal phases appear only for " +
+    "The pipeline board (ADR 0041, 0043): one column per active ticket status in the " +
+    "organization's order, closing statuses last as closed lanes, and one card per ticket in its " +
+    "status's column. Filter by assignee or type. Tickets in closing statuses appear only for " +
     "`closedWithinDays` days. A card names its customer by id only (customer.get or " +
     "customer.list resolve it); its held and booked line counts are null without program:read.",
   input: PipelineBoardInputSchema,
@@ -21,15 +21,15 @@ export const pipelineBoard = defineOperation({
   entityType: "ticket",
   handler: async ({ input, context }) => {
     const since = new Date(Date.now() - input.closedWithinDays * DAY_MS);
-    const phases = await context.db.ticketPhase.findMany({
+    const statuses = await context.db.ticketStatus.findMany({
       orderBy: [{ position: "asc" }, { id: "asc" }],
     });
-    const columns = phases.map((phase) => ({
-      id: phase.id,
-      title: phase.name,
-      color: phase.color,
-      requiresReason: phase.requiresReason,
-      closed: phase.terminal,
+    const columns = statuses.map((ticketStatus) => ({
+      id: ticketStatus.id,
+      title: ticketStatus.name,
+      color: ticketStatus.color,
+      requiresReason: ticketStatus.requiresReason,
+      closed: ticketStatus.closes,
     }));
     const cards = await loadTicketCards({ context, input, since });
     return ok({

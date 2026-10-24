@@ -25,7 +25,7 @@ export type CalendarBlock = {
   stateId: string | null;
   stateName: string | null;
   stateColor: string | null;
-  phaseId: string | null;
+  statusId: string | null;
   /** The ticket's one expiry date, shown on soft holds whose state expires. */
   expiresAt: Date | null;
 };
@@ -72,7 +72,7 @@ export function toCalendarBlocks({
       stateId: state?.id ?? null,
       stateName: state?.name ?? null,
       stateColor: state?.color ?? null,
-      phaseId: ticket?.phaseId ?? null,
+      statusId: ticket?.statusId ?? null,
       expiresAt: softHold && state?.expires ? (ticket?.holdsUntil ?? null) : null,
     };
   });

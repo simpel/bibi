@@ -10,7 +10,7 @@ export const archiveItemState = defineOperation({
   description:
     "Archive an item state (states are never deleted). When lines use it, `targetStateId` (a " +
     "state of the same type) is required: the lines move there with their holds, all or none. " +
-    "A type whose expiry state it was and the phase grid cells that use it get the target (or " +
+    "A type whose expiry state it was and the status grid cells that use it get the target (or " +
     "are cleared). Its transitions are removed. " +
     "The initial state cannot be archived until another state is initial (CONFLICT).",
   input: ItemStateArchiveInputSchema,
@@ -22,7 +22,7 @@ export const archiveItemState = defineOperation({
     const moving = canView({ context, feature: "program" })
       ? await context.db.line.count({ where: { stateId: input.id } })
       : 0;
-    const cells = await context.db.phaseStateRule.count({ where: { stateId: input.id } });
+    const cells = await context.db.statusStateRule.count({ where: { stateId: input.id } });
     const target = input.targetStateId
       ? await context.db.itemState.findFirst({ where: { id: input.targetStateId } })
       : null;

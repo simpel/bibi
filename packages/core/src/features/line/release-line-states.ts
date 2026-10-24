@@ -22,14 +22,14 @@ export type ReleaseLineStatesInput = {
   ticketId: string;
   /** Only these lines of the ticket (e.g. the options not chosen, ADR 0052). */
   lineIds?: readonly string[];
-  /** Mark the moved lines as overridden, so phase moves skip them (an explicit release). */
+  /** Mark the moved lines as overridden, so status moves skip them (an explicit release). */
   overridden?: boolean;
 };
 
 /**
  * Moves every line of the ticket that is not yet in a released state to its item type's released
  * state (ADR 0044), audited per line. A type without a released state keeps the line's state; it holds
- * nothing anyway once the ticket is in a terminal phase (ADR 0053).
+ * nothing anyway once the ticket is in a closing status (ADR 0053).
  */
 export async function releaseLineStates({
   context,
@@ -47,7 +47,7 @@ export async function releaseLineStates({
       context,
       before: line,
       stateId,
-      trigger: overridden ? "MANUAL" : "PHASE",
+      trigger: overridden ? "MANUAL" : "STATUS",
       overridden,
     });
     if (!moved.ok) return moved;

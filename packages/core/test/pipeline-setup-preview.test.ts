@@ -6,7 +6,7 @@ import { estateDraft, roomType } from "./pipeline-setup-helpers";
 const codes = ({ rows }: { rows: readonly { code: string }[] }) => rows.map((row) => row.code);
 
 describe("pipelineSetup.preview (ADR 0044)", () => {
-  it("steps a simulated ticket through every phase without writing", async () => {
+  it("steps a simulated ticket through every status without writing", async () => {
     const context = testContext();
     const room = await roomType({ context });
     const input = estateDraft({ roomTypeId: room.id });
@@ -15,9 +15,11 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
     });
     expect(preview.ready).toBe(true);
     expect(preview.problems).toEqual([]);
-    const at = ({ phase }: { phase: string }) =>
-      preview.steps.find((step) => step.phase === phase)?.lines.map((line) => line.state);
-    expect(preview.steps.map((step) => step.phase)).toEqual([
+    const at = ({ ticketStatus }: { ticketStatus: string }) =>
+      preview.steps
+        .find((step) => step.ticketStatus === ticketStatus)
+        ?.lines.map((line) => line.state);
+    expect(preview.steps.map((step) => step.ticketStatus)).toEqual([
       "New",
       "Site visit",
       "Quote sent",
@@ -27,13 +29,13 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
       "Lost",
       "Cancelled",
     ]);
-    expect(at({ phase: "New" })).toEqual(["Prebooked", "Estimated"]);
-    expect(at({ phase: "Confirmed" })).toEqual(["Booked", "Ordered"]);
-    expect(at({ phase: "Final count locked" })).toEqual(["Booked", "Locked"]);
-    expect(at({ phase: "Lost" })).toEqual(["Released", "Released"]);
+    expect(at({ ticketStatus: "New" })).toEqual(["Prebooked", "Estimated"]);
+    expect(at({ ticketStatus: "Confirmed" })).toEqual(["Booked", "Ordered"]);
+    expect(at({ ticketStatus: "Final count locked" })).toEqual(["Booked", "Locked"]);
+    expect(at({ ticketStatus: "Lost" })).toEqual(["Released", "Released"]);
     const holds = preview.steps.map((step) => step.lines[0]?.hold);
     expect(holds.slice(0, 5)).toEqual(["SOFT", "SOFT", "SOFT", "HARD", "HARD"]);
-    expect(await context.db.ticketPhase.count()).toBe(0);
+    expect(await context.db.ticketStatus.count()).toBe(0);
   });
 
   it("lists the configuration problems", async () => {
@@ -43,12 +45,16 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
     if (!room || !dish) throw new Error("draft");
     const input = {
       ...draft,
-      phases: draft.phases.map((phase) => ({ ...phase, entry: false, terminal: false })),
+      statuses: draft.statuses.map((ticketStatus) => ({
+        ...ticketStatus,
+        entry: false,
+        closes: false,
+      })),
       itemTypes: [
         { ...room, states: room.states.map((state) => ({ ...state, initial: false })) },
         { ...dish, states: dish.states.filter((state) => !state.released) },
       ],
-      cells: [...draft.cells, { phase: "New", type: "Boat", state: "Afloat" }],
+      cells: [...draft.cells, { ticketStatus: "New", type: "Boat", state: "Afloat" }],
     };
     const preview = unwrap({
       result: await execute({ operation: previewPipelineSetup, input, context }),
@@ -56,8 +62,8 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
     expect(preview.ready).toBe(false);
     expect(codes({ rows: preview.problems })).toEqual(
       expect.arrayContaining([
-        "NO_ENTRY_PHASE",
-        "NO_TERMINAL_PHASE",
+        "NO_ENTRY_STATUS",
+        "NO_CLOSING_STATUS",
         "NO_INITIAL_STATE",
         "STATE_CANNOT_LEAVE",
         "UNKNOWN_CELL",
@@ -72,7 +78,7 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
     const draft = estateDraft();
     const cells = [
       ...draft.cells,
-      { phase: "Final count locked", type: "Room", state: "Prebooked" },
+      { ticketStatus: "Final count locked", type: "Room", state: "Prebooked" },
     ];
     const preview = unwrap({
       result: await execute({
@@ -82,9 +88,13 @@ describe("pipelineSetup.preview (ADR 0044)", () => {
       }),
     });
     expect(preview.problems).toEqual([
-      expect.objectContaining({ code: "LINE_BLOCKED", phase: "Final count locked", type: "Room" }),
+      expect.objectContaining({
+        code: "LINE_BLOCKED",
+        ticketStatus: "Final count locked",
+        type: "Room",
+      }),
     ]);
-    const step = preview.steps.find((row) => row.phase === "Final count locked");
+    const step = preview.steps.find((row) => row.ticketStatus === "Final count locked");
     expect(step?.lines[0]).toMatchObject({ state: "Booked", blocked: expect.any(String) });
   });
 

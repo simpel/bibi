@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   assignAssignment,
-  changeTicketPhase,
+  changeTicketStatus,
   createTicket,
   execute,
   listAssignments,
@@ -11,7 +11,7 @@ import { assignTo, followAs, ticketSubject } from "./assignment-helpers";
 import { errorCode, unwrap } from "./helpers";
 import { testOrg } from "./org-helpers";
 import { createTestTicket, memberUser, ticketSetup } from "./ticket-helpers";
-import { phaseByName } from "./ticket-phase-helpers";
+import { statusByName } from "./ticket-status-helpers";
 
 async function setup() {
   const { context, type, customer } = await ticketSetup();
@@ -111,15 +111,15 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
     await expect(other.db.assignment.create({ data })).rejects.toThrow();
   });
 
-  it("keeps the ticket's main assignee in a phase that requires one", async () => {
+  it("keeps the ticket's main assignee in a status that requires one", async () => {
     const { context, ticket, subject } = await setup();
-    const confirmed = await phaseByName({ context, name: "Confirmed" });
-    const move = { ticketId: ticket.id, phaseId: confirmed.id };
-    const refused = await execute({ operation: changeTicketPhase, input: move, context });
+    const confirmed = await statusByName({ context, name: "Confirmed" });
+    const move = { ticketId: ticket.id, statusId: confirmed.id };
+    const refused = await execute({ operation: changeTicketStatus, input: move, context });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     const johan = await memberUser({ context, name: "Johan Ek" });
     await assignTo({ context, ...subject, assigneeId: johan });
-    unwrap({ result: await execute({ operation: changeTicketPhase, input: move, context }) });
+    unwrap({ result: await execute({ operation: changeTicketStatus, input: move, context }) });
     const removed = await execute({
       operation: assignAssignment,
       input: { ...subject, assigneeId: null },

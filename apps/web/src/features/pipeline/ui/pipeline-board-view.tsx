@@ -14,7 +14,7 @@ export type PipelineBoardViewProps = {
   customerNames: Readonly<Record<string, string>>;
 };
 
-/** The kanban board of tickets by phase; a drop runs `ticket.changePhase`. */
+/** The kanban board of tickets by status; a drop runs `ticket.changeStatus`. */
 export function PipelineBoardView({ board, transitions, customerNames }: PipelineBoardViewProps) {
   const labels = usePipelineLabels();
   const { move, dialog } = useMoveCard();

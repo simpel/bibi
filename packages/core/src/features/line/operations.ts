@@ -11,7 +11,7 @@ import {
   LineChooseOptionsOutputSchema,
 } from "./choose-options-schema";
 import { expandLineBundle } from "./expand-operation";
-import { followLinePhase } from "./follow-phase-operation";
+import { followLineStatus } from "./follow-status-operation";
 import { LineListInputSchema, LineListOutputSchema } from "./list-schema";
 import { LineIdInputSchema, LineSchema } from "./schema";
 import { byHeldSince } from "./state-history";
@@ -101,5 +101,5 @@ export const lineOperations = [
   updateLine,
   archiveLine,
   changeLineState,
-  followLinePhase,
+  followLineStatus,
 ];

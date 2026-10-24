@@ -75,7 +75,6 @@ export type { LineWire } from "./ui-contract/line-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire, TicketBalanceWire } from "./ui-contract/payment-entries";
 export type { PermissionProfileWire } from "./ui-contract/permission-entries";
-export type { PhaseGridCellWire } from "./ui-contract/phase-grid-entries";
 export type { PipelineBoardWire } from "./ui-contract/pipeline-entries";
 export type {
   PipelinePreviewWire,
@@ -89,8 +88,9 @@ export { type ResolveToolUiInput, resolveToolUi } from "./ui-contract/resolve-to
 export type { ResponsibilityWire } from "./ui-contract/responsibility-entries";
 export type { SheetDefinitionWire } from "./ui-contract/sheet-definition-entries";
 export type { SheetWire } from "./ui-contract/sheet-entries";
+export type { StatusGridCellWire } from "./ui-contract/status-grid-entries";
 export type { TicketWire } from "./ui-contract/ticket-entries";
-export type { TicketPhaseWire } from "./ui-contract/ticket-phase-entries";
+export type { TicketStatusWire } from "./ui-contract/ticket-status-entries";
 export type { TicketTemplateWire } from "./ui-contract/ticket-template-entries";
 export { GENERIC_UI_TOOLS, TOOL_UI_REGISTRY } from "./ui-contract/tool-ui-registry";
 export type {

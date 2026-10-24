@@ -13,12 +13,12 @@ import { useTranslations } from "next-intl";
 export type MoveBlockersDialogProps = {
   /** The blockers of a refused move; null = closed. */
   issues: readonly AppErrorIssue[] | null;
-  /** The target phase name. */
+  /** The target status name. */
   title: string;
   onClose: () => void;
 };
 
-/** Lists everything that blocks a move (`ticket.changePhase` CONFLICT issues). */
+/** Lists everything that blocks a move (`ticket.changeStatus` CONFLICT issues). */
 export function MoveBlockersDialog({ issues, title, onClose }: MoveBlockersDialogProps) {
   const t = useTranslations("pipeline.blockers");
   return (

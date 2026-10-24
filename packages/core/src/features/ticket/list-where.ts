@@ -9,11 +9,11 @@ export type TicketListWhereInput = { input: z.infer<typeof TicketListInputSchema
  * window overlaps the desired period. Assignee and follower filters are added by `subjectIdFilter`.
  */
 export function ticketListWhere({ input }: TicketListWhereInput): Prisma.TicketWhereInput {
-  const { customerId, entityTypeId, phaseId } = input;
+  const { customerId, entityTypeId, statusId } = input;
   return {
     ...(customerId ? { customerId } : {}),
     ...(entityTypeId ? { entityTypeId } : {}),
-    ...(phaseId ? { phaseId } : {}),
+    ...(statusId ? { statusId } : {}),
     ...(input.from ? { desiredEndsAt: { gt: input.from } } : {}),
     ...(input.to ? { desiredStartsAt: { lt: input.to } } : {}),
   };

@@ -84,7 +84,9 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       "Karin Wallin",
     ]);
     expect(nordkust?.priceLists.map((list) => Number(list.discountPercent))).toEqual([15]);
-    expect(await db.ticketPhase.count({ where: { organizationId: lind?.organizationId } })).toBe(8);
+    expect(await db.ticketStatus.count({ where: { organizationId: lind?.organizationId } })).toBe(
+      8,
+    );
     const tickets = await db.ticket.findMany({
       where: { organizationId: lind?.organizationId },
       orderBy: { reference: "asc" },

@@ -1,6 +1,6 @@
 import { PipelinePreviewSchema, PipelineSetupDraftSchema } from "@bibi/core/schemas";
 import { z } from "zod";
-import { PhaseGridWireSchema } from "./phase-grid-entries";
+import { StatusGridWireSchema } from "./status-grid-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 
@@ -22,10 +22,10 @@ export const PIPELINE_SETUP_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = 
     schema: PipelineSetupDraftSchema,
     toProps: ({ value }) => ({ draft: value }),
   }),
-  // The activated pipeline is shown by its grid; phases and states have their own tools.
+  // The activated pipeline is shown by its grid; statuses and states have their own tools.
   pipelineSetup_activate: uiEntry({
-    component: "phase-grid-table",
-    schema: z.object({ grid: PhaseGridWireSchema }),
+    component: "status-grid-table",
+    schema: z.object({ grid: StatusGridWireSchema }),
     toProps: ({ value }) => value.grid,
   }),
 };

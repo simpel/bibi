@@ -16,7 +16,7 @@ async function seed({ org }: SeedInput): Promise<string> {
     body: { base: "TICKET", name: "Conference" },
   });
   await post({
-    path: "/ticket-phases",
+    path: "/ticket-statuses",
     body: { name: "Lead", color: "#22c55e", entry: true },
   });
   const customer = await post({

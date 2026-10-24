@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   archiveItem,
-  archiveTicketPhase,
+  archiveTicketStatus,
   archiveTicketTemplate,
   execute,
   getTicketTemplate,
@@ -9,7 +9,7 @@ import {
   updateTicketTemplate,
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
-import { phaseByName } from "./ticket-phase-helpers";
+import { statusByName } from "./ticket-status-helpers";
 import { makeTemplate, roomAndDish, templateSetup } from "./ticket-template-helpers";
 
 describe("ticket templates (ADR 0043)", () => {
@@ -22,19 +22,19 @@ describe("ticket templates (ADR 0043)", () => {
     const got = unwrap({
       result: await execute({ operation: getTicketTemplate, input: { id: made.id }, context }),
     });
-    expect(got.phaseId).toBe(setup.confirmed.id);
+    expect(got.statusId).toBe(setup.confirmed.id);
     const listed = unwrap({
       result: await execute({ operation: listTicketTemplates, input: {}, context }),
     });
     expect(listed.items.map((template) => template.id)).toEqual([made.id]);
   });
 
-  it("refuses a terminal start phase, a foreign type and a customer's bundle", async () => {
+  it("refuses a closing start status, a foreign type and a customer's bundle", async () => {
     const setup = await templateSetup();
     const { context } = setup;
-    const lost = await phaseByName({ context, name: "Lost" });
-    const terminal = await makeTemplate({ context, setup, phaseId: lost.id });
-    expect(errorCode({ result: terminal })).toBe("VALIDATION");
+    const lost = await statusByName({ context, name: "Lost" });
+    const closes = await makeTemplate({ context, setup, statusId: lost.id });
+    expect(errorCode({ result: closes })).toBe("VALIDATION");
     const lines = roomAndDish({ setup }).map((line) => ({
       ...line,
       entityTypeId: setup.ticketType.id,
@@ -86,18 +86,18 @@ describe("ticket templates (ADR 0043)", () => {
     expect(errorCode({ result: gone })).toBe("NOT_FOUND");
   });
 
-  it("blocks archiving an item or a phase a template uses until the template is archived", async () => {
+  it("blocks archiving an item or a status a template uses until the template is archived", async () => {
     const setup = await templateSetup();
     const { context, room, confirmed } = setup;
     const made = unwrap({ result: await makeTemplate({ context, setup }) });
     const item = await execute({ operation: archiveItem, input: { id: room.id }, context });
     expect(errorCode({ result: item })).toBe("CONFLICT");
-    const phase = await execute({
-      operation: archiveTicketPhase,
+    const ticketStatus = await execute({
+      operation: archiveTicketStatus,
       input: { id: confirmed.id },
       context,
     });
-    expect(errorCode({ result: phase })).toBe("CONFLICT");
+    expect(errorCode({ result: ticketStatus })).toBe("CONFLICT");
     unwrap({
       result: await execute({ operation: archiveTicketTemplate, input: { id: made.id }, context }),
     });

@@ -26,7 +26,7 @@ const HELD_ALLOCATIONS = {
 
 /**
  * What the lines say should be held (ADR 0044, 0053, 0059): an active, timed line of an active
- * ticket outside a terminal phase, on a `BOOKABLE` item, in a state that holds and is not
+ * ticket outside a closing status, on a `BOOKABLE` item, in a state that holds and is not
  * released, has a `HOLD` of the state's kind and, of the same kind, a `SETUP` right before and a
  * `TEARDOWN` right after when their effective minutes are above zero, and holds each allocated
  * unit for its demand's windows. Only lines that have not ended: the past calendar is frozen
@@ -37,7 +37,7 @@ async function rebuildLineHolds({ context }: ReconcileContext): Promise<HoldRow[
     where: {
       endsAt: { gt: new Date() },
       startsAt: { not: null },
-      ticket: { status: "ACTIVE", phase: { terminal: false } },
+      ticket: { status: "ACTIVE", ticketStatus: { closes: false } },
       item: { entityType: { capabilities: { has: "BOOKABLE" } } },
       state: { released: false, hold: { not: "NONE" } },
     },

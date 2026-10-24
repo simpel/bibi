@@ -21,8 +21,8 @@ export function ReviewStep({ organization }: { organization: string }) {
   const { org, draft } = useDraftGuard();
   const { run, pending } = useToastAction();
   const types = chosenTypes({ draft });
-  const phases = getSetupPreset({ key: draft.kind ?? "empty" }).phases;
-  const pipeline = draftFromTypes({ phases, types, existingTypes: [] });
+  const statuses = getSetupPreset({ key: draft.kind ?? "empty" }).statuses;
+  const pipeline = draftFromTypes({ statuses, types, existingTypes: [] });
   const activate = () =>
     run({
       action: () => activateSetupAction({ draft: pipeline }),
@@ -45,7 +45,7 @@ export function ReviewStep({ organization }: { organization: string }) {
         book={types.filter((type) => type.bookable).map((type) => type.name)}
         sell={types.filter((type) => !type.bookable).map((type) => type.name)}
       />
-      <ReviewPath phases={pipeline.phases} />
+      <ReviewPath statuses={pipeline.statuses} />
       <WelcomeStepActions
         back={{ href: welcomePath({ step: back }), org }}
         pending={pending}

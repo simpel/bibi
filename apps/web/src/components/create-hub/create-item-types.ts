@@ -15,7 +15,7 @@ export type CreateKey =
   | "responsibility"
   | "sheet"
   | "priceList"
-  | "ticketPhase"
+  | "ticketStatus"
   | "member";
 
 export type CreateItem = {

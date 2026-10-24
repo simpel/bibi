@@ -26,7 +26,6 @@ import { organizationProfileRoutes } from "./features/organization-profile/rest"
 import { paymentRoutes } from "./features/payment/rest";
 import { paymentAccountRoutes } from "./features/payment-account/rest";
 import { permissionRoutes } from "./features/permission/rest";
-import { phaseGridRoutes } from "./features/phase-grid/rest";
 import { pipelineRoutes } from "./features/pipeline/rest";
 import { pipelineSetupRoutes } from "./features/pipeline-setup/rest";
 import { priceListRoutes } from "./features/price-list/rest";
@@ -38,8 +37,9 @@ import { setupRoutes } from "./features/setup/rest";
 import { sheetRoutes } from "./features/sheet/rest";
 import { sheetDefinitionRoutes } from "./features/sheet-definition/rest";
 import { skillRoutes } from "./features/skill/rest";
+import { statusGridRoutes } from "./features/status-grid/rest";
 import { ticketRoutes } from "./features/ticket/rest";
-import { ticketPhaseRoutes } from "./features/ticket-phase/rest";
+import { ticketStatusRoutes } from "./features/ticket-status/rest";
 import { ticketTemplateRoutes } from "./features/ticket-template/rest";
 import { userPreferenceRoutes } from "./features/user-preference/rest";
 import { venueRoutes } from "./features/venue/rest";
@@ -48,7 +48,7 @@ import type { RestRoute } from "./rest-route";
 import { searchRoutes } from "./search-rest";
 
 const accessRoutes = [...memberRoutes, ...apiKeyRoutes, ...permissionRoutes];
-const gridAndSetupRoutes = [...phaseGridRoutes, ...pipelineSetupRoutes, ...changeSetRoutes];
+const gridAndSetupRoutes = [...statusGridRoutes, ...pipelineSetupRoutes, ...changeSetRoutes];
 const lineAndGroupRoutes = [...lineRoutes, ...lineAllocationRoutes, ...alternativeGroupRoutes];
 const selfRoutes = [...userPreferenceRoutes, ...profileRoutes, ...fileRoutes];
 
@@ -73,7 +73,7 @@ export function listRestRoutes(): RestRoute[] {
     ...priceListRoutes,
     ...contactRoutes,
     ...occupancyRoutes,
-    ...ticketPhaseRoutes,
+    ...ticketStatusRoutes,
     ...ticketTemplateRoutes,
     ...itemStateRoutes,
     ...gridAndSetupRoutes,

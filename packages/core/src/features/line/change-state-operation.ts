@@ -31,8 +31,8 @@ export const changeLineState = defineOperation({
   description:
     "Set one line (line with an item) to a state of its item type, e.g. order a drink " +
     "while the ticket is still a lead (ADR 0044). The move must be allowed by the type's " +
-    "transitions (CONFLICT otherwise). The line becomes overridden: phase moves skip it until " +
-    "line.followPhase. Its hold follows the new state; a collision with a hard hold gives " +
+    "transitions (CONFLICT otherwise). The line becomes overridden: status moves skip it until " +
+    "line.followStatus. Its hold follows the new state; a collision with a hard hold gives " +
     "CONFLICT naming the blocker.",
   input: LineChangeStateInputSchema,
   output: LineSchema,

@@ -18,7 +18,7 @@ export const ROUTES = {
   sheetNew: "/new/sheet",
   responsibilityNew: "/new/responsibility",
   priceListNew: "/new/price-list",
-  ticketPhaseNew: "/new/ticket-phase",
+  ticketStatusNew: "/new/ticket-status",
   itemStateNew: "/new/item-state",
   ticketTemplateNew: "/new/ticket-template",
   ticketNew: "/new/ticket",

@@ -10,7 +10,7 @@ import {
 } from "../src/index";
 import { errorCode, peer, unwrap } from "./helpers";
 import { confirmTicket, setCount, sheetSetup } from "./sheet-helpers";
-import { moveToPhase } from "./ticket-helpers";
+import { moveToStatus } from "./ticket-helpers";
 
 type SetupResult = Awaited<ReturnType<typeof sheetSetup>>;
 
@@ -116,7 +116,7 @@ describe("sheet.send (ADR 0022)", () => {
     const closed = await sheetSetup();
     const draft = unwrap({ result: await generate(closed) });
     const lost = { context: closed.context, ticketId: closed.ticket.id, name: "Lost" };
-    unwrap({ result: await moveToPhase({ ...lost, reason: "Price" }) });
+    unwrap({ result: await moveToStatus({ ...lost, reason: "Price" }) });
     expect(errorCode({ result: await send({ setup: closed, sheet: draft }) })).toBe("CONFLICT");
   });
 

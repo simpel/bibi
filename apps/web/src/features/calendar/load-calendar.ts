@@ -24,7 +24,7 @@ export type CalendarData = {
   blocks: CalendarBlock[];
   /** The organization's states that draw a block, for the legend and the state filter. */
   legend: LegendState[];
-  phases: { id: string; name: string }[];
+  statuses: { id: string; name: string }[];
   /** Tickets with a block in the period, for the ticket filter (label: the reference). */
   tickets: { id: string; reference: number }[];
 };
@@ -35,7 +35,7 @@ export type LoadCalendarInput = {
   venueId?: string | undefined;
   typeId?: string | undefined;
   stateId?: string | undefined;
-  phaseId?: string | undefined;
+  statusId?: string | undefined;
   ticketId?: string | undefined;
 };
 
@@ -52,12 +52,12 @@ type ToCalendarDataInput = Pick<
 > & {
   selected: SelectedSpaces;
   venues: { id: string; name: string }[];
-  phases: { id: string; name: string }[];
+  statuses: { id: string; name: string }[];
   filters: FilterBlocksInput["params"];
 };
 
 /** Joins the reads into blocks, narrows them by the filters and derives the legend options. */
-function toCalendarData({ selected, venues, phases, filters, ...rest }: ToCalendarDataInput) {
+function toCalendarData({ selected, venues, statuses, filters, ...rest }: ToCalendarDataInput) {
   const spaceIds = new Set(selected.spaces.map(({ id }) => id));
   const all = toCalendarBlocks({
     ...rest,
@@ -70,7 +70,7 @@ function toCalendarData({ selected, venues, phases, filters, ...rest }: ToCalend
     ...selected,
     blocks: filterBlocks({ blocks: all, params: filters }),
     legend: buildLegend({ states: rest.states, typeIds, types: selected.types }),
-    phases: phases.map(pickName),
+    statuses: statuses.map(pickName),
     tickets: rest.tickets.filter(({ id }) => shownTickets.has(id)).map(pickReference),
   };
 }
@@ -83,12 +83,12 @@ function toCalendarData({ selected, venues, phases, filters, ...rest }: ToCalend
 export async function loadCalendar({
   typeId,
   stateId,
-  phaseId,
+  statusId,
   ticketId,
   ...window
 }: LoadCalendarInput): Promise<Result<CalendarData>> {
   const sources = await loadSources(window);
-  const [occupancies, tickets, states, phases] = [sources[3], sources[5], sources[6], sources[7]];
+  const [occupancies, tickets, states, statuses] = [sources[3], sources[5], sources[6], sources[7]];
   const venues = orEmpty({ result: sources[0] });
   const items = orEmpty({ result: sources[1] });
   const types = orEmpty({ result: sources[2] });
@@ -100,7 +100,7 @@ export async function loadCalendar({
   if (!lines.ok) return lines;
   if (!tickets.ok) return tickets;
   if (!states.ok) return states;
-  if (!phases.ok) return phases;
+  if (!statuses.ok) return statuses;
   const selected = selectSpaces({
     spaces: items.value.map(({ id, name, venueId, entityTypeId }) => ({
       ...{ id, name, venueId, entityTypeId },
@@ -112,7 +112,11 @@ export async function loadCalendar({
     value: toCalendarData({
       ...{ occupancies: occupancies.value, lines: lines.value },
       ...{ tickets: tickets.value, states: states.value, selected },
-      ...{ venues: venues.value, phases: phases.value, filters: { stateId, phaseId, ticketId } },
+      ...{
+        venues: venues.value,
+        statuses: statuses.value,
+        filters: { stateId, statusId, ticketId },
+      },
     }),
   });
 }

@@ -18,7 +18,7 @@ The server layer for the assistant (ADR 0007, 0008). Framework-independent: Web 
 - Skills are data: `load_skill` can only **narrow** the tools (`allowedTools` ∩ the user's tools ∩ the previous skill; empty list = no extra restriction). Applies to both `activeTools` per step and a guard in `execute`.
 - Page context and skill texts are JSON-encoded in the prompt (they cannot add rules).
 
-## Contract for the web phase
+## Contract for the web status
 - Routes (as the web app mounts them): `app/api/chat/route.ts` → `export const POST = createChatHandler({ resolveContext: resolveExecuteContext })` and `app/api/assistant/approval/route.ts` → `createApprovalHandler({ resolveContext: resolveExecuteContext })`. `runtime = "nodejs"`.
 - Chat request: `useChat` with `DefaultChatTransport({ api, body: { conversationId, pageContext: { route, locale: "sv"|"en", entity?: { type, id } } } })`. Response: SSE (`x-vercel-ai-ui-message-stream: v1`), header `x-bibi-conversation-id`, plus a transient data part `data-bibi-conversation` `{ conversationId, created }`. Errors before the stream: JSON `{ error: { code, message, issues } }` with status 400/401/403/404/500.
 - Approval cards: `extractPendingApprovals({ message })` (client-safe: `@bibi/ai/approvals`) → `{ toolCallId, toolName, operation, input, summary, approvalToken, expiresAt }[]`. Buttons POST `{ decision: "approve"|"reject", approvalToken, conversationId, toolCallId, operation }` → `{ status: "approved", result }` / `{ status: "rejected" }` / error (409 = already used, 403 = invalid/expired/other user). The decision is saved as a TOOL message (`Approval update: …` + `data-bibi-approval`), so the next turn knows the outcome.

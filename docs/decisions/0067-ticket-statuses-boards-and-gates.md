@@ -3,7 +3,7 @@
 - **Date:** 2026-10-24
 - **Status:** Accepted
 - **Related:** 0043 (supersedes), 0044 and 0054 (phase parts superseded, addenda on acceptance), 0021, 0034, 0045, 0051, 0052, 0053, 0057
-- **Spec:** `docs/specs/tickets-phases-and-states.md`
+- **Spec:** `docs/specs/tickets-statuses-and-states.md`
 
 ## Context
 Checked 2026-10-24 against the code in this worktree:
@@ -37,7 +37,7 @@ Checked 2026-10-24 against the code in this worktree:
 - Renames for the codemod ticket (one Renames table, lands first): `TicketPhase` to `TicketStatus`; `TicketPhaseTransition` to `TicketStatusTransition`; `TicketPhaseChange` to `TicketStatusChange`; `Ticket.phaseId` to `statusId`; `PhaseStateRule` to `StatusStateRule` (`phaseId` to `statusId`); `TicketTemplate.startPhase` to `startStatus`; `PhaseEvent` to `StatusEvent`; operations `ticketPhase.*` to `ticketStatus.*`, `ticket.changePhase` and `ticket.phaseHistory` to `changeStatus` and `statusHistory`, `phaseGrid.*` to `statusGrid.*`; flag `terminal` to `closes`; i18n keys, `pipelineSetup` and the `phase` grid UI text. The word "phase" is then free for board columns.
 - Database: `sync_line_occupancy.sql` reads `TicketStatus.closes` and its trigger moves to `TicketStatus`; the reconciliation check and `packages/db/CLAUDE.md` trigger list follow.
 - Cost: about 32 core files read the phase, 77 files overall, plus the board UI, the onboarding path (ADR 0045) and the setup preview.
-- On acceptance these must change (not in this PR): `packages/core/CLAUDE.md` (status and gate rules, `changeStatus`), `packages/db/CLAUDE.md` (trigger and projection list), `apps/web/CLAUDE.md` (board and drop-zone rules), root `CLAUDE.md` (differentiator and configurable-domain lines that say "phases"), `docs/specs/tickets-phases-and-states.md` (split into statuses, boards and gates; "Not built yet: `requiresPaidDeposit`" becomes the `depositPaid` gate), a new `docs/specs/boards.md`, `docs/domain-model.md` and `docs/artifacts/domain-model.html` together. ADR 0043 is marked Superseded by 0067; ADR 0044 and 0054 get dated addenda pointing here.
+- On acceptance these must change (not in this PR): `packages/core/CLAUDE.md` (status and gate rules, `changeStatus`), `packages/db/CLAUDE.md` (trigger and projection list), `apps/web/CLAUDE.md` (board and drop-zone rules), root `CLAUDE.md` (differentiator and configurable-domain lines that say "phases"), `docs/specs/tickets-statuses-and-states.md` (split into statuses, boards and gates; "Not built yet: `requiresPaidDeposit`" becomes the `depositPaid` gate), a new `docs/specs/boards.md`, `docs/domain-model.md` and `docs/artifacts/domain-model.html` together. ADR 0043 is marked Superseded by 0067; ADR 0044 and 0054 get dated addenda pointing here.
 - Follow-up tickets in dependency order: codemod (renames), schema and trigger, core operations and gates, boards UI, seed and onboarding.
 
 ## Alternatives rejected

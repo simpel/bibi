@@ -34,7 +34,7 @@ const block = ({ id, start, end }: BlockInput): CalendarBlock => ({
   stateId: null,
   stateName: null,
   stateColor: null,
-  phaseId: null,
+  statusId: null,
   expiresAt: null,
 });
 

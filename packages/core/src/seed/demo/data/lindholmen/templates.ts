@@ -7,7 +7,7 @@ import type { DemoTicketTemplate } from "../../template-types";
  */
 export const lindholmenTemplates: readonly DemoTicketTemplate[] = [
   {
-    ...{ name: "Small meeting", type: "Conference", phase: "Confirmed" },
+    ...{ name: "Small meeting", type: "Conference", status: "Confirmed" },
     lines: [
       {
         ...{ item: "Asperö", setup: "Boardroom", name: "Small meeting room" },
@@ -20,7 +20,7 @@ export const lindholmenTemplates: readonly DemoTicketTemplate[] = [
     ],
   },
   {
-    ...{ name: "Afternoon break", type: "Conference", phase: "Confirmed" },
+    ...{ name: "Afternoon break", type: "Conference", status: "Confirmed" },
     lines: [
       {
         ...{ item: "Donsö", setup: "Boardroom", name: "Afternoon break room" },

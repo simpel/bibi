@@ -5,7 +5,7 @@ import {
   createLine,
   expandLineBundle,
   expireTicketHolds,
-  followLinePhase,
+  followLineStatus,
   getLine,
   type LineDto,
   LineSchema,
@@ -40,7 +40,7 @@ mutationFromOperation({ operation: createLine, type: LineRef });
 mutationFromOperation({ operation: updateLine, type: LineRef });
 mutationFromOperation({ operation: archiveLine, type: LineRef });
 mutationFromOperation({ operation: changeLineState, type: LineRef });
-mutationFromOperation({ operation: followLinePhase, type: LineRef });
+mutationFromOperation({ operation: followLineStatus, type: LineRef });
 
 const ExpandBundleRef = builder.objectRef<{ items: LineDto[] }>("LineExpandBundleResult");
 ExpandBundleRef.implement({

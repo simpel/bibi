@@ -52,13 +52,13 @@ describe("calendar blocks", () => {
     const [block] = toCalendarBlocks({
       occupancies: [occupancy({ overrides: { holdKind: "SOFT", lineId: "p1" } })],
       lines: [{ ...line, stateId: "s1" }],
-      tickets: [{ ...ticket, phaseId: "ph1", holdsUntil }],
+      tickets: [{ ...ticket, statusId: "ph1", holdsUntil }],
       states: [state],
     });
     expect(block).toMatchObject({
       stateName: "Prebooked",
       stateColor: "#22c55e",
-      phaseId: "ph1",
+      statusId: "ph1",
       expiresAt: holdsUntil,
     });
   });

@@ -12,7 +12,7 @@ const today = { year: 2026, month: 10, day: 15 };
 
 describe("calendar params", () => {
   it("puts the period in the path and round-trips the filters in the query", () => {
-    const raw = { venue: "v1", type: "t1", state: "s1", phase: "p1", ticket: "k1" };
+    const raw = { venue: "v1", type: "t1", state: "s1", status: "p1", ticket: "k1" };
     const params = { ...readCalendarFilters({ raw }), period: { from: today, to: today } };
     expect(calendarHref({ params })).toEqual({
       pathname: "/calendar/2026-10-15/2026-10-15",

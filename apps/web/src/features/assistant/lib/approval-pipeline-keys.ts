@@ -1,18 +1,18 @@
 /**
- * Approval label keys of the pipeline (ADR 0043, 0044, 0059): phases, item states, line states
+ * Approval label keys of the pipeline (ADR 0043, 0044, 0059): statuses, item states, line states
  * hold buffers, demands and allocations, kept apart so `approval-labels.ts` stays within the size limit.
  */
 export const PIPELINE_FIELD_KEYS = [
   "color",
   "entry",
-  "terminal",
+  "closes",
   "requiresReason",
   "requiresAssignee",
   "requiresAcceptedQuote",
   "invoiceable",
   "event",
-  "targetPhaseId",
-  "toPhaseIds",
+  "targetStatusId",
+  "toStatusIds",
   "ids",
   "initial",
   "hold",
@@ -34,7 +34,7 @@ export const PIPELINE_FIELD_KEYS = [
   "lines",
   "startsAt",
   "itemTypes",
-  "phases",
+  "statuses",
   "cells",
   // Demands and allocations (ADR 0059).
   "itemId",
@@ -47,27 +47,27 @@ export const PIPELINE_FIELD_KEYS = [
 
 /** Pipeline operations with a localized label in `assistant.approval.operations`. */
 export const PIPELINE_OPERATION_KEYS = [
-  "ticketPhase_create",
-  "ticketPhase_update",
-  "ticketPhase_archive",
-  "ticketPhase_reorder",
-  "ticketPhase_setTransitions",
-  "ticketPhase_importTemplate",
+  "ticketStatus_create",
+  "ticketStatus_update",
+  "ticketStatus_archive",
+  "ticketStatus_reorder",
+  "ticketStatus_setTransitions",
+  "ticketStatus_importTemplate",
   "itemState_create",
   "itemState_update",
   "itemState_archive",
   "itemState_reorder",
   "itemState_setTransitions",
   "line_changeState",
-  "line_followPhase",
+  "line_followStatus",
   "line_expandBundle",
   "line_chooseOptions",
   "alternativeGroup_create",
   "alternativeGroup_update",
   "alternativeGroup_archive",
   "alternativeGroup_choose",
-  "phaseGrid_setCell",
-  "phaseGrid_importTemplate",
+  "statusGrid_setCell",
+  "statusGrid_importTemplate",
   "ticket_expireHolds",
   "ticket_createFromTemplate",
   "ticketTemplate_create",

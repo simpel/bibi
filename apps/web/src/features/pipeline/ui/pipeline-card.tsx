@@ -23,7 +23,7 @@ export function PipelineCardContent({ card }: PipelineCardContentProps) {
         {card.quantity === null ? "" : ` · ${t("quantity", { count: card.quantity })}`}
       </span>
       <span className="text-xs text-muted-foreground">
-        {t.rich("inPhase", { time: () => <RelativeTime instant={card.phaseChangedAt} /> })}
+        {t.rich("inStatus", { time: () => <RelativeTime instant={card.statusChangedAt} /> })}
         {card.heldLines ? ` · ${t("heldLines", { count: card.heldLines })}` : ""}
         {card.bookedLines ? ` · ${t("bookedLines", { count: card.bookedLines })}` : ""}
       </span>

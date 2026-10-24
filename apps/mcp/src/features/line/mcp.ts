@@ -48,9 +48,9 @@ export const lineMcpTools = [
       `Set line ${text({ value: input.lineId })} to state ${text({ value: input.stateId })}`,
   }),
   mcpTool({
-    operation: "line.followPhase",
+    operation: "line.followStatus",
     idempotent: true,
     summary: ({ input }) =>
-      `Let line ${text({ value: input.lineId })} follow the ticket's phase again`,
+      `Let line ${text({ value: input.lineId })} follow the ticket's status again`,
   }),
 ];

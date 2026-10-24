@@ -12,7 +12,6 @@ import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
 import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
 import { PERMISSION_UI_ENTRIES } from "./permission-entries";
-import { PHASE_GRID_UI_ENTRIES } from "./phase-grid-entries";
 import { PIPELINE_UI_ENTRIES } from "./pipeline-entries";
 import { PIPELINE_SETUP_UI_ENTRIES } from "./pipeline-setup-entries";
 import { PRICE_LIST_UI_ENTRIES } from "./price-list-entries";
@@ -24,8 +23,9 @@ import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
 import { SELF_GENERIC_UI_TOOLS } from "./self-generic-tools";
 import { SHEET_DEFINITION_UI_ENTRIES } from "./sheet-definition-entries";
 import { SHEET_UI_ENTRIES } from "./sheet-entries";
+import { STATUS_GRID_UI_ENTRIES } from "./status-grid-entries";
 import { TICKET_UI_ENTRIES } from "./ticket-entries";
-import { TICKET_PHASE_UI_ENTRIES } from "./ticket-phase-entries";
+import { TICKET_STATUS_UI_ENTRIES } from "./ticket-status-entries";
 import { TICKET_TEMPLATE_UI_ENTRIES } from "./ticket-template-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
@@ -69,10 +69,10 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...CUSTOMER_UI_ENTRIES,
   ...OCCUPANCY_UI_ENTRIES,
   ...PRICE_LIST_UI_ENTRIES,
-  ...TICKET_PHASE_UI_ENTRIES,
+  ...TICKET_STATUS_UI_ENTRIES,
   ...TICKET_TEMPLATE_UI_ENTRIES,
   ...ITEM_STATE_UI_ENTRIES,
-  ...PHASE_GRID_UI_ENTRIES,
+  ...STATUS_GRID_UI_ENTRIES,
   ...TICKET_UI_ENTRIES,
   ...LINE_UI_ENTRIES,
   ...ALTERNATIVE_GROUP_UI_ENTRIES,

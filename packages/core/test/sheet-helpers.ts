@@ -1,6 +1,6 @@
 import {
   assignAssignment,
-  changeTicketPhase,
+  changeTicketStatus,
   createEntityType,
   createFieldDefinition,
   createSheetDefinition,
@@ -15,7 +15,7 @@ import { createTestLine } from "./line-helpers";
 import { addRequirement, requirementSetup } from "./requirement-helpers";
 import { createTestResponsibility } from "./responsibility-helpers";
 import { memberUser } from "./ticket-helpers";
-import { phaseByName } from "./ticket-phase-helpers";
+import { statusByName } from "./ticket-status-helpers";
 
 type ContextInput = { context: ExecuteContext };
 
@@ -92,7 +92,7 @@ export type SetupResult = Awaited<ReturnType<typeof sheetSetup>>;
 
 export type ConfirmInput = { context: ExecuteContext; ticketId: string };
 
-/** Gives the ticket a main assignee and moves it to the CONFIRMED phase. */
+/** Gives the ticket a main assignee and moves it to the CONFIRMED status. */
 export async function confirmTicket({ context, ticketId }: ConfirmInput) {
   const assigneeId = await memberUser({ context, name: "Johan Ek" });
   unwrap({
@@ -102,11 +102,11 @@ export async function confirmTicket({ context, ticketId }: ConfirmInput) {
       context,
     }),
   });
-  const confirmed = await phaseByName({ context, name: "Confirmed" });
+  const confirmed = await statusByName({ context, name: "Confirmed" });
   unwrap({
     result: await execute({
-      operation: changeTicketPhase,
-      input: { ticketId, phaseId: confirmed.id },
+      operation: changeTicketStatus,
+      input: { ticketId, statusId: confirmed.id },
       context,
     }),
   });

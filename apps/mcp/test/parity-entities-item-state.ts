@@ -28,35 +28,35 @@ type Cell = Record<string, unknown> & { id: string };
 const cellOf = ({ grid, id }: { grid: { cells: Cell[] }; id: string }) =>
   grid.cells.find((cell) => cell.id === id);
 
-/** A phase grid cell (ADR 0044): the phase made earlier moves the item type's lines to the state. */
-const phaseStateRule = (): ParityEntity => ({
-  name: "phaseStateRule",
+/** A status grid cell (ADR 0044): the status made earlier moves the item type's lines to the state. */
+const statusStateRule = (): ParityEntity => ({
+  name: "statusStateRule",
   create: async ({ mcp, made }) => {
     const args = {
-      phaseId: made.ticketPhase.id,
+      statusId: made.ticketStatus.id,
       entityTypeId: made.itemState.entityTypeId,
       stateId: made.itemState.id,
     };
-    const grid = await tool({ mcp, name: "phaseGrid_setCell", args });
+    const grid = await tool({ mcp, name: "statusGrid_setCell", args });
     return grid.cells.find((cell: Cell) => cell.stateId === made.itemState.id);
   },
   viaMcp: async ({ mcp, created }) =>
-    cellOf({ grid: await tool({ mcp, name: "phaseGrid_get", args: {} }), id: created.id }),
+    cellOf({ grid: await tool({ mcp, name: "statusGrid_get", args: {} }), id: created.id }),
   viaRest: async ({ context, created }) =>
     cellOf({
-      grid: await createRestClient({ context }).get({ path: "/phase-grid" }),
+      grid: await createRestClient({ context }).get({ path: "/status-grid" }),
       id: created.id,
     }),
   viaGraph: async ({ context, created, keys }) => {
     const data = await gqlQuery({
       context,
-      query: `query { phaseGrid { cells { ${keys.join(" ")} } } }`,
+      query: `query { statusGrid { cells { ${keys.join(" ")} } } }`,
     });
-    return cellOf({ grid: data.phaseGrid, id: created.id });
+    return cellOf({ grid: data.statusGrid, id: created.id });
   },
 });
 
 /** Item states; a function so the import cycle with `parity-entities.ts` resolves first. */
 export function itemStateEntities(): ParityEntity[] {
-  return [itemState(), phaseStateRule()];
+  return [itemState(), statusStateRule()];
 }

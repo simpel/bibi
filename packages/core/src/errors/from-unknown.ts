@@ -49,7 +49,7 @@ function lineConflict({ cause }: { cause: PostgresCause }): Mapped | undefined {
 }
 
 /**
- * A history row written against a phase or state that changed in the meantime (ADR 0054,
+ * A history row written against a status or state that changed in the meantime (ADR 0054,
  * `domain_history.sql`): a concurrent change won.
  */
 const HISTORY_STALE: Mapped = {

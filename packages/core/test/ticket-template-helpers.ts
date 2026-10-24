@@ -6,8 +6,8 @@ import {
   type TicketTemplateLineInput,
 } from "../src/index";
 import { unwrap } from "./helpers";
-import { type GridSetup, gridSetup, setCell } from "./phase-grid-helpers";
-import { phaseByName } from "./ticket-phase-helpers";
+import { type GridSetup, gridSetup, setCell } from "./status-grid-helpers";
+import { statusByName } from "./ticket-status-helpers";
 
 type Ctx = { context: ExecuteContext };
 
@@ -18,7 +18,7 @@ async function confirmedGrid({ setup }: { setup: GridSetup }) {
     { entityTypeId: room.entityTypeId, stateId: roomState.booked.id },
     { entityTypeId: food.type.id, stateId: food.locked.id },
   ]) {
-    unwrap({ result: await setCell({ context, phase: "Confirmed", ...cell }) });
+    unwrap({ result: await setCell({ context, ticketStatus: "Confirmed", ...cell }) });
   }
 }
 
@@ -43,12 +43,12 @@ export const roomAndDish = ({ setup }: TemplateLinesInput): TicketTemplateLineIn
   },
 ];
 
-/** The grid setup plus the phase and ticket type a template needs; Confirmed is set up. */
+/** The grid setup plus the status and ticket type a template needs; Confirmed is set up. */
 export async function templateSetup() {
   const setup = await gridSetup();
   await confirmedGrid({ setup });
   const { context } = setup;
-  const confirmed = await phaseByName({ context, name: "Confirmed" });
+  const confirmed = await statusByName({ context, name: "Confirmed" });
   const ticketType = unwrap({
     result: await execute({
       operation: listEntityTypes,
@@ -64,18 +64,18 @@ export type TemplateSetup = Awaited<ReturnType<typeof templateSetup>>;
 
 export type MakeTemplateInput = Ctx & {
   setup: TemplateSetup;
-  phaseId?: string;
+  statusId?: string;
   lines?: TicketTemplateLineInput[];
 };
 
 /** `ticketTemplate.create` starting in Confirmed with the room and dish lines by default. */
-export const makeTemplate = ({ context, setup, phaseId, lines }: MakeTemplateInput) =>
+export const makeTemplate = ({ context, setup, statusId, lines }: MakeTemplateInput) =>
   execute({
     operation: createTicketTemplate,
     input: {
       name: "Small meeting",
       entityTypeId: setup.ticketType.id,
-      phaseId: phaseId ?? setup.confirmed.id,
+      statusId: statusId ?? setup.confirmed.id,
       lines: lines ?? roomAndDish({ setup }),
     },
     context,

@@ -54,14 +54,14 @@ Locale prefix (`/sv`, `/en`) omitted.
 - **`organization`:** legal name, org number, street address, postal code, city, country (default SE), website, contact email and phone. The checkbox "This address is also our first venue" is on by default and creates a venue.
 - **`kind`:** a 3×3 grid of venue kinds, plus a "Start empty" link that skips to review.
 - **`bookable` / `sellable`:** the kind's item types as checkboxes, with "+ Add another". A note says more can be added later in Settings → Types.
-- **`review`:** the chosen types and the phase path, then Activate (`pipelineSetup.activate`, `actor=user`). This sets the setup status to `COMPLETED`.
+- **`review`:** the chosen types and the status path, then Activate (`pipelineSetup.activate`, `actor=user`). This sets the setup status to `COMPLETED`.
 - **Skip for now** (on every setup page) sets the status to `SKIPPED`. Setup can still be changed later in Settings and through the assistant.
 - The draft lives in the `setup` layout and is copied to `sessionStorage`. A step without a draft goes back to `kind`.
 
 ## Venue kinds
-Full = the `conference-estate` phases; Simple = the `default` phases.
+Full = the `conference-estate` statuses; Simple = the `default` statuses.
 
-| Kind | Bookable | Sellable | Phases |
+| Kind | Bookable | Sellable | Statuses |
 |---|---|---|---|
 | Conference estate | Conference room, Breakout room, Equipment | Coffee break, Lunch, Dinner, Drink, Activity | Full |
 | Manor house | Banquet hall, Meeting room, Garden | Dinner menu, Drink package, Coffee break, Activity | Full |

@@ -12,10 +12,10 @@ import {
 import { createTestCustomer } from "./customer-helpers";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { createTestContact, createTestTicket, ticketSetup } from "./ticket-helpers";
-import { phaseByName } from "./ticket-phase-helpers";
+import { statusByName } from "./ticket-status-helpers";
 
 describe("tickets (ADR 0043)", () => {
-  it("creates a lead with sequential references in the entry phase", async () => {
+  it("creates a lead with sequential references in the entry status", async () => {
     const { context, type, key, customer } = await ticketSetup();
     const contact = await createTestContact({ context, customerId: customer.id });
     const created = unwrap({
@@ -32,14 +32,14 @@ describe("tickets (ADR 0043)", () => {
         context,
       }),
     });
-    const lead = await phaseByName({ context, name: "Lead" });
+    const lead = await statusByName({ context, name: "Lead" });
     expect(created).toMatchObject({
       reference: 1,
-      phaseId: lead.id,
+      statusId: lead.id,
       contactId: contact.id,
       desiredStartsAt: null,
       estimatedHeadcount: 40,
-      phaseReason: null,
+      statusReason: null,
       fields: { [key]: "Kickoff" },
     });
     const second = await createTestTicket({
@@ -75,8 +75,8 @@ describe("tickets (ADR 0043)", () => {
     const elsewhere = await createTestContact({ context, customerId: other.id });
     const wrong = await update({ input: { contactId: elsewhere.id } });
     expect(wrong.ok ? null : wrong.error.issues[0]?.path).toBe("contactId");
-    const phase = await update({ input: { phaseId: "x" } });
-    expect(unwrap({ result: phase }).phaseId).toBe(ticket.phaseId);
+    const ticketStatus = await update({ input: { statusId: "x" } });
+    expect(unwrap({ result: ticketStatus }).statusId).toBe(ticket.statusId);
   });
 
   it("refuses an unknown customer, a type of another base and unknown fields", async () => {
@@ -93,7 +93,7 @@ describe("tickets (ADR 0043)", () => {
     expect(await issue({ input: { ...base, fields: { nope: 1 } } })).toBe("fields.nope");
   });
 
-  it("filters the list by customer and phase and never shows another organization's", async () => {
+  it("filters the list by customer and status and never shows another organization's", async () => {
     const { context, type, customer } = await ticketSetup();
     const otherCustomer = await createTestCustomer({ context, name: "Kvarnby Design AB" });
     const ticket = await createTestTicket({
@@ -106,8 +106,8 @@ describe("tickets (ADR 0043)", () => {
       execute({ operation: listTickets, input, context });
     const byCustomer = unwrap({ result: await list({ input: { customerId: customer.id } }) });
     expect(byCustomer.items.map((item) => item.id)).toEqual([ticket.id]);
-    const byPhase = unwrap({ result: await list({ input: { phaseId: ticket.phaseId } }) });
-    expect(byPhase.items).toHaveLength(2);
+    const byStatus = unwrap({ result: await list({ input: { statusId: ticket.statusId } }) });
+    expect(byStatus.items).toHaveLength(2);
     const other = testContext();
     const get = await execute({ operation: getTicket, input: { id: ticket.id }, context: other });
     expect(errorCode({ result: get })).toBe("NOT_FOUND");
@@ -130,7 +130,7 @@ describe("tickets (ADR 0043)", () => {
     expect(exported).toMatchObject({ filename: "ticket-1.json", mime: "application/json" });
     const document = JSON.parse(exported.content);
     expect(document).toMatchObject({ schemaVersion: 1, ticket: { id: ticket.id } });
-    expect(document.phase.name).toBe("Lead");
+    expect(document.ticketStatus.name).toBe("Lead");
     const outside = await execute({
       operation: exportTicket,
       input: { id: ticket.id },

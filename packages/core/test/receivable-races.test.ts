@@ -19,7 +19,7 @@ afterEach(() => {
 describe("receivables under concurrency (ADR 0057)", () => {
   it("lets only one of two concurrent invoices of a ticket through", async () => {
     const { context, ticket } = await moneySetup();
-    await makeInvoiceable({ context, phaseId: ticket.phaseId });
+    await makeInvoiceable({ context, statusId: ticket.statusId });
     const input = { ticketId: ticket.id };
     const results = await Promise.all([
       execute({ operation: createInvoice, input, context }),

@@ -11,7 +11,7 @@ export const lindholmenAlternativeTickets: readonly DemoTicket[] = [
   {
     ...quoted,
     ...{ ref: "L13", customer: "Kvarnby Design AB", type: "Conference", day: 20, from: "09:00" },
-    ...{ to: "12:00", phase: "Quote sent", headcount: 14, assignee: "Maria Holm" },
+    ...{ to: "12:00", status: "Quote sent", headcount: 14, assignee: "Maria Holm" },
     fields: { Purpose: "Design workshop" },
     lines: [
       // ADR 0059: its own setup (30 min) wins over the room type's 15; a soft hold's buffer.
@@ -23,7 +23,7 @@ export const lindholmenAlternativeTickets: readonly DemoTicket[] = [
   {
     ...quoted,
     ...{ ref: "L14", customer: "Älvstrand Tech AB", type: "Conference", day: 25, from: "09:00" },
-    ...{ to: "12:00", phase: "Confirmed", headcount: 16, assignee: "Johan Ek" },
+    ...{ to: "12:00", status: "Confirmed", headcount: 16, assignee: "Johan Ek" },
     fields: { Purpose: "Planning day" },
     lines: [
       { item: "Hönö", name: "Planning in Hönö", from: "09:00", to: "12:00" },

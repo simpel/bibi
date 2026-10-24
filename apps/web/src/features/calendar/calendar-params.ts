@@ -12,9 +12,9 @@ import {
 export type CalendarFilters = {
   venueId?: string | undefined;
   typeId?: string | undefined;
-  /** Filters on the line's state, the ticket's phase and the ticket itself. */
+  /** Filters on the line's state, the ticket's status and the ticket itself. */
   stateId?: string | undefined;
-  phaseId?: string | undefined;
+  statusId?: string | undefined;
   ticketId?: string | undefined;
 };
 
@@ -34,7 +34,7 @@ export function readCalendarFilters({ raw }: { raw: RawCalendarParams }): Calend
     venueId: first({ value: raw.venue }),
     typeId: first({ value: raw.type }),
     stateId: first({ value: raw.state }),
-    phaseId: first({ value: raw.phase }),
+    statusId: first({ value: raw.status }),
     ticketId: first({ value: raw.ticket }),
   };
 }
@@ -45,7 +45,7 @@ export function calendarQuery({ params }: { params: CalendarFilters }): Record<s
   if (params.venueId) query.venue = params.venueId;
   if (params.typeId) query.type = params.typeId;
   if (params.stateId) query.state = params.stateId;
-  if (params.phaseId) query.phase = params.phaseId;
+  if (params.statusId) query.status = params.statusId;
   if (params.ticketId) query.ticket = params.ticketId;
   return query;
 }

@@ -7,7 +7,7 @@ import { type TicketLookups, useTicketColumns } from "./use-ticket-columns";
 
 export type TicketTableProps = TicketLookups & { tickets: TicketDto[] };
 
-/** Ticket rows: reference (link), customer, type, phase, desired period and quantity. */
+/** Ticket rows: reference (link), customer, type, status, desired period and quantity. */
 export function TicketTable({ tickets, ...lookups }: TicketTableProps) {
   const t = useTranslations("ticket");
   const columns = useTicketColumns(lookups);

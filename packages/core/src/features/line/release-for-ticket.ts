@@ -8,9 +8,9 @@ import { LINE_INCLUDE, toLineRecord } from "./to-line-record";
 export type ReleaseForTicketInput = { context: OperationContext; ticketId: string };
 
 /**
- * Releases every active line of the ticket when it enters a terminal phase (ADR 0044): each line
+ * Releases every active line of the ticket when it enters a closing status (ADR 0044): each line
  * with a state moves to its item type's released state (ignoring the grid, overrides and
- * transitions). The holds follow by trigger (ADR 0053): a ticket in a terminal phase holds
+ * transitions). The holds follow by trigger (ADR 0053): a ticket in a closing status holds
  * nothing, so a closed ticket no longer blocks its items. The lines themselves stay as history.
  */
 export const releaseLinesOfTicket = ({

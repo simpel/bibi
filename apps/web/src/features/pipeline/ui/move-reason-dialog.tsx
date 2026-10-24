@@ -13,13 +13,13 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export type MoveReasonDialogProps = {
-  /** The phase that requires a reason; null = closed. */
+  /** The status that requires a reason; null = closed. */
   column: PipelineColumn | null;
   onCancel: () => void;
   onSubmit: (reason: string) => void;
 };
 
-/** Asks for the reason a phase with `requiresReason` needs before the card is moved. */
+/** Asks for the reason a status with `requiresReason` needs before the card is moved. */
 export function MoveReasonDialog({ column, onCancel, onSubmit }: MoveReasonDialogProps) {
   const t = useTranslations("pipeline.reason");
   const common = useTranslations("common");

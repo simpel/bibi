@@ -27,7 +27,7 @@ async function existingItemTypes({ context }: { context: Context }): Promise<Exi
 
 /**
  * A whole draft from a setup preset (ADR 0045) for the caller's organization: its active item
- * types are kept (by id), the preset adds the ones it is missing, and states, phases and the grid
+ * types are kept (by id), the preset adds the ones it is missing, and states, statuses and the grid
  * come from the templates. Nothing is saved.
  */
 export async function presetDraft({

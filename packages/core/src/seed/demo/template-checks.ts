@@ -7,7 +7,7 @@ type TicketInput = CheckDemoTemplatesInput & { ticket: DemoOrg["tickets"][number
 
 /**
  * A ticket made from a predefined ticket (ADR 0043): it has one line per template line, each in
- * the state the phase grid gives its item type for the template's phase (ADR 0044).
+ * the state the status grid gives its item type for the template's status (ADR 0044).
  */
 async function ticketFailures({ context, org, ticket }: TicketInput): Promise<string[]> {
   const template = org.templates.find((candidate) => candidate.name === ticket.template);
@@ -27,7 +27,7 @@ async function ticketFailures({ context, org, ticket }: TicketInput): Promise<st
   for (const line of lines) {
     const type = line.item?.entityType.name;
     const cell = org.pipeline.cells.find(
-      (row) => row.phase === template.phase && row.type === type,
+      (row) => row.ticketStatus === template.status && row.type === type,
     );
     if (cell && line.state?.name !== cell.state) {
       failures.push(`${ticket.ref}: ${line.name} is ${line.state?.name}, expected ${cell.state}`);
@@ -38,7 +38,7 @@ async function ticketFailures({ context, org, ticket }: TicketInput): Promise<st
 
 /**
  * ADR 0043 (predefined tickets): the template count and each template's lines against the data
- * files, and that every ticket made from one has its lines in the states of the template's phase.
+ * files, and that every ticket made from one has its lines in the states of the template's status.
  * Returns failure messages.
  */
 export async function checkDemoTemplates({

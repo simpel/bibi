@@ -15,7 +15,7 @@ export const upcomingTickets = [
     venue: "Grand Manor Hall",
     dates: "Oct 24–26, 2026",
     guests: 140,
-    phase: "CONFIRMED",
+    ticketStatus: "CONFIRMED",
     badgeVariant: "success" as const,
   },
   {
@@ -25,7 +25,7 @@ export const upcomingTickets = [
     venue: "Orangeriet Banquet Hall",
     dates: "Oct 28, 2026",
     guests: 260,
-    phase: "CONFIRMED",
+    ticketStatus: "CONFIRMED",
     badgeVariant: "success" as const,
   },
   {
@@ -35,7 +35,7 @@ export const upcomingTickets = [
     venue: "Library Salon + Terrace",
     dates: "Nov 02–04, 2026",
     guests: 45,
-    phase: "HOLD OPTION",
+    ticketStatus: "HOLD OPTION",
     badgeVariant: "warning" as const,
   },
   {
@@ -45,7 +45,7 @@ export const upcomingTickets = [
     venue: "Garden Pavilion",
     dates: "Nov 06, 2026",
     guests: 85,
-    phase: "QUOTED",
+    ticketStatus: "QUOTED",
     badgeVariant: "secondary" as const,
   },
   {
@@ -55,7 +55,7 @@ export const upcomingTickets = [
     venue: "Grand Manor + Orangeriet",
     dates: "Nov 12–14, 2026",
     guests: 320,
-    phase: "PLANNING",
+    ticketStatus: "PLANNING",
     badgeVariant: "default" as const,
   },
 ];

@@ -1,13 +1,13 @@
 import type { TicketDto } from "@bibi/core";
-import type { TicketPhaseDto } from "@bibi/core/schemas";
+import type { TicketStatusDto } from "@bibi/core/schemas";
 import type { ColumnDef } from "@bibi/ui";
 import { useFormatter, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { namedOptionColumn } from "@/components/data-table/named-option-column";
 import type { NamedOption } from "@/components/form/named-option";
 import { desiredPeriod } from "./desired-period";
-import { TicketPhaseLabel } from "./ticket-phase-label";
 import { TicketReferenceCell } from "./ticket-reference-cell";
+import { TicketStatusLabel } from "./ticket-status-label";
 
 type Column = ColumnDef<TicketDto>;
 type Translate = ReturnType<typeof useTranslations<"ticket">>;
@@ -18,7 +18,7 @@ export type TicketLookups = {
   /** The caller may not view customers: the column shows "Hidden". */
   customersHidden?: boolean;
   types: NamedOption[];
-  phases: TicketPhaseDto[];
+  statuses: TicketStatusDto[];
 };
 
 const referenceColumn = ({ t }: { t: Translate }): Column => ({
@@ -33,11 +33,11 @@ const referenceColumn = ({ t }: { t: Translate }): Column => ({
   ),
 });
 
-const phaseColumn = ({ t, phases }: { t: Translate; phases: TicketPhaseDto[] }): Column => ({
-  id: "phase",
-  header: t("columns.phase"),
-  accessorFn: (ticket) => phases.find(({ id }) => id === ticket.phaseId)?.name ?? "",
-  cell: ({ row }) => <TicketPhaseLabel phases={phases} id={row.original.phaseId} />,
+const statusColumn = ({ t, statuses }: { t: Translate; statuses: TicketStatusDto[] }): Column => ({
+  id: "status",
+  header: t("columns.status"),
+  accessorFn: (ticket) => statuses.find(({ id }) => id === ticket.statusId)?.name ?? "",
+  cell: ({ row }) => <TicketStatusLabel statuses={statuses} id={row.original.statusId} />,
 });
 
 const whenColumn = ({ t, format }: { t: Translate; format: Format }): Column => ({
@@ -75,9 +75,9 @@ const namedColumns = ({ t, customers, types, hidden }: NamedInput): Column[] => 
   }),
 ];
 
-/** Reference (link), customer, type, phase, desired period and quantity of a ticket. */
+/** Reference (link), customer, type, status, desired period and quantity of a ticket. */
 export function useTicketColumns({
-  phases,
+  statuses,
   customers,
   customersHidden,
   types,
@@ -90,10 +90,10 @@ export function useTicketColumns({
     () => [
       referenceColumn({ t }),
       ...namedColumns({ t, customers, types, hidden: shown }),
-      phaseColumn({ t, phases }),
+      statusColumn({ t, statuses }),
       whenColumn({ t, format }),
       quantityColumn({ t }),
     ],
-    [t, format, customers, types, phases, shown],
+    [t, format, customers, types, statuses, shown],
   );
 }

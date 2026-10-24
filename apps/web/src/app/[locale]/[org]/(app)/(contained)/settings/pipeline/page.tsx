@@ -1,11 +1,11 @@
 import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
-import { TicketPhaseList } from "@/features/ticket-phase/ui/ticket-phase-list";
+import { TicketStatusList } from "@/features/ticket-status/ui/ticket-status-list";
 
-type TicketPhasesPageProps = { params: Promise<{ locale: string }> };
+type TicketStatusesPageProps = { params: Promise<{ locale: string }> };
 
-export default async function TicketPhasesPage({ params }: TicketPhasesPageProps) {
+export default async function TicketStatusesPage({ params }: TicketStatusesPageProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
-  return <TicketPhaseList locale={locale} />;
+  return <TicketStatusList locale={locale} />;
 }

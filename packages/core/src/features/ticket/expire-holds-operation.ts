@@ -44,7 +44,7 @@ export const expireTicketHolds = defineOperation({
   description:
     "Expire the soft holds of every ticket whose holdsUntil date has passed (ADR 0044): each " +
     "line in a state that expires moves to its item type's expiry state and its hold follows. " +
-    "Booked or ordered lines and the ticket's phase are unchanged; a type without an expiry " +
+    "Booked or ordered lines and the ticket's status are unchanged; a type without an expiry " +
     "state keeps its lines. Runs every 15 minutes in the scheduler and can be run by hand. " +
     "Returns the lines that expired.",
   input: TicketExpireHoldsInputSchema,

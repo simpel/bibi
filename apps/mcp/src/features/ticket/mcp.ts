@@ -4,7 +4,7 @@ export const ticketMcpTools = [
   mcpTool({ operation: "ticket.list" }),
   mcpTool({ operation: "ticket.get" }),
   mcpTool({ operation: "ticket.export" }),
-  mcpTool({ operation: "ticket.phaseHistory" }),
+  mcpTool({ operation: "ticket.statusHistory" }),
   mcpTool({
     operation: "ticket.create",
     summary: ({ input }) => `Create a ticket for customer ${text({ value: input.customerId })}`,
@@ -30,10 +30,10 @@ export const ticketMcpTools = [
     summary: () => "Expire the soft holds of every ticket whose holdsUntil date has passed",
   }),
   mcpTool({
-    operation: "ticket.changePhase",
+    operation: "ticket.changeStatus",
     summary: ({ input }) =>
-      `Move ticket ${text({ value: input.ticketId })} to phase ${text({
-        value: input.phaseId,
+      `Move ticket ${text({ value: input.ticketId })} to status ${text({
+        value: input.statusId,
       })}${input.reason === undefined ? "" : ` (reason: ${text({ value: input.reason })})`}`,
   }),
 ];

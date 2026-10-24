@@ -10,13 +10,13 @@ import { TicketTemplateRowActions } from "./ticket-template-row-actions";
 type Column = ColumnDef<TicketTemplateDto>;
 
 export type TemplateColumnsInput = {
-  phases: readonly NamedOption[];
+  statuses: readonly NamedOption[];
   types: readonly NamedOption[];
   access: RowAccess;
 };
 
-/** Name, ticket type, start phase and line count; admins also get the row actions. */
-export function useTemplateColumns({ phases, types, access }: TemplateColumnsInput): Column[] {
+/** Name, ticket type, start status and line count; admins also get the row actions. */
+export function useTemplateColumns({ statuses, types, access }: TemplateColumnsInput): Column[] {
   const t = useTranslations("ticketTemplate");
   const common = useTranslations("common");
   return useMemo<Column[]>(() => {
@@ -28,9 +28,9 @@ export function useTemplateColumns({ phases, types, access }: TemplateColumnsInp
         accessorFn: (row) => nameOf({ options: types, id: row.entityTypeId }),
       },
       {
-        id: "phase",
-        header: t("columns.phase"),
-        accessorFn: (row) => nameOf({ options: phases, id: row.phaseId }),
+        id: "status",
+        header: t("columns.status"),
+        accessorFn: (row) => nameOf({ options: statuses, id: row.statusId }),
       },
       {
         id: "lines",
@@ -44,5 +44,5 @@ export function useTemplateColumns({ phases, types, access }: TemplateColumnsInp
       cell: (template) => <TicketTemplateRowActions template={template} access={access} />,
     });
     return [...columns, actions];
-  }, [t, common, phases, types, access]);
+  }, [t, common, statuses, types, access]);
 }

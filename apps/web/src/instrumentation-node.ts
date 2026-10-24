@@ -20,7 +20,7 @@ export function registerLogging(): void {
   getLogger().info({ event: "process.started", msg: "@bibi/web started" });
 }
 
-/** `pnpm dev` only: prints the local services to the terminal. */
+/** `pnpm dev` only: prints the local services to the console. */
 export function registerDevBanner(): void {
   if (!isDevEnvironment()) return;
   const { WEB_URL, MCP_URL, STORYBOOK_URL } = getEnv();

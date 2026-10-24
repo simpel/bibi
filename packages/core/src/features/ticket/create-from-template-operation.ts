@@ -19,22 +19,24 @@ type CreateInput = {
   input: TicketCreateFromTemplateInput;
 };
 
-/** The start phase must still take new tickets: active and not terminal. */
-async function checkStartPhase({ context, template }: Omit<CreateInput, "input">) {
-  const phase = await context.db.ticketPhase.findFirst({ where: { id: template.phaseId } });
-  if (phase && !phase.terminal) return ok({ value: true as const });
-  const message = `The template's phase is gone or terminal: change the template "${template.name}"`;
+/** The start status must still take new tickets: active and not closing. */
+async function checkStartStatus({ context, template }: Omit<CreateInput, "input">) {
+  const ticketStatus = await context.db.ticketStatus.findFirst({
+    where: { id: template.statusId },
+  });
+  if (ticketStatus && !ticketStatus.closes) return ok({ value: true as const });
+  const message = `The template's status is gone or closing: change the template "${template.name}"`;
   return conflict({ message, issues: [{ path: "templateId", message }] });
 }
 
 async function create({ context, template, input }: CreateInput): Promise<Result<TicketDto>> {
   const { startsAt, headcount, customerId, assigneeId } = input;
   const plan = planTemplateLines({ template, startsAt });
-  const phased = await checkStartPhase({ context, template });
-  if (!phased.ok) return phased;
+  const statusd = await checkStartStatus({ context, template });
+  if (!statusd.ok) return statusd;
   const blockers = await templateCollisions({
     context,
-    phaseId: template.phaseId,
+    statusId: template.statusId,
     lines: plan.lines,
   });
   if (blockers.length > 0) {
@@ -43,7 +45,7 @@ async function create({ context, template, input }: CreateInput): Promise<Result
   }
   const ticket = await insertTicket({
     context,
-    phaseId: template.phaseId,
+    statusId: template.statusId,
     trigger: "TEMPLATE",
     input: {
       ...{ entityTypeId: template.entityTypeId, customerId, assigneeId, fields: template.fields },
@@ -67,10 +69,10 @@ export const createTicketFromTemplate = defineOperation({
   kind: "command",
   description:
     "Create a ticket from one of the organization's predefined tickets in one step (ADR 0043): " +
-    "the template's ticket type, default fields and start phase, for a customer, starting at " +
+    "the template's ticket type, default fields and start status, for a customer, starting at " +
     "`startsAt` with `headcount` as the estimated headcount. Its lines are created timed from " +
     "the start (a line without a quantity counts the headcount), " +
-    "in the states the phase grid gives for the start phase. If any line's hard hold would " +
+    "in the states the status grid gives for the start status. If any line's hard hold would " +
     "collide, nothing is created and CONFLICT lists every blocking line in `issues`.",
   input: TicketCreateFromTemplateInputSchema,
   output: TicketSchema,

@@ -24,7 +24,7 @@ export function organizationPlugin({ db }: { db: Db }) {
     organizationHooks: {
       // The slug and the time zone are checked before anything is written (ADR 0062, 0064).
       beforeCreateOrganization: beforeCreateOrganizationHook({ db }),
-      // The profile, default ticket phases etc. are created by core as SYSTEM (ADR 0043, 0064).
+      // The profile, default ticket statuses etc. are created by core as SYSTEM (ADR 0043, 0064).
       afterCreateOrganization: provisionOrganizationHook({ db }),
       beforeAddMember: async ({ member }) => {
         assertFixedRole({ role: member.role });

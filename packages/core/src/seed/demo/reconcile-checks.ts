@@ -1,4 +1,4 @@
-import { lineStateReconciliation, ticketPhaseReconciliation } from "./history-reconcile";
+import { lineStateReconciliation, ticketStatusReconciliation } from "./history-reconcile";
 import { lineHoldsReconciliation } from "./line-holds-reconcile";
 import { type ReconcileContext, runReconciliations } from "./reconcile";
 import { recordReconciliation } from "./record-reconciliation";
@@ -6,7 +6,7 @@ import { recordReconciliation } from "./record-reconciliation";
 export const RECONCILIATIONS = [
   lineHoldsReconciliation,
   recordReconciliation,
-  ticketPhaseReconciliation,
+  ticketStatusReconciliation,
   lineStateReconciliation,
 ];
 

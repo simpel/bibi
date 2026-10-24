@@ -11,10 +11,10 @@ export type CancellationInput = {
 };
 
 /**
- * Applies the organization's cancellation terms to a ticket that enters a terminal phase (ADR
+ * Applies the organization's cancellation terms to a ticket that enters a closing status (ADR
  * 0022, 0043). Cancellation
  * terms are not built yet (domain model: CancellationTerms); when they are, their hook goes in
- * `CANCELLATION_HOOKS` and runs inside the same transaction as the phase change. An error rolls
+ * `CANCELLATION_HOOKS` and runs inside the same transaction as the status change. An error rolls
  * the whole change back.
  */
 export type CancellationHook = (input: CancellationInput) => Promise<Result<true>>;
@@ -22,10 +22,10 @@ export type CancellationHook = (input: CancellationInput) => Promise<Result<true
 export const CANCELLATION_HOOKS: CancellationHook[] = [];
 
 /**
- * Everything entering a terminal phase does beyond the phase change: every line moves to its
+ * Everything entering a closing status does beyond the status change: every line moves to its
  * released state. The holds go by trigger (ADR 0053).
  */
-export async function applyTerminal({
+export async function applyClosing({
   context,
   ticket,
   reason,

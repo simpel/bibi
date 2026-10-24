@@ -16,9 +16,9 @@ export const previewPipelineSetup = defineOperation({
   kind: "query",
   description:
     "Preview a whole pipeline setup without saving anything (ADR 0044): item types with their " +
-    "states, phases in order and grid cells, all by name. Returns the configuration problems " +
+    "states, statuses in order and grid cells, all by name. Returns the configuration problems " +
     "(errors block activation, warnings do not) and a simulated ticket with one line per item " +
-    "type stepped through every open phase and into each terminal phase, with each line's " +
+    "type stepped through every open status and into each closing status, with each line's " +
     "state and hold. Use it to propose a full setup from a description of the organization.",
   input: PipelineSetupDraftSchema,
   output: PipelinePreviewSchema,
@@ -37,10 +37,10 @@ export const activatePipelineSetup = defineOperation({
   description:
     "Save a pipeline setup (the same draft as pipelineSetup.preview, which must have no " +
     "errors) as one audited batch through the normal operations: new item types are created, " +
-    "states and phases are created or updated by name, the item types' other states and the " +
-    "other phases are archived (their lines and tickets move to the initial state and the entry " +
-    "phase), and the order, default transitions and grid cells are set. All or nothing. Needs " +
-    "configuration, itemState, ticketPhase and phaseGrid admin.",
+    "states and statuses are created or updated by name, the item types' other states and the " +
+    "other statuses are archived (their lines and tickets move to the initial state and the entry " +
+    "status), and the order, default transitions and grid cells are set. All or nothing. Needs " +
+    "configuration, itemState, ticketStatus and statusGrid admin.",
   input: PipelineSetupDraftSchema,
   output: PipelineActivateOutputSchema,
   permission: "pipeline:write",
@@ -54,7 +54,7 @@ export const presetDraftPipelineSetup = defineOperation({
   description:
     "A whole pipeline setup draft from a setup preset (ADR 0045), saving nothing: the " +
     "organization's own item types are kept, the preset adds the ones it is missing, and states, " +
-    "phases and the grid come from the templates. Adjust its item types and phases by name, then " +
+    "statuses and the grid come from the templates. Adjust its item types and statuses by name, then " +
     "check it with pipelineSetup.preview. Use it for an organization's first setup.",
   input: PipelinePresetDraftInputSchema,
   output: PipelineSetupDraftSchema,

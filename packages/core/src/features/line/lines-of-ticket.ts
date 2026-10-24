@@ -7,7 +7,7 @@ export type TypedLine = { line: LineRecord; entityTypeId: string };
 export type LinesOfTicketInput = {
   context: Pick<OperationContext, "db">;
   ticketId: string;
-  /** Only lines that follow the phase grid (not overridden). */
+  /** Only lines that follow the status grid (not overridden). */
   followingOnly?: boolean;
   /** Only these lines of the ticket. */
   lineIds?: readonly string[];

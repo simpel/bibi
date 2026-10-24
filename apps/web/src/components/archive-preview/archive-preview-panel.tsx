@@ -7,7 +7,7 @@ export type ArchivePreviewPanelProps = {
   preview: ArchivePreview | null;
   loading?: boolean;
   errorKey?: ErrorKey | null;
-  /** What moves: the tickets of a phase or the lines of a state. */
+  /** What moves: the tickets of a status or the lines of a state. */
   unit: "tickets" | "lines";
 };
 

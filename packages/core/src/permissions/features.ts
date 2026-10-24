@@ -4,7 +4,7 @@
  */
 /**
  * The three actions (ADR 0050): `read` sees the feature, `write` creates and changes it
- * (including sending, exporting and moving a ticket's phase), `delete` archives it. Bibi never
+ * (including sending, exporting and moving a ticket's status), `delete` archives it. Bibi never
  * hard-deletes; `delete` is the archive action.
  */
 export const PERMISSION_ACTIONS = ["read", "write", "delete"] as const;
@@ -51,7 +51,7 @@ export const LOCKED_FEATURES: readonly Feature[] = ["member", "apiKey", "payment
 
 /**
  * Shared vocabulary (ADR 0050, feature scope): every screen shows these as labels (a ticket's
- * type and phase, a colleague's name), so `read` on them is always granted and cannot be denied.
+ * type and status, a colleague's name), so `read` on them is always granted and cannot be denied.
  * Changing them stays permissioned.
  */
 export const ALWAYS_VISIBLE_FEATURES: readonly Feature[] = [

@@ -18,18 +18,20 @@ type InvoiceableInput = { context: Context; input: InvoiceCreateInput };
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
- * An invoice needs a ticket in an `invoiceable` phase without another invoice that is not VOID
+ * An invoice needs a ticket in an `invoiceable` status without another invoice that is not VOID
  * (the partial unique index refuses a concurrent second one); its due date follows the
  * customer's payment terms unless given.
  */
 async function checkInvoiceable({ context, input }: InvoiceableInput): Promise<Result<Date>> {
   const ticket = await context.db.ticket.findFirst({
     where: { id: input.ticketId },
-    include: { phase: { select: { name: true, invoiceable: true } }, customer: true },
+    include: { ticketStatus: { select: { name: true, invoiceable: true } }, customer: true },
   });
   if (!ticket) return notFound({ entity: "Ticket" });
-  if (!ticket.phase.invoiceable) {
-    return conflict({ message: `A ticket in "${ticket.phase.name}" cannot be invoiced yet` });
+  if (!ticket.ticketStatus.invoiceable) {
+    return conflict({
+      message: `A ticket in "${ticket.ticketStatus.name}" cannot be invoiced yet`,
+    });
   }
   const open = await context.db.invoice.count({
     where: { ticketId: input.ticketId, status: { not: "VOID" } },
@@ -44,7 +46,7 @@ export const createInvoice = defineOperation({
   kind: "command",
   description:
     "Invoice a ticket (ADR 0052, 0057): freezes its priced lines as the invoice's snapshot " +
-    "with totals and the organization's next invoice number, as a DRAFT. The ticket's phase " +
+    "with totals and the organization's next invoice number, as a DRAFT. The ticket's status " +
     "must be invoiceable and the ticket must have no other invoice that is not VOID. Each " +
     "line needs a quantity and VAT. Send it (invoice.send) before requesting payment " +
     "(payment.create with invoiceId).",

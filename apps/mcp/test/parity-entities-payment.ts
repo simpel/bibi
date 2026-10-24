@@ -35,7 +35,7 @@ export const depositEntity = (): ParityEntity => ({
   },
 });
 
-/** An invoice of the ticket's priced lines (ADR 0052), once its phase is invoiceable. */
+/** An invoice of the ticket's priced lines (ADR 0052), once its status is invoiceable. */
 export const invoiceEntity = (): ParityEntity => ({
   ...byId({
     name: "invoice",
@@ -46,8 +46,8 @@ export const invoiceEntity = (): ParityEntity => ({
     nested: { lines: `{ ${LINE} }` },
   }),
   create: async ({ mcp, made }) => {
-    const phase = { id: made.ticket.phaseId, invoiceable: true };
-    await tool({ mcp, name: "ticketPhase_update", args: phase });
+    const ticketStatus = { id: made.ticket.statusId, invoiceable: true };
+    await tool({ mcp, name: "ticketStatus_update", args: ticketStatus });
     return tool({ mcp, name: "invoice_create", args: { ticketId: made.ticket.id } });
   },
 });

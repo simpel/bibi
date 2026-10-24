@@ -26,7 +26,6 @@ import { organizationProfileMcpTools } from "../features/organization-profile/mc
 import { paymentMcpTools } from "../features/payment/mcp";
 import { paymentAccountMcpTools } from "../features/payment-account/mcp";
 import { permissionMcpTools } from "../features/permission/mcp";
-import { phaseGridMcpTools } from "../features/phase-grid/mcp";
 import { pipelineMcpTools } from "../features/pipeline/mcp";
 import { pipelineSetupMcpTools } from "../features/pipeline-setup/mcp";
 import { priceListMcpTools } from "../features/price-list/mcp";
@@ -38,8 +37,9 @@ import { setupMcpTools } from "../features/setup/mcp";
 import { sheetMcpTools } from "../features/sheet/mcp";
 import { sheetDefinitionMcpTools } from "../features/sheet-definition/mcp";
 import { skillMcpTools } from "../features/skill/mcp";
+import { statusGridMcpTools } from "../features/status-grid/mcp";
 import { ticketMcpTools } from "../features/ticket/mcp";
-import { ticketPhaseMcpTools } from "../features/ticket-phase/mcp";
+import { ticketStatusMcpTools } from "../features/ticket-status/mcp";
 import { ticketTemplateMcpTools } from "../features/ticket-template/mcp";
 import { userPreferenceMcpTools } from "../features/user-preference/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
@@ -48,7 +48,11 @@ import { searchMcpTools } from "../search-mcp";
 import type { McpToolMeta } from "./meta";
 
 const accessMcpTools = [...memberMcpTools, ...apiKeyMcpTools, ...permissionMcpTools];
-const gridAndSetupMcpTools = [...phaseGridMcpTools, ...pipelineSetupMcpTools, ...changeSetMcpTools];
+const gridAndSetupMcpTools = [
+  ...statusGridMcpTools,
+  ...pipelineSetupMcpTools,
+  ...changeSetMcpTools,
+];
 const lineAndGroupMcpTools = [
   ...lineMcpTools,
   ...lineAllocationMcpTools,
@@ -81,7 +85,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...priceListMcpTools,
     ...contactMcpTools,
     ...occupancyMcpTools,
-    ...ticketPhaseMcpTools,
+    ...ticketStatusMcpTools,
     ...ticketTemplateMcpTools,
     ...itemStateMcpTools,
     ...gridAndSetupMcpTools,

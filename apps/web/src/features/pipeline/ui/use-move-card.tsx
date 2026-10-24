@@ -12,7 +12,7 @@ type Pending =
   | { kind: "blockers"; card: PipelineCard; to: PipelineColumn; error: ActionError };
 
 /**
- * Runs `ticket.changePhase` behind a drop. A phase that requires a reason asks for it first; a
+ * Runs `ticket.changeStatus` behind a drop. A status that requires a reason asks for it first; a
  * refused move opens a dialog that lists every blocker instead of dropping the card.
  */
 export function useMoveCard() {

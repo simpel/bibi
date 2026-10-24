@@ -10,7 +10,7 @@ export type DemoChoice = { responsibility: string; assignee?: string; unfollow?:
 /**
  * A demo ticket (slice 5 of ADR 0025, `docs/demo-seed.md`). `ref` is the row in the spec (L1,
  * V3, …); `day` is the offset from the day of the run and `from`/`to` local times (HH:MM, the
- * organization's zone; lines in the venue's) of the desired period on that day. Customer, type, phase and people are
+ * organization's zone; lines in the venue's) of the desired period on that day. Customer, type, status and people are
  * referred to by name.
  */
 export type DemoTicket = {
@@ -23,26 +23,26 @@ export type DemoTicket = {
   headcount: number;
   /**
    * A predefined ticket (`templates.ts`) the ticket is created from with `ticket.createFromTemplate`
-   * (ADR 0043): its lines and start phase come from it, so `phase` must be the template's phase
+   * (ADR 0043): its lines and start status come from it, so `status` must be the template's status
    * and `to` the end of its last line.
    */
   template?: string;
-  /** The phase the ticket is moved to after it is created (ADR 0043); default: the entry phase. */
-  phase?: string;
+  /** The status the ticket is moved to after it is created (ADR 0043); default: the entry status. */
+  status?: string;
   /**
-   * The item (by name) the ticket's quote charges, for a `phase` that a quote event enters: the
+   * The item (by name) the ticket's quote charges, for a `status` that a quote event enters: the
    * ticket gets an untimed line of it (unless a line has it), then a quote of its priced lines
    * that is sent, and for the accepted event accepted (ADR 0043, 0052).
    */
   quote?: string;
   /**
    * Money (ADR 0057): a SENT deposit request, and a SUCCEEDED card payment of `paidKr` against
-   * the accepted quote (the ticket's `phase` must accept it).
+   * the accepted quote (the ticket's `status` must accept it).
    */
   money?: { deposit?: { description: string; amountKr: number }; paidKr?: number };
   /** A line (by name) whose quantity changes after the quote, so it differs from it (ADR 0052). */
   changeAfterQuote?: { line: string; quantity: number };
-  /** The reason of that move, for phases that require one. */
+  /** The reason of that move, for statuses that require one. */
   reason?: string;
   /** The main assignee (ADR 0034), by user name. */
   assignee?: string;
@@ -60,7 +60,7 @@ export type DemoTicket = {
   /** Lines (by name) grouped as alternatives the customer picks one of (ADR 0052). */
   alternatives?: readonly DemoAlternative[];
   /**
-   * A phase move `checkDemoGrid` makes after seeding (ADR 0044): `blocked` moves must be refused
+   * A status move `checkDemoGrid` makes after seeding (ADR 0044): `blocked` moves must be refused
    * and change nothing; the others must move the lines as the grid says, skipping overrides.
    */
   checkMove?: { to: string; blocked: boolean };

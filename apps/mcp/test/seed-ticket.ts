@@ -6,7 +6,7 @@ export type SeededTicket = { id: string; entityTypeId: string; customerId: strin
 
 export type SeedTicketInput = { client: Client };
 
-/** A ticket with its own type, customer and entry phase in the client's organization. */
+/** A ticket with its own type, customer and entry status in the client's organization. */
 export async function seedTicket({ client }: SeedTicketInput): Promise<SeededTicket> {
   const type = await call({
     client,
@@ -25,8 +25,8 @@ export async function seedTicket({ client }: SeedTicketInput): Promise<SeededTic
   });
   await call({
     client,
-    name: "ticketPhase_create",
-    args: { name: "Secret phase", color: "#22c55e", entry: true },
+    name: "ticketStatus_create",
+    args: { name: "Secret status", color: "#22c55e", entry: true },
   });
   const ticket = await call({
     client,

@@ -90,7 +90,7 @@ export async function CalendarToolbar({ params, today, period, data }: CalendarT
         types={data.types}
         typeId={data.typeId}
         states={data.legend}
-        phases={data.phases}
+        statuses={data.statuses}
         tickets={data.tickets}
       />
     </div>

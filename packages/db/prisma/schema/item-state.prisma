@@ -40,7 +40,7 @@ model ItemState {
   lines           Line[]
   changesFrom     LineStateChange[]     @relation("StateChangeFrom")
   changesTo       LineStateChange[]     @relation("StateChangeTo")
-  phaseRules      PhaseStateRule[]
+  statusRules     StatusStateRule[]
 
   @@unique([id, organizationId])
   @@index([organizationId, entityTypeId, status, position])
@@ -63,23 +63,23 @@ model ItemStateTransition {
   @@index([organizationId, fromStateId])
 }
 
-/// Phase state rule – one cell of the phase grid (ADR 0044): when a ticket enters `phaseId`, its
+/// Status state rule – one cell of the status grid (ADR 0044): when a ticket enters `statusId`, its
 /// lines of item type `entityTypeId` move to `stateId`. A missing cell means "keep the state".
-/// Replaced per cell by `phaseGrid.setCell` (cleared = deleted), audited on the cell.
-model PhaseStateRule {
-  id             String      @id @default(cuid(2))
+/// Replaced per cell by `statusGrid.setCell` (cleared = deleted), audited on the cell.
+model StatusStateRule {
+  id             String       @id @default(cuid(2))
   organizationId String
-  phaseId        String
+  statusId       String
   entityTypeId   String
   stateId        String
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   createdBy      String?
-  phase          TicketPhase @relation(fields: [phaseId, organizationId], references: [id, organizationId])
-  entityType     EntityType  @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  state          ItemState   @relation(fields: [stateId, organizationId], references: [id, organizationId])
+  ticketStatus   TicketStatus @relation(fields: [statusId, organizationId], references: [id, organizationId])
+  entityType     EntityType   @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  state          ItemState    @relation(fields: [stateId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
-  @@unique([phaseId, entityTypeId])
-  @@index([organizationId, phaseId])
+  @@unique([statusId, entityTypeId])
+  @@index([organizationId, statusId])
 }

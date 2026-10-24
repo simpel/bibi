@@ -38,7 +38,7 @@ async function afterInsert({ context, row, stateId }: AfterInsertInput) {
 }
 
 /**
- * Creates a line in the state the phase grid gives it for the ticket's phase (else its
+ * Creates a line in the state the status grid gives it for the ticket's status (else its
  * type's initial state), holds its bookable item as the state says and records the change.
  * Shared by `line.create`, `line.expandBundle` and `line.chooseOptions`.
  */

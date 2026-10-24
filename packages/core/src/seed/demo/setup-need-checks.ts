@@ -1,5 +1,5 @@
 import { getOrganizationProfile } from "../../features/organization-profile/operations";
-import { listTicketPhases } from "../../features/ticket-phase/read-operations";
+import { listTicketStatuses } from "../../features/ticket-status/read-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoOrg } from "./types";
@@ -8,8 +8,8 @@ export type CheckSetupNeedInput = { context: ExecuteContext; org: DemoOrg; skipP
 
 /**
  * The welcome setup (ADR 0061) is for an organization whose setup is PENDING and that has no
- * phases. With `--skip-pipeline` the organization must need it, with no grid cells and only each
- * item type's default state; otherwise it must be COMPLETED with phases.
+ * statuses. With `--skip-pipeline` the organization must need it, with no grid cells and only each
+ * item type's default state; otherwise it must be COMPLETED with statuses.
  */
 export async function checkDemoSetupNeed({
   context,
@@ -22,14 +22,14 @@ export async function checkDemoSetupNeed({
   if (profile.value.setupStatus !== expected) {
     return [`${org.slug}: setup is ${profile.value.setupStatus}, expected ${expected}`];
   }
-  const phases = await execute({ operation: listTicketPhases, input: { limit: 1 }, context });
-  if (!phases.ok) return [`${org.slug}: could not read phases`];
-  const needsSetup = phases.value.items.length === 0;
+  const statuses = await execute({ operation: listTicketStatuses, input: { limit: 1 }, context });
+  if (!statuses.ok) return [`${org.slug}: could not read statuses`];
+  const needsSetup = statuses.value.items.length === 0;
   if (needsSetup !== skipPipeline) {
     return [`${org.slug}: ${needsSetup ? "needs" : "does not need"} the guided pipeline setup`];
   }
   if (!skipPipeline) return [];
-  const cells = await context.db.phaseStateRule.count();
+  const cells = await context.db.statusStateRule.count();
   const types = await context.db.entityType.count({ where: { base: "ITEM" } });
   const states = await context.db.itemState.count();
   const failures = cells > 0 ? [`${org.slug}: ${cells} grid cells, expected none`] : [];

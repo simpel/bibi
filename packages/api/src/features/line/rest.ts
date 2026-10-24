@@ -20,8 +20,8 @@ export const lineRoutes = [
     path: "/lines/{lineId}/state",
   }),
   restRoute({
-    operation: "line.followPhase",
+    operation: "line.followStatus",
     method: "POST",
-    path: "/lines/{lineId}/follow-phase",
+    path: "/lines/{lineId}/follow-status",
   }),
 ];

@@ -4,12 +4,12 @@ import {
   createPayment,
   createStripeWebhookHandler,
   execute,
-  setTicketPhaseTransitions,
+  setTicketStatusTransitions,
 } from "../src/index";
 import { unwrap } from "./helpers";
 import { paymentSetup, sentDeposit } from "./payment-helpers";
 import { createTestTicket, memberUser } from "./ticket-helpers";
-import { phaseByName } from "./ticket-phase-helpers";
+import { statusByName } from "./ticket-status-helpers";
 
 export const SECRET = "whsec_test_secret";
 
@@ -53,16 +53,16 @@ export async function postEvent({ event, secret = SECRET, header }: PostInput) {
   return { status: response.status, body: (await response.json()) as { status?: string } };
 }
 
-/** A paid-for-able card payment on a ticket whose Lead phase may move to Confirmed. */
+/** A paid-for-able card payment on a ticket whose Lead status may move to Confirmed. */
 export async function webhookSetup() {
   const setup = await paymentSetup();
   const { context } = setup;
-  const lead = await phaseByName({ context, name: "Lead" });
-  const confirmed = await phaseByName({ context, name: "Confirmed" });
+  const lead = await statusByName({ context, name: "Lead" });
+  const confirmed = await statusByName({ context, name: "Confirmed" });
   unwrap({
     result: await execute({
-      operation: setTicketPhaseTransitions,
-      input: { id: lead.id, toPhaseIds: [confirmed.id] },
+      operation: setTicketStatusTransitions,
+      input: { id: lead.id, toStatusIds: [confirmed.id] },
       context,
     }),
   });

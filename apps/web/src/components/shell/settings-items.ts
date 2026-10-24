@@ -27,7 +27,7 @@ export type SettingsKey =
   | "responsibilities"
   | "sheets"
   | "priceLists"
-  | "ticketPhases"
+  | "ticketStatuses"
   | "itemStates"
   | "ticketTemplates"
   | "members"
@@ -79,7 +79,7 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
   },
   {
     href: ROUTES.settingsPipeline,
-    key: "ticketPhases",
+    key: "ticketStatuses",
     icon: CircleDotIcon,
     permission: "pipeline:read",
   },

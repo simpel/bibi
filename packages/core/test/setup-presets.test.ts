@@ -40,7 +40,7 @@ describe("setup presets (ADR 0061)", () => {
   it("builds a ready draft from a subset of chosen, translated types", async () => {
     const context = testContext();
     const draft = draftFromTypes({
-      phases: "conference-estate",
+      statuses: "conference-estate",
       types: [
         { name: "Bankettsal", bookable: true },
         { name: "Middagsmeny", bookable: false },

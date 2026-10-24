@@ -1,5 +1,5 @@
 import {
-  changeTicketPhase,
+  changeTicketStatus,
   createTicket,
   createTicketFromTemplate,
   exportTicket,
@@ -8,10 +8,10 @@ import {
   type TicketDto,
   type TicketExport,
   TicketExportOutputSchema,
-  type TicketPhaseHistory,
-  TicketPhaseHistoryOutputSchema,
   TicketSchema,
-  ticketPhaseHistory,
+  type TicketStatusHistory,
+  TicketStatusHistoryOutputSchema,
+  ticketStatusHistory,
   updateTicket,
 } from "@bibi/core";
 import { builder } from "../../schema/builder";
@@ -22,7 +22,7 @@ import { requirePermission } from "../../schema/require-permission";
 import { runOperation } from "../../schema/run-operation";
 import { CustomerRef } from "../customer/graphql";
 import { EntityTypeRef } from "../entity-type/graphql";
-import { TicketPhaseRef } from "../ticket-phase/graphql";
+import { TicketStatusRef } from "../ticket-status/graphql";
 
 export const TicketRef = objectFromSchema<TicketDto>({
   name: "Ticket",
@@ -31,7 +31,7 @@ export const TicketRef = objectFromSchema<TicketDto>({
   description:
     "Ticket – one customer request from first contact to the delivered event (ADR 0043): type " +
     "and fields, customer and contact, desired period, headcount, budget, the " +
-    "organization's own phase and who answers for it (assignments).",
+    "organization's own status and who answers for it (assignments).",
 });
 const TicketPageRef = pageType({ name: "TicketPage", item: TicketRef });
 const TicketExportRef = objectFromSchema<TicketExport>({
@@ -42,23 +42,23 @@ const TicketExportRef = objectFromSchema<TicketExport>({
 
 fieldFromOperation({ operation: listTickets, type: TicketPageRef, name: "tickets" });
 fieldFromOperation({ operation: getTicket, type: TicketRef, name: "ticket" });
-const TicketPhaseHistoryRef = objectFromSchema<TicketPhaseHistory>({
-  name: "TicketPhaseHistory",
-  schema: TicketPhaseHistoryOutputSchema,
+const TicketStatusHistoryRef = objectFromSchema<TicketStatusHistory>({
+  name: "TicketStatusHistory",
+  schema: TicketStatusHistoryOutputSchema,
   description:
-    "A ticket's phase history, oldest first (ADR 0054), and the facts that contradict its phase.",
+    "A ticket's status history, oldest first (ADR 0054), and the facts that contradict its status.",
 });
 
 fieldFromOperation({ operation: exportTicket, type: TicketExportRef, name: "ticketExport" });
 fieldFromOperation({
-  operation: ticketPhaseHistory,
-  type: TicketPhaseHistoryRef,
-  name: "ticketPhaseHistory",
+  operation: ticketStatusHistory,
+  type: TicketStatusHistoryRef,
+  name: "ticketStatusHistory",
 });
 mutationFromOperation({ operation: createTicket, type: TicketRef });
 mutationFromOperation({ operation: createTicketFromTemplate, type: TicketRef });
 mutationFromOperation({ operation: updateTicket, type: TicketRef });
-mutationFromOperation({ operation: changeTicketPhase, type: TicketRef });
+mutationFromOperation({ operation: changeTicketStatus, type: TicketRef });
 
 builder.objectField(TicketRef, "entityType", (t) =>
   t.field({
@@ -83,13 +83,13 @@ builder.objectField(TicketRef, "customer", (t) =>
   }),
 );
 
-builder.objectField(TicketRef, "phase", (t) =>
+builder.objectField(TicketRef, "ticketStatus", (t) =>
   t.field({
-    type: TicketPhaseRef,
-    description: "The ticket's phase, with its flags (archived phases included).",
+    type: TicketStatusRef,
+    description: "The ticket's status, with its flags (archived statuses included).",
     resolve: (ticket, _args, ctx) => {
       requirePermission({ ctx, permission: "pipeline:read" });
-      return ctx.loaders.ticketPhase.load({ id: ticket.phaseId }) as never;
+      return ctx.loaders.ticketStatus.load({ id: ticket.statusId }) as never;
     },
   }),
 );

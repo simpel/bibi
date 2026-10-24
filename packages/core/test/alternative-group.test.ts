@@ -10,8 +10,8 @@ import { choose, groupLines, roomAlternatives } from "./alternative-group-helper
 import { errorCode, peer, unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
 import { activeOccupancies } from "./line-helpers";
-import { addLine, lineNow, setCell } from "./phase-grid-helpers";
-import { moveToPhase } from "./ticket-helpers";
+import { addLine, lineNow, setCell } from "./status-grid-helpers";
+import { moveToStatus } from "./ticket-helpers";
 
 describe("alternative groups (ADR 0052)", () => {
   it("groups two soft-held lines as options and lists them", async () => {
@@ -30,11 +30,11 @@ describe("alternative groups (ADR 0052)", () => {
     expect((await lineNow({ context, lineId: b.id })).stateId).toBe(roomState.prebooked.id);
   });
 
-  it("fails a phase move that would hard-hold both options, without any change", async () => {
+  it("fails a status move that would hard-hold both options, without any change", async () => {
     const { context, a, b, room, roomState, ticket } = await roomAlternatives();
     const cell = { entityTypeId: room.entityTypeId, stateId: roomState.booked.id };
-    unwrap({ result: await setCell({ context, phase: "Confirmed", ...cell }) });
-    const moved = await moveToPhase({ context, ticketId: ticket.id, name: "Confirmed" });
+    unwrap({ result: await setCell({ context, ticketStatus: "Confirmed", ...cell }) });
+    const moved = await moveToStatus({ context, ticketId: ticket.id, name: "Confirmed" });
     expect(errorCode({ result: moved })).toBe("CONFLICT");
     for (const lineId of [a.id, b.id]) {
       expect((await lineNow({ context, lineId })).stateId).toBe(roomState.prebooked.id);

@@ -23,7 +23,7 @@ const base: CalendarBlock = {
   stateId: null,
   stateName: null,
   stateColor: null,
-  phaseId: null,
+  statusId: null,
   expiresAt: null,
 };
 

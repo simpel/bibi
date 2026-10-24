@@ -24,7 +24,7 @@ export const DEMO_ORGS: readonly DemoOrg[] = [lindholmen, vingaleden];
 export type SeedDemoInput = {
   db?: Db;
   orgs?: readonly DemoOrg[];
-  /** `--skip-pipeline`: item types without phases, states or grid, for the first setup. */
+  /** `--skip-pipeline`: item types without statuses, states or grid, for the first setup. */
   skipPipeline?: boolean;
   /** The mega admin (superadmin, admin of every org); on by default for the demo orgs only. */
   megaAdmin?: boolean;

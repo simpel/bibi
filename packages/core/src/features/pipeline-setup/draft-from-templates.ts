@@ -7,18 +7,18 @@ import {
   type ItemStateTemplateKey,
   type ItemStateTemplateState,
 } from "../../templates/item-states/item-state-templates";
-import { getPhaseGridTemplate } from "../../templates/phase-grid/phase-grid-templates";
 import {
   getSetupPreset,
   type SetupPresetKey,
-  type SetupPresetPhases,
+  type SetupPresetStatuses,
 } from "../../templates/setup-presets/setup-presets";
-import { getTicketPhaseTemplate } from "../../templates/ticket-phases/ticket-phase-templates";
+import { getStatusGridTemplate } from "../../templates/status-grid/status-grid-templates";
+import { getTicketStatusTemplate } from "../../templates/ticket-statuses/ticket-status-templates";
 import type {
   PipelineCellDraft,
-  PipelinePhaseDraft,
   PipelineSetupDraft,
   PipelineStateDraft,
+  PipelineStatusDraft,
   PipelineTypeDraft,
 } from "./schema";
 
@@ -26,7 +26,7 @@ import type {
 export const STATE_TEMPLATE_CHOICES = ["bookable", "food", "other", "single"] as const;
 export type StateTemplateChoice = (typeof STATE_TEMPLATE_CHOICES)[number];
 
-/** The phase (and grid) templates of the wizard. */
+/** The status (and grid) templates of the wizard. */
 export const PIPELINE_TEMPLATE_KEYS = ["conference-estate", "default"] as const;
 export type PipelineTemplateKey = (typeof PIPELINE_TEMPLATE_KEYS)[number];
 
@@ -58,42 +58,42 @@ export function statesFromTemplate({ template, bookable }: StatesFromTemplateInp
 export const defaultStateTemplate = ({ bookable }: { bookable: boolean }): StateTemplateChoice =>
   bookable ? "bookable" : "other";
 
-/** The template's phases with every flag spelled out. */
-export function phasesFromTemplate({ template }: { template: PipelineTemplateKey }) {
-  return getTicketPhaseTemplate({ key: template }).phases.map(
-    (phase): Required<PipelinePhaseDraft> => ({
-      name: phase.name,
-      color: phase.color,
-      entry: phase.entry ?? false,
-      terminal: phase.terminal ?? false,
-      requiresReason: phase.requiresReason ?? false,
-      requiresAssignee: phase.requiresAssignee ?? false,
-      requiresAcceptedQuote: phase.requiresAcceptedQuote ?? false,
-      invoiceable: phase.invoiceable ?? false,
-      event: phase.event ?? null,
+/** The template's statuses with every flag spelled out. */
+export function statusesFromTemplate({ template }: { template: PipelineTemplateKey }) {
+  return getTicketStatusTemplate({ key: template }).statuses.map(
+    (status): Required<PipelineStatusDraft> => ({
+      name: status.name,
+      color: status.color,
+      entry: status.entry ?? false,
+      closes: status.closes ?? false,
+      requiresReason: status.requiresReason ?? false,
+      requiresAssignee: status.requiresAssignee ?? false,
+      requiresAcceptedQuote: status.requiresAcceptedQuote ?? false,
+      invoiceable: status.invoiceable ?? false,
+      event: status.event ?? null,
     }),
   );
 }
 
 export type CellsFromTemplateInput = {
   template: PipelineTemplateKey;
-  phases: readonly PipelinePhaseDraft[];
+  statuses: readonly PipelineStatusDraft[];
   itemTypes: readonly Pick<PipelineTypeDraft, "name" | "states">[];
 };
 
 /**
- * The grid template's cells for the draft, by name: per open phase and type, the first template
- * cell of the phase whose state the type has. Phases and types without a match keep the state.
+ * The grid template's cells for the draft, by name: per open status and type, the first template
+ * cell of the status whose state the type has. Statuses and types without a match keep the state.
  */
-export function cellsFromTemplate({ template, phases, itemTypes }: CellsFromTemplateInput) {
-  const cells = getPhaseGridTemplate({ key: template }).cells;
-  return phases
-    .filter((phase) => !phase.terminal)
-    .flatMap((phase) =>
+export function cellsFromTemplate({ template, statuses, itemTypes }: CellsFromTemplateInput) {
+  const cells = getStatusGridTemplate({ key: template }).cells;
+  return statuses
+    .filter((status) => !status.closes)
+    .flatMap((status) =>
       itemTypes.flatMap((type): PipelineCellDraft[] => {
         const names = new Set(type.states.map((state) => state.name));
-        const match = cells.find((cell) => cell.phase === phase.name && names.has(cell.state));
-        return match ? [{ phase: phase.name, type: type.name, state: match.state }] : [];
+        const match = cells.find((cell) => cell.status === status.name && names.has(cell.state));
+        return match ? [{ ticketStatus: status.name, type: type.name, state: match.state }] : [];
       }),
     );
 }
@@ -108,11 +108,11 @@ export type DraftFromPresetInput = {
 /** A whole draft from a setup preset (ADR 0061): `draftFromTypes` with the preset's types. */
 export function draftFromPreset({ key, existingTypes }: DraftFromPresetInput): PipelineSetupDraft {
   const preset = getSetupPreset({ key });
-  return draftFromTypes({ phases: preset.phases, types: preset.itemTypes, existingTypes });
+  return draftFromTypes({ statuses: preset.statuses, types: preset.itemTypes, existingTypes });
 }
 
 export type DraftFromTypesInput = {
-  phases: SetupPresetPhases;
+  statuses: SetupPresetStatuses;
   /** The new types by name, e.g. a preset's types as the user ticked and named them. */
   types: readonly { name: string; bookable: boolean }[];
   existingTypes: readonly ExistingSetupType[];
@@ -120,10 +120,10 @@ export type DraftFromTypesInput = {
 
 /**
  * A whole draft from chosen types (ADR 0061): existing item types are kept, chosen types not
- * there yet (by name) are added, and states, phases and the grid come from the templates.
+ * there yet (by name) are added, and states, statuses and the grid come from the templates.
  */
 export function draftFromTypes({
-  phases: template,
+  statuses: template,
   types,
   existingTypes,
 }: DraftFromTypesInput): PipelineSetupDraft {
@@ -143,6 +143,6 @@ export function draftFromTypes({
         : {};
     return { ...identity, name, ...states };
   });
-  const phases = phasesFromTemplate({ template });
-  return { itemTypes, phases, cells: cellsFromTemplate({ template, phases, itemTypes }) };
+  const statuses = statusesFromTemplate({ template });
+  return { itemTypes, statuses, cells: cellsFromTemplate({ template, statuses, itemTypes }) };
 }

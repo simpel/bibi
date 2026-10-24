@@ -72,7 +72,7 @@ export async function checkDemoHolds({ context, org }: CheckDemoHoldsInput): Pro
       ...line,
       day: ticket.day,
       expired: (ticket.holdsUntilDay ?? 0) < 0 || pickedAway({ ticket, line }),
-      initial: !ticket.phase && !line.state,
+      initial: !ticket.status && !line.state,
     })),
   );
   if (lines.length === 0) return [];

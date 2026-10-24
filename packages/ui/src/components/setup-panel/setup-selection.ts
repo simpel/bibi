@@ -3,7 +3,7 @@
 import { createContext, type ReactNode, useContext } from "react";
 
 /** What a staff member can point at in the setup panel. */
-export type SetupTargetKind = "itemType" | "phase";
+export type SetupTargetKind = "itemType" | "status";
 
 export type SetupTarget = { kind: SetupTargetKind; name: string };
 

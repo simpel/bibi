@@ -68,7 +68,7 @@
   - `packages/core/CLAUDE.md`: series operations, the invoice-by-lines rule, edit scopes and the skipped list.
   - `packages/db/CLAUDE.md`: the new constraint or trigger on invoiced lines.
   - `apps/web/CLAUDE.md`: series form and scope picker (this, following, all).
-  - `docs/specs/series.md` (new): rule, end, skips, modes, scopes, clash and skipped handling, billing. Also `docs/specs/tickets-phases-and-states.md` for line `occurrenceStart`, and `docs/specs/payments.md` for per-period invoices.
+  - `docs/specs/series.md` (new): rule, end, skips, modes, scopes, clash and skipped handling, billing. Also `docs/specs/tickets-statuses-and-states.md` for line `occurrenceStart`, and `docs/specs/payments.md` for per-period invoices.
   - `docs/domain-model.md` and `docs/artifacts/domain-model.html`: a **Target (ADR 0069)** note on Ticket, Line, Invoice and a new Series entity.
   - Root `CLAUDE.md`: a short differentiator line. Depends on ADR 0064 being built for the zone.
 - Cost: occurrences are rows, so a weekly series holds about 52 tickets or line sets at a time (the 12-month horizon); the daily job adds the rest as time passes. `apps/worker/CLAUDE.md` lists the extension job. `FOLLOWING` splits create a second series row.

@@ -16,7 +16,7 @@ export const TicketTemplateRef = objectFromSchema<TicketTemplateDto>({
   schema: TicketTemplateSchema,
   omit: ["organizationId"],
   description:
-    "Ticket template – a predefined ticket: ticket type, start phase, default field values and " +
+    "Ticket template – a predefined ticket: ticket type, start status, default field values and " +
     "lines (item, setup, offset and duration from the ticket start, quantity).",
 });
 const TicketTemplatePageRef = pageType({ name: "TicketTemplatePage", item: TicketTemplateRef });

@@ -2,11 +2,11 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
 import { loadStatesOfType } from "../item-state/load-item-state";
-import { loadGrid } from "../phase-grid/load-grid";
-import { loadAllTicketPhases } from "../ticket-phase/load-ticket-phase";
+import { loadGrid } from "../status-grid/load-grid";
+import { loadAllTicketStatuses } from "../ticket-status/load-ticket-status";
 import { activateGrid } from "./activate-grid";
-import { finishPhases, upsertPhases } from "./activate-phases";
 import { activateType, type SetUpType } from "./activate-states";
+import { finishStatuses, upsertStatuses } from "./activate-statuses";
 import { previewPipeline } from "./preview";
 import { resolveBookable } from "./resolve-types";
 import type { PipelineActivateOutput, PipelineSetupDraft } from "./schema";
@@ -26,7 +26,7 @@ async function checkReady({ context, draft }: ActivatePipelineInput): Promise<Re
 }
 
 /**
- * `pipelineSetup.activate` (ADR 0044): item types and states, phases, the grid, then the phases
+ * `pipelineSetup.activate` (ADR 0044): item types and states, statuses, the grid, then the statuses
  * the draft left out are archived and the order and transitions set, all through the normal
  * operations in the caller's one transaction and audit batch.
  */
@@ -42,11 +42,15 @@ export async function activatePipeline({
     if (!setUp.ok) return setUp;
     types.set(type.name, setUp.value);
   }
-  const phaseIds = await upsertPhases({ context, phases: draft.phases });
-  if (!phaseIds.ok) return phaseIds;
-  const grid = await activateGrid({ context, draft, phaseIds: phaseIds.value, types });
+  const statusIds = await upsertStatuses({ context, statuses: draft.statuses });
+  if (!statusIds.ok) return statusIds;
+  const grid = await activateGrid({ context, draft, statusIds: statusIds.value, types });
   if (!grid.ok) return grid;
-  const finished = await finishPhases({ context, phases: draft.phases, ids: phaseIds.value });
+  const finished = await finishStatuses({
+    context,
+    statuses: draft.statuses,
+    ids: statusIds.value,
+  });
   if (!finished.ok) return finished;
   // One query at a time: the transaction's connection runs them in order anyway.
   const states = [];
@@ -55,7 +59,7 @@ export async function activatePipeline({
   }
   return ok({
     value: {
-      phases: await loadAllTicketPhases({ context }),
+      statuses: await loadAllTicketStatuses({ context }),
       states: states.flat(),
       grid: await loadGrid({ context }),
     },

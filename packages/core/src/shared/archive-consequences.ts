@@ -1,17 +1,17 @@
 import type { Consequence } from "../change-preview/schema";
 
 export type ArchiveConsequencesInput = {
-  /** Rows that move to the target: tickets for a phase, lines for a state. */
+  /** Rows that move to the target: tickets for a status, lines for a state. */
   moving: number;
-  /** Phase grid cells that are cleared. */
+  /** Status grid cells that are cleared. */
   cells: number;
-  /** Name of the phase or state they move to, when one is given. */
+  /** Name of the status or state they move to, when one is given. */
   target: string | null;
   /** `tickets` or `lines`, for the message. */
   rows: "tickets" | "lines";
 };
 
-/** The approval card's consequences of archiving a phase or a state (ADR 0049). */
+/** The approval card's consequences of archiving a status or a state (ADR 0049). */
 export function archiveConsequences({
   moving,
   cells,

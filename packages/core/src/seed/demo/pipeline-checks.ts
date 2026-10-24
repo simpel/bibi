@@ -16,40 +16,45 @@ function expectedStates({ org }: { org: DemoOrg }): number {
     .reduce((sum, type) => sum + (type.states ? ITEM_STATE_TEMPLATES[type.states].length : 1), 0);
 }
 
-/** Counts and the minimum configuration of the phases and the grid. */
-async function phaseFailures({ context, org }: CheckDemoPipelineInput): Promise<string[]> {
+/** Counts and the minimum configuration of the statuses and the grid. */
+async function statusFailures({ context, org }: CheckDemoPipelineInput): Promise<string[]> {
   const { slug, pipeline } = org;
-  const phases = await context.db.ticketPhase.findMany({ where: { status: "ACTIVE" } });
-  const transitions = await context.db.ticketPhaseTransition.count();
-  const cells = await context.db.phaseStateRule.count();
-  const entries = phases.filter((phase) => phase.entry).length;
+  const statuses = await context.db.ticketStatus.findMany({ where: { status: "ACTIVE" } });
+  const transitions = await context.db.ticketStatusTransition.count();
+  const cells = await context.db.statusStateRule.count();
+  const entries = statuses.filter((ticketStatus) => ticketStatus.entry).length;
   const failures = [
     ...countFailure({
       slug,
-      what: "phases",
-      found: phases.length,
-      expected: pipeline.phases.phases.length,
+      what: "statuses",
+      found: statuses.length,
+      expected: pipeline.statuses.statuses.length,
     }),
     ...countFailure({
       slug,
-      what: "phase transitions",
+      what: "status transitions",
       found: transitions,
-      expected: pipeline.phases.transitions.length,
+      expected: pipeline.statuses.transitions.length,
     }),
     ...countFailure({ slug, what: "grid cells", found: cells, expected: pipeline.cells.length }),
-    ...countFailure({ slug, what: "entry phases", found: entries, expected: 1 }),
+    ...countFailure({ slug, what: "entry statuses", found: entries, expected: 1 }),
   ];
-  if (!phases.some((phase) => phase.terminal)) failures.push(`${slug}: no terminal phase`);
-  const guarded = pipeline.phases.phases.filter((phase) => phase.requiresAcceptedQuote).length;
-  const found = phases.filter((phase) => phase.requiresAcceptedQuote).length;
-  failures.push(...countFailure({ slug, what: "accepted-quote phases", found, expected: guarded }));
+  if (!statuses.some((ticketStatus) => ticketStatus.closes))
+    failures.push(`${slug}: no closing status`);
+  const guarded = pipeline.statuses.statuses.filter(
+    (ticketStatus) => ticketStatus.requiresAcceptedQuote,
+  ).length;
+  const found = statuses.filter((ticketStatus) => ticketStatus.requiresAcceptedQuote).length;
+  failures.push(
+    ...countFailure({ slug, what: "accepted-quote statuses", found, expected: guarded }),
+  );
   return failures;
 }
 
 /**
- * The phase history (ADR 0054): every ticket's first change is its start (no `fromPhaseId`, by
+ * The status history (ADR 0054): every ticket's first change is its start (no `fromStatusId`, by
  * `TEMPLATE` for each ticket made from a predefined ticket, else `MANUAL`), and a ticket in a
- * phase with a quote event got there by `QUOTE_EVENT` (or started there from a template). That `phaseId` is the newest change is the
+ * status with a quote event got there by `QUOTE_EVENT` (or started there from a template). That `statusId` is the newest change is the
  * reconciliation's job.
  */
 async function historyFailures({ context, org }: CheckDemoPipelineInput): Promise<string[]> {
@@ -57,22 +62,22 @@ async function historyFailures({ context, org }: CheckDemoPipelineInput): Promis
   const tickets = await context.db.ticket.findMany({
     select: {
       reference: true,
-      phase: { select: { event: true } },
-      phaseChanges: { select: { fromPhaseId: true, trigger: true }, orderBy: { seq: "asc" } },
+      ticketStatus: { select: { event: true } },
+      statusChanges: { select: { fromStatusId: true, trigger: true }, orderBy: { seq: "asc" } },
     },
   });
   const failures: string[] = [];
-  for (const { reference, phase, phaseChanges } of tickets) {
-    const first = phaseChanges[0];
-    if (!first || first.fromPhaseId !== null || !["MANUAL", "TEMPLATE"].includes(first.trigger)) {
-      failures.push(`${slug}: ticket #${reference} has no start in its phase history`);
+  for (const { reference, ticketStatus, statusChanges } of tickets) {
+    const first = statusChanges[0];
+    if (!first || first.fromStatusId !== null || !["MANUAL", "TEMPLATE"].includes(first.trigger)) {
+      failures.push(`${slug}: ticket #${reference} has no start in its status history`);
     }
-    const byEvent = phaseChanges.some((change) => change.trigger === "QUOTE_EVENT");
-    if (phase.event && !byEvent && first?.trigger !== "TEMPLATE") {
-      failures.push(`${slug}: ticket #${reference} reached its event phase by hand`);
+    const byEvent = statusChanges.some((change) => change.trigger === "QUOTE_EVENT");
+    if (ticketStatus.event && !byEvent && first?.trigger !== "TEMPLATE") {
+      failures.push(`${slug}: ticket #${reference} reached its event status by hand`);
     }
   }
-  const found = tickets.filter((ticket) => ticket.phaseChanges[0]?.trigger === "TEMPLATE").length;
+  const found = tickets.filter((ticket) => ticket.statusChanges[0]?.trigger === "TEMPLATE").length;
   const expected = org.tickets.filter((ticket) => ticket.template).length;
   return [...failures, ...countFailure({ slug, what: "template starts", found, expected })];
 }
@@ -103,8 +108,8 @@ async function stateFailures({ context, org }: CheckDemoPipelineInput): Promise<
 }
 
 /**
- * ADR 0043 and 0044: the phase, transition, state and grid cell counts against the data files,
- * the minimum configuration (one entry and one terminal phase) and that every item type has
+ * ADR 0043 and 0044: the status, transition, state and grid cell counts against the data files,
+ * the minimum configuration (one entry and one closing status) and that every item type has
  * exactly one initial state. Run before the grid checks move any ticket. Returns failures.
  */
 export async function checkDemoPipeline({
@@ -113,7 +118,7 @@ export async function checkDemoPipeline({
 }: CheckDemoPipelineInput): Promise<string[]> {
   const input = { context, org };
   return [
-    ...(await phaseFailures(input)),
+    ...(await statusFailures(input)),
     ...(await stateFailures(input)),
     ...(await historyFailures(input)),
   ];

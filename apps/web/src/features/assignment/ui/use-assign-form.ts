@@ -19,7 +19,7 @@ export type UseAssignFormInput = {
   onDone: () => void;
 };
 
-/** Main assignee form; a refused removal (the phase needs an assignee) shows on the field. */
+/** Main assignee form; a refused removal (the status needs an assignee) shows on the field. */
 export function useAssignForm({ subject, assigneeId, onDone }: UseAssignFormInput) {
   const t = useTranslations("assignment");
   const common = useTranslations("common");

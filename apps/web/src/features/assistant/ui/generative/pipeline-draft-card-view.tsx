@@ -14,8 +14,8 @@ export type PipelineDraftCardViewProps = GenerativeProps<"pipeline-draft-card">;
  */
 export function PipelineDraftCardView({ draft }: PipelineDraftCardViewProps) {
   const t = useTranslations("assistant.ui.pipelineDraft");
-  const open = draft.phases.filter((phase) => !phase.terminal);
-  const ends = draft.phases.filter((phase) => phase.terminal);
+  const open = draft.statuses.filter((ticketStatus) => !ticketStatus.closes);
+  const ends = draft.statuses.filter((ticketStatus) => ticketStatus.closes);
   return (
     <Card data-slot="pipeline-draft-card" className="gap-3 py-4 shadow-none">
       <CardHeader className="px-4">
@@ -36,15 +36,15 @@ export function PipelineDraftCardView({ draft }: PipelineDraftCardViewProps) {
         <section className="grid gap-1.5">
           <h4 className="text-xs font-medium text-muted-foreground">{t("moves")}</h4>
           <div className="flex flex-wrap items-center gap-1.5">
-            {open.map((phase, index) => (
-              <Fragment key={phase.name}>
+            {open.map((ticketStatus, index) => (
+              <Fragment key={ticketStatus.name}>
                 {index > 0 ? <ArrowRightIcon className="size-3 text-muted-foreground" /> : null}
-                <Badge variant="outline">{phase.name}</Badge>
+                <Badge variant="outline">{ticketStatus.name}</Badge>
               </Fragment>
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            {t("ends", { phases: ends.map((phase) => phase.name).join(", ") })}
+            {t("ends", { statuses: ends.map((ticketStatus) => ticketStatus.name).join(", ") })}
           </p>
         </section>
       </CardContent>

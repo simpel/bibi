@@ -15,10 +15,10 @@ export type ApprovalActionsProps = {
 };
 
 const isLocked = ({ state }: { state: DecisionState }): boolean =>
-  state.phase === "pending" ||
-  state.phase === "approved" ||
-  state.phase === "rejected" ||
-  (state.phase === "error" && state.final);
+  state.status === "pending" ||
+  state.status === "approved" ||
+  state.status === "rejected" ||
+  (state.status === "error" && state.final);
 
 /** Cancel / Confirm; both are disabled while sending and after a final decision. */
 export function ApprovalActions({
@@ -29,7 +29,7 @@ export function ApprovalActions({
 }: ApprovalActionsProps) {
   const t = useTranslations("assistant.approval");
   const locked = isLocked({ state });
-  const pending = state.phase === "pending";
+  const pending = state.status === "pending";
   return (
     <div className="flex gap-2">
       <Button

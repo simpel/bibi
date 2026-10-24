@@ -21,9 +21,9 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.quote.deleteMany({ where }),
   // A chosen alternative points at its line and the lines at their group (ADR 0052).
   db.alternativeGroup.updateMany({ where, data: { chosenLineId: null } }),
-  // The phase and state history (ADR 0054) points at the lines, tickets, phases and states.
+  // The status and state history (ADR 0054) points at the lines, tickets, statuses and states.
   db.lineStateChange.deleteMany({ where }),
-  db.ticketPhaseChange.deleteMany({ where }),
+  db.ticketStatusChange.deleteMany({ where }),
   // Allocations point at their lines, demands and each other (ADR 0059); their holds cascade.
   db.lineAllocation.updateMany({ where, data: { parentAllocationId: null } }),
   db.lineAllocation.deleteMany({ where }),
@@ -35,9 +35,9 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.ticketTemplate.deleteMany({ where }),
 ];
 
-/** Item states, their transitions and the phase grid (ADR 0044); after the lines that use them. */
+/** Item states, their transitions and the status grid (ADR 0044); after the lines that use them. */
 const itemStates = ({ db, where }: ScopeInput) => [
-  db.phaseStateRule.deleteMany({ where }),
+  db.statusStateRule.deleteMany({ where }),
   // A type's expiry state points back at its states: cut that link before deleting either.
   db.entityType.updateMany({ where, data: { expiryStateId: null } }),
   db.itemStateTransition.deleteMany({ where }),
@@ -101,8 +101,8 @@ export async function deleteOrganizations({
     db.assignmentFollower.deleteMany({ where }),
     db.assignment.deleteMany({ where }),
     db.ticket.deleteMany({ where }),
-    db.ticketPhaseTransition.deleteMany({ where }),
-    db.ticketPhase.deleteMany({ where }),
+    db.ticketStatusTransition.deleteMany({ where }),
+    db.ticketStatus.deleteMany({ where }),
     ...recordRoots({ db, where }),
     db.fieldDefinition.deleteMany({ where }),
     db.vocabularyValue.deleteMany({ where }),

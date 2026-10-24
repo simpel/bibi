@@ -12,7 +12,7 @@ import { seedDemoLines } from "./seed-lines";
 import { seedTicketMoney } from "./seed-money";
 import { seedTicketChoices } from "./seed-ticket-choices";
 import { createDemoTicketFromTemplate } from "./seed-ticket-from-template";
-import { movePhase } from "./seed-ticket-phase";
+import { moveStatus } from "./seed-ticket-status";
 import type { DemoTicket } from "./ticket-types";
 import type { DemoUserIds } from "./users";
 
@@ -118,11 +118,11 @@ async function seedTicket({ context, refs, userIds, zones, ticket, now }: Ticket
   if (!lines.ok) return lines;
   const chosen = await seedTicketChoices({ ...{ context, ticketId, userIds }, ticket });
   if (!chosen.ok) return chosen;
-  const moved = await movePhase({ context, ticket, ticketId, now });
+  const moved = await moveStatus({ context, ticket, ticketId, now });
   return moved.ok ? seedTicketMoney({ context, ticket, ticketId }) : moved;
 }
 
-/** Slice 5 of ADR 0025, started: tickets with a main assignee, followers and phase, as SYSTEM. */
+/** Slice 5 of ADR 0025, started: tickets with a main assignee, followers and status, as SYSTEM. */
 export async function seedDemoTickets({
   tickets,
   now = new Date(),

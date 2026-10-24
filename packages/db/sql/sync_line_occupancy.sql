@@ -2,8 +2,8 @@
 -- functions and triggers; the latest migration that includes it applies it verbatim
 -- (`packages/db/test/line-holds-sql.test.ts` keeps the two in step).
 --
--- A line holds its item when: the line and its ticket are ACTIVE, the ticket's phase is not
--- terminal, the line is timed, its item's type is BOOKABLE and its state is not released and
+-- A line holds its item when: the line and its ticket are ACTIVE, the ticket's status does not
+-- close it, the line is timed, its item's type is BOOKABLE and its state is not released and
 -- holds (SOFT or HARD). It then has one HOLD row of the state's kind for [startsAt, endsAt), a
 -- SETUP row right before and a TEARDOWN row right after, each of the same kind and only when its
 -- minutes are above zero. Setup minutes are the line's, else the item's, else the type's, and
@@ -65,14 +65,14 @@ LANGUAGE sql STABLE AS $$
              AS teardown_to
       FROM "Line" l
       JOIN "Ticket" t ON t."id" = l."ticketId" AND t."organizationId" = l."organizationId"
-      JOIN "TicketPhase" p ON p."id" = t."phaseId" AND p."organizationId" = t."organizationId"
+      JOIN "TicketStatus" p ON p."id" = t."statusId" AND p."organizationId" = t."organizationId"
       JOIN "Item" i ON i."id" = l."itemId" AND i."organizationId" = l."organizationId"
       JOIN "EntityType" et ON et."id" = i."entityTypeId"
         AND et."organizationId" = i."organizationId"
       JOIN "ItemState" s ON s."id" = l."stateId" AND s."organizationId" = l."organizationId"
       LEFT JOIN "Setup" su ON su."id" = l."setupId" AND su."organizationId" = l."organizationId"
      WHERE l."id" = target_line_id
-       AND l."status" = 'ACTIVE' AND t."status" = 'ACTIVE' AND NOT p."terminal"
+       AND l."status" = 'ACTIVE' AND t."status" = 'ACTIVE' AND NOT p."closes"
        AND l."startsAt" IS NOT NULL AND l."endsAt" IS NOT NULL
        AND 'BOOKABLE' = ANY (et."capabilities")
        AND NOT s."released" AND s."hold" <> 'NONE'
@@ -126,7 +126,7 @@ EXCEPTION WHEN exclusion_violation THEN
 END $$;
 
 -- Re-derives a set of lines and collects every line that collides, so a configuration change
--- (state flags, changeover time, buffer minutes, capabilities, terminal flag) is refused with all
+-- (state flags, changeover time, buffer minutes, capabilities, `closes` flag) is refused with all
 -- of them listed.
 CREATE OR REPLACE FUNCTION sync_line_occupancies(line_ids text[])
 RETURNS void LANGUAGE plpgsql AS $$
@@ -215,13 +215,13 @@ BEGIN
   RETURN NULL;
 END $$;
 
-CREATE OR REPLACE FUNCTION line_occupancy_on_ticket_phase() RETURNS trigger
+CREATE OR REPLACE FUNCTION line_occupancy_on_ticket_status() RETURNS trigger
 LANGUAGE plpgsql AS $$
 BEGIN
   PERFORM sync_line_occupancies(ARRAY(
     SELECT l."id" FROM "Line" l
       JOIN "Ticket" t ON t."id" = l."ticketId" AND t."organizationId" = l."organizationId"
-     WHERE t."phaseId" = NEW."id" AND t."organizationId" = NEW."organizationId"
+     WHERE t."statusId" = NEW."id" AND t."organizationId" = NEW."organizationId"
        AND line_not_ended(l."endsAt") ORDER BY l."id"));
   RETURN NULL;
 END $$;
@@ -287,13 +287,13 @@ CREATE TRIGGER line_occupancy_item AFTER UPDATE ON "Item"
 
 DROP TRIGGER IF EXISTS line_occupancy_ticket ON "Ticket";
 CREATE TRIGGER line_occupancy_ticket AFTER UPDATE ON "Ticket"
-  FOR EACH ROW WHEN ((OLD."phaseId", OLD."status") IS DISTINCT FROM (NEW."phaseId", NEW."status"))
+  FOR EACH ROW WHEN ((OLD."statusId", OLD."status") IS DISTINCT FROM (NEW."statusId", NEW."status"))
   EXECUTE FUNCTION line_occupancy_on_ticket();
 
-DROP TRIGGER IF EXISTS line_occupancy_ticket_phase ON "TicketPhase";
-CREATE TRIGGER line_occupancy_ticket_phase AFTER UPDATE ON "TicketPhase"
-  FOR EACH ROW WHEN (OLD."terminal" IS DISTINCT FROM NEW."terminal")
-  EXECUTE FUNCTION line_occupancy_on_ticket_phase();
+DROP TRIGGER IF EXISTS line_occupancy_ticket_status ON "TicketStatus";
+CREATE TRIGGER line_occupancy_ticket_status AFTER UPDATE ON "TicketStatus"
+  FOR EACH ROW WHEN (OLD."closes" IS DISTINCT FROM NEW."closes")
+  EXECUTE FUNCTION line_occupancy_on_ticket_status();
 
 DROP TRIGGER IF EXISTS line_occupancy_allocation_insert ON "LineAllocation";
 CREATE TRIGGER line_occupancy_allocation_insert AFTER INSERT ON "LineAllocation"

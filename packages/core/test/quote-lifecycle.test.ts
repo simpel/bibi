@@ -11,7 +11,7 @@ import {
 } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { addTestLines, createTestQuote, draftQuote as draft, quoteSetup } from "./quote-helpers";
-import { createTestTicket, moveToPhase } from "./ticket-helpers";
+import { createTestTicket, moveToStatus } from "./ticket-helpers";
 
 describe("quote.send (ADR 0022)", () => {
   it("needs lines and a future validity, then sends without moving the ticket", async () => {
@@ -43,7 +43,7 @@ describe("quote.send (ADR 0022)", () => {
     const after = unwrap({
       result: await execute({ operation: getTicket, input: { id: ticket.id }, context }),
     });
-    expect(after.phaseId).toBe(ticket.phaseId);
+    expect(after.statusId).toBe(ticket.statusId);
     const twice = await execute({ operation: sendQuote, input: { id }, context });
     expect(errorCode({ result: twice })).toBe("CONFLICT");
     const edit = await execute({ operation: updateQuote, input: { id, terms: "x" }, context });
@@ -52,7 +52,7 @@ describe("quote.send (ADR 0022)", () => {
     expect(audit.find((row) => row.operation === "quote.send")).toBeUndefined();
   });
 
-  it("refuses a ticket in a terminal phase and rolls everything back", async () => {
+  it("refuses a ticket in a closing status and rolls everything back", async () => {
     const { context, type, customer, lunch, lineType } = await quoteSetup();
     const fresh = await createTestTicket({
       context,
@@ -63,7 +63,7 @@ describe("quote.send (ADR 0022)", () => {
     await addTestLines({ context, ticketId: fresh.id, lineTypeId: lineType.id, lines });
     const quote = await createTestQuote({ context, ticketId: fresh.id });
     const lost = { context, ticketId: fresh.id, name: "Lost", reason: "Price" };
-    unwrap({ result: await moveToPhase(lost) });
+    unwrap({ result: await moveToStatus(lost) });
     const sent = await execute({ operation: sendQuote, input: { id: quote.id }, context });
     expect(errorCode({ result: sent })).toBe("CONFLICT");
     const kept = unwrap({

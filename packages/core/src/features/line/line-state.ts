@@ -3,7 +3,7 @@ import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
 import { groupHardHoldBlocker } from "../alternative-group/hard-hold";
-import { cellOfTicket } from "../phase-grid/load-grid";
+import { cellOfTicket } from "../status-grid/load-grid";
 import type { LineRecord } from "./schema";
 import { recordStateChange } from "./state-history";
 import { LINE_INCLUDE, toLineRecord } from "./to-line-record";
@@ -13,7 +13,7 @@ type Db = { context: Pick<OperationContext, "db"> };
 export type InitialStateInput = Db & { ticketId: string; itemId: string | null };
 
 /**
- * The state a new line starts in (ADR 0044): the phase grid's cell of the ticket's current phase
+ * The state a new line starts in (ADR 0044): the status grid's cell of the ticket's current status
  * for its item type, or the type's initial state when the cell is empty. A line without an item
  * has no state.
  */
@@ -45,7 +45,7 @@ export type StateAfterMoveInput = Db & { before: LineRecord; itemId: string | nu
 
 /**
  * A line moved to an item of another type (or to no item) leaves its state: it starts over in
- * the new type's state for the ticket's phase (grid cell or initial state). Null when the state
+ * the new type's state for the ticket's status (grid cell or initial state). Null when the state
  * stays (same type); otherwise the new state, null for no item.
  */
 export async function stateAfterMove({ context, before, itemId }: StateAfterMoveInput) {

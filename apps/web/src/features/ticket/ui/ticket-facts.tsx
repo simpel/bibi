@@ -13,14 +13,14 @@ const count = ({ value }: { value: number | null }) => (value === null ? "–" :
 
 const HOLDS_UNTIL = { dateStyle: "medium", timeStyle: "short" } as const;
 
-/** Description list of a ticket: customer, contact, period, counts, budget, phase and fields. */
+/** Description list of a ticket: customer, contact, period, counts, budget, status and fields. */
 export async function TicketFacts({ ticket, data }: TicketFactsProps) {
   const t = await getTranslations("ticket.fields");
   const common = await getTranslations("common");
   const format = await getFormatter();
   const locale = await getLocale();
   const type = data.types.find(({ id }) => id === ticket.entityTypeId);
-  const phase = data.phases.find(({ id }) => id === ticket.phaseId);
+  const ticketStatus = data.statuses.find(({ id }) => id === ticket.statusId);
   const budget = ticket.budgetMinor;
   const hidden = data.customersHidden ? common("hidden") : undefined;
   const facts = [
@@ -34,8 +34,8 @@ export async function TicketFacts({ ticket, data }: TicketFactsProps) {
       value: nameOf({ options: data.contacts, id: ticket.contactId, hidden }),
     },
     { label: t("when"), value: desiredPeriod({ ticket, format }) },
-    { label: t("phase"), value: phase?.name ?? "–" },
-    ...(ticket.phaseReason ? [{ label: t("phaseReason"), value: ticket.phaseReason }] : []),
+    { label: t("status"), value: ticketStatus?.name ?? "–" },
+    ...(ticket.statusReason ? [{ label: t("statusReason"), value: ticket.statusReason }] : []),
     { label: t("estimatedHeadcount"), value: count({ value: ticket.estimatedHeadcount }) },
     { label: t("guaranteedHeadcount"), value: count({ value: ticket.guaranteedHeadcount }) },
     { label: t("budget"), value: budget === null ? "–" : formatKr({ minor: budget, locale }) },

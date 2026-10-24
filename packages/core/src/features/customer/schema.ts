@@ -77,7 +77,7 @@ export const CustomerArchiveInputSchema = z.object({
     .boolean()
     .default(false)
     .describe(
-      "Also archive all of the customer's tickets that are not archived, in every phase. " +
+      "Also archive all of the customer's tickets that are not archived, in every status. " +
         "Without it, any such ticket blocks archiving the customer.",
     ),
   expectedTicketCount: z

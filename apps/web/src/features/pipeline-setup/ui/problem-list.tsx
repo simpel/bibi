@@ -4,9 +4,9 @@ import { useTranslations } from "next-intl";
 
 export type ProblemListProps = { ready: boolean; problems: PipelineProblem[] };
 
-/** Where the problem is: phase, item type and state, as far as they are known. */
+/** Where the problem is: status, item type and state, as far as they are known. */
 const placeOf = ({ problem }: { problem: PipelineProblem }) =>
-  [problem.phase, problem.type, problem.state].filter(Boolean).join(" · ");
+  [problem.ticketStatus, problem.type, problem.state].filter(Boolean).join(" · ");
 
 /** The configuration problems in plain words; errors block activation, warnings do not. */
 export function ProblemList({ ready, problems }: ProblemListProps) {

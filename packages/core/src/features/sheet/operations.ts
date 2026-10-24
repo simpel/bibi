@@ -6,8 +6,8 @@ import { paginate } from "../../shared/paginate";
 import { checkReadable } from "../ticket/ticket-rules";
 import { buildSheetContent } from "./build-content";
 import { checkNotBlocked } from "./check-blocked";
-import { checkPhase } from "./check-phase";
 import { checkSourcesReadable } from "./check-sources-readable";
+import { checkStatus } from "./check-status";
 import { loadMatches } from "./load-matches";
 import { loadSources } from "./load-sources";
 import {
@@ -108,7 +108,7 @@ export const sendSheet = defineOperation({
   description:
     "Send a sheet version to its receiving responsibility: marks the version as sent, which is the " +
     "baseline the next version's ★ changes are measured against. Not for a ticket in a " +
-    "terminal phase (CONFLICT), only the latest version, and a version once. A blocked " +
+    "closing status (CONFLICT), only the latest version, and a version once. A blocked " +
     "sheet (`blocked`: a count matches an item that contains it, see `matches`) gives CONFLICT. " +
     "Needs `ticket:read`: the recipients (the responsibility's assignee and followers on " +
     "the ticket) are stored as a snapshot that later changes do not rewrite.",
@@ -128,8 +128,8 @@ export const sendSheet = defineOperation({
     if (newer > 0) return conflict({ message: "A newer version exists; send that one instead" });
     const unblocked = checkNotBlocked({ sheet: toSheetDto({ row: before }) });
     if (!unblocked.ok) return unblocked;
-    const phase = await checkPhase({ context, ticketId });
-    if (!phase.ok) return phase;
+    const ticketStatus = await checkStatus({ context, ticketId });
+    if (!ticketStatus.ok) return ticketStatus;
     const recipients = await currentRecipients({ context, ticketId, responsibilityId });
     await context.db.sheet.update({
       where: { id },

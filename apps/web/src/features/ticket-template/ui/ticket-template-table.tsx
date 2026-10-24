@@ -9,7 +9,7 @@ import { useTemplateColumns } from "./use-template-columns";
 
 export type TicketTemplateTableProps = {
   templates: TicketTemplateDto[];
-  phases: NamedOption[];
+  statuses: NamedOption[];
   types: NamedOption[];
   access: RowAccess;
 };
@@ -17,12 +17,12 @@ export type TicketTemplateTableProps = {
 /** The organization's predefined tickets; admins get row actions. */
 export function TicketTemplateTable({
   templates,
-  phases,
+  statuses,
   types,
   access,
 }: TicketTemplateTableProps) {
   const t = useTranslations("ticketTemplate");
-  const columns = useTemplateColumns({ phases, types, access });
+  const columns = useTemplateColumns({ statuses, types, access });
   return (
     <PersistedDataTable
       tableId="ticket-template.list"

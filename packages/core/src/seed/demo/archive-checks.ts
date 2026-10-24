@@ -1,5 +1,5 @@
 import { previewArchiveItemState } from "../../features/item-state/archive-preview-operation";
-import { previewArchiveTicketPhase } from "../../features/ticket-phase/archive-preview-operation";
+import { previewArchiveTicketStatus } from "../../features/ticket-status/archive-preview-operation";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoOrg } from "./types";
@@ -7,31 +7,34 @@ import type { DemoOrg } from "./types";
 export type CheckDemoArchiveInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
- * ADR 0043: previewing the removal of a phase that holds tickets, with a target, reports that
+ * ADR 0043: previewing the removal of a status that holds tickets, with a target, reports that
  * all of its tickets move and nothing blocks; the preview changes nothing. An organization
- * without such a phase (or state) has nothing to check.
+ * without such a status (or state) has nothing to check.
  */
-async function phaseFailures({ context, org }: CheckDemoArchiveInput): Promise<string[]> {
-  const phases = await context.db.ticketPhase.findMany({
-    where: { status: "ACTIVE", entry: false, terminal: false },
-    include: { transitionsFrom: { include: { toPhase: true } } },
+async function statusFailures({ context, org }: CheckDemoArchiveInput): Promise<string[]> {
+  const statuses = await context.db.ticketStatus.findMany({
+    where: { status: "ACTIVE", entry: false, closes: false },
+    include: { transitionsFrom: { include: { toStatus: true } } },
   });
-  for (const phase of phases) {
-    const tickets = await context.db.ticket.count({ where: { phaseId: phase.id } });
-    // Tickets cannot be moved into a phase that only a quote event enters (ADR 0043), and a
-    // phase that requires a reason or an accepted quote (ADR 0054) would block the move;
+  for (const ticketStatus of statuses) {
+    const tickets = await context.db.ticket.count({ where: { statusId: ticketStatus.id } });
+    // Tickets cannot be moved into a status that only a quote event enters (ADR 0043), and a
+    // status that requires a reason or an accepted quote (ADR 0054) would block the move;
     // transitions come in no fixed order.
-    const target = phase.transitionsFrom.find(
-      ({ toPhase }) => !toPhase.event && !toPhase.requiresReason && !toPhase.requiresAcceptedQuote,
-    )?.toPhaseId;
-    const templates = await context.db.ticketTemplate.count({ where: { phaseId: phase.id } });
+    const target = ticketStatus.transitionsFrom.find(
+      ({ toStatus }) =>
+        !toStatus.event && !toStatus.requiresReason && !toStatus.requiresAcceptedQuote,
+    )?.toStatusId;
+    const templates = await context.db.ticketTemplate.count({
+      where: { statusId: ticketStatus.id },
+    });
     if (tickets === 0 || templates > 0 || !target) continue;
-    const input = { id: phase.id, targetPhaseId: target };
-    const result = await execute({ operation: previewArchiveTicketPhase, input, context });
-    if (!result.ok) return [`${org.slug}: archive preview of ${phase.name} failed`];
+    const input = { id: ticketStatus.id, targetStatusId: target };
+    const result = await execute({ operation: previewArchiveTicketStatus, input, context });
+    if (!result.ok) return [`${org.slug}: archive preview of ${ticketStatus.name} failed`];
     const { archivable, moving, blockers } = result.value;
     if (archivable && moving === tickets) return [];
-    return [`${org.slug}: removing "${phase.name}" is blocked: ${blockers.join("; ")}`];
+    return [`${org.slug}: removing "${ticketStatus.name}" is blocked: ${blockers.join("; ")}`];
   }
   return [];
 }
@@ -57,8 +60,8 @@ async function stateFailures({ context, org }: CheckDemoArchiveInput): Promise<s
   return [];
 }
 
-/** Removing a populated phase or state with a target is previewed and allowed (#275). */
+/** Removing a populated status or state with a target is previewed and allowed (#275). */
 export async function checkDemoArchive({ context, org }: CheckDemoArchiveInput): Promise<string[]> {
   const input = { context, org };
-  return [...(await phaseFailures(input)), ...(await stateFailures(input))];
+  return [...(await statusFailures(input)), ...(await stateFailures(input))];
 }

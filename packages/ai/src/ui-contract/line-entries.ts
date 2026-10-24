@@ -49,7 +49,7 @@ export const LINE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
     schema: z.object({ items: z.array(LineWireSchema) }),
     toProps: ({ value }) => ({ items: value.items, nextCursor: null }),
   }),
-  line_followPhase: lineCard,
+  line_followStatus: lineCard,
   // The lines `ticket.expireHolds` moved to their expiry state (ADR 0044).
   ticket_expireHolds: uiEntry({
     component: "line-table",

@@ -2,8 +2,8 @@ import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
 import {
   cellsFromTemplate,
-  phasesFromTemplate,
   statesFromTemplate,
+  statusesFromTemplate,
 } from "../src/features/pipeline-setup/draft-from-templates";
 import {
   activatePipelineSetup,
@@ -11,7 +11,7 @@ import {
   execute,
   grantAll,
   listEntityTypes,
-  listTicketPhases,
+  listTicketStatuses,
 } from "../src/index";
 import { lindholmen } from "../src/seed/demo/data/lindholmen/lindholmen";
 import { seedDemo } from "../src/seed/demo/seed-demo";
@@ -33,8 +33,8 @@ describe("guided setup from the empty demo (seed:demo --skip-pipeline)", {
     const seeded = unwrap({ result: await seedDemo({ orgs: [org], skipPipeline: true }) });
     const organizationId = seeded.organizations[0]?.organizationId ?? "";
     const context = adminOf({ organizationId });
-    const phases = { operation: listTicketPhases, input: {}, context };
-    expect(unwrap({ result: await execute(phases) }).items).toEqual([]);
+    const statuses = { operation: listTicketStatuses, input: {}, context };
+    expect(unwrap({ result: await execute(statuses) }).items).toEqual([]);
     const listed = await execute({
       operation: listEntityTypes,
       input: { base: "ITEM", limit: 100 },
@@ -50,14 +50,16 @@ describe("guided setup from the empty demo (seed:demo --skip-pipeline)", {
       };
     });
     const template = "conference-estate" as const;
-    const draftPhases = phasesFromTemplate({ template });
+    const draftStatuses = statusesFromTemplate({ template });
     const input = {
       itemTypes,
-      phases: draftPhases,
-      cells: cellsFromTemplate({ template, phases: draftPhases, itemTypes }),
+      statuses: draftStatuses,
+      cells: cellsFromTemplate({ template, statuses: draftStatuses, itemTypes }),
     };
     unwrap({ result: await execute({ operation: activatePipelineSetup, input, context }) });
-    const after = unwrap({ result: await execute(phases) }).items;
-    expect(after.map((phase) => phase.name)).toEqual(draftPhases.map((phase) => phase.name));
+    const after = unwrap({ result: await execute(statuses) }).items;
+    expect(after.map((ticketStatus) => ticketStatus.name)).toEqual(
+      draftStatuses.map((ticketStatus) => ticketStatus.name),
+    );
   });
 });

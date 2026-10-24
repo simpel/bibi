@@ -1,13 +1,13 @@
 /// Ticket – one customer request from first contact to the delivered event (ADR 0043). Its type
-/// (base `TICKET`) decides its own fields. `phaseId` is one of the organization's own phases. It
-/// is a projection of the phase history (ADR 0054): the trigger on `TicketPhaseChange` insert sets
+/// (base `TICKET`) decides its own fields. `statusId` is one of the organization's own statuses. It
+/// is a projection of the status history (ADR 0054): the trigger on `TicketStatusChange` insert sets
 /// it (`domain_history.sql`), and core never writes it after the insert. When the ticket entered
-/// its phase and why come from the newest `TicketPhaseChange`.
-/// `status` is the soft-delete flag (ADR 0006), not the phase.
-/// Trigger (ADR 0053): changing `phaseId` or `status` re-derives the holds of the ticket's lines
-/// (an archived ticket or one in a terminal phase holds nothing, `sync_line_occupancy.sql`).
+/// its status and why come from the newest `TicketStatusChange`.
+/// `status` is the soft-delete flag (ADR 0006), not the status.
+/// Trigger (ADR 0053): changing `statusId` or `status` re-derives the holds of the ticket's lines
+/// (an archived ticket or one in a closing status holds nothing, `sync_line_occupancy.sql`).
 model Ticket {
-  id                  String              @id
+  id                  String               @id
   organizationId      String
   /// Reference number, sequential per organization (1, 2, 3, …).
   reference           Int
@@ -15,7 +15,7 @@ model Ticket {
   customerId          String
   /// A contact person at the customer (optional).
   contactId           String?
-  phaseId             String
+  statusId            String
   /// The period the customer asked for; each line has its own time.
   desiredStartsAt     DateTime?
   desiredEndsAt       DateTime?
@@ -28,15 +28,15 @@ model Ticket {
   /// Lines in an `expires` state fall to their type's `expiryStateId` after this date (ADR 0044).
   holdsUntil          DateTime?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
-  fields              Json                @default("{}")
-  status              RecordStatus        @default(ACTIVE)
-  createdAt           DateTime            @default(now())
-  updatedAt           DateTime            @updatedAt
+  fields              Json                 @default("{}")
+  status              RecordStatus         @default(ACTIVE)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
   createdBy           String?
-  entityType          EntityType          @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  customer            Customer            @relation(fields: [customerId, organizationId], references: [id, organizationId])
-  contact             Contact?            @relation(fields: [contactId, organizationId], references: [id, organizationId])
-  phase               TicketPhase         @relation(fields: [phaseId, organizationId], references: [id, organizationId])
+  entityType          EntityType           @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  customer            Customer             @relation(fields: [customerId, organizationId], references: [id, organizationId])
+  contact             Contact?             @relation(fields: [contactId, organizationId], references: [id, organizationId])
+  ticketStatus        TicketStatus         @relation(fields: [statusId, organizationId], references: [id, organizationId])
   inboundEmails       InboundEmail[]
   payments            Payment[]
   deposits            Deposit[]
@@ -44,16 +44,16 @@ model Ticket {
   lines               Line[]
   alternativeGroups   AlternativeGroup[]
   quotes              Quote[]
-  phaseChanges        TicketPhaseChange[]
+  statusChanges       TicketStatusChange[]
   requirements        Requirement[]
   sheets              Sheet[]
   /// The supertable row this record extends (ADR 0056).
-  record              Record              @relation(fields: [id, organizationId], references: [id, organizationId])
+  record              Record               @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@unique([organizationId, reference])
   @@index([organizationId, status, desiredStartsAt])
   @@index([organizationId, customerId])
-  @@index([organizationId, phaseId])
+  @@index([organizationId, statusId])
   @@index([organizationId, holdsUntil])
 }

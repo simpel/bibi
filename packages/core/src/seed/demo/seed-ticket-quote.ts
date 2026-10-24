@@ -61,15 +61,15 @@ async function changeAfterQuote({ context, ticket, ticketId }: QuoteInput): Prom
 }
 
 export type SeedTicketQuoteInput = QuoteInput & {
-  /** The quote event of the phase the ticket belongs in. */
+  /** The quote event of the status the ticket belongs in. */
   event: "QUOTE_SENT" | "QUOTE_ACCEPTED";
 };
 
 /**
- * Brings the ticket into its phase through its quote (ADR 0043, 0052): the ticket's lines are
+ * Brings the ticket into its status through its quote (ADR 0043, 0052): the ticket's lines are
  * quoted and sent, and for the accepted event also accepted, with the customer's pick of each
- * alternative group that has `chosen` (ADR 0052). The phases follow from the
- * organization's events, never from `ticket.changePhase`.
+ * alternative group that has `chosen` (ADR 0052). The statuses follow from the
+ * organization's events, never from `ticket.changeStatus`.
  */
 export async function seedTicketQuote({
   event,

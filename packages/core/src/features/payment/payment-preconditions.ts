@@ -14,16 +14,16 @@ export type ChargeTarget = {
 
 export type ChargeableTicketInput = Db & { ticketId: string };
 
-/** A ticket can be charged unless it is in a `terminal` phase that is not `invoiceable`. */
+/** A ticket can be charged unless it is in a `closes` status that is not `invoiceable`. */
 export async function loadChargeableTicket({ context, ticketId }: ChargeableTicketInput) {
   const ticket = await context.db.ticket.findFirst({ where: { id: ticketId } });
   if (!ticket) return notFound({ entity: "Ticket" });
-  const phase = await context.db.ticketPhase.findFirst({
-    where: { id: ticket.phaseId, status: { in: ["ACTIVE", "ARCHIVED"] } },
-    select: { terminal: true, invoiceable: true, name: true },
+  const ticketStatus = await context.db.ticketStatus.findFirst({
+    where: { id: ticket.statusId, status: { in: ["ACTIVE", "ARCHIVED"] } },
+    select: { closes: true, invoiceable: true, name: true },
   });
-  if (phase?.terminal && !phase.invoiceable) {
-    return conflict({ message: `A ticket in "${phase.name}" cannot be charged` });
+  if (ticketStatus?.closes && !ticketStatus.invoiceable) {
+    return conflict({ message: `A ticket in "${ticketStatus.name}" cannot be charged` });
   }
   return ok({ value: ticket });
 }

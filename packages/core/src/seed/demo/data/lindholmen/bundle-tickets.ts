@@ -8,7 +8,7 @@ import type { DemoTicket } from "../../ticket-types";
 export const lindholmenBundleTickets: readonly DemoTicket[] = [
   {
     ...{ ref: "L15", customer: "Hisingen Energi AB", type: "Conference", day: 18, from: "09:00" },
-    ...{ to: "17:00", phase: "Quote sent", headcount: 24, assignee: "Johan Ek" },
+    ...{ to: "17:00", status: "Quote sent", headcount: 24, assignee: "Johan Ek" },
     ...{ quote: "Conference day", followers: ["Erik Lund"] },
     fields: { Purpose: "Sales conference" },
     bundles: [{ item: "Conference day", from: "09:00", to: "17:00" }],

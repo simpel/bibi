@@ -10,7 +10,7 @@ async function seedTemplate({ client }: { client: Client }) {
   const args = {
     name: "Secret template",
     entityTypeId: ticket.entityTypeId,
-    phaseId: ticket.phaseId,
+    statusId: ticket.statusId,
     lines: [
       {
         entityTypeId: seed.programTypeId,
@@ -46,7 +46,7 @@ describe("cross-organization isolation: predefined tickets", () => {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");
     }
     const intruder = { ...secret.args, name: "Intruder" };
-    const [typeIssue, phaseIssue, itemIssue] = await Promise.all([
+    const [typeIssue, statusIssue, itemIssue] = await Promise.all([
       call({
         client: b,
         name: "ticketTemplate_create",
@@ -55,11 +55,11 @@ describe("cross-organization isolation: predefined tickets", () => {
       call({
         client: b,
         name: "ticketTemplate_create",
-        args: { ...own.args, name: "Other phase", phaseId: secret.phaseId },
+        args: { ...own.args, name: "Other status", statusId: secret.statusId },
       }),
       call({ client: b, name: "ticketTemplate_create", args: intruder }),
     ]);
-    for (const refused of [typeIssue, phaseIssue, itemIssue]) {
+    for (const refused of [typeIssue, statusIssue, itemIssue]) {
       expect(refused.data.code, JSON.stringify(refused.data)).toBe("VALIDATION");
     }
     const foreignCustomer = await call({

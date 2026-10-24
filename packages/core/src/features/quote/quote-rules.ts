@@ -9,19 +9,19 @@ type Db = { context: Pick<OperationContext, "db"> };
 
 export type LoadOpenTicketInput = Db & { ticketId: string };
 
-/** The quote's ticket; a ticket in a terminal phase gets no new quotes or versions (`CONFLICT`). */
+/** The quote's ticket; a ticket in a closing status gets no new quotes or versions (`CONFLICT`). */
 export async function loadOpenTicket({
   context,
   ticketId,
 }: LoadOpenTicketInput): Promise<Result<TicketDto>> {
   const ticket = await loadTicket({ context, id: ticketId });
   if (!ticket) return notFound({ entity: "Ticket" });
-  const phase = await context.db.ticketPhase.findFirst({
-    where: { id: ticket.phaseId, status: { in: ["ACTIVE", "ARCHIVED"] } },
-    select: { name: true, terminal: true },
+  const ticketStatus = await context.db.ticketStatus.findFirst({
+    where: { id: ticket.statusId, status: { in: ["ACTIVE", "ARCHIVED"] } },
+    select: { name: true, closes: true },
   });
-  if (phase?.terminal) {
-    return conflict({ message: `The ticket is in "${phase.name}" and takes no quotes` });
+  if (ticketStatus?.closes) {
+    return conflict({ message: `The ticket is in "${ticketStatus.name}" and takes no quotes` });
   }
   return ok({ value: ticket });
 }

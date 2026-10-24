@@ -35,7 +35,10 @@ export function useTicketTemplateForm({ data, template }: UseTicketTemplateFormI
     resolver: zodResolver(ticketTemplateFormSchema, useZodMessages()),
     defaultValues: ticketTemplateFormDefaults({
       template,
-      firstTypes: { ticketType: data.ticketTypes[0]?.id ?? "", phase: data.phases[0]?.id ?? "" },
+      firstTypes: {
+        ticketType: data.ticketTypes[0]?.id ?? "",
+        ticketStatus: data.statuses[0]?.id ?? "",
+      },
     }),
   });
   const back = () => router.push(ROUTES.settingsTicketTemplates);

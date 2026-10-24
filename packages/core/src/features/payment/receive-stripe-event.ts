@@ -41,7 +41,7 @@ async function organizationOf({ db, action }: { db: Db; action: StripeAction }) 
 
 type ApplyInput = { context: ExecuteContext; signal: PaymentSignal };
 
-/** Sets the payment's status only: a payment never moves the ticket's phase (ADR 0043). */
+/** Sets the payment's status only: a payment never moves the ticket's status (ADR 0043). */
 async function applyToPayment({ context, signal }: ApplyInput): Promise<Result<true>> {
   const applied = await execute({ operation: applyPaymentSignal, input: signal, context });
   if (!applied.ok) return err({ error: applied.error });

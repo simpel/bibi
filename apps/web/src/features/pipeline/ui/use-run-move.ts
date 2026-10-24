@@ -1,7 +1,7 @@
 import type { PipelineCard, PipelineColumn } from "@bibi/core";
 import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { changeTicketPhaseAction } from "@/features/ticket/actions";
+import { changeTicketStatusAction } from "@/features/ticket/actions";
 import type { ActionError } from "@/lib/action-result";
 import { errorKeyForCode } from "@/lib/error-key";
 import { useRouter } from "@/lib/navigation";
@@ -15,16 +15,16 @@ export type UseRunMoveInput = {
 
 const STAY = { duration: Number.POSITIVE_INFINITY, closeButton: true } as const;
 
-/** `ticket.changePhase` for a drop in the one-toast flow; blockers go to `onRefused`. */
+/** `ticket.changeStatus` for a drop in the one-toast flow; blockers go to `onRefused`. */
 export function useRunMove({ onRefused, onMoved }: UseRunMoveInput) {
   const t = useTranslations("pipeline");
   const errors = useTranslations("errors");
   const router = useRouter();
   return async ({ card, to, reason }: RunMoveInput) => {
     const id = toast.loading(t("moving"));
-    const input = { ticketId: card.id, phaseId: to.id, ...(reason ? { reason } : {}) };
+    const input = { ticketId: card.id, statusId: to.id, ...(reason ? { reason } : {}) };
     try {
-      const result = await changeTicketPhaseAction({ input });
+      const result = await changeTicketStatusAction({ input });
       if (result.ok) {
         toast.success(t("moved", { column: to.title }), { id });
         router.refresh();

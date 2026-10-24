@@ -8,7 +8,7 @@ export type ProvisionHookInput = { organization: { id: string; metadata?: unknow
 
 /**
  * `afterCreateOrganization`: gives the new organization its defaults (its profile with the chosen
- * time zone, ADR 0064, and a minimal set of ticket phases, ADR 0043) through core as SYSTEM, then
+ * time zone, ADR 0064, and a minimal set of ticket statuses, ADR 0043) through core as SYSTEM, then
  * clears the `metadata` that carried the zone in. Core logs the operation; a failure is surfaced to
  * the creator instead of leaving an organization that cannot take tickets unnoticed.
  */

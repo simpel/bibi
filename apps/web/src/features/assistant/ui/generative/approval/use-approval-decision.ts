@@ -10,12 +10,12 @@ import type { StoredDecision } from "../../../lib/stored-messages";
 import { type Decision, postDecision } from "./post-decision";
 
 export type DecisionState =
-  | { phase: "idle" }
-  | { phase: "pending"; decision: Decision }
-  | { phase: "approved"; result: unknown }
-  | { phase: "rejected" }
+  | { status: "idle" }
+  | { status: "pending"; decision: Decision }
+  | { status: "approved"; result: unknown }
+  | { status: "rejected" }
   /** `final`: the proposal is spent or expired, so the buttons stay disabled. */
-  | { phase: "error"; errorKey: ApprovalErrorKey; final: boolean };
+  | { status: "error"; errorKey: ApprovalErrorKey; final: boolean };
 
 export type UseApprovalDecisionInput = {
   approval: Pick<Approval, "approvalToken" | "operation">;
@@ -27,10 +27,10 @@ export type UseApprovalDecisionInput = {
 };
 
 const fromStored = ({ stored }: { stored: StoredDecision | undefined }): DecisionState => {
-  if (!stored) return { phase: "idle" };
-  if (stored.decision === "rejected") return { phase: "rejected" };
-  if (stored.decision === "failed") return { phase: "error", errorKey: "generic", final: true };
-  return { phase: "approved", result: stored.result };
+  if (!stored) return { status: "idle" };
+  if (stored.decision === "rejected") return { status: "rejected" };
+  if (stored.decision === "failed") return { status: "error", errorKey: "generic", final: true };
+  return { status: "approved", result: stored.result };
 };
 
 /** Approve/reject state machine for one card. After an approval the server data is refreshed. */
@@ -46,7 +46,7 @@ export function useApprovalDecision({
   const [state, setState] = useState<DecisionState>(() => fromStored({ stored }));
 
   const decide = async ({ decision }: { decision: Decision }) => {
-    setState({ phase: "pending", decision });
+    setState({ status: "pending", decision });
     const outcome = await postDecision({
       decision,
       approvalToken: approval.approvalToken,
@@ -56,11 +56,11 @@ export function useApprovalDecision({
     });
     if (!outcome.ok) {
       const final = outcome.status === 409 || outcome.status === 403;
-      setState({ phase: "error", errorKey: approvalErrorKey({ status: outcome.status }), final });
+      setState({ status: "error", errorKey: approvalErrorKey({ status: outcome.status }), final });
     } else if (outcome.status === "rejected") {
-      setState({ phase: "rejected" });
+      setState({ status: "rejected" });
     } else {
-      setState({ phase: "approved", result: outcome.result });
+      setState({ status: "approved", result: outcome.result });
       toast.success(t("approvedToast"));
       router.refresh();
       onApproved?.();

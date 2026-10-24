@@ -2,7 +2,7 @@
 
 Booking system for businesses that sell conferences with food and drink: experience centers, museums, conference estates, manor houses and restaurants with private rooms (e.g. World of Volvo).
 
-Core flow: ticket (through the organization's own phases) → lines → quote → signing → needs → kitchen order and other sheets → delivery → invoice → Fortnox/Visma.
+Core flow: ticket (through the organization's own statuses) → lines → quote → signing → needs → kitchen order and other sheets → delivery → invoice → Fortnox/Visma.
 
 ## Status
 
@@ -72,6 +72,6 @@ Environment variables are read only via `@bibi/config`.
 |---|---|
 | [docs/market/market-analysis.md](docs/market/market-analysis.md) | Multinet/Lega Online, market segments, the municipal market, the Nordics, strategy |
 | [docs/market/venue-competitors.md](docs/market/venue-competitors.md) | Competitor map for the conference + F&B segment, coverage matrix, gaps |
-| [docs/domain-model.md](docs/domain-model.md) | Entities, attributes, relations and phasing (MVP / Phase 2 / Phase 3) |
+| [docs/domain-model.md](docs/domain-model.md) | Entities, attributes, relations and phasing (MVP / Status 2 / Status 3) |
 | [docs/artifacts/domain-model.html](docs/artifacts/domain-model.html) | Interactive view of the domain model and competitor matrix |
 | [docs/decisions/](docs/decisions/) | Decision log (ADR) |

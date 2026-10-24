@@ -18,7 +18,7 @@ export const assignAssignment = defineOperation({
     "Set who answers for a ticket or an item (ADR 0034): its main assignee, or, " +
     "with `responsibilityId`, the assignee for that responsibility on a ticket. The assignee " +
     "must be a member (member.list userId). null removes the assignee, which is refused " +
-    "(CONFLICT) for the main assignee of a ticket in a phase that requires one.",
+    "(CONFLICT) for the main assignee of a ticket in a status that requires one.",
   input: AssignmentAssignInputSchema,
   output: AssignmentSchema,
   permission: "ticket:write",

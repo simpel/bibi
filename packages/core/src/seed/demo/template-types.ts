@@ -12,12 +12,12 @@ export type DemoTemplateLine = {
 };
 
 /**
- * A predefined ticket (slice 5 of ADR 0025, `docs/demo-seed.md`): the ticket type and the phase
+ * A predefined ticket (slice 5 of ADR 0025, `docs/demo-seed.md`): the ticket type and the status
  * tickets start in by name, and its lines. Created before the tickets that use it.
  */
 export type DemoTicketTemplate = {
   name: string;
   type: string;
-  phase: string;
+  status: string;
   lines: readonly DemoTemplateLine[];
 };

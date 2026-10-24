@@ -39,7 +39,7 @@ export const LineRecordSchema = z.object({
   fields: FieldValuesSchema,
   /** The line's state (one of its item type's states, ADR 0044); null without an item. */
   stateId: z.string().nullable(),
-  /** Set by `line.changeState`: phase moves skip the line. */
+  /** Set by `line.changeState`: status moves skip the line. */
   stateOverridden: z.boolean(),
   /** When the line entered its current state ("held since"): its newest `LineStateChange`. */
   heldAt: z.date(),

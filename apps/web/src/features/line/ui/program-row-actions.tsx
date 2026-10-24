@@ -13,7 +13,7 @@ import { LineStateMenu } from "./line-state-menu";
 import type { ProgramFormData } from "./program-form-data";
 
 /**
- * Edit and remove follow `program:*`; changing a line's state and following the phase are
+ * Edit and remove follow `program:*`; changing a line's state and following the status are
  * `program:write`; choosing a unit needs `program:write` and reading items (ADR 0050, 0059).
  */
 export type ProgramAccess = RowAccess & { canChangeState: boolean; canAllocate: boolean };

@@ -58,7 +58,7 @@ const NEW_PARENTS: Record<string, string> = {
   sheet: "settings/sheets",
   responsibility: "settings/responsibilities",
   "price-list": "settings/price-lists",
-  "ticket-phase": "settings/pipeline",
+  "ticket-status": "settings/pipeline",
   "item-state": "settings/item-states",
   "ticket-template": "settings/ticket-templates",
 };

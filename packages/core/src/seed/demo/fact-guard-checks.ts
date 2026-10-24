@@ -1,21 +1,21 @@
-import { changeTicketPhase } from "../../features/ticket/change-phase-operation";
+import { changeTicketStatus } from "../../features/ticket/change-status-operation";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoOrg } from "./types";
 
 export type CheckDemoFactGuardsInput = { context: ExecuteContext; org: DemoOrg };
 
-/** An open ticket without an accepted quote that the organization lets move into the phase. */
+/** An open ticket without an accepted quote that the organization lets move into the status. */
 async function ticketWithoutQuote({
   context,
-  phaseId,
+  statusId,
 }: {
   context: ExecuteContext;
-  phaseId: string;
+  statusId: string;
 }) {
   return context.db.ticket.findFirst({
     where: {
-      phase: { terminal: false, transitionsFrom: { some: { toPhaseId: phaseId } } },
+      ticketStatus: { closes: false, transitionsFrom: { some: { toStatusId: statusId } } },
       quotes: { none: { quoteStatus: "ACCEPTED" } },
     },
     orderBy: { reference: "asc" },
@@ -23,7 +23,7 @@ async function ticketWithoutQuote({
 }
 
 /**
- * ADR 0054: a phase guards a fact, it does not store it. For every phase that requires an
+ * ADR 0054: a status guards a fact, it does not store it. For every status that requires an
  * accepted quote, moving a ticket without one there is refused with that blocker (and so changes
  * nothing). Returns failure messages.
  */
@@ -32,15 +32,19 @@ export async function checkDemoFactGuards({
   org,
 }: CheckDemoFactGuardsInput): Promise<string[]> {
   const failures: string[] = [];
-  const guarded = await context.db.ticketPhase.findMany({ where: { requiresAcceptedQuote: true } });
-  for (const phase of guarded) {
-    const ticket = await ticketWithoutQuote({ context, phaseId: phase.id });
+  const guarded = await context.db.ticketStatus.findMany({
+    where: { requiresAcceptedQuote: true },
+  });
+  for (const ticketStatus of guarded) {
+    const ticket = await ticketWithoutQuote({ context, statusId: ticketStatus.id });
     if (!ticket) continue;
-    const input = { ticketId: ticket.id, phaseId: phase.id, reason: "Seed check" };
-    const result = await execute({ operation: changeTicketPhase, input, context });
+    const input = { ticketId: ticket.id, statusId: ticketStatus.id, reason: "Seed check" };
+    const result = await execute({ operation: changeTicketStatus, input, context });
     const refused = !result.ok && result.error.issues.some((issue) => issue.path === "quote");
     if (!refused) {
-      failures.push(`${org.slug}: #${ticket.reference} entered "${phase.name}" without a quote`);
+      failures.push(
+        `${org.slug}: #${ticket.reference} entered "${ticketStatus.name}" without a quote`,
+      );
     }
   }
   return failures;

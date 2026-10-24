@@ -6,7 +6,7 @@ import type { GenerativeProps } from "./generative-props";
 
 export type ArchivePreviewCardViewProps = GenerativeProps<"archive-preview-card">;
 
-/** What archiving a phase or state would do: the rows that move and the blockers. */
+/** What archiving a status or state would do: the rows that move and the blockers. */
 export function ArchivePreviewCardView({ preview, toolName }: ArchivePreviewCardViewProps) {
   const unit = toolName?.startsWith("itemState") ? "lines" : "tickets";
   return (

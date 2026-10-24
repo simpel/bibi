@@ -52,7 +52,7 @@ model Line {
   /// projection of the state history (ADR 0054): set by the trigger on `LineStateChange` insert
   /// (`domain_history.sql`), never written after the insert. "Held since" is the newest change.
   stateId            String?
-  /// Set by `line.changeState`: phase moves skip the line (ADR 0044).
+  /// Set by `line.changeState`: status moves skip the line (ADR 0044).
   stateOverridden    Boolean            @default(false)
   status             RecordStatus       @default(ACTIVE)
   createdAt          DateTime           @default(now())

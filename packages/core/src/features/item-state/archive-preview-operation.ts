@@ -10,7 +10,7 @@ export const previewArchiveItemState = defineOperation({
   dryRun: true,
   description:
     "Preview archiving an item state without changing anything: how many lines would move to " +
-    "`targetStateId`, how many phase grid cells move or are cleared and every blocker (a missing " +
+    "`targetStateId`, how many status grid cells move or are cleared and every blocker (a missing " +
     "target, the initial state, a hard hold that would collide) that would refuse " +
     "`itemState.archive`. Same input as `itemState.archive`.",
   input: ItemStateArchiveInputSchema,
@@ -18,7 +18,7 @@ export const previewArchiveItemState = defineOperation({
   permission: "pipeline:delete",
   handler: async ({ input, context }) => {
     const moving = await context.db.line.count({ where: { stateId: input.id } });
-    const cells = await context.db.phaseStateRule.count({ where: { stateId: input.id } });
+    const cells = await context.db.statusStateRule.count({ where: { stateId: input.id } });
     const archived = await archiveState({ context, input });
     if (!archived.ok && archived.error.code === "NOT_FOUND") return archived;
     const blockers = archived.ok ? [] : blockersOf({ error: archived.error });

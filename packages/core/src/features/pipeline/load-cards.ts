@@ -1,7 +1,7 @@
 import type { OperationContext } from "../../operations/types";
 import { canView } from "../../shared/can-view";
 import { subjectIdFilter } from "../assignment/subject-filter";
-import { LATEST_PHASE_CHANGE } from "../ticket/phase-history";
+import { LATEST_STATUS_CHANGE } from "../ticket/status-history";
 import type { PipelineBoardInput, PipelineCard } from "./schema";
 
 /** Upper bound of cards, so one board response stays small. */
@@ -40,16 +40,16 @@ async function lineCounts({ context, ids }: { context: Db; ids: string[] }) {
   return counts;
 }
 
-/** Tickets in open phases, plus those that entered a terminal phase since `since`. */
+/** Tickets in open statuses, plus those that entered a closing status since `since`. */
 /**
- * Open tickets, and closed ones that entered their terminal phase since `since`: nothing leaves
- * a terminal phase, so a change into one is the current one (phase history, ADR 0054).
+ * Open tickets, and closed ones that entered their closing status since `since`: nothing leaves
+ * a closing status, so a change into one is the current one (status history, ADR 0054).
  */
 const openOrRecentlyClosed = ({ since }: { since: Date }) => [
-  { phase: { terminal: false } },
+  { ticketStatus: { closes: false } },
   {
-    phase: { terminal: true },
-    phaseChanges: { some: { changedAt: { gte: since }, toPhase: { terminal: true } } },
+    ticketStatus: { closes: true },
+    statusChanges: { some: { changedAt: { gte: since }, toStatus: { closes: true } } },
   },
 ];
 
@@ -66,7 +66,7 @@ export async function loadTicketCards({
       ...(entityTypeId ? { entityTypeId } : {}),
       OR: openOrRecentlyClosed({ since }),
     },
-    include: { entityType: { select: { name: true } }, ...LATEST_PHASE_CHANGE },
+    include: { entityType: { select: { name: true } }, ...LATEST_STATUS_CHANGE },
     orderBy: [{ reference: "desc" }, { id: "desc" }],
     take: CARD_LIMIT,
   });
@@ -78,14 +78,14 @@ export async function loadTicketCards({
   return rows.map((row) => ({
     ...(lines?.get(row.id) ?? none),
     id: row.id,
-    columnId: row.phaseId,
+    columnId: row.statusId,
     reference: row.reference,
     typeName: row.entityType.name,
     customerId: row.customerId,
     startsAt: row.desiredStartsAt,
     endsAt: row.desiredEndsAt,
     quantity: row.guaranteedHeadcount ?? row.estimatedHeadcount,
-    phaseChangedAt: row.phaseChanges[0]?.changedAt ?? row.createdAt,
+    statusChangedAt: row.statusChanges[0]?.changedAt ?? row.createdAt,
     assigneeId: owners.get(row.id) ?? null,
   }));
 }

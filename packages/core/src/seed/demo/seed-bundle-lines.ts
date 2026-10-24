@@ -15,7 +15,7 @@ export type SeedBundleLinesInput = {
 
 /**
  * ADR 0059: each of the ticket's bundles through `line.expandBundle` as SYSTEM, in the
- * organization's line type: one bundle line and its part lines, each in its entry phase's cell.
+ * organization's line type: one bundle line and its part lines, each in its entry status's cell.
  */
 export async function seedDemoBundleLines({
   context,

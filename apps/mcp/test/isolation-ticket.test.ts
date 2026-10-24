@@ -9,16 +9,16 @@ describe("cross-organization isolation for tickets", () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
     const { id } = await seedTicket({ client: a });
-    const phaseB = await call({
+    const statusB = await call({
       client: b,
-      name: "ticketPhase_create",
-      args: { name: "Other phase", color: "#ef4444" },
+      name: "ticketStatus_create",
+      args: { name: "Other status", color: "#ef4444" },
     });
     for (const [name, args] of [
       ["ticket_get", { id }],
-      ["ticket_changePhase", { ticketId: id, phaseId: phaseB.data.id }],
+      ["ticket_changeStatus", { ticketId: id, statusId: statusB.data.id }],
       ["ticket_export", { id }],
-      ["ticket_phaseHistory", { ticketId: id }],
+      ["ticket_statusHistory", { ticketId: id }],
       ["ticket_update", { id, estimatedHeadcount: 99 }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");

@@ -6,7 +6,7 @@ import {
   chooseLineOptions,
   createLine,
   expandLineBundle,
-  followLinePhase,
+  followLineStatus,
   type LineChooseOptionsInput,
   type LineCreateInput,
   type LineDto,
@@ -54,14 +54,14 @@ export async function changeLineStateAction({
   });
 }
 
-export type FollowLinePhaseActionInput = { lineId: string };
+export type FollowLineStatusActionInput = { lineId: string };
 
-/** Lets an overridden line follow the ticket's phase again (ADR 0044). */
-export async function followLinePhaseAction({
+/** Lets an overridden line follow the ticket's status again (ADR 0044). */
+export async function followLineStatusAction({
   lineId,
-}: FollowLinePhaseActionInput): Promise<ActionResult<LineDto>> {
+}: FollowLineStatusActionInput): Promise<ActionResult<LineDto>> {
   return toActionResult({
-    result: await runOperation({ operation: followLinePhase, input: { lineId } }),
+    result: await runOperation({ operation: followLineStatus, input: { lineId } }),
   });
 }
 

@@ -1,6 +1,6 @@
-import type { TicketPhase } from "@bibi/db";
+import type { TicketStatus } from "@bibi/db";
 import { acceptQuote } from "../../features/quote/lifecycle-operations";
-import { changeTicketPhase } from "../../features/ticket/change-phase-operation";
+import { changeTicketStatus } from "../../features/ticket/change-status-operation";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { createSentQuote } from "./seed-ticket-quote";
@@ -35,7 +35,9 @@ function moveFailures({ org, ticket, before, after }: ExpectInput): string[] {
     const was = before.find((row) => row.name === line.name);
     const now = after.find((row) => row.name === line.name);
     const type = was?.item?.entityType.name;
-    const cell = org.pipeline.cells.find((row) => row.phase === move.to && row.type === type);
+    const cell = org.pipeline.cells.find(
+      (row) => row.ticketStatus === move.to && row.type === type,
+    );
     const expected =
       move.blocked || line.state ? was?.state?.name : (cell?.state ?? was?.state?.name);
     if (now?.state?.name === expected && now?.stateOverridden === Boolean(line.state)) return [];
@@ -45,16 +47,16 @@ function moveFailures({ org, ticket, before, after }: ExpectInput): string[] {
   });
 }
 
-type MoveToInput = Ctx & { ticket: DemoTicket; ticketId: string; phase: TicketPhase };
+type MoveToInput = Ctx & { ticket: DemoTicket; ticketId: string; ticketStatus: TicketStatus };
 
 /**
- * The move to the phase: by `ticket.changePhase`, or for a phase with a quote event by accepting
+ * The move to the status: by `ticket.changeStatus`, or for a status with a quote event by accepting
  * the ticket's sent quote (made first when it has none).
  */
-async function moveTo({ context, ticket, ticketId, phase }: MoveToInput) {
-  if (!phase.event) {
-    const input = { ticketId, phaseId: phase.id };
-    return execute({ operation: changeTicketPhase, input, context });
+async function moveTo({ context, ticket, ticketId, ticketStatus }: MoveToInput) {
+  if (!ticketStatus.event) {
+    const input = { ticketId, statusId: ticketStatus.id };
+    return execute({ operation: changeTicketStatus, input, context });
   }
   const sent = await context.db.quote.findFirst({ where: { ticketId, quoteStatus: "SENT" } });
   const quote = sent
@@ -71,9 +73,9 @@ async function checkTicket({ context, org, ticket }: CheckTicketInput): Promise<
   const before = await loadLines({ context, ticket });
   const ticketId = before[0]?.ticketId;
   if (!move || !ticketId) return [`${ticket.ref}: no lines to move`];
-  const phase = await context.db.ticketPhase.findFirst({ where: { name: move.to } });
-  if (!phase) return [`${ticket.ref}: no phase ${move.to}`];
-  const result = await moveTo({ context, ticket, ticketId, phase });
+  const ticketStatus = await context.db.ticketStatus.findFirst({ where: { name: move.to } });
+  if (!ticketStatus) return [`${ticket.ref}: no status ${move.to}`];
+  const result = await moveTo({ context, ticket, ticketId, ticketStatus });
   const lineBlockers = result.ok
     ? []
     : result.error.issues.filter((i) => i.path.startsWith("lines."));
@@ -86,9 +88,9 @@ async function checkTicket({ context, org, ticket }: CheckTicketInput): Promise<
 }
 
 /**
- * The phase grid checks of `docs/demo-seed.md` (ADR 0044): every ticket with a `checkMove` is
- * moved with `ticket.changePhase`, or by accepting its quote for a phase with a quote event. A blocked move must be refused by a line (a hard hold
- * collision) and change nothing; an allowed one must move the lines to the target phase's cells,
+ * The status grid checks of `docs/demo-seed.md` (ADR 0044): every ticket with a `checkMove` is
+ * moved with `ticket.changeStatus`, or by accepting its quote for a status with a quote event. A blocked move must be refused by a line (a hard hold
+ * collision) and change nothing; an allowed one must move the lines to the target status's cells,
  * keep lines whose cell is empty and skip overridden lines. Returns failure messages.
  */
 export async function checkDemoGrid({ context, org }: Ctx & { org: DemoOrg }): Promise<string[]> {

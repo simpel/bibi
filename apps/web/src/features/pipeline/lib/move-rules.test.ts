@@ -11,7 +11,7 @@ const card = ({ overrides = {} }: { overrides?: Partial<PipelineCard> } = {}): P
   startsAt: null,
   endsAt: null,
   quantity: 10,
-  phaseChangedAt: new Date("2026-10-01T08:00:00Z"),
+  statusChangedAt: new Date("2026-10-01T08:00:00Z"),
   assigneeId: null,
   heldLines: 0,
   bookedLines: 0,
@@ -55,7 +55,7 @@ describe("pipeline move rules (ADR 0041, 0043)", () => {
     expect(canMoveCard(back)).toBe(false);
   });
 
-  it("accepts the drop on a phase that needs a reason (a dialog asks for it)", () => {
+  it("accepts the drop on a status that needs a reason (a dialog asks for it)", () => {
     expect(canMoveCard({ card: card(), from: lead, to: lost, transitions })).toBe(true);
   });
 

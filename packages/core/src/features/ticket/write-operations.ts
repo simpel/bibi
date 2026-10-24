@@ -15,7 +15,7 @@ export const createTicket = defineOperation({
   kind: "command",
   description:
     "Create a ticket of one of the organization's ticket types for a customer (ADR 0043). It " +
-    "gets the next reference number and starts in the organization's entry phase. Nothing but " +
+    "gets the next reference number and starts in the organization's entry status. Nothing but " +
     "the type and customer is required; the contact must work at the customer. `assigneeId` (a " +
     "member) becomes the main assignee. `fields` must match the type's own fields.",
   input: TicketCreateInputSchema,
@@ -31,7 +31,7 @@ export const updateTicket = defineOperation({
     "Update a ticket's customer, contact, desired period, headcount, budget, " +
     "holdsUntil (when its soft holds expire) or own " +
     "fields. Omitted properties are unchanged; `fields` is merged by key (null clears a value). " +
-    "The type cannot be changed, the phase changes only with ticket.changePhase and the " +
+    "The type cannot be changed, the status changes only with ticket.changeStatus and the " +
     "assignee with assignment.assign.",
   input: TicketUpdateInputSchema,
   output: TicketSchema,

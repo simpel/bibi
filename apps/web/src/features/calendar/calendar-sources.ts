@@ -5,7 +5,7 @@ import {
   listItems,
   listLines,
   listOccupancies,
-  listTicketPhases,
+  listTicketStatuses,
   listTickets,
   listVenues,
   ok,
@@ -34,7 +34,7 @@ export function loadSources({ from, to, venueId }: CalendarWindow) {
     listAll({ operation: listLines, input: programWindow, maxPages: 20 }),
     listAll({ operation: listTickets, input: programWindow, maxPages: 20 }),
     listAll({ operation: listItemStates, input: {} }),
-    listAll({ operation: listTicketPhases, input: {} }),
+    listAll({ operation: listTicketStatuses, input: {} }),
   ]);
 }
 

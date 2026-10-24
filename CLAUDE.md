@@ -10,7 +10,7 @@
 - Needs as counts against the organization's own lists (e.g. the EU's 14 allergens as an importable template), matched against items and compiled into sheets. No personal data about guests.
 - Versioned sheets (e.g. kitchen order) sent to a responsibility (e.g. head of kitchen), plus export (json, pdf, csv) for handover outside the system.
 - Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses three fixed roles as presets (member, manager, admin) of `<feature>:<action>` permissions, which admins fine-tune per member or API key with allow/deny overrides (ADR 0034, 0050).
-- A ticket moves through the organization's own phases, and each line (room, food, activity) has a state per phase set in a grid: soft holds with a held-since date and one expiry date per ticket, hard holds that block (ADR 0043, 0044).
+- A ticket moves through the organization's own statuses, and each line (room, food, activity) has a state per status set in a grid: soft holds with a held-since date and one expiry date per ticket, hard holds that block (ADR 0043, 0044).
 - Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Fortnox, Visma and Peppol deferred, ADR 0028 and 0029).
 - Bibi's own prices are published and venues can sign up without talking to sales.
 
@@ -53,7 +53,7 @@
   - Searchable entities implement `Embeddable`.
   - Reusable AI behaviour lives as skills (System / Organization / Personal), not as ad hoc prompts.
   - See `docs/decisions/0007-ai-first-ux.md` and `docs/decisions/0008-semantic-search-and-skills.md`.
-- **Configurable domain.** No domain words in code. The organization defines types, fields, lists, ticket phases, item states and responsibilities as data. Every ticket and item has one assignee plus followers (ADR 0034). Code owns only generic capabilities (`PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE`, `SETUPS`) and flags on phases and states (ADR 0043, 0044). Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
+- **Configurable domain.** No domain words in code. The organization defines types, fields, lists, ticket statuses, item states and responsibilities as data. Every ticket and item has one assignee plus followers (ADR 0034). Code owns only generic capabilities (`PRICED`, `BUNDLE`, `CUSTOMISATIONS`, `BOOKABLE`, `SETUPS`) and flags on statuses and states (ADR 0043, 0044). Templates are optional data. See `docs/decisions/0021-configurable-items.md`.
 - **Capabilities, demands, buffers and database triggers** (ADR 0059, 0053): `packages/core/CLAUDE.md`, `packages/db/CLAUDE.md`.
 - **Permissions and feature scope** (ADR 0050): `<feature>:<action>` with fixed role presets and per-member overrides; an operation returns only its own feature's data. Details in `packages/core/CLAUDE.md`.
 - **Single source of truth.** Every column is owned, derived, a projection or a snapshot (ADR 0051). A fact lives in one place; defaults are inherited (`null` = inherit), never copied; references are foreign keys, never id lists or ids in JSON (ADR 0056). Projections are written only by the database or one named function and have a reconciliation check. Triggers that write projections are listed in `packages/db/CLAUDE.md`. The line is the booking and quotes and invoices are snapshots of lines (ADR 0052). Balances are derived (ADR 0057). Domain history never comes from `AuditLog`.

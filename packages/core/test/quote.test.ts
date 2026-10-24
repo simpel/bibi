@@ -3,7 +3,7 @@ import { execute, getQuote, listQuotes, updateItem, updateLine, updateQuote } fr
 import { errorCode, unwrap } from "./helpers";
 import { testOrg } from "./org-helpers";
 import { addTestLines, createTestQuote, quoteSetup } from "./quote-helpers";
-import { createTestTicket, moveToPhase } from "./ticket-helpers";
+import { createTestTicket, moveToStatus } from "./ticket-helpers";
 
 describe("quote.create (ADR 0022, 0052)", () => {
   it("shows the ticket's priced lines live, sums the totals and stores no lines", async () => {
@@ -78,7 +78,7 @@ describe("quote.create (ADR 0022, 0052)", () => {
       customerId: customer.id,
     });
     const lost = { context, ticketId: other.id, name: "Lost", reason: "Too expensive" };
-    unwrap({ result: await moveToPhase(lost) });
+    unwrap({ result: await moveToStatus(lost) });
     const closed = await createTestQuote({ context, ticketId: other.id }).catch((e) => e);
     expect(closed.code).toBe("CONFLICT");
   });

@@ -14,7 +14,7 @@ export const colorSwatchVariants = cva(
 
 export type ColorSwatchProps = Omit<ComponentProps<"span">, "color"> &
   VariantProps<typeof colorSwatchVariants> & {
-    /** A color the organization chose as data (e.g. a ticket phase's `#22c55e`), not a token. */
+    /** A color the organization chose as data (e.g. a ticket status's `#22c55e`), not a token. */
     color: string;
   };
 

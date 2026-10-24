@@ -11,7 +11,7 @@ export const stateOf = ({ item, data }: StateOfInput) =>
 
 export type LineStateCellProps = { line: LineDto; data: ProgramFormData };
 
-/** The line's state with its color, marked when it is overridden (phase moves skip it). */
+/** The line's state with its color, marked when it is overridden (status moves skip it). */
 export function LineStateCell({ line, data }: LineStateCellProps) {
   const t = useTranslations("line");
   const state = stateOf({ item: line, data });

@@ -17,7 +17,7 @@ export type SeedDemoSalesInput = {
   refs: DemoRefs;
   catalog: DemoCatalog;
   userIds: DemoUserIds;
-  /** No phases yet (`--skip-pipeline`): the customers only. */
+  /** No statuses yet (`--skip-pipeline`): the customers only. */
   skipPipeline?: boolean;
 };
 

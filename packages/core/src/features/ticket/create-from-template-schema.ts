@@ -17,7 +17,7 @@ export const TicketCreateFromTemplateInputSchema = z.object({
     .min(1)
     .nullish()
     .describe(
-      "User id of the main assignee (member.list userId); required when the template's phase " +
+      "User id of the main assignee (member.list userId); required when the template's status " +
         "requires an assignee",
     ),
 });

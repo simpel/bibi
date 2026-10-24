@@ -3,8 +3,6 @@ import {
   type PipelineActivateOutput,
   type PipelineCellDraft,
   PipelineCellDraftSchema,
-  type PipelinePhaseDraft,
-  PipelinePhaseDraftSchema,
   type PipelinePreview,
   type PipelinePreviewLine,
   PipelinePreviewLineSchema,
@@ -15,6 +13,8 @@ import {
   type PipelineSetupDraft,
   type PipelineStateDraft,
   PipelineStateDraftSchema,
+  type PipelineStatusDraft,
+  PipelineStatusDraftSchema,
   type PipelineTypeDraft,
   PipelineTypeDraftSchema,
   presetDraftPipelineSetup,
@@ -24,8 +24,8 @@ import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
 import { ItemStateRef } from "../item-state/graphql";
-import { PhaseGridRef } from "../phase-grid/graphql";
-import { TicketPhaseRef } from "../ticket-phase/graphql";
+import { StatusGridRef } from "../status-grid/graphql";
+import { TicketStatusRef } from "../ticket-status/graphql";
 
 const ProblemRef = objectFromSchema<PipelineProblem>({
   name: "PipelineProblem",
@@ -36,14 +36,14 @@ const ProblemRef = objectFromSchema<PipelineProblem>({
 const LineRef = objectFromSchema<PipelinePreviewLine>({
   name: "PipelinePreviewLine",
   schema: PipelinePreviewLineSchema,
-  description: "One line of the simulated ticket in one phase: its state and hold.",
+  description: "One line of the simulated ticket in one status: its state and hold.",
 });
 
 const StepRef = objectFromSchema<PipelinePreviewStep>({
   name: "PipelinePreviewStep",
   schema: PipelinePreviewStepSchema,
   omit: ["lines"],
-  description: "The simulated ticket after entering one phase.",
+  description: "The simulated ticket after entering one status.",
 });
 builder.objectFields(StepRef, (t) => ({
   lines: t.field({ type: [LineRef], resolve: (step) => step.lines }),
@@ -64,11 +64,11 @@ PreviewRef.implement({
 
 const ActivateRef = builder.objectRef<PipelineActivateOutput>("PipelineActivation");
 ActivateRef.implement({
-  description: "The pipeline as activated: phases, the set-up types' states and the grid.",
+  description: "The pipeline as activated: statuses, the set-up types' states and the grid.",
   fields: (t) => ({
-    phases: t.field({ type: [TicketPhaseRef], resolve: (result) => result.phases as never }),
+    statuses: t.field({ type: [TicketStatusRef], resolve: (result) => result.statuses as never }),
     states: t.field({ type: [ItemStateRef], resolve: (result) => result.states as never }),
-    grid: t.field({ type: PhaseGridRef, resolve: (result) => result.grid }),
+    grid: t.field({ type: StatusGridRef, resolve: (result) => result.grid }),
   }),
 });
 
@@ -95,10 +95,10 @@ builder.objectFields(TypeDraftRef, (t) => ({
   states: t.field({ type: [StateDraftRef], resolve: (type) => type.states }),
 }));
 
-const PhaseDraftRef = objectFromSchema<PipelinePhaseDraft>({
-  name: "PipelinePhaseDraft",
-  schema: PipelinePhaseDraftSchema,
-  description: "One ticket phase in a pipeline setup draft.",
+const StatusDraftRef = objectFromSchema<PipelineStatusDraft>({
+  name: "PipelineStatusDraft",
+  schema: PipelineStatusDraftSchema,
+  description: "One ticket status in a pipeline setup draft.",
 });
 
 const CellDraftRef = objectFromSchema<PipelineCellDraft>({
@@ -112,7 +112,7 @@ DraftRef.implement({
   description: "A whole pipeline setup draft (ADR 0045); nothing is saved.",
   fields: (t) => ({
     itemTypes: t.field({ type: [TypeDraftRef], resolve: (draft) => draft.itemTypes }),
-    phases: t.field({ type: [PhaseDraftRef], resolve: (draft) => draft.phases }),
+    statuses: t.field({ type: [StatusDraftRef], resolve: (draft) => draft.statuses }),
     cells: t.field({ type: [CellDraftRef], resolve: (draft) => draft.cells }),
   }),
 });

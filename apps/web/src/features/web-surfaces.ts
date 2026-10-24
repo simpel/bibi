@@ -23,7 +23,7 @@ export type WebSurface = {
 const PANEL = { route: "/" } as const;
 
 export const WEB_SURFACES: readonly WebSurface[] = [
-  // The pipeline board: tickets by phase, moved by drag (ADR 0041, 0043).
+  // The pipeline board: tickets by status, moved by drag (ADR 0041, 0043).
   { operation: "pipeline.board", route: "/pipeline" },
   { operation: "venue.list", route: "/venues" },
   { operation: "venue.get", route: "/venues/[id]" },
@@ -60,7 +60,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "ticket.createFromTemplate", route: "/new/ticket" },
   { operation: "ticket.get", route: "/tickets/[id]" },
   { operation: "ticket.update", route: "/tickets/[id]/update" },
-  { operation: "ticket.changePhase", route: "/tickets/[id]" },
+  { operation: "ticket.changeStatus", route: "/tickets/[id]" },
   { operation: "ticket.export", route: "/tickets/[id]" },
   { operation: "inboundEmail.list", route: "/tickets/[id]" },
   // The run schedule (lines) is listed and edited on the ticket page.
@@ -68,9 +68,9 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "line.create", route: "/tickets/[id]" },
   { operation: "line.update", route: "/tickets/[id]" },
   { operation: "line.archive", route: "/tickets/[id]" },
-  // A line's state is changed (override) or set to follow the phase from its row (ADR 0044).
+  // A line's state is changed (override) or set to follow the status from its row (ADR 0044).
   { operation: "line.changeState", route: "/tickets/[id]" },
-  { operation: "line.followPhase", route: "/tickets/[id]" },
+  { operation: "line.followStatus", route: "/tickets/[id]" },
   { operation: "requirement.list", route: "/tickets/[id]" },
   { operation: "requirement.create", route: "/tickets/[id]" },
   { operation: "requirement.update", route: "/tickets/[id]" },
@@ -117,15 +117,15 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "sheetDefinition.create", route: "/settings/sheets" },
   { operation: "sheetDefinition.update", route: "/settings/sheets" },
   { operation: "sheetDefinition.archive", route: "/settings/sheets" },
-  { operation: "ticketPhase.list", route: "/settings/pipeline" },
-  { operation: "ticketPhase.get", route: "/settings/pipeline" },
-  { operation: "ticketPhase.create", route: "/settings/pipeline" },
-  { operation: "ticketPhase.update", route: "/settings/pipeline" },
-  { operation: "ticketPhase.archive", route: "/settings/pipeline" },
-  { operation: "ticketPhase.archivePreview", route: "/settings/pipeline" },
-  { operation: "ticketPhase.reorder", route: "/settings/pipeline" },
-  { operation: "ticketPhase.setTransitions", route: "/settings/pipeline" },
-  { operation: "ticketPhase.importTemplate", route: "/settings/pipeline" },
+  { operation: "ticketStatus.list", route: "/settings/pipeline" },
+  { operation: "ticketStatus.get", route: "/settings/pipeline" },
+  { operation: "ticketStatus.create", route: "/settings/pipeline" },
+  { operation: "ticketStatus.update", route: "/settings/pipeline" },
+  { operation: "ticketStatus.archive", route: "/settings/pipeline" },
+  { operation: "ticketStatus.archivePreview", route: "/settings/pipeline" },
+  { operation: "ticketStatus.reorder", route: "/settings/pipeline" },
+  { operation: "ticketStatus.setTransitions", route: "/settings/pipeline" },
+  { operation: "ticketStatus.importTemplate", route: "/settings/pipeline" },
   { operation: "search", route: "/venues" },
   { operation: "skill.list", route: "/skills" },
   { operation: "skill.get", route: "/skills/[id]" },

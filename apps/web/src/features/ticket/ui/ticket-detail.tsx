@@ -13,8 +13,8 @@ import { runOperation } from "@/server/run-operation";
 import { loadTicketData } from "../load-ticket-data";
 import { TicketActions } from "./ticket-actions";
 import { TicketFacts } from "./ticket-facts";
-import { TicketPhaseLabel } from "./ticket-phase-label";
 import { TicketSections } from "./ticket-sections";
+import { TicketStatusLabel } from "./ticket-status-label";
 
 export type TicketDetailProps = { locale: Locale; id: string };
 
@@ -48,7 +48,7 @@ export async function TicketDetail({ locale, id }: TicketDetailProps) {
       <BackLink />
       <PageHeader title={t("reference", { reference: ticket.value.reference })} actions={actions} />
       <div>
-        <TicketPhaseLabel phases={data.value.phases} id={ticket.value.phaseId} />
+        <TicketStatusLabel statuses={data.value.statuses} id={ticket.value.statusId} />
       </div>
       <TicketFacts ticket={ticket.value} data={data.value} />
       <AssignmentSection
@@ -59,7 +59,7 @@ export async function TicketDetail({ locale, id }: TicketDetailProps) {
       <TicketSections
         locale={locale}
         ticket={ticket.value}
-        phases={data.value.phases}
+        statuses={data.value.statuses}
         abilities={abilities}
       />
     </div>

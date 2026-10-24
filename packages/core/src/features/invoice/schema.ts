@@ -44,7 +44,7 @@ export const InvoiceCreateInputSchema = z.object({
   ticketId: z
     .string()
     .min(1)
-    .describe("Id of the ticket to invoice; its phase must be invoiceable"),
+    .describe("Id of the ticket to invoice; its status must be invoiceable"),
   dueDate: z.coerce
     .date()
     .nullish()

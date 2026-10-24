@@ -3,7 +3,7 @@
 - **Date:** 2026-10-19
 - **Status:** Accepted
 - **Related:** 0014 (logging), 0032 (audit log retention), 0043 (ticket and phases), 0044, 0051
-- **Spec:** `docs/specs/tickets-phases-and-states.md`
+- **Spec:** `docs/specs/tickets-statuses-and-states.md`
 
 ## Context
 - ADR 0043 said "history comes from `AuditLog`", so phase history, time-in-phase and "held since" depended on a table that is permission-gated, pseudonymised after 365 days (ADR 0032) and shaped for evidence, not queries.

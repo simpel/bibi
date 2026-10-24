@@ -3,7 +3,7 @@ import { runWithLogContext } from "@bibi/logger";
 import { seedDemo } from "./seed-demo";
 
 // `pnpm --filter @bibi/core seed:demo` – recreates the demo organizations (ADR 0025).
-// `-- --skip-pipeline` leaves out phases, item states, the grid and tickets (first setup, ADR 0045).
+// `-- --skip-pipeline` leaves out statuses, item states, the grid and tickets (first setup, ADR 0045).
 const skipPipeline = process.argv.includes("--skip-pipeline");
 await runWithLogContext({
   context: { surface: "cli" },

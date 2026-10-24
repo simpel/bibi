@@ -3,28 +3,28 @@ import type { Ticket } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { recordFields, WITH_RECORD_LINKS, type WithRecordLinks } from "../../records/record-links";
 import { ticketReplyAddress } from "../inbound-email/address";
-import { LATEST_PHASE_CHANGE, type LatestPhaseChange } from "./phase-history";
 import type { TicketDto } from "./schema";
+import { LATEST_STATUS_CHANGE, type LatestStatusChange } from "./status-history";
 
-export type TicketRow = Ticket & WithRecordLinks & LatestPhaseChange;
+export type TicketRow = Ticket & WithRecordLinks & LatestStatusChange;
 
 export type ToTicketDtoInput = { row: TicketRow };
 
 /**
- * Prisma `include` for every ticket read (`toTicketDto`): its `LINK` values and its newest phase
+ * Prisma `include` for every ticket read (`toTicketDto`): its `LINK` values and its newest status
  * change (ADR 0054).
  */
-export const TICKET_INCLUDE = { ...WITH_RECORD_LINKS, ...LATEST_PHASE_CHANGE };
+export const TICKET_INCLUDE = { ...WITH_RECORD_LINKS, ...LATEST_STATUS_CHANGE };
 
 export const toTicketDto = ({ row }: ToTicketDtoInput): TicketDto => {
-  const { record: _record, phaseChanges, ...ticket } = row;
+  const { record: _record, statusChanges, ...ticket } = row;
   const domain = getEnv().MAIL_INBOUND_DOMAIN;
   const inboundAddress = ticketReplyAddress({ ticketId: row.id, domain });
-  const latest = phaseChanges[0];
+  const latest = statusChanges[0];
   return {
     ...ticket,
-    phaseChangedAt: latest?.changedAt ?? row.createdAt,
-    phaseReason: latest?.reason ?? null,
+    statusChangedAt: latest?.changedAt ?? row.createdAt,
+    statusReason: latest?.reason ?? null,
     fields: recordFields({ row }),
     inboundAddress,
   };

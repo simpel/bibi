@@ -1,6 +1,6 @@
 import { getDb } from "@bibi/db";
 import {
-  changeTicketPhase,
+  changeTicketStatus,
   createContact,
   createEntityType,
   createTicket,
@@ -80,38 +80,38 @@ export async function createTestContact({ context, customerId }: CreateTestConta
   });
 }
 
-export type MoveToPhaseInput = {
+export type MoveToStatusInput = {
   context: ExecuteContext;
   ticketId: string;
-  /** The phase name, e.g. "Lost" from the default template. */
+  /** The status name, e.g. "Lost" from the default template. */
   name: string;
   reason?: string;
 };
 
-/** Moves the ticket to the named phase through `ticket.changePhase`; returns the result. */
-export async function moveToPhase({ context, ticketId, name, reason }: MoveToPhaseInput) {
-  const phase = await getDb().ticketPhase.findFirstOrThrow({
+/** Moves the ticket to the named status through `ticket.changeStatus`; returns the result. */
+export async function moveToStatus({ context, ticketId, name, reason }: MoveToStatusInput) {
+  const ticketStatus = await getDb().ticketStatus.findFirstOrThrow({
     where: { organizationId: context.organizationId, name, status: "ACTIVE" },
   });
-  const input = { ticketId, phaseId: phase.id, reason };
-  return execute({ operation: changeTicketPhase, input, context });
+  const input = { ticketId, statusId: ticketStatus.id, reason };
+  return execute({ operation: changeTicketStatus, input, context });
 }
 
-export type PlaceInPhaseInput = {
-  ticket: { id: string; organizationId: string; phaseId: string };
-  phaseId: string;
+export type PlaceInStatusInput = {
+  ticket: { id: string; organizationId: string; statusId: string };
+  statusId: string;
 };
 
 /**
- * Puts a ticket in a phase without the move rules, through its phase history (ADR 0054: the only
- * way `phaseId` changes). For tests whose subject is not the move itself.
+ * Puts a ticket in a status without the move rules, through its status history (ADR 0054: the only
+ * way `statusId` changes). For tests whose subject is not the move itself.
  */
-export async function placeInPhase({ ticket, phaseId }: PlaceInPhaseInput): Promise<void> {
-  if (phaseId === ticket.phaseId) return;
-  await getDb().ticketPhaseChange.create({
+export async function placeInStatus({ ticket, statusId }: PlaceInStatusInput): Promise<void> {
+  if (statusId === ticket.statusId) return;
+  await getDb().ticketStatusChange.create({
     data: {
       ...{ organizationId: ticket.organizationId, ticketId: ticket.id },
-      ...{ fromPhaseId: ticket.phaseId, toPhaseId: phaseId, trigger: "SYSTEM" },
+      ...{ fromStatusId: ticket.statusId, toStatusId: statusId, trigger: "SYSTEM" },
     },
   });
 }

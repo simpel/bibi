@@ -1,17 +1,17 @@
-// Domain history (ADR 0054): append-only tables owned by core. The current phase of a ticket and
-// the current state of a line are projections of them: a trigger on insert sets `Ticket.phaseId`
+// Domain history (ADR 0054): append-only tables owned by core. The current status of a ticket and
+// the current state of a line are projections of them: a trigger on insert sets `Ticket.statusId`
 // and `Line.stateId` (`packages/db/sql/domain_history.sql`), and nothing else changes them.
 // The audit log stays evidence; no feature reads history from it.
 
-/// What made a ticket change phase (ADR 0054).
-enum PhaseChangeTrigger {
-  /// A person moved the ticket (`ticket.changePhase`, `ticket.create`).
+/// What made a ticket change status (ADR 0054).
+enum StatusChangeTrigger {
+  /// A person moved the ticket (`ticket.changeStatus`, `ticket.create`).
   MANUAL
   /// A quote event moved it (`QUOTE_SENT`, `QUOTE_ACCEPTED`).
   QUOTE_EVENT
   /// The ticket was created from a predefined ticket (`ticket.createFromTemplate`).
   TEMPLATE
-  /// The system moved it, e.g. archiving the phase it was in.
+  /// The system moved it, e.g. archiving the status it was in.
   SYSTEM
 }
 
@@ -19,39 +19,39 @@ enum PhaseChangeTrigger {
 enum StateChangeTrigger {
   /// A person set the state (`line.changeState`).
   MANUAL
-  /// The ticket's phase (phase grid, terminal release, `line.followPhase`).
-  PHASE
+  /// The ticket's status (status grid, closing release, `line.followStatus`).
+  STATUS
   /// `ticket.expireHolds` moved an expired soft hold to its expiry state.
   EXPIRY
   /// The system, e.g. the first state of a new line or a line moved to an item of another type.
   SYSTEM
 }
 
-/// Ticket phase change – one entry of a ticket's phase history. Append-only. The newest row
-/// (`seq`) is the ticket's current phase: inserting a row sets `Ticket.phaseId` by trigger, which
+/// Ticket status change – one entry of a ticket's status history. Append-only. The newest row
+/// (`seq`) is the ticket's current status: inserting a row sets `Ticket.statusId` by trigger, which
 /// in turn re-derives the ticket's holds (ADR 0053) in the same transaction.
-model TicketPhaseChange {
-  id             String             @id @default(cuid(2))
+model TicketStatusChange {
+  id             String              @id @default(cuid(2))
   organizationId String
-  /// Insertion order; the newest row is the current phase.
-  seq            Int                @default(autoincrement())
+  /// Insertion order; the newest row is the current status.
+  seq            Int                 @default(autoincrement())
   ticketId       String
-  /// Null for the first row (the phase the ticket was created in).
-  fromPhaseId    String?
-  toPhaseId      String
-  /// Free text given with the move; required by `requiresReason` phases.
+  /// Null for the first row (the status the ticket was created in).
+  fromStatusId   String?
+  toStatusId     String
+  /// Free text given with the move; required by `requiresReason` statuses.
   reason         String?
-  trigger        PhaseChangeTrigger
-  changedAt      DateTime           @default(now())
+  trigger        StatusChangeTrigger
+  changedAt      DateTime            @default(now())
   /// User who made the change; null for the system.
   changedBy      String?
-  ticket         Ticket             @relation(fields: [ticketId, organizationId], references: [id, organizationId])
-  fromPhase      TicketPhase?       @relation("PhaseChangeFrom", fields: [fromPhaseId, organizationId], references: [id, organizationId])
-  toPhase        TicketPhase        @relation("PhaseChangeTo", fields: [toPhaseId, organizationId], references: [id, organizationId])
+  ticket         Ticket              @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+  fromStatus     TicketStatus?       @relation("StatusChangeFrom", fields: [fromStatusId, organizationId], references: [id, organizationId])
+  toStatus       TicketStatus        @relation("StatusChangeTo", fields: [toStatusId, organizationId], references: [id, organizationId])
 
   @@unique([seq])
   @@index([organizationId, ticketId, seq])
-  @@index([organizationId, toPhaseId, changedAt])
+  @@index([organizationId, toStatusId, changedAt])
 }
 
 /// Line state change – one entry of a line's state history. Append-only. The newest row (`seq`)

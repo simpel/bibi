@@ -1,16 +1,16 @@
 import { z } from "zod";
 
 export const PipelineColumnSchema = z.object({
-  id: z.string().describe("The ticket phase id"),
-  title: z.string().describe("The phase name"),
-  color: z.string().describe("The phase colour"),
-  requiresReason: z.boolean().describe("Entering the phase needs a reason"),
-  closed: z.boolean().describe("A terminal phase; shown in the collapsed Closed lane"),
+  id: z.string().describe("The ticket status id"),
+  title: z.string().describe("The status name"),
+  color: z.string().describe("The status colour"),
+  requiresReason: z.boolean().describe("Entering the status needs a reason"),
+  closed: z.boolean().describe("A closing status; shown in the collapsed Closed lane"),
 });
 
 export const PipelineCardSchema = z.object({
   id: z.string().describe("Ticket id"),
-  columnId: z.string().describe("The ticket's phase id"),
+  columnId: z.string().describe("The ticket's status id"),
   reference: z.number().int().describe("Ticket reference number"),
   typeName: z.string(),
   customerId: z
@@ -23,7 +23,7 @@ export const PipelineCardSchema = z.object({
     .int()
     .nullable()
     .describe("Guaranteed or estimated headcount, else the requested quantity"),
-  phaseChangedAt: z.date().describe("When the ticket entered its phase (time in phase)"),
+  statusChangedAt: z.date().describe("When the ticket entered its status (time in status)"),
   assigneeId: z.string().nullable().describe("Main assignee (user id)"),
   heldLines: z
     .number()
@@ -46,7 +46,7 @@ export const PipelineBoardInputSchema = z.object({
     .min(1)
     .max(365)
     .default(30)
-    .describe("Show tickets in terminal phases that moved there within this many days"),
+    .describe("Show tickets in closing statuses that moved there within this many days"),
 });
 
 export const PipelineBoardSchema = z.object({

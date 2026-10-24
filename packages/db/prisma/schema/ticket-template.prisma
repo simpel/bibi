@@ -1,4 +1,4 @@
-/// Ticket template – an organization's predefined ticket (ADR 0043): a ticket type, the phase the
+/// Ticket template – an organization's predefined ticket (ADR 0043): a ticket type, the status the
 /// ticket starts in, default own-field values and lines. `ticket.createFromTemplate` makes a
 /// ticket from it in one step. `status` is the soft-delete flag (ADR 0006).
 model TicketTemplate {
@@ -6,8 +6,8 @@ model TicketTemplate {
   organizationId String
   name           String
   entityTypeId   String
-  /// The phase created tickets start in (not terminal).
-  phaseId        String
+  /// The status created tickets start in (not closing).
+  statusId       String
   /// Default values of the ticket type's own fields, keyed by `FieldDefinition.key`.
   fields         Json                 @default("{}")
   status         RecordStatus         @default(ACTIVE)
@@ -15,14 +15,14 @@ model TicketTemplate {
   updatedAt      DateTime             @updatedAt
   createdBy      String?
   entityType     EntityType           @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
-  phase          TicketPhase          @relation(fields: [phaseId, organizationId], references: [id, organizationId])
+  ticketStatus   TicketStatus         @relation(fields: [statusId, organizationId], references: [id, organizationId])
   lines          TicketTemplateLine[]
   /// The supertable row this record extends (ADR 0056).
   record         Record               @relation(fields: [id, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@index([organizationId, status])
-  @@index([organizationId, phaseId])
+  @@index([organizationId, statusId])
 }
 
 /// Ticket template line – a line the ticket gets, timed from the ticket's start.

@@ -25,7 +25,7 @@ type Ctx = { context: ExecuteContext };
 
 async function invoiceable() {
   const setup = await moneySetup();
-  await makeInvoiceable({ context: setup.context, phaseId: setup.ticket.phaseId });
+  await makeInvoiceable({ context: setup.context, statusId: setup.ticket.statusId });
   return setup;
 }
 
@@ -33,7 +33,7 @@ const create = ({ context, ticketId }: Ctx & { ticketId: string }) =>
   execute({ operation: createInvoice, input: { ticketId }, context });
 
 describe("an invoice is a frozen receivable of the ticket's lines (ADR 0052, 0057)", () => {
-  it("needs an invoiceable phase", async () => {
+  it("needs an invoiceable status", async () => {
     const { context, ticket } = await moneySetup();
     expect(errorCode({ result: await create({ context, ticketId: ticket.id }) })).toBe("CONFLICT");
   });

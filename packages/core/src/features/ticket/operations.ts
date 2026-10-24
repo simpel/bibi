@@ -4,18 +4,18 @@ import { notFound } from "../../shared/errors";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
 import { subjectIdFilter } from "../assignment/subject-filter";
-import { changeTicketPhase } from "./change-phase-operation";
+import { changeTicketStatus } from "./change-status-operation";
 import { createTicketFromTemplate } from "./create-from-template-operation";
 import { expireTicketHolds } from "./expire-holds-operation";
 import { exportTicket } from "./export-operation";
 import { ticketListWhere } from "./list-where";
-import { ticketPhaseHistory } from "./phase-history-operation";
 import {
   TicketIdInputSchema,
   TicketListInputSchema,
   TicketListOutputSchema,
   TicketSchema,
 } from "./schema";
+import { ticketStatusHistory } from "./status-history-operation";
 import { loadTicket, TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
 import { createTicket, updateTicket } from "./write-operations";
 
@@ -23,7 +23,7 @@ export const listTickets = defineOperation({
   name: "ticket.list",
   kind: "query",
   description:
-    "List the organization's tickets, newest first. Filter by customer, type, phase, assignee, " +
+    "List the organization's tickets, newest first. Filter by customer, type, status, assignee, " +
     "follower (assignment.list) or a window over the desired period (`from`/`to`).",
   input: TicketListInputSchema,
   output: TicketListOutputSchema,
@@ -48,7 +48,7 @@ export const getTicket = defineOperation({
   kind: "query",
   description:
     "Get one ticket by id: reference number, type and its field values, customer, contact, " +
-    "desired period, headcount, budget and phase (with the reason of the last move). " +
+    "desired period, headcount, budget and status (with the reason of the last move). " +
     "Who answers for it: assignment.list.",
   input: TicketIdInputSchema,
   output: TicketSchema,
@@ -64,9 +64,9 @@ export const ticketOperations = [
   getTicket,
   createTicket,
   updateTicket,
-  changeTicketPhase,
+  changeTicketStatus,
   createTicketFromTemplate,
   exportTicket,
   expireTicketHolds,
-  ticketPhaseHistory,
+  ticketStatusHistory,
 ];

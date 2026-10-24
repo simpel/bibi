@@ -3,19 +3,19 @@ import type { CalendarParams } from "./calendar-params";
 
 export type FilterBlocksInput = {
   blocks: CalendarBlock[];
-  params: Pick<CalendarParams, "stateId" | "phaseId" | "ticketId">;
+  params: Pick<CalendarParams, "stateId" | "statusId" | "ticketId">;
 };
 
 /**
- * Narrows the blocks by line state, ticket phase and ticket. Blocks without a state (setup time,
- * manual blocks) are hidden while a state or phase filter is on, because they match neither.
+ * Narrows the blocks by line state, ticket status and ticket. Blocks without a state (setup time,
+ * manual blocks) are hidden while a state or status filter is on, because they match neither.
  */
 export function filterBlocks({ blocks, params }: FilterBlocksInput): CalendarBlock[] {
-  const { stateId, phaseId, ticketId } = params;
+  const { stateId, statusId, ticketId } = params;
   return blocks.filter(
     (block) =>
       (!stateId || block.stateId === stateId) &&
-      (!phaseId || block.phaseId === phaseId) &&
+      (!statusId || block.statusId === statusId) &&
       (!ticketId || block.ticketId === ticketId),
   );
 }

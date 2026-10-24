@@ -1,7 +1,7 @@
 import { VENUE_KIND_PRESETS } from "./venue-kinds";
 
-/** The phase and grid template a preset starts from (ADR 0045, 0061). */
-export type SetupPresetPhases = "conference-estate" | "default";
+/** The status and grid template a preset starts from (ADR 0045, 0061). */
+export type SetupPresetStatuses = "conference-estate" | "default";
 
 export type SetupPresetType = {
   /** Stable id of the type within presets; the web app labels it `welcome.types.<key>`. */
@@ -14,13 +14,13 @@ export type SetupPresetType = {
 
 /**
  * A starting point for a new organization's first setup (ADR 0061): the item types to create, and
- * which phase template the ticket pipeline starts from. Everything can be changed in the setup.
+ * which status template the ticket pipeline starts from. Everything can be changed in the setup.
  * Domain words live only in this data (`venue-kinds.ts`).
  */
 export type SetupPreset = {
   key: string;
   itemTypes: readonly SetupPresetType[];
-  phases: SetupPresetPhases;
+  statuses: SetupPresetStatuses;
 };
 
 /** In display order: the 3×3 grid of the welcome flow, then "Start empty". */

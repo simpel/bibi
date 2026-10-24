@@ -4,7 +4,7 @@ export type FormatDevBannerInput = { services: DevService[] };
 
 const rule = "─".repeat(64);
 
-/** Terminal message listing the local dev services and where to find them. */
+/** Console message listing the local dev services and where to find them. */
 export function formatDevBanner({ services }: FormatDevBannerInput): string {
   const lines = services.map(
     ({ name, url, note }) => `  ${name.padEnd(10)} ${url.padEnd(26)} ${note}`,

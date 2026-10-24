@@ -52,7 +52,7 @@ async function cascadeArchive({ context, customer, ...flags }: CascadeArchiveInp
 
 type BlockedInput = { context: OperationContext; name: string; tickets: number };
 
-/** Every ticket that is not archived blocks, whatever its phase (#134). */
+/** Every ticket that is not archived blocks, whatever its status (#134). */
 const ticketsBlock = ({ context, name, tickets }: BlockedInput) =>
   inUseConflict({
     context,
@@ -72,7 +72,7 @@ export const archiveCustomer = defineOperation({
   description:
     "Archive (soft-delete) a customer. Refused while the customer has active contacts or " +
     "active price lists (archive those first). Every ticket that is not archived, in any " +
-    "phase, also blocks it, unless `archiveTickets` is true: then those tickets are " +
+    "status, also blocks it, unless `archiveTickets` is true: then those tickets are " +
     "archived with the customer, with their lines and room occupancy (needs " +
     "ticket:delete). The customer's own bundles are archived with it (needs item:delete). " +
     "With `archiveTickets` and `expectedTicketCount` it is refused with CONFLICT, and nothing " +

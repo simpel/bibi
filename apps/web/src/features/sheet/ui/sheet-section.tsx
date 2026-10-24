@@ -11,7 +11,7 @@ export type SheetSectionProps = { locale: Locale; ticket: TicketDto };
 
 /**
  * The ticket's sheets (ADR 0021): per sheet definition the newest version, with ★ on the rows
- * changed since the last sent one. Versions go out only from the confirmed phase (`sheet.send`).
+ * changed since the last sent one. Versions go out only from the confirmed status (`sheet.send`).
  */
 export async function SheetSection({ locale, ticket }: SheetSectionProps) {
   const abilities = await getCallerAbilities();

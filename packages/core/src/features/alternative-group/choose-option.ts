@@ -27,7 +27,7 @@ async function checkChosenLine({ context, lineId, path }: Omit<ChooseOptionInput
 /**
  * Records the customer's pick (ADR 0052): the group's `chosenLineId` is set once, and every other
  * option moves to its item type's released state in the same transaction, which releases its hold
- * (ADR 0053). The released options are overridden, so phase moves skip them.
+ * (ADR 0053). The released options are overridden, so status moves skip them.
  */
 export async function chooseOption({
   context,

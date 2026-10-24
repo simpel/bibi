@@ -31,14 +31,14 @@ function OperationApprovalCard({ approval, toolCallId, toolName }: ApprovalCardV
   const { conversationId, decisions } = useApprovalContext();
   const stored = decisions.find((decision) => decision.toolCallId === toolCallId);
   const { state, decide } = useApprovalDecision({ approval, toolCallId, conversationId, stored });
-  const decided = state.phase === "approved" || state.phase === "rejected";
+  const decided = state.status === "approved" || state.status === "rejected";
   const seconds = useCountdown({ expiresAt: approval.expiresAt, active: !decided });
   const { preview } = approval;
   const gate = useWarningGate({ preview });
   return (
     <Card
       data-slot="approval-card"
-      data-state={state.phase}
+      data-state={state.status}
       className="border-primary/40 shadow-none"
     >
       <ApprovalHeader

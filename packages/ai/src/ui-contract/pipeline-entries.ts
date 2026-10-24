@@ -9,7 +9,7 @@ export const PipelineBoardWireSchema = PipelineBoardSchema.extend({
     PipelineCardSchema.extend({
       startsAt: z.string().nullable(),
       endsAt: z.string().nullable(),
-      phaseChangedAt: z.string(),
+      statusChangedAt: z.string(),
     }),
   ),
 });

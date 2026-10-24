@@ -37,7 +37,7 @@ export function priceListsRoute(): string {
   return ROUTES.settingsPriceLists;
 }
 
-/** `/settings/pipeline`: the organization's ticket phases (no detail page). */
-export function ticketPhasesRoute(): string {
+/** `/settings/pipeline`: the organization's ticket statuses (no detail page). */
+export function ticketStatusesRoute(): string {
   return ROUTES.settingsPipeline;
 }

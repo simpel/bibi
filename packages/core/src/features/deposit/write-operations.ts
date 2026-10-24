@@ -19,7 +19,7 @@ export const createDeposit = defineOperation({
   description:
     "Create a DRAFT deposit request on a ticket: a fixed amount with its own description, e.g. " +
     "an advance at confirmation. Send it (deposit.send) before requesting a payment against it " +
-    "(payment.create with depositId). The ticket must not be in a terminal phase unless it is " +
+    "(payment.create with depositId). The ticket must not be in a closing status unless it is " +
     "invoiceable.",
   input: DepositCreateInputSchema,
   output: DepositSchema,

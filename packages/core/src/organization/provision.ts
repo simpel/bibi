@@ -5,8 +5,8 @@ import {
   updateOrganizationProfile,
 } from "../features/organization-profile/operations";
 import type { SetupStatus } from "../features/organization-profile/schema";
-import { importPhaseGridTemplate } from "../features/phase-grid/operations";
-import { importTicketPhaseTemplate } from "../features/ticket-phase/import-template-operation";
+import { importStatusGridTemplate } from "../features/status-grid/operations";
+import { importTicketStatusTemplate } from "../features/ticket-status/import-template-operation";
 import { createExecuteContext } from "../operations/context";
 import { execute } from "../operations/execute";
 import { grantAll } from "../permissions/permission-set";
@@ -26,7 +26,7 @@ export type ProvisionOrganizationInput = {
 /**
  * The defaults every new organization starts with, created through core operations as SYSTEM
  * (audited and logged like any command): its profile with the chosen time zone (ADR 0064) and
- * the first setup `PENDING` (ADR 0061), and the default ticket phases (ADR 0043) with their phase
+ * the first setup `PENDING` (ADR 0061), and the default ticket statuses (ADR 0043) with their status
  * grid (ADR 0044), so tickets work immediately. Called by Better Auth's `afterCreateOrganization`
  * and the demo seed.
  */
@@ -52,8 +52,8 @@ export async function provisionOrganization({
   if (!started.ok) return started;
   if (pipeline === "none") return ok({ value: true });
   const input = { template: "default" } as const;
-  const phases = await execute({ operation: importTicketPhaseTemplate, input, context });
-  if (!phases.ok) return phases;
-  const grid = await execute({ operation: importPhaseGridTemplate, input, context });
+  const statuses = await execute({ operation: importTicketStatusTemplate, input, context });
+  if (!statuses.ok) return statuses;
+  const grid = await execute({ operation: importStatusGridTemplate, input, context });
   return grid.ok ? ok({ value: true }) : grid;
 }

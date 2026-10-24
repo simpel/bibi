@@ -36,7 +36,7 @@ export const declineQuote = closeQuote({
   to: "DECLINED",
   description:
     "Record that the customer declined a SENT quote (ADR 0022). The ticket stays open: make a " +
-    "new version with quote.revise or move the ticket to a terminal phase. Any other status is a CONFLICT.",
+    "new version with quote.revise or move the ticket to a closing status. Any other status is a CONFLICT.",
 });
 
 export const expireQuote = closeQuote({
@@ -53,9 +53,9 @@ export const acceptQuote = defineOperation({
   description:
     "Record that the customer accepted a SENT quote (ADR 0022). Stores who recorded it " +
     "(`acceptedBy`), when (`acceptedAt`) and `acceptanceMethod` MANUAL, and creates no other " +
-    "record. The ticket must not be in a terminal phase. The ticket moves into the phase with " +
+    "record. The ticket must not be in a closing status. The ticket moves into the status with " +
     "the QUOTE_ACCEPTED event, if there is one and the organization allows the move from its " +
-    "current phase (needs ticket:write); its lines move through that phase's grid. A blocked " +
+    "current status (needs ticket:write); its lines move through that status's grid. A blocked " +
     "move fails the accept without any change. Any other starting status is a CONFLICT. " +
     "chosenLineIds records the customer's pick per alternative group first (ADR 0052): the " +
     "other options are released, as alternativeGroup.choose does.",

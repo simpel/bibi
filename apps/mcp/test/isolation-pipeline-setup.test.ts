@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 
-/** A one-type, two-phase draft on the given existing item type. */
+/** A one-type, two-status draft on the given existing item type. */
 const draft = ({ entityTypeId }: { entityTypeId: string }) => ({
   itemTypes: [
     {
@@ -13,11 +13,11 @@ const draft = ({ entityTypeId }: { entityTypeId: string }) => ({
       ],
     },
   ],
-  phases: [
+  statuses: [
     { name: "Open", color: "#f59e0b", entry: true },
-    { name: "Closed", color: "#6b7280", terminal: true },
+    { name: "Closed", color: "#6b7280", closes: true },
   ],
-  cells: [{ phase: "Open", type: "Room", state: "Held" }],
+  cells: [{ ticketStatus: "Open", type: "Room", state: "Held" }],
 });
 
 describe("cross-organization isolation: the guided pipeline setup", () => {
@@ -32,8 +32,8 @@ describe("cross-organization isolation: the guided pipeline setup", () => {
     expect(preview.data.code).toBe("NOT_FOUND");
     const activated = await call({ client: b, name: "pipelineSetup_activate", args: foreign });
     expect(activated.data.code).toBe("NOT_FOUND");
-    const phases = await call({ client: b, name: "ticketPhase_list", args: {} });
-    expect(phases.data.items).toEqual([]);
+    const statuses = await call({ client: b, name: "ticketStatus_list", args: {} });
+    expect(statuses.data.items).toEqual([]);
     const own = await call({ client: a, name: "pipelineSetup_activate", args: foreign });
     expect(own.isError, JSON.stringify(own.data)).toBe(false);
     const states = await call({

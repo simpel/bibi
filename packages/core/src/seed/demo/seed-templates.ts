@@ -39,8 +39,10 @@ type TemplateInput = Omit<SeedTemplatesInput, "templates"> & { template: DemoTic
 async function seedTemplate({ context, refs, template }: TemplateInput): Promise<Result<true>> {
   const type = refs.ticketTypes.get(template.type);
   if (!type) return missing({ what: `ticket type ${template.type}` });
-  const phase = await context.db.ticketPhase.findFirst({ where: { name: template.phase } });
-  if (!phase) return missing({ what: `ticket phase ${template.phase}` });
+  const ticketStatus = await context.db.ticketStatus.findFirst({
+    where: { name: template.status },
+  });
+  if (!ticketStatus) return missing({ what: `ticket status ${template.status}` });
   const lineType = await context.db.entityType.findFirst({ where: { base: "LINE" } });
   if (!lineType) return missing({ what: "a line type (base LINE)" });
   const lines: TicketTemplateLineInput[] = [];
@@ -49,14 +51,14 @@ async function seedTemplate({ context, refs, template }: TemplateInput): Promise
     if (!input.ok) return input;
     lines.push(input.value);
   }
-  const input = { name: template.name, entityTypeId: type.id, phaseId: phase.id, lines };
+  const input = { name: template.name, entityTypeId: type.id, statusId: ticketStatus.id, lines };
   const created = await execute({ operation: createTicketTemplate, input, context });
   return created.ok ? ok({ value: true }) : created;
 }
 
 /**
  * The organization's predefined tickets (ADR 0043, 0025) through `ticketTemplate.create` as
- * SYSTEM, after the pipeline (their start phases) and before the tickets that use them.
+ * SYSTEM, after the pipeline (their start statuses) and before the tickets that use them.
  */
 export async function seedDemoTemplates({
   templates,

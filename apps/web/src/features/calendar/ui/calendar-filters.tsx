@@ -11,12 +11,12 @@ export type CalendarFiltersProps = {
   /** The type shown after defaulting (`undefined` = all types). */
   typeId: string | undefined;
   states: LegendState[];
-  phases: { id: string; name: string }[];
+  statuses: { id: string; name: string }[];
   tickets: { id: string; reference: number }[];
 };
 
 type Option = { value: string; label: string };
-type Key = keyof Pick<CalendarParams, "venueId" | "typeId" | "stateId" | "phaseId" | "ticketId">;
+type Key = keyof Pick<CalendarParams, "venueId" | "typeId" | "stateId" | "statusId" | "ticketId">;
 
 type FilterProps = {
   params: CalendarParams;
@@ -41,7 +41,7 @@ function Filter({ params, paramKey, options, value, ...rest }: FilterProps) {
 
 const named = ({ id, name }: { id: string; name: string }): Option => ({ value: id, label: name });
 
-/** Venue, type, state, phase and ticket filters as URL state (ADR 0044, 0036). */
+/** Venue, type, state, status and ticket filters as URL state (ADR 0044, 0036). */
 export async function CalendarFilters({ params, ...data }: CalendarFiltersProps) {
   const t = await getTranslations("calendar");
   const many = <Row extends { id: string; name: string }>({ rows }: { rows: Row[] }) =>
@@ -66,9 +66,9 @@ export async function CalendarFilters({ params, ...data }: CalendarFiltersProps)
         options={data.states.map(named)}
       />
       <Filter
-        {...{ params, paramKey: "phaseId", name: "phase", label: t("phase") }}
-        allLabel={t("allPhases")}
-        options={data.phases.map(named)}
+        {...{ params, paramKey: "statusId", name: "status", label: t("status") }}
+        allLabel={t("allStatuses")}
+        options={data.statuses.map(named)}
       />
       <Filter
         {...{ params, paramKey: "ticketId", name: "ticket", label: t("ticket") }}

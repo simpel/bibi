@@ -36,7 +36,6 @@ import { MONEY_COMPONENTS } from "./money-components";
 import { OccupancyCardView } from "./occupancy-card-view";
 import { OccupancyTableView } from "./occupancy-table-view";
 import { PermissionProfileCardView } from "./permission-profile-card-view";
-import { PhaseGridTableView } from "./phase-grid-table-view";
 import { PipelineBoardView } from "./pipeline-board-view";
 import { PipelineDraftCardView } from "./pipeline-draft-card-view";
 import { PipelinePreviewView } from "./pipeline-preview-view";
@@ -58,10 +57,11 @@ import { SheetDefinitionTableView } from "./sheet-definition-table-view";
 import { SheetTableView } from "./sheet-table-view";
 import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
+import { StatusGridTableView } from "./status-grid-table-view";
 import { TicketCardView } from "./ticket-card-view";
-import { TicketPhaseCardView } from "./ticket-phase-card-view";
-import { TicketPhaseHistoryView } from "./ticket-phase-history-view";
-import { TicketPhaseTableView } from "./ticket-phase-table-view";
+import { TicketStatusCardView } from "./ticket-status-card-view";
+import { TicketStatusHistoryView } from "./ticket-status-history-view";
+import { TicketStatusTableView } from "./ticket-status-table-view";
 import { TicketTableView } from "./ticket-table-view";
 import { TicketTemplateCardView } from "./ticket-template-card-view";
 import { TicketTemplateTableView } from "./ticket-template-table-view";
@@ -89,20 +89,20 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "occupancy-card": OccupancyCardView,
   "price-list-table": PriceListTableView,
   "price-list-card": PriceListCardView,
-  "ticket-phase-table": TicketPhaseTableView,
-  "ticket-phase-card": TicketPhaseCardView,
+  "ticket-status-table": TicketStatusTableView,
+  "ticket-status-card": TicketStatusCardView,
   "archive-preview-card": ArchivePreviewCardView,
   "ticket-template-table": TicketTemplateTableView,
   "ticket-template-card": TicketTemplateCardView,
   "item-state-table": ItemStateTableView,
   "item-state-card": ItemStateCardView,
-  "phase-grid-table": PhaseGridTableView,
+  "status-grid-table": StatusGridTableView,
   "pipeline-preview": PipelinePreviewView,
   "pipeline-draft-card": PipelineDraftCardView,
   questionnaire: QuestionnaireView,
   "ticket-table": TicketTableView,
   "ticket-card": TicketCardView,
-  "ticket-phase-history": TicketPhaseHistoryView,
+  "ticket-status-history": TicketStatusHistoryView,
   "line-table": LineTableView,
   "line-card": LineCardView,
   "alternative-group-table": AlternativeGroupTableView,

@@ -8,7 +8,7 @@ export type ApprovalErrorLineProps = { state: DecisionState };
 /** Localized failure of the last attempt (409 already used, 403 expired, network, ...). */
 export function ApprovalErrorLine({ state }: ApprovalErrorLineProps) {
   const t = useTranslations("errors");
-  if (state.phase !== "error") return null;
+  if (state.status !== "error") return null;
   return (
     <p role="alert" className="text-sm text-destructive">
       {t(state.errorKey)}

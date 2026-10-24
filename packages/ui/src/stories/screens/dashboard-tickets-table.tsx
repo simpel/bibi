@@ -37,7 +37,7 @@ function TicketRow({ ticket }: { ticket: (typeof upcomingTickets)[number] }) {
       <TableCell className="text-right font-mono font-medium text-xs">{ticket.guests}</TableCell>
       <TableCell>
         <Badge variant={ticket.badgeVariant} className="text-[10px]">
-          {ticket.phase}
+          {ticket.ticketStatus}
         </Badge>
       </TableCell>
     </TableRow>
@@ -68,7 +68,7 @@ export function DashboardTicketsTable() {
               <TableHead>Assigned Space</TableHead>
               <TableHead>Dates</TableHead>
               <TableHead className="text-right">Guests</TableHead>
-              <TableHead>Phase</TableHead>
+              <TableHead>Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

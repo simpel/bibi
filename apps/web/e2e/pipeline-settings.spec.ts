@@ -4,7 +4,7 @@ import { createItemType, signUpWithOrganization } from "./steps";
 
 const SETTINGS = "/settings/pipeline";
 
-async function createPhase({
+async function createStatus({
   page,
   name,
   flag,
@@ -15,7 +15,7 @@ async function createPhase({
 }) {
   await gotoApp({ page, path: SETTINGS });
   await page.getByRole("link", { name: "Skapa fas" }).first().click();
-  await expect(page).toHaveURL(/\/sv\/[^/]+\/new\/ticket-phase$/);
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/new\/ticket-status$/);
   await page.getByLabel("Namn").fill(name);
   if (flag) await page.getByRole("checkbox", { name: flag }).click();
   await page.getByRole("button", { name: "Spara" }).click();
@@ -39,14 +39,14 @@ async function rowAction({
   await page.getByRole("menuitem", { name: item }).click();
 }
 
-test("an admin edits phases and the grid on step pages", async ({ page }) => {
+test("an admin edits statuses and the grid on step pages", async ({ page }) => {
   await signUpWithOrganization({ page, name: "Pipeline AB" });
   await createItemType({ page, name: "Conference room", numberField: "Max guests" });
 
-  // A new organization already has the default phases (Lead, Confirmed, Completed, Lost).
-  await createPhase({ page, name: "Cancelled", flag: "Avslutar ärendet" });
-  await createPhase({ page, name: "Booked" });
-  await createPhase({ page, name: "Spare" });
+  // A new organization already has the default statuses (Lead, Confirmed, Completed, Lost).
+  await createStatus({ page, name: "Cancelled", flag: "Avslutar ärendet" });
+  await createStatus({ page, name: "Booked" });
+  await createStatus({ page, name: "Spare" });
 
   await rowAction({ page, row: "Booked", item: "Redigera fas" });
   await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline\/[^/]+\/update$/);

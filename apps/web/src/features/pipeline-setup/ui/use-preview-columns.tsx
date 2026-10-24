@@ -25,20 +25,20 @@ function LineCell({ line }: LineCellProps) {
   );
 }
 
-/** The phase, then one column per item type with the line's state in that phase. */
+/** The status, then one column per item type with the line's state in that status. */
 export function usePreviewColumns({
   types,
 }: PreviewColumnsInput): ColumnDef<PipelinePreviewStep>[] {
   const t = useTranslations("pipelineSetup.preview");
   return useMemo(() => {
-    const phase: ColumnDef<PipelinePreviewStep> = {
-      id: "phase",
-      header: t("phase"),
-      accessorFn: (step) => step.phase,
+    const ticketStatus: ColumnDef<PipelinePreviewStep> = {
+      id: "status",
+      header: t("status"),
+      accessorFn: (step) => step.ticketStatus,
       cell: ({ row: { original } }) => (
         <span className="inline-flex items-center gap-2 font-medium">
           <ColorSwatch color={original.color} />
-          {original.phase}
+          {original.ticketStatus}
         </span>
       ),
     };
@@ -50,6 +50,6 @@ export function usePreviewColumns({
         cell: ({ row: { original } }) => <LineCell line={original.lines[index]} />,
       }),
     );
-    return [phase, ...perType];
+    return [ticketStatus, ...perType];
   }, [t, types]);
 }

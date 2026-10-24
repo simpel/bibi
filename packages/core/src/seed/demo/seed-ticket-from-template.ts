@@ -15,7 +15,7 @@ export type DemoTicketFromTemplateInput = {
 
 /**
  * A ticket from its predefined ticket through `ticket.createFromTemplate` (ADR 0043): it starts in
- * the template's phase with the template's lines, in the states the phase grid gives them.
+ * the template's status with the template's lines, in the states the status grid gives them.
  */
 export async function createDemoTicketFromTemplate({
   context,

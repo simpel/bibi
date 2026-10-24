@@ -1,7 +1,7 @@
 import {
   cellsFromTemplate,
-  phasesFromTemplate,
   statesFromTemplate,
+  statusesFromTemplate,
 } from "../src/features/pipeline-setup/draft-from-templates";
 import {
   createEntityType,
@@ -14,7 +14,7 @@ import { unwrap } from "./helpers";
 export type EstateDraftInput = { roomTypeId?: string };
 
 /**
- * The "Conference estate" phases with a room type (bookable, existing when `roomTypeId` is
+ * The "Conference estate" statuses with a room type (bookable, existing when `roomTypeId` is
  * given) and a new food type, its grid filled from the template.
  */
 export function estateDraft({ roomTypeId }: EstateDraftInput = {}): PipelineSetupDraft {
@@ -29,8 +29,8 @@ export function estateDraft({ roomTypeId }: EstateDraftInput = {}): PipelineSetu
     { name: "Dish", ...food },
   ];
   const template = "conference-estate" as const;
-  const phases = phasesFromTemplate({ template });
-  return { itemTypes, phases, cells: cellsFromTemplate({ template, phases, itemTypes }) };
+  const statuses = statusesFromTemplate({ template });
+  return { itemTypes, statuses, cells: cellsFromTemplate({ template, statuses, itemTypes }) };
 }
 
 export type RoomTypeInput = { context: ExecuteContext };

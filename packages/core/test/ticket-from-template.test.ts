@@ -2,14 +2,14 @@ import { describe, expect, it } from "vitest";
 import { createTicketFromTemplate, execute } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
-import { addLine } from "./phase-grid-helpers";
+import { addLine } from "./status-grid-helpers";
 import { memberUser } from "./ticket-helpers";
 import { makeTemplate, templateSetup } from "./ticket-template-helpers";
 
 const startsAt = new Date(Date.UTC(2026, 10, 1, 9));
 
 describe("ticket.createFromTemplate (ADR 0043)", () => {
-  it("creates the ticket in the template's phase with its lines in the grid's states", async () => {
+  it("creates the ticket in the template's status with its lines in the grid's states", async () => {
     const setup = await templateSetup();
     const { context, room, roomState, food } = setup;
     const template = unwrap({ result: await makeTemplate({ context, setup }) });
@@ -23,7 +23,7 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
       }),
     });
     expect(ticket).toMatchObject({
-      phaseId: setup.confirmed.id,
+      statusId: setup.confirmed.id,
       estimatedHeadcount: 8,
       customerId,
     });
@@ -67,7 +67,7 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
     expect(await context.db.ticket.count()).toBe(before);
   });
 
-  it("needs an assignee when the start phase requires one and creates nothing without", async () => {
+  it("needs an assignee when the start status requires one and creates nothing without", async () => {
     const setup = await templateSetup();
     const { context } = setup;
     const template = unwrap({ result: await makeTemplate({ context, setup }) });

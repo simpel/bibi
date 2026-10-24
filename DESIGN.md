@@ -165,7 +165,7 @@ typography:
 1. **Headings are Always Pitch Black (`#000000` / `text-black`, and `dark:text-white` in dark mode)**:
    Headings never use muted gray or tinted tones. They command immediate, authoritative contrast against the luminous canvas.
 2. **Zero Monospace Policy**:
-   Fixed-pitch developer monospace fonts (`JetBrains Mono`, `IBM Plex Mono`, `Roboto Mono`) are eliminated from the user-facing UI. Monospace fonts belong in terminal code editors, not in dignified Scandinavian manor and cultural venue tools. Instead, we use **Inter with OpenType `tabular-nums`**, providing perfect vertical column alignment down financial quote tables and runsheets with zero typewriter clunkiness.
+   Fixed-pitch developer monospace fonts (`JetBrains Mono`, `IBM Plex Mono`, `Roboto Mono`) are eliminated from the user-facing UI. Monospace fonts belong in code editors, not in dignified Scandinavian manor and cultural venue tools. Instead, we use **Inter with OpenType `tabular-nums`**, providing perfect vertical column alignment down financial quote tables and runsheets with zero typewriter clunkiness.
 3. **Hero Totals as Editorial Statements**:
    Grand totals and key proposal figures (e.g. `184 500 SEK`) use **Fraunces Light** numerals, echoing the refined typographic craftsmanship of a bespoke menu at a Michelin-starred estate.
 4. **No Decorative Eyebrows or Pre-headers**:

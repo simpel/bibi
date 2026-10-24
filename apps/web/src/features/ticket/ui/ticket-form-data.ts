@@ -1,4 +1,4 @@
-import type { TicketPhaseDto } from "@bibi/core";
+import type { TicketStatusDto } from "@bibi/core";
 import type { NamedOption } from "@/components/form/named-option";
 import type { TypedFormData } from "@/components/typed-fields/typed-form-data";
 
@@ -8,7 +8,7 @@ export type ContactOption = NamedOption & { customerId: string };
 /**
  * What the ticket pages read besides the ticket: ticket types and lists (own fields), the
  * customers and contacts to pick from, the members who can be assigned (`id` = user id) and the
- * organization's phases.
+ * organization's statuses.
  */
 export type TicketFormData = TypedFormData & {
   customers: NamedOption[];
@@ -16,5 +16,5 @@ export type TicketFormData = TypedFormData & {
   /** The caller may not view customers: show them as hidden and disable the pickers. */
   customersHidden: boolean;
   members: NamedOption[];
-  phases: TicketPhaseDto[];
+  statuses: TicketStatusDto[];
 };

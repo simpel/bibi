@@ -9,7 +9,7 @@ const TICKET = `mutation($i: TicketCreateInput!) { ticketCreate(input: $i) { id 
 const ASSIGN = `mutation($i: AssignmentAssignInput!) { assignmentAssign(input: $i) { id } }`;
 
 describe("ticket graph (ADR 0043)", () => {
-  it("resolves ticket { customer phase entityType } and customer { tickets }", async () => {
+  it("resolves ticket { customer ticketStatus entityType } and customer { tickets }", async () => {
     const context = testContext();
     const provisioned = await provisionOrganization({
       organizationId: context.organizationId,
@@ -42,14 +42,14 @@ describe("ticket graph (ADR 0043)", () => {
     expect(reference).toBe(1);
     const res = await gql({
       query: `query($id: String!) { ticket(id: $id) { estimatedHeadcount entityType { base }
-        phase { name entry } customer { name tickets { id } } } }`,
+        ticketStatus { name entry } customer { name tickets { id } } } }`,
       variables: { id },
     });
     expect(res.body.errors).toBeUndefined();
     expect(res.body.data.ticket).toEqual({
       estimatedHeadcount: 18,
       entityType: { base: "TICKET" },
-      phase: { name: "Lead", entry: true },
+      ticketStatus: { name: "Lead", entry: true },
       customer: { name: "Kvarnby AB", tickets: [{ id }] },
     });
     const subject = { subjectType: "TICKET", subjectId: id };

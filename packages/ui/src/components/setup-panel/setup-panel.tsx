@@ -1,8 +1,8 @@
 import { Badge } from "../badge/badge";
 import { Card, CardContent } from "../card/card";
-import { type PathPhase, PhasePath } from "./phase-path";
 import { type SetupSelection, SetupSelectionContext, useSetupSelection } from "./setup-selection";
 import { SetupTargetCard } from "./setup-target";
+import { type PathStatus, StatusPath } from "./status-path";
 
 export type SetupPanelLabels = {
   empty: string;
@@ -17,9 +17,9 @@ export type SetupPanelLabels = {
 export type SetupPanelProps = {
   /** Item type names of the draft; `null` while there is no draft yet. */
   itemTypes: string[] | null;
-  phases: PathPhase[];
+  statuses: PathStatus[];
   labels: SetupPanelLabels;
-  /** Makes item types and phases selectable, each with a comment box; read-only without it. */
+  /** Makes item types and statuses selectable, each with a comment box; read-only without it. */
   selection?: SetupSelection;
 };
 
@@ -59,7 +59,7 @@ function SellSection({ itemTypes, label }: { itemTypes: string[]; label: string 
   );
 }
 
-function PathSection({ phases, label }: { phases: PathPhase[]; label: string }) {
+function PathSection({ statuses, label }: { statuses: PathStatus[]; label: string }) {
   const readOnly = useSetupSelection() === null;
   return (
     <section aria-labelledby="setup-path" className="flex flex-col gap-3">
@@ -69,11 +69,11 @@ function PathSection({ phases, label }: { phases: PathPhase[]; label: string }) 
       >
         {label}
       </h2>
-      <PhasePath phases={phases} label={label} />
+      <StatusPath statuses={statuses} label={label} />
       {readOnly ? (
         <ol className="sr-only">
-          {phases.map((phase) => (
-            <li key={phase.name}>{phase.name}</li>
+          {statuses.map((ticketStatus) => (
+            <li key={ticketStatus.name}>{ticketStatus.name}</li>
           ))}
         </ol>
       ) : null}
@@ -81,14 +81,14 @@ function PathSection({ phases, label }: { phases: PathPhase[]; label: string }) 
   );
 }
 
-/** The first version in plain words: what you sell, and the phases a request moves through. */
-export function SetupPanel({ itemTypes, phases, labels, selection }: SetupPanelProps) {
+/** The first version in plain words: what you sell, and the statuses a request moves through. */
+export function SetupPanel({ itemTypes, statuses, labels, selection }: SetupPanelProps) {
   if (!itemTypes) return <EmptyState text={labels.empty} />;
   return (
     <SetupSelectionContext value={selection ?? null}>
       <div data-slot="setup-panel" className="flex flex-col gap-8 p-8">
         <SellSection itemTypes={itemTypes} label={labels.sell} />
-        <PathSection phases={phases} label={labels.path} />
+        <PathSection statuses={statuses} label={labels.path} />
         {selection && labels.hint ? (
           <p className="-mt-4 text-sm text-muted-foreground">{labels.hint}</p>
         ) : null}

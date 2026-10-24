@@ -21,8 +21,8 @@ export const TicketTemplateSchema = z.object({
   organizationId: z.string(),
   name: z.string(),
   entityTypeId: z.string(),
-  /** The phase tickets made from the template start in. */
-  phaseId: z.string(),
+  /** The status tickets made from the template start in. */
+  statusId: z.string(),
   fields: FieldValuesSchema,
   lines: z.array(TicketTemplateLineSchema),
   status: RecordStatusSchema,
@@ -59,10 +59,10 @@ export const TicketTemplateLineInputSchema = z.object({
 const DetailsShape = {
   name: z.string().trim().min(1).max(100).describe("Template name, e.g. Small meeting"),
   entityTypeId: z.string().min(1).describe("Id of the ticket type (entityType.list base TICKET)"),
-  phaseId: z
+  statusId: z
     .string()
     .min(1)
-    .describe("Id of the phase tickets start in (ticketPhase.list); not a terminal phase"),
+    .describe("Id of the status tickets start in (ticketStatus.list); not a closing status"),
   fields: FieldValuesSchema.optional().describe(
     "Default values of the ticket type's own fields, by field key",
   ),

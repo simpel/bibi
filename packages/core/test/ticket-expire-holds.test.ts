@@ -49,7 +49,7 @@ describe("ticket.expireHolds (ADR 0044)", () => {
     const after = unwrap({
       result: await execute({ operation: getTicket, input: { id: ticket.id }, context }),
     });
-    expect(after.phaseId).toBe(ticket.phaseId);
+    expect(after.statusId).toBe(ticket.statusId);
     const again = unwrap({
       result: await execute({ operation: expireTicketHolds, input: {}, context }),
     });

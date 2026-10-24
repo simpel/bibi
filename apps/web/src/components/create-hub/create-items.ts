@@ -97,7 +97,7 @@ export const CREATE_ITEMS: readonly CreateItem[] = [
     permission: "template:write",
   },
   {
-    key: "ticketPhase",
+    key: "ticketStatus",
     group: "settings",
     href: ROUTES.settingsPipeline,
     icon: CircleDotIcon,

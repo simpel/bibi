@@ -3,7 +3,7 @@
 - **Date:** 2026-10-18
 - **Status:** Superseded by 0067
 - **Related:** 0021 (configurable domain), 0022 (quotes and occupancy), 0034 (assignments), 0041 (three primary views), 0044 (line states and the phase grid), 0054 (history)
-- **Spec:** `docs/specs/tickets-phases-and-states.md`
+- **Spec:** `docs/specs/tickets-statuses-and-states.md`
 
 ## Context
 - A customer request is one continuous thing from first contact to the delivered event. Lines (rooms, food, activities) are added, removed and changed long before and after the deal.

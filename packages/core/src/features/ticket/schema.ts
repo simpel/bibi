@@ -12,8 +12,8 @@ export const TicketSchema = z.object({
   entityTypeId: z.string(),
   customerId: z.string(),
   contactId: z.string().nullable(),
-  /** The organization's own phase (ADR 0043); the newest entry of its phase history (ADR 0054). */
-  phaseId: z.string(),
+  /** The organization's own status (ADR 0043); the newest entry of its status history (ADR 0054). */
+  statusId: z.string(),
   desiredStartsAt: z.date().nullable(),
   desiredEndsAt: z.date().nullable(),
   estimatedHeadcount: z.number().int().nullable(),
@@ -21,10 +21,10 @@ export const TicketSchema = z.object({
   budgetMinor: z.number().int().nullable(),
   /** Lines in an expiring state fall to their type's expiry state after this date (ADR 0044). */
   holdsUntil: z.date().nullable(),
-  /** When the ticket entered its phase (time in phase): its newest `TicketPhaseChange`. */
-  phaseChangedAt: z.date(),
-  /** The reason given with the last phase change (newest `TicketPhaseChange`). */
-  phaseReason: z.string().nullable(),
+  /** When the ticket entered its status (time in status): its newest `TicketStatusChange`. */
+  statusChangedAt: z.date(),
+  /** The reason given with the last status change (newest `TicketStatusChange`). */
+  statusReason: z.string().nullable(),
   fields: FieldValuesSchema,
   /**
    * Derived, not stored (ADR 0012, 0043): `ticket-<id>@<MAIL_INBOUND_DOMAIN>`, the reply-to of
@@ -85,7 +85,7 @@ export const TicketCreateInputSchema = z.object({
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
 });
 
-/** Phase and assignee are not here: they change only through their own commands. */
+/** Status and assignee are not here: they change only through their own commands. */
 export const TicketUpdateInputSchema = z
   .object(TicketDetailsShape)
   .partial()
@@ -96,19 +96,19 @@ export const TicketUpdateInputSchema = z
     ),
   });
 
-export const TicketChangePhaseInputSchema = z.object({
+export const TicketChangeStatusInputSchema = z.object({
   ticketId: z.string().min(1).describe("Id of the ticket"),
-  phaseId: z
+  statusId: z
     .string()
     .min(1)
-    .describe("Id of the new phase; must be an allowed move (ticketPhase.list transitionsTo)"),
+    .describe("Id of the new status; must be an allowed move (ticketStatus.list transitionsTo)"),
   reason: z
     .string()
     .trim()
     .min(1)
     .max(1000)
     .optional()
-    .describe("Why the phase changes; required when the new phase requires a reason"),
+    .describe("Why the status changes; required when the new status requires a reason"),
 });
 
 export const TicketExpireHoldsInputSchema = z.object({});
@@ -123,7 +123,7 @@ export const TicketIdInputSchema = z.object({ id: z.string().min(1) });
 export const TicketListInputSchema = z.object({
   customerId: z.string().optional().describe("Only tickets of this customer"),
   entityTypeId: z.string().optional().describe("Only tickets of this type"),
-  phaseId: z.string().optional().describe("Only tickets in this phase"),
+  statusId: z.string().optional().describe("Only tickets in this status"),
   assigneeId: z.string().optional().describe("Only tickets this user is assigned to"),
   followerId: z.string().optional().describe("Only tickets this user follows"),
   from: z.coerce.date().optional().describe("Only tickets whose desired period ends after this"),
@@ -139,4 +139,4 @@ export const TicketListOutputSchema = z.object({
 export type TicketDto = z.infer<typeof TicketSchema>;
 export type TicketCreateInput = z.infer<typeof TicketCreateInputSchema>;
 export type TicketUpdateInput = z.infer<typeof TicketUpdateInputSchema>;
-export type TicketChangePhaseInput = z.infer<typeof TicketChangePhaseInputSchema>;
+export type TicketChangeStatusInput = z.infer<typeof TicketChangeStatusInputSchema>;

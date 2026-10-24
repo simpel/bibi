@@ -7,7 +7,7 @@ export type InstallProcessHandlersInput = {
 
 const KEY = Symbol.for("bibi.logger.processHandlers");
 
-/** Crashes and forgotten promises end up in the system log, not only on a terminal (ADR 0014). */
+/** Crashes and forgotten promises end up in the system log, not only on the console (ADR 0014). */
 export function installProcessHandlers({ exitOnUncaught }: InstallProcessHandlersInput): void {
   const holder = globalThis as typeof globalThis & { [KEY]?: true };
   if (holder[KEY]) return;

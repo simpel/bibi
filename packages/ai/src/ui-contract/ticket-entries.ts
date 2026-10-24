@@ -1,7 +1,7 @@
 import {
-  TicketPhaseChangeSchema,
-  TicketPhaseHistoryOutputSchema,
   TicketSchema,
+  TicketStatusChangeSchema,
+  TicketStatusHistoryOutputSchema,
 } from "@bibi/core/schemas";
 import { z } from "zod";
 import type { ToolUiEntry } from "./tool-ui-types";
@@ -12,7 +12,7 @@ export const TicketWireSchema = TicketSchema.extend({
   desiredStartsAt: z.string().nullable(),
   desiredEndsAt: z.string().nullable(),
   holdsUntil: z.string().nullable(),
-  phaseChangedAt: z.string(),
+  statusChangedAt: z.string(),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -23,12 +23,12 @@ export const TicketListWireSchema = z.object({
 
 export type TicketWire = z.infer<typeof TicketWireSchema>;
 
-/** JSON form of a ticket's phase history (ADR 0054). */
-export const TicketPhaseHistoryWireSchema = TicketPhaseHistoryOutputSchema.extend({
-  items: z.array(TicketPhaseChangeSchema.extend({ changedAt: z.string() })),
+/** JSON form of a ticket's status history (ADR 0054). */
+export const TicketStatusHistoryWireSchema = TicketStatusHistoryOutputSchema.extend({
+  items: z.array(TicketStatusChangeSchema.extend({ changedAt: z.string() })),
 });
 
-export type TicketPhaseHistoryWire = z.infer<typeof TicketPhaseHistoryWireSchema>;
+export type TicketStatusHistoryWire = z.infer<typeof TicketStatusHistoryWireSchema>;
 
 const ticketTable = uiEntry({
   component: "ticket-table",
@@ -48,10 +48,10 @@ export const TICKET_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   ticket_create: ticketCard,
   ticket_createFromTemplate: ticketCard,
   ticket_update: ticketCard,
-  ticket_changePhase: ticketCard,
-  ticket_phaseHistory: uiEntry({
-    component: "ticket-phase-history",
-    schema: TicketPhaseHistoryWireSchema,
+  ticket_changeStatus: ticketCard,
+  ticket_statusHistory: uiEntry({
+    component: "ticket-status-history",
+    schema: TicketStatusHistoryWireSchema,
     toProps: ({ value }) => ({ history: value }),
   }),
 };

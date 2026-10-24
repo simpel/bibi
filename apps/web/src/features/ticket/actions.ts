@@ -1,13 +1,13 @@
 "use server";
 
 import {
-  changeTicketPhase,
+  changeTicketStatus,
   createTicket,
   createTicketFromTemplate,
   expireTicketHolds,
   exportTicket,
   type LineDto,
-  type TicketChangePhaseInput,
+  type TicketChangeStatusInput,
   type TicketCreateFromTemplateInput,
   type TicketCreateInput,
   type TicketDto,
@@ -22,7 +22,7 @@ import { toActionResult } from "@/server/to-action-result";
 export type CreateTicketActionInput = { input: TicketCreateInput };
 export type CreateTicketFromTemplateActionInput = { input: TicketCreateFromTemplateInput };
 export type UpdateTicketActionInput = { input: TicketUpdateInput };
-export type ChangeTicketPhaseActionInput = { input: TicketChangePhaseInput };
+export type ChangeTicketStatusActionInput = { input: TicketChangeStatusInput };
 
 export async function createTicketAction({
   input,
@@ -44,10 +44,10 @@ export async function updateTicketAction({
   return toActionResult({ result: await runOperation({ operation: updateTicket, input }) });
 }
 
-export async function changeTicketPhaseAction({
+export async function changeTicketStatusAction({
   input,
-}: ChangeTicketPhaseActionInput): Promise<ActionResult<TicketDto>> {
-  return toActionResult({ result: await runOperation({ operation: changeTicketPhase, input }) });
+}: ChangeTicketStatusActionInput): Promise<ActionResult<TicketDto>> {
+  return toActionResult({ result: await runOperation({ operation: changeTicketStatus, input }) });
 }
 
 export type ExportTicketActionInput = { id: string };

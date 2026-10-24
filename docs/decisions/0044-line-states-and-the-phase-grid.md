@@ -3,7 +3,7 @@
 - **Date:** 2026-10-18
 - **Status:** Accepted
 - **Related:** 0021 (configurable items), 0043 (ticket and phases), 0022 (occupancy), 0027 (job scheduler), 0036 (calendar view), 0045 (onboarding), 0052, 0053, 0054
-- **Spec:** `docs/specs/tickets-phases-and-states.md`
+- **Spec:** `docs/specs/tickets-statuses-and-states.md`
 
 ## Context
 - A ticket allocates rooms, food and activities, and what "allocated" means changes during its life: a room is held softly in a lead, booked after the deal and released after a cancellation; food is estimated, ordered, then locked at the final count.

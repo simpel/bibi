@@ -1,17 +1,17 @@
 import { resolveLocale } from "@bibi/i18n";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionGate } from "@/components/states/permission-gate";
-import { TicketPhaseUpdate } from "@/features/ticket-phase/ui/ticket-phase-update";
+import { TicketStatusUpdate } from "@/features/ticket-status/ui/ticket-status-update";
 
-type UpdateTicketPhasePageProps = { params: Promise<{ locale: string; id: string }> };
+type UpdateTicketStatusPageProps = { params: Promise<{ locale: string; id: string }> };
 
-export default async function UpdateTicketPhasePage({ params }: UpdateTicketPhasePageProps) {
+export default async function UpdateTicketStatusPage({ params }: UpdateTicketStatusPageProps) {
   const { locale: rawLocale, id } = await params;
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   return (
     <PermissionGate permission="pipeline:write">
-      <TicketPhaseUpdate locale={locale} id={id} />
+      <TicketStatusUpdate locale={locale} id={id} />
     </PermissionGate>
   );
 }

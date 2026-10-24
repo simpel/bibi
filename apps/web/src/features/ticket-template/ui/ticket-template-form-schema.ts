@@ -20,7 +20,7 @@ export type TemplateLineValues = {
 export type TicketTemplateFormValues = {
   name: string;
   entityTypeId: string;
-  phaseId: string;
+  statusId: string;
   lines: TemplateLineValues[];
 };
 
@@ -56,7 +56,7 @@ export const emptyLine = ({ entityTypeId }: { entityTypeId: string }): TemplateL
 
 export type FormDefaultsInput = {
   template?: TicketTemplateDto | undefined;
-  firstTypes: { ticketType: string; phase: string };
+  firstTypes: { ticketType: string; ticketStatus: string };
 };
 
 export function ticketTemplateFormDefaults({
@@ -66,7 +66,7 @@ export function ticketTemplateFormDefaults({
   return {
     name: template?.name ?? "",
     entityTypeId: template?.entityTypeId ?? firstTypes.ticketType,
-    phaseId: template?.phaseId ?? firstTypes.phase,
+    statusId: template?.statusId ?? firstTypes.ticketStatus,
     lines: (template?.lines ?? []).map((line) => ({
       name: line.name,
       entityTypeId: line.entityTypeId,

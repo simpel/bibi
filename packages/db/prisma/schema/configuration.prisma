@@ -62,7 +62,7 @@ model EntityType {
   lines            Line[]
   requirements     Requirement[]
   itemStates       ItemState[]                 @relation("ItemStateType")
-  phaseRules       PhaseStateRule[]
+  statusRules      StatusStateRule[]
   ticketTemplates  TicketTemplate[]
   records          Record[]
   templateLines    TicketTemplateLine[]

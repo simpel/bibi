@@ -49,7 +49,7 @@ export async function TicketTemplateList({ locale }: TicketTemplateListProps) {
       ) : (
         <TicketTemplateTable
           templates={items}
-          phases={data.value.phases}
+          statuses={data.value.statuses}
           types={data.value.ticketTypes}
           access={rowAccess({ abilities, feature: "template" })}
         />

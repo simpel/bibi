@@ -5,17 +5,17 @@ import type { AssignmentSlot } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
-/** The name of the ticket's phase when that phase requires a main assignee, else null. */
+/** The name of the ticket's status when that status requires a main assignee, else null. */
 async function ticketNeedsAssignee({ context, subjectId }: Db & { subjectId: string }) {
   const ticket = await context.db.ticket.findFirst({
     where: { id: subjectId },
-    select: { phase: { select: { requiresAssignee: true, name: true } } },
+    select: { ticketStatus: { select: { requiresAssignee: true, name: true } } },
   });
-  return ticket?.phase.requiresAssignee ? ticket.phase.name : null;
+  return ticket?.ticketStatus.requiresAssignee ? ticket.ticketStatus.name : null;
 }
 
 /**
- * The main assignee cannot be removed while the ticket's phase requires one (ADR 0034, 0043:
+ * The main assignee cannot be removed while the ticket's status requires one (ADR 0034, 0043:
  * `requiresAssignee`). Responsibility assignments are never required.
  */
 export async function checkAssigneeKept({

@@ -16,7 +16,7 @@ export const CHANGE_KINDS = ["create", "update", "archive"] as const;
 
 /** One record a command would create, change or archive. */
 export const RecordChangePreviewSchema = z.object({
-  entityType: z.string().describe("Kind of record, e.g. item or ticketPhase"),
+  entityType: z.string().describe("Kind of record, e.g. item or ticketStatus"),
   entityId: z.string(),
   kind: z.enum(CHANGE_KINDS),
   name: z.string().nullable().describe("The record's name, when it has one"),

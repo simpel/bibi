@@ -1,13 +1,13 @@
 import { z } from "zod";
 import type { Err } from "../errors/result";
 
-/** What archiving a phase or state would do, reported without changing anything. */
+/** What archiving a status or state would do, reported without changing anything. */
 export const ArchivePreviewSchema = z.object({
   archivable: z
     .boolean()
     .describe("False when blockers would refuse the archive (nothing changes)"),
-  moving: z.number().int().describe("Tickets (phase) or lines (state) that move to the target"),
-  cells: z.number().int().describe("Phase grid cells cleared or moved with the archive"),
+  moving: z.number().int().describe("Tickets (status) or lines (state) that move to the target"),
+  cells: z.number().int().describe("Status grid cells cleared or moved with the archive"),
   targetRequired: z.boolean().describe("The archive needs a target because rows use it"),
   blockers: z.array(z.string()).describe("Why the archive would be refused, one per blocker"),
 });

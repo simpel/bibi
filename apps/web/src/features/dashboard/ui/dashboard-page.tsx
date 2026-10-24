@@ -8,7 +8,7 @@ import { runOperation } from "@/server/run-operation";
 
 export type DashboardPageProps = { locale: Locale };
 
-/** `/dashboard`: ticket counts grouped by phase and by the terminal flag (ADR 0041, 0043). */
+/** `/dashboard`: ticket counts grouped by status and by the closing flag (ADR 0041, 0043). */
 export async function DashboardPage({ locale }: DashboardPageProps) {
   const t = await getTranslations("dashboard");
   const board = await runOperation({ operation: pipelineBoard, input: {} });
@@ -34,7 +34,7 @@ export async function DashboardPage({ locale }: DashboardPageProps) {
           <dd className="text-2xl font-semibold">{total({ closed: true })}</dd>
         </div>
       </dl>
-      <h2 className="mt-6 text-sm font-medium">{t("byPhase")}</h2>
+      <h2 className="mt-6 text-sm font-medium">{t("byStatus")}</h2>
       {cards.length === 0 ? <p className="text-sm text-muted-foreground">{t("empty")}</p> : null}
       <ul className="mt-2 flex flex-wrap gap-2">
         {lanes.map((lane) => (

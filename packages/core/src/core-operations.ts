@@ -26,7 +26,6 @@ import { organizationProfileOperations } from "./features/organization-profile/o
 import { paymentOperations } from "./features/payment/operations";
 import { paymentAccountOperations } from "./features/payment-account/operations";
 import { permissionOperations } from "./features/permission/operations";
-import { phaseGridOperations } from "./features/phase-grid/operations";
 import { pipelineOperations } from "./features/pipeline/operations";
 import { pipelineSetupOperations } from "./features/pipeline-setup/operations";
 import { priceListOperations } from "./features/price-list/operations";
@@ -38,8 +37,9 @@ import { setupOperations } from "./features/setup/operations";
 import { sheetOperations } from "./features/sheet/operations";
 import { sheetDefinitionOperations } from "./features/sheet-definition/operations";
 import { skillOperations } from "./features/skill/operations";
+import { statusGridOperations } from "./features/status-grid/operations";
 import { ticketOperations } from "./features/ticket/operations";
-import { ticketPhaseOperations } from "./features/ticket-phase/operations";
+import { ticketStatusOperations } from "./features/ticket-status/operations";
 import { ticketTemplateOperations } from "./features/ticket-template/operations";
 import { userPreferenceOperations } from "./features/user-preference/operations";
 import { venueOperations } from "./features/venue/operations";
@@ -91,10 +91,10 @@ function staticOperations(): AnyOperation[] {
     ...contactOperations,
     ...priceListOperations,
     ...occupancyOperations,
-    ...ticketPhaseOperations,
+    ...ticketStatusOperations,
     ...ticketTemplateOperations,
     ...itemStateOperations,
-    ...phaseGridOperations,
+    ...statusGridOperations,
     ...ticketOperations,
     ...lineGroupOperations,
     ...assignmentOperations,

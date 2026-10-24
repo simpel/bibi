@@ -4,10 +4,10 @@ import {
   type EntityTypeDto,
   type ItemStateDto,
   type PermissionSet,
-  type TicketPhaseDto,
+  type TicketStatusDto,
   toCustomerDto,
   toItemStateDto,
-  toTicketPhaseDto,
+  toTicketStatusDto,
   type VocabularyDto,
   type VocabularyValueDto,
   WITH_STATE_TRANSITIONS,
@@ -24,7 +24,7 @@ export type Loaders = {
   venue: BatchLoader<VenueRow>;
   setup: BatchLoader<SetupRow>;
   customer: BatchLoader<CustomerDto>;
-  ticketPhase: BatchLoader<TicketPhaseDto>;
+  ticketStatus: BatchLoader<TicketStatusDto>;
   itemState: BatchLoader<ItemStateDto>;
   entityType: BatchLoader<EntityTypeDto>;
   vocabulary: BatchLoader<VocabularyDto>;
@@ -68,12 +68,12 @@ async function loadVocabularies({ db, ids }: DbInput & Ids) {
 }
 
 /** Statuses by id, archived ones included: a ticket keeps a status that has been archived. */
-async function loadTicketPhases({ db, ids }: DbInput & Ids) {
-  const rows = await db.ticketPhase.findMany({
+async function loadTicketStatuses({ db, ids }: DbInput & Ids) {
+  const rows = await db.ticketStatus.findMany({
     where: { id: { in: [...ids] }, status: { in: ["ACTIVE", "ARCHIVED"] } },
     include: WITH_TRANSITIONS,
   });
-  return byId({ rows: rows.map((row) => toTicketPhaseDto({ row })) });
+  return byId({ rows: rows.map((row) => toTicketStatusDto({ row })) });
 }
 
 /** States by id, archived ones included: an archived line keeps the state it had. */
@@ -103,7 +103,7 @@ export function createLoaders({ db, permissions }: CreateLoadersInput): Loaders 
         return byId({ rows: rows.map((row) => toCustomerDto({ row, context: { permissions } })) });
       },
     }),
-    ticketPhase: createBatchLoader({ batch: (ids) => loadTicketPhases({ db, ids }) }),
+    ticketStatus: createBatchLoader({ batch: (ids) => loadTicketStatuses({ db, ids }) }),
     itemState: createBatchLoader({ batch: (ids) => loadItemStates({ db, ids }) }),
     entityType: createBatchLoader({ batch: (ids) => loadEntityTypes({ db, ids }) }),
     vocabulary: createBatchLoader({ batch: (ids) => loadVocabularies({ db, ids }) }),

@@ -5,7 +5,7 @@ import {
   execute,
   sendQuote,
   setPaymentProvider,
-  updateTicketPhase,
+  updateTicketStatus,
 } from "../src/index";
 import { unwrap } from "./helpers";
 import { activatePaymentAccount } from "./payment-helpers";
@@ -37,12 +37,12 @@ export async function sentTestQuote({ context, ticketId, accept = false }: Quote
   return unwrap({ result: await execute({ operation: acceptQuote, input, context }) });
 }
 
-export type InvoiceableInput = { context: ExecuteContext; phaseId: string };
+export type InvoiceableInput = { context: ExecuteContext; statusId: string };
 
-/** Flags the ticket's current phase `invoiceable`. */
-export async function makeInvoiceable({ context, phaseId }: InvoiceableInput) {
-  const input = { id: phaseId, invoiceable: true };
-  unwrap({ result: await execute({ operation: updateTicketPhase, input, context }) });
+/** Flags the ticket's current status `invoiceable`. */
+export async function makeInvoiceable({ context, statusId }: InvoiceableInput) {
+  const input = { id: statusId, invoiceable: true };
+  unwrap({ result: await execute({ operation: updateTicketStatus, input, context }) });
 }
 
 export type SettleInput = { context: ExecuteContext; paymentId: string; refundedMinor?: number };

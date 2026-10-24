@@ -9,7 +9,7 @@ Current behaviour, checked against the code. Why: ADR 0021, 0026. Direction (par
 - **Requirements** (`Requirement`): a count on a ticket against a vocabulary value (Gluten × 3). It applies to the whole ticket or to one line, and a row on a line replaces the ticket's count there. Requirement is also a type with its own fields. Requirements never link to a person: there is no personal data about guests.
 - **Sheets**: the organization defines the sheet (`SheetDefinition`: which item types and fields, which vocabularies' requirements, which responsibility it goes to) and each ticket gets versioned sheets (`Sheet`, changes marked ★).
 - **Setups** (`Setup`): the organization's own room layouts with changeover time (Cinema, U-table, Mingle).
-- Ticket phases, line states and the grid are configured the same way (`docs/specs/tickets-phases-and-states.md`). Access is fixed presets (`docs/specs/permissions.md`).
+- Ticket statuses, line states and the grid are configured the same way (`docs/specs/tickets-statuses-and-states.md`). Access is fixed presets (`docs/specs/permissions.md`).
 - New organizations start empty. Templates (`templates/vocabularies/eu-14-allergens`, `templates/configuration/conference-venue`) are ordinary data created through ordinary operations; they can be changed freely and imports are idempotent. The assistant can suggest a configuration and the user approves.
 
 ## Field values
@@ -43,5 +43,5 @@ Anything that would make existing values invalid is refused: turning off a capab
 ## Surfaces
 - Operations are generic (`item.*`, `entityType.*`, `fieldDefinition.*`, `vocabulary.*`, `requirement.*`, `sheet.*`, `setup.*`). GraphQL and REST expose fields as `fields: JSON` plus the definitions.
 - The MCP tools `item_list|get|create|update` describe the organization's types, fields and allowed values per call (read through `entityType.list` as the caller; static description without `configuration:read`).
-- Each field kind and capability has its own Zod schema and its own component in `@bibi/ui`. Reports build on capabilities and phase flags, never on type names.
+- Each field kind and capability has its own Zod schema and its own component in `@bibi/ui`. Reports build on capabilities and status flags, never on type names.
 - Permissions: `item:*` for items, `configuration:*` for types, fields, vocabularies and setups.

@@ -33,7 +33,7 @@ export function ApprovalBody({
         decided={decided}
       />
       <ApprovalErrorLine state={state} />
-      {state.phase === "approved" && state.result ? (
+      {state.status === "approved" && state.result ? (
         <ToolResultView
           toolName={toolName ?? approval.operation.replaceAll(".", "_")}
           output={state.result}

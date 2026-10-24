@@ -1,4 +1,4 @@
-import { listQuotes, type TicketDto, type TicketPhaseDto } from "@bibi/core";
+import { listQuotes, type TicketDto, type TicketStatusDto } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
@@ -12,7 +12,7 @@ import { QuoteVersions } from "./quote-versions";
 export type TicketQuotesProps = {
   locale: Locale;
   ticket: TicketDto;
-  phases: readonly TicketPhaseDto[];
+  statuses: readonly TicketStatusDto[];
 };
 
 /**
@@ -20,7 +20,7 @@ export type TicketQuotesProps = {
  * has none, and how the ticket's lines differ from the accepted quote (ADR 0052). Hidden for
  * callers who may not read quotes.
  */
-export async function TicketQuotes({ locale, ticket, phases }: TicketQuotesProps) {
+export async function TicketQuotes({ locale, ticket, statuses }: TicketQuotesProps) {
   const t = await getTranslations("quote");
   const abilities = await getCallerAbilities();
   const quotes = await runOperation({
@@ -32,7 +32,7 @@ export async function TicketQuotes({ locale, ticket, phases }: TicketQuotesProps
     return <ErrorState errorKey={handleLoadError({ error: quotes.error, locale })} />;
   }
   const items = quotes.value.items;
-  const open = !phases.find(({ id }) => id === ticket.phaseId)?.terminal;
+  const open = !statuses.find(({ id }) => id === ticket.statusId)?.closes;
   const canCreate = can({ abilities, permission: "quote:write" }) && open && items.length === 0;
   const accepted = items.find((quote) => quote.quoteStatus === "ACCEPTED");
   return (

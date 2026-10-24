@@ -17,7 +17,7 @@ type FormProps = {
   data: TicketTemplateFormData;
 };
 
-/** Name, ticket type and the phase tickets start in. */
+/** Name, ticket type and the status tickets start in. */
 function DetailFields({ form, data }: FormProps) {
   const t = useTranslations("ticketTemplate.fields");
   return (
@@ -32,9 +32,9 @@ function DetailFields({ form, data }: FormProps) {
         />
         <OptionSelectField
           control={form.control}
-          name="phaseId"
-          label={t("phase")}
-          options={data.phases}
+          name="statusId"
+          label={t("status")}
+          options={data.statuses}
         />
       </div>
     </>
