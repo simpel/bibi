@@ -2,7 +2,8 @@
 // Structure check for Bibi. Run with `pnpm check:structure` from the repo root.
 // Checks apps/* and packages/*: files max 150 lines, functions max 40 lines,
 // default export only in Next files/config/stories, barrel files only as
-// packages/*/src/index.ts, one typed object parameter per function, and feature folders with required files.
+// packages/*/src/index.ts, raw date APIs only in the time module (ADR 0064),
+// one typed object parameter per function, and feature folders with required files.
 // Exits with code 1 on failure. See tools/lib/ for the rules.
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -12,6 +13,7 @@ import { checkFile } from "./lib/file-rules.mjs";
 import { analyzeFunctions } from "./lib/functions.mjs";
 import { analyzeParams } from "./lib/params.mjs";
 import { listPackageDirs, walkSources } from "./lib/scan.mjs";
+import { checkTime } from "./lib/time-rules.mjs";
 
 // Files required in feature folders (<package>/src/features/<entity>/), per package.
 // - packages/core: the core. Every entity there must have schema.ts and operations.ts.
@@ -37,6 +39,7 @@ export function runChecks({ root }) {
         ...checkFile({ relPath, content }),
         ...analyzeFunctions({ content }),
         ...analyzeParams({ relPath, content }),
+        ...checkTime({ relPath, content }),
       ];
       for (const message of messages) problems.push({ file: relPath, message });
     }

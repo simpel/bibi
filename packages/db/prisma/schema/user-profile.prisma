@@ -20,7 +20,7 @@ model UserProfile {
 model UserWorkingHours {
   id               String   @id @default(cuid(2))
   userId           String
-  /// 0 = Monday … 6 = Sunday (`weekdayOf` in core `recurrence`).
+  /// 0 = Monday … 6 = Sunday (`weekdayOf` in core `time`).
   weekday          Int
   startMinute      Int
   endMinute        Int
