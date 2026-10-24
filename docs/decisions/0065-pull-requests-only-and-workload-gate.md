@@ -1,7 +1,7 @@
 # 0065 – Pull requests only, and a workload gate for work-backlog
 
 - **Date:** 2026-10-22
-- **Status:** Accepted
+- **Status:** Accepted; points 2 (auto-merge) and 3 (the workload gate) superseded by 0066
 - **Related:** 0060 (versioning from Conventional Commits), 0013 (hosting and deploy)
 
 ## Context

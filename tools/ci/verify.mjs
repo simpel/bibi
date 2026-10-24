@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// The checks, defined once in tools/ci/checks.json. CI runs `node tools/ci/verify.mjs --all`; the work-backlog run
+// The checks, defined once in tools/ci/checks.json. CI runs `node tools/ci/verify.mjs --all`; the ticket loop
 // runs it through tools/backlog/checks.sh, scoped to the files a ticket changed.
 //   node tools/ci/verify.mjs [--all | --light | --only a,b] [--base origin/main] [--changed a,b] [--json] [--list]
 // Default (auto): checks without `paths` always run, checks with `paths` only when a changed file matches (all of them

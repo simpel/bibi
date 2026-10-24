@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Smoke test for ship.sh, ci.sh, arm.sh, park.sh and residue.sh in a sandbox: a bare "origin", a main checkout, a
+# Smoke test for ship.sh, ci.sh, park.sh, main-ci.sh and residue.sh in a sandbox: a bare "origin", a main checkout, a
 # worktree per ticket, and fake gh, pnpm and docker commands. Nothing touches GitHub or the real repo.
 # Run: bash tools/backlog/scripts-smoke.sh
 set -uo pipefail
@@ -86,18 +86,7 @@ has "ci red carries the log" "$(jq -r .log <<<"$OUT")" "boom"
 echo '[{"name":"check","bucket":"pending"}]' >"$STATE/checks.json"
 eq "ci pending when the budget runs out" "$(jq -r .state <<<"$(CI_POLL_SECONDS=1 run "$S/ci.sh" 1 --timeout 1)")" pending
 
-# ---- arm: auto-merge is enabled, nothing is merged by the run ------------------------------------
-main_commit b.txt other "other work"
-OUT="$(run env KIND=Bugfix CO_AUTHOR='Co-Authored-By: Test <t@t>' "$S/arm.sh" 1 --title "Fix the thing" <<<"What changed")"
-eq "arm succeeds" "$(jq -r .state <<<"$OUT")" armed
-ARGS="$(cat "$STATE/pr-merge-args")"
-has "auto-merge is requested" "$ARGS" "--auto"
-has "as a squash with the conventional subject" "$ARGS" "fix: Fix the thing (#101)"
-has "the body closes the issue" "$ARGS" "Closes #1"
-eq "main is untouched by the run" "$(git -C "$ROOT/origin.git" log --format=%s main | head -1)" "other work"
-eq "a branch that is only behind main is not rebased" "$(git -C "$ROOT/origin.git" merge-base ticket/1 main | cut -c1-7)" "$(git -C "$ROOT/origin.git" rev-parse ticket/1~1 | cut -c1-7)"
-eq "worktree is removed" "$([ -d "$ROOT/bibi-worktrees/t-1" ] && echo yes || echo no)" no
-eq "lock is released" "$([ -d "$ROOT/bibi-worktrees/.locks/t-1" ] && echo yes || echo no)" no
+rm -f "$STATE/pr-1"; run "$ROOT/bin/pnpm" wt:rm t-1 >/dev/null; rm -rf "$ROOT/bibi-worktrees/.locks/t-1"
 
 # ---- ship conflict ---------------------------------------------------------------
 new_ticket 1

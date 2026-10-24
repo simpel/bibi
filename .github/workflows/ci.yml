@@ -43,8 +43,7 @@ jobs:
         with:
           node-version: 22
       - run: node --test tools/ci/verify.test.mjs
-      - run: node --test tools/backlog/gate.test.mjs tools/backlog/metrics.test.mjs tools/loop/loop.test.mjs
-      - run: node tools/backlog/workflow-smoke.mjs
+      - run: node --test tools/backlog/metrics.test.mjs tools/loop/loop.test.mjs
       - run: bash tools/backlog/scripts-smoke.sh
 
   storybook:

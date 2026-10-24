@@ -54,7 +54,7 @@ test("choose skips to the first ready ticket and reports why the others were ski
   assert.deepEqual(skipped, [{ number: 1, reason: "blocked by #3" }]);
 });
 
-test("profile follows the board fields and falls back to the work-backlog rules", () => {
+test("profile follows the board fields and falls back to the default rules", () => {
   assert.deepEqual(profile({ ticket: ticket({}) }), {
     model: "sonnet",
     effort: "medium",

@@ -1,5 +1,5 @@
 {
-  "comment": "The single definition of the checks. Used by CI (.github/workflows/ci.yml) and by the work-backlog run (tools/backlog/checks.sh) through verify.mjs. stage: fast = always all reported; slow = run when every fast check passed; last = run when everything before passed. paths: regexes over changed files; the check runs in auto mode only when one matches (--all ignores them). job: the check has its own CI job and is skipped by --all. light: part of --light (documentation and decision tickets). needs: postgres = a database must be up.",
+  "comment": "The single definition of the checks. Used by CI (.github/workflows/ci.yml) and by the ticket loop (tools/backlog/checks.sh) through verify.mjs. stage: fast = always all reported; slow = run when every fast check passed; last = run when everything before passed. paths: regexes over changed files; the check runs in auto mode only when one matches (--all ignores them). job: the check has its own CI job and is skipped by --all. light: part of --light (documentation and decision tickets). needs: postgres = a database must be up.",
   "checks": [
     { "id": "lint", "name": "pnpm lint", "command": "pnpm lint", "stage": "fast", "light": true },
     {

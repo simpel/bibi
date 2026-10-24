@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // How the loop runs one ticket: model, effort, skill and budget, from the board fields.
 //   node tools/loop/model.mjs '<ticket json from pick.mjs>'   prints { model, effort, skill, budgetUsd }
-// The rules are the ones work-backlog used: the Model field wins; a codemod is Sonnet; L/XL, area:auth and area:db are Opus.
+// The Model field wins; a codemod is Sonnet; L/XL, area:auth and area:db are Opus.
 
 const MODELS = ["haiku", "sonnet", "opus"];
 const EFFORT_OF = { low: "low", medium: "medium", high: "high", extra: "xhigh" };
