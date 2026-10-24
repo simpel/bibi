@@ -1,7 +1,7 @@
 # 0068 – Member profiles, positions and shifts
 
 - **Date:** 2026-10-24
-- **Status:** Proposed
+- **Status:** Accepted
 - **Related:** amends 0059 (staff are items, no login) and 0061 (user working hours); builds on 0050 (permissions), 0051 (single source of truth), 0053 (holds), 0056 (foreign keys), 0064 (time, advisory hours)
 - **Ticket:** #442
 
