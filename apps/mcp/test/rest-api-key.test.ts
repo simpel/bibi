@@ -1,6 +1,7 @@
 import { createRestHandler } from "@bibi/api";
 import { getAuth, resolveExecuteContext } from "@bibi/auth";
 import { createApiKey, createCoreOperations, execute, revokeApiKey } from "@bibi/core";
+import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
@@ -34,7 +35,10 @@ async function ownerWithKey() {
     .join("; ");
   const session = new Headers({ cookie });
   const slug = `org-${createId()}`;
-  await auth.api.createOrganization({ headers: session, body: { name: slug, slug } });
+  await auth.api.createOrganization({
+    headers: session,
+    body: { name: slug, slug, metadata: { timeZone: FALLBACK_TIME_ZONE } },
+  });
   const context = await resolveExecuteContext({ headers: session });
   if (!context.ok) throw context.error;
   const input = { name: "REST", role: "admin" };

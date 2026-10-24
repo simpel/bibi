@@ -61,7 +61,7 @@ export async function seedDemoProfiles({
     postalCode: venue.postalCode,
     city: venue.city,
   };
-  const input = { legalName: org.name, ...address, contactEmail: null, timeZone: org.timeZone };
+  const input = { legalName: org.name, ...address, contactEmail: null };
   const saved = await execute({ operation: updateOrganizationProfile, input, context });
   if (!saved.ok) return saved;
   const users = [...userIds.entries()];

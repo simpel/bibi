@@ -86,6 +86,7 @@ async function seedOne({ db, org, skipPipeline }: SeedOneInput): Promise<Result<
   const setupStatus = skipPipeline ? "PENDING" : "COMPLETED";
   const provisioned = await provisionOrganization({
     organizationId,
+    timeZone: org.timeZone,
     db,
     pipeline: "none",
     setupStatus,

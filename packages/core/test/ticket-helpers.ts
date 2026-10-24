@@ -8,6 +8,7 @@ import {
   execute,
   provisionOrganization,
 } from "../src/index";
+import { FALLBACK_TIME_ZONE } from "../src/time/time-zone";
 import { createTestCustomer, createTypeWithField } from "./customer-helpers";
 import { unwrap } from "./helpers";
 import { addTestMember, testOrg } from "./org-helpers";
@@ -24,7 +25,12 @@ export async function memberUser({ context, name }: MemberUserInput): Promise<st
 /** An organization provisioned like a real signup, with a ticket type and a customer. */
 export async function ticketSetup() {
   const context = await testOrg();
-  unwrap({ result: await provisionOrganization({ organizationId: context.organizationId }) });
+  unwrap({
+    result: await provisionOrganization({
+      organizationId: context.organizationId,
+      timeZone: FALLBACK_TIME_ZONE,
+    }),
+  });
   const { type, key } = await createTypeWithField({ context, base: "TICKET", name: "Conference" });
   const customer = await createTestCustomer({ context, name: "Hisingen Energi AB" });
   return { context, type, key, customer };

@@ -1,3 +1,4 @@
+import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { createId } from "@paralleldrive/cuid2";
 import { getAuth } from "../src/index";
 
@@ -41,7 +42,10 @@ export type CreateOrgInput = { headers: Headers };
 /** Creates an organization owned by the session user; it becomes the active organization. */
 export async function createOrg({ headers }: CreateOrgInput): Promise<string> {
   const slug = `org-${createId()}`;
-  const org = await getAuth().api.createOrganization({ headers, body: { name: slug, slug } });
+  const org = await getAuth().api.createOrganization({
+    headers,
+    body: { name: slug, slug, metadata: { timeZone: FALLBACK_TIME_ZONE } },
+  });
   if (!org) throw new Error("organization not created");
   return org.id;
 }

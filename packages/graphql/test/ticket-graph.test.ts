@@ -1,4 +1,5 @@
 import { provisionOrganization } from "@bibi/core";
+import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { createClient, testContext } from "./helpers";
 
@@ -10,7 +11,10 @@ const ASSIGN = `mutation($i: AssignmentAssignInput!) { assignmentAssign(input: $
 describe("ticket graph (ADR 0043)", () => {
   it("resolves ticket { customer phase entityType } and customer { tickets }", async () => {
     const context = testContext();
-    const provisioned = await provisionOrganization({ organizationId: context.organizationId });
+    const provisioned = await provisionOrganization({
+      organizationId: context.organizationId,
+      timeZone: FALLBACK_TIME_ZONE,
+    });
     expect(provisioned.ok).toBe(true);
     const gql = createClient({ context });
     const type = async ({ base }: { base: string }) =>

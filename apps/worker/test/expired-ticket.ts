@@ -13,6 +13,7 @@ import {
   provisionOrganization,
   updateEntityType,
 } from "@bibi/core";
+import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 
@@ -30,7 +31,7 @@ async function provisionedOrg() {
   const organizationId = `org_${createId()}`;
   const data = { id: organizationId, name: organizationId, slug: organizationId };
   await getDb().organization.create({ data: { ...data, createdAt: new Date() } });
-  await provisionOrganization({ organizationId });
+  await provisionOrganization({ organizationId, timeZone: FALLBACK_TIME_ZONE });
   return createExecuteContext({
     organizationId,
     roles: ["admin"],

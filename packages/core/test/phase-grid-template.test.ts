@@ -5,6 +5,7 @@ import {
   importTicketPhaseTemplate,
   provisionOrganization,
 } from "../src/index";
+import { FALLBACK_TIME_ZONE } from "../src/time/time-zone";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
 import { addLine, gridSetup, lineNow, setCell } from "./phase-grid-helpers";
 import { moveToPhase } from "./ticket-helpers";
@@ -67,7 +68,12 @@ describe("phaseGrid.importTemplate (ADR 0044)", () => {
 
   it("needs phaseGrid:admin and sets nothing in an organization without types", async () => {
     const context = testContext();
-    unwrap({ result: await provisionOrganization({ organizationId: context.organizationId }) });
+    unwrap({
+      result: await provisionOrganization({
+        organizationId: context.organizationId,
+        timeZone: FALLBACK_TIME_ZONE,
+      }),
+    });
     const result = unwrap({
       result: await execute({
         operation: importPhaseGridTemplate,

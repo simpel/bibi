@@ -6,6 +6,7 @@ import {
   setOrganizationSetupStatus,
   updateOrganizationProfile,
 } from "../src/index";
+import { FALLBACK_TIME_ZONE } from "../src/time/time-zone";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
 
 type Context = ReturnType<typeof testContext>;
@@ -19,7 +20,13 @@ describe("organization profile (ADR 0061)", () => {
     expect(await read({ context: admin })).toMatchObject({ id: null, setupStatus: "PENDING" });
     expect(await admin.db.organizationProfile.count()).toBe(0);
     const { organizationId } = admin;
-    unwrap({ result: await provisionOrganization({ organizationId, pipeline: "none" }) });
+    unwrap({
+      result: await provisionOrganization({
+        organizationId,
+        timeZone: FALLBACK_TIME_ZONE,
+        pipeline: "none",
+      }),
+    });
     const created = await read({ context: admin });
     expect(created.id).not.toBeNull();
     expect(created).toMatchObject({ setupStatus: "PENDING", country: "SE" });

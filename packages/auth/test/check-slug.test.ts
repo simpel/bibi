@@ -1,3 +1,4 @@
+import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 import { describe, expect, it } from "vitest";
@@ -20,8 +21,14 @@ describe("organization slug (ADR 0062)", () => {
   it("suggests the first free -n when the slug is taken", async () => {
     const { headers } = await signUp();
     const slug = `str-${createId().slice(0, 10)}`;
-    await getAuth().api.createOrganization({ headers, body: { name: slug, slug } });
-    await getAuth().api.createOrganization({ headers, body: { name: slug, slug: `${slug}-2` } });
+    await getAuth().api.createOrganization({
+      headers,
+      body: { name: slug, slug, metadata: { timeZone: FALLBACK_TIME_ZONE } },
+    });
+    await getAuth().api.createOrganization({
+      headers,
+      body: { name: slug, slug: `${slug}-2`, metadata: { timeZone: FALLBACK_TIME_ZONE } },
+    });
     const check = await checkOrganizationSlug({ db: db(), slug });
     expect(check).toEqual({ slug, status: "taken", suggestion: `${slug}-3` });
   });
@@ -40,7 +47,7 @@ describe("organization slug (ADR 0062)", () => {
     const { headers } = await signUp();
     const create = getAuth().api.createOrganization({
       headers,
-      body: { name: "Welcome", slug: "welcome" },
+      body: { name: "Welcome", slug: "welcome", metadata: { timeZone: FALLBACK_TIME_ZONE } },
     });
     await expect(create).rejects.toThrow();
   });

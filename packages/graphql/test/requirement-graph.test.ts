@@ -1,4 +1,5 @@
 import { provisionOrganization } from "@bibi/core";
+import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { createClient, testContext } from "./helpers";
 
@@ -45,7 +46,14 @@ async function ticketWithList({ gql }: { gql: Gql }) {
 describe("requirement graph (ADR 0021)", () => {
   it("resolves ticket { requirements { vocabularyValue } } and maps a duplicate to CONFLICT", async () => {
     const context = testContext();
-    expect((await provisionOrganization({ organizationId: context.organizationId })).ok).toBe(true);
+    expect(
+      (
+        await provisionOrganization({
+          organizationId: context.organizationId,
+          timeZone: FALLBACK_TIME_ZONE,
+        })
+      ).ok,
+    ).toBe(true);
     const gql = createClient({ context });
     const add = { ...(await ticketWithList({ gql })), quantity: 3 };
     const created = await gql({ query: ADD, variables: { i: add } });

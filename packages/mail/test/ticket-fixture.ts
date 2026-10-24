@@ -10,6 +10,7 @@ import {
   provisionOrganization,
   type Result,
 } from "@bibi/core";
+import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 
 const value = <T>({ result }: { result: Result<T> }): T => {
   if (!result.ok) throw result.error;
@@ -25,7 +26,7 @@ export async function ticketFixture(): Promise<{ context: ExecuteContext; ticket
     permissions: grantAll({}),
     actor: { type: "user", userId: `user_${randomUUID()}` },
   });
-  value({ result: await provisionOrganization({ organizationId }) });
+  value({ result: await provisionOrganization({ organizationId, timeZone: FALLBACK_TIME_ZONE }) });
   const [ticketType, customerType] = await Promise.all(
     (["TICKET", "CUSTOMER"] as const).map(async (base) =>
       value({

@@ -1,4 +1,5 @@
 import { provisionOrganization } from "@bibi/core";
+import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
 import { createClient, testContext } from "./helpers";
 
@@ -14,7 +15,14 @@ const ADD = `mutation($i: LineCreateInput!) { lineCreate(input: $i) { id } }`;
 describe("line graph (ADR 0022)", () => {
   it("resolves ticket { lines } and maps a double booking to CONFLICT", async () => {
     const context = testContext();
-    expect((await provisionOrganization({ organizationId: context.organizationId })).ok).toBe(true);
+    expect(
+      (
+        await provisionOrganization({
+          organizationId: context.organizationId,
+          timeZone: FALLBACK_TIME_ZONE,
+        })
+      ).ok,
+    ).toBe(true);
     const gql = createClient({ context });
     const type = async ({ base, capabilities }: { base: string; capabilities?: string[] }) =>
       (await gql({ query: TYPE, variables: { i: { base, name: `${base} type`, capabilities } } }))

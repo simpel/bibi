@@ -1,4 +1,5 @@
 import { provisionOrganization } from "@bibi/core";
+import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { createClient, testContext } from "./helpers";
@@ -78,7 +79,14 @@ async function sheetSources({ gql, organizationId }: SourcesInput) {
 describe("sheet graph (ADR 0021)", () => {
   it("generates a version, lists it on the ticket and sends it while the ticket is open", async () => {
     const context = testContext();
-    expect((await provisionOrganization({ organizationId: context.organizationId })).ok).toBe(true);
+    expect(
+      (
+        await provisionOrganization({
+          organizationId: context.organizationId,
+          timeZone: FALLBACK_TIME_ZONE,
+        })
+      ).ok,
+    ).toBe(true);
     const gql = createClient({ context });
     const input = await sheetSources({ gql, organizationId: context.organizationId });
     const made = await gql({ query: GENERATE, variables: { i: input } });

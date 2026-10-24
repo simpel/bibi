@@ -1,5 +1,6 @@
 import { getAuth, mcpResourceUrl } from "@bibi/auth";
 import { getEnv } from "@bibi/config";
+import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { getDb } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
 
@@ -31,7 +32,7 @@ export async function signUpWithOrg(): Promise<TestUser> {
   const slug = `org-${createId()}`;
   const org = await getAuth().api.createOrganization({
     headers: cookies,
-    body: { name: slug, slug },
+    body: { name: slug, slug, metadata: { timeZone: FALLBACK_TIME_ZONE } },
   });
   if (!org) throw new Error("organization not created");
   return { userId: response.user.id, organizationId: org.id, cookies };
