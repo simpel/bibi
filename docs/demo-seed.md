@@ -309,6 +309,73 @@ The main assignee (A) and followers (F) are given by first name (ADR 0034): the 
 
 **Note on L3:** the nut allergy hits Chocolate fondant, which has the alternatives Cloudberry parfait and Lemon sorbet. The result is "may contain" and no blocking (check 4). The replacement is made on the ticket's copy of the package, so the catalog package is not changed (snapshot, ADR 0021). L3 thus also shows that a package can be adapted for a single occasion.
 
+## Scaled Lindholmen (accepted, not built yet)
+
+Decided in the data-model interview of 2026-10-24 (#455). Lindholmen grows to 50 users, 2 venues and 100 generated tickets that show on the calendar and on the boards. The generator is built in later tickets; this section is what it must reach. Series, shifts, several boards, gates and a per-venue time zone depend on #441, #442 and #443 and are not in the code yet, so the checks below are written against what those tickets add.
+
+### Fixtures stay
+
+- L1–L15 and F1–F6 above stay in the same organization as hand-checked fixtures. Their rows, phases and checks 1–15 do not change.
+- The generated users and tickets are added after the fixtures and never edit or hold against them. Generated counts below are in addition to the fixtures, except the user count (50 in total, fixtures included).
+
+### Generator rules
+
+- **Deterministic.** One fixed RNG seed in the data files, never `Math.random`. All dates are relative to the run day `D`, so the spread keeps its shape on any day. The same run day gives the same rows.
+- **Hard holds only in free slots.** The generator picks a room and period that is free at that moment (`item.freeUnits` and the room's existing holds, including setup and teardown buffers and the fixtures' holds) before a line becomes a hard hold. If none is free it moves the line to the next free slot. Soft holds may overlap, as F2 and F3 do.
+- Every row is made through core operations as `SYSTEM` (the rule of this file), never by writing `Occupancy` or history directly.
+
+### Users (50)
+
+| Group | Count | Pattern | Roles |
+|---|---|---|---|
+| Floor staff (waiters, technicians, bartenders) | 25 | shifts | mostly `member`, a few `manager` as shift leads |
+| Office staff (sales, billing, managers, admins) | 15 | weekly working-hours pattern (`workingHours.set`) | spread over `admin`, `manager` and `member` |
+| Casual staff | 10 | ad hoc shifts | `member` |
+
+- The 8 existing users count towards the groups (office staff). Across the 50, every role has at least 2 users and `member` is the largest group.
+- The email rule above applies (`firstname.lastname@lindholmen-demo.bibi.test`), with unique names.
+
+### Venues (2)
+
+- The existing Lindholmspiren 1 venue and a second venue in another time zone than Europe/Stockholm. Each venue has its own rooms; the second venue needs only enough rooms to carry its tickets.
+- Times follow ADR 0064 (accepted, not built yet): every stored time is an instant and the zone is read through `effectiveTimeZone`. The fixtures keep Europe/Stockholm.
+
+### Tickets (100 generated)
+
+| Kind | Count | Shape |
+|---|---|---|
+| Single-room bookings | 50 | one room line, optionally one meal line |
+| Day packages | 30 | one bundle line expanded with `line.expandBundle` (Half-day conference, Full-day conference, Conference day) |
+| Series | 20 | about 6 series, in both modes of the series model from #441–#443; every series has at least 2 tickets |
+
+Spread over time, from D−90 to D+180:
+
+| Window | Phase | Lines |
+|---|---|---|
+| D−90 to D−1 | Completed, closed and invoiced | Released |
+| D to about D+30 | Confirmed (a few Final count locked) | hard holds, Booked by the grid |
+| about D+30 to D+180 | New, Site visit or Quote sent | soft holds, `Prebooked` |
+
+- Roughly 40 % of tickets are past, 25 % near and 35 % far; each window holds all three kinds.
+- Every ticket has a customer, a type, a headcount and an assignee drawn from the 50 users by access level.
+
+### Boards (at least 2)
+
+- At least two boards over the same tickets, each with its own columns. At least one board has gates that refuse some moves, e.g. a move into a column that requires an assignee or an accepted quote.
+- Every generated ticket is on exactly one card of each board it belongs to, in a known column.
+
+### Checks that prove it
+
+1. User count is 50 in `Member`, split 25 / 15 / 10 by group, with every role present.
+2. Venue count is 2 and their time zones differ.
+3. Ticket count is the fixtures plus 100, split 50 / 30 / 20, with the series count and both modes present.
+4. The phase and window distribution matches the tables above: past tickets are in a terminal invoiced phase, near ones Confirmed, far ones before the quote.
+5. Every generated ticket with a calendar period shows on the calendar, and every one is on a board card (extends `checkDemoBoard`).
+6. At least one move per gated board is refused with `CONFLICT` and changes nothing.
+7. No two hard holds overlap on the same room, buffers included; the `line-holds` reconciliation (check 9) passes.
+8. Seeding twice on the same run day gives identical rows (names, periods, phases).
+9. Fixtures: checks 1–15 still pass unchanged.
+
 ---
 
 # Vingaleden Archipelago Tours
