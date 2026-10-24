@@ -134,7 +134,7 @@
       "cancelled": "Flytten av {card} avbröts."
     },
     "moving": "Flyttar…",
-    "inPhase": "I fasen {time}",
+    "inPhase": "I fasen <time></time>",
     "heldLines": "{count, plural, one {# rad reserverad} other {# rader reserverade}}",
     "bookedLines": "{count, plural, one {# rad bokad} other {# rader bokade}}",
     "reason": {

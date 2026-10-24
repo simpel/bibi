@@ -86,6 +86,7 @@ export * from "./components/popover/popover";
 export * from "./components/questionnaire/questionnaire";
 export * from "./components/questionnaire/questionnaire-actions";
 export * from "./components/questionnaire/questionnaire-choices";
+export * from "./components/relative-time/relative-time";
 export {
   Select,
   SelectContent,
