@@ -1,8 +1,7 @@
 import type { OccupancyType } from "@bibi/core/schemas";
 import { ticketRoute } from "@/lib/routes";
 import type { CalendarBlock } from "./calendar-blocks";
-import type { CalendarColumn, PlacedBlock } from "./calendar-layout";
-import type { CalendarView } from "./calendar-params";
+import type { CalendarColumn, GridView, PlacedBlock } from "./calendar-layout";
 import { assignLanes } from "./lanes";
 import type { CalendarData } from "./load-calendar";
 
@@ -29,7 +28,7 @@ export type GridCell = {
 };
 export type GridRow = { id: string; name: string; lanes: number; cells: GridCell[] };
 export type GridModel = {
-  view: CalendarView;
+  view: GridView;
   columns: { key: string; label: string }[];
   rows: GridRow[];
 };
@@ -82,7 +81,7 @@ function toGridBlock({ placed, lane, labels }: ToGridBlockInput): GridBlock {
 }
 
 export type BuildGridInput = {
-  view: CalendarView;
+  view: GridView;
   data: CalendarData;
   columns: CalendarColumn[];
   place: (input: { blocks: CalendarBlock[] }) => PlacedBlock[][];

@@ -29,4 +29,10 @@ describe("buildCrumbs", () => {
       { href: "/new/item", labelKey: "new" },
     ]);
   });
+
+  it("shows a calendar period as the calendar crumb alone", () => {
+    expect(buildCrumbs({ pathname: "/calendar/2026-10-12/2026-10-18" })).toEqual([
+      { href: "/calendar", labelKey: "calendar" },
+    ]);
+  });
 });

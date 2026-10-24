@@ -1,16 +1,16 @@
 import { resolveLocale } from "@bibi/i18n";
-import { setRequestLocale } from "next-intl/server";
 import type { RawCalendarParams } from "@/features/calendar/calendar-params";
-import { CalendarPage } from "@/features/calendar/ui/calendar-page";
+import { calendarStartHref } from "@/features/calendar/calendar-routing";
+import { redirect } from "@/lib/navigation";
 
-type CalendarRouteProps = {
-  params: Promise<{ locale: string }>;
+type CalendarStartProps = {
+  params: Promise<{ locale: string; org: string }>;
   searchParams: Promise<RawCalendarParams>;
 };
 
-/** Occupancy per space by day or week; `?view`, `?date` and `?venue` make the view shareable. */
-export default async function CalendarRoute({ params, searchParams }: CalendarRouteProps) {
-  const locale = resolveLocale({ value: (await params).locale });
-  setRequestLocale(locale);
-  return <CalendarPage locale={locale} raw={await searchParams} />;
+/** Bare `/calendar` (and old `?view=&date=` links): redirects to a `/calendar/{from}/{to}` period. */
+export default async function CalendarStart({ params, searchParams }: CalendarStartProps) {
+  const { locale, org } = await params;
+  const href = await calendarStartHref({ raw: await searchParams });
+  redirect({ href, locale: resolveLocale({ value: locale }), org });
 }

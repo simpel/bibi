@@ -63,13 +63,17 @@ const NEW_PARENTS: Record<string, string> = {
   "ticket-template": "settings/ticket-templates",
 };
 
+/** Pages whose later segments are a period, not a page (`/calendar/{from}/{to}`, ADR 0064). */
+const PERIOD_PAGES = new Set(["calendar"]);
+
 export type Crumb = { href: string; labelKey: CrumbLabelKey };
 
 export type BuildCrumbsInput = { pathname: string };
 
 /** One crumb per path segment; unknown segments (ids) are a generic "Details". Empty on `/`. */
 export function buildCrumbs({ pathname }: BuildCrumbsInput): Crumb[] {
-  const segments = pathname.split("/").filter(Boolean);
+  const all = pathname.split("/").filter(Boolean);
+  const segments = PERIOD_PAGES.has(all[0] ?? "") ? all.slice(0, 1) : all;
   const parent = segments[0] === "new" ? NEW_PARENTS[segments[1] ?? ""] : undefined;
   if (parent) {
     return [...buildCrumbs({ pathname: `/${parent}` }), { href: pathname, labelKey: "new" }];

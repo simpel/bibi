@@ -2,7 +2,8 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/navigation";
 import type { ListDay, ListEntry } from "../calendar-list-model";
 
-const markerStyle = ({ entry }: { entry: ListEntry }) =>
+/** A colored left border for a block's state, dashed for a soft hold. */
+export const markerStyle = ({ entry }: { entry: ListEntry }) =>
   entry.color
     ? {
         borderLeftColor: entry.color,
@@ -11,7 +12,11 @@ const markerStyle = ({ entry }: { entry: ListEntry }) =>
       }
     : undefined;
 
-export type CalendarListProps = { days: ListDay[] };
+export type CalendarListProps = {
+  days: ListDay[];
+  /** The list view itself; otherwise it is the fallback below `md` for the grid and month. */
+  always?: boolean;
+};
 
 function EntryText({ entry }: { entry: ListEntry }) {
   return (
@@ -24,11 +29,11 @@ function EntryText({ entry }: { entry: ListEntry }) {
   );
 }
 
-/** Below `md` the grid gives way to a readable list: each day, then its blocks with the space. */
-export async function CalendarList({ days }: CalendarListProps) {
+/** Each day, then its blocks with the space: the list view, and the grid's fallback below `md`. */
+export async function CalendarList({ days, always = false }: CalendarListProps) {
   const t = await getTranslations("calendar");
   return (
-    <div className="grid gap-4 md:hidden">
+    <div className={always ? "grid gap-4" : "grid gap-4 md:hidden"}>
       {days.map((day) => (
         <section key={day.key} className="grid gap-2">
           <h3 className="text-sm font-medium">{day.label}</h3>

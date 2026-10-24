@@ -529,10 +529,12 @@
   },
   "calendar": {
     "title": "Kalender",
-    "description": "Beläggning per lokal, per dag eller vecka. Öppna ett block för att se ärendet.",
+    "description": "Beläggning per lokal, per dag, vecka, månad eller valfri period. Öppna ett block för att se ärendet.",
     "views": {
       "day": "Dag",
-      "week": "Vecka"
+      "week": "Vecka",
+      "month": "Månad",
+      "list": "Lista"
     },
     "view": "Vy",
     "previous": "Föregående",
@@ -562,7 +564,9 @@
     "allTickets": "Alla ärenden",
     "legend": "Förklaring",
     "softHold": "mjuk reservation, streckad",
-    "hardHold": "hård reservation, ifylld"
+    "hardHold": "hård reservation, ifylld",
+    "more": "+{count} till",
+    "openDay": "Öppna {date}"
   },
   "quote": {
     "singular": "Offert",

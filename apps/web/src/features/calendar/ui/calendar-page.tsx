@@ -9,17 +9,29 @@ import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
-import { loadOrganizationTimeZone, loadVenueTimeZone } from "@/server/time-zones";
-import { calendarRange, type RawCalendarParams, readCalendarParams } from "../calendar-params";
+import {
+  type CalendarParams,
+  calendarRange,
+  type RawCalendarParams,
+  readCalendarFilters,
+} from "../calendar-params";
+import { readCalendarPeriod } from "../calendar-period";
+import { calendarTimeZone, todayIn } from "../calendar-routing";
 import { loadCalendar } from "../load-calendar";
 import { CalendarBody } from "./calendar-body";
 import { CalendarLegend } from "./calendar-legend";
 import { CalendarToolbar } from "./calendar-toolbar";
 
-export type CalendarPageProps = { locale: Locale; raw: RawCalendarParams };
+export type CalendarPageProps = {
+  locale: Locale;
+  /** The path's `{from}` and `{to}`, already canonical (the route redirects otherwise). */
+  from: string;
+  to: string;
+  raw: RawCalendarParams;
+};
 
 /** The URL filters the loader narrows by. */
-const filtersOf = ({ params }: { params: ReturnType<typeof readCalendarParams> }) => ({
+const filtersOf = ({ params }: { params: CalendarParams }) => ({
   venueId: params.venueId,
   typeId: params.typeId,
   stateId: params.stateId,
@@ -79,26 +91,19 @@ const formatPeriod = ({ format, range, timeZone }: FormatPeriodInput & { timeZon
     timeZone,
   });
 
-/** The filtered venue's zone, else the organization's; the venue filter does not depend on it. */
-async function calendarTimeZone({ raw, now }: { raw: RawCalendarParams; now: Date }) {
-  const organization = await loadOrganizationTimeZone();
-  const { venueId } = readCalendarParams({ raw, now, timeZone: organization });
-  return venueId ? loadVenueTimeZone({ venueId }) : organization;
-}
-
 /**
  * `/calendar` (a canvas page, ADR 0038): a full-width toolbar row and the occupancy of every space
- * for the shown day or week, which scrolls on its own below it. One venue shows in its zone, all
+ * for the shown period (`/calendar/{from}/{to}`, ADR 0064), which scrolls on its own below it. One venue shows in its zone, all
  * venues in the organization's (ADR 0064 decision 12).
  */
-export async function CalendarPage({ locale, raw }: CalendarPageProps) {
+export async function CalendarPage({ locale, from, to, raw }: CalendarPageProps) {
   const t = await getTranslations("calendar");
   const format = await getFormatter();
-  const now = new Date();
-  const timeZone = await calendarTimeZone({ raw, now });
-  const params = readCalendarParams({ raw, now, timeZone });
-  const today = readCalendarParams({ raw: {}, now, timeZone }).date;
-  const range = calendarRange({ params, timeZone });
+  const filters = readCalendarFilters({ raw });
+  const timeZone = await calendarTimeZone({ venueId: filters.venueId });
+  const today = todayIn({ timeZone });
+  const params = { ...filters, period: readCalendarPeriod({ from, to, today }) };
+  const range = calendarRange({ period: params.period, timeZone });
   const [result, abilities] = await Promise.all([
     loadCalendar({ ...range, ...filtersOf({ params }) }),
     getCallerAbilities(),

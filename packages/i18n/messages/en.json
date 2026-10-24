@@ -529,10 +529,12 @@
   },
   "calendar": {
     "title": "Calendar",
-    "description": "Occupancy per space, by day or week. Open a block to see its ticket.",
+    "description": "Occupancy per space, by day, week, month or any period. Open a block to see its ticket.",
     "views": {
       "day": "Day",
-      "week": "Week"
+      "week": "Week",
+      "month": "Month",
+      "list": "List"
     },
     "view": "View",
     "previous": "Previous",
@@ -562,7 +564,9 @@
     "allTickets": "All tickets",
     "legend": "Legend",
     "softHold": "soft hold, hatched",
-    "hardHold": "hard hold, solid"
+    "hardHold": "hard hold, solid",
+    "more": "+{count} more",
+    "openDay": "Open {date}"
   },
   "quote": {
     "singular": "Quote",

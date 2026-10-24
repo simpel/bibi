@@ -1,6 +1,9 @@
-import { addDays, fromZonedParts, type PlainDate } from "@bibi/core/schemas";
+import { addDays, type PlainDate, toZonedParts } from "@bibi/core/schemas";
 import type { CalendarBlock } from "./calendar-blocks";
-import { type CalendarParams, calendarDays, dayStart } from "./calendar-params";
+import { dayStart } from "./calendar-params";
+
+/** The views drawn as a space × time grid; month and list have their own components. */
+export type GridView = "day" | "week";
 
 /** One column: an hour of the day (day view) or a whole day (week view). */
 export type CalendarColumn = { start: Date; end: Date; date: PlainDate; hour: number | null };
@@ -8,25 +11,27 @@ export type CalendarColumn = { start: Date; end: Date; date: PlainDate; hour: nu
 /** A block in the column where it starts; `offset` and `span` are fractions of the column. */
 export type PlacedBlock = { block: CalendarBlock; offset: number; span: number };
 
-type ColumnsInput = { params: CalendarParams; timeZone: string };
+type DaysInput = { days: PlainDate[]; timeZone: string };
 
-const HOURS = Array.from({ length: 24 }, (_, hour) => hour);
+const HOUR_MS = 3_600_000;
 
+/**
+ * The hours of one day from its instants (ADR 0064 decision 8): midnight to the next midnight in
+ * the zone, so a DST day has 23 or 25 columns and the repeated autumn hour shows twice.
+ */
 function hourColumns({ date, timeZone }: { date: PlainDate; timeZone: string }) {
-  const at = ({ hour }: { hour: number }) =>
-    fromZonedParts({ date, time: { hour, minute: 0, second: 0 }, timeZone });
-  const next = dayStart({ date: addDays({ date, days: 1 }), timeZone });
-  return HOURS.map((hour) => ({
-    start: at({ hour }),
-    end: hour < 23 ? at({ hour: hour + 1 }) : next,
-    date,
-    hour,
-  }));
+  const start = dayStart({ date, timeZone }).getTime();
+  const end = dayStart({ date: addDays({ date, days: 1 }), timeZone }).getTime();
+  return Array.from({ length: Math.ceil((end - start) / HOUR_MS) }, (_, index) => {
+    const at = new Date(start + index * HOUR_MS);
+    const hour = toZonedParts({ instant: at, timeZone }).time.hour;
+    return { start: at, end: new Date(Math.min(at.getTime() + HOUR_MS, end)), date, hour };
+  });
 }
 
-/** One whole-day column per shown day (one for the day view, Monday to Sunday for the week). */
-export function dayColumns({ params, timeZone }: ColumnsInput): CalendarColumn[] {
-  return calendarDays({ params }).map((date) => ({
+/** One whole-day column per shown day, each from midnight to the next midnight in the zone. */
+export function dayColumns({ days, timeZone }: DaysInput): CalendarColumn[] {
+  return days.map((date) => ({
     start: dayStart({ date, timeZone }),
     end: dayStart({ date: addDays({ date, days: 1 }), timeZone }),
     date,
@@ -34,16 +39,17 @@ export function dayColumns({ params, timeZone }: ColumnsInput): CalendarColumn[]
   }));
 }
 
-/** 24 hour columns for the day view, 7 day columns (Monday first) for the week view. */
-export function calendarColumns({ params, timeZone }: ColumnsInput): CalendarColumn[] {
-  if (params.view === "day") return hourColumns({ date: params.date, timeZone });
-  return dayColumns({ params, timeZone });
+/** The day's hour columns for the day view, one column per day for the week view. */
+export function calendarColumns({ view, days, timeZone }: DaysInput & { view: GridView }) {
+  const [date] = days;
+  if (view === "day" && date) return hourColumns({ date, timeZone });
+  return dayColumns({ days, timeZone });
 }
 
 export type PlaceBlocksInput = {
   columns: CalendarColumn[];
   blocks: CalendarBlock[];
-  view: CalendarParams["view"];
+  view: GridView;
 };
 
 const overlaps = ({ block, column }: { block: CalendarBlock; column: CalendarColumn }) =>
