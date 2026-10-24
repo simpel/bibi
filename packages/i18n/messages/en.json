@@ -134,7 +134,7 @@
       "cancelled": "Moving {card} was cancelled."
     },
     "moving": "Moving…",
-    "inPhase": "In phase {time}",
+    "inPhase": "In phase <time></time>",
     "heldLines": "{count, plural, one {# line held} other {# lines held}}",
     "bookedLines": "{count, plural, one {# line booked} other {# lines booked}}",
     "reason": {

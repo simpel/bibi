@@ -1,6 +1,6 @@
 import type { PipelineCard } from "@bibi/core";
-import { useFormatter, useNow, useTranslations } from "next-intl";
-import { relativeTime } from "@/lib/time/relative-time";
+import { useFormatter, useTranslations } from "next-intl";
+import { RelativeTime } from "@/components/relative-time";
 
 export type PipelineCardContentProps = {
   /** `customerName` is null when the caller may not view customers: then none is shown. */
@@ -11,7 +11,6 @@ export type PipelineCardContentProps = {
 export function PipelineCardContent({ card }: PipelineCardContentProps) {
   const t = useTranslations("pipeline");
   const format = useFormatter();
-  const since = useNow();
   const heading = `#${card.reference} · ${card.typeName}`;
   return (
     <div className="grid gap-0.5 text-sm">
@@ -24,7 +23,7 @@ export function PipelineCardContent({ card }: PipelineCardContentProps) {
         {card.quantity === null ? "" : ` · ${t("quantity", { count: card.quantity })}`}
       </span>
       <span className="text-xs text-muted-foreground">
-        {t("inPhase", { time: relativeTime({ format, instant: card.phaseChangedAt, now: since }) })}
+        {t.rich("inPhase", { time: () => <RelativeTime instant={card.phaseChangedAt} /> })}
         {card.heldLines ? ` · ${t("heldLines", { count: card.heldLines })}` : ""}
         {card.bookedLines ? ` · ${t("bookedLines", { count: card.bookedLines })}` : ""}
       </span>
