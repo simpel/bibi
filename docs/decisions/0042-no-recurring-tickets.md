@@ -1,7 +1,7 @@
 # 0042 – No recurring tickets
 
 - **Date:** 2026-10-17
-- **Status:** Accepted
+- **Status:** Superseded by 0069
 - **Related:** 0023 (customer pricing)
 
 ## Context

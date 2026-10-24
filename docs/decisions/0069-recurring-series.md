@@ -1,7 +1,7 @@
 # 0069 – Recurring series
 
 - **Date:** 2026-10-24
-- **Status:** Proposed
+- **Status:** Accepted
 - **Related:** 0042 (superseded by this ADR), 0043 (phases, replaced by ticket statuses in ADR 0067, #462), 0044 (line states), 0027 (job scheduler), 0051 (single source of truth), 0052 (the line is the booking), 0057 (money is derived), 0059 (capabilities, buffers), 0064 (time and time zones)
 - **Spec:** `docs/specs/series.md` (to write when accepted)
 
