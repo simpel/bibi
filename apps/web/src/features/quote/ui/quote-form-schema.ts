@@ -1,5 +1,5 @@
 import type { QuoteDto } from "@bibi/core";
-import { QuoteCreateInputSchema, QuoteUpdateInputSchema } from "@bibi/core/schemas";
+import { QuoteCreateInputSchema, QuoteUpdateInputSchema, toZonedParts } from "@bibi/core/schemas";
 import type { z } from "zod";
 import { blankToNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
@@ -49,10 +49,13 @@ export const quoteFormSchema = ({ target }: { target: QuoteFormTarget }) =>
 
 const pad = ({ n }: { n: number }) => String(n).padStart(2, "0");
 
-const localDay = ({ date }: { date: Date | null }) =>
-  date
-    ? `${date.getFullYear()}-${pad({ n: date.getMonth() + 1 })}-${pad({ n: date.getDate() })}`
-    : "";
+/** The `YYYY-MM-DD` day `date` has in the host's local zone, the zone `endOfDay` reads it in. */
+const localDay = ({ date }: { date: Date | null }) => {
+  if (!date) return "";
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const { date: day } = toZonedParts({ instant: date, timeZone });
+  return `${day.year}-${pad({ n: day.month })}-${pad({ n: day.day })}`;
+};
 
 export function quoteFormDefaults({ quote }: { quote?: QuoteDto | undefined }): QuoteFormValues {
   return {

@@ -87,9 +87,9 @@ export { type PermissionSet, PermissionSetSchema } from "./permissions/permissio
 export * from "./platform/ai-settings/ai-features";
 export * from "./platform/ai-settings/schema";
 export * from "./platform/system-log/schema";
-export * from "./recurrence/plain-date";
-export * from "./recurrence/zoned-time";
 export * from "./search/search-schema";
 export * from "./shared/archive-preview";
 export * from "./shared/minute-of-day";
 export * from "./shared/phone";
+export * from "./time/plain-date";
+export * from "./time/zoned-time";
