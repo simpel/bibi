@@ -738,7 +738,8 @@
     "chooseOptionsDescription": "Choose the line's options in each customisation group. Each chosen option becomes its own line under this one: included options add nothing, extras are charged at their own price, and an option that replaces sets the price instead of the item.",
     "optionsChosen": "The options have been saved.",
     "optionGroup": "{name} (choose {min, number}{same, select, true {} other {–{max, number}}})",
-    "optionChoice": "{name} · {effect}"
+    "optionChoice": "{name} · {effect}",
+    "units": "Units"
   },
   "priceEffect": {
     "INCLUDED": "Included",
@@ -3178,5 +3179,61 @@
     "resetAll": "Reset all to preset",
     "changePresetMember": "Change role",
     "changePresetApiKey": "Change preset"
+  },
+  "itemDemand": {
+    "plural": "Needs",
+    "create": "Add need",
+    "edit": "Edit need",
+    "archive": "Remove need",
+    "archiving": "Removing…",
+    "archived": "Need removed",
+    "archiveConfirm": "Remove the need for {name}?",
+    "created": "Need added",
+    "updated": "Need saved",
+    "formDescription": "What this item asks of a pool each time it is booked.",
+    "lists": {
+      "resources": "Resources",
+      "staffing": "Staffing"
+    },
+    "empty": {
+      "resources": "No equipment needed.",
+      "staffing": "No staff needed."
+    },
+    "mandatory": "Mandatory",
+    "optional": "Optional",
+    "columns": {
+      "target": "Pool",
+      "required": "Need",
+      "quantity": "Quantity",
+      "windows": "Windows"
+    },
+    "fields": {
+      "pool": "Pool",
+      "quantity": "Quantity per booking",
+      "required": "Mandatory (a booking is refused when no unit is free)",
+      "windows": "Held during"
+    },
+    "windows": {
+      "SETUP": "Setup",
+      "BOOKING": "Booking",
+      "TEARDOWN": "Teardown"
+    }
+  },
+  "lineAllocation": {
+    "title": "Units",
+    "description": "The units held for this booking. The first free unit in pool order is prepicked; choose another to change it.",
+    "loading": "Loading…",
+    "loadFailed": "The units could not be loaded.",
+    "empty": "This booking needs no units.",
+    "unit": "Unit",
+    "choose": "Choose a unit",
+    "unfilled": "No unit",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Unit saved",
+    "mandatory": "Mandatory",
+    "optional": "Optional",
+    "chained": "needed by a chosen unit",
+    "noneFree": "No free unit in {pool} for {window}."
   }
 }

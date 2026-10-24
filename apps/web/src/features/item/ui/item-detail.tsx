@@ -10,6 +10,7 @@ import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
+import { DemandsSection } from "../../item-demand/ui/demands-section";
 import { OccupancySection } from "../../occupancy/ui/occupancy-section";
 import { loadItemFormData } from "../load-item-form-data";
 import { BundleOwner } from "./bundle-owner";
@@ -51,6 +52,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         {type?.capabilities.includes("BUNDLE") ? (
           <ItemResolutionSection locale={locale} itemId={item.value.id} />
         ) : null}
+        <DemandsSection locale={locale} itemId={item.value.id} />
         {type?.capabilities.includes("BOOKABLE") &&
         can({ abilities, permission: "ticket:read" }) ? (
           <OccupancySection locale={locale} itemId={item.value.id} />

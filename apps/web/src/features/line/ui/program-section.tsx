@@ -18,7 +18,8 @@ export type ProgramSectionProps = { locale: Locale; ticket: TicketDto };
 function programAccess({ abilities }: { abilities: CallerAbilities }): ProgramAccess {
   const canWrite = can({ abilities, permission: "program:write" });
   const canRemove = can({ abilities, permission: "program:delete" });
-  return { canEdit: canWrite, canRemove, canChangeState: canWrite };
+  const canAllocate = canWrite && can({ abilities, permission: "item:read" });
+  return { canEdit: canWrite, canRemove, canChangeState: canWrite, canAllocate };
 }
 
 /** The ticket's run schedule (ADR 0022): lines in time order, edited inline, then its alternatives. */

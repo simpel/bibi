@@ -80,7 +80,9 @@ export function useProgramColumns({ lines, data, access }: UseProgramColumnsInpu
   return useMemo<Column[]>(() => {
     const hidden = data.itemsHidden ? common("hidden") : undefined;
     const columns = dataColumns({ data, t, effects, format, locale, hidden });
-    if (!access.canEdit && !access.canRemove && !access.canChangeState) return columns;
+    if (!access.canEdit && !access.canRemove && !access.canChangeState && !access.canAllocate) {
+      return columns;
+    }
     return [
       ...columns,
       actionsColumn<LineDto>({
