@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import { useRouter } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
+import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { createTicketFromTemplateAction } from "../actions";
@@ -21,8 +22,9 @@ export function useTemplateTicketForm() {
   const t = useTranslations("ticket");
   const common = useTranslations("common");
   const router = useRouter();
+  const timeZone = useOrganizationTimeZone();
   const form = useForm<TemplateTicketFormValues, unknown, TicketCreateFromTemplateInput>({
-    resolver: zodResolver(templateTicketFormSchema, useZodMessages()),
+    resolver: zodResolver(templateTicketFormSchema({ timeZone }), useZodMessages()),
     defaultValues: templateTicketDefaults,
   });
   const { submit, pending } = useFormAction({

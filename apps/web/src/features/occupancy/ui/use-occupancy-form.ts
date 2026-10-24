@@ -18,20 +18,22 @@ export type UseOccupancyFormInput = {
   itemId: string;
   /** Present = edit mode, absent = create mode. */
   occupancy?: OccupancyDto | undefined;
+  /** The zone of the item's venue: the period is entered in it (ADR 0064). */
+  timeZone: string;
   onDone: () => void;
 };
 
 /** Block form state; an overlap (CONFLICT) is also shown on the start field. */
-export function useOccupancyForm({ itemId, occupancy, onDone }: UseOccupancyFormInput) {
+export function useOccupancyForm({ itemId, occupancy, timeZone, onDone }: UseOccupancyFormInput) {
   const t = useTranslations("occupancy");
   const common = useTranslations("common");
   const errors = useTranslations("errors");
   const router = useRouter();
   const form = useForm<OccupancyFormValues, unknown, OccupancyFormOutput>({
-    resolver: zodResolver(occupancyFormSchema({ itemId }), {
+    resolver: zodResolver(occupancyFormSchema({ itemId, timeZone }), {
       error: zodMessageMap({ translate: (key) => errors(key) }),
     }),
-    defaultValues: occupancyFormDefaults({ occupancy }),
+    defaultValues: occupancyFormDefaults({ occupancy, timeZone }),
   });
   const { submit, pending } = useFormAction({
     form,

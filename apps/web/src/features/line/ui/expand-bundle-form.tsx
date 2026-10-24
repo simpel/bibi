@@ -17,7 +17,7 @@ export function ExpandBundleForm({ data, ticketId, startsAt, onDone }: ExpandBun
   const t = useTranslations("line");
   const common = useTranslations("common");
   const { form, submit, pending } = useExpandBundleForm({
-    ...{ ticketId, startsAt, onDone },
+    ...{ ticketId, startsAt, onDone, zones: data },
     entityTypeId: data.types[0]?.id ?? "",
     itemId: data.bundles[0]?.id ?? "",
   });

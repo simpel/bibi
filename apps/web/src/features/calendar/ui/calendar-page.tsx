@@ -1,4 +1,4 @@
-import { DEFAULT_TIME_ZONE, type Locale } from "@bibi/i18n";
+import type { Locale } from "@bibi/i18n";
 import { Button } from "@bibi/ui";
 import { getFormatter, getTranslations } from "next-intl/server";
 import type { ComponentProps, ReactNode } from "react";
@@ -9,6 +9,7 @@ import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
+import { loadOrganizationTimeZone, loadVenueTimeZone } from "@/server/time-zones";
 import { calendarRange, type RawCalendarParams, readCalendarParams } from "../calendar-params";
 import { loadCalendar } from "../load-calendar";
 import { CalendarBody } from "./calendar-body";
@@ -16,8 +17,6 @@ import { CalendarLegend } from "./calendar-legend";
 import { CalendarToolbar } from "./calendar-toolbar";
 
 export type CalendarPageProps = { locale: Locale; raw: RawCalendarParams };
-
-const TIME_ZONE = DEFAULT_TIME_ZONE;
 
 /** The URL filters the loader narrows by. */
 const filtersOf = ({ params }: { params: ReturnType<typeof readCalendarParams> }) => ({
@@ -74,29 +73,38 @@ type FormatPeriodInput = {
   range: ReturnType<typeof calendarRange>;
 };
 
-const formatPeriod = ({ format, range }: FormatPeriodInput): string =>
+const formatPeriod = ({ format, range, timeZone }: FormatPeriodInput & { timeZone: string }) =>
   format.dateTimeRange(range.from, new Date(range.to.getTime() - 1), {
     dateStyle: "medium",
-    timeZone: TIME_ZONE,
+    timeZone,
   });
+
+/** The filtered venue's zone, else the organization's; the venue filter does not depend on it. */
+async function calendarTimeZone({ raw, now }: { raw: RawCalendarParams; now: Date }) {
+  const organization = await loadOrganizationTimeZone();
+  const { venueId } = readCalendarParams({ raw, now, timeZone: organization });
+  return venueId ? loadVenueTimeZone({ venueId }) : organization;
+}
 
 /**
  * `/calendar` (a canvas page, ADR 0038): a full-width toolbar row and the occupancy of every space
- * for the shown day or week, which scrolls on its own below it.
+ * for the shown day or week, which scrolls on its own below it. One venue shows in its zone, all
+ * venues in the organization's (ADR 0064 decision 12).
  */
 export async function CalendarPage({ locale, raw }: CalendarPageProps) {
   const t = await getTranslations("calendar");
   const format = await getFormatter();
   const now = new Date();
-  const params = readCalendarParams({ raw, now, timeZone: TIME_ZONE });
-  const today = readCalendarParams({ raw: {}, now, timeZone: TIME_ZONE }).date;
-  const range = calendarRange({ params, timeZone: TIME_ZONE });
+  const timeZone = await calendarTimeZone({ raw, now });
+  const params = readCalendarParams({ raw, now, timeZone });
+  const today = readCalendarParams({ raw: {}, now, timeZone }).date;
+  const range = calendarRange({ params, timeZone });
   const [result, abilities] = await Promise.all([
     loadCalendar({ ...range, ...filtersOf({ params }) }),
     getCallerAbilities(),
   ]);
   if (!result.ok) return <LoadError errorKey={handleLoadError({ error: result.error, locale })} />;
-  const period = formatPeriod({ format, range });
+  const period = formatPeriod({ format, range, timeZone });
   const header = <PageHeader title={t("title")} description={t("description")} />;
   if (result.value.spaces.length === 0 && !params.venueId) return <NoSpaces header={header} />;
   return (
@@ -112,7 +120,7 @@ export async function CalendarPage({ locale, raw }: CalendarPageProps) {
       <CalendarBody
         params={params}
         data={result.value}
-        timeZone={TIME_ZONE}
+        timeZone={timeZone}
         canBook={can({ abilities, permission: "ticket:write" })}
       />
     </CalendarLayout>

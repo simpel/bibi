@@ -21,6 +21,10 @@ model OrganizationProfile {
   website        String?
   contactEmail   String?
   contactPhone   String?
+  /// Owned, IANA name (ADR 0064): the zone of ticket-level times and the default of every venue.
+  /// Read only through core's `effectiveTimeZone`. The default backfills existing rows and keeps
+  /// the previous release's inserts working (expand/contract, ADR 0013); core validates every write.
+  timeZone       String       @default("Europe/Stockholm")
   status         RecordStatus @default(ACTIVE)
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt

@@ -11,14 +11,20 @@ type Column = ColumnDef<OccupancyDto>;
 const isManual = ({ type }: OccupancyDto) =>
   (MANUAL_OCCUPANCY_TYPES as readonly string[]).includes(type);
 
+export type UseOccupancyColumnsInput = {
+  access: RowAccess;
+  /** The zone of the item's venue: times show in it (ADR 0064). */
+  timeZone: string;
+};
+
 /** Type · note · starts · ends, plus the row actions (manual blocks only) when writable. */
-export function useOccupancyColumns({ access }: { access: RowAccess }): Column[] {
+export function useOccupancyColumns({ access, timeZone }: UseOccupancyColumnsInput): Column[] {
   const t = useTranslations("occupancy");
   const common = useTranslations("common");
   const format = useFormatter();
   return useMemo<Column[]>(() => {
     const when = ({ date }: { date: Date }) =>
-      format.dateTime(date, { dateStyle: "medium", timeStyle: "short" });
+      format.dateTime(date, { dateStyle: "medium", timeStyle: "short", timeZone });
     const columns: Column[] = [
       { id: "type", header: t("columns.type"), accessorFn: (o) => t(`types.${o.type}`) },
       {
@@ -45,8 +51,9 @@ export function useOccupancyColumns({ access }: { access: RowAccess }): Column[]
       ...columns,
       actionsColumn<OccupancyDto>({
         label: common("actions"),
-        cell: (o) => (isManual(o) ? <OccupancyRowActions occupancy={o} access={access} /> : null),
+        cell: (o) =>
+          isManual(o) ? <OccupancyRowActions {...{ occupancy: o, access, timeZone }} /> : null,
       }),
     ];
-  }, [t, common, format, access]);
+  }, [t, common, format, access, timeZone]);
 }

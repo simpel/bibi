@@ -13,11 +13,12 @@ describe("ticket.expireHolds job (ADR 0027, 0044)", () => {
     expect(expireTicketHoldsJob.cron).toBe("*/15 * * * *");
   });
 
-  it("moves expired soft holds to the expiry state in every organization as SYSTEM", async () => {
+  it("moves expired soft holds to the expiry state as SYSTEM", async () => {
     const { context, line, prebooked, expiry } = await expiredTicket();
     const before = await execute({ operation: getLine, input: { id: line.id }, context });
     expect(before.ok && before.value.stateId).toBe(prebooked.id);
-    await expireTicketHoldsJob.handler({ db });
+    // Only this test's organization: the test database is shared with other suites running now.
+    await expireTicketHoldsJob.handler({ db, organizationIds: [context.organizationId] });
     const after = await execute({ operation: getLine, input: { id: line.id }, context });
     expect(after.ok && after.value.stateId).toBe(expiry.id);
     const audit = await db.auditLog.findMany({

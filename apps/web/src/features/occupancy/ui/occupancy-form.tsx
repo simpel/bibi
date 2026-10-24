@@ -8,14 +8,16 @@ import { useOccupancyForm } from "./use-occupancy-form";
 export type OccupancyFormProps = {
   itemId: string;
   occupancy?: OccupancyDto | undefined;
+  /** The zone of the item's venue (ADR 0064). */
+  timeZone: string;
   onDone: () => void;
 };
 
 /** Create or edit a block of a bookable item: type, period and note. */
-export function OccupancyForm({ itemId, occupancy, onDone }: OccupancyFormProps) {
+export function OccupancyForm({ itemId, occupancy, timeZone, onDone }: OccupancyFormProps) {
   const common = useTranslations("common");
   const t = useTranslations("occupancy.fields");
-  const { form, submit, pending } = useOccupancyForm({ itemId, occupancy, onDone });
+  const { form, submit, pending } = useOccupancyForm({ itemId, occupancy, timeZone, onDone });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TimeZoneSchema } from "../../time/time-zone";
 
 export const VenueStatusSchema = z.enum(["ACTIVE", "ARCHIVED"]);
 
@@ -14,6 +15,7 @@ export const VenueSchema = z.object({
   contactEmail: z.string().nullable(),
   contactPhone: z.string().nullable(),
   openingHours: z.string().nullable(),
+  timeZone: z.string().nullable().describe("IANA zone; null = the organization's (ADR 0064)"),
   defaultVatRatePercent: z.number().int(),
   status: VenueStatusSchema,
   createdAt: z.date(),
@@ -31,6 +33,9 @@ export const VenueCreateInputSchema = z.object({
   contactEmail: z.email().nullish(),
   contactPhone: z.string().trim().max(50).nullish(),
   openingHours: z.string().trim().max(500).nullish(),
+  timeZone: TimeZoneSchema.nullish().describe(
+    "IANA zone of this venue's lines and calendar; null = the organization's zone",
+  ),
   defaultVatRatePercent: z.number().int().min(0).max(100).optional(),
 });
 

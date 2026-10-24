@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PhoneSchema } from "../../shared/phone";
+import { TimeZoneSchema } from "../../time/time-zone";
 
 /** Where the organization is in its first setup (ADR 0061). */
 export const SETUP_STATUSES = ["PENDING", "COMPLETED", "SKIPPED"] as const;
@@ -21,6 +22,9 @@ export const OrganizationProfileSchema = z.object({
   website: z.string().nullable(),
   contactEmail: z.string().nullable(),
   contactPhone: z.string().nullable(),
+  timeZone: z
+    .string()
+    .describe("IANA zone of ticket-level times and the default of every venue (ADR 0064)"),
 });
 
 export const OrganizationProfileGetInputSchema = z.object({});
@@ -37,6 +41,9 @@ export const OrganizationProfileUpdateInputSchema = z.object({
   website: z.url().max(300).nullish().describe("Website, e.g. https://example.se"),
   contactEmail: z.email().max(200).nullish(),
   contactPhone: PhoneSchema.nullish(),
+  timeZone: TimeZoneSchema.optional().describe(
+    "IANA zone, e.g. Europe/Stockholm: changes how times display and are entered, never a stored time",
+  ),
 });
 
 export const OrganizationProfileSetSetupStatusInputSchema = z.object({

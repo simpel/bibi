@@ -22,6 +22,7 @@ import { lindholmenTypes } from "./types";
 export const lindholmen: DemoOrg = {
   slug: "lindholmen-demo",
   name: "Lindholmen Experience Center",
+  timeZone: "Europe/Stockholm",
   users: [
     { name: "Anna Berg", role: "admin" },
     { name: "Erik Lund", role: "manager" },

@@ -4,6 +4,8 @@ import type { VenueCreateInput } from "@bibi/core";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { TextField } from "@/components/form/text-field";
+import { TimeZoneField } from "@/components/form/time-zone-field";
+import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import type { VenueFormValues } from "./venue-form-schema";
 
 export type VenueStepFieldsProps = {
@@ -20,8 +22,10 @@ export function VenueIdentityFields({ form }: VenueStepFieldsProps) {
   );
 }
 
+/** Address and zone: a venue inherits the organization's zone unless it sets its own (ADR 0064). */
 export function VenueAddressFields({ form }: VenueStepFieldsProps) {
   const t = useTranslations("venue.fields");
+  const zone = useOrganizationTimeZone();
   return (
     <>
       <TextField form={form} name="streetAddress" label={t("streetAddress")} />
@@ -30,6 +34,12 @@ export function VenueAddressFields({ form }: VenueStepFieldsProps) {
         <TextField form={form} name="city" label={t("city")} />
       </div>
       <TextField form={form} name="country" label={t("country")} />
+      <TimeZoneField
+        control={form.control}
+        name="timeZone"
+        label={t("timeZone")}
+        inheritLabel={t("timeZoneInherit", { zone })}
+      />
     </>
   );
 }

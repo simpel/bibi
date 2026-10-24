@@ -15,11 +15,18 @@ export { LineRecordSchema };
 
 /**
  * A line with its effective quantity, price, discount, VAT and buffers and where each comes from,
- * and its derived warnings.
+ * its derived warnings and the zone its times are in.
  */
 export const LineSchema = LineRecordSchema.extend(LineEffectiveShape)
   .extend(EffectiveBuffersShape)
-  .extend(LineWarningsShape);
+  .extend(LineWarningsShape)
+  .extend({
+    timeZone: z
+      .string()
+      .describe(
+        "Derived (ADR 0064): the zone of the line's times, its item's venue's else the organization's",
+      ),
+  });
 
 const LineDetailsShape = {
   name: z.string().trim().min(1).max(200).describe("What happens, e.g. Morning session or Lunch"),

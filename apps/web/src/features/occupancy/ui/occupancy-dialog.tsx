@@ -7,6 +7,8 @@ export type OccupancyDialogProps = {
   itemId: string;
   /** Present = edit mode, absent = create mode. */
   occupancy?: OccupancyDto | undefined;
+  /** The zone of the item's venue (ADR 0064). */
+  timeZone: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };

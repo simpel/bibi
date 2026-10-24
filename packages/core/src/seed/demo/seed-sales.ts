@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import type { ExecuteContext } from "../../operations/context";
 import { withDemoPayments } from "./demo-payments";
 import type { DemoRefs } from "./demo-refs";
+import { demoTimeZones } from "./demo-time-zones";
 import { seedDemoCustomers } from "./seed-customers";
 import type { DemoCatalog } from "./seed-items";
 import { activateDemoPayments } from "./seed-money";
@@ -42,7 +43,10 @@ export async function seedDemoSales({
     run: async () => {
       const account = await activateDemoPayments({ context, org });
       if (!account.ok) return account;
-      const tickets = await seedDemoTickets({ context, tickets: org.tickets, refs, userIds });
+      const zones = demoTimeZones({ org });
+      const tickets = await seedDemoTickets({
+        ...{ context, tickets: org.tickets, refs, userIds, zones },
+      });
       return tickets.ok ? ok({ value: true as const }) : tickets;
     },
   });

@@ -14,6 +14,7 @@ import { vingaledenTours } from "./tours";
 export const vingaleden: DemoOrg = {
   slug: "vingaleden-demo",
   name: "Vingaleden Archipelago Tours",
+  timeZone: "Europe/Stockholm",
   users: [
     { name: "Per Vinga", role: "admin" },
     { name: "Stina Holm", role: "manager" },
@@ -27,6 +28,8 @@ export const vingaleden: DemoOrg = {
       streetAddress: "Saltholmen",
       postalCode: "426 76",
       city: "Västra Frölunda",
+      // The venue override (ADR 0064): same offset as the organization, so times read the same.
+      timeZone: "Europe/Oslo",
     },
     items: [...vingaledenBoats, ...vingaledenTours],
     // Check 2: no allergen list at all. Its sheets (slice 6) will not include food either.

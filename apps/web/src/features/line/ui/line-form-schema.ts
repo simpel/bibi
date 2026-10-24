@@ -9,6 +9,7 @@ import { blankToNull, minorOrNull, numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 import type { LineFormValues } from "./line-form-values";
+import { type LineTimeZoneInput, lineTimeZone } from "./line-time-zone";
 
 /** What the resolver outputs: core's create input. */
 export type LineFormOutput = z.infer<typeof LineCreateInputSchema>;
@@ -19,22 +20,32 @@ export type LineSchemaInput = {
   ticketId: string;
   type: EntityTypeDto | undefined;
   vocabularies: VocabularyDto[];
+  /** The items' and the organization's zones (ADR 0064). */
+  zones: LineTimeZoneInput["data"];
+  /** The line being edited, if any: its own zone while it keeps its item. */
+  line?: LineTimeZoneInput["line"];
 };
 
-/** Core's line schema with `fields` checked against the type; the server checks again. */
-export function lineFormSchema({ ticketId, type, vocabularies }: LineSchemaInput) {
+/**
+ * Core's line schema with `fields` checked against the type; the server checks again. The times
+ * are read in the chosen item's zone (ADR 0064).
+ */
+export function lineFormSchema({ ticketId, type, vocabularies, zones, line }: LineSchemaInput) {
   const specs = specsOf({ type, vocabularies });
   return formSchema({
     schema: LineCreateInputSchema.extend({ fields: buildFieldsSchema({ specs }) }),
     toInput: ({ values }: { values: LineFormValues }) => {
       const itemId = picked({ value: values.itemId });
+      const timeZone = lineTimeZone({ data: zones, itemId, line });
+      const instant = ({ value }: { value: string }) =>
+        fromLocalInputValue({ value, timeZone }) ?? null;
       return {
         ticketId,
         entityTypeId: values.entityTypeId,
         name: values.name,
         // Both empty = an untimed line (ADR 0052).
-        startsAt: fromLocalInputValue({ value: values.startsAt }) ?? null,
-        endsAt: fromLocalInputValue({ value: values.endsAt }) ?? null,
+        startsAt: instant({ value: values.startsAt }),
+        endsAt: instant({ value: values.endsAt }),
         itemId,
         setupId: itemId ? picked({ value: values.setupId }) : null,
         ...bufferFormToInput({ values }),

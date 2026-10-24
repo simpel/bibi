@@ -36,6 +36,8 @@ export type DemoPipeline = { phases: TicketPhaseTemplate; cells: readonly DemoGr
 export type DemoOrg = {
   slug: string;
   name: string;
+  /** The organization's IANA zone (ADR 0064): ticket-level times and the venue default. */
+  timeZone: string;
   users: readonly DemoUser[];
   config: DemoConfig;
   /** Slice 2: what each person answers for, with covered item types and default people. */

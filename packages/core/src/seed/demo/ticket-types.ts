@@ -9,8 +9,8 @@ export type DemoChoice = { responsibility: string; assignee?: string; unfollow?:
 
 /**
  * A demo ticket (slice 5 of ADR 0025, `docs/demo-seed.md`). `ref` is the row in the spec (L1,
- * V3, …); `day` is the offset from the day of the run and `from`/`to` local times (HH:MM,
- * Europe/Stockholm) of the desired period on that day. Customer, type, phase and people are
+ * V3, …); `day` is the offset from the day of the run and `from`/`to` local times (HH:MM, the
+ * organization's zone; lines in the venue's) of the desired period on that day. Customer, type, phase and people are
  * referred to by name.
  */
 export type DemoTicket = {

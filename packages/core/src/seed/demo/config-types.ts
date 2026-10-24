@@ -104,7 +104,14 @@ export type DemoConfig = {
   lists: readonly { name: string; values: readonly string[] }[];
   setups: readonly { name: string; changeoverMinutes: number }[];
   types: readonly DemoType[];
-  venue: { name: string; streetAddress: string; postalCode: string; city: string };
+  /** `timeZone` is the venue's own zone; left out = the organization's (ADR 0064). */
+  venue: {
+    name: string;
+    streetAddress: string;
+    postalCode: string;
+    city: string;
+    timeZone?: string;
+  };
   /** Seeded in the venue. Slice 2 seeds the bookable spaces, slice 3 the rest of the catalog. */
   items: readonly DemoItem[];
   /** Org-specific checks (`docs/demo-seed.md`, Checks), e.g. check 2. */

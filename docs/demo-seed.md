@@ -5,7 +5,9 @@ Specification for `pnpm --filter @bibi/core seed:demo` (ADR 0025). Two fictional
 - **Lindholmen Experience Center**: conferences, exhibition and restaurant. Uses everything: vocabularies with allergens, sheets to the kitchen, bundles, item states and a phase grid.
 - **Vingaleden Archipelago Tours**: boat tours in the Gothenburg archipelago. No food, no allergens, other phases and other requirements.
 
-All dates are relative to the day of the run: `D` = today, `D+3` = in three days. Times are local time (Europe/Stockholm).
+All dates are relative to the day of the run: `D` = today, `D+3` = in three days. Times are local time in the zone `effectiveTimeZone` resolves (ADR 0064): ticket-level times (`desired*`, `holdsUntil`) in the organization's zone, lines in their venue's.
+
+**Time zones (ADR 0064):** both organizations have `Europe/Stockholm` on their profile. Vingaleden's venue Saltholmen has its own zone, `Europe/Oslo` (the same offset all year, so its times read the same); Lindholmen's venue inherits (`timeZone` null).
 
 ## Checks after seeding (CI)
 
@@ -27,6 +29,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 13. Pools (ADR 0059, `pool-checks.ts`): a type flagged `pool` in the data files is a pool of interchangeable units. Lindholmen's Wireless microphone type has ten units (Wireless microphone 01 to 10, bookable, setup and teardown 5). `item.freeUnits` for the type in a window far from every booking lists all ten in name order, the prepick is the first, and a second call answers the same.
 14. Bundles (ADR 0059, `bundle-checks.ts`): every bundle a ticket expands is one bundle line with one part line per part of the bundle item that is not a customisation option (`Line.parentLineId`). Its sent quote freezes the bundle line with one VAT row per rate (`vatRows`, at least two: Lindholmen's Conference day mixes the room at 25 % with coffee and lunch at 12 %) that sum exactly to its total and VAT, and the part lines as order lines with `parentLineId` that do not count (`inTotal` false).
 15. Demands and allocations (ADR 0059, `allocation-checks.ts`): the Projector and the Mobile sound system each need one technician (the Technician pool of two, a Person type) for their SETUP and TEARDOWN windows. Every hard-held line whose item has demands has each mandatory slot filled (`lineAllocation.list`), and each allocated unit is no longer free (`item.freeUnits`) in the windows its demand holds it for, so an overlapping setup gets the other technician. Lindholmen must show at least one: L4's Sound for the conference line (Mobile sound system, D+5 09–13, Booked) holds Technician 1 for its 10-minute setup and teardown, `HARD` like its line. L11's untimed Projector hire line has an unfilled slot and holds nothing. That the allocation holds match exactly is the `line-holds` reconciliation (check 9).
+16. Time zones (ADR 0064, `time-zone-checks.ts`): each organization's profile has its zone, Saltholmen stores `Europe/Oslo` and Lindholmen's venue stores `null`, and `effectiveTimeZone` resolves each venue to its own zone, else the organization's.
 
 The checks that run today:
 - **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.

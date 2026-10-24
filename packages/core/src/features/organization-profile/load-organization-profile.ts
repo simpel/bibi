@@ -1,4 +1,5 @@
 import type { OperationContext } from "../../operations/types";
+import { FALLBACK_TIME_ZONE } from "../../time/time-zone";
 import type { OrganizationProfileDto } from "./schema";
 
 export const ORGANIZATION_PROFILE_SELECT = {
@@ -13,6 +14,7 @@ export const ORGANIZATION_PROFILE_SELECT = {
   website: true,
   contactEmail: true,
   contactPhone: true,
+  timeZone: true,
 } as const;
 
 /** What `organizationProfile.get` returns before the row exists (a query never creates it). */
@@ -28,6 +30,7 @@ export const EMPTY_ORGANIZATION_PROFILE: OrganizationProfileDto = {
   website: null,
   contactEmail: null,
   contactPhone: null,
+  timeZone: FALLBACK_TIME_ZONE,
 };
 
 export type LoadOrganizationProfileInput = { context: Pick<OperationContext, "db"> };

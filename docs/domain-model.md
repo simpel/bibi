@@ -475,6 +475,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` overrides (owned, null = the item's, else its type's). Derived on every read: `effectiveSetupMinutes` (the inherited minutes or the setup's changeover time, whichever is larger, never the sum) and `effectiveTeardownMinutes`, each with its source (`LINE`, `ITEM`, `TYPE`, or `SETUP` when the changeover wins; null = no buffer).
 
+> **Done (ADR 0064):** derived on every read, `timeZone`: the zone its times show and are entered in (its item's venue zone, else the organization's), so no caller needs `venue:read` for it.
+
 > **Done (ADR 0059):** `line.chooseOptions` replaces the customisation options chosen on a line whose item has groups. Each chosen option becomes an option line under it (`parentLineId` = the line; same ticket, type, fields, time and quantity as the line; its own item and name; `priceEffect` snapshot). A dropped option's line is archived. Each group needs between its `minPick` and `maxPick` options (`VALIDATION`); a group with `minPick` 0 can be skipped, and opting out is choosing another option. An option is chosen once per line while active (partial unique index). A line with part or option lines keeps its item; moving a timed line moves its timed part and option lines by the same delta and archiving it archives them, at every level. Quote derivation: `INCLUDED` never counts, `EXTRA` counts at its own price, `REPLACES` counts and its parent line does not; an option of an unchosen alternative (ADR 0052) is left out with it. Option lines are not bundle parts (no VAT split). The order line has no price effect field of its own; an option line is snapshotted like any line (`parentLineId`, `inTotal`).
 
 > **Ownership:** owned `name`, `startsAt`, `endsAt`, `quantity`, `unitPriceMinor`, `discountPercent`, `vatRatePercent`, `alternativeGroupId`, `parentLineId`; snapshot `priceEffect` (set by `line.chooseOptions`, never changed); derived `effectiveQuantity`, `effectiveUnitPriceMinor`, `effectiveDiscountPercent`, `effectiveVatRatePercent` and their sources; projection `holdKind` (check `line-holds`).
@@ -573,11 +575,12 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A building or site. Bookable items belong to a venue.
 
-> **Target (ADR 0064):** `timeZone` (owned, nullable, `null` = the organization's) and structured opening hours (a weekly pattern with dated exceptions, advisory, replacing the free-text `openingHours`), with the same shape as user and item working hours.
+> **Target (ADR 0064):** structured opening hours (a weekly pattern with dated exceptions, advisory, replacing the free-text `openingHours`), with the same shape as user and item working hours.
 
 **Attributes**
 - name
 - address
+- timeZone (owned, IANA name, nullable, `null` = the organization's; ADR 0064): the zone its lines, occupancy and calendar show and are entered in, read only through `effectiveTimeZone`. Changing it moves no stored time.
 - opening hours
 - default VAT
 - contact details
@@ -617,6 +620,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 *MVP* · Everything that can be sold or booked: dish, drink, venue space, equipment, guide, bundle.
 
 > **Done (ADR 0059):** nullable `setupMinutes` and `teardownMinutes` (owned, an override of the type default, on any item); derived on read `effectiveSetupMinutes` and `effectiveTeardownMinutes` with their source (`ITEM` or `TYPE`). A line's effective setup is the larger of these and its setup's changeover.
+
+> **Done (ADR 0064):** derived on every read, `timeZone`: its venue's zone, else the organization's (the zone of its lines and occupancy).
 
 > **Done (ADR 0059):** `ItemDemand` rows (what the item asks of a pool). **Target:** working hours for a bookable item.
 
@@ -1055,8 +1060,9 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - legalName, orgNumber
 - streetAddress, postalCode, city, country (default `SE`)
 - website, contactEmail, contactPhone
+- timeZone (owned, IANA name, required; existing rows backfilled `Europe/Stockholm`; ADR 0064): the zone of ticket-level times and the default of every venue, read only through `effectiveTimeZone`. Editable in `/settings/organization`.
 
-> **Target (ADR 0064):** `timeZone` (owned, IANA name, required): the zone of ticket-level times and the default of every venue. Chosen when the organization is created, editable in settings.
+> **Target (ADR 0064):** the zone is chosen when the organization is created (`/welcome/new`).
 
 > Operations: `organizationProfile.get` and `organizationProfile.update` (setup feature), `organizationProfile.setSetupStatus` (`pipeline:write`). While the status is `PENDING`, `/:org/welcome` sends members who can do the setup through it and everyone else to a waiting page.
 

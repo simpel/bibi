@@ -176,6 +176,7 @@
     "commandBar": "Kommandofält",
     "members": "Medlemmar",
     "payments": "Betalningar",
+    "organization": "Organisation",
     "ticketPhases": "Faser",
     "priceLists": "Prislistor",
     "assistant": "Assistent",
@@ -225,6 +226,8 @@
       "contactEmail": "Kontakt, e-post",
       "contactPhone": "Kontakt, telefon",
       "openingHours": "Öppettider",
+      "timeZone": "Tidszon",
+      "timeZoneInherit": "Organisationens zon ({zone})",
       "defaultVatRatePercent": "Moms (%)"
     },
     "listDescription": "Byggnader och platser med artiklar att boka.",
@@ -2143,6 +2146,7 @@
     "title": "Inställningar",
     "description": "Hur er organisation är uppsatt. Ändringar här påverkar alla.",
     "items": {
+      "organization": "Organisationens tidszon, som varje anläggning utan egen zon använder.",
       "types": "Vilka sorters artiklar ni erbjuder och vilka fält de har.",
       "lists": "Era egna värdelistor, till exempel allergener eller utrustning.",
       "setups": "Möblering som teater, klassrum eller styrelserum.",
@@ -2157,6 +2161,18 @@
       "itemStates": "De statusar en rad kan ha, per artikeltyp.",
       "ticketTemplates": "Färdiga ärenden som personalen skapar ett ärende från i ett steg."
     }
+  },
+  "organizationSettings": {
+    "title": "Organisation",
+    "description": "Inställningar som gäller hela organisationen.",
+    "timeZone": "Tidszon",
+    "timeZoneHint": "Ärendets tider och varje anläggning utan egen zon använder den här zonen. En ändring påverkar hur tider visas och skrivs in; sparade tider ändras inte.",
+    "saved": "Tidszonen har sparats."
+  },
+  "timeZone": {
+    "placeholder": "Välj tidszon",
+    "search": "Sök tidszon",
+    "empty": "Ingen tidszon hittades"
   },
   "commandBar": {
     "title": "Kommandofält",

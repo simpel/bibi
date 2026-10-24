@@ -1,6 +1,5 @@
 import { getRequestConfig } from "next-intl/server";
 import { resolveLocale } from "./routing";
-import { DEFAULT_TIME_ZONE } from "./time-zone";
 import type { Messages } from "./types";
 
 type LoadMessagesInput = { locale: string };
@@ -10,11 +9,20 @@ async function loadMessages({ locale }: LoadMessagesInput): Promise<Messages> {
   return loaded.default as Messages;
 }
 
-/** Request config factory: `export default createRequestConfig()` in `i18n/request.ts` of the app. */
-export function createRequestConfig() {
+export type CreateRequestConfigInput = {
+  /**
+   * The zone every date and time of the request renders in: the app resolves the organization's
+   * zone (ADR 0064), so the result never depends on the host's or the browser's zone.
+   */
+  loadTimeZone: () => Promise<string>;
+};
+
+/** Request config factory: `export default createRequestConfig({ loadTimeZone })` in the app. */
+export function createRequestConfig({ loadTimeZone }: CreateRequestConfigInput) {
   return getRequestConfig(async ({ requestLocale }) => {
     const requested = await requestLocale;
     const locale = resolveLocale({ value: requested });
-    return { locale, timeZone: DEFAULT_TIME_ZONE, messages: await loadMessages({ locale }) };
+    const [timeZone, messages] = await Promise.all([loadTimeZone(), loadMessages({ locale })]);
+    return { locale, timeZone, messages };
   });
 }

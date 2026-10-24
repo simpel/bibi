@@ -61,6 +61,11 @@ export const ItemSchema = z.object({
   ...BufferMinutesShape,
   /** Derived: the item's buffers, else its type's (source ITEM or TYPE). */
   ...EffectiveBuffersShape,
+  timeZone: z
+    .string()
+    .describe(
+      "Derived (ADR 0064): the zone of the item's times, its venue's else the organization's",
+    ),
   setups: z.array(ItemSetupSchema),
   parts: z.array(ItemPartSchema),
   customisationGroups: z.array(ItemCustomisationGroupSchema),

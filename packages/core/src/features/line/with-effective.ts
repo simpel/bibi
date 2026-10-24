@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { HandlerInput, OperationContext } from "../../operations/types";
 import { effectiveBuffers } from "../../shared/buffers";
+import { loadZoneOfVenue } from "../../shared/time-zones";
 import { loadPriceTerms } from "../price-list/customer-price-terms";
 import { effectiveOf } from "./effective-values";
 import { loadLineWarnings } from "./line-warnings";
@@ -21,9 +22,37 @@ async function loadChangeovers({ context, lines }: WithEffectiveInput) {
   return new Map(setups.map((setup) => [setup.id, setup.changeoverMinutes]));
 }
 
+/** The lines' items with their venue's VAT default and their zone (ADR 0064), by id. */
+async function loadItems({ context, lines }: WithEffectiveInput) {
+  const itemIds = [...new Set(lines.flatMap((line) => (line.itemId ? [line.itemId] : [])))];
+  const [items, zoneOf] = await Promise.all([
+    context.db.item.findMany({
+      where: { id: { in: itemIds } },
+      select: {
+        ...{ id: true, priceMinor: true, vatRatePercent: true },
+        ...{ setupMinutes: true, teardownMinutes: true },
+        venue: { select: { defaultVatRatePercent: true, timeZone: true } },
+        entityType: { select: { setupMinutes: true, teardownMinutes: true } },
+      },
+    }),
+    loadZoneOfVenue({ context }),
+  ]);
+  const byId = new Map(
+    items.map(({ venue, ...item }) => [
+      item.id,
+      {
+        ...item,
+        venueVatRatePercent: venue?.defaultVatRatePercent ?? null,
+        timeZone: zoneOf({ venue }),
+      },
+    ]),
+  );
+  // A line without an item has the organization's zone.
+  return { items: byId, organizationZone: zoneOf({ venue: null }) };
+}
+
 async function loadSources({ context, lines }: WithEffectiveInput) {
   const ticketIds = [...new Set(lines.map((line) => line.ticketId))];
-  const itemIds = [...new Set(lines.flatMap((line) => (line.itemId ? [line.itemId] : [])))];
   const [tickets, items, changeovers] = await Promise.all([
     context.db.ticket.findMany({
       where: { id: { in: ticketIds } },
@@ -32,15 +61,7 @@ async function loadSources({ context, lines }: WithEffectiveInput) {
         ...{ estimatedHeadcount: true, guaranteedHeadcount: true },
       },
     }),
-    context.db.item.findMany({
-      where: { id: { in: itemIds } },
-      select: {
-        ...{ id: true, priceMinor: true, vatRatePercent: true },
-        ...{ setupMinutes: true, teardownMinutes: true },
-        venue: { select: { defaultVatRatePercent: true } },
-        entityType: { select: { setupMinutes: true, teardownMinutes: true } },
-      },
-    }),
+    loadItems({ context, lines }),
     loadChangeovers({ context, lines }),
   ]);
   const terms = await loadPriceTerms({
@@ -49,12 +70,7 @@ async function loadSources({ context, lines }: WithEffectiveInput) {
   });
   return {
     tickets: new Map(tickets.map((ticket) => [ticket.id, ticket])),
-    items: new Map(
-      items.map(({ venue, ...item }) => [
-        item.id,
-        { ...item, venueVatRatePercent: venue?.defaultVatRatePercent ?? null },
-      ]),
-    ),
+    ...items,
     changeovers,
     terms,
   };
@@ -69,7 +85,7 @@ const NO_HEADCOUNT = { estimatedHeadcount: null, guaranteedHeadcount: null };
  */
 export async function withEffective({ context, lines }: WithEffectiveInput): Promise<LineDto[]> {
   if (lines.length === 0) return [];
-  const [{ tickets, items, changeovers, terms }, warnings] = await Promise.all([
+  const [{ tickets, items, changeovers, terms, organizationZone }, warnings] = await Promise.all([
     loadSources({ context, lines }),
     loadLineWarnings({ context, lineIds: lines.map((line) => line.id) }),
   ]);
@@ -91,6 +107,7 @@ export async function withEffective({ context, lines }: WithEffectiveInput): Pro
       ...effectiveOf({ line, ticket: headcount, item, terms: priceTerms }),
       ...buffers,
       warnings: warnings.get(line.id) ?? [],
+      timeZone: item?.timeZone ?? organizationZone,
     };
   });
 }

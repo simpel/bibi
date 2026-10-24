@@ -27,10 +27,17 @@ test("flags hard-coded zone names and relativeTime", () => {
   assert.equal(problems("format.relativeTime(a, b)").length, 1);
 });
 
-test("ignores comments, tests, stories, the time module and zone constants", () => {
+test("ignores comments, tests, stories, the time module and demo zone data", () => {
   assert.deepEqual(problems("// date.getHours() in Europe/Stockholm\n/* new Date(1, 2) */"), []);
   assert.deepEqual(problems("date.getHours()", "apps/web/src/x.test.ts"), []);
   assert.deepEqual(problems("date.getHours()", "packages/ui/src/stories/a.tsx"), []);
   assert.deepEqual(problems("date.getHours()", "packages/core/src/time/zoned-time.ts"), []);
-  assert.deepEqual(problems('"Europe/Stockholm"', "packages/i18n/src/time-zone.ts"), []);
+  const demo = "packages/core/src/seed/demo/data/a/a.ts";
+  assert.deepEqual(problems('timeZone: "Europe/Oslo"', demo), []);
+  assert.equal(problems("date.getHours()", demo).length, 1);
+});
+
+test("flags a zone constant outside the time module", () => {
+  assert.equal(problems('"Europe/Stockholm"', "apps/worker/src/job-definition.ts").length, 1);
+  assert.equal(problems('"Europe/Stockholm"', "packages/core/src/seed/demo/seed.ts").length, 1);
 });

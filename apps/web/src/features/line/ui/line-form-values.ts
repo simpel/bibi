@@ -26,13 +26,21 @@ export type LineDefaultsInput = {
   line?: LineDto | undefined;
   /** Where a new line starts: the ticket's start. */
   startsAt: Date;
+  /** The zone the times show in: the line's item's venue zone (ADR 0064). */
+  timeZone: string;
 };
 
-const local = ({ date }: { date: Date | null }) => (date ? toLocalInputValue({ date }) : "");
 const text = ({ value }: { value: number | null | undefined }) =>
   value === null || value === undefined ? "" : String(value);
 
-export function lineFormDefaults({ type, line, startsAt }: LineDefaultsInput): LineFormValues {
+export function lineFormDefaults({
+  type,
+  line,
+  startsAt,
+  timeZone,
+}: LineDefaultsInput): LineFormValues {
+  const local = ({ date }: { date: Date | null }) =>
+    date ? toLocalInputValue({ date, timeZone }) : "";
   return {
     entityTypeId: type?.id ?? "",
     name: line?.name ?? "",

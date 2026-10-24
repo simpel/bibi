@@ -25,6 +25,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   skills: "skills",
   admin: "admin",
   settings: "settings",
+  organization: "organization",
   types: "types",
   lists: "lists",
   setups: "setups",

@@ -68,7 +68,9 @@ export const createVenue = defineOperation({
 export const updateVenue = defineOperation({
   name: "venue.update",
   kind: "command",
-  description: "Update fields of an active venue. Omitted fields are left unchanged.",
+  description:
+    "Update fields of an active venue. Omitted fields are left unchanged. A new time zone " +
+    "(null = the organization's) changes how its lines display and are entered; no stored time moves.",
   input: VenueUpdateInputSchema,
   output: VenueSchema,
   permission: "venue:write",

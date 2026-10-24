@@ -92,4 +92,5 @@ export * from "./shared/archive-preview";
 export * from "./shared/minute-of-day";
 export * from "./shared/phone";
 export * from "./time/plain-date";
+export * from "./time/time-zone";
 export * from "./time/zoned-time";

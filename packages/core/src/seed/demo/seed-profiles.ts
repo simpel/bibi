@@ -47,7 +47,7 @@ async function seedUserProfile({ db, organizationId, userId, name, index }: Seed
 
 /**
  * The welcome flow's data (ADR 0061): every demo user has a complete profile and hours, and the
- * organization has its address, so seeded users go straight to the board.
+ * organization has its address and time zone, so seeded users go straight to the board.
  */
 export async function seedDemoProfiles({
   db,
@@ -61,7 +61,7 @@ export async function seedDemoProfiles({
     postalCode: venue.postalCode,
     city: venue.city,
   };
-  const input = { legalName: org.name, ...address, contactEmail: null };
+  const input = { legalName: org.name, ...address, contactEmail: null, timeZone: org.timeZone };
   const saved = await execute({ operation: updateOrganizationProfile, input, context });
   if (!saved.ok) return saved;
   const users = [...userIds.entries()];

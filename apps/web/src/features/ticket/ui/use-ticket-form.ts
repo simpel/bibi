@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useTypedResolver } from "@/components/typed-fields/use-typed-resolver";
 import { useRouter } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
+import { useOrganizationTimeZone } from "@/lib/time/use-organization-time-zone";
 import { useFormAction } from "@/lib/use-form-action";
 import { createTicketAction, updateTicketAction } from "../actions";
 import type { TicketFormData } from "./ticket-form-data";
@@ -22,15 +23,16 @@ export function useTicketForm({ data, ticket, onDone }: UseTicketFormInput) {
   const t = useTranslations("ticket");
   const common = useTranslations("common");
   const router = useRouter();
+  const timeZone = useOrganizationTimeZone();
   const typeOf = ({ id }: { id: string }) => data.types.find((type) => type.id === id);
   const resolver = useTypedResolver<TicketFormValues, TicketFormOutput>({
     types: data.types,
-    schemaFor: ({ type }) => ticketFormSchema({ type, vocabularies: data.vocabularies }),
+    schemaFor: ({ type }) => ticketFormSchema({ type, vocabularies: data.vocabularies, timeZone }),
   });
   const initial = typeOf({ id: ticket?.entityTypeId ?? data.types[0]?.id ?? "" });
   const form = useForm<TicketFormValues, unknown, TicketFormOutput>({
     resolver,
-    defaultValues: ticketFormDefaults({ type: initial, ticket }),
+    defaultValues: ticketFormDefaults({ type: initial, ticket, timeZone }),
   });
   const { submit, run, pending } = useFormAction({
     form,

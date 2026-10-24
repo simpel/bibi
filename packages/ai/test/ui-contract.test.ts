@@ -19,6 +19,7 @@ const venue = {
   contactEmail: null,
   contactPhone: null,
   openingHours: null,
+  timeZone: null,
   defaultVatRatePercent: 25,
   status: "ACTIVE",
   createdAt: "2026-10-13T10:00:00.000Z",
