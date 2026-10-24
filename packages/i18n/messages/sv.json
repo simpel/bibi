@@ -740,7 +740,8 @@
     "chooseOptionsDescription": "Välj radens tillval i varje anpassningsgrupp. Varje valt tillval blir en egen rad under den här: tillval som ingår kostar inget extra, tillägg debiteras med sitt eget pris och ett tillval som ersätter sätter priset i stället för artikeln.",
     "optionsChosen": "Tillvalen har sparats.",
     "optionGroup": "{name} (välj {min, number}{same, select, true {} other {–{max, number}}})",
-    "optionChoice": "{name} · {effect}"
+    "optionChoice": "{name} · {effect}",
+    "units": "Enheter"
   },
   "priceEffect": {
     "INCLUDED": "Ingår",
@@ -3181,5 +3182,61 @@
     "resetAll": "Återställ allt till förinställningen",
     "changePresetMember": "Byt roll",
     "changePresetApiKey": "Byt förinställning"
+  },
+  "itemDemand": {
+    "plural": "Behov",
+    "create": "Lägg till behov",
+    "edit": "Redigera behov",
+    "archive": "Ta bort behov",
+    "archiving": "Tar bort…",
+    "archived": "Behovet togs bort",
+    "archiveConfirm": "Ta bort behovet av {name}?",
+    "created": "Behovet lades till",
+    "updated": "Behovet sparades",
+    "formDescription": "Vad den här posten behöver ur en pool varje gång den bokas.",
+    "lists": {
+      "resources": "Resurser",
+      "staffing": "Bemanning"
+    },
+    "empty": {
+      "resources": "Ingen utrustning behövs.",
+      "staffing": "Ingen personal behövs."
+    },
+    "mandatory": "Obligatoriskt",
+    "optional": "Valfritt",
+    "columns": {
+      "target": "Pool",
+      "required": "Behov",
+      "quantity": "Antal",
+      "windows": "Tider"
+    },
+    "fields": {
+      "pool": "Pool",
+      "quantity": "Antal per bokning",
+      "required": "Obligatoriskt (bokningen nekas om ingen enhet är ledig)",
+      "windows": "Hålls under"
+    },
+    "windows": {
+      "SETUP": "Iordningställande",
+      "BOOKING": "Bokning",
+      "TEARDOWN": "Avveckling"
+    }
+  },
+  "lineAllocation": {
+    "title": "Enheter",
+    "description": "Enheterna som hålls för bokningen. Den första lediga enheten i poolens ordning är förvald; välj en annan för att byta.",
+    "loading": "Laddar…",
+    "loadFailed": "Enheterna kunde inte laddas.",
+    "empty": "Bokningen behöver inga enheter.",
+    "unit": "Enhet",
+    "choose": "Välj en enhet",
+    "unfilled": "Ingen enhet",
+    "save": "Spara",
+    "saving": "Sparar…",
+    "saved": "Enheten sparades",
+    "mandatory": "Obligatoriskt",
+    "optional": "Valfritt",
+    "chained": "behövs av en vald enhet",
+    "noneFree": "Ingen ledig enhet i {pool} för {window}."
   }
 }
