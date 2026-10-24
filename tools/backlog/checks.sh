@@ -6,12 +6,16 @@
 # Prints one JSON line: {"green":bool,"failures":[{"check","output"}]} (output = last 60 lines).
 # Exit code is always 0 so a caller reads the JSON, not the status.
 # --light runs only lint and check:structure (documentation and decision tickets change no code).
+# A full run waits for the machine-wide checks lock (checks-lock.sh), so two worktrees never run the tests at once.
 set -uo pipefail
 MAIN="$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")"
 ARGS=(--json --base origin/main)
 if [ "${1:-}" = "--light" ]; then
   ARGS+=(--light)
 else
+  # shellcheck source=checks-lock.sh
+  . "$(dirname "${BASH_SOURCE[0]}")/checks-lock.sh"
+  take_checks_lock
   docker compose -p bibi -f "$MAIN/docker-compose.yml" up -d --wait postgres >/dev/null 2>&1 || true
   # Storybook has its own CI job; a ticket that changes packages/ui builds it here too.
   CHANGED="$(git diff --name-only origin/main...HEAD; git diff --name-only HEAD; git ls-files --others --exclude-standard)"
