@@ -1,14 +1,14 @@
 "use client";
 
-import type { OrderLineDto, QuoteLineDto } from "@bibi/core/schemas";
+import type { OrderLineDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { type QuoteLineRow, useQuoteLineColumns } from "./use-quote-line-columns";
 
 export type QuoteLinesTableProps = {
-  lines: readonly QuoteLineDto[];
-  removedLines: readonly OrderLineDto[];
+  lines: readonly QuoteLineRow["line"][];
+  removedLines?: readonly OrderLineDto[];
   /** Saved column order key; the ticket's differences use their own. */
   tableId?: string;
 };
@@ -16,7 +16,7 @@ export type QuoteLinesTableProps = {
 /** The quote's order lines with change markers, and the lines this version removed. */
 export function QuoteLinesTable({
   lines,
-  removedLines,
+  removedLines = [],
   tableId = "quote.lines",
 }: QuoteLinesTableProps) {
   const t = useTranslations("quote");
