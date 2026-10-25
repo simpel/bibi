@@ -31,6 +31,8 @@ export const AI_FORBIDDEN_NAMES = ["apiKey.create"];
 const SELF_NAMES = [
   "userPreference.list",
   "userPreference.set",
+  "userSettings.get",
+  "userSettings.update",
   "profile.get",
   "profile.update",
   "workingHours.get",

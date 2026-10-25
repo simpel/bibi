@@ -1,22 +1,30 @@
 import "server-only";
-import type { CalendarBlockDto } from "@bibi/core/schemas";
-import { toIsoDate, toZonedParts } from "@bibi/core/schemas";
-import { getFormatter, getTranslations } from "next-intl/server";
+import {
+  type CalendarBlockDto,
+  type DateTimeFormat,
+  toIsoDate,
+  toZonedParts,
+} from "@bibi/core/schemas";
+import { getTranslations } from "next-intl/server";
+import { getDateTimeFormat } from "@/server/date-time-format";
 import type { CalendarLabels } from "../calendar-grid-model";
 import type { CalendarColumn } from "../calendar-layout";
-
-const TIME = { hour: "2-digit", minute: "2-digit" } as const;
-const DAY = { weekday: "short", day: "numeric", month: "short" } as const;
-const DATE = { weekday: "long", day: "numeric", month: "long", year: "numeric" } as const;
 
 const dayKey = ({ instant, timeZone }: { instant: Date; timeZone: string }) =>
   toIsoDate({ date: toZonedParts({ instant, timeZone }).date });
 
-/** Times only, or with the dates when the block runs over midnight. */
-const rangeOptions = ({ block, timeZone }: { block: CalendarBlockDto; timeZone: string }) =>
-  dayKey({ instant: block.startsAt, timeZone }) === dayKey({ instant: block.endsAt, timeZone })
-    ? { ...TIME, timeZone }
-    : { ...DAY, ...TIME, timeZone };
+const sameDay = ({ block, timeZone }: { block: CalendarBlockDto; timeZone: string }) =>
+  dayKey({ instant: block.startsAt, timeZone }) === dayKey({ instant: block.endsAt, timeZone });
+
+type BlockTimeInput = { format: DateTimeFormat; block: CalendarBlockDto; timeZone: string };
+
+/** Times only, or with the days when the block runs over midnight. */
+const blockTime = ({ format, block, timeZone }: BlockTimeInput) => {
+  const span = { start: block.startsAt, end: block.endsAt, timeZone };
+  return sameDay({ block, timeZone })
+    ? format.timeRange(span)
+    : format.dateTimeRange({ ...span, year: false, weekday: "short" });
+};
 
 /** The translators the grid and list need, built once per request from next-intl. */
 export async function getCalendarLabels({
@@ -28,26 +36,26 @@ export async function getCalendarLabels({
     getTranslations("calendar"),
     getTranslations("occupancy"),
     getTranslations("ticket"),
-    getFormatter(),
+    getDateTimeFormat(),
   ]);
   const at = ({ column }: { column: CalendarColumn }) =>
-    format.dateTime(column.start, { ...TIME, timeZone });
+    format.time({ instant: column.start, timeZone });
+  const dayLabel = ({ instant }: { instant: Date }) =>
+    format.date({ instant, timeZone, year: false, weekday: "short" });
   const date = ({ column }: { column: CalendarColumn }) =>
-    format.dateTime(new Date(`${toIsoDate({ date: column.date })}T12:00:00Z`), {
-      ...DATE,
+    format.date({
+      instant: new Date(`${toIsoDate({ date: column.date })}T12:00:00Z`),
+      weekday: "long",
       timeZone: "UTC",
     });
   return {
     type: ({ type }) => occupancy(`types.${type}`),
     reference: ({ reference }) => ticket("reference", { reference }),
-    heldSince: ({ heldAt }) =>
-      t("heldSince", { date: format.dateTime(heldAt, { ...DAY, timeZone }) }),
-    expires: ({ expiresAt }) =>
-      t("expires", { date: format.dateTime(expiresAt, { ...DAY, timeZone }) }),
-    time: ({ block }) =>
-      format.dateTimeRange(block.startsAt, block.endsAt, rangeOptions({ block, timeZone })),
+    heldSince: ({ heldAt }) => t("heldSince", { date: dayLabel({ instant: heldAt }) }),
+    expires: ({ expiresAt }) => t("expires", { date: dayLabel({ instant: expiresAt }) }),
+    time: ({ block }) => blockTime({ format, block, timeZone }),
     column: ({ column }) =>
-      column.hour !== null ? at({ column }) : format.dateTime(column.start, { ...DAY, timeZone }),
+      column.hour !== null ? at({ column }) : dayLabel({ instant: column.start }),
     slot: ({ space, column }) => {
       const when =
         column.hour !== null ? `${date({ column })} ${at({ column })}` : date({ column });

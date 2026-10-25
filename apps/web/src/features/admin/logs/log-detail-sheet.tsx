@@ -11,7 +11,8 @@ import {
   SheetTitle,
 } from "@bibi/ui";
 import { ListTreeIcon } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { LevelBadge } from "./level-badge";
 import { LogDetailBody } from "./log-detail-fields";
 import { useLogNavigation } from "./use-log-navigation";
@@ -25,7 +26,7 @@ export type LogDetailSheetProps = {
 /** Full log entry: indexed fields, raw JSON, and a jump to every line of the same request. */
 export function LogDetailSheet({ selectedId, entry }: LogDetailSheetProps) {
   const t = useTranslations("admin.logs.detail");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const { navigate } = useLogNavigation();
   const close = () => navigate({ patch: { log: null } });
   return (
@@ -37,9 +38,7 @@ export function LogDetailSheet({ selectedId, entry }: LogDetailSheetProps) {
             <span className="break-all">{entry?.event ?? t("title")}</span>
           </SheetTitle>
           <SheetDescription>
-            {entry
-              ? format.dateTime(entry.time, { dateStyle: "long", timeStyle: "medium" })
-              : t("notFound")}
+            {entry ? format.dateTime({ instant: entry.time, seconds: true }) : t("notFound")}
           </SheetDescription>
         </SheetHeader>
         {entry ? <LogDetailBody entry={entry} /> : null}

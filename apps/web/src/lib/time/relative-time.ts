@@ -1,3 +1,4 @@
+import type { DateTimeFormat } from "@bibi/core/schemas";
 import type { useFormatter } from "next-intl";
 
 type Formatter = ReturnType<typeof useFormatter>;
@@ -9,7 +10,7 @@ export type RelativeTimeInput = {
 };
 
 export type ExactTimeInput = {
-  format: Formatter;
+  format: DateTimeFormat;
   instant: Date;
   timeZone: string;
 };
@@ -21,5 +22,5 @@ export function relativeTime({ format, instant, now }: RelativeTimeInput): strin
 
 /** The exact date and time of `instant` in `timeZone`, with the zone's name: the tooltip of a relative time. */
 export function exactTime({ format, instant, timeZone }: ExactTimeInput): string {
-  return format.dateTime(instant, { dateStyle: "full", timeStyle: "long", timeZone });
+  return format.dateTime({ instant, timeZone, weekday: "long", zoneName: true });
 }

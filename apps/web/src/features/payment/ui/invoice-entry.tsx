@@ -1,6 +1,7 @@
 import type { InvoiceDto } from "@bibi/core/schemas";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { PaidOf } from "./paid-of";
 import { ReceivableBadges } from "./receivable-badges";
 
@@ -15,7 +16,7 @@ export type InvoiceEntryProps = { invoice: InvoiceValue; actions?: ReactNode };
 /** One invoice: its number, what is paid of its total, due date, status and progress. */
 export function InvoiceEntry({ invoice, actions }: InvoiceEntryProps) {
   const t = useTranslations("invoice");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const due = invoice.dueDate ? new Date(invoice.dueDate) : null;
   return (
     <article data-slot="invoice-entry" className="flex flex-wrap items-center gap-2 py-3 text-sm">
@@ -28,7 +29,7 @@ export function InvoiceEntry({ invoice, actions }: InvoiceEntryProps) {
       <ReceivableBadges status={invoice.status} progress={invoice.progress} />
       {due ? (
         <time className="text-xs text-muted-foreground" dateTime={due.toISOString()}>
-          {t("due", { date: format.dateTime(due, { dateStyle: "medium" }) })}
+          {t("due", { date: format.date({ instant: due }) })}
         </time>
       ) : null}
       {actions ? <div className="ml-auto flex gap-2">{actions}</div> : null}

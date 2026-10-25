@@ -1,6 +1,7 @@
 import { Button } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { AllocationSlot } from "./allocation-types";
 import { NO_UNIT, UnitSelect } from "./unit-select";
 import { useAssignUnit } from "./use-assign-unit";
@@ -17,11 +18,8 @@ type NoneFreeProps = Pick<AllocationSlotRowProps, "slot" | "startsAt" | "endsAt"
 /** Names the pool and the window nobody is free in. */
 function NoneFree({ slot, startsAt, endsAt }: NoneFreeProps) {
   const t = useTranslations("lineAllocation");
-  const format = useFormatter();
-  const window = format.dateTimeRange(startsAt, endsAt, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  const format = useDateTimeFormat();
+  const window = format.dateTimeRange({ start: startsAt, end: endsAt });
   return (
     <p role="alert" className="text-sm text-destructive">
       {t("noneFree", { pool: slot.poolName, window })}

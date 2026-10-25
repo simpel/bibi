@@ -1,9 +1,10 @@
 import type { InvitationDto } from "@bibi/core";
 import { actionsColumn, type ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { RoleBadge } from "./role-badge";
 
 export type InvitationRow = Pick<InvitationDto, "id" | "email" | "role"> & {
@@ -46,7 +47,7 @@ export function useInvitationColumns<TRow extends InvitationRow>({
 }: UseInvitationColumnsInput<TRow>): ColumnDef<TRow>[] {
   const t = useTranslations("member.columns");
   const common = useTranslations("common");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const actionColumn: ColumnDef<TRow>[] = renderActions
     ? [actionsColumn<TRow>({ label: common("actions"), cell: renderActions })]
     : [];
@@ -62,11 +63,7 @@ export function useInvitationColumns<TRow extends InvitationRow>({
       id: "expires",
       header: t("expires"),
       accessorFn: (i) => new Date(i.expiresAt),
-      cell: ({ row }) =>
-        format.dateTime(new Date(row.original.expiresAt), {
-          dateStyle: "medium",
-          timeStyle: "short",
-        }),
+      cell: ({ row }) => format.dateTime({ instant: row.original.expiresAt }),
     },
     ...actionColumn,
   ];

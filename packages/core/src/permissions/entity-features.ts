@@ -56,6 +56,7 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   skill: "self",
   oauthGrant: "self",
   userPreference: "self",
+  userSettings: "self",
   profile: "self",
   workingHours: "self",
   file: "self",

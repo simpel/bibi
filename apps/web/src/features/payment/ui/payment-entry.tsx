@@ -1,5 +1,6 @@
 import type { PaymentDto } from "@bibi/core/schemas";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { PaymentStatusBadge } from "./payment-status-badge";
 import { useMoney } from "./use-money";
 
@@ -21,7 +22,7 @@ const settles = ({ payment }: PaymentEntryProps) =>
  */
 export function PaymentEntry({ payment }: PaymentEntryProps) {
   const t = useTranslations("payment");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const money = useMoney();
   const when = new Date(payment.paidAt ?? payment.createdAt);
   const fee = payment.applicationFeeMinor;
@@ -35,7 +36,7 @@ export function PaymentEntry({ payment }: PaymentEntryProps) {
       </span>
       <PaymentStatusBadge status={payment.status} />
       <time className="text-xs text-muted-foreground" dateTime={when.toISOString()}>
-        {format.dateTime(when, { dateStyle: "medium", timeStyle: "short" })}
+        {format.dateTime({ instant: when })}
       </time>
       {fee === null ? null : (
         <span className="text-xs text-muted-foreground">

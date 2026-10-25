@@ -97,6 +97,7 @@ export const USER_SCOPED_MODELS = new Set<string>([
   "UserPreference",
   "UserProfile",
   "UserWorkingHours",
+  "UserSettings",
 ]);
 
 /** Every model that is deliberately not org-scoped. Each Prisma model is here or org-scoped. */

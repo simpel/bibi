@@ -1,5 +1,6 @@
 import type { SheetChange, SheetRow } from "@bibi/core/schemas";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 type RowFacts = Pick<
   SheetRow,
@@ -25,13 +26,11 @@ function Marker({ change }: { change: SheetChange["change"] | undefined }) {
 }
 
 function Period({ row }: { row: RowFacts }) {
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   if (!row.startsAt || !row.endsAt) return null;
-  const options = { dateStyle: "short", timeStyle: "short" } as const;
   return (
     <span className="text-muted-foreground">
-      {format.dateTime(new Date(row.startsAt), options)} –{" "}
-      {format.dateTime(new Date(row.endsAt), options)}
+      {format.dateTimeRange({ start: row.startsAt, end: row.endsAt })}
     </span>
   );
 }

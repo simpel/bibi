@@ -1,7 +1,8 @@
 import type { SystemLogEntry } from "@bibi/core/schemas";
 import type { ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { LevelBadge } from "./level-badge";
 
 type Column = ColumnDef<SystemLogEntry>;
@@ -27,14 +28,14 @@ const text = ({
 /** Columns of the system log table; the full entry is in the row's detail sheet. */
 export function useLogColumns(): Column[] {
   const t = useTranslations("admin.logs.columns");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return useMemo<Column[]>(() => {
     const time: Column = {
       id: "time",
       header: t("time"),
       cell: ({ row }) => (
         <time className="whitespace-nowrap tabular-nums" dateTime={row.original.time.toISOString()}>
-          {format.dateTime(row.original.time, { dateStyle: "short", timeStyle: "medium" })}
+          {format.dateTime({ instant: row.original.time, seconds: true })}
         </time>
       ),
     };

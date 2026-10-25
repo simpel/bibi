@@ -7,6 +7,8 @@ export const SELF_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   oauthGrant_revoke: "connected apps are managed on /profile, not in chat",
   userPreference_list: "UI preference bookkeeping (e.g. table column order), not a tool card",
   userPreference_set: "UI preference bookkeeping (e.g. table column order), not a tool card",
+  userSettings_get: "date and clock formats are set on /profile, not a tool card",
+  userSettings_update: "date and clock formats are set on /profile, not a tool card",
   profile_get: "the profile is edited in the welcome flow and on /profile (#418), not a tool card",
   profile_update:
     "the profile is edited in the welcome flow and on /profile (#418), not a tool card",

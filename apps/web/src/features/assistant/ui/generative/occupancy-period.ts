@@ -1,17 +1,14 @@
-import type { useFormatter } from "next-intl";
+import type { DateTimeFormat } from "@bibi/core/schemas";
 
 export type OccupancyPeriodInput = {
-  format: ReturnType<typeof useFormatter>;
+  format: DateTimeFormat;
   startsAt: string;
   endsAt: string;
 };
 
-/** `[startsAt, endsAt)` as one localized range, e.g. "1 Nov 2026, 08:00 – 10:00". */
+/** `[startsAt, endsAt)` as one range in the user's formats, e.g. "1 Nov 2026, 08:00 – 10:00". */
 export function occupancyPeriod({ format, startsAt, endsAt }: OccupancyPeriodInput): string {
-  return format.dateTimeRange(new Date(startsAt), new Date(endsAt), {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  return format.dateTimeRange({ start: startsAt, end: endsAt });
 }
 
 export type LinePeriodInput = Omit<OccupancyPeriodInput, "startsAt" | "endsAt"> & {

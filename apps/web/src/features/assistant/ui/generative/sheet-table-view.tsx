@@ -1,11 +1,12 @@
 "use client";
 
 import { Card, type ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
@@ -15,7 +16,7 @@ type Row = SheetTableViewProps["items"][number];
 
 function useSheetColumns(): ColumnDef<Row>[] {
   const t = useTranslations("assistant.ui.sheet");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return useMemo<ColumnDef<Row>[]>(
     () => [
       {
@@ -43,9 +44,7 @@ function useSheetColumns(): ColumnDef<Row>[] {
         header: t("columns.sent"),
         accessorFn: (sheet) => (sheet.sentAt ? new Date(sheet.sentAt) : undefined),
         cell: ({ row }) =>
-          row.original.sentAt
-            ? format.dateTime(new Date(row.original.sentAt), { dateStyle: "medium" })
-            : t("notSent"),
+          row.original.sentAt ? format.date({ instant: row.original.sentAt }) : t("notSent"),
       },
     ],
     [t, format],

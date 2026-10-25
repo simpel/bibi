@@ -30,3 +30,9 @@
 
 ## Addendum 2026-10-22 – setup status moves to the organization
 - `onboardingStatus` is removed. The setup status is `OrganizationProfile.setupStatus`, and the AI onboarding is replaced by the welcome flow (ADR 0061).
+
+## Addendum 2026-10-25 – date and clock formats (#481)
+- `UserSettings` comes back with two owned, nullable columns: `dateFormat` (`D_MMM_YYYY`, `D_MMMM_YYYY`, `YYYY_MM_DD`, `DD_MM_YYYY`, `MM_DD_YYYY`) and `clockFormat` (`H24`, `H12`). `null` = the default, `D_MMM_YYYY` (27 Aug 2026) and `H24` (ADR 0051). No row means the defaults.
+- `userSettings.get` and `userSettings.update({ dateFormat?, clockFormat? })` on every surface (REST `GET`/`PUT /user-settings`), `self:read|write`. Omitted keeps a value, `null` resets it. Set on `/profile`.
+- A typed setting, not a `UserPreference` key: every date and time the app shows depends on it, the AI and API set it with a validated enum, and the server reads it to render.
+- One formatter, `createDateTimeFormat({ locale, timeZone, formats })` in core `time/`, writes every date and time: `date`, `time`, `dateTime`, `weekday` and the ranges. It assembles dates from `Intl.DateTimeFormat.formatToParts`, because Intl options alone cannot give `27 Aug 2026` in English (they give `Aug 27, 2026`). Month and weekday names follow the UI language. The web app gets it from `getDateTimeFormat()` (server) and `useDateTimeFormat()` (client); `check:structure` refuses next-intl `format.dateTime`/`dateTimeRange` and `toLocale*String` outside the time module.

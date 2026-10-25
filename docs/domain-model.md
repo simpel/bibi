@@ -99,6 +99,7 @@ erDiagram
   User ||--o{ UserPreference : "saves"
   User ||--o| UserProfile : "has"
   User ||--o{ UserWorkingHours : "works"
+  User ||--o| UserSettings : "sets"
   Member ||--o| MemberProfile : "has"
   MemberProfile ||--o{ MemberProfileItem : "is staffed as"
   Item ||--o| MemberProfileItem : "stands for a member"
@@ -937,6 +938,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `1:N` saves → UserPreference
 - `1:1` has → UserProfile (optional until the welcome flow)
 - `1:N` works → UserWorkingHours (one per weekday)
+- `1:1` sets → UserSettings (optional: none means the defaults)
 
 | Preset | Can |
 |---|---|
@@ -1053,6 +1055,19 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` belongs to → User
 
 > Operations (`self:read|write`): `workingHours.get` and `workingHours.set({ days })` (replaces the week). Default in the welcome flow: Monday–Friday 08–17 with lunch 12–13.
+
+### UserSettings (`UserSettings`)
+
+*MVP* · How one user wants the app to behave, as typed columns ([ADR 0046](decisions/0046-user-settings.md)): today the date and clock format every date and time in the UI is written in. User-scoped like `UserPreference`; no row means the defaults.
+
+**Attributes**
+- dateFormat (owned, nullable = default `D_MMM_YYYY`): `D_MMM_YYYY` (27 Aug 2026), `D_MMMM_YYYY` (27 August 2026), `YYYY_MM_DD` (2026-08-27), `DD_MM_YYYY` (27/08/2026), `MM_DD_YYYY` (08/27/2026); month names follow the UI language
+- clockFormat (owned, nullable = default `H24`): `H24` (14:30) or `H12` (2:30 PM)
+
+**Relations**
+- `1:1` belongs to → User
+
+> Operations (`self:read|write`): `userSettings.get` and `userSettings.update({ dateFormat?, clockFormat? })` (omitted keeps, null resets). Set on `/profile`. The web app renders every date and time through `createDateTimeFormat` (core `time/`) with these, the UI language and the zone from `effectiveTimeZone`.
 
 ### MemberProfile (`MemberProfile`)
 
@@ -1280,6 +1295,7 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | UserPreference | Användarinställning |
 | UserProfile | Användarprofil |
 | UserWorkingHours | Arbetstider |
+| UserSettings | Användarinställningar |
 | OrganizationProfile | Organisationsprofil |
 | SystemLog | Systemlogg |
 | AiSetting | AI-inställning |

@@ -1,11 +1,12 @@
 "use client";
 
 import { Card, type ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 import { linePeriod } from "./occupancy-period";
@@ -16,7 +17,7 @@ type Row = LineTableViewProps["items"][number];
 
 function useLineColumns(): ColumnDef<Row>[] {
   const t = useTranslations("assistant.ui.line");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return useMemo<ColumnDef<Row>[]>(
     () => [
       {

@@ -1,9 +1,10 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { CalendarRangeBlock } from "./calendar-range-block";
 import { groupBlocksByDay } from "./calendar-range-model";
 import type { GenerativeProps } from "./generative-props";
@@ -16,12 +17,11 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 /** The calendar for a period as blocks per day; the full calendar is on `/calendar`. */
 export function CalendarRangeView({ range }: CalendarRangeViewProps) {
   const t = useTranslations("assistant.ui.calendar");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const { timeZone } = range;
-  const day = ({ value }: { value: string | Date }) =>
-    format.dateTime(new Date(value), { dateStyle: "medium", timeZone });
   // `to` is exclusive (the start of the day after the last).
-  const period = `${day({ value: range.from })} – ${day({ value: new Date(new Date(range.to).getTime() - DAY_MS) })}`;
+  const end = new Date(new Date(range.to).getTime() - DAY_MS);
+  const period = format.dateRange({ start: range.from, end, timeZone });
   const { days, hidden } = groupBlocksByDay({ blocks: range.blocks, timeZone, limit: MAX_BLOCKS });
   return (
     <Card data-slot="calendar-range" className="shadow-none">
@@ -33,7 +33,7 @@ export function CalendarRangeView({ range }: CalendarRangeViewProps) {
         {days.map((group) => (
           <section key={group.key} className="grid gap-1">
             <h4 className="text-xs font-medium text-muted-foreground">
-              {day({ value: group.firstStart })}
+              {format.date({ instant: group.firstStart, timeZone })}
             </h4>
             <ul className="grid gap-1">
               {group.blocks.map((block) => (

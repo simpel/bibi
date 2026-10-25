@@ -45,6 +45,7 @@ import "../features/api-key/graphql";
 import "../features/permission/graphql";
 import "../features/oauth-grant/graphql";
 import "../features/user-preference/graphql";
+import "../features/user-settings/graphql";
 import "../features/profile/graphql";
 import "../features/file/graphql";
 import "../features/organization-profile/graphql";

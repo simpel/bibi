@@ -7,6 +7,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 import { Providers } from "@/components/providers";
 import { DevUserSwitcherSlot } from "@/features/dev/ui/dev-user-switcher-slot";
+import { DisplayFormatsProvider } from "@/lib/time/display-formats-provider";
+import { loadDisplayFormats } from "@/server/display-formats";
 import "../globals.css";
 
 const sans = Inter({
@@ -57,8 +59,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     >
       <body>
         <NextIntlClientProvider>
-          <Providers>{children}</Providers>
-          <DevUserSwitcherSlot />
+          <DisplayFormatsProvider formats={await loadDisplayFormats()}>
+            <Providers>{children}</Providers>
+            <DevUserSwitcherSlot />
+          </DisplayFormatsProvider>
         </NextIntlClientProvider>
       </body>
     </html>

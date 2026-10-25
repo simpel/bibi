@@ -44,6 +44,7 @@ import { ticketOperations } from "./features/ticket/operations";
 import { ticketStatusOperations } from "./features/ticket-status/operations";
 import { ticketTemplateOperations } from "./features/ticket-template/operations";
 import { userPreferenceOperations } from "./features/user-preference/operations";
+import { userSettingsOperations } from "./features/user-settings/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
 import type { AnyOperation } from "./operations/types";
@@ -80,8 +81,16 @@ const moneyOperations = [
 /** What occupies bookable items and the calendar that shows it (ADR 0022, 0064). */
 const bookingOperations = [...occupancyOperations, ...calendarOperations];
 
-/** The caller's own data: preferences, profile, working hours and files (ADR 0039, 0061, 0063). */
-const selfOperations = [...userPreferenceOperations, ...profileOperations, ...fileOperations];
+/**
+ * The caller's own data: preferences, settings, profile, working hours and files
+ * (ADR 0039, 0046, 0061, 0063).
+ */
+const selfOperations = [
+  ...userPreferenceOperations,
+  ...userSettingsOperations,
+  ...profileOperations,
+  ...fileOperations,
+];
 
 /** Every operation that does not depend on the app's `embed` (all but `search`). */
 function staticOperations(): AnyOperation[] {

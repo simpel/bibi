@@ -41,3 +41,12 @@ test("flags a zone constant outside the time module", () => {
   assert.equal(problems('"Europe/Stockholm"', "apps/worker/src/job-definition.ts").length, 1);
   assert.equal(problems('"Europe/Stockholm"', "packages/core/src/seed/demo/seed.ts").length, 1);
 });
+
+test("flags next-intl date formatting but not the user's formatter (#481)", () => {
+  assert.equal(problems('format.dateTime(value, { dateStyle: "medium" })').length, 1);
+  assert.equal(problems("format.dateTimeRange(\n  start,\n  end,\n)").length, 1);
+  assert.equal(problems("date.toLocaleDateString()").length, 1);
+  assert.deepEqual(problems("format.dateTime({ instant })"), []);
+  assert.deepEqual(problems("format.dateTimeRange({\n  start,\n  end })"), []);
+  assert.deepEqual(problems("(1000).toLocaleString(locale)"), []);
+});

@@ -26,7 +26,12 @@ export const lindholmen: DemoOrg = {
   timeZone: "Europe/Stockholm",
   users: [
     { name: "Anna Berg", role: "admin" },
-    { name: "Erik Lund", role: "manager" },
+    // Reads dates as 2026-08-27 and a 12 hour clock (ADR 0046).
+    {
+      name: "Erik Lund",
+      role: "manager",
+      displayFormats: { dateFormat: "YYYY_MM_DD", clockFormat: "H12" },
+    },
     { name: "Sara Nilsson", role: "manager" },
     { name: "Johan Ek", role: "admin" },
     // Handles bookings but not money (ADR 0050).

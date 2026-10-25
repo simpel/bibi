@@ -1,13 +1,11 @@
-import type { useFormatter } from "next-intl";
-
-const PERIOD = { dateStyle: "medium", timeStyle: "short" } as const;
+import type { DateTimeFormat } from "@bibi/core/schemas";
 
 type When = Date | string | null;
 
 export type DesiredPeriodInput = {
   /** A ticket, or its JSON form from a tool result (dates as ISO strings). */
   ticket: { desiredStartsAt: When; desiredEndsAt: When };
-  format: ReturnType<typeof useFormatter>;
+  format: DateTimeFormat;
 };
 
 const toDate = ({ value }: { value: When }) => (value === null ? null : new Date(value));
@@ -16,7 +14,7 @@ const toDate = ({ value }: { value: When }) => (value === null ? null : new Date
 export function desiredPeriod({ ticket, format }: DesiredPeriodInput): string {
   const start = toDate({ value: ticket.desiredStartsAt });
   const end = toDate({ value: ticket.desiredEndsAt });
-  if (start && end) return format.dateTimeRange(start, end, PERIOD);
+  if (start && end) return format.dateTimeRange({ start, end });
   const one = start ?? end;
-  return one ? format.dateTime(one, PERIOD) : "–";
+  return one ? format.dateTime({ instant: one }) : "–";
 }

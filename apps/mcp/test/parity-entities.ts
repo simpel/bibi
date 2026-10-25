@@ -10,7 +10,7 @@ import { moneyEntities } from "./parity-entities-payment";
 import { alternativeGroupEntity, quoteEntity } from "./parity-entities-quote";
 import { sheet } from "./parity-entities-sheet";
 import { ticketEntities } from "./parity-entities-ticket";
-import { userPreferenceEntity } from "./parity-entities-user-preference";
+import { selfEntities } from "./parity-entities-user-settings";
 import { welcomeEntities } from "./parity-entities-welcome";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
@@ -143,6 +143,6 @@ export const ENTITIES: ParityEntity[] = [
   ...accessEntities(),
   ...moneyEntities(),
   ...integrationEntities(),
-  userPreferenceEntity,
+  ...selfEntities(),
   ...welcomeEntities(),
 ];

@@ -1,7 +1,8 @@
 import type { AuditLogDto } from "@bibi/core/schemas";
 import { Badge } from "@bibi/ui";
 import { SparklesIcon } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { auditDiff } from "../audit-diff";
 import { AuditChanges } from "./audit-changes";
 
@@ -16,11 +17,8 @@ export type AuditEntryProps = { entry: AuditEntryValue };
 /** One change: when, who (with the assistant marker and approver), the operation and the diff. */
 export function AuditEntry({ entry }: AuditEntryProps) {
   const t = useTranslations("auditLog");
-  const format = useFormatter();
-  const when = format.dateTime(new Date(entry.createdAt), {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  const format = useDateTimeFormat();
+  const when = format.dateTime({ instant: entry.createdAt });
   const who = entry.actorName ?? t(`actor.${entry.actorType}`);
   return (
     <article data-slot="audit-entry" className="grid gap-2 py-3 text-sm">

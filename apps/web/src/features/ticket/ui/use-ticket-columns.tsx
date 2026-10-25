@@ -1,17 +1,18 @@
 import type { TicketDto } from "@bibi/core";
-import type { TicketStatusDto } from "@bibi/core/schemas";
+import type { DateTimeFormat, TicketStatusDto } from "@bibi/core/schemas";
 import type { ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { namedOptionColumn } from "@/components/data-table/named-option-column";
 import type { NamedOption } from "@/components/form/named-option";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { desiredPeriod } from "./desired-period";
 import { TicketReferenceCell } from "./ticket-reference-cell";
 import { TicketStatusLabel } from "./ticket-status-label";
 
 type Column = ColumnDef<TicketDto>;
 type Translate = ReturnType<typeof useTranslations<"ticket">>;
-type Format = ReturnType<typeof useFormatter>;
+type Format = DateTimeFormat;
 
 export type TicketLookups = {
   customers: NamedOption[];
@@ -85,7 +86,7 @@ export function useTicketColumns({
   const t = useTranslations("ticket");
   const common = useTranslations("common");
   const shown = customersHidden ? common("hidden") : undefined;
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return useMemo<Column[]>(
     () => [
       referenceColumn({ t }),

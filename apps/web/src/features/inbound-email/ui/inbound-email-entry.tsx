@@ -1,6 +1,7 @@
 import type { InboundEmailDto } from "@bibi/core/schemas";
 import { PaperclipIcon } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 /** A received mail as the server (Date) or a tool result (ISO string) carries it. */
 export type InboundEmailValue = Omit<InboundEmailDto, "receivedAt" | "createdAt"> & {
@@ -15,14 +16,14 @@ export type InboundEmailEntryProps = { email: InboundEmailValue };
  */
 export function InboundEmailEntry({ email }: InboundEmailEntryProps) {
   const t = useTranslations("inboundEmail");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const received = new Date(email.receivedAt);
   return (
     <article data-slot="inbound-email-entry" className="grid gap-2 py-3 text-sm">
       <header className="flex flex-wrap items-center gap-2">
         <span className="font-medium">{email.fromAddress}</span>
         <time className="ml-auto text-xs text-muted-foreground" dateTime={received.toISOString()}>
-          {format.dateTime(received, { dateStyle: "medium", timeStyle: "short" })}
+          {format.dateTime({ instant: received })}
         </time>
       </header>
       <p className="font-medium">{email.subject ?? t("noSubject")}</p>

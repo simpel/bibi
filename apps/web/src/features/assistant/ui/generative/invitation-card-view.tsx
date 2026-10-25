@@ -1,10 +1,11 @@
 "use client";
 
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { RoleBadge } from "@/features/member/ui/role-badge";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
 
 export type InvitationCardViewProps = GenerativeProps<"invitation-card">;
@@ -12,11 +13,8 @@ export type InvitationCardViewProps = GenerativeProps<"invitation-card">;
 /** One invitation: email, status, the role it gives and when it expires. */
 export function InvitationCardView({ invitation }: InvitationCardViewProps) {
   const t = useTranslations("member");
-  const format = useFormatter();
-  const expires = format.dateTime(new Date(invitation.expiresAt), {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  const format = useDateTimeFormat();
+  const expires = format.dateTime({ instant: invitation.expiresAt });
   return (
     <Card data-slot="invitation-card" className="shadow-none">
       <CardHeader className="flex-row items-start justify-between gap-2 p-4 pb-2">

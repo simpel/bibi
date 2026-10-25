@@ -1,10 +1,11 @@
 import type { ColumnDef } from "@bibi/ui";
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { formatKr } from "@/features/item/ui/format-price";
 import { QuoteStatusBadge } from "@/features/quote/ui/quote-status-badge";
 import { Link } from "@/lib/navigation";
 import { quoteRoute } from "@/lib/routes";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
 
 export type QuoteCardRow = GenerativeProps<"quote-table">["items"][number];
@@ -25,7 +26,7 @@ const versionColumn = ({ t }: { t: Translate }): ColumnDef<QuoteCardRow> => ({
 /** Version (links to the quote) · valid until · total · status. */
 export function useQuoteCardColumns(): ColumnDef<QuoteCardRow>[] {
   const t = useTranslations("assistant.ui.quote");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const locale = useLocale();
   return useMemo(
     () => [
@@ -35,9 +36,7 @@ export function useQuoteCardColumns(): ColumnDef<QuoteCardRow>[] {
         header: t("columns.validUntil"),
         accessorFn: (q) => (q.validUntil ? new Date(q.validUntil) : undefined),
         cell: ({ row }) =>
-          row.original.validUntil
-            ? format.dateTime(new Date(row.original.validUntil), { dateStyle: "medium" })
-            : "–",
+          row.original.validUntil ? format.date({ instant: row.original.validUntil }) : "–",
       },
       {
         id: "total",

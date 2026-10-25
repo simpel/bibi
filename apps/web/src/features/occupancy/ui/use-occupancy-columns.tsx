@@ -1,9 +1,10 @@
 import type { OccupancyDto } from "@bibi/core";
 import { MANUAL_OCCUPANCY_TYPES } from "@bibi/core/schemas";
 import { actionsColumn, type ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import type { RowAccess } from "@/lib/can";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { OccupancyRowActions } from "./occupancy-row-actions";
 
 type Column = ColumnDef<OccupancyDto>;
@@ -21,10 +22,9 @@ export type UseOccupancyColumnsInput = {
 export function useOccupancyColumns({ access, timeZone }: UseOccupancyColumnsInput): Column[] {
   const t = useTranslations("occupancy");
   const common = useTranslations("common");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return useMemo<Column[]>(() => {
-    const when = ({ date }: { date: Date }) =>
-      format.dateTime(date, { dateStyle: "medium", timeStyle: "short", timeZone });
+    const when = ({ date }: { date: Date }) => format.dateTime({ instant: date, timeZone });
     const columns: Column[] = [
       { id: "type", header: t("columns.type"), accessorFn: (o) => t(`types.${o.type}`) },
       {

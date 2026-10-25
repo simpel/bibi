@@ -1,12 +1,13 @@
-import { type ApiKeyDto, parseFixedRole } from "@bibi/core/schemas";
+import { type ApiKeyDto, type DateTimeFormat, parseFixedRole } from "@bibi/core/schemas";
 import { actionsColumn, type ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { ApiKeyRowActions } from "./api-key-row-actions";
 
 type Column = ColumnDef<ApiKeyDto>;
 type Translate = ReturnType<typeof useTranslations<"integration.apiKeys">>;
-type Format = ReturnType<typeof useFormatter>;
+type Format = DateTimeFormat;
 
 type DateColumnInput = {
   id: "expires" | "lastUsed";
@@ -22,7 +23,7 @@ const dateColumn = ({ id, t, format, pick }: DateColumnInput): Column => ({
   accessorFn: (key) => pick(key) ?? undefined,
   cell: ({ row }) => {
     const value = pick(row.original);
-    return value ? format.dateTime(value, { dateStyle: "medium" }) : t("never");
+    return value ? format.date({ instant: value }) : t("never");
   },
 });
 
@@ -49,7 +50,7 @@ export function useApiKeyColumns({ canManage }: UseApiKeyColumnsInput): Column[]
   const t = useTranslations("integration.apiKeys");
   const roles = useTranslations("role");
   const common = useTranslations("common");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return useMemo<Column[]>(
     () => [
       nameColumn({ t }),

@@ -1,5 +1,6 @@
 import type { TicketStatusChangeDto } from "@bibi/core/schemas";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 /** A status change as the server (Date) or a tool result (ISO string) carries it. */
 export type StatusChangeValue = Omit<TicketStatusChangeDto, "changedAt"> & {
@@ -19,7 +20,7 @@ export type StatusHistoryListProps = {
  */
 export function StatusHistoryList({ items, statusNames }: StatusHistoryListProps) {
   const t = useTranslations("ticket.statusHistory");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
   return (
     <ol data-slot="status-history-list" className="divide-y">
@@ -33,7 +34,7 @@ export function StatusHistoryList({ items, statusNames }: StatusHistoryListProps
             </span>
             <span className="text-muted-foreground">{t(`trigger.${item.trigger}`)}</span>
             <time className="text-xs text-muted-foreground" dateTime={when.toISOString()}>
-              {format.dateTime(when, { dateStyle: "medium", timeStyle: "short" })}
+              {format.dateTime({ instant: when })}
             </time>
             {item.reason ? (
               <span className="basis-full text-muted-foreground">{item.reason}</span>

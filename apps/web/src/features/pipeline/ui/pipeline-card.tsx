@@ -1,6 +1,7 @@
 import type { PipelineCard } from "@bibi/core";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { RelativeTime } from "@/components/relative-time";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 export type PipelineCardContentProps = {
   /** `customerName` is null when the caller may not view customers: then none is shown. */
@@ -10,7 +11,7 @@ export type PipelineCardContentProps = {
 /** What a board card shows: ticket number and type, customer, start and quantity. */
 export function PipelineCardContent({ card }: PipelineCardContentProps) {
   const t = useTranslations("pipeline");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const heading = `#${card.reference} · ${card.typeName}`;
   return (
     <div className="grid gap-0.5 text-sm">
@@ -19,7 +20,7 @@ export function PipelineCardContent({ card }: PipelineCardContentProps) {
         <span className="text-muted-foreground">{card.customerName}</span>
       ) : null}
       <span className="text-xs text-muted-foreground">
-        {card.startsAt ? format.dateTime(card.startsAt, { dateStyle: "medium" }) : t("noDate")}
+        {card.startsAt ? format.date({ instant: card.startsAt }) : t("noDate")}
         {card.quantity === null ? "" : ` · ${t("quantity", { count: card.quantity })}`}
       </span>
       <span className="text-xs text-muted-foreground">

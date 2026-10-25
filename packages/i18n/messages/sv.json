@@ -1384,6 +1384,8 @@
         "venueId": "Anläggning (id)",
         "entityTypeId": "Typ (id)",
         "base": "Bas",
+        "dateFormat": "Datumformat",
+        "clockFormat": "Klockformat",
         "capabilities": "Förmågor",
         "fields": "Fält",
         "priceMinor": "Pris (öre)",
@@ -1541,6 +1543,7 @@
         "skill_share": "Dela färdighet",
         "skill_import": "Importera färdighet",
         "conversation_archive": "Arkivera konversation",
+        "userSettings_update": "Ändra datum- och klockformat",
         "assignment_assign": "Byt ansvarig",
         "assignment_follow": "Följ",
         "assignment_unfollow": "Sluta följa",
@@ -2190,6 +2193,23 @@
     "timeZoneHint": "Ärendets tider och varje anläggning utan egen zon använder den här zonen. En ändring påverkar hur tider visas och skrivs in; sparade tider ändras inte.",
     "saved": "Tidszonen har sparats."
   },
+  "userSettings": {
+    "dateFormat": "Datumformat",
+    "clockFormat": "Klocka",
+    "withDefault": "{label} (standard)",
+    "saved": "Ditt datum- och klockformat har sparats.",
+    "dateFormats": {
+      "D_MMM_YYYY": "{example}",
+      "D_MMMM_YYYY": "{example} (hel månad)",
+      "YYYY_MM_DD": "{example} (ISO)",
+      "DD_MM_YYYY": "{example} (dag först)",
+      "MM_DD_YYYY": "{example} (månad först)"
+    },
+    "clockFormats": {
+      "H24": "{example} (24 timmar)",
+      "H12": "{example} (12 timmar)"
+    }
+  },
   "timeZone": {
     "placeholder": "Välj tidszon",
     "search": "Sök tidszon",
@@ -2665,6 +2685,8 @@
   "profile": {
     "title": "Profil",
     "description": "Ditt namn, ditt lösenord och dina inloggade sessioner.",
+    "displayTitle": "Datum och tid",
+    "displayDescription": "Hur datum och tider skrivs för dig överallt i appen.",
     "details": "Uppgifter",
     "saveName": "Spara namn",
     "savingName": "Sparar…",

@@ -28,6 +28,7 @@ import { checkDemoTemplates } from "./template-checks";
 import { checkDemoTickets } from "./ticket-checks";
 import { checkDemoTimeZones } from "./time-zone-checks";
 import type { DemoOrg } from "./types";
+import { checkDemoUserSettings } from "./user-settings-checks";
 
 type OrgCheck = (input: { context: ExecuteContext; org: DemoOrg }) => Promise<string[]>;
 
@@ -98,6 +99,7 @@ export async function checkDemoOrg({
   failures.push(...(await checkDemoRecords({ context, org })));
   failures.push(...(await checkDemoSetupNeed({ context, org, skipPipeline })));
   failures.push(...(await checkDemoTimeZones({ context, org })));
+  failures.push(...(await checkDemoUserSettings({ context, org })));
   if (skipPipeline) return [...failures, ...(await auditFailures({ context, org }))];
   for (const check of PIPELINE_CHECKS) failures.push(...(await check({ context, org })));
   failures.push(...(await reconcileProjections({ context })));
@@ -105,11 +107,11 @@ export async function checkDemoOrg({
 }
 
 /** Entities the seed writes as each user, because `self:*` operations refuse SYSTEM. */
-const SELF_SEEDED = ["profile", "workingHours"] as const;
+const SELF_SEEDED = ["profile", "workingHours", "userSettings"] as const;
 
 /**
  * Check 7 (ADR 0025): every write must have an audit row as SYSTEM, except each user's own
- * profile and hours (ADR 0061), which `self:*` operations save as that user.
+ * profile, hours and settings (ADR 0061, 0046), which `self:*` operations save as that user.
  */
 async function auditFailures({ context, org }: CheckDemoOrgInput): Promise<string[]> {
   const notSystem = await context.db.auditLog.count({

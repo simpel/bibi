@@ -44,6 +44,7 @@ import { ticketMcpTools } from "../features/ticket/mcp";
 import { ticketStatusMcpTools } from "../features/ticket-status/mcp";
 import { ticketTemplateMcpTools } from "../features/ticket-template/mcp";
 import { userPreferenceMcpTools } from "../features/user-preference/mcp";
+import { userSettingsMcpTools } from "../features/user-settings/mcp";
 import { venueMcpTools } from "../features/venue/mcp";
 import { vocabularyMcpTools } from "../features/vocabulary/mcp";
 import { searchMcpTools } from "../search-mcp";
@@ -62,7 +63,12 @@ const lineAndGroupMcpTools = [
 ];
 /** The read models staff work from: the pipeline board and the calendar. */
 const boardMcpTools = [...pipelineMcpTools, ...calendarMcpTools];
-const selfMcpTools = [...userPreferenceMcpTools, ...profileMcpTools, ...fileMcpTools];
+const selfMcpTools = [
+  ...userPreferenceMcpTools,
+  ...userSettingsMcpTools,
+  ...profileMcpTools,
+  ...fileMcpTools,
+];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
 const moneyMcpTools = [

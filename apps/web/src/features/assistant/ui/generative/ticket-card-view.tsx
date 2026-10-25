@@ -1,10 +1,11 @@
 "use client";
 
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { desiredPeriod } from "@/features/ticket/ui/desired-period";
 import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";
 
@@ -13,7 +14,7 @@ export type TicketCardViewProps = GenerativeProps<"ticket-card">;
 /** One ticket: reference (link), desired period, headcount and own fields. */
 export function TicketCardView({ ticket }: TicketCardViewProps) {
   const t = useTranslations("assistant.ui.ticket");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const href = ticketRoute({ id: ticket.id });
   const headcount = ticket.guaranteedHeadcount ?? ticket.estimatedHeadcount;
   return (

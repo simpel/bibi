@@ -1,6 +1,7 @@
 import { addDays, type PlainDate, toIsoDate } from "@bibi/core/schemas";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/lib/navigation";
+import { getDateTimeFormat } from "@/server/date-time-format";
 import type { MonthBlank, MonthCell } from "../calendar-month-model";
 import type { CalendarFilters } from "../calendar-params";
 import { calendarHref } from "../calendar-params";
@@ -52,13 +53,14 @@ async function MonthDay({ cell: { date, day }, filters }: DayProps) {
 
 /** A month as weeks of days (not a table: the grid is the one exception), each day's first blocks. */
 export async function CalendarMonth({ weeks, filters }: CalendarMonthProps) {
-  const format = await getFormatter();
+  const format = await getDateTimeFormat();
   const second = weeks[1]?.[0];
   const monday = second && "date" in second ? second.date : undefined;
   const weekdays = monday
     ? Array.from({ length: 7 }, (_, days) =>
-        format.dateTime(noon({ date: addDays({ date: monday, days }) }), {
-          weekday: "short",
+        format.weekday({
+          instant: noon({ date: addDays({ date: monday, days }) }),
+          style: "short",
           timeZone: "UTC",
         }),
       )

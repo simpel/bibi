@@ -3,9 +3,11 @@ import { ok, type Result } from "../../errors/result";
 import { updateOrganizationProfile } from "../../features/organization-profile/operations";
 import { setWorkingHours, updateProfile } from "../../features/profile/operations";
 import { DEFAULT_WORKING_HOURS } from "../../features/profile/working-hours-schema";
+import { updateUserSettings } from "../../features/user-settings/operations";
 import { createExecuteContext, type ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { grantAll } from "../../permissions/permission-set";
+import type { DisplayFormats } from "../../time/display-formats";
 import type { DemoOrg } from "./types";
 import type { DemoUserIds } from "./users";
 
@@ -26,10 +28,18 @@ type SeedUserInput = {
   userId: string;
   name: string;
   index: number;
+  displayFormats?: DisplayFormats;
 };
 
-/** One user's profile and default hours, saved as that user (the operations are `self:*`). */
-async function seedUserProfile({ db, organizationId, userId, name, index }: SeedUserInput) {
+/** One user's profile, default hours and formats, saved as that user (the operations are `self:*`). */
+async function seedUserProfile({
+  db,
+  organizationId,
+  userId,
+  name,
+  index,
+  displayFormats,
+}: SeedUserInput) {
   const context = createExecuteContext({
     organizationId,
     roles: [],
@@ -42,7 +52,9 @@ async function seedUserProfile({ db, organizationId, userId, name, index }: Seed
   const profile = await execute({ operation: updateProfile, input, context });
   if (!profile.ok) return profile;
   const days = [...DEFAULT_WORKING_HOURS];
-  return execute({ operation: setWorkingHours, input: { days }, context });
+  const hours = await execute({ operation: setWorkingHours, input: { days }, context });
+  if (!hours.ok || !displayFormats) return hours;
+  return execute({ operation: updateUserSettings, input: displayFormats, context });
 }
 
 /**
@@ -67,7 +79,9 @@ export async function seedDemoProfiles({
   const users = [...userIds.entries()];
   for (const [index, [name, userId]] of users.entries()) {
     const organizationId = context.organizationId;
-    const seeded = await seedUserProfile({ db, organizationId, userId, name, index });
+    const { displayFormats } = org.users.find((user) => user.name === name) ?? {};
+    const input = { db, organizationId, userId, name, index, displayFormats };
+    const seeded = await seedUserProfile(input);
     if (!seeded.ok) return seeded;
   }
   return ok({ value: null });

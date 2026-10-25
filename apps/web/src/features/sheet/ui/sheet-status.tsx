@@ -1,6 +1,7 @@
 import type { SheetDto } from "@bibi/core/schemas";
 import { Badge } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 /** A sheet as the server (Date) or a tool result (ISO string) carries it. */
 export type SheetStatusValue = Pick<SheetDto, "version" | "baseVersion" | "changes" | "blocked"> & {
@@ -12,7 +13,7 @@ export type SheetStatusProps = { sheet: SheetStatusValue };
 /** Version, whether it has been sent, and how many rows carry ★ since the last sent version. */
 export function SheetStatus({ sheet }: SheetStatusProps) {
   const t = useTranslations("sheet");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const sent = sheet.sentAt ? new Date(sheet.sentAt) : null;
   return (
     <div data-slot="sheet-status" className="flex flex-wrap items-center gap-2 text-sm">
@@ -20,7 +21,7 @@ export function SheetStatus({ sheet }: SheetStatusProps) {
       <Badge variant={sent ? "outline" : "default"}>
         {sent
           ? t("sentAt", {
-              when: format.dateTime(sent, { dateStyle: "medium", timeStyle: "short" }),
+              when: format.dateTime({ instant: sent }),
             })
           : t("notSent")}
       </Badge>

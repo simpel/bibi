@@ -1,8 +1,10 @@
 import type { LineDto } from "@bibi/core";
+import type { DateTimeFormat } from "@bibi/core/schemas";
 import { actionsColumn, type ColumnDef } from "@bibi/ui";
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { chosenOptions } from "./choose-options-schema";
 import { LineStateCell, stateOf } from "./line-state-cell";
 import { placeOf } from "./place-of";
@@ -13,7 +15,6 @@ import { type ProgramAccess, ProgramRowActions } from "./program-row-actions";
 
 type Translator = ReturnType<typeof useTranslations<"line">>;
 type EffectTranslator = ReturnType<typeof useTranslations<"priceEffect">>;
-type Formatter = ReturnType<typeof useFormatter>;
 type Column = ColumnDef<LineDto>;
 
 export type UseProgramColumnsInput = {
@@ -26,7 +27,7 @@ type DataInput = {
   data: ProgramFormData;
   t: Translator;
   effects: EffectTranslator;
-  format: Formatter;
+  format: DateTimeFormat;
   locale: string;
   hidden: string | undefined;
 };
@@ -58,9 +59,9 @@ function dataColumns({ data, t, effects, format, locale, hidden }: DataInput): C
       cell: ({ row: { original } }) => (
         <span className="whitespace-nowrap">
           {original.startsAt && original.endsAt
-            ? format.dateTimeRange(original.startsAt, original.endsAt, {
-                dateStyle: "short",
-                timeStyle: "short",
+            ? format.dateTimeRange({
+                start: original.startsAt,
+                end: original.endsAt,
                 timeZone: original.timeZone,
               })
             : t("untimed")}
@@ -76,7 +77,7 @@ export function useProgramColumns({ lines, data, access }: UseProgramColumnsInpu
   const t = useTranslations("line");
   const effects = useTranslations("priceEffect");
   const common = useTranslations("common");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const locale = useLocale();
   return useMemo<Column[]>(() => {
     const hidden = data.itemsHidden ? common("hidden") : undefined;

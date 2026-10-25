@@ -2,7 +2,7 @@ import { getMember } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { Button } from "@bibi/ui";
 import { ArrowLeftIcon } from "lucide-react";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
@@ -11,6 +11,7 @@ import { MemberWork } from "@/features/member-profile/ui/member-work";
 import { Link } from "@/lib/navigation";
 import { memberPermissionsRoute, memberRoute, ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
+import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 
@@ -21,7 +22,7 @@ export async function MemberDetail({ locale, id }: MemberDetailProps) {
   const t = await getTranslations("member");
   const role = await getTranslations("role");
   const common = await getTranslations("common");
-  const format = await getFormatter();
+  const format = await getDateTimeFormat();
   const abilities = await getCallerAbilities();
   const member = await runOperation({ operation: getMember, input: { id } });
   if (!member.ok) return <ErrorState errorKey={handleLoadError({ error: member.error, locale })} />;
@@ -29,7 +30,7 @@ export async function MemberDetail({ locale, id }: MemberDetailProps) {
   const facts = [
     { label: t("columns.email"), value: email },
     { label: t("columns.roles"), value: preset === null ? "–" : role(preset) },
-    { label: t("memberSince"), value: format.dateTime(createdAt, { dateStyle: "medium" }) },
+    { label: t("memberSince"), value: format.date({ instant: createdAt }) },
   ];
   const permissions = can({ abilities, permission: "member:write" }) ? (
     <Button asChild variant="outline">

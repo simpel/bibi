@@ -3,6 +3,7 @@
 import { RelativeTime as RelativeTimeView } from "@bibi/ui";
 import { useFormatter, useNow, useTimeZone } from "next-intl";
 import { exactTime, relativeTime } from "@/lib/time/relative-time";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 export type RelativeTimeProps = {
   instant: Date | string;
@@ -13,12 +14,13 @@ export function RelativeTime({ instant }: RelativeTimeProps) {
   const format = useFormatter();
   const timeZone = useTimeZone() ?? "UTC";
   const now = useNow();
+  const dateTimeFormat = useDateTimeFormat();
   const date = new Date(instant);
   return (
     <RelativeTimeView
       dateTime={date.toISOString()}
       label={relativeTime({ format, instant: date, now })}
-      exact={exactTime({ format, instant: date, timeZone })}
+      exact={exactTime({ format: dateTimeFormat, instant: date, timeZone })}
     />
   );
 }

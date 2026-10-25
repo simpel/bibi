@@ -1,6 +1,7 @@
+import type { DateTimeFormat } from "@bibi/core/schemas";
 import type { Locale } from "@bibi/i18n";
 import { Button } from "@bibi/ui";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import type { ComponentProps, ReactNode } from "react";
 import { EmptyState } from "@/components/states/empty-state";
 import { ErrorState } from "@/components/states/error-state";
@@ -8,6 +9,7 @@ import { PageHeader } from "@/components/states/page-header";
 import { Link } from "@/lib/navigation";
 import { ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
+import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import {
   type CalendarParams,
@@ -81,15 +83,12 @@ function LoadError({ errorKey }: LoadErrorProps) {
 }
 
 type FormatPeriodInput = {
-  format: Awaited<ReturnType<typeof getFormatter>>;
+  format: DateTimeFormat;
   range: ReturnType<typeof calendarRange>;
 };
 
 const formatPeriod = ({ format, range, timeZone }: FormatPeriodInput & { timeZone: string }) =>
-  format.dateTimeRange(range.from, new Date(range.to.getTime() - 1), {
-    dateStyle: "medium",
-    timeZone,
-  });
+  format.dateRange({ start: range.from, end: new Date(range.to.getTime() - 1), timeZone });
 
 /**
  * `/calendar` (a canvas page, ADR 0038): a full-width toolbar row and the occupancy of every space
@@ -98,7 +97,7 @@ const formatPeriod = ({ format, range, timeZone }: FormatPeriodInput & { timeZon
  */
 export async function CalendarPage({ locale, from, to, raw }: CalendarPageProps) {
   const t = await getTranslations("calendar");
-  const format = await getFormatter();
+  const format = await getDateTimeFormat();
   const filters = readCalendarFilters({ raw });
   const timeZone = await calendarTimeZone({ venueId: filters.venueId });
   const today = todayIn({ timeZone });

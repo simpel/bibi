@@ -1,7 +1,8 @@
 import type { OauthGrantDto } from "@bibi/core";
 import { actionsColumn, type ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { OauthGrantRowActions } from "./oauth-grant-row-actions";
 
 type Column = ColumnDef<OauthGrantDto>;
@@ -10,7 +11,7 @@ type Column = ColumnDef<OauthGrantDto>;
 export function useOauthGrantColumns(): Column[] {
   const t = useTranslations("integration.oauthGrants");
   const common = useTranslations("common");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return useMemo<Column[]>(
     () => [
       {
@@ -31,7 +32,7 @@ export function useOauthGrantColumns(): Column[] {
         id: "connected",
         header: t("columns.connected"),
         accessorFn: (grant) => grant.connectedAt,
-        cell: ({ row }) => format.dateTime(row.original.connectedAt, { dateStyle: "medium" }),
+        cell: ({ row }) => format.date({ instant: row.original.connectedAt }),
       },
       actionsColumn<OauthGrantDto>({
         label: common("actions"),

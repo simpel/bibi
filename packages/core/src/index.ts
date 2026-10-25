@@ -113,6 +113,7 @@ export * from "./features/ticket-status/read-operations";
 export * from "./features/ticket-status/write-operations";
 export * from "./features/ticket-template/operations";
 export * from "./features/user-preference/operations";
+export * from "./features/user-settings/operations";
 export * from "./features/venue/operations";
 export * from "./features/vocabulary/read-operations";
 export * from "./features/vocabulary/value-operations";

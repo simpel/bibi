@@ -1,0 +1,29 @@
+/// How a user wants dates written (ADR 0046 addendum 2026-10-25). Each value is a pattern:
+/// D = day, MMM/MMMM = short/long month name in the UI language, MM = month number, YYYY = year.
+enum DateFormat {
+  D_MMM_YYYY
+  D_MMMM_YYYY
+  YYYY_MM_DD
+  DD_MM_YYYY
+  MM_DD_YYYY
+}
+
+/// 24 hour (`14:30`) or 12 hour (`2:30 PM`) clock.
+enum ClockFormat {
+  H24
+  H12
+}
+
+/// One typed settings row per user (ADR 0046), separate from the key/value `UserPreference`.
+/// User-scoped, NOT org-scoped: it follows the user across organizations. Reached only through
+/// `scopedDb`, which pins every query to the acting user (`USER_SCOPED_MODELS`). Upserted in
+/// place; there is no soft delete and no `createdBy` (the owner is `userId`).
+/// Owned: `dateFormat`, `clockFormat`; `null` = the default (`D_MMM_YYYY`, `H24`, ADR 0051).
+model UserSettings {
+  id          String       @id @default(cuid(2))
+  userId      String       @unique
+  dateFormat  DateFormat?
+  clockFormat ClockFormat?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}

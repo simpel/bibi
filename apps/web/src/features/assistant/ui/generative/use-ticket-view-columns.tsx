@@ -1,9 +1,10 @@
 import type { ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { desiredPeriod } from "@/features/ticket/ui/desired-period";
 import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { TicketTableViewProps } from "./ticket-table-view";
 
 type Row = TicketTableViewProps["items"][number];
@@ -11,7 +12,7 @@ type Row = TicketTableViewProps["items"][number];
 /** Reference (link), desired period and headcount of the tickets in the chat card. */
 export function useTicketViewColumns(): ColumnDef<Row>[] {
   const t = useTranslations("assistant.ui.ticket");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return useMemo<ColumnDef<Row>[]>(
     () => [
       {

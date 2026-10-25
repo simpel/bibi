@@ -1,9 +1,10 @@
 import type { QuoteDto } from "@bibi/core";
 import type { ColumnDef } from "@bibi/ui";
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Link } from "@/lib/navigation";
 import { quoteRoute } from "@/lib/routes";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { formatKr } from "../../item/ui/format-price";
 import { QuoteStatusBadge } from "./quote-status-badge";
 
@@ -25,7 +26,7 @@ const versionColumn = ({ t }: { t: Translate }): Column => ({
 /** Version (link) · status · valid until · total incl. VAT. */
 export function useQuoteVersionColumns(): Column[] {
   const t = useTranslations("quote");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const locale = useLocale();
   return useMemo<Column[]>(
     () => [
@@ -41,9 +42,7 @@ export function useQuoteVersionColumns(): Column[] {
         header: t("fields.validUntil"),
         accessorFn: (quote) => quote.validUntil ?? undefined,
         cell: ({ row }) =>
-          row.original.validUntil
-            ? format.dateTime(row.original.validUntil, { dateStyle: "medium" })
-            : "–",
+          row.original.validUntil ? format.date({ instant: row.original.validUntil }) : "–",
       },
       {
         id: "total",

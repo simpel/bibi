@@ -1,12 +1,13 @@
 import type { Locale } from "@bibi/i18n";
 import { ArrowLeftIcon } from "lucide-react";
-import { getFormatter, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { FactList } from "@/components/typed-fields/fact-list";
 import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
+import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { loadQuotePage } from "../load-quote-page";
 import { QuoteActions } from "./quote-actions";
@@ -26,7 +27,7 @@ export type QuoteDetailProps = { locale: Locale; id: string };
  */
 export async function QuoteDetail({ locale, id }: QuoteDetailProps) {
   const t = await getTranslations("quote");
-  const format = await getFormatter();
+  const format = await getDateTimeFormat();
   const page = await loadQuotePage({ id });
   if (!page.ok) return <ErrorState errorKey={handleLoadError({ error: page.error, locale })} />;
   const { quote, versions, ownerId, members, can } = page.value;
@@ -34,7 +35,7 @@ export async function QuoteDetail({ locale, id }: QuoteDetailProps) {
   const facts = [
     {
       label: t("fields.validUntil"),
-      value: validUntil ? format.dateTime(validUntil, { dateStyle: "medium" }) : "–",
+      value: validUntil ? format.date({ instant: validUntil }) : "–",
     },
     { label: t("fields.salesOwner"), value: nameOf({ options: members, id: ownerId }) },
     { label: t("fields.terms"), value: quote.terms ?? "–" },

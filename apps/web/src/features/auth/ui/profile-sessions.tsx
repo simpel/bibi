@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 import { InlineLoadError } from "@/components/states/inline-load-error";
 import { authClient } from "@/lib/auth-client";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { useAuthFormAction } from "./use-auth-form-action";
 
 type SessionRow = {
@@ -43,6 +44,7 @@ function useSessions() {
 /** Active sessions of the signed-in user, with "sign out of all others". */
 export function ProfileSessions() {
   const t = useTranslations("profile");
+  const format = useDateTimeFormat();
   const current = authClient.useSession().data?.session.id;
   const { rows, failed, pending, signOutOthers } = useSessions();
   const others = rows.filter((row) => row.id !== current);
@@ -54,7 +56,7 @@ export function ProfileSessions() {
           <li key={row.id} className="flex items-center justify-between gap-3 text-sm">
             <span className="truncate">{row.userAgent || t("unknownDevice")}</span>
             <span className="flex items-center gap-2 text-muted-foreground">
-              {new Date(row.createdAt).toLocaleString()}
+              {format.dateTime({ instant: row.createdAt })}
               {row.id === current ? <Badge>{t("thisSession")}</Badge> : null}
             </span>
           </li>

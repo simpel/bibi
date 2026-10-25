@@ -1,9 +1,10 @@
 "use client";
 
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
-import { useFormatter, useLocale, useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
 import { ticketRoute } from "@/lib/routes";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { formatKr } from "../../../item/ui/format-price";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";
@@ -14,7 +15,7 @@ export type LineCardViewProps = GenerativeProps<"line-card">;
 /** One line: name, time (or none), effective quantity and unit price, and own fields. */
 export function LineCardView({ line }: LineCardViewProps) {
   const t = useTranslations("assistant.ui.line");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const href = ticketRoute({ id: line.ticketId });
   const locale = useLocale();
   const { effectiveQuantity: quantity, effectiveUnitPriceMinor: price } = line;

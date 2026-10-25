@@ -1,4 +1,5 @@
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 type DateValue = Date | string | null;
 
@@ -7,9 +8,9 @@ export type PriceListValidityProps = { validFrom: DateValue; validTo: DateValue 
 /** Validity as inclusive dates, e.g. "1 Jan 2026 – 31 Dec 2026" or "Always valid". */
 export function PriceListValidity({ validFrom, validTo }: PriceListValidityProps) {
   const t = useTranslations("priceList.validity");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   const day = ({ value }: { value: Date | string }) =>
-    format.dateTime(new Date(value), { dateStyle: "medium", timeZone: "UTC" });
+    format.date({ instant: value, timeZone: "UTC" });
   if (validFrom && validTo)
     return t("range", { from: day({ value: validFrom }), to: day({ value: validTo }) });
   if (validFrom) return t("from", { from: day({ value: validFrom }) });

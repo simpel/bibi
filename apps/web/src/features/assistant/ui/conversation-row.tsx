@@ -2,7 +2,8 @@
 
 import { Button } from "@bibi/ui";
 import { ArchiveIcon, PencilIcon } from "lucide-react";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { ConversationSummary } from "../actions";
 
 export type ConversationRowProps = {
@@ -22,11 +23,8 @@ export function ConversationRow({
   onArchive,
 }: ConversationRowProps) {
   const t = useTranslations("assistant.history");
-  const format = useFormatter();
-  const updated = format.dateTime(new Date(conversation.updatedAt), {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
+  const format = useDateTimeFormat();
+  const updated = format.dateTime({ instant: conversation.updatedAt });
   return (
     <li
       data-slot="conversation-row"

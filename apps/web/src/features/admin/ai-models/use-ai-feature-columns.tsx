@@ -1,6 +1,7 @@
 import type { ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { FeatureCell } from "./feature-cell";
 import type { AiFeatureRow } from "./model-options";
 import { ModelPrice } from "./model-price";
@@ -11,7 +12,7 @@ type Column = ColumnDef<AiFeatureRow>;
 /** Feature · model picker (form) · price of the chosen model · last change. */
 export function useAiFeatureColumns(): Column[] {
   const t = useTranslations("admin.aiModels.columns");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return useMemo<Column[]>(
     () => [
       {
@@ -36,10 +37,7 @@ export function useAiFeatureColumns(): Column[] {
         header: t("changed"),
         cell: ({ row: { original } }) =>
           original.setting.updatedAt
-            ? format.dateTime(original.setting.updatedAt, {
-                dateStyle: "short",
-                timeStyle: "short",
-              })
+            ? format.dateTime({ instant: original.setting.updatedAt })
             : "–",
       },
     ],

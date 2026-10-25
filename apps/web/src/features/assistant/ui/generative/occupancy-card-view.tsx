@@ -1,9 +1,10 @@
 "use client";
 
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { itemRoute } from "@/lib/configuration-routes";
 import { Link } from "@/lib/navigation";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
 import { occupancyPeriod } from "./occupancy-period";
 
@@ -13,7 +14,7 @@ export type OccupancyCardViewProps = GenerativeProps<"occupancy-card">;
 export function OccupancyCardView({ occupancy }: OccupancyCardViewProps) {
   const t = useTranslations("assistant.ui.occupancy");
   const types = useTranslations("occupancy.types");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return (
     <Card data-slot="occupancy-card" className="shadow-none">
       <CardHeader className="flex-row items-start justify-between gap-2 p-4 pb-2">

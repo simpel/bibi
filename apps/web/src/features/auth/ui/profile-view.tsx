@@ -1,46 +1,54 @@
+import { getUserSettings } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import type { ReactNode } from "react";
 import { PageHeader } from "@/components/states/page-header";
 import { OauthGrantSection } from "@/features/oauth-grant/ui/oauth-grant-section";
+import { DisplayFormatForm } from "@/features/user-settings/ui/display-format-form";
+import { runOperation } from "@/server/run-operation";
 import { ProfileNameForm } from "./profile-name-form";
 import { ProfilePasswordForm } from "./profile-password-form";
 import { ProfileSessions } from "./profile-sessions";
 
 export type ProfileViewProps = { name: string; email: string; locale: Locale };
 
-/** Profile page body: name, email (read-only), password, active sessions and connected apps. */
+type ProfileCardProps = { title: string; description?: string; children: ReactNode };
+
+function ProfileCard({ title, description, children }: ProfileCardProps) {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        {description ? <CardDescription>{description}</CardDescription> : null}
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
+  );
+}
+
+/** Profile page body: name, email (read-only), date and clock format, password, active sessions and connected apps. */
 export async function ProfileView({ name, email, locale }: ProfileViewProps) {
   const t = await getTranslations("profile");
+  const settings = await runOperation({ operation: getUserSettings, input: {} });
   return (
     <div className="grid max-w-2xl gap-6">
       <PageHeader title={t("title")} description={t("description")} />
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("details")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ProfileNameForm name={name} email={email} />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("passwordTitle")}</CardTitle>
-          <CardDescription>{t("passwordDescription")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ProfilePasswordForm />
-        </CardContent>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("sessionsTitle")}</CardTitle>
-          <CardDescription>{t("sessionsDescription")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <ProfileSessions />
-        </CardContent>
-      </Card>
+      <ProfileCard title={t("details")}>
+        <ProfileNameForm name={name} email={email} />
+      </ProfileCard>
+      <ProfileCard title={t("displayTitle")} description={t("displayDescription")}>
+        <DisplayFormatForm
+          dateFormat={settings.ok ? settings.value.dateFormat : null}
+          clockFormat={settings.ok ? settings.value.clockFormat : null}
+        />
+      </ProfileCard>
+      <ProfileCard title={t("passwordTitle")} description={t("passwordDescription")}>
+        <ProfilePasswordForm />
+      </ProfileCard>
+      <ProfileCard title={t("sessionsTitle")} description={t("sessionsDescription")}>
+        <ProfileSessions />
+      </ProfileCard>
       <OauthGrantSection locale={locale} />
     </div>
   );

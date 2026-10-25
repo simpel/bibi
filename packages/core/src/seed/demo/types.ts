@@ -1,13 +1,20 @@
 import type { FixedRole } from "../../permissions/fixed-roles";
 import type { PermissionOverride } from "../../permissions/overrides";
 import type { TicketStatusTemplate } from "../../templates/ticket-statuses/ticket-status-template";
+import type { DisplayFormats } from "../../time/display-formats";
 import type { DemoConfig } from "./config-types";
 import type { DemoCustomer } from "./customer-types";
 import type { DemoTicketTemplate } from "./template-types";
 import type { DemoTicket } from "./ticket-types";
 
 /** One demo staff member with their preset and optional overrides (ADR 0034, 0050). */
-export type DemoUser = { name: string; role: FixedRole; overrides?: readonly PermissionOverride[] };
+export type DemoUser = {
+  name: string;
+  role: FixedRole;
+  overrides?: readonly PermissionOverride[];
+  /** The user's own date and clock formats (ADR 0046); omitted = the defaults. */
+  displayFormats?: DisplayFormats;
+};
 
 /**
  * A responsibility (ADR 0034): the item types it covers by name, and the default assignee and

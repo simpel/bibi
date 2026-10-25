@@ -44,6 +44,7 @@ import { ticketRoutes } from "./features/ticket/rest";
 import { ticketStatusRoutes } from "./features/ticket-status/rest";
 import { ticketTemplateRoutes } from "./features/ticket-template/rest";
 import { userPreferenceRoutes } from "./features/user-preference/rest";
+import { userSettingsRoutes } from "./features/user-settings/rest";
 import { venueRoutes } from "./features/venue/rest";
 import { vocabularyRoutes } from "./features/vocabulary/rest";
 import type { RestRoute } from "./rest-route";
@@ -54,7 +55,12 @@ const accessRoutes = [...memberRoutes, ...apiKeyRoutes, ...permissionRoutes];
 const boardRoutes = [...pipelineRoutes, ...calendarRoutes];
 const gridAndSetupRoutes = [...statusGridRoutes, ...pipelineSetupRoutes, ...changeSetRoutes];
 const lineAndGroupRoutes = [...lineRoutes, ...lineAllocationRoutes, ...alternativeGroupRoutes];
-const selfRoutes = [...userPreferenceRoutes, ...profileRoutes, ...fileRoutes];
+const selfRoutes = [
+  ...userPreferenceRoutes,
+  ...userSettingsRoutes,
+  ...profileRoutes,
+  ...fileRoutes,
+];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
 const moneyRoutes = [...paymentAccountRoutes, ...paymentRoutes, ...depositRoutes, ...invoiceRoutes];

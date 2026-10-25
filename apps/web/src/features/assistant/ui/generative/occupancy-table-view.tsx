@@ -1,11 +1,12 @@
 "use client";
 
 import { Card, type ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { itemRoute } from "@/lib/configuration-routes";
 import { Link } from "@/lib/navigation";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 import { occupancyPeriod } from "./occupancy-period";
@@ -17,7 +18,7 @@ type Row = OccupancyTableViewProps["items"][number];
 function useOccupancyColumns(): ColumnDef<Row>[] {
   const t = useTranslations("assistant.ui.occupancy");
   const types = useTranslations("occupancy.types");
-  const format = useFormatter();
+  const format = useDateTimeFormat();
   return useMemo<ColumnDef<Row>[]>(
     () => [
       {
