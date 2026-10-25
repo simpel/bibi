@@ -47,4 +47,6 @@ model Occupancy {
   @@unique([lineId, itemId, type])
   @@index([organizationId, allocationId])
   @@index([organizationId, itemId, startsAt])
+  /// The calendar's range read (`calendar.range`): `endsAt > from` skips the organization's past.
+  @@index([organizationId, status, endsAt])
 }

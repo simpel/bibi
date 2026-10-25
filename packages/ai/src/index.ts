@@ -68,6 +68,7 @@ export type { ResolveContext } from "./server/resolve-user";
 export type { AssistantServerOptions } from "./server/server-options";
 export { LOCAL_SKILL_TOOLS } from "./skills/create-skill-tools";
 export type { AssignmentWire } from "./ui-contract/assignment-entries";
+export type { CalendarRangeWire } from "./ui-contract/calendar-entries";
 export type { InboundEmailWire } from "./ui-contract/inbound-email-entries";
 export type { ItemResolutionWire } from "./ui-contract/item-resolution-entries";
 export type { ItemStateWire } from "./ui-contract/item-state-entries";

@@ -1,7 +1,7 @@
 import "server-only";
+import type { CalendarBlockDto } from "@bibi/core/schemas";
 import { toIsoDate, toZonedParts } from "@bibi/core/schemas";
 import { getFormatter, getTranslations } from "next-intl/server";
-import type { CalendarBlock } from "../calendar-blocks";
 import type { CalendarLabels } from "../calendar-grid-model";
 import type { CalendarColumn } from "../calendar-layout";
 
@@ -13,7 +13,7 @@ const dayKey = ({ instant, timeZone }: { instant: Date; timeZone: string }) =>
   toIsoDate({ date: toZonedParts({ instant, timeZone }).date });
 
 /** Times only, or with the dates when the block runs over midnight. */
-const rangeOptions = ({ block, timeZone }: { block: CalendarBlock; timeZone: string }) =>
+const rangeOptions = ({ block, timeZone }: { block: CalendarBlockDto; timeZone: string }) =>
   dayKey({ instant: block.startsAt, timeZone }) === dayKey({ instant: block.endsAt, timeZone })
     ? { ...TIME, timeZone }
     : { ...DAY, ...TIME, timeZone };

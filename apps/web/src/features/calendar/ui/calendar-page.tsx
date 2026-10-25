@@ -105,7 +105,7 @@ export async function CalendarPage({ locale, from, to, raw }: CalendarPageProps)
   const params = { ...filters, period: readCalendarPeriod({ from, to, today }) };
   const range = calendarRange({ period: params.period, timeZone });
   const [result, abilities] = await Promise.all([
-    loadCalendar({ ...range, ...filtersOf({ params }) }),
+    loadCalendar({ period: params.period, ...filtersOf({ params }) }),
     getCallerAbilities(),
   ]);
   if (!result.ok) return <LoadError errorKey={handleLoadError({ error: result.error, locale })} />;

@@ -14,6 +14,16 @@ export const INTEGRATION_NAMES = [
   "permission.update",
 ];
 
+/** Occupancy and the calendar read (ADR 0022, 0064), kept apart so `operation-names.ts` fits. */
+export const BOOKING_NAMES = [
+  "calendar.range",
+  "occupancy.archive",
+  "occupancy.create",
+  "occupancy.get",
+  "occupancy.list",
+  "occupancy.update",
+];
+
 /** Operations the AI actor may never run (`aiAllowed: false`, #88). */
 export const AI_FORBIDDEN_NAMES = ["apiKey.create"];
 
@@ -54,6 +64,7 @@ export const EXTRA_NAMES = [
   ...MEMBER_PROFILE_NAMES,
   ...MONEY_NAMES,
   ...INTEGRATION_NAMES,
+  ...BOOKING_NAMES,
   ...SELF_NAMES,
   ...ORGANIZATION_NAMES,
   ...CHANGE_NAMES,

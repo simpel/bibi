@@ -8,6 +8,7 @@ import { AssignmentCardView } from "./assignment-card-view";
 import { AssignmentTableView } from "./assignment-table-view";
 import { AuditLogCardView } from "./audit-log-card-view";
 import { AuditLogTableView } from "./audit-log-table-view";
+import { BOARD_COMPONENTS } from "./board-components";
 import { ContactCardView } from "./contact-card-view";
 import { ContactTableView } from "./contact-table-view";
 import { CustomerCardView } from "./customer-card-view";
@@ -37,7 +38,6 @@ import { MONEY_COMPONENTS } from "./money-components";
 import { OccupancyCardView } from "./occupancy-card-view";
 import { OccupancyTableView } from "./occupancy-table-view";
 import { PermissionProfileCardView } from "./permission-profile-card-view";
-import { PipelineBoardView } from "./pipeline-board-view";
 import { PipelineDraftCardView } from "./pipeline-draft-card-view";
 import { PipelinePreviewView } from "./pipeline-preview-view";
 import { PriceListCardView } from "./price-list-card-view";
@@ -110,7 +110,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "alternative-group-card": AlternativeGroupCardView,
   "requirement-table": RequirementTableView,
   "requirement-card": RequirementCardView,
-  "pipeline-board": PipelineBoardView,
+  ...BOARD_COMPONENTS,
   "quote-card": QuoteCardView,
   "quote-table": QuoteTableView,
   "inbound-email-table": InboundEmailTableView,

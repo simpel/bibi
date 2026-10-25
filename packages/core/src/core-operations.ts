@@ -2,6 +2,7 @@ import { alternativeGroupOperations } from "./features/alternative-group/operati
 import { apiKeyOperations } from "./features/api-key/operations";
 import { assignmentOperations } from "./features/assignment/operations";
 import { auditLogOperations } from "./features/audit-log/operations";
+import { calendarOperations } from "./features/calendar/operations";
 import { changeSetOperations } from "./features/change-set/operations";
 import { configurationOperations } from "./features/configuration/operations";
 import { contactOperations } from "./features/contact/operations";
@@ -76,6 +77,9 @@ const moneyOperations = [
   ...invoiceOperations,
 ];
 
+/** What occupies bookable items and the calendar that shows it (ADR 0022, 0064). */
+const bookingOperations = [...occupancyOperations, ...calendarOperations];
+
 /** The caller's own data: preferences, profile, working hours and files (ADR 0039, 0061, 0063). */
 const selfOperations = [...userPreferenceOperations, ...profileOperations, ...fileOperations];
 
@@ -95,7 +99,7 @@ function staticOperations(): AnyOperation[] {
     ...customerOperations,
     ...contactOperations,
     ...priceListOperations,
-    ...occupancyOperations,
+    ...bookingOperations,
     ...ticketStatusOperations,
     ...ticketTemplateOperations,
     ...itemStateOperations,

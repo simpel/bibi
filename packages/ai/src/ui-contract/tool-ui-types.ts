@@ -3,6 +3,7 @@ import type { AskedQuestion } from "../questions/question-schema";
 import type { AlternativeGroupWire } from "./alternative-group-entries";
 import type { ArchivePreviewWire } from "./archive-preview-entry";
 import type { AssignmentWire } from "./assignment-entries";
+import type { CalendarRangeWire } from "./calendar-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
 import type { ItemResolutionWire } from "./item-resolution-entries";
 import type { ItemStateWire } from "./item-state-entries";
@@ -78,6 +79,7 @@ export type ToolUiProps = {
   "requirement-table": { items: RequirementWire[]; nextCursor: string | null };
   "requirement-card": { requirement: RequirementWire };
   "pipeline-board": { board: PipelineBoardWire };
+  "calendar-range": { range: CalendarRangeWire };
   "pipeline-preview": { preview: PipelinePreviewWire };
   "pipeline-draft-card": { draft: PipelineSetupDraftWire };
   /** A question to the user (`ask_question`); the answer is the next chat message. */

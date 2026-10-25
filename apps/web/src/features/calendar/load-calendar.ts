@@ -1,19 +1,11 @@
 import "server-only";
-import { ok, type Result, type VenueDto } from "@bibi/core";
-import { type FilterBlocksInput, filterBlocks } from "./calendar-block-filter";
-import {
-  type CalendarBlock,
-  type ToCalendarBlocksInput,
-  toCalendarBlocks,
-} from "./calendar-blocks";
+import { type CalendarBlockDto, calendarRange, ok, type Result, type VenueDto } from "@bibi/core";
+import { toIsoDate } from "@bibi/core/schemas";
+import { runOperation } from "@/server/run-operation";
 import { buildLegend, type LegendState } from "./calendar-legend";
+import type { CalendarPeriod } from "./calendar-period";
 import { loadSources, orEmpty } from "./calendar-sources";
-import {
-  type SelectedSpaces,
-  type SpaceRow,
-  selectSpaces,
-  type TypeOption,
-} from "./calendar-types";
+import { type SpaceRow, selectSpaces, type TypeOption } from "./calendar-types";
 
 export type CalendarData = {
   venues: Pick<VenueDto, "id" | "name">[];
@@ -21,7 +13,7 @@ export type CalendarData = {
   types: TypeOption[];
   typeId: string | undefined;
   spaces: SpaceRow[];
-  blocks: CalendarBlock[];
+  blocks: CalendarBlockDto[];
   /** The organization's states that draw a block, for the legend and the state filter. */
   legend: LegendState[];
   statuses: { id: string; name: string }[];
@@ -30,8 +22,7 @@ export type CalendarData = {
 };
 
 export type LoadCalendarInput = {
-  from: Date;
-  to: Date;
+  period: CalendarPeriod;
   venueId?: string | undefined;
   typeId?: string | undefined;
   stateId?: string | undefined;
@@ -41,82 +32,73 @@ export type LoadCalendarInput = {
 
 const pickName = ({ id, name }: { id: string; name: string }) => ({ id, name });
 
-const pickReference = ({ id, reference }: { id: string; reference: number }) => ({
-  id,
-  reference,
-});
-
-type ToCalendarDataInput = Pick<
-  ToCalendarBlocksInput,
-  "occupancies" | "lines" | "tickets" | "states"
-> & {
-  selected: SelectedSpaces;
-  venues: { id: string; name: string }[];
-  statuses: { id: string; name: string }[];
-  filters: FilterBlocksInput["params"];
-};
-
-/** Joins the reads into blocks, narrows them by the filters and derives the legend options. */
-function toCalendarData({ selected, venues, statuses, filters, ...rest }: ToCalendarDataInput) {
-  const spaceIds = new Set(selected.spaces.map(({ id }) => id));
-  const all = toCalendarBlocks({
-    ...rest,
-    occupancies: rest.occupancies.filter(({ itemId }) => spaceIds.has(itemId)),
-  });
-  const typeIds = new Set(selected.spaces.map(({ entityTypeId }) => entityTypeId));
-  const shownTickets = new Set(all.map((block) => block.ticketId));
-  return {
-    venues: venues.map(pickName),
-    ...selected,
-    blocks: filterBlocks({ blocks: all, params: filters }),
-    legend: buildLegend({ states: rest.states, typeIds, types: selected.types }),
-    statuses: statuses.map(pickName),
-    tickets: rest.tickets.filter(({ id }) => shownTickets.has(id)).map(pickReference),
-  };
+/** Unique tickets of the blocks, by reference. */
+function ticketsOf({ blocks }: { blocks: CalendarBlockDto[] }) {
+  const byId = new Map<string, number>();
+  for (const { ticketId, reference } of blocks) {
+    if (ticketId && reference !== null) byId.set(ticketId, reference);
+  }
+  return [...byId]
+    .map(([id, reference]) => ({ id, reference }))
+    .sort((a, b) => a.reference - b.reference);
 }
 
-/**
- * The calendar's data from existing reads (no operation of its own): the bookable items
- * (spaces) of the venue, one type at a time (`selectSpaces`), their occupancies in `[from, to)`
- * and the lines and tickets those come from, so each block can open its ticket.
- */
-export async function loadCalendar({
-  typeId,
-  stateId,
-  statusId,
-  ticketId,
-  ...window
-}: LoadCalendarInput): Promise<Result<CalendarData>> {
-  const sources = await loadSources(window);
-  const [occupancies, tickets, states, statuses] = [sources[3], sources[5], sources[6], sources[7]];
-  const venues = orEmpty({ result: sources[0] });
-  const items = orEmpty({ result: sources[1] });
-  const types = orEmpty({ result: sources[2] });
-  const lines = orEmpty({ result: sources[4] });
-  if (!venues.ok) return venues;
+type ConfigInput = { venueId: string | undefined; typeId: string | undefined };
+
+/** The config lists, with the spaces of the one type shown (`selectSpaces`). */
+async function loadConfig({ venueId, typeId }: ConfigInput) {
+  const [venues, rawItems, rawTypes, states, statuses] = await loadSources({ venueId });
+  const items = orEmpty({ result: rawItems });
+  const types = orEmpty({ result: rawTypes });
+  const lists = orEmpty({ result: venues });
+  if (!lists.ok) return lists;
   if (!items.ok) return items;
   if (!types.ok) return types;
-  if (!occupancies.ok) return occupancies;
-  if (!lines.ok) return lines;
-  if (!tickets.ok) return tickets;
   if (!states.ok) return states;
   if (!statuses.ok) return statuses;
   const selected = selectSpaces({
-    spaces: items.value.map(({ id, name, venueId, entityTypeId }) => ({
-      ...{ id, name, venueId, entityTypeId },
+    spaces: items.value.map(({ id, name, venueId: item, entityTypeId }) => ({
+      ...{ id, name, venueId: item, entityTypeId },
     })),
     types: types.value.map(pickName),
     typeId,
   });
   return ok({
-    value: toCalendarData({
-      ...{ occupancies: occupancies.value, lines: lines.value },
-      ...{ tickets: tickets.value, states: states.value, selected },
-      ...{
-        venues: venues.value,
-        statuses: statuses.value,
-        filters: { stateId, statusId, ticketId },
-      },
-    }),
+    value: { venues: lists.value, states: states.value, statuses: statuses.value, selected },
+  });
+}
+
+/**
+ * The calendar's data: the config lists (`selectSpaces` keeps one type at a time) and the
+ * blocks of `calendar.range`, restricted to the spaces shown.
+ */
+export async function loadCalendar({
+  period,
+  ...filters
+}: LoadCalendarInput): Promise<Result<CalendarData>> {
+  const config = await loadConfig({ venueId: filters.venueId, typeId: filters.typeId });
+  if (!config.ok) return config;
+  const { venues, states, statuses, selected } = config.value;
+  const range = await runOperation({
+    operation: calendarRange,
+    input: {
+      from: toIsoDate({ date: period.from }),
+      to: toIsoDate({ date: period.to }),
+      ...{ ...filters, typeId: selected.typeId },
+    },
+  });
+  if (!range.ok) return range;
+  const spaceIds = new Set(selected.spaces.map(({ id }) => id));
+  const blocks = range.value.blocks.filter(({ itemId }) => spaceIds.has(itemId));
+  const typeIds = new Set(selected.spaces.map(({ entityTypeId }) => entityTypeId));
+  return ok({
+    value: {
+      venues: venues.map(pickName),
+      ...selected,
+      blocks,
+      legend: buildLegend({ states, typeIds, types: selected.types }),
+      statuses: statuses.map(pickName),
+      tickets: ticketsOf({ blocks }),
+    },
   });
 }

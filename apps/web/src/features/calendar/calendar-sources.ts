@@ -3,36 +3,22 @@ import {
   listEntityTypes,
   listItemStates,
   listItems,
-  listLines,
-  listOccupancies,
   listTicketStatuses,
-  listTickets,
   listVenues,
   ok,
   type Result,
 } from "@bibi/core";
 import { listAll } from "@/server/list-all";
 
-export type CalendarWindow = {
-  from: Date;
-  to: Date;
-  venueId?: string | undefined;
-};
+export type CalendarSourcesInput = { venueId?: string | undefined };
 
-/** Setup time sits right before a line, so its line can start after `to`. */
-const PROGRAM_SLACK_MS = 7 * 86_400_000;
-
-/** Every read the calendar joins, in a fixed order (see `readSources`). */
-export function loadSources({ from, to, venueId }: CalendarWindow) {
+/** The small config lists the filters and rows need, in a fixed order (see `loadCalendar`). */
+export function loadSources({ venueId }: CalendarSourcesInput) {
   const spaceFilter = { capability: "BOOKABLE" as const, ...(venueId ? { venueId } : {}) };
-  const programWindow = { from, to: new Date(to.getTime() + PROGRAM_SLACK_MS) };
   return Promise.all([
     listAll({ operation: listVenues, input: {} }),
     listAll({ operation: listItems, input: spaceFilter }),
     listAll({ operation: listEntityTypes, input: { base: "ITEM" as const } }),
-    listAll({ operation: listOccupancies, input: { from, to }, maxPages: 20 }),
-    listAll({ operation: listLines, input: programWindow, maxPages: 20 }),
-    listAll({ operation: listTickets, input: programWindow, maxPages: 20 }),
     listAll({ operation: listItemStates, input: {} }),
     listAll({ operation: listTicketStatuses, input: {} }),
   ]);

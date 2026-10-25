@@ -3,6 +3,7 @@ import {
   addMonths,
   compareDates,
   daysInMonth,
+  MAX_CALENDAR_DAYS,
   type PlainDate,
   parseIsoDate,
   toIsoDate,
@@ -16,7 +17,7 @@ export type CalendarView = (typeof CALENDAR_VIEWS)[number];
 export type CalendarPeriod = { from: PlainDate; to: PlainDate };
 
 /** The longest period one URL may show; a longer one is cut. */
-export const MAX_PERIOD_DAYS = 62;
+export const MAX_PERIOD_DAYS = MAX_CALENDAR_DAYS;
 /** The list view's span when it is picked from another view. */
 const LIST_DAYS = 14;
 

@@ -1,5 +1,5 @@
+import type { CalendarBlockDto } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
-import type { CalendarBlock } from "./calendar-blocks";
 import { blockLabel, type CalendarLabels } from "./calendar-grid-model";
 
 const labels = {
@@ -9,7 +9,7 @@ const labels = {
   expires: ({ expiresAt }) => `Expires ${expiresAt.toISOString().slice(0, 10)}`,
 } as CalendarLabels;
 
-const base: CalendarBlock = {
+const base: CalendarBlockDto = {
   id: "a",
   itemId: "room",
   type: "HOLD",

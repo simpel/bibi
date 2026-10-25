@@ -13,6 +13,7 @@ export * from "./features/api-key/write-operations";
 export * from "./features/assignment/read-operations";
 export * from "./features/assignment/write-operations";
 export * from "./features/audit-log/operations";
+export * from "./features/calendar/operations";
 export * from "./features/change-set/operations";
 export * from "./features/configuration/operations";
 export * from "./features/contact/operations";

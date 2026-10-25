@@ -1,5 +1,5 @@
+import type { CalendarBlockDto } from "@bibi/core/schemas";
 import { ticketRoute } from "@/lib/routes";
-import type { CalendarBlock } from "./calendar-blocks";
 import { blockLabel, type CalendarLabels, type GridBlock } from "./calendar-grid-model";
 import type { CalendarColumn } from "./calendar-layout";
 import type { CalendarData } from "./load-calendar";
@@ -17,7 +17,7 @@ export type BuildListInput = { days: CalendarColumn[]; data: CalendarData; label
 /** The list fallback below `md`: one section per day, its blocks earliest first with the space. */
 export function buildListModel({ days, data, labels }: BuildListInput): ListDay[] {
   const spaceName = new Map(data.spaces.map(({ id, name }) => [id, name]));
-  const held = ({ heldAt }: CalendarBlock) => heldAt?.getTime() ?? 0;
+  const held = ({ heldAt }: CalendarBlockDto) => heldAt?.getTime() ?? 0;
   const sorted = [...data.blocks].sort(
     (a, b) => a.startsAt.getTime() - b.startsAt.getTime() || held(a) - held(b),
   );

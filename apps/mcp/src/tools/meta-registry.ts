@@ -2,6 +2,7 @@ import { alternativeGroupMcpTools } from "../features/alternative-group/mcp";
 import { apiKeyMcpTools } from "../features/api-key/mcp";
 import { assignmentMcpTools } from "../features/assignment/mcp";
 import { auditLogMcpTools } from "../features/audit-log/mcp";
+import { calendarMcpTools } from "../features/calendar/mcp";
 import { changeSetMcpTools } from "../features/change-set/mcp";
 import { configurationMcpTools } from "../features/configuration/mcp";
 import { contactMcpTools } from "../features/contact/mcp";
@@ -59,6 +60,8 @@ const lineAndGroupMcpTools = [
   ...lineAllocationMcpTools,
   ...alternativeGroupMcpTools,
 ];
+/** The read models staff work from: the pipeline board and the calendar. */
+const boardMcpTools = [...pipelineMcpTools, ...calendarMcpTools];
 const selfMcpTools = [...userPreferenceMcpTools, ...profileMcpTools, ...fileMcpTools];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
@@ -98,7 +101,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...lineAndGroupMcpTools,
     ...requirementMcpTools,
     ...sheetMcpTools,
-    ...pipelineMcpTools,
+    ...boardMcpTools,
     ...quoteMcpTools,
     ...inboundEmailMcpTools,
     ...moneyMcpTools,

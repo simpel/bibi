@@ -21,10 +21,10 @@ export type WebSurface = {
 
 /** The assistant (conversation history, rename, archive, chat) lives on the start page. */
 const PANEL = { route: "/" } as const;
-
 export const WEB_SURFACES: readonly WebSurface[] = [
-  // The pipeline board: tickets by status, moved by drag (ADR 0041, 0043).
+  // The pipeline board (ADR 0041, 0043) and the calendar (ADR 0064).
   { operation: "pipeline.board", route: "/pipeline" },
+  { operation: "calendar.range", route: "/calendar" },
   { operation: "venue.list", route: "/venues" },
   { operation: "venue.get", route: "/venues/[id]" },
   { operation: "venue.create", route: "/venues" },

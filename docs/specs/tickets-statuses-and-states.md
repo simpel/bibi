@@ -66,6 +66,7 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 
 ## Calendar
 - Each occupancy is drawn in its state's color: hard holds solid, soft holds hatched, released not shown. Filters: state, status, ticket, item type. Each block links to the ticket and shows the line's state name.
+- One read, `calendar.range({ from, to, venueId?, typeId?, stateId?, statusId?, ticketId? })` (ADR 0064): `from` and `to` are plain dates, both inclusive, at most 62 days, resolved to `[start of from, start of to + 1 day)` in the venue's zone, else the organization's. It returns every active occupancy overlapping that range as a block already joined with its line, ticket, state and status (setup and teardown included), earliest first, with no paging. Permission `ticket:read`; the item is an id, the line's name and held-since need `program:read`, the state's name and color need `pipeline:read`. An unknown venue or ticket is `NOT_FOUND`. The web calendar, GraphQL, REST and MCP all read it.
 
 ## Board
 - One column per active status in position order and a collapsed Closed lane for closing statuses. Dashboard counts group by status flag, never by status name.
@@ -76,7 +77,7 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 - Templates ("Conference estate" and per-type state presets) fill the draft and can be changed freely.
 
 ## Operations
-- `ticketStatus.list|get|create|update|archive|archivePreview|reorder|setTransitions|importTemplate`, `ticketTemplate.list|get|create|update|archive`, `ticket.list|get|create|update|changeStatus|createFromTemplate|expireHolds|export|statusHistory`, `itemState.list|get|create|update|archive|archivePreview|reorder|setTransitions`, `statusGrid.get|setCell|importTemplate`, `line.changeState|followStatus`, `pipelineSetup.presetDraft|preview|activate`.
+- `ticketStatus.list|get|create|update|archive|archivePreview|reorder|setTransitions|importTemplate`, `ticketTemplate.list|get|create|update|archive`, `ticket.list|get|create|update|changeStatus|createFromTemplate|expireHolds|export|statusHistory`, `itemState.list|get|create|update|archive|archivePreview|reorder|setTransitions`, `statusGrid.get|setCell|importTemplate`, `line.changeState|followStatus`, `pipelineSetup.presetDraft|preview|activate`, `calendar.range`.
 - All exist on web, GraphQL, REST and MCP; AI proposes, the user approves.
 
 ## Not decided

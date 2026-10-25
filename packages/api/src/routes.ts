@@ -2,6 +2,7 @@ import { alternativeGroupRoutes } from "./features/alternative-group/rest";
 import { apiKeyRoutes } from "./features/api-key/rest";
 import { assignmentRoutes } from "./features/assignment/rest";
 import { auditLogRoutes } from "./features/audit-log/rest";
+import { calendarRoutes } from "./features/calendar/rest";
 import { changeSetRoutes } from "./features/change-set/rest";
 import { configurationRoutes } from "./features/configuration/rest";
 import { contactRoutes } from "./features/contact/rest";
@@ -49,6 +50,8 @@ import type { RestRoute } from "./rest-route";
 import { searchRoutes } from "./search-rest";
 
 const accessRoutes = [...memberRoutes, ...apiKeyRoutes, ...permissionRoutes];
+/** The read models staff work from: the pipeline board and the calendar. */
+const boardRoutes = [...pipelineRoutes, ...calendarRoutes];
 const gridAndSetupRoutes = [...statusGridRoutes, ...pipelineSetupRoutes, ...changeSetRoutes];
 const lineAndGroupRoutes = [...lineRoutes, ...lineAllocationRoutes, ...alternativeGroupRoutes];
 const selfRoutes = [...userPreferenceRoutes, ...profileRoutes, ...fileRoutes];
@@ -85,7 +88,7 @@ export function listRestRoutes(): RestRoute[] {
     ...lineAndGroupRoutes,
     ...requirementRoutes,
     ...sheetRoutes,
-    ...pipelineRoutes,
+    ...boardRoutes,
     ...quoteRoutes,
     ...inboundEmailRoutes,
     ...moneyRoutes,

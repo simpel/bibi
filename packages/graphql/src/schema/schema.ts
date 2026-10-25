@@ -28,6 +28,7 @@ import "../features/change-set/graphql";
 import "../features/requirement/graphql";
 import "../features/sheet/graphql";
 import "../features/pipeline/graphql";
+import "../features/calendar/graphql";
 import "../features/quote/graphql";
 import "../features/assignment/graphql";
 import "../features/inbound-email/graphql";

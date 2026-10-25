@@ -1,5 +1,5 @@
+import type { CalendarBlockDto } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
-import type { CalendarBlock } from "./calendar-blocks";
 import { calendarColumns, placeBlocks } from "./calendar-layout";
 import { type CalendarView, periodDays, periodFor, readPlainDate } from "./calendar-period";
 import { assignLanes } from "./lanes";
@@ -20,7 +20,7 @@ const columnsOf = ({ view, date }: GridInput) => {
 
 type BlockInput = { id: string; start: string; end: string };
 
-const block = ({ id, start, end }: BlockInput): CalendarBlock => ({
+const block = ({ id, start, end }: BlockInput): CalendarBlockDto => ({
   id,
   itemId: "room",
   type: "HOLD",

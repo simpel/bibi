@@ -1,5 +1,5 @@
+import type { CalendarBlockDto } from "@bibi/core/schemas";
 import { addDays, type PlainDate, toZonedParts } from "@bibi/core/schemas";
-import type { CalendarBlock } from "./calendar-blocks";
 import { dayStart } from "./calendar-params";
 
 /** The views drawn as a space × time grid; month and list have their own components. */
@@ -9,7 +9,7 @@ export type GridView = "day" | "week";
 export type CalendarColumn = { start: Date; end: Date; date: PlainDate; hour: number | null };
 
 /** A block in the column where it starts; `offset` and `span` are fractions of the column. */
-export type PlacedBlock = { block: CalendarBlock; offset: number; span: number };
+export type PlacedBlock = { block: CalendarBlockDto; offset: number; span: number };
 
 type DaysInput = { days: PlainDate[]; timeZone: string };
 
@@ -48,11 +48,11 @@ export function calendarColumns({ view, days, timeZone }: DaysInput & { view: Gr
 
 export type PlaceBlocksInput = {
   columns: CalendarColumn[];
-  blocks: CalendarBlock[];
+  blocks: CalendarBlockDto[];
   view: GridView;
 };
 
-const overlaps = ({ block, column }: { block: CalendarBlock; column: CalendarColumn }) =>
+const overlaps = ({ block, column }: { block: CalendarBlockDto; column: CalendarColumn }) =>
   block.startsAt < column.end && block.endsAt > column.start;
 
 /** Day view: a block is clipped to the day and drawn from the hour it starts in. */

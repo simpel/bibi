@@ -1716,6 +1716,13 @@
         "onboardingLink": "Fortsätt hos Stripe",
         "open": "Öppna betalningsinställningar"
       },
+      "calendar": {
+        "title": "Kalender, {period}",
+        "empty": "Inga block under perioden.",
+        "more": "+{count} till",
+        "open": "Öppna kalendern",
+        "softHold": "Mjuk reservation"
+      },
       "pipeline": {
         "title": "Pipeline",
         "empty": "Inga ärenden än.",

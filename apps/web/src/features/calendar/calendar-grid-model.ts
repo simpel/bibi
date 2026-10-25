@@ -1,6 +1,5 @@
-import type { OccupancyType } from "@bibi/core/schemas";
+import type { CalendarBlockDto, OccupancyType } from "@bibi/core/schemas";
 import { ticketRoute } from "@/lib/routes";
-import type { CalendarBlock } from "./calendar-blocks";
 import type { CalendarColumn, GridView, PlacedBlock } from "./calendar-layout";
 import { assignLanes } from "./lanes";
 import type { CalendarData } from "./load-calendar";
@@ -39,12 +38,12 @@ export type CalendarLabels = {
   reference: (input: { reference: number }) => string;
   heldSince: (input: { heldAt: Date }) => string;
   expires: (input: { expiresAt: Date }) => string;
-  time: (input: { block: CalendarBlock }) => string;
+  time: (input: { block: CalendarBlockDto }) => string;
   column: (input: { column: CalendarColumn }) => string;
   slot: (input: { space: string; column: CalendarColumn }) => { label: string; prompt: string };
 };
 
-type LabelInput = { block: CalendarBlock; labels: CalendarLabels };
+type LabelInput = { block: CalendarBlockDto; labels: CalendarLabels };
 
 /** "Prebooked · Held since 3 Oct · Expires 28 Feb · Ticket 12 · Lunch": the state is always text. */
 export function blockLabel({ block, labels }: LabelInput): string {
@@ -84,7 +83,7 @@ export type BuildGridInput = {
   view: GridView;
   data: CalendarData;
   columns: CalendarColumn[];
-  place: (input: { blocks: CalendarBlock[] }) => PlacedBlock[][];
+  place: (input: { blocks: CalendarBlockDto[] }) => PlacedBlock[][];
   labels: CalendarLabels;
 };
 

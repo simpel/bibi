@@ -1,5 +1,6 @@
 import { PipelineBoardSchema, PipelineCardSchema } from "@bibi/core/schemas";
 import { z } from "zod";
+import { CALENDAR_UI_ENTRIES } from "./calendar-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 
@@ -25,4 +26,5 @@ const pipelineBoard = uiEntry({
 /** Tool → component for the ticket pipeline (ADR 0041, 0043). */
 export const PIPELINE_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   pipeline_board: pipelineBoard,
+  ...CALENDAR_UI_ENTRIES,
 };

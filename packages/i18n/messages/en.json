@@ -1716,6 +1716,13 @@
         "onboardingLink": "Continue on Stripe",
         "open": "Open payment settings"
       },
+      "calendar": {
+        "title": "Calendar, {period}",
+        "empty": "No blocks in this period.",
+        "more": "+{count} more",
+        "open": "Open the calendar",
+        "softHold": "Soft hold"
+      },
       "pipeline": {
         "title": "Pipeline",
         "empty": "No tickets yet.",
