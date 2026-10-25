@@ -327,7 +327,7 @@
       "venue": "Anläggning",
       "price": "Pris"
     },
-    "priceValue": "{amount} kr {unit}",
+    "priceValue": "{amount} {unit}",
     "durationValue": "{minutes} min",
     "capacityValue": "{name}: {capacity}",
     "parts": {
@@ -591,7 +591,6 @@
     "formDescription": "Ange giltighet och villkor. Raderna hör till ärendet: lägg till och prissätt dem på ärendet.",
     "created": "Offerten har skapats.",
     "saved": "Offerten har sparats.",
-    "amount": "{amount} kr",
     "send": "Markera som skickad",
     "sent": "Offerten har markerats som skickad.",
     "accept": "Markera som godkänd",
@@ -1399,6 +1398,8 @@
         "base": "Bas",
         "dateFormat": "Datumformat",
         "clockFormat": "Klockformat",
+        "numberFormat": "Talformat",
+        "currencyDisplay": "Valuta",
         "capabilities": "Förmågor",
         "fields": "Fält",
         "priceMinor": "Pris (öre)",
@@ -1754,7 +1755,6 @@
         "open": "Öppna offerten",
         "validUntil": "Giltig till {date}",
         "noValidity": "Inget giltighetsdatum ännu",
-        "amount": "{amount} kr",
         "columns": {
           "version": "Offert",
           "validUntil": "Giltig till",
@@ -2219,8 +2219,21 @@
   "userSettings": {
     "dateFormat": "Datumformat",
     "clockFormat": "Klocka",
+    "numberFormat": "Talformat",
+    "currencyDisplay": "Valuta",
     "withDefault": "{label} (standard)",
-    "saved": "Ditt datum- och klockformat har sparats.",
+    "saved": "Dina visningsformat har sparats.",
+    "numberFormats": {
+      "LANGUAGE": "Samma som språket ({example})",
+      "SPACE_COMMA": "{example} (mellanslag, komma)",
+      "COMMA_DOT": "{example} (komma, punkt)",
+      "DOT_COMMA": "{example} (punkt, komma)",
+      "SPACE_DOT": "{example} (mellanslag, punkt)"
+    },
+    "currencyDisplays": {
+      "SYMBOL": "{example} (symbol)",
+      "CODE": "{example} (valutakod)"
+    },
     "dateFormats": {
       "D_MMM_YYYY": "{example}",
       "D_MMMM_YYYY": "{example} (hel månad)",
@@ -2708,8 +2721,8 @@
   "profile": {
     "title": "Profil",
     "description": "Ditt namn, ditt lösenord och dina inloggade sessioner.",
-    "displayTitle": "Datum och tid",
-    "displayDescription": "Hur datum och tider skrivs för dig överallt i appen.",
+    "displayTitle": "Datum, tid och tal",
+    "displayDescription": "Hur datum, tider, tal och belopp skrivs för dig överallt i appen.",
     "details": "Uppgifter",
     "saveName": "Spara namn",
     "savingName": "Sparar…",

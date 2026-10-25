@@ -1,11 +1,11 @@
 import type { QuoteDto } from "@bibi/core";
 import type { ColumnDef } from "@bibi/ui";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { Link } from "@/lib/navigation";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { quoteRoute } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
-import { formatKr } from "../../item/ui/format-price";
 import { QuoteStatusBadge } from "./quote-status-badge";
 
 type Column = ColumnDef<QuoteDto>;
@@ -27,7 +27,7 @@ const versionColumn = ({ t }: { t: Translate }): Column => ({
 export function useQuoteVersionColumns(): Column[] {
   const t = useTranslations("quote");
   const format = useDateTimeFormat();
-  const locale = useLocale();
+  const { money } = useNumberFormat();
   return useMemo<Column[]>(
     () => [
       versionColumn({ t }),
@@ -48,10 +48,9 @@ export function useQuoteVersionColumns(): Column[] {
         id: "total",
         header: t("totals.inclVat"),
         accessorFn: (quote) => quote.totalInclVatMinor,
-        cell: ({ row }) =>
-          t("amount", { amount: formatKr({ minor: row.original.totalInclVatMinor, locale }) }),
+        cell: ({ row }) => money({ minor: row.original.totalInclVatMinor }),
       },
     ],
-    [t, format, locale],
+    [t, format, money],
   );
 }

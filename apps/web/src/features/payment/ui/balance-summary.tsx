@@ -1,13 +1,13 @@
 import type { TicketBalanceDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
-import { useMoney } from "./use-money";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 
 export type BalanceSummaryProps = { balance: TicketBalanceDto };
 
 /** What the ticket owes, derived (ADR 0057): billed, paid and what is left. */
 export function BalanceSummary({ balance }: BalanceSummaryProps) {
   const t = useTranslations("payment.balance");
-  const money = useMoney();
+  const { money } = useNumberFormat();
   const figures = [
     { key: "billed", minor: balance.billedMinor },
     { key: "paid", minor: balance.paidMinor },

@@ -1,6 +1,7 @@
 import type { ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import type { DescribedChange, DescribedValue, PathSegment } from "../../../lib/describe-change";
 
 /** One row of the change table: a field of a record, before and after. */
@@ -8,12 +9,10 @@ export type ChangeRow = DescribedChange & { id: string; record: string };
 
 function useValueText() {
   const t = useTranslations("assistant.approval");
-  const format = useFormatter();
+  const { money } = useNumberFormat();
   return ({ value }: { value: DescribedValue }) => {
     if (value.kind === "empty") return t("changes.empty");
-    if (value.kind === "money") {
-      return format.number(value.minor / 100, { style: "currency", currency: "SEK" });
-    }
+    if (value.kind === "money") return money({ minor: value.minor });
     return value.text;
   };
 }

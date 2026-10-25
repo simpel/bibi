@@ -1,9 +1,10 @@
 import type { LineDto } from "@bibi/core";
-import type { DateTimeFormat } from "@bibi/core/schemas";
+import type { DateTimeFormat, NumberFormat } from "@bibi/core/schemas";
 import { actionsColumn, type ColumnDef } from "@bibi/ui";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { chosenOptions } from "./choose-options-schema";
 import { LineStateCell, stateOf } from "./line-state-cell";
@@ -28,12 +29,12 @@ type DataInput = {
   t: Translator;
   effects: EffectTranslator;
   format: DateTimeFormat;
-  locale: string;
+  money: NumberFormat["money"];
   hidden: string | undefined;
 };
 
 /** The data columns (without the row actions). */
-function dataColumns({ data, t, effects, format, locale, hidden }: DataInput): Column[] {
+function dataColumns({ data, t, effects, format, money, hidden }: DataInput): Column[] {
   return [
     nameColumn({ t, effects }),
     {
@@ -68,7 +69,7 @@ function dataColumns({ data, t, effects, format, locale, hidden }: DataInput): C
         </span>
       ),
     },
-    ...amountColumns({ t, locale }),
+    ...amountColumns({ t, money }),
   ];
 }
 
@@ -78,10 +79,10 @@ export function useProgramColumns({ lines, data, access }: UseProgramColumnsInpu
   const effects = useTranslations("priceEffect");
   const common = useTranslations("common");
   const format = useDateTimeFormat();
-  const locale = useLocale();
+  const { money } = useNumberFormat();
   return useMemo<Column[]>(() => {
     const hidden = data.itemsHidden ? common("hidden") : undefined;
-    const columns = dataColumns({ data, t, effects, format, locale, hidden });
+    const columns = dataColumns({ data, t, effects, format, money, hidden });
     if (!access.canEdit && !access.canRemove && !access.canChangeState && !access.canAllocate) {
       return columns;
     }
@@ -99,5 +100,5 @@ export function useProgramColumns({ lines, data, access }: UseProgramColumnsInpu
         ),
       }),
     ];
-  }, [t, effects, common, format, locale, lines, data, access]);
+  }, [t, effects, common, format, money, lines, data, access]);
 }

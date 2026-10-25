@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { nameOf } from "@/components/form/named-option";
 import { itemRoute } from "@/lib/configuration-routes";
 import { Link } from "@/lib/navigation";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { priceText } from "./price-text";
 
 type Column = ColumnDef<ItemDto>;
@@ -14,12 +15,12 @@ export type UseItemColumnsInput = {
   venues: { id: string; name: string }[];
   /** Venue cell text when the caller may not view venues (ADR 0050). */
   hidden?: string | undefined;
-  locale: string;
 };
 
 /** Name · type · venue · price. */
-export function useItemColumns({ types, venues, hidden, locale }: UseItemColumnsInput): Column[] {
+export function useItemColumns({ types, venues, hidden }: UseItemColumnsInput): Column[] {
   const t = useTranslations("item");
+  const { money } = useNumberFormat();
   return useMemo<Column[]>(
     () => [
       {
@@ -46,9 +47,9 @@ export function useItemColumns({ types, venues, hidden, locale }: UseItemColumns
         id: "price",
         header: t("columns.price"),
         accessorFn: (item) => item.priceMinor ?? undefined,
-        cell: ({ row }) => priceText({ item: row.original, locale, t }),
+        cell: ({ row }) => priceText({ item: row.original, money, t }),
       },
     ],
-    [t, types, venues, hidden, locale],
+    [t, types, venues, hidden, money],
   );
 }

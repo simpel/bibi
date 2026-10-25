@@ -1,3 +1,4 @@
+import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { OperationContext } from "../../operations/types";
 import type { ReceivableKind, ReceivableSettlement, TicketBalanceDto } from "./balance-schema";
 import { paidByReceivable, settlementOf } from "./settlement";
@@ -81,7 +82,7 @@ export async function ticketBalance({
   const balanceMinor = billedMinor - paidMinor;
   return {
     ticketId,
-    currency: "SEK",
+    currency: DEFAULT_CURRENCY,
     billedFrom,
     billedMinor,
     paidMinor,

@@ -3,10 +3,12 @@
 import type { DisplayFormats } from "@bibi/core/schemas";
 import { createContext, type ReactNode } from "react";
 
-/** The signed-in user's date and clock formats; defaults when nobody is signed in. */
+/** The signed-in user's date, clock and number formats; defaults when nobody is signed in. */
 export const DisplayFormatsContext = createContext<DisplayFormats>({
   dateFormat: null,
   clockFormat: null,
+  numberFormat: null,
+  currencyDisplay: null,
 });
 
 export type DisplayFormatsProviderProps = { formats: DisplayFormats; children: ReactNode };

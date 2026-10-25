@@ -1,6 +1,7 @@
 import type { PublicPaymentDto } from "@bibi/core/schemas";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { AutoRefresh } from "./auto-refresh";
 import { type PaymentOutcome, paymentOutcome } from "./payment-outcome";
 
@@ -27,13 +28,10 @@ const DESCRIPTION_KEY = {
 /** What the customer sees at `/pay/<token>`: the amount and a way to pay, or why not. */
 export function PaymentPageCard({ payment, returning = false }: PaymentPageCardProps) {
   const t = useTranslations("payment.public");
-  const format = useFormatter();
+  const { money } = useNumberFormat();
   const outcome = paymentOutcome({ payment, returning });
   const values = { organization: payment.organizationName, reference: payment.ticketReference };
-  const amount = format.number(payment.amountMinor / 100, {
-    style: "currency",
-    currency: payment.currency,
-  });
+  const amount = money({ minor: payment.amountMinor, currency: payment.currency });
   const showAmount = outcome !== "expired" && outcome !== "unavailable";
   return (
     <Card className="w-full max-w-md">

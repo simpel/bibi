@@ -1,17 +1,16 @@
-import type { ItemDto } from "@bibi/core";
+import type { ItemDto, NumberFormat } from "@bibi/core/schemas";
 import type { useTranslations } from "next-intl";
-import { formatKr } from "./format-price";
 
 export type PriceTextInput = {
   item: Pick<ItemDto, "priceMinor" | "priceUnit">;
-  locale: string;
+  money: NumberFormat["money"];
   /** The `item` messages translator. */
   t: ReturnType<typeof useTranslations<"item">>;
 };
 
-/** "4 500 kr per hour", or "–" when the item has no price. */
-export function priceText({ item, locale, t }: PriceTextInput): string {
+/** "4 500,00 kr per hour", or "–" when the item has no price. */
+export function priceText({ item, money, t }: PriceTextInput): string {
   if (item.priceMinor === null || item.priceUnit === null) return "–";
-  const amount = formatKr({ minor: item.priceMinor, locale });
+  const amount = money({ minor: item.priceMinor });
   return t("priceValue", { amount, unit: t(`priceUnits.${item.priceUnit}`) });
 }

@@ -1,10 +1,10 @@
 import type { TicketDto } from "@bibi/core";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import { nameOf } from "@/components/form/named-option";
 import { FactList } from "@/components/typed-fields/fact-list";
 import { ownFieldFacts } from "@/components/typed-fields/own-field-facts";
 import { getDateTimeFormat } from "@/server/date-time-format";
-import { formatKr } from "../../item/ui/format-price";
+import { getNumberFormat } from "@/server/number-format";
 import { desiredPeriod } from "./desired-period";
 import type { TicketFormData } from "./ticket-form-data";
 
@@ -17,7 +17,7 @@ export async function TicketFacts({ ticket, data }: TicketFactsProps) {
   const t = await getTranslations("ticket.fields");
   const common = await getTranslations("common");
   const format = await getDateTimeFormat();
-  const locale = await getLocale();
+  const { money } = await getNumberFormat();
   const type = data.types.find(({ id }) => id === ticket.entityTypeId);
   const ticketStatus = data.statuses.find(({ id }) => id === ticket.statusId);
   const budget = ticket.budgetMinor;
@@ -37,7 +37,7 @@ export async function TicketFacts({ ticket, data }: TicketFactsProps) {
     ...(ticket.statusReason ? [{ label: t("statusReason"), value: ticket.statusReason }] : []),
     { label: t("estimatedHeadcount"), value: count({ value: ticket.estimatedHeadcount }) },
     { label: t("guaranteedHeadcount"), value: count({ value: ticket.guaranteedHeadcount }) },
-    { label: t("budget"), value: budget === null ? "–" : formatKr({ minor: budget, locale }) },
+    { label: t("budget"), value: budget === null ? "–" : money({ minor: budget }) },
     ...(ticket.holdsUntil
       ? [{ label: t("holdsUntil"), value: format.dateTime({ instant: ticket.holdsUntil }) }]
       : []),

@@ -14,16 +14,34 @@ enum ClockFormat {
   H12
 }
 
+/// How a user wants numbers written (#482): digit-group and decimal separators.
+/// SPACE_COMMA = 1 234,50, COMMA_DOT = 1,234.50, DOT_COMMA = 1.234,50, SPACE_DOT = 1 234.50.
+enum NumberFormat {
+  SPACE_COMMA
+  COMMA_DOT
+  DOT_COMMA
+  SPACE_DOT
+}
+
+/// How an amount names its currency (#482): `SYMBOL` (kr, €, $) or `CODE` (SEK, EUR).
+enum CurrencyDisplay {
+  SYMBOL
+  CODE
+}
+
 /// One typed settings row per user (ADR 0046), separate from the key/value `UserPreference`.
 /// User-scoped, NOT org-scoped: it follows the user across organizations. Reached only through
 /// `scopedDb`, which pins every query to the acting user (`USER_SCOPED_MODELS`). Upserted in
 /// place; there is no soft delete and no `createdBy` (the owner is `userId`).
-/// Owned: `dateFormat`, `clockFormat`; `null` = the default (`D_MMM_YYYY`, `H24`, ADR 0051).
+/// Owned: `dateFormat`, `clockFormat`, `numberFormat`, `currencyDisplay`; `null` = the default
+/// (`D_MMM_YYYY`, `H24`, and the UI language's number style with a symbol; ADR 0051).
 model UserSettings {
-  id          String       @id @default(cuid(2))
-  userId      String       @unique
-  dateFormat  DateFormat?
-  clockFormat ClockFormat?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id              String           @id @default(cuid(2))
+  userId          String           @unique
+  dateFormat      DateFormat?
+  clockFormat     ClockFormat?
+  numberFormat    NumberFormat?
+  currencyDisplay CurrencyDisplay?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }

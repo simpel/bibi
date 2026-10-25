@@ -28,6 +28,19 @@ describe("user settings (ADR 0046)", () => {
     unwrap({ result: await update({ input: { dateFormat: null } }) });
     expect(await read({ context: a })).toMatchObject({ dateFormat: null, clockFormat: "H12" });
     expect(await read({ context: b })).toMatchObject({ id: null, clockFormat: null });
+    unwrap({
+      result: await update({ input: { numberFormat: "COMMA_DOT", currencyDisplay: "CODE" } }),
+    });
+    expect(await read({ context: a })).toMatchObject({
+      clockFormat: "H12",
+      numberFormat: "COMMA_DOT",
+      currencyDisplay: "CODE",
+    });
+    unwrap({ result: await update({ input: { currencyDisplay: null } }) });
+    expect(await read({ context: a })).toMatchObject({
+      numberFormat: "COMMA_DOT",
+      currencyDisplay: null,
+    });
   });
 
   it("refuses a format it does not know", async () => {

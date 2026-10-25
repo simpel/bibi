@@ -33,7 +33,6 @@ export async function ItemList({ locale, typeId, cursor }: ItemListProps) {
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
   return (
     <ItemCatalog
-      locale={locale}
       data={data.value}
       page={result.value}
       canCreate={canCreate}

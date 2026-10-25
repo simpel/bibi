@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { createDateTimeFormat, type DisplayFormats } from "../src/schemas";
+import { createDateTimeFormat, type DateTimeFormats } from "../src/schemas";
 
 const AFTERNOON = new Date("2026-08-27T12:30:00Z"); // 14:30 in Stockholm (CEST)
 const EVENING = new Date("2026-08-27T14:05:00Z");
 const NEXT_DAY = new Date("2026-08-28T07:00:00Z");
-const DEFAULTS: DisplayFormats = { dateFormat: null, clockFormat: null };
+const DEFAULTS: DateTimeFormats = { dateFormat: null, clockFormat: null };
 
-type MakeInput = { locale?: string; formats?: DisplayFormats };
+type MakeInput = { locale?: string; formats?: DateTimeFormats };
 
 const make = ({ locale = "en", formats = DEFAULTS }: MakeInput = {}) =>
   createDateTimeFormat({ locale, timeZone: "Europe/Stockholm", formats });
@@ -20,7 +20,7 @@ describe("createDateTimeFormat (#481)", () => {
   });
 
   it("writes each date pattern", () => {
-    const date = ({ dateFormat }: { dateFormat: DisplayFormats["dateFormat"] }) =>
+    const date = ({ dateFormat }: { dateFormat: DateTimeFormats["dateFormat"] }) =>
       make({ formats: { dateFormat, clockFormat: null } }).date({ instant: AFTERNOON });
     expect(date({ dateFormat: "D_MMMM_YYYY" })).toBe("27 August 2026");
     expect(date({ dateFormat: "YYYY_MM_DD" })).toBe("2026-08-27");

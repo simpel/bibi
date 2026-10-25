@@ -327,7 +327,7 @@
       "venue": "Venue",
       "price": "Price"
     },
-    "priceValue": "{amount} SEK {unit}",
+    "priceValue": "{amount} {unit}",
     "durationValue": "{minutes} min",
     "capacityValue": "{name}: {capacity}",
     "parts": {
@@ -591,7 +591,6 @@
     "formDescription": "Set the validity and the terms. The lines are the ticket's own: add and price them on the ticket.",
     "created": "The quote has been created.",
     "saved": "The quote has been saved.",
-    "amount": "{amount} kr",
     "send": "Mark as sent",
     "sent": "The quote has been marked as sent.",
     "accept": "Mark as accepted",
@@ -1399,6 +1398,8 @@
         "base": "Base",
         "dateFormat": "Date format",
         "clockFormat": "Clock format",
+        "numberFormat": "Number format",
+        "currencyDisplay": "Currency display",
         "capabilities": "Capabilities",
         "fields": "Fields",
         "priceMinor": "Price (minor units)",
@@ -1754,7 +1755,6 @@
         "open": "Open the quote",
         "validUntil": "Valid until {date}",
         "noValidity": "No validity date yet",
-        "amount": "{amount} kr",
         "columns": {
           "version": "Quote",
           "validUntil": "Valid until",
@@ -2219,8 +2219,21 @@
   "userSettings": {
     "dateFormat": "Date format",
     "clockFormat": "Clock",
+    "numberFormat": "Number format",
+    "currencyDisplay": "Currency display",
     "withDefault": "{label} (default)",
-    "saved": "Your date and clock format has been saved.",
+    "saved": "Your display formats have been saved.",
+    "numberFormats": {
+      "LANGUAGE": "Same as the language ({example})",
+      "SPACE_COMMA": "{example} (space, comma)",
+      "COMMA_DOT": "{example} (comma, dot)",
+      "DOT_COMMA": "{example} (dot, comma)",
+      "SPACE_DOT": "{example} (space, dot)"
+    },
+    "currencyDisplays": {
+      "SYMBOL": "{example} (symbol)",
+      "CODE": "{example} (currency code)"
+    },
     "dateFormats": {
       "D_MMM_YYYY": "{example}",
       "D_MMMM_YYYY": "{example} (full month)",
@@ -2708,8 +2721,8 @@
   "profile": {
     "title": "Profile",
     "description": "Your name, password and sign-in sessions.",
-    "displayTitle": "Date and time",
-    "displayDescription": "How dates and times are written for you everywhere in the app.",
+    "displayTitle": "Date, time and numbers",
+    "displayDescription": "How dates, times, numbers and amounts are written for you everywhere in the app.",
     "details": "Details",
     "saveName": "Save name",
     "savingName": "Saving…",

@@ -4,6 +4,7 @@ import { buildSystemPrompt } from "../prompt/build-system-prompt";
 import { errorResponse } from "../server/error-response";
 import type { UserContext } from "../server/resolve-user";
 import type { ChatRuntime } from "./handle-chat";
+import { loadPromptFormats } from "./load-prompt-formats";
 import { onRunFinish } from "./on-run-finish";
 import type { ChatInput } from "./parse-chat-input";
 import { persistUserMessage } from "./persist-user-message";
@@ -46,9 +47,11 @@ async function buildModelInput({
     messages: [...history, userMessage],
     tools: prepared.tools,
   });
+  const formats = await loadPromptFormats({ user, locale });
   const instructions = buildSystemPrompt({
     organizationId: user.organizationId,
     locale,
+    formats,
     skills: prepared.promptSkills,
     access: { roles: user.roles, permissions: user.permissions },
     ...(page ? { page } : {}),

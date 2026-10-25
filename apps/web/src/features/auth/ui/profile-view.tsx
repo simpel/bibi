@@ -27,6 +27,13 @@ function ProfileCard({ title, description, children }: ProfileCardProps) {
   );
 }
 
+const NO_FORMATS = {
+  dateFormat: null,
+  clockFormat: null,
+  numberFormat: null,
+  currencyDisplay: null,
+};
+
 /** Profile page body: name, email (read-only), date and clock format, password, active sessions and connected apps. */
 export async function ProfileView({ name, email, locale }: ProfileViewProps) {
   const t = await getTranslations("profile");
@@ -38,10 +45,7 @@ export async function ProfileView({ name, email, locale }: ProfileViewProps) {
         <ProfileNameForm name={name} email={email} />
       </ProfileCard>
       <ProfileCard title={t("displayTitle")} description={t("displayDescription")}>
-        <DisplayFormatForm
-          dateFormat={settings.ok ? settings.value.dateFormat : null}
-          clockFormat={settings.ok ? settings.value.clockFormat : null}
-        />
+        <DisplayFormatForm formats={settings.ok ? settings.value : NO_FORMATS} />
       </ProfileCard>
       <ProfileCard title={t("passwordTitle")} description={t("passwordDescription")}>
         <ProfilePasswordForm />

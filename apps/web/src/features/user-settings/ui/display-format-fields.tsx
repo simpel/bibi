@@ -8,10 +8,10 @@ export type DisplayFormatFieldsProps = {
   control: Control<DisplayFormatValues, unknown, DisplayFormatValues>;
 };
 
-/** The date and clock selects of the display format form. */
+/** The date, clock, number and currency selects of the display format form. */
 export function DisplayFormatFields({ control }: DisplayFormatFieldsProps) {
   const t = useTranslations("userSettings");
-  const { dates, clocks } = useFormatOptions();
+  const { dates, clocks, numbers, currencies } = useFormatOptions();
   return (
     <>
       <FormatSelectField
@@ -25,6 +25,18 @@ export function DisplayFormatFields({ control }: DisplayFormatFieldsProps) {
         name="clockFormat"
         label={t("clockFormat")}
         options={clocks}
+      />
+      <FormatSelectField
+        control={control}
+        name="numberFormat"
+        label={t("numberFormat")}
+        options={numbers}
+      />
+      <FormatSelectField
+        control={control}
+        name="currencyDisplay"
+        label={t("currencyDisplay")}
+        options={currencies}
       />
     </>
   );

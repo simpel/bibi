@@ -8,12 +8,15 @@ import {
 import { formatClock } from "./format-clock";
 import { formatDate, formatWeekday, namesMonth } from "./format-date";
 
+/** The part of a user's formats that dates and times use. */
+export type DateTimeFormats = Pick<DisplayFormats, "dateFormat" | "clockFormat">;
+
 export type CreateDateTimeFormatInput = {
   /** The UI language (next-intl locale): month and weekday names, AM/PM. */
   locale: string;
   /** The zone every call renders in unless it passes its own (ADR 0064: venue or organization). */
   timeZone: string;
-  formats: DisplayFormats;
+  formats: DateTimeFormats;
 };
 
 type At = { instant: InstantLike; timeZone?: string };

@@ -8,6 +8,8 @@ export const PEOPLE_FIELD_KEYS = [
   "itemIds",
   "dateFormat",
   "clockFormat",
+  "numberFormat",
+  "currencyDisplay",
   "days",
   "exceptions",
 ] as const;

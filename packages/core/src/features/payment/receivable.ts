@@ -1,4 +1,5 @@
 import { ok, type Result } from "../../errors/result";
+import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
 import { checkReadable } from "../ticket/ticket-rules";
@@ -32,7 +33,13 @@ async function findQuote({ context, id }: FindInput): Promise<Result<Receivable>
   const { ticketId, totalInclVatMinor: amountMinor, version } = quote;
   const description = `Ticket #${quote.ticket.reference}, quote v${version}`;
   return ok({
-    value: { ref: { ...NONE, quoteId: id }, ticketId, amountMinor, currency: "SEK", description },
+    value: {
+      ref: { ...NONE, quoteId: id },
+      ticketId,
+      amountMinor,
+      currency: DEFAULT_CURRENCY,
+      description,
+    },
   });
 }
 

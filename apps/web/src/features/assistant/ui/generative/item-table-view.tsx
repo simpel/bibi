@@ -1,11 +1,12 @@
 "use client";
 
 import { Card, type ColumnDef } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { itemRoute } from "@/lib/configuration-routes";
 import { Link } from "@/lib/navigation";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import type { GenerativeProps } from "./generative-props";
 import { MoreHint } from "./more-hint";
 
@@ -15,7 +16,7 @@ type Row = ItemTableViewProps["items"][number];
 
 function useItemColumns(): ColumnDef<Row>[] {
   const t = useTranslations("assistant.ui.item");
-  const format = useFormatter();
+  const { money } = useNumberFormat();
   return useMemo<ColumnDef<Row>[]>(
     () => [
       {
@@ -39,12 +40,10 @@ function useItemColumns(): ColumnDef<Row>[] {
         header: t("columns.price"),
         accessorFn: (item) => item.priceMinor ?? undefined,
         cell: ({ row }) =>
-          row.original.priceMinor === null
-            ? "–"
-            : format.number(row.original.priceMinor / 100, { style: "currency", currency: "SEK" }),
+          row.original.priceMinor === null ? "–" : money({ minor: row.original.priceMinor }),
       },
     ],
-    [t, format],
+    [t, money],
   );
 }
 

@@ -1,5 +1,4 @@
 import type { ItemDto } from "@bibi/core";
-import type { Locale } from "@bibi/i18n";
 import { Button } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { CursorPagination } from "@/components/cursor-pagination";
@@ -13,7 +12,6 @@ import { ItemTable } from "./item-table";
 import { ItemTypeFilter } from "./item-type-filter";
 
 export type ItemCatalogProps = {
-  locale: Locale;
   data: ItemFormData;
   page: { items: ItemDto[]; nextCursor: string | null };
   canCreate: boolean;
@@ -23,7 +21,7 @@ export type ItemCatalogProps = {
 
 /** The catalog: header with create, type filter, and the table (or an empty state). */
 export async function ItemCatalog(props: ItemCatalogProps) {
-  const { locale, data, page, canCreate, typeId, cursor } = props;
+  const { data, page, canCreate, typeId, cursor } = props;
   const t = await getTranslations("item");
   const noTypes = data.types.length === 0;
   const create = canCreate && !noTypes ? <CreateItemButton typeId={typeId} /> : undefined;
@@ -49,7 +47,6 @@ export async function ItemCatalog(props: ItemCatalogProps) {
             types={data.types}
             venues={data.venues}
             venuesHidden={data.venuesHidden}
-            locale={locale}
           />
           <CursorPagination
             pathname={ROUTES.items}

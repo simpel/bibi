@@ -1,3 +1,5 @@
+import type { NumberFormats } from "../number/number-format";
+
 /** How a user wants dates written (ADR 0046): D day, MMM/MMMM month name, MM month, YYYY year. */
 export const DATE_FORMATS = [
   "D_MMM_YYYY",
@@ -17,8 +19,8 @@ export type ClockFormat = (typeof CLOCK_FORMATS)[number];
 export const DEFAULT_DATE_FORMAT: DateFormat = "D_MMM_YYYY";
 export const DEFAULT_CLOCK_FORMAT: ClockFormat = "H24";
 
-/** A user's choices; `null` = the default (ADR 0051). */
-export type DisplayFormats = {
+/** A user's choices; `null` = the default (ADR 0051). Numbers: #482. */
+export type DisplayFormats = NumberFormats & {
   dateFormat: DateFormat | null;
   clockFormat: ClockFormat | null;
 };

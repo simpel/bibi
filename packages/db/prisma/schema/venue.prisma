@@ -1,13 +1,13 @@
 /// Venue – a building or site. Bookable items may belong to a venue (ADR 0021).
 model Venue {
-  id                    String       @id @default(cuid(2))
+  id                    String           @id @default(cuid(2))
   organizationId        String
   name                  String
   description           String?
   streetAddress         String?
   postalCode            String?
   city                  String?
-  country               String       @default("SE")
+  country               String           @default("SE")
   contactEmail          String?
   contactPhone          String?
   /// Free-text note about opening hours, kept from before structured hours (ADR 0064, #429:
@@ -17,10 +17,10 @@ model Venue {
   /// Owned, IANA name, `null` = the organization's zone (ADR 0064, 0051). Read only through core's
   /// `effectiveTimeZone`: the zone of this venue's lines, occupancy and calendar.
   timeZone              String?
-  defaultVatRatePercent Int          @default(25)
-  status                RecordStatus @default(ACTIVE)
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
+  defaultVatRatePercent Int              @default(25)
+  status                RecordStatus     @default(ACTIVE)
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
   createdBy             String?
   items                 Item[]
   hoursDays             HoursDay[]

@@ -1,8 +1,8 @@
 import type { LineChange, OrderLineDto } from "@bibi/core/schemas";
 import { Badge, type BadgeProps, type ColumnDef } from "@bibi/ui";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
-import { formatKr } from "../../item/ui/format-price";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { LineVatRows } from "./line-vat-rows";
 
 const CHANGE_VARIANT: Record<LineChange, BadgeProps["variant"]> = {
@@ -87,10 +87,8 @@ const changeColumn = ({ t }: { t: Translate }): Column => ({
 /** Item · quantity · unit price · discount · VAT · total · change marker. */
 export function useQuoteLineColumns(): Column[] {
   const t = useTranslations("quote");
-  const locale = useLocale();
+  const { money } = useNumberFormat();
   return useMemo<Column[]>(() => {
-    const kr = ({ minor }: { minor: number }) =>
-      t("amount", { amount: formatKr({ minor, locale }) });
     return [
       itemColumn({ t }),
       valueColumn({ t, id: "quantity", sort: (l) => l.quantity, show: (l) => l.quantity }),
@@ -98,7 +96,7 @@ export function useQuoteLineColumns(): Column[] {
         t,
         id: "unitPrice",
         sort: (l) => l.unitPriceMinor,
-        show: (l) => kr({ minor: l.unitPriceMinor }),
+        show: (l) => money({ minor: l.unitPriceMinor }),
       }),
       valueColumn({
         t,
@@ -111,9 +109,9 @@ export function useQuoteLineColumns(): Column[] {
         t,
         id: "total",
         sort: (l) => l.totalExclVatMinor,
-        show: (l) => kr({ minor: l.totalExclVatMinor }),
+        show: (l) => money({ minor: l.totalExclVatMinor }),
       }),
       changeColumn({ t }),
     ];
-  }, [t, locale]);
+  }, [t, money]);
 }

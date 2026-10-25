@@ -3,6 +3,7 @@ import type { PromptSkill } from "../skills/skill-wire";
 import { accessSection } from "./access-section";
 import { assistantRules } from "./assistant-rules";
 import { contextSection, skillsSection } from "./context-sections";
+import { formatsSection, type PromptFormats } from "./formats-section";
 import type { AssistantLocale, PageContext } from "./page-context-schema";
 import { PRODUCT_CONTEXT } from "./product-context";
 
@@ -13,6 +14,8 @@ export type BuildSystemPromptInput = {
   skills: readonly PromptSkill[];
   /** The signed-in user's fixed role(s) and permissions (ADR 0048). */
   access: { roles: readonly string[]; permissions: PermissionSet };
+  /** The user's date, time, number and amount formats (ADR 0046, #482); left out in tests. */
+  formats?: PromptFormats;
   now?: Date;
 };
 
@@ -27,6 +30,7 @@ export function buildSystemPrompt({
   page,
   skills,
   access,
+  formats,
   now = new Date(),
 }: BuildSystemPromptInput): string {
   const rules = assistantRules({ locale }).map((rule) => `- ${rule}`);
@@ -34,6 +38,7 @@ export function buildSystemPrompt({
     PRODUCT_CONTEXT,
     ["## Rules", ...rules].join("\n"),
     contextSection({ organizationId, now, ...(page ? { page } : {}) }),
+    ...(formats ? [formatsSection({ ...formats, now })] : []),
     accessSection(access),
     skillsSection({ skills }),
   ].join("\n\n");

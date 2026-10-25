@@ -1082,11 +1082,13 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 **Attributes**
 - dateFormat (owned, nullable = default `D_MMM_YYYY`): `D_MMM_YYYY` (27 Aug 2026), `D_MMMM_YYYY` (27 August 2026), `YYYY_MM_DD` (2026-08-27), `DD_MM_YYYY` (27/08/2026), `MM_DD_YYYY` (08/27/2026); month names follow the UI language
 - clockFormat (owned, nullable = default `H24`): `H24` (14:30) or `H12` (2:30 PM)
+- numberFormat (owned, nullable = the UI language's style, #482): `SPACE_COMMA` (1 234,50), `COMMA_DOT` (1,234.50), `DOT_COMMA` (1.234,50), `SPACE_DOT` (1 234.50)
+- currencyDisplay (owned, nullable = `SYMBOL`): `SYMBOL` (kr) or `CODE` (SEK)
 
 **Relations**
 - `1:1` belongs to → User
 
-> Operations (`self:read|write`): `userSettings.get` and `userSettings.update({ dateFormat?, clockFormat? })` (omitted keeps, null resets). Set on `/profile`. The web app renders every date and time through `createDateTimeFormat` (core `time/`) with these, the UI language and the zone from `effectiveTimeZone`.
+> Operations (`self:read|write`): `userSettings.get` and `userSettings.update({ dateFormat?, clockFormat?, numberFormat?, currencyDisplay? })` (omitted keeps, null resets). Set on `/profile`. The web app renders every date and time through `createDateTimeFormat` (core `time/`) with these, the UI language and the zone from `effectiveTimeZone`, and every number and amount through `createNumberFormat` (core `number/`).
 
 ### MemberProfile (`MemberProfile`)
 

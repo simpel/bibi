@@ -55,7 +55,6 @@ async function BundlesBody({
           types={data.value.types}
           venues={data.value.venues}
           venuesHidden={data.value.venuesHidden}
-          locale={locale}
         />
       )}
     </section>

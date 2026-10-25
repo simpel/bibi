@@ -1,9 +1,9 @@
 import type { ColumnDef } from "@bibi/ui";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
-import { formatKr } from "@/features/item/ui/format-price";
 import { QuoteStatusBadge } from "@/features/quote/ui/quote-status-badge";
 import { Link } from "@/lib/navigation";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { quoteRoute } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
@@ -27,7 +27,7 @@ const versionColumn = ({ t }: { t: Translate }): ColumnDef<QuoteCardRow> => ({
 export function useQuoteCardColumns(): ColumnDef<QuoteCardRow>[] {
   const t = useTranslations("assistant.ui.quote");
   const format = useDateTimeFormat();
-  const locale = useLocale();
+  const { money } = useNumberFormat();
   return useMemo(
     () => [
       versionColumn({ t }),
@@ -42,8 +42,7 @@ export function useQuoteCardColumns(): ColumnDef<QuoteCardRow>[] {
         id: "total",
         header: t("columns.total"),
         accessorFn: (q) => q.totalInclVatMinor,
-        cell: ({ row }) =>
-          t("amount", { amount: formatKr({ minor: row.original.totalInclVatMinor, locale }) }),
+        cell: ({ row }) => money({ minor: row.original.totalInclVatMinor }),
       },
       {
         id: "status",
@@ -52,6 +51,6 @@ export function useQuoteCardColumns(): ColumnDef<QuoteCardRow>[] {
         cell: ({ row }) => <QuoteStatusBadge status={row.original.quoteStatus} />,
       },
     ],
-    [t, format, locale],
+    [t, format, money],
   );
 }

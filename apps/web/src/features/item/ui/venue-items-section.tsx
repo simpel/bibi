@@ -39,7 +39,6 @@ export async function VenueItemsSection({ locale, venueId, cursor }: VenueItemsS
         types={data.value.types}
         venues={data.value.venues}
         venuesHidden={data.value.venuesHidden}
-        locale={locale}
       />
       <CursorPagination
         pathname={venueRoute({ id: venueId })}

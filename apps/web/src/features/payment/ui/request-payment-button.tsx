@@ -14,8 +14,8 @@ import { CreditCardIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { TextField } from "@/components/form/text-field";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { PaymentMethodField } from "./payment-method-field";
-import { useMoney } from "./use-money";
 import { type ReceivableTarget, useRequestPaymentForm } from "./use-request-payment-form";
 
 type RequestPaymentFormProps = { target: ReceivableTarget; openMinor: number; onDone: () => void };
@@ -23,7 +23,7 @@ type RequestPaymentFormProps = { target: ReceivableTarget; openMinor: number; on
 function RequestPaymentForm({ target, openMinor, onDone }: RequestPaymentFormProps) {
   const common = useTranslations("common");
   const t = useTranslations("payment");
-  const money = useMoney();
+  const { money } = useNumberFormat();
   const { form, submit, pending } = useRequestPaymentForm({ target, onDone });
   return (
     <Form {...form}>

@@ -1,5 +1,5 @@
-import { useLocale, useTranslations } from "next-intl";
-import { formatKr } from "../../item/ui/format-price";
+import { useTranslations } from "next-intl";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 
 export type QuoteTotalsProps = {
   quote: { totalExclVatMinor: number; totalInclVatMinor: number; totalIsFrom: boolean };
@@ -8,9 +8,9 @@ export type QuoteTotalsProps = {
 /** Total excl. VAT, the VAT and the total incl. VAT; "from" prices while an alternative is open. */
 export function QuoteTotals({ quote }: QuoteTotalsProps) {
   const t = useTranslations("quote");
-  const locale = useLocale();
+  const { money } = useNumberFormat();
   const kr = ({ minor }: { minor: number }) => {
-    const amount = t("amount", { amount: formatKr({ minor, locale }) });
+    const amount = money({ minor });
     return quote.totalIsFrom ? t("totals.from", { amount }) : amount;
   };
   const rows = [

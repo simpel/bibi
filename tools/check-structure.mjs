@@ -11,6 +11,7 @@ import { fileURLToPath } from "node:url";
 import { checkFeatures } from "./lib/features.mjs";
 import { checkFile } from "./lib/file-rules.mjs";
 import { analyzeFunctions } from "./lib/functions.mjs";
+import { checkNumber } from "./lib/number-rules.mjs";
 import { analyzeParams } from "./lib/params.mjs";
 import { listPackageDirs, walkSources } from "./lib/scan.mjs";
 import { checkTime } from "./lib/time-rules.mjs";
@@ -40,6 +41,7 @@ export function runChecks({ root }) {
         ...analyzeFunctions({ content }),
         ...analyzeParams({ relPath, content }),
         ...checkTime({ relPath, content }),
+        ...checkNumber({ relPath, content }),
       ];
       for (const message of messages) problems.push({ file: relPath, message });
     }

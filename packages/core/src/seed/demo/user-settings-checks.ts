@@ -11,10 +11,20 @@ type Member = { name: string; userId: string };
 
 const formatsOf = ({ org, member }: { org: DemoOrg; member: Member }) => {
   const formats = org.users.find((user) => user.name === member.name)?.displayFormats;
-  return `${formats?.dateFormat ?? null}/${formats?.clockFormat ?? null}`;
+  return keyOf({ formats: formats ?? {} });
 };
 
-/** ADR 0046: each user has the formats in the data files, read as that user; the rest none. */
+type Formats = Partial<
+  Record<"dateFormat" | "clockFormat" | "numberFormat" | "currencyDisplay", string | null>
+>;
+
+/** `date/clock/number/currency`, `null` for a default. */
+const keyOf = ({ formats }: { formats: Formats }) =>
+  [formats.dateFormat, formats.clockFormat, formats.numberFormat, formats.currencyDisplay]
+    .map((value) => value ?? null)
+    .join("/");
+
+/** ADR 0046, #482: each user has the formats in the data files, read as that user; the rest none. */
 export async function checkDemoUserSettings({
   context,
   org,
@@ -30,7 +40,7 @@ export async function checkDemoUserSettings({
       actor: { type: "user", userId: member.userId },
     });
     const settings = await execute({ operation: getUserSettings, input: {}, context: own });
-    const got = settings.ok ? `${settings.value.dateFormat}/${settings.value.clockFormat}` : "none";
+    const got = settings.ok ? keyOf({ formats: settings.value }) : "none";
     const want = formatsOf({ org, member });
     if (got !== want) failures.push(`${org.slug}: ${member.name} has formats ${got}, want ${want}`);
   }

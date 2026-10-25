@@ -12,10 +12,11 @@ import {
   CustomisationsDisplay,
   PricedDisplay,
 } from "@bibi/ui";
-import { useFormatter, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { customisationGroupLines } from "@/features/item/ui/customisation-group-lines";
 import { itemRoute } from "@/lib/configuration-routes";
 import { Link } from "@/lib/navigation";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import type { GenerativeProps } from "./generative-props";
 import { fieldLines } from "./item-facts";
 
@@ -26,11 +27,8 @@ type CapabilitiesProps = { item: ItemCardViewProps["item"] };
 /** The capability values of the item, shown with the same displays as the item page. */
 function Capabilities({ item }: CapabilitiesProps) {
   const t = useTranslations("assistant.ui.item");
-  const format = useFormatter();
-  const amount =
-    item.priceMinor === null
-      ? null
-      : format.number(item.priceMinor / 100, { style: "currency", currency: "SEK" });
+  const { money } = useNumberFormat();
+  const amount = item.priceMinor === null ? null : money({ minor: item.priceMinor });
   const price = amount && item.priceUnit ? `${amount} ${t(`priceUnit.${item.priceUnit}`)}` : amount;
   const duration =
     item.defaultDurationMinutes === null

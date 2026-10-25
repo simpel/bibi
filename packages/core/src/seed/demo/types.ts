@@ -13,7 +13,7 @@ export type DemoUser = {
   role: FixedRole;
   overrides?: readonly PermissionOverride[];
   /** The user's own date and clock formats (ADR 0046); omitted = the defaults. */
-  displayFormats?: DisplayFormats;
+  displayFormats?: Partial<DisplayFormats>;
 };
 
 /**

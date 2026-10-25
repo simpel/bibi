@@ -49,7 +49,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
       {item.value.customerId ? <BundleOwner customerId={item.value.customerId} /> : null}
       <WithHistory locale={locale} entityType="item" entityId={item.value.id}>
         <ItemFacts item={item.value} type={type} data={data.value} />
-        <ItemCapabilities item={item.value} data={data.value} locale={locale} />
+        <ItemCapabilities item={item.value} data={data.value} />
         {type?.capabilities.includes("BUNDLE") ? (
           <ItemResolutionSection locale={locale} itemId={item.value.id} />
         ) : null}

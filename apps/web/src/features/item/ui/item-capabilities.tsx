@@ -7,20 +7,21 @@ import {
   SetupsDisplay,
 } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
+import { getNumberFormat } from "@/server/number-format";
 import { customisationGroupLines } from "./customisation-group-lines";
-import { formatKr } from "./format-price";
 import type { ItemFormData } from "./item-form-data";
 
-export type ItemCapabilitiesProps = { item: ItemDto; data: ItemFormData; locale: string };
+export type ItemCapabilitiesProps = { item: ItemDto; data: ItemFormData };
 
 /** The capability values of an item (price, length, setups, parts, customisations), shown with `@bibi/ui` displays. */
-export async function ItemCapabilities({ item, data, locale }: ItemCapabilitiesProps) {
+export async function ItemCapabilities({ item, data }: ItemCapabilitiesProps) {
   const t = await getTranslations("item");
+  const { money } = await getNumberFormat();
   const price =
     item.priceMinor === null || item.priceUnit === null
       ? null
       : t("priceValue", {
-          amount: formatKr({ minor: item.priceMinor, locale }),
+          amount: money({ minor: item.priceMinor }),
           unit: t(`priceUnits.${item.priceUnit}`),
         });
   const duration =

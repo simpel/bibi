@@ -1,8 +1,8 @@
 import type { PaymentDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { PaymentStatusBadge } from "./payment-status-badge";
-import { useMoney } from "./use-money";
 
 /** A payment as the server (Date) or a tool result (ISO string) carries it. */
 export type PaymentValue = Omit<PaymentDto, "createdAt" | "updatedAt" | "expiresAt" | "paidAt"> & {
@@ -23,7 +23,7 @@ const settles = ({ payment }: PaymentEntryProps) =>
 export function PaymentEntry({ payment }: PaymentEntryProps) {
   const t = useTranslations("payment");
   const format = useDateTimeFormat();
-  const money = useMoney();
+  const { money } = useNumberFormat();
   const when = new Date(payment.paidAt ?? payment.createdAt);
   const fee = payment.applicationFeeMinor;
   return (

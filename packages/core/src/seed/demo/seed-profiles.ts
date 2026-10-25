@@ -28,7 +28,7 @@ type SeedUserInput = {
   userId: string;
   name: string;
   index: number;
-  displayFormats?: DisplayFormats;
+  displayFormats?: Partial<DisplayFormats>;
 };
 
 /** One user's profile, default hours and formats, saved as that user (the operations are `self:*`). */
