@@ -57,6 +57,8 @@ export const CREATED_BY_MODELS = new Set<string>([
   "ItemCustomisationOption",
   "ItemDemand",
   "ItemDemandTag",
+  "MemberProfile",
+  "MemberProfileItem",
   "Customer",
   "Contact",
   "PriceList",

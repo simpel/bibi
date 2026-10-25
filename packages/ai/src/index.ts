@@ -72,6 +72,7 @@ export type { InboundEmailWire } from "./ui-contract/inbound-email-entries";
 export type { ItemResolutionWire } from "./ui-contract/item-resolution-entries";
 export type { ItemStateWire } from "./ui-contract/item-state-entries";
 export type { LineWire } from "./ui-contract/line-entries";
+export type { MemberProfileWire } from "./ui-contract/member-profile-entries";
 export type { PaymentAccountWire } from "./ui-contract/payment-account-entries";
 export type { PaymentWire, TicketBalanceWire } from "./ui-contract/payment-entries";
 export type { PermissionProfileWire } from "./ui-contract/permission-entries";

@@ -19,6 +19,7 @@ import { itemStateRoutes } from "./features/item-state/rest";
 import { lineRoutes } from "./features/line/rest";
 import { lineAllocationRoutes } from "./features/line-allocation/rest";
 import { memberRoutes } from "./features/member/rest";
+import { memberProfileRoutes } from "./features/member-profile/rest";
 import { messageRoutes } from "./features/message/rest";
 import { oauthGrantRoutes } from "./features/oauth-grant/rest";
 import { occupancyRoutes } from "./features/occupancy/rest";
@@ -54,6 +55,9 @@ const selfRoutes = [...userPreferenceRoutes, ...profileRoutes, ...fileRoutes];
 
 /** Payments, the receivables they settle (ADR 0057) and the payout account. */
 const moneyRoutes = [...paymentAccountRoutes, ...paymentRoutes, ...depositRoutes, ...invoiceRoutes];
+
+/** The organization's profile and its members' profiles (ADR 0061, 0068). */
+const organizationAndMemberProfileRoutes = [...organizationProfileRoutes, ...memberProfileRoutes];
 
 /** Every declared REST route; add a feature's routes here when it gets a `rest.ts`. */
 export function listRestRoutes(): RestRoute[] {
@@ -92,7 +96,7 @@ export function listRestRoutes(): RestRoute[] {
     ...accessRoutes,
     ...oauthGrantRoutes,
     ...selfRoutes,
-    ...organizationProfileRoutes,
+    ...organizationAndMemberProfileRoutes,
     ...searchRoutes,
   ];
 }

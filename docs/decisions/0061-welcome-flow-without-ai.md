@@ -66,3 +66,6 @@
 - **Keep the AI chat and add a wizard as a fallback:** two paths to maintain. The chat added little over picking a kind.
 - **Profile per membership:** the same person would type their phone number again in every organization. Per-organization data (role, responsibilities) already lives on `Member`.
 - **Setup status per user (ADR 0046 as is):** members of an organization that is not set up get no explanation, and two admins could each be "pending".
+
+## Addendum (2026-10-25, #448): working hours become org-scoped
+- Working hours become org-scoped (`MemberWorkingHours` on the member profile) with #449 ([ADR 0068](0068-member-profiles-positions-and-shifts.md)). Not built yet: `UserWorkingHours` is still global.

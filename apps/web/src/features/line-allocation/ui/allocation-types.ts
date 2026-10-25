@@ -1,5 +1,10 @@
 /** A unit the picker offers. */
-export type UnitOption = { id: string; name: string };
+export type UnitOption = {
+  id: string;
+  name: string;
+  /** The member behind a staff item; absent for equipment or when the caller may not read members. */
+  memberName?: string;
+};
 
 /** One slot of a demand on a line, with the units staff can choose from. */
 export type AllocationSlot = {

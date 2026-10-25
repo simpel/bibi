@@ -11,6 +11,7 @@ import { lindholmenMeals } from "./meals";
 import { lindholmenPipeline } from "./pipeline";
 import { lindholmenResponsibilities } from "./responsibilities";
 import { lindholmenRooms } from "./rooms";
+import { lindholmenStaff, lindholmenStaffTypes } from "./staff";
 import { lindholmenTemplates } from "./templates";
 import { lindholmenTickets } from "./tickets";
 import { lindholmenTypes } from "./types";
@@ -45,7 +46,7 @@ export const lindholmen: DemoOrg = {
   ],
   config: {
     ...lindholmenLists,
-    types: lindholmenTypes,
+    types: [...lindholmenTypes, ...lindholmenStaffTypes],
     venue: {
       name: "Lindholmen Experience Center",
       streetAddress: "Lindholmspiren 1",
@@ -65,6 +66,7 @@ export const lindholmen: DemoOrg = {
     checks: { listSizes: { Allergens: 14 } },
   },
   responsibilities: lindholmenResponsibilities,
+  staff: lindholmenStaff,
   customers: lindholmenCustomers,
   pipeline: lindholmenPipeline,
   templates: lindholmenTemplates,

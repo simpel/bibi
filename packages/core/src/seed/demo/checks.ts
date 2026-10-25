@@ -13,6 +13,7 @@ import { checkDemoCustomisations } from "./customisation-checks";
 import { checkDemoFactGuards } from "./fact-guard-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
+import { checkDemoMemberProfiles } from "./member-profile-checks";
 import { checkDemoPayments } from "./payment-checks";
 import { checkDemoPermissions } from "./permission-checks";
 import { checkDemoPipeline } from "./pipeline-checks";
@@ -91,6 +92,7 @@ export async function checkDemoOrg({
   failures.push(...(await checkDemoPermissions({ context, org, members: listed })));
   failures.push(...(await checkDemoConfig({ context, org, skipPipeline })));
   failures.push(...(await checkDemoPools({ context, org })));
+  failures.push(...(await checkDemoMemberProfiles({ context, org })));
   failures.push(...(await checkDemoCustomisations({ context, org })));
   failures.push(...(await checkDemoResponsibilities({ context, org })));
   failures.push(...(await checkDemoRecords({ context, org })));

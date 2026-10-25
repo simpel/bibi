@@ -7,6 +7,7 @@ import { CrumbName } from "@/components/shell/crumb-name";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
 import { FactList } from "@/components/typed-fields/fact-list";
+import { MemberWork } from "@/features/member-profile/ui/member-work";
 import { Link } from "@/lib/navigation";
 import { memberPermissionsRoute, memberRoute, ROUTES } from "@/lib/routes";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
@@ -47,6 +48,7 @@ export async function MemberDetail({ locale, id }: MemberDetailProps) {
       </Link>
       <PageHeader title={name} description={t("detailDescription")} actions={permissions} />
       <FactList facts={facts} />
+      <MemberWork locale={locale} memberId={id} />
     </div>
   );
 }

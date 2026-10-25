@@ -1,7 +1,7 @@
 /**
  * Org-scoped models that are neither soft-deleted nor append-only, so hard deletion is permitted:
  * replacement sets owned by a parent and audited on it (ItemSetup, ItemPart, ItemCustomisationGroup,
- * ItemCustomisationOption, ItemDemandTag, TicketStatusTransition, ItemStateTransition, TicketTemplateLine,
+ * ItemCustomisationOption, ItemDemandTag, MemberProfileItem, TicketStatusTransition, ItemStateTransition, TicketTemplateLine,
  * PriceListItem, OrderLine, the id lists of responsibilities and sheet definitions and
  * RecordLink, ADR 0056), status grid cells (StatusStateRule, audited on itself), the derived
  * search index (Embedding), Better Auth membership rows (Member; Invitation has its own
@@ -16,6 +16,7 @@ export const HARD_DELETE_MODELS = new Set<string>([
   "ItemCustomisationGroup",
   "ItemCustomisationOption",
   "ItemDemandTag",
+  "MemberProfileItem",
   "TicketStatusTransition",
   "ItemStateTransition",
   "StatusStateRule",

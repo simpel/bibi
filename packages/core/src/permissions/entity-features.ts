@@ -28,6 +28,7 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   sheet: "sheet",
   item: "item",
   itemDemand: "item",
+  memberProfile: "item",
   venue: "venue",
   priceList: "priceList",
   configuration: "configuration",

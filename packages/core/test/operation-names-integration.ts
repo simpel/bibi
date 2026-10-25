@@ -36,6 +36,14 @@ const ORGANIZATION_NAMES = [
   "organizationProfile.setSetupStatus",
 ];
 
+/** A member's work in the organization: schedule kind and staff items (ADR 0068). */
+const MEMBER_PROFILE_NAMES = [
+  "memberProfile.get",
+  "memberProfile.list",
+  "memberProfile.update",
+  "memberProfile.setItems",
+];
+
 /** The audit trail and the change layer that applies approved change sets (ADR 0049). */
 const CHANGE_NAMES = ["auditLog.get", "auditLog.list", "changeSet.apply"];
 
@@ -43,6 +51,7 @@ const CHANGE_NAMES = ["auditLog.get", "auditLog.list", "changeSet.apply"];
 export const EXTRA_NAMES = [
   ...SALES_NAMES,
   ...ALLOCATION_NAMES,
+  ...MEMBER_PROFILE_NAMES,
   ...MONEY_NAMES,
   ...INTEGRATION_NAMES,
   ...SELF_NAMES,

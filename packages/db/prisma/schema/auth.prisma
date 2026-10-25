@@ -101,14 +101,16 @@ model Organization {
 }
 
 model Member {
-  id             String       @id
+  id             String         @id
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role           String       @default("member")
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String         @default("member")
   createdAt      DateTime
+  profile        MemberProfile?
 
+  @@unique([id, organizationId])
   @@index([organizationId])
   @@index([userId])
   @@map("member")

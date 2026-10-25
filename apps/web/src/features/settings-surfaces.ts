@@ -24,6 +24,10 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   // One permission grid per member and per API key (ADR 0050).
   { operation: "permission.get", route: "/admin/members/[id]/permissions" },
   { operation: "member.get", route: "/admin/members/[id]" },
+  // A member's positions and schedule kind sit on the member page (ADR 0068).
+  { operation: "memberProfile.get", route: "/admin/members/[id]" },
+  { operation: "memberProfile.update", route: "/admin/members/[id]" },
+  { operation: "memberProfile.setItems", route: "/admin/members/[id]" },
   { operation: "member.get", route: "/admin/members/[id]/permissions" },
   { operation: "member.assignRole", route: "/admin/members/[id]/permissions" },
   { operation: "apiKey.update", route: "/admin/api-keys/[id]/permissions" },

@@ -31,6 +31,7 @@ import { JsonView } from "./json-view";
 import { LineCardView } from "./line-card-view";
 import { LineTableView } from "./line-table-view";
 import { MemberCardView } from "./member-card-view";
+import { MemberProfileCardView } from "./member-profile-card-view";
 import { MemberTableView } from "./member-table-view";
 import { MONEY_COMPONENTS } from "./money-components";
 import { OccupancyCardView } from "./occupancy-card-view";
@@ -133,6 +134,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "sheet-card": SheetCardView,
   "member-table": MemberTableView,
   "member-card": MemberCardView,
+  "member-profile-card": MemberProfileCardView,
   "permission-profile-card": PermissionProfileCardView,
   "invitation-table": InvitationTableView,
   "invitation-card": InvitationCardView,

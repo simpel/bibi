@@ -1484,7 +1484,10 @@
         "capacity": "Capacity",
         "setupId": "Setup",
         "status": "Status",
-        "price": "Price"
+        "price": "Price",
+        "memberId": "Member",
+        "scheduleKind": "Schedule kind",
+        "itemIds": "Staff items"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -1575,7 +1578,9 @@
         "invoice_create": "Create invoice",
         "invoice_send": "Mark invoice as sent",
         "invoice_void": "Void invoice",
-        "payment_create": "Request payment"
+        "payment_create": "Request payment",
+        "memberProfile_update": "Change a member's schedule kind",
+        "memberProfile_setItems": "Link staff items to a member"
       },
       "setup": {
         "title": "Create my first version",
@@ -1959,6 +1964,11 @@
         "moves": "How a request moves",
         "ends": "Ends as: {statuses}",
         "nothingYet": "Nothing yet"
+      },
+      "memberProfile": {
+        "singular": "Member work",
+        "noItems": "No staff items",
+        "open": "Open member"
       }
     },
     "questionnaire": {
@@ -3262,5 +3272,21 @@
     "optional": "Optional",
     "chained": "needed by a chosen unit",
     "noneFree": "No free unit in {pool} for {window}."
+  },
+  "memberProfile": {
+    "title": "Positions and schedule",
+    "positions": "Positions",
+    "scheduleKind": "Schedule kind",
+    "staffItems": "Staff items",
+    "none": "None",
+    "noStaffItems": "There are no active staff items. Create an item of a type that is a person.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Positions and schedule saved.",
+    "scheduleKinds": {
+      "PATTERN": "Weekly pattern",
+      "SHIFTS": "Shifts",
+      "CASUAL": "On call"
+    }
   }
 }

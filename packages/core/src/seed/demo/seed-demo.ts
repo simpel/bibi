@@ -15,6 +15,7 @@ import { seedPipelineAndSales } from "./seed-pipeline-and-sales";
 import { seedDemoProfiles } from "./seed-profiles";
 import { seedDemoResponsibilities } from "./seed-responsibilities";
 import { seedDemoRoles } from "./seed-roles";
+import { seedDemoStaff } from "./seed-staff";
 import type { DemoOrg } from "./types";
 import { bootstrapDemoOrg } from "./users";
 
@@ -66,6 +67,8 @@ async function seedSlices({
   ranParts.add(2);
   const items = await seedDemoItems({ context, config: org.config, refs: refs.value });
   if (!items.ok) return items;
+  const staff = await seedDemoStaff({ context, org, members, items: items.value.items });
+  if (!staff.ok) return staff;
   ranParts.add(3);
   const sales = await seedPipelineAndSales({
     ...{ context, org, userIds, skipPipeline },

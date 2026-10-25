@@ -19,6 +19,7 @@ import { itemStateOperations } from "./features/item-state/operations";
 import { lineOperations } from "./features/line/operations";
 import { lineAllocationOperations } from "./features/line-allocation/operations";
 import { memberOperations } from "./features/member/operations";
+import { memberProfileOperations } from "./features/member-profile/operations";
 import { messageOperations } from "./features/message/operations";
 import { oauthGrantOperations } from "./features/oauth-grant/operations";
 import { occupancyOperations } from "./features/occupancy/operations";
@@ -56,7 +57,11 @@ const pipelineGroupOperations = [
   ...changeSetOperations,
 ];
 /** Items and what they ask of pools (ADR 0059). */
-const itemGroupOperations = [...itemOperations, ...itemDemandOperations];
+const itemGroupOperations = [
+  ...itemOperations,
+  ...itemDemandOperations,
+  ...memberProfileOperations,
+];
 const lineGroupOperations = [
   ...lineOperations,
   ...lineAllocationOperations,

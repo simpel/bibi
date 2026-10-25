@@ -24,9 +24,9 @@ export function UnitSelect({ options, value, canClear, disabled, onChange }: Uni
       </SelectTrigger>
       <SelectContent>
         {canClear ? <SelectItem value={NO_UNIT}>{t("unfilled")}</SelectItem> : null}
-        {options.map(({ id, name }) => (
+        {options.map(({ id, name, memberName }) => (
           <SelectItem key={id} value={id}>
-            {name}
+            {memberName ? `${name} · ${memberName}` : name}
           </SelectItem>
         ))}
       </SelectContent>

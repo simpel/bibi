@@ -1,5 +1,6 @@
 import { createMemoryFileStore, DEFAULT_WORKING_HOURS, setFileStore } from "@bibi/core";
 import { type ParityEntity, tool } from "./parity-entities";
+import { memberProfileEntity } from "./parity-entities-member-profile";
 import { gqlQuery } from "./parity-graphql";
 import { createRestClient } from "./parity-rest";
 
@@ -86,5 +87,6 @@ export function welcomeEntities(): ParityEntity[] {
         contactPhone: "031-12 34 56",
       },
     }),
+    memberProfileEntity(),
   ];
 }

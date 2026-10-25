@@ -18,6 +18,8 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "lineAllocation.list", route: "/tickets/[id]" },
   { operation: "lineAllocation.assign", route: "/tickets/[id]" },
   { operation: "item.freeUnits", route: "/tickets/[id]" },
+  // The unit picker shows the member behind a staff item (ADR 0068).
+  { operation: "memberProfile.list", route: "/tickets/[id]" },
   // The Resources and Staffing lists on the needing item (ADR 0059).
   { operation: "itemDemand.list", route: "/items/[id]" },
   { operation: "itemDemand.create", route: "/items/[id]" },

@@ -32,6 +32,16 @@ export type DemoGridCell = { ticketStatus: string; type: string; state: string }
  */
 export type DemoPipeline = { statuses: TicketStatusTemplate; cells: readonly DemoGridCell[] };
 
+/**
+ * A member's profile (ADR 0068) by name: the schedule kind (default PATTERN) and the staff items
+ * linked to them, by item name.
+ */
+export type DemoStaffLink = {
+  member: string;
+  scheduleKind?: "PATTERN" | "SHIFTS" | "CASUAL";
+  items: readonly string[];
+};
+
 /** Everything ADR 0025 seeds for one organization so far (`docs/demo-seed.md`). */
 export type DemoOrg = {
   slug: string;
@@ -44,6 +54,8 @@ export type DemoOrg = {
   responsibilities: readonly DemoResponsibility[];
   /** Slice 4: customers with their contact persons. */
   customers: readonly DemoCustomer[];
+  /** Slice 3: member profiles with their staff item links (ADR 0068); none when left out. */
+  staff?: readonly DemoStaffLink[];
   /** Slice 5: the statuses and the status grid, set before the tickets so their lines follow it. */
   pipeline: DemoPipeline;
   /** Slice 5: predefined tickets (ADR 0043), created after the pipeline, before the tickets. */

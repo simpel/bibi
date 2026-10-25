@@ -8,6 +8,7 @@ import { INBOUND_EMAIL_UI_ENTRIES } from "./inbound-email-entries";
 import { ITEM_RESOLUTION_UI_ENTRIES } from "./item-resolution-entries";
 import { ITEM_STATE_UI_ENTRIES } from "./item-state-entries";
 import { LINE_UI_ENTRIES } from "./line-entries";
+import { MEMBER_PROFILE_UI_ENTRIES } from "./member-profile-entries";
 import { OCCUPANCY_UI_ENTRIES } from "./occupancy-entries";
 import { PAYMENT_ACCOUNT_UI_ENTRIES } from "./payment-account-entries";
 import { PAYMENT_UI_ENTRIES } from "./payment-entries";
@@ -89,6 +90,7 @@ export const TOOL_UI_REGISTRY: Readonly<Record<string, ToolUiEntry>> = {
   ...SHEET_DEFINITION_UI_ENTRIES,
   ...SHEET_UI_ENTRIES,
   ...ACCESS_UI_ENTRIES,
+  ...MEMBER_PROFILE_UI_ENTRIES,
   ...PERMISSION_UI_ENTRIES,
   ...QUESTION_UI_ENTRIES,
   search: uiEntry({
@@ -129,6 +131,8 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   conversation_archive: "chat bookkeeping",
   message_list: "chat history UI, not a tool card",
   message_append: "chat bookkeeping",
+  memberProfile_list:
+    "a list of profiles without member names; the member page shows who is behind a staff item",
   item_freeUnits:
     "a list of unit names with the prepick; shown as JSON until the allocation UI (#384)",
   skill_export: "SKILL.md text; shown as code/JSON",

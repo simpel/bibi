@@ -7,6 +7,7 @@ import type { InboundEmailWire } from "./inbound-email-entries";
 import type { ItemResolutionWire } from "./item-resolution-entries";
 import type { ItemStateWire } from "./item-state-entries";
 import type { LineWire } from "./line-entries";
+import type { MemberProfileWire } from "./member-profile-entries";
 import type { PaymentAccountWire } from "./payment-account-entries";
 import type { PaymentWire, TicketBalanceWire } from "./payment-entries";
 import type { PermissionProfileWire } from "./permission-entries";
@@ -111,6 +112,7 @@ export type ToolUiProps = {
   "sheet-card": { sheet: SheetWire };
   "member-table": { items: MemberWire[]; nextCursor: string | null };
   "member-card": { member: MemberWire };
+  "member-profile-card": { profile: MemberProfileWire };
   "permission-profile-card": { profile: PermissionProfileWire };
   "invitation-table": { items: InvitationWire[]; nextCursor: string | null };
   "invitation-card": { invitation: InvitationWire };

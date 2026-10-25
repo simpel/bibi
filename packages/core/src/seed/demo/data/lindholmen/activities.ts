@@ -27,6 +27,8 @@ const technicians: readonly DemoItem[] = ["Technician 1", "Technician 2"].map((n
   name,
 }));
 
+const hosts: readonly DemoItem[] = [{ type: "Host", name: "Host 1" }];
+
 /** Ten interchangeable units of one bookable type: a pool (ADR 0059, `docs/demo-seed.md`). */
 const microphones: readonly DemoItem[] = Array.from({ length: 10 }, (_, index) => {
   const number = String(index + 1).padStart(2, "0");
@@ -91,4 +93,5 @@ export const lindholmenActivities: readonly DemoItem[] = [
   equipment({ name: "Hearing loop", kr: 0, inventory: "LEC-AV-003" }),
   ...microphones,
   ...technicians,
+  ...hosts,
 ];

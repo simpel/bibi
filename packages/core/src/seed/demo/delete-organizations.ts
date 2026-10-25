@@ -64,6 +64,9 @@ const itemChildren = ({ db, where }: ScopeInput) => [
   db.itemPart.deleteMany({ where }),
   db.itemCustomisationGroup.deleteMany({ where }),
   db.itemSetup.deleteMany({ where }),
+  // Member profiles link to staff items (ADR 0068): before the items.
+  db.memberProfileItem.deleteMany({ where }),
+  db.memberProfile.deleteMany({ where }),
 ];
 
 /** Contacts, customers and the `Record` supertable rows (ADR 0056), after every table that extends them. */

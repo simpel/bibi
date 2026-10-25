@@ -10,6 +10,7 @@ import {
   type Result,
 } from "@bibi/core";
 import { runOperation } from "@/server/run-operation";
+import { loadUnitMembers } from "./load-unit-members";
 import type { AllocationSlot, AllocationView, UnitOption } from "./ui/allocation-types";
 
 const LIMIT = 100;
@@ -39,9 +40,10 @@ type SlotInput = {
   demand: ItemDemandDto;
   free: Free;
   names: Names;
+  members: Names;
 };
 
-function toSlot({ allocation, demand, free, names }: SlotInput): AllocationSlot {
+function toSlot({ allocation, demand, free, names, members }: SlotInput): AllocationSlot {
   const { unitId } = allocation;
   const current = unitId && !free.items.some(({ id }) => id === unitId);
   const own = current ? [{ id: unitId, name: names.get(unitId) ?? "–" }] : [];
@@ -53,7 +55,10 @@ function toSlot({ allocation, demand, free, names }: SlotInput): AllocationSlot 
     required: demand.required,
     unitId,
     chained: allocation.parentAllocationId !== null,
-    options: [...own, ...free.items],
+    options: [...own, ...free.items].map((option) => {
+      const memberName = members.get(option.id);
+      return memberName ? { ...option, memberName } : option;
+    }),
     prepickId: free.prepickId,
   };
 }
@@ -112,9 +117,14 @@ export async function loadLineAllocations({
   const active = allocations.value.items.filter(({ status }) => status === "ACTIVE");
   const demands = await loadDemands({ demandIds: active.map((a) => a.demandId), startsAt, endsAt });
   if (!demands.ok) return demands;
+  const unitIds = [
+    ...active.flatMap(({ unitId }) => (unitId ? [unitId] : [])),
+    ...[...demands.value.values()].flatMap(({ free }) => free.items.map(({ id }) => id)),
+  ];
+  const members = await loadUnitMembers({ unitIds });
   const slots = active.flatMap((allocation) => {
     const loaded = demands.value.get(allocation.demandId);
-    return loaded ? [toSlot({ allocation, ...loaded, names })] : [];
+    return loaded ? [toSlot({ allocation, ...loaded, names, members })] : [];
   });
   return { ok: true, value: { startsAt, endsAt, slots } };
 }

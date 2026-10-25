@@ -1484,7 +1484,10 @@
         "capacity": "Kapacitet",
         "setupId": "Uppställning",
         "status": "Status",
-        "price": "Pris"
+        "price": "Pris",
+        "memberId": "Medlem",
+        "scheduleKind": "Schematyp",
+        "itemIds": "Personalresurser"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -1575,7 +1578,9 @@
         "invoice_create": "Skapa faktura",
         "invoice_send": "Markera faktura som skickad",
         "invoice_void": "Makulera faktura",
-        "payment_create": "Begär betalning"
+        "payment_create": "Begär betalning",
+        "memberProfile_update": "Ändra medlemmens schematyp",
+        "memberProfile_setItems": "Koppla personalresurser till medlem"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -1959,6 +1964,11 @@
         "moves": "Så rör sig en förfrågan",
         "ends": "Slutar som: {statuses}",
         "nothingYet": "Inget ännu"
+      },
+      "memberProfile": {
+        "singular": "Medlemmens arbete",
+        "noItems": "Inga personalresurser",
+        "open": "Öppna medlem"
       }
     },
     "questionnaire": {
@@ -3262,5 +3272,21 @@
     "optional": "Valfritt",
     "chained": "behövs av en vald enhet",
     "noneFree": "Ingen ledig enhet i {pool} för {window}."
+  },
+  "memberProfile": {
+    "title": "Befattning och schema",
+    "positions": "Befattningar",
+    "scheduleKind": "Schematyp",
+    "staffItems": "Personalresurser",
+    "none": "Ingen",
+    "noStaffItems": "Det finns inga aktiva personalresurser. Skapa en artikel av en typ som är en person.",
+    "save": "Spara",
+    "saving": "Sparar…",
+    "saved": "Befattning och schema har sparats.",
+    "scheduleKinds": {
+      "PATTERN": "Veckoschema",
+      "SHIFTS": "Pass",
+      "CASUAL": "Vid behov"
+    }
   }
 }

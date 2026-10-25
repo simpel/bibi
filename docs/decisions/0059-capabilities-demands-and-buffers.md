@@ -75,3 +75,6 @@
 ## Addendum (2026-10-23, #383): allocations are re-derived by the engine
 - Rule 17 holds for the commands that choose a unit (`lineAllocation.assign`: `program:write` plus `item:read`). Keeping allocations in step is engine work, like the holds projection: `line.*` commands create and prefill a line's slots without `item:read`, and `itemDemand.*` (`item:write`) re-derives the slots of the lines that book the item, without `program:write`. Neither returns the other feature's data: line outputs carry no allocation, demand outputs carry no line, and a refusal names the pool only with `item:read` and the window times only with `program:read`.
 - Rejected: requiring `program:write` for a demand change. A catalogue editor without it could then not change demands at all, or the change would leave lines out of step with their demands.
+
+## Addendum (2026-10-25, #448): staff items link to members
+- Rule 9: a staff item can be linked to a member profile ([ADR 0068](0068-member-profiles-positions-and-shifts.md), `memberProfile.setItems`). The item still has no login or profile of its own; the link says which member it stands for.

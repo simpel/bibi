@@ -47,6 +47,7 @@ import "../features/user-preference/graphql";
 import "../features/profile/graphql";
 import "../features/file/graphql";
 import "../features/organization-profile/graphql";
+import "../features/member-profile/graphql";
 import "./scalars";
 import "./search";
 import { builder } from "./builder";

@@ -48,6 +48,7 @@ model Item {
   optionIn               ItemCustomisationOption[]
   /// What the item asks of pools (ADR 0059).
   demands                ItemDemand[]              @relation("ItemDemandOf")
+  memberProfileItem      MemberProfileItem?
   /// The demands that target this item specifically.
   demandedBy             ItemDemand[]              @relation("ItemDemandTarget")
   /// The line slots this item fills as a unit (ADR 0059).

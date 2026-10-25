@@ -19,6 +19,7 @@ import { itemStateMcpTools } from "../features/item-state/mcp";
 import { lineMcpTools } from "../features/line/mcp";
 import { lineAllocationMcpTools } from "../features/line-allocation/mcp";
 import { memberMcpTools } from "../features/member/mcp";
+import { memberProfileMcpTools } from "../features/member-profile/mcp";
 import { messageMcpTools } from "../features/message/mcp";
 import { oauthGrantMcpTools } from "../features/oauth-grant/mcp";
 import { occupancyMcpTools } from "../features/occupancy/mcp";
@@ -68,6 +69,9 @@ const moneyMcpTools = [
   ...invoiceMcpTools,
 ];
 
+/** The organization's profile and its members' profiles (ADR 0061, 0068). */
+const profilesMcpTools = [...organizationProfileMcpTools, ...memberProfileMcpTools];
+
 /** Every declared operation tool; add a feature's tools here when it gets an `mcp.ts`. */
 export function listMcpToolMetas(): McpToolMeta[] {
   return [
@@ -105,7 +109,7 @@ export function listMcpToolMetas(): McpToolMeta[] {
     ...accessMcpTools,
     ...oauthGrantMcpTools,
     ...selfMcpTools,
-    ...organizationProfileMcpTools,
+    ...profilesMcpTools,
     ...searchMcpTools,
   ];
 }

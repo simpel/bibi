@@ -1,0 +1,47 @@
+/// How a member's working time is planned in an organization (ADR 0068): a weekly pattern with
+/// exceptions, dated shifts only, or no schedule (called in when needed, offered last).
+enum ScheduleKind {
+  PATTERN
+  SHIFTS
+  CASUAL
+}
+
+/// Member profile – a member's work in one organization (ADR 0068), next to the global
+/// `UserProfile` (name, phone, avatar). One per `Member`, created on the first write; removed with
+/// the member (cascade). Owned: `scheduleKind`. Positions are derived: the types of the linked
+/// staff items. Org-scoped; feature `item` (ADR 0050).
+model MemberProfile {
+  id             String              @id @default(cuid(2))
+  organizationId String
+  memberId       String
+  scheduleKind   ScheduleKind        @default(PATTERN)
+  status         RecordStatus        @default(ACTIVE)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  createdBy      String?
+  member         Member              @relation(fields: [memberId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  items          MemberProfileItem[]
+
+  @@unique([id, organizationId])
+  @@unique([memberId, organizationId])
+  @@index([organizationId, status])
+}
+
+/// Member profile item – links a staff item (an item whose type is PERSON, ADR 0059) to the
+/// member it stands for (ADR 0068). An item links to at most one profile; a staff item without a
+/// link stays valid (external staff). Replaced as a set by `memberProfile.setItems` and audited on
+/// the profile, so rows are hard-deleted. Owned, foreign keys on both sides (ADR 0056).
+model MemberProfileItem {
+  id              String        @id @default(cuid(2))
+  organizationId  String
+  memberProfileId String
+  itemId          String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  createdBy       String?
+  memberProfile   MemberProfile @relation(fields: [memberProfileId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  item            Item          @relation(fields: [itemId, organizationId], references: [id, organizationId])
+
+  @@unique([itemId, organizationId])
+  @@index([organizationId, memberProfileId])
+}

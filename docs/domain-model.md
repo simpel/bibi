@@ -99,6 +99,9 @@ erDiagram
   User ||--o{ UserPreference : "saves"
   User ||--o| UserProfile : "has"
   User ||--o{ UserWorkingHours : "works"
+  Member ||--o| MemberProfile : "has"
+  MemberProfile ||--o{ MemberProfileItem : "is staffed as"
+  Item ||--o| MemberProfileItem : "stands for a member"
   Deposit ||--o{ Payment : "is paid with"
   Quote ||--o{ Payment : "is paid with"
   Invoice ||--o{ Payment : "is settled with"
@@ -1051,6 +1054,33 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > Operations (`self:read|write`): `workingHours.get` and `workingHours.set({ days })` (replaces the week). Default in the welcome flow: Monday–Friday 08–17 with lunch 12–13.
 
+### MemberProfile (`MemberProfile`)
+
+*MVP* · A member's work in one organization ([ADR 0068](decisions/0068-member-profiles-positions-and-shifts.md)), next to the global `UserProfile`. One per member, created on the first write, removed with the member. Feature `item`.
+
+**Attributes**
+- scheduleKind (owned): `PATTERN` (weekly pattern with exceptions, default), `SHIFTS` (dated shifts only) or `CASUAL` (no schedule, called in when needed). Advisory.
+- status
+
+**Relations**
+- `N:1` belongs to → Member (unique per member)
+- `1:N` is staffed as → MemberProfileItem
+
+> Positions are derived: the types of the active linked staff items. Operations: `memberProfile.get|list` (`item:read`) and `memberProfile.update|setItems` (`item:write`, the member must be readable). Built: profile, schedule kind and links. Target, not built: working hours per organization (#449), shifts (#450), person-wide collision (#451). Spec: `docs/specs/member-profiles.md`.
+
+### MemberProfileItem (`MemberProfileItem`)
+
+*MVP* · Links a staff item (an item whose type is `PERSON`) to the member it stands for. Owned, foreign keys on both sides; replaced as a set by `memberProfile.setItems`.
+
+**Attributes**
+- item, unique: an item is linked to at most one profile
+
+**Relations**
+- `N:1` belongs to → MemberProfile
+- `N:1` links → Item
+
+> A staff item without a link stays valid (external staff). The link of an archived item is kept but hidden and does not count as a position.
+
 ### OrganizationProfile (`OrganizationProfile`)
 
 *MVP* · The organization's own facts and where it is in its first setup ([ADR 0061](decisions/0061-welcome-flow-without-ai.md)). One row per organization, created `PENDING` with it.
@@ -1209,6 +1239,8 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | ItemSetup | Item-uppställning |
 | Item | Artikel |
 | ItemPart | Artikeldel |
+| MemberProfile | Medlemsprofil |
+| MemberProfileItem | Medlemsprofil-artikel |
 | ItemCustomisationGroup | Anpassningsgrupp |
 | ItemCustomisationOption | Tillval |
 | ItemDemand | Resursbehov |
