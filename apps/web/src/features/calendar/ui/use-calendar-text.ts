@@ -56,6 +56,12 @@ function bookingText({ t, number }: TextInput) {
     money: ({ amount, currency }: { amount: number; currency: string }) =>
       number.money({ minor: Math.round(amount * 100), currency }),
     exclVat: ({ amount }: { amount: string }) => t("exclVat", { amount }),
+    value: {
+      ...{ booked: t("value.booked"), prebooked: t("value.prebooked"), open: t("value.open") },
+      note: t("value.note"),
+      rate: ({ percent }: { percent: number }) => t("value.rate", { percent }),
+      share: ({ percent }: { percent: number }) => t("value.share", { percent }),
+    },
     open: ({ ticket }: { ticket: string }) => t("open", { ticket }),
     ...{ openLine: t("openLine"), notes: t("notes"), staff: t("staff") },
     fromTicket: ({ via }: { via: string }) => t("fromTicket", { via }),

@@ -1,4 +1,4 @@
-import type { AssetBooking } from "@bibi/ui";
+import type { AssetBooking, CalendarDayValue } from "@bibi/ui";
 import { useCallback, useRef, useState } from "react";
 import { loadCalendarBookingsAction } from "../actions";
 
@@ -21,17 +21,18 @@ function missingOf({ wanted, covered }: { wanted: DayRange; covered: DayRange | 
 }
 
 /**
- * The bookings of every day the timeline has loaded: the page's first days, then each new edge
+ * The bookings and day values of every day the timeline has loaded: the page's first days, then each new edge
  * as it scrolls, once. A failed load leaves its days to the next attempt.
  */
 export function useLoadedBookings({
   initial,
   range,
 }: {
-  initial: AssetBooking[];
+  initial: { bookings: AssetBooking[]; values: CalendarDayValue[] };
   range: DayRange;
 }) {
-  const [bookings, setBookings] = useState(initial);
+  const [bookings, setBookings] = useState(initial.bookings);
+  const [values, setValues] = useState(initial.values);
   const [failed, setFailed] = useState(false);
   const covered = useRef<DayRange | null>(range);
   const onRangeChange = useCallback((wanted: DayRange) => {
@@ -52,12 +53,14 @@ export function useLoadedBookings({
           return;
         }
         setFailed(false);
+        const loaded = result.value;
+        setValues((current) => [...current, ...loaded.values]);
         setBookings((current) => {
           const ids = new Set(current.map((booking) => booking.id));
-          return [...current, ...result.value.filter((booking) => !ids.has(booking.id))];
+          return [...current, ...loaded.bookings.filter((booking) => !ids.has(booking.id))];
         });
       });
     }
   }, []);
-  return { bookings, failed, onRangeChange };
+  return { bookings, values, failed, onRangeChange };
 }

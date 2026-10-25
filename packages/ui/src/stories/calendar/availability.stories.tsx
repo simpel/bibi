@@ -47,6 +47,12 @@ export const QuietDay: Story = { args: { assets: ASSETS, template: BOOKINGS } };
 /** A week: thin blocks with the customer, nights shrunk to a seam, weekends on a grey ground. */
 export const Week: Story = { args: { initialLevel: "week" } };
 
+/** Each day's booked share beside its name; hover or tap it for booked, prebooked and still open. */
+export const DayValues: Story = { args: { initialLevel: "week", withValues: true } };
+
+/** Zoomed out to months: each week carries its booked share, its amounts on hover or tap. */
+export const MonthDayValues: Story = { args: { initialLevel: "month", withValues: true } };
+
 /** A month: one cell per asset and day, as tall as it is booked, red on a clash. Click to zoom in. */
 export const Month: Story = { args: { initialLevel: "month" } };
 

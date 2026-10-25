@@ -578,6 +578,14 @@
     "booked": "Bokad",
     "guests": "{count, plural, one {# gäst} other {# gäster}}",
     "exclVat": "{amount} exkl. moms",
+    "value": {
+      "booked": "Bokat",
+      "prebooked": "Preliminärt",
+      "open": "Kvar att sälja",
+      "note": "Exkl. moms. Kvar att sälja är ledig tid inom öppettiderna till varje rums timpris.",
+      "rate": "{percent} % bokat",
+      "share": "{percent} %"
+    },
     "open": "Öppna {ticket}",
     "openLine": "Öppna rad",
     "notes": "Anteckningar",

@@ -1,7 +1,13 @@
 import "server-only";
-import { type CalendarBlockDto, calendarRange, ok, type Result } from "@bibi/core";
+import {
+  type CalendarBlockDto,
+  type CalendarRange,
+  calendarRange,
+  ok,
+  type Result,
+} from "@bibi/core";
 import { addDays, MAX_CALENDAR_DAYS, parseIsoDate, toIsoDate } from "@bibi/core/schemas";
-import type { AssetBooking } from "@bibi/ui";
+import type { AssetBooking, CalendarDayValue } from "@bibi/ui";
 import { getTranslations } from "next-intl/server";
 import { ticketRoute } from "@/lib/routes";
 import { runOperation } from "@/server/run-operation";
@@ -12,6 +18,23 @@ import { toAssetBookings } from "./to-asset-bookings";
 export const MAX_LOAD_DAYS = MAX_CALENDAR_DAYS * 3;
 
 export type DayRange = { from: string; to: string };
+
+/** The calendar's bookings of some days, and what each item's day is worth. */
+export type CalendarLoad = { bookings: AssetBooking[]; values: CalendarDayValue[] };
+
+/** Day values in whole units, as the calendar shows money (`Money`). */
+const toValues = ({ range }: { range: CalendarRange }): CalendarDayValue[] =>
+  range.values.map((value) => {
+    const units = ({ minor }: { minor: number | null }) => (minor === null ? null : minor / 100);
+    return {
+      assetId: value.itemId,
+      date: value.date,
+      booked: units({ minor: value.bookedMinor }),
+      prebooked: units({ minor: value.prebookedMinor }),
+      open: units({ minor: value.openMinor }),
+      currency: range.currency,
+    };
+  });
 
 /** `[from, to]` cut into the longest ranges one `calendar.range` call may cover. */
 export function chunksOf({ from, to }: DayRange): DayRange[] {
@@ -27,28 +50,29 @@ export function chunksOf({ from, to }: DayRange): DayRange[] {
   return chunks;
 }
 
-/** Every block of the days, once each: a block over a chunk's edge comes back in both. */
-async function loadBlocks({ range }: { range: DayRange }): Promise<Result<CalendarBlockDto[]>> {
+/**
+ * Every block of the days, once each: a block over a chunk's edge comes back in both. The chunks'
+ * days never overlap, so their values simply add up.
+ */
+async function loadBlocks({ range }: { range: DayRange }) {
   const results = await Promise.all(
     chunksOf(range).map((chunk) => runOperation({ operation: calendarRange, input: chunk })),
   );
   const blocks = new Map<string, CalendarBlockDto>();
+  const values: CalendarDayValue[] = [];
   for (const result of results) {
     if (!result.ok) return result;
     for (const block of result.value.blocks) blocks.set(block.id, block);
+    values.push(...toValues({ range: result.value }));
   }
-  return ok({ value: [...blocks.values()] });
+  return ok({ value: { blocks: [...blocks.values()], values } });
 }
 
 /**
  * The calendar's bookings for `from` to `to` (inclusive, at most `MAX_LOAD_DAYS`), in the
  * organization's zone (ADR 0064 decision 12: all venues show in the organization's zone).
  */
-export async function loadBookings({
-  range,
-}: {
-  range: DayRange;
-}): Promise<Result<AssetBooking[]>> {
+export async function loadBookings({ range }: { range: DayRange }): Promise<Result<CalendarLoad>> {
   const [blocks, timeZone, t] = await Promise.all([
     loadBlocks({ range }),
     loadOrganizationTimeZone(),
@@ -56,7 +80,7 @@ export async function loadBookings({
   ]);
   if (!blocks.ok) return blocks;
   const bookings = toAssetBookings({
-    blocks: blocks.value,
+    blocks: blocks.value.blocks,
     timeZone,
     blocked: { name: t("blocked"), color: "var(--input)", ink: "var(--foreground)", hold: "hard" },
     unnamed: {
@@ -68,5 +92,5 @@ export async function loadBookings({
     via: { LINE: t("viaLine"), TICKET: t("viaTicket") },
     ticketHref: ({ ticketId }) => ticketRoute({ id: ticketId }),
   });
-  return ok({ value: bookings });
+  return ok({ value: { bookings, values: blocks.value.values } });
 }

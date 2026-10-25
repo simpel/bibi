@@ -2,6 +2,7 @@ import { cn } from "../../lib/cn";
 import { AvailabilityRow, type AvailabilityRowProps, LABEL_WIDTH } from "./availability-row";
 import type { AssetBooking, CalendarAsset } from "./calendar-types";
 import { byDate } from "./day-occupancy";
+import type { DayTotal } from "./day-value";
 import { TimelineHeader } from "./timeline-header";
 import type { TimelineFrame } from "./timeline-scale";
 import type { Timeline } from "./use-timeline";
@@ -14,6 +15,8 @@ export type AvailabilityGridProps = Pick<
   bookings: readonly AssetBooking[];
   timeline: Pick<Timeline, "scrollerRef" | "labelRef" | "onScroll">;
   frame: TimelineFrame;
+  /** What each day is worth across the assets shown, in the day headings. */
+  totals?: ReadonlyMap<string, DayTotal>;
   /** Shown instead of rows when the filter leaves none. */
   empty?: string;
   className?: string;
@@ -27,7 +30,7 @@ function GroupHeading({ group, count }: { group: string; count: number }) {
   );
 }
 
-type AssetGroupsProps = Omit<AvailabilityGridProps, "timeline" | "empty" | "className">;
+type AssetGroupsProps = Omit<AvailabilityGridProps, "timeline" | "empty" | "totals" | "className">;
 
 /** The organization's own groups of assets, a row each, in the order they first appear. */
 function AssetGroups({ assets, bookings, frame, ...row }: AssetGroupsProps) {
@@ -61,6 +64,7 @@ export function AvailabilityGrid({
   timeline,
   frame,
   empty,
+  totals,
   className,
   ...row
 }: AvailabilityGridProps) {
@@ -71,7 +75,7 @@ export function AvailabilityGrid({
       className={cn("touch-pan-x touch-pan-y overflow-auto overscroll-contain", className)}
     >
       <div className={cn(LABEL_WIDTH, "w-max min-w-full pb-1")}>
-        <TimelineHeader frame={frame} labelRef={timeline.labelRef} />
+        <TimelineHeader frame={frame} labelRef={timeline.labelRef} totals={totals} />
         {empty ? (
           <p className="sticky left-0 w-[min(36rem,calc(100vw-4rem))] px-4 py-10 text-center text-sm text-muted-foreground">
             {empty}

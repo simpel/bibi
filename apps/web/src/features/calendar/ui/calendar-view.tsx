@@ -5,6 +5,7 @@ import {
   AvailabilityCalendar,
   BookingSheet,
   type CalendarAsset,
+  type CalendarDayValue,
   CalendarLabelsProvider,
   CalendarLegend,
   type CalendarState,
@@ -23,6 +24,8 @@ export type CalendarViewProps = {
   assets: CalendarAsset[];
   /** The bookings of `range`, loaded with the page. */
   bookings: AssetBooking[];
+  /** What each item's days of `range` are worth. */
+  values: CalendarDayValue[];
   /** The path's days, shown first. */
   range: { from: string; to: string };
   today: string;
@@ -68,7 +71,8 @@ export function CalendarView(props: CalendarViewProps) {
   const format = useDateTimeFormat();
   const router = useRouter();
   const { prefill } = useAssistant();
-  const { bookings, failed, onRangeChange } = useLoadedBookings({ initial, range });
+  const loaded = useLoadedBookings({ initial: { bookings: initial, values: props.values }, range });
+  const { bookings, values, failed, onRangeChange } = loaded;
   const onShownChange = useCallback(keepInPath, []);
   const [open, setOpen] = useState<AssetBooking | null>(null);
   const ticket = open ? ticketOfBooking({ booking: open, bookings, assets }) : null;
@@ -76,7 +80,7 @@ export function CalendarView(props: CalendarViewProps) {
     <CalendarLabelsProvider labels={labels}>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-card">
         <AvailabilityCalendar
-          {...{ assets, bookings, today, locale, labels, onRangeChange, onShownChange }}
+          {...{ assets, bookings, values, today, locale, labels, onRangeChange, onShownChange }}
           layout="page"
           className="flex-1"
           formatDate={format.date}

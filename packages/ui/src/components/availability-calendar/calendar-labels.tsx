@@ -46,6 +46,17 @@ export type CalendarLabels = {
   /** An amount in the user's number format and currency display. */
   money: (money: Money) => string;
   exclVat: (input: { amount: string }) => string;
+  /** A day's value in its heading: booked, prebooked and still open, excl. VAT. */
+  value: {
+    booked: string;
+    prebooked: string;
+    open: string;
+    note: string;
+    /** Next to the day: "48% booked". */
+    rate: (input: { percent: number }) => string;
+    /** Next to a narrow day: "48%". */
+    share: (input: { percent: number }) => string;
+  };
   open: (input: { ticket: string }) => string;
   openLine: string;
   notes: string;

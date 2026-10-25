@@ -10,6 +10,7 @@ export * from "./features/api-key/schema";
 export * from "./features/assignment/schema";
 export * from "./features/audit-log/schema";
 export * from "./features/calendar/schema";
+export * from "./features/calendar/value-schema";
 export * from "./features/change-set/schema";
 export * from "./features/configuration/schema";
 export * from "./features/contact/schema";

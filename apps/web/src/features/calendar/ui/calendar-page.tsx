@@ -64,7 +64,8 @@ export async function CalendarPage({ locale, from, to }: CalendarPageProps) {
     <CalendarView
       {...{ range, today, openingHours }}
       assets={assets.value}
-      bookings={bookings.value}
+      bookings={bookings.value.bookings}
+      values={bookings.value.values}
     />
   );
 }

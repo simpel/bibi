@@ -9,7 +9,8 @@ export type HoursLookup = {
   exceptions: ReadonlyMap<string, OpenSpan | null>;
 };
 
-type Interval = { from: number; to: number };
+/** An instant interval in epoch milliseconds, `[from, to)`. */
+export type Interval = { from: number; to: number };
 
 /** Longest stretch evaluated; a longer line is never within hours. */
 const MAX_DAYS = 366;
@@ -29,10 +30,10 @@ function instantAt({
   return fromZonedParts({ date: day, time, timeZone }).getTime();
 }
 
-type DayInput = { hours: HoursLookup; date: PlainDate; timeZone: string };
+export type DayInput = { hours: HoursLookup; date: PlainDate; timeZone: string };
 
 /** The open intervals of one local day: the exception if there is one, else the weekday. */
-function openIntervals({ hours, date, timeZone }: DayInput): Interval[] {
+export function openIntervals({ hours, date, timeZone }: DayInput): Interval[] {
   const iso = toIsoDate({ date });
   const span = hours.exceptions.has(iso)
     ? hours.exceptions.get(iso)

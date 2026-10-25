@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { PlainDateStringSchema } from "../../time/plain-date-schema";
 import { OccupancyTypeSchema } from "../occupancy/schema";
+import { CalendarDayValueSchema } from "./value-schema";
 
 /** The longest range one call may cover, in days (ADR 0064 decision 2). */
 export const MAX_CALENDAR_DAYS = 62;
@@ -92,6 +93,9 @@ export const CalendarBlockSchema = z.object({
     .nullable()
     .describe("The line's name (null without program:read), or the note of a manual block"),
   soft: z.boolean().describe("A soft hold (ADR 0044): may overlap other soft holds"),
+  allocated: z
+    .boolean()
+    .describe("The hold of a unit allocated to the line (ADR 0059), not of the line's own item"),
   heldAt: z
     .date()
     .nullable()
@@ -112,6 +116,10 @@ export const CalendarRangeSchema = z.object({
   from: z.date().describe("Start of the first day (inclusive)"),
   to: z.date().describe("Start of the day after the last (exclusive)"),
   blocks: z.array(CalendarBlockSchema).describe("Every block overlapping [from, to), by start"),
+  currency: z.string().describe("ISO 4217 code of the day values"),
+  values: z
+    .array(CalendarDayValueSchema)
+    .describe("Per item and day with any value: booked, prebooked and still open"),
 });
 
 export type CalendarRangeInput = z.infer<typeof CalendarRangeInputSchema>;

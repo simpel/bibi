@@ -1,7 +1,9 @@
 import { ok } from "../../errors/result";
+import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
 import { loadBlocks } from "./load-blocks";
+import { loadValues } from "./load-values";
 import { resolveRange } from "./resolve-range";
 import { CalendarRangeInputSchema, CalendarRangeSchema } from "./schema";
 
@@ -17,7 +19,9 @@ export const calendarRange = defineOperation({
     "state's name and colour without pipeline:read. A view read model (ADR 0071): each line " +
     "block carries details (customer and client contact with customer:read; quantity, value " +
     "excl. VAT, note, the line's assignee and allocated staff with program:read; headcount and " +
-    "the ticket's assignee always), so one call answers what the calendar shows.",
+    "the ticket's assignee always), so one call answers what the calendar shows. values gives " +
+    "each item's day in money excl. VAT: booked (hard holds), prebooked (soft holds) and still " +
+    "open (free time within its hours at its hourly price).",
   input: CalendarRangeInputSchema,
   output: CalendarRangeSchema,
   permission: "ticket:read",
@@ -33,9 +37,10 @@ export const calendarRange = defineOperation({
       });
       if (!ticket) return notFound({ entity: "Ticket" });
     }
-    const { from, to } = range.value;
+    const { from, to, timeZone } = range.value;
     const blocks = await loadBlocks({ context, filters: input, from, to });
-    return ok({ value: { ...range.value, blocks } });
+    const values = await loadValues({ context, input, timeZone, blocks });
+    return ok({ value: { ...range.value, blocks, currency: DEFAULT_CURRENCY, values } });
   },
 });
 

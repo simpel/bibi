@@ -11,6 +11,7 @@ export type { FormatDate } from "./components/availability-calendar/calendar-dat
 export * from "./components/availability-calendar/calendar-labels";
 export * from "./components/availability-calendar/calendar-legend";
 export type * from "./components/availability-calendar/calendar-types";
+export type { CalendarDayValue } from "./components/availability-calendar/day-value";
 export * from "./components/availability-calendar/ticket-of-booking";
 export * from "./components/avatar/avatar";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";

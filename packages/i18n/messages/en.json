@@ -578,6 +578,14 @@
     "booked": "Booked",
     "guests": "{count, plural, one {# guest} other {# guests}}",
     "exclVat": "{amount} excl. VAT",
+    "value": {
+      "booked": "Booked",
+      "prebooked": "Prebooked",
+      "open": "Still open",
+      "note": "Excl. VAT. Still open is free time within opening hours at each room's hourly price.",
+      "rate": "{percent}% booked",
+      "share": "{percent}%"
+    },
     "open": "Open {ticket}",
     "openLine": "Open line",
     "notes": "Notes",

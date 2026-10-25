@@ -22,6 +22,7 @@ const block = ({ over = {} }: { over?: Partial<CalendarBlockDto> }): CalendarBlo
   reference: 12,
   title: "Lunch",
   soft: false,
+  allocated: false,
   heldAt: null,
   stateId: "s1",
   stateName: "Booked",

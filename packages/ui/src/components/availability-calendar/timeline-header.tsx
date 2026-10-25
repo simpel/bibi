@@ -1,34 +1,47 @@
 import type { Ref } from "react";
 import { cn } from "../../lib/cn";
 import { ROW_GRID } from "./availability-row";
-import { addDays, formatDate, formatDay, isoWeek, weekdayOf } from "./calendar-dates";
+import { addDays, formatDate, formatDay, weekdayOf } from "./calendar-dates";
+import type { DayTotal } from "./day-value";
+import { DayRate } from "./day-value-peek";
 import { HourLabels } from "./time-axis";
 import type { TimelineFrame } from "./timeline-scale";
+import { WeekHeading } from "./week-heading";
 
 const dateOf = ({ frame, index }: { frame: TimelineFrame; index: number }) =>
   addDays({ date: frame.start, days: index });
 
+/** Today's bar along the top, drawn over the column so nothing under it moves. */
+function TodayBar({ date, frame }: { date: string; frame: TimelineFrame }) {
+  if (date !== frame.today) return null;
+  return <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-primary" />;
+}
+
+type DayProps = { frame: TimelineFrame; index: number; total: DayTotal | undefined };
+
 /**
- * A day's name, pinned just right of the asset names while its day scrolls past, so you always
- * know which day you are in. Clicking it zooms in to that day.
+ * A day's name and how much of it is sold, pinned just right of the asset names while its day
+ * scrolls past, so you always know which day you are in. Clicking the name zooms in to that day.
  */
-function DayHeading({ frame, index }: { frame: TimelineFrame; index: number }) {
+function DayHeading({ frame, index, total }: DayProps) {
   const date = dateOf({ frame, index });
+  const day = formatDay({ date, format: frame.formatDate });
   return (
-    <div
-      className={cn("absolute inset-y-0", date === frame.today && "border-t-4 border-primary")}
-      style={{ left: index * frame.pitch, width: frame.dayPx }}
-    >
-      <button
-        type="button"
-        onClick={() => frame.onDrill({ date })}
-        className={cn(
-          "sticky left-[calc(var(--label)+0.5rem)] mt-1 block w-fit truncate rounded-sm px-1 text-xs font-medium outline-none hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring",
-          date === frame.today && "font-bold text-primary",
-        )}
-      >
-        {formatDay({ date, format: frame.formatDate })}
-      </button>
+    <div className="absolute inset-y-0" style={{ left: index * frame.pitch, width: frame.dayPx }}>
+      <TodayBar date={date} frame={frame} />
+      <div className="sticky left-[calc(var(--label)+0.5rem)] mt-2 flex w-fit max-w-[calc(100%-1rem)] items-center gap-2">
+        <button
+          type="button"
+          onClick={() => frame.onDrill({ date })}
+          className={cn(
+            "shrink-0 rounded-sm text-xs leading-5 font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            date === frame.today && "font-bold text-primary",
+          )}
+        >
+          {day}
+        </button>
+        <DayRate total={total} day={day} compact={frame.dayPx < 200} />
+      </div>
       {frame.detail === "hours" ? (
         <div className="absolute inset-x-0 bottom-1">
           <HourLabels window={frame.hours} />
@@ -38,28 +51,8 @@ function DayHeading({ frame, index }: { frame: TimelineFrame; index: number }) {
   );
 }
 
-/** Month zoom, top tier: the week number and month, pinned while the week scrolls past. */
-function WeekHeading({ frame, index }: { frame: TimelineFrame; index: number }) {
-  const date = dateOf({ frame, index });
-  const month = formatDate({
-    date: addDays({ date, days: 3 }),
-    locale: frame.locale,
-    options: { month: "short" },
-  });
-  return (
-    <div
-      className="absolute top-0 h-5 border-l"
-      style={{ left: index * frame.pitch, width: 7 * frame.pitch - 2 }}
-    >
-      <span className="sticky left-[calc(var(--label)+0.25rem)] px-1 text-xs font-medium whitespace-nowrap">
-        {month} · W{isoWeek({ date })}
-      </span>
-    </div>
-  );
-}
-
 /** Month zoom, bottom tier: the day of the month over its weekday initial. */
-function DayNumber({ frame, index }: { frame: TimelineFrame; index: number }) {
+function DayNumber({ frame, index }: DayProps) {
   const date = dateOf({ frame, index });
   const weekday = formatDate({ date, locale: frame.locale, options: { weekday: "narrow" } });
   return (
@@ -67,10 +60,11 @@ function DayNumber({ frame, index }: { frame: TimelineFrame; index: number }) {
       className={cn(
         "absolute inset-y-0 grid content-end pb-0.5 text-center text-[0.625rem] leading-tight tabular-nums",
         weekdayOf({ date }) >= 5 && "text-muted-foreground",
-        date === frame.today && "border-t-4 border-primary font-bold text-primary",
+        date === frame.today && "font-bold text-primary",
       )}
       style={{ left: index * frame.pitch, width: frame.dayPx }}
     >
+      <TodayBar date={date} frame={frame} />
       <span>{Number(date.slice(8))}</span>
       <span className="opacity-70">{weekday}</span>
     </div>
@@ -89,27 +83,33 @@ function weekStarts({ frame }: { frame: TimelineFrame }) {
   return [...starts];
 }
 
-export type TimelineHeaderProps = { frame: TimelineFrame; labelRef: Ref<HTMLDivElement> };
+export type TimelineHeaderProps = {
+  frame: TimelineFrame;
+  labelRef: Ref<HTMLDivElement>;
+  /** What each day is worth across the assets shown, by day key. */
+  totals?: ReadonlyMap<string, DayTotal> | undefined;
+};
 
 /** Days on top, hours under them; zoomed out to months, weeks on top and days under them. */
-export function TimelineHeader({ frame, labelRef }: TimelineHeaderProps) {
+export function TimelineHeader({ frame, labelRef, totals }: TimelineHeaderProps) {
   const cells = frame.detail === "cells";
   return (
     <div className={cn(ROW_GRID, "sticky top-0 z-40 border-b bg-card")}>
       <div ref={labelRef} className="sticky left-0 z-10 border-r bg-card" />
-      <div className="relative h-11" style={{ width: frame.width }}>
+      <div className="relative h-14" style={{ width: frame.width }}>
         {cells
           ? weekStarts({ frame }).map((index) => (
-              <WeekHeading key={`w${index}`} frame={frame} index={index} />
+              <WeekHeading key={`w${index}`} {...{ frame, index, totals }} />
             ))
           : null}
-        {frame.drawn.map((index) =>
-          cells ? (
-            <DayNumber key={index} frame={frame} index={index} />
+        {frame.drawn.map((index) => {
+          const total = totals?.get(dateOf({ frame, index }));
+          return cells ? (
+            <DayNumber key={index} {...{ frame, index, total }} />
           ) : (
-            <DayHeading key={index} frame={frame} index={index} />
-          ),
-        )}
+            <DayHeading key={index} {...{ frame, index, total }} />
+          );
+        })}
       </div>
     </div>
   );

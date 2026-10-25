@@ -1,6 +1,8 @@
 import {
   type CalendarBlockDto,
   CalendarBlockSchema,
+  type CalendarDayValue,
+  CalendarDayValueSchema,
   type CalendarRange,
   calendarRange,
 } from "@bibi/core";
@@ -15,6 +17,12 @@ const CalendarBlockRef = objectFromSchema<CalendarBlockDto>({
     "One block on the calendar: an occupancy of an item joined with its line and ticket.",
 });
 
+const CalendarDayValueRef = objectFromSchema<CalendarDayValue>({
+  name: "CalendarDayValue",
+  schema: CalendarDayValueSchema,
+  description: "What one item's day is worth excl. VAT: booked, prebooked and still open.",
+});
+
 const CalendarRangeRef = builder.objectRef<CalendarRange>("CalendarRange").implement({
   description: "What is on the calendar between two days, in one time zone.",
   fields: (t) => ({
@@ -22,6 +30,8 @@ const CalendarRangeRef = builder.objectRef<CalendarRange>("CalendarRange").imple
     from: t.field({ type: "DateTime", resolve: (range) => range.from }),
     to: t.field({ type: "DateTime", resolve: (range) => range.to }),
     blocks: t.field({ type: [CalendarBlockRef], resolve: (range) => range.blocks }),
+    currency: t.exposeString("currency"),
+    values: t.field({ type: [CalendarDayValueRef], resolve: (range) => range.values }),
   }),
 });
 

@@ -13,6 +13,7 @@ import { type CalendarLabels, CalendarLabelsProvider } from "./calendar-labels";
 import { CalendarToolbar } from "./calendar-toolbar";
 import type { AssetBooking, CalendarAsset, CalendarWindow } from "./calendar-types";
 import { byDate, occupancyOf } from "./day-occupancy";
+import { type CalendarDayValue, dayTotals } from "./day-value";
 import { OverviewStrip } from "./overview-strip";
 import { frameOf } from "./timeline-frame";
 import { floorDayPx } from "./timeline-scale";
@@ -39,6 +40,8 @@ export type AvailabilityCalendarProps = Pick<
   initialRange?: UseTimelineInput["initialRange"];
   /** The venues' opening hours, widest across the week (ADR 0064); bookings outside widen it. */
   openingHours?: CalendarWindow;
+  /** What each asset's loaded days are worth; the day headings sum the assets shown. */
+  values?: readonly CalendarDayValue[];
   className?: string;
   /** The days on screen changed, e.g. to keep them in the URL; `to` is inclusive. */
   onShownChange?: (range: { from: string; to: string }) => void;
@@ -95,7 +98,7 @@ export function AvailabilityCalendar({ labels, ...props }: AvailabilityCalendarP
 }
 
 function Calendar(props: Omit<AvailabilityCalendarProps, "labels">) {
-  const { assets, today, locale, formatDate, openingHours, ...rest } = props;
+  const { assets, today, locale, formatDate, openingHours, values, ...rest } = props;
   const { onRangeChange, initialLevel, initialRange, onShownChange, layout, className, ...row } =
     rest;
   const { shown, filter, empty } = useShownAssets({ assets, bookings: props.bookings });
@@ -106,6 +109,10 @@ function Calendar(props: Omit<AvailabilityCalendarProps, "labels">) {
   const density = useMemo(
     () => densityOf({ assets: shown, bookings, hours }),
     [shown, bookings, hours],
+  );
+  const totals = useMemo(
+    () => values && dayTotals({ values, assetIds: new Set(shown.map((asset) => asset.id)) }),
+    [values, shown],
   );
   const onDrill = ({ date }: { date: string }) =>
     timeline.jump({ date, days: 1, floor: floorDayPx({ level: "day", hours }) });
@@ -120,7 +127,7 @@ function Calendar(props: Omit<AvailabilityCalendarProps, "labels">) {
         onScrollTo={(left) => timeline.scrollerRef.current?.scrollTo({ left })}
       />
       <AvailabilityGrid
-        {...{ bookings, timeline, frame, empty }}
+        {...{ bookings, timeline, frame, empty, totals }}
         assets={shown}
         className={availabilityGridVariants({ layout })}
         {...row}
