@@ -32,9 +32,12 @@ export async function runOperation<I extends z.ZodType, O extends z.ZodType>({
   operation,
   input,
 }: RunOperationInput<I, O>): Promise<Result<z.infer<O>>> {
+  // The request first: at build time it makes Next render the page per request instead of
+  // prerendering it, before `ensureOperations` reads env that only exists at runtime.
+  const logContext = await webLogContext();
   ensureOperations();
   return runWithLogContext({
-    context: await webLogContext(),
+    context: logContext,
     fn: async () => {
       const context: Result<ExecuteContext> = await resolveExecuteContext({
         headers: await headers(),
