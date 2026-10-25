@@ -1,7 +1,7 @@
 # 0050 – Permission presets and per-user overrides
 
 - **Date:** 2026-10-19
-- **Status:** Accepted
+- **Status:** Accepted, feature scope amended by 0071 (view read models)
 - **Related:** 0034 (fixed access roles, superseded in part), 0048 (access levels, superseded), 0005 (API keys, amended), 0015 (superadmin), 0003 (parity), 0007 (AI-first UX)
 - **Spec:** `docs/specs/permissions.md`
 

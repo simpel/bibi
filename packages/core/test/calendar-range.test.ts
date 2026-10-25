@@ -20,6 +20,7 @@ describe("calendar.range (ADR 0064)", () => {
     expect(result.blocks).toEqual([
       expect.objectContaining({
         type: "HOLD",
+        lineId: line.id,
         ticketId: line.ticketId,
         reference: ticket.reference,
         title: line.name,
@@ -31,6 +32,7 @@ describe("calendar.range (ADR 0064)", () => {
       expect.objectContaining({
         id: manual.id,
         type: "MAINTENANCE",
+        lineId: null,
         ticketId: null,
         title: "Floor polish",
         stateId: null,

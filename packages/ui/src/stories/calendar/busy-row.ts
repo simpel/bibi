@@ -1,9 +1,13 @@
-import { STORY_DAY } from "./calendar-dates";
-import { toMinutes } from "./calendar-time";
-import type { AssetBooking, CalendarState, Money } from "./calendar-types";
+import { toMinutes } from "../../components/availability-calendar/calendar-time";
+import type {
+  AssetBooking,
+  CalendarState,
+  Money,
+} from "../../components/availability-calendar/calendar-types";
 import { CLIENT_CONTACTS } from "./client-contacts-data";
 import { PEOPLE } from "./people-data";
 import { STATES } from "./states-data";
+import { STORY_DAY } from "./story-dates";
 
 export type BusyRow = {
   a: string;

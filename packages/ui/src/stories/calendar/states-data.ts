@@ -1,4 +1,4 @@
-import type { CalendarState } from "./calendar-types";
+import type { CalendarState } from "../../components/availability-calendar/calendar-types";
 
 /**
  * The fixed stage palette: a state picks a stage, never a color. Amber tentative, blue ordered,

@@ -1,5 +1,5 @@
-import { toMinutes } from "./calendar-time";
-import type { CalendarLine } from "./calendar-types";
+import { toMinutes } from "../../components/availability-calendar/calendar-time";
+import type { CalendarLine } from "../../components/availability-calendar/calendar-types";
 
 /** Where the guests are from one time to the next: one stop per place, in order. */
 export type GuestStop<Line extends CalendarLine = CalendarLine> = {

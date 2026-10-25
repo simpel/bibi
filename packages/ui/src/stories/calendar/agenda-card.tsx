@@ -1,9 +1,17 @@
+import { CalendarHoverCard } from "../../components/availability-calendar/calendar-hover-card";
+import { dotStyle } from "../../components/availability-calendar/calendar-marks";
+import {
+  LineContact,
+  StaffList,
+  ticketLines,
+} from "../../components/availability-calendar/calendar-people";
+import { durationLabel, toMinutes } from "../../components/availability-calendar/calendar-time";
+import type {
+  CalendarAudience,
+  CalendarLine,
+  CalendarTicket,
+} from "../../components/availability-calendar/calendar-types";
 import { cn } from "../../lib/cn";
-import { CalendarHoverCard } from "./calendar-hover-card";
-import { dotStyle } from "./calendar-marks";
-import { LineContact, StaffList, ticketLines } from "./calendar-people";
-import { durationLabel, toMinutes } from "./calendar-time";
-import type { CalendarAudience, CalendarLine, CalendarTicket } from "./calendar-types";
 import { DateLeaf } from "./date-leaf";
 import { GuestMark } from "./guest-mark";
 

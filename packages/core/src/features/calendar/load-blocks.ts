@@ -2,6 +2,7 @@ import type { Prisma } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
 import { canView } from "../../shared/can-view";
 import { LATEST_STATE_CHANGE } from "../line/state-history";
+import { loadDetails } from "./load-details";
 import type { CalendarBlockDto, CalendarRangeInput } from "./schema";
 
 const BLOCK_SELECT = {
@@ -14,6 +15,7 @@ const BLOCK_SELECT = {
   note: true,
   line: {
     select: {
+      id: true,
       name: true,
       ticketId: true,
       stateId: true,
@@ -28,6 +30,7 @@ const BLOCK_SELECT = {
 type BlockRow = Prisma.OccupancyGetPayload<{ select: typeof BLOCK_SELECT }>;
 type Visible = { program: boolean; pipeline: boolean };
 type Filters = Omit<CalendarRangeInput, "from" | "to">;
+type BareBlock = Omit<CalendarBlockDto, "details">;
 
 /** The line filters; a manual block has no line, so any of them hides it. */
 function lineWhere({ ticketId, stateId, statusId }: Filters): Prisma.LineWhereInput | undefined {
@@ -43,7 +46,7 @@ function lineWhere({ ticketId, stateId, statusId }: Filters): Prisma.LineWhereIn
  * One occupancy as a block (ADR 0053): a line's hold and its buffers carry the line's ticket and
  * state; held since and expiry belong to the soft hold itself, not its buffers.
  */
-function toBlock({ row, visible }: { row: BlockRow; visible: Visible }): CalendarBlockDto {
+function toBlock({ row, visible }: { row: BlockRow; visible: Visible }): BareBlock {
   const { line } = row;
   const soft = row.holdKind === "SOFT";
   const softHold = soft && row.type === "HOLD";
@@ -55,6 +58,7 @@ function toBlock({ row, visible }: { row: BlockRow; visible: Visible }): Calenda
     type: row.type,
     startsAt: row.startsAt,
     endsAt: row.endsAt,
+    lineId: line?.id ?? null,
     ticketId: line?.ticketId ?? null,
     reference: line?.ticket.reference ?? null,
     title: line ? (visible.program ? line.name : null) : row.note,
@@ -100,5 +104,7 @@ export async function loadBlocks({
     program: canView({ context, feature: "program" }),
     pipeline: canView({ context, feature: "pipeline" }),
   };
-  return rows.map((row) => toBlock({ row, visible }));
+  const blocks = rows.map((row) => toBlock({ row, visible }));
+  const detailsOf = await loadDetails({ context, blocks });
+  return blocks.map((block) => ({ ...block, details: detailsOf(block) }));
 }

@@ -1,9 +1,9 @@
+import { percentIn } from "../../components/availability-calendar/calendar-time";
+import type { CalendarWindow } from "../../components/availability-calendar/calendar-types";
+import { HourRules } from "../../components/availability-calendar/time-axis";
 import { cn } from "../../lib/cn";
-import { percentIn } from "./calendar-time";
-import type { CalendarWindow } from "./calendar-types";
 import { GUEST_RULE, GuestMark } from "./guest-mark";
 import type { GuestStop } from "./guest-path";
-import { HourRules } from "./time-axis";
 
 export type GuestLaneProps = {
   stops: readonly GuestStop[];

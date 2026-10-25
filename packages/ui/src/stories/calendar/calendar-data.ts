@@ -1,4 +1,7 @@
-import type { CalendarLine, CalendarTicket } from "./calendar-types";
+import type {
+  CalendarLine,
+  CalendarTicket,
+} from "../../components/availability-calendar/calendar-types";
 import { PEOPLE } from "./people-data";
 import { STATES } from "./states-data";
 

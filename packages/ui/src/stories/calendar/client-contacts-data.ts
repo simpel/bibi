@@ -1,4 +1,4 @@
-import type { ClientContact } from "./calendar-types";
+import type { ClientContact } from "../../components/availability-calendar/calendar-types";
 
 const contact = ({ name, phone }: { name: string; phone: string }): ClientContact => ({
   name,

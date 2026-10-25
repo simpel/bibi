@@ -1,6 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { AvailabilityCalendar } from "../../components/availability-calendar/availability-calendar";
+import type {
+  AssetBooking,
+  CalendarAsset,
+  CalendarTicket,
+} from "../../components/availability-calendar/calendar-types";
 import {
   Sheet,
   SheetContent,
@@ -8,8 +14,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "../../components/sheet/sheet";
-import { AvailabilityCalendar } from "./availability-calendar";
-import type { AssetBooking, CalendarAsset, CalendarTicket } from "./calendar-types";
+import { STORY_CALENDAR } from "./story-labels";
 import { TicketLanes } from "./ticket-lanes";
 import { ticketOf } from "./ticket-of";
 import { useStoryBookings } from "./use-story-bookings";
@@ -56,6 +61,7 @@ export function AvailabilityWithTicket({ assets, template }: AvailabilityWithTic
   return (
     <div className="grid gap-3">
       <AvailabilityCalendar
+        {...STORY_CALENDAR}
         assets={assets}
         bookings={bookings}
         onRangeChange={onRangeChange}

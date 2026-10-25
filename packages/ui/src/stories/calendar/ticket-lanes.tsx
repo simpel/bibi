@@ -1,19 +1,19 @@
-import { cn } from "../../lib/cn";
-import { ticketLines } from "./calendar-people";
-import { CalendarSpan } from "./calendar-span";
-import { axisWindow } from "./calendar-time";
+import { ticketLines } from "../../components/availability-calendar/calendar-people";
+import { CalendarSpan } from "../../components/availability-calendar/calendar-span";
+import { axisWindow } from "../../components/availability-calendar/calendar-time";
 import type {
   CalendarAudience,
   CalendarLine,
   CalendarTicket,
   CalendarWindow,
-} from "./calendar-types";
+} from "../../components/availability-calendar/calendar-types";
+import { HourLabels, HourRules } from "../../components/availability-calendar/time-axis";
+import { cn } from "../../lib/cn";
 import { DateLeaf } from "./date-leaf";
 import { FrameBracket } from "./frame-bracket";
 import { GuestLane } from "./guest-lane";
 import { GuestMark } from "./guest-mark";
 import { guestPath } from "./guest-path";
-import { HourLabels, HourRules } from "./time-axis";
 
 export type TicketLanesProps = {
   ticket: CalendarTicket;

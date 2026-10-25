@@ -1,5 +1,9 @@
+import type {
+  AssetBooking,
+  CalendarAsset,
+  CalendarTicket,
+} from "../../components/availability-calendar/calendar-types";
 import { TICKET_18 } from "./calendar-data";
-import type { AssetBooking, CalendarAsset, CalendarTicket } from "./calendar-types";
 import { PEOPLE } from "./people-data";
 
 /**

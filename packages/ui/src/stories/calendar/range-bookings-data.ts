@@ -1,5 +1,10 @@
-import { addDays, daysBetween, STORY_DAY, weekdayOf } from "./calendar-dates";
-import type { AssetBooking } from "./calendar-types";
+import {
+  addDays,
+  daysBetween,
+  weekdayOf,
+} from "../../components/availability-calendar/calendar-dates";
+import type { AssetBooking } from "../../components/availability-calendar/calendar-types";
+import { STORY_DAY } from "./story-dates";
 
 /** A repeatable 0–1 from a string: the same day always gets the same bookings. */
 function noise({ seed }: { seed: string }): number {

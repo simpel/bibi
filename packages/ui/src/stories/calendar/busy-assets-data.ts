@@ -1,4 +1,7 @@
-import type { CalendarAsset, CalendarPerson } from "./calendar-types";
+import type {
+  CalendarAsset,
+  CalendarPerson,
+} from "../../components/availability-calendar/calendar-types";
 import { PEOPLE } from "./people-data";
 
 const SPACES: readonly [string, string, string][] = [

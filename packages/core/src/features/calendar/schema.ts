@@ -25,12 +25,63 @@ export const CalendarRangeInputSchema = z.object({
   ticketId: z.string().min(1).optional().describe("Only blocks of this ticket"),
 });
 
+const ClientSchema = z.object({
+  name: z.string(),
+  phone: z.string().nullable(),
+  email: z.string().nullable(),
+});
+
+const ContactSchema = z.object({
+  userId: z.string(),
+  name: z.string(),
+  via: z.enum(["LINE", "TICKET"]).describe("The line's own assignee, else the ticket's"),
+});
+
+const StaffSchema = z.object({
+  itemId: z.string(),
+  name: z.string(),
+  type: z.string().describe("The unit's item type: a person's position"),
+  person: z.boolean().describe("Linked to a member's profile (ADR 0068)"),
+});
+
+/**
+ * What a booking is about, joined for the screen (ADR 0071 view read model). Each field from
+ * another feature is null or empty without that feature's read.
+ */
+export const CalendarDetailsSchema = z.object({
+  customer: z.string().nullable().describe("The ticket's customer; null without customer:read"),
+  client: ClientSchema.nullable().describe(
+    "The ticket's contact person; null without customer:read",
+  ),
+  headcount: z
+    .number()
+    .int()
+    .nullable()
+    .describe("The ticket's guaranteed, else estimated, guests"),
+  quantity: z.number().int().nullable().describe("The line's effective quantity; program:read"),
+  valueMinor: z
+    .number()
+    .int()
+    .nullable()
+    .describe("The line's total excl. VAT in minor units; null without program:read or a price"),
+  currency: z.string().describe("ISO 4217 code of valueMinor"),
+  note: z.string().nullable().describe("The line's internal note; null without program:read"),
+  contact: ContactSchema.nullable().describe(
+    "Who to reach: the line's assignee (program:read), else the ticket's",
+  ),
+  staff: z.array(StaffSchema).describe("Units allocated to the line (ADR 0059); program:read"),
+});
+
 export const CalendarBlockSchema = z.object({
   id: z.string().describe("The occupancy id"),
   itemId: z.string().describe("The occupied item; resolve its name with item.get or item.list"),
   type: OccupancyTypeSchema,
   startsAt: z.date(),
   endsAt: z.date(),
+  lineId: z
+    .string()
+    .nullable()
+    .describe("The line the hold or buffer belongs to; null for a manual block"),
   ticketId: z.string().nullable().describe("The line's ticket; null for a manual block"),
   reference: z.number().int().nullable().describe("The ticket's reference number"),
   title: z
@@ -50,6 +101,7 @@ export const CalendarBlockSchema = z.object({
     .date()
     .nullable()
     .describe("Soft holds in an expiring state: the ticket's hold expiry (holdsUntil)"),
+  details: CalendarDetailsSchema.nullable().describe("Null for a manual block"),
 });
 
 export const CalendarRangeSchema = z.object({
@@ -60,5 +112,6 @@ export const CalendarRangeSchema = z.object({
 });
 
 export type CalendarRangeInput = z.infer<typeof CalendarRangeInputSchema>;
+export type CalendarDetails = z.infer<typeof CalendarDetailsSchema>;
 export type CalendarBlockDto = z.infer<typeof CalendarBlockSchema>;
 export type CalendarRange = z.infer<typeof CalendarRangeSchema>;

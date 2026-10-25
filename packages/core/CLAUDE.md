@@ -35,11 +35,12 @@ The parity core: every capability is defined **once** as an operation and then e
 - Anti-escalation (`features/member/role-access.ts`, by rank): nobody gives a role above their own or changes a member above them. The organization always keeps one admin (`checkAdminKept`, also for system). `parseMemberRole` turns an unknown stored role into `null`, which grants nothing.
 - Adding a permission: see "Adding a permission" in `packages/auth/CLAUDE.md`.
 
-## Feature scope: no cross-feature data (ADR 0050)
-- An operation returns only data of its own feature. Another feature's record is an id, resolved through that feature's own operation.
+## Feature scope (ADR 0050, 0071)
+- An owner operation returns only data of its own feature. Another feature's record is an id, resolved through that feature's own operation.
+- A view read model (a query that answers one screen, e.g. `calendar.range`) may join other features' data. Each such field goes through `visibleTo` (`shared/visible-to.ts`) and is `null` or empty without that feature's `read`; its description names the feature. Views never write and are never snapshotted. Why: ADR 0071.
 - Inputs that reference another feature's id are checked with `checkReadable(<feature>:read)`. Errors never describe records the caller cannot view.
 - Snapshots copied from another feature need its `read` at copy time. Audit, search text and approval previews only show what the caller may view.
-- If a feature needs another feature's data in its output, the scope is wrong: fix the scope.
+- If an owner operation needs another feature's data in its output, the scope is wrong: fix the scope, or answer the screen with a view read model.
 
 ## Configurable domain (ADR 0021, 0026, 0059)
 - No domain words in code. Base entities and capabilities: `features/entity-type/capability-kinds.ts`. Field kinds: `features/field-definition/field-kinds.ts`.

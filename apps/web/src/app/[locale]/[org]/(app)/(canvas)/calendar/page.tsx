@@ -1,16 +1,16 @@
 import { resolveLocale } from "@bibi/i18n";
-import type { RawCalendarParams } from "@/features/calendar/calendar-params";
-import { calendarStartHref } from "@/features/calendar/calendar-routing";
+import { calendarHref, calendarToday } from "@/features/calendar/calendar-path";
 import { redirect } from "@/lib/navigation";
 
-type CalendarStartProps = {
-  params: Promise<{ locale: string; org: string }>;
-  searchParams: Promise<RawCalendarParams>;
-};
+type CalendarStartProps = { params: Promise<{ locale: string; org: string }> };
 
-/** Bare `/calendar` (and old `?view=&date=` links): redirects to a `/calendar/{from}/{to}` period. */
-export default async function CalendarStart({ params, searchParams }: CalendarStartProps) {
+/** Bare `/calendar`: today, in the organization's zone. */
+export default async function CalendarStart({ params }: CalendarStartProps) {
   const { locale, org } = await params;
-  const href = await calendarStartHref({ raw: await searchParams });
-  redirect({ href, locale: resolveLocale({ value: locale }), org });
+  const today = await calendarToday();
+  redirect({
+    href: calendarHref({ from: today, to: today }),
+    locale: resolveLocale({ value: locale }),
+    org,
+  });
 }

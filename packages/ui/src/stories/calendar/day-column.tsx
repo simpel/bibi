@@ -1,18 +1,18 @@
-import { ticketLines } from "./calendar-people";
-import { CalendarSpan } from "./calendar-span";
-import { axisWindow } from "./calendar-time";
+import { ticketLines } from "../../components/availability-calendar/calendar-people";
+import { CalendarSpan } from "../../components/availability-calendar/calendar-span";
+import { axisWindow } from "../../components/availability-calendar/calendar-time";
 import type {
   CalendarAudience,
   CalendarLine,
   CalendarTicket,
   CalendarWindow,
-} from "./calendar-types";
+} from "../../components/availability-calendar/calendar-types";
+import { HOUR_REM, HourGutter, HourRules } from "../../components/availability-calendar/time-axis";
 import { DateLeaf } from "./date-leaf";
 import { FrameBand } from "./frame-bracket";
 import { GuestRail } from "./guest-lane";
 import { GuestMark } from "./guest-mark";
 import { type GuestStop, guestPath } from "./guest-path";
-import { HOUR_REM, HourGutter, HourRules } from "./time-axis";
 
 export type DayColumnProps = {
   ticket: CalendarTicket;

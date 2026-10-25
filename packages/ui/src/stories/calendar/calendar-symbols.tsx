@@ -1,7 +1,10 @@
 import type { ReactNode } from "react";
-import { markStyle } from "./calendar-marks";
+import { markStyle } from "../../components/availability-calendar/calendar-marks";
+import type {
+  CalendarHold,
+  CalendarState,
+} from "../../components/availability-calendar/calendar-types";
 import { OTHERS, Swatch } from "./calendar-symbols-data";
-import type { CalendarHold, CalendarState } from "./calendar-types";
 import { STAGE_COLORS } from "./states-data";
 
 const HOLDS: readonly { hold: CalendarHold; label: string; means: string }[] = [

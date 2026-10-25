@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { CalendarLegend } from "../../components/availability-calendar/calendar-legend";
 import { AgendaCard } from "./agenda-card";
 import { ASSETS, BOOKINGS } from "./availability-data";
 import { TICKET_18 } from "./calendar-data";
-import { CalendarLegend } from "./calendar-legend";
 import { CalendarRules } from "./calendar-rules";
 import { CalendarSymbols } from "./calendar-symbols";
 import { LiveCalendar } from "./live-calendar";

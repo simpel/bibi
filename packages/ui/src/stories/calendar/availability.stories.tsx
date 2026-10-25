@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
+import { CalendarLegend } from "../../components/availability-calendar/calendar-legend";
 import { ASSETS, BOOKINGS } from "./availability-data";
 import { AvailabilityWithTicket } from "./availability-with-ticket";
 import { BUSY_ASSETS } from "./busy-assets-data";
 import { BUSY_BOOKINGS } from "./busy-bookings-data";
-import { CalendarLegend } from "./calendar-legend";
 import { LiveCalendar } from "./live-calendar";
 import { STATES } from "./states-data";
 

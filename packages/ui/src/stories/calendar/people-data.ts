@@ -1,4 +1,4 @@
-import type { CalendarPerson } from "./calendar-types";
+import type { CalendarPerson } from "../../components/availability-calendar/calendar-types";
 
 /** Lindholmen demo staff. Johan, Erik and Ali are seeded members; Sara, Mona and Leo are staff items. */
 export const PEOPLE = {

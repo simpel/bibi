@@ -1,9 +1,9 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { STORY_DAY } from "./calendar-dates";
-import type { AssetBooking } from "./calendar-types";
+import type { AssetBooking } from "../../components/availability-calendar/calendar-types";
 import { rangeBookings } from "./range-bookings-data";
+import { STORY_DAY } from "./story-dates";
 
 /** A story's stand-in for loading bookings as the timeline reaches new days. */
 export function useStoryBookings({ template }: { template: readonly AssetBooking[] }) {

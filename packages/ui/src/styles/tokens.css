@@ -42,6 +42,9 @@
   --success-foreground: oklch(0.985 0.008 85);
   --warning: oklch(0.74 0.13 75);
   --warning-foreground: oklch(0.26 0.05 65);
+  /* Text on a fill of the organization's own colour (states): picked by the fill's brightness. */
+  --ink-on-light: oklch(0.2 0.018 60);
+  --ink-on-dark: oklch(0.985 0.008 85);
   --border: oklch(0.915 0.006 85);
   --input: oklch(0.895 0.008 85);
   --ring: oklch(0.38 0.075 155);
