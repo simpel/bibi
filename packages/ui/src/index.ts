@@ -5,6 +5,7 @@ export * from "./components/ai-elements/message";
 export * from "./components/ai-elements/prompt-input";
 export * from "./components/ai-elements/shimmer";
 export * from "./components/ai-elements/suggestion";
+export * from "./components/avatar/avatar";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";
 export { Button, type ButtonProps, buttonVariants } from "./components/button/button";
 export * from "./components/capability-display/bookable-display";
@@ -21,18 +22,7 @@ export * from "./components/collapsible/collapsible";
 export * from "./components/color-swatch/color-swatch";
 export { Combobox, type ComboboxProps } from "./components/combobox/combobox";
 export type { ComboboxOption } from "./components/combobox/combobox-groups";
-export {
-  Command,
-  CommandDialog,
-  type CommandDialogProps,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from "./components/command/command";
+export * from "./components/command/command";
 export {
   DataTable,
   type DataTableProps,
@@ -82,6 +72,7 @@ export { Label, type LabelProps } from "./components/label/label";
 export * from "./components/page-container/page-container";
 export * from "./components/permission-profile-card/permission-chip-list";
 export * from "./components/permission-profile-card/permission-profile-card";
+export * from "./components/person-contact/person-contact";
 export * from "./components/popover/popover";
 export * from "./components/questionnaire/questionnaire";
 export * from "./components/questionnaire/questionnaire-actions";
