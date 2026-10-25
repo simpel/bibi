@@ -1,5 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import { createItem } from "../../features/item/write-operations";
+import { setVenueHours } from "../../features/venue/hours-operations";
 import { createVenue } from "../../features/venue/operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
@@ -14,7 +15,7 @@ export type SeedItemsInput = { context: ExecuteContext; config: DemoConfig; refs
 export type DemoCatalog = { venueId: string; items: ReadonlyMap<string, string> };
 
 /**
- * Slices 2–3 of ADR 0025: the org's venue and the items in it (parts after the items they
+ * Slices 2–3 of ADR 0025: the org's venue with its opening hours and the items in it (parts after the items they
  * contain), via `venue.create` and `item.create` as SYSTEM, each with its demands (ADR 0059).
  */
 export async function seedDemoItems({
@@ -24,6 +25,9 @@ export async function seedDemoItems({
 }: SeedItemsInput): Promise<Result<DemoCatalog>> {
   const venue = await execute({ operation: createVenue, input: config.venue, context });
   if (!venue.ok) return venue;
+  const hours = { venueId: venue.value.id, ...config.venueHours };
+  const opening = await execute({ operation: setVenueHours, input: hours, context });
+  if (!opening.ok) return opening;
   const seeded = new Map<string, string>();
   for (const item of config.items) {
     const input = itemInput({ item, refs, venueId: venue.value.id, seeded });

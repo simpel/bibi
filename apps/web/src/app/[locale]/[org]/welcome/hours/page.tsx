@@ -1,7 +1,7 @@
 import { DEFAULT_WORKING_HOURS } from "@bibi/core/schemas";
 import { resolveLocale } from "@bibi/i18n";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { rowsFromDays } from "@/features/welcome/lib/hours";
+import { rowsFromDays } from "@/features/hours/lib/hours";
 import { loadStepState } from "@/features/welcome/load-step-state";
 import { HoursForm } from "@/features/welcome/ui/hours/hours-form";
 import { welcomeProgress } from "@/features/welcome/ui/welcome-progress";

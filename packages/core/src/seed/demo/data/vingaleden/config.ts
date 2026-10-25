@@ -1,7 +1,7 @@
 import type { DemoConfig, DemoItem } from "../../config-types";
 
 /** Vingaleden's configuration (`docs/demo-seed.md`): no food lists, no allergens. */
-export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "checks"> = {
+export const vingaledenConfig: Omit<DemoConfig, "items" | "venue" | "venueHours" | "checks"> = {
   listTemplates: [],
   lists: [
     { name: "Harbor", values: ["Saltholmen", "Lilla Bommen", "Styrsö Bratten", "Vrångö"] },

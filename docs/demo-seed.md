@@ -32,6 +32,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 16. Member profiles (ADR 0068, `member-profile-checks.ts`): staff items are linked to members by `memberProfile.setItems` right after the items (`data/lindholmen/staff.ts`, `seed-staff.ts`). Erik Lund has schedule kind `SHIFTS` and holds two staff items, Technician 1 and Host 1 (two positions). Lena Strand is `CASUAL` and holds Technician 2. `memberProfile.get` returns exactly those items and the schedule kind for each member in the data files (a missing link or a wrong kind fails). Vingaleden has no staff items and no profiles.
 16. Time zones (ADR 0064, `time-zone-checks.ts`): each organization's profile has its zone, Saltholmen stores `Europe/Oslo` and Lindholmen's venue stores `null`, and `effectiveTimeZone` resolves each venue to its own zone, else the organization's.
 17. Date and clock formats (ADR 0046, `user-settings-checks.ts`): Erik Lund saves `YYYY_MM_DD` and `H12` through `userSettings.update` as himself (`displayFormats` in `data/lindholmen/lindholmen.ts`), so he sees `2026-08-27 2:30 PM`. Every other user has no settings row and sees the defaults (`27 Aug 2026, 14:30`). Each member's formats are read back as that member.
+18. Opening hours (ADR 0064 rule 10, `hours-checks.ts`): each demo venue reads back, through `venueHours.get`, the open weekdays and the dated exception its data sets.
 
 The checks that run today:
 - **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
@@ -69,7 +70,7 @@ The checks that run today:
 
 # Lindholmen Experience Center
 
-Slug `lindholmen-demo`. Venue: Lindholmspiren 1, 417 56 Göteborg.
+Slug `lindholmen-demo`. Venue: Lindholmspiren 1, 417 56 Göteborg. Opening hours (ADR 0064): weekdays 07–22, Saturday 09–18, closed on Sunday and on Christmas Eve (2026-12-24).
 
 ## Configuration
 
@@ -386,7 +387,7 @@ Spread over time, from D−90 to D+180:
 
 # Vingaleden Archipelago Tours
 
-Slug `vingaleden-demo`. Venue: Saltholmen, 426 76 Västra Frölunda. No food and no allergens. The same code, another world.
+Slug `vingaleden-demo`. Venue: Saltholmen, 426 76 Västra Frölunda. Opening hours: every day 08–20, 10–15 on New Year's Eve (2026-12-31). No food and no allergens. The same code, another world.
 
 ## Configuration
 

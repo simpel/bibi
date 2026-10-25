@@ -1,4 +1,4 @@
-import { mcpTool, text } from "../../tools/meta";
+import { hoursSummary, mcpTool, text } from "../../tools/meta";
 
 export const itemMcpTools = [
   mcpTool({ operation: "item.list" }),
@@ -28,5 +28,11 @@ export const itemMcpTools = [
     operation: "item.saveAsBundle",
     summary: ({ input }) =>
       `Save bundle "${text({ value: input.name })}" for customer ${text({ value: input.customerId })}`,
+  }),
+  mcpTool({ operation: "itemHours.get" }),
+  mcpTool({
+    operation: "itemHours.set",
+    idempotent: true,
+    summary: ({ input }) => hoursSummary({ input, owner: "item" }),
   }),
 ];

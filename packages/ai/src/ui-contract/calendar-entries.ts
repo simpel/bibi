@@ -1,5 +1,6 @@
 import { CalendarBlockSchema, CalendarRangeSchema } from "@bibi/core/schemas";
 import { z } from "zod";
+import { HOURS_UI_ENTRIES } from "./hours-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 
@@ -19,8 +20,9 @@ export const CalendarRangeWireSchema = CalendarRangeSchema.extend({
 
 export type CalendarRangeWire = z.infer<typeof CalendarRangeWireSchema>;
 
-/** Tool → component for the occupancy calendar (ADR 0064). */
+/** Tool → component for the occupancy calendar and the hours that shape it (ADR 0064). */
 export const CALENDAR_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
+  ...HOURS_UI_ENTRIES,
   calendar_range: uiEntry({
     component: "calendar-range",
     schema: CalendarRangeWireSchema,

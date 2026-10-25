@@ -1,4 +1,5 @@
 import type { DemoOrg } from "../../types";
+import { lindholmenHours } from "../demo-hours";
 import { lindholmenActivities } from "./activities";
 import { lindholmenAlternativeTickets } from "./alternative-tickets";
 import { lindholmenBundleTickets } from "./bundle-tickets";
@@ -58,6 +59,7 @@ export const lindholmen: DemoOrg = {
       postalCode: "417 56",
       city: "Göteborg",
     },
+    venueHours: lindholmenHours,
     // Parts come after the items they contain.
     items: [
       ...lindholmenRooms,

@@ -9,7 +9,7 @@ import { lineAmounts } from "./line-totals";
 import type { OrderLineDto, OrderLineTag } from "./order-line-schema";
 import { applyPriceEffects } from "./price-effects";
 
-type Db = { context: Pick<OperationContext, "db"> };
+type Db = { context: Pick<OperationContext, "db" | "permissions"> };
 
 /** An effective value a priced line needs before the quote can be sent. */
 export type MissingValue = "quantity" | "vatRatePercent";

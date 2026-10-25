@@ -1,4 +1,5 @@
 import type { DemoOrg } from "../../types";
+import { saltholmenHours } from "../demo-hours";
 import { vingaledenBoats, vingaledenConfig } from "./config";
 import { vingaledenCustomers } from "./customers";
 import { vingaledenPipeline } from "./pipeline";
@@ -31,6 +32,7 @@ export const vingaleden: DemoOrg = {
       // The venue override (ADR 0064): same offset as the organization, so times read the same.
       timeZone: "Europe/Oslo",
     },
+    venueHours: saltholmenHours,
     items: [...vingaledenBoats, ...vingaledenTours],
     // Check 2: no allergen list at all. Its sheets (slice 6) will not include food either.
     checks: { absentLists: ["Allergens"] },

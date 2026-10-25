@@ -17,11 +17,15 @@ export const INTEGRATION_NAMES = [
 /** Occupancy and the calendar read (ADR 0022, 0064), kept apart so `operation-names.ts` fits. */
 export const BOOKING_NAMES = [
   "calendar.range",
+  "itemHours.get",
+  "itemHours.set",
   "occupancy.archive",
   "occupancy.create",
   "occupancy.get",
   "occupancy.list",
   "occupancy.update",
+  "venueHours.get",
+  "venueHours.set",
 ];
 
 /** Operations the AI actor may never run (`aiAllowed: false`, #88). */

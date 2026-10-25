@@ -225,7 +225,7 @@
       "country": "Land (ISO-kod)",
       "contactEmail": "Kontakt, e-post",
       "contactPhone": "Kontakt, telefon",
-      "openingHours": "Öppettider",
+      "openingHours": "Notering om öppettider",
       "timeZone": "Tidszon",
       "timeZoneInherit": "Organisationens zon ({zone})",
       "defaultVatRatePercent": "Moms (%)"
@@ -257,6 +257,11 @@
         "address": "Var anläggningen ligger.",
         "contact": "Hur man når anläggningen, när den har öppet och standardmoms."
       }
+    },
+    "hours": {
+      "title": "Öppettider",
+      "description": "Används för att varna när en bokning ligger utanför öppettiderna. Blockerar aldrig en bokning.",
+      "empty": "Inga öppettider angivna. Bokningar kontrolleras inte mot öppettider."
     }
   },
   "item": {
@@ -376,6 +381,12 @@
         "details": "Namnge artikeln och fyll i typens fält.",
         "setup": "Ange pris, bokning, upplägg och innehåll."
       }
+    },
+    "hours": {
+      "title": "Arbetstider",
+      "description": "När den här resursen är tillgänglig, till exempel en person eller ett rum. Blockerar aldrig en bokning.",
+      "followsVenue": "Inga egna tider: resursen följer lokalens öppettider.",
+      "followHint": "Stäng av alla dagar och ta bort alla undantag för att följa lokalens öppettider igen."
     }
   },
   "customer": {
@@ -737,7 +748,9 @@
     "inherited": "(ärvt)",
     "part": "Del",
     "warnings": {
-      "UNFILLED_OPTIONAL_DEMAND": "Ett valfritt behov saknar enhet"
+      "UNFILLED_OPTIONAL_DEMAND": "Ett valfritt behov saknar enhet",
+      "OUTSIDE_ITEM_HOURS": "Raden ligger utanför resursens arbetstider",
+      "OUTSIDE_VENUE_HOURS": "Raden ligger utanför lokalens öppettider"
     },
     "expandBundle": "Lägg till paket",
     "expandBundleDescription": "Lägg till ett paket som en rad som bär priset, plus en rad per del med delens tid räknat från paketets start. Delarna visar sina egna priser men räknas inte i summan; offerten visar moms per sats. Lämna tiderna tomma för rader utan tid.",
@@ -1379,7 +1392,7 @@
         "country": "Land",
         "contactEmail": "Kontakt, e-post",
         "contactPhone": "Kontakt, telefon",
-        "openingHours": "Öppettider",
+        "openingHours": "Notering om öppettider",
         "defaultVatRatePercent": "Moms (%)",
         "venueId": "Anläggning (id)",
         "entityTypeId": "Typ (id)",
@@ -1489,7 +1502,9 @@
         "price": "Pris",
         "memberId": "Medlem",
         "scheduleKind": "Schematyp",
-        "itemIds": "Personalresurser"
+        "itemIds": "Personalresurser",
+        "days": "Dagar",
+        "exceptions": "Undantag"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -1583,7 +1598,9 @@
         "invoice_void": "Makulera faktura",
         "payment_create": "Begär betalning",
         "memberProfile_update": "Ändra medlemmens schematyp",
-        "memberProfile_setItems": "Koppla personalresurser till medlem"
+        "memberProfile_setItems": "Koppla personalresurser till medlem",
+        "venueHours_set": "Ange öppettider",
+        "itemHours_set": "Ange arbetstider"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -1979,6 +1996,12 @@
         "singular": "Medlemmens arbete",
         "noItems": "Inga personalresurser",
         "open": "Öppna medlem"
+      },
+      "hours": {
+        "title": "Tider",
+        "empty": "Inga tider angivna.",
+        "exceptions": "Undantag",
+        "zone": "Tidszon {zone}"
       }
     },
     "questionnaire": {
@@ -3011,27 +3034,7 @@
     },
     "hours": {
       "title": "Dina arbetstider",
-      "description": "Visar när du är tillgänglig. Du kan ändra dem senare i din profil.",
-      "weekdays": "Mån–fre",
-      "weekend": "Lör–sön",
-      "off": "Ledig",
-      "lunch": "Lunch {start}–{end}",
-      "change": "Ändra",
-      "done": "Klar",
-      "workday": "Arbetar",
-      "start": "Start",
-      "end": "Slut",
-      "breakStart": "Rast från",
-      "breakEnd": "Rast till",
-      "day": {
-        "0": "Måndag",
-        "1": "Tisdag",
-        "2": "Onsdag",
-        "3": "Torsdag",
-        "4": "Fredag",
-        "5": "Lördag",
-        "6": "Söndag"
-      }
+      "description": "Visar när du är tillgänglig. Du kan ändra dem senare i din profil."
     },
     "setup": {
       "organization": {
@@ -3317,5 +3320,38 @@
       "SHIFTS": "Pass",
       "CASUAL": "Vid behov"
     }
+  },
+  "hours": {
+    "off": "Ledig",
+    "lunch": "Lunch {start}–{end}",
+    "change": "Ändra",
+    "done": "Klar",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "saving": "Sparar…",
+    "saved": "Tiderna är sparade",
+    "workday": "Arbetar",
+    "start": "Start",
+    "end": "Slut",
+    "breakStart": "Rast från",
+    "breakEnd": "Rast till",
+    "exceptions": "Undantag",
+    "noExceptions": "Inga undantag. Lägg till en dag som avviker från veckan, till exempel en helgdag.",
+    "addException": "Lägg till undantag",
+    "removeException": "Ta bort",
+    "exceptionDate": "Datum",
+    "exceptionNote": "Notering",
+    "closedAllDay": "Stängt hela dagen",
+    "closed": "Stängt",
+    "day": {
+      "0": "Måndag",
+      "1": "Tisdag",
+      "2": "Onsdag",
+      "3": "Torsdag",
+      "4": "Fredag",
+      "5": "Lördag",
+      "6": "Söndag"
+    },
+    "exceptionsHelp": "Enbart datumundantag utan veckodagar betyder att alla andra dagar är stängda."
   }
 }

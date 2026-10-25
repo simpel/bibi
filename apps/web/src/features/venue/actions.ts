@@ -3,10 +3,13 @@
 import {
   archiveVenue,
   createVenue,
+  type HoursDto,
   listVenues,
+  setVenueHours,
   updateVenue,
   type VenueCreateInput,
   type VenueDto,
+  type VenueHoursSetInput,
   type VenueUpdateInput,
 } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
@@ -44,4 +47,13 @@ export async function listVenueShortcutsAction(): Promise<ActionResult<VenueShor
     ? ({ ok: true, value: result.value.items.map(({ id, name }) => ({ id, name })) } as const)
     : result;
   return toActionResult({ result: mapped });
+}
+
+/** The venue's opening hours: the whole weekly pattern and its dated exceptions (ADR 0064). */
+export async function saveVenueHoursAction({
+  input,
+}: {
+  input: VenueHoursSetInput;
+}): Promise<ActionResult<HoursDto>> {
+  return toActionResult({ result: await runOperation({ operation: setVenueHours, input }) });
 }

@@ -10,6 +10,9 @@ model Venue {
   country               String       @default("SE")
   contactEmail          String?
   contactPhone          String?
+  /// Free-text note about opening hours, kept from before structured hours (ADR 0064, #429:
+  /// the old text could not be parsed, so it was not guessed). The hours are `HoursDay` and
+  /// `HoursException`.
   openingHours          String?
   /// Owned, IANA name, `null` = the organization's zone (ADR 0064, 0051). Read only through core's
   /// `effectiveTimeZone`: the zone of this venue's lines, occupancy and calendar.
@@ -20,6 +23,8 @@ model Venue {
   updatedAt             DateTime     @updatedAt
   createdBy             String?
   items                 Item[]
+  hoursDays             HoursDay[]
+  hoursExceptions       HoursException[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status])

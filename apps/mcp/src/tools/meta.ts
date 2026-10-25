@@ -48,3 +48,14 @@ export type TextFieldInput = { value: unknown };
 export function text({ value }: TextFieldInput): string {
   return typeof value === "string" ? value : JSON.stringify(value ?? "");
 }
+
+export type HoursSummaryInput = { input: Record<string, unknown>; owner: string };
+
+const countOf = ({ value }: { value: unknown }) => (Array.isArray(value) ? value.length : 0);
+
+/** Approval summary of a `*Hours.set` command (venue or item). */
+export function hoursSummary({ input, owner }: HoursSummaryInput): string {
+  const days = countOf({ value: input.days });
+  const exceptions = countOf({ value: input.exceptions });
+  return `Set the ${owner} hours to ${days} open days and ${exceptions} exceptions`;
+}

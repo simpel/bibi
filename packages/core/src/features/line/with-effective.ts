@@ -1,4 +1,5 @@
 import { ok, type Result } from "../../errors/result";
+import { loadHoursWarnings } from "../../hours/hours-warnings";
 import type { HandlerInput, OperationContext } from "../../operations/types";
 import { effectiveBuffers } from "../../shared/buffers";
 import { loadZoneOfVenue } from "../../shared/time-zones";
@@ -7,7 +8,7 @@ import { effectiveOf } from "./effective-values";
 import { loadLineWarnings } from "./line-warnings";
 import type { LineDto, LineRecord } from "./schema";
 
-type Db = { context: Pick<OperationContext, "db"> };
+type Db = { context: Pick<OperationContext, "db" | "permissions"> };
 
 export type WithEffectiveInput = Db & { lines: readonly LineRecord[] };
 
@@ -85,10 +86,12 @@ const NO_HEADCOUNT = { estimatedHeadcount: null, guaranteedHeadcount: null };
  */
 export async function withEffective({ context, lines }: WithEffectiveInput): Promise<LineDto[]> {
   if (lines.length === 0) return [];
-  const [{ tickets, items, changeovers, terms, organizationZone }, warnings] = await Promise.all([
+  const [sources, warnings, outsideHours] = await Promise.all([
     loadSources({ context, lines }),
     loadLineWarnings({ context, lineIds: lines.map((line) => line.id) }),
+    loadHoursWarnings({ context, lines }),
   ]);
+  const { tickets, items, changeovers, terms, organizationZone } = sources;
   return lines.map((line) => {
     const ticket = tickets.get(line.ticketId);
     const item = line.itemId ? (items.get(line.itemId) ?? null) : null;
@@ -102,11 +105,12 @@ export async function withEffective({ context, lines }: WithEffectiveInput): Pro
       type: item?.entityType ?? null,
       changeoverMinutes,
     });
+    const outside = outsideHours.get(line.id);
     return {
       ...line,
       ...effectiveOf({ line, ticket: headcount, item, terms: priceTerms }),
       ...buffers,
-      warnings: warnings.get(line.id) ?? [],
+      warnings: [...(warnings.get(line.id) ?? []), ...(outside ? [outside] : [])],
       timeZone: item?.timeZone ?? organizationZone,
     };
   });

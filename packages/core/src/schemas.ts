@@ -75,6 +75,9 @@ export * from "./features/user-preference/schema";
 export * from "./features/user-settings/schema";
 export * from "./features/venue/schema";
 export * from "./features/vocabulary/schema";
+export * from "./hours/day-schema";
+export * from "./hours/owner-schema";
+export * from "./hours/schema";
 export * from "./permissions/features";
 export {
   ADMIN_ROLE,

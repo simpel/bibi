@@ -25,4 +25,6 @@ export const itemRoutes = [
     method: "POST",
     path: "/customers/{customerId}/bundles",
   }),
+  restRoute({ operation: "itemHours.get", method: "GET", path: "/items/{itemId}/hours" }),
+  restRoute({ operation: "itemHours.set", method: "PUT", path: "/items/{itemId}/hours" }),
 ];

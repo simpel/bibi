@@ -1,4 +1,4 @@
-import { mcpTool, text } from "../../tools/meta";
+import { hoursSummary, mcpTool, text } from "../../tools/meta";
 
 export const venueMcpTools = [
   mcpTool({ operation: "venue.list" }),
@@ -20,5 +20,11 @@ export const venueMcpTools = [
     destructive: true,
     idempotent: true,
     summary: ({ input }) => `Archive venue ${text({ value: input.id })} and all its items`,
+  }),
+  mcpTool({ operation: "venueHours.get" }),
+  mcpTool({
+    operation: "venueHours.set",
+    idempotent: true,
+    summary: ({ input }) => hoursSummary({ input, owner: "venue" }),
   }),
 ];

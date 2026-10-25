@@ -34,6 +34,7 @@ export const UI_COMPONENTS: readonly UiComponent[] = [
   "requirement-card",
   "pipeline-board",
   "calendar-range",
+  "hours-card",
   "pipeline-preview",
   "pipeline-draft-card",
   "questionnaire",

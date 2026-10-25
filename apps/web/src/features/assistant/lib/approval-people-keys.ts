@@ -8,6 +8,8 @@ export const PEOPLE_FIELD_KEYS = [
   "itemIds",
   "dateFormat",
   "clockFormat",
+  "days",
+  "exceptions",
 ] as const;
 
 /** Assignment, member profile and own settings commands with a label in `assistant.approval.operations`. */
@@ -18,4 +20,6 @@ export const PEOPLE_OPERATION_KEYS = [
   "memberProfile_update",
   "memberProfile_setItems",
   "userSettings_update",
+  "venueHours_set",
+  "itemHours_set",
 ] as const;

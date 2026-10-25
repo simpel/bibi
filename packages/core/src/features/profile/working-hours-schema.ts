@@ -1,39 +1,10 @@
 import { z } from "zod";
-import { MinuteOfDaySchema } from "../../shared/minute-of-day";
+import { type HoursDay, HoursDaySchema, refineDays } from "../../hours/day-schema";
 
-/** One working day (ADR 0061); minutes after midnight, a missing weekday is a day off. */
-export const WorkingDaySchema = z.object({
-  weekday: z.number().int().min(0).max(6).describe("0 = Monday … 6 = Sunday"),
-  startMinute: MinuteOfDaySchema,
-  endMinute: MinuteOfDaySchema,
-  breakStartMinute: MinuteOfDaySchema.nullable(),
-  breakEndMinute: MinuteOfDaySchema.nullable(),
-});
+/** One working day (ADR 0061); the shared day shape of an hours pattern (ADR 0064). */
+export const WorkingDaySchema = HoursDaySchema;
 
-type Day = z.infer<typeof WorkingDaySchema>;
-type Issue = { message: string; path: (string | number)[] };
-
-/** Problems of one day: start before end, break both-or-neither and inside the day. */
-function dayIssues({ day, index }: { day: Day; index: number }): Issue[] {
-  const at = ({ field }: { field: string }) => ["days", index, field];
-  const issues: Issue[] = [];
-  if (day.startMinute >= day.endMinute) {
-    issues.push({ message: "The day must start before it ends", path: at({ field: "endMinute" }) });
-  }
-  const { breakStartMinute: from, breakEndMinute: to } = day;
-  if ((from === null) !== (to === null)) {
-    issues.push({
-      message: "Set both break start and end, or neither",
-      path: at({ field: "breakEndMinute" }),
-    });
-  } else if (from !== null && to !== null) {
-    if (from >= to || from < day.startMinute || to > day.endMinute) {
-      const message = "The break must start before it ends and lie inside the working day";
-      issues.push({ message, path: at({ field: "breakStartMinute" }) });
-    }
-  }
-  return issues;
-}
+type Day = HoursDay;
 
 export const WorkingHoursSchema = z.object({
   days: z.array(WorkingDaySchema).describe("Working days sorted by weekday"),
@@ -48,16 +19,7 @@ export const WorkingHoursSetInputSchema = z
       .max(7)
       .describe("Every working day; replaces all earlier ones (a missing weekday is a day off)"),
   })
-  .superRefine(({ days }, ctx) => {
-    const seen = new Set<number>();
-    days.forEach((day, index) => {
-      if (seen.has(day.weekday)) {
-        ctx.addIssue({ code: "custom", message: "Weekday listed twice", path: ["days", index] });
-      }
-      seen.add(day.weekday);
-      for (const issue of dayIssues({ day, index })) ctx.addIssue({ code: "custom", ...issue });
-    });
-  });
+  .superRefine(({ days }, ctx) => refineDays({ days, ctx }));
 
 const OFFICE_DAY = {
   startMinute: 480,

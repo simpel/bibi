@@ -47,6 +47,7 @@ import { userPreferenceOperations } from "./features/user-preference/operations"
 import { userSettingsOperations } from "./features/user-settings/operations";
 import { venueOperations } from "./features/venue/operations";
 import { vocabularyOperations } from "./features/vocabulary/operations";
+import { hoursOperations } from "./hours/operations";
 import type { AnyOperation } from "./operations/types";
 import type { EmbedFn } from "./search/embed";
 import { createSearchOperation } from "./search/search-operation";
@@ -78,8 +79,8 @@ const moneyOperations = [
   ...invoiceOperations,
 ];
 
-/** What occupies bookable items and the calendar that shows it (ADR 0022, 0064). */
-const bookingOperations = [...occupancyOperations, ...calendarOperations];
+/** What occupies bookable items, their hours and the calendar (ADR 0022, 0064). */
+const bookingOperations = [...occupancyOperations, ...calendarOperations, ...hoursOperations];
 
 /**
  * The caller's own data: preferences, settings, profile, working hours and files

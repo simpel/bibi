@@ -16,8 +16,8 @@
 ## Decision
 
 ### What is stored
-1. **Every stored time is an instant** (`timestamptz`). There are no date-only columns and no stored wall-clock times. `holdsUntil` can be "13:00 on 14 Nov", so it stays an instant.
-2. A **plain date** exists only as a code-level key (`PlainDate`, `plain-date.ts`): a period in a URL path, and dated exceptions in an hours pattern. It is never a column. Query strings are a last resort, so the calendar's `?view=` and `?date=` move into the path: `/calendar/{from}/{to}`, two plain dates, both inclusive (a week is `/calendar/2026-11-09/2026-11-15`). Core turns them into `[start of from, start of to + 1 day)` in the zone. The view is derived from the range, never stored in the URL: 1 day is the day view, 7 days the week view, a whole calendar month the month view, anything else a list. Bare `/calendar` redirects on the server to today's range in the user's preferred view (ADR 0039). An invalid date redirects to today, `from` after `to` is swapped and a span over the cap (62 days) is cut. Optional filters (venue, type, state, phase, ticket) stay as query strings.
+1. **Every stored time is an instant** (`timestamptz`). There are no date-only columns and no stored wall-clock times, except in hours patterns (rule 10). `holdsUntil` can be "13:00 on 14 Nov", so it stays an instant.
+2. A **plain date** exists only as a code-level key (`PlainDate`, `plain-date.ts`): a period in a URL path, and the date of an exception in an hours pattern. It is never a column, except that exception date (rule 10). Query strings are a last resort, so the calendar's `?view=` and `?date=` move into the path: `/calendar/{from}/{to}`, two plain dates, both inclusive (a week is `/calendar/2026-11-09/2026-11-15`). Core turns them into `[start of from, start of to + 1 day)` in the zone. The view is derived from the range, never stored in the URL: 1 day is the day view, 7 days the week view, a whole calendar month the month view, anything else a list. Bare `/calendar` redirects on the server to today's range in the user's preferred view (ADR 0039). An invalid date redirects to today, `from` after `to` is swapped and a span over the cap (62 days) is cut. Optional filters (venue, type, state, phase, ticket) stay as query strings.
 
 ### Zones
 3. `OrganizationProfile.timeZone` (owned, IANA name, required; `Organization` belongs to Better Auth, the profile is ours and exists from creation, ADR 0061) and `Venue.timeZone` (owned, nullable, `null` = inherit, ADR 0051). Core exposes one resolver, `effectiveTimeZone`, and nothing else reads a zone. The four constants are removed.
@@ -33,6 +33,7 @@
 
 ### Hours
 10. **Opening hours** (venue), **working hours** (user) and **item working hours** (#388) share one shape and one UX: a weekly pattern (weekday, start and end minute, optional break) plus dated exceptions (closed, or other hours), in minutes after midnight in the owner's zone.
+10a. *Amended 2026-10-25 (#429).* The pattern is stored as wall-clock data: weekday rows in minutes, and an exception keyed by a plain-date column (`date`) with its minutes. Both are read in the owner's current zone, so a zone change moves the hours with the owner. Rules 1 and 2 exist for the exclusion constraint and the buffer triggers, which hours never reach (rule 11). An instant range per exception was rejected: rule 4 would pin it to the old zone's midnight, so after a zone change "24 Dec" would cover the wrong local day.
 11. Hours are **advisory**. They are evaluated on read, never enforced by a constraint or trigger. Scheduling outside them is always allowed, and the system warns (on lines, occupancy and assignments alike).
 
 ### Multi-zone
@@ -44,7 +45,7 @@
 | `OrganizationProfile.timeZone` | owned |
 | `Venue.timeZone` | owned (`null` = inherit) |
 | effective zone | derived on read |
-| hours pattern and exception rows | owned (replace `Venue.openingHours`) |
+| hours pattern and exception rows (`HoursDay`, `HoursException`) | owned (replace `Venue.openingHours`, whose text stays as a note) |
 
 - Surfaces: `organizationProfile.update` and `venue.update` take `timeZone`; hours get their own operations on web, GraphQL, REST and MCP (ADR 0003). Permission follows the owning feature (ADR 0050).
 - Seed: one demo venue with its own zone, and structured hours for the demo venues.

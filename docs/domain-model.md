@@ -99,6 +99,10 @@ erDiagram
   User ||--o{ UserPreference : "saves"
   User ||--o| UserProfile : "has"
   User ||--o{ UserWorkingHours : "works"
+  Venue ||--o{ HoursDay : "is open"
+  Venue ||--o{ HoursException : "is open"
+  Item ||--o{ HoursDay : "works"
+  Item ||--o{ HoursException : "works"
   User ||--o| UserSettings : "sets"
   Member ||--o| MemberProfile : "has"
   MemberProfile ||--o{ MemberProfileItem : "is staffed as"
@@ -579,20 +583,35 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A building or site. Bookable items belong to a venue.
 
-> **Target (ADR 0064):** structured opening hours (a weekly pattern with dated exceptions, advisory, replacing the free-text `openingHours`), with the same shape as user and item working hours.
+> **Done (ADR 0064, #429):** structured opening hours (`HoursDay`, `HoursException`): a weekly pattern with dated exceptions, advisory, the same shape as item working hours. The free-text `openingHours` stays as a note. **Target:** user working hours move to the member profile in the same shape (#449).
 
 **Attributes**
 - name
 - address
 - timeZone (owned, IANA name, nullable, `null` = the organization's; ADR 0064): the zone its lines, occupancy and calendar show and are entered in, read only through `effectiveTimeZone`. Changing it moves no stored time.
-- opening hours
+- opening hours (`HoursDay`, `HoursException`; owned)
+- openingHours (owned, free text): a note kept from before structured hours, not parsed
 - default VAT
 - contact details
 
 **Relations**
 - `1:N` has → Item
+- `1:N` is open → HoursDay, HoursException
 
 > Archiving a venue archives its items.
+
+### HoursDay and HoursException (`HoursDay`, `HoursException`)
+
+*MVP* · An hours pattern ([ADR 0064](decisions/0064-time-and-time-zones.md) rules 10–11): a venue's opening hours or an item's working hours. Exactly one owner per row (a CHECK). Owned, wall-clock data read in the owner's current zone, so a zone change moves the hours with the owner.
+
+**Attributes**
+- `HoursDay`: weekday (0 = Monday … 6 = Sunday, unique per owner), startMinute, endMinute, breakStartMinute and breakEndMinute (both or neither, inside the day). A missing weekday is closed.
+- `HoursException`: date (a plain-date column, unique per owner, rule 10a), start and end minutes (both null = closed all day), optional break, note.
+
+**Relations**
+- `N:1` belongs to → Venue or Item
+
+> Operations: `venueHours.get|set` (`venue:read|write`) and `itemHours.get|set` (`item:read|write`); `set` replaces the whole pattern. Advisory only: no constraint or trigger reads it. A line read derives `OUTSIDE_ITEM_HOURS` (id = the item) when its time falls outside the item's hours, else `OUTSIDE_VENUE_HOURS` (id = the venue) outside its venue's, the latter only for callers with `venue:read` (ADR 0050). An owner with exceptions only is closed on every other day. Concurrent `set` calls on one owner run one after the other (the owner row is locked).
 
 ### Occupancy ★
 
@@ -627,7 +646,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > **Done (ADR 0064):** derived on every read, `timeZone`: its venue's zone, else the organization's (the zone of its lines and occupancy).
 
-> **Done (ADR 0059):** `ItemDemand` rows (what the item asks of a pool). **Target:** working hours for a bookable item.
+> **Done (ADR 0059):** `ItemDemand` rows (what the item asks of a pool). **Done (ADR 0064, #429):** working hours (`HoursDay`, `HoursException`); without its own the item follows its venue's opening hours. **Target (#388):** the free pool and the prepick read them.
 
 > **Done (ADR 0059):** customisation groups hang on any item whose type has `CUSTOMISATIONS`, not only bundles; each option is another item with a price effect (`ItemCustomisationOption`).
 
@@ -1295,6 +1314,8 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | UserPreference | Användarinställning |
 | UserProfile | Användarprofil |
 | UserWorkingHours | Arbetstider |
+| HoursDay | Veckotider |
+| HoursException | Avvikande tider |
 | UserSettings | Användarinställningar |
 | OrganizationProfile | Organisationsprofil |
 | SystemLog | Systemlogg |

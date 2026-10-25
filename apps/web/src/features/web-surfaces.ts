@@ -1,3 +1,4 @@
+import { BOOKING_SURFACES } from "./booking-surfaces";
 import { MONEY_SURFACES } from "./money-surfaces";
 import { SALES_SURFACES } from "./sales-surfaces";
 import { SETTINGS_SURFACES } from "./settings-surfaces";
@@ -39,8 +40,6 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "item.archive", route: "/items/[id]" },
   // A bookable item's occupancy is listed and its manual blocks edited on the item page.
   { operation: "occupancy.list", route: "/items/[id]" },
-  // The calendar shows the occupancy of every space by day or week.
-  { operation: "occupancy.list", route: "/calendar" },
   { operation: "occupancy.create", route: "/items/[id]" },
   { operation: "occupancy.update", route: "/items/[id]" },
   { operation: "occupancy.archive", route: "/items/[id]" },
@@ -78,6 +77,7 @@ export const WEB_SURFACES: readonly WebSurface[] = [
   { operation: "sheet.list", route: "/tickets/[id]" },
   { operation: "sheet.generate", route: "/tickets/[id]" },
   { operation: "sheet.send", route: "/tickets/[id]" },
+  ...BOOKING_SURFACES,
   ...SALES_SURFACES,
   ...MONEY_SURFACES,
   ...SETTINGS_SURFACES,

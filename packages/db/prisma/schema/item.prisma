@@ -63,6 +63,8 @@ model Item {
   priceListItems         PriceListItem[]
   /// Order lines that copied this item (snapshot).
   orderLines             OrderLine[]
+  hoursDays              HoursDay[]
+  hoursExceptions        HoursException[]
   /// The supertable row this record extends (ADR 0056).
   record                 Record                    @relation(fields: [id, organizationId], references: [id, organizationId])
 

@@ -225,7 +225,7 @@
       "country": "Country (ISO code)",
       "contactEmail": "Contact email",
       "contactPhone": "Contact phone",
-      "openingHours": "Opening hours",
+      "openingHours": "Opening hours note",
       "timeZone": "Time zone",
       "timeZoneInherit": "The organization's zone ({zone})",
       "defaultVatRatePercent": "VAT (%)"
@@ -257,6 +257,11 @@
         "address": "Where the venue is.",
         "contact": "How to reach the venue, when it is open and its default VAT."
       }
+    },
+    "hours": {
+      "title": "Opening hours",
+      "description": "Used to warn when a booking falls outside opening hours. It never blocks a booking.",
+      "empty": "No opening hours set. Bookings are not checked against opening hours."
     }
   },
   "item": {
@@ -376,6 +381,12 @@
         "details": "Name the item and fill in the fields of its type.",
         "setup": "Set the price, booking, setups and contents."
       }
+    },
+    "hours": {
+      "title": "Working hours",
+      "description": "When this item is available, for example a person or a room. It never blocks a booking.",
+      "followsVenue": "No own hours: this item follows its venue's opening hours.",
+      "followHint": "Switch off every day and remove all exceptions to follow the venue's opening hours again."
     }
   },
   "customer": {
@@ -737,7 +748,9 @@
     "inherited": "(inherited)",
     "part": "Part",
     "warnings": {
-      "UNFILLED_OPTIONAL_DEMAND": "An optional need has no unit"
+      "UNFILLED_OPTIONAL_DEMAND": "An optional need has no unit",
+      "OUTSIDE_ITEM_HOURS": "The line is outside the item's working hours",
+      "OUTSIDE_VENUE_HOURS": "The line is outside the venue's opening hours"
     },
     "expandBundle": "Add bundle",
     "expandBundleDescription": "Add a bundle as one line that carries its price, plus one line per part with the part's time from the bundle's start. The parts show their own prices but do not count in the total; the quote shows VAT per rate. Leave the times empty for lines without time.",
@@ -1379,7 +1392,7 @@
         "country": "Country",
         "contactEmail": "Contact email",
         "contactPhone": "Contact phone",
-        "openingHours": "Opening hours",
+        "openingHours": "Opening hours note",
         "defaultVatRatePercent": "VAT (%)",
         "venueId": "Venue (id)",
         "entityTypeId": "Type (id)",
@@ -1489,7 +1502,9 @@
         "price": "Price",
         "memberId": "Member",
         "scheduleKind": "Schedule kind",
-        "itemIds": "Staff items"
+        "itemIds": "Staff items",
+        "days": "Days",
+        "exceptions": "Exceptions"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -1583,7 +1598,9 @@
         "invoice_void": "Void invoice",
         "payment_create": "Request payment",
         "memberProfile_update": "Change a member's schedule kind",
-        "memberProfile_setItems": "Link staff items to a member"
+        "memberProfile_setItems": "Link staff items to a member",
+        "venueHours_set": "Set opening hours",
+        "itemHours_set": "Set working hours"
       },
       "setup": {
         "title": "Create my first version",
@@ -1979,6 +1996,12 @@
         "singular": "Member work",
         "noItems": "No staff items",
         "open": "Open member"
+      },
+      "hours": {
+        "title": "Hours",
+        "empty": "No hours set.",
+        "exceptions": "Exceptions",
+        "zone": "Time zone {zone}"
       }
     },
     "questionnaire": {
@@ -3011,27 +3034,7 @@
     },
     "hours": {
       "title": "Your working hours",
-      "description": "Used to show when you are available. You can change them later in your profile.",
-      "weekdays": "Mon–Fri",
-      "weekend": "Sat–Sun",
-      "off": "Off",
-      "lunch": "Lunch {start}–{end}",
-      "change": "Change",
-      "done": "Done",
-      "workday": "Works",
-      "start": "Start",
-      "end": "End",
-      "breakStart": "Break from",
-      "breakEnd": "Break to",
-      "day": {
-        "0": "Monday",
-        "1": "Tuesday",
-        "2": "Wednesday",
-        "3": "Thursday",
-        "4": "Friday",
-        "5": "Saturday",
-        "6": "Sunday"
-      }
+      "description": "Used to show when you are available. You can change them later in your profile."
     },
     "setup": {
       "organization": {
@@ -3317,5 +3320,38 @@
       "SHIFTS": "Shifts",
       "CASUAL": "On call"
     }
+  },
+  "hours": {
+    "off": "Off",
+    "lunch": "Lunch {start}–{end}",
+    "change": "Change",
+    "done": "Done",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "saved": "Hours saved",
+    "workday": "Works",
+    "start": "Start",
+    "end": "End",
+    "breakStart": "Break from",
+    "breakEnd": "Break to",
+    "exceptions": "Exceptions",
+    "noExceptions": "No exceptions. Add a day that differs from the week, such as a holiday.",
+    "addException": "Add exception",
+    "removeException": "Remove",
+    "exceptionDate": "Date",
+    "exceptionNote": "Note",
+    "closedAllDay": "Closed all day",
+    "closed": "Closed",
+    "day": {
+      "0": "Monday",
+      "1": "Tuesday",
+      "2": "Wednesday",
+      "3": "Thursday",
+      "4": "Friday",
+      "5": "Saturday",
+      "6": "Sunday"
+    },
+    "exceptionsHelp": "Only dated exceptions and no weekdays means every other day is closed."
   }
 }

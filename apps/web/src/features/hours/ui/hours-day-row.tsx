@@ -3,17 +3,16 @@
 import { Checkbox, FormControl, FormController, FormItem, FormLabel } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
-import type { HoursRow } from "../../lib/hours";
 import { HoursTimeField } from "./hours-time-field";
+import type { HoursValues } from "./hours-values";
 
-export type HoursValues = { rows: HoursRow[] };
 type Day = "0" | "1" | "2" | "3" | "4" | "5" | "6";
 
 export type HoursDayRowProps = { form: UseFormReturn<HoursValues>; index: number };
 
 /** One weekday in the editor: works or not, start and end, and an optional break. */
 export function HoursDayRow({ form, index }: HoursDayRowProps) {
-  const t = useTranslations("welcome.hours");
+  const t = useTranslations("hours");
   const works = form.watch(`rows.${index}.works`);
   const weekday = form.getValues(`rows.${index}.weekday`);
   return (

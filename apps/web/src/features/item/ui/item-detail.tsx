@@ -17,6 +17,7 @@ import { BundleOwner } from "./bundle-owner";
 import { ItemActions } from "./item-actions";
 import { ItemCapabilities } from "./item-capabilities";
 import { ItemFacts } from "./item-facts";
+import { ItemHoursSection } from "./item-hours-section";
 import { ItemResolutionSection } from "./item-resolution-section";
 
 export type ItemDetailProps = { locale: Locale; id: string };
@@ -52,6 +53,7 @@ export async function ItemDetail({ locale, id }: ItemDetailProps) {
         {type?.capabilities.includes("BUNDLE") ? (
           <ItemResolutionSection locale={locale} itemId={item.value.id} />
         ) : null}
+        <ItemHoursSection locale={locale} itemId={item.value.id} />
         <DemandsSection locale={locale} itemId={item.value.id} />
         {type?.capabilities.includes("BOOKABLE") &&
         can({ abilities, permission: "ticket:read" }) ? (

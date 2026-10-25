@@ -64,6 +64,9 @@ const itemChildren = ({ db, where }: ScopeInput) => [
   db.itemPart.deleteMany({ where }),
   db.itemCustomisationGroup.deleteMany({ where }),
   db.itemSetup.deleteMany({ where }),
+  // Hours patterns of items and venues (ADR 0064): before both.
+  db.hoursException.deleteMany({ where }),
+  db.hoursDay.deleteMany({ where }),
   // Member profiles link to staff items (ADR 0068): before the items.
   db.memberProfileItem.deleteMany({ where }),
   db.memberProfile.deleteMany({ where }),

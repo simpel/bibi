@@ -4,14 +4,15 @@ import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { daysFromRows, type HoursRow } from "@/features/hours/lib/hours";
+import { HoursSummary } from "@/features/hours/ui/hours-summary";
+import type { HoursValues } from "@/features/hours/ui/hours-values";
+import { HoursWeekEditor } from "@/features/hours/ui/hours-week-editor";
 import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { saveHoursAction } from "../../actions";
-import { daysFromRows, type HoursRow } from "../../lib/hours";
 import { welcomePath } from "../../lib/welcome-step";
 import { WelcomeStepActions } from "../welcome-step-actions";
-import { HoursDayRow, type HoursValues } from "./hours-day-row";
-import { HoursSummary } from "./hours-summary";
 
 export type HoursFormProps = { org: string; rows: HoursRow[] };
 
@@ -19,9 +20,10 @@ export type HoursFormProps = { org: string; rows: HoursRow[] };
 export function HoursForm({ org, rows }: HoursFormProps) {
   const t = useTranslations("welcome");
   const common = useTranslations("common");
+  const hours = useTranslations("hours");
   const router = useRouter();
   const [editing, setEditing] = useState(false);
-  const form = useForm<HoursValues>({ defaultValues: { rows } });
+  const form = useForm<HoursValues>({ defaultValues: { rows, exceptions: [] } });
   const { submit, pending } = useFormAction({
     form,
     action: ({ values }) =>
@@ -34,11 +36,7 @@ export function HoursForm({ org, rows }: HoursFormProps) {
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
         {editing ? (
-          <div className="grid gap-3 rounded-lg border p-4">
-            {current.map((row, index) => (
-              <HoursDayRow key={row.weekday} form={form} index={index} />
-            ))}
-          </div>
+          <HoursWeekEditor form={form} withExceptions={false} />
         ) : (
           <HoursSummary rows={current} />
         )}
@@ -47,7 +45,7 @@ export function HoursForm({ org, rows }: HoursFormProps) {
           pending={pending}
           aside={
             <Button type="button" variant="ghost" onClick={() => setEditing(!editing)}>
-              {editing ? t("hours.done") : t("hours.change")}
+              {editing ? hours("done") : hours("change")}
             </Button>
           }
         />

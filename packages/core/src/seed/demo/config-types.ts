@@ -6,6 +6,7 @@ import type {
 import type { FieldKind } from "../../features/field-definition/field-kinds";
 import type { PRICE_EFFECTS } from "../../features/item/customisation-group-schema";
 import type { PRICE_UNITS } from "../../features/item/schema";
+import type { HoursPattern } from "../../hours/schema";
 import type { ItemStateTemplateKey } from "../../templates/item-states/item-state-templates";
 import type { VocabularyTemplateKey } from "../../templates/vocabularies/vocabulary-templates";
 
@@ -112,6 +113,8 @@ export type DemoConfig = {
     city: string;
     timeZone?: string;
   };
+  /** The venue's opening hours (ADR 0064 rule 10), set with `venueHours.set`. */
+  venueHours: HoursPattern;
   /** Seeded in the venue. Slice 2 seeds the bookable spaces, slice 3 the rest of the catalog. */
   items: readonly DemoItem[];
   /** Org-specific checks (`docs/demo-seed.md`, Checks), e.g. check 2. */
