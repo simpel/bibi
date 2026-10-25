@@ -50,6 +50,29 @@ export const Week: Story = { args: { initialLevel: "week" } };
 /** A month: one cell per asset and day, as tall as it is booked, red on a clash. Click to zoom in. */
 export const Month: Story = { args: { initialLevel: "month" } };
 
+const MANY = [
+  "Halls",
+  "Rooms",
+  "Lounges",
+  "Chefs",
+  "Hosts",
+  "Guides",
+  "AV",
+  "Furniture",
+  "Cars",
+  "Boats",
+];
+
+/** Ten groups of the org's own: the group list gets a search field above eight. */
+export const ManyGroups: Story = {
+  args: {
+    assets: BUSY_ASSETS.map((asset, index) => ({
+      ...asset,
+      group: MANY[index % MANY.length] ?? asset.group,
+    })),
+  },
+};
+
 /** The overview and its detail: click a booking and its ticket's Program opens beside it. */
 export const OpenATicket: Story = {
   render: (args) => <AvailabilityWithTicket assets={args.assets} template={args.template} />,

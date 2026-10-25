@@ -23,7 +23,7 @@ export type RangeToolbarProps = {
   onCustom: (range: { from: string; to: string }) => void;
 };
 
-const CHOICES: readonly { value: RangeChoice; label: string }[] = [
+export const CHOICES: readonly { value: RangeChoice; label: string }[] = [
   { value: "day", label: "Day" },
   { value: "week", label: "Week" },
   { value: "month", label: "Month" },
@@ -41,7 +41,7 @@ function RangeTabs({ choice, shown, onLevel, onCustom }: RangeToolbarProps) {
           onValueChange={(value) => (value === "custom" ? null : onLevel(value as TimelineLevel))}
           className="min-w-0"
         >
-          <TabsList className="grid w-full grid-cols-4 sm:inline-flex sm:w-fit">
+          <TabsList>
             {CHOICES.map(({ value, label }) => (
               <TabsTrigger
                 key={value}
@@ -67,8 +67,10 @@ function RangeTabs({ choice, shown, onLevel, onCustom }: RangeToolbarProps) {
   );
 }
 
-/** Earlier, today, later, and the days on screen in words. */
-function RangeStepper({ label, onStep, onToday }: RangeToolbarProps) {
+export type RangeStepperProps = Pick<RangeToolbarProps, "onStep" | "onToday"> & { label?: string };
+
+/** Earlier, today, later, and the days on screen in words when there is room for them. */
+export function RangeStepper({ label, onStep, onToday }: RangeStepperProps) {
   return (
     <div className="flex min-w-0 items-center gap-1">
       <Button variant="outline" size="icon" aria-label="Earlier" onClick={() => onStep(-1)}>
@@ -80,20 +82,22 @@ function RangeStepper({ label, onStep, onToday }: RangeToolbarProps) {
       <Button variant="outline" size="icon" aria-label="Later" onClick={() => onStep(1)}>
         <ChevronRightIcon aria-hidden />
       </Button>
-      <p aria-live="polite" className="ml-2 truncate text-sm font-medium tabular-nums">
-        {label}
-      </p>
+      {label ? (
+        <p aria-live="polite" className="ml-2 truncate text-sm font-medium tabular-nums">
+          {label}
+        </p>
+      ) : null}
     </div>
   );
 }
 
 /**
- * How much time to show, and where. The tabs set the zoom; a pinch or ctrl-scroll moves the
- * highlight along. On a phone the tabs take the full width and the stepper sits under them.
+ * How much time to show, and where, as one block. The tabs set the zoom; a pinch or ctrl-scroll
+ * moves the highlight along. A narrow calendar uses `CompactToolbar` instead.
  */
 export function RangeToolbar(props: RangeToolbarProps) {
   return (
-    <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex min-w-0 items-center gap-3">
       <RangeTabs {...props} />
       <RangeStepper {...props} />
     </div>

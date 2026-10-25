@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ALL, AvailabilityFilter, matches } from "./availability-filter";
+import { matches } from "./availability-filter";
 import { AvailabilityGrid, type AvailabilityGridProps } from "./availability-grid";
 import { type FormatDate, formatDays, STORY_DAY, storyFormatDate } from "./calendar-dates";
+import { CalendarToolbar } from "./calendar-toolbar";
 import type { AssetBooking, CalendarAsset, CalendarWindow } from "./calendar-types";
 import { byDate, occupancyOf } from "./day-occupancy";
 import { OverviewStrip } from "./overview-strip";
-import { RangeToolbar } from "./range-toolbar";
 import { frameOf } from "./timeline-frame";
 import { floorDayPx, openHours } from "./timeline-scale";
 import { useRangeControls } from "./use-range-controls";
@@ -56,18 +56,20 @@ function useShownAssets({
   bookings,
 }: Pick<AvailabilityCalendarProps, "assets" | "bookings">) {
   const [query, setQuery] = useState("");
-  const [group, setGroup] = useState(ALL);
+  const [groups, setGroups] = useState<string[]>([]);
   const shown = useMemo(
     () =>
       assets.filter(
-        (asset) => (group === ALL || asset.group === group) && matches({ asset, bookings, query }),
+        (asset) =>
+          (groups.length === 0 || groups.includes(asset.group)) &&
+          matches({ asset, bookings, query }),
       ),
-    [assets, bookings, group, query],
+    [assets, bookings, groups, query],
   );
-  const filter = { assets, query, group, onQuery: setQuery, onGroup: setGroup };
+  const filter = { assets, query, groups, onQuery: setQuery, onGroups: setGroups };
   const empty =
     shown.length === 0
-      ? `Nothing matches “${query}”${group === ALL ? "" : ` in ${group}`}.`
+      ? `Nothing matches “${query}”${groups.length === 0 ? "" : ` in ${groups.join(", ")}`}.`
       : undefined;
   return { shown, filter, empty };
 }
@@ -92,9 +94,8 @@ export function AvailabilityCalendar(props: AvailabilityCalendarProps) {
   const label = formatDays({ ...controls.shown, format: formatDate });
   const frame = frameOf({ timeline, hours, today, locale, formatDate, onDrill });
   return (
-    <div className="grid min-w-0 gap-3 rounded-xl border bg-card p-3 shadow-xs sm:gap-4 sm:p-5">
-      <RangeToolbar {...controls} label={label} />
-      <AvailabilityFilter {...filter} />
+    <div className="@container grid min-w-0 gap-3 rounded-xl border bg-card p-3 shadow-xs sm:gap-4 sm:p-5">
+      <CalendarToolbar range={{ ...controls, label }} filter={filter} />
       <OverviewStrip
         view={timeline.view}
         scroll={timeline.scroll}

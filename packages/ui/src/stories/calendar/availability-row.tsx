@@ -8,8 +8,11 @@ import { DayCell } from "./day-cell";
 import { DayTrack, type DayTrackProps, LANE_REM } from "./day-track";
 import type { TimelineFrame } from "./timeline-scale";
 
-/** The label column's width, set once on the grid so sticky parts can line up with it. */
-export const LABEL_WIDTH = "[--label:7.5rem] sm:[--label:13rem]";
+/**
+ * The label column's width, set once on the grid so sticky parts can line up with it. A quarter
+ * of the calendar's width, kept between a short name and a long one, so the days keep the room.
+ */
+export const LABEL_WIDTH = "[--label:clamp(6rem,24cqw,14rem)]";
 
 /** Label column, then the track: shared by the header and every row. */
 export const ROW_GRID = "grid grid-cols-[var(--label)_1fr]";
@@ -21,15 +24,27 @@ export type AvailabilityRowProps = Pick<DayTrackProps, "selectedId" | "onAdd" | 
   frame: TimelineFrame;
 };
 
-/** Pinned while the days scroll: avatar for people, the name, and one fact to pick by. */
+/**
+ * Pinned while the days scroll: avatar for people, the name, and one fact to pick by. A narrow
+ * calendar wraps the name to two lines and drops the avatar and the fact; the full name is a tooltip.
+ */
 export function AssetLabel({ asset }: { asset: CalendarAsset }) {
   return (
-    <div className="sticky left-0 z-30 flex min-w-0 items-center gap-2 border-r bg-card py-1.5 pr-3">
-      {asset.person ? <PersonAvatar person={asset.person} size="sm" /> : null}
+    <div
+      title={asset.name}
+      className="sticky left-0 z-30 flex min-w-0 items-center gap-2 border-r bg-card py-1.5 pr-2 @2xl:pr-3"
+    >
+      {asset.person ? (
+        <span className="hidden shrink-0 @2xl:contents">
+          <PersonAvatar person={asset.person} size="sm" />
+        </span>
+      ) : null}
       <div className="grid min-w-0">
-        <span className="truncate text-sm">{asset.name}</span>
+        <span className="line-clamp-2 text-sm leading-tight break-words @2xl:truncate">
+          {asset.name}
+        </span>
         {asset.detail ? (
-          <span className="hidden truncate text-xs text-muted-foreground sm:block">
+          <span className="hidden truncate text-xs text-muted-foreground @2xl:block">
             {asset.detail}
           </span>
         ) : null}
