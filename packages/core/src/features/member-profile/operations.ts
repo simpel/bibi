@@ -67,16 +67,18 @@ export const updateMemberProfile = defineOperation({
   kind: "command",
   description:
     "Set how a member's working time is planned here: PATTERN (weekly hours), SHIFTS (dated " +
-    "shifts only) or CASUAL (called in when needed, offered last). Advisory only: nothing is refused.",
+    "shifts only) or CASUAL (called in when needed, offered last), and how colleagues here reach " +
+    "them: work phone and email (ADR 0072). Omitted fields are kept. Advisory only.",
   input: MemberProfileUpdateInputSchema,
   output: MemberProfileSchema,
   permission: "item:write",
-  handler: async ({ input: { memberId, scheduleKind }, context }) => {
+  handler: async ({ input: { memberId, ...fields }, context }) => {
     const member = await checkMember({ context, memberId });
     if (!member.ok) return member;
     const before = await loadMemberProfile({ context, memberId });
     const id = await ensureMemberProfileId({ context, memberId });
-    await context.db.memberProfile.update({ where: { id }, data: { scheduleKind } });
+    const data = Object.fromEntries(Object.entries(fields).filter(([, v]) => v !== undefined));
+    await context.db.memberProfile.update({ where: { id }, data });
     const after = await loadMemberProfile({ context, memberId });
     context.recordChange({ entityId: id, before, after });
     return ok({ value: after });

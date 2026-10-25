@@ -1,6 +1,5 @@
 import { daysInMonth, type FormatDate, startOfMonth, startOfWeek } from "./calendar-dates";
-import { axisWindow } from "./calendar-time";
-import type { AssetBooking, CalendarWindow } from "./calendar-types";
+import type { CalendarWindow } from "./calendar-types";
 
 /**
  * The timeline is a row of day columns. Only open hours get width; the night between two days is
@@ -87,14 +86,6 @@ export function nearestLevel({
   return levels.reduce((best, level) =>
     distance({ level }) < distance({ level: best }) ? level : best,
   );
-}
-
-/** Open hours, the same on every day so columns line up: what is booked, and at least 08–18. */
-export function openHours({ bookings }: { bookings: readonly AssetBooking[] }): CalendarWindow {
-  const office = { from: 8 * 60, to: 18 * 60 };
-  if (bookings.length === 0) return office;
-  const booked = axisWindow({ lines: bookings, audience: "internal" });
-  return { from: Math.min(booked.from, office.from), to: Math.max(booked.to, office.to) };
 }
 
 /** What a row or the header needs to place its days on the track. */

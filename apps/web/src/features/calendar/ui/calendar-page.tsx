@@ -9,6 +9,7 @@ import { handleLoadError } from "@/server/load-error";
 import { calendarToday } from "../calendar-path";
 import { loadBookings } from "../load-bookings";
 import { loadCalendarAssets } from "../load-calendar";
+import { loadOpeningHours } from "../load-opening-hours";
 import { CalendarView } from "./calendar-view";
 
 export type CalendarPageProps = {
@@ -37,10 +38,11 @@ async function NoAssets() {
  */
 export async function CalendarPage({ locale, from, to }: CalendarPageProps) {
   const range = { from, to };
-  const [assets, bookings, today] = await Promise.all([
+  const [assets, bookings, today, openingHours] = await Promise.all([
     loadCalendarAssets(),
     loadBookings({ range }),
     calendarToday(),
+    loadOpeningHours(),
   ]);
   const failed = !assets.ok ? assets : !bookings.ok ? bookings : null;
   if (failed) {
@@ -59,6 +61,10 @@ export async function CalendarPage({ locale, from, to }: CalendarPageProps) {
     );
   }
   return (
-    <CalendarView assets={assets.value} bookings={bookings.value} range={range} today={today} />
+    <CalendarView
+      {...{ range, today, openingHours }}
+      assets={assets.value}
+      bookings={bookings.value}
+    />
   );
 }

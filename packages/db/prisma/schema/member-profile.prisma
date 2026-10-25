@@ -6,15 +6,22 @@ enum ScheduleKind {
   CASUAL
 }
 
-/// Member profile – a member's work in one organization (ADR 0068), next to the global
-/// `UserProfile` (name, phone, avatar). One per `Member`, created on the first write; removed with
-/// the member (cascade). Owned: `scheduleKind`. Positions are derived: the types of the linked
-/// staff items. Org-scoped; feature `item` (ADR 0050).
+/// Member profile – a member's work in one organization (ADR 0068) and how colleagues there reach
+/// them (ADR 0072), next to the global `UserProfile` (the person's own name and defaults). One per
+/// `Member`, created on the first write; removed with the member (cascade). Owned: `scheduleKind`,
+/// `phone`, `email`, `avatarKey`. Positions are derived: the types of the linked staff items. Org-scoped; feature `item` (ADR 0050).
 model MemberProfile {
   id             String              @id @default(cuid(2))
   organizationId String
   memberId       String
   scheduleKind   ScheduleKind        @default(PATTERN)
+  /// How colleagues here reach the member (ADR 0072): owned per organization, prefilled from the
+  /// member's own `UserProfile` when they join or first save it, never synced after.
+  phone          String?
+  /// Work email in this organization; null shows the login email.
+  email          String?
+  /// Key in `@bibi/storage` (ADR 0063) of the photo shown here; null shows initials.
+  avatarKey      String?
   status         RecordStatus        @default(ACTIVE)
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt

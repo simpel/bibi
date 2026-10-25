@@ -26,6 +26,28 @@ function loadTickets({ context, ticketIds }: Db & Pick<DetailIds, "ticketIds">) 
   });
 }
 
+/** Members by user id, with how colleagues here reach them: their member profile (ADR 0072). */
+async function loadColleagues({ context, userIds }: Db & { userIds: string[] }) {
+  const members = await context.db.member.findMany({
+    where: { userId: { in: userIds } },
+    select: {
+      userId: true,
+      user: { select: { name: true, email: true } },
+      profile: { select: { phone: true, email: true, avatarKey: true } },
+    },
+  });
+  return new Map(
+    members.map(({ userId, user, profile }) => {
+      const contact = {
+        email: profile?.email ?? user.email,
+        phone: profile?.phone ?? null,
+        avatarKey: profile?.avatarKey ?? null,
+      };
+      return [userId, { userId, name: user.name, ...contact }] as const;
+    }),
+  );
+}
+
 /** The main assignees of the lines and tickets (ADR 0055: stored choices only), with names. */
 async function loadAssignees({ context, lineIds, ticketIds }: Db & DetailIds) {
   const rows = await context.db.assignment.findMany({
@@ -38,15 +60,11 @@ async function loadAssignees({ context, lineIds, ticketIds }: Db & DetailIds) {
     select: { recordId: true, assigneeId: true },
   });
   const userIds = [...new Set(rows.flatMap((row) => row.assigneeId ?? []))];
-  const members = await context.db.member.findMany({
-    where: { userId: { in: userIds } },
-    select: { userId: true, user: { select: { name: true } } },
-  });
-  const names = new Map(members.map((member) => [member.userId, member.user.name]));
+  const people = await loadColleagues({ context, userIds });
   return new Map(
     rows.flatMap(({ recordId, assigneeId }) => {
-      const name = assigneeId ? names.get(assigneeId) : undefined;
-      return assigneeId && name ? [[recordId, { userId: assigneeId, name }] as const] : [];
+      const person = assigneeId ? people.get(assigneeId) : undefined;
+      return person ? [[recordId, person] as const] : [];
     }),
   );
 }

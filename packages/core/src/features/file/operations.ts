@@ -2,6 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { requireUser } from "../../shared/require-user";
 import { decodeImage } from "./decode-image";
@@ -63,16 +64,17 @@ export const getFile = defineOperation({
   name: "file.get",
   kind: "query",
   description:
-    "Read one of the caller's own files by the key file.upload returned: content type and " +
-    "base64 bytes. Keys of other users are not found.",
+    "Read one of the caller's own files by the key file.upload returned, or the photo of a " +
+    "member of this organization: content type and base64 bytes. Other keys are not found.",
   input: FileGetInputSchema,
   output: FileSchema,
   permission: "self:read",
   handler: async ({ input: { key }, context }) => {
     const user = requireUser({ context });
     if (!user.ok) return user;
-    // Key ownership (ADR 0063): never read a key the caller did not upload.
-    if (!key.startsWith(`${user.value}/`)) return notFound({ entity: "File" });
+    // Key ownership (ADR 0063): the caller's own uploads, or a colleague's photo here (ADR 0072).
+    const own = key.startsWith(`${user.value}/`);
+    if (!own && !(await isMemberPhoto({ context, key }))) return notFound({ entity: "File" });
     const store = getFileStore();
     if (!store) return unavailable();
     const found = await store.get({ key });
@@ -82,6 +84,15 @@ export const getFile = defineOperation({
     return ok({ value: { key, contentType, base64: Buffer.from(body).toString("base64") } });
   },
 });
+
+/** A member's photo in this organization: visible to their colleagues here, nowhere else. */
+async function isMemberPhoto({ context, key }: { context: OperationContext; key: string }) {
+  const profile = await context.db.memberProfile.findFirst({
+    where: { avatarKey: key },
+    select: { id: true },
+  });
+  return profile !== null;
+}
 
 /** The caller's own stored files (ADR 0063). */
 export const fileOperations = [uploadFile, getFile];

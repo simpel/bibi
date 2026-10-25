@@ -17,7 +17,10 @@ describe("member profiles (ADR 0068)", () => {
     const empty = unwrap({
       result: await execute({ operation: getMemberProfile, input: { memberId: anna }, context }),
     });
-    expect(empty).toEqual({ id: null, memberId: anna, scheduleKind: "PATTERN", items: [] });
+    expect(empty).toEqual({
+      ...{ id: null, memberId: anna, scheduleKind: "PATTERN", items: [] },
+      ...{ phone: null, email: null, avatarKey: null },
+    });
     const input = { memberId: anna, scheduleKind: "SHIFTS" as const };
     const saved = unwrap({
       result: await execute({ operation: updateMemberProfile, input, context }),

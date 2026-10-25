@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { DateLeaf } from "./date-leaf";
+import { DateLeaf } from "../../components/availability-calendar/date-leaf";
 
 const meta = {
   title: "Calendar/Date leaf",

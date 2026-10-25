@@ -1,19 +1,22 @@
-import { ticketLines } from "../../components/availability-calendar/calendar-people";
-import { CalendarSpan } from "../../components/availability-calendar/calendar-span";
-import { axisWindow } from "../../components/availability-calendar/calendar-time";
+"use client";
+
+import { cn } from "../../lib/cn";
+import { type CalendarLabels, useCalendarLabels } from "./calendar-labels";
+import { ticketLines } from "./calendar-people";
+import { CalendarSpan } from "./calendar-span";
+import { axisWindow } from "./calendar-time";
 import type {
   CalendarAudience,
   CalendarLine,
   CalendarTicket,
   CalendarWindow,
-} from "../../components/availability-calendar/calendar-types";
-import { HourLabels, HourRules } from "../../components/availability-calendar/time-axis";
-import { cn } from "../../lib/cn";
+} from "./calendar-types";
 import { DateLeaf } from "./date-leaf";
 import { FrameBracket } from "./frame-bracket";
 import { GuestLane } from "./guest-lane";
 import { GuestMark } from "./guest-mark";
 import { guestPath } from "./guest-path";
+import { HourLabels, HourRules } from "./time-axis";
 
 export type TicketLanesProps = {
   ticket: CalendarTicket;
@@ -80,15 +83,18 @@ function Lane({ line, audience, window, frame }: LaneProps) {
   );
 }
 
-function summary({ ticket, lines }: { ticket: CalendarTicket; lines: number }) {
-  const guests = ticket.headcount ? `${ticket.headcount} guests` : "";
-  return [ticket.reference, `${lines} lines`, guests].filter(Boolean).join(" · ");
+type SummaryInput = { ticket: CalendarTicket; lines: number; labels: CalendarLabels };
+
+function summary({ ticket, lines, labels }: SummaryInput) {
+  const guests = ticket.headcount ? labels.guests({ count: ticket.headcount }) : "";
+  return [ticket.reference, labels.lineCount({ count: lines }), guests].filter(Boolean).join(" · ");
 }
 
 /** Every line of one ticket on its own lane against one hour axis; buffers attach internally. */
 export function TicketLanes({ ticket, audience, locale }: TicketLanesProps) {
   const lines = ticketLines({ ticket, audience });
   const window = axisWindow({ lines, audience });
+  const labels = useCalendarLabels();
   return (
     <div className="@container rounded-xl border bg-card p-4 shadow-xs sm:p-5">
       <div className="mb-4 flex items-center gap-3">
@@ -98,7 +104,7 @@ export function TicketLanes({ ticket, audience, locale }: TicketLanesProps) {
             {ticket.purpose}
           </h3>
           <p className="text-xs text-muted-foreground">
-            {summary({ ticket, lines: lines.length })}
+            {summary({ ticket, lines: lines.length, labels })}
           </p>
         </div>
       </div>

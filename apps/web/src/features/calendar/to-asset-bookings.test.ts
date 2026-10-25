@@ -96,7 +96,10 @@ describe("toAssetBookings", () => {
       valueMinor: 1_080_000,
       currency: "SEK",
       note: null,
-      contact: { userId: "u1", name: "Anna Berg", via: "TICKET" as const },
+      contact: {
+        ...{ userId: "u1", name: "Anna Berg", email: null, phone: "+46 31 123" },
+        ...{ avatarKey: null, via: "TICKET" as const },
+      },
       staff: [
         { itemId: "i1", name: "Sam", type: "Host", person: true },
         { itemId: "i2", name: "Projector", type: "AV", person: false },

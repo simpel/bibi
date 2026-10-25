@@ -1,8 +1,8 @@
 import type { CSSProperties, ReactNode } from "react";
 import { bufferStyle, markStyle } from "../../components/availability-calendar/calendar-marks";
 import { LineContact, StaffList } from "../../components/availability-calendar/calendar-people";
+import { GUEST_RULE, GuestMark } from "../../components/availability-calendar/guest-mark";
 import { cn } from "../../lib/cn";
-import { GUEST_RULE, GuestMark } from "./guest-mark";
 import { PEOPLE } from "./people-data";
 import { STATES } from "./states-data";
 

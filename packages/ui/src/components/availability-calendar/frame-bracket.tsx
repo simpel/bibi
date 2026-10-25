@@ -1,8 +1,5 @@
-import { percentIn, toMinutes } from "../../components/availability-calendar/calendar-time";
-import type {
-  CalendarLine,
-  CalendarWindow,
-} from "../../components/availability-calendar/calendar-types";
+import { percentIn, toMinutes } from "./calendar-time";
+import type { CalendarLine, CalendarWindow } from "./calendar-types";
 
 /**
  * A package on a horizontal track: a grey bracket over the time its parts fill. It frames, it

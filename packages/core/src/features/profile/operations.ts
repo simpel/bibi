@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { invalid } from "../../shared/errors";
 import { requireUser } from "../../shared/require-user";
+import { prefillMemberContact } from "../member-profile/prefill-contact";
 import { loadProfile } from "./load-profile";
 import { ProfileGetInputSchema, ProfileSchema, ProfileUpdateInputSchema } from "./schema";
 import {
@@ -53,6 +54,8 @@ export const updateProfile = defineOperation({
       create: { userId, ...names, avatarKey: avatarKey ?? null },
       update: { ...names, ...avatar },
     });
+    // The welcome flow saves the profile after joining: give this organization its prefill too.
+    await prefillMemberContact({ db: context.db, userId });
     const after = await loadProfile({ context, userId });
     const entityId = after.id ?? userId;
     context.recordChange({ entityId, before: before.id ? before : undefined, after });

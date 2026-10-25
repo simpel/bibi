@@ -1,5 +1,6 @@
 import type { CalendarDetails } from "@bibi/core/schemas";
-import type { AssetBooking } from "@bibi/ui";
+import type { AssetBooking, CalendarPerson } from "@bibi/ui";
+import { fileUrl } from "@/lib/file-url";
 
 /** Why the contact is the one to call: the line's own assignee, or the ticket's. */
 export type ContactVia = { LINE: string; TICKET: string };
@@ -8,6 +9,17 @@ type Details = Pick<
   AssetBooking,
   "customer" | "client" | "headcount" | "value" | "notes" | "contact" | "staff" | "quantity"
 >;
+
+/** Our contact as a person: their profile is visible to colleagues (ADR 0072). */
+const personOf = ({ contact }: { contact: NonNullable<CalendarDetails["contact"]> }) =>
+  ({
+    id: contact.userId,
+    name: contact.name,
+    role: "",
+    ...(contact.phone ? { phone: contact.phone } : {}),
+    ...(contact.email ? { email: contact.email } : {}),
+    ...(contact.avatarKey ? { photoUrl: fileUrl({ key: contact.avatarKey }) } : {}),
+  }) satisfies CalendarPerson;
 
 const clientOf = ({ client }: Pick<CalendarDetails, "client">) =>
   client
@@ -44,7 +56,7 @@ export function bookingDetailsOf({
     ...(contact
       ? {
           contact: {
-            person: { id: contact.userId, name: contact.name, role: "" },
+            person: personOf({ contact }),
             via: via[contact.via],
             ...(contact.via === "TICKET" ? { inherited: true } : {}),
           },

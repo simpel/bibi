@@ -4,6 +4,7 @@ import { SCHEDULE_KINDS } from "@bibi/core/schemas";
 import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { OptionSelectField } from "@/components/form/option-select-field";
+import { TextField } from "@/components/form/text-field";
 import type { StaffOption } from "../load-member-work";
 import { StaffItemsField } from "./staff-items-field";
 import { type MemberWorkValues, useMemberWorkForm } from "./use-member-work-form";
@@ -14,7 +15,7 @@ export type MemberWorkFormProps = {
   options: readonly StaffOption[];
 };
 
-/** Edit form for the schedule kind and the staff items linked to a member. */
+/** Edit form for the work phone and email, the schedule kind and the linked staff items. */
 export function MemberWorkForm({ memberId, saved, options }: MemberWorkFormProps) {
   const t = useTranslations("memberProfile");
   const { form, submit, pending } = useMemberWorkForm({ memberId, saved });
@@ -22,6 +23,9 @@ export function MemberWorkForm({ memberId, saved, options }: MemberWorkFormProps
   return (
     <Form {...form}>
       <form onSubmit={submit} className="grid max-w-md gap-4">
+        <p className="text-sm text-muted-foreground">{t("contactHint")}</p>
+        <TextField form={form} name="phone" label={t("phone")} type="tel" autoComplete="off" />
+        <TextField form={form} name="email" label={t("email")} type="email" autoComplete="off" />
         <OptionSelectField
           control={form.control}
           name="scheduleKind"

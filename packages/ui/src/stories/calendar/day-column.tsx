@@ -7,12 +7,12 @@ import type {
   CalendarTicket,
   CalendarWindow,
 } from "../../components/availability-calendar/calendar-types";
+import { DateLeaf } from "../../components/availability-calendar/date-leaf";
+import { FrameBand } from "../../components/availability-calendar/frame-bracket";
+import { GuestRail } from "../../components/availability-calendar/guest-lane";
+import { GuestMark } from "../../components/availability-calendar/guest-mark";
+import { type GuestStop, guestPath } from "../../components/availability-calendar/guest-path";
 import { HOUR_REM, HourGutter, HourRules } from "../../components/availability-calendar/time-axis";
-import { DateLeaf } from "./date-leaf";
-import { FrameBand } from "./frame-bracket";
-import { GuestRail } from "./guest-lane";
-import { GuestMark } from "./guest-mark";
-import { type GuestStop, guestPath } from "./guest-path";
 
 export type DayColumnProps = {
   ticket: CalendarTicket;

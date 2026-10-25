@@ -4,6 +4,7 @@
 - **Status:** Proposed
 - **Related:** supersedes 0045 (soft-landing onboarding); amends 0046 (user settings); builds on 0062 (org-scoped URLs), 0063 (file storage), 0021 (configurable items), 0043 and 0044 (phases, states, grid), 0050 (permissions)
 - **Spec:** `docs/specs/welcome.md`
+- **Amended by:** 0072 (phone, email and photo are owned per organization on the member profile)
 
 ## Context
 - Checked on 2026-10-22 in `apps/web/src/features/onboarding/`, `packages/core/src/features/pipeline-setup/` and `packages/core/src/templates/setup-presets/`:

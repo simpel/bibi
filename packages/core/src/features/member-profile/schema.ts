@@ -20,6 +20,12 @@ export const MemberProfileSchema = z.object({
   id: z.string().nullable().describe("null until the profile is first saved"),
   memberId: z.string(),
   scheduleKind: ScheduleKindSchema,
+  phone: z.string().nullable().describe("How colleagues here reach the member (ADR 0072)"),
+  email: z.string().nullable().describe("Work email here; null means the login email"),
+  avatarKey: z
+    .string()
+    .nullable()
+    .describe("Photo shown here (file.get); prefilled from the member's own profile"),
   items: z
     .array(MemberProfileItemSchema)
     .describe("Active staff items linked to the member, by name; their types are the positions"),
@@ -44,7 +50,14 @@ export const MemberProfileListOutputSchema = z.object({
 
 export const MemberProfileUpdateInputSchema = z.object({
   ...MemberIdShape,
-  scheduleKind: ScheduleKindSchema,
+  scheduleKind: ScheduleKindSchema.optional().describe("Omitted keeps the current kind"),
+  phone: z
+    .string()
+    .trim()
+    .max(40)
+    .nullish()
+    .describe("Work phone here; null clears, omitted keeps"),
+  email: z.email().max(254).nullish().describe("Work email here; null clears, omitted keeps"),
 });
 
 export const MemberProfileSetItemsInputSchema = z.object({

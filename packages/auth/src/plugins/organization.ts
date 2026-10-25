@@ -5,6 +5,7 @@ import { organization } from "better-auth/plugins";
 import { beforeCreateOrganizationHook } from "../organization/before-create-hook";
 import { accessControl, orgRoles } from "../permissions";
 import { assertFixedRole } from "./check-member-roles";
+import { prefillMemberHook } from "./prefill-member-hook";
 import { provisionOrganizationHook } from "./provision-organization-hook";
 
 const closed = ({ operation }: { operation: string }): never => {
@@ -29,6 +30,9 @@ export function organizationPlugin({ db }: { db: Db }) {
       beforeAddMember: async ({ member }) => {
         assertFixedRole({ role: member.role });
       },
+      // A new member's contact here starts from their own profile (ADR 0072).
+      afterAddMember: prefillMemberHook,
+      afterAcceptInvitation: prefillMemberHook,
       // Better Auth lets the creator bypass its own `member:update` check here, so the
       // endpoint is closed outright: roles are assigned via core `member.assignRole` (audited).
       beforeUpdateMemberRole: async () => closed({ operation: "member.assignRole" }),

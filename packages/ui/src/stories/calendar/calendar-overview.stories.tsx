@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { CalendarLegend } from "../../components/availability-calendar/calendar-legend";
+import { TicketLanes } from "../../components/availability-calendar/ticket-lanes";
 import { AgendaCard } from "./agenda-card";
 import { ASSETS, BOOKINGS } from "./availability-data";
 import { TICKET_18 } from "./calendar-data";
@@ -7,7 +8,6 @@ import { CalendarRules } from "./calendar-rules";
 import { CalendarSymbols } from "./calendar-symbols";
 import { LiveCalendar } from "./live-calendar";
 import { STATES } from "./states-data";
-import { TicketLanes } from "./ticket-lanes";
 
 const meta = {
   title: "Calendar/Overview",

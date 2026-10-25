@@ -3,13 +3,16 @@
 import {
   type AssetBooking,
   AvailabilityCalendar,
+  BookingSheet,
   type CalendarAsset,
   CalendarLabelsProvider,
   CalendarLegend,
   type CalendarState,
+  type CalendarWindow,
+  ticketOfBooking,
 } from "@bibi/ui";
 import { useLocale, useTranslations } from "next-intl";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";
 import { useRouter } from "@/lib/navigation";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
@@ -23,6 +26,8 @@ export type CalendarViewProps = {
   /** The path's days, shown first. */
   range: { from: string; to: string };
   today: string;
+  /** The venues' widest opening hours; the calendar's office day without them. */
+  openingHours?: CalendarWindow | undefined;
 };
 
 /** The states on screen once each, for the legend; manual blocks get their own entry. */
@@ -36,6 +41,18 @@ function legendOf({ bookings }: { bookings: readonly AssetBooking[] }) {
   return { states: [...states.values()], blocked };
 }
 
+/** Below the calendar: a failed load, and the legend of what is on screen. */
+function CalendarFooter({ bookings, failed }: { bookings: AssetBooking[]; failed: boolean }) {
+  const t = useTranslations("calendar");
+  const legend = useMemo(() => legendOf({ bookings }), [bookings]);
+  return (
+    <div className="grid shrink-0 gap-2 border-t px-4 py-2.5 sm:px-6">
+      {failed ? <p className="text-sm text-destructive">{t("loadFailed")}</p> : null}
+      <CalendarLegend states={legend.states} withBlocked={legend.blocked} />
+    </div>
+  );
+}
+
 /** The path follows the days on screen, so a link or reload opens the same place. */
 function keepInPath({ from, to }: { from: string; to: string }) {
   const path = window.location.pathname.replace(/\/calendar(\/[^/]+\/[^/]+)?$/, "/calendar");
@@ -43,7 +60,8 @@ function keepInPath({ from, to }: { from: string; to: string }) {
 }
 
 /** The availability calendar on the page: loads days as it scrolls, opens tickets, books. */
-export function CalendarView({ assets, bookings: initial, range, today }: CalendarViewProps) {
+export function CalendarView(props: CalendarViewProps) {
+  const { assets, bookings: initial, range, today, openingHours } = props;
   const t = useTranslations("calendar");
   const labels = useCalendarText();
   const locale = useLocale();
@@ -51,8 +69,9 @@ export function CalendarView({ assets, bookings: initial, range, today }: Calend
   const router = useRouter();
   const { prefill } = useAssistant();
   const { bookings, failed, onRangeChange } = useLoadedBookings({ initial, range });
-  const legend = useMemo(() => legendOf({ bookings }), [bookings]);
   const onShownChange = useCallback(keepInPath, []);
+  const [open, setOpen] = useState<AssetBooking | null>(null);
+  const ticket = open ? ticketOfBooking({ booking: open, bookings, assets }) : null;
   return (
     <CalendarLabelsProvider labels={labels}>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-card">
@@ -62,15 +81,20 @@ export function CalendarView({ assets, bookings: initial, range, today }: Calend
           className="flex-1"
           formatDate={format.date}
           initialRange={range}
-          onOpen={(booking) => (booking.href ? router.push(booking.href) : undefined)}
+          {...(openingHours ? { openingHours } : {})}
+          selectedId={open?.id}
+          onOpen={setOpen}
           onAdd={({ asset, date, start }) =>
             prefill({ text: t("bookPrompt", { space: asset.name, date, time: start }) })
           }
         />
-        <div className="grid shrink-0 gap-2 border-t px-4 py-2.5 sm:px-6">
-          {failed ? <p className="text-sm text-destructive">{t("loadFailed")}</p> : null}
-          <CalendarLegend states={legend.states} withBlocked={legend.blocked} />
-        </div>
+        <BookingSheet
+          ticket={ticket}
+          locale={locale}
+          onClose={() => setOpen(null)}
+          onOpenTicket={open?.href ? () => open.href && router.push(open.href) : undefined}
+        />
+        <CalendarFooter bookings={bookings} failed={failed} />
       </div>
     </CalendarLabelsProvider>
   );

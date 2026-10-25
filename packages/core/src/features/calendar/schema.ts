@@ -34,6 +34,9 @@ const ClientSchema = z.object({
 const ContactSchema = z.object({
   userId: z.string(),
   name: z.string(),
+  email: z.string().nullable().describe("Work email here, else the login email"),
+  phone: z.string().nullable().describe("From the member's profile here (ADR 0072)"),
+  avatarKey: z.string().nullable().describe("Read the photo with file.get"),
   via: z.enum(["LINE", "TICKET"]).describe("The line's own assignee, else the ticket's"),
 });
 

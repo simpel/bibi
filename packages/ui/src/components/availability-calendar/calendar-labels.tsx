@@ -39,6 +39,10 @@ export type CalendarLabels = {
   blocked: string;
   notSold: string;
   guests: (input: { count: number }) => string;
+  /** Where the guests are on a ticket's lanes: "Guests here", or with how many. */
+  guestsHere: (input: { count?: number }) => string;
+  guestsAt: (input: { place: string }) => string;
+  lineCount: (input: { count: number }) => string;
   /** An amount in the user's number format and currency display. */
   money: (money: Money) => string;
   exclVat: (input: { amount: string }) => string;

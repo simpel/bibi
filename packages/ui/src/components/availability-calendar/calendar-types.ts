@@ -22,6 +22,7 @@ export type CalendarPerson = {
   /** The organization's own position or role, e.g. "AV technician", "Waiter". */
   role: string;
   phone?: string;
+  email?: string;
   /** The member profile photo; initials while there is none. */
   photoUrl?: string | null;
 };

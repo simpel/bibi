@@ -597,7 +597,11 @@
     "noSpacesDescription": "Artiklar vars typ är bokningsbar visas här som rader.",
     "goToItems": "Gå till artiklar",
     "viaLine": "Ansvarig för raden",
-    "viaTicket": "Ansvarig för ärendet"
+    "viaTicket": "Ansvarig för ärendet",
+    "guestsHere": "Gästerna är här",
+    "guestsHereCount": "{count, plural, one {# gäst} other {# gäster}} här",
+    "guestsAt": "Gäster: {place}",
+    "lineCount": "{count, plural, one {# rad} other {# rader}}"
   },
   "quote": {
     "singular": "Offert",
@@ -3339,7 +3343,7 @@
     "noneFree": "Ingen ledig enhet i {pool} för {window}."
   },
   "memberProfile": {
-    "title": "Befattning och schema",
+    "title": "Arbete här",
     "positions": "Befattningar",
     "scheduleKind": "Schematyp",
     "staffItems": "Personalresurser",
@@ -3347,12 +3351,15 @@
     "noStaffItems": "Det finns inga aktiva personalresurser. Skapa en artikel av en typ som är en person.",
     "save": "Spara",
     "saving": "Sparar…",
-    "saved": "Befattning och schema har sparats.",
+    "saved": "Arbetsprofilen har sparats.",
     "scheduleKinds": {
       "PATTERN": "Veckoschema",
       "SHIFTS": "Pass",
       "CASUAL": "Vid behov"
-    }
+    },
+    "phone": "Arbetstelefon",
+    "email": "Arbetsmejl",
+    "contactHint": "Så når kollegor i organisationen personen. Utgår från personens egen profil."
   },
   "hours": {
     "off": "Ledig",

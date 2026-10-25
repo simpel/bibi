@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { CalendarLegend } from "../../components/availability-calendar/calendar-legend";
+import { TicketLanes } from "../../components/availability-calendar/ticket-lanes";
 import { TICKET_18 } from "./calendar-data";
 import { STATES } from "./states-data";
-import { TicketLanes } from "./ticket-lanes";
 import { TICKET_SMALL } from "./ticket-small-data";
 
 const meta = {

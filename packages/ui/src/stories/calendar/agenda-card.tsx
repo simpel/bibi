@@ -11,9 +11,9 @@ import type {
   CalendarLine,
   CalendarTicket,
 } from "../../components/availability-calendar/calendar-types";
+import { DateLeaf } from "../../components/availability-calendar/date-leaf";
+import { GuestMark } from "../../components/availability-calendar/guest-mark";
 import { cn } from "../../lib/cn";
-import { DateLeaf } from "./date-leaf";
-import { GuestMark } from "./guest-mark";
 
 export type AgendaCardProps = {
   ticket: CalendarTicket;

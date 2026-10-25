@@ -15,7 +15,8 @@ import type { AssetBooking, CalendarAsset, CalendarWindow } from "./calendar-typ
 import { byDate, occupancyOf } from "./day-occupancy";
 import { OverviewStrip } from "./overview-strip";
 import { frameOf } from "./timeline-frame";
-import { floorDayPx, openHours } from "./timeline-scale";
+import { floorDayPx } from "./timeline-scale";
+import { useDayWindow } from "./use-day-window";
 import { useRangeControls } from "./use-range-controls";
 import { useShownAssets } from "./use-shown-assets";
 import { type UseTimelineInput, useTimeline } from "./use-timeline";
@@ -36,6 +37,8 @@ export type AvailabilityCalendarProps = Pick<
   onRangeChange?: UseTimelineInput["onRangeChange"];
   initialLevel?: UseTimelineInput["initialLevel"];
   initialRange?: UseTimelineInput["initialRange"];
+  /** The venues' opening hours, widest across the week (ADR 0064); bookings outside widen it. */
+  openingHours?: CalendarWindow;
   className?: string;
   /** The days on screen changed, e.g. to keep them in the URL; `to` is inclusive. */
   onShownChange?: (range: { from: string; to: string }) => void;
@@ -92,11 +95,11 @@ export function AvailabilityCalendar({ labels, ...props }: AvailabilityCalendarP
 }
 
 function Calendar(props: Omit<AvailabilityCalendarProps, "labels">) {
-  const { assets, bookings, today, locale, formatDate, ...rest } = props;
+  const { assets, today, locale, formatDate, openingHours, ...rest } = props;
   const { onRangeChange, initialLevel, initialRange, onShownChange, layout, className, ...row } =
     rest;
-  const { shown, filter, empty } = useShownAssets({ assets, bookings });
-  const hours = useMemo(() => openHours({ bookings }), [bookings]);
+  const { shown, filter, empty } = useShownAssets({ assets, bookings: props.bookings });
+  const { hours, bookings } = useDayWindow({ bookings: props.bookings, openingHours });
   const timeline = useTimeline({ today, hours, initialLevel, initialRange, onRangeChange });
   const controls = useRangeControls({ timeline, hours, today });
   useShownChange({ shown: controls.shown, onShownChange });

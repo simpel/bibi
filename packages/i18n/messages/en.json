@@ -597,7 +597,11 @@
     "noSpacesDescription": "Items whose type is bookable show up here as rows.",
     "goToItems": "Go to items",
     "viaLine": "Line assignee",
-    "viaTicket": "Ticket assignee"
+    "viaTicket": "Ticket assignee",
+    "guestsHere": "Guests here",
+    "guestsHereCount": "{count, plural, one {# guest} other {# guests}} here",
+    "guestsAt": "Guests: {place}",
+    "lineCount": "{count, plural, one {# line} other {# lines}}"
   },
   "quote": {
     "singular": "Quote",
@@ -3339,7 +3343,7 @@
     "noneFree": "No free unit in {pool} for {window}."
   },
   "memberProfile": {
-    "title": "Positions and schedule",
+    "title": "Work here",
     "positions": "Positions",
     "scheduleKind": "Schedule kind",
     "staffItems": "Staff items",
@@ -3347,12 +3351,15 @@
     "noStaffItems": "There are no active staff items. Create an item of a type that is a person.",
     "save": "Save",
     "saving": "Saving…",
-    "saved": "Positions and schedule saved.",
+    "saved": "Work profile saved.",
     "scheduleKinds": {
       "PATTERN": "Weekly pattern",
       "SHIFTS": "Shifts",
       "CASUAL": "On call"
-    }
+    },
+    "phone": "Work phone",
+    "email": "Work email",
+    "contactHint": "How colleagues in this organization reach this person. Starts from their own profile."
   },
   "hours": {
     "off": "Off",

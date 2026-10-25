@@ -12,6 +12,9 @@ export const MEMBER_PROFILE_SELECT = {
   id: true,
   memberId: true,
   scheduleKind: true,
+  phone: true,
+  email: true,
+  avatarKey: true,
   items: {
     where: { item: { status: "ACTIVE" } },
     select: { item: { select: { id: true, name: true, entityTypeId: true } } },
@@ -25,6 +28,9 @@ export const toMemberProfileDto = ({ row }: { row: ProfileRow }): MemberProfileD
   id: row.id,
   memberId: row.memberId,
   scheduleKind: row.scheduleKind,
+  phone: row.phone,
+  email: row.email,
+  avatarKey: row.avatarKey,
   items: row.items.map(({ item }) => ({
     itemId: item.id,
     name: item.name,
@@ -37,6 +43,9 @@ export const emptyMemberProfile = ({ memberId }: { memberId: string }): MemberPr
   id: null,
   memberId,
   scheduleKind: "PATTERN",
+  phone: null,
+  email: null,
+  avatarKey: null,
   items: [],
 });
 

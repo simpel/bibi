@@ -1049,12 +1049,12 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### UserProfile (`UserProfile`)
 
-*MVP* · The person behind a user ([ADR 0061](decisions/0061-welcome-flow-without-ai.md)): entered once in the welcome flow and shared across organizations. User-scoped like `UserPreference`.
+*MVP* · The person behind a user ([ADR 0061](decisions/0061-welcome-flow-without-ai.md)): entered once in the welcome flow and shared across organizations, private to the person. User-scoped like `UserPreference`. Phone and avatar are only defaults: each organization owns its own copy on the member profile ([ADR 0072](decisions/0072-member-contact-per-organization.md)).
 
 **Attributes**
 - firstName, lastName (owned; `User.name` is their projection, written only by the `sync_user_name.sql` trigger)
-- phone
-- avatarKey (a file in `@bibi/storage`, [ADR 0063](decisions/0063-file-storage.md); none shows initials)
+- phone (default for new memberships)
+- avatarKey (a file in `@bibi/storage`, [ADR 0063](decisions/0063-file-storage.md); default for new memberships)
 
 **Relations**
 - `1:1` belongs to → User
@@ -1092,10 +1092,11 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### MemberProfile (`MemberProfile`)
 
-*MVP* · A member's work in one organization ([ADR 0068](decisions/0068-member-profiles-positions-and-shifts.md)), next to the global `UserProfile`. One per member, created on the first write, removed with the member. Feature `item`.
+*MVP* · A member's work in one organization ([ADR 0068](decisions/0068-member-profiles-positions-and-shifts.md)) and how colleagues there reach them ([ADR 0072](decisions/0072-member-contact-per-organization.md)), next to the global `UserProfile`. One per member, created on the first write, removed with the member. Feature `item`.
 
 **Attributes**
 - scheduleKind (owned): `PATTERN` (weekly pattern with exceptions, default), `SHIFTS` (dated shifts only) or `CASUAL` (no schedule, called in when needed). Advisory.
+- phone, email, avatarKey (owned): work contact here; prefilled from the person's `UserProfile` when they join or save it, never synced; email null shows the login email. Readable by every member of the organization; the photo through `file.get`.
 - status
 
 **Relations**

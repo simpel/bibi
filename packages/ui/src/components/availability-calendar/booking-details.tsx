@@ -48,6 +48,7 @@ function Contacts({ booking }: { booking: AssetBooking }) {
             name={contact.person.name}
             description={contact.via || undefined}
             phone={contact.person.phone}
+            email={contact.person.email}
             photoUrl={contact.person.photoUrl}
           />
         </Row>

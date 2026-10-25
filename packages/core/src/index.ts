@@ -59,6 +59,7 @@ export * from "./features/member/invitation-operations";
 export { parseMemberRole } from "./features/member/member-roles";
 export * from "./features/member/operations";
 export * from "./features/member-profile/operations";
+export { prefillMemberProfile } from "./features/member-profile/prefill-contact";
 export * from "./features/message/operations";
 export * from "./features/oauth-grant/operations";
 export * from "./features/occupancy/operations";

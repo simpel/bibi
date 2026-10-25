@@ -3,8 +3,8 @@ import type {
   CalendarAsset,
   CalendarTicket,
 } from "../../components/availability-calendar/calendar-types";
+import { ticketOfBooking } from "../../components/availability-calendar/ticket-of-booking";
 import { TICKET_18 } from "./calendar-data";
-import { PEOPLE } from "./people-data";
 
 /**
  * The ticket behind a booking, for the story's "click to open". Ticket 18 is the full demo
@@ -21,20 +21,5 @@ export function ticketOf({
 }): CalendarTicket | null {
   if (!booking.ticket) return null;
   if (booking.ticket === TICKET_18.reference) return TICKET_18;
-  const lines = bookings
-    .filter((other) => other.ticket === booking.ticket)
-    .map((line) => ({
-      ...line,
-      type: assets.find((asset) => asset.id === line.assetId)?.group ?? line.type,
-      place: assets.find((asset) => asset.id === line.assetId)?.name ?? null,
-    }));
-  return {
-    reference: booking.ticket,
-    customer: booking.customer ?? "",
-    purpose: booking.customer ?? booking.ticket,
-    date: booking.date,
-    headcount: booking.headcount ?? 0,
-    contact: { person: PEOPLE.erik, via: "Ticket assignee" },
-    lines,
-  };
+  return ticketOfBooking({ booking, bookings, assets });
 }

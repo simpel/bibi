@@ -40,6 +40,9 @@ export const STORY_LABELS: CalendarLabels = {
   blocked: "Blocked",
   notSold: "not sold",
   guests: ({ count }) => plural({ count, one: "guest", many: "guests" }),
+  guestsHere: ({ count }) => (count ? `${count} guests here` : "Guests here"),
+  guestsAt: ({ place }) => `Guests: ${place}`,
+  lineCount: ({ count }) => plural({ count, one: "line", many: "lines" }),
   money: ({ amount, currency }) =>
     new Intl.NumberFormat("en-GB", {
       style: "currency",

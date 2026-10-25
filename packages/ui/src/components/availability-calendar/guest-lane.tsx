@@ -1,9 +1,12 @@
-import { percentIn } from "../../components/availability-calendar/calendar-time";
-import type { CalendarWindow } from "../../components/availability-calendar/calendar-types";
-import { HourRules } from "../../components/availability-calendar/time-axis";
+"use client";
+
 import { cn } from "../../lib/cn";
+import { useCalendarLabels } from "./calendar-labels";
+import { percentIn } from "./calendar-time";
+import type { CalendarWindow } from "./calendar-types";
 import { GUEST_RULE, GuestMark } from "./guest-mark";
 import type { GuestStop } from "./guest-path";
+import { HourRules } from "./time-axis";
 
 export type GuestLaneProps = {
   stops: readonly GuestStop[];
@@ -46,12 +49,13 @@ export function GuestRail({
   window,
   className,
 }: Pick<GuestLaneProps, "stops" | "window"> & { className?: string }) {
+  const labels = useCalendarLabels();
   return stops.map((stop) => {
     const { offset, size } = percentIn({ window, from: stop.from, to: stop.to });
     return (
       <span
         key={`${stop.place}-${stop.from}`}
-        title={`Guests: ${stop.place}`}
+        title={labels.guestsAt({ place: stop.place })}
         className={cn(GUEST_RULE, "absolute w-1", className)}
         style={{ top: `${offset}%`, height: `${size}%` }}
       />
