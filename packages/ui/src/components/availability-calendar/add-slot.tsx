@@ -24,9 +24,19 @@ function minuteAt({ event, window }: { event: PointerEvent; window: CalendarWind
   return Math.floor(minute / SNAP) * SNAP;
 }
 
+/** Room for "+ 10:30 PM", the longest time a slot shows. */
+const MIN_SLOT = "5rem";
+
+/** At least wide enough for its time, and pushed back from the day's end so it stays inside. */
+function edgeOf({ place }: { place: { offset: number; size: number } }) {
+  const width = `max(${MIN_SLOT}, ${place.size}%)`;
+  return { left: `min(${place.offset}%, 100% - ${width})`, width };
+}
+
 /**
  * The empty track itself: point at free time and a dashed slot offers "+ 10:30"; click or tap
- * adds there. It sits under the blocks, so a booking always wins the pointer.
+ * adds there. It sits under the blocks, so a booking always wins the pointer. In a week's narrow
+ * days the slot grows to fit its time.
  */
 export function AddSlot({ assetName, lines, window, onAdd }: AddSlotProps) {
   const labels = useCalendarLabels();
@@ -52,8 +62,8 @@ export function AddSlot({ assetName, lines, window, onAdd }: AddSlotProps) {
     >
       {place && slot ? (
         <span
-          className="pointer-events-none absolute top-1.5 h-8 flex items-center gap-1 overflow-hidden rounded-md border border-dashed border-muted-foreground/50 bg-card px-1.5 text-xs text-muted-foreground"
-          style={{ left: `${place.offset}%`, width: `${place.size}%` }}
+          className="pointer-events-none absolute top-1.5 h-8 flex whitespace-nowrap items-center gap-1 overflow-hidden rounded-md border border-dashed border-muted-foreground/50 bg-card px-1.5 text-xs text-muted-foreground"
+          style={edgeOf({ place })}
         >
           <PlusIcon aria-hidden className="size-3 shrink-0" />
           <span className="tabular-nums">{labels.clock({ minutes: slot.from })}</span>

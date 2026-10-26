@@ -109,7 +109,7 @@ export function DayTrack({ asset, date, withHours, onAdd, ...props }: DayTrackPr
   return (
     <>
       {withHours ? <HourRules window={props.window} /> : null}
-      {withHours && onAdd ? (
+      {onAdd ? (
         <AddSlot
           assetName={asset.name}
           lines={props.bookings}
