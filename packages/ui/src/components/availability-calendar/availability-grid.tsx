@@ -1,4 +1,6 @@
+import { ChevronRightIcon } from "lucide-react";
 import { cn } from "../../lib/cn";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "../collapsible/collapsible";
 import { AvailabilityRow, type AvailabilityRowProps, LABEL_WIDTH } from "./availability-row";
 import type { AssetBooking, CalendarAsset } from "./calendar-types";
 import { byDate } from "./day-occupancy";
@@ -22,10 +24,14 @@ export type AvailabilityGridProps = Pick<
   className?: string;
 };
 
+/** A group's name and size; a click folds its rows away and back. */
 function GroupHeading({ group, count }: { group: string; count: number }) {
   return (
-    <div className="sticky left-0 w-fit bg-card pt-4 pb-1.5 pl-[var(--gutter,0px)] text-xs font-medium text-muted-foreground">
-      {group} <span className="tabular-nums">· {count}</span>
+    <div className="sticky left-0 w-fit bg-card pt-4 pb-1.5 pl-[var(--gutter,0px)]">
+      <CollapsibleTrigger className="group flex items-center gap-1 rounded-sm text-xs font-medium text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring">
+        <ChevronRightIcon className="size-3 transition-transform group-data-[state=open]:rotate-90" />
+        {group} <span className="tabular-nums">· {count}</span>
+      </CollapsibleTrigger>
     </div>
   );
 }
@@ -38,18 +44,24 @@ function AssetGroups({ assets, bookings, frame, ...row }: AssetGroupsProps) {
   return groups.map((group) => {
     const members = assets.filter((asset) => asset.group === group);
     return (
-      <section key={group} aria-label={group}>
-        <GroupHeading group={group} count={members.length} />
-        {members.map((asset) => (
-          <AvailabilityRow
-            key={asset.id}
-            asset={asset}
-            days={byDate({ bookings: bookings.filter((booking) => booking.assetId === asset.id) })}
-            frame={frame}
-            {...row}
-          />
-        ))}
-      </section>
+      <Collapsible key={group} defaultOpen asChild>
+        <section aria-label={group}>
+          <GroupHeading group={group} count={members.length} />
+          <CollapsibleContent>
+            {members.map((asset) => (
+              <AvailabilityRow
+                key={asset.id}
+                asset={asset}
+                days={byDate({
+                  bookings: bookings.filter((booking) => booking.assetId === asset.id),
+                })}
+                frame={frame}
+                {...row}
+              />
+            ))}
+          </CollapsibleContent>
+        </section>
+      </Collapsible>
     );
   });
 }
