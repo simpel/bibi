@@ -11,23 +11,26 @@ enum ScheduleKind {
 /// `Member`, created on the first write; removed with the member (cascade). Owned: `scheduleKind`,
 /// `phone`, `email`, `avatarKey`. Positions are derived: the types of the linked staff items. Org-scoped; feature `item` (ADR 0050).
 model MemberProfile {
-  id             String              @id @default(cuid(2))
-  organizationId String
-  memberId       String
-  scheduleKind   ScheduleKind        @default(PATTERN)
+  id              String              @id @default(cuid(2))
+  organizationId  String
+  memberId        String
+  scheduleKind    ScheduleKind        @default(PATTERN)
   /// How colleagues here reach the member (ADR 0072): owned per organization, prefilled from the
   /// member's own `UserProfile` when they join or first save it, never synced after.
-  phone          String?
+  phone           String?
   /// Work email in this organization; null shows the login email.
-  email          String?
+  email           String?
   /// Key in `@bibi/storage` (ADR 0063) of the photo shown here; null shows initials.
-  avatarKey      String?
-  status         RecordStatus        @default(ACTIVE)
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  createdBy      String?
-  member         Member              @relation(fields: [memberId, organizationId], references: [id, organizationId], onDelete: Cascade)
-  items          MemberProfileItem[]
+  avatarKey       String?
+  status          RecordStatus        @default(ACTIVE)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  createdBy       String?
+  member          Member              @relation(fields: [memberId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  items           MemberProfileItem[]
+  /// The member's working hours here (#449): a weekly pattern with exceptions (ADR 0064 rule 10).
+  hoursDays       HoursDay[]
+  hoursExceptions HoursException[]
 
   @@unique([id, organizationId])
   @@unique([memberId, organizationId])

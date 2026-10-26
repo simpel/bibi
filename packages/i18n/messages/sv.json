@@ -609,7 +609,8 @@
     "guestsHere": "Gästerna är här",
     "guestsHereCount": "{count, plural, one {# gäst} other {# gäster}} här",
     "guestsAt": "Gäster: {place}",
-    "lineCount": "{count, plural, one {# rad} other {# rader}}"
+    "lineCount": "{count, plural, one {# rad} other {# rader}}",
+    "unscheduled": "Inte schemalagt"
   },
   "quote": {
     "singular": "Offert",

@@ -18,7 +18,8 @@ export type LoadProfileInput = { context: Pick<OperationContext, "db">; userId: 
 export async function loadProfile({ context, userId }: LoadProfileInput): Promise<ProfileDto> {
   const [row, days] = await Promise.all([
     context.db.userProfile.findUnique({ where: { userId }, select: PROFILE_SELECT }),
-    context.db.userWorkingHours.count({ where: { userId } }),
+    // Working days are kept per organization (#449): the ones here make the profile complete.
+    context.db.hoursDay.count({ where: { memberProfile: { member: { userId } } } }),
   ]);
   const named = Boolean(row?.firstName && row.lastName && row.phone);
   return {

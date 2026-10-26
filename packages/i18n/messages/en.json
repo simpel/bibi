@@ -609,7 +609,8 @@
     "guestsHere": "Guests here",
     "guestsHereCount": "{count, plural, one {# guest} other {# guests}} here",
     "guestsAt": "Guests: {place}",
-    "lineCount": "{count, plural, one {# line} other {# lines}}"
+    "lineCount": "{count, plural, one {# line} other {# lines}}",
+    "unscheduled": "Not scheduled"
   },
   "quote": {
     "singular": "Quote",

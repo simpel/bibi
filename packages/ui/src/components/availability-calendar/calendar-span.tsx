@@ -86,7 +86,10 @@ export function CalendarSpan({ line, audience, window, axis, ...props }: Calenda
         const { style, size } = place({ segment, window, axis });
         const booking = segment.kind === "booking";
         return (
-          <CalendarHoverCard key={segment.kind} line={line} audience={audience} card={props.card}>
+          <CalendarHoverCard
+            key={segment.kind}
+            {...{ line, audience, card: props.card, disabled: props.selected }}
+          >
             <div
               tabIndex={booking ? 0 : -1}
               className={cn(

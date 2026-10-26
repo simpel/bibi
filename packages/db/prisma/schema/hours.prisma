@@ -1,27 +1,31 @@
-/// One open day of a weekly hours pattern (ADR 0064 rule 10): the venue's opening hours or an
-/// item's working hours, exactly one owner (a CHECK in the migration). Owned, wall-clock data:
+/// One open day of a weekly hours pattern (ADR 0064 rule 10): a venue's opening hours, an item's
+/// working hours or a member's working hours in this organization (ADR 0068, #449), exactly one
+/// owner (a CHECK in the migration). Owned, wall-clock data:
 /// minutes after midnight read in the owner's current zone; a missing weekday is closed. At most
 /// one row per owner and weekday. Advisory only (rule 11): no constraint or trigger reads it.
 /// Replaced as a whole by `venueHours.set` / `itemHours.set`, audited on the owner.
 model HoursDay {
-  id               String   @id @default(cuid(2))
+  id               String         @id @default(cuid(2))
   organizationId   String
   venueId          String?
   itemId           String?
+  memberProfileId  String?
   /// 0 = Monday … 6 = Sunday (`weekdayOf` in core `time`).
   weekday          Int
   startMinute      Int
   endMinute        Int
   breakStartMinute Int?
   breakEndMinute   Int?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
   createdBy        String?
-  venue            Venue?   @relation(fields: [venueId, organizationId], references: [id, organizationId])
-  item             Item?    @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  venue            Venue?         @relation(fields: [venueId, organizationId], references: [id, organizationId])
+  item             Item?          @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  memberProfile    MemberProfile? @relation(fields: [memberProfileId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([venueId, weekday])
   @@unique([itemId, weekday])
+  @@unique([memberProfileId, weekday])
   @@index([organizationId, venueId])
   @@index([organizationId, itemId])
 }
@@ -31,25 +35,28 @@ model HoursDay {
 /// is read in the owner's current zone. Owned; one row per owner and date; same owner rule and
 /// lifecycle as `HoursDay`.
 model HoursException {
-  id               String   @id @default(cuid(2))
+  id               String         @id @default(cuid(2))
   organizationId   String
   venueId          String?
   itemId           String?
-  date             DateTime @db.Date
+  memberProfileId  String?
+  date             DateTime       @db.Date
   /// Null with `endMinute` null: closed all day.
   startMinute      Int?
   endMinute        Int?
   breakStartMinute Int?
   breakEndMinute   Int?
   note             String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
   createdBy        String?
-  venue            Venue?   @relation(fields: [venueId, organizationId], references: [id, organizationId])
-  item             Item?    @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  venue            Venue?         @relation(fields: [venueId, organizationId], references: [id, organizationId])
+  item             Item?          @relation(fields: [itemId, organizationId], references: [id, organizationId])
+  memberProfile    MemberProfile? @relation(fields: [memberProfileId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
   @@unique([venueId, date])
   @@unique([itemId, date])
+  @@unique([memberProfileId, date])
   @@index([organizationId, venueId])
   @@index([organizationId, itemId])
 }

@@ -67,15 +67,16 @@ export const getWorkingHours = defineOperation({
   name: "workingHours.get",
   kind: "query",
   description:
-    "Read the caller's own working hours: one entry per working weekday (0 = Monday) with start, " +
-    "end and optional break in minutes after midnight. A missing weekday is a day off.",
+    "Read the caller's own working hours in this organization (#449): one entry per working " +
+    "weekday (0 = Monday) with start, end and optional break in minutes after midnight. A " +
+    "missing weekday is a day off. Each organization keeps its own.",
   input: WorkingHoursGetInputSchema,
   output: WorkingHoursSchema,
   permission: "self:read",
   handler: async ({ context }) => {
     const user = requireUser({ context });
     if (!user.ok) return user;
-    return ok({ value: await loadWorkingHours({ context }) });
+    return ok({ value: await loadWorkingHours({ context, userId: user.value }) });
   },
 });
 
@@ -83,20 +84,21 @@ export const setWorkingHours = defineOperation({
   name: "workingHours.set",
   kind: "command",
   description:
-    "Replace the caller's own working hours with `days` (each weekday at most once; start " +
-    "before end; a break needs both ends and lies inside the day). Minutes after midnight.",
+    "Replace the caller's own working hours in this organization with `days` (each weekday at " +
+    "most once; start before end; a break needs both ends and lies inside the day). Minutes " +
+    "after midnight in the organization's zone. Dated exceptions are kept.",
   input: WorkingHoursSetInputSchema,
   output: WorkingHoursSchema,
   permission: "self:write",
   handler: async ({ input, context }) => {
     const user = requireUser({ context });
     if (!user.ok) return user;
-    const before = await loadWorkingHours({ context });
-    const after = await replaceWorkingHours({ context, days: input.days });
+    const before = await loadWorkingHours({ context, userId: user.value });
+    const after = await replaceWorkingHours({ context, userId: user.value, days: input.days });
     context.recordChange({ entityId: user.value, before, after });
     return ok({ value: after });
   },
 });
 
-/** The caller's own profile and working hours (ADR 0061), user-scoped like preferences. */
+/** The caller's own profile (ADR 0061, user-scoped) and working hours here (#449). */
 export const profileOperations = [getProfile, updateProfile, getWorkingHours, setWorkingHours];

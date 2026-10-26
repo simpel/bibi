@@ -88,6 +88,8 @@ export function toAssetBookings({
       customer: null,
       ...details,
       ...(href ? { href } : {}),
+      ...(block.lineId ? { lineId: block.lineId } : {}),
+      ...(block.ticketId ? { ticketId: block.ticketId } : {}),
     }));
   });
 }

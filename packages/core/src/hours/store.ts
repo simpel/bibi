@@ -2,8 +2,11 @@ import type { OperationContext } from "../operations/types";
 import { fromDateColumn, toDateColumn } from "../time/date-column";
 import type { HoursDto, HoursPattern } from "./schema";
 
-/** Whose hours: a venue's opening hours or an item's working hours (ADR 0064 rule 10). */
-export type HoursOwner = { venueId: string } | { itemId: string };
+/**
+ * Whose hours: a venue's opening hours, an item's working hours (ADR 0064 rule 10) or a member's
+ * working hours in this organization (#449).
+ */
+export type HoursOwner = { venueId: string } | { itemId: string } | { memberProfileId: string };
 
 type Db = { context: Pick<OperationContext, "db" | "organizationId"> };
 
@@ -47,7 +50,9 @@ export type ReplaceHoursInput = LoadHoursInput & { pattern: HoursPattern };
 async function lockOwner({ context, owner }: Db & { owner: HoursOwner }) {
   const data = { updatedAt: new Date() };
   if ("venueId" in owner) await context.db.venue.updateMany({ where: { id: owner.venueId }, data });
-  else await context.db.item.updateMany({ where: { id: owner.itemId }, data });
+  else if ("itemId" in owner)
+    await context.db.item.updateMany({ where: { id: owner.itemId }, data });
+  else await context.db.memberProfile.updateMany({ where: { id: owner.memberProfileId }, data });
 }
 
 /** Replaces the owner's whole pattern in the command's transaction, one replace at a time. */

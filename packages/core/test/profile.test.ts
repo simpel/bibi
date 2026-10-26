@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { execute, getProfile, setWorkingHours, updateProfile } from "../src/index";
 import { DEFAULT_WORKING_HOURS } from "../src/schemas";
 import { errorCode, peer, testContext, unwrap } from "./helpers";
+import { addTestMemberWithUser, testOrg } from "./org-helpers";
 
 type Context = ReturnType<typeof testContext>;
 
@@ -24,7 +25,10 @@ describe("profile (ADR 0061)", () => {
   });
 
   it("saves trimmed names, is complete only with working hours, and keeps users apart", async () => {
-    const a = testContext();
+    const org = await testOrg();
+    const { userId } = await addTestMemberWithUser({ context: org, role: "member" });
+    const actor = { type: "user" as const, userId };
+    const a = testContext({ organizationId: org.organizationId, access: "read", actor });
     const saved = unwrap({
       result: await execute({ operation: updateProfile, input: NAMES, context: a }),
     });

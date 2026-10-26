@@ -79,7 +79,14 @@ function loadStaff({ context, lineIds }: Db & Pick<DetailIds, "lineIds">) {
         select: {
           ...{ id: true, name: true },
           entityType: { select: { name: true } },
-          memberProfileItem: { select: { id: true } },
+          // A linked staff item is the person (ADR 0068): colleagues' names are shared vocabulary.
+          memberProfileItem: {
+            select: {
+              memberProfile: {
+                select: { member: { select: { user: { select: { name: true } } } } },
+              },
+            },
+          },
         },
       },
     },

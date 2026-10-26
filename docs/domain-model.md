@@ -602,16 +602,16 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 ### HoursDay and HoursException (`HoursDay`, `HoursException`)
 
-*MVP* · An hours pattern ([ADR 0064](decisions/0064-time-and-time-zones.md) rules 10–11): a venue's opening hours or an item's working hours. Exactly one owner per row (a CHECK). Owned, wall-clock data read in the owner's current zone, so a zone change moves the hours with the owner.
+*MVP* · An hours pattern ([ADR 0064](decisions/0064-time-and-time-zones.md) rules 10–11): a venue's opening hours, an item's working hours or a member's working hours in one organization (#449). Exactly one owner per row (a CHECK). Owned, wall-clock data read in the owner's current zone, so a zone change moves the hours with the owner.
 
 **Attributes**
 - `HoursDay`: weekday (0 = Monday … 6 = Sunday, unique per owner), startMinute, endMinute, breakStartMinute and breakEndMinute (both or neither, inside the day). A missing weekday is closed.
 - `HoursException`: date (a plain-date column, unique per owner, rule 10a), start and end minutes (both null = closed all day), optional break, note.
 
 **Relations**
-- `N:1` belongs to → Venue or Item
+- `N:1` belongs to → Venue, Item or MemberProfile
 
-> Operations: `venueHours.get|set` (`venue:read|write`) and `itemHours.get|set` (`item:read|write`); `set` replaces the whole pattern. Advisory only: no constraint or trigger reads it. A line read derives `OUTSIDE_ITEM_HOURS` (id = the item) when its time falls outside the item's hours, else `OUTSIDE_VENUE_HOURS` (id = the venue) outside its venue's, the latter only for callers with `venue:read` (ADR 0050). An owner with exceptions only is closed on every other day. Concurrent `set` calls on one owner run one after the other (the owner row is locked).
+> Operations: `venueHours.get|set` (`venue:read|write`) and `itemHours.get|set` (`item:read|write`); `set` replaces the whole pattern. Advisory only: no constraint or trigger reads it. A line read derives `OUTSIDE_ITEM_HOURS` (id = the item) when its time falls outside the item's hours, else `OUTSIDE_VENUE_HOURS` (id = the venue) outside its venue's, the latter only for callers with `venue:read` (ADR 0050). An owner with exceptions only is closed on every other day. A staff item linked to a member works the member's hours: `itemHours.get` shows them, `itemHours.set` is a `CONFLICT`, and line warnings read them. `workingHours.get|set` (`self:*`) read and write the caller's member profile here. Concurrent `set` calls on one owner run one after the other (the owner row is locked).
 
 ### Occupancy ★
 
@@ -1063,7 +1063,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### UserWorkingHours (`UserWorkingHours`)
 
-*MVP* · One working day of a user ([ADR 0061](decisions/0061-welcome-flow-without-ai.md)). A missing weekday is a day off. User-scoped.
+*Deprecated* · One working day of a user ([ADR 0061](decisions/0061-welcome-flow-without-ai.md)), global. No longer read since #449: working hours are kept per organization on the member profile (`HoursDay` with `memberProfileId`). Dropped in a later release (expand/contract). User-scoped.
 
 **Attributes**
 - weekday (0 = Monday … 6 = Sunday), unique per user
@@ -1103,7 +1103,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `N:1` belongs to → Member (unique per member)
 - `1:N` is staffed as → MemberProfileItem
 
-> Positions are derived: the types of the active linked staff items. Operations: `memberProfile.get|list` (`item:read`) and `memberProfile.update|setItems` (`item:write`, the member must be readable). Built: profile, schedule kind and links. Target, not built: working hours per organization (#449), shifts (#450), person-wide collision (#451). Spec: `docs/specs/member-profiles.md`.
+> Positions are derived: the types of the active linked staff items. Operations: `memberProfile.get|list` (`item:read`) and `memberProfile.update|setItems` (`item:write`, the member must be readable). Built: profile, schedule kind and links. Built: working hours per organization (#449, `HoursDay`/`HoursException` with `memberProfileId`). Target, not built: shifts (#450), person-wide collision (#451). Spec: `docs/specs/member-profiles.md`.
 
 ### MemberProfileItem (`MemberProfileItem`)
 

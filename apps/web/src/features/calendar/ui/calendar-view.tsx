@@ -3,20 +3,18 @@
 import {
   type AssetBooking,
   AvailabilityCalendar,
-  BookingSheet,
   type CalendarAsset,
   type CalendarDayValue,
   CalendarLabelsProvider,
   CalendarLegend,
   type CalendarState,
   type CalendarWindow,
-  ticketOfBooking,
 } from "@bibi/ui";
 import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import { useAssistant } from "@/features/assistant/state/assistant-context";
-import { useRouter } from "@/lib/navigation";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
+import { CalendarBookingSheet } from "./calendar-booking-sheet";
 import { useCalendarText } from "./use-calendar-text";
 import { useLoadedBookings } from "./use-loaded-bookings";
 
@@ -69,13 +67,11 @@ export function CalendarView(props: CalendarViewProps) {
   const labels = useCalendarText();
   const locale = useLocale();
   const format = useDateTimeFormat();
-  const router = useRouter();
   const { prefill } = useAssistant();
   const loaded = useLoadedBookings({ initial: { bookings: initial, values: props.values }, range });
   const { bookings, values, failed, onRangeChange } = loaded;
   const onShownChange = useCallback(keepInPath, []);
   const [open, setOpen] = useState<AssetBooking | null>(null);
-  const ticket = open ? ticketOfBooking({ booking: open, bookings, assets }) : null;
   return (
     <CalendarLabelsProvider labels={labels}>
       <div className="flex min-h-0 min-w-0 flex-1 flex-col bg-card">
@@ -92,11 +88,9 @@ export function CalendarView(props: CalendarViewProps) {
             prefill({ text: t("bookPrompt", { space: asset.name, date, time: start }) })
           }
         />
-        <BookingSheet
-          ticket={ticket}
-          locale={locale}
+        <CalendarBookingSheet
+          {...{ open, bookings, assets, locale }}
           onClose={() => setOpen(null)}
-          onOpenTicket={open?.href ? () => open.href && router.push(open.href) : undefined}
         />
         <CalendarFooter bookings={bookings} failed={failed} />
       </div>

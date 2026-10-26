@@ -30,8 +30,11 @@
 ## Consequences
 - The calendar's contact (ADR 0071) carries phone, email and photo from the member profile.
 - A migration adds the three nullable columns and prefills them from existing user profiles. It creates a member profile where one was missing.
-- Open overlaps found while deciding this, each a follow-up decision:
-  - **Working hours** can live in three places: global `UserWorkingHours`, each staff item's `HoursDay`, and the `MemberWorkingHours` planned in ADR 0068. They belong once, on the member profile.
+- **Working hours** lived in three places: global `UserWorkingHours`, each staff item's `HoursDay`, and the `MemberWorkingHours` planned in ADR 0068. They now live once, on the member profile (#449): `HoursDay` and `HoursException` take a third owner, `memberProfileId`.
+  - `workingHours.get|set` read and write the caller's member profile in the current organization, with the same contract.
+  - A staff item linked to a member works the member's hours. `itemHours.get` shows them, and `itemHours.set` on it is a `CONFLICT`.
+  - A migration copies each user's working days to every membership. `UserWorkingHours` is no longer read and is dropped in a later release (expand/contract, ADR 0013).
+- Open overlap, a follow-up decision:
   - **A linked staff item has its own `name`** beside the member's, and the two can drift apart.
 
 ## Rejected

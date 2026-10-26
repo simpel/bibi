@@ -53,6 +53,7 @@ function bookingText({ t, number }: TextInput) {
       count ? t("guestsHereCount", { count }) : t("guestsHere"),
     guestsAt: ({ place }: { place: string }) => t("guestsAt", { place }),
     lineCount: ({ count }: { count: number }) => t("lineCount", { count }),
+    unscheduled: t("unscheduled"),
     money: ({ amount, currency }: { amount: number; currency: string }) =>
       number.money({ minor: Math.round(amount * 100), currency }),
     exclVat: ({ amount }: { amount: string }) => t("exclVat", { amount }),

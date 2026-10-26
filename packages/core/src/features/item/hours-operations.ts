@@ -4,7 +4,7 @@ import { HoursSchema } from "../../hours/schema";
 import { loadHours, replaceHours } from "../../hours/store";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
-import { notFound } from "../../shared/errors";
+import { conflict, notFound } from "../../shared/errors";
 import { loadZoneOfVenue } from "../../shared/time-zones";
 
 type ZoneInput = { context: Pick<OperationContext, "db">; itemId: string };
@@ -21,6 +21,15 @@ async function itemZone({ context, itemId }: ZoneInput) {
   return item ? zoneOf({ venue: item.venue }) : null;
 }
 
+/** Whose hours the item works: a linked staff item works its member's (#449), else its own. */
+async function ownerOf({ context, itemId }: ZoneInput) {
+  const link = await context.db.memberProfileItem.findFirst({
+    where: { itemId },
+    select: { memberProfileId: true },
+  });
+  return link ? { memberProfileId: link.memberProfileId } : { itemId };
+}
+
 export const getItemHours = defineOperation({
   name: "itemHours.get",
   kind: "query",
@@ -28,7 +37,8 @@ export const getItemHours = defineOperation({
     "Read an item's working hours (ADR 0064), e.g. when a boat or a technician is available: a " +
     "weekly pattern (weekday 0 = Monday, start, end and optional break in minutes after " +
     "midnight; a missing weekday is closed) plus dated exceptions, in the item's zone. Without " +
-    "own hours the item follows its venue's opening hours. Advisory only.",
+    "own hours the item follows its venue's opening hours. A staff item linked to a member " +
+    "shows the member's working hours here. Advisory only.",
   input: ItemHoursGetInputSchema,
   output: HoursSchema,
   permission: "item:read",
@@ -36,7 +46,8 @@ export const getItemHours = defineOperation({
   handler: async ({ input: { itemId }, context }) => {
     const timeZone = await itemZone({ context, itemId });
     if (!timeZone) return notFound({ entity: "Item" });
-    return ok({ value: await loadHours({ context, owner: { itemId }, timeZone }) });
+    const owner = await ownerOf({ context, itemId });
+    return ok({ value: await loadHours({ context, owner, timeZone }) });
   },
 });
 
@@ -46,7 +57,8 @@ export const setItemHours = defineOperation({
   description:
     "Replace an item's working hours with `days` (each weekday at most once) and `exceptions` " +
     "(each date at most once; no times = closed). Minutes after midnight in the item's zone. " +
-    "Empty `days` and `exceptions` make the item follow its venue again. Hours only warn.",
+    "Empty `days` and `exceptions` make the item follow its venue again. Hours only warn. A " +
+    "staff item linked to a member is a CONFLICT: the member's working hours apply.",
   input: ItemHoursSetInputSchema,
   output: HoursSchema,
   permission: "item:write",
@@ -54,6 +66,10 @@ export const setItemHours = defineOperation({
   handler: async ({ input: { itemId, ...pattern }, context }) => {
     const timeZone = await itemZone({ context, itemId });
     if (!timeZone) return notFound({ entity: "Item" });
+    if ("memberProfileId" in (await ownerOf({ context, itemId }))) {
+      const message = "This staff item works its member's hours; change them on the member";
+      return conflict({ message, issues: [{ path: "itemId", message }] });
+    }
     const owner = { itemId };
     const before = await loadHours({ context, owner, timeZone });
     const after = await replaceHours({ context, owner, timeZone, pattern });

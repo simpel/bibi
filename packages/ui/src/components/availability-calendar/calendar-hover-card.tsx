@@ -8,16 +8,23 @@ export type CalendarHoverCardProps = CalendarDetailsProps & {
   children: ReactNode;
   /** Replaces the line card, e.g. the booking card in availability. */
   card?: ReactNode;
+  /** Never peek, e.g. while the item is open in a sheet beside it. */
+  disabled?: boolean;
 };
 
 /**
  * Wraps a calendar item (a block, a buffer, an agenda row) so its details show on hover or focus,
  * and on tap for touch, where hover does not exist. A tap outside closes it.
  */
-export function CalendarHoverCard({ children, card, ...details }: CalendarHoverCardProps) {
+export function CalendarHoverCard({
+  children,
+  card,
+  disabled,
+  ...details
+}: CalendarHoverCardProps) {
   const [open, setOpen] = useState(false);
   return (
-    <HoverCard open={open} onOpenChange={setOpen} openDelay={150} closeDelay={80}>
+    <HoverCard open={open && !disabled} onOpenChange={setOpen} openDelay={150} closeDelay={80}>
       <HoverCardTrigger
         asChild
         onPointerUp={(event) => {

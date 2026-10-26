@@ -38,7 +38,9 @@ const staffOf = ({ sources, lineId }: Pick<DetailInput, "sources" | "lineId">) =
     of === lineId && unit
       ? [
           {
-            ...{ itemId: unit.id, name: unit.name, type: unit.entityType.name },
+            itemId: unit.id,
+            name: unit.memberProfileItem?.memberProfile.member.user.name ?? unit.name,
+            type: unit.entityType.name,
             person: !!unit.memberProfileItem,
           },
         ]

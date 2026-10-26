@@ -43,6 +43,8 @@ export type CalendarLabels = {
   guestsHere: (input: { count?: number }) => string;
   guestsAt: (input: { place: string }) => string;
   lineCount: (input: { count: number }) => string;
+  /** Heading of a ticket's lines with no time yet. */
+  unscheduled: string;
   /** An amount in the user's number format and currency display. */
   money: (money: Money) => string;
   exclVat: (input: { amount: string }) => string;

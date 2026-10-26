@@ -3,7 +3,7 @@ import { fromDateColumn, toDateColumn } from "../time/date-column";
 import type { OpenSpan } from "./day-schema";
 import type { HoursLookup } from "./within-hours";
 
-type Owner = "venueId" | "itemId";
+type Owner = "venueId" | "itemId" | "memberProfileId";
 
 export type LoadLookupsInput = {
   context: Pick<OperationContext, "db">;
@@ -22,14 +22,19 @@ const SPAN = {
 } as const;
 
 type Lookup = { days: Map<number, OpenSpan>; exceptions: Map<string, OpenSpan | null> };
-type Row = { venueId: string | null; itemId: string | null } & OpenSpanRow;
+type OwnerColumns = {
+  venueId: string | null;
+  itemId: string | null;
+  memberProfileId: string | null;
+};
 type OpenSpanRow = { startMinute: number | null; endMinute: number | null } & Pick<
   OpenSpan,
   "breakStartMinute" | "breakEndMinute"
 >;
 
-const ownerOf = ({ row, owner }: { row: Pick<Row, "venueId" | "itemId">; owner: Owner }) =>
-  (owner === "venueId" ? row.venueId : row.itemId) ?? "";
+const ownerOf = ({ row, owner }: { row: OwnerColumns; owner: Owner }) => row[owner] ?? "";
+
+const OWNER_SELECT = { venueId: true, itemId: true, memberProfileId: true } as const;
 
 /** A row's span, or null for a closed day (no times). */
 function spanOf({ row }: { row: OpenSpanRow }): OpenSpan | null {
@@ -46,25 +51,25 @@ function readRows({ context, owner, ids, from, to }: ReadInput) {
   return Promise.all([
     context.db.hoursDay.findMany({
       where,
-      select: { venueId: true, itemId: true, weekday: true, ...SPAN },
+      select: { ...OWNER_SELECT, weekday: true, ...SPAN },
     }),
     context.db.hoursException.findMany({
       where: { ...where, date: { gte: from, lte: to } },
-      select: { venueId: true, itemId: true, date: true, ...SPAN },
+      select: { ...OWNER_SELECT, date: true, ...SPAN },
     }),
     context.db.hoursException.findMany({
       where,
       distinct: [owner],
-      select: { venueId: true, itemId: true },
+      select: OWNER_SELECT,
     }),
   ]);
 }
 
 /**
- * The patterns of many venues or items in two queries, by owner id. An owner with any row has a
- * pattern; with exceptions only, every other day is closed (ADR 0064 rule 10).
+ * The patterns of many owners in two queries, by owner id. An owner with any row has a pattern;
+ * with exceptions only, every other day is closed (ADR 0064 rule 10).
  */
-export async function loadHoursLookups({ from, to, ...input }: LoadLookupsInput) {
+async function loadOwnerLookups({ from, to, ...input }: LoadLookupsInput) {
   const lookups = new Map<string, Lookup>();
   if (input.ids.length === 0) return lookups as Map<string, HoursLookup>;
   const range = { from: toDateColumn({ date: from }), to: toDateColumn({ date: to }) };
@@ -84,4 +89,28 @@ export async function loadHoursLookups({ from, to, ...input }: LoadLookupsInput)
     lookup.exceptions.set(fromDateColumn({ value: row.date }), spanOf({ row }));
   }
   return lookups as Map<string, HoursLookup>;
+}
+
+/**
+ * The patterns of many venues or items, by id. A staff item linked to a member (ADR 0068) works
+ * the member's hours here (#449): those are the only hours of a person, whatever position.
+ */
+export async function loadHoursLookups({ owner, ...rest }: LoadLookupsInput) {
+  const input = { owner, ...rest };
+  if (owner !== "itemId") return loadOwnerLookups(input);
+  const links = await input.context.db.memberProfileItem.findMany({
+    where: { itemId: { in: [...input.ids] } },
+    select: { itemId: true, memberProfileId: true },
+  });
+  const profileOf = new Map(links.map((link) => [link.itemId, link.memberProfileId]));
+  const free = input.ids.filter((id) => !profileOf.has(id));
+  const [own, members] = await Promise.all([
+    loadOwnerLookups({ ...input, ids: free }),
+    loadOwnerLookups({ ...input, owner: "memberProfileId", ids: [...new Set(profileOf.values())] }),
+  ]);
+  for (const [itemId, profileId] of profileOf) {
+    const lookup = members.get(profileId);
+    if (lookup) own.set(itemId, lookup);
+  }
+  return own;
 }

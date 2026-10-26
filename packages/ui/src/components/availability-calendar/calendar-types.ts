@@ -100,6 +100,9 @@ export type CalendarAsset = {
 /** A line placed on an asset, with the ticket and customer it belongs to (none for a block). */
 export type AssetBooking = CalendarLine & {
   assetId: string;
+  /** The line and ticket behind it, to load the ticket's other lines; none for a manual block. */
+  lineId?: string;
+  ticketId?: string;
   /** The day it is on, "YYYY-MM-DD" in the venue's zone (ADR 0064: a code-level key only). */
   date: string;
   ticket: string | null;

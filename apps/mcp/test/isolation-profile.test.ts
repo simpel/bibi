@@ -1,6 +1,8 @@
 import { createMemoryFileStore, DEFAULT_WORKING_HOURS, setFileStore } from "@bibi/core";
+import { getDb } from "@bibi/db";
 import { afterEach, describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
+import { seedOrgMember } from "./seed-org-member";
 
 type Client = Awaited<ReturnType<typeof connect>>;
 
@@ -18,13 +20,25 @@ describe("profile, working hours and file isolation (ADR 0061, 0063)", () => {
   it("keeps each user's profile, hours and files private, in the same and other organizations", async () => {
     setFileStore({ store: createMemoryFileStore() });
     const contextA = testContext({ permissions: {} });
+    // Working hours belong to the membership (#449), so `a` is a real member.
+    await seedOrgMember({ context: contextA });
+    const member = { organizationId: contextA.organizationId, role: "member" };
+    const userId = contextA.actor.userId ?? "";
+    await getDb().member.create({
+      data: { id: `member_${userId}`, userId, ...member, createdAt: new Date() },
+    });
     const a = await connect({ context: contextA });
     const sameOrgAdmin = await connect({
       context: testContext({ organizationId: contextA.organizationId }),
     });
     const otherOrg = await connect({ context: testContext() });
     await call({ client: a, name: "profile_update", args: NAMES });
-    await call({ client: a, name: "workingHours_set", args: { days: DEFAULT_WORKING_HOURS } });
+    const set = await call({
+      client: a,
+      name: "workingHours_set",
+      args: { days: DEFAULT_WORKING_HOURS },
+    });
+    expect(set.isError).toBe(false);
     const upload = await call({
       client: a,
       name: "file_upload",
