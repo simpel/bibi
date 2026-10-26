@@ -1,4 +1,6 @@
+import { densityTickets } from "../../density-tickets";
 import type { DemoOrg } from "../../types";
+import { usedAssetDays } from "../../used-asset-days";
 import { lindholmenHours } from "../demo-hours";
 import { lindholmenActivities } from "./activities";
 import { lindholmenAlternativeTickets } from "./alternative-tickets";
@@ -6,6 +8,7 @@ import { lindholmenBundleTickets } from "./bundle-tickets";
 import { conferenceDayBundle, lindholmenBundles } from "./bundles";
 import { lindholmenLists } from "./config";
 import { lindholmenCustomers } from "./customers";
+import { lindholmenDensity } from "./density";
 import { lindholmenDishes } from "./dishes";
 import { lindholmenDrinks } from "./drinks";
 import { lindholmenMeals } from "./meals";
@@ -16,6 +19,23 @@ import { lindholmenStaff, lindholmenStaffTypes } from "./staff";
 import { lindholmenTemplates } from "./templates";
 import { lindholmenTickets } from "./tickets";
 import { lindholmenTypes } from "./types";
+
+const fixtures = [
+  ...lindholmenTickets,
+  ...lindholmenAlternativeTickets,
+  ...lindholmenBundleTickets,
+];
+// Parts come after the items they contain.
+const items = [
+  ...lindholmenRooms,
+  ...lindholmenDishes,
+  ...lindholmenDrinks,
+  ...lindholmenMeals,
+  ...lindholmenActivities,
+  ...lindholmenBundles,
+  conferenceDayBundle,
+];
+const reserved = usedAssetDays({ tickets: fixtures, templates: lindholmenTemplates, items });
 
 /**
  * Lindholmen Experience Center (`docs/demo-seed.md`): fixed roles (ADR 0034). Johan configures,
@@ -63,16 +83,7 @@ export const lindholmen: DemoOrg = {
       city: "Göteborg",
     },
     venueHours: lindholmenHours,
-    // Parts come after the items they contain.
-    items: [
-      ...lindholmenRooms,
-      ...lindholmenDishes,
-      ...lindholmenDrinks,
-      ...lindholmenMeals,
-      ...lindholmenActivities,
-      ...lindholmenBundles,
-      conferenceDayBundle,
-    ],
+    items,
     checks: { listSizes: { Allergens: 14 } },
   },
   responsibilities: lindholmenResponsibilities,
@@ -80,5 +91,6 @@ export const lindholmen: DemoOrg = {
   customers: lindholmenCustomers,
   pipeline: lindholmenPipeline,
   templates: lindholmenTemplates,
-  tickets: [...lindholmenTickets, ...lindholmenAlternativeTickets, ...lindholmenBundleTickets],
+  tickets: [...fixtures, ...densityTickets({ density: lindholmenDensity, reserved })],
+  density: lindholmenDensity,
 };

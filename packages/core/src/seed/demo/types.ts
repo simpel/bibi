@@ -4,6 +4,7 @@ import type { TicketStatusTemplate } from "../../templates/ticket-statuses/ticke
 import type { DisplayFormats } from "../../time/display-formats";
 import type { DemoConfig } from "./config-types";
 import type { DemoCustomer } from "./customer-types";
+import type { DemoDensity } from "./density-types";
 import type { DemoTicketTemplate } from "./template-types";
 import type { DemoTicket } from "./ticket-types";
 
@@ -67,6 +68,8 @@ export type DemoOrg = {
   pipeline: DemoPipeline;
   /** Slice 5: predefined tickets (ADR 0043), created after the pipeline, before the tickets. */
   templates: readonly DemoTicketTemplate[];
-  /** Slice 5: tickets with their assignee and followers. */
+  /** Slice 5: tickets with their assignee and followers, the generated ones (#488) last. */
   tickets: readonly DemoTicket[];
+  /** How the generated tickets fill the calendar (#488), for the density check. */
+  density?: DemoDensity;
 };

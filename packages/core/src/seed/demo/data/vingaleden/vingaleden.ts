@@ -1,12 +1,22 @@
+import { densityTickets } from "../../density-tickets";
 import type { DemoOrg } from "../../types";
+import { usedAssetDays } from "../../used-asset-days";
 import { saltholmenHours } from "../demo-hours";
 import { vingaledenBoats, vingaledenConfig } from "./config";
 import { vingaledenCustomers } from "./customers";
+import { vingaledenDensity } from "./density";
 import { vingaledenPipeline } from "./pipeline";
 import { vingaledenResponsibilities } from "./responsibilities";
 import { vingaledenTemplates } from "./templates";
 import { vingaledenTickets } from "./tickets";
 import { vingaledenTours } from "./tours";
+
+const items = [...vingaledenBoats, ...vingaledenTours];
+const reserved = usedAssetDays({
+  tickets: vingaledenTickets,
+  templates: vingaledenTemplates,
+  items,
+});
 
 /**
  * Vingaleden Archipelago Tours (`docs/demo-seed.md`): fixed roles (ADR 0034). Stina books,
@@ -33,7 +43,7 @@ export const vingaleden: DemoOrg = {
       timeZone: "Europe/Oslo",
     },
     venueHours: saltholmenHours,
-    items: [...vingaledenBoats, ...vingaledenTours],
+    items,
     // Check 2: no allergen list at all. Its sheets (slice 6) will not include food either.
     checks: { absentLists: ["Allergens"] },
   },
@@ -41,5 +51,6 @@ export const vingaleden: DemoOrg = {
   customers: vingaledenCustomers,
   pipeline: vingaledenPipeline,
   templates: vingaledenTemplates,
-  tickets: vingaledenTickets,
+  tickets: [...vingaledenTickets, ...densityTickets({ density: vingaledenDensity, reserved })],
+  density: vingaledenDensity,
 };

@@ -6,6 +6,9 @@ import { vingaleden } from "../src/seed/demo/data/vingaleden/vingaleden";
 import { seedDemo } from "../src/seed/demo/seed-demo";
 import { LINDHOLMEN_LINE_STATES } from "./seed-demo-lines";
 
+/** Lindholmen's hand-written tickets; the generated ones come after them (#488). */
+const FIXTURES = 18;
+
 /** Same data as the real demo, under unique slugs so parallel runs and dev data never clash. */
 const testOrgs = () => {
   const suffix = createId().slice(0, 8);
@@ -91,8 +94,10 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
       where: { organizationId: lind?.organizationId },
       orderBy: { reference: "asc" },
     });
-    // L1–L15 and the leads F2, F3 and F6 with their room lines (ADR 0044, 0052, 0059).
-    expect(tickets).toHaveLength(18);
+    // L1–L15 and the leads F2, F3 and F6 with their room lines (ADR 0044, 0052, 0059), then the
+    // generated tickets that fill the calendar (#488), seeded last.
+    expect(tickets).toHaveLength(lindholmen.tickets.length);
+    expect(tickets.filter((ticket) => ticket.reference > FIXTURES).length).toBeGreaterThan(20);
     const johan = await db.member.findFirst({
       where: { organizationId: lind?.organizationId, user: { name: "Johan Ek" } },
     });
@@ -104,7 +109,7 @@ describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
     expect(main?.assigneeId).toBe(johan?.userId);
     expect(main?.followers).toHaveLength(1);
     const lines = await db.line.findMany({
-      where: { organizationId: lind?.organizationId },
+      where: { organizationId: lind?.organizationId, ticket: { reference: { lte: FIXTURES } } },
       include: { state: true },
       orderBy: [{ name: "asc" }, { state: { name: "asc" } }],
     });

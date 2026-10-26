@@ -10,6 +10,7 @@ import { checkDemoBuffers } from "./buffer-checks";
 import { checkDemoBundles } from "./bundle-checks";
 import { checkDemoConfig } from "./config-checks";
 import { checkDemoCustomisations } from "./customisation-checks";
+import { checkDemoDensity } from "./density-checks";
 import { checkDemoFactGuards } from "./fact-guard-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
@@ -51,6 +52,7 @@ const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoBuffers,
   checkDemoAllocations,
   checkDemoPayments,
+  checkDemoDensity,
 ];
 
 export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPipeline?: boolean };
