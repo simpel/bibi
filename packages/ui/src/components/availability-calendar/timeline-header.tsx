@@ -3,7 +3,7 @@ import { cn } from "../../lib/cn";
 import { ROW_GRID } from "./availability-row";
 import { addDays, formatDate, formatDay, weekdayOf } from "./calendar-dates";
 import type { DayTotal } from "./day-value";
-import { DayRate } from "./day-value-peek";
+import { DayValuePeek, DayValueStrip } from "./day-value-peek";
 import { HourLabels } from "./time-axis";
 import type { TimelineFrame } from "./timeline-scale";
 import { WeekHeading } from "./week-heading";
@@ -22,6 +22,8 @@ type DayProps = { frame: TimelineFrame; index: number; total: DayTotal | undefin
 /**
  * A day's name and how much of it is sold, pinned just right of the asset names while its day
  * scrolls past, so you always know which day you are in. Clicking the name zooms in to that day.
+ * Under it the day's value bar, the same in every zoom; hover the name or the bar, or tap the
+ * bar, for the amounts.
  */
 function DayHeading({ frame, index, total }: DayProps) {
   const date = dateOf({ frame, index });
@@ -29,19 +31,23 @@ function DayHeading({ frame, index, total }: DayProps) {
   return (
     <div className="absolute inset-y-0" style={{ left: index * frame.pitch, width: frame.dayPx }}>
       <TodayBar date={date} frame={frame} />
-      <div className="sticky left-[calc(var(--label)+0.5rem)] mt-2 flex w-fit max-w-[calc(100%-1rem)] items-center gap-2">
-        <button
-          type="button"
-          onClick={() => frame.onDrill({ date })}
-          className={cn(
-            "shrink-0 rounded-sm text-xs leading-5 font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-ring",
-            date === frame.today && "font-bold text-primary",
-          )}
-        >
-          {day}
-        </button>
-        <DayRate total={total} day={day} compact={frame.dayPx < 200} />
-      </div>
+      <DayValuePeek total={total} day={day}>
+        <div className="absolute inset-x-0 top-0 h-[3.25rem] pt-2">
+          <button
+            type="button"
+            onClick={() => frame.onDrill({ date })}
+            // A tap on the name zooms in; on touch only the bar opens the amounts.
+            onPointerUp={(event) => event.stopPropagation()}
+            className={cn(
+              "sticky left-[calc(var(--label)+0.5rem)] max-w-[calc(100%-1rem)] truncate rounded-sm text-xs leading-5 font-medium whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              date === frame.today && "font-bold text-primary",
+            )}
+          >
+            {day}
+          </button>
+          <DayValueStrip total={total} className="absolute inset-x-1 top-8 h-5" />
+        </div>
+      </DayValuePeek>
       {frame.detail === "hours" ? (
         <div className="absolute inset-x-0 bottom-1">
           <HourLabels window={frame.hours} />
@@ -90,13 +96,19 @@ export type TimelineHeaderProps = {
   totals?: ReadonlyMap<string, DayTotal> | undefined;
 };
 
-/** Days on top, hours under them; zoomed out to months, weeks on top and days under them. */
+/**
+ * Days on top, hours under them; zoomed out to months, weeks on top and days under them. Hours
+ * get a taller header, so the value bar keeps its place between the day and the axis.
+ */
 export function TimelineHeader({ frame, labelRef, totals }: TimelineHeaderProps) {
   const cells = frame.detail === "cells";
   return (
     <div className={cn(ROW_GRID, "sticky top-0 z-40 border-b bg-card")}>
-      <div ref={labelRef} className="sticky left-0 z-10 border-r bg-card" />
-      <div className="relative h-14" style={{ width: frame.width }}>
+      <div ref={labelRef} className="sticky left-0 z-20 border-r bg-card" />
+      <div
+        className={cn("relative", frame.detail === "hours" ? "h-[4.5rem]" : "h-14")}
+        style={{ width: frame.width }}
+      >
         {cells
           ? weekStarts({ frame }).map((index) => (
               <WeekHeading key={`w${index}`} {...{ frame, index, totals }} />

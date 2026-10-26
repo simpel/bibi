@@ -2,7 +2,6 @@
 
 import { type ReactNode, useState } from "react";
 import { cn } from "../../lib/cn";
-import { badgeVariants } from "../badge/badge";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "../hover-card/hover-card";
 import { useCalendarLabels } from "./calendar-labels";
 import { type DayTotal, fillOf } from "./day-value";
@@ -10,10 +9,6 @@ import { DayValueBar, VALUE_FILLS } from "./day-value-bar";
 
 const PARTS = ["booked", "prebooked", "open"] as const;
 const percent = ({ share }: { share: number }) => Math.round(share * 100);
-
-/** How well the day is sold, at a glance: red under 40% booked, amber from 40%, green from 70%. */
-const toneOf = ({ share }: { share: number }) =>
-  share >= 0.7 ? "success" : share >= 0.4 ? "warning" : "destructive";
 
 /** The day's allocation: the bar, then its three amounts, each with its swatch. */
 function ValueCard({ total, day }: { total: DayTotal; day: string }) {
@@ -64,30 +59,40 @@ function Peek({ total, day, children }: { total: DayTotal; day: string; children
 export type DayValueProps = {
   total: DayTotal | undefined;
   day: string;
-  /** A narrow day: just the share, "48%"; the full label stays its accessible name. */
-  compact?: boolean;
   className?: string;
 };
 
-/** A label next to the day's name: how much of the day is sold, e.g. "48% booked". */
-export function DayRate({ total, day, compact, className }: DayValueProps) {
+/**
+ * The heading a day's amounts open from: its name and its bar together. Wraps one element, which
+ * passes the trigger's handlers down; with no value it is the element alone.
+ */
+export function DayValuePeek({ total, day, children }: DayValueProps & { children: ReactNode }) {
+  if (!total || !fillOf({ total })) return children;
+  return (
+    <Peek total={total} day={day}>
+      {children}
+    </Peek>
+  );
+}
+
+/**
+ * The day's value as a bar under its name, on every day however narrow. The strip around it is
+ * taller than the bar, so a finger can tap it; inside a `DayValuePeek` that opens the amounts.
+ */
+export function DayValueStrip({ total, className }: Omit<DayValueProps, "day">) {
   const labels = useCalendarLabels();
   const fill = total ? fillOf({ total }) : null;
   if (!total || !fill) return null;
-  const booked = percent({ share: fill.booked });
   return (
-    <Peek total={total} day={day}>
-      <button
-        type="button"
-        aria-label={labels.value.rate({ percent: booked })}
-        className={cn(
-          badgeVariants({ variant: toneOf({ share: fill.booked }) }),
-          "min-w-0 shrink truncate px-1.5 py-0 leading-5 font-normal tabular-nums outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          className,
-        )}
-      >
-        {compact ? labels.value.share({ percent: booked }) : labels.value.rate({ percent: booked })}
-      </button>
-    </Peek>
+    <button
+      type="button"
+      aria-label={labels.value.rate({ percent: percent({ share: fill.booked }) })}
+      className={cn(
+        "flex items-start rounded-sm pt-1 outline-none focus-visible:ring-2 focus-visible:ring-ring",
+        className,
+      )}
+    >
+      <DayValueBar total={total} className="rounded-full" />
+    </button>
   );
 }

@@ -583,8 +583,7 @@
       "prebooked": "Preliminärt",
       "open": "Kvar att sälja",
       "note": "Exkl. moms. Kvar att sälja är ledig tid inom öppettiderna till varje rums timpris.",
-      "rate": "{percent} % bokat",
-      "share": "{percent} %"
+      "rate": "{percent} % bokat"
     },
     "open": "Öppna {ticket}",
     "openLine": "Öppna rad",

@@ -71,7 +71,6 @@ function bookingText({ t, number }: TextInput) {
       ...{ booked: t("value.booked"), prebooked: t("value.prebooked"), open: t("value.open") },
       note: t("value.note"),
       rate: ({ percent }: { percent: number }) => t("value.rate", { percent }),
-      share: ({ percent }: { percent: number }) => t("value.share", { percent }),
     },
     open: ({ ticket }: { ticket: string }) => t("open", { ticket }),
     ...{ openLine: t("openLine"), notes: t("notes"), staff: t("staff") },

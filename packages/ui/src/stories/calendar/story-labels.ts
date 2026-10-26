@@ -61,7 +61,6 @@ export const STORY_LABELS: CalendarLabels = {
     open: "Still open",
     note: "Excl. VAT. Still open is free time in opening hours at hourly prices.",
     rate: ({ percent }) => `${percent}% booked`,
-    share: ({ percent }) => `${percent}%`,
   },
   open: ({ ticket }) => `Open ${ticket}`,
   openLine: "Open line",

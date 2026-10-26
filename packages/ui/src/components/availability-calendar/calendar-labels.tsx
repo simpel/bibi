@@ -60,8 +60,6 @@ export type CalendarLabels = {
     note: string;
     /** Next to the day: "48% booked". */
     rate: (input: { percent: number }) => string;
-    /** Next to a narrow day: "48%". */
-    share: (input: { percent: number }) => string;
   };
   open: (input: { ticket: string }) => string;
   openLine: string;

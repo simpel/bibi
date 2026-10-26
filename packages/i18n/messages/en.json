@@ -583,8 +583,7 @@
       "prebooked": "Prebooked",
       "open": "Still open",
       "note": "Excl. VAT. Still open is free time within opening hours at each room's hourly price.",
-      "rate": "{percent}% booked",
-      "share": "{percent}%"
+      "rate": "{percent}% booked"
     },
     "open": "Open {ticket}",
     "openLine": "Open line",
