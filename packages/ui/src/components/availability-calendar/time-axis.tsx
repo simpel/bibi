@@ -1,12 +1,14 @@
 import { cn } from "../../lib/cn";
+import { useCalendarLabels } from "./calendar-labels";
 import { hoursIn } from "./calendar-time";
 import type { CalendarWindow } from "./calendar-types";
 
 const at = ({ window, hour }: { window: CalendarWindow; hour: number }) =>
   ((hour * 60 - window.from) / (window.to - window.from)) * 100;
 
-/** Hour labels along a horizontal track, 24-hour and tabular. */
+/** Hour labels along a horizontal track, in the user's clock and tabular. */
 export function HourLabels({ window }: { window: CalendarWindow }) {
+  const labels = useCalendarLabels();
   return (
     <div className="relative h-5">
       {hoursIn({ window }).map((hour, index, all) => (
@@ -18,7 +20,7 @@ export function HourLabels({ window }: { window: CalendarWindow }) {
           )}
           style={{ left: `${at({ window, hour })}%` }}
         >
-          {String(hour).padStart(2, "0")}
+          {labels.hour({ hour })}
         </span>
       ))}
     </div>
@@ -53,6 +55,7 @@ export const HOUR_REM = 3;
 
 /** Hour labels down the side of a vertical day. */
 export function HourGutter({ window }: { window: CalendarWindow }) {
+  const labels = useCalendarLabels();
   return (
     <div className="relative">
       {hoursIn({ window }).map((hour, index) => (
@@ -61,7 +64,7 @@ export function HourGutter({ window }: { window: CalendarWindow }) {
           className="absolute right-2 -translate-y-1/2 text-[0.6875rem] text-muted-foreground tabular-nums"
           style={{ top: `${index * HOUR_REM}rem` }}
         >
-          {String(hour).padStart(2, "0")}:00
+          {labels.clock({ minutes: hour * 60 })}
         </span>
       ))}
     </div>

@@ -4,6 +4,7 @@ import { SquareArrowOutUpRightIcon } from "lucide-react";
 import { Button } from "../button/button";
 import { useCalendarLabels } from "./calendar-labels";
 import { LineContact } from "./calendar-people";
+import { toMinutes } from "./calendar-time";
 import type { CalendarAudience, CalendarLine } from "./calendar-types";
 
 /** Staff notes: the one place free text about a line shows on a calendar. */
@@ -37,12 +38,14 @@ export type CalendarDetailsProps = { line: CalendarLine; audience: CalendarAudie
  * time, buffers, guests and staff are already drawn. Customers get the title and the time.
  */
 export function CalendarDetails({ line, audience }: CalendarDetailsProps) {
+  const { clock } = useCalendarLabels();
   if (audience === "external") {
     return (
       <div className="grid gap-0.5">
         <p className="font-medium">{line.name}</p>
         <p className="text-xs text-muted-foreground tabular-nums">
-          {line.start}–{line.end}
+          {clock({ minutes: toMinutes({ time: line.start }) })}–
+          {clock({ minutes: toMinutes({ time: line.end }) })}
         </p>
       </div>
     );

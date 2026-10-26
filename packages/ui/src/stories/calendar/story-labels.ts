@@ -44,6 +44,9 @@ export const STORY_LABELS: CalendarLabels = {
   guestsAt: ({ place }) => `Guests: ${place}`,
   lineCount: ({ count }) => plural({ count, one: "line", many: "lines" }),
   unscheduled: "Not scheduled",
+  clock: ({ minutes }) =>
+    `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`,
+  hour: ({ hour }) => String(hour).padStart(2, "0"),
   money: ({ amount, currency }) =>
     new Intl.NumberFormat("en-GB", {
       style: "currency",

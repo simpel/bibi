@@ -3,7 +3,7 @@
 import { createContext, type ReactNode, useContext } from "react";
 import type { CalendarHold, Money } from "./calendar-types";
 
-/** Every word the calendar writes, from the app's translations. Times are already "HH:mm". */
+/** Every word the calendar writes, from the app's translations, with times in the user's clock. */
 export type CalendarLabels = {
   levels: { day: string; week: string; month: string; custom: string };
   range: string;
@@ -45,6 +45,10 @@ export type CalendarLabels = {
   lineCount: (input: { count: number }) => string;
   /** Heading of a ticket's lines with no time yet. */
   unscheduled: string;
+  /** Minutes after midnight in the user's clock format: `14:05` or `2:05 PM`. */
+  clock: (input: { minutes: number }) => string;
+  /** A whole hour on an axis: `14` or `2 PM`. */
+  hour: (input: { hour: number }) => string;
   /** An amount in the user's number format and currency display. */
   money: (money: Money) => string;
   exclVat: (input: { amount: string }) => string;

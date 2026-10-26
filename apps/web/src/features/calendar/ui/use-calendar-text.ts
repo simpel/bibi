@@ -1,11 +1,12 @@
-import type { NumberFormat } from "@bibi/core/schemas";
+import type { DateTimeFormat, NumberFormat } from "@bibi/core/schemas";
 import type { CalendarLabels } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { useNumberFormat } from "@/lib/number/use-number-format";
+import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 type Translate = ReturnType<typeof useTranslations<"calendar">>;
-type TextInput = { t: Translate; number: NumberFormat };
+type TextInput = { t: Translate; number: NumberFormat; format: DateTimeFormat };
 
 /** The toolbar: range, stepper, custom range, filter and search. */
 function toolbarText({ t }: TextInput) {
@@ -43,6 +44,15 @@ function trackText({ t }: TextInput) {
   } satisfies Partial<CalendarLabels>;
 }
 
+/** Wall-clock minutes in the user's clock: read as a UTC instant so no zone can shift them. */
+function clockText({ format }: TextInput) {
+  const clock = ({ minutes }: { minutes: number }) =>
+    format.time({ instant: new Date(Date.UTC(1970, 0, 1, 0, minutes)), timeZone: "UTC" });
+  // The formatter writes `hh:mm`, so a whole hour drops ":00": `14`, `2 PM`.
+  const hour = ({ hour }: { hour: number }) => clock({ minutes: hour * 60 }).replace(":00", "");
+  return { clock, hour } satisfies Partial<CalendarLabels>;
+}
+
 /** A booking's card and the legend. */
 function bookingText({ t, number }: TextInput) {
   return {
@@ -71,16 +81,18 @@ function bookingText({ t, number }: TextInput) {
   } satisfies Partial<CalendarLabels>;
 }
 
-/** The calendar's words from next-intl, with amounts in the user's number format (#482). */
+/** The calendar's words from next-intl, with times and amounts in the user's formats. */
 export function useCalendarText(): CalendarLabels {
   const t = useTranslations("calendar");
   const number = useNumberFormat();
-  return useMemo(
-    () => ({
-      ...toolbarText({ t, number }),
-      ...trackText({ t, number }),
-      ...bookingText({ t, number }),
-    }),
-    [t, number],
-  );
+  const format = useDateTimeFormat();
+  return useMemo(() => {
+    const input = { t, number, format };
+    return {
+      ...toolbarText(input),
+      ...trackText(input),
+      ...clockText(input),
+      ...bookingText(input),
+    };
+  }, [t, number, format]);
 }

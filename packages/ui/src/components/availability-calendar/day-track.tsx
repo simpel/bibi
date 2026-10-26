@@ -4,7 +4,7 @@ import { AddSlot } from "./add-slot";
 import { BookingDetails } from "./booking-details";
 import { useCalendarLabels } from "./calendar-labels";
 import { CalendarSpan } from "./calendar-span";
-import { formatMinutes, percentIn } from "./calendar-time";
+import { percentIn, toMinutes } from "./calendar-time";
 import type { AssetBooking, CalendarAsset, CalendarWindow } from "./calendar-types";
 import { clashesOf } from "./clashes";
 import { HourRules } from "./time-axis";
@@ -28,12 +28,14 @@ export type DayTrackProps = {
 
 /** Who it is for, then the time once the block is wide enough (measured, not guessed). */
 function BlockLabel({ booking }: { booking: AssetBooking }) {
+  const { clock } = useCalendarLabels();
   return (
     <span className="@container block size-full">
       <span className="flex h-full items-center gap-1.5 px-2 whitespace-nowrap @max-[4rem]:px-1 @max-[2.5rem]:invisible">
         <span className="truncate font-medium">{booking.customer ?? booking.name}</span>
         <span className="hidden tabular-nums opacity-80 @min-[11rem]:inline">
-          {booking.start}–{booking.end}
+          {clock({ minutes: toMinutes({ time: booking.start }) })}–
+          {clock({ minutes: toMinutes({ time: booking.end }) })}
         </span>
       </span>
     </span>
@@ -49,8 +51,8 @@ function Clashes({ bookings, window }: Pick<DayTrackProps, "bookings" | "window"
   return clashesOf({ lines: bookings }).map((clash) => {
     const { offset, size } = percentIn({ window, from: clash.from, to: clash.to });
     const label = labels.clash({
-      from: formatMinutes({ minutes: clash.from }),
-      to: formatMinutes({ minutes: clash.to }),
+      from: labels.clock({ minutes: clash.from }),
+      to: labels.clock({ minutes: clash.to }),
     });
     return (
       <span

@@ -56,7 +56,7 @@ export function AddSlot({ assetName, lines, window, onAdd }: AddSlotProps) {
           style={{ left: `${place.offset}%`, width: `${place.size}%` }}
         >
           <PlusIcon aria-hidden className="size-3 shrink-0" />
-          <span className="tabular-nums">{formatMinutes({ minutes: slot.from })}</span>
+          <span className="tabular-nums">{labels.clock({ minutes: slot.from })}</span>
         </span>
       ) : null}
     </button>
