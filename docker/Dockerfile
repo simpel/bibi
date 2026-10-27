@@ -16,12 +16,20 @@ COPY --from=prune /app/out/full/ .
 RUN pnpm exec turbo run build --filter=@bibi/${APP}
 RUN pnpm --filter @bibi/${APP} deploy --prod --legacy /deploy
 # deploy drops `.next/node_modules` (hash-named links Turbopack uses for serverExternalPackages);
-# recreate them against the deployed node_modules.
+# recreate them against the deployed node_modules. A package that only a workspace package depends
+# on (@aws-sdk/client-s3 via @bibi/storage) is not at the top level, so fall back to its place under
+# node_modules/.pnpm. Every link must resolve, or the build fails here instead of at startup.
 RUN cd apps/${APP} && if [ -d .next/node_modules ]; then \
       find .next/node_modules -type l | while read -r l; do \
         pkg=$(readlink "$l" | sed 's#.*/node_modules/##'); \
+        rel="node_modules/$pkg"; \
+        [ -e "/deploy/$rel" ] || rel=$(cd /deploy && ls -d node_modules/.pnpm/*/node_modules/$pkg | head -1); \
+        [ -n "$rel" ] || { echo "external $pkg is not in /deploy"; exit 1; }; \
         mkdir -p "/deploy/$(dirname "$l")"; \
-        ln -s "$(echo "$(dirname "$l")" | sed 's#[^/]*#..#g')/node_modules/$pkg" "/deploy/$l"; \
+        ln -s "$(echo "$(dirname "$l")" | sed 's#[^/]*#..#g')/$rel" "/deploy/$l"; \
+      done \
+      && cd /deploy && find .next/node_modules -type l | while read -r l; do \
+        [ -e "$l" ] || { echo "broken external link: $l"; exit 1; }; \
       done; \
     fi
 
