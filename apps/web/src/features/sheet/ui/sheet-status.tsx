@@ -1,19 +1,21 @@
-import type { SheetDto } from "@bibi/core/schemas";
+import type { DateTimeFormat, SheetDto } from "@bibi/core/schemas";
 import { Badge } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 /** A sheet as the server (Date) or a tool result (ISO string) carries it. */
 export type SheetStatusValue = Pick<SheetDto, "version" | "baseVersion" | "changes" | "blocked"> & {
   sentAt: Date | string | null;
 };
 
-export type SheetStatusProps = { sheet: SheetStatusValue };
+export type SheetStatusProps = {
+  sheet: SheetStatusValue;
+  /** The viewer's date and time format: `getDateTimeFormat()` on the server, the hook in a client card. */
+  dates: DateTimeFormat;
+};
 
 /** Version, whether it has been sent, and how many rows carry ★ since the last sent version. */
-export function SheetStatus({ sheet }: SheetStatusProps) {
+export function SheetStatus({ sheet, dates: format }: SheetStatusProps) {
   const t = useTranslations("sheet");
-  const format = useDateTimeFormat();
   const sent = sheet.sentAt ? new Date(sheet.sentAt) : null;
   return (
     <div data-slot="sheet-status" className="flex flex-wrap items-center gap-2 text-sm">

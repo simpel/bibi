@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { TablePreferencesProvider } from "@/components/data-table/table-preferences-provider";
 import { AppShell } from "@/components/shell/app-shell";
 import { canOpenSettings } from "@/components/shell/settings-items";
+import { AppPinnedBookings } from "@/features/calendar/ui/app-pinned-bookings";
 import { loadUserPreferences } from "@/features/user-preference/load";
 import { welcomePath } from "@/features/welcome/lib/welcome-step";
 import { mustWelcomeFirst } from "@/features/welcome/load-welcome-gate";
@@ -43,7 +44,7 @@ export default async function AppLayout({ children, params }: AppLayoutProps) {
           permissions: abilities.permissions,
         }}
       >
-        {children}
+        <AppPinnedBookings organizationId={organizationId}>{children}</AppPinnedBookings>
       </AppShell>
     </TablePreferencesProvider>
   );

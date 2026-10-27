@@ -6,7 +6,8 @@ import { useCalendarLabels } from "./calendar-labels";
 import { CalendarSpan } from "./calendar-span";
 import { percentIn, toMinutes } from "./calendar-time";
 import type { AssetBooking, CalendarAsset, CalendarWindow } from "./calendar-types";
-import { clashesOf } from "./clashes";
+import { ClashCards } from "./clash-cards";
+import { clashesOf, clashesWith } from "./clashes";
 import { HourRules } from "./time-axis";
 
 /** One sub-lane is 2.25rem; a row with a clash grows a lane per overlapping booking. */
@@ -69,6 +70,24 @@ function Clashes({ bookings, window }: Pick<DayTrackProps, "bookings" | "window"
   });
 }
 
+/** A booking's card; in a clash, every booking it shares time with stacked in one. */
+function BookingCard({
+  booking,
+  bookings,
+  onOpen,
+}: { booking: AssetBooking } & Pick<DayTrackProps, "bookings" | "onOpen">) {
+  const clashes = clashesWith({ line: booking, lines: bookings });
+  if (!clashes.length) {
+    return <BookingDetails booking={booking} onOpen={onOpen ? () => onOpen(booking) : undefined} />;
+  }
+  const stretch = {
+    from: Math.min(...clashes.map((clash) => clash.from)),
+    to: Math.max(...clashes.map((clash) => clash.to)),
+  };
+  const all = [booking, ...clashes.map((clash) => clash.line)];
+  return <ClashCards bookings={all} stretch={stretch} onOpen={onOpen} />;
+}
+
 type BookingsProps = Pick<
   DayTrackProps,
   "bookings" | "window" | "lane" | "selectedId" | "onOpen" | "withHours"
@@ -93,9 +112,7 @@ function Bookings({ bookings, window, lane, selectedId, onOpen, withHours }: Boo
         bookingClassName="inset-y-0"
         bufferClassName="inset-y-2"
         selected={booking.id === selectedId}
-        card={
-          <BookingDetails booking={booking} onOpen={onOpen ? () => onOpen(booking) : undefined} />
-        }
+        card={<BookingCard booking={booking} bookings={bookings} onOpen={onOpen} />}
         onSelect={onOpen ? () => onOpen(booking) : undefined}
       >
         {() => <BlockLabel booking={booking} />}

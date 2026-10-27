@@ -1,14 +1,16 @@
+import type { NumberFormat } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
-import { useNumberFormat } from "@/lib/number/use-number-format";
 
 export type QuoteTotalsProps = {
   quote: { totalExclVatMinor: number; totalInclVatMinor: number; totalIsFrom: boolean };
+  /** The viewer's number format: `getNumberFormat()` on the server, the hook in a client card. */
+  numbers: NumberFormat;
 };
 
 /** Total excl. VAT, the VAT and the total incl. VAT; "from" prices while an alternative is open. */
-export function QuoteTotals({ quote }: QuoteTotalsProps) {
+export function QuoteTotals({ quote, numbers }: QuoteTotalsProps) {
   const t = useTranslations("quote");
-  const { money } = useNumberFormat();
+  const { money } = numbers;
   const kr = ({ minor }: { minor: number }) => {
     const amount = money({ minor });
     return quote.totalIsFrom ? t("totals.from", { amount }) : amount;

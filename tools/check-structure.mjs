@@ -14,6 +14,7 @@ import { analyzeFunctions } from "./lib/functions.mjs";
 import { checkNumber } from "./lib/number-rules.mjs";
 import { analyzeParams } from "./lib/params.mjs";
 import { listPackageDirs, walkSources } from "./lib/scan.mjs";
+import { checkServerRender } from "./lib/server-render-rules.mjs";
 import { checkTime } from "./lib/time-rules.mjs";
 
 // Files required in feature folders (<package>/src/features/<entity>/), per package.
@@ -51,8 +52,9 @@ export function runChecks({ root }) {
     requiredFiles: REQUIRED_FILES,
     corePackage: CORE_PACKAGE,
   });
+  const serverRender = checkServerRender({ root });
   return {
-    problems: [...problems, ...features.problems],
+    problems: [...problems, ...features.problems, ...serverRender.problems],
     fileCount,
     entityCount: features.entityCount,
   };

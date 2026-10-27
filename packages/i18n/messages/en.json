@@ -458,6 +458,13 @@
       "type": "Type",
       "email": "Email",
       "phone": "Phone"
+    },
+    "card": {
+      "phone": "Phone",
+      "email": "Email",
+      "copy": "Copy {label}",
+      "copied": "{label} copied",
+      "copyFailed": "Could not copy"
     }
   },
   "ticket": {
@@ -586,6 +593,20 @@
       "rate": "{percent}% booked"
     },
     "open": "Open {ticket}",
+    "pin": "Pin {name} to compare",
+    "unpin": "Unpin {name}",
+    "pinned": "Pinned bookings",
+    "pinCard": {
+      "when": "When",
+      "where": "Where",
+      "state": "State",
+      "guests": "Guests",
+      "value": "Value",
+      "exclVat": "excl. VAT",
+      "seeTicket": "See ticket",
+      "minimize": "Minimize {name}",
+      "expand": "Expand {name}"
+    },
     "openLine": "Open line",
     "notes": "Notes",
     "staff": "Staff",

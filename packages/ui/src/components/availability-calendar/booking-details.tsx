@@ -1,61 +1,59 @@
 "use client";
 
-import { SquareArrowOutUpRightIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { Button } from "../button/button";
-import { PersonContact } from "../person-contact/person-contact";
+import { ContactName, type NamedContact } from "../person-contact/contact-name";
+import { BookingActions } from "./booking-actions";
 import { type CalendarLabels, useCalendarLabels } from "./calendar-labels";
-import { StaffList } from "./calendar-people";
 import type { AssetBooking } from "./calendar-types";
 
 export type BookingDetailsProps = {
   booking: AssetBooking;
   /** Opens the booking's ticket: the card's one action. */
-  onOpen?: () => void;
+  onOpen?: (() => void) | undefined;
 };
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <>
-      <dt className="pt-1 text-xs text-muted-foreground">{label}</dt>
+      <dt className="text-muted-foreground">{label}</dt>
       <dd className="min-w-0">{children}</dd>
     </>
   );
 }
 
-/** Who to call on each side: the customer's contact, then ours. */
+/** Names only, side by side; each opens that person's contact card. */
+function Names({ people }: { people: readonly NamedContact[] }) {
+  return (
+    <span className="flex flex-wrap gap-x-3 gap-y-1">
+      {people.map((person) => (
+        <ContactName key={person.id ?? person.name} contact={person} />
+      ))}
+    </span>
+  );
+}
+
+/** Who to call on each side, by name: the customer's contact, then ours, then who works it. */
 function Contacts({ booking }: { booking: AssetBooking }) {
   const { client, contact, staff } = booking;
   const labels = useCalendarLabels();
   if (!client && !contact && !staff?.length) return null;
   return (
-    <dl className="grid grid-cols-[3.75rem_1fr] gap-x-3 gap-y-2.5 border-t pt-2.5">
+    <dl className="grid grid-cols-[3.75rem_1fr] items-baseline gap-x-3 gap-y-1.5 border-t pt-2.5 text-xs">
       {client ? (
         <Row label={labels.client}>
-          <PersonContact
-            size="compact"
-            avatar={false}
-            name={client.name}
-            phone={client.phone}
-            email={client.email}
+          <Names
+            people={[{ ...client, description: booking.customer ?? undefined, avatar: false }]}
           />
         </Row>
       ) : null}
       {contact ? (
         <Row label={labels.internal}>
-          <PersonContact
-            size="compact"
-            name={contact.person.name}
-            description={contact.via || undefined}
-            phone={contact.person.phone}
-            email={contact.person.email}
-            photoUrl={contact.person.photoUrl}
-          />
+          <Names people={[{ ...contact.person, description: contact.via || undefined }]} />
         </Row>
       ) : null}
       {staff?.length ? (
         <Row label={labels.staff}>
-          <StaffList staff={staff} label={false} />
+          <Names people={staff.map((person) => ({ ...person, description: person.role }))} />
         </Row>
       ) : null}
     </dl>
@@ -88,7 +86,7 @@ function Title({ booking, onOpen }: BookingDetailsProps) {
 
 /**
  * A booking in the overview: the client, guests and value, notes, the way into the ticket, and
- * who to call on either side. Time and state are already on the block.
+ * who to call on either side. Time and state are already on the block. Pin it to compare.
  */
 export function BookingDetails({ booking, onOpen }: BookingDetailsProps) {
   const labels = useCalendarLabels();
@@ -101,18 +99,7 @@ export function BookingDetails({ booking, onOpen }: BookingDetailsProps) {
             {subtitle({ booking, labels })}
           </p>
         </div>
-        {onOpen && booking.ticket ? (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="-my-1 -mr-1.5 size-8 shrink-0"
-            onClick={onOpen}
-            aria-label={labels.open({ ticket: booking.ticket })}
-            title={labels.open({ ticket: booking.ticket })}
-          >
-            <SquareArrowOutUpRightIcon aria-hidden />
-          </Button>
-        ) : null}
+        <BookingActions booking={booking} onOpen={onOpen} />
       </div>
       {booking.notes ? <p className="text-xs leading-relaxed">{booking.notes}</p> : null}
       <Contacts booking={booking} />

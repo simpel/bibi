@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { PaymentPageCard } from "@/features/payment/ui/payment-page-card";
 import { loadPublicPayment } from "@/server/load-public-payment";
+import { getNumberFormat } from "@/server/number-format";
 
 type PayPageProps = {
   params: Promise<{ locale: string; token: string }>;
@@ -19,7 +20,7 @@ export default async function PayPage({ params, searchParams }: PayPageProps) {
   const { locale: rawLocale, token } = await params;
   setRequestLocale(resolveLocale({ value: rawLocale }));
   const { checkout } = await searchParams;
-  const payment = await loadPublicPayment({ token });
+  const [payment, numbers] = await Promise.all([loadPublicPayment({ token }), getNumberFormat()]);
   if (!payment) notFound();
-  return <PaymentPageCard payment={payment} returning={checkout === "success"} />;
+  return <PaymentPageCard payment={payment} returning={checkout === "success"} numbers={numbers} />;
 }

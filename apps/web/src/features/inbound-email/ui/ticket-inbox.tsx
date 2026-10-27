@@ -2,6 +2,7 @@ import { listInboundEmails } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
 import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
+import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { InboundEmailList } from "./inbound-email-list";
@@ -17,7 +18,7 @@ const LIMIT = 50;
 
 /** The ticket's reply address and the mails received on it (`inboundEmail.list`, ADR 0012). */
 export async function TicketInbox({ locale, ticketId, address }: TicketInboxProps) {
-  const t = await getTranslations("inboundEmail");
+  const [t, dates] = await Promise.all([getTranslations("inboundEmail"), getDateTimeFormat()]);
   const result = await runOperation({
     operation: listInboundEmails,
     input: { ticketId, limit: LIMIT },
@@ -35,7 +36,7 @@ export async function TicketInbox({ locale, ticketId, address }: TicketInboxProp
             })
           : t("noAddress")}
       </p>
-      <InboundEmailList emails={result.value.items} />
+      <InboundEmailList emails={result.value.items} dates={dates} />
     </section>
   );
 }

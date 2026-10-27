@@ -79,6 +79,7 @@ export * from "./features/vocabulary/schema";
 export * from "./hours/day-schema";
 export * from "./hours/owner-schema";
 export * from "./hours/schema";
+export * from "./number/money-flow";
 export * from "./number/number-format";
 export * from "./number/number-formats";
 export * from "./permissions/features";

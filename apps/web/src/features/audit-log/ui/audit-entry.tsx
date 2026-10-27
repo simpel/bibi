@@ -1,8 +1,7 @@
-import type { AuditLogDto } from "@bibi/core/schemas";
+import type { AuditLogDto, DateTimeFormat } from "@bibi/core/schemas";
 import { Badge } from "@bibi/ui";
 import { SparklesIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { auditDiff } from "../audit-diff";
 import { AuditChanges } from "./audit-changes";
 
@@ -12,12 +11,15 @@ export type AuditEntryValue = Omit<AuditLogDto, "createdAt" | "pseudonymisedAt">
   pseudonymisedAt: Date | string | null;
 };
 
-export type AuditEntryProps = { entry: AuditEntryValue };
+export type AuditEntryProps = {
+  entry: AuditEntryValue;
+  /** The viewer's date and time format: `getDateTimeFormat()` on the server, the hook in a client card. */
+  dates: DateTimeFormat;
+};
 
 /** One change: when, who (with the assistant marker and approver), the operation and the diff. */
-export function AuditEntry({ entry }: AuditEntryProps) {
+export function AuditEntry({ entry, dates: format }: AuditEntryProps) {
   const t = useTranslations("auditLog");
-  const format = useDateTimeFormat();
   const when = format.dateTime({ instant: entry.createdAt });
   const who = entry.actorName ?? t(`actor.${entry.actorType}`);
   return (

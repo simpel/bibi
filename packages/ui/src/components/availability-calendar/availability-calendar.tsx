@@ -15,6 +15,7 @@ import type { AssetBooking, CalendarAsset, CalendarWindow } from "./calendar-typ
 import { byDate, occupancyOf } from "./day-occupancy";
 import { type CalendarDayValue, dayTotals } from "./day-value";
 import { OverviewStrip } from "./overview-strip";
+import { PinScope } from "./pin-scope";
 import { frameOf } from "./timeline-frame";
 import { floorDayPx } from "./timeline-scale";
 import { useDayWindow } from "./use-day-window";
@@ -88,11 +89,15 @@ function useShownChange({
 /**
  * The main calendar: what is free and what is taken, for every asset the organization books, on
  * one timeline from a single day to months. Pick a range or pinch; scroll on forever either way.
+ * Pin bookings from their cards to compare them side by side at the bottom.
  */
 export function AvailabilityCalendar({ labels, ...props }: AvailabilityCalendarProps) {
+  const { assets, formatDate, onOpen } = props;
   return (
     <CalendarLabelsProvider labels={labels}>
-      <Calendar {...props} />
+      <PinScope {...{ labels, assets, formatDate, onOpen }}>
+        <Calendar {...props} />
+      </PinScope>
     </CalendarLabelsProvider>
   );
 }

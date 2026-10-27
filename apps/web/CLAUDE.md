@@ -58,6 +58,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 
 ## `"use client"`
 - Set only at the client boundary: components that a server component renders and that themselves have state, context or browser events. Children and hooks inherit the boundary.
+- Never add `"use client"` to make a hook work. What a page renders on the server is prepared on the server: dates and amounts come from `getDateTimeFormat()` / `getNumberFormat()` and go down as props (`dates`, `numbers`); a component shared with an assistant card takes them as props and the card passes its hook's. `pnpm check:structure` flags client-only hooks reachable from a page through server files (`tools/lib/server-render-rules.mjs`).
 
 ## The assistant (ADR 0007, 0008)
 - `features/assistant/`: `AssistantProvider` in the shell holds ONE `useChat` for the home page and ⌘K. The assistant exists only on `/` (ADR 0035); `ask` and `prefill` start a conversation and navigate there.

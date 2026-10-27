@@ -17,13 +17,13 @@
 - **Backup:** nightly `pg_dump` (the whole database, including the worker's `pgboss` schema, ADR 0027) to Hetzner Object Storage (or Storage Box), plus Hetzner's server backup. Restore is tested before the first customer.
 - **Images:** built in GitHub Actions after CI is green on `main`, published to GHCR and tagged with the git SHA. The same image is used in all environments.
 - **Deploy platform:** Coolify (self-hosted, Apache-2.0) on the same server. Coolify handles proxy with TLS (Let's Encrypt), environment variables, database management and scheduled database backups to S3-compatible storage.
-- **Deploy flow:** GitHub Actions triggers a deploy through Coolify's API/webhook with the new image's SHA tag. Rollback is done by deploying the previous SHA. Implemented as `.github/workflows/deploy.yml` (reusable, called from CI after `publish-images`, with a health gate on `/api/health` and `/health`) and the manual `rollback.yml`. See `docs/runbooks/deploy.md`.
+- **Deploy flow:** GitHub Actions triggers a deploy through Coolify's API by setting `IMAGE_TAG` on one Docker Compose resource built from `docker-compose.prod.yml`. Rollback is done by deploying the previous SHA. Implemented as `.github/workflows/deploy.yml` (reusable, called from CI after `publish-images`, with a health gate on `/api/health` and `/health`) and the manual `rollback.yml`. See `docs/runbooks/deploy.md`.
 - **Configuration in git:** the applications are deployed from a `docker-compose.prod.yml` in the repo, so the service definition is versioned. UI settings are limited to domains, secrets and backup schedule.
-- **Coolify security (see Context):** the admin UI is not exposed publicly. It is reached through VPN (Tailscale/WireGuard) or an SSH tunnel. Coolify is kept updated to the latest 4.x version, with few administrators, and Coolify's own instance data is included in the backup.
+- **Coolify security (see Context):** the admin UI is not exposed publicly. Admins reach it through an SSH tunnel; the GitHub runner reaches its API the same way, as a `deploy` user whose key may only forward to the Coolify port (a VPN such as Tailscale was rejected as an extra account and moving part). Coolify is kept updated to the latest 4.x version, with few administrators, and Coolify's own instance data is included in the backup.
 - **Migrations:** `prisma migrate deploy` runs as a one-off step before new containers take traffic. Migrations must be backward compatible (expand/contract).
 - **Domains:** `app.` for the web app and `mcp.` for the MCP server (OAuth requires a stable public HTTPS URL).
 - **Secrets:** GitHub environment secrets and Coolify's secret management. Never in the repo. All are read through `@bibi/config`.
-- **Hardening:** Hetzner Cloud Firewall (80, 443 and SSH), SSH keys only, unattended-upgrades.
+- **Hardening:** Hetzner Cloud Firewall (80, 443 and SSH), SSH keys only, fail2ban, unattended-upgrades. SSH is open to all IPs because GitHub's runners have no fixed range.
 - **Operations:** health endpoints for web and mcp as a deploy gate, Docker log rotation, uptime monitoring and error tracking.
 
 ## Open

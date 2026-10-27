@@ -1,6 +1,5 @@
-import type { SheetChange, SheetRow } from "@bibi/core/schemas";
+import type { DateTimeFormat, SheetChange, SheetRow } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
-import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 type RowFacts = Pick<
   SheetRow,
@@ -13,6 +12,8 @@ export type SheetRowLineProps = {
   change?: SheetChange["change"];
   /** REQUIREMENT: the line it applies to; null = the whole ticket. */
   parentKey?: string | null;
+  /** The viewer's date and time format: `getDateTimeFormat()` on the server, the hook in a client card. */
+  dates: DateTimeFormat;
 };
 
 function Marker({ change }: { change: SheetChange["change"] | undefined }) {
@@ -25,8 +26,7 @@ function Marker({ change }: { change: SheetChange["change"] | undefined }) {
   );
 }
 
-function Period({ row }: { row: RowFacts }) {
-  const format = useDateTimeFormat();
+function Period({ row, dates: format }: { row: RowFacts; dates: DateTimeFormat }) {
   if (!row.startsAt || !row.endsAt) return null;
   return (
     <span className="text-muted-foreground">
@@ -43,7 +43,7 @@ function Title({ row }: { row: RowFacts }) {
 }
 
 /** One sheet row with its ★ marker: the ticket, an item with its fields, or a count. */
-export function SheetRowLine({ row, change, parentKey }: SheetRowLineProps) {
+export function SheetRowLine({ row, change, parentKey, dates }: SheetRowLineProps) {
   const t = useTranslations("sheet");
   const details = Object.values(row.values).filter((value) => value !== null && value !== "");
   const muted = "text-muted-foreground";
@@ -65,7 +65,7 @@ export function SheetRowLine({ row, change, parentKey }: SheetRowLineProps) {
       {row.kind === "REQUIREMENT" ? (
         <span className={muted}>{parentKey ? t("onLine") : t("onTicket")}</span>
       ) : null}
-      <Period row={row} />
+      <Period row={row} dates={dates} />
       {details.length > 0 ? <span className={muted}>{details.map(String).join(", ")}</span> : null}
     </li>
   );

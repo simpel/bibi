@@ -21,7 +21,8 @@ jobs:
       group: deploy-${{ inputs.environment }}
       cancel-in-progress: false
     env:
-      COOLIFY_URL: ${{ secrets.COOLIFY_URL }}
+      # Coolify is reached through the SSH tunnel opened below.
+      COOLIFY_URL: ${{ secrets.DEPLOY_HOST && 'http://localhost:8000' || '' }}
       COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
       SHA: ${{ inputs.sha }}
     steps:
@@ -29,7 +30,7 @@ jobs:
         id: cfg
         run: |
           if [ -z "$COOLIFY_URL" ]; then
-            echo "::warning::COOLIFY_URL is not set; skipping deploy (production only until the first paying venue, ADR 0031)."
+            echo "::warning::DEPLOY_HOST is not set; skipping deploy (production only until the first paying venue, ADR 0031)."
             echo "configured=false" >> "$GITHUB_OUTPUT"
           else
             echo "configured=true" >> "$GITHUB_OUTPUT"
@@ -38,25 +39,34 @@ jobs:
         if: steps.cfg.outputs.configured == 'true'
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-          for app in web mcp; do
+          for app in web mcp worker; do
             docker manifest inspect "ghcr.io/${GITHUB_REPOSITORY}-${app}:${SHA}" > /dev/null
           done
+      - name: Open SSH tunnel to Coolify (its port is not public, ADR 0013)
+        if: steps.cfg.outputs.configured == 'true'
+        # The `deploy` user's key may only forward to localhost:8000 (tools/server/bootstrap.sh).
+        run: |
+          install -m 700 -d ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy && chmod 600 ~/.ssh/deploy
+          echo "${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/deploy -fN -o ExitOnForwardFailure=yes -L 8000:localhost:8000 "deploy@${{ secrets.DEPLOY_HOST }}"
       - name: Set image tag and trigger rollout in Coolify
         if: steps.cfg.outputs.configured == 'true'
+        # One Coolify Docker Compose resource runs docker-compose.prod.yml (migrate, web, mcp, worker),
+        # so setting IMAGE_TAG and redeploying rolls out every service on the same SHA.
         run: |
-          for uuid in "${{ secrets.COOLIFY_WEB_UUID }}" "${{ secrets.COOLIFY_MCP_UUID }}"; do
-            curl -fsS -X PATCH "$COOLIFY_URL/api/v1/applications/$uuid" \
-              -H "Authorization: Bearer $COOLIFY_TOKEN" -H "Content-Type: application/json" \
-              -d "{\"docker_registry_image_tag\": \"${SHA}\"}"
-            curl -fsS "$COOLIFY_URL/api/v1/deploy?uuid=$uuid&force=false" \
-              -H "Authorization: Bearer $COOLIFY_TOKEN"
-          done
+          uuid="${{ secrets.COOLIFY_APP_UUID }}"
+          curl -fsS -X PATCH "$COOLIFY_URL/api/v1/applications/$uuid/envs" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN" -H "Content-Type: application/json" \
+            -d "{\"key\": \"IMAGE_TAG\", \"value\": \"${SHA}\"}" > /dev/null
+          curl -fsS "$COOLIFY_URL/api/v1/deploy?uuid=$uuid&force=false" \
+            -H "Authorization: Bearer $COOLIFY_TOKEN"
       - name: Health gate
         if: steps.cfg.outputs.configured == 'true'
         run: |
           for url in "${{ vars.WEB_URL }}/api/health" "${{ vars.MCP_URL }}/health"; do
             ok=false
-            for i in $(seq 1 30); do
+            for i in $(seq 1 60); do
               if curl -fsS --max-time 5 "$url" > /dev/null; then ok=true; break; fi
               sleep 10
             done

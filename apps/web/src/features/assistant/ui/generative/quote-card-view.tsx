@@ -6,6 +6,7 @@ import { QuoteLinesTable } from "@/features/quote/ui/quote-lines-table";
 import { QuoteStatusBadge } from "@/features/quote/ui/quote-status-badge";
 import { QuoteTotals } from "@/features/quote/ui/quote-totals";
 import { Link } from "@/lib/navigation";
+import { useNumberFormat } from "@/lib/number/use-number-format";
 import { quoteRoute } from "@/lib/routes";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import type { GenerativeProps } from "./generative-props";
@@ -14,6 +15,7 @@ export type QuoteCardViewProps = GenerativeProps<"quote-card">;
 
 /** One quote version: status, validity, lines with change markers and totals. */
 export function QuoteCardView({ quote }: QuoteCardViewProps) {
+  const numbers = useNumberFormat();
   const t = useTranslations("assistant.ui.quote");
   const format = useDateTimeFormat();
   const href = quoteRoute({ id: quote.id });
@@ -33,7 +35,7 @@ export function QuoteCardView({ quote }: QuoteCardViewProps) {
           {validUntil ? t("validUntil", { date: validUntil }) : t("noValidity")}
         </p>
         <QuoteLinesTable lines={quote.lines} removedLines={quote.removedLines} />
-        <QuoteTotals quote={quote} />
+        <QuoteTotals numbers={numbers} quote={quote} />
         <Link href={href} className="text-primary hover:underline">
           {t("open")}
         </Link>

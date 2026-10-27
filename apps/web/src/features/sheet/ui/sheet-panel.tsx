@@ -1,5 +1,6 @@
 import type { SheetDto } from "@bibi/core";
 import { getTranslations } from "next-intl/server";
+import { getDateTimeFormat } from "@/server/date-time-format";
 import { GenerateSheetButton } from "./generate-sheet-button";
 import { SendSheetButton } from "./send-sheet-button";
 import { SheetMatches } from "./sheet-matches";
@@ -23,7 +24,7 @@ export async function SheetPanel({
   canGenerate,
   canSend,
 }: SheetPanelProps) {
-  const t = await getTranslations("sheet");
+  const [t, dates] = await Promise.all([getTranslations("sheet"), getDateTimeFormat()]);
   return (
     <article data-slot="sheet-panel" className="grid gap-3 rounded-lg border p-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -39,9 +40,9 @@ export async function SheetPanel({
       </div>
       {sheet ? (
         <>
-          <SheetStatus sheet={sheet} />
+          <SheetStatus sheet={sheet} dates={dates} />
           <SheetMatches matches={sheet.matches} />
-          <SheetRowsView content={sheet.content} changes={sheet.changes} />
+          <SheetRowsView content={sheet.content} changes={sheet.changes} dates={dates} />
         </>
       ) : (
         <p className="text-sm text-muted-foreground">{t("noVersion")}</p>

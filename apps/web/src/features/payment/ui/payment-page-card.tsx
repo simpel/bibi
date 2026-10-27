@@ -1,11 +1,15 @@
-import type { PublicPaymentDto } from "@bibi/core/schemas";
+import type { NumberFormat, PublicPaymentDto } from "@bibi/core/schemas";
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { useNumberFormat } from "@/lib/number/use-number-format";
 import { AutoRefresh } from "./auto-refresh";
 import { type PaymentOutcome, paymentOutcome } from "./payment-outcome";
 
-export type PaymentPageCardProps = { payment: PublicPaymentDto; returning?: boolean };
+export type PaymentPageCardProps = {
+  payment: PublicPaymentDto;
+  returning?: boolean;
+  /** The viewer's number format: `getNumberFormat()` on the server, the hook in a client card. */
+  numbers: NumberFormat;
+};
 
 const TITLE_KEY = {
   pay: "title",
@@ -26,9 +30,9 @@ const DESCRIPTION_KEY = {
 } as const satisfies Record<PaymentOutcome, string>;
 
 /** What the customer sees at `/pay/<token>`: the amount and a way to pay, or why not. */
-export function PaymentPageCard({ payment, returning = false }: PaymentPageCardProps) {
+export function PaymentPageCard({ payment, returning = false, numbers }: PaymentPageCardProps) {
   const t = useTranslations("payment.public");
-  const { money } = useNumberFormat();
+  const { money } = numbers;
   const outcome = paymentOutcome({ payment, returning });
   const values = { organization: payment.organizationName, reference: payment.ticketReference };
   const amount = money({ minor: payment.amountMinor, currency: payment.currency });

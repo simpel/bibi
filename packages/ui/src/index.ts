@@ -12,6 +12,7 @@ export * from "./components/availability-calendar/calendar-labels";
 export * from "./components/availability-calendar/calendar-legend";
 export type * from "./components/availability-calendar/calendar-types";
 export type { CalendarDayValue } from "./components/availability-calendar/day-value";
+export { PinnedBookings } from "./components/availability-calendar/pinned-bookings";
 export * from "./components/availability-calendar/ticket-of-booking";
 export * from "./components/avatar/avatar";
 export { Badge, type BadgeProps, badgeVariants } from "./components/badge/badge";
@@ -38,10 +39,7 @@ export {
 } from "./components/data-table/data-table";
 export * from "./components/data-table/data-table-actions";
 export * from "./components/data-table/data-table-order";
-export {
-  DataTablePagination,
-  type DataTablePaginationProps,
-} from "./components/data-table/data-table-pagination";
+export * from "./components/data-table/data-table-pagination";
 export type * from "./components/data-table/data-table-types";
 export * from "./components/dialog/dialog";
 export {
@@ -80,6 +78,8 @@ export { Label, type LabelProps } from "./components/label/label";
 export * from "./components/page-container/page-container";
 export * from "./components/permission-profile-card/permission-chip-list";
 export * from "./components/permission-profile-card/permission-profile-card";
+export * from "./components/person-contact/contact-labels";
+export * from "./components/person-contact/contact-name";
 export * from "./components/person-contact/person-contact";
 export * from "./components/popover/popover";
 export * from "./components/questionnaire/questionnaire";

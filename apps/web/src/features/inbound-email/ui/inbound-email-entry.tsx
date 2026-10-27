@@ -1,22 +1,24 @@
-import type { InboundEmailDto } from "@bibi/core/schemas";
+import type { DateTimeFormat, InboundEmailDto } from "@bibi/core/schemas";
 import { PaperclipIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 /** A received mail as the server (Date) or a tool result (ISO string) carries it. */
 export type InboundEmailValue = Omit<InboundEmailDto, "receivedAt" | "createdAt"> & {
   receivedAt: Date | string;
 };
 
-export type InboundEmailEntryProps = { email: InboundEmailValue };
+export type InboundEmailEntryProps = {
+  email: InboundEmailValue;
+  /** The viewer's date and time format: `getDateTimeFormat()` on the server, the hook in a client card. */
+  dates: DateTimeFormat;
+};
 
 /**
  * One received mail: sender, time, subject, the plain-text body and attachment names. The HTML
  * body is never rendered (untrusted markup from outside the organization).
  */
-export function InboundEmailEntry({ email }: InboundEmailEntryProps) {
+export function InboundEmailEntry({ email, dates: format }: InboundEmailEntryProps) {
   const t = useTranslations("inboundEmail");
-  const format = useDateTimeFormat();
   const received = new Date(email.receivedAt);
   return (
     <article data-slot="inbound-email-entry" className="grid gap-2 py-3 text-sm">

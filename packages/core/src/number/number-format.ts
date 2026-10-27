@@ -1,3 +1,4 @@
+import { type MoneyFlow, moneyFlowOf } from "./money-flow";
 import {
   type CurrencyDisplay,
   DEFAULT_CURRENCY,
@@ -28,6 +29,8 @@ export type NumberFormat = {
   money: (input: MoneyInput) => string;
   /** Minor units without a currency, always two decimals: `1 234,50`. */
   amount: (input: Omit<MoneyInput, "currency">) => string;
+  /** Settings for an animated amount (NumberFlow) that reads as `money` does. */
+  moneyFlow: (input: Pick<MoneyInput, "currency">) => MoneyFlow;
 };
 
 type PartsInput = {
@@ -73,5 +76,7 @@ export function createNumberFormat({ locale, formats }: CreateNumberFormatInput)
         },
       })(minor / 100),
     amount: ({ minor }) => formatter({ locale, style, options: TWO })(minor / 100),
+    moneyFlow: ({ currency }) =>
+      moneyFlowOf({ locale, style, currency: currency ?? DEFAULT_CURRENCY, currencyDisplay }),
   };
 }

@@ -1,6 +1,5 @@
-import type { TicketStatusChangeDto } from "@bibi/core/schemas";
+import type { DateTimeFormat, TicketStatusChangeDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
-import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 /** A status change as the server (Date) or a tool result (ISO string) carries it. */
 export type StatusChangeValue = Omit<TicketStatusChangeDto, "changedAt"> & {
@@ -12,15 +11,16 @@ export type StatusHistoryListProps = {
   items: readonly StatusChangeValue[];
   /** Status id → name; without it an entry says only that the status changed. */
   statusNames?: ReadonlyMap<string, string>;
+  /** The viewer's date and time format: `getDateTimeFormat()` on the server, the hook in a client card. */
+  dates: DateTimeFormat;
 };
 
 /**
  * The ticket's status history (ADR 0054), newest first: the status entered, what made the move,
  * when, and the reason. Shared by the ticket page and the assistant's tool card.
  */
-export function StatusHistoryList({ items, statusNames }: StatusHistoryListProps) {
+export function StatusHistoryList({ items, statusNames, dates: format }: StatusHistoryListProps) {
   const t = useTranslations("ticket.statusHistory");
-  const format = useDateTimeFormat();
   if (items.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
   return (
     <ol data-slot="status-history-list" className="divide-y">

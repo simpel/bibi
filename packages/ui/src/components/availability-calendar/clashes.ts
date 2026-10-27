@@ -61,3 +61,21 @@ export function lanesOf({ lines }: { lines: readonly CalendarLine[] }) {
   }
   return { lane, count: Math.max(1, ends.length) };
 }
+
+/** The other lines on this asset that take some of `line`'s time, each with the stretch shared. */
+export function clashesWith<Line extends CalendarLine>({
+  line,
+  lines,
+}: {
+  line: Line;
+  lines: readonly Line[];
+}) {
+  const own = footprint({ line, audience: "internal" });
+  return lines.flatMap((other) => {
+    if (other.id === line.id) return [];
+    const span = footprint({ line: other, audience: "internal" });
+    const from = Math.max(own.from, span.from);
+    const to = Math.min(own.to, span.to);
+    return to > from ? [{ line: other, from, to }] : [];
+  });
+}

@@ -6,7 +6,9 @@ import { getTranslations } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { Link } from "@/lib/navigation";
 import { depositNewRoute } from "@/lib/routes";
+import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
+import { getNumberFormat } from "@/server/number-format";
 import { runOperation } from "@/server/run-operation";
 import { BalanceSummary } from "./balance-summary";
 import { CreateInvoiceButton } from "./create-invoice-button";
@@ -42,6 +44,7 @@ async function loadMoney({ ticketId }: { ticketId: string }) {
 export async function TicketPayments({ locale, ticketId, canRequest }: TicketPaymentsProps) {
   const t = await getTranslations("payment");
   const deposit = await getTranslations("deposit");
+  const [dates, numbers] = await Promise.all([getDateTimeFormat(), getNumberFormat()]);
   const result = await loadMoney({ ticketId });
   if (!result.ok && result.error.code === "FORBIDDEN") return null;
   if (!result.ok) return <ErrorState errorKey={handleLoadError({ error: result.error, locale })} />;
@@ -62,11 +65,11 @@ export async function TicketPayments({ locale, ticketId, canRequest }: TicketPay
           </div>
         ) : null}
       </div>
-      <BalanceSummary balance={balance} />
+      <BalanceSummary balance={balance} numbers={numbers} />
       <h3 className="font-medium">{t("receivables")}</h3>
-      <ReceivableList {...{ balance, deposits, invoices }} canWrite={canRequest} />
+      <ReceivableList {...{ balance, deposits, invoices, dates, numbers }} canWrite={canRequest} />
       <h3 className="font-medium">{t("plural")}</h3>
-      <PaymentList payments={payments} />
+      <PaymentList payments={payments} dates={dates} numbers={numbers} />
     </section>
   );
 }

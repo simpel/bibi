@@ -34,4 +34,20 @@ describe("createNumberFormat (#482)", () => {
     expect(user.money({ minor: 4500, currency: "EUR" })).toBe("€45.00");
     expect(user.amount({ minor: -5 })).toBe("-0.05");
   });
+
+  it("gives an animated amount the settings that write it exactly as money does", () => {
+    const styles = ["SPACE_COMMA", "COMMA_DOT", "DOT_COMMA", "SPACE_DOT", null] as const;
+    for (const locale of ["sv", "en"]) {
+      for (const numberFormat of styles) {
+        for (const currencyDisplay of ["SYMBOL", "CODE"] as const) {
+          const user = format({ locale, numberFormat, currencyDisplay });
+          const flow = user.moneyFlow({ currency: "SEK" });
+          const digits = new Intl.NumberFormat(flow.locales, flow.format).format(1234567.5);
+          expect(`${flow.prefix}${digits}${flow.suffix}`).toBe(
+            user.money({ minor: 123456750, currency: "SEK" }),
+          );
+        }
+      }
+    }
+  });
 });

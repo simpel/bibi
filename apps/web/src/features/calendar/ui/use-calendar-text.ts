@@ -66,6 +66,7 @@ function bookingText({ t, number }: TextInput) {
     unscheduled: t("unscheduled"),
     money: ({ amount, currency }: { amount: number; currency: string }) =>
       number.money({ minor: Math.round(amount * 100), currency }),
+    moneyFlow: ({ currency }: { currency: string }) => number.moneyFlow({ currency }),
     exclVat: ({ amount }: { amount: string }) => t("exclVat", { amount }),
     value: {
       ...{ booked: t("value.booked"), prebooked: t("value.prebooked"), open: t("value.open") },
@@ -73,6 +74,16 @@ function bookingText({ t, number }: TextInput) {
       rate: ({ percent }: { percent: number }) => t("value.rate", { percent }),
     },
     open: ({ ticket }: { ticket: string }) => t("open", { ticket }),
+    pin: ({ name }: { name: string }) => t("pin", { name }),
+    unpin: ({ name }: { name: string }) => t("unpin", { name }),
+    pinned: t("pinned"),
+    pinCard: {
+      ...{ when: t("pinCard.when"), where: t("pinCard.where"), state: t("pinCard.state") },
+      ...{ guests: t("pinCard.guests"), value: t("pinCard.value"), exclVat: t("pinCard.exclVat") },
+      seeTicket: t("pinCard.seeTicket"),
+      minimize: ({ name }: { name: string }) => t("pinCard.minimize", { name }),
+      expand: ({ name }: { name: string }) => t("pinCard.expand", { name }),
+    },
     ...{ openLine: t("openLine"), notes: t("notes"), staff: t("staff") },
     fromTicket: ({ via }: { via: string }) => t("fromTicket", { via }),
     holds: { hard: t("holds.hard"), soft: t("holds.soft"), none: t("holds.none") },

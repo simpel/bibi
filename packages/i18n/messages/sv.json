@@ -458,6 +458,13 @@
       "type": "Typ",
       "email": "E-post",
       "phone": "Telefon"
+    },
+    "card": {
+      "phone": "Telefon",
+      "email": "E-post",
+      "copy": "Kopiera {label}",
+      "copied": "{label} kopierad",
+      "copyFailed": "Kunde inte kopiera"
     }
   },
   "ticket": {
@@ -586,6 +593,20 @@
       "rate": "{percent} % bokat"
     },
     "open": "Öppna {ticket}",
+    "pin": "Fäst {name} för att jämföra",
+    "unpin": "Lossa {name}",
+    "pinned": "Fästa bokningar",
+    "pinCard": {
+      "when": "När",
+      "where": "Var",
+      "state": "Läge",
+      "guests": "Gäster",
+      "value": "Värde",
+      "exclVat": "exkl. moms",
+      "seeTicket": "Visa ärendet",
+      "minimize": "Minimera {name}",
+      "expand": "Expandera {name}"
+    },
     "openLine": "Öppna rad",
     "notes": "Anteckningar",
     "staff": "Personal",

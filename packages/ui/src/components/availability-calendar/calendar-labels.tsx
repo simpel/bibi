@@ -52,6 +52,13 @@ export type CalendarLabels = {
   /** An amount in the user's number format and currency display. */
   money: (money: Money) => string;
   exclVat: (input: { amount: string }) => string;
+  /** The same amount for an animated number (NumberFlow), in the user's number format. */
+  moneyFlow: (input: { currency: string }) => {
+    locales: string;
+    format: { minimumFractionDigits: number; maximumFractionDigits: number };
+    prefix: string;
+    suffix: string;
+  };
   /** A day's value in its heading: booked, prebooked and still open, excl. VAT. */
   value: {
     booked: string;
@@ -62,6 +69,22 @@ export type CalendarLabels = {
     rate: (input: { percent: number }) => string;
   };
   open: (input: { ticket: string }) => string;
+  /** Pinning a booking's card to the tray at the bottom, to compare it with others. */
+  pin: (input: { name: string }) => string;
+  unpin: (input: { name: string }) => string;
+  pinned: string;
+  /** A pinned booking's card. */
+  pinCard: {
+    when: string;
+    where: string;
+    state: string;
+    guests: string;
+    value: string;
+    exclVat: string;
+    seeTicket: string;
+    minimize: (input: { name: string }) => string;
+    expand: (input: { name: string }) => string;
+  };
   openLine: string;
   notes: string;
   staff: string;

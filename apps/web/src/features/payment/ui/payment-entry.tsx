@@ -1,7 +1,5 @@
-import type { PaymentDto } from "@bibi/core/schemas";
+import type { DateTimeFormat, NumberFormat, PaymentDto } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
-import { useNumberFormat } from "@/lib/number/use-number-format";
-import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 import { PaymentStatusBadge } from "./payment-status-badge";
 
 /** A payment as the server (Date) or a tool result (ISO string) carries it. */
@@ -10,20 +8,25 @@ export type PaymentValue = Omit<PaymentDto, "createdAt" | "updatedAt" | "expires
   paidAt: Date | string | null;
 };
 
-export type PaymentEntryProps = { payment: PaymentValue };
+export type PaymentEntryProps = {
+  payment: PaymentValue;
+  /** The viewer's date and time format: `getDateTimeFormat()` on the server, the hook in a client card. */
+  dates: DateTimeFormat;
+  /** The viewer's number format: `getNumberFormat()` on the server, the hook in a client card. */
+  numbers: NumberFormat;
+};
 
 /** What a payment settles: a quote, a deposit request or an invoice (ADR 0057). */
-const settles = ({ payment }: PaymentEntryProps) =>
+const settles = ({ payment }: Pick<PaymentEntryProps, "payment">) =>
   payment.depositId ? "DEPOSIT" : payment.invoiceId ? "INVOICE" : "QUOTE";
 
 /**
  * One requested payment: method, amount, what it settles, status, when it was requested or paid,
  * Bibi's application fee on it and its link.
  */
-export function PaymentEntry({ payment }: PaymentEntryProps) {
+export function PaymentEntry({ payment, dates: format, numbers }: PaymentEntryProps) {
   const t = useTranslations("payment");
-  const format = useDateTimeFormat();
-  const { money } = useNumberFormat();
+  const { money } = numbers;
   const when = new Date(payment.paidAt ?? payment.createdAt);
   const fee = payment.applicationFeeMinor;
   return (
