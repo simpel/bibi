@@ -51,8 +51,7 @@ services:
     restart: "no"
     # The image is a `pnpm deploy` output, not a workspace, so call pnpm's hoisted Prisma CLI directly.
     working_dir: /app/node_modules/@bibi/db
-    entrypoint: ["/app/node_modules/.pnpm/node_modules/.bin/prisma", "migrate", "deploy"]
-    command: []
+    command: ["/app/node_modules/.pnpm/node_modules/.bin/prisma", "migrate", "deploy"]
     healthcheck:
       disable: true
     environment:
