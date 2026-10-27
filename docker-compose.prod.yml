@@ -17,6 +17,8 @@ x-app-env: &app-env
   BETTER_AUTH_URL: ${BETTER_AUTH_URL:?set BETTER_AUTH_URL}
   WEB_URL: ${WEB_URL:?set WEB_URL}
   MCP_URL: ${MCP_URL:?set MCP_URL}
+  # ADR 0073: the public site's host (apex). Empty = no host rules.
+  PUBLIC_URL: ${PUBLIC_URL:-}
   SMTP_URL: ${SMTP_URL:-}
   MAIL_FROM: ${MAIL_FROM:-}
   # ADR 0012: set MAIL_PROVIDER=resend with RESEND_API_KEY (EU region) for production mail.

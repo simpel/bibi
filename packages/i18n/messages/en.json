@@ -3422,5 +3422,33 @@
       "6": "Sunday"
     },
     "exceptionsHelp": "Only dated exceptions and no weekdays means every other day is closed."
+  },
+  "site": {
+    "brand": "Bibi",
+    "metaTitle": "Bibi – booking for conferences, food and drink",
+    "metaDescription": "Booking software for conferences, food and drink at venues without a hotel system: experience centres, museums, conference estates and restaurants with private rooms.",
+    "heading": "Conferences, food and drink in one place",
+    "lead": "Bibi is a booking system for venues without a hotel system. Staff create a ticket with all its lines in one step, and the customer pays through a link.",
+    "login": "Log in",
+    "signUp": "Get started",
+    "footer": "© Bibi",
+    "features": {
+      "tickets": {
+        "title": "Predefined tickets",
+        "body": "Create a ticket for a smaller meeting without a quote. The customer pays by card or on invoice through a link and never has to use the app."
+      },
+      "needs": {
+        "title": "Needs as counts",
+        "body": "Allergens and other needs are counted against your own lists and compiled automatically. No personal data about guests."
+      },
+      "sheets": {
+        "title": "Sheets that reach the right person",
+        "body": "Versioned sheets, such as the kitchen order, go to the person responsible and can be exported as json, pdf and csv."
+      },
+      "setup": {
+        "title": "Your own setup",
+        "body": "You decide the types, fields, lists, statuses and responsibilities. Access follows roles that you fine-tune per person."
+      }
+    }
   }
 }

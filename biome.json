@@ -55,6 +55,8 @@
         "**/page.tsx",
         "**/layout.tsx",
         "**/route.ts",
+        "**/robots.ts",
+        "**/sitemap.ts",
         "**/*.config.ts",
         "**/*.config.mjs",
         "**/.storybook/**",

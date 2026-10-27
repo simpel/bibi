@@ -21,10 +21,10 @@ Images on GHCR are public, so the server needs no registry login.
 
 1. **Hetzner Cloud Firewall** (Console > Firewalls), applied to the server. Inbound: TCP 22, 80 and 443 from anywhere. Nothing else: 8000, 6001, 6002 (Coolify) stay closed. SSH is open because GitHub's runners have no fixed IPs; it accepts keys only, `fail2ban` is on, and the `deploy` key can only forward to `localhost:8000`.
 2. **Bootstrap the server** from your Mac: `scp tools/server/bootstrap.sh root@<ip>:` then `ssh root@<ip> bash bootstrap.sh` (about 5 minutes). At the end it prints `DEPLOY_HOST`, `DEPLOY_SSH_KEY` (once) and `DEPLOY_SSH_KNOWN_HOSTS`.
-3. **DNS**: A records `app.<domain>` and `mcp.<domain>` to the server's public IPv4.
+3. **DNS**: A records to the server's public IPv4 for `app.`, `mcp.`, the apex and `www.` of the public domain (`heybibi.se`), and for the apex and `www.` of the redirect domain (`heybibi.tech`).
 4. **Coolify** (`ssh -L 8000:localhost:8000 -L 6001:localhost:6001 -L 6002:localhost:6002 root@<ip>`, then http://localhost:8000; 6001 and 6002 carry the live log updates): create the admin account, turn on 2FA, keep the instance URL empty.
    - New project `bibi` > New resource > Public repository `https://github.com/simpel/bibi`, branch `main`, build pack *Docker Compose*, compose file `/docker-compose.prod.yml`.
-   - Domains: web `https://app.<domain>:3330`, mcp `https://mcp.<domain>:3331` (the port is the container port).
+   - Domains (ADR 0073): web `https://app.<domain>:3330`, mcp `https://mcp.<domain>:3331` (the port is the container port). Also on `web`: `https://<domain>:3330`, `https://www.<domain>:3330`, `https://<tld2>:3330` and `https://www.<tld2>:3330`, where `<tld2>` is the redirect domain. The app redirects those to the right host, but each needs its own certificate. Set `PUBLIC_URL=https://<domain>` (the apex) next to `WEB_URL`; unset, the app serves everything on one host.
    - Environment: Coolify lists every `${VAR}` from the compose file. Set `IMAGE_TAG` to the SHA of the latest green CI run on `main`, `POSTGRES_PASSWORD` and `BETTER_AUTH_SECRET` (`openssl rand -hex 32`), `BETTER_AUTH_URL` and `WEB_URL` = `https://app.<domain>`, `MCP_URL` = `https://mcp.<domain>`, the `BACKUP_S3_*` values (`docs/operations/backup-and-restore.md`), mail and AI keys.
    - Deploy once from the UI and check `https://app.<domain>/api/health`.
    - Keys and Tokens > API tokens: create a token with *deploy* and *write*. Copy the resource UUID from its URL.

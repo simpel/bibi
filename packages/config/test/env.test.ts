@@ -20,6 +20,14 @@ describe("parseEnv", () => {
     expect(env.MAIL_FROM).toBe("Bibi <no-reply@bibi.local>");
   });
 
+  it("leaves PUBLIC_URL unset unless a URL is given", () => {
+    expect(parseEnv({ source: base }).PUBLIC_URL).toBeUndefined();
+    expect(parseEnv({ source: { ...base, PUBLIC_URL: "" } }).PUBLIC_URL).toBeUndefined();
+    expect(parseEnv({ source: { ...base, PUBLIC_URL: "https://heybibi.se" } }).PUBLIC_URL).toBe(
+      "https://heybibi.se",
+    );
+  });
+
   it("treats empty optional and defaulted vars as unset", () => {
     const env = parseEnv({
       source: { ...base, MAIL_PROVIDER: "", MAIL_INBOUND_DOMAIN: "", WEB_OAUTH_CLIENT_ID: "" },

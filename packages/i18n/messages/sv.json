@@ -3422,5 +3422,33 @@
       "6": "Söndag"
     },
     "exceptionsHelp": "Enbart datumundantag utan veckodagar betyder att alla andra dagar är stängda."
+  },
+  "site": {
+    "brand": "Bibi",
+    "metaTitle": "Bibi – bokningssystem för konferens, mat och dryck",
+    "metaDescription": "Bokningssystem för konferens, mat och dryck på platser utan hotellsystem: upplevelsecenter, museer, konferensgårdar och restauranger med privata rum.",
+    "heading": "Konferens, mat och dryck på ett ställe",
+    "lead": "Bibi är ett bokningssystem för platser utan hotellsystem. Personalen skapar en biljett med alla rader i ett steg, och kunden betalar via en länk.",
+    "login": "Logga in",
+    "signUp": "Kom igång",
+    "footer": "© Bibi",
+    "features": {
+      "tickets": {
+        "title": "Färdiga biljetter",
+        "body": "Skapa en biljett för ett mindre möte utan offert. Kunden betalar med kort eller mot faktura via en länk, och behöver aldrig använda appen."
+      },
+      "needs": {
+        "title": "Behov som antal",
+        "body": "Allergener och andra behov räknas som antal mot era egna listor och sammanställs automatiskt. Inga personuppgifter om gäster."
+      },
+      "sheets": {
+        "title": "Underlag som går rätt",
+        "body": "Versionerade underlag, till exempel köksorder, skickas till rätt ansvarig och kan exporteras som json, pdf och csv."
+      },
+      "setup": {
+        "title": "Er egen uppsättning",
+        "body": "Ni bestämmer själva typer, fält, listor, statusar och ansvar. Åtkomst styrs av roller som ni finjusterar per person."
+      }
+    }
   }
 }

@@ -49,6 +49,11 @@ const envSchema = z
     STRIPE_APPLICATION_FEE_BPS: z.coerce.number().int().min(0).max(10_000).optional(),
     AI_GATEWAY_API_KEY: z.string().optional(),
     WEB_URL: z.string().url().default("http://localhost:3330"),
+    /**
+     * Public site on its own host (ADR 0073), e.g. `https://heybibi.se`, while `WEB_URL` is the app host.
+     * Unset: one host serves everything and the public site is only reachable at `/<locale>/site`.
+     */
+    PUBLIC_URL: z.string().url().optional(),
     MCP_URL: z.string().url().default("http://localhost:3331"),
     /** Storybook of `@bibi/ui` (`pnpm --filter @bibi/ui dev`), shown in the dev banner. */
     STORYBOOK_URL: z.string().url().default("http://localhost:3332"),
