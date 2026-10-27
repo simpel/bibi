@@ -1,4 +1,5 @@
-# Production service definition (ADR 0013). Deployed by Coolify or run directly:
+# Production service definition (ADR 0013). Deployed by Coolify. No host ports are published: the proxy
+# routes app. and mcp. to the containers. To run it directly, add a reverse proxy or a temporary ports mapping:
 #   IMAGE_TAG=<git sha> docker compose -f docker-compose.prod.yml --env-file .env.prod up -d
 # Images are built in GitHub Actions and published to GHCR tagged with the git SHA.
 # Secrets come from the environment (Coolify / --env-file), never from the repo.
@@ -64,8 +65,9 @@ services:
     image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-web:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: unless-stopped
     environment: *app-env
-    ports:
-      - "${WEB_PORT:-3330}:3330"
+    # Not published: Coolify's proxy reaches the container on this internal port.
+    expose:
+      - "3330"
     depends_on:
       postgres: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }
@@ -81,8 +83,8 @@ services:
     image: ${IMAGE_REPO:-ghcr.io/simpel/bibi}-mcp:${IMAGE_TAG:?set IMAGE_TAG to the git sha}
     restart: unless-stopped
     environment: *app-env
-    ports:
-      - "${MCP_PORT:-3331}:3331"
+    expose:
+      - "3331"
     depends_on:
       postgres: { condition: service_healthy }
       migrate: { condition: service_completed_successfully }
