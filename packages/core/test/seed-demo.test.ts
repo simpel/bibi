@@ -15,8 +15,9 @@ const testOrgs = () => {
   return [lindholmen, vingaleden].map((org) => ({ ...org, slug: `${org.slug}-${suffix}` }));
 };
 
-// Each test seeds the full demo (twice for idempotency checks); allow headroom for a loaded machine.
-describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 60_000 }, () => {
+// Each test seeds the full demo (twice for idempotency checks). It takes about 35 s alone and
+// over 60 s on CI, where all packages run in parallel, so the limit leaves a wide margin.
+describe("seed:demo slices 1–5 (ADR 0025)", { timeout: 180_000 }, () => {
   it("creates both orgs with fixed-role members, passes its checks and is idempotent", async () => {
     const orgs = testOrgs();
     const first = await seedDemo({ orgs });
