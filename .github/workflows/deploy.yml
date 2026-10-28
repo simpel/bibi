@@ -56,10 +56,10 @@ jobs:
         # so setting IMAGE_TAG and redeploying rolls out every service on the same SHA.
         run: |
           uuid="${{ secrets.COOLIFY_APP_UUID }}"
-          curl -fsS -X PATCH "$COOLIFY_URL/api/v1/applications/$uuid/envs" \
+          curl -sS --fail-with-body -X PATCH "$COOLIFY_URL/api/v1/applications/$uuid/envs" \
             -H "Authorization: Bearer $COOLIFY_TOKEN" -H "Content-Type: application/json" \
             -d "{\"key\": \"IMAGE_TAG\", \"value\": \"${SHA}\"}" > /dev/null
-          curl -fsS "$COOLIFY_URL/api/v1/deploy?uuid=$uuid&force=false" \
+          curl -sS --fail-with-body "$COOLIFY_URL/api/v1/deploy?uuid=$uuid&force=false" \
             -H "Authorization: Bearer $COOLIFY_TOKEN"
       - name: Health gate
         if: steps.cfg.outputs.configured == 'true'
