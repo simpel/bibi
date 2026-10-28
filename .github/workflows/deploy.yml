@@ -58,7 +58,7 @@ jobs:
           uuid="${{ secrets.COOLIFY_APP_UUID }}"
           curl -sS --fail-with-body -X PATCH "$COOLIFY_URL/api/v1/applications/$uuid/envs" \
             -H "Authorization: Bearer $COOLIFY_TOKEN" -H "Content-Type: application/json" \
-            -d "{\"key\": \"IMAGE_TAG\", \"value\": \"${SHA}\"}" > /dev/null
+            -d "{\"key\": \"IMAGE_TAG\", \"value\": \"${SHA}\"}"
           curl -sS --fail-with-body "$COOLIFY_URL/api/v1/deploy?uuid=$uuid&force=false" \
             -H "Authorization: Bearer $COOLIFY_TOKEN"
       - name: Health gate
