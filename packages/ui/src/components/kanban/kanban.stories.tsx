@@ -15,12 +15,11 @@ const labels: KanbanLabels = {
 };
 
 const columns = [
-  { id: "new", title: "New", color: "var(--color-muted-foreground)" },
+  { id: "new", title: "New" },
   { id: "qualified", title: "Qualified" },
   {
     id: "confirmed",
     title: "Won",
-    color: "var(--color-primary)",
     zones: [
       { id: "confirmed", title: "Confirmed" },
       { id: "locked", title: "Final count locked" },

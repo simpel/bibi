@@ -20,8 +20,12 @@ type Ctx = { context: ExecuteContext };
 
 /** "Quote sent" (QUOTE_SENT) after Lead, and Confirmed as the QUOTE_ACCEPTED status. */
 async function configure({ context }: Ctx) {
-  const input = { name: "Quote sent", color: "#7c3aed", event: "QUOTE_SENT" as const };
-  const sent = unwrap({ result: await execute({ operation: createTicketStatus, input, context }) });
+  const input = { name: "Quote sent", color: "#7c3aed" };
+  const made = unwrap({ result: await execute({ operation: createTicketStatus, input, context }) });
+  const event = { id: made.id, event: "QUOTE_SENT" as const };
+  const sent = unwrap({
+    result: await execute({ operation: updateTicketStatus, input: event, context }),
+  });
   const confirmed = await statusByName({ context, name: "Confirmed" });
   const update = { id: confirmed.id, event: "QUOTE_ACCEPTED" as const };
   unwrap({ result: await execute({ operation: updateTicketStatus, input: update, context }) });

@@ -6,7 +6,6 @@ export function customizePhases({ board }: { board: PipelineBoard }): KanbanPhas
   return board.columns.map((column) => ({
     id: column.id,
     title: column.title,
-    color: column.color,
     statusIds: column.statuses.map((status) => status.id),
   }));
 }

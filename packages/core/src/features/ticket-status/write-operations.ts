@@ -26,15 +26,10 @@ export const createTicketStatus = defineOperation({
   name: "ticketStatus.create",
   kind: "command",
   description:
-    "Create a ticket status: a name, a hex color and its flags (entry, closing, " +
-    "requiresReason, requiresAssignee, requiresAcceptedQuote, invoiceable; all false by default) " +
-    "and an optional quote " +
-    "`event` (QUOTE_SENT or QUOTE_ACCEPTED: quote.send and quote.accept move tickets here; at " +
-    "most one status per event, so it is taken from the status that had it). It is placed last. " +
-    "It shows in `phaseId` when given, otherwise on no board until moved onto one " +
-    "(boardPhase.moveStatus). " +
-    "A new entry status takes the entry flag from the current one. Allow moves to and from it " +
-    "with ticketStatus.setTransitions.",
+    "Create a ticket status: a name and a hex color. Every flag starts false and the quote " +
+    "event empty; set them with ticketStatus.update. It is placed last. It shows in `phaseId` " +
+    "when given, otherwise on no board until moved onto one (boardPhase.moveStatus). Allow " +
+    "moves to and from it with ticketStatus.setTransitions.",
   input: TicketStatusCreateInputSchema,
   output: TicketStatusSchema,
   permission: "pipeline:write",

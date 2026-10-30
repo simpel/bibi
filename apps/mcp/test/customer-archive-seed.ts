@@ -40,8 +40,9 @@ export async function seedArchiveCustomer({ client, tickets }: SeedInput): Promi
     name: "customer_create",
     args: { entityTypeId: customerType.data.id, name: "Kvarnby Design AB" },
   });
-  const status = { name: "Lead", color: "#22c55e", entry: true };
-  await call({ client, name: "ticketStatus_create", args: status });
+  const status = { name: "Lead", color: "#22c55e" };
+  const lead = await call({ client, name: "ticketStatus_create", args: status });
+  await call({ client, name: "ticketStatus_update", args: { id: lead.data.id, entry: true } });
   for (let index = 0; index < tickets; index += 1)
     await addArchiveTicket({ client, entityTypeId: type.data.id, customerId: customer.data.id });
   return customer.data.id;

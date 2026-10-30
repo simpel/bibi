@@ -23,11 +23,12 @@ export async function seedTicket({ client }: SeedTicketInput): Promise<SeededTic
     name: "customer_create",
     args: { entityTypeId: customerType.data.id, name: "Secret AB" },
   });
-  await call({
+  const status = await call({
     client,
     name: "ticketStatus_create",
-    args: { name: "Secret status", color: "#22c55e", entry: true },
+    args: { name: "Secret status", color: "#22c55e" },
   });
+  await call({ client, name: "ticketStatus_update", args: { id: status.data.id, entry: true } });
   const ticket = await call({
     client,
     name: "ticket_create",

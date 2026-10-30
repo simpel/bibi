@@ -194,8 +194,7 @@
     "remove": "Ta bort kolumnen",
     "removeConfirm": "Ta bort kolumnen {name}? Dess ärendestatusar hamnar under \"Inte på den här tavlan\". Inga ärenden ändras.",
     "fields": {
-      "name": "Namn",
-      "color": "Färg"
+      "name": "Namn"
     },
     "saving": "Sparar…",
     "removing": "Tar bort…",

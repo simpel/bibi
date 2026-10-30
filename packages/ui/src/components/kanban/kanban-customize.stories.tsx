@@ -32,10 +32,10 @@ const statuses = [
 ];
 
 const initial: KanbanPhaseData[] = [
-  { id: "p1", title: "Lead", color: "#f59e0b", statusIds: ["lead"] },
-  { id: "p2", title: "Quote sent", color: "#3b82f6", statusIds: ["quote"] },
-  { id: "p3", title: "Won", color: "#22c55e", statusIds: ["confirmed", "locked"] },
-  { id: "p4", title: "Closed", color: "#64748b", statusIds: ["completed"] },
+  { id: "p1", title: "Lead", statusIds: ["lead"] },
+  { id: "p2", title: "Quote sent", statusIds: ["quote"] },
+  { id: "p3", title: "Won", statusIds: ["confirmed", "locked"] },
+  { id: "p4", title: "Closed", statusIds: ["completed"] },
 ];
 
 const slots: KanbanCustomizeSlots = {

@@ -15,9 +15,13 @@ async function seed({ org }: SeedInput): Promise<string> {
     path: "/entity-types",
     body: { base: "TICKET", name: "Conference" },
   });
-  await post({
-    path: "/ticket-statuses",
-    body: { name: "Lead", color: "#22c55e", entry: true },
+  // A new status is a name and a colour; the entry flag is set with an update.
+  const lead = await post({ path: "/ticket-statuses", body: { name: "Lead", color: "#22c55e" } });
+  await call({
+    method: "PATCH",
+    path: `/ticket-statuses/${lead.json.id}`,
+    org,
+    body: { entry: true },
   });
   const customer = await post({
     path: "/customers",

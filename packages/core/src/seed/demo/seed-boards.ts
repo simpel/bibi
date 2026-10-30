@@ -22,9 +22,9 @@ async function seedBoard({ context, board, statusIds }: SeedBoardInput): Promise
   const created = await execute({ operation: createBoard, input: { name: board.name }, context });
   if (!created.ok) return created;
   const { id: boardId, phases: mirrored } = created.value;
-  for (const { name, color, statuses } of board.phases) {
+  for (const { name, statuses } of board.phases) {
     const ids = statuses.flatMap((status) => statusIds.get(status) ?? []);
-    const input = { boardId, name, color, statusIds: ids };
+    const input = { boardId, name, statusIds: ids };
     const phase = await execute({ operation: createBoardPhase, input, context });
     if (!phase.ok) return phase;
   }

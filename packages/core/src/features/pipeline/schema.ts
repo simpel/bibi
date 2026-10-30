@@ -11,7 +11,6 @@ export const PipelineStatusSchema = z.object({
 export const PipelineColumnSchema = z.object({
   id: z.string().describe("The board phase id"),
   title: z.string().describe("The phase name"),
-  color: z.string().describe("The phase colour"),
   closed: z.boolean().describe("Every status of the phase closes; shown as a closed lane"),
   statuses: z
     .array(PipelineStatusSchema)

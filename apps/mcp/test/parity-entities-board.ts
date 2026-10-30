@@ -6,13 +6,23 @@ type Phase = Record<string, unknown> & { id: string };
 const phaseOf = ({ board, id }: { board: { phases: Phase[] }; id: string }) =>
   board.phases.find((phase) => phase.id === id);
 
-const ticketStatus = byId({
+const statusById = byId({
   name: "ticketStatus",
   field: "ticketStatus",
   list: "ticket-statuses",
   createTool: "ticketStatus_create",
-  args: { name: "Parity status", color: "#22c55e", entry: true },
+  args: { name: "Parity status", color: "#22c55e" },
 });
+
+/** A new status is a name and a colour; the entry flag (tickets made later need one) is an update. */
+const ticketStatus: ParityEntity = {
+  ...statusById,
+  create: async (input) => {
+    const created = await statusById.create(input);
+    const args = { id: created.id, entry: true };
+    return tool({ mcp: input.mcp, name: "ticketStatus_update", args });
+  },
+};
 
 const board = byId({
   name: "board",
@@ -21,7 +31,7 @@ const board = byId({
   createTool: "board_create",
   args: { name: "Parity board" },
   nested: {
-    phases: "{ id boardId name color position statusIds status createdAt updatedAt createdBy }",
+    phases: "{ id boardId name position statusIds status createdAt updatedAt createdBy }",
   },
 });
 
@@ -32,7 +42,7 @@ const boardPhase: ParityEntity = {
     tool({
       mcp,
       name: "boardPhase_create",
-      args: { boardId: made.board.id, name: "Parity phase", color: "#22c55e" },
+      args: { boardId: made.board.id, name: "Parity phase" },
     }),
   viaMcp: async ({ mcp, created }) =>
     phaseOf({

@@ -1,15 +1,13 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
-import { ColorSchema } from "../ticket-status/schema";
 
-/** A column of a board (ADR 0067): a name, a color and the ticket statuses it shows. */
+/** A column of a board (ADR 0067): a name and the ticket statuses it shows; only statuses have a colour. */
 export const BoardPhaseSchema = z.object({
   id: z.string(),
   organizationId: z.string(),
   boardId: z.string(),
   name: z.string(),
-  color: z.string(),
   /** Order among the board's phases (left to right). */
   position: z.number().int(),
   /** Ids of the ticket statuses in this phase, in status order. */
@@ -30,7 +28,6 @@ export const PhaseNameSchema = z
 export const BoardPhaseCreateInputSchema = z.object({
   boardId: z.string().min(1),
   name: PhaseNameSchema,
-  color: ColorSchema,
   position: z
     .number()
     .int()
@@ -46,7 +43,6 @@ export const BoardPhaseCreateInputSchema = z.object({
 export const BoardPhaseUpdateInputSchema = z.object({
   id: z.string().min(1),
   name: PhaseNameSchema.optional(),
-  color: ColorSchema.optional(),
 });
 
 export const BoardPhaseIdInputSchema = z.object({ id: z.string().min(1) });

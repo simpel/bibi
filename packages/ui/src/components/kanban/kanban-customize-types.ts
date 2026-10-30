@@ -1,10 +1,9 @@
 import type { ReactNode } from "react";
 
-/** A board column in customize mode: a phase that groups statuses. */
+/** A board column in customize mode: a phase that groups statuses (only statuses have a colour). */
 export type KanbanPhaseData = {
   id: string;
   title: string;
-  color?: string;
   /** The chips in this column, in display order. */
   statusIds: readonly string[];
 };

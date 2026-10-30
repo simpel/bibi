@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 import { seedResponsibility } from "./seed-responsibility";
 
-const SECRET_STATUS = { name: "Secret status", color: "#22c55e", entry: true } as const;
+const SECRET_STATUS = { name: "Secret status", color: "#22c55e" } as const;
 
 describe("cross-organization isolation: ticket statuses", () => {
   it("hides one organization's statuses and refuses them as transition targets", async () => {

@@ -26,7 +26,7 @@ import { applyNewStatusTransitions } from "./apply-new-status-transitions";
 
 type BoardPage = { items: BoardDto[]; nextCursor: string | null };
 export type IdActionInput = { id: string };
-export type PhaseUpdateInput = { id: string; name?: string; color?: string };
+export type PhaseUpdateInput = { id: string; name?: string };
 export type MoveStatusInput = { boardId: string; statusId: string; phaseId: string | null };
 
 export async function createBoardAction({

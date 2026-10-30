@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 
-const STATUS = { name: "Open", color: "#22c55e", entry: true } as const;
+const STATUS = { name: "Open", color: "#22c55e" } as const;
 
 describe("cross-organization isolation: boards and phases", () => {
   it("hides one organization's boards and phases and refuses its ids in another's", async () => {
@@ -13,7 +13,7 @@ describe("cross-organization isolation: boards and phases", () => {
     const phase = await call({
       client: a,
       name: "boardPhase_create",
-      args: { boardId: board.data.id, name: "Secret phase", color: "#22c55e" },
+      args: { boardId: board.data.id, name: "Secret phase" },
     });
     expect(phase.isError, JSON.stringify(phase.data)).toBe(false);
     const own = await call({ client: b, name: "board_create", args: { name: "Own board" } });
@@ -21,7 +21,7 @@ describe("cross-organization isolation: boards and phases", () => {
     const ownPhase = await call({
       client: b,
       name: "boardPhase_create",
-      args: { boardId: own.data.id, name: "Own phase", color: "#22c55e" },
+      args: { boardId: own.data.id, name: "Own phase" },
     });
 
     const listed = await call({ client: b, name: "board_list", args: {} });
@@ -30,7 +30,7 @@ describe("cross-organization isolation: boards and phases", () => {
       ["board_get", { id: board.data.id }],
       ["board_update", { id: board.data.id, name: "Hacked" }],
       ["board_archive", { id: board.data.id }],
-      ["boardPhase_create", { boardId: board.data.id, name: "X", color: "#22c55e" }],
+      ["boardPhase_create", { boardId: board.data.id, name: "X" }],
       ["boardPhase_update", { id: phase.data.id, name: "Hacked" }],
       ["boardPhase_archive", { id: phase.data.id }],
       ["boardPhase_reorder", { boardId: board.data.id, ids: [phase.data.id] }],

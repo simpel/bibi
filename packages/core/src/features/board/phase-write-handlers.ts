@@ -20,14 +20,14 @@ export const createBoardPhaseHandler = async ({
   input,
   context,
 }: HandlerInput<z.infer<typeof BoardPhaseCreateInputSchema>>) => {
-  const { boardId, name, color, statusIds } = input;
+  const { boardId, name, statusIds } = input;
   const board = await context.db.board.findFirst({ where: { id: boardId } });
   if (!board) return notFound({ entity: "Board" });
   const unique = [...new Set(statusIds)];
   const found = await context.db.ticketStatus.count({ where: { id: { in: unique } } });
   if (found !== unique.length) return unknownStatus();
   const position = input.position ?? Number.MAX_SAFE_INTEGER;
-  const row = await insertPhase({ context, boardId, name, color, position });
+  const row = await insertPhase({ context, boardId, name, position });
   for (const statusId of unique) await placeStatus({ context, boardId, phaseId: row.id, statusId });
   const phase = await loadBoardPhase({ context, id: row.id });
   if (!phase) return notFound({ entity: "Board phase" });

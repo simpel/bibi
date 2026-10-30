@@ -31,7 +31,7 @@ async function createDefaultBoard({ context }: Ctx) {
 }
 
 export type PlaceNewStatusInput = Ctx & {
-  status: { id: string; name: string; color: string; closes: boolean };
+  status: { id: string; name: string; closes: boolean };
   /** A phase to show it in. */
   phaseId: string | undefined;
   /**
@@ -73,8 +73,7 @@ export async function placeNewStatus({
   const boardId = board.id;
   const change = async () => {
     const end = status.closes ? Number.MAX_SAFE_INTEGER : await openStatusEnd({ context, boardId });
-    const { name, color } = status;
-    const phase = await insertPhase({ context, boardId, name, color, position: end });
+    const phase = await insertPhase({ context, boardId, name: status.name, position: end });
     await placeStatus({ context, boardId, phaseId: phase.id, statusId: status.id });
   };
   await auditedOnBoard({ context, boardId, change });

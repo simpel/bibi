@@ -44,7 +44,7 @@ export const createBoardPhase = defineOperation({
   name: "boardPhase.create",
   kind: "command",
   description:
-    "Add a phase (column) to a board: a name, a hex color, an optional `position` (index, " +
+    "Add a phase (column) to a board: a name, an optional `position` (index, " +
     "default last) and the ticket statuses it shows (`statusIds`). A status is in one phase per " +
     "board, so each listed status leaves its current phase on this board. Tickets are unchanged.",
   input: BoardPhaseCreateInputSchema,
@@ -56,7 +56,7 @@ export const createBoardPhase = defineOperation({
 export const updateBoardPhase = defineOperation({
   name: "boardPhase.update",
   kind: "command",
-  description: "Rename or recolor a board phase (column). Its statuses and tickets are unchanged.",
+  description: "Rename a board phase (column). Its statuses and tickets are unchanged.",
   input: BoardPhaseUpdateInputSchema,
   output: BoardPhaseSchema,
   permission: "pipeline:write",

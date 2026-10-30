@@ -1,6 +1,9 @@
 import { ok, type Result } from "../../errors/result";
 import { setTicketStatusTransitions } from "../../features/ticket-status/order-operations";
-import { createTicketStatus } from "../../features/ticket-status/write-operations";
+import {
+  createTicketStatus,
+  updateTicketStatus,
+} from "../../features/ticket-status/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { seedDemoBoards } from "./seed-boards";
@@ -10,13 +13,20 @@ import type { DemoPipeline } from "./types";
 
 export type SeedPipelineInput = { context: ExecuteContext; pipeline: DemoPipeline };
 
-/** Creates the statuses in order through `ticketStatus.create`; returns their ids by name. */
+/**
+ * Creates the statuses in order through `ticketStatus.create` (a name and a colour), then sets
+ * each one's flags and event with `ticketStatus.update`; returns their ids by name.
+ */
 async function createStatuses({ context, pipeline }: SeedPipelineInput) {
   const ids = new Map<string, string>();
-  for (const ticketStatus of pipeline.statuses.statuses) {
-    const created = await execute({ operation: createTicketStatus, input: ticketStatus, context });
+  for (const { name, color, ...flags } of pipeline.statuses.statuses) {
+    const input = { name, color };
+    const created = await execute({ operation: createTicketStatus, input, context });
     if (!created.ok) return created;
-    ids.set(ticketStatus.name, created.value.id);
+    const update = { id: created.value.id, ...flags };
+    const updated = await execute({ operation: updateTicketStatus, input: update, context });
+    if (!updated.ok) return updated;
+    ids.set(name, created.value.id);
   }
   return ok({ value: ids });
 }

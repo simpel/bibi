@@ -33,7 +33,6 @@ export function boardColumns({ board, statuses, cards }: BoardColumnsInput): Boa
     return {
       id: phase.id,
       title: phase.name,
-      color: phase.color,
       closed: rows.length > 0 && rows.every((row) => row.closes),
       statuses: rows.map((row) => toStatus({ row })),
     };

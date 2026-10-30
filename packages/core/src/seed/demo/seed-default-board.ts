@@ -29,14 +29,13 @@ export async function seedDefaultBoard({
   let open = pipeline.statuses.statuses.filter(
     (status) => !status.closes && placed.has(ids.get(status.name) ?? ""),
   ).length;
-  for (const { name, color, closes } of pipeline.statuses.statuses) {
+  for (const { name, closes } of pipeline.statuses.statuses) {
     const id = ids.get(name);
     if (!id || placed.has(id)) continue;
     const position = closes ? undefined : open++;
     const input = {
       boardId: board.id,
       name,
-      color,
       statusIds: [id],
       ...(position === undefined ? {} : { position }),
     };

@@ -1,13 +1,12 @@
-import type { TicketStatusCreateInput } from "@bibi/core/schemas";
 import { STATUS_EVENTS, STATUS_FLAGS } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { CheckField } from "@/components/form/check-field";
 import { OptionSelectField } from "@/components/form/option-select-field";
-import type { TicketStatusFormValues } from "./ticket-status-form-schema";
+import type { TicketStatusEdit, TicketStatusFormValues } from "./ticket-status-form-schema";
 
 export type StatusFlagFieldsProps = {
-  form: UseFormReturn<TicketStatusFormValues, unknown, TicketStatusCreateInput>;
+  form: UseFormReturn<TicketStatusFormValues, unknown, TicketStatusEdit>;
 };
 
 /** One checkbox per status flag and the quote event select (ADR 0043), each a plain choice. */

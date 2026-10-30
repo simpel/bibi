@@ -194,8 +194,7 @@
     "remove": "Remove column",
     "removeConfirm": "Remove the column {name}? Its statuses move to \"Not on this board\". No ticket changes.",
     "fields": {
-      "name": "Name",
-      "color": "Colour"
+      "name": "Name"
     },
     "saving": "Saving…",
     "removing": "Removing…",

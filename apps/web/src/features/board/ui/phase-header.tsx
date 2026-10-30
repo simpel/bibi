@@ -1,6 +1,5 @@
 import type { KanbanPhaseData } from "@bibi/ui";
 import {
-  ColorSwatch,
   DataTableRowActions,
   Dialog,
   DialogContent,
@@ -59,14 +58,13 @@ function PhaseMenu({ phase, order, access, onReorder, onOpen }: PhaseMenuProps) 
   );
 }
 
-/** The back of a column: its name and colour, and a menu (edit, move, remove). */
+/** The back of a column: its name and a menu (edit, move, remove). */
 export function PhaseHeader({ boardId, ...menu }: PhaseHeaderProps) {
   const t = useTranslations("boardPhase");
   const [dialog, setDialog] = useState<"edit" | "remove" | null>(null);
   const { phase } = menu;
   return (
     <div className="flex items-center gap-2 text-sm font-medium">
-      {phase.color ? <ColorSwatch color={phase.color} /> : null}
       <span className="truncate">{phase.title}</span>
       <span className="ml-auto">
         <PhaseMenu {...menu} onOpen={setDialog} />

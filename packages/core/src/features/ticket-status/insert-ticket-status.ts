@@ -4,10 +4,19 @@ import { conflict } from "../../shared/errors";
 import { type PlaceNewStatusInput, placeNewStatus } from "../board/status-placement";
 import { checkFlagCombination, handOverEntry, handOverEvent } from "./flag-rules";
 import { toTicketStatusDto } from "./load-ticket-status";
-import type { TicketStatusCreateInput, TicketStatusDto } from "./schema";
+import type {
+  StatusEvent,
+  TicketStatusCreateInput,
+  TicketStatusDto,
+  TicketStatusFlags,
+} from "./schema";
 
+/** A create's fields plus the flags and event a template import sets in the same step. */
 export type InsertTicketStatusInput = { context: OperationContext } & TicketStatusCreateInput &
-  Pick<PlaceNewStatusInput, "ownPhase">;
+  Partial<TicketStatusFlags> & { event?: StatusEvent | null } & Pick<
+    PlaceNewStatusInput,
+    "ownPhase"
+  >;
 
 export type NameTakenInput = { context: Pick<OperationContext, "db">; name: string; id?: string };
 

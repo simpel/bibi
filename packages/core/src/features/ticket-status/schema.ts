@@ -68,10 +68,10 @@ export const ColorSchema = z
 
 const OptionalFlags = z.object({ ...FlagShape, event: EventSchema }).partial().shape;
 
+/** A new status is a name and a colour; its flags are set with `ticketStatus.update`. */
 export const TicketStatusCreateInputSchema = z.object({
   name: NameSchema,
   color: ColorSchema,
-  ...OptionalFlags,
   phaseId: z
     .string()
     .min(1)

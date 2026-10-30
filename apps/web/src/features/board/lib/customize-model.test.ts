@@ -17,14 +17,12 @@ const board = {
     {
       id: "open",
       title: "Open",
-      color: "#f59e0b",
       closed: false,
       statuses: [status({ id: "lead" })],
     },
     {
       id: "won",
       title: "Won",
-      color: "#22c55e",
       closed: false,
       statuses: [status({ id: "confirmed" }), status({ id: "locked" })],
     },

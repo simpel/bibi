@@ -267,7 +267,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 **Attributes**
 - Board: name, order (`position`; the first active board is the default), optional filter on ticket type (`entityTypeId`) and main assignee (`assigneeId`), archived
-- BoardPhase: name, color, order within its board, archived
+- BoardPhase: name, order within its board, archived (no colour: only statuses are colour-coded)
 - BoardPhaseStatus: a join row, one status in one phase; unique per board and status, so a status is in at most one phase per board and a status in none is not on that board
 
 **Relations**
@@ -275,7 +275,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `1:N` BoardPhase shows → BoardPhaseStatus; `N:1` BoardPhaseStatus is → TicketStatus
 - `N:1` Board filters → EntityType (optional)
 
-> Every organization has at least one board; `ticketStatus.create` leaves a new status on no board until it is moved onto one, unless given a `phaseId`; a template import gives each imported status its own phase on the default board. Archiving a status removes it from every board and archives a phase it leaves empty; archiving a phase or a board never changes tickets or statuses. The last board cannot be archived (`CONFLICT`).
+> Every organization has at least one board; `ticketStatus.create` takes only a name and a colour (flags are set with `ticketStatus.update`) and leaves a new status on no board until it is moved onto one, unless given a `phaseId`; a template import gives each imported status its own phase on the default board. Archiving a status removes it from every board and archives a phase it leaves empty; archiving a phase or a board never changes tickets or statuses. The last board cannot be archived (`CONFLICT`).
 
 > Operations (`pipeline:read` to read, `pipeline:write|delete` to change): `board.list|get|create|update|reorder|archive`, `boardPhase.create|update|archive|reorder|moveStatus`; `pipeline.board` reads one board's columns and cards. Web: the customize mode of `/pipeline`.
 

@@ -37,33 +37,53 @@ describe("ticket statuses (ADR 0043)", () => {
     expect(lead.createdBy).toBe("system");
   });
 
-  it("places a new status last, and a new entry status takes the flag", async () => {
+  it("creates a status with a name and a colour only, placed last with no flags", async () => {
     const context = await provisionedContext();
-    const input = { name: "Site visit", color: "#0d9488" };
+    const input = { name: "Site visit", color: "#0d9488", entry: true, closes: true };
     const created = unwrap({
       result: await execute({ operation: createTicketStatus, input, context }),
     });
-    expect(created).toMatchObject({ position: 4, entry: false, transitionsTo: [] });
+    expect(created).toMatchObject({ position: 4, entry: false, closes: false, event: null });
+    expect(created.transitionsTo).toEqual([]);
     const again = await execute({ operation: createTicketStatus, input, context });
     expect(errorCode({ result: again })).toBe("CONFLICT");
-    const entry = { name: "Request", color: "#000000", entry: true };
-    unwrap({ result: await execute({ operation: createTicketStatus, input: entry, context }) });
-    const entries = (await statuses({ context })).filter((ticketStatus) => ticketStatus.entry);
-    expect(entries.map((ticketStatus) => ticketStatus.name)).toEqual(["Request"]);
-    const both = { name: "Odd", color: "#000000", entry: true, closes: true };
-    const odd = await execute({ operation: createTicketStatus, input: both, context });
-    expect(errorCode({ result: odd })).toBe("VALIDATION");
   });
 
-  it("keeps one entry status when two are made at once (CONFLICT, never INTERNAL)", async () => {
+  it("gives the entry flag to a status set as entry, and refuses entry with closes", async () => {
     const context = await provisionedContext();
-    const make = ({ name }: { name: string }) =>
-      execute({
-        operation: createTicketStatus,
-        input: { name, color: "#000000", entry: true },
-        context,
+    const make = async ({ name }: { name: string }) =>
+      unwrap({
+        result: await execute({
+          operation: createTicketStatus,
+          input: { name, color: "#000000" },
+          context,
+        }),
       });
-    const results = await Promise.all([make({ name: "A" }), make({ name: "B" })]);
+    const request = await make({ name: "Request" });
+    const entry = { id: request.id, entry: true };
+    unwrap({ result: await execute({ operation: updateTicketStatus, input: entry, context }) });
+    const entries = (await statuses({ context })).filter((ticketStatus) => ticketStatus.entry);
+    expect(entries.map((ticketStatus) => ticketStatus.name)).toEqual(["Request"]);
+    const odd = await make({ name: "Odd" });
+    const both = { id: odd.id, entry: true, closes: true };
+    const refused = await execute({ operation: updateTicketStatus, input: both, context });
+    expect(errorCode({ result: refused })).toBe("VALIDATION");
+  });
+
+  it("keeps one entry status when two are set at once (CONFLICT, never INTERNAL)", async () => {
+    const context = await provisionedContext();
+    const make = async ({ name }: { name: string }) =>
+      unwrap({
+        result: await execute({
+          operation: createTicketStatus,
+          input: { name, color: "#000000" },
+          context,
+        }),
+      });
+    const [a, b] = [await make({ name: "A" }), await make({ name: "B" })];
+    const setEntry = ({ id }: { id: string }) =>
+      execute({ operation: updateTicketStatus, input: { id, entry: true }, context });
+    const results = await Promise.all([setEntry({ id: a.id }), setEntry({ id: b.id })]);
     for (const result of results) {
       if (!result.ok) expect(result.error.code).toBe("CONFLICT");
     }

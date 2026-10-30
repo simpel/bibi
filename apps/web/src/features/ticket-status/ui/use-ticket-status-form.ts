@@ -1,18 +1,19 @@
-import type { TicketStatusCreateInput, TicketStatusDto } from "@bibi/core/schemas";
+import type { TicketStatusDto } from "@bibi/core/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import {
+  type TicketStatusEdit,
   type TicketStatusFormValues,
   ticketStatusFormDefaults,
   ticketStatusFormSchema,
 } from "./ticket-status-form-schema";
 
-export type UseTicketStatusFormInput = { ticketStatus?: TicketStatusDto | undefined };
+export type UseTicketStatusFormInput = { ticketStatus: TicketStatusDto };
 
-/** react-hook-form wired to core's ticket status schema with localized validation messages. */
+/** The status edit form, wired to core's update schema with localized validation messages. */
 export function useTicketStatusForm({ ticketStatus }: UseTicketStatusFormInput) {
-  return useForm<TicketStatusFormValues, unknown, TicketStatusCreateInput>({
+  return useForm<TicketStatusFormValues, unknown, TicketStatusEdit>({
     resolver: zodResolver(ticketStatusFormSchema, useZodMessages()),
     defaultValues: ticketStatusFormDefaults({ ticketStatus }),
   });

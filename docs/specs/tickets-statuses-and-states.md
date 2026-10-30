@@ -9,7 +9,7 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 - Inbound address: `ticket-<id>@<MAIL_INBOUND_DOMAIN>` (ADR 0012).
 
 ## Statuses are organization data
-- `TicketStatus`: name, color, position and flags. The organization adds, renames, reorders and removes statuses freely; none are fixed in code.
+- `TicketStatus`: name, color, position and flags. The organization adds, renames, reorders and removes statuses freely; none are fixed in code. A new status (`ticketStatus.create`) is only a name and a colour, placed last with every flag off; its flags are set with `ticketStatus.update`.
 
 | Flag | The system does |
 |---|---|

@@ -17,7 +17,6 @@ export function kanbanColumns({ board }: { board: PipelineBoard }): KanbanColumn
   return board.columns.map((column) => ({
     id: column.id,
     title: column.title,
-    color: column.color,
     zones: column.statuses.map(({ id, title, color }) => ({ id, title, color })),
   }));
 }

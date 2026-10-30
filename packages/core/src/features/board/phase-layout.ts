@@ -25,13 +25,12 @@ export async function placeStatus({ context, boardId, phaseId, statusId }: Place
 type InsertPhaseInput = Ctx & {
   boardId: string;
   name: string;
-  color: string;
   /** Index among the board's active phases; past the end places it last. */
   position: number;
 };
 
 /** Creates a phase at `position` and shifts the phases from there one step right. */
-export async function insertPhase({ context, boardId, name, color, position }: InsertPhaseInput) {
+export async function insertPhase({ context, boardId, name, position }: InsertPhaseInput) {
   const phases = await context.db.boardPhase.findMany({
     where: { boardId },
     orderBy: [{ position: "asc" }, { id: "asc" }],
@@ -39,7 +38,7 @@ export async function insertPhase({ context, boardId, name, color, position }: I
   });
   const at = Math.min(position, phases.length);
   const row = await context.db.boardPhase.create({
-    data: { organizationId: context.organizationId, boardId, name, color, position: at },
+    data: { organizationId: context.organizationId, boardId, name, position: at },
   });
   const ids = phases.map(({ id }) => id);
   ids.splice(at, 0, row.id);
@@ -53,9 +52,9 @@ export async function mirrorStatuses({ context, boardId }: Ctx & { boardId: stri
     orderBy: [{ closes: "asc" }, { position: "asc" }, { id: "asc" }],
   });
   for (const [position, ticketStatus] of statuses.entries()) {
-    const { name, color, id: statusId } = ticketStatus;
+    const { name, id: statusId } = ticketStatus;
     const phase = await context.db.boardPhase.create({
-      data: { organizationId: context.organizationId, boardId, name, color, position },
+      data: { organizationId: context.organizationId, boardId, name, position },
     });
     await placeStatus({ context, boardId, phaseId: phase.id, statusId });
   }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Card, CardContent, CardHeader, CardTitle, ColorSwatch } from "@bibi/ui";
+import { Badge, Card, CardContent, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { pipelineHref } from "@/features/pipeline/lib/pipeline-href";
 import { Link } from "@/lib/navigation";
@@ -24,7 +24,6 @@ export function BoardCardView({ board }: BoardCardViewProps) {
           {board.phases.map((phase) => (
             <li key={phase.id}>
               <Badge variant="outline" className="gap-1.5">
-                <ColorSwatch color={phase.color} />
                 {phase.name}: {t("statuses", { count: phase.statusIds.length })}
               </Badge>
             </li>

@@ -12,8 +12,6 @@ export type KanbanZoneData = {
 export type KanbanColumnData = {
   id: string;
   title: string;
-  /** Optional accent (a CSS colour or token reference) shown as a dot before the title. */
-  color?: string;
   /**
    * The column's drop zones. With two or more, a dragged card picks one: each zone shows as its
    * own target while dragging. With one, the whole column drops into it.

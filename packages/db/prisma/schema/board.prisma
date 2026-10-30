@@ -25,14 +25,13 @@ model Board {
   @@index([organizationId, status, position])
 }
 
-/// Board phase – one column of a board. Owned: `name`, `color`, `position`. Its statuses are
+/// Board phase – one column of a board. Owned: `name`, `position` (no colour: only statuses are colour-coded). Its statuses are
 /// `BoardPhaseStatus` rows; archiving a phase removes them, so its statuses leave the board.
 model BoardPhase {
   id             String             @id @default(cuid(2))
   organizationId String
   boardId        String
   name           String
-  color          String
   position       Int                @default(0)
   status         RecordStatus       @default(ACTIVE)
   createdAt      DateTime           @default(now())

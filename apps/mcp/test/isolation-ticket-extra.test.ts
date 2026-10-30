@@ -78,9 +78,10 @@ describe("cross-organization isolation: ticket statuses and audit log", () => {
     const created = await call({
       client: a,
       name: "ticketStatus_create",
-      args: { name: "Secret status", color: "#22c55e", entry: true },
+      args: { name: "Secret status", color: "#22c55e" },
     });
     const id = created.data.id as string;
+    await call({ client: a, name: "ticketStatus_update", args: { id, entry: true } });
     for (const [name, args] of [
       ["ticketStatus_update", { id, name: "Hijacked" }],
       ["ticketStatus_archive", { id }],
@@ -93,8 +94,9 @@ describe("cross-organization isolation: ticket statuses and audit log", () => {
     const ownB = await call({
       client: b,
       name: "ticketStatus_create",
-      args: { name: "Own status", color: "#3b82f6", entry: true },
+      args: { name: "Own status", color: "#3b82f6" },
     });
+    await call({ client: b, name: "ticketStatus_update", args: { id: ownB.data.id, entry: true } });
     for (const ids of [[id], [ownB.data.id, id]]) {
       const reorder = await call({ client: b, name: "ticketStatus_reorder", args: { ids } });
       expect(reorder.data.code, JSON.stringify(ids)).toBe("VALIDATION");

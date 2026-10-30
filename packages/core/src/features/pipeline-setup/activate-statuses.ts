@@ -28,6 +28,18 @@ const flagsOf = ({ ticketStatus }: { ticketStatus: PipelineStatusDraft }) => ({
 const rank = ({ ticketStatus }: { ticketStatus: PipelineStatusDraft }) =>
   ticketStatus.entry ? 0 : ticketStatus.closes ? 1 : 2;
 
+type CreateInput = { context: OperationContext; ticketStatus: PipelineStatusDraft };
+
+/** `ticketStatus.create` takes only a name and a colour; the draft's flags follow as an update. */
+async function createWithFlags({ context, ticketStatus }: CreateInput) {
+  const { name, color } = ticketStatus;
+  const input = { name, color };
+  const created = await runNested({ operation: createTicketStatus, input, context });
+  if (!created.ok) return created;
+  const flags = { id: created.value.id, ...flagsOf({ ticketStatus }) };
+  return runNested({ operation: updateTicketStatus, input: flags, context });
+}
+
 /** Creates or updates (by name) every status of the draft; returns their ids by name. */
 export async function upsertStatuses({
   context,
@@ -46,11 +58,7 @@ export async function upsertStatuses({
           input: { id: found.id, ...flagsOf({ ticketStatus }) },
           context,
         })
-      : await runNested({
-          operation: createTicketStatus,
-          input: { name: ticketStatus.name, ...flagsOf({ ticketStatus }) },
-          context,
-        });
+      : await createWithFlags({ context, ticketStatus });
     if (!saved.ok) return saved;
     ids.set(ticketStatus.name, saved.value.id);
   }
