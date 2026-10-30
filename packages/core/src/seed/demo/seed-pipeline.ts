@@ -4,6 +4,7 @@ import { createTicketStatus } from "../../features/ticket-status/write-operation
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { seedDemoBoards } from "./seed-boards";
+import { seedDefaultBoard } from "./seed-default-board";
 import { seedDemoGrid } from "./seed-grid";
 import type { DemoPipeline } from "./types";
 
@@ -47,6 +48,8 @@ export async function seedDemoPipeline({
   const input = { context, pipeline };
   const created = await createStatuses(input);
   if (!created.ok) return created;
+  const placed = await seedDefaultBoard({ ...input, ids: created.value });
+  if (!placed.ok) return placed;
   const transitions = await setTransitions({ ...input, ids: created.value });
   if (!transitions.ok) return transitions;
   const boards = await seedDemoBoards({

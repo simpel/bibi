@@ -67,7 +67,13 @@ export async function importTicketStatuses({
     const entry = ticketStatus.entry === true && !hasEntry;
     const event =
       ticketStatus.event && !takenEvents.has(ticketStatus.event) ? ticketStatus.event : null;
-    const inserted = await insertTicketStatus({ context, ...ticketStatus, entry, event });
+    const inserted = await insertTicketStatus({
+      context,
+      ...ticketStatus,
+      entry,
+      event,
+      ownPhase: true,
+    });
     if (!inserted.ok) return inserted;
     created.push(inserted.value);
   }

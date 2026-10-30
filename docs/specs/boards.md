@@ -11,7 +11,7 @@ Behaviour spec for ADR 0067. Entities are in `docs/domain-model.md`; statuses, g
 ## Defaults
 - Every organization has at least one board. The migration and a new organization give it a board "Pipeline" with one phase per active status, open statuses first and closing statuses last.
 - `board.create` starts mirroring every active status, one phase each, in the same order. Staff (or the seed) then regroup them.
-- A new status (`ticketStatus.create`) gets its own phase on the default board, after the open statuses' phases unless it closes. Pass `phaseId` to put it in an existing phase instead. Other boards do not show it until staff add it.
+- A new status (`ticketStatus.create`) is on no board: in customize mode it shows in the "Not on this board" column on the far left, and staff drag it to a column (`boardPhase.moveStatus`). Pass `phaseId` to put it in an existing phase instead. A template import (`ticketStatus.importTemplate`) gives each status its own phase on the default board, after the open statuses' phases unless it closes, so a new organization's board shows every status.
 - Archiving a status removes it from every board. A phase it leaves empty is archived too.
 - Archiving a phase removes its statuses from that board (move them first with `boardPhase.moveStatus` to keep them on it). It never touches tickets or statuses.
 - Archiving a board never touches tickets. The last active board cannot be archived (`CONFLICT`).
@@ -25,11 +25,11 @@ Behaviour spec for ADR 0067. Entities are in `docs/domain-model.md`; statuses, g
 
 ## Customize mode on `/pipeline`
 - A user with `pipeline:write` sees a **Configure** button on `/pipeline`. It switches the board into customize mode; others have no button.
-- In customize mode the columns flip to show their statuses as chips. Staff can:
-  - drag a status chip to another column (`boardPhase.moveStatus`), or off the board;
+- In customize mode the columns turn over one after the other (GSAP) and slide right to make room for the **Not on this board** column on the far left, which holds the statuses on no column. Staff can:
+  - drag a status chip to another column (`boardPhase.moveStatus`), or into Not on this board;
   - add a column (`boardPhase.create`) and remove one (`boardPhase.archive`, its statuses leave the board);
   - rename or recolor a column (`boardPhase.update`) and reorder columns (`boardPhase.reorder`);
-  - add a status, which creates it through `ticketStatus.create` with the chosen `phaseId`;
+  - add a status in Not on this board (`ticketStatus.create`, no `phaseId`), then drag it to a column;
   - archive a status, choosing a target status for its tickets (`ticketStatus.archive`).
 - Every action saves at once; there is no draft or save button. Leaving customize mode returns to the cards.
 - Archiving a status that holds tickets needs a target status; the tickets move in one logged operation through the normal move checks.

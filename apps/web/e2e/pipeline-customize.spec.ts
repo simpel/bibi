@@ -41,23 +41,26 @@ test("an admin customizes the board: columns, statuses and the unphased column",
   });
   await expect(page.getByText("Ärendestatusen har flyttats.").first()).toBeVisible();
 
-  // Add a column after the last one, then a status inside it.
+  // Add a column after the last one. A new status lands in the unphased column; drag it in.
   await page.getByRole("button", { name: "Lägg till kolumn", exact: true }).click();
   await page.getByRole("dialog").getByLabel("Namn").fill("Uppföljning");
   await page.getByRole("dialog").getByRole("button", { name: "Spara" }).click();
   await expect(columnBack({ page, name: "Uppföljning" })).toBeVisible();
-  await addStatus({ page, scope: columnBack({ page, name: "Uppföljning" }), name: "Platsbesök" });
-  await expect(
-    chip({ scope: columnBack({ page, name: "Uppföljning" }), name: "Platsbesök" }),
-  ).toBeVisible();
-
-  // A status from the unphased column gets its own column on the default board; drag it into Uppföljning,
-  // then off the board into the unphased column.
   const unphased = page.locator('[data-slot="kanban-unphased-column"]');
+  await addStatus({ page, scope: unphased, name: "Platsbesök" });
+  await expect(chip({ scope: unphased, name: "Platsbesök" })).toBeVisible();
+  await dragUntil({
+    page,
+    source: chip({ scope: unphased, name: "Platsbesök" }),
+    target: columnBack({ page, name: "Uppföljning" }).locator('[data-slot="kanban-chip-list"]'),
+    landed: chip({ scope: columnBack({ page, name: "Uppföljning" }), name: "Platsbesök" }),
+  });
+
+  // Another new status: into Uppföljning, then off the board again into the unphased column.
   await addStatus({ page, scope: unphased, name: "Reserv" });
   await dragUntil({
     page,
-    source: chip({ scope: columnBack({ page, name: "Reserv" }), name: "Reserv" }),
+    source: chip({ scope: unphased, name: "Reserv" }),
     target: columnBack({ page, name: "Uppföljning" }).locator('[data-slot="kanban-chip-list"]'),
     landed: chip({ scope: columnBack({ page, name: "Uppföljning" }), name: "Reserv" }),
   });
@@ -83,7 +86,7 @@ test("an admin customizes the board: columns, statuses and the unphased column",
   await page.getByRole("menuitem", { name: "Arkivera ärendestatus" }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("combobox").click();
-  // Uppföljning is the last column, so its new status may move on only to the closing ones.
+  // A new status starts on no column, so it may move on only to the closing ones.
   await page.getByRole("option", { name: "Completed" }).click();
   await dialog.getByRole("button", { name: "Arkivera ärendestatus" }).click();
   await expect(page.getByText("Ärendestatusen har arkiverats.").first()).toBeVisible();

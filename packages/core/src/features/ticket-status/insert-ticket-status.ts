@@ -1,12 +1,13 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
-import { placeNewStatus } from "../board/status-placement";
+import { type PlaceNewStatusInput, placeNewStatus } from "../board/status-placement";
 import { checkFlagCombination, handOverEntry, handOverEvent } from "./flag-rules";
 import { toTicketStatusDto } from "./load-ticket-status";
 import type { TicketStatusCreateInput, TicketStatusDto } from "./schema";
 
-export type InsertTicketStatusInput = { context: OperationContext } & TicketStatusCreateInput;
+export type InsertTicketStatusInput = { context: OperationContext } & TicketStatusCreateInput &
+  Pick<PlaceNewStatusInput, "ownPhase">;
 
 export type NameTakenInput = { context: Pick<OperationContext, "db">; name: string; id?: string };
 
@@ -29,6 +30,7 @@ async function lastPosition({ context }: { context: Pick<OperationContext, "db">
 export async function insertTicketStatus({
   context,
   phaseId,
+  ownPhase,
   ...input
 }: InsertTicketStatusInput): Promise<Result<TicketStatusDto>> {
   if (await ticketStatusNameTaken({ context, name: input.name })) {
@@ -43,7 +45,7 @@ export async function insertTicketStatus({
   const row = await context.db.ticketStatus.create({
     data: { ...input, position, organizationId: context.organizationId },
   });
-  const placed = await placeNewStatus({ context, status: row, phaseId });
+  const placed = await placeNewStatus({ context, status: row, phaseId, ownPhase });
   if (!placed.ok) return placed;
   const ticketStatus = toTicketStatusDto({ row: { ...row, transitionsFrom: [] } });
   context.recordChange({ entityId: row.id, after: ticketStatus });

@@ -9,24 +9,22 @@ import { createStatusOnBoardAction } from "../actions";
 
 export type AddStatusFormProps = {
   boardId: string;
-  /** The column to put it in; null = no column (it gets its own on the default board). */
-  phaseId: string | null;
   onDone: () => void;
 };
 
 /**
- * A new ticket status made in customize mode: name, colour and flags (ADR 0043). It lands in
- * `phaseId` and gets default transitions; flag conflicts show as the core error.
+ * A new ticket status made in customize mode: name, colour and flags (ADR 0043). It lands on no
+ * column (staff drag it onto one) and gets default transitions; flag conflicts show as the core
+ * error.
  */
-export function AddStatusForm({ boardId, phaseId, onDone }: AddStatusFormProps) {
+export function AddStatusForm({ boardId, onDone }: AddStatusFormProps) {
   const t = useTranslations("ticketStatus");
   const common = useTranslations("common");
   const router = useRouter();
   const form = useTicketStatusForm({});
   const { submit, pending } = useFormAction({
     form,
-    action: ({ values }) =>
-      createStatusOnBoardAction({ input: { ...values, ...(phaseId ? { phaseId } : {}) }, boardId }),
+    action: ({ values }) => createStatusOnBoardAction({ input: values, boardId }),
     messages: { pending: t("saving"), success: t("created") },
     onSuccess: () => {
       router.refresh();

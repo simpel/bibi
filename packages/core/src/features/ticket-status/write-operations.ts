@@ -31,12 +31,14 @@ export const createTicketStatus = defineOperation({
     "and an optional quote " +
     "`event` (QUOTE_SENT or QUOTE_ACCEPTED: quote.send and quote.accept move tickets here; at " +
     "most one status per event, so it is taken from the status that had it). It is placed last. " +
+    "It shows in `phaseId` when given, otherwise on no board until moved onto one " +
+    "(boardPhase.moveStatus). " +
     "A new entry status takes the entry flag from the current one. Allow moves to and from it " +
     "with ticketStatus.setTransitions.",
   input: TicketStatusCreateInputSchema,
   output: TicketStatusSchema,
   permission: "pipeline:write",
-  handler: ({ input, context }) => insertTicketStatus({ context, ...input }),
+  handler: ({ input, context }) => insertTicketStatus({ context, ...input, ownPhase: false }),
 });
 
 type FlagsAfterInput = { before: TicketStatusDto; data: Omit<TicketStatusUpdateInput, "id"> };

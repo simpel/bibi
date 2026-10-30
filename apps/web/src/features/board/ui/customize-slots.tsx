@@ -18,7 +18,10 @@ export type CustomizeSlotsInput = {
   onMove: (move: Pick<KanbanStatusMove, "statusId" | "toPhaseId">) => void;
 };
 
-/** What customize mode puts in the kanban's slots: fronts, headers, menus and add buttons. */
+/**
+ * What customize mode puts in the kanban's slots: fronts, headers, menus and add buttons. New
+ * statuses are added only in the unphased column; staff drag them onto the board.
+ */
 export function customizeSlots({
   boardId,
   phases,
@@ -34,7 +37,6 @@ export function customizeSlots({
     renderPhaseHeader: ({ phase }) => (
       <PhaseHeader {...{ boardId, phase, order, access, onReorder }} />
     ),
-    renderPhaseFooter: ({ phase }) => <AddStatusButton boardId={boardId} phaseId={phase.id} />,
     renderChipMenu: ({ status, phaseId }) => {
       const ticketStatus = statuses.find((candidate) => candidate.id === status.id);
       return ticketStatus ? (
@@ -44,6 +46,6 @@ export function customizeSlots({
     renderAddColumn: ({ position }) => (
       <AddColumnButton boardId={boardId} position={position} between={position < phases.length} />
     ),
-    unphasedFooter: <AddStatusButton boardId={boardId} phaseId={null} />,
+    unphasedFooter: <AddStatusButton boardId={boardId} />,
   };
 }

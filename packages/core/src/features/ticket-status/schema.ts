@@ -76,7 +76,7 @@ export const TicketStatusCreateInputSchema = z.object({
     .string()
     .min(1)
     .optional()
-    .describe("Board phase to show it in; omitted gives it its own phase on the default board"),
+    .describe("Board phase to show it in; omitted leaves it on no board until moved onto one"),
 });
 
 export const TicketStatusUpdateInputSchema = z.object({

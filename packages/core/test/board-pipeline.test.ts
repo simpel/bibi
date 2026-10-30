@@ -48,23 +48,20 @@ describe("pipeline.board on boards (ADR 0067)", () => {
     expect(hidden.unmappedCount).toBe(1);
   });
 
-  it("places a new status in a given phase, or as its own phase before the closing ones", async () => {
+  it("places a new status in a given phase, or on no column of the board", async () => {
     const { context } = await ticketSetup();
     const board = await defaultBoard({ context });
     const lead = board.phases[0];
     if (!lead) throw new Error("Missing phases");
     const inPhase = { name: "Site visit", color: "#0ea5e9", phaseId: lead.id };
     unwrap({ result: await execute({ operation: createTicketStatus, input: inPhase, context }) });
-    const own = { name: "Quote sent", color: "#f59e0b" };
-    unwrap({ result: await execute({ operation: createTicketStatus, input: own, context }) });
+    const off = { name: "Quote sent", color: "#f59e0b" };
+    unwrap({ result: await execute({ operation: createTicketStatus, input: off, context }) });
     const after = await view({ context });
-    expect(after.columns.map((c) => c.title)).toEqual([
-      "Lead",
-      "Confirmed",
+    expect(after.columns.map((c) => c.title)).toEqual(["Lead", "Confirmed", "Completed", "Lost"]);
+    expect(after.columns.flatMap((c) => c.statuses.map((s) => s.title))).not.toContain(
       "Quote sent",
-      "Completed",
-      "Lost",
-    ]);
+    );
     expect(after.columns[0]?.statuses.map((s) => s.title)).toEqual(["Lead", "Site visit"]);
   });
 

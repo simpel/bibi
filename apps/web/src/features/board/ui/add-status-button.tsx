@@ -3,10 +3,10 @@ import { useTranslations } from "next-intl";
 import { AddStatusForm } from "./add-status-form";
 import { FormPopover } from "./form-popover";
 
-export type AddStatusButtonProps = { boardId: string; phaseId: string | null };
+export type AddStatusButtonProps = { boardId: string };
 
-/** "+ Add status" on a column's back or in the tray (`ticketStatus.create`). */
-export function AddStatusButton({ boardId, phaseId }: AddStatusButtonProps) {
+/** "+ Add status" in the unphased column (`ticketStatus.create`). */
+export function AddStatusButton({ boardId }: AddStatusButtonProps) {
   const t = useTranslations("boardPhase");
   return (
     <FormPopover
@@ -16,7 +16,7 @@ export function AddStatusButton({ boardId, phaseId }: AddStatusButtonProps) {
       variant="ghost"
       className="justify-start"
     >
-      {({ close }) => <AddStatusForm boardId={boardId} phaseId={phaseId} onDone={close} />}
+      {({ close }) => <AddStatusForm boardId={boardId} onDone={close} />}
     </FormPopover>
   );
 }

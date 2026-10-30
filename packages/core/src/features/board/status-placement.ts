@@ -32,18 +32,26 @@ async function createDefaultBoard({ context }: Ctx) {
 
 export type PlaceNewStatusInput = Ctx & {
   status: { id: string; name: string; color: string; closes: boolean };
-  /** A phase to show it in; omitted gives it its own phase on the default board. */
+  /** A phase to show it in. */
   phaseId: string | undefined;
+  /**
+   * Without `phaseId`: true gives it its own phase on the default board (a template import, so a
+   * new organization's board shows every status); false leaves it off every board until staff
+   * drag it onto one (`ticketStatus.create`).
+   */
+  ownPhase: boolean;
 };
 
 /**
- * Where a new ticket status shows (ADR 0067): in the given phase, or as its own phase on the
- * default board, after the open statuses' phases unless it closes. Other boards leave it off.
+ * Where a new ticket status shows (ADR 0067): in the given phase, else as its own phase on the
+ * default board (after the open statuses' phases unless it closes) or on no board, per
+ * `ownPhase`. Other boards leave it off. With no board yet, a default board mirrors every status.
  */
 export async function placeNewStatus({
   context,
   status,
   phaseId,
+  ownPhase,
 }: PlaceNewStatusInput): Promise<Result<true>> {
   if (phaseId) {
     const phase = await context.db.boardPhase.findFirst({ where: { id: phaseId } });
@@ -61,6 +69,7 @@ export async function placeNewStatus({
     await createDefaultBoard({ context });
     return ok({ value: true });
   }
+  if (!ownPhase) return ok({ value: true });
   const boardId = board.id;
   const change = async () => {
     const end = status.closes ? Number.MAX_SAFE_INTEGER : await openStatusEnd({ context, boardId });

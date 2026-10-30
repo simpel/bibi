@@ -43,11 +43,6 @@ const slots: KanbanCustomizeSlots = {
     <KanbanColumnFace column={phase} count={0} emptyLabel="Nothing here" />
   ),
   renderPhaseHeader: ({ phase }) => <span className="text-sm font-medium">{phase.title}</span>,
-  renderPhaseFooter: () => (
-    <Button size="sm" variant="ghost">
-      + Add status
-    </Button>
-  ),
   renderAddColumn: ({ position }) => (
     <Button size="sm" variant="ghost" className="self-start" aria-label={`Add column ${position}`}>
       +

@@ -106,8 +106,8 @@ export async function moveBoardPhaseStatusAction({
 }
 
 /**
- * `ticketStatus.create` from customize mode (with `phaseId`: in that column; without: its own
- * column on the default board), then default transitions so tickets can move into it at once.
+ * `ticketStatus.create` from customize mode (on no column until dragged onto one), then default
+ * transitions so tickets can move into it at once.
  */
 export async function createStatusOnBoardAction({
   input,
