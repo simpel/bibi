@@ -2,6 +2,7 @@ import { alternativeGroupRoutes } from "./features/alternative-group/rest";
 import { apiKeyRoutes } from "./features/api-key/rest";
 import { assignmentRoutes } from "./features/assignment/rest";
 import { auditLogRoutes } from "./features/audit-log/rest";
+import { boardRoutes as boardCrudRoutes, boardPhaseRoutes } from "./features/board/rest";
 import { calendarRoutes } from "./features/calendar/rest";
 import { changeSetRoutes } from "./features/change-set/rest";
 import { configurationRoutes } from "./features/configuration/rest";
@@ -52,7 +53,7 @@ import { searchRoutes } from "./search-rest";
 
 const accessRoutes = [...memberRoutes, ...apiKeyRoutes, ...permissionRoutes];
 /** The read models staff work from: the pipeline board and the calendar. */
-const boardRoutes = [...pipelineRoutes, ...calendarRoutes];
+const boardRoutes = [...pipelineRoutes, ...calendarRoutes, ...boardCrudRoutes, ...boardPhaseRoutes];
 const gridAndSetupRoutes = [...statusGridRoutes, ...pipelineSetupRoutes, ...changeSetRoutes];
 const lineAndGroupRoutes = [...lineRoutes, ...lineAllocationRoutes, ...alternativeGroupRoutes];
 const selfRoutes = [

@@ -21,7 +21,7 @@ describe("pipeline.board (ADR 0043)", () => {
       "Lost",
     ]);
     expect(columns.filter((c) => c.closed).map((c) => c.title)).toEqual(["Completed", "Lost"]);
-    expect(columns.find((c) => c.title === "Lost")?.requiresReason).toBe(true);
+    expect(columns.find((c) => c.title === "Lost")?.statuses[0]?.requiresReason).toBe(true);
   });
 
   it("puts tickets in their status's column and moves them with ticket.changeStatus", async () => {
@@ -36,7 +36,7 @@ describe("pipeline.board (ADR 0043)", () => {
     expect(first.cards).toEqual([
       expect.objectContaining({
         id: ticket.id,
-        columnId: ticket.statusId,
+        statusId: ticket.statusId,
         reference: ticket.reference,
         customerId: customer.id,
         quantity: 20,
@@ -46,7 +46,7 @@ describe("pipeline.board (ADR 0043)", () => {
     const lost = { context, ticketId: ticket.id, name: "Lost", reason: "Went elsewhere" };
     const moved = unwrap({ result: await moveToStatus(lost) });
     const after = await board({ context });
-    expect(after.cards[0]?.columnId).toBe(moved.statusId);
+    expect(after.cards[0]?.statusId).toBe(moved.statusId);
     const recent = await board({ context, input: { closedWithinDays: 1 } });
     expect(recent.cards).toHaveLength(1);
   });

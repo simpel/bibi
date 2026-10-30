@@ -1,5 +1,5 @@
 import { previewArchiveItemState } from "../../features/item-state/archive-preview-operation";
-import { previewArchiveTicketStatus } from "../../features/ticket-status/archive-preview-operation";
+import { previewArchiveTicketStatus } from "../../features/ticket-status/archive-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoOrg } from "./types";

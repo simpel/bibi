@@ -1,4 +1,4 @@
-import type { PipelineCard, PipelineColumn } from "@bibi/core";
+import type { PipelineCard, PipelineStatus } from "@bibi/core";
 import { toast } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { changeTicketStatusAction } from "@/features/ticket/actions";
@@ -6,10 +6,10 @@ import type { ActionError } from "@/lib/action-result";
 import { errorKeyForCode } from "@/lib/error-key";
 import { useRouter } from "@/lib/navigation";
 
-export type RunMoveInput = { card: PipelineCard; to: PipelineColumn; reason?: string };
+export type RunMoveInput = { card: PipelineCard; to: PipelineStatus; reason?: string };
 export type UseRunMoveInput = {
   /** A refused move with blockers to list. */
-  onRefused: (input: { card: PipelineCard; to: PipelineColumn; error: ActionError }) => void;
+  onRefused: (input: { card: PipelineCard; to: PipelineStatus; error: ActionError }) => void;
   onMoved: () => void;
 };
 

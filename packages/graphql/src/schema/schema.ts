@@ -16,6 +16,7 @@ import "../features/contact/graphql";
 import "../features/price-list/graphql";
 import "../features/occupancy/graphql";
 import "../features/ticket-status/graphql";
+import "../features/board/graphql";
 import "../features/ticket-template/graphql";
 import "../features/ticket/graphql";
 import "../features/line/graphql";

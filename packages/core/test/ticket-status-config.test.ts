@@ -85,7 +85,7 @@ describe("ticket status order, transitions and templates (ADR 0043)", () => {
     expect(second).toMatchObject({ created: [], transitionsAdded: 0 });
   });
 
-  it("imports into an empty organization and audits every change as a ticketStatus", async () => {
+  it("imports into an empty organization and audits statuses and the board they land on", async () => {
     const context = testContext();
     const result = unwrap({
       result: await execute({
@@ -100,7 +100,8 @@ describe("ticket status order, transitions and templates (ADR 0043)", () => {
     const audit = await getDb().auditLog.findMany({
       where: { organizationId: context.organizationId, operation: "ticketStatus.importTemplate" },
     });
-    expect(new Set(audit.map((row) => row.entityType))).toEqual(new Set(["ticketStatus"]));
+    // Each new status also lands on the default board (ADR 0067), audited on that board.
+    expect(new Set(audit.map((row) => row.entityType))).toEqual(new Set(["ticketStatus", "board"]));
     expect(audit.length).toBeGreaterThanOrEqual(5);
   });
 });

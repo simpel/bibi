@@ -1,4 +1,4 @@
-import type { PipelineColumn } from "@bibi/core";
+import type { PipelineStatus } from "@bibi/core";
 import {
   Button,
   Dialog,
@@ -14,7 +14,7 @@ import { useState } from "react";
 
 export type MoveReasonDialogProps = {
   /** The status that requires a reason; null = closed. */
-  column: PipelineColumn | null;
+  column: PipelineStatus | null;
   onCancel: () => void;
   onSubmit: (reason: string) => void;
 };

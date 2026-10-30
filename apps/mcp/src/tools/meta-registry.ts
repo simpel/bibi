@@ -2,6 +2,7 @@ import { alternativeGroupMcpTools } from "../features/alternative-group/mcp";
 import { apiKeyMcpTools } from "../features/api-key/mcp";
 import { assignmentMcpTools } from "../features/assignment/mcp";
 import { auditLogMcpTools } from "../features/audit-log/mcp";
+import { boardCrudMcpTools, boardPhaseMcpTools } from "../features/board/mcp";
 import { calendarMcpTools } from "../features/calendar/mcp";
 import { changeSetMcpTools } from "../features/change-set/mcp";
 import { configurationMcpTools } from "../features/configuration/mcp";
@@ -62,7 +63,12 @@ const lineAndGroupMcpTools = [
   ...alternativeGroupMcpTools,
 ];
 /** The read models staff work from: the pipeline board and the calendar. */
-const boardMcpTools = [...pipelineMcpTools, ...calendarMcpTools];
+const boardMcpTools = [
+  ...pipelineMcpTools,
+  ...calendarMcpTools,
+  ...boardCrudMcpTools,
+  ...boardPhaseMcpTools,
+];
 const selfMcpTools = [
   ...userPreferenceMcpTools,
   ...userSettingsMcpTools,

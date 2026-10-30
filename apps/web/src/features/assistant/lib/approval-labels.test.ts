@@ -16,6 +16,8 @@ const ENTITIES = [
   "deposit",
   "invoice",
   "memberProfile",
+  "board",
+  "boardPhase",
 ];
 
 describe("approval labels", () => {
@@ -46,7 +48,7 @@ describe("approval labels", () => {
     expect(labelled).toEqual([...OPERATION_KEYS].sort());
   });
 
-  it("labels every write operation of customer, contact, ticket, status, item state and line", () => {
+  it("labels every write operation of customer, contact, ticket, status, board, item state and line", () => {
     const writes = createCoreOperations({ embed })
       .filter((op) => op.kind === "command" && ENTITIES.includes(op.name.split(".")[0] ?? ""))
       .map((op) => op.name);

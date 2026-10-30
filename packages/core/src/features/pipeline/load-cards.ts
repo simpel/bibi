@@ -4,6 +4,9 @@ import { subjectIdFilter } from "../assignment/subject-filter";
 import { LATEST_STATUS_CHANGE } from "../ticket/status-history";
 import type { PipelineBoardInput, PipelineCard } from "./schema";
 
+/** A card before it is placed in a column of the board. */
+export type LoadedCard = Omit<PipelineCard, "columnId">;
+
 /** Upper bound of cards, so one board response stays small. */
 const CARD_LIMIT = 500;
 
@@ -12,6 +15,8 @@ export type LoadCardsInput = {
   context: Pick<OperationContext, "db" | "permissions">;
   input: PipelineBoardInput;
   since: Date;
+  /** Which statuses: the board's (`in`) or every other (`notIn`). */
+  statusIds: { in: string[] } | { notIn: string[] };
 };
 
 async function mainAssignees({ context, ids }: { context: Db; ids: string[] }) {
@@ -53,19 +58,29 @@ const openOrRecentlyClosed = ({ since }: { since: Date }) => [
   },
 ];
 
-export async function loadTicketCards({
-  context,
-  input,
-  since,
-}: LoadCardsInput): Promise<PipelineCard[]> {
+/** The tickets a board shows: its filter, open or recently closed, in the given statuses. */
+async function ticketWhere({ context, input, since, statusIds }: LoadCardsInput) {
   const { assigneeId, entityTypeId } = input;
   const ids = await subjectIdFilter({ context, subjectType: "TICKET", assigneeId });
+  return {
+    ...ids,
+    ...(entityTypeId ? { entityTypeId } : {}),
+    statusId: statusIds,
+    OR: openOrRecentlyClosed({ since }),
+  };
+}
+
+/** Matching tickets whose status is on no phase of the board (`statusIds` is `notIn` here). */
+export async function countTickets({ context, ...query }: LoadCardsInput) {
+  return context.db.ticket.count({ where: await ticketWhere({ context, ...query }) });
+}
+
+export async function loadTicketCards({
+  context,
+  ...query
+}: LoadCardsInput): Promise<LoadedCard[]> {
   const rows = await context.db.ticket.findMany({
-    where: {
-      ...ids,
-      ...(entityTypeId ? { entityTypeId } : {}),
-      OR: openOrRecentlyClosed({ since }),
-    },
+    where: await ticketWhere({ context, ...query }),
     include: { entityType: { select: { name: true } }, ...LATEST_STATUS_CHANGE },
     orderBy: [{ reference: "desc" }, { id: "desc" }],
     take: CARD_LIMIT,
@@ -78,7 +93,7 @@ export async function loadTicketCards({
   return rows.map((row) => ({
     ...(lines?.get(row.id) ?? none),
     id: row.id,
-    columnId: row.statusId,
+    statusId: row.statusId,
     reference: row.reference,
     typeName: row.entityType.name,
     customerId: row.customerId,

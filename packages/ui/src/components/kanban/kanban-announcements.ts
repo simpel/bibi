@@ -1,4 +1,5 @@
 import type { Announcements } from "@dnd-kit/core";
+import { targetTitle } from "./kanban-targets";
 import type { KanbanCardData, KanbanColumnData, KanbanLabels } from "./kanban-types";
 
 export type BuildKanbanAnnouncementsInput = {
@@ -7,7 +8,7 @@ export type BuildKanbanAnnouncementsInput = {
   labels: KanbanLabels;
 };
 
-/** Screen reader announcements for dragging a card between columns. */
+/** Screen reader announcements for dragging a card between columns (and their zones). */
 export function buildKanbanAnnouncements({
   cards,
   columns,
@@ -15,8 +16,7 @@ export function buildKanbanAnnouncements({
 }: BuildKanbanAnnouncementsInput): Announcements {
   const cardTitle = ({ id }: { id: string | number }) =>
     cards.find((c) => c.id === id)?.title ?? String(id);
-  const columnTitle = ({ id }: { id: string | number }) =>
-    columns.find((c) => c.id === id)?.title ?? "";
+  const columnTitle = ({ id }: { id: string | number }) => targetTitle({ id: String(id), columns });
   return {
     onDragStart: ({ active }) => labels.pickedUp(cardTitle({ id: active.id })),
     onDragOver: ({ active, over }) =>

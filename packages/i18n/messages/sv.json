@@ -149,6 +149,66 @@
       "close": "Stäng"
     }
   },
+  "board": {
+    "switcher": "Tavla: {name}",
+    "switcherLabel": "Byt tavla",
+    "default": "Standard",
+    "configure": "Anpassa",
+    "done": "Klar",
+    "rename": "Byt namn på tavlan",
+    "create": "Ny tavla",
+    "makeDefault": "Gör till standardtavla",
+    "archive": "Arkivera tavlan",
+    "archiveConfirm": "Arkivera tavlan {name}? Dess kolumner försvinner med den. Ärenden och ärendestatusar finns kvar.",
+    "fields": {
+      "name": "Namn"
+    },
+    "saving": "Sparar…",
+    "archiving": "Arkiverar…",
+    "created": "Tavlan har skapats.",
+    "updated": "Tavlan har sparats.",
+    "archived": "Tavlan har arkiverats.",
+    "madeDefault": "Standardtavlan har ändrats.",
+    "unmapped": "{count, plural, one {# ärende har} other {# ärenden har}} en ärendestatus som inte finns på den här tavlan.",
+    "unmappedLink": "Anpassa tavlan",
+    "customize": {
+      "description": "Dra kolumner för att ändra ordningen och dra ärendestatusar mellan kolumner. Allt sparas direkt.",
+      "dragInstructions": "Tryck mellanslag för att lyfta en kolumn eller ärendestatus, piltangenterna för att flytta den och mellanslag för att släppa den.",
+      "tray": "Inte på den här tavlan",
+      "trayEmpty": "Alla ärendestatusar finns på tavlan",
+      "emptyPhase": "Dra hit en ärendestatus",
+      "phaseHandle": "Flytta kolumnen {phase}",
+      "count": "{count, plural, one {# ärende} other {# ärenden}}",
+      "pickedUp": "Lyfte {item}.",
+      "movedOver": "{item} är över {target}.",
+      "dropped": "{item} släpptes i {target}.",
+      "cancelled": "Flytten av {item} avbröts."
+    }
+  },
+  "boardPhase": {
+    "addColumn": "Lägg till kolumn",
+    "addColumnHere": "Lägg till en kolumn här",
+    "edit": "Redigera kolumnen",
+    "actions": "Åtgärder för kolumnen {name}",
+    "moveLeft": "Flytta vänster",
+    "moveRight": "Flytta höger",
+    "remove": "Ta bort kolumnen",
+    "removeConfirm": "Ta bort kolumnen {name}? Dess ärendestatusar hamnar under \"Inte på den här tavlan\". Inga ärenden ändras.",
+    "fields": {
+      "name": "Namn",
+      "color": "Färg"
+    },
+    "saving": "Sparar…",
+    "removing": "Tar bort…",
+    "created": "Kolumnen har lagts till.",
+    "updated": "Kolumnen har sparats.",
+    "removed": "Kolumnen har tagits bort.",
+    "reordered": "Kolumnordningen har sparats.",
+    "statusMoved": "Ärendestatusen har flyttats.",
+    "addStatus": "Lägg till ärendestatus",
+    "statusActions": "Åtgärder för {name}",
+    "moveTo": "Flytta till"
+  },
   "dashboard": {
     "title": "Översikt",
     "description": "Aktuellt läge i verksamheten.",
@@ -1558,7 +1618,11 @@
         "scheduleKind": "Schematyp",
         "itemIds": "Personalresurser",
         "days": "Dagar",
-        "exceptions": "Undantag"
+        "exceptions": "Undantag",
+        "boardId": "Tavla",
+        "phaseId": "Kolumn",
+        "statusIds": "Ärendestatusar",
+        "assigneeId": "Ansvarig"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -1654,7 +1718,16 @@
         "memberProfile_update": "Ändra medlemmens schematyp",
         "memberProfile_setItems": "Koppla personalresurser till medlem",
         "venueHours_set": "Ange öppettider",
-        "itemHours_set": "Ange arbetstider"
+        "itemHours_set": "Ange arbetstider",
+        "board_create": "Skapa tavla",
+        "board_update": "Ändra tavla",
+        "board_reorder": "Ändra ordning på tavlor",
+        "board_archive": "Arkivera tavla",
+        "boardPhase_create": "Lägg till kolumn på tavla",
+        "boardPhase_update": "Ändra kolumn på tavla",
+        "boardPhase_archive": "Ta bort kolumn från tavla",
+        "boardPhase_reorder": "Ändra ordning på kolumner",
+        "boardPhase_moveStatus": "Flytta ärendestatus mellan kolumner"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -2055,6 +2128,17 @@
         "empty": "Inga tider angivna.",
         "exceptions": "Undantag",
         "zone": "Tidszon {zone}"
+      },
+      "board": {
+        "title": "Tavla {name}",
+        "boards": "Tavlor",
+        "default": "Standard",
+        "columns": "{count, plural, one {# kolumn} other {# kolumner}}",
+        "statuses": "{count, plural, one {# ärendestatus} other {# ärendestatusar}}",
+        "empty": "Inga tavlor.",
+        "open": "Öppna tavlan",
+        "archived": "Arkiverad",
+        "column": "Kolumn {name}"
       }
     },
     "questionnaire": {

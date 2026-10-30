@@ -1,0 +1,69 @@
+// Boards (ADR 0067): saved views over the organization's tickets. A board owns no ticket data; its
+// phases are its columns and group ticket statuses, one phase per status per board.
+
+/// Board – a saved view of tickets, e.g. Sales or Ops. Owned: `name`, `position` and the filter
+/// (`entityTypeId`, `assigneeId`, both optional). The first active board by `position` is the
+/// default; a new status without a phase gets its own phase there (ADR 0067).
+model Board {
+  id             String             @id @default(cuid(2))
+  organizationId String
+  name           String
+  position       Int                @default(0)
+  /// Filter: only tickets of this type; null for every type.
+  entityTypeId   String?
+  /// Filter: only tickets this member (user id) is the main assignee of; null for everyone.
+  assigneeId     String?
+  status         RecordStatus       @default(ACTIVE)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  createdBy      String?
+  entityType     EntityType?        @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  phases         BoardPhase[]
+  phaseStatuses  BoardPhaseStatus[]
+
+  @@unique([id, organizationId])
+  @@index([organizationId, status, position])
+}
+
+/// Board phase – one column of a board. Owned: `name`, `color`, `position`. Its statuses are
+/// `BoardPhaseStatus` rows; archiving a phase removes them, so its statuses leave the board.
+model BoardPhase {
+  id             String             @id @default(cuid(2))
+  organizationId String
+  boardId        String
+  name           String
+  color          String
+  position       Int                @default(0)
+  status         RecordStatus       @default(ACTIVE)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  createdBy      String?
+  board          Board              @relation(fields: [boardId, organizationId], references: [id, organizationId])
+  statuses       BoardPhaseStatus[]
+
+  @@unique([id, organizationId])
+  @@unique([id, boardId, organizationId])
+  @@index([organizationId, boardId, status, position])
+}
+
+/// Board phase status – a ticket status shown in a phase (join row, ADR 0056). A status is in at
+/// most one phase per board (`@@unique([boardId, statusId])`); with none it is not on that board.
+/// Replaced through `boardPhase.moveStatus` and audited on the board.
+model BoardPhaseStatus {
+  id             String       @id @default(cuid(2))
+  organizationId String
+  boardId        String
+  phaseId        String
+  statusId       String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  createdBy      String?
+  board          Board        @relation(fields: [boardId, organizationId], references: [id, organizationId])
+  /// Through the board too, so a row's `boardId` is always its phase's board.
+  phase          BoardPhase   @relation(fields: [phaseId, boardId, organizationId], references: [id, boardId, organizationId])
+  ticketStatus   TicketStatus @relation(fields: [statusId, organizationId], references: [id, organizationId])
+
+  @@unique([boardId, statusId])
+  @@index([organizationId, phaseId])
+  @@index([organizationId, statusId])
+}

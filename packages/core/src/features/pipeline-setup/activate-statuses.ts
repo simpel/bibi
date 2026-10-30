@@ -2,7 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { runNested } from "../../operations/run-nested";
 import type { OperationContext } from "../../operations/types";
 import { forwardTransitions } from "../../templates/ticket-statuses/ticket-status-template";
-import { archiveTicketStatus } from "../ticket-status/archive-operation";
+import { archiveTicketStatus } from "../ticket-status/archive-operations";
 import { loadAllTicketStatuses } from "../ticket-status/load-ticket-status";
 import {
   reorderTicketStatuses,

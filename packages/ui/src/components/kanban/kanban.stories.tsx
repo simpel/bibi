@@ -17,14 +17,28 @@ const labels: KanbanLabels = {
 const columns = [
   { id: "new", title: "New", color: "var(--color-muted-foreground)" },
   { id: "qualified", title: "Qualified" },
-  { id: "confirmed", title: "Confirmed", color: "var(--color-primary)" },
+  {
+    id: "confirmed",
+    title: "Won",
+    color: "var(--color-primary)",
+    zones: [
+      { id: "confirmed", title: "Confirmed" },
+      { id: "locked", title: "Final count locked" },
+    ],
+  },
   { id: "completed", title: "Completed" },
 ];
 
 const initial: StoryCard[] = [
   { id: "1", columnId: "new", title: "Annual meeting", subtitle: "Nordkust AB" },
   { id: "2", columnId: "qualified", title: "Product launch", subtitle: "Vingaleden" },
-  { id: "3", columnId: "confirmed", title: "Board dinner", subtitle: "Lindholmen" },
+  {
+    id: "3",
+    columnId: "confirmed",
+    zoneId: "confirmed",
+    title: "Board dinner",
+    subtitle: "Lindholmen",
+  },
 ];
 
 function Demo() {
@@ -36,8 +50,12 @@ function Demo() {
         cards={cards}
         labels={labels}
         canDrop={({ toColumnId }) => toColumnId !== "completed"}
-        onMove={({ cardId, toColumnId }) =>
-          setCards((all) => all.map((c) => (c.id === cardId ? { ...c, columnId: toColumnId } : c)))
+        onMove={({ cardId, toColumnId, toZoneId }) =>
+          setCards((all) =>
+            all.map((c) =>
+              c.id === cardId ? { ...c, columnId: toColumnId, zoneId: toZoneId } : c,
+            ),
+          )
         }
         renderCard={(card) => (
           <div className="grid gap-0.5">
@@ -55,5 +73,8 @@ const meta = { title: "Components/Kanban", component: Demo } satisfies Meta<type
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Completed refuses drops: it stays un-highlighted while a card is dragged. */
+/**
+ * Completed refuses drops: it stays un-highlighted while a card is dragged. Won has two zones
+ * (Confirmed, Final count locked): dragging a card over it shows one target per zone.
+ */
 export const Default: Story = {};

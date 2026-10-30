@@ -6,6 +6,7 @@ import { checkDemoAlternatives } from "./alternative-checks";
 import { checkDemoArchive } from "./archive-checks";
 import { checkDemoAssignments } from "./assignment-checks";
 import { checkDemoBoard } from "./board-checks";
+import { checkDemoBoardLayout } from "./board-layout-checks";
 import { checkDemoBuffers } from "./buffer-checks";
 import { checkDemoBundles } from "./bundle-checks";
 import { checkDemoConfig } from "./config-checks";
@@ -40,6 +41,7 @@ const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoTemplates,
   checkDemoTickets,
   checkDemoBoard,
+  checkDemoBoardLayout,
   checkDemoAssignments,
   checkDemoHolds,
   checkDemoAlternatives,

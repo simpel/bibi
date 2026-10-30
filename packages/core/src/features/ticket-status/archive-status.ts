@@ -3,6 +3,7 @@ import type { AppErrorIssue } from "../../errors/app-error";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict, invalid, notFound } from "../../shared/errors";
+import { unplaceStatus } from "../board/status-placement";
 import { clearStatusCells } from "../status-grid/cell-lifecycle";
 import { moveTicket } from "../ticket/move-ticket";
 import { TICKET_INCLUDE, toTicketDto } from "../ticket/to-ticket-dto";
@@ -101,6 +102,7 @@ export async function archiveStatus({ context, input }: ArchiveStatusInput) {
   await detachIncoming({ context, id });
   await context.db.ticketStatusTransition.deleteMany({ where: { fromStatusId: id } });
   await clearStatusCells({ context, statusId: id });
+  await unplaceStatus({ context, statusId: id });
   // An archived status gives up its quote event (ADR 0043): another status can take it.
   const data = { status: "ARCHIVED", event: null } as const;
   const row = await context.db.ticketStatus.update({ where: { id }, data });

@@ -22,7 +22,7 @@ async function timeInStatusFailures({ context, org, cards }: TimeInStatusInput) 
 }
 
 /**
- * ADR 0041, 0043: `pipeline.board` has one column per seeded status, every seeded ticket is on
+ * ADR 0041, 0043: `pipeline.board` (the default board) has one column per seeded status, every seeded ticket is on
  * exactly one card (in its status's column), the Closed lane shows the closing tickets, and the
  * time in status comes from the status history (ADR 0054).
  */
@@ -32,6 +32,7 @@ export async function checkDemoBoard({ context, org }: CheckDemoBoardInput): Pro
   const { columns, cards } = result.value;
   const failures: string[] = [];
   const statuses = await context.db.ticketStatus.findMany({ select: { id: true, name: true } });
+  // The default board has one phase per status (ADR 0067), so one column per seeded status.
   if (columns.length !== statuses.length) {
     failures.push(`${org.slug}: ${columns.length} board columns, expected ${statuses.length}`);
   }

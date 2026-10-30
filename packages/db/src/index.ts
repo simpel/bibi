@@ -26,6 +26,9 @@ export {
   type Assignment,
   type AssignmentFollower,
   type AuditLog,
+  type Board,
+  type BoardPhase,
+  type BoardPhaseStatus,
   type Contact,
   type Conversation,
   type Customer,
@@ -107,14 +110,7 @@ export type {
   RecordMatches,
   RecordRef,
 } from "./records/types";
-export {
-  GLOBAL_READ_MODELS,
-  ORG_SCOPED_MODELS,
-  SOFT_DELETE_DEFAULTS,
-  SOFT_DELETE_MODELS,
-  UNSCOPED_MODELS,
-  USER_SCOPED_MODELS,
-} from "./scoped/models";
+export { ORG_SCOPED_MODELS, UNSCOPED_MODELS, USER_SCOPED_MODELS } from "./scoped/models";
 export { PLATFORM_SCOPE } from "./scoped/platform-scope";
 export { ScopeViolationError } from "./scoped/scope-violation";
 export {
@@ -123,6 +119,11 @@ export {
   type ScopedDbInput,
   scopedDb,
 } from "./scoped/scoped-db";
+export {
+  GLOBAL_READ_MODELS,
+  SOFT_DELETE_DEFAULTS,
+  SOFT_DELETE_MODELS,
+} from "./scoped/soft-delete-models";
 export { SYSTEM_ACTOR_ID } from "./scoped/system-actor";
 export {
   type CreateSystemLogSinkInput,

@@ -42,6 +42,7 @@ model TicketStatus {
   templates             TicketTemplate[]
   changesFrom           TicketStatusChange[]     @relation("StatusChangeFrom")
   changesTo             TicketStatusChange[]     @relation("StatusChangeTo")
+  boardPhases           BoardPhaseStatus[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status, position])

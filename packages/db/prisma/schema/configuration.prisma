@@ -70,6 +70,7 @@ model EntityType {
   sheetDefinitions SheetDefinitionEntityType[]
   /// Demands whose pool is this item type (ADR 0059).
   demands          ItemDemand[]
+  boards           Board[]
   expiryState      ItemState?                  @relation("ExpiryState", fields: [expiryStateId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])

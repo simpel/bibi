@@ -33,7 +33,10 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
       where: { operation: "pipelineSetup.activate" },
     });
     const types = new Set(audit.map((row) => row.entityType));
-    expect(types).toEqual(new Set(["entityType", "itemState", "ticketStatus", "statusStateRule"]));
+    // Each new status also lands on the default board (ADR 0067), audited on that board.
+    expect(types).toEqual(
+      new Set(["entityType", "itemState", "ticketStatus", "statusStateRule", "board"]),
+    );
   });
 
   it("replaces a provisioned pipeline: other statuses are archived, same names updated", async () => {

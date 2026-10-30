@@ -2,6 +2,7 @@ import type { ExecuteContext } from "@bibi/core";
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { call, type Json } from "./helpers";
 import { accessEntities } from "./parity-entities-access";
+import { boardEntities } from "./parity-entities-board";
 import { configurationEntities } from "./parity-entities-config";
 import { customerEntities } from "./parity-entities-customer";
 import { integrationEntities } from "./parity-entities-integration";
@@ -107,13 +108,7 @@ export const ENTITIES: ParityEntity[] = [
   }),
   ...configurationEntities(),
   ...customerEntities(),
-  byId({
-    name: "ticketStatus",
-    field: "ticketStatus",
-    list: "ticket-statuses",
-    createTool: "ticketStatus_create",
-    args: { name: "Parity status", color: "#22c55e", entry: true },
-  }),
+  ...boardEntities(),
   ...ticketEntities(),
   ...itemStateEntities(),
   alternativeGroupEntity(),

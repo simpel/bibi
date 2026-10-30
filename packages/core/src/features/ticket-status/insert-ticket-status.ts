@@ -1,6 +1,7 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
+import { placeNewStatus } from "../board/status-placement";
 import { checkFlagCombination, handOverEntry, handOverEvent } from "./flag-rules";
 import { toTicketStatusDto } from "./load-ticket-status";
 import type { TicketStatusCreateInput, TicketStatusDto } from "./schema";
@@ -27,6 +28,7 @@ async function lastPosition({ context }: { context: Pick<OperationContext, "db">
 /** Shared by `ticketStatus.create` and `.importTemplate`: unique name, flags, insert, record. */
 export async function insertTicketStatus({
   context,
+  phaseId,
   ...input
 }: InsertTicketStatusInput): Promise<Result<TicketStatusDto>> {
   if (await ticketStatusNameTaken({ context, name: input.name })) {
@@ -41,6 +43,8 @@ export async function insertTicketStatus({
   const row = await context.db.ticketStatus.create({
     data: { ...input, position, organizationId: context.organizationId },
   });
+  const placed = await placeNewStatus({ context, status: row, phaseId });
+  if (!placed.ok) return placed;
   const ticketStatus = toTicketStatusDto({ row: { ...row, transitionsFrom: [] } });
   context.recordChange({ entityId: row.id, after: ticketStatus });
   return ok({ value: ticketStatus });

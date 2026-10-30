@@ -1,5 +1,4 @@
-import { archiveTicketStatus } from "./archive-operation";
-import { previewArchiveTicketStatus } from "./archive-preview-operation";
+import { archiveTicketStatus, previewArchiveTicketStatus } from "./archive-operations";
 import { importTicketStatusTemplate } from "./import-template-operation";
 import { reorderTicketStatuses, setTicketStatusTransitions } from "./order-operations";
 import { getTicketStatus, listTicketStatuses } from "./read-operations";

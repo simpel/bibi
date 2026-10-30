@@ -20,6 +20,7 @@ Prisma 7 (the `prisma-client` generator, driver adapter `@prisma/adapter-pg`) ag
   - Per-user rules (private conversations, personal skills) live in core, not in the client: `scopedDb` only knows the organization.
   - `AuditLog` and `Message` are append-only. `$queryRaw`/`$executeRaw` are hidden; search/index goes via `$searchEmbeddings`, `$upsertEmbedding`, `$deleteEmbedding`.
   - Relations within an org are also enforced in the database with a composite FK (`Item(venueId, organizationId) → Venue(id, organizationId)`). Do the same for new relations.
+  - `BoardPhaseStatus` is a join row (`@@unique([boardId, statusId])`): replace a status's phase by delete and create, never by id list or JSON (ADR 0056, 0067).
   - Writes: use scalar FK fields (`venueId`), not `connect`, because `organizationId` is set as a scalar field.
   - Nested `include` does not filter out archived children – filter explicitly.
 - Exception from `scopedDb`: platform code (core `platform/`, ADR 0015) and its tables `SystemLog` and `AiSetting` (`platform.prisma`). They are not org-scoped and `scopedDb` refuses them. `PLATFORM_SCOPE` (`__platform__`) is `AuditLog.organizationId` for platform commands and reserved in `scopedDb`.

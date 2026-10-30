@@ -72,6 +72,11 @@ export const TicketStatusCreateInputSchema = z.object({
   name: NameSchema,
   color: ColorSchema,
   ...OptionalFlags,
+  phaseId: z
+    .string()
+    .min(1)
+    .optional()
+    .describe("Board phase to show it in; omitted gives it its own phase on the default board"),
 });
 
 export const TicketStatusUpdateInputSchema = z.object({

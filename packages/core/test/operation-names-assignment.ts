@@ -18,3 +18,18 @@ export const ALLOCATION_NAMES = [
   "lineAllocation.get",
   "lineAllocation.list",
 ];
+
+/** Board and board phase operations (ADR 0067), kept apart so `operation-names.ts` fits its file. */
+export const BOARD_NAMES = [
+  "board.archive",
+  "board.create",
+  "board.get",
+  "board.list",
+  "board.reorder",
+  "board.update",
+  "boardPhase.archive",
+  "boardPhase.create",
+  "boardPhase.moveStatus",
+  "boardPhase.reorder",
+  "boardPhase.update",
+];

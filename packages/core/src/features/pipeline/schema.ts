@@ -1,16 +1,27 @@
 import { z } from "zod";
 
-export const PipelineColumnSchema = z.object({
+export const PipelineStatusSchema = z.object({
   id: z.string().describe("The ticket status id"),
   title: z.string().describe("The status name"),
   color: z.string().describe("The status colour"),
   requiresReason: z.boolean().describe("Entering the status needs a reason"),
-  closed: z.boolean().describe("A closing status; shown in the collapsed Closed lane"),
+  closed: z.boolean().describe("A closing status"),
+});
+
+export const PipelineColumnSchema = z.object({
+  id: z.string().describe("The board phase id"),
+  title: z.string().describe("The phase name"),
+  color: z.string().describe("The phase colour"),
+  closed: z.boolean().describe("Every status of the phase closes; shown as a closed lane"),
+  statuses: z
+    .array(PipelineStatusSchema)
+    .describe("The ticket statuses in this column, in status order: one drop zone each"),
 });
 
 export const PipelineCardSchema = z.object({
   id: z.string().describe("Ticket id"),
-  columnId: z.string().describe("The ticket's status id"),
+  columnId: z.string().describe("The board phase (column) the ticket shows in"),
+  statusId: z.string().describe("The ticket's status id"),
   reference: z.number().int().describe("Ticket reference number"),
   typeName: z.string(),
   customerId: z
@@ -38,8 +49,15 @@ export const PipelineCardSchema = z.object({
 });
 
 export const PipelineBoardInputSchema = z.object({
-  assigneeId: z.string().optional().describe("Only tickets this user is assigned to"),
-  entityTypeId: z.string().optional().describe("Only tickets of this type"),
+  boardId: z.string().optional().describe("The board to show (board.list); default: the first"),
+  assigneeId: z
+    .string()
+    .optional()
+    .describe("Only tickets this user is assigned to; replaces the board's own filter"),
+  entityTypeId: z
+    .string()
+    .optional()
+    .describe("Only tickets of this type; replaces the board's own filter"),
   closedWithinDays: z
     .number()
     .int()
@@ -50,10 +68,17 @@ export const PipelineBoardInputSchema = z.object({
 });
 
 export const PipelineBoardSchema = z.object({
+  boardId: z.string().nullable().describe("The board shown; null when the organization has none"),
+  boardName: z.string().nullable(),
   columns: z.array(PipelineColumnSchema),
   cards: z.array(PipelineCardSchema),
+  unmappedCount: z
+    .number()
+    .int()
+    .describe("Matching tickets whose status is in no phase of this board, so not shown"),
 });
 
+export type PipelineStatus = z.infer<typeof PipelineStatusSchema>;
 export type PipelineColumn = z.infer<typeof PipelineColumnSchema>;
 export type PipelineCard = z.infer<typeof PipelineCardSchema>;
 export type PipelineBoard = z.infer<typeof PipelineBoardSchema>;

@@ -1,5 +1,6 @@
 import { conferenceEstateTicketStatuses } from "../../../../templates/ticket-statuses/conference-estate";
 import type { DemoGridCell, DemoPipeline } from "../../types";
+import { lindholmenBoards } from "./boards";
 
 type Row = { statuses: readonly string[]; type: string; state: string };
 
@@ -25,9 +26,10 @@ const cells: readonly DemoGridCell[] = rows.flatMap(({ statuses, type, state }) 
  * Lindholmen's pipeline (`docs/demo-seed.md`, Ticket statuses and Item states and the status grid):
  * the "Conference estate" statuses, and a grid that books rooms and equipment, orders food and
  * confirms tours from Confirmed on. Cells left out keep the state: food and equipment before the
- * deal, drinks throughout.
+ * deal, drinks throughout. Two boards beyond the default one (`./boards`).
  */
 export const lindholmenPipeline: DemoPipeline = {
   statuses: conferenceEstateTicketStatuses,
   cells,
+  boards: lindholmenBoards,
 };

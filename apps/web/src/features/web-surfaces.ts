@@ -1,5 +1,6 @@
 import { BOOKING_SURFACES } from "./booking-surfaces";
 import { MONEY_SURFACES } from "./money-surfaces";
+import { PIPELINE_SURFACES } from "./pipeline-surfaces";
 import { SALES_SURFACES } from "./sales-surfaces";
 import { SETTINGS_SURFACES } from "./settings-surfaces";
 import { WELCOME_SURFACES } from "./welcome-surfaces";
@@ -23,8 +24,7 @@ export type WebSurface = {
 /** The assistant (conversation history, rename, archive, chat) lives on the start page. */
 const PANEL = { route: "/" } as const;
 export const WEB_SURFACES: readonly WebSurface[] = [
-  // The pipeline board (ADR 0041, 0043) and the calendar (ADR 0064).
-  { operation: "pipeline.board", route: "/pipeline" },
+  ...PIPELINE_SURFACES,
   { operation: "calendar.range", route: "/calendar" },
   { operation: "venue.list", route: "/venues" },
   { operation: "venue.get", route: "/venues/[id]" },

@@ -1,4 +1,4 @@
-import { ASSIGNMENT_NAMES } from "./operation-names-assignment";
+import { ASSIGNMENT_NAMES, BOARD_NAMES } from "./operation-names-assignment";
 import { EXTRA_NAMES } from "./operation-names-integration";
 
 const NAMES = [
@@ -141,4 +141,5 @@ export const OPERATION_NAMES: readonly string[] = [
   ...NAMES,
   ...EXTRA_NAMES,
   ...ASSIGNMENT_NAMES,
+  ...BOARD_NAMES,
 ].sort();

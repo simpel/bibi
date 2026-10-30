@@ -3,6 +3,7 @@ import { setTicketStatusTransitions } from "../../features/ticket-status/order-o
 import { createTicketStatus } from "../../features/ticket-status/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import { seedDemoBoards } from "./seed-boards";
 import { seedDemoGrid } from "./seed-grid";
 import type { DemoPipeline } from "./types";
 
@@ -48,5 +49,11 @@ export async function seedDemoPipeline({
   if (!created.ok) return created;
   const transitions = await setTransitions({ ...input, ids: created.value });
   if (!transitions.ok) return transitions;
+  const boards = await seedDemoBoards({
+    context,
+    boards: pipeline.boards ?? [],
+    statusIds: created.value,
+  });
+  if (!boards.ok) return boards;
   return seedDemoGrid({ context, cells: pipeline.cells });
 }

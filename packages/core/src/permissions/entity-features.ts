@@ -39,6 +39,8 @@ export const ENTITY_FEATURE: Readonly<Record<string, Feature | "self">> = {
   setup: "configuration",
   organizationProfile: "configuration",
   ticketStatus: "pipeline",
+  board: "pipeline",
+  boardPhase: "pipeline",
   itemState: "pipeline",
   statusGrid: "pipeline",
   statusStateRule: "pipeline",

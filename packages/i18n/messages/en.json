@@ -149,6 +149,66 @@
       "close": "Close"
     }
   },
+  "board": {
+    "switcher": "Board: {name}",
+    "switcherLabel": "Switch board",
+    "default": "Default",
+    "configure": "Configure",
+    "done": "Done",
+    "rename": "Rename board",
+    "create": "New board",
+    "makeDefault": "Make default board",
+    "archive": "Archive board",
+    "archiveConfirm": "Archive the board {name}? Its columns go with it. Tickets and statuses stay.",
+    "fields": {
+      "name": "Name"
+    },
+    "saving": "Saving…",
+    "archiving": "Archiving…",
+    "created": "Board created.",
+    "updated": "Board saved.",
+    "archived": "Board archived.",
+    "madeDefault": "Default board changed.",
+    "unmapped": "{count, plural, one {# ticket is} other {# tickets are}} in a status that is not on this board.",
+    "unmappedLink": "Customize the board",
+    "customize": {
+      "description": "Drag columns to reorder them and drag statuses between columns. Every change is saved at once.",
+      "dragInstructions": "Press space to lift a column or status, the arrow keys to move it and space to drop it.",
+      "tray": "Not on this board",
+      "trayEmpty": "Every status is on this board",
+      "emptyPhase": "Drag a status here",
+      "phaseHandle": "Move column {phase}",
+      "count": "{count, plural, one {# ticket} other {# tickets}}",
+      "pickedUp": "Picked up {item}.",
+      "movedOver": "{item} is over {target}.",
+      "dropped": "{item} dropped in {target}.",
+      "cancelled": "Moving {item} was cancelled."
+    }
+  },
+  "boardPhase": {
+    "addColumn": "Add column",
+    "addColumnHere": "Add a column here",
+    "edit": "Edit column",
+    "actions": "Actions for column {name}",
+    "moveLeft": "Move left",
+    "moveRight": "Move right",
+    "remove": "Remove column",
+    "removeConfirm": "Remove the column {name}? Its statuses move to \"Not on this board\". No ticket changes.",
+    "fields": {
+      "name": "Name",
+      "color": "Colour"
+    },
+    "saving": "Saving…",
+    "removing": "Removing…",
+    "created": "Column added.",
+    "updated": "Column saved.",
+    "removed": "Column removed.",
+    "reordered": "Column order saved.",
+    "statusMoved": "Status moved.",
+    "addStatus": "Add status",
+    "statusActions": "Actions for {name}",
+    "moveTo": "Move to"
+  },
   "dashboard": {
     "title": "Dashboard",
     "description": "The current state of your business.",
@@ -1558,7 +1618,11 @@
         "scheduleKind": "Schedule kind",
         "itemIds": "Staff items",
         "days": "Days",
-        "exceptions": "Exceptions"
+        "exceptions": "Exceptions",
+        "boardId": "Board",
+        "phaseId": "Column",
+        "statusIds": "Statuses",
+        "assigneeId": "Assignee"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -1654,7 +1718,16 @@
         "memberProfile_update": "Change a member's schedule kind",
         "memberProfile_setItems": "Link staff items to a member",
         "venueHours_set": "Set opening hours",
-        "itemHours_set": "Set working hours"
+        "itemHours_set": "Set working hours",
+        "board_create": "Create board",
+        "board_update": "Update board",
+        "board_reorder": "Reorder boards",
+        "board_archive": "Archive board",
+        "boardPhase_create": "Add board column",
+        "boardPhase_update": "Update board column",
+        "boardPhase_archive": "Remove board column",
+        "boardPhase_reorder": "Reorder board columns",
+        "boardPhase_moveStatus": "Move status between board columns"
       },
       "setup": {
         "title": "Create my first version",
@@ -2055,6 +2128,17 @@
         "empty": "No hours set.",
         "exceptions": "Exceptions",
         "zone": "Time zone {zone}"
+      },
+      "board": {
+        "title": "Board {name}",
+        "boards": "Boards",
+        "default": "Default",
+        "columns": "{count, plural, one {# column} other {# columns}}",
+        "statuses": "{count, plural, one {# status} other {# statuses}}",
+        "empty": "No boards.",
+        "open": "Open the board",
+        "archived": "Archived",
+        "column": "Column {name}"
       }
     },
     "questionnaire": {

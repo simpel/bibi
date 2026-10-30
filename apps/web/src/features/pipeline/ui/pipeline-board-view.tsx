@@ -2,6 +2,7 @@
 
 import type { PipelineBoard } from "@bibi/core";
 import { KanbanBoard } from "@bibi/ui";
+import { findDrop, kanbanCards, kanbanColumns } from "../lib/kanban-model";
 import { canMoveCard } from "../lib/move-rules";
 import { PipelineCardContent } from "./pipeline-card";
 import { useMoveCard } from "./use-move-card";
@@ -14,38 +15,27 @@ export type PipelineBoardViewProps = {
   customerNames: Readonly<Record<string, string>>;
 };
 
-/** The kanban board of tickets by status; a drop runs `ticket.changeStatus`. */
+/**
+ * The kanban board of tickets by phase (ADR 0067). A phase with several statuses splits into one
+ * drop zone per status while a card is dragged; a drop runs `ticket.changeStatus` to that status.
+ */
 export function PipelineBoardView({ board, transitions, customerNames }: PipelineBoardViewProps) {
   const labels = usePipelineLabels();
   const { move, dialog } = useMoveCard();
-  const columns = board.columns.map((column) => ({
-    id: column.id,
-    title: column.title,
-    color: column.color,
-  }));
-  const cards = board.cards.map((card) => {
-    const customerName = customerNames[card.customerId] ?? null;
-    return { ...card, customerName, title: customerName ?? `#${card.reference}` };
-  });
-  const column = ({ id }: { id: string }) => board.columns.find((c) => c.id === id);
-
   return (
     <>
       <KanbanBoard
-        columns={columns}
-        cards={cards}
+        columns={kanbanColumns({ board })}
+        cards={kanbanCards({ board, customerNames })}
         labels={labels}
         renderCard={(card) => <PipelineCardContent card={card} />}
-        canDrop={({ cardId, fromColumnId, toColumnId }) => {
-          const card = board.cards.find((c) => c.id === cardId);
-          const from = column({ id: fromColumnId });
-          const to = column({ id: toColumnId });
-          return !!card && !!from && !!to && canMoveCard({ card, from, to, transitions });
+        canDrop={(drop) => {
+          const found = findDrop({ board, move: drop });
+          return !!found && canMoveCard({ ...found, transitions });
         }}
-        onMove={({ cardId, toColumnId }) => {
-          const card = board.cards.find((c) => c.id === cardId);
-          const to = column({ id: toColumnId });
-          if (card && to) move({ card, to });
+        onMove={(drop) => {
+          const found = findDrop({ board, move: drop });
+          if (found) move({ card: found.card, to: found.to });
         }}
       />
       {dialog}

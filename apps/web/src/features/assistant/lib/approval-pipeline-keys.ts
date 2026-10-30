@@ -43,6 +43,11 @@ export const PIPELINE_FIELD_KEYS = [
   "windows",
   "unitId",
   "resourceKind",
+  // Boards and their columns (ADR 0067).
+  "boardId",
+  "phaseId",
+  "statusIds",
+  "assigneeId",
 ] as const;
 
 /** Pipeline operations with a localized label in `assistant.approval.operations`. */
@@ -78,4 +83,13 @@ export const PIPELINE_OPERATION_KEYS = [
   "itemDemand_update",
   "itemDemand_archive",
   "lineAllocation_assign",
+  "board_create",
+  "board_update",
+  "board_reorder",
+  "board_archive",
+  "boardPhase_create",
+  "boardPhase_update",
+  "boardPhase_archive",
+  "boardPhase_reorder",
+  "boardPhase_moveStatus",
 ] as const;

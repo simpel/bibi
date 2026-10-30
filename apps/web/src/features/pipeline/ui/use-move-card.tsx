@@ -1,15 +1,15 @@
-import type { PipelineCard, PipelineColumn } from "@bibi/core";
+import type { PipelineCard, PipelineStatus } from "@bibi/core";
 import { useState } from "react";
 import type { ActionError } from "@/lib/action-result";
 import { MoveBlockersDialog } from "./move-blockers-dialog";
 import { MoveReasonDialog } from "./move-reason-dialog";
 import { useRunMove } from "./use-run-move";
 
-export type MoveCardInput = { card: PipelineCard; to: PipelineColumn };
+export type MoveCardInput = { card: PipelineCard; to: PipelineStatus };
 
 type Pending =
-  | { kind: "reason"; card: PipelineCard; to: PipelineColumn }
-  | { kind: "blockers"; card: PipelineCard; to: PipelineColumn; error: ActionError };
+  | { kind: "reason"; card: PipelineCard; to: PipelineStatus }
+  | { kind: "blockers"; card: PipelineCard; to: PipelineStatus; error: ActionError };
 
 /**
  * Runs `ticket.changeStatus` behind a drop. A status that requires a reason asks for it first; a

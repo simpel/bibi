@@ -115,6 +115,10 @@ erDiagram
   Ticket }o--|| TicketStatus : "is in"
   TicketStatus ||--o{ TicketStatusTransition : "from"
   TicketStatus ||--o{ TicketStatusTransition : "to"
+  Board ||--o{ BoardPhase : "has"
+  BoardPhase ||--o{ BoardPhaseStatus : "shows"
+  TicketStatus ||--o{ BoardPhaseStatus : "is shown in"
+  EntityType |o--o{ Board : "filters"
   EntityType ||--o{ ItemState : "has"
   ItemState ||--o{ ItemStateTransition : "from"
   ItemState ||--o{ ItemStateTransition : "to"
@@ -256,6 +260,24 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 > Minimum configuration, checked on every change (`CONFLICT`): one `entry` and one `closes` status. The default transitions are every forward move and a move to any closing status. Reports group by flag, never by status name.
 
 > Operations (`pipeline:write|delete` to change, `pipeline:read` to read): `ticketStatus.list|get|create|update|archive|reorder|setTransitions|importTemplate`. Settings page `/settings/pipeline`; first-time setup is the assistant onboarding at `/onboarding` ([ADR 0045](decisions/0045-soft-landing-onboarding.md), building on [ADR 0044](decisions/0044-line-states-and-the-status-grid.md)).
+
+### Board (`Board`), BoardPhase (`BoardPhase`) and BoardPhaseStatus (`BoardPhaseStatus`)
+
+*MVP* · A board is a saved view of the organization's tickets; its phases are its columns and group ticket statuses ([ADR 0067](decisions/0067-ticket-statuses-boards-and-gates.md), spec `docs/specs/boards.md`). A board owns no ticket data.
+
+**Attributes**
+- Board: name, order (`position`; the first active board is the default), optional filter on ticket type (`entityTypeId`) and main assignee (`assigneeId`), archived
+- BoardPhase: name, color, order within its board, archived
+- BoardPhaseStatus: a join row, one status in one phase; unique per board and status, so a status is in at most one phase per board and a status in none is not on that board
+
+**Relations**
+- `1:N` Board has → BoardPhase
+- `1:N` BoardPhase shows → BoardPhaseStatus; `N:1` BoardPhaseStatus is → TicketStatus
+- `N:1` Board filters → EntityType (optional)
+
+> Every organization has at least one board; `ticketStatus.create` puts a new status in its own phase on the default board unless given a `phaseId`. Archiving a status removes it from every board and archives a phase it leaves empty; archiving a phase or a board never changes tickets or statuses. The last board cannot be archived (`CONFLICT`).
+
+> Operations (`pipeline:read` to read, `pipeline:write|delete` to change): `board.list|get|create|update|reorder|archive`, `boardPhase.create|update|archive|reorder|moveStatus`; `pipeline.board` reads one board's columns and cards. Web: the customize mode of `/pipeline`.
 
 ### ItemState (`ItemState`) with flags and transitions
 

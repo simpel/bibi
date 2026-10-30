@@ -9,6 +9,7 @@ export * from "./features/alternative-group/schema";
 export * from "./features/api-key/schema";
 export * from "./features/assignment/schema";
 export * from "./features/audit-log/schema";
+export * from "./features/board/schema";
 export * from "./features/calendar/schema";
 export * from "./features/calendar/value-schema";
 export * from "./features/change-set/schema";

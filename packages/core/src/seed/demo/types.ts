@@ -38,7 +38,21 @@ export type DemoGridCell = { ticketStatus: string; type: string; state: string }
  * An organization's pipeline (ADR 0043, 0044): its statuses with flags and transitions (the shape of
  * a status template) and the grid cells by name. Item states come from the item types' templates.
  */
-export type DemoPipeline = { statuses: TicketStatusTemplate; cells: readonly DemoGridCell[] };
+/** A phase (column) of a demo board: a name, a color and the statuses it shows, by status name. */
+export type DemoBoardPhase = { name: string; color: string; statuses: readonly string[] };
+
+/** An extra board (ADR 0067): its phases left to right; statuses in no phase are off the board. */
+export type DemoBoard = { name: string; phases: readonly DemoBoardPhase[] };
+
+/**
+ * The statuses, the grid and the boards beyond the default "Pipeline" board that
+ * `ticketStatus.create` keeps (one phase per status).
+ */
+export type DemoPipeline = {
+  statuses: TicketStatusTemplate;
+  cells: readonly DemoGridCell[];
+  boards?: readonly DemoBoard[];
+};
 
 /**
  * A member's profile (ADR 0068) by name: the schedule kind (default PATTERN) and the staff items

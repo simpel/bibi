@@ -3,6 +3,7 @@ import type { AskedQuestion } from "../questions/question-schema";
 import type { AlternativeGroupWire } from "./alternative-group-entries";
 import type { ArchivePreviewWire } from "./archive-preview-entry";
 import type { AssignmentWire } from "./assignment-entries";
+import type { BoardUiProps } from "./board-entries";
 import type { CalendarRangeWire } from "./calendar-entries";
 import type { HoursWire } from "./hours-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
@@ -48,7 +49,7 @@ import type {
  * Generative-UI contract: component key → props. The web maps each key to an `@bibi/ui`
  * component; this package only decides which key and validated props a tool result gets.
  */
-export type ToolUiProps = {
+export type ToolUiProps = BoardUiProps & {
   "venue-table": { items: VenueWire[]; nextCursor: string | null };
   "venue-card": { venue: VenueWire };
   "item-table": { items: ItemWire[]; nextCursor: string | null };

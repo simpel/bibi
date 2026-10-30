@@ -1,17 +1,35 @@
-import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { loadTicketCards } from "./load-cards";
+import { boardOperations } from "../board/operations";
+import {
+  moveBoardPhaseStatusHandler,
+  reorderBoardPhasesHandler,
+} from "../board/phase-order-handlers";
+import {
+  archiveBoardPhaseHandler,
+  createBoardPhaseHandler,
+  updateBoardPhaseHandler,
+} from "../board/phase-write-handlers";
+import {
+  BoardPhaseCreateInputSchema,
+  BoardPhaseIdInputSchema,
+  BoardPhaseMoveStatusInputSchema,
+  BoardPhaseReorderInputSchema,
+  BoardPhaseSchema,
+  BoardPhaseUpdateInputSchema,
+  BoardSchema,
+} from "../board/schema";
+import { pipelineBoardHandler } from "./board-view";
 import { PipelineBoardInputSchema, PipelineBoardSchema } from "./schema";
-
-const DAY_MS = 86_400_000;
 
 export const pipelineBoard = defineOperation({
   name: "pipeline.board",
   kind: "query",
   description:
-    "The pipeline board (ADR 0041, 0043): one column per active ticket status in the " +
-    "organization's order, closing statuses last as closed lanes, and one card per ticket in its " +
-    "status's column. Filter by assignee or type. Tickets in closing statuses appear only for " +
+    "A board of tickets (ADR 0041, 0067): `boardId` picks the board (board.list), default the " +
+    "first. One column per phase of the board, each listing its ticket statuses (one drop zone " +
+    "each), and one card per ticket in the phase of its status; tickets whose status is on no " +
+    "phase are only counted (`unmappedCount`). The board's filter applies; `assigneeId` and " +
+    "`entityTypeId` replace it. Tickets in closing statuses appear only for " +
     "`closedWithinDays` days. A card names its customer by id only (customer.get or " +
     "customer.list resolve it); its held and booked line counts are null without program:read.",
   input: PipelineBoardInputSchema,
@@ -19,26 +37,80 @@ export const pipelineBoard = defineOperation({
   permission: "ticket:read",
   // The cards are tickets; a card's customer is only its id (ADR 0050, feature scope).
   entityType: "ticket",
-  handler: async ({ input, context }) => {
-    const since = new Date(Date.now() - input.closedWithinDays * DAY_MS);
-    const statuses = await context.db.ticketStatus.findMany({
-      orderBy: [{ position: "asc" }, { id: "asc" }],
-    });
-    const columns = statuses.map((ticketStatus) => ({
-      id: ticketStatus.id,
-      title: ticketStatus.name,
-      color: ticketStatus.color,
-      requiresReason: ticketStatus.requiresReason,
-      closed: ticketStatus.closes,
-    }));
-    const cards = await loadTicketCards({ context, input, since });
-    return ok({
-      value: {
-        columns: [...columns.filter((c) => !c.closed), ...columns.filter((c) => c.closed)],
-        cards,
-      },
-    });
-  },
+  handler: pipelineBoardHandler,
 });
 
-export const pipelineOperations = [pipelineBoard];
+export const createBoardPhase = defineOperation({
+  name: "boardPhase.create",
+  kind: "command",
+  description:
+    "Add a phase (column) to a board: a name, a hex color, an optional `position` (index, " +
+    "default last) and the ticket statuses it shows (`statusIds`). A status is in one phase per " +
+    "board, so each listed status leaves its current phase on this board. Tickets are unchanged.",
+  input: BoardPhaseCreateInputSchema,
+  output: BoardPhaseSchema,
+  permission: "pipeline:write",
+  handler: createBoardPhaseHandler,
+});
+
+export const updateBoardPhase = defineOperation({
+  name: "boardPhase.update",
+  kind: "command",
+  description: "Rename or recolor a board phase (column). Its statuses and tickets are unchanged.",
+  input: BoardPhaseUpdateInputSchema,
+  output: BoardPhaseSchema,
+  permission: "pipeline:write",
+  handler: updateBoardPhaseHandler,
+});
+
+export const archiveBoardPhase = defineOperation({
+  name: "boardPhase.archive",
+  kind: "command",
+  description:
+    "Remove a phase (column) from its board. Its statuses leave the board (move them first with " +
+    "boardPhase.moveStatus to keep them on it); tickets and statuses are unchanged.",
+  input: BoardPhaseIdInputSchema,
+  output: BoardPhaseSchema,
+  permission: "pipeline:delete",
+  handler: archiveBoardPhaseHandler,
+});
+
+export const reorderBoardPhases = defineOperation({
+  name: "boardPhase.reorder",
+  kind: "command",
+  description:
+    "Set the order of a board's phases (columns, left to right): pass every active phase id of " +
+    "the board once, in the new order. Returns the board.",
+  input: BoardPhaseReorderInputSchema,
+  output: BoardSchema,
+  permission: "pipeline:write",
+  // Audited on the board whose column order changes.
+  entityType: "board",
+  handler: reorderBoardPhasesHandler,
+});
+
+export const moveBoardPhaseStatus = defineOperation({
+  name: "boardPhase.moveStatus",
+  kind: "command",
+  description:
+    "Show a ticket status in another phase (column) of a board, or take it off the board with " +
+    "`phaseId: null`. A status is in one phase per board. Tickets keep their status; only where " +
+    "the board shows them changes. Returns the board.",
+  input: BoardPhaseMoveStatusInputSchema,
+  output: BoardSchema,
+  permission: "pipeline:write",
+  // Audited on the board whose layout changes.
+  entityType: "board",
+  handler: moveBoardPhaseStatusHandler,
+});
+
+/** The board view, board phases and boards (ADR 0067); handlers live in sibling files. */
+export const pipelineOperations = [
+  pipelineBoard,
+  createBoardPhase,
+  updateBoardPhase,
+  archiveBoardPhase,
+  reorderBoardPhases,
+  moveBoardPhaseStatus,
+  ...boardOperations,
+];

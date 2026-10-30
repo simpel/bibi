@@ -70,8 +70,11 @@ The parity core: every capability is defined **once** as an operation and then e
 - A searchable entity implements `Embeddable` and is registered in `search/embeddables.ts`. `embed` is injected by the app; core has no AI SDK dependency.
 - `search` filters each hit through `load({ ids, db, viewer })`, so archived rows and things the user may not see are removed. `load` without `viewer` is for the indexer.
 
+## Boards (ADR 0067)
+- A status is in at most one phase per board; only the `board`, `boardPhase` and `ticketStatus` (create, archive) operations place or unplace one; never write `BoardPhaseStatus` from another feature. Archiving a phase or board never touches tickets or statuses. A `pipeline.board` card's `columnId` is a phase id, never a status id.
+
 ## Demo data
-- `seedDemo()` in `src/seed/demo/`, CLI `seed:demo`; the spec is `docs/demo-seed.md`. Everything goes through `execute` as SYSTEM, except the Better Auth rows. Checks are in `checks.ts` and `config-checks.ts`.
+- `seedDemo()` in `src/seed/demo/`, CLI `seed:demo`; the spec is `docs/demo-seed.md`. Everything goes through `execute` as SYSTEM, except the Better Auth rows. Checks are in `checks.ts` and `config-checks.ts`; the board layout of an organization is data in `data/<org>/boards.ts`.
 
 ## Tests
 - Vitest against a real Postgres (`docker compose up -d postgres`, `pnpm db:migrate`), no mocks. Each test creates its own org via `testContext()`; tests that create members need a real organization (`testOrg()` in `test/org-helpers.ts`). `testContext({ role })` resolves permissions from the preset; pass `permissions` to test overrides. Deterministic `fakeEmbed` in `test/fake-embed.ts`.

@@ -73,6 +73,9 @@ export * from "./components/hero-number/hero-number";
 export * from "./components/hover-card/hover-card";
 export { Input, type InputProps } from "./components/input/input";
 export * from "./components/kanban/kanban-board";
+export * from "./components/kanban/kanban-column";
+export * from "./components/kanban/kanban-customize-board";
+export * from "./components/kanban/kanban-flip";
 export type * from "./components/kanban/kanban-types";
 export { Label, type LabelProps } from "./components/label/label";
 export * from "./components/page-container/page-container";
@@ -125,12 +128,7 @@ export {
   type SidebarProviderProps,
   useSidebar,
 } from "./components/sidebar/sidebar-context";
-export {
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-} from "./components/sidebar/sidebar-group";
+export * from "./components/sidebar/sidebar-group";
 export * from "./components/sidebar/sidebar-layout";
 export { SidebarMenu, SidebarMenuBadge, SidebarMenuItem } from "./components/sidebar/sidebar-menu";
 export * from "./components/sidebar/sidebar-menu-button";
