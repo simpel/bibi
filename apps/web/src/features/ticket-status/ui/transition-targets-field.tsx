@@ -11,6 +11,7 @@ import {
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control } from "react-hook-form";
+import { TransitionGateToggles } from "./transition-gate-toggles";
 import type { TransitionsFormOutput, TransitionsFormValues } from "./transitions-form-schema";
 
 export type TransitionTargetsFieldProps = {
@@ -23,7 +24,38 @@ type ToggleInput = { ids: readonly string[]; id: string; on: boolean };
 const toggle = ({ ids, id, on }: ToggleInput) =>
   on ? [...ids, id] : ids.filter((candidate) => candidate !== id);
 
-/** One checkbox per other status: may a ticket move there? */
+type TargetRowProps = Pick<TransitionTargetsFieldProps, "control"> & {
+  target: TicketStatusDto;
+  ids: readonly string[];
+  onChange: (ids: string[]) => void;
+};
+
+/** One target: may a ticket move there, and, when it may, the move's gates. */
+function TransitionTargetRow({ control, target, ids, onChange }: TargetRowProps) {
+  const on = ids.includes(target.id);
+  return (
+    <div className="grid gap-1">
+      <div className="flex items-center gap-2 text-sm">
+        <FormControl>
+          <Checkbox
+            id={`transition-${target.id}`}
+            checked={on}
+            onCheckedChange={(checked) =>
+              onChange(toggle({ ids, id: target.id, on: checked === true }))
+            }
+          />
+        </FormControl>
+        <Label htmlFor={`transition-${target.id}`} className="inline-flex items-center gap-2">
+          <ColorSwatch color={target.color} />
+          {target.name}
+        </Label>
+      </div>
+      {on ? <TransitionGateToggles control={control} toStatusId={target.id} /> : null}
+    </div>
+  );
+}
+
+/** One checkbox per other status: may a ticket move there, and with which gates? */
 export function TransitionTargetsField({ control, targets }: TransitionTargetsFieldProps) {
   const t = useTranslations("ticketStatus");
   return (
@@ -37,23 +69,13 @@ export function TransitionTargetsField({ control, targets }: TransitionTargetsFi
             <p className="text-sm text-muted-foreground">{t("noTargets")}</p>
           ) : null}
           {targets.map((target) => (
-            <div key={target.id} className="flex items-center gap-2 text-sm">
-              <FormControl>
-                <Checkbox
-                  id={`transition-${target.id}`}
-                  checked={field.value.includes(target.id)}
-                  onCheckedChange={(checked) =>
-                    field.onChange(
-                      toggle({ ids: field.value, id: target.id, on: checked === true }),
-                    )
-                  }
-                />
-              </FormControl>
-              <Label htmlFor={`transition-${target.id}`} className="inline-flex items-center gap-2">
-                <ColorSwatch color={target.color} />
-                {target.name}
-              </Label>
-            </div>
+            <TransitionTargetRow
+              key={target.id}
+              control={control}
+              target={target}
+              ids={field.value}
+              onChange={field.onChange}
+            />
           ))}
           <FormMessage />
         </FormItem>

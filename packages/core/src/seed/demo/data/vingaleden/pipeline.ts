@@ -7,11 +7,11 @@ import type { DemoGridCell, DemoPipeline } from "../../types";
 const statuses: TicketStatusTemplate["statuses"] = [
   { name: "Request", color: "#f59e0b", entry: true },
   { name: "Weather hold", color: "#0ea5e9" },
-  { name: "Confirmed", color: "#16a34a", requiresAssignee: true },
-  { name: "Weather OK", color: "#0d9488", requiresAssignee: true },
+  { name: "Confirmed", color: "#16a34a", gatesIn: ["ASSIGNEE"] },
+  { name: "Weather OK", color: "#0d9488", gatesIn: ["ASSIGNEE"] },
   { name: "Completed", color: "#2563eb", closes: true, invoiceable: true },
-  { name: "Called off – weather", color: "#6b7280", closes: true, requiresReason: true },
-  { name: "Cancelled", color: "#9ca3af", closes: true, requiresReason: true },
+  { name: "Called off – weather", color: "#6b7280", closes: true, gatesIn: ["REASON"] },
+  { name: "Cancelled", color: "#9ca3af", closes: true, gatesIn: ["REASON"] },
 ];
 
 const SOFT = ["Request", "Weather hold"];

@@ -6,7 +6,6 @@ const status = ({ id, closed = false }: { id: string; closed?: boolean }) => ({
   id,
   title: id,
   color: "#64748b",
-  requiresReason: false,
   closed,
 });
 

@@ -2,7 +2,6 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { checkMembers } from "../../shared/check-members";
 import { notFound } from "../../shared/errors";
-import { checkAssigneeKept } from "./check-assignee-kept";
 import { checkSlot } from "./check-slot";
 import {
   AssignmentAssignInputSchema,
@@ -17,18 +16,14 @@ export const assignAssignment = defineOperation({
   description:
     "Set who answers for a ticket or an item (ADR 0034): its main assignee, or, " +
     "with `responsibilityId`, the assignee for that responsibility on a ticket. The assignee " +
-    "must be a member (member.list userId). null removes the assignee, which is refused " +
-    "(CONFLICT) for the main assignee of a ticket in a status that requires one.",
+    "must be a member (member.list userId). null removes the assignee. Moves that need one " +
+    "check it through the transition's ASSIGNEE gate.",
   input: AssignmentAssignInputSchema,
   output: AssignmentSchema,
   permission: "ticket:write",
   handler: async ({ input: { assigneeId, ...slot }, context }) => {
     const valid = await checkSlot({ context, ...slot });
     if (!valid.ok) return valid;
-    if (assigneeId === null) {
-      const kept = await checkAssigneeKept({ context, ...slot });
-      if (!kept.ok) return kept;
-    }
     const member = await checkMembers({ context, userIds: { assigneeId } });
     if (!member.ok) return member;
     return ok({ value: await saveAssignee({ context, ...slot, assigneeId }) });

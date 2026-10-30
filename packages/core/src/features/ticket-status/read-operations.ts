@@ -16,9 +16,8 @@ export const listTicketStatuses = defineOperation({
   kind: "query",
   description:
     "List the organization's ticket statuses in board order, each with its flags (entry, " +
-    "closing, requiresReason, requiresAssignee, requiresAcceptedQuote, invoiceable) and the " +
-    "statuses a ticket may move " +
-    "to from it (`transitionsTo`).",
+    "closing, invoiceable), the statuses a ticket may move to from it (`transitionsTo`) and " +
+    "the gates on those moves (`transitionGates`: REASON, ASSIGNEE, ACCEPTED_QUOTE).",
   input: TicketStatusListInputSchema,
   output: TicketStatusListOutputSchema,
   permission: "pipeline:read",

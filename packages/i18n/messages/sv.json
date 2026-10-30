@@ -1400,12 +1400,15 @@
       "transitions": "Får gå till",
       "order": "Ordning"
     },
+    "gates": {
+      "label": "Vad flytten kräver",
+      "REASON": "En anledning",
+      "ASSIGNEE": "En huvudansvarig",
+      "ACCEPTED_QUOTE": "En accepterad offert"
+    },
     "flags": {
       "entry": "Nya ärenden startar här",
       "closes": "Avslutar ärendet",
-      "requiresReason": "Kräver en anledning",
-      "requiresAssignee": "Kräver en ansvarig",
-      "requiresAcceptedQuote": "Kräver en accepterad offert",
       "invoiceable": "Kan faktureras",
       "event": "Nås genom en offerthändelse",
       "noEvent": "Ingen händelse (flyttas för hand)",
@@ -1569,9 +1572,7 @@
         "color": "Färg",
         "entry": "Nya ärenden startar här",
         "closes": "Avslutar ärendet",
-        "requiresReason": "Kräver en anledning",
-        "requiresAssignee": "Kräver en ansvarig",
-        "requiresAcceptedQuote": "Kräver en accepterad offert",
+        "gates": "Villkor för flytten",
         "invoiceable": "Kan faktureras",
         "event": "Offerthändelse",
         "targetStatusId": "Flytta ärenden till (ärendestatus-id)",

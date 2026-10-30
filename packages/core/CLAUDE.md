@@ -71,6 +71,7 @@ The parity core: every capability is defined **once** as an operation and then e
 - `search` filters each hit through `load({ ids, db, viewer })`, so archived rows and things the user may not see are removed. `load` without `viewer` is for the indexer.
 
 ## Boards (ADR 0067)
+- A status carries no move rules: they are gates on its transitions (`TicketStatusTransitionGate`, ADR 0067 §5), checked only in `moveTicket` (`statusBlockers`). Write transitions and gates through `replaceTransitions` / `createTransition` only (no nested writes: the scoped client refuses them).
 - A status is in at most one phase per board; only the `board`, `boardPhase` and `ticketStatus` (create, archive) operations place or unplace one; never write `BoardPhaseStatus` from another feature. Archiving a phase or board never touches tickets or statuses. A `pipeline.board` card's `columnId` is a phase id, never a status id.
 
 ## Demo data

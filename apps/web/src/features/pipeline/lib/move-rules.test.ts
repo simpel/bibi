@@ -27,7 +27,6 @@ const status = ({
   id: "lead",
   title: "Lead",
   color: "#f59e0b",
-  requiresReason: false,
   closed: false,
   ...overrides,
 });
@@ -36,7 +35,7 @@ const lead = status();
 const confirmed = status({ overrides: { id: "confirmed", title: "Confirmed" } });
 const locked = status({ overrides: { id: "locked", title: "Final count locked" } });
 const lost = status({
-  overrides: { id: "lost", title: "Lost", closed: true, requiresReason: true },
+  overrides: { id: "lost", title: "Lost", closed: true },
 });
 const completed = status({ overrides: { id: "completed", title: "Completed", closed: true } });
 const transitions = {

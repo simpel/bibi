@@ -110,8 +110,14 @@ export async function addStatus({
   scope,
   name,
 }: PageInput & { scope: Locator; name: string }) {
-  await scope.getByRole("button", { name: "Lägg till ärendestatus" }).click();
   const form = page.getByRole("dialog");
+  // Right after a drag the first click can land while the board re-renders and close again:
+  // click until the popover is open.
+  await expect(async () => {
+    if (await form.isVisible()) return;
+    await scope.getByRole("button", { name: "Lägg till ärendestatus" }).click();
+    await expect(form.getByLabel("Namn")).toBeVisible({ timeout: 3_000 });
+  }).toPass({ timeout: 20_000 });
   await form.getByLabel("Namn").fill(name);
   await form.getByRole("button", { name: "Spara" }).click();
   await expect(page.getByText("Ärendestatusen har skapats.").first()).toBeVisible();

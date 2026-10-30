@@ -2,6 +2,7 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { invalid, notFound } from "../../shared/errors";
 import { loadAllTicketStatuses, loadTicketStatus } from "./load-ticket-status";
+import { replaceTransitions } from "./replace-transitions";
 import {
   TicketStatusListOutputSchema,
   TicketStatusReorderInputSchema,
@@ -49,11 +50,12 @@ export const setTicketStatusTransitions = defineOperation({
   description:
     "Replace the statuses a ticket may move to from one status (from → to). Pass the full set; an " +
     "empty list makes the status a dead end. A closing status is always a dead end (ADR 0043). " +
-    "The status flags still apply to every allowed move.",
+    "Each transition can carry gates a move along it must pass (REASON, ASSIGNEE, " +
+    "ACCEPTED_QUOTE; ADR 0067): pass `gates` to replace them, omit it to keep the current ones.",
   input: TicketStatusSetTransitionsInputSchema,
   output: TicketStatusSchema,
   permission: "pipeline:write",
-  handler: async ({ input: { id, toStatusIds }, context }) => {
+  handler: async ({ input: { id, toStatusIds, gates }, context }) => {
     const before = await loadTicketStatus({ context, id });
     if (!before) return notFound({ entity: "Ticket status" });
     const targets = [...new Set(toStatusIds)];
@@ -63,14 +65,8 @@ export const setTicketStatusTransitions = defineOperation({
     if (targets.includes(id)) return problem({ message: "A status cannot move to itself" });
     const found = await context.db.ticketStatus.count({ where: { id: { in: targets } } });
     if (found !== targets.length) return problem({ message: "Unknown or archived target status" });
-    await context.db.ticketStatusTransition.deleteMany({ where: { fromStatusId: id } });
-    await context.db.ticketStatusTransition.createMany({
-      data: targets.map((toStatusId) => ({
-        organizationId: context.organizationId,
-        fromStatusId: id,
-        toStatusId,
-      })),
-    });
+    const replaced = await replaceTransitions({ context, before, targets, gates });
+    if (!replaced.ok) return replaced;
     const after = await loadTicketStatus({ context, id });
     if (!after) return notFound({ entity: "Ticket status" });
     context.recordChange({ entityId: id, before, after });

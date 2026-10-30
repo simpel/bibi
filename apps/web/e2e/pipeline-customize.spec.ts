@@ -55,8 +55,6 @@ test("an admin customizes the board: columns, statuses and the unphased column",
     target: columnBack({ page, name: "Uppföljning" }).locator('[data-slot="kanban-chip-list"]'),
     landed: chip({ scope: columnBack({ page, name: "Uppföljning" }), name: "Platsbesök" }),
   });
-  // The drop shows at once; let its save and refresh finish before opening the next popover.
-  await page.waitForLoadState("networkidle");
 
   // Another new status: into Uppföljning, then off the board again into the unphased column.
   await addStatus({ page, scope: unphased, name: "Reserv" });

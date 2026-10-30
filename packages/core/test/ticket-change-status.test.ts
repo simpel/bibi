@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { changeTicketStatus, createLine, execute } from "../src/index";
+import { changeTicketStatus, createLine, execute, setTicketStatusTransitions } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { insertHold } from "./hold-helpers";
 import { activeOccupancies } from "./line-helpers";
@@ -39,23 +39,30 @@ describe("ticket.changeStatus (ADR 0043)", () => {
     expect(audit.after).toMatchObject({ statusId: confirmed.id });
   });
 
-  it("lists every blocker of a refused move and changes nothing", async () => {
+  it("lists every failing gate of a refused move and changes nothing", async () => {
+    const { context, ticket } = await leadSetup();
+    const confirmed = await statusByName({ context, name: "Confirmed" });
+    const lead = await statusByName({ context, name: "Lead" });
+    const gates = [{ toStatusId: confirmed.id, gates: ["REASON" as const, "ASSIGNEE" as const] }];
+    const input = { id: lead.id, toStatusIds: lead.transitionsTo, gates };
+    unwrap({ result: await execute({ operation: setTicketStatusTransitions, input, context }) });
+    const refused = await moveToStatus({ context, ticketId: ticket.id, name: "Confirmed" });
+    expect(errorCode({ result: refused })).toBe("CONFLICT");
+    const paths = refused.ok ? [] : refused.error.issues.map((issue) => issue.path);
+    expect(paths).toEqual(["reason", "assigneeId"]);
+    const after = await context.db.ticket.findFirstOrThrow({ where: { id: ticket.id } });
+    expect(after.statusId).toBe(lead.id);
+  });
+
+  it("refuses a move the organization does not allow", async () => {
     const { context, ticket } = await leadSetup();
     const confirmed = await statusByName({ context, name: "Confirmed" });
     const lead = await statusByName({ context, name: "Lead" });
     await context.db.ticketStatusTransition.deleteMany({
       where: { fromStatusId: lead.id, toStatusId: confirmed.id },
     });
-    await context.db.ticketStatus.update({
-      where: { id: confirmed.id },
-      data: { requiresReason: true },
-    });
     const refused = await moveToStatus({ context, ticketId: ticket.id, name: "Confirmed" });
-    expect(errorCode({ result: refused })).toBe("CONFLICT");
-    const paths = refused.ok ? [] : refused.error.issues.map((issue) => issue.path);
-    expect(paths).toEqual(["statusId", "reason", "assigneeId"]);
-    const after = await context.db.ticket.findFirstOrThrow({ where: { id: ticket.id } });
-    expect(after.statusId).toBe(lead.id);
+    expect(refused.ok ? [] : refused.error.issues.map((issue) => issue.path)).toEqual(["statusId"]);
   });
 
   it("needs a reason for Lost and an assignee for Completed", async () => {

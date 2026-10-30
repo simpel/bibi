@@ -10,8 +10,9 @@ export const changeTicketStatus = defineOperation({
   description:
     "Move a ticket to another of the organization's statuses (ADR 0043). Only moves the " +
     "organization allows (ticketStatus.list transitionsTo); nothing leaves a closing status. The " +
-    "target's flags apply: requiresReason needs `reason`, requiresAssignee needs a main assignee " +
-    "(assignment.assign), and a closing status releases every line. A refused move changes " +
+    "transition's gates apply (ticketStatus.list transitionGates): REASON needs `reason`, " +
+    "ASSIGNEE a main assignee (assignment.assign), ACCEPTED_QUOTE an accepted quote; a closing " +
+    "status releases every line. A refused move changes " +
     "nothing and gives CONFLICT with every blocker in `issues`.",
   input: TicketChangeStatusInputSchema,
   output: TicketSchema,

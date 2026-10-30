@@ -12,6 +12,7 @@ import {
   type TicketStatusCreateInput,
   type TicketStatusDto,
   type TicketStatusImportResult,
+  type TicketStatusSetTransitionsInput,
   type TicketStatusUpdateInput,
   updateTicketStatus,
 } from "@bibi/core";
@@ -24,7 +25,7 @@ export type CreateTicketStatusActionInput = { input: TicketStatusCreateInput };
 export type UpdateTicketStatusActionInput = { input: TicketStatusUpdateInput };
 export type ArchiveTicketStatusActionInput = { input: TicketStatusArchiveInput };
 export type ReorderTicketStatusesActionInput = { ids: string[] };
-export type SetTransitionsActionInput = { input: { id: string; toStatusIds: string[] } };
+export type SetTransitionsActionInput = { input: TicketStatusSetTransitionsInput };
 type StatusPage = { items: TicketStatusDto[]; nextCursor: string | null };
 
 export async function createTicketStatusAction({

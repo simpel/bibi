@@ -3,6 +3,8 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import type { TicketStatusTemplate } from "../../templates/ticket-statuses/ticket-status-template";
 import { getTicketStatusTemplate } from "../../templates/ticket-statuses/ticket-status-templates";
+import { createTransition } from "./create-transition";
+import type { TransitionGate } from "./gate-schema";
 import { insertTicketStatus, ticketStatusNameTaken } from "./insert-ticket-status";
 import { loadAllTicketStatuses } from "./load-ticket-status";
 import {
@@ -27,18 +29,34 @@ async function recordTransitionChanges({ context, before }: RecordInput) {
   return after;
 }
 
-/** Adds the template's transitions between the active statuses with its names; keeps the rest. */
+type NewTransition = { fromStatusId: string; toStatusId: string; gates: readonly TransitionGate[] };
+
+/** The template's transitions between active statuses with its names that do not exist yet. */
+function newTransitions({
+  template,
+  before,
+}: {
+  template: TicketStatusTemplate;
+  before: TicketStatusDto[];
+}) {
+  const byName = new Map(before.map((ticketStatus) => [ticketStatus.name, ticketStatus]));
+  const gatesIn = new Map(template.statuses.map((status) => [status.name, status.gatesIn ?? []]));
+  return template.transitions.flatMap(([from, to]): NewTransition[] => {
+    const [fromStatus, toStatus] = [byName.get(from), byName.get(to)];
+    if (!fromStatus || !toStatus || fromStatus.transitionsTo.includes(toStatus.id)) return [];
+    return [{ fromStatusId: fromStatus.id, toStatusId: toStatus.id, gates: gatesIn.get(to) ?? [] }];
+  });
+}
+
+/**
+ * Adds the template's transitions between the active statuses with its names, each with the gates
+ * of its target (`gatesIn`); existing transitions and their gates are kept.
+ */
 async function addTransitions({ context, template }: TemplateInput) {
   const before = await loadAllTicketStatuses({ context });
-  const idOf = new Map(before.map((ticketStatus) => [ticketStatus.name, ticketStatus.id]));
-  const data = template.transitions.flatMap(([from, to]) => {
-    const fromStatusId = idOf.get(from);
-    const toStatusId = idOf.get(to);
-    if (!fromStatusId || !toStatusId) return [];
-    return [{ organizationId: context.organizationId, fromStatusId, toStatusId }];
-  });
-  const added = await context.db.ticketStatusTransition.createMany({ data, skipDuplicates: true });
-  return { count: added.count, statuses: await recordTransitionChanges({ context, before }) };
+  const added = newTransitions({ template, before });
+  for (const transition of added) await createTransition({ context, ...transition });
+  return { count: added.length, statuses: await recordTransitionChanges({ context, before }) };
 }
 
 /** The quote events an active status already has; the import never takes one from it. */
@@ -67,13 +85,8 @@ export async function importTicketStatuses({
     const entry = ticketStatus.entry === true && !hasEntry;
     const event =
       ticketStatus.event && !takenEvents.has(ticketStatus.event) ? ticketStatus.event : null;
-    const inserted = await insertTicketStatus({
-      context,
-      ...ticketStatus,
-      entry,
-      event,
-      ownPhase: true,
-    });
+    const { gatesIn: _gatesIn, ...fields } = ticketStatus;
+    const inserted = await insertTicketStatus({ context, ...fields, entry, event, ownPhase: true });
     if (!inserted.ok) return inserted;
     created.push(inserted.value);
   }
@@ -90,7 +103,7 @@ export const importTicketStatusTemplate = defineOperation({
   kind: "command",
   description:
     "Import a ticket status template as ordinary, editable statuses with their flags and " +
-    "transitions. Statuses whose name already exists are skipped; the template's transitions " +
+    "transitions with their gates. Statuses whose name already exists are skipped; the template's transitions " +
     "between statuses with its names are added, existing transitions are kept. An existing entry " +
     "status stays the entry status, and a quote event that a status has stays with it.",
   input: TicketStatusImportTemplateInputSchema,

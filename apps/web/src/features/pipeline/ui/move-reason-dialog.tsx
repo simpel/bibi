@@ -19,7 +19,7 @@ export type MoveReasonDialogProps = {
   onSubmit: (reason: string) => void;
 };
 
-/** Asks for the reason a status with `requiresReason` needs before the card is moved. */
+/** Asks for the reason a transition with a REASON gate needs before the card is moved. */
 export function MoveReasonDialog({ column, onCancel, onSubmit }: MoveReasonDialogProps) {
   const t = useTranslations("pipeline.reason");
   const common = useTranslations("common");

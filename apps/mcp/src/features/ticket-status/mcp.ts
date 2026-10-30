@@ -39,7 +39,8 @@ export const ticketStatusMcpTools = [
     idempotent: true,
     summary: ({ input }) =>
       `Allow ticket status ${text({ value: input.id })} to move to: ` +
-      (list({ value: input.toStatusIds }) || "nothing"),
+      (list({ value: input.toStatusIds }) || "nothing") +
+      (input.gates ? ", and set the gates on those moves" : ""),
   }),
   mcpTool({
     operation: "ticketStatus.importTemplate",

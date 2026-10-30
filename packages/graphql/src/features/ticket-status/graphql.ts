@@ -24,8 +24,8 @@ export const TicketStatusRef = objectFromSchema<TicketStatusDto>({
   omit: ["organizationId"],
   description:
     "Ticket status – one of the organization's own statuses, with its flags (entry, closing, " +
-    "requiresReason, requiresAssignee, invoiceable). `transitionsTo` lists the statuses a ticket " +
-    "may move to.",
+    "invoiceable). `transitionsTo` lists the statuses a ticket may move to and " +
+    "`transitionGates` the gates on those moves (ADR 0067).",
 });
 const TicketStatusPageRef = pageType({ name: "TicketStatusPage", item: TicketStatusRef });
 

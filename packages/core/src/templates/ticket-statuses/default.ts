@@ -2,15 +2,15 @@ import { forwardTransitions, type TicketStatusTemplate } from "./ticket-status-t
 
 const statuses: TicketStatusTemplate["statuses"] = [
   { name: "Lead", color: "#f59e0b", entry: true },
-  { name: "Confirmed", color: "#16a34a", requiresAssignee: true },
+  { name: "Confirmed", color: "#16a34a", gatesIn: ["ASSIGNEE"] },
   {
     name: "Completed",
     color: "#2563eb",
     closes: true,
-    requiresAssignee: true,
     invoiceable: true,
+    gatesIn: ["ASSIGNEE"],
   },
-  { name: "Lost", color: "#6b7280", closes: true, requiresReason: true },
+  { name: "Lost", color: "#6b7280", closes: true, gatesIn: ["REASON"] },
 ];
 
 /**

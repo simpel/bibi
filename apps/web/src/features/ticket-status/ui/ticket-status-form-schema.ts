@@ -9,9 +9,6 @@ export type TicketStatusFormValues = {
   color: string;
   entry: boolean;
   closes: boolean;
-  requiresReason: boolean;
-  requiresAssignee: boolean;
-  requiresAcceptedQuote: boolean;
   invoiceable: boolean;
   /** The quote event that enters the status, or `NONE`. */
   event: StatusEvent | typeof NONE;
@@ -43,9 +40,6 @@ export function ticketStatusFormDefaults({
     color: ticketStatus.color,
     entry: ticketStatus.entry,
     closes: ticketStatus.closes,
-    requiresReason: ticketStatus.requiresReason,
-    requiresAssignee: ticketStatus.requiresAssignee,
-    requiresAcceptedQuote: ticketStatus.requiresAcceptedQuote,
     invoiceable: ticketStatus.invoiceable,
     event: ticketStatus.event ?? NONE,
   };

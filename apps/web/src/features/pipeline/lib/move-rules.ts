@@ -13,8 +13,8 @@ export type MoveRuleInput = {
 /**
  * Which drops the board accepts (ADR 0041, 0043, 0067): a move the organization allows out of an
  * open status into another status, also within the same column (a column groups statuses). A
- * status that requires a reason opens a dialog that asks for it; core checks every other status
- * flag and refuses with the blockers, which a dialog lists.
+ * REASON gate on the transition opens a dialog that asks for it; core checks every other gate and
+ * refuses with the blockers, which a dialog lists.
  */
 export function canMoveCard({ card, from, to, transitions }: MoveRuleInput): boolean {
   if (from.closed || from.id === to.id || card.statusId !== from.id) return false;

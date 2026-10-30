@@ -13,8 +13,6 @@ const flagsOf = ({ name, ...ticketStatus }: Awaited<ReturnType<typeof statusByNa
   name,
   ticketStatus.entry,
   ticketStatus.closes,
-  ticketStatus.requiresReason,
-  ticketStatus.requiresAssignee,
   ticketStatus.invoiceable,
 ];
 
@@ -23,14 +21,20 @@ describe("ticket statuses (ADR 0043)", () => {
     const context = await provisionedContext();
     const all = await statuses({ context });
     expect(all.map((ticketStatus) => flagsOf(ticketStatus))).toEqual([
-      ["Lead", true, false, false, false, false],
-      ["Confirmed", false, false, false, true, false],
-      ["Completed", false, true, false, true, true],
-      ["Lost", false, true, true, false, false],
+      ["Lead", true, false, false],
+      ["Confirmed", false, false, false],
+      ["Completed", false, true, true],
+      ["Lost", false, true, false],
     ]);
     const ids = Object.fromEntries(all.map((ticketStatus) => [ticketStatus.name, ticketStatus.id]));
     const lead = await statusByName({ context, name: "Lead" });
     expect(lead.transitionsTo).toEqual([ids.Confirmed, ids.Completed, ids.Lost]);
+    // The template's gates sit on every transition into their status (ADR 0067 §5).
+    expect(lead.transitionGates).toEqual([
+      { toStatusId: ids.Confirmed, gates: ["ASSIGNEE"] },
+      { toStatusId: ids.Completed, gates: ["ASSIGNEE"] },
+      { toStatusId: ids.Lost, gates: ["REASON"] },
+    ]);
     const confirmed = await statusByName({ context, name: "Confirmed" });
     expect(confirmed.transitionsTo).toEqual([ids.Completed, ids.Lost]);
     expect((await statusByName({ context, name: "Lost" })).transitionsTo).toEqual([]);

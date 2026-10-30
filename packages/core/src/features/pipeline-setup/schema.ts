@@ -3,6 +3,7 @@ import { ItemCapabilitiesSchema } from "../entity-type/capability-kinds";
 import { HoldKindSchema } from "../item-state/hold-kind";
 import { ItemStateSchema } from "../item-state/schema";
 import { StatusGridSchema } from "../status-grid/schema";
+import { TransitionGateSchema } from "../ticket-status/gate-schema";
 import { ColorSchema, TicketStatusSchema } from "../ticket-status/schema";
 
 const name = ({ max, example }: { max: number; example: string }) =>
@@ -38,18 +39,16 @@ export const PipelineTypeDraftSchema = z.object({
     .describe("Name of the state lines in an expiring state fall to; null for none"),
 });
 
-/** One ticket status in the draft (ADR 0043); flags default to off. */
+/** One ticket status in the draft (ADR 0043); flags default to off, gates to none. */
 export const PipelineStatusDraftSchema = z.object({
   name: name({ max: 64, example: "Status name, e.g. Lead, Quote sent or Lost" }),
   color: ColorSchema,
   entry: z.boolean().optional().describe("New tickets start here; exactly one status"),
   closes: z.boolean().optional().describe("Ends the ticket; entering it releases every line"),
-  requiresReason: z.boolean().optional().describe("A reason is required to enter"),
-  requiresAssignee: z.boolean().optional().describe("The ticket needs its assignee to enter"),
-  requiresAcceptedQuote: z
-    .boolean()
+  gatesIn: z
+    .array(TransitionGateSchema)
     .optional()
-    .describe("The ticket needs an accepted quote to enter"),
+    .describe("Gates on every move into this status (ADR 0067), e.g. REASON for Lost"),
   invoiceable: z.boolean().optional().describe("Invoices can be created in this status"),
   event: TicketStatusSchema.shape.event.optional(),
 });

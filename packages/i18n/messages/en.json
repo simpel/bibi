@@ -1400,12 +1400,15 @@
       "transitions": "May move to",
       "order": "Order"
     },
+    "gates": {
+      "label": "What the move needs",
+      "REASON": "A reason",
+      "ASSIGNEE": "A main assignee",
+      "ACCEPTED_QUOTE": "An accepted quote"
+    },
     "flags": {
       "entry": "New tickets start here",
       "closes": "Ends the ticket",
-      "requiresReason": "Needs a reason to enter",
-      "requiresAssignee": "Needs an assignee to enter",
-      "requiresAcceptedQuote": "Needs an accepted quote to enter",
       "invoiceable": "Can be invoiced",
       "event": "Entered by a quote event",
       "noEvent": "No event (entered by hand)",
@@ -1569,9 +1572,7 @@
         "color": "Color",
         "entry": "New tickets start here",
         "closes": "Ends the ticket",
-        "requiresReason": "Needs a reason",
-        "requiresAssignee": "Needs an assignee",
-        "requiresAcceptedQuote": "Needs an accepted quote",
+        "gates": "Gates on the moves",
         "invoiceable": "Can be invoiced",
         "event": "Quote event",
         "targetStatusId": "Move tickets to (status id)",

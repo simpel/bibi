@@ -41,13 +41,14 @@ async function statusFailures({ context, org }: CheckDemoPipelineInput): Promise
   ];
   if (!statuses.some((ticketStatus) => ticketStatus.closes))
     failures.push(`${slug}: no closing status`);
-  const guarded = pipeline.statuses.statuses.filter(
-    (ticketStatus) => ticketStatus.requiresAcceptedQuote,
-  ).length;
-  const found = statuses.filter((ticketStatus) => ticketStatus.requiresAcceptedQuote).length;
-  failures.push(
-    ...countFailure({ slug, what: "accepted-quote statuses", found, expected: guarded }),
+  // Every template transition carries the gates of its target (`gatesIn`, ADR 0067 §5).
+  const gatesIn = new Map(pipeline.statuses.statuses.map((s) => [s.name, s.gatesIn ?? []]));
+  const expected = pipeline.statuses.transitions.reduce(
+    (sum, [, to]) => sum + (gatesIn.get(to)?.length ?? 0),
+    0,
   );
+  const found = await context.db.ticketStatusTransitionGate.count();
+  failures.push(...countFailure({ slug, what: "transition gates", found, expected }));
   return failures;
 }
 

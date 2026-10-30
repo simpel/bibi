@@ -4,8 +4,8 @@ import {
   acceptQuote,
   execute,
   sendQuote,
+  setTicketStatusTransitions,
   ticketStatusHistory,
-  updateTicketStatus,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { draftQuote } from "./quote-helpers";
@@ -19,13 +19,21 @@ const historyOf = async ({ context, ticketId }: { context: Ctx; ticketId: string
     result: await execute({ operation: ticketStatusHistory, input: { ticketId }, context }),
   });
 
-/** A ticket in Lead with a draft quote, and Confirmed requiring an accepted quote. */
+/** A ticket in Lead with a draft quote, and the move Lead → Confirmed gated on an accepted quote. */
 async function guarded() {
   const setup = await draftQuote();
   const { context } = setup;
-  const confirmed = await statusByName({ context, name: "Confirmed" });
-  const input = { id: confirmed.id, requiresAcceptedQuote: true };
-  unwrap({ result: await execute({ operation: updateTicketStatus, input, context }) });
+  const [lead, confirmed] = await Promise.all(
+    ["Lead", "Confirmed"].map((name) => statusByName({ context, name })),
+  );
+  if (!lead || !confirmed) throw new Error("Missing statuses");
+  const gates = lead.transitionGates.map((gate) =>
+    gate.toStatusId === confirmed.id
+      ? { ...gate, gates: [...gate.gates, "ACCEPTED_QUOTE" as const] }
+      : gate,
+  );
+  const input = { id: lead.id, toStatusIds: lead.transitionsTo, gates };
+  unwrap({ result: await execute({ operation: setTicketStatusTransitions, input, context }) });
   return { ...setup, confirmed };
 }
 

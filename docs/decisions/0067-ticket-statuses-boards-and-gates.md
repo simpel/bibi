@@ -45,3 +45,10 @@ Checked 2026-10-24 against the code in this worktree:
 - **Keep flags on the destination status.** Cheapest. Rejected: a flag cannot take parameters (deposit percent), cannot differ by source status, and the catalogue of flags grows with every new guard.
 - **One fixed pipeline with phases as the only level.** What exists today. Rejected: it gives no per-audience boards and forces one column set on 50 users.
 - **Phases own statuses (a status belongs to one phase globally).** Rejected: Sales and Billing need to group the same statuses differently, so the mapping must be per board.
+
+## Addendum 2026-10-30: the first gates (#447)
+- Built: `TicketStatusTransitionGate` (transition, `key`) with the gates `REASON`, `ASSIGNEE` and `ACCEPTED_QUOTE`, which replace the three `requires*` flags. The migration gave every transition into a flagged status the matching gate. `params` and the other gates of §5 come with #493.
+- One write path instead of `ticketStatusGate.*` operations (§8): `ticketStatus.setTransitions` takes `gates` with the targets, so a status's moves and their gates are replaced as one set and audited on the status. Omitting `gates` keeps the gates of the targets that stay, so callers that only change targets cannot drop gates by accident.
+- `ticketStatus.list` keeps `transitionsTo` and adds `transitionGates`, rather than replacing `transitionsTo`: every move rule in the web app reads it unchanged.
+- A gate runs only on a move. Creating a ticket in a status and removing its main assignee are no longer refused.
+- Confirmed on 2026-10-30 against rules on board columns: the same move must pass or fail the same way on every board, on the ticket page, for quote events and through the API, as in Jira's workflows.

@@ -1,5 +1,15 @@
 // Ticket statuses per organization (ADR 0043): the organization's own statuses, in its own order.
-// Behaviour comes only from the generic status flags. Transitions between statuses are data too.
+// Behaviour comes from a few generic status flags; move rules are gates on transitions (ADR 0067).
+
+/// A check on a transition, from a code-owned catalogue (ADR 0067 §5). Gates read facts, never store them.
+enum TransitionGate {
+  /// The move needs a reason.
+  REASON
+  /// The ticket needs its main assignee (ADR 0034).
+  ASSIGNEE
+  /// The ticket needs an accepted quote (ADR 0054).
+  ACCEPTED_QUOTE
+}
 
 /// Quote event that moves a ticket into a status (ADR 0043). At most one active status per event.
 enum StatusEvent {
@@ -12,55 +22,68 @@ enum StatusEvent {
 /// Trigger (ADR 0053): changing `closes` re-derives the holds of the lines that have not ended
 /// on tickets in the status (`sync_line_occupancy.sql`).
 model TicketStatus {
-  id                    String                   @id @default(cuid(2))
-  organizationId        String
-  name                  String
-  color                 String
-  position              Int                      @default(0)
+  id              String                   @id @default(cuid(2))
+  organizationId  String
+  name            String
+  color           String
+  position        Int                      @default(0)
   /// New tickets start here.
-  entry                 Boolean                  @default(false)
+  entry           Boolean                  @default(false)
   /// No move leaves this status; entering it releases every line.
-  closes                Boolean                  @default(false)
-  /// A reason is required to enter.
-  requiresReason        Boolean                  @default(false)
-  /// The ticket must have its main assignee (ADR 0034) to enter.
-  requiresAssignee      Boolean                  @default(false)
-  /// The ticket must have an accepted quote to enter (ADR 0054: statuses guard facts).
-  requiresAcceptedQuote Boolean                  @default(false)
+  closes          Boolean                  @default(false)
   /// Invoices can be created in this status.
-  invoiceable           Boolean                  @default(false)
+  invoiceable     Boolean                  @default(false)
   /// Entered by this quote event instead of by hand; at most one active status per event.
-  event                 StatusEvent?
-  status                RecordStatus             @default(ACTIVE)
-  createdAt             DateTime                 @default(now())
-  updatedAt             DateTime                 @updatedAt
-  createdBy             String?
-  transitionsFrom       TicketStatusTransition[] @relation("TransitionFrom")
-  transitionsTo         TicketStatusTransition[] @relation("TransitionTo")
-  tickets               Ticket[]
-  stateRules            StatusStateRule[]
-  templates             TicketTemplate[]
-  changesFrom           TicketStatusChange[]     @relation("StatusChangeFrom")
-  changesTo             TicketStatusChange[]     @relation("StatusChangeTo")
-  boardPhases           BoardPhaseStatus[]
+  event           StatusEvent?
+  status          RecordStatus             @default(ACTIVE)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+  createdBy       String?
+  transitionsFrom TicketStatusTransition[] @relation("TransitionFrom")
+  transitionsTo   TicketStatusTransition[] @relation("TransitionTo")
+  tickets         Ticket[]
+  stateRules      StatusStateRule[]
+  templates       TicketTemplate[]
+  changesFrom     TicketStatusChange[]     @relation("StatusChangeFrom")
+  changesTo       TicketStatusChange[]     @relation("StatusChangeTo")
+  boardPhases     BoardPhaseStatus[]
 
   @@unique([id, organizationId])
   @@index([organizationId, status, position])
 }
 
-/// Ticket status transition – an allowed move from one status to another (from → to). Replaced as a
-/// set per `from` status by `ticketStatus.setTransitions`.
+/// Ticket status transition – an allowed move from one status to another (from → to), with its
+/// gates. Replaced as a set per `from` status by `ticketStatus.setTransitions`.
 model TicketStatusTransition {
-  id             String       @id @default(cuid(2))
+  id             String                       @id @default(cuid(2))
   organizationId String
   fromStatusId   String
   toStatusId     String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime                     @default(now())
+  updatedAt      DateTime                     @updatedAt
   createdBy      String?
-  fromStatus     TicketStatus @relation("TransitionFrom", fields: [fromStatusId, organizationId], references: [id, organizationId])
-  toStatus       TicketStatus @relation("TransitionTo", fields: [toStatusId, organizationId], references: [id, organizationId])
+  fromStatus     TicketStatus                 @relation("TransitionFrom", fields: [fromStatusId, organizationId], references: [id, organizationId])
+  toStatus       TicketStatus                 @relation("TransitionTo", fields: [toStatusId, organizationId], references: [id, organizationId])
+  gates          TicketStatusTransitionGate[]
 
+  @@unique([id, organizationId])
   @@unique([fromStatusId, toStatusId])
   @@index([organizationId, fromStatusId])
+}
+
+/// Ticket status transition gate (ADR 0067 §5) – one check a move along the transition must pass.
+/// Owned: `key`. Replaced with its transition's set by `ticketStatus.setTransitions` (hard delete,
+/// cascades with the transition).
+model TicketStatusTransitionGate {
+  id             String                 @id @default(cuid(2))
+  organizationId String
+  transitionId   String
+  key            TransitionGate
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+  createdBy      String?
+  transition     TicketStatusTransition @relation(fields: [transitionId, organizationId], references: [id, organizationId], onDelete: Cascade)
+
+  @@unique([transitionId, key])
+  @@index([organizationId, transitionId])
 }

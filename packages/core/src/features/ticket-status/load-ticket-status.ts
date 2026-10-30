@@ -1,23 +1,29 @@
 import type { Prisma, TicketStatus } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
+import type { TransitionGate } from "./gate-schema";
 import type { TicketStatusDto } from "./schema";
 
-/** Prisma `include` that loads a status's allowed targets (active ones, in status order). */
+/** Prisma `include` that loads a status's allowed targets (active ones, in status order) and gates. */
 export const WITH_TRANSITIONS = {
   transitionsFrom: {
     where: { toStatus: { status: "ACTIVE" } },
-    select: { toStatusId: true },
+    select: { toStatusId: true, gates: { select: { key: true }, orderBy: { key: "asc" } } },
     orderBy: [{ toStatus: { position: "asc" } }, { toStatusId: "asc" }],
   },
 } satisfies Prisma.TicketStatusInclude;
 
-type Row = TicketStatus & { transitionsFrom: readonly { toStatusId: string }[] };
+type Target = { toStatusId: string; gates?: readonly { key: TransitionGate }[] };
+type Row = TicketStatus & { transitionsFrom: readonly Target[] };
 
 export type ToTicketStatusDtoInput = { row: Row };
 
 export function toTicketStatusDto({ row }: ToTicketStatusDtoInput): TicketStatusDto {
   const { transitionsFrom, ...ticketStatus } = row;
-  return { ...ticketStatus, transitionsTo: transitionsFrom.map((target) => target.toStatusId) };
+  const transitionGates = transitionsFrom.flatMap(({ toStatusId, gates = [] }) =>
+    gates.length > 0 ? [{ toStatusId, gates: gates.map((gate) => gate.key) }] : [],
+  );
+  const transitionsTo = transitionsFrom.map((target) => target.toStatusId);
+  return { ...ticketStatus, transitionsTo, transitionGates };
 }
 
 export type LoadTicketStatusInput = { context: Pick<OperationContext, "db">; id: string };

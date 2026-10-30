@@ -5,46 +5,48 @@ import type { DemoOrg } from "./types";
 
 export type CheckDemoFactGuardsInput = { context: ExecuteContext; org: DemoOrg };
 
-/** An open ticket without an accepted quote that the organization lets move into the status. */
-async function ticketWithoutQuote({
+type Transition = { fromStatusId: string; toStatusId: string; toStatus: { name: string } };
+
+/** An open ticket in the transition's start status without an accepted quote. */
+const ticketWithoutQuote = ({
   context,
-  statusId,
+  transition,
 }: {
   context: ExecuteContext;
-  statusId: string;
-}) {
-  return context.db.ticket.findFirst({
+  transition: Transition;
+}) =>
+  context.db.ticket.findFirst({
     where: {
-      ticketStatus: { closes: false, transitionsFrom: { some: { toStatusId: statusId } } },
+      statusId: transition.fromStatusId,
+      ticketStatus: { closes: false },
       quotes: { none: { quoteStatus: "ACCEPTED" } },
     },
     orderBy: { reference: "asc" },
   });
-}
 
 /**
- * ADR 0054: a status guards a fact, it does not store it. For every status that requires an
- * accepted quote, moving a ticket without one there is refused with that blocker (and so changes
- * nothing). Returns failure messages.
+ * ADR 0054, 0067: a gate guards a fact, it does not store it. For every transition with an
+ * ACCEPTED_QUOTE gate, moving a ticket without an accepted quote along it is refused with that
+ * gate named as the blocker (and so changes nothing). Returns failure messages.
  */
 export async function checkDemoFactGuards({
   context,
   org,
 }: CheckDemoFactGuardsInput): Promise<string[]> {
   const failures: string[] = [];
-  const guarded = await context.db.ticketStatus.findMany({
-    where: { requiresAcceptedQuote: true },
+  const guarded = await context.db.ticketStatusTransition.findMany({
+    where: { gates: { some: { key: "ACCEPTED_QUOTE" } } },
+    include: { toStatus: { select: { name: true } } },
   });
-  for (const ticketStatus of guarded) {
-    const ticket = await ticketWithoutQuote({ context, statusId: ticketStatus.id });
+  for (const transition of guarded) {
+    const ticket = await ticketWithoutQuote({ context, transition });
     if (!ticket) continue;
-    const input = { ticketId: ticket.id, statusId: ticketStatus.id, reason: "Seed check" };
+    const input = { ticketId: ticket.id, statusId: transition.toStatusId, reason: "Seed check" };
     const result = await execute({ operation: changeTicketStatus, input, context });
     const refused = !result.ok && result.error.issues.some((issue) => issue.path === "quote");
     if (!refused) {
-      failures.push(
-        `${org.slug}: #${ticket.reference} entered "${ticketStatus.name}" without a quote`,
-      );
+      const name = transition.toStatus.name;
+      failures.push(`${org.slug}: #${ticket.reference} entered "${name}" without a quote`);
     }
   }
   return failures;

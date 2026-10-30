@@ -67,19 +67,19 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
     expect(await context.db.ticket.count()).toBe(before);
   });
 
-  it("needs an assignee when the start status requires one and creates nothing without", async () => {
+  it("starts in the template's status without an assignee: creating is not a move", async () => {
     const setup = await templateSetup();
     const { context } = setup;
     const template = unwrap({ result: await makeTemplate({ context, setup }) });
     const customerId = (await setup.newTicket()).customerId;
     const before = await context.db.ticket.count();
-    const refused = await execute({
+    const created = await execute({
       operation: createTicketFromTemplate,
       input: { templateId: template.id, customerId, startsAt, headcount: 8 },
       context,
     });
-    expect(errorCode({ result: refused })).toBe("CONFLICT");
-    expect(await context.db.ticket.count()).toBe(before);
+    expect(created.ok).toBe(true);
+    expect(await context.db.ticket.count()).toBe(before + 1);
   });
 
   it("needs read access to the template and customer", async () => {

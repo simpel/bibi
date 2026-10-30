@@ -38,6 +38,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "HoursException",
   "TicketStatus",
   "TicketStatusTransition",
+  "TicketStatusTransitionGate",
   "Board",
   "BoardPhase",
   "BoardPhaseStatus",

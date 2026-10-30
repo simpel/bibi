@@ -36,6 +36,7 @@ export async function PipelinePage({ locale, boardId, customize }: PipelinePageP
         <PipelineBoardView
           board={board}
           transitions={data.value.transitions}
+          reasonMoves={data.value.reasonMoves}
           customerNames={data.value.customerNames}
         />
       </div>

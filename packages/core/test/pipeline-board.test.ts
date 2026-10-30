@@ -21,7 +21,6 @@ describe("pipeline.board (ADR 0043)", () => {
       "Lost",
     ]);
     expect(columns.filter((c) => c.closed).map((c) => c.title)).toEqual(["Completed", "Lost"]);
-    expect(columns.find((c) => c.title === "Lost")?.statuses[0]?.requiresReason).toBe(true);
   });
 
   it("puts tickets in their status's column and moves them with ticket.changeStatus", async () => {

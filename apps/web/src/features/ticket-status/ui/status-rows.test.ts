@@ -12,12 +12,10 @@ const ticketStatus = ({
     color: "#000",
     entry: false,
     closes: false,
-    requiresReason: false,
-    requiresAssignee: false,
-    requiresAcceptedQuote: false,
     invoiceable: false,
     event: null,
     transitionsTo: [],
+    transitionGates: [],
     ...fields,
   }) as TicketStatusDto;
 
@@ -28,10 +26,10 @@ describe("toStatusRows", () => {
         ticketStatus({
           fields: { id: "a", name: "Lead", entry: true, transitionsTo: ["b", "gone"] },
         }),
-        ticketStatus({ fields: { id: "b", name: "Lost", closes: true, requiresReason: true } }),
+        ticketStatus({ fields: { id: "b", name: "Lost", closes: true, invoiceable: true } }),
       ],
     });
-    expect(rows.map((row) => row.flags)).toEqual([["entry"], ["closes", "requiresReason"]]);
+    expect(rows.map((row) => row.flags)).toEqual([["entry"], ["closes", "invoiceable"]]);
     expect(rows[0]?.targets).toEqual(["Lost", "gone"]);
   });
 });

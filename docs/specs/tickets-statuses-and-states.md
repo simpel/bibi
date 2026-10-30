@@ -15,23 +15,29 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 |---|---|
 | `entry` | New tickets start here. Exactly one active status is the default entry. |
 | `closes` | No move leaves it. Entering it releases every line. |
-| `requiresReason` | A reason is required to enter. |
-| `requiresAssignee` | The ticket needs its main assignee to enter. |
-| `requiresAcceptedQuote` | The ticket needs an accepted quote to enter. |
 | `invoiceable` | Invoices can be created in this status. |
 | `event` | Entered by a quote event (`QUOTE_SENT` or `QUOTE_ACCEPTED`) instead of by hand. At most one active status per event. |
 
 - Minimum configuration, refused with `CONFLICT` on every change: one `entry` status and one `closes` status.
 - Transitions are data (`TicketStatusTransition`, from → to). Default: every forward move plus a move to any closing status.
+- Move rules are gates on transitions (`TicketStatusTransitionGate`, ADR 0067 §5), never flags on a status. The same status can be entered with a gate from one status and without one from another. Set them with `ticketStatus.setTransitions({ id, toStatusIds, gates? })`: `gates` replaces the gates of the listed targets, omitted keeps them. `ticketStatus.list` returns them as `transitionGates`.
+
+| Gate | A move along the transition needs |
+|---|---|
+| `REASON` | A reason (`reason`). |
+| `ASSIGNEE` | The ticket's main assignee. |
+| `ACCEPTED_QUOTE` | An accepted quote. |
+
+- A gate runs only on a move: creating a ticket in a status checks none, and removing the main assignee is allowed. Templates give each status `gatesIn`, the gates on every template transition into it. More gates (invoices, deposits, holds, staff) are #493.
 - `quote.send` and `quote.accept` move the ticket into the status with the matching `event` when one exists and the transition is allowed; otherwise the status does not change. Payments and invoices never move a ticket.
 - Removing a status is archiving. A status that holds tickets needs a target status; tickets move in one logged operation through the normal checks. The last `entry` or `closes` status cannot be archived.
 
 ## Moving a ticket
 - One command: `ticket.changeStatus({ ticketId, statusId, reason? })`. The status is never set through `ticket.update`.
-- A move is atomic. Core checks the transition, the status flags and the line states the move implies. If anything blocks, nothing changes and `CONFLICT` lists every blocker (e.g. a hard hold collision, a disallowed state transition, a missing assignee).
+- A move is atomic. Core checks the transition, its gates and the line states the move implies. If anything blocks, nothing changes and `CONFLICT` lists every blocker (e.g. a hard hold collision, a disallowed state transition, a missing assignee).
 - History is `TicketStatusChange` (append-only: from, to, reason, `changedAt`, `changedBy`, `trigger` = `MANUAL | QUOTE_EVENT | TEMPLATE | SYSTEM`); read it with `ticket.statusHistory`. `Ticket.statusId` is a projection set by a trigger on insert into that table; never write it. Time-in-status reports are plain SQL on it.
-- Facts stay on their records: quote status on `Quote`, payment status on `Payment`, holds on lines. A status may only guard a fact on entry (`requiresAcceptedQuote`). A status that contradicts a fact is shown as a derived warning, never silently resolved.
-- Not built yet: `requiresPaidDeposit`.
+- Facts stay on their records: quote status on `Quote`, payment status on `Payment`, holds on lines. A transition may only guard a fact (the `ACCEPTED_QUOTE` gate). A status that contradicts a fact is shown as a derived warning, never silently resolved.
+- Not built yet: the `DEPOSIT_PAID` gate (#493).
 
 ## Predefined tickets
 - `TicketTemplate`: name, ticket type, start status, default own-field values and lines (item, optional setup, offset and duration from the ticket start, quantity fixed or per headcount).
@@ -69,7 +75,7 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 - One read, `calendar.range({ from, to, venueId?, typeId?, stateId?, statusId?, ticketId? })` (ADR 0064): `from` and `to` are plain dates, both inclusive, at most 62 days, resolved to `[start of from, start of to + 1 day)` in the venue's zone, else the organization's. It returns every active occupancy overlapping that range as a block already joined with its line, ticket, state and status (setup and teardown included), earliest first, with no paging. Permission `ticket:read`; the item is an id, the line's name and held-since need `program:read`, the state's name and color need `pipeline:read`. An unknown venue or ticket is `NOT_FOUND`. The web calendar, GraphQL, REST and MCP all read it.
 
 ## Board
-- One column per active status in position order and a collapsed Closed lane for closing statuses. Dashboard counts group by status flag, never by status name.
+- Boards, their columns (phases) and drop zones are in `docs/specs/boards.md`. A drop zone is greyed out without a transition from the card's status; a `REASON` gate on that transition asks for the reason first. Dashboard counts group by status flag, never by status name.
 
 ## Setup
 - First setup is the assistant onboarding at `/onboarding` (ADR 0045; the earlier wizard is gone). It builds a draft through `pipelineSetup.presetDraft|preview|activate` (activate is one audited batch). Afterwards the same data is edited in settings.

@@ -16,7 +16,6 @@ const toStatus = ({ row }: { row: TicketStatus }) => ({
   id: row.id,
   title: row.name,
   color: row.color,
-  requiresReason: row.requiresReason,
   closed: row.closes,
 });
 

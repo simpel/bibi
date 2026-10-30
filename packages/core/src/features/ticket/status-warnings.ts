@@ -10,11 +10,15 @@ export type StatusWarningsInput = {
 
 /**
  * The status the fact "quote accepted" leads to: the first active status entered by the
- * `QUOTE_ACCEPTED` event or requiring an accepted quote. Null when the organization has none.
+ * `QUOTE_ACCEPTED` event or by a transition with an `ACCEPTED_QUOTE` gate. Null when the
+ * organization has none.
  */
 async function acceptancePosition({ context }: Pick<StatusWarningsInput, "context">) {
+  const gated = {
+    transitionsTo: { some: { gates: { some: { key: "ACCEPTED_QUOTE" as const } } } },
+  };
   const ticketStatus = await context.db.ticketStatus.findFirst({
-    where: { OR: [{ event: "QUOTE_ACCEPTED" }, { requiresAcceptedQuote: true }] },
+    where: { OR: [{ event: "QUOTE_ACCEPTED" }, gated] },
     orderBy: [{ position: "asc" }, { id: "asc" }],
     select: { position: true },
   });

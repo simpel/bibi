@@ -1,7 +1,6 @@
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { createRecord } from "../../records/create-record";
-import { conflict } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { assignOnCreate } from "../assignment/assign-on-create";
 import { checkNewTicket } from "./check-new-ticket";
@@ -19,34 +18,14 @@ export type InsertTicketInput = {
   trigger?: "MANUAL" | "TEMPLATE";
 };
 
-type EntryInput = {
-  context: OperationContext;
-  assigneeId: string | null | undefined;
-  statusId: string | undefined;
-};
+type EntryInput = { context: OperationContext; statusId: string | undefined };
 
 /**
- * The start status; when it requires an assignee (ADR 0043), the new ticket must get one. A new
- * ticket has no quote, so it cannot start in a status that requires an accepted one (ADR 0054).
+ * The start status: the given one, else the organization's entry status. Creating a ticket is not
+ * a move, so no transition gate applies (ADR 0067 §5).
  */
-async function loadStartStatus({
-  context,
-  assigneeId,
-  statusId,
-}: EntryInput): Promise<Result<string>> {
-  const start = statusId ? ok({ value: statusId }) : await entryStatusId({ context });
-  if (!start.ok) return start;
-  const ticketStatus = await context.db.ticketStatus.findFirst({ where: { id: start.value } });
-  if (ticketStatus?.requiresAcceptedQuote) {
-    const message = `A new ticket cannot start in "${ticketStatus.name}": it requires an accepted quote`;
-    return conflict({ message, issues: [{ path: "statusId", message }] });
-  }
-  if (assigneeId || !ticketStatus?.requiresAssignee) return start;
-  return conflict({
-    message: `A ticket in "${ticketStatus.name}" requires an assignee`,
-    issues: [{ path: "assigneeId", message: "Required by the entry status" }],
-  });
-}
+const loadStartStatus = async ({ context, statusId }: EntryInput): Promise<Result<string>> =>
+  statusId ? ok({ value: statusId }) : await entryStatusId({ context });
 
 /**
  * Creates a ticket in the start status (default: the organization's entry status) with the next reference number and records
@@ -61,7 +40,7 @@ export async function insertTicket({
   const checked = await checkNewTicket({ context, input });
   if (!checked.ok) return checked;
   const { entityTypeId, fields: _fields, assigneeId, ...data } = input;
-  const statusId = await loadStartStatus({ context, assigneeId, statusId: startStatusId });
+  const statusId = await loadStartStatus({ context, statusId: startStatusId });
   if (!statusId.ok) return statusId;
   const reference = await nextReference({ context });
   const row = await createRecord({

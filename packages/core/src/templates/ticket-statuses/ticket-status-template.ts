@@ -1,9 +1,12 @@
+import type { TransitionGate } from "../../features/ticket-status/gate-schema";
 import type { StatusEvent, TicketStatusFlags } from "../../features/ticket-status/schema";
 
 export type TicketStatusTemplateStatus = {
   name: string;
   color: string;
   event?: StatusEvent | null;
+  /** The gates on every template transition into this status (ADR 0067 §5), e.g. a reason for Lost. */
+  gatesIn?: readonly TransitionGate[];
 } & Partial<TicketStatusFlags>;
 
 /**

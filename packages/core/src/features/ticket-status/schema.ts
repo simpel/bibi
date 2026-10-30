@@ -2,16 +2,10 @@ import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { TICKET_STATUS_TEMPLATE_KEYS } from "../../templates/ticket-statuses/ticket-status-templates";
+import { TransitionGatesSchema } from "./gate-schema";
 
-/** The generic status flags (ADR 0043): the only behaviour a status has. */
-export const STATUS_FLAGS = [
-  "entry",
-  "closes",
-  "requiresReason",
-  "requiresAssignee",
-  "requiresAcceptedQuote",
-  "invoiceable",
-] as const;
+/** The generic status flags (ADR 0043); move rules are gates on transitions (ADR 0067). */
+export const STATUS_FLAGS = ["entry", "closes", "invoiceable"] as const;
 export type StatusFlag = (typeof STATUS_FLAGS)[number];
 
 /** The quote events that can move a ticket into a status (ADR 0043). */
@@ -29,11 +23,6 @@ const FlagShape = {
     .boolean()
     .describe("New tickets start here; the first active entry status is the default"),
   closes: z.boolean().describe("No move leaves this status; entering it releases every line"),
-  requiresReason: z.boolean().describe("A reason is required to enter (lost, cancelled, reopened)"),
-  requiresAssignee: z.boolean().describe("The ticket must have its main assignee to enter"),
-  requiresAcceptedQuote: z
-    .boolean()
-    .describe("The ticket must have an accepted quote to enter (the status guards the fact)"),
   invoiceable: z.boolean().describe("Invoices can be created in this status"),
 };
 
@@ -48,6 +37,8 @@ export const TicketStatusSchema = z.object({
   event: EventSchema,
   /** Ids of the statuses a ticket may move to from this one (ADR 0043). */
   transitionsTo: z.array(z.string()),
+  /** The gates on those transitions; a target without gates is not listed (ADR 0067 §5). */
+  transitionGates: z.array(TransitionGatesSchema),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),
@@ -120,6 +111,13 @@ export const TicketStatusSetTransitionsInputSchema = z.object({
   toStatusIds: z
     .array(z.string().min(1))
     .describe("Every status a ticket may move to from this one; replaces the current set"),
+  gates: z
+    .array(TransitionGatesSchema)
+    .optional()
+    .describe(
+      "The gates of those transitions, replacing their current gates (a target not listed gets " +
+        "none). Omitted keeps the gates of the targets that stay",
+    ),
 });
 
 export const TicketStatusImportTemplateInputSchema = z.object({
@@ -145,5 +143,6 @@ export type TicketStatusDto = z.infer<typeof TicketStatusSchema>;
 export type TicketStatusFlags = Pick<TicketStatusDto, StatusFlag>;
 export type TicketStatusCreateInput = z.infer<typeof TicketStatusCreateInputSchema>;
 export type TicketStatusUpdateInput = z.infer<typeof TicketStatusUpdateInputSchema>;
+export type TicketStatusSetTransitionsInput = z.infer<typeof TicketStatusSetTransitionsInputSchema>;
 export type TicketStatusArchiveInput = z.infer<typeof TicketStatusArchiveInputSchema>;
 export type TicketStatusImportResult = z.infer<typeof TicketStatusImportTemplateOutputSchema>;

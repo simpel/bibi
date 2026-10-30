@@ -111,7 +111,7 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
     await expect(other.db.assignment.create({ data })).rejects.toThrow();
   });
 
-  it("keeps the ticket's main assignee in a status that requires one", async () => {
+  it("needs a main assignee to move along an ASSIGNEE gate, and may remove it after", async () => {
     const { context, ticket, subject } = await setup();
     const confirmed = await statusByName({ context, name: "Confirmed" });
     const move = { ticketId: ticket.id, statusId: confirmed.id };
@@ -120,12 +120,13 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
     const johan = await memberUser({ context, name: "Johan Ek" });
     await assignTo({ context, ...subject, assigneeId: johan });
     unwrap({ result: await execute({ operation: changeTicketStatus, input: move, context }) });
+    // A gate runs only on a move (ADR 0067 §5): the assignee can go once the ticket is there.
     const removed = await execute({
       operation: assignAssignment,
       input: { ...subject, assigneeId: null },
       context,
     });
-    expect(errorCode({ result: removed })).toBe("CONFLICT");
+    expect(removed.ok).toBe(true);
     const maria = await memberUser({ context, name: "Maria Holm" });
     const replaced = await assignTo({ context, ...subject, assigneeId: maria });
     expect(replaced.assigneeId).toBe(maria);

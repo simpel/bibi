@@ -11,6 +11,8 @@ import { usePipelineLabels } from "./use-pipeline-labels";
 export type PipelineBoardViewProps = {
   board: PipelineBoard;
   transitions: Readonly<Record<string, readonly string[]>>;
+  /** Status id → the targets whose move from it needs a reason (a REASON gate). */
+  reasonMoves: Readonly<Record<string, readonly string[]>>;
   /** Customer id → name; a card without one shows no customer (ADR 0050). */
   customerNames: Readonly<Record<string, string>>;
 };
@@ -19,9 +21,10 @@ export type PipelineBoardViewProps = {
  * The kanban board of tickets by phase (ADR 0067). A phase with several statuses splits into one
  * drop zone per status while a card is dragged; a drop runs `ticket.changeStatus` to that status.
  */
-export function PipelineBoardView({ board, transitions, customerNames }: PipelineBoardViewProps) {
+export function PipelineBoardView(props: PipelineBoardViewProps) {
+  const { board, transitions, reasonMoves, customerNames } = props;
   const labels = usePipelineLabels();
-  const { move, dialog } = useMoveCard();
+  const { move, dialog } = useMoveCard({ reasonMoves });
   return (
     <>
       <KanbanBoard

@@ -23,6 +23,8 @@ export type PipelineData = {
   statuses: TicketStatusDto[];
   /** Ticket status id → the ids it may move to (`ticketStatus.list` transitionsTo). */
   transitions: Record<string, string[]>;
+  /** Ticket status id → the ids whose move from it has a REASON gate (ADR 0067 §5). */
+  reasonMoves: Record<string, string[]>;
   /** Customer id → name; empty when the caller may not view customers (ADR 0050). */
   customerNames: Record<string, string>;
   access: BoardAccess;
@@ -69,11 +71,17 @@ export async function loadPipelineData({
   const transitions = Object.fromEntries(
     statuses.value.items.map(({ id, transitionsTo }) => [id, transitionsTo]),
   );
+  const reasonMoves = Object.fromEntries(
+    statuses.value.items.map(({ id, transitionGates }) => [
+      id,
+      transitionGates.filter((g) => g.gates.includes("REASON")).map((g) => g.toStatusId),
+    ]),
+  );
   const customerNames = await loadCustomerNames({ board: board.value, abilities });
   const access = {
     write: can({ abilities, permission: "pipeline:write" }),
     remove: can({ abilities, permission: "pipeline:delete" }),
   };
   const value = { board: board.value, boards: boards.value.items, statuses: statuses.value.items };
-  return { ok: true, value: { ...value, transitions, customerNames, access } };
+  return { ok: true, value: { ...value, transitions, reasonMoves, customerNames, access } };
 }

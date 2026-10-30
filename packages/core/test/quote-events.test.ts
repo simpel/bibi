@@ -32,7 +32,12 @@ async function configure({ context }: Ctx) {
   const lead = await statusByName({ context, name: "Lead" });
   const moves = [
     { id: lead.id, toStatusIds: [sent.id, confirmed.id] },
-    { id: sent.id, toStatusIds: [confirmed.id] },
+    // Entering Confirmed needs a main assignee, as on the template's moves into it.
+    {
+      id: sent.id,
+      toStatusIds: [confirmed.id],
+      gates: [{ toStatusId: confirmed.id, gates: ["ASSIGNEE" as const] }],
+    },
   ];
   for (const move of moves) {
     const result = await execute({ operation: setTicketStatusTransitions, input: move, context });

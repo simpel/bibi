@@ -19,7 +19,7 @@ export type SeedPipelineInput = { context: ExecuteContext; pipeline: DemoPipelin
  */
 async function createStatuses({ context, pipeline }: SeedPipelineInput) {
   const ids = new Map<string, string>();
-  for (const { name, color, ...flags } of pipeline.statuses.statuses) {
+  for (const { name, color, gatesIn: _gatesIn, ...flags } of pipeline.statuses.statuses) {
     const input = { name, color };
     const created = await execute({ operation: createTicketStatus, input, context });
     if (!created.ok) return created;
@@ -33,13 +33,20 @@ async function createStatuses({ context, pipeline }: SeedPipelineInput) {
 
 type TransitionsInput = SeedPipelineInput & { ids: ReadonlyMap<string, string> };
 
-/** The statuses' transitions, one `ticketStatus.setTransitions` per status they leave. */
+/**
+ * The statuses' transitions, one `ticketStatus.setTransitions` per status they leave, each with the
+ * gates of its target (`gatesIn`, ADR 0067 §5).
+ */
 async function setTransitions({ context, pipeline, ids }: TransitionsInput): Promise<Result<true>> {
+  const gatesIn = new Map(pipeline.statuses.statuses.map((s) => [s.name, s.gatesIn ?? []]));
   for (const [name, id] of ids) {
-    const toStatusIds = pipeline.statuses.transitions
-      .filter(([from]) => from === name)
-      .flatMap(([, to]) => ids.get(to) ?? []);
-    const input = { id, toStatusIds };
+    const targets = pipeline.statuses.transitions.filter(([from]) => from === name);
+    const toStatusIds = targets.flatMap(([, to]) => ids.get(to) ?? []);
+    const gates = targets.flatMap(([, to]) => {
+      const toStatusId = ids.get(to);
+      return toStatusId ? [{ toStatusId, gates: [...(gatesIn.get(to) ?? [])] }] : [];
+    });
+    const input = { id, toStatusIds, gates };
     const set = await execute({ operation: setTicketStatusTransitions, input, context });
     if (!set.ok) return set;
   }

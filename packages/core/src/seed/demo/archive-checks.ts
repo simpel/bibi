@@ -14,16 +14,16 @@ export type CheckDemoArchiveInput = { context: ExecuteContext; org: DemoOrg };
 async function statusFailures({ context, org }: CheckDemoArchiveInput): Promise<string[]> {
   const statuses = await context.db.ticketStatus.findMany({
     where: { status: "ACTIVE", entry: false, closes: false },
-    include: { transitionsFrom: { include: { toStatus: true } } },
+    include: { transitionsFrom: { include: { toStatus: true, gates: true } } },
   });
   for (const ticketStatus of statuses) {
     const tickets = await context.db.ticket.count({ where: { statusId: ticketStatus.id } });
     // Tickets cannot be moved into a status that only a quote event enters (ADR 0043), and a
-    // status that requires a reason or an accepted quote (ADR 0054) would block the move;
+    // REASON or ACCEPTED_QUOTE gate on the transition (ADR 0067) would block the move;
     // transitions come in no fixed order.
+    const blocking = new Set(["REASON", "ACCEPTED_QUOTE"]);
     const target = ticketStatus.transitionsFrom.find(
-      ({ toStatus }) =>
-        !toStatus.event && !toStatus.requiresReason && !toStatus.requiresAcceptedQuote,
+      ({ toStatus, gates }) => !toStatus.event && !gates.some((gate) => blocking.has(gate.key)),
     )?.toStatusId;
     const templates = await context.db.ticketTemplate.count({
       where: { statusId: ticketStatus.id },

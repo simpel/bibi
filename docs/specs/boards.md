@@ -18,7 +18,7 @@ Behaviour spec for ADR 0067. Entities are in `docs/domain-model.md`; statuses, g
 
 ## Reading a board
 - `pipeline.board({ boardId?, ... })` reads one board; without `boardId` it reads the default board. Output: `boardId`, `boardName`, `columns`, `cards` and `unmappedCount`.
-- A column is a phase: `id` (the phase id), `title`, `closed` (every status in it closes) and its `statuses` (`id`, `title`, `color`, `requiresReason`, `closed`). Each status is a drop zone: moving a card onto it sets that status through `ticket.changeStatus`, with the usual transition, gate and reason checks. A drop zone not allowed from the card's status is shown disabled.
+- A column is a phase: `id` (the phase id), `title`, `closed` (every status in it closes) and its `statuses` (`id`, `title`, `color`, `closed`). Each status is a drop zone: moving a card onto it sets that status through `ticket.changeStatus`, with the usual transition, gate and reason checks. A drop zone not allowed from the card's status is shown disabled.
 - A card carries `columnId` (the phase id) and `statusId`. A ticket shows on exactly one card, in the column of the phase that holds its status. Closed tickets show only within `closedWithinDays`.
 - `unmappedCount` is the number of tickets of the board's filter whose status is not in any phase of the board.
 - The board's own filter (type, assignee) narrows the cards; the request's filters narrow them further.

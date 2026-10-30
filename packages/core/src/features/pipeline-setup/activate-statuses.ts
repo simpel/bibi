@@ -17,9 +17,6 @@ const flagsOf = ({ ticketStatus }: { ticketStatus: PipelineStatusDraft }) => ({
   color: ticketStatus.color,
   entry: ticketStatus.entry ?? false,
   closes: ticketStatus.closes ?? false,
-  requiresReason: ticketStatus.requiresReason ?? false,
-  requiresAssignee: ticketStatus.requiresAssignee ?? false,
-  requiresAcceptedQuote: ticketStatus.requiresAcceptedQuote ?? false,
   invoiceable: ticketStatus.invoiceable ?? false,
   event: ticketStatus.event ?? null,
 });
@@ -69,7 +66,8 @@ type FinishInput = StatusesInput & { ids: Map<string, string> };
 
 /**
  * Archives the statuses the draft left out (their tickets move to the entry status through the
- * normal move checks), then sets the draft's order and the default transitions (ADR 0043).
+ * normal move checks), then sets the draft's order and the default transitions with the gates of
+ * their targets (ADR 0043, 0067).
  */
 export async function finishStatuses({
   context,
@@ -90,11 +88,15 @@ export async function finishStatuses({
   const reordered = await runNested({ operation: reorderTicketStatuses, input: order, context });
   if (!reordered.ok) return reordered;
   const pairs = forwardTransitions({ statuses });
+  const gatesIn = new Map(statuses.map((s) => [s.name, s.gatesIn ?? []]));
   for (const ticketStatus of statuses) {
-    const toStatusIds = pairs
-      .filter(([from]) => from === ticketStatus.name)
-      .map(([, to]) => idOf({ name: to }));
-    const input = { id: idOf({ name: ticketStatus.name }), toStatusIds };
+    const targets = pairs.filter(([from]) => from === ticketStatus.name).map(([, to]) => to);
+    const toStatusIds = targets.map((to) => idOf({ name: to }));
+    const gates = targets.map((to) => ({
+      toStatusId: idOf({ name: to }),
+      gates: [...(gatesIn.get(to) ?? [])],
+    }));
+    const input = { id: idOf({ name: ticketStatus.name }), toStatusIds, gates };
     const set = await runNested({ operation: setTicketStatusTransitions, input, context });
     if (!set.ok) return set;
   }

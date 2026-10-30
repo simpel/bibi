@@ -4,7 +4,6 @@ export const PipelineStatusSchema = z.object({
   id: z.string().describe("The ticket status id"),
   title: z.string().describe("The status name"),
   color: z.string().describe("The status colour"),
-  requiresReason: z.boolean().describe("Entering the status needs a reason"),
   closed: z.boolean().describe("A closing status"),
 });
 

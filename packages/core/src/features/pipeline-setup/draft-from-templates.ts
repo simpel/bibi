@@ -58,7 +58,7 @@ export function statesFromTemplate({ template, bookable }: StatesFromTemplateInp
 export const defaultStateTemplate = ({ bookable }: { bookable: boolean }): StateTemplateChoice =>
   bookable ? "bookable" : "other";
 
-/** The template's statuses with every flag spelled out. */
+/** The template's statuses with every flag and gate spelled out. */
 export function statusesFromTemplate({ template }: { template: PipelineTemplateKey }) {
   return getTicketStatusTemplate({ key: template }).statuses.map(
     (status): Required<PipelineStatusDraft> => ({
@@ -66,9 +66,7 @@ export function statusesFromTemplate({ template }: { template: PipelineTemplateK
       color: status.color,
       entry: status.entry ?? false,
       closes: status.closes ?? false,
-      requiresReason: status.requiresReason ?? false,
-      requiresAssignee: status.requiresAssignee ?? false,
-      requiresAcceptedQuote: status.requiresAcceptedQuote ?? false,
+      gatesIn: [...(status.gatesIn ?? [])],
       invoiceable: status.invoiceable ?? false,
       event: status.event ?? null,
     }),
