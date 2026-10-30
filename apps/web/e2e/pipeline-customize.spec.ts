@@ -13,7 +13,9 @@ import { signUpWithOrganization } from "./steps";
 // Customize mode on /pipeline (ADR 0067): a new organization has one default board with one
 // column per default status (Lead, Confirmed, Completed, Lost).
 
-test("an admin customizes the board: columns, statuses and the tray", async ({ page }) => {
+test("an admin customizes the board: columns, statuses and the unphased column", async ({
+  page,
+}) => {
   await signUpWithOrganization({ page, name: "Tavla AB" });
   const ticketId = await createTicket({ page });
   await gotoApp({ page, path: "/pipeline" });
@@ -49,10 +51,10 @@ test("an admin customizes the board: columns, statuses and the tray", async ({ p
     chip({ scope: columnBack({ page, name: "Uppföljning" }), name: "Platsbesök" }),
   ).toBeVisible();
 
-  // A status from the tray gets its own column on the default board; drag it into Uppföljning,
-  // then off the board into the tray.
-  const tray = page.locator('[data-slot="kanban-status-tray"]');
-  await addStatus({ page, scope: tray, name: "Reserv" });
+  // A status from the unphased column gets its own column on the default board; drag it into Uppföljning,
+  // then off the board into the unphased column.
+  const unphased = page.locator('[data-slot="kanban-unphased-column"]');
+  await addStatus({ page, scope: unphased, name: "Reserv" });
   await dragUntil({
     page,
     source: chip({ scope: columnBack({ page, name: "Reserv" }), name: "Reserv" }),
@@ -62,8 +64,8 @@ test("an admin customizes the board: columns, statuses and the tray", async ({ p
   await dragUntil({
     page,
     source: chip({ scope: columnBack({ page, name: "Uppföljning" }), name: "Reserv" }),
-    target: tray.locator('[data-slot="kanban-chip-list"]'),
-    landed: chip({ scope: tray, name: "Reserv" }),
+    target: unphased.locator('[data-slot="kanban-chip-list"]'),
+    landed: chip({ scope: unphased, name: "Reserv" }),
   });
 
   // The new status takes tickets at once (default transitions); archive it with a target.

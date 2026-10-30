@@ -6,7 +6,7 @@ import type {
   KanbanStatusChipData,
 } from "./kanban-customize-types";
 
-export type KanbanStatusTrayProps = {
+export type KanbanUnphasedColumnProps = {
   /** Statuses on no column of this board. */
   statuses: readonly KanbanStatusChipData[];
   labels: KanbanCustomizeLabels;
@@ -14,30 +14,31 @@ export type KanbanStatusTrayProps = {
   footer?: ReactNode;
 };
 
-/** The "not on this board" tray: drag a chip here to take it off the board, or out to place it. */
-export function KanbanStatusTray({
+/**
+ * The column on the far left of customize mode with the statuses that are on no column of this
+ * board: drag a chip here to take it off the board, or out to place it. It never moves or flips.
+ */
+export function KanbanUnphasedColumn({
   statuses,
   labels,
   renderChipMenu,
   footer,
-}: KanbanStatusTrayProps) {
+}: KanbanUnphasedColumnProps) {
   return (
     <section
-      data-slot="kanban-status-tray"
-      aria-label={labels.tray}
-      className="grid gap-1 rounded-xl border border-dashed p-2"
+      data-slot="kanban-unphased-column"
+      aria-label={labels.unphased}
+      className="flex w-72 shrink-0 snap-start flex-col gap-2 rounded-xl border border-dashed p-2"
     >
-      <h2 className="px-1 text-xs font-medium text-muted-foreground">{labels.tray}</h2>
+      <h2 className="px-1 py-1 text-sm font-medium text-muted-foreground">{labels.unphased}</h2>
       <KanbanChipList
         containerId={null}
         statuses={statuses}
-        emptyLabel={labels.trayEmpty}
+        emptyLabel={labels.unphasedEmpty}
         countLabel={labels.count}
         renderChipMenu={renderChipMenu}
-        inline
-      >
-        {footer}
-      </KanbanChipList>
+      />
+      {footer}
     </section>
   );
 }

@@ -172,10 +172,9 @@
     "unmapped": "{count, plural, one {# ärende har} other {# ärenden har}} en ärendestatus som inte finns på den här tavlan.",
     "unmappedLink": "Anpassa tavlan",
     "customize": {
-      "description": "Dra kolumner för att ändra ordningen och dra ärendestatusar mellan kolumner. Allt sparas direkt.",
       "dragInstructions": "Tryck mellanslag för att lyfta en kolumn eller ärendestatus, piltangenterna för att flytta den och mellanslag för att släppa den.",
-      "tray": "Inte på den här tavlan",
-      "trayEmpty": "Alla ärendestatusar finns på tavlan",
+      "unphased": "Inte på den här tavlan",
+      "unphasedEmpty": "Alla ärendestatusar finns på tavlan",
       "emptyPhase": "Dra hit en ärendestatus",
       "phaseHandle": "Flytta kolumnen {phase}",
       "count": "{count, plural, one {# ärende} other {# ärenden}}",

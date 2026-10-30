@@ -7,13 +7,10 @@ import type { KanbanCustomizeSlots, KanbanStatusChipData } from "./kanban-custom
 import { KanbanStatusChip } from "./kanban-status-chip";
 
 export const kanbanChipListVariants = cva(
-  "flex min-h-12 gap-1.5 rounded-lg p-1 transition-colors",
+  "flex min-h-12 flex-col gap-1.5 rounded-lg p-1 transition-colors",
   {
-    variants: {
-      inline: { true: "flex-row flex-wrap items-center", false: "flex-col" },
-      over: { true: "bg-accent ring-2 ring-ring", false: "" },
-    },
-    defaultVariants: { inline: false, over: false },
+    variants: { over: { true: "bg-accent ring-2 ring-ring", false: "" } },
+    defaultVariants: { over: false },
   },
 );
 
@@ -21,25 +18,22 @@ export const kanbanChipListVariants = cva(
 const KEEP_ORDER: SortingStrategy = () => null;
 
 export type KanbanChipListProps = {
-  /** The column id; null = the tray. */
+  /** The column id; null = the unphased column. */
   containerId: string | null;
   statuses: readonly KanbanStatusChipData[];
   emptyLabel: string;
   countLabel: (count: number) => string;
   renderChipMenu?: KanbanCustomizeSlots["renderChipMenu"];
-  /** Lays the chips out in a row (the tray) instead of a column. */
-  inline?: boolean;
   children?: ReactNode;
 };
 
-/** A droppable list of status chips: a column's back, or the tray. */
+/** A droppable list of status chips: a column's back, or the unphased column. */
 export function KanbanChipList({
   containerId,
   statuses,
   emptyLabel,
   countLabel,
   renderChipMenu,
-  inline = false,
   children,
 }: KanbanChipListProps) {
   const { setNodeRef, isOver } = useDroppable({
@@ -51,7 +45,7 @@ export function KanbanChipList({
       <div
         ref={setNodeRef}
         data-slot="kanban-chip-list"
-        className={kanbanChipListVariants({ inline, over: isOver })}
+        className={kanbanChipListVariants({ over: isOver })}
       >
         {statuses.length === 0 ? (
           <p className="px-1 py-2 text-xs text-muted-foreground">{emptyLabel}</p>

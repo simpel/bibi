@@ -7,7 +7,7 @@ import type { KanbanStatusChipData } from "./kanban-customize-types";
 
 export type KanbanStatusChipProps = {
   status: KanbanStatusChipData;
-  /** The column the chip sits in; null = the tray. */
+  /** The column the chip sits in; null = the unphased column. */
   containerId: string | null;
   countLabel: (count: number) => string;
   /** The chip's menu trigger (edit, transitions, archive), outside the drag handle. */

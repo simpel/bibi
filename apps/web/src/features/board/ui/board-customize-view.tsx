@@ -1,7 +1,6 @@
 "use client";
 
 import { KanbanCustomizeBoard } from "@bibi/ui";
-import { useTranslations } from "next-intl";
 import { kanbanCards } from "@/features/pipeline/lib/kanban-model";
 import { pipelineHref } from "@/features/pipeline/lib/pipeline-href";
 import type { PipelineData } from "@/features/pipeline/load-pipeline-data";
@@ -17,11 +16,10 @@ export type BoardCustomizeViewProps = { data: PipelineData; boardId: string };
 
 /**
  * `/pipeline?mode=customize` (ADR 0067): every column turns over to its settings. Columns are
- * dragged into order, statuses between columns and the tray; each change saves at once. Done
- * turns the columns back and leaves customize mode.
+ * dragged into order, statuses between columns and the unphased column on the far left; each
+ * change saves at once. Done turns the columns back and leaves customize mode once they have.
  */
 export function BoardCustomizeView({ data, boardId }: BoardCustomizeViewProps) {
-  const t = useTranslations("board.customize");
   const router = useRouter();
   const { board, boards, statuses, access } = data;
   const layout = useBoardLayout({ boardId, phases: customizePhases({ board }) });
@@ -36,7 +34,6 @@ export function BoardCustomizeView({ data, boardId }: BoardCustomizeViewProps) {
   return (
     <>
       <BoardCustomizeToolbar boards={boards} boardId={boardId} access={access} onDone={done} />
-      <p className="text-sm text-muted-foreground">{t("description")}</p>
       <div className="min-h-0 flex-1">
         <KanbanCustomizeBoard
           phases={layout.phases}
@@ -51,6 +48,7 @@ export function BoardCustomizeView({ data, boardId }: BoardCustomizeViewProps) {
           })}
           onReorderPhases={layout.reorder}
           onMoveStatus={layout.moveStatus}
+          onFlipEnd={flip.onFlipEnd}
         />
       </div>
     </>

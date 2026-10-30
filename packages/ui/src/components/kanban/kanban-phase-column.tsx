@@ -18,7 +18,10 @@ export type KanbanPhaseColumnProps = {
   slots: KanbanCustomizeSlots;
 };
 
-/** One column in customize mode: it flips to its back, where it can be dragged and edited. */
+/**
+ * One column in customize mode: it flips to its back, where it can be dragged and edited. The row
+ * animates the turn (`usePhaseFlipMotion`).
+ */
 export function KanbanPhaseColumn({ phase, flipped, ...back }: KanbanPhaseColumnProps) {
   const sortable = useSortable({ id: phase.id, data: { type: "phase", phaseId: phase.id } });
   const handle = {
@@ -36,12 +39,16 @@ export function KanbanPhaseColumn({ phase, flipped, ...back }: KanbanPhaseColumn
       }}
       className={cn("w-72 shrink-0 snap-start", sortable.isDragging && "z-10 opacity-60")}
     >
-      <KanbanFlip
-        flipped={flipped}
-        className="h-full"
-        front={back.slots.renderFront({ phase })}
-        back={<KanbanPhaseBack phase={phase} handle={handle} {...back} />}
-      />
+      {/* GSAP moves this wrapper; dnd-kit owns the transform of the sortable node above. */}
+      <div data-kanban-motion="phase" className="h-full">
+        <KanbanFlip
+          flipped={flipped}
+          transition="none"
+          className="h-full"
+          front={back.slots.renderFront({ phase })}
+          back={<KanbanPhaseBack phase={phase} handle={handle} {...back} />}
+        />
+      </div>
     </div>
   );
 }

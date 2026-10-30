@@ -23,7 +23,9 @@ export function buildCustomizeAnnouncements({
   const target = ({ data }: { data: unknown }) => {
     const container = dropContainer({ over: data });
     if (container === undefined) return "";
-    return container === null ? labels.tray : (phases.find((p) => p.id === container)?.title ?? "");
+    return container === null
+      ? labels.unphased
+      : (phases.find((p) => p.id === container)?.title ?? "");
   };
   return {
     onDragStart: ({ active }) => labels.pickedUp(name({ id: active.id })),

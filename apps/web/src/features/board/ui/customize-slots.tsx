@@ -44,6 +44,6 @@ export function customizeSlots({
     renderAddColumn: ({ position }) => (
       <AddColumnButton boardId={boardId} position={position} between={position < phases.length} />
     ),
-    trayFooter: <AddStatusButton boardId={boardId} phaseId={null} />,
+    unphasedFooter: <AddStatusButton boardId={boardId} phaseId={null} />,
   };
 }

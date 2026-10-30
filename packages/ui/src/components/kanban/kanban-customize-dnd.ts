@@ -3,7 +3,7 @@ import { arrayMove } from "@dnd-kit/sortable";
 
 /**
  * What a draggable or droppable of the customize board stands for. `containerId` is the column
- * (phase) id, or null for the tray of statuses that are on no column.
+ * (phase) id, or null for the unphased column of statuses that are on no column.
  */
 export type CustomizeDragData =
   | { type: "phase"; phaseId: string }
@@ -18,13 +18,13 @@ export function readDragData({ data }: { data: unknown }): CustomizeDragData | n
   return TYPES.has(String(data.type)) ? (data as CustomizeDragData) : null;
 }
 
-/** The droppable id of a column's chip list (or the tray's, for `null`). */
+/** The droppable id of a column's chip list (or the unphased column's, for `null`). */
 export function chipsDropId({ phaseId }: { phaseId: string | null }): string {
-  return `kanban-chips:${phaseId ?? "tray"}`;
+  return `kanban-chips:${phaseId ?? "unphased"}`;
 }
 
 /**
- * Where a drop lands, as a container: a column id, null for the tray, `undefined` when the target
+ * Where a drop lands, as a container: a column id, null for the unphased column, `undefined` when the target
  * is not one (nothing under the pointer). Dropping a chip on a whole column counts as its list.
  */
 export function dropContainer({ over }: { over: unknown }): string | null | undefined {
@@ -35,8 +35,8 @@ export function dropContainer({ over }: { over: unknown }): string | null | unde
 
 /**
  * Collisions among the droppables of the dragged kind only: columns while a column moves, chips
- * and chip lists while a chip moves. A chip lands where the pointer is (a wide list such as the
- * tray loses on closest corners); with the keyboard, or outside every list, closest corners
+ * and chip lists while a chip moves. A chip lands where the pointer is (a tall list can lose on
+ * closest corners); with the keyboard, or outside every list, closest corners
  * decide. Pure rect maths, no DOM checks (SSR-safe, #296).
  */
 export const customizeCollision: CollisionDetection = ({ droppableContainers, ...rest }) => {

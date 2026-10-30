@@ -9,7 +9,7 @@ export type KanbanPhaseData = {
   statusIds: readonly string[];
 };
 
-/** A chip that can move between columns and the tray. */
+/** A chip that can move between columns and the unphased column. */
 export type KanbanStatusChipData = {
   id: string;
   title: string;
@@ -18,7 +18,7 @@ export type KanbanStatusChipData = {
   count?: number;
 };
 
-/** A chip move: `toPhaseId` null = into the tray (off the board). */
+/** A chip move: `toPhaseId` null = into the unphased column (off the board). */
 export type KanbanStatusMove = {
   statusId: string;
   fromPhaseId: string | null;
@@ -28,9 +28,9 @@ export type KanbanStatusMove = {
 /** Localised texts for customize mode; the caller passes them through next-intl. */
 export type KanbanCustomizeLabels = {
   dragInstructions: string;
-  /** Heading of the tray of statuses that are on no column of this board. */
-  tray: string;
-  trayEmpty: string;
+  /** Heading of the far-left column of statuses that are on no column of this board. */
+  unphased: string;
+  unphasedEmpty: string;
   emptyPhase: string;
   /** Accessible name of a column's drag handle. */
   phaseHandle: (phase: string) => string;
@@ -54,6 +54,6 @@ export type KanbanCustomizeSlots = {
   renderChipMenu?: (input: { status: KanbanStatusChipData; phaseId: string | null }) => ReactNode;
   /** Between columns (`position` = index the new column gets) and after the last. */
   renderAddColumn?: (input: { position: number }) => ReactNode;
-  /** In the tray, e.g. "+ Add status". */
-  trayFooter?: ReactNode;
+  /** Below the unphased column's chips, e.g. "+ Add status". */
+  unphasedFooter?: ReactNode;
 };

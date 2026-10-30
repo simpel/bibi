@@ -1,13 +1,13 @@
 import type { KanbanCustomizeLabels } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
-/** Customize mode's drag-and-drop texts (announcements, tray, empty column). */
+/** Customize mode's drag-and-drop texts (announcements, unphased column, empty column). */
 export function useCustomizeLabels(): KanbanCustomizeLabels {
   const t = useTranslations("board.customize");
   return {
     dragInstructions: t("dragInstructions"),
-    tray: t("tray"),
-    trayEmpty: t("trayEmpty"),
+    unphased: t("unphased"),
+    unphasedEmpty: t("unphasedEmpty"),
     emptyPhase: t("emptyPhase"),
     phaseHandle: (phase) => t("phaseHandle", { phase }),
     count: (count) => t("count", { count }),

@@ -26,13 +26,13 @@ export type StatusChipMenuProps = {
 
 type MoveToProps = Pick<StatusChipMenuProps, "ticketStatus" | "phaseId" | "phases" | "onMove">;
 
-/** "Move to" a column or the tray: the keyboard-free alternative to dragging a chip. */
+/** "Move to" a column or the unphased column: the keyboard-free alternative to dragging a chip. */
 function MoveToMenu({ ticketStatus, phaseId, phases, onMove }: MoveToProps) {
   const t = useTranslations("boardPhase");
   const board = useTranslations("board.customize");
   const targets = [
     ...phases.map((phase) => ({ id: phase.id as string | null, name: phase.title })),
-    { id: null, name: board("tray") },
+    { id: null, name: board("unphased") },
   ].filter((target) => target.id !== phaseId);
   return (
     <DropdownMenuSub>
@@ -40,7 +40,7 @@ function MoveToMenu({ ticketStatus, phaseId, phases, onMove }: MoveToProps) {
       <DropdownMenuSubContent>
         {targets.map((target) => (
           <DropdownMenuItem
-            key={target.id ?? "tray"}
+            key={target.id ?? "unphased"}
             onSelect={() => onMove({ statusId: ticketStatus.id, toPhaseId: target.id })}
           >
             {target.name}

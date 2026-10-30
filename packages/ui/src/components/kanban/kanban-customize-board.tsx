@@ -12,14 +12,13 @@ import type {
   KanbanStatusMove,
 } from "./kanban-customize-types";
 import { KanbanPhaseRow } from "./kanban-phase-row";
-import { KanbanStatusTray } from "./kanban-status-tray";
 import { useCustomizeDrag } from "./use-customize-drag";
 
 import { useCustomizeSensors } from "./use-customize-sensors";
 
 export type KanbanCustomizeBoardProps = {
   phases: readonly KanbanPhaseData[];
-  /** Every status that can be placed; those on no column show in the tray. */
+  /** Every status that can be placed; those on no column show in the unphased column. */
   statuses: readonly KanbanStatusChipData[];
   /** False shows the columns' fronts; true turns them over to their settings. */
   flipped: boolean;
@@ -27,17 +26,18 @@ export type KanbanCustomizeBoardProps = {
   slots: KanbanCustomizeSlots;
   onReorderPhases: (input: { ids: string[] }) => void;
   onMoveStatus: (move: KanbanStatusMove) => void;
+  /** Called when the columns have finished turning, e.g. to leave customize mode after. */
+  onFlipEnd?: (input: { flipped: boolean }) => void;
 };
 
 /**
  * The board in customize mode: columns are sortable left and right by their handle, and status
- * chips move between columns and a "not on this board" tray. Pointer and keyboard (space, arrows,
+ * chips move between columns and the unphased column on the far left. Pointer and keyboard (space, arrows,
  * space) both work and are announced. The caller saves each drop and refreshes the props.
  */
 export function KanbanCustomizeBoard(props: KanbanCustomizeBoardProps) {
-  const { phases, statuses, labels, slots } = props;
+  const { phases, statuses, labels } = props;
   const drag = useCustomizeDrag(props);
-  const placed = new Set(phases.flatMap((phase) => phase.statusIds));
   return (
     <DndContext
       {...useCustomizeSensors()}
@@ -52,12 +52,6 @@ export function KanbanCustomizeBoard(props: KanbanCustomizeBoardProps) {
       }}
     >
       <div data-slot="kanban-customize-board" className="flex h-full min-h-0 flex-col gap-3">
-        <KanbanStatusTray
-          statuses={statuses.filter((status) => !placed.has(status.id))}
-          labels={labels}
-          renderChipMenu={slots.renderChipMenu}
-          footer={slots.trayFooter}
-        />
         <KanbanPhaseRow {...props} />
       </div>
       <DragOverlay>

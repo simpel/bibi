@@ -11,8 +11,8 @@ import type {
 
 const labels: KanbanCustomizeLabels = {
   dragInstructions: "Press space to lift, the arrow keys to move and space to drop.",
-  tray: "Not on this board",
-  trayEmpty: "Every status is on the board",
+  unphased: "Not on this board",
+  unphasedEmpty: "Every status is on the board",
   emptyPhase: "Drag a status here",
   phaseHandle: (phase) => `Move column ${phase}`,
   count: (count) => `${count} tickets`,
@@ -53,7 +53,7 @@ const slots: KanbanCustomizeSlots = {
       +
     </Button>
   ),
-  trayFooter: (
+  unphasedFooter: (
     <Button size="sm" variant="ghost">
       + Add status
     </Button>
@@ -102,6 +102,6 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Customize mode: columns flip to their back. Drag a column by its handle, drag status chips
- * between columns or into the "Not on this board" tray. Lost starts in the tray.
+ * between columns or into the "Not on this board" column on the far left, where Lost starts.
  */
 export const Default: Story = {};

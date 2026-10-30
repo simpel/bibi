@@ -172,10 +172,9 @@
     "unmapped": "{count, plural, one {# ticket is} other {# tickets are}} in a status that is not on this board.",
     "unmappedLink": "Customize the board",
     "customize": {
-      "description": "Drag columns to reorder them and drag statuses between columns. Every change is saved at once.",
       "dragInstructions": "Press space to lift a column or status, the arrow keys to move it and space to drop it.",
-      "tray": "Not on this board",
-      "trayEmpty": "Every status is on this board",
+      "unphased": "Not on this board",
+      "unphasedEmpty": "Every status is on this board",
       "emptyPhase": "Drag a status here",
       "phaseHandle": "Move column {phase}",
       "count": "{count, plural, one {# ticket} other {# tickets}}",
