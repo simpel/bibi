@@ -87,6 +87,23 @@ export async function drag({
   await page.mouse.up();
 }
 
+/**
+ * Drags until `landed` shows: the board refreshes after every save, and a drag that starts while
+ * it re-renders can be dropped (seen on slower CI runners). A drag that already landed is not redone.
+ */
+export async function dragUntil({
+  page,
+  source,
+  target,
+  landed,
+}: PageInput & { source: Locator; target: Locator; landed: Locator }) {
+  await expect(async () => {
+    if (await landed.isVisible()) return;
+    await drag({ page, source, target });
+    await expect(landed).toBeVisible({ timeout: 3_000 });
+  }).toPass({ timeout: 20_000 });
+}
+
 /** Opens "+ Add status" in `scope`, names the status and saves it. */
 export async function addStatus({
   page,

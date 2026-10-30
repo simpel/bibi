@@ -1,6 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { gotoApp } from "./goto-app";
-import { addStatus, api, chip, columnBack, createTicket, drag } from "./pipeline-customize-steps";
+import {
+  addStatus,
+  api,
+  chip,
+  columnBack,
+  createTicket,
+  dragUntil,
+} from "./pipeline-customize-steps";
 import { signUpWithOrganization } from "./steps";
 
 // Customize mode on /pipeline (ADR 0067): a new organization has one default board with one
@@ -24,15 +31,13 @@ test("an admin customizes the board: columns, statuses and the tray", async ({ p
   await expect(page.getByText("Kolumnordningen har sparats.").first()).toBeVisible();
 
   // Drag a status into another column: Lost joins Completed; the Lost column stays, empty.
-  await drag({
+  await dragUntil({
     page,
     source: chip({ scope: columnBack({ page, name: "Lost" }), name: "Lost" }),
     target: columnBack({ page, name: "Completed" }).locator('[data-slot="kanban-chip-list"]'),
+    landed: chip({ scope: columnBack({ page, name: "Completed" }), name: "Lost" }),
   });
   await expect(page.getByText("Ärendestatusen har flyttats.").first()).toBeVisible();
-  await expect(
-    chip({ scope: columnBack({ page, name: "Completed" }), name: "Lost" }),
-  ).toBeVisible();
 
   // Add a column after the last one, then a status inside it.
   await page.getByRole("button", { name: "Lägg till kolumn", exact: true }).click();
@@ -48,20 +53,18 @@ test("an admin customizes the board: columns, statuses and the tray", async ({ p
   // then off the board into the tray.
   const tray = page.locator('[data-slot="kanban-status-tray"]');
   await addStatus({ page, scope: tray, name: "Reserv" });
-  await drag({
+  await dragUntil({
     page,
     source: chip({ scope: columnBack({ page, name: "Reserv" }), name: "Reserv" }),
     target: columnBack({ page, name: "Uppföljning" }).locator('[data-slot="kanban-chip-list"]'),
+    landed: chip({ scope: columnBack({ page, name: "Uppföljning" }), name: "Reserv" }),
   });
-  await expect(
-    chip({ scope: columnBack({ page, name: "Uppföljning" }), name: "Reserv" }),
-  ).toBeVisible();
-  await drag({
+  await dragUntil({
     page,
     source: chip({ scope: columnBack({ page, name: "Uppföljning" }), name: "Reserv" }),
     target: tray.locator('[data-slot="kanban-chip-list"]'),
+    landed: chip({ scope: tray, name: "Reserv" }),
   });
-  await expect(chip({ scope: tray, name: "Reserv" })).toBeVisible();
 
   // The new status takes tickets at once (default transitions); archive it with a target.
   const statuses = await api({ page, method: "get", path: "/ticket-statuses" });
