@@ -16,11 +16,17 @@ async function createStatus({
   await gotoApp({ page, path: SETTINGS });
   await page.getByRole("link", { name: "Skapa ärendestatus" }).first().click();
   await expect(page).toHaveURL(/\/sv\/[^/]+\/new\/ticket-status$/);
+  // A new status is a name and a colour; its flags are set on its update page.
   await page.getByLabel("Namn").fill(name);
-  if (flag) await page.getByRole("checkbox", { name: flag }).click();
   await page.getByRole("button", { name: "Spara" }).click();
   await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline$/, { timeout: 15_000 });
   await expect(page.getByRole("cell", { name }).first()).toBeVisible();
+  if (!flag) return;
+  await rowAction({ page, row: name, item: "Redigera ärendestatus" });
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline\/[^/]+\/update$/);
+  await page.getByRole("checkbox", { name: flag }).click();
+  await page.getByRole("button", { name: "Spara" }).click();
+  await expect(page).toHaveURL(/\/sv\/[^/]+\/settings\/pipeline$/, { timeout: 15_000 });
 }
 
 async function rowAction({
