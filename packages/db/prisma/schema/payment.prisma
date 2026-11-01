@@ -43,6 +43,7 @@ model Payment {
   quote               Quote?        @relation(fields: [quoteId, organizationId], references: [id, organizationId])
   deposit             Deposit?      @relation(fields: [depositId, organizationId], references: [id, organizationId])
   invoice             Invoice?      @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
+  refunds             PaymentRefund[]
 
   @@unique([id, organizationId])
   @@unique([providerReference])
@@ -70,6 +71,29 @@ enum PaymentStatus {
   CANCELLED
   /// Paid and then refunded in full.
   REFUNDED
+}
+
+/// PaymentRefund – one refund of a payment (ADR 0077), append-only. Owned fact written only by
+/// `payment.applySignal` when Stripe reports a higher refunded total: `amountMinor` is the step,
+/// `refundedTotalMinor` the total after it (unique per payment, so a repeated signal adds nothing).
+/// `Payment.refundedMinor` is the Stripe mirror and equals the newest total (reconciliation check
+/// `payment refunds`).
+model PaymentRefund {
+  id                 String   @id @default(cuid(2))
+  organizationId     String
+  paymentId          String
+  /// This refund in minor units.
+  amountMinor        Int
+  /// Refunded on the payment so far, this refund included.
+  refundedTotalMinor Int
+  /// When Stripe reported the refund: the date of its reversal voucher.
+  refundedAt         DateTime
+  createdAt          DateTime @default(now())
+  payment            Payment  @relation(fields: [paymentId, organizationId], references: [id, organizationId])
+
+  @@unique([id, organizationId])
+  @@unique([paymentId, refundedTotalMinor])
+  @@index([organizationId, refundedAt])
 }
 
 /// A Stripe webhook event that has been handled (ADR 0028). The event id is the dedupe key: a

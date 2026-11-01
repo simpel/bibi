@@ -94,5 +94,15 @@ describe("Stripe webhook", () => {
     await postEvent({ event: refund({ amount: 125_000 }) });
     const full = await context.db.payment.findUniqueOrThrow({ where: { id: payment.id } });
     expect([full.status, full.refundedMinor]).toEqual(["REFUNDED", 125_000]);
+    await postEvent({ event: refund({ amount: 125_000 }) });
+    const refunds = await context.db.paymentRefund.findMany({
+      where: { paymentId: payment.id },
+      orderBy: { refundedTotalMinor: "asc" },
+    });
+    const steps = refunds.map((row) => [row.amountMinor, row.refundedTotalMinor]);
+    expect(steps).toEqual([
+      [25_000, 25_000],
+      [100_000, 125_000],
+    ]);
   });
 });

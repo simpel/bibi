@@ -87,6 +87,19 @@ describe("an invoice is a frozen receivable of the ticket's lines (ADR 0052, 005
     expect(errorCode({ result: blocked })).toBe("CONFLICT");
   });
 
+  it("keeps its send date when it is voided later (ADR 0077)", async () => {
+    const { context, ticket } = await invoiceable();
+    const invoice = unwrap({ result: await create({ context, ticketId: ticket.id }) });
+    const input = { id: invoice.id };
+    unwrap({ result: await execute({ operation: sendInvoice, input, context }) });
+    const sent = await context.db.invoice.findUniqueOrThrow({ where: input });
+    unwrap({ result: await execute({ operation: voidInvoice, input, context }) });
+    const voided = await context.db.invoice.findUniqueOrThrow({ where: input });
+    expect(sent.sentAt).toBeInstanceOf(Date);
+    expect(voided.sentAt).toEqual(sent.sentAt);
+    expect(voided.voidedAt).toEqual(voided.statusChangedAt);
+  });
+
   it("needs program:read to copy the lines and stays in its organization", async () => {
     const { context, ticket } = await invoiceable();
     const permissions = { ...grantAll({}), program: [] };

@@ -26,6 +26,10 @@ model Deposit {
   dueDate         DateTime?
   status          ReceivableStatus @default(DRAFT)
   statusChangedAt DateTime         @default(now())
+  /// When it was sent to the customer (owned, ADR 0077); kept when it is voided later.
+  sentAt          DateTime?
+  /// When it was voided (owned, ADR 0077).
+  voidedAt        DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
   createdBy       String?
@@ -52,6 +56,10 @@ model Invoice {
   dueDate           DateTime?
   status            ReceivableStatus @default(DRAFT)
   statusChangedAt   DateTime         @default(now())
+  /// When it was sent to the customer (owned, ADR 0077): the accounting date of its voucher.
+  sentAt            DateTime?
+  /// When it was voided (owned, ADR 0077): the date of a reversal voucher.
+  voidedAt          DateTime?
   /// Sums of the frozen lines in minor units (snapshot).
   totalExclVatMinor Int
   totalInclVatMinor Int

@@ -4,6 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { moveReceivable } from "../payment/move-receivable";
 import { loadChargeableTicket } from "../payment/payment-preconditions";
+import { receivableMoveDates } from "../payment/receivable-lifecycle";
 import type { ReceivableStatus } from "../payment/settlement-schema";
 import {
   DepositCreateInputSchema,
@@ -60,7 +61,7 @@ const moveDeposit = ({ context, id, to }: MoveInput): Promise<Result<DepositDto>
       (
         await context.db.deposit.updateMany({
           where: { id, status: from },
-          data: { status: to, statusChangedAt: new Date() },
+          data: { status: to, ...receivableMoveDates({ to, at: new Date() }) },
         })
       ).count,
   });

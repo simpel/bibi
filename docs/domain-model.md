@@ -899,7 +899,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · A deposit request: a fixed amount the customer pays in advance, with its own description ([ADR 0057](decisions/0057-money-balance-is-derived.md)). A payment for "something else" is a deposit request too.
 
-> **Ownership:** owned `description`, `amountMinor`, `currency`, `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`); derived `paidMinor`, `openMinor`, `progress` (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`, from its payments; never stored).
+> **Ownership:** owned `description`, `amountMinor`, `currency`, `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt`, `voidedAt` (ADR 0077); derived `paidMinor`, `openMinor`, `progress` (`OPEN`, `PARTLY_PAID`, `PAID`, `OVERPAID`, from its payments; never stored).
 
 **Attributes**
 - description, amount (fixed, set once), currency, due date
@@ -928,7 +928,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - payment link (`paymentUrl`) and, for a checkout, when it expires
 - public token (`publicToken`, unique, 256 random bits): addresses the customer's payment page `/pay/<token>`; never in the DTO
 - paid at
-- refunded so far (`refundedMinor`)
+- refunded so far (`refundedMinor`, the Stripe mirror); each refund is also a `PaymentRefund` row (amount, total after it, `refundedAt`; append-only, written only by `payment.applySignal`, ADR 0077), and the `payment refunds` reconciliation checks that they sum to `refundedMinor`
 
 **Relations**
 - `N:1` Ticket is paid with this
@@ -946,7 +946,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · The invoice after delivery: a snapshot of the ticket's priced lines, like a sent quote ([ADR 0052](decisions/0052-the-line-is-the-booking.md), [ADR 0057](decisions/0057-money-balance-is-derived.md)). A ticket can be invoiced only in a status with the `invoiceable` flag.
 
-> **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`); snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments).
+> **Ownership:** owned `number` (per organization, highest + 1), `dueDate`, `status` (`DRAFT`, `SENT`, `VOID`), `sentAt` and `voidedAt` (set by the move, kept afterwards; the accounting dates, ADR 0077); snapshot its `OrderLine` rows and `totalExclVatMinor`, `totalInclVatMinor` (taken at create); derived `paidMinor`, `openMinor`, `progress` (from its payments).
 
 **Attributes**
 - invoice number, due date (given, else after the customer's payment terms, default 30 days)
@@ -988,7 +988,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 | Preset | Can |
 |---|---|
 | `member` | view every feature except `audit`, `assistant` and `apiKey`; change only their own conversations, personal skills and connections (`self`, always on) |
-| `manager` | everything a member can, plus every action on bookings and selling: `ticket`, `program` (lines), `customer`, `quote`, `payment`, `sheet` |
+| `manager` | everything a member can, plus every action on bookings and selling: `ticket`, `program` (lines), `customer`, `quote`, `payment`, `sheet`, `finance` (ADR 0077; members do not see it) |
 | `admin` | every action on every feature: also catalog, setup (configuration, pipeline, templates, responsibilities), members, API keys, the payment account, audit and the assistant's organization data. The organization always keeps at least one admin |
 
 > Permissions (ADR 0050) are `<feature>:<action>`. Features are defined once in `FEATURE_SPECS` (core) and grouped as bookings (`ticket`, `program`), selling (`customer`, `quote`, `payment`, `sheet`), catalog (`item`, `venue`, `priceList`), setup (`configuration`, `pipeline`, `template`, `responsibility`) and organization (`member`, `apiKey`, `paymentAccount`, `audit`, `assistant`). Actions are `read`, `write` and `delete`: `write` covers creating, changing, sending, exporting and moving a ticket's status, `delete` archives, and both imply `read`. `self` (own conversations, skills, preferences, settings, connected apps) and search are always on.

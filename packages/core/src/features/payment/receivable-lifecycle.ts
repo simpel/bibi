@@ -11,6 +11,17 @@ export const RECEIVABLE_TRANSITIONS: Readonly<
   Record<ReceivableStatus, readonly ReceivableStatus[]>
 > = { DRAFT: ["SENT", "VOID"], SENT: ["VOID"], VOID: [] };
 
+export type ReceivableMoveDatesInput = { to: ReceivableStatus; at: Date };
+
+/** The dates a move writes: always `statusChangedAt`, plus `sentAt` or `voidedAt` (ADR 0077). */
+export function receivableMoveDates({ to, at }: ReceivableMoveDatesInput) {
+  return {
+    statusChangedAt: at,
+    ...(to === "SENT" ? { sentAt: at } : {}),
+    ...(to === "VOID" ? { voidedAt: at } : {}),
+  };
+}
+
 export type ReceivableMove = { what: string; from: ReceivableStatus; to: ReceivableStatus };
 
 /** `CONFLICT` unless the lifecycle allows the move. */

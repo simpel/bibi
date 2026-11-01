@@ -23,6 +23,8 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   ["LineStateChange", ["createdAt", "updatedAt", "createdBy"]],
   // Append-only (ADR 0076): users who have been members, written by SYSTEM.
   ["KnownMember", ["updatedAt", "createdBy"]],
+  // Append-only (ADR 0077): a refund Stripe reported, written by SYSTEM through the webhook.
+  ["PaymentRefund", ["updatedAt", "createdBy"]],
   // Derived search index, rebuilt from its entity; not authored by anyone.
   ["Embedding", ["createdBy"]],
   // Better Auth tables (shape owned by Better Auth); `inviterId` records the inviter.
