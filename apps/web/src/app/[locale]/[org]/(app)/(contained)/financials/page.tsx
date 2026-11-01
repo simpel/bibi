@@ -1,5 +1,6 @@
 import { resolveLocale } from "@bibi/i18n";
-import { defaultFinancePeriod, financialsHref } from "@/features/finance/finance-path";
+import { defaultFinancePeriod } from "@/features/finance/finance-path";
+import { financialsHref } from "@/features/finance/lib/finance-href";
 import { redirect } from "@/lib/navigation";
 
 type FinancialsStartProps = { params: Promise<{ locale: string; org: string }> };

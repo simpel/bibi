@@ -9,6 +9,10 @@ export const FinanceOverviewInputSchema = z.object({
   to: PlainDateStringSchema.describe(
     `Last day of the period, YYYY-MM-DD (inclusive); at most ${MAX_FINANCE_MONTHS} months`,
   ),
+  customerId: z
+    .string()
+    .optional()
+    .describe("Only this customer's tickets, invoices and payments (customer.list)"),
 });
 
 const minor = ({ what }: { what: string }) => z.number().int().describe(`${what}, minor units`);

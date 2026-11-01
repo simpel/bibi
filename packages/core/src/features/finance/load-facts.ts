@@ -2,9 +2,13 @@ import type { OperationContext } from "../../operations/types";
 import { paidForInvoices } from "../payment/settlement";
 import type { FinancePeriod } from "./period";
 
-type Db = { context: Pick<OperationContext, "db"> };
+type Scope = { customerId?: string | undefined };
+type Db = { context: Pick<OperationContext, "db"> } & Scope;
 
 export type FactsInput = Db & { period: Pick<FinancePeriod, "start" | "end"> };
+
+/** The ticket filter that narrows a fact to one customer; empty for the whole organization. */
+const ticketOf = ({ customerId }: Scope) => (customerId ? { ticket: { customerId } } : {});
 
 const LINE_SELECT = {
   totalExclVatMinor: true,
@@ -13,9 +17,13 @@ const LINE_SELECT = {
 } as const;
 
 /** SENT invoices sent in the period, with the lines that count (not void: a void is reversed). */
-export function loadInvoicedInPeriod({ context, period }: FactsInput) {
+export function loadInvoicedInPeriod({ context, period, customerId }: FactsInput) {
   return context.db.invoice.findMany({
-    where: { status: "SENT", sentAt: { gte: period.start, lt: period.end } },
+    where: {
+      status: "SENT",
+      sentAt: { gte: period.start, lt: period.end },
+      ...ticketOf({ customerId }),
+    },
     select: {
       sentAt: true,
       totalExclVatMinor: true,
@@ -27,15 +35,19 @@ export function loadInvoicedInPeriod({ context, period }: FactsInput) {
 export type InvoicedInPeriod = Awaited<ReturnType<typeof loadInvoicedInPeriod>>;
 
 /** Settled payments by `paidAt` and refunds by `refundedAt` in the period (ADR 0077). */
-export async function loadCashInPeriod({ context, period }: FactsInput) {
+export async function loadCashInPeriod({ context, period, customerId }: FactsInput) {
   const when = { gte: period.start, lt: period.end };
   const [payments, refunds] = await Promise.all([
     context.db.payment.findMany({
-      where: { status: { in: ["SUCCEEDED", "REFUNDED"] }, paidAt: when },
+      where: {
+        status: { in: ["SUCCEEDED", "REFUNDED"] },
+        paidAt: when,
+        ...ticketOf({ customerId }),
+      },
       select: { paidAt: true, amountMinor: true },
     }),
     context.db.paymentRefund.findMany({
-      where: { refundedAt: when },
+      where: { refundedAt: when, payment: ticketOf({ customerId }) },
       select: { refundedAt: true, amountMinor: true },
     }),
   ]);
@@ -45,9 +57,9 @@ export async function loadCashInPeriod({ context, period }: FactsInput) {
 export type CashInPeriod = Awaited<ReturnType<typeof loadCashInPeriod>>;
 
 /** Every SENT invoice with what is still open on it, today. */
-export async function loadOpenInvoices({ context }: Db) {
+export async function loadOpenInvoices({ context, customerId }: Db) {
   const invoices = await context.db.invoice.findMany({
-    where: { status: "SENT" },
+    where: { status: "SENT", ...ticketOf({ customerId }) },
     select: {
       id: true,
       number: true,
@@ -66,11 +78,15 @@ export async function loadOpenInvoices({ context }: Db) {
 export type OpenInvoice = Awaited<ReturnType<typeof loadOpenInvoices>>[number];
 
 /** ACCEPTED quotes on active tickets that have no SENT invoice yet: won, not billed. */
-export function loadForwardBooked({ context }: Db) {
+export function loadForwardBooked({ context, customerId }: Db) {
   return context.db.quote.findMany({
     where: {
       quoteStatus: "ACCEPTED",
-      ticket: { status: "ACTIVE", invoices: { none: { status: "SENT" } } },
+      ticket: {
+        status: "ACTIVE",
+        invoices: { none: { status: "SENT" } },
+        ...(customerId ? { customerId } : {}),
+      },
     },
     select: {
       ticketId: true,

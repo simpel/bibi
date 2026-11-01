@@ -45,11 +45,12 @@ export const financeOverview = defineOperation({
     const period = resolved.value;
     const money = canView({ context, feature: "payment" });
     const quotes = canView({ context, feature: "quote" });
+    const { customerId } = input;
     const [invoiced, cash, open, won] = await Promise.all([
-      money ? loadInvoicedInPeriod({ context, period }) : [],
-      money ? loadCashInPeriod({ context, period }) : { payments: [], refunds: [] },
-      money ? loadOpenInvoices({ context }) : [],
-      quotes ? loadForwardBooked({ context }) : [],
+      money ? loadInvoicedInPeriod({ context, period, customerId }) : [],
+      money ? loadCashInPeriod({ context, period, customerId }) : { payments: [], refunds: [] },
+      money ? loadOpenInvoices({ context, customerId }) : [],
+      quotes ? loadForwardBooked({ context, customerId }) : [],
     ]);
     const months = monthly({ ...period, invoiced, cash });
     const referenceOf = ({ reference }: { reference: number }) =>

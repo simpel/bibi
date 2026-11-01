@@ -324,7 +324,16 @@
       "next": "Next period",
       "thisYear": "This year",
       "last12": "Last 12 months",
-      "range": "{from} – {to}"
+      "range": "{from} – {to}",
+      "custom": "Custom span",
+      "from": "First day",
+      "to": "Last day",
+      "show": "Show span",
+      "invalid": "Pick two days in order, at most {months} months apart."
+    },
+    "customerFilter": {
+      "label": "Customer",
+      "all": "All customers"
     },
     "charts": {
       "month": "Month",

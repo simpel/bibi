@@ -324,7 +324,16 @@
       "next": "Nästa period",
       "thisYear": "I år",
       "last12": "Senaste 12 månaderna",
-      "range": "{from} – {to}"
+      "range": "{from} – {to}",
+      "custom": "Eget spann",
+      "from": "Första dagen",
+      "to": "Sista dagen",
+      "show": "Visa spannet",
+      "invalid": "Välj två dagar i ordning, högst {months} månader isär."
+    },
+    "customerFilter": {
+      "label": "Kund",
+      "all": "Alla kunder"
     },
     "charts": {
       "month": "Månad",
