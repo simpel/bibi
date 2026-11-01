@@ -52,3 +52,6 @@
 ## Addendum 2026-11-01 – a year of demo history
 - The demo seed now has a year of invoices, payments and one refund (L16–L28, `docs/demo-seed.md`), dated through the context clock (ADR 0064 addendum), as Consequences asked.
 - Found while seeding: a refund of an invoice payment reopens the invoice, so a paid invoice with a partial refund shows the refunded amount as open and overdue (L19). A refund of a paid invoice should be a credit, not a new receivable; this needs a decision (credit note or a settlement rule).
+
+## Addendum 2026-11-01 – money on the dashboard (ADR 0079)
+- "Money on the dashboard" is no longer rejected: the dashboard shows a panel from `finance.overview`, gated by `finance:read`. Financials stays the full view and the only home of the export.

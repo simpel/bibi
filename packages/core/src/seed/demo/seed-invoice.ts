@@ -6,6 +6,7 @@ import { createPayment } from "../../features/payment/create-operation";
 import type { PaymentSignal } from "../../features/payment/webhook-schema";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import { atDay as at } from "./seed-clock";
 import type { DemoTicket } from "./ticket-types";
 
 const DAY_MS = 86_400_000;
@@ -15,15 +16,6 @@ type SeedInvoiceInput = {
   ticket: DemoTicket;
   ticketId: string;
   now: Date;
-};
-
-type AtInput = { context: ExecuteContext; now: Date; day: number | undefined };
-
-/** The context with its clock at `day` (offset from `now`); unchanged without one. */
-const at = ({ context, now, day }: AtInput): ExecuteContext => {
-  if (day === undefined) return context;
-  const instant = new Date(now.getTime() + day * DAY_MS);
-  return { ...context, now: () => instant };
 };
 
 type SignalInput = { context: ExecuteContext; paymentId: string } & Pick<

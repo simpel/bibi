@@ -7,6 +7,7 @@ import type {
   PlainDate,
 } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
+import { ROUTES } from "@/lib/routes";
 import { plainDayText } from "../lib/plain-day";
 import { CustomerFilter } from "./customer-filter";
 import { ExportHistory } from "./export-history";
@@ -51,7 +52,12 @@ export function FinancialsView(props: FinancialsViewProps) {
     <div className="grid gap-6">
       <FinancialsHeader exportPreview={canWrite ? { preview, span } : null} />
       <div className="flex flex-wrap items-center gap-2">
-        <PeriodSwitcher period={period} today={today} customerId={customerId} />
+        <PeriodSwitcher
+          period={period}
+          today={today}
+          base={ROUTES.financials}
+          customerId={customerId}
+        />
         {customers.length > 0 ? (
           <CustomerFilter period={period} customers={customers} customerId={customerId} />
         ) : null}

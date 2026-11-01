@@ -22,12 +22,16 @@ async function timeInStatusFailures({ context, org, cards }: TimeInStatusInput) 
 }
 
 /**
- * ADR 0041, 0043: `pipeline.board` (the default board) has one column per seeded status, every seeded ticket is on
+ * ADR 0041, 0043: `pipeline.board` (the default board, closed tickets of the last year) has one column per seeded status, every seeded ticket is on
  * exactly one card (in its status's column), the Closed lane shows the closing tickets, and the
  * time in status comes from the status history (ADR 0054).
  */
 export async function checkDemoBoard({ context, org }: CheckDemoBoardInput): Promise<string[]> {
-  const result = await execute({ operation: pipelineBoard, input: {}, context });
+  const result = await execute({
+    operation: pipelineBoard,
+    input: { closedWithinDays: 365 },
+    context,
+  });
   if (!result.ok) return [`${org.slug}: pipeline.board failed: ${result.error.message}`];
   const { columns, cards } = result.value;
   const failures: string[] = [];

@@ -1,11 +1,16 @@
 import { resolveLocale } from "@bibi/i18n";
-import { setRequestLocale } from "next-intl/server";
-import { DashboardPage } from "@/features/dashboard/ui/dashboard-page";
+import { defaultDashboardPeriod } from "@/features/dashboard/dashboard-path";
+import { dashboardHref } from "@/features/dashboard/lib/dashboard-href";
+import { redirect } from "@/lib/navigation";
 
-type DashboardRouteProps = { params: Promise<{ locale: string }> };
+type DashboardStartProps = { params: Promise<{ locale: string; org: string }> };
 
-export default async function DashboardRoute({ params }: DashboardRouteProps) {
-  const locale = resolveLocale({ value: (await params).locale });
-  setRequestLocale(locale);
-  return <DashboardPage locale={locale} />;
+/** Bare `/dashboard`: the last 6 whole months, in the organization's zone. */
+export default async function DashboardStart({ params }: DashboardStartProps) {
+  const { locale, org } = await params;
+  redirect({
+    href: dashboardHref(await defaultDashboardPeriod()),
+    locale: resolveLocale({ value: locale }),
+    org,
+  });
 }

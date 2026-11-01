@@ -22,7 +22,9 @@ describe("monthsWithMoney", () => {
   });
 
   it("keeps every month once one has money", () => {
-    expect(monthsWithMoney({ monthly: [month({ minor: 0 }), month({ minor: 500 })] })).toHaveLength(2);
+    expect(monthsWithMoney({ monthly: [month({ minor: 0 }), month({ minor: 500 })] })).toHaveLength(
+      2,
+    );
   });
 
   it("passes no access through", () => {

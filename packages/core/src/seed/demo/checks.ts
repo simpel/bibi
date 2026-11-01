@@ -11,6 +11,7 @@ import { checkDemoBuffers } from "./buffer-checks";
 import { checkDemoBundles } from "./bundle-checks";
 import { checkDemoConfig } from "./config-checks";
 import { checkDemoCustomisations } from "./customisation-checks";
+import { checkDemoDashboard } from "./dashboard-checks";
 import { checkDemoDensity } from "./density-checks";
 import { checkDemoDomainJoin } from "./domain-join-checks";
 import { checkDemoEstimates } from "./estimate-checks";
@@ -60,6 +61,7 @@ const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoPayments,
   checkDemoFinance,
   checkDemoDensity,
+  checkDemoDashboard,
 ];
 
 export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPipeline?: boolean };

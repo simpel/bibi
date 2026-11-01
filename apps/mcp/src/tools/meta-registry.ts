@@ -9,6 +9,7 @@ import { configurationMcpTools } from "../features/configuration/mcp";
 import { contactMcpTools } from "../features/contact/mcp";
 import { conversationMcpTools } from "../features/conversation/mcp";
 import { customerMcpTools } from "../features/customer/mcp";
+import { dashboardMcpTools } from "../features/dashboard/mcp";
 import { depositMcpTools } from "../features/deposit/mcp";
 import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
@@ -67,6 +68,7 @@ const lineAndGroupMcpTools = [
 const boardMcpTools = [
   ...pipelineMcpTools,
   ...calendarMcpTools,
+  ...dashboardMcpTools,
   ...financeMcpTools,
   ...boardCrudMcpTools,
   ...boardPhaseMcpTools,

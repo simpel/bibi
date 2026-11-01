@@ -24,13 +24,19 @@ const OFFICE_DAY = {
   breakStartMinute: null,
   breakEndMinute: null,
 };
-const OFFICE_HOURS: HoursLookup = {
+export const OFFICE_HOURS: HoursLookup = {
   days: new Map(Array.from({ length: 7 }, (_, weekday) => [weekday, OFFICE_DAY] as const)),
   exceptions: new Map(),
 };
 
 /** The range's local days as instants in its zone (ADR 0064: 23 or 25 hours long at a shift). */
-function daysOf({ input, timeZone }: { input: CalendarRangeInput; timeZone: string }) {
+export function daysOf({
+  input,
+  timeZone,
+}: {
+  input: Pick<CalendarRangeInput, "from" | "to">;
+  timeZone: string;
+}) {
   const days: RangeDay[] = [];
   const last = parseIsoDate({ value: input.to });
   for (let date = parseIsoDate({ value: input.from }); compareDates({ a: date, b: last }) <= 0; ) {

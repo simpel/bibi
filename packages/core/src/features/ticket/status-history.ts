@@ -1,5 +1,6 @@
 import type { StatusChangeTrigger } from "@bibi/db";
 import type { OperationContext } from "../../operations/types";
+import { nowOf } from "../../time/now";
 
 /** `include` for the newest status change of a ticket: when it entered its status, and why (ADR 0054). */
 export const LATEST_STATUS_CHANGE = {
@@ -15,7 +16,7 @@ export type LatestStatusChange = {
 };
 
 export type RecordStatusChangeInput = {
-  context: Pick<OperationContext, "db" | "organizationId" | "actor">;
+  context: Pick<OperationContext, "db" | "organizationId" | "actor" | "now">;
   ticketId: string;
   /** The status the change was decided from; null for the first row of a new ticket. */
   fromStatusId: string | null;
@@ -46,6 +47,7 @@ export async function recordStatusChange({
       reason: reason ?? null,
       trigger,
       changedBy: context.actor.userId,
+      changedAt: nowOf({ context }),
     },
   });
 }

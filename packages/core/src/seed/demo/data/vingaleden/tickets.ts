@@ -1,4 +1,5 @@
 import type { DemoTicket } from "../../ticket-types";
+import { vingaledenClosedTickets } from "./closed-tickets";
 
 const hisingen = "Hisingen Energi AB";
 const people = { assignee: "Per Vinga", followers: ["Stina Holm"] };
@@ -19,10 +20,20 @@ export const vingaledenTickets: readonly DemoTicket[] = [
   },
   {
     ...{ ref: "V3", customer: "Familjen Rask", type: "Round trip", day: 2, from: "10:00" },
-    ...{ to: "11:30", status: "Weather OK", headcount: 9, ...people },
+    ...{ to: "11:30", status: "Weather OK", headcount: 9, estimatesKr: [6_500], ...people },
   },
   {
     ...{ ref: "V4", customer: hisingen, type: "Charter", day: 10, from: "17:00", to: "19:30" },
-    ...{ status: "Weather hold", headcount: 60, assignee: "Stina Holm" },
+    ...{ status: "Weather hold", headcount: 60, assignee: "Stina Holm", estimatesKr: [38_000] },
   },
+  {
+    ...{ ref: "V5", customer: "Familjen Rask", type: "Round trip", day: 16, from: "10:00" },
+    ...{ to: "11:30", headcount: 12, estimatesKr: [9_000], ...people },
+  },
+  {
+    ...{ ref: "V6", customer: "Kvarnby Design AB", type: "Charter", day: 21, from: "17:00" },
+    ...{ to: "19:30", status: "Confirmed", headcount: 30, estimatesKr: [26_000], ...people },
+  },
+  // Last, so the fixtures keep their reference numbers.
+  ...vingaledenClosedTickets,
 ];

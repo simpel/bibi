@@ -5,10 +5,15 @@ import { CalendarRangeIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useRouter } from "@/lib/navigation";
-import { financialsHref } from "../lib/finance-href";
+import { periodHref } from "../lib/finance-href";
 import { isValidPeriod, MAX_PERIOD_MONTHS, type Period } from "../lib/finance-period";
 
-export type PeriodRangeProps = { period: Period; customerId?: string | undefined };
+export type PeriodRangeProps = {
+  period: Period;
+  /** The page whose period is in the path, e.g. `/financials`. */
+  base: string;
+  customerId?: string | undefined;
+};
 
 type RangeFieldsProps = { draft: Period; onChange: (draft: Period) => void };
 
@@ -32,7 +37,7 @@ function RangeFields({ draft, onChange }: RangeFieldsProps) {
 }
 
 /** Two dates, first and last day, for a span the preset buttons do not cover. */
-export function PeriodRange({ period, customerId }: PeriodRangeProps) {
+export function PeriodRange({ period, base, customerId }: PeriodRangeProps) {
   const t = useTranslations("finance.period");
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -54,7 +59,7 @@ export function PeriodRange({ period, customerId }: PeriodRangeProps) {
             event.preventDefault();
             if (!valid) return;
             setOpen(false);
-            router.push(financialsHref({ ...draft, customerId }));
+            router.push(periodHref({ ...draft, base, customerId }));
           }}
         >
           <RangeFields draft={draft} onChange={setDraft} />

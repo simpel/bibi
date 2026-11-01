@@ -1,4 +1,5 @@
 import type { DemoTicket } from "../../ticket-types";
+import { lindholmenClosedTickets } from "./closed-tickets";
 import { lindholmenHistoryTickets } from "./history-tickets";
 import { l4Lines, l11Choices } from "./ticket-choices";
 import { lindholmenYearTickets } from "./year-tickets";
@@ -84,6 +85,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   {
     ...quoted,
     ...{ ref: "L9", customer: kvarnby, type: "Conference", day: 8, from: "09:00", to: "16:00" },
+    estimatesKr: [48_000],
     ...{ status: "Confirmed", headcount: 18, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
   },
   {
@@ -95,6 +97,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     ...quoted,
     ...{ ref: "L11", customer: gota, type: "Conference", day: 6, from: "09:00", to: "13:00" },
     ...{
+      estimatesKr: [35_000],
       status: "Quote sent",
       headcount: 10,
       assignee: "Maria Holm",
@@ -117,6 +120,7 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   },
   {
     ...{ ref: "L12", customer: hisingen, type: "Conference", day: 5, from: "10:00", to: "12:00" },
+    estimatesKr: [22_000],
     ...quoted,
     ...{ headcount: 8, assignee: "Erik Lund", checkMove: { to: "Confirmed", blocked: true } },
     fields: { Purpose: "Strategy meeting" },
@@ -140,4 +144,6 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     fields: { Purpose: "Team day" },
     lines: [{ item: "Hönö", name: "Team day", from: "09:00", to: "16:00" }],
   },
+  // Last, so the fixtures keep their reference numbers.
+  ...lindholmenClosedTickets,
 ];

@@ -30,6 +30,11 @@ export type DemoTicket = {
   /** The status the ticket is moved to after it is created (ADR 0043); default: the entry status. */
   status?: string;
   /**
+   * ADR 0079: the ticket gets its quote (see `quote`), accepted, and is then moved on to
+   * `status`, a status without a quote event: Completed for a won ticket, or Final count locked.
+   */
+  won?: true;
+  /**
    * The item (by name) the ticket's quote charges, for a `status` that a quote event enters: the
    * ticket gets an untimed line of it (unless a line has it), then a quote of its priced lines
    * that is sent, and for the accepted event accepted (ADR 0043, 0052).

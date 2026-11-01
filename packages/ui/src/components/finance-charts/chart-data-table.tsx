@@ -1,3 +1,4 @@
+import { cva } from "class-variance-authority";
 import {
   Table,
   TableBody,
@@ -9,7 +10,14 @@ import {
 } from "../table/table";
 import type { ChartRow, ChartSeries } from "./chart-model";
 
+export const chartDataTableVariants = cva("", {
+  variants: { placement: { hidden: "sr-only", beside: "text-sm" } },
+  defaultVariants: { placement: "hidden" },
+});
+
 export type ChartDataTableProps = {
+  /** `hidden` = for screen readers only, `beside` = a visible alternative to the chart. */
+  placement?: "hidden" | "beside";
   caption: string;
   /** The heading of the category column. */
   categoryLabel: string;
@@ -18,9 +26,15 @@ export type ChartDataTableProps = {
 };
 
 /** The chart's numbers for screen readers: a chart is an image to them (`ChartContainer`). */
-export function ChartDataTable({ caption, categoryLabel, series, rows }: ChartDataTableProps) {
+export function ChartDataTable({
+  caption,
+  categoryLabel,
+  series,
+  rows,
+  placement,
+}: ChartDataTableProps) {
   return (
-    <div data-slot="chart-data-table" className="sr-only">
+    <div data-slot="chart-data-table" className={chartDataTableVariants({ placement })}>
       <Table>
         <TableCaption>{caption}</TableCaption>
         <TableHeader>

@@ -232,10 +232,32 @@
   "dashboard": {
     "title": "Dashboard",
     "description": "The current state of your business.",
-    "openTickets": "Open tickets",
-    "closedTickets": "Closed recently",
-    "byStatus": "Tickets by status",
-    "empty": "No tickets yet."
+    "pipeline": {
+      "title": "Open tickets by status",
+      "tickets": "{count, plural, one {# ticket} other {# tickets}}",
+      "noValue": "No value yet",
+      "empty": "No open statuses."
+    },
+    "outcomes": {
+      "title": "Won and lost tickets",
+      "month": "Month",
+      "won": "Won",
+      "lost": "Lost",
+      "winRate": "Win rate {rate} ({won} of {total})",
+      "text": "{count} · {amount}",
+      "empty": "No tickets were closed in this period."
+    },
+    "economy": {
+      "title": "Economy"
+    },
+    "utilisation": {
+      "title": "Utilisation",
+      "type": "Item type",
+      "rate": "Utilisation",
+      "text": "{rate} · {booked} h booked of {open} h open",
+      "closed": "Closed in this period",
+      "empty": "No bookable items."
+    }
   },
   "finance": {
     "title": "Financials",

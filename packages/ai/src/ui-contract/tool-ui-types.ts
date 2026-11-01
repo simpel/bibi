@@ -5,6 +5,7 @@ import type { ArchivePreviewWire } from "./archive-preview-entry";
 import type { AssignmentWire } from "./assignment-entries";
 import type { BoardUiProps } from "./board-entries";
 import type { CalendarRangeWire } from "./calendar-entries";
+import type { DashboardUiProps } from "./dashboard-ui-props";
 import type { FinanceUiProps } from "./finance-ui-props";
 import type { HoursWire } from "./hours-entries";
 import type { InboundEmailWire } from "./inbound-email-entries";
@@ -51,6 +52,7 @@ import type {
  * component; this package only decides which key and validated props a tool result gets.
  */
 export type ToolUiProps = BoardUiProps &
+  DashboardUiProps &
   FinanceUiProps &
   TicketToolUiProps & {
     "venue-table": { items: VenueWire[]; nextCursor: string | null };

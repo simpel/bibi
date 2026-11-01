@@ -232,10 +232,32 @@
   "dashboard": {
     "title": "Översikt",
     "description": "Aktuellt läge i verksamheten.",
-    "openTickets": "Öppna ärenden",
-    "closedTickets": "Nyligen stängda",
-    "byStatus": "Ärenden per ärendestatus",
-    "empty": "Inga ärenden ännu."
+    "pipeline": {
+      "title": "Öppna ärenden per ärendestatus",
+      "tickets": "{count, plural, one {# ärende} other {# ärenden}}",
+      "noValue": "Inget värde ännu",
+      "empty": "Inga öppna ärendestatusar."
+    },
+    "outcomes": {
+      "title": "Vunna och förlorade ärenden",
+      "month": "Månad",
+      "won": "Vunna",
+      "lost": "Förlorade",
+      "winRate": "Vinstandel {rate} ({won} av {total})",
+      "text": "{count} · {amount}",
+      "empty": "Inga ärenden stängdes under perioden."
+    },
+    "economy": {
+      "title": "Ekonomi"
+    },
+    "utilisation": {
+      "title": "Beläggning",
+      "type": "Objekttyp",
+      "rate": "Beläggning",
+      "text": "{rate} · {booked} h bokade av {open} h öppet",
+      "closed": "Stängt under perioden",
+      "empty": "Inga bokningsbara objekt."
+    }
   },
   "finance": {
     "title": "Ekonomi",

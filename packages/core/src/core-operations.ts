@@ -8,6 +8,7 @@ import { configurationOperations } from "./features/configuration/operations";
 import { contactOperations } from "./features/contact/operations";
 import { conversationOperations } from "./features/conversation/operations";
 import { customerOperations } from "./features/customer/operations";
+import { dashboardOperations } from "./features/dashboard/operations";
 import { entityTypeOperations } from "./features/entity-type/operations";
 import { fieldDefinitionOperations } from "./features/field-definition/operations";
 import { fileOperations } from "./features/file/operations";
@@ -53,6 +54,7 @@ export type CreateCoreOperationsInput = { embed: EmbedFn };
 
 const pipelineGroupOperations = [
   ...pipelineOperations,
+  ...dashboardOperations,
   ...pipelineSetupOperations,
   ...changeSetOperations,
 ];

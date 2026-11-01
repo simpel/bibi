@@ -2,18 +2,20 @@ import type { PlainDate } from "@bibi/core/schemas";
 import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
-import { financialsHref } from "../lib/finance-href";
+import { periodHref } from "../lib/finance-href";
 import { lastMonthsPeriod, type Period, shiftPeriod, yearPeriod } from "../lib/finance-period";
 import { PeriodRange } from "./period-range";
 
 export type PeriodSwitcherProps = {
   period: Period;
   today: PlainDate;
+  /** The page whose period is in the path, e.g. `/financials` or `/dashboard`. */
+  base: string;
   customerId?: string | undefined;
 };
 
 /** Previous and next period of the same length, this year, and the last 12 months. */
-export function PeriodSwitcher({ period, today, customerId }: PeriodSwitcherProps) {
+export function PeriodSwitcher({ period, today, base, customerId }: PeriodSwitcherProps) {
   const t = useTranslations("finance.period");
   const links = [
     { key: "previous", period: shiftPeriod({ period, direction: -1 }) },
@@ -25,10 +27,10 @@ export function PeriodSwitcher({ period, today, customerId }: PeriodSwitcherProp
     <nav aria-label={t("label")} className="flex flex-wrap items-center gap-2">
       {links.map(({ key, period: target }) => (
         <Button key={key} asChild variant="outline" size="sm">
-          <Link href={financialsHref({ ...target, customerId })}>{t(key)}</Link>
+          <Link href={periodHref({ ...target, base, customerId })}>{t(key)}</Link>
         </Button>
       ))}
-      <PeriodRange period={period} customerId={customerId} />
+      <PeriodRange period={period} base={base} customerId={customerId} />
     </nav>
   );
 }

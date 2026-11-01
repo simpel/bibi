@@ -8,6 +8,8 @@ const PIPELINE = { route: "/pipeline" } as const;
  */
 export const PIPELINE_SURFACES: readonly WebSurface[] = [
   { operation: "pipeline.board", ...PIPELINE },
+  // The dashboard: open tickets per status now, outcomes and utilisation for a period (ADR 0079).
+  { operation: "dashboard.summary", route: "/dashboard/[from]/[to]" },
   { operation: "board.list", ...PIPELINE },
   { operation: "ticketStatus.setGates", route: "/settings/pipeline" },
   { operation: "board.get", ...PIPELINE },

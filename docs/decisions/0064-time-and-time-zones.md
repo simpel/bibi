@@ -66,6 +66,6 @@
 - **Hours as a hard constraint.** Special events outside hours are normal here.
 
 ## Addendum 2026-11-01 – the context clock
-- Operations that stamp a fact with the current instant read it with `nowOf({ context })` (`packages/core/src/time/now.ts`): `OperationContext.now` when set, else real time. Today: invoice and deposit moves (`sentAt`, `voidedAt`), `payment.applySignal` (`paidAt`) and the `PaymentRefund` row.
+- Operations that stamp a fact with the current instant read it with `nowOf({ context })` (`packages/core/src/time/now.ts`): `OperationContext.now` when set, else real time. Today: invoice and deposit moves (`sentAt`, `voidedAt`), `payment.applySignal` (`paidAt`), the `PaymentRefund` row and `recordStatusChange` (`TicketStatusChange.changedAt`, ADR 0079).
 - Only internal callers set it (the demo seed, tests), so history is written by the same operations at its own date instead of rewriting owned columns afterwards (ADR 0051). No adapter passes it: a request cannot choose its time.
 - Rejected: updating `sentAt`/`paidAt`/`refundedAt` in the seed after the fact, which writes owned facts outside their operation.

@@ -10,7 +10,7 @@ const STATUS = { QUOTE_SENT: "SENT", QUOTE_ACCEPTED: "ACCEPTED" } as const;
  * ADR 0043: a ticket in a status with a quote event got there through its quote, which is SENT for
  * `QUOTE_SENT` and ACCEPTED, with its time and method, for `QUOTE_ACCEPTED`. Tickets made from a
  * predefined ticket start in their status and have no quote. An organization without event
- * statuses has no quotes, and the quotes are snapshots of the lines (ADR 0052). Returns failure
+ * statuses has only the quotes of its won tickets (ADR 0079), and the quotes are snapshots of the lines (ADR 0052). Returns failure
  * messages.
  */
 export async function checkDemoQuoteEvents({
@@ -37,8 +37,10 @@ export async function checkDemoQuoteEvents({
     }
   }
   const quotes = await context.db.quote.count();
-  if (statuses.length === 0 && quotes > 0)
-    failures.push(`${org.slug}: ${quotes} quotes, expected 0`);
+  // ADR 0079: only the won tickets of the data have a quote without an event status.
+  const wonQuotes = org.tickets.filter((row) => row.won).length;
+  if (statuses.length === 0 && quotes !== wonQuotes)
+    failures.push(`${org.slug}: ${quotes} quotes, expected ${wonQuotes}`);
   const names = new Set(statuses.map((ticketStatus) => ticketStatus.name));
   const expected = org.tickets.filter(
     (row) => row.status && names.has(row.status) && !row.template,

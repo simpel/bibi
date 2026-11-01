@@ -114,3 +114,6 @@ export const pipelineOperations = [
   moveBoardPhaseStatus,
   ...boardOperations,
 ];
+
+// The dashboard view reaches the package index through here (its size limit).
+export { dashboardOperations, dashboardSummary } from "../dashboard/operations";

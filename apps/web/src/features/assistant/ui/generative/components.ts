@@ -13,6 +13,7 @@ import { ContactCardView } from "./contact-card-view";
 import { ContactTableView } from "./contact-table-view";
 import { CustomerCardView } from "./customer-card-view";
 import { CustomerTableView } from "./customer-table-view";
+import { DashboardSummaryView } from "./dashboard-summary-view";
 import { EntityTypeCardView } from "./entity-type-card-view";
 import { EntityTypeTableView } from "./entity-type-table-view";
 import { ErrorView } from "./error-view";
@@ -112,6 +113,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "inbound-email-table": InboundEmailTableView,
   "inbound-email-card": InboundEmailCardView,
   ...MONEY_COMPONENTS,
+  "dashboard-summary": DashboardSummaryView,
   "entity-type-table": EntityTypeTableView,
   "entity-type-card": EntityTypeCardView,
   "field-definition-table": FieldDefinitionTableView,

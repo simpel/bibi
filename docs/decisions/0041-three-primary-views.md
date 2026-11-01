@@ -25,3 +25,6 @@
 ## Addendum 2026-11-01 – financials (ADR 0077)
 - Money stays off the dashboard. Invoiced, received, outstanding and overdue figures live on Financials (`/financials/{from}/{to}`), behind their own permission `finance:read`.
 - The revenue question is answered in [ADR 0077](0077-financials-and-sie-export.md): invoices count by send date, payments by paid date, refunds by refund date. Nothing is stored; the figures are derived on read.
+
+## Addendum 2026-11-01 – dashboard summary (ADR 0079)
+- The dashboard now shows money: a panel fed by `finance.overview`, visible only with `finance:read`. This reverses the previous addendum. Its other panels (pipeline value per status, won and lost history, utilisation per item type) come from `dashboard.summary` ([ADR 0079](0079-dashboard-summary-and-utilisation.md)).
