@@ -126,6 +126,8 @@
   "pipeline": {
     "title": "Pipeline",
     "phaseValue": {
+      "confirmedLabel": "Överenskommet",
+      "estimatedLabel": "Uppskattat",
       "confirmed": "Överenskommet värde exkl. moms (accepterade offerter)",
       "estimated": "Uppskattat värde exkl. moms för ärenden utan accepterad offert"
     },

@@ -84,6 +84,7 @@ export * from "./components/kanban/kanban-customize-board";
 export * from "./components/kanban/kanban-flip";
 export type * from "./components/kanban/kanban-types";
 export { Label, type LabelProps } from "./components/label/label";
+export * from "./components/money-totals/money-totals";
 export * from "./components/page-container/page-container";
 export * from "./components/permission-profile-card/permission-chip-list";
 export * from "./components/permission-profile-card/permission-profile-card";

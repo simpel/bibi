@@ -1,12 +1,14 @@
 import type { PipelineCard } from "@bibi/core";
-import { MoneyNumberFlow } from "@bibi/ui";
+import { type MoneyTotalItem, MoneyTotals, type MoneyTotalsProps } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useNumberFormat } from "@/lib/number/use-number-format";
 
-export type PhaseValueProps = { cards: readonly PipelineCard[]; currency: string };
-
-/** Whole currency units: a phase total is an overview, not an amount to the öre. */
-const WHOLE = { minimumFractionDigits: 0, maximumFractionDigits: 0 };
+export type PhaseValueProps = {
+  cards: readonly PipelineCard[];
+  currency: string;
+  /** `md` next to the board switcher, `sm` in a lane header. */
+  size: NonNullable<MoneyTotalsProps["size"]>;
+};
 
 type Sums = { confirmed: number | null; estimated: number | null };
 
@@ -25,31 +27,30 @@ function phaseSums({ cards }: { cards: readonly PipelineCard[] }): Sums {
 }
 
 /**
- * The phase's agreed value and the estimate of its other tickets, excl. VAT, stacked in the
- * header. Both animate when a moved card refreshes the board.
+ * The agreed value and the estimate of the other tickets, excl. VAT, exact to the öre. Both
+ * animate when a moved card refreshes the board.
  */
-export function PhaseValue({ cards, currency }: PhaseValueProps) {
+export function PhaseValue({ cards, currency, size }: PhaseValueProps) {
   const t = useTranslations("pipeline.phaseValue");
   const flow = useNumberFormat().moneyFlow({ currency });
   const { confirmed, estimated } = phaseSums({ cards });
-  if (confirmed === null && estimated === null) return null;
-  return (
-    <span className="flex flex-col items-center leading-tight">
-      {confirmed !== null ? (
-        <span title={t("confirmed")} className="text-foreground">
-          <MoneyNumberFlow value={Math.round(confirmed / 100)} flow={flow} format={WHOLE} />
-        </span>
-      ) : null}
-      {estimated !== null ? (
-        <span title={t("estimated")}>
-          <MoneyNumberFlow
-            value={Math.round(estimated / 100)}
-            flow={flow}
-            format={WHOLE}
-            lead="≈ "
-          />
-        </span>
-      ) : null}
-    </span>
-  );
+  const items: MoneyTotalItem[] = [];
+  if (confirmed !== null) {
+    items.push({
+      key: "confirmed",
+      label: t("confirmedLabel"),
+      description: t("confirmed"),
+      minor: confirmed,
+    });
+  }
+  if (estimated !== null) {
+    items.push({
+      key: "estimated",
+      label: t("estimatedLabel"),
+      description: t("estimated"),
+      minor: estimated,
+      estimate: true,
+    });
+  }
+  return <MoneyTotals items={items} flow={flow} size={size} />;
 }

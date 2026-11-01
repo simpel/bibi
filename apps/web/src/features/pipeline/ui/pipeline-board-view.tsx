@@ -34,7 +34,9 @@ export function PipelineBoardView(props: PipelineBoardViewProps) {
         cards={kanbanCards({ board, customerNames })}
         labels={labels}
         renderCard={(card) => <PipelineCardContent card={card} />}
-        renderSummary={({ cards }) => <PhaseValue cards={cards} currency={board.currency} />}
+        renderSummary={({ cards }) => (
+          <PhaseValue cards={cards} currency={board.currency} size="sm" />
+        )}
         canDrop={(move) => {
           const found = findDrop({ board, move, transitions });
           // Another phase is always a drop (with a message when nothing may move there); inside

@@ -126,6 +126,8 @@
   "pipeline": {
     "title": "Pipeline",
     "phaseValue": {
+      "confirmedLabel": "Agreed",
+      "estimatedLabel": "Estimated",
       "confirmed": "Agreed value excl. VAT (accepted quotes)",
       "estimated": "Estimated value excl. VAT of the tickets without an accepted quote"
     },
