@@ -26,6 +26,12 @@ const flagsColumn = ({ t }: { t: Translate }): Column => ({
   ),
 });
 
+/** Where a status's tickets may move: nowhere (closing), any status, or the chosen ones. */
+const movesText = ({ row, t }: { row: StatusRow; t: Translate }) => {
+  if (row.closes) return t("noTransitions");
+  return row.restrictsNext ? row.targets.join(", ") || t("noTransitions") : t("anyStatus");
+};
+
 export type StatusColumnsInput = { statuses: TicketStatusDto[]; access: RowAccess };
 
 /** Name (with color), flags and allowed transitions; admins also get the row actions. */
@@ -49,7 +55,7 @@ export function useStatusColumns({ statuses, access }: StatusColumnsInput): Colu
       {
         id: "transitions",
         header: t("columns.transitions"),
-        accessorFn: (row) => row.targets.join(", ") || t("noTransitions"),
+        accessorFn: (row) => movesText({ row, t }),
       },
     ];
     if (!access.canEdit && !access.canRemove) return columns;

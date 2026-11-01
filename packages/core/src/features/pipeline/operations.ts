@@ -49,7 +49,7 @@ export const createBoardPhase = defineOperation({
     "board, so each listed status leaves its current phase on this board. Tickets are unchanged.",
   input: BoardPhaseCreateInputSchema,
   output: BoardPhaseSchema,
-  permission: "pipeline:write",
+  permission: "board:write",
   handler: createBoardPhaseHandler,
 });
 
@@ -59,7 +59,7 @@ export const updateBoardPhase = defineOperation({
   description: "Rename a board phase (column). Its statuses and tickets are unchanged.",
   input: BoardPhaseUpdateInputSchema,
   output: BoardPhaseSchema,
-  permission: "pipeline:write",
+  permission: "board:write",
   handler: updateBoardPhaseHandler,
 });
 
@@ -71,7 +71,7 @@ export const archiveBoardPhase = defineOperation({
     "boardPhase.moveStatus to keep them on it); tickets and statuses are unchanged.",
   input: BoardPhaseIdInputSchema,
   output: BoardPhaseSchema,
-  permission: "pipeline:delete",
+  permission: "board:delete",
   handler: archiveBoardPhaseHandler,
 });
 
@@ -83,7 +83,7 @@ export const reorderBoardPhases = defineOperation({
     "the board once, in the new order. Returns the board.",
   input: BoardPhaseReorderInputSchema,
   output: BoardSchema,
-  permission: "pipeline:write",
+  permission: "board:write",
   // Audited on the board whose column order changes.
   entityType: "board",
   handler: reorderBoardPhasesHandler,
@@ -98,7 +98,7 @@ export const moveBoardPhaseStatus = defineOperation({
     "the board shows them changes. Returns the board.",
   input: BoardPhaseMoveStatusInputSchema,
   output: BoardSchema,
-  permission: "pipeline:write",
+  permission: "board:write",
   // Audited on the board whose layout changes.
   entityType: "board",
   handler: moveBoardPhaseStatusHandler,

@@ -4,6 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
 import { mainAssigneeId } from "../assignment/load-assignment";
 import type { TransitionGate } from "../ticket-status/gate-schema";
+import { loadMoveRule } from "../ticket-status/move-rule";
 import { applyClosing } from "./cancellation";
 import { applyLineMoves, type LinePlan, planLineMoves } from "./plan-line-moves";
 import type { TicketDto } from "./schema";
@@ -42,27 +43,14 @@ async function hasAcceptedQuote({ context, ticketId, gates }: FactsInput) {
   return (await context.db.quote.count({ where: { ticketId, quoteStatus: "ACCEPTED" } })) > 0;
 }
 
-type TransitionInput = { context: OperationContext; from: TicketStatus; to: TicketStatus };
-
-/** The transition from → to with its gates, or null when the organization does not allow it. */
-async function loadTransition({ context, from, to }: TransitionInput) {
-  const row = await context.db.ticketStatusTransition.findFirst({
-    where: { fromStatusId: from.id, toStatusId: to.id },
-    select: { gates: { select: { key: true } } },
-  });
-  return row ? { gates: row.gates.map((gate) => gate.key) } : null;
-}
-
 type CheckMoveInput = Omit<MoveTicketInput, "to"> & { from: TicketStatus; to: TicketStatus };
 
 /**
- * Everything checked before a move: the transition, its gates and their facts, and the line
+ * Everything checked before a move: the move rule (ADR 0076), its gates and their facts, and the line
  * moves the status grid implies (a closing target ignores the grid: it releases every line).
  */
 async function checkMove({ context, before, from, to, reason, trigger }: CheckMoveInput) {
-  const transition = await loadTransition({ context, from, to });
-  const allowed = transition !== null;
-  const gates = transition?.gates ?? [];
+  const { allowed, gates } = await loadMoveRule({ context, from, to });
   const subject = { subjectType: "TICKET", subjectId: before.id } as const;
   const assigneeId = await mainAssigneeId({ context, ...subject });
   const lines: LinePlan = to.closes

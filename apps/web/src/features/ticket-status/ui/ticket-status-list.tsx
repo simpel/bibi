@@ -9,6 +9,7 @@ import { can, getCallerAbilities, rowAccess } from "@/server/caller-abilities";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
 import { CreateTicketStatusButton } from "./create-ticket-status-button";
+import { FlowEditor } from "./flow-editor";
 import { ImportTicketStatusTemplateButton } from "./import-ticket-status-template-button";
 import { TicketStatusTable } from "./ticket-status-table";
 
@@ -53,6 +54,7 @@ export async function TicketStatusList({ locale }: TicketStatusListProps) {
       ) : (
         <TicketStatusTable statuses={items} access={access} />
       )}
+      {can({ abilities, permission: "pipeline:write" }) ? <FlowEditor statuses={items} /> : null}
       <StatusGridEditor locale={locale} />
     </div>
   );

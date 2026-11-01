@@ -1,11 +1,6 @@
 import { createHmac } from "node:crypto";
 import { createId } from "@paralleldrive/cuid2";
-import {
-  createPayment,
-  createStripeWebhookHandler,
-  execute,
-  setTicketStatusTransitions,
-} from "../src/index";
+import { createPayment, createStripeWebhookHandler, execute } from "../src/index";
 import { unwrap } from "./helpers";
 import { paymentSetup, sentDeposit } from "./payment-helpers";
 import { createTestTicket, memberUser } from "./ticket-helpers";
@@ -57,15 +52,7 @@ export async function postEvent({ event, secret = SECRET, header }: PostInput) {
 export async function webhookSetup() {
   const setup = await paymentSetup();
   const { context } = setup;
-  const lead = await statusByName({ context, name: "Lead" });
   const confirmed = await statusByName({ context, name: "Confirmed" });
-  unwrap({
-    result: await execute({
-      operation: setTicketStatusTransitions,
-      input: { id: lead.id, toStatusIds: [confirmed.id] },
-      context,
-    }),
-  });
   return { ...setup, confirmed };
 }
 

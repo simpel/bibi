@@ -17,7 +17,7 @@ export const TicketStatusListWireSchema = z.object({
 export const TicketStatusImportWireSchema = z.object({
   created: z.array(TicketStatusWireSchema),
   skipped: z.array(z.string()),
-  transitionsAdded: z.number(),
+  gatesAdded: z.number(),
 });
 
 export type TicketStatusWire = z.infer<typeof TicketStatusWireSchema>;
@@ -43,6 +43,7 @@ export const TICKET_STATUS_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   ticketStatus_archivePreview: archivePreviewEntry,
   ticketStatus_reorder: statusTable,
   ticketStatus_setTransitions: statusCard,
+  ticketStatus_setGates: statusCard,
   ticketStatus_importTemplate: uiEntry({
     component: "ticket-status-table",
     schema: TicketStatusImportWireSchema,

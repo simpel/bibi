@@ -8,7 +8,6 @@ import type { RowAccess } from "@/lib/can";
 import { ArchiveTicketStatusDialog } from "./archive-ticket-status-dialog";
 import { EditTicketStatusItem } from "./edit-ticket-status-item";
 import { MoveItems } from "./move-items";
-import { TransitionsDialog } from "./transitions-dialog";
 
 export type TicketStatusRowActionsProps = {
   ticketStatus: TicketStatusDto;
@@ -17,11 +16,9 @@ export type TicketStatusRowActionsProps = {
   access: RowAccess;
 };
 
-type Dialog = "transitions" | "archive";
+type MenuProps = TicketStatusRowActionsProps & { onArchive: () => void };
 
-type MenuProps = TicketStatusRowActionsProps & { onOpen: (dialog: Dialog) => void };
-
-function StatusMenu({ ticketStatus, index, statuses, access, onOpen }: MenuProps) {
+function StatusMenu({ ticketStatus, index, statuses, access, onArchive }: MenuProps) {
   const t = useTranslations("ticketStatus");
   const common = useTranslations("common");
   return (
@@ -29,14 +26,11 @@ function StatusMenu({ ticketStatus, index, statuses, access, onOpen }: MenuProps
       {access.canEdit ? (
         <>
           <EditTicketStatusItem id={ticketStatus.id} />
-          <DropdownMenuItem onSelect={() => onOpen("transitions")}>
-            {t("editTransitions")}
-          </DropdownMenuItem>
           <MoveItems statuses={statuses} index={index} />
         </>
       ) : null}
       {access.canRemove ? (
-        <DropdownMenuItem destructive onSelect={() => onOpen("archive")}>
+        <DropdownMenuItem destructive onSelect={onArchive}>
           {t("archive")}
         </DropdownMenuItem>
       ) : null}
@@ -44,26 +38,18 @@ function StatusMenu({ ticketStatus, index, statuses, access, onOpen }: MenuProps
   );
 }
 
-/** Edit (page) / transitions / move / archive for one status. */
+/** Edit (page) / move / archive for one status; the flow has its own editor (ADR 0076). */
 export function TicketStatusRowActions(props: TicketStatusRowActionsProps) {
   const { ticketStatus, statuses } = props;
-  const [dialog, setDialog] = useState<Dialog | null>(null);
+  const [archiveOpen, setArchiveOpen] = useState(false);
   return (
     <>
-      <StatusMenu {...props} onOpen={setDialog} />
-      {dialog === "transitions" ? (
-        <TransitionsDialog
-          ticketStatus={ticketStatus}
-          statuses={statuses}
-          open
-          onOpenChange={(open) => !open && setDialog(null)}
-        />
-      ) : null}
+      <StatusMenu {...props} onArchive={() => setArchiveOpen(true)} />
       <ArchiveTicketStatusDialog
         ticketStatus={ticketStatus}
         statuses={statuses}
-        open={dialog === "archive"}
-        onOpenChange={(open) => !open && setDialog(null)}
+        open={archiveOpen}
+        onOpenChange={setArchiveOpen}
       />
     </>
   );

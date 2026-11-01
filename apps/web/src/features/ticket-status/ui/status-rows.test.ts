@@ -14,7 +14,9 @@ const ticketStatus = ({
     closes: false,
     invoiceable: false,
     event: null,
+    restrictsNext: false,
     transitionsTo: [],
+    gatesInto: [],
     transitionGates: [],
     ...fields,
   }) as TicketStatusDto;
@@ -24,12 +26,26 @@ describe("toStatusRows", () => {
     const rows = toStatusRows({
       statuses: [
         ticketStatus({
-          fields: { id: "a", name: "Lead", entry: true, transitionsTo: ["b", "gone"] },
+          fields: {
+            id: "a",
+            name: "Lead",
+            entry: true,
+            restrictsNext: true,
+            transitionsTo: ["b", "gone"],
+          },
         }),
         ticketStatus({ fields: { id: "b", name: "Lost", closes: true, invoiceable: true } }),
       ],
     });
     expect(rows.map((row) => row.flags)).toEqual([["entry"], ["closes", "invoiceable"]]);
     expect(rows[0]?.targets).toEqual(["Lost", "gone"]);
+  });
+
+  it("lists no targets for a status that moves freely", () => {
+    const [row] = toStatusRows({
+      statuses: [ticketStatus({ fields: { id: "a", transitionsTo: ["b"] } })],
+    });
+    expect(row?.restrictsNext).toBe(false);
+    expect(row?.targets).toEqual([]);
   });
 });

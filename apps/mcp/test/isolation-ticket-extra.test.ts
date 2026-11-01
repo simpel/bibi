@@ -87,7 +87,8 @@ describe("cross-organization isolation: ticket statuses and audit log", () => {
       ["ticketStatus_archive", { id }],
       ["ticketStatus_archivePreview", { id }],
       ["ticketStatus_get", { id }],
-      ["ticketStatus_setTransitions", { id, toStatusIds: [] }],
+      ["ticketStatus_setTransitions", { id, allowedNext: "ANY" }],
+      ["ticketStatus_setGates", { id, gates: [] }],
     ] as const) {
       expect((await call({ client: b, name, args })).data.code, name).toBe("NOT_FOUND");
     }

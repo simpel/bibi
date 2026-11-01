@@ -1,6 +1,6 @@
 import type { PipelineCard, PipelineStatus } from "@bibi/core";
 import { describe, expect, it } from "vitest";
-import { canMoveCard, dropStatus } from "./move-rules";
+import { canMoveCard, dropTargets } from "./move-rules";
 
 const card = ({ overrides = {} }: { overrides?: Partial<PipelineCard> } = {}): PipelineCard => ({
   id: "t1",
@@ -42,13 +42,9 @@ const transitions = {
   lead: ["confirmed", "lost", "completed"],
   confirmed: ["locked", "completed"],
 };
-// "Won" groups two statuses: each is its own drop zone (ADR 0067).
-const columns = [
-  { id: "open", statuses: [lead] },
-  { id: "won", statuses: [confirmed, locked] },
-  { id: "closed", statuses: [completed, lost] },
-  { id: "empty", statuses: [] },
-];
+// "Won" groups two statuses: a drop on it picks one of them (ADR 0076).
+const won = { id: "won", statuses: [confirmed, locked] };
+const closedColumn = { id: "closed", statuses: [completed, lost] };
 
 describe("pipeline move rules (ADR 0041, 0043, 0067)", () => {
   it("allows the organization's transitions", () => {
@@ -56,9 +52,9 @@ describe("pipeline move rules (ADR 0041, 0043, 0067)", () => {
     expect(canMoveCard({ card: card(), from: lead, to: completed, transitions })).toBe(true);
   });
 
-  it("allows a move to another status zone of the same column", () => {
-    const won = card({ overrides: { columnId: "won", statusId: "confirmed" } });
-    expect(canMoveCard({ card: won, from: confirmed, to: locked, transitions })).toBe(true);
+  it("allows a move to another status of the same column", () => {
+    const inWon = card({ overrides: { columnId: "won", statusId: "confirmed" } });
+    expect(canMoveCard({ card: inWon, from: confirmed, to: locked, transitions })).toBe(true);
   });
 
   it("refuses moves the organization does not allow", () => {
@@ -87,11 +83,21 @@ describe("pipeline move rules (ADR 0041, 0043, 0067)", () => {
     expect(canMoveCard({ card: card(), from: lead, to: lead, transitions })).toBe(false);
   });
 
-  it("finds the status a drop lands in", () => {
-    expect(dropStatus({ columns, columnId: "won", zoneId: "locked" })).toBe(locked);
-    expect(dropStatus({ columns, columnId: "open" })).toBe(lead);
-    expect(dropStatus({ columns, columnId: "won" })).toBeNull();
-    expect(dropStatus({ columns, columnId: "won", zoneId: "lead" })).toBeNull();
-    expect(dropStatus({ columns, columnId: "empty" })).toBeNull();
+  it("lists the statuses of the drop column the card may move to", () => {
+    const base = { card: card(), from: lead, transitions };
+    expect(dropTargets({ ...base, statuses: closedColumn.statuses })).toEqual([completed, lost]);
+    expect(dropTargets({ ...base, statuses: won.statuses })).toEqual([confirmed]);
+    expect(dropTargets({ ...base, statuses: [lead] })).toEqual([]);
+    expect(dropTargets({ ...base, statuses: [] })).toEqual([]);
+  });
+
+  it("never offers the card's own status, nor any status from a closed one", () => {
+    const inWon = card({ overrides: { columnId: "won", statusId: "confirmed" } });
+    const own = dropTargets({ card: inWon, from: confirmed, statuses: won.statuses, transitions });
+    expect(own).toEqual([locked]);
+    const done = card({ overrides: { columnId: "closed", statusId: "completed" } });
+    expect(
+      dropTargets({ card: done, from: completed, statuses: won.statuses, transitions }),
+    ).toEqual([]);
   });
 });

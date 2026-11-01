@@ -32,4 +32,6 @@ export const lindholmenPipeline: DemoPipeline = {
   statuses: conferenceEstateTicketStatuses,
   cells,
   boards: lindholmenBoards,
+  // Once the final count is locked, only finishing or cancelling is allowed.
+  restrictedMoves: [{ from: "Final count locked", to: ["Completed", "Cancelled"] }],
 };

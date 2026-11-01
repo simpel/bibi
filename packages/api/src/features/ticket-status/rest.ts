@@ -20,6 +20,11 @@ export const ticketStatusRoutes = [
     path: `${BASE}/{id}/transitions`,
   }),
   restRoute({
+    operation: "ticketStatus.setGates",
+    method: "PUT",
+    path: `${BASE}/{id}/gates`,
+  }),
+  restRoute({
     operation: "ticketStatus.importTemplate",
     method: "POST",
     path: `${BASE}/import-template`,

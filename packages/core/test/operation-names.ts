@@ -18,6 +18,7 @@ const NAMES = [
   "ticketStatus.list",
   "ticketStatus.reorder",
   "ticketStatus.setTransitions",
+  "ticketStatus.setGates",
   "ticketStatus.update",
   "ticketTemplate.archive",
   "ticketTemplate.create",

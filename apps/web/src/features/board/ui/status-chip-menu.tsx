@@ -12,7 +12,6 @@ import { useState } from "react";
 import type { BoardAccess } from "@/features/pipeline/load-pipeline-data";
 import { ArchiveTicketStatusDialog } from "@/features/ticket-status/ui/archive-ticket-status-dialog";
 import { EditTicketStatusItem } from "@/features/ticket-status/ui/edit-ticket-status-item";
-import { TransitionsDialog } from "@/features/ticket-status/ui/transitions-dialog";
 
 export type StatusChipMenuProps = {
   ticketStatus: TicketStatusDto;
@@ -51,40 +50,32 @@ function MoveToMenu({ ticketStatus, phaseId, phases, onMove }: MoveToProps) {
   );
 }
 
-/** A chip's menu: edit (page), transitions, move to, archive (with a target for its tickets). */
+/**
+ * A chip's menu. "Move to" is the board's (`board:write`); editing and archiving a status change
+ * the flow for everyone and show only with `pipeline:write` / `pipeline:delete` (ADR 0076).
+ */
 export function StatusChipMenu(props: StatusChipMenuProps) {
   const { ticketStatus, statuses, access } = props;
   const t = useTranslations("ticketStatus");
   const phase = useTranslations("boardPhase");
-  const [dialog, setDialog] = useState<"transitions" | "archive" | null>(null);
+  const [archiveOpen, setArchiveOpen] = useState(false);
   return (
     <>
       <DataTableRowActions label={phase("statusActions", { name: ticketStatus.name })}>
-        <EditTicketStatusItem id={ticketStatus.id} />
-        <DropdownMenuItem onSelect={() => setDialog("transitions")}>
-          {t("editTransitions")}
-        </DropdownMenuItem>
+        {access.configure ? <EditTicketStatusItem id={ticketStatus.id} /> : null}
         <MoveToMenu {...props} />
-        {access.remove ? (
-          <DropdownMenuItem destructive onSelect={() => setDialog("archive")}>
+        {access.configure && access.removeStatus ? (
+          <DropdownMenuItem destructive onSelect={() => setArchiveOpen(true)}>
             {t("archive")}
           </DropdownMenuItem>
         ) : null}
       </DataTableRowActions>
-      {dialog === "transitions" ? (
-        <TransitionsDialog
-          ticketStatus={ticketStatus}
-          statuses={statuses}
-          open
-          onOpenChange={(open) => !open && setDialog(null)}
-        />
-      ) : null}
-      {dialog === "archive" ? (
+      {archiveOpen ? (
         <ArchiveTicketStatusDialog
           ticketStatus={ticketStatus}
           statuses={statuses}
           open
-          onOpenChange={(open) => !open && setDialog(null)}
+          onOpenChange={(open) => !open && setArchiveOpen(false)}
         />
       ) : null}
     </>

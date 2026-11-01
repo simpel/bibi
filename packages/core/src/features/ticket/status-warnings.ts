@@ -15,7 +15,7 @@ export type StatusWarningsInput = {
  */
 async function acceptancePosition({ context }: Pick<StatusWarningsInput, "context">) {
   const gated = {
-    transitionsTo: { some: { gates: { some: { key: "ACCEPTED_QUOTE" as const } } } },
+    gatesInto: { some: { key: "ACCEPTED_QUOTE" as const } },
   };
   const ticketStatus = await context.db.ticketStatus.findFirst({
     where: { OR: [{ event: "QUOTE_ACCEPTED" }, gated] },

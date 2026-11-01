@@ -13,6 +13,8 @@ const MANAGER_FEATURES: readonly Feature[] = [
   "quote",
   "payment",
   "sheet",
+  // Boards are views of the pipeline, not its flow (ADR 0076): managers set them up.
+  "board",
 ];
 
 /** Managers also maintain items (demands, setup times, working hours) but never archive them (ADR 0059). */

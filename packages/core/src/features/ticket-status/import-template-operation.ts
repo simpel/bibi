@@ -3,10 +3,9 @@ import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import type { TicketStatusTemplate } from "../../templates/ticket-statuses/ticket-status-template";
 import { getTicketStatusTemplate } from "../../templates/ticket-statuses/ticket-status-templates";
-import { createTransition } from "./create-transition";
-import type { TransitionGate } from "./gate-schema";
 import { insertTicketStatus, ticketStatusNameTaken } from "./insert-ticket-status";
-import { loadAllTicketStatuses } from "./load-ticket-status";
+import { loadTicketStatus } from "./load-ticket-status";
+import { replaceGates } from "./replace-gates";
 import {
   type TicketStatusDto,
   type TicketStatusImportResult,
@@ -16,47 +15,33 @@ import {
 
 type TemplateInput = { context: OperationContext; template: TicketStatusTemplate };
 
-type RecordInput = { context: OperationContext; before: TicketStatusDto[] };
-
-/** Audits every status whose allowed targets changed; returns the statuses as they are now. */
-async function recordTransitionChanges({ context, before }: RecordInput) {
-  const after = await loadAllTicketStatuses({ context });
-  for (const ticketStatus of after) {
-    const previous = before.find((candidate) => candidate.id === ticketStatus.id);
-    if (previous && previous.transitionsTo.join() === ticketStatus.transitionsTo.join()) continue;
-    context.recordChange({ entityId: ticketStatus.id, before: previous, after: ticketStatus });
-  }
-  return after;
-}
-
-type NewTransition = { fromStatusId: string; toStatusId: string; gates: readonly TransitionGate[] };
-
-/** The template's transitions between active statuses with its names that do not exist yet. */
-function newTransitions({
-  template,
-  before,
-}: {
+type AddGatesInput = {
+  context: OperationContext;
   template: TicketStatusTemplate;
-  before: TicketStatusDto[];
-}) {
-  const byName = new Map(before.map((ticketStatus) => [ticketStatus.name, ticketStatus]));
-  const gatesIn = new Map(template.statuses.map((status) => [status.name, status.gatesIn ?? []]));
-  return template.transitions.flatMap(([from, to]): NewTransition[] => {
-    const [fromStatus, toStatus] = [byName.get(from), byName.get(to)];
-    if (!fromStatus || !toStatus || fromStatus.transitionsTo.includes(toStatus.id)) return [];
-    return [{ fromStatusId: fromStatus.id, toStatusId: toStatus.id, gates: gatesIn.get(to) ?? [] }];
-  });
-}
+  created: TicketStatusDto[];
+};
 
 /**
- * Adds the template's transitions between the active statuses with its names, each with the gates
- * of its target (`gatesIn`); existing transitions and their gates are kept.
+ * Sets the template's gates on moves into the statuses this import created, from any status
+ * (ADR 0076); statuses that existed before keep theirs. Audited on each gated status.
  */
-async function addTransitions({ context, template }: TemplateInput) {
-  const before = await loadAllTicketStatuses({ context });
-  const added = newTransitions({ template, before });
-  for (const transition of added) await createTransition({ context, ...transition });
-  return { count: added.length, statuses: await recordTransitionChanges({ context, before }) };
+async function addGates({ context, template, created }: AddGatesInput) {
+  let count = 0;
+  const statuses: TicketStatusDto[] = [];
+  for (const status of created) {
+    const gatesIn = template.statuses.find(({ name }) => name === status.name)?.gatesIn ?? [];
+    if (gatesIn.length === 0) {
+      statuses.push(status);
+      continue;
+    }
+    const gates = [{ fromStatusId: null, gates: [...gatesIn] }];
+    await replaceGates({ context, toStatusId: status.id, gates });
+    const after = await loadTicketStatus({ context, id: status.id });
+    if (after) context.recordChange({ entityId: status.id, before: status, after });
+    statuses.push(after ?? status);
+    count += gatesIn.length;
+  }
+  return { count, statuses };
 }
 
 /** The quote events an active status already has; the import never takes one from it. */
@@ -90,12 +75,8 @@ export async function importTicketStatuses({
     if (!inserted.ok) return inserted;
     created.push(inserted.value);
   }
-  const added = await addTransitions({ context, template });
-  const withTransitions = created.map(
-    (ticketStatus) =>
-      added.statuses.find((candidate) => candidate.id === ticketStatus.id) ?? ticketStatus,
-  );
-  return ok({ value: { created: withTransitions, skipped, transitionsAdded: added.count } });
+  const added = await addGates({ context, template, created });
+  return ok({ value: { created: added.statuses, skipped, gatesAdded: added.count } });
 }
 
 export const importTicketStatusTemplate = defineOperation({
@@ -103,8 +84,8 @@ export const importTicketStatusTemplate = defineOperation({
   kind: "command",
   description:
     "Import a ticket status template as ordinary, editable statuses with their flags and " +
-    "transitions with their gates. Statuses whose name already exists are skipped; the template's transitions " +
-    "between statuses with its names are added, existing transitions are kept. An existing entry " +
+    "free movement and the template's gates on moves into a status. Statuses whose name already " +
+    "exists are skipped and keep their moves and gates. An existing entry " +
     "status stays the entry status, and a quote event that a status has stays with it.",
   input: TicketStatusImportTemplateInputSchema,
   output: TicketStatusImportTemplateOutputSchema,

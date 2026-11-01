@@ -29,20 +29,8 @@ async function configure({ context }: Ctx) {
   const confirmed = await statusByName({ context, name: "Confirmed" });
   const update = { id: confirmed.id, event: "QUOTE_ACCEPTED" as const };
   unwrap({ result: await execute({ operation: updateTicketStatus, input: update, context }) });
+  // Movement is free and the template already gates Confirmed on a main assignee (ADR 0076).
   const lead = await statusByName({ context, name: "Lead" });
-  const moves = [
-    { id: lead.id, toStatusIds: [sent.id, confirmed.id] },
-    // Entering Confirmed needs a main assignee, as on the template's moves into it.
-    {
-      id: sent.id,
-      toStatusIds: [confirmed.id],
-      gates: [{ toStatusId: confirmed.id, gates: ["ASSIGNEE" as const] }],
-    },
-  ];
-  for (const move of moves) {
-    const result = await execute({ operation: setTicketStatusTransitions, input: move, context });
-    unwrap({ result });
-  }
   return { sent, confirmed, lead };
 }
 
@@ -86,7 +74,7 @@ describe("quote events move the ticket (ADR 0043)", () => {
   it("leaves the status when the organization does not allow the move", async () => {
     const { context, ticket, quote } = await sendable();
     const { sent, lead } = await configure({ context });
-    const none = { id: lead.id, toStatusIds: [] };
+    const none = { id: lead.id, allowedNext: "ONLY_THESE" as const, toStatusIds: [] };
     unwrap({
       result: await execute({ operation: setTicketStatusTransitions, input: none, context }),
     });

@@ -70,7 +70,7 @@ export const CREATED_BY_MODELS = new Set<string>([
   "HoursException",
   "TicketStatus",
   "TicketStatusTransition",
-  "TicketStatusTransitionGate",
+  "TicketStatusGate",
   "Board",
   "BoardPhase",
   "BoardPhaseStatus",

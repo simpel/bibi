@@ -115,6 +115,7 @@ erDiagram
   Ticket }o--|| TicketStatus : "is in"
   TicketStatus ||--o{ TicketStatusTransition : "from"
   TicketStatus ||--o{ TicketStatusTransition : "to"
+  TicketStatus ||--o{ TicketStatusGate : "is guarded by"
   Board ||--o{ BoardPhase : "has"
   BoardPhase ||--o{ BoardPhaseStatus : "shows"
   TicketStatus ||--o{ BoardPhaseStatus : "is shown in"
@@ -242,25 +243,27 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > Operations: `sheetDefinition.*` under the resource `configuration`. Core checks that every id is an active row of the organization (`VALIDATION`). Archiving a type, field, vocabulary or responsibility that an active sheet definition uses is refused with `CONFLICT` (ADR 0026, ADR 0034).
 
-### TicketStatus (`TicketStatus`) with flags and transitions
+### TicketStatus (`TicketStatus`) with flags, Allowed next and gates
 
 *MVP* · The organization's own pipeline column for a ticket ([ADR 0043](decisions/0043-ticket-and-configurable-statuses.md)). Nothing about statuses is fixed in code: not their number, names or order.
 
 **Attributes**
 - name (unique among the organization's active statuses), color, order (`position`)
 - flags: `entry` (new tickets start here, exactly one default), `closes` (nothing leaves it; all lines are released on entry), `invoiceable` (only after the last line has ended), `event` (`QUOTE_SENT` / `QUOTE_ACCEPTED`, at most one status per event; such a status is entered by the quote event, not by hand)
-- transitions (allowed moves to other statuses), each with its gates (`TicketStatusTransitionGate`: `REASON`, `ASSIGNEE`, `ACCEPTED_QUOTE`; a gate guards a fact, the record owns it, [ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md), [ADR 0067](decisions/0067-ticket-statuses-boards-and-gates.md))
+- `restrictsNext` (default false): false means a ticket may move from this status to any status (except out of a `closes` status, and into a status with an `event`); true means only to the rows of `TicketStatusTransition` (from → to). A free status keeps no transition rows ([ADR 0076](decisions/0076-free-status-movement-and-admin-only-flow.md))
+- gates into this status (`TicketStatusGate`: `REASON`, `ASSIGNEE`, `ACCEPTED_QUOTE`, each from a specific status or from any status; a gate guards a fact, the record owns it, [ADR 0054](decisions/0054-domain-history-and-facts-vs-workflow.md), [ADR 0067](decisions/0067-ticket-statuses-boards-and-gates.md))
 - archived (a status that holds tickets is archived only with a chosen target status)
 
 **Relations**
 - `1:N` Ticket is in this
 - `1:N` is from/to in → TicketStatusChange
-- `1:N` is from/to in → Transition (`TicketStatusTransition`, from → to)
+- `1:N` is from/to in → Transition (`TicketStatusTransition`, from → to; only while `restrictsNext`)
+- `1:N` is the target of → Gate (`TicketStatusGate`, optional source status)
 - `1:N` sets states in → StatusStateRule
 
-> Minimum configuration, checked on every change (`CONFLICT`): one `entry` and one `closes` status. The default transitions are every forward move and a move to any closing status. Reports group by flag, never by status name.
+> Minimum configuration, checked on every change (`CONFLICT`): one `entry` and one `closes` status. Movement is free by default. Reports group by flag, never by status name.
 
-> Operations (`pipeline:write|delete` to change, `pipeline:read` to read): `ticketStatus.list|get|create|update|archive|reorder|setTransitions|importTemplate`. Settings page `/settings/pipeline`; first-time setup is the assistant onboarding at `/onboarding` ([ADR 0045](decisions/0045-soft-landing-onboarding.md), building on [ADR 0044](decisions/0044-line-states-and-the-status-grid.md)).
+> Operations (`pipeline:write|delete` to change, `pipeline:read` to read; `pipeline:write` is the admin-only flow, boards use `board:*`): `ticketStatus.list|get|create|update|archive|reorder|setTransitions|setGates|importTemplate`. `setTransitions({ id, allowedNext: "ANY" | "ONLY_THESE", toStatusIds })` sets `restrictsNext` and the targets; `setGates({ id, gates })` replaces all gates into the status. `list|get` return `restrictsNext`, `transitionsTo` (effective targets), `transitionGates` (effective per target) and `gatesInto` (raw, by source). Settings page `/settings/pipeline`; first-time setup is the assistant onboarding at `/onboarding` ([ADR 0045](decisions/0045-soft-landing-onboarding.md), building on [ADR 0044](decisions/0044-line-states-and-the-status-grid.md)).
 
 ### Board (`Board`), BoardPhase (`BoardPhase`) and BoardPhaseStatus (`BoardPhaseStatus`)
 
@@ -417,8 +420,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - desired period (`desiredStartsAt`, `desiredEndsAt`, optional) – what the customer asked for; each line has its own time
 - holds until (`holdsUntil`, optional): one date for the whole ticket ("we hold this until 28 Feb"). When it passes, every line in an `expires` state falls to its type's expiry state; other lines and the status are unchanged ([ADR 0044](decisions/0044-line-states-and-the-status-grid.md))
 - estimated and guaranteed headcount (`estimatedHeadcount`, `guaranteedHeadcount`): the ticket's one headcount; a line without its own quantity counts the guaranteed one if set, else the estimate ([ADR 0052](decisions/0052-the-line-is-the-booking.md)); budget (`budgetMinor`, minor units)
-- status (`statusId`, projected from the status history), when it entered the status (`statusChangedAt`) and the reason of the last status change (`statusReason`, required by moves along a transition with a `REASON` gate), both read from the newest `TicketStatusChange`
-- main assignment and responsibility assignments (see Assignment; the main assignee is required by moves along a transition with an `ASSIGNEE` gate)
+- status (`statusId`, projected from the status history), when it entered the status (`statusChangedAt`) and the reason of the last status change (`statusReason`, required by moves into a status with a `REASON` gate), both read from the newest `TicketStatusChange`
+- main assignment and responsibility assignments (see Assignment; the main assignee is required by moves into a status with an `ASSIGNEE` gate)
 - inbound address (`inboundAddress`, derived: `ticket-<id>@<MAIL_INBOUND_DOMAIN>`, null when inbound mail is not configured)
 - channel (form, email, phone, Venuu) – *later*
 
@@ -1327,6 +1330,7 @@ English is used everywhere in code and docs. Swedish appears only in UI translat
 | Ticket | Ärende |
 | TicketStatus | Fas |
 | TicketStatusTransition | Fasövergång |
+| TicketStatusGate | Fasvillkor |
 | ItemState | Radstatus |
 | ItemStateTransition | Radövergång |
 | StatusStateRule | Fasregel |

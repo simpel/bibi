@@ -62,20 +62,23 @@ async function moveTicketsOut({
 
 type DetachInput = { context: OperationContext; id: string };
 
-/** Removes every transition into the archived status, recorded on each status it left. */
+/**
+ * Removes every move rule that names the archived status (ADR 0076): transitions into it and the
+ * gates into it or from it. Each status whose allowed or gated moves changed is audited.
+ */
 async function detachIncoming({ context, id }: DetachInput) {
-  const sources = await context.db.ticketStatusTransition.findMany({
-    where: { toStatusId: id },
-    select: { fromStatusId: true },
+  const befores = await loadAllTicketStatuses({ context });
+  await context.db.ticketStatusTransition.deleteMany({
+    where: { OR: [{ toStatusId: id }, { fromStatusId: id }] },
   });
-  const befores = await Promise.all(
-    sources.map(({ fromStatusId }) => loadTicketStatus({ context, id: fromStatusId })),
-  );
-  await context.db.ticketStatusTransition.deleteMany({ where: { toStatusId: id } });
-  for (const before of befores) {
-    if (!before) continue;
-    const after = { ...before, transitionsTo: before.transitionsTo.filter((to) => to !== id) };
-    context.recordChange({ entityId: before.id, before, after });
+  await context.db.ticketStatusGate.deleteMany({
+    where: { OR: [{ toStatusId: id }, { fromStatusId: id }] },
+  });
+  const afters = await loadAllTicketStatuses({ context });
+  for (const after of afters) {
+    const before = befores.find((candidate) => candidate.id === after.id);
+    if (!before || after.id === id || JSON.stringify(before) === JSON.stringify(after)) continue;
+    context.recordChange({ entityId: after.id, before, after });
   }
 }
 
@@ -100,13 +103,12 @@ export async function archiveStatus({ context, input }: ArchiveStatusInput) {
   const moved = await moveTicketsOut({ context, id, targetStatusId, reason });
   if (!moved.ok) return moved;
   await detachIncoming({ context, id });
-  await context.db.ticketStatusTransition.deleteMany({ where: { fromStatusId: id } });
   await clearStatusCells({ context, statusId: id });
   await unplaceStatus({ context, statusId: id });
   // An archived status gives up its quote event (ADR 0043): another status can take it.
   const data = { status: "ARCHIVED", event: null } as const;
   const row = await context.db.ticketStatus.update({ where: { id }, data });
-  const after = toTicketStatusDto({ row: { ...row, transitionsFrom: [] } });
+  const after = { ...before, ...row, transitionsTo: [], transitionGates: [], gatesInto: [] };
   context.recordChange({ entityId: id, before, after });
   return ok({ value: after });
 }

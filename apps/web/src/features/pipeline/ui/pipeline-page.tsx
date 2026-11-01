@@ -10,7 +10,7 @@ import { PipelineBoardView } from "./pipeline-board-view";
 export type PipelinePageProps = {
   locale: Locale;
   boardId?: string | undefined;
-  /** `?mode=customize`; shown only to callers with `pipeline:write`. */
+  /** `?mode=customize`; shown only to callers with `board:write`. */
   customize: boolean;
 };
 
@@ -36,7 +36,7 @@ export async function PipelinePage({ locale, boardId, customize }: PipelinePageP
         <PipelineBoardView
           board={board}
           transitions={data.value.transitions}
-          reasonMoves={data.value.reasonMoves}
+          moveGates={data.value.moveGates}
           customerNames={data.value.customerNames}
         />
       </div>

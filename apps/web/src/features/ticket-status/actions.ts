@@ -7,11 +7,13 @@ import {
   importTicketStatusTemplate,
   previewArchiveTicketStatus,
   reorderTicketStatuses,
+  setTicketStatusGates,
   setTicketStatusTransitions,
   type TicketStatusArchiveInput,
   type TicketStatusCreateInput,
   type TicketStatusDto,
   type TicketStatusImportResult,
+  type TicketStatusSetGatesInput,
   type TicketStatusSetTransitionsInput,
   type TicketStatusUpdateInput,
   updateTicketStatus,
@@ -26,6 +28,7 @@ export type UpdateTicketStatusActionInput = { input: TicketStatusUpdateInput };
 export type ArchiveTicketStatusActionInput = { input: TicketStatusArchiveInput };
 export type ReorderTicketStatusesActionInput = { ids: string[] };
 export type SetTransitionsActionInput = { input: TicketStatusSetTransitionsInput };
+export type SetGatesActionInput = { input: TicketStatusSetGatesInput };
 type StatusPage = { items: TicketStatusDto[]; nextCursor: string | null };
 
 export async function createTicketStatusAction({
@@ -62,10 +65,19 @@ export async function reorderTicketStatusesAction({
   return toActionResult({ result });
 }
 
+/** `ticketStatus.setTransitions`: Allowed next, any status or only the chosen ones (ADR 0076). */
 export async function setTicketStatusTransitionsAction({
   input,
 }: SetTransitionsActionInput): Promise<ActionResult<TicketStatusDto>> {
   const result = await runOperation({ operation: setTicketStatusTransitions, input });
+  return toActionResult({ result });
+}
+
+/** `ticketStatus.setGates`: every requirement on moves into one status, by source (ADR 0076). */
+export async function setTicketStatusGatesAction({
+  input,
+}: SetGatesActionInput): Promise<ActionResult<TicketStatusDto>> {
+  const result = await runOperation({ operation: setTicketStatusGates, input });
   return toActionResult({ result });
 }
 

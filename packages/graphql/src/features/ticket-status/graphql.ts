@@ -6,6 +6,7 @@ import {
   listTicketStatuses,
   previewArchiveTicketStatus,
   reorderTicketStatuses,
+  setTicketStatusGates,
   setTicketStatusTransitions,
   type TicketStatusDto,
   type TicketStatusImportResult,
@@ -24,7 +25,7 @@ export const TicketStatusRef = objectFromSchema<TicketStatusDto>({
   omit: ["organizationId"],
   description:
     "Ticket status – one of the organization's own statuses, with its flags (entry, closing, " +
-    "invoiceable). `transitionsTo` lists the statuses a ticket may move to and " +
+    "invoiceable). `transitionsTo` lists the statuses a ticket may move to (every other one unless `restrictsNext`) and " +
     "`transitionGates` the gates on those moves (ADR 0067).",
 });
 const TicketStatusPageRef = pageType({ name: "TicketStatusPage", item: TicketStatusRef });
@@ -39,7 +40,7 @@ const TicketStatusImportRef = builder
         description: "Names that already existed",
         resolve: (result) => result.skipped,
       }),
-      transitionsAdded: t.int({ resolve: (result) => result.transitionsAdded }),
+      gatesAdded: t.int({ resolve: (result) => result.gatesAdded }),
     }),
   });
 
@@ -59,4 +60,5 @@ fieldFromOperation({
 });
 mutationFromOperation({ operation: reorderTicketStatuses, type: TicketStatusPageRef });
 mutationFromOperation({ operation: setTicketStatusTransitions, type: TicketStatusRef });
+mutationFromOperation({ operation: setTicketStatusGates, type: TicketStatusRef });
 mutationFromOperation({ operation: importTicketStatusTemplate, type: TicketStatusImportRef });

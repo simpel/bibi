@@ -21,7 +21,7 @@ export const listBoards = defineOperation({
     "right, each with the ticket status ids it shows. A status in no phase is not on that board.",
   input: BoardListInputSchema,
   output: BoardListOutputSchema,
-  permission: "pipeline:read",
+  permission: "board:read",
   handler: listBoardsHandler,
 });
 
@@ -31,7 +31,7 @@ export const getBoard = defineOperation({
   description: "Get one board by id, with its filter and its phases and their ticket status ids.",
   input: BoardIdInputSchema,
   output: BoardSchema,
-  permission: "pipeline:read",
+  permission: "board:read",
   handler: getBoardHandler,
 });
 
@@ -45,7 +45,7 @@ export const createBoard = defineOperation({
     "boardPhase.archive.",
   input: BoardCreateInputSchema,
   output: BoardSchema,
-  permission: "pipeline:write",
+  permission: "board:write",
   handler: createBoardHandler,
 });
 
@@ -57,7 +57,7 @@ export const updateBoard = defineOperation({
     "Its phases are unchanged.",
   input: BoardUpdateInputSchema,
   output: BoardSchema,
-  permission: "pipeline:write",
+  permission: "board:write",
   handler: updateBoardHandler,
 });
 
@@ -69,7 +69,7 @@ export const reorderBoards = defineOperation({
     "board is the default one.",
   input: BoardReorderInputSchema,
   output: BoardListOutputSchema,
-  permission: "pipeline:write",
+  permission: "board:write",
   handler: reorderBoardsHandler,
 });
 
@@ -81,7 +81,7 @@ export const archiveBoard = defineOperation({
     "unchanged: a board is only a view. The organization's last board cannot be archived (CONFLICT).",
   input: BoardIdInputSchema,
   output: BoardSchema,
-  permission: "pipeline:delete",
+  permission: "board:delete",
   handler: archiveBoardHandler,
 });
 

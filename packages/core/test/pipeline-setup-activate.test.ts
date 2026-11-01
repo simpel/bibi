@@ -28,7 +28,9 @@ describe("pipelineSetup.activate (ADR 0044)", () => {
     expect(cells).toHaveLength(input.cells.length);
     const newStatus = result.statuses[0];
     expect(newStatus?.entry).toBe(true);
-    expect(newStatus?.transitionsTo).toHaveLength(input.statuses.length - 1);
+    // Free movement: every other status, except those only a quote event enters (ADR 0076).
+    const byHand = input.statuses.filter((ticketStatus) => !ticketStatus.event);
+    expect(newStatus?.transitionsTo).toHaveLength(byHand.length - 1);
     const audit = await context.db.auditLog.findMany({
       where: { operation: "pipelineSetup.activate" },
     });

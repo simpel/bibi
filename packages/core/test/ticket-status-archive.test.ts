@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  archiveTicketStatus,
-  createTicketStatus,
-  execute,
-  setTicketStatusTransitions,
-} from "../src/index";
+import { archiveTicketStatus, createTicketStatus, execute } from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { createTestTicket, placeInStatus, ticketSetup } from "./ticket-helpers";
 import { statusByName } from "./ticket-status-helpers";
@@ -58,10 +53,6 @@ describe("ticketStatus.archive (ADR 0043)", () => {
         context,
       }),
     });
-    const lead = await statusByName({ context, name: "Lead" });
-    const ids = [...lead.transitionsTo, extra.id];
-    const input = { id: lead.id, toStatusIds: ids };
-    unwrap({ result: await execute({ operation: setTicketStatusTransitions, input, context }) });
     const ticket = await createTestTicket({
       context,
       entityTypeId: type.id,

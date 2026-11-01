@@ -125,6 +125,18 @@
     "noDate": "No date",
     "quantity": "{count, plural, one {# person} other {# people}}",
     "moved": "Moved to {column}.",
+    "noMoves": "This ticket cannot move to {column}.",
+    "picker": {
+      "title": "Move to {column}",
+      "description": "Pick the status in this column to move the ticket to.",
+      "needs": "Needs {list}",
+      "noRequirements": "No requirements",
+      "gate": {
+        "REASON": "a reason",
+        "ASSIGNEE": "a main assignee",
+        "ACCEPTED_QUOTE": "an accepted quote"
+      }
+    },
     "kanban": {
       "dragInstructions": "Press space to lift the card, the arrow keys to move it between lanes and space to drop it.",
       "emptyColumn": "Nothing here",
@@ -1377,11 +1389,8 @@
     "importTemplate": "Import conference estate template",
     "importing": "Importing statuses…",
     "imported": "{created} statuses created, {skipped} already existed.",
-    "editTransitions": "Edit transitions",
-    "transitionsDescription": "Choose which statuses a ticket in {name} may move to.",
-    "transitionsSaved": "The transitions have been saved.",
     "noTransitions": "None",
-    "noTargets": "There are no other statuses to move to.",
+    "anyStatus": "Any status",
     "noTarget": "No ticket to move",
     "moveUp": "Move left",
     "moveDown": "Move right",
@@ -1390,7 +1399,6 @@
     "fields": {
       "name": "Name",
       "color": "Color",
-      "transitions": "May move to",
       "targetStatus": "Move its tickets to",
       "reason": "Reason for the moved tickets"
     },
@@ -1400,11 +1408,29 @@
       "transitions": "May move to",
       "order": "Order"
     },
-    "gates": {
-      "label": "What the move needs",
-      "REASON": "A reason",
-      "ASSIGNEE": "A main assignee",
-      "ACCEPTED_QUOTE": "An accepted quote"
+    "flow": {
+      "title": "Flow",
+      "description": "Where tickets may move and what a move needs. Everyone moves tickets by these rules on the boards; only you change them here.",
+      "saving": "Saving…",
+      "movesSaved": "The moves have been saved.",
+      "gatesSaved": "The requirements have been saved.",
+      "closing": "This status ends the ticket, so tickets in it cannot move on.",
+      "movesOut": "Moves out of {name}",
+      "movesIn": "Moves into {name}",
+      "movesAny": "Tickets in {name} can move to any status",
+      "movesOnly": "Tickets in {name} can only move to the statuses below",
+      "onlyTheseLegend": "The statuses tickets in {name} can move to",
+      "canMoveTo": "Tickets in {name} can move to {target}",
+      "requirementsIntro": "What a ticket needs to move into {name}:",
+      "requires": {
+        "REASON": "Moving to {name} requires a reason",
+        "ASSIGNEE": "Moving to {name} requires a main assignee",
+        "ACCEPTED_QUOTE": "Moving to {name} requires an accepted quote"
+      },
+      "scopeLabel": "Which moves to {name} this applies to",
+      "fromAny": "From any status",
+      "fromSpecific": "Only from specific statuses",
+      "fromStatus": "From {name}"
     },
     "flags": {
       "entry": "New tickets start here",
@@ -1577,6 +1603,7 @@
         "event": "Quote event",
         "targetStatusId": "Move tickets to (status id)",
         "toStatusIds": "May move to (status ids)",
+        "allowedNext": "Allowed next (any status or only these)",
         "ids": "Order (ids)",
         "initial": "New lines start here",
         "hold": "Hold",
@@ -1644,7 +1671,8 @@
         "ticketStatus_update": "Update status",
         "ticketStatus_archive": "Archive status",
         "ticketStatus_reorder": "Reorder statuses",
-        "ticketStatus_setTransitions": "Set status transitions",
+        "ticketStatus_setTransitions": "Set where tickets in a status can move",
+        "ticketStatus_setGates": "Set what moves into a status require",
         "ticketStatus_importTemplate": "Import status template",
         "entityType_create": "Create type",
         "entityType_update": "Update type",
@@ -2816,7 +2844,7 @@
         "configuration": {
           "title": "Configuration",
           "lead": "Admins set up what things are called and how they work in your organization. Everything here is your own data.",
-          "body": "# Who can configure\n\nOnly admins see **Settings** in the left menu. It opens a page that lists every configuration area. Changes affect everyone in the organization.\n\n# Types and fields\n\nUnder **Settings, Types** you define the kinds of records you work with: items, customers, contacts, tickets, requirements and lines. For example \"Conference room\", \"Dish\", \"Company\" or \"Conference\".\n\n1. Choose **Create type**, say what it is for and name it.\n2. For an item type, switch on capabilities such as **Priced**, **Bookable** or **Setups**. See [Items and venues](/docs/guide/items-and-venues).\n3. Add fields. A field can be text, number, yes/no, date, choice, multiple choice or a link to another record. Mark it required if it must always be filled in.\n\nA type cannot be archived while it is in use, and a field cannot change kind once it has data.\n\n# Lists\n\nUnder **Settings, Lists** you keep your own word lists, such as allergens, diets or accessibility needs. Fields and needs point to a list. To get started, choose **Import the EU's 14 allergens**. You can edit the list afterwards. A list or a value cannot be archived while a field uses it or a need counts it.\n\n# Setups\n\nUnder **Settings, Setups** you name your room layouts and set the changeover time. See [Items and venues](/docs/guide/items-and-venues).\n\n# Statuses\n\nUnder **Settings, Statuses** you decide which statuses your tickets move through, what they are called and in which order they appear on the pipeline board. Nothing about a status is fixed: each has a name, a colour and a few flags that decide what Bibi does. You need one entry status and at least one status that ends the ticket. See [Tickets](/docs/guide/tickets).\n\n1. Choose **Create status**, or **Import conference venue template** for a ready set.\n2. Use **Edit transitions** to choose which statuses a ticket may move to from each one.\n3. Reorder with the arrows.\n\nA status is archived, never deleted. If tickets are in it, you choose the status they move to.\n\n# Sheets\n\nUnder **Settings, Sheets** you define a sheet such as \"Kitchen order\": name it, choose which item types and fields it includes, which lists' needs it counts, and which role receives it. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Price lists\n\nUnder **Settings, Price lists** you create a list for a customer or for everyone, with a validity period. Choose either a general discount in percent, or a price per item, not both. New order lines use the list's prices, and an archived list no longer applies.\n\n# Payments and skills\n\n**Settings, Payments** connects Stripe. See [Payments](/docs/guide/payments). **Settings, Skills** holds organization skills for the assistant. See [The assistant](/docs/guide/assistant).\n\n# Templates and the assistant\n\nTemplates such as the conference venue starter set are optional. They are only data, so you can change everything afterwards. You can also ask the assistant to propose a setup, for example \"We are a manor with a restaurant\". You approve each change."
+          "body": "# Who can configure\n\nOnly admins see **Settings** in the left menu. It opens a page that lists every configuration area. Changes affect everyone in the organization.\n\n# Types and fields\n\nUnder **Settings, Types** you define the kinds of records you work with: items, customers, contacts, tickets, requirements and lines. For example \"Conference room\", \"Dish\", \"Company\" or \"Conference\".\n\n1. Choose **Create type**, say what it is for and name it.\n2. For an item type, switch on capabilities such as **Priced**, **Bookable** or **Setups**. See [Items and venues](/docs/guide/items-and-venues).\n3. Add fields. A field can be text, number, yes/no, date, choice, multiple choice or a link to another record. Mark it required if it must always be filled in.\n\nA type cannot be archived while it is in use, and a field cannot change kind once it has data.\n\n# Lists\n\nUnder **Settings, Lists** you keep your own word lists, such as allergens, diets or accessibility needs. Fields and needs point to a list. To get started, choose **Import the EU's 14 allergens**. You can edit the list afterwards. A list or a value cannot be archived while a field uses it or a need counts it.\n\n# Setups\n\nUnder **Settings, Setups** you name your room layouts and set the changeover time. See [Items and venues](/docs/guide/items-and-venues).\n\n# Statuses\n\nUnder **Settings, Statuses** you decide which statuses your tickets move through, what they are called and in which order they appear on the pipeline board. Nothing about a status is fixed: each has a name, a colour and a few flags that decide what Bibi does. You need one entry status and at least one status that ends the ticket. See [Tickets](/docs/guide/tickets).\n\n1. Choose **Create status**, or **Import conference venue template** for a ready set.\n2. Tickets can move from any status to any other. In the **Flow** section below the list, limit where a status may move to and set what a move into a status requires. Only admins see it.\n3. Reorder with the arrows.\n\nA status is archived, never deleted. If tickets are in it, you choose the status they move to.\n\n# Sheets\n\nUnder **Settings, Sheets** you define a sheet such as \"Kitchen order\": name it, choose which item types and fields it includes, which lists' needs it counts, and which role receives it. See [Needs and sheets](/docs/guide/needs-and-sheets).\n\n# Price lists\n\nUnder **Settings, Price lists** you create a list for a customer or for everyone, with a validity period. Choose either a general discount in percent, or a price per item, not both. New order lines use the list's prices, and an archived list no longer applies.\n\n# Payments and skills\n\n**Settings, Payments** connects Stripe. See [Payments](/docs/guide/payments). **Settings, Skills** holds organization skills for the assistant. See [The assistant](/docs/guide/assistant).\n\n# Templates and the assistant\n\nTemplates such as the conference venue starter set are optional. They are only data, so you can change everything afterwards. You can also ask the assistant to propose a setup, for example \"We are a manor with a restaurant\". You approve each change."
         },
         "members-and-roles": {
           "title": "Members and roles",
@@ -3394,6 +3422,7 @@
       "priceList": "Price lists",
       "configuration": "Types, fields and lists",
       "pipeline": "Statuses and states",
+      "board": "Boards",
       "template": "Templates",
       "responsibility": "Responsibilities",
       "member": "Members",
@@ -3414,6 +3443,7 @@
       "priceList": "Price lists with the prices of your items.",
       "configuration": "Your own types, fields and lists, such as allergens.",
       "pipeline": "The statuses a booking moves through and the states of its lines.",
+      "board": "Which statuses each board shows, how they are grouped into columns and the board filter.",
       "template": "Ready-made bookings to start new ones from.",
       "responsibility": "Who is responsible for which items, such as the head of kitchen.",
       "member": "Staff in the organization, their presets and permissions.",

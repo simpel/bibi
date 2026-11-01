@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { changeTicketStatus, createLine, execute, setTicketStatusTransitions } from "../src/index";
+import {
+  changeTicketStatus,
+  createLine,
+  execute,
+  setTicketStatusGates,
+  setTicketStatusTransitions,
+} from "../src/index";
 import { errorCode, unwrap } from "./helpers";
 import { insertHold } from "./hold-helpers";
 import { activeOccupancies } from "./line-helpers";
@@ -43,9 +49,9 @@ describe("ticket.changeStatus (ADR 0043)", () => {
     const { context, ticket } = await leadSetup();
     const confirmed = await statusByName({ context, name: "Confirmed" });
     const lead = await statusByName({ context, name: "Lead" });
-    const gates = [{ toStatusId: confirmed.id, gates: ["REASON" as const, "ASSIGNEE" as const] }];
-    const input = { id: lead.id, toStatusIds: lead.transitionsTo, gates };
-    unwrap({ result: await execute({ operation: setTicketStatusTransitions, input, context }) });
+    const gates = [{ fromStatusId: null, gates: ["REASON" as const, "ASSIGNEE" as const] }];
+    const input = { id: confirmed.id, gates };
+    unwrap({ result: await execute({ operation: setTicketStatusGates, input, context }) });
     const refused = await moveToStatus({ context, ticketId: ticket.id, name: "Confirmed" });
     expect(errorCode({ result: refused })).toBe("CONFLICT");
     const paths = refused.ok ? [] : refused.error.issues.map((issue) => issue.path);
@@ -56,13 +62,11 @@ describe("ticket.changeStatus (ADR 0043)", () => {
 
   it("refuses a move the organization does not allow", async () => {
     const { context, ticket } = await leadSetup();
-    const confirmed = await statusByName({ context, name: "Confirmed" });
     const lead = await statusByName({ context, name: "Lead" });
-    await context.db.ticketStatusTransition.deleteMany({
-      where: { fromStatusId: lead.id, toStatusId: confirmed.id },
-    });
+    const input = { id: lead.id, allowedNext: "ONLY_THESE" as const, toStatusIds: [] };
+    unwrap({ result: await execute({ operation: setTicketStatusTransitions, input, context }) });
     const refused = await moveToStatus({ context, ticketId: ticket.id, name: "Confirmed" });
-    expect(refused.ok ? [] : refused.error.issues.map((issue) => issue.path)).toEqual(["statusId"]);
+    expect(refused.ok ? [] : refused.error.issues.map((issue) => issue.path)).toContain("statusId");
   });
 
   it("needs a reason for Lost and an assignee for Completed", async () => {

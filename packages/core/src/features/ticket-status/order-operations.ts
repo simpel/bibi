@@ -2,12 +2,16 @@ import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { invalid, notFound } from "../../shared/errors";
 import { loadAllTicketStatuses, loadTicketStatus } from "./load-ticket-status";
+import {
+  TicketStatusSetGatesInputSchema,
+  TicketStatusSetTransitionsInputSchema,
+} from "./move-schema";
+import { replaceGates } from "./replace-gates";
 import { replaceTransitions } from "./replace-transitions";
 import {
   TicketStatusListOutputSchema,
   TicketStatusReorderInputSchema,
   TicketStatusSchema,
-  TicketStatusSetTransitionsInputSchema,
 } from "./schema";
 
 const reorderProblem = ({ message }: { message: string }) =>
@@ -41,32 +45,63 @@ export const reorderTicketStatuses = defineOperation({
   },
 });
 
-const problem = ({ message }: { message: string }) =>
-  invalid({ message, issues: [{ path: "toStatusIds", message }] });
+const problem = ({ message, path = "toStatusIds" }: { message: string; path?: string }) =>
+  invalid({ message, issues: [{ path, message }] });
 
 export const setTicketStatusTransitions = defineOperation({
   name: "ticketStatus.setTransitions",
   kind: "command",
   description:
-    "Replace the statuses a ticket may move to from one status (from → to). Pass the full set; an " +
-    "empty list makes the status a dead end. A closing status is always a dead end (ADR 0043). " +
-    "Each transition can carry gates a move along it must pass (REASON, ASSIGNEE, " +
-    "ACCEPTED_QUOTE; ADR 0067): pass `gates` to replace them, omit it to keep the current ones.",
+    "Set where a ticket may move from one status (ADR 0076). `allowedNext` ANY lets it move to " +
+    "any status (the default); ONLY_THESE restricts it to `toStatusIds` (an empty list makes the " +
+    "status a dead end). A closing status is always a dead end (ADR 0043). Gates on the moves " +
+    "are set with ticketStatus.setGates.",
   input: TicketStatusSetTransitionsInputSchema,
   output: TicketStatusSchema,
   permission: "pipeline:write",
-  handler: async ({ input: { id, toStatusIds, gates }, context }) => {
+  handler: async ({ input: { id, allowedNext, toStatusIds }, context }) => {
     const before = await loadTicketStatus({ context, id });
     if (!before) return notFound({ entity: "Ticket status" });
-    const targets = [...new Set(toStatusIds)];
-    if (before.closes && targets.length > 0) {
-      return problem({ message: "A closing status has no transitions out" });
+    const targets = allowedNext === "ANY" ? null : [...new Set(toStatusIds)];
+    if (before.closes && targets !== null && targets.length > 0) {
+      return problem({ message: "A closing status has no moves out" });
     }
-    if (targets.includes(id)) return problem({ message: "A status cannot move to itself" });
-    const found = await context.db.ticketStatus.count({ where: { id: { in: targets } } });
-    if (found !== targets.length) return problem({ message: "Unknown or archived target status" });
-    const replaced = await replaceTransitions({ context, before, targets, gates });
-    if (!replaced.ok) return replaced;
+    if (targets?.includes(id)) return problem({ message: "A status cannot move to itself" });
+    const found = await context.db.ticketStatus.count({ where: { id: { in: targets ?? [] } } });
+    if (found !== (targets?.length ?? 0)) {
+      return problem({ message: "Unknown or archived target status" });
+    }
+    await replaceTransitions({ context, before, targets: before.closes ? null : targets });
+    const after = await loadTicketStatus({ context, id });
+    if (!after) return notFound({ entity: "Ticket status" });
+    context.recordChange({ entityId: id, before, after });
+    return ok({ value: after });
+  },
+});
+
+export const setTicketStatusGates = defineOperation({
+  name: "ticketStatus.setGates",
+  kind: "command",
+  description:
+    "Replace the gates on moves into one status (ADR 0076). Each entry names a source status or " +
+    "null for any status, and its gates (REASON needs a reason, ASSIGNEE the main assignee, " +
+    "ACCEPTED_QUOTE an accepted quote). A move passes only if every gate from any status and " +
+    "from its own source passes. Pass the full set.",
+  input: TicketStatusSetGatesInputSchema,
+  output: TicketStatusSchema,
+  permission: "pipeline:write",
+  handler: async ({ input: { id, gates }, context }) => {
+    const before = await loadTicketStatus({ context, id });
+    if (!before) return notFound({ entity: "Ticket status" });
+    const sources = [...new Set(gates.flatMap(({ fromStatusId }) => fromStatusId ?? []))];
+    if (sources.includes(id)) {
+      return problem({ message: "A status cannot gate a move from itself", path: "gates" });
+    }
+    const found = await context.db.ticketStatus.count({ where: { id: { in: sources } } });
+    if (found !== sources.length) {
+      return problem({ message: "Unknown or archived source status", path: "gates" });
+    }
+    await replaceGates({ context, toStatusId: id, gates });
     const after = await loadTicketStatus({ context, id });
     if (!after) return notFound({ entity: "Ticket status" });
     context.recordChange({ entityId: id, before, after });

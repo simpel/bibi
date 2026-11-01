@@ -125,6 +125,18 @@
     "noDate": "Inget datum",
     "quantity": "{count, plural, one {# person} other {# personer}}",
     "moved": "Flyttad till {column}.",
+    "noMoves": "Det här ärendet kan inte flyttas till {column}.",
+    "picker": {
+      "title": "Flytta till {column}",
+      "description": "Välj vilken ärendestatus i kolumnen ärendet ska flyttas till.",
+      "needs": "Kräver {list}",
+      "noRequirements": "Inga krav",
+      "gate": {
+        "REASON": "en anledning",
+        "ASSIGNEE": "en huvudansvarig",
+        "ACCEPTED_QUOTE": "en accepterad offert"
+      }
+    },
     "kanban": {
       "dragInstructions": "Tryck mellanslag för att lyfta kortet, piltangenterna för att flytta det mellan kolumner och mellanslag för att släppa det.",
       "emptyColumn": "Inget här",
@@ -1377,11 +1389,8 @@
     "importTemplate": "Importera mallen Konferensgård",
     "importing": "Importerar ärendestatusar…",
     "imported": "{created} ärendestatusar skapades, {skipped} fanns redan.",
-    "editTransitions": "Redigera övergångar",
-    "transitionsDescription": "Välj vilka ärendestatusar ett ärende i {name} får gå till.",
-    "transitionsSaved": "Övergångarna har sparats.",
     "noTransitions": "Inga",
-    "noTargets": "Det finns inga andra ärendestatusar att gå till.",
+    "anyStatus": "Vilken ärendestatus som helst",
     "noTarget": "Inga ärenden att flytta",
     "moveUp": "Flytta vänster",
     "moveDown": "Flytta höger",
@@ -1390,7 +1399,6 @@
     "fields": {
       "name": "Namn",
       "color": "Färg",
-      "transitions": "Får gå till",
       "targetStatus": "Flytta dess ärenden till",
       "reason": "Anledning för de flyttade ärendena"
     },
@@ -1400,11 +1408,29 @@
       "transitions": "Får gå till",
       "order": "Ordning"
     },
-    "gates": {
-      "label": "Vad flytten kräver",
-      "REASON": "En anledning",
-      "ASSIGNEE": "En huvudansvarig",
-      "ACCEPTED_QUOTE": "En accepterad offert"
+    "flow": {
+      "title": "Flöde",
+      "description": "Vart ärenden får flyttas och vad en flytt kräver. Alla flyttar ärenden efter de här reglerna på tavlorna; bara du ändrar dem här.",
+      "saving": "Sparar…",
+      "movesSaved": "Flytterna har sparats.",
+      "gatesSaved": "Kraven har sparats.",
+      "closing": "Den här ärendestatusen avslutar ärendet, så ärenden i den kan inte flyttas vidare.",
+      "movesOut": "Flyttar från {name}",
+      "movesIn": "Flyttar till {name}",
+      "movesAny": "Ärenden i {name} får flyttas till vilken ärendestatus som helst",
+      "movesOnly": "Ärenden i {name} får bara flyttas till ärendestatusarna nedan",
+      "onlyTheseLegend": "Ärendestatusar som ärenden i {name} får flyttas till",
+      "canMoveTo": "Ärenden i {name} får flyttas till {target}",
+      "requirementsIntro": "Vad ett ärende behöver för att flyttas till {name}:",
+      "requires": {
+        "REASON": "Att flytta till {name} kräver en anledning",
+        "ASSIGNEE": "Att flytta till {name} kräver en huvudansvarig",
+        "ACCEPTED_QUOTE": "Att flytta till {name} kräver en accepterad offert"
+      },
+      "scopeLabel": "Vilka flyttar till {name} kravet gäller",
+      "fromAny": "Från vilken ärendestatus som helst",
+      "fromSpecific": "Bara från vissa ärendestatusar",
+      "fromStatus": "Från {name}"
     },
     "flags": {
       "entry": "Nya ärenden startar här",
@@ -1577,6 +1603,7 @@
         "event": "Offerthändelse",
         "targetStatusId": "Flytta ärenden till (ärendestatus-id)",
         "toStatusIds": "Får gå till (ärendestatus-id:n)",
+        "allowedNext": "Tillåtet nästa steg (vilken som helst eller bara dessa)",
         "ids": "Ordning (id:n)",
         "initial": "Nya rader startar här",
         "hold": "Reservation",
@@ -1644,7 +1671,8 @@
         "ticketStatus_update": "Uppdatera ärendestatus",
         "ticketStatus_archive": "Arkivera ärendestatus",
         "ticketStatus_reorder": "Ändra ordning på ärendestatusar",
-        "ticketStatus_setTransitions": "Ange statusövergångar",
+        "ticketStatus_setTransitions": "Ange vart ärenden i en ärendestatus får flyttas",
+        "ticketStatus_setGates": "Ange vad flyttar till en ärendestatus kräver",
         "ticketStatus_importTemplate": "Importera statusmall",
         "entityType_create": "Skapa typ",
         "entityType_update": "Ändra typ",
@@ -2816,7 +2844,7 @@
         "configuration": {
           "title": "Konfiguration",
           "lead": "Administratörer ställer in vad saker heter och hur de fungerar i er organisation. Allt här är era egna data.",
-          "body": "# Vem kan konfigurera\n\nBara administratörer ser **Inställningar** i vänstermenyn. Den öppnar en sida som listar alla konfigurationsområden. Ändringar påverkar alla i organisationen.\n\n# Typer och fält\n\nUnder **Inställningar, Typer** definierar du vilka sorters poster ni arbetar med: artiklar, kunder, kontakter, ärenden, behov och programpunkter. Till exempel \"Konferensrum\", \"Rätt\", \"Företag\" eller \"Konferens\".\n\n1. Välj **Skapa typ**, ange vad den gäller och namnge den.\n2. För en artikeltyp slår du på förmågor som **Prissatt**, **Bokningsbar** eller **Uppställningar**. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n3. Lägg till fält. Ett fält kan vara text, tal, ja/nej, datum, val, flerval eller en länk till en annan post. Markera det som obligatoriskt om det alltid måste fyllas i.\n\nEn typ kan inte arkiveras så länge den används, och ett fält kan inte byta sort när det har data.\n\n# Listor\n\nUnder **Inställningar, Listor** håller du era egna ordlistor, som allergener, kostval eller tillgänglighetsbehov. Fält och behov pekar på en lista. För att komma igång väljer du **Importera EU:s 14 allergener**. Du kan redigera listan efteråt. En lista eller ett värde kan inte arkiveras så länge ett fält använder det eller ett behov räknar det.\n\n# Uppställningar\n\nUnder **Inställningar, Uppställningar** namnger du era lokalupplägg och anger ställtid. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n\n# Ärendestatusar\n\nUnder **Inställningar, Ärendestatusar** bestämmer du vilka ärendestatusar era ärenden går igenom, vad de heter och i vilken ordning de visas på tavlan. Inget om en ärendestatus är fast: varje ärendestatus har ett namn, en färg och några flaggor som avgör vad Bibi gör. Ni behöver en startstatus och minst en ärendestatus som avslutar ärendet. Se [Ärenden](/docs/guide/tickets).\n\n1. Välj **Skapa ärendestatus**, eller **Importera mallen Konferensgård** för en färdig uppsättning.\n2. Använd **Redigera övergångar** för att välja vilka ärendestatusar ett ärende får gå till från varje ärendestatus.\n3. Ändra ordning med pilarna.\n\nEn ärendestatus arkiveras, den tas aldrig bort. Finns det ärenden i den väljer du vilken ärendestatus de flyttas till.\n\n# Blad\n\nUnder **Inställningar, Blad** definierar du ett blad som \"Köksorder\": namnge det, välj vilka artikeltyper och fält det tar med, vilka listors behov det räknar och vilken roll som tar emot det. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Prislistor\n\nUnder **Inställningar, Prislistor** skapar du en lista för en kund eller för alla, med en giltighetstid. Välj antingen en generell rabatt i procent eller ett pris per artikel, inte båda. Nya orderrader använder listans priser, och en arkiverad lista gäller inte längre.\n\n# Betalningar och färdigheter\n\n**Inställningar, Betalningar** kopplar Stripe. Se [Betalningar](/docs/guide/payments). **Inställningar, Färdigheter** innehåller organisationens färdigheter för assistenten. Se [Assistenten](/docs/guide/assistant).\n\n# Mallar och assistenten\n\nMallar som startuppsättningen Konferensgård är valfria. De är bara data, så du kan ändra allt efteråt. Du kan också be assistenten föreslå en uppsättning, till exempel \"Vi är en herrgård med restaurang\". Du godkänner varje ändring."
+          "body": "# Vem kan konfigurera\n\nBara administratörer ser **Inställningar** i vänstermenyn. Den öppnar en sida som listar alla konfigurationsområden. Ändringar påverkar alla i organisationen.\n\n# Typer och fält\n\nUnder **Inställningar, Typer** definierar du vilka sorters poster ni arbetar med: artiklar, kunder, kontakter, ärenden, behov och programpunkter. Till exempel \"Konferensrum\", \"Rätt\", \"Företag\" eller \"Konferens\".\n\n1. Välj **Skapa typ**, ange vad den gäller och namnge den.\n2. För en artikeltyp slår du på förmågor som **Prissatt**, **Bokningsbar** eller **Uppställningar**. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n3. Lägg till fält. Ett fält kan vara text, tal, ja/nej, datum, val, flerval eller en länk till en annan post. Markera det som obligatoriskt om det alltid måste fyllas i.\n\nEn typ kan inte arkiveras så länge den används, och ett fält kan inte byta sort när det har data.\n\n# Listor\n\nUnder **Inställningar, Listor** håller du era egna ordlistor, som allergener, kostval eller tillgänglighetsbehov. Fält och behov pekar på en lista. För att komma igång väljer du **Importera EU:s 14 allergener**. Du kan redigera listan efteråt. En lista eller ett värde kan inte arkiveras så länge ett fält använder det eller ett behov räknar det.\n\n# Uppställningar\n\nUnder **Inställningar, Uppställningar** namnger du era lokalupplägg och anger ställtid. Se [Artiklar och anläggningar](/docs/guide/items-and-venues).\n\n# Ärendestatusar\n\nUnder **Inställningar, Ärendestatusar** bestämmer du vilka ärendestatusar era ärenden går igenom, vad de heter och i vilken ordning de visas på tavlan. Inget om en ärendestatus är fast: varje ärendestatus har ett namn, en färg och några flaggor som avgör vad Bibi gör. Ni behöver en startstatus och minst en ärendestatus som avslutar ärendet. Se [Ärenden](/docs/guide/tickets).\n\n1. Välj **Skapa ärendestatus**, eller **Importera mallen Konferensgård** för en färdig uppsättning.\n2. Ärenden kan flyttas från vilken ärendestatus som helst till vilken annan som helst. I avsnittet **Flöde** under listan begränsar du vart en ärendestatus får flytta och anger vad en flytt till en ärendestatus kräver. Det ser bara administratörer.\n3. Ändra ordning med pilarna.\n\nEn ärendestatus arkiveras, den tas aldrig bort. Finns det ärenden i den väljer du vilken ärendestatus de flyttas till.\n\n# Blad\n\nUnder **Inställningar, Blad** definierar du ett blad som \"Köksorder\": namnge det, välj vilka artikeltyper och fält det tar med, vilka listors behov det räknar och vilken roll som tar emot det. Se [Behov och blad](/docs/guide/needs-and-sheets).\n\n# Prislistor\n\nUnder **Inställningar, Prislistor** skapar du en lista för en kund eller för alla, med en giltighetstid. Välj antingen en generell rabatt i procent eller ett pris per artikel, inte båda. Nya orderrader använder listans priser, och en arkiverad lista gäller inte längre.\n\n# Betalningar och färdigheter\n\n**Inställningar, Betalningar** kopplar Stripe. Se [Betalningar](/docs/guide/payments). **Inställningar, Färdigheter** innehåller organisationens färdigheter för assistenten. Se [Assistenten](/docs/guide/assistant).\n\n# Mallar och assistenten\n\nMallar som startuppsättningen Konferensgård är valfria. De är bara data, så du kan ändra allt efteråt. Du kan också be assistenten föreslå en uppsättning, till exempel \"Vi är en herrgård med restaurang\". Du godkänner varje ändring."
         },
         "members-and-roles": {
           "title": "Medlemmar och roller",
@@ -3394,6 +3422,7 @@
       "priceList": "Prislistor",
       "configuration": "Typer, fält och listor",
       "pipeline": "Ärendestatusar och tillstånd",
+      "board": "Tavlor",
       "template": "Mallar",
       "responsibility": "Ansvar",
       "member": "Medlemmar",
@@ -3414,6 +3443,7 @@
       "priceList": "Prislistor med priserna för era artiklar.",
       "configuration": "Era egna typer, fält och listor, till exempel allergener.",
       "pipeline": "Ärendestatusarna en bokning går igenom och lägena för dess rader.",
+      "board": "Vilka ärendestatusar varje tavla visar, hur de grupperas i kolumner och tavlans filter.",
       "template": "Färdiga bokningar att utgå från när ni skapar nya.",
       "responsibility": "Vem som ansvarar för vilka artiklar, till exempel köksansvarig.",
       "member": "Personalen i organisationen, deras förval och behörigheter.",

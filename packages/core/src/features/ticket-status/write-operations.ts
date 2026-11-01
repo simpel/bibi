@@ -28,8 +28,9 @@ export const createTicketStatus = defineOperation({
   description:
     "Create a ticket status: a name and a hex color. Every flag starts false and the quote " +
     "event empty; set them with ticketStatus.update. It is placed last. It shows in `phaseId` " +
-    "when given, otherwise on no board until moved onto one (boardPhase.moveStatus). Allow " +
-    "moves to and from it with ticketStatus.setTransitions.",
+    "when given, otherwise on no board until moved onto one (boardPhase.moveStatus). Tickets " +
+    "move to and from it freely; restrict that with ticketStatus.setTransitions and guard moves " +
+    "into it with ticketStatus.setGates.",
   input: TicketStatusCreateInputSchema,
   output: TicketStatusSchema,
   permission: "pipeline:write",
@@ -59,6 +60,10 @@ async function applyFlagEffects({ context, before, flags, event }: ApplyInput) {
   if (flags.entry && !before.entry) await handOverEntry({ context, id: before.id });
   if (flags.closes && !before.closes) {
     await context.db.ticketStatusTransition.deleteMany({ where: { fromStatusId: before.id } });
+    await context.db.ticketStatus.update({
+      where: { id: before.id },
+      data: { restrictsNext: false },
+    });
   }
 }
 

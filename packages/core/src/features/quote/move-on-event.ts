@@ -4,6 +4,7 @@ import type { OperationContext } from "../../operations/types";
 import { changeTicketStatus } from "../ticket/change-status-operation";
 import { moveTicket } from "../ticket/move-ticket";
 import { loadTicket } from "../ticket/to-ticket-dto";
+import { loadMoveRule } from "../ticket-status/move-rule";
 import type { StatusEvent } from "../ticket-status/schema";
 
 export type MoveOnEventInput = {
@@ -27,8 +28,8 @@ export async function moveOnQuoteEvent({
   const to = await context.db.ticketStatus.findFirst({ where: { event } });
   const before = await loadTicket({ context, id: ticketId });
   if (!to || !before || to.id === before.statusId) return ok({ value: true });
-  const transition = { fromStatusId: before.statusId, toStatusId: to.id };
-  if ((await context.db.ticketStatusTransition.count({ where: transition })) === 0) {
+  const from = await context.db.ticketStatus.findFirstOrThrow({ where: { id: before.statusId } });
+  if (from.closes || !(await loadMoveRule({ context, from, to })).allowed) {
     return ok({ value: true });
   }
   const allowed = authorize({ operation: changeTicketStatus, context });

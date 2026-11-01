@@ -9,11 +9,21 @@ import {
   type Result,
   type TicketStatusDto,
 } from "@bibi/core";
+import type { TransitionGate } from "@bibi/core/schemas";
 import { type CallerAbilities, can, getCallerAbilities } from "@/server/caller-abilities";
 import { runOperation } from "@/server/run-operation";
 
-/** What the caller may do with boards (ADR 0067 §8): edit them, and archive boards and columns. */
-export type BoardAccess = { write: boolean; remove: boolean };
+/**
+ * What the caller may do in customize mode (ADR 0076): `write` and `remove` are the board's own
+ * (`board:write`, `board:delete`); `configure` and `removeStatus` change the flow for everyone
+ * (`pipeline:write`, `pipeline:delete`).
+ */
+export type BoardAccess = {
+  write: boolean;
+  remove: boolean;
+  configure: boolean;
+  removeStatus: boolean;
+};
 
 export type PipelineData = {
   board: PipelineBoard;
@@ -21,10 +31,10 @@ export type PipelineData = {
   boards: BoardDto[];
   /** Every active ticket status (customize mode places them and opens their dialogs). */
   statuses: TicketStatusDto[];
-  /** Ticket status id → the ids it may move to (`ticketStatus.list` transitionsTo). */
+  /** Ticket status id → the ids it may move to (`ticketStatus.list` transitionsTo, ADR 0076). */
   transitions: Record<string, string[]>;
-  /** Ticket status id → the ids whose move from it has a REASON gate (ADR 0067 §5). */
-  reasonMoves: Record<string, string[]>;
+  /** Ticket status id → target id → the gates of that move (ADR 0067 §5); gate-free moves are absent. */
+  moveGates: Record<string, Record<string, TransitionGate[]>>;
   /** Customer id → name; empty when the caller may not view customers (ADR 0050). */
   customerNames: Record<string, string>;
   access: BoardAccess;
@@ -71,17 +81,19 @@ export async function loadPipelineData({
   const transitions = Object.fromEntries(
     statuses.value.items.map(({ id, transitionsTo }) => [id, transitionsTo]),
   );
-  const reasonMoves = Object.fromEntries(
+  const moveGates = Object.fromEntries(
     statuses.value.items.map(({ id, transitionGates }) => [
       id,
-      transitionGates.filter((g) => g.gates.includes("REASON")).map((g) => g.toStatusId),
+      Object.fromEntries(transitionGates.map((g) => [g.toStatusId, g.gates])),
     ]),
   );
   const customerNames = await loadCustomerNames({ board: board.value, abilities });
   const access = {
-    write: can({ abilities, permission: "pipeline:write" }),
-    remove: can({ abilities, permission: "pipeline:delete" }),
+    write: can({ abilities, permission: "board:write" }),
+    remove: can({ abilities, permission: "board:delete" }),
+    configure: can({ abilities, permission: "pipeline:write" }),
+    removeStatus: can({ abilities, permission: "pipeline:delete" }),
   };
   const value = { board: board.value, boards: boards.value.items, statuses: statuses.value.items };
-  return { ok: true, value: { ...value, transitions, reasonMoves, customerNames, access } };
+  return { ok: true, value: { ...value, transitions, moveGates, customerNames, access } };
 }

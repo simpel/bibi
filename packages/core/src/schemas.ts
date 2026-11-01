@@ -72,6 +72,7 @@ export * from "./features/ticket/export-schema";
 export * from "./features/ticket/schema";
 export * from "./features/ticket/status-history-schema";
 export * from "./features/ticket-status/gate-schema";
+export * from "./features/ticket-status/move-schema";
 export * from "./features/ticket-status/schema";
 export * from "./features/ticket-template/schema";
 export * from "./features/user-preference/schema";

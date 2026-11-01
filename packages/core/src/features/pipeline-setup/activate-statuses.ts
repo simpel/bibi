@@ -1,13 +1,9 @@
 import { ok, type Result } from "../../errors/result";
 import { runNested } from "../../operations/run-nested";
 import type { OperationContext } from "../../operations/types";
-import { forwardTransitions } from "../../templates/ticket-statuses/ticket-status-template";
 import { archiveTicketStatus } from "../ticket-status/archive-operations";
 import { loadAllTicketStatuses } from "../ticket-status/load-ticket-status";
-import {
-  reorderTicketStatuses,
-  setTicketStatusTransitions,
-} from "../ticket-status/order-operations";
+import { reorderTicketStatuses, setTicketStatusGates } from "../ticket-status/order-operations";
 import { createTicketStatus, updateTicketStatus } from "../ticket-status/write-operations";
 import type { PipelineStatusDraft } from "./schema";
 
@@ -66,8 +62,8 @@ type FinishInput = StatusesInput & { ids: Map<string, string> };
 
 /**
  * Archives the statuses the draft left out (their tickets move to the entry status through the
- * normal move checks), then sets the draft's order and the default transitions with the gates of
- * their targets (ADR 0043, 0067).
+ * normal move checks), then sets the draft's order and the gates on moves into each status, from any
+ * status (ADR 0076). Statuses keep free movement.
  */
 export async function finishStatuses({
   context,
@@ -87,17 +83,13 @@ export async function finishStatuses({
   const order = { ids: statuses.map((ticketStatus) => idOf({ name: ticketStatus.name })) };
   const reordered = await runNested({ operation: reorderTicketStatuses, input: order, context });
   if (!reordered.ok) return reordered;
-  const pairs = forwardTransitions({ statuses });
-  const gatesIn = new Map(statuses.map((s) => [s.name, s.gatesIn ?? []]));
   for (const ticketStatus of statuses) {
-    const targets = pairs.filter(([from]) => from === ticketStatus.name).map(([, to]) => to);
-    const toStatusIds = targets.map((to) => idOf({ name: to }));
-    const gates = targets.map((to) => ({
-      toStatusId: idOf({ name: to }),
-      gates: [...(gatesIn.get(to) ?? [])],
-    }));
-    const input = { id: idOf({ name: ticketStatus.name }), toStatusIds, gates };
-    const set = await runNested({ operation: setTicketStatusTransitions, input, context });
+    const gates = [...(ticketStatus.gatesIn ?? [])];
+    const input = {
+      id: idOf({ name: ticketStatus.name }),
+      gates: gates.length > 0 ? [{ fromStatusId: null, gates }] : [],
+    };
+    const set = await runNested({ operation: setTicketStatusGates, input, context });
     if (!set.ok) return set;
   }
   return ok({ value: true });

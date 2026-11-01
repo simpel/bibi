@@ -109,7 +109,7 @@ export * from "./features/ticket/status-history-operation";
 export * from "./features/ticket/write-operations";
 export * from "./features/ticket-status/archive-operations";
 export * from "./features/ticket-status/import-template-operation";
-export { toTicketStatusDto, WITH_TRANSITIONS } from "./features/ticket-status/load-ticket-status";
+export { toTicketStatusDto, WITH_MOVES } from "./features/ticket-status/load-ticket-status";
 export * from "./features/ticket-status/order-operations";
 export * from "./features/ticket-status/read-operations";
 export * from "./features/ticket-status/write-operations";

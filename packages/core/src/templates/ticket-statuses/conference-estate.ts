@@ -1,4 +1,4 @@
-import { forwardTransitions, type TicketStatusTemplate } from "./ticket-status-template";
+import type { TicketStatusTemplate } from "./ticket-status-template";
 
 const statuses: TicketStatusTemplate["statuses"] = [
   { name: "New", color: "#f59e0b", entry: true },
@@ -29,5 +29,4 @@ export const conferenceEstateTicketStatuses: TicketStatusTemplate = {
   key: "conference-estate",
   name: "Conference estate",
   statuses,
-  transitions: forwardTransitions({ statuses }),
 };

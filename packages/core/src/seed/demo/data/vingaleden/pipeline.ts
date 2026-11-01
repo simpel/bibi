@@ -1,7 +1,4 @@
-import {
-  forwardTransitions,
-  type TicketStatusTemplate,
-} from "../../../../templates/ticket-statuses/ticket-status-template";
+import type { TicketStatusTemplate } from "../../../../templates/ticket-statuses/ticket-status-template";
 import type { DemoGridCell, DemoPipeline } from "../../types";
 
 const statuses: TicketStatusTemplate["statuses"] = [
@@ -39,7 +36,6 @@ export const vingaledenPipeline: DemoPipeline = {
     key: "tour-company",
     name: "Tour company",
     statuses,
-    transitions: forwardTransitions({ statuses }),
   },
   cells,
 };

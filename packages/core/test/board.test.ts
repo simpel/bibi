@@ -94,14 +94,15 @@ describe("boards and phases (ADR 0067)", () => {
     expect(errorCode({ result: last })).toBe("CONFLICT");
   });
 
-  it("needs pipeline:write to change a board", async () => {
+  it("needs board:write to change a board, which managers have and members do not (ADR 0076)", async () => {
     const { context } = await ticketSetup();
-    const manager = peer({ of: context, access: "write" });
-    const result = await execute({
-      operation: createBoard,
-      input: { name: "Mine" },
-      context: manager,
-    });
-    expect(errorCode({ result })).toBe("FORBIDDEN");
+    const create = ({ access }: { access: "read" | "write" }) =>
+      execute({
+        operation: createBoard,
+        input: { name: `Mine ${access}` },
+        context: peer({ of: context, access }),
+      });
+    expect(errorCode({ result: await create({ access: "read" }) })).toBe("FORBIDDEN");
+    expect(errorCode({ result: await create({ access: "write" }) })).toBeNull();
   });
 });

@@ -1,5 +1,8 @@
 import { ok, type Result } from "../../errors/result";
-import { setTicketStatusTransitions } from "../../features/ticket-status/order-operations";
+import {
+  setTicketStatusGates,
+  setTicketStatusTransitions,
+} from "../../features/ticket-status/order-operations";
 import {
   createTicketStatus,
   updateTicketStatus,
@@ -31,22 +34,25 @@ async function createStatuses({ context, pipeline }: SeedPipelineInput) {
   return ok({ value: ids });
 }
 
-type TransitionsInput = SeedPipelineInput & { ids: ReadonlyMap<string, string> };
+type MovesInput = SeedPipelineInput & { ids: ReadonlyMap<string, string> };
 
 /**
- * The statuses' transitions, one `ticketStatus.setTransitions` per status they leave, each with the
- * gates of its target (`gatesIn`, ADR 0067 §5).
+ * The statuses' move rules (ADR 0076): the template's gates on moves into each status from any
+ * status (`gatesIn`), and the few statuses that only allow some moves.
  */
-async function setTransitions({ context, pipeline, ids }: TransitionsInput): Promise<Result<true>> {
-  const gatesIn = new Map(pipeline.statuses.statuses.map((s) => [s.name, s.gatesIn ?? []]));
-  for (const [name, id] of ids) {
-    const targets = pipeline.statuses.transitions.filter(([from]) => from === name);
-    const toStatusIds = targets.flatMap(([, to]) => ids.get(to) ?? []);
-    const gates = targets.flatMap(([, to]) => {
-      const toStatusId = ids.get(to);
-      return toStatusId ? [{ toStatusId, gates: [...(gatesIn.get(to) ?? [])] }] : [];
-    });
-    const input = { id, toStatusIds, gates };
+async function setMoveRules({ context, pipeline, ids }: MovesInput): Promise<Result<true>> {
+  for (const { name, gatesIn = [] } of pipeline.statuses.statuses) {
+    const id = ids.get(name);
+    if (!id || gatesIn.length === 0) continue;
+    const input = { id, gates: [{ fromStatusId: null, gates: [...gatesIn] }] };
+    const set = await execute({ operation: setTicketStatusGates, input, context });
+    if (!set.ok) return set;
+  }
+  for (const { from, to } of pipeline.restrictedMoves ?? []) {
+    const id = ids.get(from);
+    if (!id) continue;
+    const toStatusIds = to.flatMap((name) => ids.get(name) ?? []);
+    const input = { id, allowedNext: "ONLY_THESE" as const, toStatusIds };
     const set = await execute({ operation: setTicketStatusTransitions, input, context });
     if (!set.ok) return set;
   }
@@ -55,7 +61,7 @@ async function setTransitions({ context, pipeline, ids }: TransitionsInput): Pro
 
 /**
  * The organization's pipeline (ADR 0043, 0044, 0025) as SYSTEM: statuses with flags and
- * transitions, then the status grid. After the item types and their states exist, before any
+ * move rules, then the status grid. After the item types and their states exist, before any
  * ticket. The organization was provisioned without the default statuses (`pipeline: "none"`).
  */
 export async function seedDemoPipeline({
@@ -67,8 +73,8 @@ export async function seedDemoPipeline({
   if (!created.ok) return created;
   const placed = await seedDefaultBoard({ ...input, ids: created.value });
   if (!placed.ok) return placed;
-  const transitions = await setTransitions({ ...input, ids: created.value });
-  if (!transitions.ok) return transitions;
+  const moves = await setMoveRules({ ...input, ids: created.value });
+  if (!moves.ok) return moves;
   const boards = await seedDemoBoards({
     context,
     boards: pipeline.boards ?? [],

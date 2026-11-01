@@ -20,7 +20,8 @@ export type CustomizeSlotsInput = {
 
 /**
  * What customize mode puts in the kanban's slots: fronts, headers, menus and add buttons. New
- * statuses are added only in the unphased column; staff drag them onto the board.
+ * statuses (the flow, `pipeline:write`) are added only in the unphased column; staff drag them
+ * onto the board.
  */
 export function customizeSlots({
   boardId,
@@ -46,6 +47,6 @@ export function customizeSlots({
     renderAddColumn: ({ position }) => (
       <AddColumnButton boardId={boardId} position={position} between={position < phases.length} />
     ),
-    unphasedFooter: <AddStatusButton boardId={boardId} />,
+    unphasedFooter: access.configure ? <AddStatusButton /> : undefined,
   };
 }

@@ -9,7 +9,7 @@ import { BoardSwitcher } from "./board-switcher";
 export type PipelineToolbarProps = {
   boards: readonly Pick<BoardDto, "id" | "name">[];
   boardId: string | null;
-  /** `pipeline:write`: the Configure button turns the board into customize mode. */
+  /** `board:write`: the Configure button turns the board into customize mode. */
   canConfigure: boolean;
 };
 

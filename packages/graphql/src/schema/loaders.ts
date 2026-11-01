@@ -10,8 +10,8 @@ import {
   toTicketStatusDto,
   type VocabularyDto,
   type VocabularyValueDto,
+  WITH_MOVES,
   WITH_STATE_TRANSITIONS,
-  WITH_TRANSITIONS,
 } from "@bibi/core";
 import type { ScopedDb } from "@bibi/db";
 import { type BatchLoader, createBatchLoader } from "./batch-loader";
@@ -71,9 +71,11 @@ async function loadVocabularies({ db, ids }: DbInput & Ids) {
 async function loadTicketStatuses({ db, ids }: DbInput & Ids) {
   const rows = await db.ticketStatus.findMany({
     where: { id: { in: [...ids] }, status: { in: ["ACTIVE", "ARCHIVED"] } },
-    include: WITH_TRANSITIONS,
+    include: WITH_MOVES,
   });
-  return byId({ rows: rows.map((row) => toTicketStatusDto({ row })) });
+  // A free status allows every active status, so its moves are derived from the whole set.
+  const active = await db.ticketStatus.findMany({ include: WITH_MOVES });
+  return byId({ rows: rows.map((row) => toTicketStatusDto({ row, rows: active })) });
 }
 
 /** States by id, archived ones included: an archived line keeps the state it had. */

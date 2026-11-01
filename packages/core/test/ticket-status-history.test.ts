@@ -4,7 +4,7 @@ import {
   acceptQuote,
   execute,
   sendQuote,
-  setTicketStatusTransitions,
+  setTicketStatusGates,
   ticketStatusHistory,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
@@ -27,13 +27,12 @@ async function guarded() {
     ["Lead", "Confirmed"].map((name) => statusByName({ context, name })),
   );
   if (!lead || !confirmed) throw new Error("Missing statuses");
-  const gates = lead.transitionGates.map((gate) =>
-    gate.toStatusId === confirmed.id
-      ? { ...gate, gates: [...gate.gates, "ACCEPTED_QUOTE" as const] }
-      : gate,
-  );
-  const input = { id: lead.id, toStatusIds: lead.transitionsTo, gates };
-  unwrap({ result: await execute({ operation: setTicketStatusTransitions, input, context }) });
+  const gates = [
+    { fromStatusId: null, gates: ["ASSIGNEE" as const] },
+    { fromStatusId: lead.id, gates: ["ACCEPTED_QUOTE" as const] },
+  ];
+  const input = { id: confirmed.id, gates };
+  unwrap({ result: await execute({ operation: setTicketStatusGates, input, context }) });
   return { ...setup, confirmed };
 }
 

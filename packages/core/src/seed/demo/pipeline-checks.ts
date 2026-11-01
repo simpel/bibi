@@ -32,23 +32,19 @@ async function statusFailures({ context, org }: CheckDemoPipelineInput): Promise
     }),
     ...countFailure({
       slug,
-      what: "status transitions",
+      what: "restricted moves",
       found: transitions,
-      expected: pipeline.statuses.transitions.length,
+      expected: (pipeline.restrictedMoves ?? []).reduce((sum, { to }) => sum + to.length, 0),
     }),
     ...countFailure({ slug, what: "grid cells", found: cells, expected: pipeline.cells.length }),
     ...countFailure({ slug, what: "entry statuses", found: entries, expected: 1 }),
   ];
   if (!statuses.some((ticketStatus) => ticketStatus.closes))
     failures.push(`${slug}: no closing status`);
-  // Every template transition carries the gates of its target (`gatesIn`, ADR 0067 §5).
-  const gatesIn = new Map(pipeline.statuses.statuses.map((s) => [s.name, s.gatesIn ?? []]));
-  const expected = pipeline.statuses.transitions.reduce(
-    (sum, [, to]) => sum + (gatesIn.get(to)?.length ?? 0),
-    0,
-  );
-  const found = await context.db.ticketStatusTransitionGate.count();
-  failures.push(...countFailure({ slug, what: "transition gates", found, expected }));
+  // Every status gets the gates of its `gatesIn` from any status (ADR 0076).
+  const expected = pipeline.statuses.statuses.reduce((sum, s) => sum + (s.gatesIn?.length ?? 0), 0);
+  const found = await context.db.ticketStatusGate.count();
+  failures.push(...countFailure({ slug, what: "status gates", found, expected }));
   return failures;
 }
 

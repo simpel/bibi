@@ -9,7 +9,7 @@ const PIPELINE = { route: "/pipeline" } as const;
 export const PIPELINE_SURFACES: readonly WebSurface[] = [
   { operation: "pipeline.board", ...PIPELINE },
   { operation: "board.list", ...PIPELINE },
-  // A new status's default transitions follow the board's column order.
+  { operation: "ticketStatus.setGates", route: "/settings/pipeline" },
   { operation: "board.get", ...PIPELINE },
   { operation: "board.create", ...PIPELINE },
   { operation: "board.update", ...PIPELINE },

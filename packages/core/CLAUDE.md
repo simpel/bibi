@@ -71,7 +71,8 @@ The parity core: every capability is defined **once** as an operation and then e
 - `search` filters each hit through `load({ ids, db, viewer })`, so archived rows and things the user may not see are removed. `load` without `viewer` is for the indexer.
 
 ## Boards (ADR 0067)
-- A status carries no move rules: they are gates on its transitions (`TicketStatusTransitionGate`, ADR 0067 §5), checked only in `moveTicket` (`statusBlockers`). Write transitions and gates through `replaceTransitions` / `createTransition` only (no nested writes: the scoped client refuses them).
+- A status carries no move rules except gates into it (`TicketStatusGate`, optional source status, ADR 0067 §5, ADR 0076). Movement is free unless the status has `restrictsNext`; then only its `TicketStatusTransition` rows count. The move rule is read in `loadMoveRule` and checked only in `moveTicket` (`statusBlockers`). Write transitions through `replaceTransitions` and gates through `replaceGates` only (no nested writes: the scoped client refuses them).
+- `pipeline:write|delete` is the admin-only flow (statuses, flags, order, Allowed next, gates, item states, the grid, pipeline setup) and stays out of the manager and member presets. Boards and phases (`board.*`, `boardPhase.*`) use the `board` feature (`board:*`; manager in full, member `read`). Never put view setup on `pipeline:*` or a flow operation on `board:*` (ADR 0076).
 - A status is in at most one phase per board; only the `board`, `boardPhase` and `ticketStatus` (create, archive) operations place or unplace one; never write `BoardPhaseStatus` from another feature. Archiving a phase or board never touches tickets or statuses. A `pipeline.board` card's `columnId` is a phase id, never a status id.
 
 ## Demo data

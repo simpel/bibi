@@ -6,7 +6,7 @@ import type { BoardCard } from "../lib/kanban-model";
 
 export type PipelineCardContentProps = {
   /** `customerName` is null when the caller may not view customers: then none is shown. */
-  card: Omit<BoardCard, "zoneId" | "title">;
+  card: Omit<BoardCard, "title">;
 };
 
 /** What a board card shows: ticket number and type, status in a grouped column, customer, start. */

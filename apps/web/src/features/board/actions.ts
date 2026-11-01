@@ -22,7 +22,6 @@ import {
 import type { ActionResult } from "@/lib/action-result";
 import { runOperation } from "@/server/run-operation";
 import { toActionResult } from "@/server/to-action-result";
-import { applyNewStatusTransitions } from "./apply-new-status-transitions";
 
 type BoardPage = { items: BoardDto[]; nextCursor: string | null };
 export type IdActionInput = { id: string };
@@ -105,19 +104,11 @@ export async function moveBoardPhaseStatusAction({
   return toActionResult({ result: await runOperation({ operation: moveBoardPhaseStatus, input }) });
 }
 
-/**
- * `ticketStatus.create` from customize mode (on no column until dragged onto one), then default
- * transitions so tickets can move into it at once.
- */
+/** `ticketStatus.create` from customize mode (on no column until dragged onto one, ADR 0076). */
 export async function createStatusOnBoardAction({
   input,
-  boardId,
 }: {
   input: TicketStatusCreateInput;
-  boardId: string;
 }): Promise<ActionResult<TicketStatusDto>> {
-  const created = await runOperation({ operation: createTicketStatus, input });
-  if (!created.ok) return toActionResult({ result: created });
-  const transitions = await applyNewStatusTransitions({ created: created.value, boardId });
-  return toActionResult({ result: transitions.ok ? created : transitions });
+  return toActionResult({ result: await runOperation({ operation: createTicketStatus, input }) });
 }

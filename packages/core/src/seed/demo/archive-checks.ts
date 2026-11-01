@@ -1,5 +1,6 @@
 import { previewArchiveItemState } from "../../features/item-state/archive-preview-operation";
 import { previewArchiveTicketStatus } from "../../features/ticket-status/archive-operations";
+import { loadAllTicketStatuses } from "../../features/ticket-status/load-ticket-status";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import type { DemoOrg } from "./types";
@@ -14,17 +15,23 @@ export type CheckDemoArchiveInput = { context: ExecuteContext; org: DemoOrg };
 async function statusFailures({ context, org }: CheckDemoArchiveInput): Promise<string[]> {
   const statuses = await context.db.ticketStatus.findMany({
     where: { status: "ACTIVE", entry: false, closes: false },
-    include: { transitionsFrom: { include: { toStatus: true, gates: true } } },
   });
+  const all = await loadAllTicketStatuses({ context });
+  const gated = new Set(
+    (
+      await context.db.ticketStatusGate.findMany({
+        where: { key: { in: ["REASON", "ACCEPTED_QUOTE"] } },
+      })
+    ).map(({ toStatusId }) => toStatusId),
+  );
   for (const ticketStatus of statuses) {
     const tickets = await context.db.ticket.count({ where: { statusId: ticketStatus.id } });
     // Tickets cannot be moved into a status that only a quote event enters (ADR 0043), and a
-    // REASON or ACCEPTED_QUOTE gate on the transition (ADR 0067) would block the move;
-    // transitions come in no fixed order.
-    const blocking = new Set(["REASON", "ACCEPTED_QUOTE"]);
-    const target = ticketStatus.transitionsFrom.find(
-      ({ toStatus, gates }) => !toStatus.event && !gates.some((gate) => blocking.has(gate.key)),
-    )?.toStatusId;
+    // REASON or ACCEPTED_QUOTE gate (ADR 0067, 0076) would block the move.
+    // Forward only: a line's state cannot move back (ADR 0044), and movement is free (ADR 0076).
+    const allowed = all.find(({ id }) => id === ticketStatus.id)?.transitionsTo ?? [];
+    const forward = all.filter((s) => allowed.includes(s.id) && s.position > ticketStatus.position);
+    const target = forward.find(({ id }) => !gated.has(id))?.id;
     const templates = await context.db.ticketTemplate.count({
       where: { statusId: ticketStatus.id },
     });

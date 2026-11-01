@@ -6,7 +6,7 @@ Behaviour spec for ADR 0067. Entities are in `docs/domain-model.md`; statuses, g
 - A `Board` is a saved view of the organization's tickets: a name, an optional filter (ticket type, main assignee) and an order. It owns no ticket data. An organization has any number of boards; the first active one by order is the **default board**.
 - A `BoardPhase` is one column of one board: a name and an order, no colour (only statuses are colour-coded). It shows one or more ticket statuses.
 - `BoardPhaseStatus` maps a status to a phase. A status is in at most one phase per board (unique on board and status). A status in no phase of a board is not on that board; tickets in it are not shown there and are counted as unmapped.
-- Boards and phases are configuration (`pipeline:read`, `pipeline:write`, `pipeline:delete`), never ticket data. Changing them never changes a ticket, a status or a transition.
+- Boards and phases are configuration (`board:read`, `board:write`, `board:delete`; the manager preset has them in full, the member preset `read`), never ticket data. Changing them never changes a ticket, a status or a move rule. The flow (statuses, Allowed next, gates) is `pipeline:write`, admin-only (ADR 0076).
 
 ## Defaults
 - Every organization has at least one board. The migration and a new organization give it a board "Pipeline" with one phase per active status, open statuses first and closing statuses last.
@@ -18,13 +18,13 @@ Behaviour spec for ADR 0067. Entities are in `docs/domain-model.md`; statuses, g
 
 ## Reading a board
 - `pipeline.board({ boardId?, ... })` reads one board; without `boardId` it reads the default board. Output: `boardId`, `boardName`, `columns`, `cards` and `unmappedCount`.
-- A column is a phase: `id` (the phase id), `title`, `closed` (every status in it closes) and its `statuses` (`id`, `title`, `color`, `closed`). Each status is a drop zone: moving a card onto it sets that status through `ticket.changeStatus`, with the usual transition, gate and reason checks. A drop zone not allowed from the card's status is shown disabled.
+- A column is a phase: `id` (the phase id), `title`, `closed` (every status in it closes) and its `statuses` (`id`, `title`, `color`, `closed`). A column is one drop target. Dropping a card on it sets a status through `ticket.changeStatus`, with the usual allowed-target, gate and reason checks. A column with one allowed status moves at once; with several, a picker dialog lists the statuses the ticket may move to with their requirements in words; with none, a message says so.
 - A card carries `columnId` (the phase id) and `statusId`. A ticket shows on exactly one card, in the column of the phase that holds its status. Closed tickets show only within `closedWithinDays`.
 - `unmappedCount` is the number of tickets of the board's filter whose status is not in any phase of the board.
 - The board's own filter (type, assignee) narrows the cards; the request's filters narrow them further.
 
 ## Customize mode on `/pipeline`
-- A user with `pipeline:write` sees a **Configure** button on `/pipeline`. It switches the board into customize mode; others have no button.
+- A user with `board:write` sees a **Configure** button on `/pipeline`. It switches the board into customize mode; others have no button.
 - In customize mode the columns turn over one after the other (GSAP) and slide right to make room for the **Not on this board** column on the far left, which holds the statuses on no column. Staff can:
   - drag a status chip to another column (`boardPhase.moveStatus`), or into Not on this board;
   - add a column (`boardPhase.create`) and remove one (`boardPhase.archive`, its statuses leave the board);

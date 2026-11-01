@@ -71,7 +71,7 @@ test("an admin customizes the board: columns, statuses and the unphased column",
     landed: chip({ scope: unphased, name: "Reserv" }),
   });
 
-  // The new status takes tickets at once (default transitions); archive it with a target.
+  // The new status takes tickets at once (movement is free, ADR 0076); archive it with a target.
   const statuses = await api({ page, method: "get", path: "/ticket-statuses" });
   const items = statuses.items as { id: string; name: string }[];
   const visit = items.find((status) => status.name === "Platsbesök");
@@ -86,7 +86,6 @@ test("an admin customizes the board: columns, statuses and the unphased column",
   await page.getByRole("menuitem", { name: "Arkivera ärendestatus" }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("combobox").click();
-  // A new status starts on no column, so it may move on only to the closing ones.
   await page.getByRole("option", { name: "Completed" }).click();
   await dialog.getByRole("button", { name: "Arkivera ärendestatus" }).click();
   await expect(page.getByText("Ärendestatusen har arkiverats.").first()).toBeVisible();
@@ -106,7 +105,7 @@ test("an admin customizes the board: columns, statuses and the unphased column",
   );
 });
 
-test("a member without pipeline:write sees no Configure button", async ({ page }) => {
+test("a member without board:write sees no Configure button", async ({ page }) => {
   await signUpWithOrganization({ page, name: "Medlem AB" });
   const members = await api({ page, method: "get", path: "/members" });
   const me = (members.items as { id: string }[])[0];
@@ -114,7 +113,7 @@ test("a member without pipeline:write sees no Configure button", async ({ page }
     page,
     method: "put",
     path: `/permissions/member/${me?.id}`,
-    data: { overrides: [{ feature: "pipeline", action: "write", effect: "deny" }] },
+    data: { overrides: [{ feature: "board", action: "write", effect: "deny" }] },
   });
   await gotoApp({ page, path: "/pipeline?mode=customize" });
   await expect(page.getByRole("button", { name: "Byt tavla" })).toBeVisible();

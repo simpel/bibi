@@ -3,7 +3,7 @@ import type { OperationContext } from "../../operations/types";
 import { conflict } from "../../shared/errors";
 import { type PlaceNewStatusInput, placeNewStatus } from "../board/status-placement";
 import { checkFlagCombination, handOverEntry, handOverEvent } from "./flag-rules";
-import { toTicketStatusDto } from "./load-ticket-status";
+import { loadTicketStatus } from "./load-ticket-status";
 import type {
   StatusEvent,
   TicketStatusCreateInput,
@@ -56,7 +56,8 @@ export async function insertTicketStatus({
   });
   const placed = await placeNewStatus({ context, status: row, phaseId, ownPhase });
   if (!placed.ok) return placed;
-  const ticketStatus = toTicketStatusDto({ row: { ...row, transitionsFrom: [] } });
+  const ticketStatus = await loadTicketStatus({ context, id: row.id });
+  if (!ticketStatus) return conflict({ message: "The new ticket status could not be read back" });
   context.recordChange({ entityId: row.id, after: ticketStatus });
   return ok({ value: ticketStatus });
 }

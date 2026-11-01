@@ -21,16 +21,29 @@ describe("cross-organization isolation: ticket statuses", () => {
     const transitions = await call({
       client: b,
       name: "ticketStatus_setTransitions",
-      args: { id: own.data.id, toStatusIds: [secret.data.id] },
+      args: { id: own.data.id, allowedNext: "ONLY_THESE", toStatusIds: [secret.data.id] },
     });
     expect(transitions.isError).toBe(true);
     expect(["NOT_FOUND", "VALIDATION"]).toContain(transitions.data.code);
     const from = await call({
       client: b,
       name: "ticketStatus_setTransitions",
-      args: { id: secret.data.id, toStatusIds: [own.data.id] },
+      args: { id: secret.data.id, allowedNext: "ONLY_THESE", toStatusIds: [own.data.id] },
     });
     expect(from.data.code).toBe("NOT_FOUND");
+    const foreignSource = await call({
+      client: b,
+      name: "ticketStatus_setGates",
+      args: { id: own.data.id, gates: [{ fromStatusId: secret.data.id, gates: ["REASON"] }] },
+    });
+    expect(foreignSource.isError).toBe(true);
+    expect(["NOT_FOUND", "VALIDATION"]).toContain(foreignSource.data.code);
+    const foreignTarget = await call({
+      client: b,
+      name: "ticketStatus_setGates",
+      args: { id: secret.data.id, gates: [] },
+    });
+    expect(foreignTarget.data.code).toBe("NOT_FOUND");
   });
 });
 

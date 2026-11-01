@@ -33,6 +33,9 @@ model TicketStatus {
   closes          Boolean                  @default(false)
   /// Invoices can be created in this status.
   invoiceable     Boolean                  @default(false)
+  /// Free movement by default (ADR 0076): false = a ticket may move from here to any status.
+  /// True = only to the statuses in `transitionsFrom`.
+  restrictsNext   Boolean                  @default(false)
   /// Entered by this quote event instead of by hand; at most one active status per event.
   event           StatusEvent?
   status          RecordStatus             @default(ACTIVE)
@@ -41,6 +44,8 @@ model TicketStatus {
   createdBy       String?
   transitionsFrom TicketStatusTransition[] @relation("TransitionFrom")
   transitionsTo   TicketStatusTransition[] @relation("TransitionTo")
+  gatesInto       TicketStatusGate[]       @relation("GateTo")
+  gatesFrom       TicketStatusGate[]       @relation("GateFrom")
   tickets         Ticket[]
   stateRules      StatusStateRule[]
   templates       TicketTemplate[]
@@ -52,38 +57,40 @@ model TicketStatus {
   @@index([organizationId, status, position])
 }
 
-/// Ticket status transition – an allowed move from one status to another (from → to), with its
-/// gates. Replaced as a set per `from` status by `ticketStatus.setTransitions`.
+/// Ticket status transition – an allowed move from one status to another (from → to). Only read
+/// while the `from` status `restrictsNext` (ADR 0076); replaced as a set per `from` status by
+/// `ticketStatus.setTransitions`, and empty while the status is free.
 model TicketStatusTransition {
-  id             String                       @id @default(cuid(2))
+  id             String       @id @default(cuid(2))
   organizationId String
   fromStatusId   String
   toStatusId     String
-  createdAt      DateTime                     @default(now())
-  updatedAt      DateTime                     @updatedAt
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
   createdBy      String?
-  fromStatus     TicketStatus                 @relation("TransitionFrom", fields: [fromStatusId, organizationId], references: [id, organizationId])
-  toStatus       TicketStatus                 @relation("TransitionTo", fields: [toStatusId, organizationId], references: [id, organizationId])
-  gates          TicketStatusTransitionGate[]
+  fromStatus     TicketStatus @relation("TransitionFrom", fields: [fromStatusId, organizationId], references: [id, organizationId])
+  toStatus       TicketStatus @relation("TransitionTo", fields: [toStatusId, organizationId], references: [id, organizationId])
 
   @@unique([id, organizationId])
   @@unique([fromStatusId, toStatusId])
   @@index([organizationId, fromStatusId])
 }
 
-/// Ticket status transition gate (ADR 0067 §5) – one check a move along the transition must pass.
-/// Owned: `key`. Replaced with its transition's set by `ticketStatus.setTransitions` (hard delete,
-/// cascades with the transition).
-model TicketStatusTransitionGate {
-  id             String                 @id @default(cuid(2))
+/// Ticket status gate (ADR 0067 §5, 0076) – one check a move into `toStatusId` must pass. A null
+/// `fromStatusId` means from any status; a set one adds to it for that source only. Owned: `key`.
+/// Replaced per target by `ticketStatus.setGates` (hard delete, audited on the target status).
+model TicketStatusGate {
+  id             String         @id @default(cuid(2))
   organizationId String
-  transitionId   String
+  toStatusId     String
+  fromStatusId   String?
   key            TransitionGate
-  createdAt      DateTime               @default(now())
-  updatedAt      DateTime               @updatedAt
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   createdBy      String?
-  transition     TicketStatusTransition @relation(fields: [transitionId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  toStatus       TicketStatus   @relation("GateTo", fields: [toStatusId, organizationId], references: [id, organizationId], onDelete: Cascade)
+  fromStatus     TicketStatus?  @relation("GateFrom", fields: [fromStatusId, organizationId], references: [id, organizationId], onDelete: Cascade)
 
-  @@unique([transitionId, key])
-  @@index([organizationId, transitionId])
+  // Unique on (toStatusId, fromStatusId, key), NULLS NOT DISTINCT: added in the migration, which Prisma cannot express.
+  @@index([organizationId, toStatusId])
 }

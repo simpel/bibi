@@ -2,7 +2,7 @@
 
 - **Date:** 2026-10-24
 - **Status:** Accepted
-- **Related:** 0043 (supersedes), 0044 and 0054 (phase parts superseded, addenda on acceptance), 0021, 0034, 0045, 0051, 0052, 0053, 0057
+- **Related:** 0043 (supersedes), 0044 and 0054 (phase parts superseded, addenda on acceptance), 0021, 0034, 0045, 0051, 0052, 0053, 0057, 0076 (amends §4 to §6 and §8)
 - **Spec:** `docs/specs/tickets-statuses-and-states.md`
 
 ## Context
@@ -52,3 +52,8 @@ Checked 2026-10-24 against the code in this worktree:
 - `ticketStatus.list` keeps `transitionsTo` and adds `transitionGates`, rather than replacing `transitionsTo`: every move rule in the web app reads it unchanged.
 - A gate runs only on a move. Creating a ticket in a status and removing its main assignee are no longer refused.
 - Confirmed on 2026-10-30 against rules on board columns: the same move must pass or fail the same way on every board, on the ticket page, for quote events and through the API, as in Jira's workflows.
+
+## Addendum 2026-11-01: free movement and a board permission (ADR 0076)
+- §4: drop zones per status are replaced by one drop target per column. Dropping on a phase with several statuses opens a picker of the statuses the ticket may move to.
+- §5: gates are on the target status with an optional source status (`TicketStatusGate`, replaces `TicketStatusTransitionGate`). Transitions apply only while the status has `restrictsNext`; otherwise a ticket may move to any status.
+- §8: boards and phases use a new permission feature `board`; `pipeline:write` is the admin-only flow.

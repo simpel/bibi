@@ -38,9 +38,16 @@ export const ticketStatusMcpTools = [
     operation: "ticketStatus.setTransitions",
     idempotent: true,
     summary: ({ input }) =>
-      `Allow ticket status ${text({ value: input.id })} to move to: ` +
-      (list({ value: input.toStatusIds }) || "nothing") +
-      (input.gates ? ", and set the gates on those moves" : ""),
+      input.allowedNext === "ANY"
+        ? `Let tickets in ticket status ${text({ value: input.id })} move to any status`
+        : `Allow ticket status ${text({ value: input.id })} to move only to: ` +
+          (list({ value: input.toStatusIds }) || "nothing"),
+  }),
+  mcpTool({
+    operation: "ticketStatus.setGates",
+    idempotent: true,
+    summary: ({ input }) =>
+      `Set the gates on moves into ticket status ${text({ value: input.id })}`,
   }),
   mcpTool({
     operation: "ticketStatus.importTemplate",

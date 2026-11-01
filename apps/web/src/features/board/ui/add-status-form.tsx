@@ -6,23 +6,20 @@ import { useRouter } from "@/lib/navigation";
 import { useFormAction } from "@/lib/use-form-action";
 import { createStatusOnBoardAction } from "../actions";
 
-export type AddStatusFormProps = {
-  boardId: string;
-  onDone: () => void;
-};
+export type AddStatusFormProps = { onDone: () => void };
 
 /**
  * A new ticket status made in customize mode: a name and a colour. It lands on no column (staff
- * drag it onto one) and gets default transitions; its flags are set on the status page.
+ * drag it onto one) and may move freely (ADR 0076); its flags are set on the status page.
  */
-export function AddStatusForm({ boardId, onDone }: AddStatusFormProps) {
+export function AddStatusForm({ onDone }: AddStatusFormProps) {
   const t = useTranslations("ticketStatus");
   const common = useTranslations("common");
   const router = useRouter();
   const form = useNewTicketStatusForm();
   const { submit, pending } = useFormAction({
     form,
-    action: ({ values }) => createStatusOnBoardAction({ input: values, boardId }),
+    action: ({ values }) => createStatusOnBoardAction({ input: values }),
     messages: { pending: t("saving"), success: t("created") },
     onSuccess: () => {
       router.refresh();

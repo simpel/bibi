@@ -1,4 +1,4 @@
-import { forwardTransitions, type TicketStatusTemplate } from "./ticket-status-template";
+import type { TicketStatusTemplate } from "./ticket-status-template";
 
 const statuses: TicketStatusTemplate["statuses"] = [
   { name: "Lead", color: "#f59e0b", entry: true },
@@ -21,5 +21,4 @@ export const defaultTicketStatuses: TicketStatusTemplate = {
   key: "default",
   name: "Default",
   statuses,
-  transitions: forwardTransitions({ statuses }),
 };

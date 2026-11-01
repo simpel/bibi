@@ -21,5 +21,5 @@ Current behaviour. Why: ADR 0034 (responsibilities are not roles), 0055 (derived
 - Assignee and followers must be members (`VALIDATION`). All commands are audited and exist on every surface.
 
 ## Rules that use assignments
-- A move along a transition with an `ASSIGNEE` gate (ADR 0067) needs the ticket's main assignee (derived). Responsibility assignments are never required, but an unassigned one is shown as a warning.
+- A move into a status with an `ASSIGNEE` gate (ADR 0067) needs the ticket's main assignee (derived). Responsibility assignments are never required, but an unassigned one is shown as a warning.
 - `ticket.list` filters by `assigneeId` and `followerId`.

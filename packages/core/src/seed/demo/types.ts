@@ -52,6 +52,11 @@ export type DemoPipeline = {
   statuses: TicketStatusTemplate;
   cells: readonly DemoGridCell[];
   boards?: readonly DemoBoard[];
+  /**
+   * Statuses that only allow some moves (ADR 0076), by name; every other status lets a ticket
+   * move to any status. The gates are the template's `gatesIn`, from any status.
+   */
+  restrictedMoves?: readonly { from: string; to: readonly string[] }[];
 };
 
 /**

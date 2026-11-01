@@ -31,6 +31,7 @@ export const FEATURE_SPECS = {
   priceList: { group: "catalog", actions: all },
   configuration: { group: "setup", actions: all },
   pipeline: { group: "setup", actions: all },
+  board: { group: "setup", actions: all },
   template: { group: "setup", actions: all },
   responsibility: { group: "setup", actions: all },
   member: { group: "organization", actions: all },
@@ -57,6 +58,7 @@ export const LOCKED_FEATURES: readonly Feature[] = ["member", "apiKey", "payment
 export const ALWAYS_VISIBLE_FEATURES: readonly Feature[] = [
   "configuration",
   "pipeline",
+  "board",
   "template",
   "responsibility",
   "member",

@@ -5,7 +5,10 @@ import { STATUS_FLAGS, type StatusFlag } from "@bibi/core/schemas";
 export type StatusRow = {
   ticketStatus: TicketStatusDto;
   index: number;
+  /** The chosen targets when the status restricts its moves; empty when it moves freely. */
   targets: string[];
+  restrictsNext: boolean;
+  closes: boolean;
   flags: StatusFlag[];
 };
 
@@ -16,9 +19,13 @@ export function toStatusRows({ statuses }: ToStatusRowsInput): StatusRow[] {
   return statuses.map((ticketStatus, index) => ({
     ticketStatus,
     index,
-    targets: ticketStatus.transitionsTo.map(
-      (id) => statuses.find((target) => target.id === id)?.name ?? id,
-    ),
+    targets: ticketStatus.restrictsNext
+      ? ticketStatus.transitionsTo.map(
+          (id) => statuses.find((target) => target.id === id)?.name ?? id,
+        )
+      : [],
+    restrictsNext: ticketStatus.restrictsNext,
+    closes: ticketStatus.closes,
     flags: STATUS_FLAGS.filter((flag) => ticketStatus[flag]),
   }));
 }

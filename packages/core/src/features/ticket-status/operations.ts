@@ -1,6 +1,10 @@
 import { archiveTicketStatus, previewArchiveTicketStatus } from "./archive-operations";
 import { importTicketStatusTemplate } from "./import-template-operation";
-import { reorderTicketStatuses, setTicketStatusTransitions } from "./order-operations";
+import {
+  reorderTicketStatuses,
+  setTicketStatusGates,
+  setTicketStatusTransitions,
+} from "./order-operations";
 import { getTicketStatus, listTicketStatuses } from "./read-operations";
 import { createTicketStatus, updateTicketStatus } from "./write-operations";
 
@@ -14,5 +18,6 @@ export const ticketStatusOperations = [
   previewArchiveTicketStatus,
   reorderTicketStatuses,
   setTicketStatusTransitions,
+  setTicketStatusGates,
   importTicketStatusTemplate,
 ];

@@ -32,28 +32,43 @@ describe("ticket status order, transitions and templates (ADR 0043)", () => {
     expect(errorCode({ result: partial })).toBe("VALIDATION");
   });
 
-  it("replaces a status's transitions as a set; closing statuses have none", async () => {
+  it("lets tickets move anywhere until a status restricts its moves; closing statuses have none", async () => {
     const context = await provisionedContext();
     const lead = await statusByName({ context, name: "Lead" });
     const completed = await statusByName({ context, name: "Completed" });
-    const set = ({ input }: { input: { id: string; toStatusIds: string[] } }) =>
+    expect(lead.restrictsNext).toBe(false);
+    expect(lead.transitionsTo).toHaveLength(3);
+    const set = ({ input }: { input: Input }) =>
       execute({ operation: setTicketStatusTransitions, input, context });
-    const done = unwrap({
-      result: await set({ input: { id: lead.id, toStatusIds: [completed.id] } }),
+    type Input = { id: string; allowedNext: "ANY" | "ONLY_THESE"; toStatusIds?: string[] };
+    const only = ({ id, to }: { id: string; to: string[] }): Input => ({
+      id,
+      allowedNext: "ONLY_THESE",
+      toStatusIds: to,
     });
-    expect(done.transitionsTo).toEqual([completed.id]);
-    expect(
-      errorCode({ result: await set({ input: { id: lead.id, toStatusIds: [lead.id] } }) }),
-    ).toBe("VALIDATION");
+    const done = unwrap({
+      result: await set({ input: only({ id: lead.id, to: [completed.id] }) }),
+    });
+    expect(done).toMatchObject({ restrictsNext: true, transitionsTo: [completed.id] });
+    expect(errorCode({ result: await set({ input: only({ id: lead.id, to: [lead.id] }) }) })).toBe(
+      "VALIDATION",
+    );
     const foreign = await statusByName({ context: await provisionedContext(), name: "Confirmed" });
+    expect(errorCode({ result: await set({ input: only({ id: foreign.id, to: [] }) }) })).toBe(
+      "NOT_FOUND",
+    );
     expect(
-      errorCode({ result: await set({ input: { id: lead.id, toStatusIds: [foreign.id] } }) }),
+      errorCode({ result: await set({ input: only({ id: lead.id, to: [foreign.id] }) }) }),
     ).toBe("VALIDATION");
     expect(
-      errorCode({ result: await set({ input: { id: completed.id, toStatusIds: [lead.id] } }) }),
+      errorCode({ result: await set({ input: only({ id: completed.id, to: [lead.id] }) }) }),
     ).toBe("VALIDATION");
-    unwrap({ result: await set({ input: { id: lead.id, toStatusIds: [] } }) });
-    expect((await statusByName({ context, name: "Lead" })).transitionsTo).toEqual([]);
+    const free = unwrap({ result: await set({ input: { id: lead.id, allowedNext: "ANY" } }) });
+    expect(free).toMatchObject({ restrictsNext: false });
+    expect(free.transitionsTo).toHaveLength(3);
+    expect(
+      await context.db.ticketStatusTransition.count({ where: { fromStatusId: lead.id } }),
+    ).toBe(0);
   });
 
   it("imports a template next to existing statuses, keeps the entry status, idempotently", async () => {
@@ -82,7 +97,7 @@ describe("ticket status order, transitions and templates (ADR 0043)", () => {
         context,
       }),
     });
-    expect(second).toMatchObject({ created: [], transitionsAdded: 0 });
+    expect(second).toMatchObject({ created: [], gatesAdded: 0 });
   });
 
   it("imports into an empty organization and audits statuses and the board they land on", async () => {
@@ -96,7 +111,7 @@ describe("ticket status order, transitions and templates (ADR 0043)", () => {
     });
     expect(result.created).toHaveLength(8);
     expect(result.created[0]).toMatchObject({ name: "New", entry: true });
-    expect(result.transitionsAdded).toBe(25);
+    expect(result.gatesAdded).toBe(6);
     const audit = await getDb().auditLog.findMany({
       where: { organizationId: context.organizationId, operation: "ticketStatus.importTemplate" },
     });

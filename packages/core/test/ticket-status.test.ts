@@ -17,7 +17,7 @@ const flagsOf = ({ name, ...ticketStatus }: Awaited<ReturnType<typeof statusByNa
 ];
 
 describe("ticket statuses (ADR 0043)", () => {
-  it("provisions the minimum pipeline with forward and closing transitions", async () => {
+  it("provisions the minimum pipeline with free movement", async () => {
     const context = await provisionedContext();
     const all = await statuses({ context });
     expect(all.map((ticketStatus) => flagsOf(ticketStatus))).toEqual([
@@ -29,14 +29,14 @@ describe("ticket statuses (ADR 0043)", () => {
     const ids = Object.fromEntries(all.map((ticketStatus) => [ticketStatus.name, ticketStatus.id]));
     const lead = await statusByName({ context, name: "Lead" });
     expect(lead.transitionsTo).toEqual([ids.Confirmed, ids.Completed, ids.Lost]);
-    // The template's gates sit on every transition into their status (ADR 0067 §5).
+    // The template's gates guard every move into their status, from any status (ADR 0076).
     expect(lead.transitionGates).toEqual([
       { toStatusId: ids.Confirmed, gates: ["ASSIGNEE"] },
       { toStatusId: ids.Completed, gates: ["ASSIGNEE"] },
       { toStatusId: ids.Lost, gates: ["REASON"] },
     ]);
     const confirmed = await statusByName({ context, name: "Confirmed" });
-    expect(confirmed.transitionsTo).toEqual([ids.Completed, ids.Lost]);
+    expect(confirmed.transitionsTo).toEqual([ids.Lead, ids.Completed, ids.Lost]);
     expect((await statusByName({ context, name: "Lost" })).transitionsTo).toEqual([]);
     expect(lead.createdBy).toBe("system");
   });
@@ -48,7 +48,8 @@ describe("ticket statuses (ADR 0043)", () => {
       result: await execute({ operation: createTicketStatus, input, context }),
     });
     expect(created).toMatchObject({ position: 4, entry: false, closes: false, event: null });
-    expect(created.transitionsTo).toEqual([]);
+    expect(created).toMatchObject({ restrictsNext: false, gatesInto: [] }); // free (ADR 0076)
+    expect(created.transitionsTo).toHaveLength(4);
     const again = await execute({ operation: createTicketStatus, input, context });
     expect(errorCode({ result: again })).toBe("CONFLICT");
   });

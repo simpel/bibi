@@ -19,24 +19,24 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 | `event` | Entered by a quote event (`QUOTE_SENT` or `QUOTE_ACCEPTED`) instead of by hand. At most one active status per event. |
 
 - Minimum configuration, refused with `CONFLICT` on every change: one `entry` status and one `closes` status.
-- Transitions are data (`TicketStatusTransition`, from → to). Default: every forward move plus a move to any closing status.
-- Move rules are gates on transitions (`TicketStatusTransitionGate`, ADR 0067 §5), never flags on a status. The same status can be entered with a gate from one status and without one from another. Set them with `ticketStatus.setTransitions({ id, toStatusIds, gates? })`: `gates` replaces the gates of the listed targets, omitted keeps them. `ticketStatus.list` returns them as `transitionGates`.
+- Movement is free by default (ADR 0076): a ticket may move from a status to any other, except that nothing leaves a `closes` status and a status with a quote `event` is entered only by that event, never by hand. A status with `restrictsNext` allows only the rows of `TicketStatusTransition` (from → to). A free status keeps no transition rows. Set it with `ticketStatus.setTransitions({ id, allowedNext: "ANY" | "ONLY_THESE", toStatusIds })` (`toStatusIds` only with `ONLY_THESE`).
+- Move rules are gates on the target status (`TicketStatusGate`, ADR 0067 §5, ADR 0076), never flags on a status. A gate has an optional source: a specific status or none (from any status). The gates of a move from A to B are the gates into B from any status plus those into B from A. Set them with `ticketStatus.setGates({ id, gates: [{ fromStatusId: string | null, gates }] })` on the target: it replaces every gate into that status. `ticketStatus.list|get` return `restrictsNext`, `transitionsTo` (the effective allowed targets), `transitionGates` (effective per target) and `gatesInto` (raw, by source). Both setters need `pipeline:write`, the admin-only flow.
 
-| Gate | A move along the transition needs |
+| Gate | A move into the status needs |
 |---|---|
 | `REASON` | A reason (`reason`). |
 | `ASSIGNEE` | The ticket's main assignee. |
 | `ACCEPTED_QUOTE` | An accepted quote. |
 
-- A gate runs only on a move: creating a ticket in a status checks none, and removing the main assignee is allowed. Templates give each status `gatesIn`, the gates on every template transition into it. More gates (invoices, deposits, holds, staff) are #493.
-- `quote.send` and `quote.accept` move the ticket into the status with the matching `event` when one exists and the transition is allowed; otherwise the status does not change. Payments and invoices never move a ticket.
+- A gate runs only on a move: creating a ticket in a status checks none, and removing the main assignee is allowed. Templates give each status `gatesIn`, which become from-any gates (`importTemplate` returns `gatesAdded`). More gates (invoices, deposits, holds, staff) are #493.
+- `quote.send` and `quote.accept` move the ticket into the status with the matching `event` when one exists; otherwise the status does not change. Payments and invoices never move a ticket.
 - Removing a status is archiving. A status that holds tickets needs a target status; tickets move in one logged operation through the normal checks. The last `entry` or `closes` status cannot be archived.
 
 ## Moving a ticket
 - One command: `ticket.changeStatus({ ticketId, statusId, reason? })`. The status is never set through `ticket.update`.
-- A move is atomic. Core checks the transition, its gates and the line states the move implies. If anything blocks, nothing changes and `CONFLICT` lists every blocker (e.g. a hard hold collision, a disallowed state transition, a missing assignee).
+- A move is atomic. Core checks the allowed targets, the gates and the line states the move implies. If anything blocks, nothing changes and `CONFLICT` lists every blocker (e.g. a hard hold collision, a disallowed state transition, a missing assignee).
 - History is `TicketStatusChange` (append-only: from, to, reason, `changedAt`, `changedBy`, `trigger` = `MANUAL | QUOTE_EVENT | TEMPLATE | SYSTEM`); read it with `ticket.statusHistory`. `Ticket.statusId` is a projection set by a trigger on insert into that table; never write it. Time-in-status reports are plain SQL on it.
-- Facts stay on their records: quote status on `Quote`, payment status on `Payment`, holds on lines. A transition may only guard a fact (the `ACCEPTED_QUOTE` gate). A status that contradicts a fact is shown as a derived warning, never silently resolved.
+- Facts stay on their records: quote status on `Quote`, payment status on `Payment`, holds on lines. A gate may only guard a fact (the `ACCEPTED_QUOTE` gate). A status that contradicts a fact is shown as a derived warning, never silently resolved.
 - Not built yet: the `DEPOSIT_PAID` gate (#493).
 
 ## Predefined tickets
@@ -75,7 +75,7 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 - One read, `calendar.range({ from, to, venueId?, typeId?, stateId?, statusId?, ticketId? })` (ADR 0064): `from` and `to` are plain dates, both inclusive, at most 62 days, resolved to `[start of from, start of to + 1 day)` in the venue's zone, else the organization's. It returns every active occupancy overlapping that range as a block already joined with its line, ticket, state and status (setup and teardown included), earliest first, with no paging. Permission `ticket:read`; the item is an id, the line's name and held-since need `program:read`, the state's name and color need `pipeline:read`. An unknown venue or ticket is `NOT_FOUND`. The web calendar, GraphQL, REST and MCP all read it.
 
 ## Board
-- Boards, their columns (phases) and drop zones are in `docs/specs/boards.md`. A drop zone is greyed out without a transition from the card's status; a `REASON` gate on that transition asks for the reason first. Dashboard counts group by status flag, never by status name.
+- Boards, their columns (phases) and drop zones are in `docs/specs/boards.md`. A column is one drop target: dropping on a phase with several statuses opens a picker of the statuses the ticket may move to, with their requirements in words; a `REASON` gate asks for the reason first. Dashboard counts group by status flag, never by status name.
 
 ## Setup
 - First setup is the assistant onboarding at `/onboarding` (ADR 0045; the earlier wizard is gone). It builds a draft through `pipelineSetup.presetDraft|preview|activate` (activate is one audited batch). Afterwards the same data is edited in settings.
@@ -83,7 +83,7 @@ Current behaviour, checked against the code. Why these choices were made: ADR 00
 - Templates ("Conference estate" and per-type state presets) fill the draft and can be changed freely.
 
 ## Operations
-- `ticketStatus.list|get|create|update|archive|archivePreview|reorder|setTransitions|importTemplate`, `ticketTemplate.list|get|create|update|archive`, `ticket.list|get|create|update|changeStatus|createFromTemplate|expireHolds|export|statusHistory`, `itemState.list|get|create|update|archive|archivePreview|reorder|setTransitions`, `statusGrid.get|setCell|importTemplate`, `line.changeState|followStatus`, `pipelineSetup.presetDraft|preview|activate`, `calendar.range`.
+- `ticketStatus.list|get|create|update|archive|archivePreview|reorder|setTransitions|setGates|importTemplate`, `ticketTemplate.list|get|create|update|archive`, `ticket.list|get|create|update|changeStatus|createFromTemplate|expireHolds|export|statusHistory`, `itemState.list|get|create|update|archive|archivePreview|reorder|setTransitions`, `statusGrid.get|setCell|importTemplate`, `line.changeState|followStatus`, `pipelineSetup.presetDraft|preview|activate`, `calendar.range`.
 - All exist on web, GraphQL, REST and MCP; AI proposes, the user approves.
 
 ## Not decided
