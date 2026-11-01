@@ -2,6 +2,7 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { notFound } from "../../shared/errors";
+import { nowOf } from "../../time/now";
 import { moveReceivable } from "../payment/move-receivable";
 import { loadChargeableTicket } from "../payment/payment-preconditions";
 import { receivableMoveDates } from "../payment/receivable-lifecycle";
@@ -45,7 +46,7 @@ export const createDeposit = defineOperation({
 });
 
 type MoveInput = {
-  context: Pick<OperationContext, "db" | "recordChange">;
+  context: Pick<OperationContext, "db" | "recordChange" | "now">;
   id: string;
   to: ReceivableStatus;
 };
@@ -61,7 +62,7 @@ const moveDeposit = ({ context, id, to }: MoveInput): Promise<Result<DepositDto>
       (
         await context.db.deposit.updateMany({
           where: { id, status: from },
-          data: { status: to, ...receivableMoveDates({ to, at: new Date() }) },
+          data: { status: to, ...receivableMoveDates({ to, at: nowOf({ context }) }) },
         })
       ).count,
   });

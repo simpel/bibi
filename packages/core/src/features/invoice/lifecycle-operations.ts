@@ -1,6 +1,7 @@
 import type { Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
+import { nowOf } from "../../time/now";
 import { moveReceivable } from "../payment/move-receivable";
 import { receivableMoveDates } from "../payment/receivable-lifecycle";
 import type { ReceivableStatus } from "../payment/settlement-schema";
@@ -8,7 +9,7 @@ import { type InvoiceDto, InvoiceIdInputSchema, InvoiceSchema } from "./schema";
 import { loadInvoice } from "./to-invoice-dto";
 
 type MoveInput = {
-  context: Pick<OperationContext, "db" | "recordChange">;
+  context: Pick<OperationContext, "db" | "recordChange" | "now">;
   id: string;
   to: ReceivableStatus;
 };
@@ -24,7 +25,7 @@ const moveInvoice = ({ context, id, to }: MoveInput): Promise<Result<InvoiceDto>
       (
         await context.db.invoice.updateMany({
           where: { id, status: from },
-          data: { status: to, ...receivableMoveDates({ to, at: new Date() }) },
+          data: { status: to, ...receivableMoveDates({ to, at: nowOf({ context }) }) },
         })
       ).count,
   });

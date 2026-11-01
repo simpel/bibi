@@ -2,6 +2,7 @@ import { AppError } from "../../errors/app-error";
 import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { notFound } from "../../shared/errors";
+import { nowOf } from "../../time/now";
 import { nextPaymentState } from "./payment-transition";
 import { recordRefund } from "./record-refund";
 import { toPaymentDto } from "./to-payment-dto";
@@ -35,7 +36,7 @@ export const applyPaymentSignal = defineOperation({
       where: { providerAccountId, OR: match },
     });
     if (!before) return notFound({ entity: "Payment" });
-    const next = nextPaymentState({ payment: before, signal: input, now: new Date() });
+    const next = nextPaymentState({ payment: before, signal: input, now: nowOf({ context }) });
     const base = { paymentId: before.id, ticketId: before.ticketId };
     if (!next) return ok({ value: { ...base, status: before.status, changed: false } });
     const row = await context.db.payment.update({ where: { id: before.id }, data: next });

@@ -43,7 +43,7 @@ export type DemoTicket = {
     deposit?: { description: string; amountKr: number };
     paidKr?: number;
     /** ADR 0077: an invoice of the priced lines, sent; paid in full or due `dueDay` (offset). */
-    invoice?: { paid: boolean; dueDay: number };
+    invoice?: DemoInvoice;
   };
   /** Estimated values in kr excl. VAT, in order: the first estimate, then re-estimates (ADR 0074). */
   estimatesKr?: readonly number[];
@@ -71,6 +71,20 @@ export type DemoTicket = {
    * and change nothing; the others must move the lines as the grid says, skipping overrides.
    */
   checkMove?: { to: string; blocked: boolean };
+};
+
+/**
+ * A demo invoice (ADR 0077). Day offsets are from the day of the run; each step runs at its own
+ * day through the context clock (`OperationContext.now`), so the history has real dates. Left
+ * out, `sentDay` and `paidDay` are the day of the run. `refund` is a partial refund of the paid
+ * invoice, applied through Stripe's refunded signal.
+ */
+export type DemoInvoice = {
+  paid: boolean;
+  dueDay: number;
+  sentDay?: number;
+  paidDay?: number;
+  refund?: { kr: number; day: number };
 };
 
 /**

@@ -48,6 +48,11 @@ export type OperationContext = {
   credential?: CredentialKind;
   /** Commands call this so audit rows carry entity id and before/after state. */
   recordChange: (change: RecordedChange) => void;
+  /**
+   * The instant facts are stamped with; real time when absent (read it with `nowOf`). Only
+   * internal callers (the demo seed, tests) set it, to write history at its own date (ADR 0064).
+   */
+  now?: () => Date;
 };
 
 export type OperationKind = "command" | "query";

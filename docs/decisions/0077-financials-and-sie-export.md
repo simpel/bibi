@@ -48,3 +48,7 @@
 - Revenue accounts are a finance-owned `RevenueAccount` table (one row per item type or per item, exactly one set), not columns on item type and item as Consequences says. Inheritance is unchanged: item, then item type, then `AccountingSettings.revenueAccount`.
 - The demo seed has two invoices (Lindholmen L1 paid, L2 overdue) and one export, but no refund yet; refunds are covered by tests.
 - A payment against a quote is booked as a sale; if the same ticket is later invoiced, the revenue counts twice. Card-paid predefined tickets are the case it is built for; invoicing a quote-paid ticket needs a follow-up decision.
+
+## Addendum 2026-11-01 – a year of demo history
+- The demo seed now has a year of invoices, payments and one refund (L16–L28, `docs/demo-seed.md`), dated through the context clock (ADR 0064 addendum), as Consequences asked.
+- Found while seeding: a refund of an invoice payment reopens the invoice, so a paid invoice with a partial refund shows the refunded amount as open and overdue (L19). A refund of a paid invoice should be a credit, not a new receivable; this needs a decision (credit note or a settlement rule).
