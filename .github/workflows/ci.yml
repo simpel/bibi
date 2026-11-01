@@ -31,7 +31,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # The checks (lint, structure, typecheck, migrate, test, build) are defined once in tools/ci/checks.json and
-      # run locally by the implement-ticket skill before it commits.
+      # run locally by the implement skill before it commits.
       - run: node tools/ci/verify.mjs --all
 
   tools:

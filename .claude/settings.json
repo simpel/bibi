@@ -3,7 +3,6 @@
     "allow": [
       "Bash(git status:*)",
       "Bash(git diff:*)",
-      "Bash(node tools/backlog/select.mjs:*)",
       "Bash(node tools/ci/verify.mjs:*)",
       "Bash(git log:*)",
       "Bash(git fetch:*)",

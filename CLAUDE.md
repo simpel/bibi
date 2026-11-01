@@ -100,9 +100,10 @@
 - Start parallel subagents per independent package.
 - The main agent owns integration and the parity test. Subagents must not change each other's packages until the main agent has integrated.
 
-## Issues and project board
-- Every piece of work has an issue on https://github.com/users/simpel/projects/8 (not project 7); create one with the `new-ticket` skill and build it with the `implement-ticket` skill, which commits straight to `main` with `Closes #NN` (no pull requests, ADR 0070). A ticket that adds or changes data or behaviour has a **Seed data** section and is not done until `seed:demo` runs from an empty database with green checks.
-- Board states and helpers: `tools/backlog/CLAUDE.md`.
+## Work flow
+- Not all work needs an issue. Build it with the `implement` skill, which commits straight to `main` (no pull requests, ADR 0070, 0075).
+- **ADRs are the basis for new implementations.** Build what the accepted ADR decides. Major architectural moves get an ADR first (Proposed, accepted by the user before building).
+- Work that adds or changes data or behaviour updates the demo seed and is not done until `seed:demo` runs from an empty database with green checks.
 
 ## Commands
 - `docker compose up -d`: starts Postgres and Mailpit (mail at http://localhost:8025).
