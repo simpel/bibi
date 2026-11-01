@@ -8,9 +8,9 @@ import type { TicketTemplateDto } from "../ticket-template/schema";
 import type { TicketCreateFromTemplateInput } from "./create-from-template-schema";
 import { TicketCreateFromTemplateInputSchema } from "./create-from-template-schema";
 import { insertTicket } from "./insert-ticket";
-import { planTemplateLines } from "./plan-template-lines";
+import { planTemplateLines } from "./plan/plan-template-lines";
+import { templateCollisions } from "./plan/template-collisions";
 import { type TicketDto, TicketSchema } from "./schema";
-import { templateCollisions } from "./template-collisions";
 import { checkReadable } from "./ticket-rules";
 
 type CreateInput = {

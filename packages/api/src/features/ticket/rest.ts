@@ -9,6 +9,13 @@ export const ticketRoutes = [
     method: "POST",
     path: "/tickets/from-template",
   }),
+  // A preview takes the packages or draft lines as its body and writes nothing (ADR 0081).
+  restRoute({
+    operation: "ticket.previewLines",
+    method: "POST",
+    path: "/tickets/preview-lines",
+    successStatus: 200,
+  }),
   restRoute({ operation: "ticket.update", method: "PATCH", path: "/tickets/{id}" }),
   restRoute({
     operation: "ticket.changeStatus",

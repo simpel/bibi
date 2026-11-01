@@ -18,6 +18,7 @@ import { PIPELINE_SETUP_UI_ENTRIES } from "./pipeline-setup-entries";
 import { PRICE_LIST_UI_ENTRIES } from "./price-list-entries";
 import { QUESTION_UI_ENTRIES } from "./question-entries";
 import { QUOTE_UI_ENTRIES } from "./quote-entries";
+import { READ_GENERIC_UI_TOOLS } from "./read-generic-tools";
 import { RECEIVABLE_UI_ENTRIES } from "./receivable-entries";
 import { REQUIREMENT_UI_ENTRIES } from "./requirement-entries";
 import { RESPONSIBILITY_UI_ENTRIES } from "./responsibility-entries";
@@ -133,10 +134,6 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   message_append: "chat bookkeeping",
   memberProfile_list:
     "a list of profiles without member names; the member page shows who is behind a staff item",
-  item_freeUnits:
-    "a list of unit names with the prepick; shown as JSON until the allocation UI (#384)",
-  skill_export: "SKILL.md text; shown as code/JSON",
-  ticket_export: "versioned JSON document for handover; shown as code/JSON",
   graphql_schema: "SDL text",
   graphql_query: "free-form GraphQL result",
   apiKey_list: "credentials are managed on /settings/integrations, not in chat",
@@ -146,4 +143,5 @@ export const GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   apiKey_update: "credentials are managed on /settings/integrations, not in chat",
   ...SELF_GENERIC_UI_TOOLS,
   ...ALLOCATION_GENERIC_UI_TOOLS,
+  ...READ_GENERIC_UI_TOOLS,
 };

@@ -25,6 +25,7 @@ import { checkDemoPayments } from "./payment-checks";
 import { checkDemoPermissions } from "./permission-checks";
 import { checkDemoPipeline } from "./pipeline-checks";
 import { checkDemoPools } from "./pool-checks";
+import { checkDemoPreview } from "./preview-checks";
 import { checkDemoPrices } from "./price-checks";
 import { checkDemoQuoteEvents } from "./quote-event-checks";
 import { reconcileProjections } from "./reconcile-checks";
@@ -54,6 +55,7 @@ const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoEstimates,
   checkDemoFactGuards,
   checkDemoGrid,
+  checkDemoPreview,
   checkDemoPrices,
   checkDemoBundles,
   checkDemoBuffers,

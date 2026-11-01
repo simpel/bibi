@@ -11,6 +11,7 @@ import { expireTicketHolds } from "./expire-holds-operation";
 import { exportTicket } from "./export-operation";
 import { TicketListInputSchema, TicketListOutputSchema } from "./list-schema";
 import { ticketListWhere } from "./list-where";
+import { previewTicketLines } from "./preview-lines-operation";
 import { TicketIdInputSchema, TicketSchema } from "./schema";
 import { ticketStatusHistory } from "./status-history-operation";
 import { loadTicket, TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
@@ -63,10 +64,11 @@ export const ticketOperations = [
   updateTicket,
   changeTicketStatus,
   createTicketFromTemplate,
+  previewTicketLines,
   exportTicket,
   expireTicketHolds,
   ticketStatusHistory,
   ticketEstimateHistory,
 ];
 
-export { ticketEstimateHistory };
+export { previewTicketLines, ticketEstimateHistory };

@@ -19,6 +19,7 @@ import "../features/ticket-status/graphql";
 import "../features/board/graphql";
 import "../features/ticket-template/graphql";
 import "../features/ticket/graphql";
+import "../features/ticket/preview-graphql";
 import "../features/line/graphql";
 import "../features/line-allocation/graphql";
 import "../features/alternative-group/graphql";

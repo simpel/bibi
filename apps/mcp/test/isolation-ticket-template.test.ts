@@ -1,30 +1,6 @@
-import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
-import { seedProgram } from "./seed-program";
-
-/** A predefined ticket built from the organization's own seeded ticket, item and types. */
-async function seedTemplate({ client }: { client: Client }) {
-  const seed = await seedProgram({ client });
-  const ticket = (await call({ client, name: "ticket_get", args: { id: seed.ticketId } })).data;
-  const args = {
-    name: "Secret template",
-    entityTypeId: ticket.entityTypeId,
-    statusId: ticket.statusId,
-    lines: [
-      {
-        entityTypeId: seed.programTypeId,
-        name: "Secret line",
-        itemId: seed.itemId,
-        offsetMinutes: 0,
-        durationMinutes: 60,
-      },
-    ],
-  };
-  const made = await call({ client, name: "ticketTemplate_create", args });
-  expect(made.isError, JSON.stringify(made.data)).toBe(false);
-  return { ...seed, ...ticket, args, id: made.data.id as string, customerId: ticket.customerId };
-}
+import { seedTemplate } from "./seed-template";
 
 const START = "2026-12-01T08:00:00.000Z";
 
