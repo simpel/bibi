@@ -2,7 +2,7 @@
 
 - **Date:** 2026-11-01
 - **Status:** Accepted (approved by the user on 2026-11-01)
-- **Related:** 0007 (AI proposes, the user confirms), 0081 (ticket intake), 0083 (organization inbox), 0008 (skills), 0064 (time), 0078 (public email domains), 0003 (parity)
+- **Related:** 0007 (AI proposes, the user confirms), 0081 (ticket intake), 0085 (inbound messages from any channel, amends this ADR), 0008 (skills), 0064 (time), 0078 (public email domains), 0003 (parity)
 
 ## Context
 - A request usually arrives as free text, for example "a wine tasting for 14 people on Friday 21 November, around 3 pm, two of us are vegan". Staff then type every value into the intake (ADR 0081).
@@ -11,8 +11,8 @@
 - A draft must never become a booking without a person checking it. Staff must be able to see where every value came from, and which values were guessed.
 
 ## Decision
-1. **A new query, `ticketDraft.fromMessage`**, takes `{ text }` (pasted) or `{ inboundEmailId }` (ADR 0083). It returns a **draft** and writes nothing.
-   - Permission: `ticket:write`, since it only serves creating a ticket. `inboundEmailId` also needs `inbox:read`.
+1. **A new query, `ticketDraft.fromMessage`**, takes `{ text }` (pasted) or `{ inboundMessageId }` (ADR 0085: a message of any channel; structured form fields are taken as given). It returns a **draft** and writes nothing.
+   - Permission: `ticket:write`, since it only serves creating a ticket. `inboundMessageId` also needs `inbox:read`.
    - It is on every surface, so the assistant and API clients use the same draft.
 2. **The draft is per field, with evidence.** Each field is `{ value, quote, guessed }`:
    - `quote` is the exact text the value came from. If the model's quote is not found in the message, the field is marked guessed.
@@ -36,7 +36,7 @@
 ## Consequences
 - The first use of structured output: the port in `packages/ai`, mock responses for Vitest and `E2E_MOCK_MODEL`, a seed row in `ai-models.ts` and i18n labels for the feature.
 - Intake step 0 (paste, or open from the inbox) shows "What the assistant read" with value, quote and a mark on guessed values.
-- `customer.findSimilar` (ADR 0081) is a dependency; so is the inbox (ADR 0083), but only for `inboundEmailId`.
+- `customer.findSimilar` (ADR 0081) is a dependency; so is the inbox (ADR 0085), but only for `inboundMessageId`.
 
 ## Alternatives rejected
 - **Let the assistant fill the form through chat only.** Rejected: staff work in the intake page, and a chat round trip per field is slower than a draft with evidence. Chat still gets the same draft through the skill.

@@ -1,6 +1,6 @@
 # Ticket intake
 
-Behaviour spec for ADR 0081 (with 0082, 0083, 0084), all Accepted, not built yet. Tickets, statuses and line states: `docs/specs/tickets-statuses-and-states.md`. Entities: `docs/domain-model.md`. The click prototype shows every state below: https://claude.ai/artifact/Hmdk44ucTDo135fGNbeqqH
+Behaviour spec for ADR 0081 (with 0082, 0084, 0085), all Accepted, not built yet. Tickets, statuses and line states: `docs/specs/tickets-statuses-and-states.md`. Entities: `docs/domain-model.md`. The click prototype shows every state below: https://claude.ai/artifact/Hmdk44ucTDo135fGNbeqqH
 
 ## The page
 - `/new/ticket`, permission `ticket:write`, opened from the create hub, the ticket list and an inbox mail (`?fromEmail=<id>`).
@@ -90,7 +90,7 @@ Behaviour spec for ADR 0081 (with 0082, 0083, 0084), all Accepted, not built yet
 - **More** (collapsed): assignee (default: the creating member), holds until, estimated value.
 - **Create**:
   - The label is **Create ticket**, or **Create and prebook** when lines clash. While saving it shows "Creating…" and is disabled.
-  - It runs `ticket.create` with the lines, the note, `templateId` and `inboundEmailId`, and an `intakeKey`.
+  - It runs `ticket.create` with the lines, the note, `templateId` and `inboundMessageId`, and an `intakeKey`.
   - On `CONFLICT` for a new clash, nothing is created. The page previews again and shows "Not created yet. Since you started, #<ref> booked <resource> <period>. The lines and calendar are updated. Check them and create again."
   - After create, with "save as package" ticked, it runs `ticketTemplate.create`. A failure there shows a toast; the ticket stays.
 
@@ -122,9 +122,9 @@ Behaviour spec for ADR 0081 (with 0082, 0083, 0084), all Accepted, not built yet
 - Next actions: Add line, Send quote, Payment link, Hold until.
 
 ## Core
-- `ticket.previewLines`, `ticket.create` (with `lines`, `note`, `templateId`, `inboundEmailId`, `intakeKey`; contact required; starts in the entry status), `ticket.createFromTemplate` (same path, template start status, contact required): ADR 0081.
+- `ticket.previewLines`, `ticket.create` (with `lines`, `note`, `templateId`, `inboundMessageId`, `intakeKey`; contact required; starts in the entry status), `ticket.createFromTemplate` (same path, template start status, contact required): ADR 0081.
 - `customer.findSimilar`, `customer.create` with `contact`, `customer.list` with `recent`, `calendar.range` with `itemIds`: ADR 0081.
 - `line.chooseOptions` with `options[{ itemId, quantity? }]`, split groups, `OPTION_SPLIT_MISMATCH`: ADR 0082.
-- `inboundEmail.listInbox|attachToTicket|dismiss|restore`, feature `inbox`: ADR 0083.
+- `InboundMessage` and `InboundEndpoint`; `inboundMessage.list|get|attachToTicket|dismiss|restore|submit`, feature `inbox` (read, write, submit); EMAIL channel built, WEB_FORM and SMS designed: ADR 0085.
 - `ticketDraft.fromMessage`, AI feature `ticket.intakeDraft`: ADR 0084.
 - All on web, GraphQL, REST and MCP (ADR 0003).

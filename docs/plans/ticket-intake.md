@@ -38,7 +38,7 @@ Staff create a ticket in one page: customer, when and how many, then a package o
 ## ADRs and spec (slice 0)
 - **0081 Ticket intake**: decisions 1–5, 7–13; `ticket.previewLines`; `ticket.create` with lines; contact required; entry-status start; open questions vs clashes. Rejected: wizard per step; create-then-add-lines; client-side chain of `line.create`; persisted server drafts.
 - **0082 Option quantities** (amends 0059): an option line may carry its own quantity; group rules count quantities; pricing and quote snapshots per option line.
-- **0083 Organization inbox** (amends 0012): an org address, unmatched mail stored without a ticket, attach to a ticket, never fabricated by users or AI.
+- **0083 Organization inbox** (superseded by **0085 Inbound messages from any channel**, accepted): an org address, unmatched mail stored without a ticket, attach to a ticket, never fabricated by users or AI.
 - **0084 Extracting a draft from a message**: first structured-output AI feature, a query that writes nothing, quotes and guesses in the output, Zod-validated, Create as the approval.
 - Spec `docs/specs/ticket-intake.md`; `docs/domain-model.md` and `docs/artifacts/domain-model.html` together.
 
@@ -49,8 +49,8 @@ Staff create a ticket in one page: customer, when and how many, then a package o
 - **Re-check**: the transaction re-runs the planning; a new `HARD`/`REFUSED_HARD` issue returns `CONFLICT` with `lines.<index>` issues, and the web re-previews to show the difference. A client `intakeKey` makes Create idempotent.
 - **Customers**: `customer.create` accepts a nested first `contact`; `customer.findSimilar({ name?, email? })` (normalised name, legal suffixes stripped, plus contact-email domain outside `PUBLIC_EMAIL_DOMAINS`); `customer.list` gains `recent: true` (by latest ticket).
 - **Calendar**: `calendar.range` gains `itemIds`.
-- **Inbox (0083)**: `InboundEmail.ticketId` nullable plus `organizationId` address scheme; `inboundEmail.listInbox`, `attachToTicket`, `dismiss`; `receive` stays SYSTEM-only.
-- **Extraction (0084)**: `ticketDraft.fromMessage({ text } | { inboundEmailId })`, a query behind an injected `extract` port (as `embed` is), output a draft with `{ value, quote, guessed }` per field and matched ids; AI feature `ticket.intakeDraft`.
+- **Inbound messages (0085, replaces the 0083 design)**: `InboundMessage` + `InboundEndpoint`, one SYSTEM `inboundMessage.receive` behind channel adapters, `inboundMessage.submit` for the API channel. Was (0083): `InboundEmail.ticketId` nullable plus `organizationId` address scheme; `inboundEmail.listInbox`, `attachToTicket`, `dismiss`; `receive` stays SYSTEM-only.
+- **Extraction (0084)**: `ticketDraft.fromMessage({ text } | { inboundMessageId })`, a query behind an injected `extract` port (as `embed` is), output a draft with `{ value, quote, guessed }` per field and matched ids; AI feature `ticket.intakeDraft`.
 
 ## Slices (each one commit to main through the `implement` skill, verify green, seed updated)
 | # | Slice | Depends on | Size |
@@ -63,8 +63,8 @@ Staff create a ticket in one page: customer, when and how many, then a package o
 | 5 | Customers: nested contact, `findSimilar`, `recent` | 1 | 0.5 d |
 | 6 | Web A: one-page shell (new step-section and time field in `@bibi/ui`), who (async search, recent, inline new + duplicate check), when, package groups + follow-up dialog, local draft | 3, 5 | 1.5 d |
 | 7 | Web B: review: draft table, line dialog (search across types, capability fields, option quantities, needs), calendar snapshot with draft overlay, open questions (pure function, unit-tested), notes, one-off + type + own fields, save as package, Create + re-check; remove the wizard and short form | 4, 6 | 2.5 d |
-| 8 | Organization inbox (0083): schema, receive routing, inbox page, "New ticket from this email" | 1 | 1 d |
-| 9 | Extraction (0084): AI feature, port, structured output, mock model, step 0 UI with quotes and guesses, system skill for chat | 4, 5, 8 | 1.5 d |
+| 8 | Inbound messages (0085, accepted; replaces 0083): `InboundMessage` + `InboundEndpoint`, backfill of `InboundEmail`, EMAIL adapter (org address + ticket replies), `inboundMessage.submit` (API channel), inbox page, "New ticket from this message" | 1 | 1.5 d |
+| 9 | Extraction (0084, amended by 0085): AI feature, port, structured output, mock model, form fields taken as given, step 0 UI with quotes and guesses, system skill for chat | 4, 5, 8 | 1.5 d |
 | 10 | Showcase seed (packages with ranges, non-room items, a stock pool, clashing bookings, contact domains, a near-duplicate customer, inbox mail) + Playwright for flows A, B, C + user guide | 7, 9 | 1 d |
 
 About **13 working days**. Core slices (1–5, 8) are Opus work and run alone; 2 and 5 can run in parallel after 1; 8 can run any time after 1. Web slices start when their core contracts are on main. The main session owns integration and the parity test.

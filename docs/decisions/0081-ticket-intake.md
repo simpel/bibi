@@ -2,7 +2,7 @@
 
 - **Date:** 2026-11-01
 - **Status:** Accepted (approved by the user on 2026-11-01)
-- **Related:** 0043 and 0067 (predefined tickets, start status), 0044 (soft holds, no queue), 0052 (the line is the booking), 0053 (holds are a projection), 0059 (capabilities, demands, pools), 0064 (time), 0071 (view read models), 0078 (domain join), 0003 (parity), 0007 (AI proposes, the user confirms). Companion ADRs: 0082 (option quantities), 0083 (organization inbox), 0084 (draft from a message)
+- **Related:** 0043 and 0067 (predefined tickets, start status), 0044 (soft holds, no queue), 0052 (the line is the booking), 0053 (holds are a projection), 0059 (capabilities, demands, pools), 0064 (time), 0071 (view read models), 0078 (domain join), 0003 (parity), 0007 (AI proposes, the user confirms). Companion ADRs: 0082 (option quantities), 0085 (inbound messages from any channel; replaces 0083), 0084 (draft from a message)
 - **Spec:** `docs/specs/ticket-intake.md`. Plan: `docs/plans/ticket-intake.md`. Click prototype: https://claude.ai/artifact/Hmdk44ucTDo135fGNbeqqH
 
 ## Context

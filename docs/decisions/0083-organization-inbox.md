@@ -1,7 +1,7 @@
 # 0083 – An organization inbox for mail that is not yet a ticket
 
 - **Date:** 2026-11-01
-- **Status:** Accepted (approved by the user on 2026-11-01)
+- **Status:** Superseded by 0085 (accepted 2026-11-01, never built; its decisions live on in 0085 for every channel)
 - **Amends:** 0012 (inbound mail only on a ticket's own address; other mail is dropped)
 - **Related:** 0081 (ticket intake), 0084 (draft from a message), 0062 (organization slug), 0050 (permissions), 0058 (external effects after commit)
 
