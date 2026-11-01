@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { EntityTypeList } from "@/features/entity-type/ui/entity-type-list";
 import { readCursor } from "@/lib/page-cursor";
@@ -12,5 +13,9 @@ export default async function TypesPage({ params, searchParams }: TypesPageProps
   const locale = resolveLocale({ value: (await params).locale });
   const { cursor } = await searchParams;
   setRequestLocale(locale);
-  return <EntityTypeList locale={locale} cursor={readCursor({ value: cursor })} />;
+  return (
+    <SimplePage>
+      <EntityTypeList locale={locale} cursor={readCursor({ value: cursor })} />
+    </SimplePage>
+  );
 }

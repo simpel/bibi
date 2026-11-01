@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { notFound } from "next/navigation";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionGate } from "@/components/states/permission-gate";
@@ -14,8 +15,10 @@ export default async function NewDepositPage({ params, searchParams }: NewDeposi
   const { ticket } = await searchParams;
   if (typeof ticket !== "string" || ticket === "") notFound();
   return (
-    <PermissionGate permission="payment:write">
-      <DepositCreate ticketId={ticket} />
-    </PermissionGate>
+    <SimplePage>
+      <PermissionGate permission="payment:write">
+        <DepositCreate ticketId={ticket} />
+      </PermissionGate>
+    </SimplePage>
   );
 }

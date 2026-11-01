@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionGate } from "@/components/states/permission-gate";
 import { ItemCreate } from "@/features/item/ui/item-create";
@@ -13,8 +14,10 @@ export default async function NewItemPage({ params, searchParams }: NewItemPageP
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="item:write">
-      <ItemCreate locale={locale} typeId={readCursor({ value: (await searchParams).type })} />
-    </PermissionGate>
+    <SimplePage>
+      <PermissionGate permission="item:write">
+        <ItemCreate locale={locale} typeId={readCursor({ value: (await searchParams).type })} />
+      </PermissionGate>
+    </SimplePage>
   );
 }

@@ -7,7 +7,10 @@ import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { listAll } from "@/server/list-all";
 import { handleLoadError } from "@/server/load-error";
 import { runOperation } from "@/server/run-operation";
-import { AccountingForm } from "./accounting-form";
+import { accountRows } from "../lib/account-rows";
+import { AccountsTable } from "./accounts-table";
+import { FiscalYearSetting } from "./fiscal-year-setting";
+import { RevenueAccountsSection } from "./revenue-accounts-section";
 
 export type AccountingSettingsProps = { locale: Locale };
 
@@ -15,21 +18,35 @@ export type AccountingSettingsProps = { locale: Locale };
 export async function AccountingSettings({ locale }: AccountingSettingsProps) {
   const t = await getTranslations("finance.accounting");
   const abilities = await getCallerAbilities();
-  const [settings, types] = await Promise.all([
+  const [settingsResult, itemTypes] = await Promise.all([
     runOperation({ operation: getAccountingSettings, input: {} }),
     listAll({ operation: listEntityTypes, input: { base: "ITEM" } }),
   ]);
-  if (!settings.ok)
-    return <ErrorState errorKey={handleLoadError({ error: settings.error, locale })} />;
-  if (!types.ok) return <ErrorState errorKey={handleLoadError({ error: types.error, locale })} />;
+  if (!settingsResult.ok)
+    return <ErrorState errorKey={handleLoadError({ error: settingsResult.error, locale })} />;
+  if (!itemTypes.ok)
+    return <ErrorState errorKey={handleLoadError({ error: itemTypes.error, locale })} />;
+  const settings = settingsResult.value;
+  const types = itemTypes.value.map(({ id, name }) => ({ id, name }));
+  const canEdit = can({ abilities, permission: "finance:write" });
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-8">
       <PageHeader title={t("title")} description={t("description")} />
-      <AccountingForm
-        settings={settings.value}
-        types={types.value.map(({ id, name }) => ({ id, name }))}
-        canEdit={can({ abilities, permission: "finance:write" })}
-      />
+      <FiscalYearSetting settings={settings} canEdit={canEdit} />
+      <section className="grid gap-3">
+        <h2 className="text-base font-semibold">{t("groups.accounts")}</h2>
+        <AccountsTable
+          tableId="finance.accounts"
+          rows={accountRows({ settings })}
+          settings={settings}
+          types={types}
+          grouped
+          emptyText={t("empty")}
+          canEdit={canEdit}
+        />
+      </section>
+      <RevenueAccountsSection settings={settings} types={types} canEdit={canEdit} />
+      {canEdit ? null : <p className="text-sm text-muted-foreground">{t("readOnly")}</p>}
     </div>
   );
 }

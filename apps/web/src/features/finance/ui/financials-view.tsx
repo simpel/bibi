@@ -5,14 +5,11 @@ import type {
   NumberFormat,
   PlainDate,
 } from "@bibi/core/schemas";
-import { useTranslations } from "next-intl";
+import { PageContainer, PageSection } from "@bibi/ui";
 import { ROUTES } from "@/lib/routes";
-import { plainDayText } from "@/lib/time/plain-day";
 import { CustomerFilter } from "./customer-filter";
-import { ExportHistory } from "./export-history";
-import { FinanceChartGrid } from "./finance-chart-grid";
-import { FinanceKpis } from "./finance-kpis";
-import { FinanceTables } from "./finance-tables";
+import { FinanceOpenSection } from "./finance-open-section";
+import { FinancePeriodSection } from "./finance-period-section";
 import { FinancialsHeader } from "./financials-header";
 import { PeriodSwitcher } from "./period-switcher";
 
@@ -28,37 +25,37 @@ export type FinancialsViewProps = {
   customerId: string | undefined;
 };
 
-/** The page body once everything is loaded. */
+/** The page body once everything is loaded: the period's money on top, today's below. */
 export function FinancialsView(props: FinancialsViewProps) {
   const { overview, exports, today, dates, numbers, canWrite } = props;
   const { customers, customerId } = props;
-  const t = useTranslations("finance");
   const period = { from: overview.from, to: overview.to };
-  const zone = { timeZone: overview.timeZone, dates };
   return (
-    <div className="grid gap-6">
-      <FinancialsHeader exportPeriod={canWrite ? period : null} today={today} />
-      <div className="flex flex-wrap items-center gap-2">
-        <PeriodSwitcher
-          period={period}
-          today={today}
-          base={ROUTES.financials}
-          customerId={customerId}
-        />
-        {customers.length > 0 ? (
-          <CustomerFilter period={period} customers={customers} customerId={customerId} />
-        ) : null}
-      </div>
-      <p className="text-sm text-muted-foreground">
-        {t("period.range", {
-          from: plainDayText({ day: overview.from, ...zone }),
-          to: plainDayText({ day: overview.to, ...zone }),
-        })}
-      </p>
-      <FinanceKpis overview={overview} numbers={numbers} />
-      <FinanceChartGrid overview={overview} numbers={numbers} />
-      <FinanceTables overview={overview} dates={dates} numbers={numbers} />
-      <ExportHistory exports={exports} dates={dates} canDownload={canWrite} />
-    </div>
+    <>
+      <PageSection>
+        <PageContainer className="grid gap-6 pb-10 sm:pb-12">
+          <FinancialsHeader exportPeriod={canWrite ? period : null} today={today} />
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <PeriodSwitcher
+              period={period}
+              today={today}
+              base={ROUTES.financials}
+              customerId={customerId}
+            />
+            {customers.length > 0 ? (
+              <CustomerFilter period={period} customers={customers} customerId={customerId} />
+            ) : null}
+          </div>
+          <FinancePeriodSection overview={overview} numbers={numbers} />
+        </PageContainer>
+      </PageSection>
+      <FinanceOpenSection
+        overview={overview}
+        exports={exports}
+        dates={dates}
+        numbers={numbers}
+        canDownload={canWrite}
+      />
+    </>
   );
 }

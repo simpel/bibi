@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { parseSkillFilters } from "@/features/skill/skill-filters";
 import { SkillList } from "@/features/skill/ui/skill-list";
@@ -12,5 +13,9 @@ export default async function SkillsPage({ params, searchParams }: SkillsPagePro
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   const filters = parseSkillFilters({ params: await searchParams });
-  return <SkillList locale={locale} filters={filters} />;
+  return (
+    <SimplePage>
+      <SkillList locale={locale} filters={filters} />
+    </SimplePage>
+  );
 }

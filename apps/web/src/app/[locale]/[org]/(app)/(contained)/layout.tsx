@@ -1,7 +1,9 @@
-import { PageContainer } from "@bibi/ui";
 import type { ReactNode } from "react";
 
-/** Lists, details, forms and settings: centred content (ADR 0038). Pages pick a narrower or wider tier themselves. */
+/**
+ * Lists, details, forms and settings (ADR 0038). The layout adds no container: a page is one
+ * `SimplePage`, or several `PageSection`s (edge to edge, each with a `PageContainer` inside).
+ */
 export default function ContainedLayout({ children }: { children: ReactNode }) {
-  return <PageContainer>{children}</PageContainer>;
+  return <>{children}</>;
 }

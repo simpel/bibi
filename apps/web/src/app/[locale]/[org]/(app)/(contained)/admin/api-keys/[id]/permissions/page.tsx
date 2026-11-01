@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionPage } from "@/features/permission/ui/permission-page";
 
@@ -8,5 +9,9 @@ export default async function ApiKeyPermissionsPage({ params }: ApiKeyPermission
   const { locale: rawLocale, id } = await params;
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
-  return <PermissionPage locale={locale} subjectType="apiKey" subjectId={id} />;
+  return (
+    <SimplePage>
+      <PermissionPage locale={locale} subjectType="apiKey" subjectId={id} />
+    </SimplePage>
+  );
 }

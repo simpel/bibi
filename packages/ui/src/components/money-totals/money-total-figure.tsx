@@ -1,6 +1,7 @@
 "use client";
 
 import { Card } from "../card/card";
+import { useRememberedValue } from "../hero-number/flow-memory";
 import { type MoneyFlowSettings, MoneyNumberFlow } from "../hero-number/money-number-flow";
 import {
   type MoneyTotalsSize,
@@ -33,10 +34,13 @@ export type MoneyTotalFigureProps = {
   flow: MoneyFlowSettings;
   size: MoneyTotalsSize;
   divided: boolean;
+  /** The figure's key in a `FlowMemory`. */
+  memoryKey?: string | undefined;
 };
 
 /** One labelled figure of `MoneyTotals`; at `lg` it is a tile. */
-export function MoneyTotalFigure({ item, flow, size, divided }: MoneyTotalFigureProps) {
+export function MoneyTotalFigure({ item, flow, size, divided, memoryKey }: MoneyTotalFigureProps) {
+  const shown = useRememberedValue({ key: memoryKey, value: item.minor ?? 0 });
   const tone = item.tone ?? "neutral";
   const Root = size === "lg" ? Card : "div";
   return (
@@ -50,11 +54,7 @@ export function MoneyTotalFigure({ item, flow, size, divided }: MoneyTotalFigure
         <span className="truncate">{item.label}</span>
       </dt>
       <dd className={moneyTotalAmountVariants({ size, tone })}>
-        {item.minor === null ? (
-          item.fallback
-        ) : (
-          <MoneyNumberFlow value={item.minor / 100} flow={flow} />
-        )}
+        {item.minor === null ? item.fallback : <MoneyNumberFlow value={shown / 100} flow={flow} />}
       </dd>
       {item.hint && size === "lg" ? (
         <dd className="text-xs text-muted-foreground">{item.hint}</dd>

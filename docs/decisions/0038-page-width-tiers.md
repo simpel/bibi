@@ -11,10 +11,10 @@
 ## Decision
 A page is either **contained** or a **canvas**. The choice is made by the route group, not by each page.
 
-- **Contained** (`app/[locale]/(app)/(contained)/`): lists, detail pages, forms, settings. Its layout wraps the page in `PageContainer` (`@bibi/ui`, cva `width`):
-  - `default` (`max-w-5xl`): the normal width, supplied by the layout.
-  - `narrow` (`max-w-2xl`): a form or reading page. The page nests `<PageContainer width="narrow" gutter={false}>`.
-  - `wide` (`max-w-7xl`): a table with many columns. Nested the same way.
+- **Contained** (`app/[locale]/(app)/(contained)/`): lists, detail pages, forms, settings. The layout adds no container; the page builds itself from sections (`@bibi/ui`):
+  - `PageSection`: a band that goes edge to edge. `tone` is `default`, `card` (the white band) or `muted`; `divided` adds a top border.
+  - `PageContainer`: the first child of a section; it centres and pads the content. `width` is `default` (`max-w-5xl`), `narrow` (`max-w-2xl`, a form or reading page) or `wide` (`max-w-7xl`, a table with many columns).
+  - `SimplePage`: one default section with one container, for the usual page. `page.tsx` wraps its feature in it. A page with several bands composes `PageSection` and `PageContainer` itself (Financials: the period on the page colour, what is open today on a `card` band).
 - **Canvas** (`app/[locale]/(app)/(canvas)/`): spatial, time-based or streaming pages. The layout fills the viewport below the top bar (`h-[calc(100dvh-3.5rem)]`) and adds no padding. The page decides which part is capped.
   - **Calendar:** a full-width toolbar row, and the grid scrolls on its own below it.
   - **Assistant home:** the transcript and the message box sit in a centred `max-w-3xl` column, with the message box at the bottom. The header and the scroll area span the full width.
@@ -22,6 +22,7 @@ A page is either **contained** or a **canvas**. The choice is made by the route 
 Rule of thumb: rows and fields that are read or scanned are contained. A grid on a time axis or a conversation stream is a canvas. A new page goes into one of the two groups, and the app shell itself adds no container.
 
 ## Consequences
+- A canvas page is only for a fixed one-screen height with its own scroll regions (the assistant, the calendar grid, the pipeline board). A page that merely wants a coloured band is contained.
 - Moving a page between tiers is moving its folder.
 - A canvas page owns its own gutter and its own scrolling.
 - Phones keep a 16px gutter on contained pages and on canvas toolbars and the message box.

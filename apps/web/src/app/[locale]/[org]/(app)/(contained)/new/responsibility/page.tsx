@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionGate } from "@/components/states/permission-gate";
 import { ResponsibilityCreate } from "@/features/responsibility/ui/responsibility-create";
@@ -9,8 +10,10 @@ export default async function NewResponsibilityPage({ params }: NewResponsibilit
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="responsibility:write">
-      <ResponsibilityCreate locale={locale} />
-    </PermissionGate>
+    <SimplePage>
+      <PermissionGate permission="responsibility:write">
+        <ResponsibilityCreate locale={locale} />
+      </PermissionGate>
+    </SimplePage>
   );
 }

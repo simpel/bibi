@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { VenueDetail } from "@/features/venue/ui/venue-detail";
 import { readCursor } from "@/lib/page-cursor";
@@ -13,5 +14,9 @@ export default async function VenuePage({ params, searchParams }: VenuePageProps
   const locale = resolveLocale({ value: rawLocale });
   const { itemCursor } = await searchParams;
   setRequestLocale(locale);
-  return <VenueDetail locale={locale} id={id} itemCursor={readCursor({ value: itemCursor })} />;
+  return (
+    <SimplePage>
+      <VenueDetail locale={locale} id={id} itemCursor={readCursor({ value: itemCursor })} />
+    </SimplePage>
+  );
 }

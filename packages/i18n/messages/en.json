@@ -285,8 +285,18 @@
       "saved": "The accounting settings have been saved.",
       "default": "Default {account}",
       "usesDefault": "Empty uses the default revenue account ({account})",
-      "noTypes": "There are no item types yet.",
       "revenueByTypeHint": "Revenue account per item type. Leave empty to use the default revenue account.",
+      "empty": "No accounts.",
+      "emptyRevenue": "No item types have their own account. They use the default revenue account.",
+      "add": "Add account",
+      "edit": "Edit account",
+      "editDescription": "Change the account number. The BAS default applies as a hint.",
+      "pickType": "Item type",
+      "columns": {
+        "name": "Name",
+        "group": "Group",
+        "account": "Account"
+      },
       "readOnly": "You can view these settings but not change them.",
       "groups": {
         "accounts": "Accounts",
@@ -353,8 +363,7 @@
       "outstanding": "Outstanding",
       "overdue": "Overdue",
       "exclVat": "Excluding VAT",
-      "netOfRefunds": "Refunds subtracted",
-      "today": "Today"
+      "netOfRefunds": "Refunds subtracted"
     },
     "period": {
       "label": "Period",
@@ -416,6 +425,10 @@
         "base": "Invoiced excluding VAT",
         "vat": "VAT"
       }
+    },
+    "now": {
+      "title": "Right now",
+      "description": "Open and overdue money, what is booked ahead and the SIE exports. Not tied to the period above."
     }
   },
   "nav": {

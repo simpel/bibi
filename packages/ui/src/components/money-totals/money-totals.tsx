@@ -12,6 +12,11 @@ export type MoneyTotalsProps = Omit<ComponentProps<"dl">, "children"> &
   VariantProps<typeof moneyTotalsVariants> & {
     items: readonly MoneyTotalItem[];
     flow: MoneyFlowSettings;
+    /**
+     * Names these totals in a `FlowMemory`, so after a remount (a filter in the URL changed)
+     * each amount animates from its last value.
+     */
+    memoryKey?: string;
   };
 
 /**
@@ -19,7 +24,8 @@ export type MoneyTotalsProps = Omit<ComponentProps<"dl">, "children"> &
  * (`sm`) and a toolbar (`md`) to a page's headline tiles (`lg`). Amounts are never rounded and
  * their digits animate together on change.
  */
-export function MoneyTotals({ items, flow, size, className, ...props }: MoneyTotalsProps) {
+export function MoneyTotals(props: MoneyTotalsProps) {
+  const { items, flow, size, memoryKey, className, ...rest } = props;
   if (items.length === 0) return null;
   const resolved: MoneyTotalsSize = size ?? "md";
   return (
@@ -27,7 +33,7 @@ export function MoneyTotals({ items, flow, size, className, ...props }: MoneyTot
       <dl
         data-slot="money-totals"
         className={cn(moneyTotalsVariants({ size: resolved }), className)}
-        {...props}
+        {...rest}
       >
         {items.map((item, index) => (
           <MoneyTotalFigure
@@ -36,6 +42,7 @@ export function MoneyTotals({ items, flow, size, className, ...props }: MoneyTot
             flow={flow}
             size={resolved}
             divided={index > 0}
+            memoryKey={memoryKey ? `${memoryKey}:${item.key}` : undefined}
           />
         ))}
       </dl>

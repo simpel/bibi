@@ -5,7 +5,7 @@ import { redirect } from "@/lib/navigation";
 
 type FinancialsStartProps = { params: Promise<{ locale: string; org: string }> };
 
-/** Bare `/financials`: the last 12 whole months, in the organization's zone. */
+/** Bare `/financials`: the default preset (`DEFAULT_PRESET`), in the organization's zone. */
 export default async function FinancialsStart({ params }: FinancialsStartProps) {
   const { locale, org } = await params;
   redirect({

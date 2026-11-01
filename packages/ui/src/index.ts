@@ -88,7 +88,7 @@ export { Label, type LabelProps } from "./components/label/label";
 export * from "./components/money-totals/money-total-figure";
 export * from "./components/money-totals/money-totals";
 export * from "./components/money-totals/money-totals-variants";
-export * from "./components/page-container/page-container";
+export * from "./components/page-layout/page-layout";
 export * from "./components/permission-profile-card/permission-chip-list";
 export * from "./components/permission-profile-card/permission-profile-card";
 export * from "./components/person-contact/contact-labels";

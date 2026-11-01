@@ -7,19 +7,31 @@ type Overview = Pick<
   "currency" | "invoicedExclVatMinor" | "receivedMinor" | "outstandingMinor" | "overdueMinor"
 >;
 
-export type FinanceKpisProps = { overview: Overview; numbers: NumberFormat };
+/** `period` = invoiced and received in the period; `open` = outstanding and overdue today. */
+export type FinanceKpiPart = "period" | "open";
+
+export type FinanceKpisProps = {
+  overview: Overview;
+  numbers: NumberFormat;
+  /** Left out: all four, e.g. in the assistant's card. */
+  part?: FinanceKpiPart;
+};
+
+const PART_KEYS: Record<FinanceKpiPart, readonly string[]> = {
+  period: ["invoiced", "received"],
+  open: ["outstanding", "overdue"],
+};
 
 type KpiItemsInput = {
   overview: Overview;
   t: (
-    key: "invoiced" | "received" | "outstanding" | "overdue" | "exclVat" | "netOfRefunds" | "today",
+    key: "invoiced" | "received" | "outstanding" | "overdue" | "exclVat" | "netOfRefunds",
   ) => string;
   fallback: string;
 };
 
 /** Received is secured money, outstanding still pending, overdue a problem once above zero. */
 function kpiItems({ overview, t, fallback }: KpiItemsInput): MoneyTotalItem[] {
-  const today = t("today");
   const items: MoneyTotalItem[] = [
     {
       key: "invoiced",
@@ -38,30 +50,34 @@ function kpiItems({ overview, t, fallback }: KpiItemsInput): MoneyTotalItem[] {
       key: "outstanding",
       label: t("outstanding"),
       minor: overview.outstandingMinor,
-      hint: today,
       tone: "pending",
     },
     {
       key: "overdue",
       label: t("overdue"),
       minor: overview.overdueMinor,
-      hint: today,
       tone: overview.overdueMinor ? "negative" : "neutral",
     },
   ];
   return items.map((item) => ({ ...item, fallback }));
 }
 
-/** Invoiced, received, outstanding and overdue; "No access" where the caller may not read payments. */
-export function FinanceKpis({ overview, numbers }: FinanceKpisProps) {
+/**
+ * One half of the headline figures: invoiced and received in the period, or outstanding and
+ * overdue today; "No access" where the caller may not read payments.
+ */
+export function FinanceKpis({ overview, numbers, part }: FinanceKpisProps) {
   const t = useTranslations("finance.kpi");
   const common = useTranslations("finance");
   return (
     <MoneyTotals
       data-slot="finance-kpis"
+      memoryKey={`finance-kpis-${part ?? "all"}`}
       size="lg"
       flow={numbers.moneyFlow({ currency: overview.currency })}
-      items={kpiItems({ overview, t, fallback: common("noAccessShort") })}
+      items={kpiItems({ overview, t, fallback: common("noAccessShort") }).filter(
+        ({ key }) => !part || PART_KEYS[part].includes(key),
+      )}
     />
   );
 }

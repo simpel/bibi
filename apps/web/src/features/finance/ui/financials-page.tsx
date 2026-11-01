@@ -1,5 +1,6 @@
 import { financeOverview, listCustomers } from "@bibi/core";
 import type { Locale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
@@ -37,7 +38,9 @@ export async function FinancialsPage({ locale, from, to, customerId }: Financial
     loadExportData(),
   ]);
   const fail = ({ error }: { error: Parameters<typeof handleLoadError>[0]["error"] }) => (
-    <ErrorState errorKey={handleLoadError({ error, locale })} />
+    <SimplePage>
+      <ErrorState errorKey={handleLoadError({ error, locale })} />
+    </SimplePage>
   );
   if (!overview.ok) return fail({ error: overview.error });
   if (!exports.ok) return fail({ error: exports.error });

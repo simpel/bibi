@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { ApiKeyUpdatePage } from "@/features/api-key/ui/api-key-update-page";
 
@@ -8,5 +9,9 @@ export default async function UpdateApiKeyPage({ params }: UpdateApiKeyPageProps
   const { locale: rawLocale, id } = await params;
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
-  return <ApiKeyUpdatePage locale={locale} id={id} />;
+  return (
+    <SimplePage>
+      <ApiKeyUpdatePage locale={locale} id={id} />
+    </SimplePage>
+  );
 }

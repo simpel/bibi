@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { ErrorState } from "@/components/states/error-state";
 import { PageHeader } from "@/components/states/page-header";
@@ -13,11 +14,17 @@ export default async function ApiKeysPage({ params }: ApiKeysPageProps) {
   setRequestLocale(locale);
   const t = await getTranslations("integration.apiKeys");
   if (!can({ abilities: await getCallerAbilities(), permission: "apiKey:read" }))
-    return <ErrorState errorKey="forbidden" />;
+    return (
+      <SimplePage>
+        <ErrorState errorKey="forbidden" />
+      </SimplePage>
+    );
   return (
-    <div className="grid gap-8">
-      <PageHeader title={t("title")} description={t("description")} />
-      <ApiKeySection locale={locale} />
-    </div>
+    <SimplePage>
+      <div className="grid gap-8">
+        <PageHeader title={t("title")} description={t("description")} />
+        <ApiKeySection locale={locale} />
+      </div>
+    </SimplePage>
   );
 }

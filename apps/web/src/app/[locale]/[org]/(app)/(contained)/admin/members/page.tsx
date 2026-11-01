@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { MemberList } from "@/features/member/ui/member-list";
 import { readCursor } from "@/lib/page-cursor";
@@ -12,5 +13,9 @@ export default async function MembersPage({ params, searchParams }: MembersPageP
   const locale = resolveLocale({ value: (await params).locale });
   const { cursor } = await searchParams;
   setRequestLocale(locale);
-  return <MemberList locale={locale} cursor={readCursor({ value: cursor })} />;
+  return (
+    <SimplePage>
+      <MemberList locale={locale} cursor={readCursor({ value: cursor })} />
+    </SimplePage>
+  );
 }

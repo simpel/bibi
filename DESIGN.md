@@ -228,7 +228,7 @@ Layout and spacing scale strictly on multiples of `0.25rem` (4px):
 ### Page Width Tiers (ADR 0038)
 Every page belongs to one of two structural categories:
 1. **Contained** (`app/[locale]/(app)/(contained)/`):
-   - Standard lists, forms, and detail views wrapped in `PageContainer`.
+   - Standard lists, forms, and detail views built from `PageSection` (edge to edge, `tone` default, card or muted) with a `PageContainer` as its first child; `SimplePage` is one of each.
    - `default` (`max-w-5xl`): Default layout container.
    - `narrow` (`max-w-2xl`): Dedicated single-column forms and reading views.
    - `wide` (`max-w-7xl`): Data-dense tables with numerous columns.

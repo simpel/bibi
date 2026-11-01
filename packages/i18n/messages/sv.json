@@ -285,8 +285,18 @@
       "saved": "Bokföringsinställningarna har sparats.",
       "default": "Standard {account}",
       "usesDefault": "Tomt använder standardkontot för försäljning ({account})",
-      "noTypes": "Det finns inga artikeltyper ännu.",
       "revenueByTypeHint": "Intäktskonto per artikeltyp. Lämna tomt för att använda standardkontot för försäljning.",
+      "empty": "Inga konton.",
+      "emptyRevenue": "Inga artikeltyper har något eget konto. De använder standardkontot för försäljning.",
+      "add": "Lägg till konto",
+      "edit": "Redigera konto",
+      "editDescription": "Ändra kontonumret. Standardvärdet enligt BAS visas som ledtext.",
+      "pickType": "Artikeltyp",
+      "columns": {
+        "name": "Namn",
+        "group": "Grupp",
+        "account": "Konto"
+      },
       "readOnly": "Du kan se de här inställningarna men inte ändra dem.",
       "groups": {
         "accounts": "Konton",
@@ -353,8 +363,7 @@
       "outstanding": "Utestående",
       "overdue": "Förfallet",
       "exclVat": "Exklusive moms",
-      "netOfRefunds": "Efter återbetalningar",
-      "today": "I dag"
+      "netOfRefunds": "Efter återbetalningar"
     },
     "period": {
       "label": "Period",
@@ -416,6 +425,10 @@
         "base": "Fakturerat exklusive moms",
         "vat": "Moms"
       }
+    },
+    "now": {
+      "title": "Just nu",
+      "description": "Öppna och förfallna belopp, det som är bokat framåt och SIE-exporterna. Gäller oavsett perioden ovan."
     }
   },
   "nav": {

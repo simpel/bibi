@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { ItemList } from "@/features/item/ui/item-list";
 import { readCursor } from "@/lib/page-cursor";
@@ -13,5 +14,9 @@ export default async function ItemsPage({ params, searchParams }: ItemsPageProps
   const { cursor, type } = await searchParams;
   setRequestLocale(locale);
   const typeId = readCursor({ value: type });
-  return <ItemList locale={locale} typeId={typeId} cursor={readCursor({ value: cursor })} />;
+  return (
+    <SimplePage>
+      <ItemList locale={locale} typeId={typeId} cursor={readCursor({ value: cursor })} />
+    </SimplePage>
+  );
 }

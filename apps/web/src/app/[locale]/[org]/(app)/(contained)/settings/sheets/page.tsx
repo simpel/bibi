@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { SheetDefinitionList } from "@/features/sheet-definition/ui/sheet-definition-list";
 import { readCursor } from "@/lib/page-cursor";
@@ -12,5 +13,9 @@ export default async function SheetsPage({ params, searchParams }: SheetsPagePro
   const locale = resolveLocale({ value: (await params).locale });
   const { cursor } = await searchParams;
   setRequestLocale(locale);
-  return <SheetDefinitionList locale={locale} cursor={readCursor({ value: cursor })} />;
+  return (
+    <SimplePage>
+      <SheetDefinitionList locale={locale} cursor={readCursor({ value: cursor })} />
+    </SimplePage>
+  );
 }

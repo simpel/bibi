@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionGate } from "@/components/states/permission-gate";
 import { PriceListUpdate } from "@/features/price-list/ui/price-list-update";
@@ -10,8 +11,10 @@ export default async function UpdatePriceListPage({ params }: UpdatePriceListPag
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="priceList:write">
-      <PriceListUpdate locale={locale} id={id} />
-    </PermissionGate>
+    <SimplePage>
+      <PermissionGate permission="priceList:write">
+        <PriceListUpdate locale={locale} id={id} />
+      </PermissionGate>
+    </SimplePage>
   );
 }

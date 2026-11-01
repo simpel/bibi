@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { MemberDetail } from "@/features/member/ui/member-detail";
 
@@ -8,5 +9,9 @@ export default async function MemberPage({ params }: MemberPageProps) {
   const { locale: rawLocale, id } = await params;
   const locale = resolveLocale({ value: rawLocale });
   setRequestLocale(locale);
-  return <MemberDetail locale={locale} id={id} />;
+  return (
+    <SimplePage>
+      <MemberDetail locale={locale} id={id} />
+    </SimplePage>
+  );
 }

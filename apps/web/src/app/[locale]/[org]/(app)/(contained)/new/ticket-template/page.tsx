@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { PermissionGate } from "@/components/states/permission-gate";
 import { TicketTemplateCreate } from "@/features/ticket-template/ui/ticket-template-create";
@@ -9,8 +10,10 @@ export default async function NewTicketTemplatePage({ params }: NewTicketTemplat
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);
   return (
-    <PermissionGate permission="template:write">
-      <TicketTemplateCreate locale={locale} />
-    </PermissionGate>
+    <SimplePage>
+      <PermissionGate permission="template:write">
+        <TicketTemplateCreate locale={locale} />
+      </PermissionGate>
+    </SimplePage>
   );
 }

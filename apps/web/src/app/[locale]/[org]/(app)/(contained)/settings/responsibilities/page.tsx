@@ -1,4 +1,5 @@
 import { resolveLocale } from "@bibi/i18n";
+import { SimplePage } from "@bibi/ui";
 import { setRequestLocale } from "next-intl/server";
 import { ResponsibilityList } from "@/features/responsibility/ui/responsibility-list";
 import { readCursor } from "@/lib/page-cursor";
@@ -15,5 +16,9 @@ export default async function ResponsibilitiesPage({
   const locale = resolveLocale({ value: (await params).locale });
   const { cursor } = await searchParams;
   setRequestLocale(locale);
-  return <ResponsibilityList locale={locale} cursor={readCursor({ value: cursor })} />;
+  return (
+    <SimplePage>
+      <ResponsibilityList locale={locale} cursor={readCursor({ value: cursor })} />
+    </SimplePage>
+  );
 }
