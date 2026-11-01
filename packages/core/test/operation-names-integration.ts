@@ -50,6 +50,7 @@ const ORGANIZATION_NAMES = [
   "organizationProfile.get",
   "organizationProfile.update",
   "organizationProfile.setSetupStatus",
+  "organizationProfile.setDomainJoin",
 ];
 
 /** A member's work in the organization: schedule kind and staff items (ADR 0068). */

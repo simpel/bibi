@@ -12,6 +12,7 @@ export const PEOPLE_FIELD_KEYS = [
   "currencyDisplay",
   "days",
   "exceptions",
+  "enabled",
 ] as const;
 
 /** Assignment, member profile and own settings commands with a label in `assistant.approval.operations`. */
@@ -24,4 +25,5 @@ export const PEOPLE_OPERATION_KEYS = [
   "userSettings_update",
   "venueHours_set",
   "itemHours_set",
+  "organizationProfile_setDomainJoin",
 ] as const;

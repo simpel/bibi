@@ -14,6 +14,7 @@ export {
   getFirstPartyAccessToken,
 } from "./first-party/get-first-party-access-token";
 export { getAuth } from "./get-auth";
+export { findInvitationByCode } from "./invitations/find-invitation-by-code";
 export { invitationMailHook } from "./invitations/invitation-mail-hook";
 export { authHandler, handleAuthRequest } from "./next";
 export {
@@ -23,11 +24,17 @@ export {
   type SlugCheck,
   type SlugStatus,
 } from "./organization/check-slug";
+export { joinOffer } from "./organization/join-offer";
+export {
+  type JoinableOrganizations,
+  loadJoinableOrganizations,
+} from "./organization/joinable-organizations";
 export {
   type IsReservedSlugInput,
   isReservedSlug,
   RESERVED_SLUGS,
 } from "./organization/reserved-slugs";
+export { setPrimaryOrganization } from "./organization/set-primary-organization";
 export { accessControl, orgRoles } from "./permissions";
 export { type IsPlatformAdminInput, isPlatformAdmin } from "./platform/is-platform-admin";
 export {

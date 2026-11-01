@@ -4,7 +4,11 @@ import type { OrganizationProfileDto, OrganizationProfileUpdateInput, SetupStatu
 
 export type SaveOrganizationProfileInput = {
   context: Pick<OperationContext, "db" | "organizationId" | "recordChange">;
-  data: OrganizationProfileUpdateInput & { setupStatus?: SetupStatus };
+  data: OrganizationProfileUpdateInput & {
+    setupStatus?: SetupStatus;
+    emailDomain?: string;
+    domainJoin?: boolean;
+  };
 };
 
 /**

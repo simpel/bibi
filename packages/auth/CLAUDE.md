@@ -15,6 +15,13 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 - Web client: `createAuthClient({})` from `@bibi/auth/client` (imports no server code).
 - `Organization.id` = `organizationId` on all business rows. No FK (Better Auth owns the tables).
 
+## Domain join, invite codes and the primary organization (ADR 0076)
+- Nothing joins on sign-in. `/welcome` reads `loadJoinableOrganizations({ userId, email })`: core `domainOffers` (organizations claiming the user's verified domain with `domainJoin` on, minus `KnownMember`s, members and invitees), pending invitations and memberships. `joinOffer` joins one on click (core `joinDomainOffer` re-checks the claim; member preset, `KnownMember` row, SYSTEM audit row).
+- `findInvitationByCode({ code, email })`: pending, unexpired, and only for the invited email; the web action then accepts it with `auth.api.acceptInvitation`, so hooks and role match the mailed link. The invitation mail prints the code.
+- `setPrimaryOrganization` sets `Member.primary` (one per user, cleared first in one transaction); `defaultActiveOrganization` starts there, else in the oldest membership.
+- `prefillMemberHook` (`afterAddMember`, `afterAcceptInvitation`) also calls `recordKnownMember` (`@bibi/core/known-member`), so a removed or departed member is never offered the organization again.
+- `afterCreateOrganization` passes the creator to `provisionOrganization`, which claims their verified work domain. Never let a domain be typed in: it must come from a verified address (`emailDomainOf` refuses public providers).
+
 ## Superadmin (ADR 0015)
 - Admin plugin: `user.role` (`user`/`superadmin`, `SUPERADMIN_ROLE` in core) and ban. The context carries `platformRole: "superadmin"`. **All** `/admin/*` endpoints are disabled (`DISABLED_ADMIN_PATHS`). Roles are set with `pnpm --filter @bibi/auth grant-superadmin <email> [--revoke]` (`setPlatformAdmin`, writes AuditLog).
 - `resolvePlatformContext({ headers })`: session cookie only, the role is read live (`isPlatformAdmin`), impersonated sessions are denied. API keys and OAuth tokens give `FORBIDDEN`.

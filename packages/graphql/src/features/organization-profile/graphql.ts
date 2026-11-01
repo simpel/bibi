@@ -2,6 +2,7 @@ import {
   getOrganizationProfile,
   type OrganizationProfileDto,
   OrganizationProfileSchema,
+  setOrganizationDomainJoin,
   setOrganizationSetupStatus,
   updateOrganizationProfile,
 } from "@bibi/core";
@@ -21,3 +22,4 @@ fieldFromOperation({
 });
 mutationFromOperation({ operation: updateOrganizationProfile, type: OrganizationProfileRef });
 mutationFromOperation({ operation: setOrganizationSetupStatus, type: OrganizationProfileRef });
+mutationFromOperation({ operation: setOrganizationDomainJoin, type: OrganizationProfileRef });

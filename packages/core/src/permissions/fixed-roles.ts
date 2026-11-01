@@ -10,6 +10,9 @@ export type FixedRole = (typeof FIXED_ROLES)[number];
 /** The organization role with every permission. Every organization keeps at least one. */
 export const ADMIN_ROLE = "admin" satisfies FixedRole;
 
+/** The weakest role: what someone who joins by email domain gets (ADR 0076). */
+export const MEMBER_ROLE = "member" satisfies FixedRole;
+
 /**
  * `user.role` of a superadmin (ADR 0015): runs the whole platform (`/admin`). A platform role,
  * not an organization role; it grants nothing inside an organization by itself.

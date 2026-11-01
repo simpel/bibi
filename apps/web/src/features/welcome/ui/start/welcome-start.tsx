@@ -1,7 +1,7 @@
 import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/navigation";
-import { welcomePath } from "../../lib/welcome-step";
+import { JOIN_PATHS } from "../../lib/join-paths";
 import { WelcomeStepFrame } from "../welcome-step-frame";
 import { InvitationList } from "./invitation-list";
 import { OrganizationList } from "./organization-list";
@@ -15,6 +15,9 @@ export function WelcomeStart({ email }: { email: string }) {
         <Card>
           <CardContent className="grid gap-6 pt-6">
             <InvitationList email={email} />
+            <Button asChild variant="ghost" className="w-full">
+              <Link href={JOIN_PATHS.code}>{t("haveCode")}</Link>
+            </Button>
             <OrganizationList />
           </CardContent>
         </Card>
@@ -25,7 +28,7 @@ export function WelcomeStart({ email }: { email: string }) {
           </CardHeader>
           <CardContent>
             <Button asChild className="w-full">
-              <Link href={`${welcomePath()}/new`}>{t("create")}</Link>
+              <Link href={JOIN_PATHS.create}>{t("create")}</Link>
             </Button>
           </CardContent>
         </Card>

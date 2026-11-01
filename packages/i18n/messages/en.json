@@ -1618,6 +1618,7 @@
         "itemIds": "Staff items",
         "days": "Days",
         "exceptions": "Exceptions",
+        "enabled": "On",
         "boardId": "Board",
         "phaseId": "Column",
         "statusIds": "Statuses",
@@ -1718,6 +1719,7 @@
         "memberProfile_setItems": "Link staff items to a member",
         "venueHours_set": "Set opening hours",
         "itemHours_set": "Set working hours",
+        "organizationProfile_setDomainJoin": "Turn domain join on or off",
         "board_create": "Create board",
         "board_update": "Update board",
         "board_reorder": "Reorder boards",
@@ -2350,7 +2352,14 @@
     "description": "Settings that apply to the whole organization.",
     "timeZone": "Time zone",
     "timeZoneHint": "Ticket times and every venue without its own zone use this zone. Changing it changes how times are shown and entered; saved times stay the same.",
-    "saved": "The time zone has been saved."
+    "saved": "The time zone has been saved.",
+    "domainJoin": {
+      "label": "Colleagues can join by email domain",
+      "hint": "Anyone who signs in with a verified @{domain} email is offered to join as a member. Someone you remove is not offered it again.",
+      "noDomain": "No email domain yet. Turn this on while signed in with a verified work email to use its domain.",
+      "turnedOn": "Colleagues with your email domain are now offered to join when they sign in.",
+      "turnedOff": "Colleagues now need an invitation to join."
+    }
   },
   "userSettings": {
     "dateFormat": "Date format",
@@ -3148,7 +3157,37 @@
       "noInvitations": "No invitations for {email}. Ask your admin to invite this email.",
       "createTitle": "Create a new organization",
       "createDescription": "Set up Bibi for your venue.",
-      "create": "Create organization"
+      "create": "Create organization",
+      "haveCode": "Have an invite code?"
+    },
+    "join": {
+      "offerTitle": "Join {organization}",
+      "offerDescription": "Your colleagues at {domain} use Bibi in {organization}.",
+      "joinOrganization": "Join {organization}",
+      "different": "Join a different organization",
+      "createInstead": "Create a new organization instead",
+      "join": "Join",
+      "joining": "Joining {organization}…",
+      "joined": "You have joined {organization}.",
+      "codeTitle": "Join a different organization",
+      "codeDescription": "Enter the code from your invitation email.",
+      "code": "Invite code",
+      "codeHint": "The code works only for the email address the invitation was sent to.",
+      "useCode": "Join",
+      "checkingCode": "Checking the code…",
+      "codeAccepted": "You have joined the organization.",
+      "listTitle": "Your organizations",
+      "listDescription": "Join the organizations you work in, then pick the one Bibi opens first.",
+      "member": "You are a member",
+      "isMember": "Joined",
+      "byDomain": "Open to everyone at {domain}",
+      "invited": "You are invited",
+      "nothing": "There is nothing to join yet. Ask your admin for an invitation.",
+      "primary": "Primary organization",
+      "primaryHint": "Bibi opens this organization when you sign in.",
+      "continue": "Continue to {organization}",
+      "finishing": "Opening…",
+      "finished": "{organization} is your primary organization."
     },
     "new": {
       "title": "Name your organization",

@@ -13,4 +13,12 @@ export const organizationProfileMcpTools = [
     summary: ({ input }) =>
       `Set the organization's first setup to ${text({ value: input.setupStatus })}`,
   }),
+  mcpTool({
+    operation: "organizationProfile.setDomainJoin",
+    idempotent: true,
+    summary: ({ input }) =>
+      input.enabled
+        ? "Offer the organization to colleagues with its email domain"
+        : "Stop offering the organization by email domain",
+  }),
 ];

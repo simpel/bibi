@@ -1618,6 +1618,7 @@
         "itemIds": "Personalresurser",
         "days": "Dagar",
         "exceptions": "Undantag",
+        "enabled": "På",
         "boardId": "Tavla",
         "phaseId": "Kolumn",
         "statusIds": "Ärendestatusar",
@@ -1718,6 +1719,7 @@
         "memberProfile_setItems": "Koppla personalresurser till medlem",
         "venueHours_set": "Ange öppettider",
         "itemHours_set": "Ange arbetstider",
+        "organizationProfile_setDomainJoin": "Slå på eller av anslutning via e-postdomän",
         "board_create": "Skapa tavla",
         "board_update": "Ändra tavla",
         "board_reorder": "Ändra ordning på tavlor",
@@ -2350,7 +2352,14 @@
     "description": "Inställningar som gäller hela organisationen.",
     "timeZone": "Tidszon",
     "timeZoneHint": "Ärendets tider och varje anläggning utan egen zon använder den här zonen. En ändring påverkar hur tider visas och skrivs in; sparade tider ändras inte.",
-    "saved": "Tidszonen har sparats."
+    "saved": "Tidszonen har sparats.",
+    "domainJoin": {
+      "label": "Kollegor kan gå med via e-postdomän",
+      "hint": "Den som loggar in med en verifierad @{domain}-adress erbjuds att gå med som medlem. Den du tar bort erbjuds det inte igen.",
+      "noDomain": "Ingen e-postdomän än. Slå på det här när du är inloggad med en verifierad jobbadress så används dess domän.",
+      "turnedOn": "Kollegor med er e-postdomän erbjuds nu att gå med när de loggar in.",
+      "turnedOff": "Kollegor behöver nu en inbjudan för att ansluta."
+    }
   },
   "userSettings": {
     "dateFormat": "Datumformat",
@@ -3148,7 +3157,37 @@
       "noInvitations": "Inga inbjudningar för {email}. Be din admin att bjuda in den här e-postadressen.",
       "createTitle": "Skapa en ny organisation",
       "createDescription": "Sätt upp Bibi för din anläggning.",
-      "create": "Skapa organisation"
+      "create": "Skapa organisation",
+      "haveCode": "Har du en inbjudningskod?"
+    },
+    "join": {
+      "offerTitle": "Gå med i {organization}",
+      "offerDescription": "Dina kollegor på {domain} använder Bibi i {organization}.",
+      "joinOrganization": "Gå med i {organization}",
+      "different": "Gå med i en annan organisation",
+      "createInstead": "Skapa en ny organisation i stället",
+      "join": "Gå med",
+      "joining": "Går med i {organization}…",
+      "joined": "Du är nu med i {organization}.",
+      "codeTitle": "Gå med i en annan organisation",
+      "codeDescription": "Skriv in koden från din inbjudan.",
+      "code": "Inbjudningskod",
+      "codeHint": "Koden fungerar bara för e-postadressen som inbjudan skickades till.",
+      "useCode": "Gå med",
+      "checkingCode": "Kontrollerar koden…",
+      "codeAccepted": "Du är nu med i organisationen.",
+      "listTitle": "Dina organisationer",
+      "listDescription": "Gå med i organisationerna du jobbar i och välj sedan den som Bibi öppnar först.",
+      "member": "Du är medlem",
+      "isMember": "Med",
+      "byDomain": "Öppen för alla på {domain}",
+      "invited": "Du är inbjuden",
+      "nothing": "Det finns inget att gå med i än. Be din admin om en inbjudan.",
+      "primary": "Primär organisation",
+      "primaryHint": "Bibi öppnar den här organisationen när du loggar in.",
+      "continue": "Fortsätt till {organization}",
+      "finishing": "Öppnar…",
+      "finished": "{organization} är din primära organisation."
     },
     "new": {
       "title": "Namnge din organisation",

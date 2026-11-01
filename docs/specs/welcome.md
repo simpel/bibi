@@ -25,6 +25,22 @@ Locale prefix (`/sv`, `/en`) omitted.
 - Step pages show "Step n of m" and have Back and Continue.
 - The app layout runs the same check as the router, so a member with an open step always lands back in the flow.
 
+## Joining (ADR 0076)
+```
+/welcome                          a verified work domain claimed by an organization?
+├─ yes ─► "Join <organization>"   [Join <organization>] → /welcome/organizations
+│         ghost: Join a different organization → /welcome/join
+│         link: Create a new organization instead → /welcome/new
+└─ no ──► your orgs · invitations · "Have an invite code?" · Create new
+/welcome/join[/<code>]            invite code from the invitation mail → /welcome/organizations
+/welcome/organizations            joined (ticked) · offered by domain [Join] · invited [Join]
+                                  Primary organization (when more than one) · Continue → /:org/welcome
+```
+- Nobody is added without clicking Join. An organization is offered when it claims the user's verified work domain with domain join on, unless the user has been a member there before (removed or left) or has a pending invitation (shown as an invitation instead).
+- An invite code works only for the invited email, while the invitation is pending; it is accepted through Better Auth like the mailed link.
+- The primary organization is where a new session starts; with one membership it is that one.
+- Creating an organization claims the creator's verified work domain (never a public provider). Admins turn it off or on in `/settings/organization`, which shows the domain.
+
 ## `/welcome`
 - **Your organizations:** each one links to `/:slug/welcome`.
 - **Invitations:** pending invitations for the signed-in email, each showing the organization and the role, with Accept. With none: "No invitations for anna@example.se. Ask your admin to invite this email."

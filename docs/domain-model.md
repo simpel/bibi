@@ -1004,6 +1004,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - status (pending / accepted / rejected / canceled)
 - inviter
 - expires (48 hours after it was sent)
+- code (owned, 8 characters, unique; [ADR 0076](decisions/0076-domain-join.md)): printed in the invitation mail and typed in on `/welcome/join`; accepted only for the invited email
 
 **Relations**
 - `N:1` is sent by → User
@@ -1151,10 +1152,26 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - streetAddress, postalCode, city, country (default `SE`)
 - website, contactEmail, contactPhone
 - timeZone (owned, IANA name, required; existing rows backfilled `Europe/Stockholm`; ADR 0064): the zone of ticket-level times and the default of every venue, read only through `effectiveTimeZone`. Editable in `/settings/organization`.
+- emailDomain (owned, lowercase, optional; [ADR 0076](decisions/0076-domain-join.md)): the work email domain whose verified users are offered to join as members. Never typed in: taken from the creator's verified email at creation, and from the admin who turns domain join on (their own domain replaces the stored one). Public mail providers never count.
+- domainJoin (owned, default on; ADR 0076): the admin's switch. It takes effect only while emailDomain is set.
 
 > **Target (ADR 0064):** the zone is chosen when the organization is created (`/welcome/new`).
 
-> Operations: `organizationProfile.get` and `organizationProfile.update` (setup feature), `organizationProfile.setSetupStatus` (`pipeline:write`). While the status is `PENDING`, `/:org/welcome` sends members who can do the setup through it and everyone else to a waiting page.
+> Operations: `organizationProfile.get` and `organizationProfile.update` (setup feature), `organizationProfile.setSetupStatus` (`pipeline:write`), `organizationProfile.setDomainJoin` (`member:write`, admins only). While the status is `PENDING`, `/:org/welcome` sends members who can do the setup through it and everyone else to a waiting page.
+
+### KnownMember (`KnownMember`)
+
+*MVP* · A user who has been a member of the organization ([ADR 0076](decisions/0076-domain-join.md)). Append-only and owned: written by domain join (with the `Member` row and a SYSTEM audit row `member.joinByDomain`), by Better Auth's `afterAddMember` and `afterAcceptInvitation` (`recordKnownMember`), and by domain join when it finds an existing member; today's members were backfilled.
+
+**Attributes**
+- user, unique per organization
+
+**Relations**
+- `N:1` belongs to → Organization
+
+> Domain join never offers the organization to a user with a row, so someone removed or who left stays out until invited. A user with a pending invitation is not offered it: the invitation's role wins.
+>
+> Related (ADR 0076): `Member.primary` (owned, Better Auth's table, at most one per user) marks the user's primary organization, where a new session starts; chosen on `/welcome/organizations`.
 
 ### Task
 

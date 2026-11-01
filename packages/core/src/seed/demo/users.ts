@@ -1,5 +1,6 @@
 import type { Db } from "@bibi/db";
 import { createId } from "@paralleldrive/cuid2";
+import type { OrganizationCreator } from "../../organization/claim-creator-domain";
 import { ADMIN_ROLE } from "../../permissions/fixed-roles";
 import type { DemoOrg, DemoUser } from "./types";
 
@@ -57,4 +58,14 @@ export async function bootstrapDemoOrg({ db, org }: BootstrapDemoOrgInput) {
     userIds.set(user.name, userId);
   }
   return { organizationId, members, userIds };
+}
+
+export type DemoCreatorInput = { org: DemoOrg; userIds: DemoUserIds };
+
+/** The first admin, standing in for whoever signed up and created the organization (ADR 0076). */
+export function demoCreator({ org, userIds }: DemoCreatorInput): OrganizationCreator | undefined {
+  const admin = org.users.find((user) => user.role === ADMIN_ROLE);
+  const userId = admin ? userIds.get(admin.name) : undefined;
+  if (!admin || !userId) return undefined;
+  return { userId, email: demoEmail({ org, user: admin }), emailVerified: true };
 }

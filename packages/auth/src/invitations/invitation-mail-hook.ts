@@ -4,7 +4,7 @@ import { sendAuthMail } from "../mail";
 import { webUrl } from "../urls";
 
 /**
- * Sends the invitation link after `member.invite` committed (core cannot reach mail). Every
+ * Sends the invitation link and its invite code (ADR 0076) after `member.invite` committed (core cannot reach mail). Every
  * surface that runs commands passes it to `execute`; a failed send is logged, never undone.
  */
 export const invitationMailHook: AfterCommitHook = async ({ operation, output }) => {
@@ -14,6 +14,7 @@ export const invitationMailHook: AfterCommitHook = async ({ operation, output })
     email: true,
     organizationId: true,
     inviterId: true,
+    code: true,
   }).parse(output);
   const [organization, inviter] = await Promise.all([
     getDb().organization.findUniqueOrThrow({ where: { id: invitation.organizationId } }),
@@ -24,6 +25,25 @@ export const invitationMailHook: AfterCommitHook = async ({ operation, output })
     kind: "auth.invitation",
     to: invitation.email,
     subject: `Invitation to ${organization.name} on Bibi`,
-    text: `${inviter.name} has invited you to ${organization.name}.\n\nAccept: ${url}`,
+    text: invitationText({
+      inviter: inviter.name,
+      organization: organization.name,
+      url,
+      code: invitation.code,
+    }),
   });
 };
+
+type InvitationTextInput = {
+  inviter: string;
+  organization: string;
+  url: string;
+  code: string | null;
+};
+
+/** The mail body: the link, and the code for "Join a different organization" in Bibi (ADR 0076). */
+function invitationText({ inviter, organization, url, code }: InvitationTextInput): string {
+  const accept = `${inviter} has invited you to ${organization}.\n\nAccept: ${url}`;
+  if (!code) return accept;
+  return `${accept}\n\nOr sign in to Bibi, choose "Join a different organization" and enter the code ${code}.`;
+}

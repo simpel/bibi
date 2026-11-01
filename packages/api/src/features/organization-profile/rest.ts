@@ -13,4 +13,9 @@ export const organizationProfileRoutes = [
     method: "PUT",
     path: "/organization-profile/setup-status",
   }),
+  restRoute({
+    operation: "organizationProfile.setDomainJoin",
+    method: "PUT",
+    path: "/organization-profile/domain-join",
+  }),
 ];

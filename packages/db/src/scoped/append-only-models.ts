@@ -10,5 +10,6 @@ export const APPEND_ONLY_MODELS = new Set<string>([
   "Message",
   "InboundEmail",
   "SheetRecipient",
+  "KnownMember",
   ...DOMAIN_HISTORY_MODELS,
 ]);

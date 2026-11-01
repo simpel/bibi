@@ -1,5 +1,6 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
+import { setOrganizationDomainJoin } from "./domain-join-operation";
 import { EMPTY_ORGANIZATION_PROFILE, loadOrganizationProfile } from "./load-organization-profile";
 import { saveOrganizationProfile } from "./save-organization-profile";
 import {
@@ -57,4 +58,7 @@ export const organizationProfileOperations = [
   getOrganizationProfile,
   updateOrganizationProfile,
   setOrganizationSetupStatus,
+  setOrganizationDomainJoin,
 ];
+
+export { setOrganizationDomainJoin };

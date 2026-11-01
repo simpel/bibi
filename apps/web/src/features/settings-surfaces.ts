@@ -14,6 +14,8 @@ export const SETTINGS_SURFACES: readonly WebSurface[] = [
   { operation: "member.invite", route: "/admin/members" },
   { operation: "member.listInvitations", route: "/admin/members" },
   { operation: "member.cancelInvitation", route: "/admin/members" },
+  // Domain join sits with the organization's other settings (ADR 0076).
+  { operation: "organizationProfile.setDomainJoin", route: "/settings/organization" },
   { operation: "paymentAccount.get", route: "/settings/payments" },
   { operation: "paymentAccount.startOnboarding", route: "/settings/payments" },
   { operation: "paymentAccount.sync", route: "/settings/payments" },

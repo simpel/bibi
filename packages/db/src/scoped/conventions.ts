@@ -21,6 +21,8 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   // Append-only domain history (ADR 0054): `changedAt` and `changedBy` say when and who.
   ["TicketStatusChange", ["createdAt", "updatedAt", "createdBy"]],
   ["LineStateChange", ["createdAt", "updatedAt", "createdBy"]],
+  // Append-only (ADR 0076): users who have been members, written by SYSTEM.
+  ["KnownMember", ["updatedAt", "createdBy"]],
   // Derived search index, rebuilt from its entity; not authored by anyone.
   ["Embedding", ["createdBy"]],
   // Better Auth tables (shape owned by Better Auth); `inviterId` records the inviter.

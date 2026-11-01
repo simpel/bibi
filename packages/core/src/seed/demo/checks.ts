@@ -12,6 +12,7 @@ import { checkDemoBundles } from "./bundle-checks";
 import { checkDemoConfig } from "./config-checks";
 import { checkDemoCustomisations } from "./customisation-checks";
 import { checkDemoDensity } from "./density-checks";
+import { checkDemoDomainJoin } from "./domain-join-checks";
 import { checkDemoFactGuards } from "./fact-guard-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
@@ -71,7 +72,7 @@ export type CheckDemoOrgInput = { context: ExecuteContext; org: DemoOrg; skipPip
  * moves the grid drives (`checkDemoGrid`), every line's effective price and inherited quantity
  * (`checkDemoPrices`, ADR 0052), the expanded bundles' part lines and per-rate VAT
  * (`checkDemoBundles`, ADR 0059), every line's setup and teardown buffers (`checkDemoBuffers`, ADR
- * 0059), the allocated units' holds (`checkDemoAllocations`, ADR 0059), the derived balances (`checkDemoPayments`, ADR 0057), the organization's and venue's zones (`checkDemoTimeZones`, ADR 0064), every projection against its owned data
+ * 0059), the allocated units' holds (`checkDemoAllocations`, ADR 0059), the derived balances (`checkDemoPayments`, ADR 0057), the organization's and venue's zones (`checkDemoTimeZones`, ADR 0064), the claimed email domain (`checkDemoDomainJoin`, ADR 0076), every projection against its owned data
  * (`reconcileProjections`, ADR 0051), and every write
  * was audited as SYSTEM. Returns failure messages.
  */
@@ -104,6 +105,7 @@ export async function checkDemoOrg({
   failures.push(...(await checkDemoRecords({ context, org })));
   failures.push(...(await checkDemoSetupNeed({ context, org, skipPipeline })));
   failures.push(...(await checkDemoTimeZones({ context, org })));
+  failures.push(...(await checkDemoDomainJoin({ context, org })));
   failures.push(...(await checkDemoHours({ context, org })));
   failures.push(...(await checkDemoUserSettings({ context, org })));
   if (skipPipeline) return [...failures, ...(await auditFailures({ context, org }))];
@@ -117,14 +119,18 @@ const SELF_SEEDED = ["profile", "workingHours", "userSettings"] as const;
 
 /**
  * Check 7 (ADR 0025): every write must have an audit row as SYSTEM, except each user's own
- * profile, hours and settings (ADR 0061, 0046), which `self:*` operations save as that user.
+ * profile, hours and settings (ADR 0061, 0046), which `self:*` operations save as that user, and
+ * the creator's claim of their email domain (ADR 0076), which a real signup makes as the creator.
  */
 async function auditFailures({ context, org }: CheckDemoOrgInput): Promise<string[]> {
   const notSystem = await context.db.auditLog.count({
     where: {
       organizationId: context.organizationId,
       actorType: { not: "SYSTEM" },
-      NOT: { actorType: "USER", entityType: { in: [...SELF_SEEDED] } },
+      NOT: [
+        { actorType: "USER", entityType: { in: [...SELF_SEEDED] } },
+        { actorType: "USER", operation: "organizationProfile.setDomainJoin" },
+      ],
     },
   });
   return notSystem > 0 ? [`${org.slug}: ${notSystem} audit rows not by SYSTEM`] : [];

@@ -72,6 +72,7 @@ export const ORG_SCOPED_MODELS = new Set<string>([
   "Apikey",
   "OauthGrantRevocation",
   "OrganizationProfile",
+  "KnownMember",
 ]);
 
 /** Global tables (ADR 0006): Better Auth's, shared across organizations, refused by `scopedDb`. */

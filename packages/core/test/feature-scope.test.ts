@@ -30,6 +30,8 @@ const PERMISSION_EXCEPTIONS: Readonly<Record<string, string>> = {
   "organizationProfile.setSetupStatus":
     "the first setup status gates activating a pipeline (ADR 0061), so who may set up the " +
     "pipeline (pipeline:write) may finish or skip it; the profile itself is configuration",
+  "organizationProfile.setDomainJoin":
+    "domain join decides who becomes a member (ADR 0076), so it needs the admin-locked member:write",
 };
 
 /** Key prefix → the feature that owns data named like that. */

@@ -4,6 +4,7 @@ import { err, ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import { pageArgs } from "../../shared/page-input";
 import { paginate } from "../../shared/paginate";
+import { newInvitationCode } from "./invitation-code";
 import { findInvitationConflict } from "./invitation-conflict";
 import { checkCanGrantRole } from "./role-access";
 import {
@@ -24,7 +25,7 @@ export const inviteMember = defineOperation({
   entityType: "invitation",
   description:
     "Invite a person by email to join the organization as staff with one fixed role (member, " +
-    "manager or admin). They get an email with a link and become a " +
+    "manager or admin). They get an email with a link and a code, and become a " +
     "member when they accept. You cannot invite with a role above your own.",
   input: MemberInviteInputSchema,
   output: InvitationSchema,
@@ -46,6 +47,7 @@ export const inviteMember = defineOperation({
         email,
         role: input.role,
         status: "pending",
+        code: newInvitationCode(),
         inviterId,
         expiresAt: new Date(now.getTime() + INVITATION_TTL_MS),
         createdAt: now,

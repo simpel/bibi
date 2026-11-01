@@ -18,7 +18,7 @@ import { seedDemoRoles } from "./seed-roles";
 import { seedSharedMember } from "./seed-shared-member";
 import { seedDemoStaff } from "./seed-staff";
 import type { DemoOrg } from "./types";
-import { bootstrapDemoOrg } from "./users";
+import { bootstrapDemoOrg, demoCreator } from "./users";
 
 /** The demo organizations, in seed order (`docs/demo-seed.md`). */
 export const DEMO_ORGS: readonly DemoOrg[] = [lindholmen, vingaleden];
@@ -85,15 +85,16 @@ async function seedSlices({
 async function seedOne({ db, org, skipPipeline }: SeedOneInput): Promise<Result<string>> {
   await resetDemoOrg({ db, org });
   const { organizationId, members, userIds } = await bootstrapDemoOrg({ db, org });
-  // What Better Auth's afterCreateOrganization hook does for a real signup.
-  // `--skip-pipeline` leaves the welcome setup to do (ADR 0061).
+  // Better Auth's afterCreateOrganization; `--skip-pipeline` leaves the welcome setup (ADR 0061).
   const setupStatus = skipPipeline ? "PENDING" : "COMPLETED";
+  const creator = demoCreator({ org, userIds });
   const provisioned = await provisionOrganization({
     organizationId,
     timeZone: org.timeZone,
     db,
     pipeline: "none",
     setupStatus,
+    ...(creator ? { creator } : {}),
   });
   if (!provisioned.ok) return provisioned;
   const context = createExecuteContext({

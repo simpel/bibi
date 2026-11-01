@@ -15,6 +15,8 @@ export const ORGANIZATION_PROFILE_SELECT = {
   contactEmail: true,
   contactPhone: true,
   timeZone: true,
+  emailDomain: true,
+  domainJoin: true,
 } as const;
 
 /** What `organizationProfile.get` returns before the row exists (a query never creates it). */
@@ -31,6 +33,8 @@ export const EMPTY_ORGANIZATION_PROFILE: OrganizationProfileDto = {
   contactEmail: null,
   contactPhone: null,
   timeZone: FALLBACK_TIME_ZONE,
+  emailDomain: null,
+  domainJoin: true,
 };
 
 export type LoadOrganizationProfileInput = { context: Pick<OperationContext, "db"> };

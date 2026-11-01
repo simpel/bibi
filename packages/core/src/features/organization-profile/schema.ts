@@ -25,6 +25,13 @@ export const OrganizationProfileSchema = z.object({
   timeZone: z
     .string()
     .describe("IANA zone of ticket-level times and the default of every venue (ADR 0064)"),
+  emailDomain: z
+    .string()
+    .nullable()
+    .describe("Email domain whose verified users are offered to join as members (ADR 0076)"),
+  domainJoin: z
+    .boolean()
+    .describe("Domain join on: takes effect only while emailDomain is set (ADR 0076)"),
 });
 
 export const OrganizationProfileGetInputSchema = z.object({});
@@ -50,6 +57,18 @@ export const OrganizationProfileSetSetupStatusInputSchema = z.object({
   setupStatus: SetupStatusSchema,
 });
 
+export const OrganizationProfileSetDomainJoinInputSchema = z.object({
+  enabled: z
+    .boolean()
+    .describe(
+      "true: verified users with the organization's email domain are offered to join as members " +
+        "when they sign in; false: they need an invitation",
+    ),
+});
+
 export type SetupStatus = z.infer<typeof SetupStatusSchema>;
 export type OrganizationProfileDto = z.infer<typeof OrganizationProfileSchema>;
 export type OrganizationProfileUpdateInput = z.infer<typeof OrganizationProfileUpdateInputSchema>;
+export type OrganizationProfileSetDomainJoinInput = z.infer<
+  typeof OrganizationProfileSetDomainJoinInputSchema
+>;
