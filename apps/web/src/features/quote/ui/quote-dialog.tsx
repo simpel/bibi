@@ -10,6 +10,7 @@ import {
   Form,
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { DateField } from "@/components/date-picker/date-field";
 import { TextField } from "@/components/form/text-field";
 import type { QuoteFormTarget } from "./quote-form-schema";
 import { useQuoteForm } from "./use-quote-form";
@@ -27,7 +28,7 @@ function QuoteForm({ target, quote, onDone }: QuoteFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
-        <TextField form={form} name="validUntil" label={t("validUntil")} type="date" />
+        <DateField form={form} name="validUntil" label={t("validUntil")} />
         <TextField form={form} name="terms" label={t("terms")} multiline />
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>

@@ -54,7 +54,18 @@
     "removing": "Tar bort…",
     "select": "Välj…",
     "noOptions": "Inga alternativ.",
-    "noMatches": "Inga träffar."
+    "noMatches": "Inga träffar.",
+    "datePicker": {
+      "placeholder": "Välj datum",
+      "rangePlaceholder": "Välj period",
+      "clear": "Rensa datum",
+      "presets": {
+        "last7Days": "Senaste 7 dagarna",
+        "last30Days": "Senaste 30 dagarna",
+        "last3Months": "Senaste 3 månaderna",
+        "last6Months": "Senaste 6 månaderna"
+      }
+    }
   },
   "auth": {
     "signIn": "Logga in",
@@ -349,13 +360,7 @@
       "label": "Period",
       "previous": "Föregående period",
       "next": "Nästa period",
-      "thisYear": "I år",
-      "last12": "Senaste 12 månaderna",
       "range": "{from} – {to}",
-      "custom": "Eget spann",
-      "from": "Första dagen",
-      "to": "Sista dagen",
-      "show": "Visa spannet",
       "invalid": "Välj två dagar i ordning, högst {months} månader isär."
     },
     "customerFilter": {
@@ -821,10 +826,6 @@
     "earlier": "Tidigare",
     "today": "Idag",
     "later": "Senare",
-    "customRange": "Anpassad period",
-    "firstDay": "Första dag",
-    "lastDay": "Sista dag",
-    "showRange": "Visa period",
     "jumpInTime": "Hoppa i tiden",
     "search": "Sök",
     "searchPlaceholder": "Sök artiklar, kunder, ärenden",

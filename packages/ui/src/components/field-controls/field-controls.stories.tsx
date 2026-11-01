@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
 import { BooleanControl } from "./boolean-control";
 import { ChoiceControl } from "./choice-control";
-import { DateControl } from "./date-control";
 import { LinkControl } from "./link-control";
 import { MultiChoiceControl } from "./multi-choice-control";
 import { NumberControl } from "./number-control";
@@ -30,13 +29,6 @@ export const NumberField: Story = {
   render: () => {
     const [value, setValue] = useState("12.5");
     return <NumberControl value={value} onChange={setValue} />;
-  },
-};
-
-export const DateField: Story = {
-  render: () => {
-    const [value, setValue] = useState("2026-10-15");
-    return <DateControl value={value} onChange={setValue} />;
   },
 };
 

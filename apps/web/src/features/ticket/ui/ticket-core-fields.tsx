@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { DateTimeField } from "@/components/date-picker/date-time-field";
 import type { NamedOption } from "@/components/form/named-option";
 import { NONE, OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
@@ -53,7 +54,7 @@ type DetailInput = {
     | "estimatedHeadcount"
     | "guaranteedHeadcount"
     | "holdsUntil";
-  type: "datetime-local" | "number";
+  type: "number";
 };
 
 /** The desired period, the counts, the budget and when soft holds expire; all optional. */
@@ -65,8 +66,8 @@ function DetailFields({ form }: { form: Form }) {
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
-        {field({ name: "desiredStartsAt", type: "datetime-local" })}
-        {field({ name: "desiredEndsAt", type: "datetime-local" })}
+        <DateTimeField form={form} name="desiredStartsAt" label={t("desiredStartsAt")} />
+        <DateTimeField form={form} name="desiredEndsAt" label={t("desiredEndsAt")} />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         {field({ name: "estimatedHeadcount", type: "number" })}
@@ -83,7 +84,7 @@ function DetailFields({ form }: { form: Form }) {
         />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        {field({ name: "holdsUntil", type: "datetime-local" })}
+        <DateTimeField form={form} name="holdsUntil" label={t("holdsUntil")} />
       </div>
     </>
   );

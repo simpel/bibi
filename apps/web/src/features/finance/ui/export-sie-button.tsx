@@ -1,5 +1,6 @@
 "use client";
 
+import type { PlainDate } from "@bibi/core/schemas";
 import {
   Button,
   Dialog,
@@ -14,17 +15,17 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Period } from "../lib/finance-period";
 import { RangeStatus } from "./export-range-status";
-import { PeriodCalendar } from "./period-calendar";
+import { FinancePeriodButton } from "./finance-period-button";
 import { useCreateExport } from "./use-create-export";
 import { useExportPreview } from "./use-export-preview";
 
-export type ExportSieButtonProps = { period: Period };
+export type ExportSieButtonProps = { period: Period; today: PlainDate };
 
 /**
  * "Export SIE" (`finance:write`): pick the range to report, see what it holds, then create the
  * export and save the file. The dialog stays usable, so the same range can be exported again.
  */
-export function ExportSieButton({ period }: ExportSieButtonProps) {
+export function ExportSieButton({ period, today }: ExportSieButtonProps) {
   const t = useTranslations("finance.export");
   const common = useTranslations("common");
   const [open, setOpen] = useState(false);
@@ -38,12 +39,12 @@ export function ExportSieButton({ period }: ExportSieButtonProps) {
         {t("button")}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-xl">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>{t("title")}</DialogTitle>
             <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
-          <PeriodCalendar draft={range} onChange={setRange} />
+          <FinancePeriodButton period={range} today={today} onChange={setRange} />
           <RangeStatus range={range} valid={valid} failed={failed} preview={preview} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>

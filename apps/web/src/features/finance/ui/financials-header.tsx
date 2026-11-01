@@ -1,3 +1,4 @@
+import type { PlainDate } from "@bibi/core/schemas";
 import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/components/states/page-header";
@@ -9,10 +10,11 @@ import { ExportSieButton } from "./export-sie-button";
 export type FinancialsHeaderProps = {
   /** Set with `finance:write`: shows "Export SIE", which starts on this period. */
   exportPeriod: Period | null;
+  today: PlainDate;
 };
 
 /** Title with "Export SIE" (`finance:write`) and accounting settings as actions on the right. */
-export function FinancialsHeader({ exportPeriod }: FinancialsHeaderProps) {
+export function FinancialsHeader({ exportPeriod, today }: FinancialsHeaderProps) {
   const t = useTranslations("finance");
   return (
     <PageHeader
@@ -20,7 +22,7 @@ export function FinancialsHeader({ exportPeriod }: FinancialsHeaderProps) {
       description={t("description")}
       actions={
         <>
-          {exportPeriod ? <ExportSieButton period={exportPeriod} /> : null}
+          {exportPeriod ? <ExportSieButton period={exportPeriod} today={today} /> : null}
           <Button asChild variant="outline" size="sm">
             <Link href={ROUTES.settingsAccounting}>{t("accountingSettings")}</Link>
           </Button>

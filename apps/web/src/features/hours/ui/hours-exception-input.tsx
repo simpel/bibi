@@ -3,6 +3,7 @@
 import { FormControl, FormController, FormItem, FormLabel, Input } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { PlainDateButton } from "@/components/date-picker/plain-date-button";
 import type { HoursValues } from "./hours-values";
 
 export type HoursExceptionInputProps = {
@@ -24,7 +25,11 @@ export function HoursExceptionInput({ form, index, field }: HoursExceptionInputP
             {field === "date" ? t("exceptionDate") : t("exceptionNote")}
           </FormLabel>
           <FormControl>
-            <Input type={field === "date" ? "date" : "text"} maxLength={200} {...control} />
+            {field === "date" ? (
+              <PlainDateButton value={control.value ?? ""} onChange={control.onChange} />
+            ) : (
+              <Input type="text" maxLength={200} {...control} />
+            )}
           </FormControl>
         </FormItem>
       )}

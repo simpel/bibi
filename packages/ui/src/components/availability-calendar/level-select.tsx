@@ -8,10 +8,13 @@ import { CustomRange } from "./custom-range";
 import { CHOICES, type RangeToolbarProps } from "./range-toolbar";
 import type { TimelineLevel } from "./timeline-scale";
 
-export type LevelSelectProps = Pick<RangeToolbarProps, "choice" | "shown" | "onLevel" | "onCustom">;
+export type LevelSelectProps = Pick<
+  RangeToolbarProps,
+  "choice" | "shown" | "today" | "locale" | "onLevel" | "onCustom"
+>;
 
 /** Day, week, month or custom as one dropdown, for a calendar too narrow for the tabs. */
-export function LevelSelect({ choice, shown, onLevel, onCustom }: LevelSelectProps) {
+export function LevelSelect({ choice, shown, today, locale, onLevel, onCustom }: LevelSelectProps) {
   const [customOpen, setCustomOpen] = useState(false);
   const labels = useCalendarLabels();
   return (
@@ -40,6 +43,7 @@ export function LevelSelect({ choice, shown, onLevel, onCustom }: LevelSelectPro
       {customOpen ? (
         <CustomRange
           {...shown}
+          {...{ today, locale }}
           onApply={(range) => {
             setCustomOpen(false);
             onCustom(range);

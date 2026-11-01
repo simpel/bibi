@@ -1,5 +1,5 @@
 import type { DateTimeFormat, FinanceAging, NumberFormat, VatByRate } from "@bibi/core/schemas";
-import { plainDayText } from "./plain-day";
+import { plainDayText } from "@/lib/time/plain-day";
 
 export type OverdueRow = {
   invoiceId: string;

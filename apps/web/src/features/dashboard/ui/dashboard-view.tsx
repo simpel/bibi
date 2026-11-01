@@ -7,9 +7,9 @@ import type {
 } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/components/states/page-header";
-import { plainDayText } from "@/features/finance/lib/plain-day";
 import { PeriodSwitcher } from "@/features/finance/ui/period-switcher";
 import { ROUTES } from "@/lib/routes";
+import { plainDayText } from "@/lib/time/plain-day";
 import { EconomyPanel } from "./economy-panel";
 import { OutcomesPanel } from "./outcomes-panel";
 import { PipelineTiles } from "./pipeline-tiles";

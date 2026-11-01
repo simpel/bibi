@@ -45,6 +45,7 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
   - One toast id per process: `toast.loading(pending)` is replaced by `toast.success(success, { id })`.
   - Errors are a **persistent** toast with a close button (`duration: Infinity, closeButton: true`). Network errors become `errors.network`.
   - `messages` come from i18n: `common.saving`/`archiving`/`sending` for pending, the entity's own key for the outcome (e.g. `venue.created`).
+- Dates are never `<input type="date">`. A date field is `DateField` (a time too: `DateTimeField`), a span is `PeriodRangeButton` (`components/date-picker/`): a button that writes the date in the user's date format and opens the shadcn Calendar (a span adds presets and closes on the second day). Plain days (`YYYY-MM-DD`) stay strings in forms and paths.
 - Auto-save (a select that saves on change) uses the same flow; on error the field is reset via `onError`.
 - References: `features/venue/ui/venue-form.tsx` and `features/venue/ui/archive-venue-dialog.tsx`.
 - Exceptions: sign-in and account forms use `useAuthFormAction` through the Better Auth client (OAuth needs the signed `sig` query and a browser redirect); search and filter forms navigate by URL with no action or toast; the chat composer streams via `useChat`.

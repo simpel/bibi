@@ -7,7 +7,7 @@ import type {
 } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { ROUTES } from "@/lib/routes";
-import { plainDayText } from "../lib/plain-day";
+import { plainDayText } from "@/lib/time/plain-day";
 import { CustomerFilter } from "./customer-filter";
 import { ExportHistory } from "./export-history";
 import { FinanceChartGrid } from "./finance-chart-grid";
@@ -37,7 +37,7 @@ export function FinancialsView(props: FinancialsViewProps) {
   const zone = { timeZone: overview.timeZone, dates };
   return (
     <div className="grid gap-6">
-      <FinancialsHeader exportPeriod={canWrite ? period : null} />
+      <FinancialsHeader exportPeriod={canWrite ? period : null} today={today} />
       <div className="flex flex-wrap items-center gap-2">
         <PeriodSwitcher
           period={period}

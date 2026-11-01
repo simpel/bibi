@@ -6,10 +6,11 @@ import { useNumberFormat } from "@/lib/number/use-number-format";
 import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
 
 type Translate = ReturnType<typeof useTranslations<"calendar">>;
-type TextInput = { t: Translate; number: NumberFormat; format: DateTimeFormat };
+type Presets = CalendarLabels["rangePresets"];
+type TextInput = { t: Translate; number: NumberFormat; format: DateTimeFormat; presets: Presets };
 
 /** The toolbar: range, stepper, custom range, filter and search. */
-function toolbarText({ t }: TextInput) {
+function toolbarText({ t, presets }: TextInput) {
   return {
     levels: {
       day: t("levels.day"),
@@ -18,8 +19,7 @@ function toolbarText({ t }: TextInput) {
       custom: t("levels.custom"),
     },
     ...{ range: t("range"), earlier: t("earlier"), today: t("today"), later: t("later") },
-    ...{ customRange: t("customRange"), firstDay: t("firstDay"), lastDay: t("lastDay") },
-    ...{ showRange: t("showRange"), jumpInTime: t("jumpInTime"), search: t("search") },
+    ...{ rangePresets: presets, jumpInTime: t("jumpInTime"), search: t("search") },
     ...{ searchPlaceholder: t("searchPlaceholder"), searchLabel: t("searchLabel") },
     ...{ assetGroups: t("assetGroups"), allAssets: t("allAssets") },
     groupCount: ({ count }: { count: number }) => t("groupCount", { count }),
@@ -94,15 +94,22 @@ function bookingText({ t, number }: TextInput) {
 /** The calendar's words from next-intl, with times and amounts in the user's formats. */
 export function useCalendarText(): CalendarLabels {
   const t = useTranslations("calendar");
+  const picker = useTranslations("common.datePicker.presets");
   const number = useNumberFormat();
   const format = useDateTimeFormat();
   return useMemo(() => {
-    const input = { t, number, format };
+    const presets = {
+      last7Days: picker("last7Days"),
+      last30Days: picker("last30Days"),
+      last3Months: picker("last3Months"),
+      last6Months: picker("last6Months"),
+    };
+    const input = { t, number, format, presets };
     return {
       ...toolbarText(input),
       ...trackText(input),
       ...clockText(input),
       ...bookingText(input),
     };
-  }, [t, number, format]);
+  }, [t, picker, number, format]);
 }

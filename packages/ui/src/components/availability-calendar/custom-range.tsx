@@ -1,56 +1,40 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "../button/button";
-import { Input } from "../input/input";
-import { Label } from "../label/label";
-import { PopoverContent, PopoverHeader, PopoverTitle } from "../popover/popover";
+import { calendarLocales } from "../calendar/calendar";
+import { DateRangePanel } from "../date-picker/date-range-panel";
+import { PopoverContent } from "../popover/popover";
 import { useCalendarLabels } from "./calendar-labels";
+import { dateOfDay, dayOfDate, rangePresets } from "./calendar-presets";
 
 export type CustomRangeProps = {
-  /** The days on screen now: the form starts from them. */
+  /** The days on screen now: the calendar opens on them. */
   from: string;
   to: string;
+  today: string;
+  locale: string;
   /** Fits the range into the track; `to` is inclusive. */
   onApply: (range: { from: string; to: string }) => void;
 };
 
-/** Two dates, first and last day; the timeline fits them and picks the detail from the length. */
-export function CustomRange({ from, to, onApply }: CustomRangeProps) {
-  const [draft, setDraft] = useState({ from, to });
+/** Presets and a calendar: the first day clicked starts a span, the second finishes it. */
+export function CustomRange({ from, to, today, locale, onApply }: CustomRangeProps) {
   const labels = useCalendarLabels();
-  const valid = draft.from !== "" && draft.to !== "" && draft.from <= draft.to;
   return (
-    <PopoverContent align="start" className="w-[min(18rem,calc(100vw-2rem))]">
-      <form
-        className="grid gap-3"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (valid) onApply(draft);
+    <PopoverContent align="start" className="w-auto max-w-[calc(100vw-2rem)] p-2">
+      <DateRangePanel
+        range={{ from: dateOfDay({ day: from }), to: dateOfDay({ day: to }) }}
+        presets={rangePresets({ today, labels: labels.rangePresets })}
+        calendar={{
+          locale: locale.startsWith("sv") ? calendarLocales.sv : calendarLocales.en,
+          weekStartsOn: 1,
+          timeZone: "UTC",
         }}
-      >
-        <PopoverHeader>
-          <PopoverTitle>{labels.customRange}</PopoverTitle>
-        </PopoverHeader>
-        <div className="grid grid-cols-2 gap-2">
-          {(["from", "to"] as const).map((key) => (
-            <div key={key} className="grid gap-1.5">
-              <Label htmlFor={`range-${key}`}>
-                {key === "from" ? labels.firstDay : labels.lastDay}
-              </Label>
-              <Input
-                id={`range-${key}`}
-                type="date"
-                value={draft[key]}
-                onChange={(event) => setDraft({ ...draft, [key]: event.target.value })}
-              />
-            </div>
-          ))}
-        </div>
-        <Button type="submit" size="sm" disabled={!valid}>
-          {labels.showRange}
-        </Button>
-      </form>
+        onPick={({ from: start, to: end }) =>
+          start &&
+          end &&
+          onApply({ from: dayOfDate({ date: start }), to: dayOfDate({ date: end }) })
+        }
+      />
     </PopoverContent>
   );
 }

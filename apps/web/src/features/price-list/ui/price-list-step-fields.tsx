@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { DateField } from "@/components/date-picker/date-field";
 import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
 import type { PriceListFormData } from "./load-price-list-form-data";
@@ -38,8 +39,8 @@ export function PriceListTermsFields({ form }: PriceListStepFieldsProps) {
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField form={form} name="validFrom" label={t("fields.validFrom")} type="date" />
-        <TextField form={form} name="validTo" label={t("fields.validTo")} type="date" />
+        <DateField form={form} name="validFrom" label={t("fields.validFrom")} clearable />
+        <DateField form={form} name="validTo" label={t("fields.validTo")} clearable />
       </div>
       <TextField
         form={form}

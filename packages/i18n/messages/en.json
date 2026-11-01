@@ -54,7 +54,18 @@
     "removing": "Removing…",
     "select": "Select…",
     "noOptions": "No options.",
-    "noMatches": "No matches."
+    "noMatches": "No matches.",
+    "datePicker": {
+      "placeholder": "Pick a date",
+      "rangePlaceholder": "Pick a span",
+      "clear": "Clear date",
+      "presets": {
+        "last7Days": "Last 7 days",
+        "last30Days": "Last 30 days",
+        "last3Months": "Last 3 months",
+        "last6Months": "Last 6 months"
+      }
+    }
   },
   "auth": {
     "signIn": "Sign in",
@@ -349,13 +360,7 @@
       "label": "Period",
       "previous": "Previous period",
       "next": "Next period",
-      "thisYear": "This year",
-      "last12": "Last 12 months",
       "range": "{from} – {to}",
-      "custom": "Custom span",
-      "from": "First day",
-      "to": "Last day",
-      "show": "Show span",
       "invalid": "Pick two days in order, at most {months} months apart."
     },
     "customerFilter": {
@@ -821,10 +826,6 @@
     "earlier": "Earlier",
     "today": "Today",
     "later": "Later",
-    "customRange": "Custom range",
-    "firstDay": "First day",
-    "lastDay": "Last day",
-    "showRange": "Show range",
     "jumpInTime": "Jump in time",
     "search": "Search",
     "searchPlaceholder": "Search items, customers, tickets",

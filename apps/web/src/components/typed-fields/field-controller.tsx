@@ -2,7 +2,6 @@ import type { FieldDefinitionDto } from "@bibi/core";
 import {
   BooleanControl,
   ChoiceControl,
-  DateControl,
   FormControl,
   FormController,
   FormItem,
@@ -15,6 +14,7 @@ import {
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { Control, Path } from "react-hook-form";
+import { PlainDateButton } from "@/components/date-picker/plain-date-button";
 import type { FieldChoice } from "./field-specs";
 import type { WithRawFields } from "./raw-fields";
 
@@ -97,7 +97,7 @@ function renderControl({ kind, choices, labels, value, onChange }: RenderInput) 
     case "NUMBER":
       return <NumberControl value={String(value ?? "")} {...common} />;
     case "DATE":
-      return <DateControl value={String(value ?? "")} {...common} />;
+      return <PlainDateButton value={String(value ?? "")} clearable {...common} />;
     case "BOOLEAN":
       return <BooleanControl value={value === true} {...common} />;
     case "CHOICE":

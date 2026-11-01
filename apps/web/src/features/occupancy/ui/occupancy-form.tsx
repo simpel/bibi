@@ -1,6 +1,7 @@
 import type { OccupancyDto } from "@bibi/core";
 import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { DateTimeField } from "@/components/date-picker/date-time-field";
 import { TextField } from "@/components/form/text-field";
 import { OccupancyTypeField } from "./occupancy-type-field";
 import { useOccupancyForm } from "./use-occupancy-form";
@@ -23,14 +24,8 @@ export function OccupancyForm({ itemId, occupancy, timeZone, onDone }: Occupancy
       <form onSubmit={submit} noValidate className="grid gap-4">
         <OccupancyTypeField control={form.control} />
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField
-            form={form}
-            name="startsAt"
-            label={t("startsAt")}
-            type="datetime-local"
-            required
-          />
-          <TextField form={form} name="endsAt" label={t("endsAt")} type="datetime-local" required />
+          <DateTimeField form={form} name="startsAt" label={t("startsAt")} required />
+          <DateTimeField form={form} name="endsAt" label={t("endsAt")} required />
         </div>
         <TextField form={form} name="note" label={t("note")} multiline rows={2} />
         <DialogFooter>

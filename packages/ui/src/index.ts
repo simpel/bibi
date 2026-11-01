@@ -42,6 +42,7 @@ export * from "./components/data-table/data-table-actions";
 export * from "./components/data-table/data-table-order";
 export * from "./components/data-table/data-table-pagination";
 export type * from "./components/data-table/data-table-types";
+export * from "./components/date-picker/date-button";
 export * from "./components/dialog/dialog";
 export {
   DropdownMenu,
@@ -58,7 +59,6 @@ export * from "./components/dropdown-menu/dropdown-menu-sub";
 export * from "./components/field-controls/boolean-control";
 export * from "./components/field-controls/choice-control";
 export * from "./components/field-controls/control-props";
-export * from "./components/field-controls/date-control";
 export * from "./components/field-controls/link-control";
 export * from "./components/field-controls/multi-choice-control";
 export * from "./components/field-controls/number-control";

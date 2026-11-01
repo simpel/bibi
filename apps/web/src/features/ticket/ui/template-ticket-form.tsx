@@ -2,6 +2,7 @@
 
 import { Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { DateTimeField } from "@/components/date-picker/date-time-field";
 import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
 import { TemplateTicketActions } from "./template-ticket-actions";
@@ -32,7 +33,7 @@ export function TemplateTicketForm({ data }: TemplateTicketFormProps) {
           options={data.templates}
         />
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField form={form} name="startsAt" label={t("startsAt")} type="datetime-local" />
+          <DateTimeField form={form} name="startsAt" label={t("startsAt")} />
           <TextField form={form} name="headcount" label={t("headcount")} type="number" />
         </div>
         {data.members.length > 0 ? (

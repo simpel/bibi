@@ -10,10 +10,7 @@ export type CalendarLabels = {
   earlier: string;
   today: string;
   later: string;
-  customRange: string;
-  firstDay: string;
-  lastDay: string;
-  showRange: string;
+  rangePresets: { last7Days: string; last30Days: string; last3Months: string; last6Months: string };
   jumpInTime: string;
   search: string;
   searchPlaceholder: string;

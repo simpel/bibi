@@ -125,7 +125,7 @@ function Calendar(props: Omit<AvailabilityCalendarProps, "labels">) {
   const frame = frameOf({ timeline, hours, today, locale, formatDate, onDrill });
   return (
     <div className={cn(availabilityCalendarVariants({ layout }), className)}>
-      <CalendarToolbar range={{ ...controls, label }} filter={filter} />
+      <CalendarToolbar range={{ ...controls, label, today, locale }} filter={filter} />
       <OverviewStrip
         {...{ view: timeline.view, scroll: timeline.scroll, trackPx: timeline.trackPx }}
         {...{ density, today, locale, shownLabel: label }}

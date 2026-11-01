@@ -22,12 +22,14 @@ export type RangeToolbarProps = {
   onStep: (direction: -1 | 1) => void;
   onToday: () => void;
   onCustom: (range: { from: string; to: string }) => void;
+  today: string;
+  locale: string;
 };
 
 export const CHOICES: readonly RangeChoice[] = ["day", "week", "month", "custom"];
 
 /** Day, week and month set the zoom; custom asks for two dates. Full width on a phone. */
-function RangeTabs({ choice, shown, onLevel, onCustom }: RangeToolbarProps) {
+function RangeTabs({ choice, shown, today, locale, onLevel, onCustom }: RangeToolbarProps) {
   const [customOpen, setCustomOpen] = useState(false);
   const labels = useCalendarLabels();
   return (
@@ -54,6 +56,7 @@ function RangeTabs({ choice, shown, onLevel, onCustom }: RangeToolbarProps) {
       {customOpen ? (
         <CustomRange
           {...shown}
+          {...{ today, locale }}
           onApply={(range) => {
             setCustomOpen(false);
             onCustom(range);

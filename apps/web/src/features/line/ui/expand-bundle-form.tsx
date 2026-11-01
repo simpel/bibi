@@ -1,5 +1,6 @@
 import { Button, DialogFooter, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { DateTimeField } from "@/components/date-picker/date-time-field";
 import { TextField } from "@/components/form/text-field";
 import { ExpandBundlePickFields } from "./expand-bundle-pick-fields";
 import type { ProgramFormData } from "./program-form-data";
@@ -21,15 +22,14 @@ export function ExpandBundleForm({ data, ticketId, startsAt, onDone }: ExpandBun
     entityTypeId: data.types[0]?.id ?? "",
     itemId: data.bundles[0]?.id ?? "",
   });
-  const time = { form, type: "datetime-local" } as const;
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
         <ExpandBundlePickFields form={form} data={data} />
         <TextField form={form} name="name" label={t("bundleFields.name")} />
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField {...time} name="startsAt" label={t("fields.startsAt")} />
-          <TextField {...time} name="endsAt" label={t("fields.endsAt")} />
+          <DateTimeField form={form} name="startsAt" label={t("fields.startsAt")} />
+          <DateTimeField form={form} name="endsAt" label={t("fields.endsAt")} />
         </div>
         <TextField form={form} name="quantity" label={t("fields.quantity")} type="number" />
         <DialogFooter>

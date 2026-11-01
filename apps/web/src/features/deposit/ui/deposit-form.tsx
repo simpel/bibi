@@ -2,6 +2,7 @@
 
 import { Button, Form } from "@bibi/ui";
 import { useTranslations } from "next-intl";
+import { DateField } from "@/components/date-picker/date-field";
 import { TextField } from "@/components/form/text-field";
 import { useDepositForm } from "./use-deposit-form";
 
@@ -23,7 +24,7 @@ export function DepositForm({ ticketId }: DepositFormProps) {
           step="0.01"
           required
         />
-        <TextField form={form} name="dueDate" label={t("fields.dueDate")} type="date" />
+        <DateField form={form} name="dueDate" label={t("fields.dueDate")} />
         <div>
           <Button type="submit" disabled={pending}>
             {t("create")}
