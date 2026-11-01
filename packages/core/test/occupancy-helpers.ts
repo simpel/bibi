@@ -9,8 +9,8 @@ export async function createBookableItem({ context }: BookableItemInput) {
   return createTestItem({ context, entityTypeId: type.id, name: "Älvsalen" });
 }
 
-/** `[from, to)` on 1 November 2026 between whole hours (UTC). */
+/** `[from, to)` on 1 November 2037 between whole hours (UTC). */
 export const hours = ({ from, to }: { from: number; to: number }) => ({
-  startsAt: new Date(Date.UTC(2026, 10, 1, from)),
-  endsAt: new Date(Date.UTC(2026, 10, 1, to)),
+  startsAt: new Date(Date.UTC(2037, 10, 1, from)),
+  endsAt: new Date(Date.UTC(2037, 10, 1, to)),
 });

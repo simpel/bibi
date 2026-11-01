@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { calendarSetup, range } from "./calendar-range-helpers";
 import { testContext } from "./helpers";
 
-const DAY = { from: "2026-11-01", to: "2026-11-01" };
+const DAY = { from: "2037-11-01", to: "2037-11-01" };
 
 /** The setup's line with a note, a price, a quantity and a headcount on its ticket. */
 async function pricedSetup() {

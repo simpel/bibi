@@ -58,7 +58,7 @@ export async function bundleSetup() {
 export type ExpandInput = Ctx &
   Partial<LineExpandBundleInput> & { ticketId: string; entityTypeId: string; itemId: string };
 
-/** `line.expandBundle` from 09:00 to 17:00 on 1 November 2026 (UTC) unless times are given. */
+/** `line.expandBundle` from 09:00 to 17:00 on 1 November 2037 (UTC) unless times are given. */
 export const expand = ({ context, ...input }: ExpandInput) =>
   execute({
     operation: expandLineBundle,

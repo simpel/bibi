@@ -15,7 +15,7 @@ import { hours } from "./occupancy-helpers";
 
 type Setup = Awaited<ReturnType<typeof programSetup>>;
 
-/** A line on the room with its setup: `[from, to)` on 1 November 2026, or in 2020 when `past`. */
+/** A line on the room with its setup: `[from, to)` on 1 November 2037, or in 2020 when `past`. */
 async function lineAt({
   setup,
   from,
@@ -29,7 +29,7 @@ async function lineAt({
 }) {
   const { context, ticket, type, room } = setup;
   const period = hours({ from, to });
-  const shift = past ? Date.UTC(2026, 10, 1) - Date.UTC(2020, 0, 1) : 0;
+  const shift = past ? Date.UTC(2037, 10, 1) - Date.UTC(2020, 0, 1) : 0;
   const input = {
     ...{ ticketId: ticket.id, entityTypeId: type.id, itemId: room.id, setupId: setup.setup.id },
     name: past ? "Past" : "Future",

@@ -7,7 +7,7 @@ import { createTestItem } from "./item-helpers";
 import { createBookableItem } from "./occupancy-helpers";
 import { ticketSetup } from "./ticket-helpers";
 
-/** A venue with an item and a soft line on Sunday 1 November 2026, 09–11 UTC. */
+/** A venue with an item and a soft line on Sunday 1 November 2037, 09–11 UTC. */
 async function lineSetup() {
   const setup = await ticketSetup();
   const { context } = setup;
@@ -53,14 +53,14 @@ describe("hours rules (ADR 0064, 0050)", () => {
   it("treats exceptions alone as a pattern: every other day is closed", async () => {
     const { context, item, line } = await lineSetup();
     const open = { startMinute: 0, endMinute: 1440, breakStartMinute: null, breakEndMinute: null };
-    const later = [{ date: "2027-06-01", ...open, note: "Season opening" }];
+    const later = [{ date: "2038-06-01", ...open, note: "Season opening" }];
     unwrap({
       result: await runItemHours({ context, itemId: item.id, days: [], exceptions: later }),
     });
     expect(await warningsOf({ context, lineId: line.id })).toEqual([
       { id: item.id, kind: "OUTSIDE_ITEM_HOURS" },
     ]);
-    const today = [{ date: "2026-11-01", ...open, note: null }];
+    const today = [{ date: "2037-11-01", ...open, note: null }];
     unwrap({
       result: await runItemHours({ context, itemId: item.id, days: [], exceptions: today }),
     });

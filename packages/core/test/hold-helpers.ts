@@ -37,7 +37,7 @@ async function initialWithHold({ context, entityTypeId, hold }: Ctx & HoldKindOf
 type HoldKindOf = { entityTypeId: string; hold: HoldLineInput["hold"] };
 
 /**
- * A line of a fresh ticket on the item for `[from, to)` on 1 November 2026, in a state of the
+ * A line of a fresh ticket on the item for `[from, to)` on 1 November 2037, in a state of the
  * given hold; its `HOLD` follows by trigger (ADR 0053). Needs a provisioned organization
  * (`ticketSetup`). Returns the `line.create` result.
  */

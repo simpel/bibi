@@ -8,7 +8,7 @@ import { createBookableItem } from "./occupancy-helpers";
 import { ticketSetup } from "./ticket-helpers";
 
 const CHRISTMAS = {
-  date: "2026-12-24",
+  date: "2037-12-24",
   startMinute: null,
   endMinute: null,
   breakStartMinute: null,
@@ -91,7 +91,7 @@ describe("venue and item hours (ADR 0064 rules 10–11)", () => {
       name: "Pier",
       venueId: venue.id,
     });
-    // Sunday 1 November 2026, 09–11 UTC.
+    // Sunday 1 November 2037, 09–11 UTC.
     const line = unwrap({
       result: await createHoldLine({ context, itemId: item.id, hold: "SOFT", from: 9, to: 11 }),
     });
@@ -102,7 +102,7 @@ describe("venue and item hours (ADR 0064 rules 10–11)", () => {
     ]);
     unwrap({ result: await runItemHours({ context, itemId: item.id, days: ALL_DAYS }) });
     expect(await warningsOf({ context, lineId: line.id })).toEqual([]);
-    const closed = [{ ...CHRISTMAS, date: "2026-11-01" }];
+    const closed = [{ ...CHRISTMAS, date: "2037-11-01" }];
     unwrap({
       result: await runItemHours({ context, itemId: item.id, days: ALL_DAYS, exceptions: closed }),
     });

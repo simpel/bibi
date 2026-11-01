@@ -77,7 +77,7 @@ describe("a blocked status move changes nothing (ADR 0044)", () => {
     expect(issues[0]?.path).toBe(paths(lines)[0]);
     if (blockers.includes("collision")) {
       const [collision] = issues.filter((issue) => issue.path === `lines.${roomLine.id}`);
-      expect(collision?.message).toMatch(/booked by ticket #\d+ on 2026-11-01/);
+      expect(collision?.message).toMatch(/booked by ticket #\d+ on 2037-11-01/);
     }
     const after = await context.db.ticket.findFirstOrThrow({ where: { id: ticket.id } });
     expect(after.statusId).toBe(ticket.statusId);

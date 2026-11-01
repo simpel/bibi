@@ -23,7 +23,7 @@ async function expanded() {
 }
 
 const at = ({ hour, minute = 0 }: { hour: number; minute?: number }) =>
-  new Date(Date.UTC(2026, 10, 1, hour, minute));
+  new Date(Date.UTC(2037, 10, 1, hour, minute));
 
 describe("line.expandBundle (ADR 0059)", () => {
   it("adds a bundle line and part lines with times from the parts' offsets", async () => {

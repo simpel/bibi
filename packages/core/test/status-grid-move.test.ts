@@ -112,7 +112,7 @@ describe("ticket.changeStatus moves lines by the status grid (ADR 0044)", () => 
     const setup = await gridSetup();
     const { context, room, roomState } = setup;
     const ticket = await setup.newTicket();
-    const holdsUntil = new Date(Date.UTC(2026, 9, 30));
+    const holdsUntil = new Date(Date.UTC(2037, 9, 30));
     await context.db.ticket.update({ where: { id: ticket.id }, data: { holdsUntil } });
     const line = await addLine({ setup, ticketId: ticket.id, itemId: room.id });
     const cell = { entityTypeId: room.entityTypeId, stateId: roomState.booked.id };

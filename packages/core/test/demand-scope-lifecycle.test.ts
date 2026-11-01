@@ -45,7 +45,7 @@ describe("demands: feature scope and lifecycle (ADR 0050, 0059)", () => {
       "No free unit in the pool Technician for SETUP, TEARDOWN",
     );
     const shown = await execute({ operation: createItemDemand, input, context });
-    expect(shown.ok ? "" : shown.error.message).toContain("SETUP 2026-11-01T09:45:00.000Z");
+    expect(shown.ok ? "" : shown.error.message).toContain("SETUP 2037-11-01T09:45:00.000Z");
   });
 
   it("refuses to archive an allocated unit, a demand's target or a pool's last bookability", async () => {

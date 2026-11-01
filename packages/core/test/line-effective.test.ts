@@ -94,11 +94,11 @@ describe("line commercial values (ADR 0052)", () => {
     };
     await later({
       name: "Old",
-      from: new Date("2026-10-20"),
-      to: new Date("2026-10-31"),
+      from: new Date("2037-10-20"),
+      to: new Date("2037-10-31"),
       priceMinor: 1,
     });
-    await later({ name: "Autumn", from: new Date("2026-10-15"), to: null, priceMinor: 85_000 });
+    await later({ name: "Autumn", from: new Date("2037-10-15"), to: null, priceMinor: 85_000 });
     expect(await read({ setup, id: line.id })).toMatchObject({ effectiveUnitPriceMinor: 85_000 });
   });
 

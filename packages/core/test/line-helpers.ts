@@ -45,7 +45,10 @@ export type CreateTestLineInput = {
   setupId?: string;
 };
 
-/** Runs `line.create` for `[from, to)` on 1 November 2026 (UTC) and returns the result. */
+/**
+ * Runs `line.create` for `[from, to)` on 1 November 2037 (UTC) and returns the result. Far ahead
+ * on purpose: holds re-derive only for lines that have not ended (`sync_line_occupancy.sql`).
+ */
 export const createTestLine = ({ context, from, to, ...input }: CreateTestLineInput) =>
   execute({
     operation: createLine,

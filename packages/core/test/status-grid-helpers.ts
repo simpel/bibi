@@ -74,7 +74,7 @@ export async function setCell({ context, ticketStatus, entityTypeId, stateId }: 
 
 export type AddLineInput = { setup: GridSetup; ticketId: string; itemId: string; from?: number };
 
-/** A line on the item from `from` (default 9) for two hours on 1 November 2026. */
+/** A line on the item from `from` (default 9) for two hours on 1 November 2037. */
 export async function addLine({ setup, ticketId, itemId, from = 9 }: AddLineInput) {
   const { context, lineType } = setup;
   const input = { context, ticketId, entityTypeId: lineType.id, itemId, from, to: from + 2 };

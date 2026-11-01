@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { calendarSetup, range } from "./calendar-range-helpers";
 import { testContext } from "./helpers";
 
-const DAY = { from: "2026-11-01", to: "2026-11-01" };
+const DAY = { from: "2037-11-01", to: "2037-11-01" };
 const HOUR_MINOR = 100_000;
 
 /**
@@ -40,7 +40,7 @@ describe("calendar.range values", () => {
     expect(values).toEqual([
       {
         itemId: item.id,
-        date: "2026-11-01",
+        date: "2037-11-01",
         bookedMinor: 40 * 27_000,
         prebookedMinor: 0,
         openMinor: 7 * HOUR_MINOR,

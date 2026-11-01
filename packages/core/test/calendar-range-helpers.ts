@@ -23,7 +23,7 @@ export async function range({ context, input }: RangeInput): Promise<CalendarRan
 
 /**
  * An organization in Europe/Stockholm with one bookable item, a hard-hold line 09–11 UTC and a
- * maintenance block 13–14 UTC, both on 1 November 2026.
+ * maintenance block 13–14 UTC, both on 1 November 2037.
  */
 export async function calendarSetup() {
   const setup = await ticketSetup();

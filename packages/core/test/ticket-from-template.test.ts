@@ -6,7 +6,7 @@ import { addLine } from "./status-grid-helpers";
 import { memberUser } from "./ticket-helpers";
 import { makeTemplate, templateSetup } from "./ticket-template-helpers";
 
-const startsAt = new Date(Date.UTC(2026, 10, 1, 9));
+const startsAt = new Date(Date.UTC(2037, 10, 1, 9));
 
 describe("ticket.createFromTemplate (ADR 0043)", () => {
   it("creates the ticket in the template's status with its lines in the grid's states", async () => {
@@ -27,7 +27,7 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
       estimatedHeadcount: 8,
       customerId,
     });
-    expect(ticket.desiredEndsAt?.toISOString()).toBe("2026-11-01T11:00:00.000Z");
+    expect(ticket.desiredEndsAt?.toISOString()).toBe("2037-11-01T11:00:00.000Z");
     const lines = await context.db.line.findMany({
       where: { ticketId: ticket.id },
       orderBy: { startsAt: "asc" },
@@ -36,7 +36,7 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
       ["Meeting room", roomState.booked.id, 1],
       ["Coffee", food.locked.id, null],
     ]);
-    expect(lines[1]?.startsAt?.toISOString()).toBe("2026-11-01T09:30:00.000Z");
+    expect(lines[1]?.startsAt?.toISOString()).toBe("2037-11-01T09:30:00.000Z");
     expect(room.id).toBe(lines[0]?.itemId);
   });
 
