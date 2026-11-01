@@ -21,8 +21,9 @@ export function isDevEnvironment(): boolean {
 
 /**
  * Seeded dev users of the demo organizations (`DEMO_ORGS`), grouped by organization, oldest
- * membership first. Copies that test runs leave in the dev database (same names, suffixed slugs)
- * are left out. Empty outside dev.
+ * membership first, then the users they have invited (role `invited`, ADR 0076), who belong
+ * nowhere yet. Copies that test runs leave in the dev database (same names, suffixed slugs) are
+ * left out. Empty outside dev.
  */
 export async function listDevUsers(): Promise<DevUser[]> {
   if (!isDevEnvironment()) return [];
@@ -38,11 +39,33 @@ export async function listDevUsers(): Promise<DevUser[]> {
       organization: { select: { name: true } },
     },
   });
-  return members.map(({ user, organization, role }) => ({
+  const listed = members.map(({ user, organization, role }) => ({
     ...user,
     organization: organization.name,
     role,
   }));
+  return [...listed, ...(await listDevInvitees())];
+}
+
+/** Pending invitations of the demo organizations whose invitee already has a seeded account. */
+async function listDevInvitees(): Promise<DevUser[]> {
+  const invitations = await getDb().invitation.findMany({
+    where: {
+      status: "pending",
+      email: { endsWith: DEV_EMAIL_SUFFIX },
+      organization: { slug: { in: DEMO_ORGS.map((org) => org.slug) } },
+    },
+    orderBy: { createdAt: "asc" },
+    select: { email: true, organization: { select: { name: true } } },
+  });
+  const users = await getDb().user.findMany({
+    where: { email: { in: invitations.map((invitation) => invitation.email) } },
+    select: { id: true, name: true, email: true },
+  });
+  return invitations.flatMap(({ email, organization }) => {
+    const user = users.find((candidate) => candidate.email === email);
+    return user ? [{ ...user, organization: organization.name, role: "invited" }] : [];
+  });
 }
 
 /**

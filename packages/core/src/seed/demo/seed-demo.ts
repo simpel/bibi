@@ -9,13 +9,13 @@ import { refuseProduction } from "./guard";
 import { postSeedLogging } from "./post-seed";
 import { resetDemoOrg } from "./reset";
 import { runPlatformSeed } from "./run-platform-seed";
+import { seedAcrossOrganizations } from "./seed-across-organizations";
 import { seedDemoConfig } from "./seed-config";
 import { seedDemoItems } from "./seed-items";
 import { seedPipelineAndSales } from "./seed-pipeline-and-sales";
 import { seedDemoProfiles } from "./seed-profiles";
 import { seedDemoResponsibilities } from "./seed-responsibilities";
 import { seedDemoRoles } from "./seed-roles";
-import { seedSharedMember } from "./seed-shared-member";
 import { seedDemoStaff } from "./seed-staff";
 import type { DemoOrg } from "./types";
 import { bootstrapDemoOrg, demoCreator } from "./users";
@@ -132,14 +132,8 @@ export async function seedDemo({
     if (!seeded.ok) return seeded;
     organizations.push({ slug: org.slug, organizationId: seeded.value });
   }
-  const shared = await seedSharedMember({
-    db,
-    seeded: organizations.map(({ slug, organizationId }) => ({
-      org: orgs.find((org) => org.slug === slug) as DemoOrg,
-      organizationId,
-    })),
-  });
-  if (!shared.ok) return shared;
+  const across = await seedAcrossOrganizations({ db, orgs, organizations });
+  if (!across.ok) return across;
   if (megaAdmin) {
     const organizationIds = organizations.map(({ organizationId }) => organizationId);
     const platform = await runPlatformSeed({ db, organizationIds });

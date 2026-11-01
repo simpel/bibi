@@ -18,7 +18,7 @@ const toAscii = ({ value }: { value: string }): string =>
     .toLowerCase()
     .replace(/[^a-z]+/g, ".");
 
-export type DemoEmailInput = { org: DemoOrg; user: DemoUser };
+export type DemoEmailInput = { org: DemoOrg; user: Pick<DemoUser, "name"> };
 
 /** "Peter Sjoberg" → `peter.sjoberg@lindholmen-demo.bibi.test` (sign in with magic link or code). */
 export function demoEmail({ org, user }: DemoEmailInput): string {

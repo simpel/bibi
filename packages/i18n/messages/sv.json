@@ -2298,6 +2298,7 @@
     "slugUnavailable": "Den adressen togs precis. Använd förslaget eller välj en annan."
   },
   "dev": {
+    "inviteCodes": "Dev: väntande inbjudningskoder för den här adressen",
     "services": "Tjänster",
     "devUsers": "Dev-användare",
     "switchUser": "Byt dev-användare",

@@ -1,5 +1,9 @@
 export { type Auth, type CreateAuthInput, createAuth } from "./auth";
 export {
+  type DevInvitationCode,
+  listDevInvitationCodes,
+} from "./dev/dev-invitation-codes";
+export {
   type DevUser,
   isDevEnvironment,
   listDevPlatformAdmins,

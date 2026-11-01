@@ -2298,6 +2298,7 @@
     "slugUnavailable": "That address was just taken. Use the suggestion or pick another."
   },
   "dev": {
+    "inviteCodes": "Dev: pending invite codes for this email",
     "services": "Services",
     "devUsers": "Dev users",
     "switchUser": "Switch dev user",
