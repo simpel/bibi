@@ -1,7 +1,7 @@
 import type { FinanceAging, NumberFormat } from "@bibi/core/schemas";
 import { AgingChart } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { agingRows } from "../lib/chart-data";
+import { agingRows, agingWithMoney } from "../lib/chart-data";
 import { FinanceSection } from "./finance-section";
 
 export type AgingCardProps = {
@@ -10,11 +10,11 @@ export type AgingCardProps = {
   currency: string;
 };
 
-/** Open invoice money by age; the section says "no access" when `aging` is null. */
+/** Open invoice money by age; "no access" when `aging` is null, "no data" when nothing is open. */
 export function AgingCard({ aging, numbers, currency }: AgingCardProps) {
   const t = useTranslations("finance");
   return (
-    <FinanceSection title={t("charts.aging.title")} data={aging ? [aging] : null}>
+    <FinanceSection title={t("charts.aging.title")} data={agingWithMoney({ aging })}>
       {aging ? (
         <AgingChart
           label={t("charts.aging.title")}

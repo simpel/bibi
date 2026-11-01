@@ -72,3 +72,22 @@ export function typeRows({ revenueByType, withoutType, ...format }: TypeInput) {
     point: point({ ...format, minor: row.invoicedExclVatMinor }),
   }));
 }
+
+/** True when any amount is not zero; a chart of only zeros is not shown (no filler data). */
+export const hasMoney = ({ minors }: { minors: readonly number[] }) =>
+  minors.some((minor) => minor !== 0);
+
+/** The months, or none when every month is zero; `null` (no access) passes through. */
+export function monthsWithMoney({ monthly }: { monthly: FinanceMonth[] | null }) {
+  if (!monthly) return null;
+  const minors = monthly.flatMap((row) => [row.invoicedExclVatMinor, row.receivedMinor]);
+  return hasMoney({ minors }) ? monthly : [];
+}
+
+/** The aging as one row, or none when nothing is open; `null` (no access) passes through. */
+export function agingWithMoney({ aging }: { aging: FinanceAging | null }) {
+  if (!aging) return null;
+  const { notDueMinor, overdue1to30Minor, overdue31to60Minor, overdue61PlusMinor } = aging;
+  const minors = [notDueMinor, overdue1to30Minor, overdue31to60Minor, overdue61PlusMinor];
+  return hasMoney({ minors }) ? [aging] : [];
+}
