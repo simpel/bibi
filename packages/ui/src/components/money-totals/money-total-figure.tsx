@@ -5,13 +5,14 @@ import { type MoneyFlowSettings, MoneyNumberFlow } from "../hero-number/money-nu
 import {
   type MoneyTotalsSize,
   moneyTotalAmountVariants,
+  moneyTotalDotVariants,
   moneyTotalLabelVariants,
   moneyTotalVariants,
 } from "./money-totals-variants";
 
 export type MoneyTotalItem = {
   key: string;
-  /** Short name of the figure, e.g. "Agreed". Visible at `md` and `lg`, read aloud at `sm`. */
+  /** Short name of the figure, e.g. "Agreed" or "Estimated"; always shown with the amount. */
   label: string;
   /** A longer explanation for the tooltip; defaults to the label. */
   description?: string;
@@ -20,8 +21,11 @@ export type MoneyTotalItem = {
   fallback?: string;
   /** A short line under the amount at `lg`, e.g. "Excl. VAT". */
   hint?: string;
-  /** `estimate` is muted and written `≈`; `destructive` warns (overdue money). */
-  tone?: "default" | "estimate" | "destructive";
+  /**
+   * What kind of money, shown as a coloured dot and amount: `positive` secured (agreed,
+   * received), `pending` not yet certain (estimated, outstanding), `negative` a problem (overdue).
+   */
+  tone?: "neutral" | "positive" | "pending" | "negative";
 };
 
 export type MoneyTotalFigureProps = {
@@ -33,7 +37,7 @@ export type MoneyTotalFigureProps = {
 
 /** One labelled figure of `MoneyTotals`; at `lg` it is a tile. */
 export function MoneyTotalFigure({ item, flow, size, divided }: MoneyTotalFigureProps) {
-  const tone = item.tone ?? "default";
+  const tone = item.tone ?? "neutral";
   const Root = size === "lg" ? Card : "div";
   return (
     <Root
@@ -41,16 +45,15 @@ export function MoneyTotalFigure({ item, flow, size, divided }: MoneyTotalFigure
       title={item.description ?? item.label}
       className={moneyTotalVariants({ size, divided })}
     >
-      <dt className={moneyTotalLabelVariants({ size })}>{item.label}</dt>
+      <dt className={moneyTotalLabelVariants({ size })}>
+        <span aria-hidden className={moneyTotalDotVariants({ tone })} />
+        <span className="truncate">{item.label}</span>
+      </dt>
       <dd className={moneyTotalAmountVariants({ size, tone })}>
         {item.minor === null ? (
           item.fallback
         ) : (
-          <MoneyNumberFlow
-            value={item.minor / 100}
-            flow={flow}
-            lead={tone === "estimate" ? "≈ " : ""}
-          />
+          <MoneyNumberFlow value={item.minor / 100} flow={flow} />
         )}
       </dd>
       {item.hint && size === "lg" ? (

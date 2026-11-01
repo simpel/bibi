@@ -41,6 +41,7 @@ export function PhaseValue({ cards, currency, size }: PhaseValueProps) {
       label: t("confirmedLabel"),
       description: t("confirmed"),
       minor: confirmed,
+      tone: "positive",
     });
   }
   if (estimated !== null) {
@@ -49,7 +50,7 @@ export function PhaseValue({ cards, currency, size }: PhaseValueProps) {
       label: t("estimatedLabel"),
       description: t("estimated"),
       minor: estimated,
-      tone: "estimate",
+      tone: "pending",
     });
   }
   return <MoneyTotals items={items} flow={flow} size={size} />;

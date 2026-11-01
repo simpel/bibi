@@ -17,7 +17,7 @@ export type MoneyNumberFlowProps = Omit<
   flow: MoneyFlowSettings;
   /** Overrides the flow's fraction digits, e.g. whole units for an overview. */
   format?: MoneyFlowSettings["format"];
-  /** Text before the currency, e.g. `≈ `. */
+  /** Text before the currency, e.g. `from `. */
   lead?: string;
 };
 
