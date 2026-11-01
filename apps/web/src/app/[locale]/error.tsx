@@ -11,7 +11,7 @@ export default function ErrorPage({ reset }: ErrorPageProps) {
   const common = useTranslations("common");
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col items-center justify-center gap-4 p-6 text-center">
-      <h1 className="text-2xl font-semibold">{t("generic")}</h1>
+      <h1 className="text-3xl">{t("generic")}</h1>
       <Button onClick={reset}>{common("retry")}</Button>
     </main>
   );

@@ -14,3 +14,16 @@
     @apply font-serif tracking-tight text-black dark:text-white;
   }
 }
+
+/*
+ * Headings are never bold. Unlayered on purpose: it must win over the `font-semibold` and
+ * `font-medium` utilities that sit in a cascade layer.
+ */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 400;
+}
