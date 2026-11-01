@@ -38,7 +38,7 @@ function Blocker({ blocker }: { blocker: ExportBlocker }) {
   );
 }
 
-/** What the next export holds per kind and over which dates, and what stops it. */
+/** What an export of the range holds per kind and over which dates, and what stops it. */
 export function ExportPreviewSummary({ preview, span }: ExportPreviewSummaryProps) {
   const t = useTranslations("finance.export");
   const nothing = preview.blockers.every(({ code }) => code === "NOTHING_TO_EXPORT");
@@ -56,6 +56,11 @@ export function ExportPreviewSummary({ preview, span }: ExportPreviewSummaryProp
             ))}
           </ul>
           {span ? <p className="text-xs text-muted-foreground">{span}</p> : null}
+          {preview.earlierExports > 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {t("earlierExports", { count: preview.earlierExports })}
+            </p>
+          ) : null}
         </>
       ) : null}
       {preview.blockers.length > 0 && !(nothing && preview.voucherCount > 0) ? (

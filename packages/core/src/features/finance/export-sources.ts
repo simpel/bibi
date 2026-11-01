@@ -1,7 +1,5 @@
 import type { OperationContext } from "../../operations/types";
 
-type Db = { context: Pick<OperationContext, "db"> };
-
 const SETTLED = { in: ["SUCCEEDED" as const, "REFUNDED" as const] };
 const LINES = {
   where: { inTotal: true },
@@ -33,45 +31,36 @@ const INVOICE_SELECT = {
   lines: LINES,
 } as const;
 
-type Kind = "INVOICE_SENT" | "INVOICE_VOID" | "PAYMENT" | "FEE";
+type Range = { start: Date; end: Date };
+type Sources = { context: Pick<OperationContext, "db">; period: Range };
 
-const notAs = ({ kind }: { kind: Kind }) => ({ exportEntries: { none: { kind } } });
+const within = ({ period }: { period: Range }) => ({ gte: period.start, lt: period.end });
 
-/** SENT invoices not exported, and VOID ones whose send was exported but not their void. */
-function loadInvoices({ context }: Db) {
+/** Invoices sent in the range, and those voided in it (the reversal of a send, whenever it was). */
+function loadInvoices({ context, period }: Sources) {
   return Promise.all([
     context.db.invoice.findMany({
-      where: { status: "SENT", sentAt: { not: null }, ...notAs({ kind: "INVOICE_SENT" }) },
+      where: { sentAt: within({ period }) },
       select: INVOICE_SELECT,
     }),
     context.db.invoice.findMany({
-      where: {
-        status: "VOID",
-        voidedAt: { not: null },
-        AND: [
-          { exportEntries: { some: { kind: "INVOICE_SENT" } } },
-          notAs({ kind: "INVOICE_VOID" }),
-        ],
-      },
+      where: { sentAt: { not: null }, voidedAt: within({ period }) },
       select: INVOICE_SELECT,
     }),
   ]);
 }
 
-/** Settled payments, their application fees and their refunds not exported yet. */
-function loadCash({ context }: Db) {
-  const settled = { status: SETTLED, paidAt: { not: null } };
+/** Payments settled in the range, their application fees, and the refunds made in it. */
+function loadCash({ context, period }: Sources) {
+  const settled = { status: SETTLED, paidAt: within({ period }) };
   return Promise.all([
+    context.db.payment.findMany({ where: settled, select: PAYMENT_SELECT }),
     context.db.payment.findMany({
-      where: { ...settled, ...notAs({ kind: "PAYMENT" }) },
-      select: PAYMENT_SELECT,
-    }),
-    context.db.payment.findMany({
-      where: { ...settled, applicationFeeMinor: { gt: 0 }, ...notAs({ kind: "FEE" }) },
+      where: { ...settled, applicationFeeMinor: { gt: 0 } },
       select: PAYMENT_SELECT,
     }),
     context.db.paymentRefund.findMany({
-      where: { exportEntries: { none: {} } },
+      where: { refundedAt: within({ period }) },
       select: {
         id: true,
         amountMinor: true,
@@ -83,14 +72,14 @@ function loadCash({ context }: Db) {
 }
 
 /**
- * Every fact no export has contained yet (ADR 0077): SENT invoices, VOID invoices whose send was
- * exported (a void before its export is never exported at all), settled payments, their fees
- * and refunds. The entries' unique keys make this "not exported" exactly once.
+ * Every fact dated in the range (ADR 0077, addendum): invoices by send date, voids by void date,
+ * settled payments and their fees by `paidAt`, refunds by refund date. Facts exported before are
+ * included again, so a range can be exported any number of times.
  */
-export async function loadExportSources({ context }: Db) {
+export async function loadExportSources({ context, period }: Sources) {
   const [[sent, voided], [payments, fees, refunds]] = await Promise.all([
-    loadInvoices({ context }),
-    loadCash({ context }),
+    loadInvoices({ context, period }),
+    loadCash({ context, period }),
   ]);
   return { sent, voided, payments, fees, refunds };
 }

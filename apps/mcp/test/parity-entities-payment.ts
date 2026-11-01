@@ -98,6 +98,12 @@ export const accountingSettingsEntity: ParityEntity = {
 };
 
 /** An SIE export (ADR 0077) of the invoice once sent; needs the organization's number. */
+/** Yesterday to tomorrow, so the invoice sent in this test is inside the exported range. */
+const AROUND_NOW = {
+  from: new Date(Date.now() - 86_400_000).toISOString().slice(0, 10),
+  to: new Date(Date.now() + 86_400_000).toISOString().slice(0, 10),
+};
+
 export const accountingExportEntity = (): ParityEntity => ({
   ...byId({
     name: "accountingExport",
@@ -110,7 +116,7 @@ export const accountingExportEntity = (): ParityEntity => ({
     const profile = { orgNumber: "556000-0000", legalName: "Parity AB" };
     await tool({ mcp, name: "organizationProfile_update", args: profile });
     await tool({ mcp, name: "invoice_send", args: { id: made.invoice.id } });
-    return tool({ mcp, name: "accountingExport_create", args: {} });
+    return tool({ mcp, name: "accountingExport_create", args: AROUND_NOW });
   },
 });
 

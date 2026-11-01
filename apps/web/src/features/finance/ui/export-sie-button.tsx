@@ -1,6 +1,5 @@
 "use client";
 
-import type { AccountingExportPreviewDto } from "@bibi/core/schemas";
 import {
   Button,
   Dialog,
@@ -13,16 +12,24 @@ import {
 import { DownloadIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { ExportPreviewSummary } from "./export-preview-summary";
+import type { Period } from "../lib/finance-period";
+import { RangeStatus } from "./export-range-status";
+import { PeriodRangeFields } from "./period-range-fields";
 import { useCreateExport } from "./use-create-export";
+import { useExportPreview } from "./use-export-preview";
 
-export type ExportSieButtonProps = { preview: AccountingExportPreviewDto; span: string | null };
+export type ExportSieButtonProps = { period: Period };
 
-/** "Export SIE" (`finance:write`): shows what is pending, then creates the export and saves the file. */
-export function ExportSieButton({ preview, span }: ExportSieButtonProps) {
+/**
+ * "Export SIE" (`finance:write`): pick the range to report, see what it holds, then create the
+ * export and save the file. The dialog stays usable, so the same range can be exported again.
+ */
+export function ExportSieButton({ period }: ExportSieButtonProps) {
   const t = useTranslations("finance.export");
   const common = useTranslations("common");
   const [open, setOpen] = useState(false);
+  const [range, setRange] = useState(period);
+  const { preview, failed, valid } = useExportPreview({ range, enabled: open });
   const { confirm, pending } = useCreateExport({ onDone: () => setOpen(false) });
   return (
     <>
@@ -36,12 +43,16 @@ export function ExportSieButton({ preview, span }: ExportSieButtonProps) {
             <DialogTitle>{t("title")}</DialogTitle>
             <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
-          <ExportPreviewSummary preview={preview} span={span} />
+          <PeriodRangeFields draft={range} onChange={setRange} idPrefix="finance-export" />
+          <RangeStatus range={range} valid={valid} failed={failed} preview={preview} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
               {common("cancel")}
             </Button>
-            <Button disabled={pending || preview.blockers.length > 0} onClick={confirm}>
+            <Button
+              disabled={pending || !preview || preview.blockers.length > 0}
+              onClick={() => confirm({ range })}
+            >
               {t("confirm")}
             </Button>
           </DialogFooter>

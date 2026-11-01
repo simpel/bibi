@@ -44,6 +44,14 @@
 - **Gate on `payment:read`.** Rejected: financial totals for the whole organization are broader than one ticket's payments.
 - **Money on the dashboard.** Rejected: the dashboard is the operational state (ADR 0041); finance has its own audience and permission.
 
+## Addendum 2026-11-01 – exports report a date range
+Supersedes decision 6 and the rejected "Regenerate by period" alternative, at the user's request: staff choose the range, and the same range can be exported several times.
+- `accountingExport.preview` and `create` take `{ from, to }` (plain days, inclusive, at most 24 months like the overview). Pressing Export SIE opens a dialog with the two dates (the page's period as default) and a live preview.
+- A file holds every event dated in the range, whether exported before or not: invoices by `sentAt`, voids by `voidedAt` (a void always reverses a send, whenever it was), payments and fees by `paidAt`, refunds by refund date. The "exported once" rule and the unique keys on `AccountingExportEntry` are gone; an entry now means "this export contained this event".
+- `AccountingExport` keeps `periodStart` and `periodEnd` (instants, end exclusive, in the organization's zone; null on files made before ranges) and shows the range in the history. The fiscal year in the file (`#RAR`) is the one holding the range's first day.
+- The cost: importing two files that overlap duplicates vouchers in the accounting program. The preview says how many earlier exports overlap (`earlierExports`) and the dialog warns. Re-downloading an old file still returns the same bytes.
+- Concurrent exports are still refused by the unique `(organizationId, number)`.
+
 ## Addendum 2026-11-01 – as built
 - Revenue accounts are a finance-owned `RevenueAccount` table (one row per item type or per item, exactly one set), not columns on item type and item as Consequences says. Inheritance is unchanged: item, then item type, then `AccountingSettings.revenueAccount`.
 - The demo seed has two invoices (Lindholmen L1 paid, L2 overdue) and one export, but no refund yet; refunds are covered by tests.

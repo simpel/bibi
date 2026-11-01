@@ -23,7 +23,7 @@ const CUSTOMER_LIMIT = 100;
 export async function FinancialsPage({ locale, from, to, customerId }: FinancialsPageProps) {
   const abilities = await getCallerAbilities();
   const canListCustomers = can({ abilities, permission: "customer:read" });
-  const [numbers, dates, today, overview, customers, exportData] = await Promise.all([
+  const [numbers, dates, today, overview, customers, exports] = await Promise.all([
     getNumberFormat(),
     getDateTimeFormat(),
     financeToday(),
@@ -36,17 +36,14 @@ export async function FinancialsPage({ locale, from, to, customerId }: Financial
       : null,
     loadExportData(),
   ]);
-  const { preview, exports } = exportData;
   const fail = ({ error }: { error: Parameters<typeof handleLoadError>[0]["error"] }) => (
     <ErrorState errorKey={handleLoadError({ error, locale })} />
   );
   if (!overview.ok) return fail({ error: overview.error });
-  if (!preview.ok) return fail({ error: preview.error });
   if (!exports.ok) return fail({ error: exports.error });
   return (
     <FinancialsView
       overview={overview.value}
-      preview={preview.value}
       exports={exports.value.items}
       today={today}
       dates={dates}

@@ -56,14 +56,20 @@ describe("cross-organization isolation: financials", () => {
       const result = await call({ client: b, name, args: { id } });
       expect(result.data.code, name).toBe("NOT_FOUND");
     }
-    const theirs = await call({ client: b, name: "accountingExport_preview", args: {} });
+    const theirs = await call({ client: b, name: "accountingExport_preview", args: RANGE });
     expect(theirs.data.voucherCount).toBe(0);
-    const made = await call({ client: b, name: "accountingExport_create", args: {} });
+    const made = await call({ client: b, name: "accountingExport_create", args: RANGE });
     expect(made.data.code).toBe("CONFLICT");
     const list = await call({ client: b, name: "accountingExport_list", args: {} });
     expect(list.data.items).toEqual([]);
   });
 });
+
+/** A range around now: yesterday to tomorrow, so anything made in the test is inside it. */
+const DAY = 86_400_000;
+const isoDay = ({ offset }: { offset: number }) =>
+  new Date(Date.now() + offset * DAY).toISOString().slice(0, 10);
+const RANGE = { from: isoDay({ offset: -1 }), to: isoDay({ offset: 1 }) };
 
 /** Organization A invoices its quote basis and exports it; returns the export's id. */
 async function exportOf({ client }: { client: Client }): Promise<string> {
@@ -79,7 +85,7 @@ async function exportOf({ client }: { client: Client }): Promise<string> {
     args: { ticketId: secret.ticketId },
   });
   await call({ client, name: "invoice_send", args: { id: invoice.data.id } });
-  const made = await call({ client, name: "accountingExport_create", args: {} });
+  const made = await call({ client, name: "accountingExport_create", args: RANGE });
   expect(made.isError, JSON.stringify(made.data)).toBe(false);
   return made.data.id as string;
 }

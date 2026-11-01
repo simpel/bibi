@@ -26,12 +26,16 @@ export const previewAccountingExport = defineOperation({
   entityType,
   kind: "query",
   description:
-    "What the next SIE export would contain: vouchers per kind (invoices sent or voided, " +
-    "payments, fees, refunds) not exported before, their date span, and what blocks it.",
+    "What an SIE export of a date range would contain: vouchers per kind (invoices sent or " +
+    "voided, payments, fees, refunds) dated in it, their date span, how many earlier exports " +
+    "overlap it, and what blocks it.",
   input: AccountingExportPreviewInputSchema,
   output: AccountingExportPreviewSchema,
   permission: "finance:read",
-  handler: async ({ context }) => ok({ value: previewOf({ plan: await planExport({ context }) }) }),
+  handler: async ({ input, context }) => {
+    const plan = await planExport({ context, input });
+    return plan.ok ? ok({ value: previewOf({ plan: plan.value }) }) : plan;
+  },
 });
 
 export const createAccountingExport = defineOperation({
@@ -39,16 +43,19 @@ export const createAccountingExport = defineOperation({
   entityType,
   kind: "command",
   description:
-    "Create the next SIE 4I export: one voucher per invoice sent or voided, payment, fee and " +
-    "refund not exported before. Download it with accountingExport.download.",
+    "Create an SIE 4I export of a date range: one voucher per invoice sent or voided, payment, " +
+    "fee and refund dated in it, also those exported before, so a range can be exported again. " +
+    "Download it with accountingExport.download.",
   input: AccountingExportCreateInputSchema,
   output: AccountingExportSchema,
   permission: "finance:write",
-  handler: async ({ context }) => {
-    const plan = await planExport({ context });
+  handler: async ({ input, context }) => {
+    const planned = await planExport({ context, input });
+    if (!planned.ok) return planned;
+    const plan = planned.value;
     const blockers = exportBlockers({ plan });
     if (blockers.some((b) => b.code === "NOTHING_TO_EXPORT")) {
-      return conflict({ message: "Nothing to export" });
+      return conflict({ message: "Nothing to export in this range" });
     }
     const [blocker] = blockers;
     if (blocker) return invalid({ message: `${blocker.code} ${blocker.detail ?? ""}`.trim() });
@@ -69,7 +76,8 @@ export const listAccountingExports = defineOperation({
   name: "accountingExport.list",
   entityType,
   kind: "query",
-  description: "SIE exports made so far, newest first: number, file name and voucher count.",
+  description:
+    "SIE exports made so far, newest first: number, file name, reported range and voucher count.",
   input: AccountingExportListInputSchema,
   output: AccountingExportListOutputSchema,
   permission: "finance:read",

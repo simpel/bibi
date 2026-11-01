@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { PageInputShape } from "../../shared/page-input";
+import { PlainDateStringSchema } from "../../time/plain-date-schema";
+import { MAX_FINANCE_MONTHS } from "./schema";
 
 export const ACCOUNTING_SOURCE_KINDS = [
   "INVOICE_SENT",
@@ -15,6 +17,8 @@ export const AccountingExportSchema = z.object({
   number: z.number().int().describe("Per organization, 1, 2, 3 …"),
   fileName: z.string(),
   voucherCount: z.number().int(),
+  periodStart: z.date().nullable().describe("Start of the reported range; null before ranges"),
+  periodEnd: z.date().nullable().describe("End of the reported range, exclusive"),
   createdAt: z.date(),
   createdBy: z.string().nullable(),
 });
@@ -24,17 +28,28 @@ export const ExportBlockerSchema = z.object({
   detail: z.string().nullable().describe("E.g. the VAT rates without an account"),
 });
 
-/** What the next export would contain, and what stops it (ADR 0077). */
+/** What an export of the range would contain, and what stops it (ADR 0077). */
 export const AccountingExportPreviewSchema = z.object({
   voucherCount: z.number().int(),
   counts: z.array(z.object({ kind: z.enum(ACCOUNTING_SOURCE_KINDS), count: z.number().int() })),
   firstDate: z.string().nullable().describe("Earliest voucher date, YYYY-MM-DD"),
   lastDate: z.string().nullable().describe("Latest voucher date, YYYY-MM-DD"),
+  earlierExports: z
+    .number()
+    .int()
+    .describe("Exports made before whose range overlaps this one; importing both duplicates"),
   blockers: z.array(ExportBlockerSchema).describe("Empty when the export can be created"),
 });
 
-export const AccountingExportPreviewInputSchema = z.object({});
-export const AccountingExportCreateInputSchema = z.object({});
+/** The range an export reports: every voucher dated in it, however often it was exported. */
+export const AccountingExportRangeInputSchema = z.object({
+  from: PlainDateStringSchema.describe("First day to report, YYYY-MM-DD (inclusive)"),
+  to: PlainDateStringSchema.describe(
+    `Last day to report, YYYY-MM-DD (inclusive); at most ${MAX_FINANCE_MONTHS} months`,
+  ),
+});
+export const AccountingExportPreviewInputSchema = AccountingExportRangeInputSchema;
+export const AccountingExportCreateInputSchema = AccountingExportRangeInputSchema;
 export const AccountingExportIdInputSchema = z.object({
   id: z.string().min(1).describe("accountingExport.list"),
 });
@@ -53,6 +68,7 @@ export const AccountingExportFileSchema = z.object({
   contentBase64: z.string(),
 });
 
+export type AccountingExportRangeInput = z.infer<typeof AccountingExportRangeInputSchema>;
 export type AccountingExportDto = z.infer<typeof AccountingExportSchema>;
 export type AccountingExportPreviewDto = z.infer<typeof AccountingExportPreviewSchema>;
 export type AccountingExportFileDto = z.infer<typeof AccountingExportFileSchema>;

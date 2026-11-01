@@ -9,7 +9,7 @@ export const financeRoutes = [
     method: "PATCH",
     path: "/accounting-settings",
   }),
-  // SIE exports (ADR 0077): preview and create the next batch, read and download made ones.
+  // SIE exports (ADR 0077): preview and create an export of a date range, read and download made ones.
   restRoute({
     operation: "accountingExport.preview",
     method: "GET",

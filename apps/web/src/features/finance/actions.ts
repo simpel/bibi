@@ -3,10 +3,13 @@
 import {
   type AccountingExportDto,
   type AccountingExportFileDto,
+  type AccountingExportPreviewDto,
+  type AccountingExportRangeInput,
   type AccountingSettingsDto,
   type AccountingSettingsUpdateInput,
   createAccountingExport,
   downloadAccountingExport,
+  previewAccountingExport,
   updateAccountingSettings,
 } from "@bibi/core";
 import type { ActionResult } from "@/lib/action-result";
@@ -24,10 +27,23 @@ export async function updateAccountingSettingsAction({
   });
 }
 
-/** Books every pending event into a new SIE export (ADR 0077); CONFLICT when none is pending. */
-export async function createAccountingExportAction(): Promise<ActionResult<AccountingExportDto>> {
+export type AccountingExportRangeActionInput = { input: AccountingExportRangeInput };
+
+/** What an SIE export of the range would hold, for the export dialog (ADR 0077). */
+export async function previewAccountingExportAction({
+  input,
+}: AccountingExportRangeActionInput): Promise<ActionResult<AccountingExportPreviewDto>> {
   return toActionResult({
-    result: await runOperation({ operation: createAccountingExport, input: {} }),
+    result: await runOperation({ operation: previewAccountingExport, input }),
+  });
+}
+
+/** Writes a new SIE export of every voucher dated in the range, also those exported before. */
+export async function createAccountingExportAction({
+  input,
+}: AccountingExportRangeActionInput): Promise<ActionResult<AccountingExportDto>> {
+  return toActionResult({
+    result: await runOperation({ operation: createAccountingExport, input }),
   });
 }
 

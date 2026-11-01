@@ -6,9 +6,9 @@ import type { ExportPlan } from "./plan-export";
 const PROGRAM_NAME = "Bibi";
 const PROGRAM_VERSION = "1.0";
 
-/** The fiscal year that contains `today`, starting in the settings' first month. */
-function fiscalYear({ today, startMonth }: { today: PlainDate; startMonth: number }) {
-  const year = today.month >= startMonth ? today.year : today.year - 1;
+/** The fiscal year that contains `day`, starting in the settings' first month. */
+function fiscalYear({ day, startMonth }: { day: PlainDate; startMonth: number }) {
+  const year = day.month >= startMonth ? day.year : day.year - 1;
   const start = { year, month: startMonth, day: 1 };
   const end = addDays({ date: addMonths({ date: start, months: 12 }), days: -1 });
   return { start: toIsoDate({ date: start }), end: toIsoDate({ date: end }) };
@@ -16,9 +16,13 @@ function fiscalYear({ today, startMonth }: { today: PlainDate; startMonth: numbe
 
 export type ToSieFileInput = { plan: ExportPlan; vouchers: readonly SieVoucher[]; now: Date };
 
-/** The SIE 4I file of one export (ADR 0077): header, the tickets as projects, the vouchers. */
+/**
+ * The SIE 4I file of one export (ADR 0077): header with the fiscal year of the range's first day,
+ * the tickets as projects, the vouchers.
+ */
 export function toSieFile({ plan, vouchers, now }: ToSieFileInput): SieFile {
   const today = toZonedParts({ instant: now, timeZone: plan.timeZone }).date;
+  const rangeStart = toZonedParts({ instant: plan.period.start, timeZone: plan.timeZone }).date;
   const tickets = [
     ...new Set(
       vouchers.flatMap((v) => v.transactions.flatMap((t) => t.objects ?? []).map((o) => o.id)),
@@ -30,7 +34,7 @@ export function toSieFile({ plan, vouchers, now }: ToSieFileInput): SieFile {
     generatedOn: toIsoDate({ date: today }),
     orgNumber: plan.profile?.orgNumber ?? "",
     companyName: plan.profile?.legalName ?? "",
-    fiscalYear: fiscalYear({ today, startMonth: plan.settings.fiscalYearStartMonth }),
+    fiscalYear: fiscalYear({ day: rangeStart, startMonth: plan.settings.fiscalYearStartMonth }),
     accounts: [],
     objects: tickets.map((id) => ({ dimension: 6, id, name: `Ticket ${id}` })),
     vouchers,

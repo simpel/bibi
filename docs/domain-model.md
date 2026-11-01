@@ -1033,17 +1033,18 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · One SIE 4I file handed to the accounting program ([ADR 0077](decisions/0077-financials-and-sie-export.md)). A snapshot: the bytes are kept as written (codepage 437), so a re-download is identical. Never deleted.
 
-> **Ownership:** owned `number`, `fileName`, `fileBytes` and `voucherCount`. The events it contains are its `AccountingExportEntry` rows.
+> **Ownership:** owned `number`, `fileName`, `fileBytes`, `voucherCount`, `periodStart` and `periodEnd`. The events it contains are its `AccountingExportEntry` rows.
 
 **Attributes**
 - number (per organization, highest + 1) and file name (`bibi-sie-NNNN.si`)
 - voucher count
+- reported range (`periodStart`, `periodEnd` exclusive; null on files made before ranges)
 - created at and by
 
 **Relations**
 - `1:N` contains → AccountingExportEntry
 
-> Operations: `accountingExport.preview` and `list|get` (`finance:read`); `accountingExport.create` and `download` (`finance:write`). `preview` shows what the next export would contain and its blockers (`ORG_NUMBER_MISSING`, `VAT_ACCOUNT_MISSING`, `NOTHING_TO_EXPORT`). `create` writes one voucher per invoice sent or voided, payment, fee and refund not exported before, with the file. `download` returns the file as base64. Web: Export SIE on the Financials page, with the export history.
+> Operations: `accountingExport.preview` and `list|get` (`finance:read`); `accountingExport.create` and `download` (`finance:write`). `preview` and `create` take a range `{ from, to }`. `preview` shows what an export of the range would contain, how many earlier exports overlap it and its blockers (`ORG_NUMBER_MISSING`, `VAT_ACCOUNT_MISSING`, `NOTHING_TO_EXPORT`). `create` writes one voucher per invoice sent or voided, payment, fee and refund dated in the range, also those exported before, so a range can be exported again, with the file. `download` returns the file as base64. Web: Export SIE on the Financials page opens a dialog with the range, with the export history.
 
 ### AccountingExportEntry (`AccountingExportEntry`)
 

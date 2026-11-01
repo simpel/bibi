@@ -1,6 +1,5 @@
 import type {
   AccountingExportDto,
-  AccountingExportPreviewDto,
   DateTimeFormat,
   FinanceOverviewDto,
   NumberFormat,
@@ -19,7 +18,6 @@ import { PeriodSwitcher } from "./period-switcher";
 
 export type FinancialsViewProps = {
   overview: FinanceOverviewDto;
-  preview: AccountingExportPreviewDto;
   exports: AccountingExportDto[];
   today: PlainDate;
   dates: DateTimeFormat;
@@ -30,27 +28,16 @@ export type FinancialsViewProps = {
   customerId: string | undefined;
 };
 
-type SpanInput = { preview: AccountingExportPreviewDto; timeZone: string; dates: DateTimeFormat };
-
-/** The voucher date span of the pending export, written in the viewer's date format. */
-function exportSpan({ preview, timeZone, dates }: SpanInput): string | null {
-  const { firstDate, lastDate } = preview;
-  if (!firstDate || !lastDate) return null;
-  const day = ({ value }: { value: string }) => plainDayText({ day: value, timeZone, dates });
-  return `${day({ value: firstDate })} – ${day({ value: lastDate })}`;
-}
-
 /** The page body once everything is loaded. */
 export function FinancialsView(props: FinancialsViewProps) {
-  const { overview, preview, exports, today, dates, numbers, canWrite } = props;
+  const { overview, exports, today, dates, numbers, canWrite } = props;
   const { customers, customerId } = props;
   const t = useTranslations("finance");
   const period = { from: overview.from, to: overview.to };
   const zone = { timeZone: overview.timeZone, dates };
-  const span = exportSpan({ preview, ...zone });
   return (
     <div className="grid gap-6">
-      <FinancialsHeader exportPreview={canWrite ? { preview, span } : null} />
+      <FinancialsHeader exportPeriod={canWrite ? period : null} />
       <div className="flex flex-wrap items-center gap-2">
         <PeriodSwitcher
           period={period}

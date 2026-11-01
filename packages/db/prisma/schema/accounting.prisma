@@ -50,7 +50,7 @@ model RevenueAccount {
   @@unique([organizationId, itemId])
 }
 
-/// What an accounting event was (ADR 0077): each becomes one voucher, exported once.
+/// What an accounting event was (ADR 0077): each becomes one voucher in every export whose range holds its date.
 enum AccountingSourceKind {
   /// An invoice sent: receivables against revenue and VAT (`invoiceId`).
   INVOICE_SENT
@@ -66,7 +66,8 @@ enum AccountingSourceKind {
 
 /// AccountingExport – one SIE 4I file handed to the accounting program (ADR 0077). A snapshot:
 /// the exact bytes are kept so a re-download is identical. Numbered per organization
-/// (highest + 1). Never deleted.
+/// (highest + 1). Never deleted. `periodStart`/`periodEnd` are the range the user reported, as
+/// instants `[start, end)` in the organization's zone; null on files made before ranges.
 model AccountingExport {
   id             String                  @id @default(cuid(2))
   organizationId String
@@ -75,6 +76,8 @@ model AccountingExport {
   /// The file as written, codepage 437.
   fileBytes      Bytes
   voucherCount   Int
+  periodStart    DateTime?
+  periodEnd      DateTime?
   status         RecordStatus            @default(ACTIVE)
   createdAt      DateTime                @default(now())
   updatedAt      DateTime                @updatedAt
@@ -86,8 +89,8 @@ model AccountingExport {
 }
 
 /// AccountingExportEntry – one event an export contained (ADR 0077), append-only. Exactly one of
-/// `invoiceId`, `paymentId`, `refundId` is set, as `kind` says (check constraint). Unique per kind
-/// and source, so an event is never exported twice, also by two exports running at once.
+/// `invoiceId`, `paymentId`, `refundId` is set, as `kind` says (check constraint). An event has one
+/// entry per export that contained it: a range can be exported again.
 model AccountingExportEntry {
   id             String               @id @default(cuid(2))
   organizationId String
@@ -102,8 +105,5 @@ model AccountingExportEntry {
   payment        Payment?             @relation(fields: [paymentId, organizationId], references: [id, organizationId])
   refund         PaymentRefund?       @relation(fields: [refundId, organizationId], references: [id, organizationId])
 
-  @@unique([kind, invoiceId])
-  @@unique([kind, paymentId])
-  @@unique([kind, refundId])
   @@index([organizationId, exportId])
 }

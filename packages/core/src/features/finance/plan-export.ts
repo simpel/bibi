@@ -1,32 +1,50 @@
 import { missingVatRates } from "../../accounting/sie4/events";
+import { ok } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
-import { loadZoneOfVenue } from "../../shared/time-zones";
 import { revenueAccountResolver, toAccountMap } from "./account-map";
 import { type PendingEvent, pendingEvents } from "./export-events";
-import type { AccountingExportPreviewDto, ExportBlocker } from "./export-schema";
+import type {
+  AccountingExportPreviewDto,
+  AccountingExportRangeInput,
+  ExportBlocker,
+} from "./export-schema";
 import { loadExportSources } from "./export-sources";
 import { loadAccountingSettings } from "./load-settings";
+import { resolvePeriod } from "./period";
 
-type Db = { context: Pick<OperationContext, "db"> };
+export type PlanExportInput = {
+  context: Pick<OperationContext, "db">;
+  input: AccountingExportRangeInput;
+};
 
-/** Everything the next export needs, read once: settings, organization, zone and its events. */
-export async function planExport({ context }: Db) {
-  const [settings, profile, zoneOf, sources] = await Promise.all([
+/**
+ * Everything an export of the range needs, read once: settings, organization, zone and the events
+ * dated in the range. VALIDATION for a range that is backwards or longer than the overview's.
+ */
+export async function planExport({ context, input }: PlanExportInput) {
+  const resolved = await resolvePeriod({ context, input });
+  if (!resolved.ok) return resolved;
+  const { start, end, timeZone } = resolved.value;
+  const period = { start, end };
+  const [settings, profile, sources, earlierExports] = await Promise.all([
     loadAccountingSettings({ context }),
     context.db.organizationProfile.findFirst({ select: { legalName: true, orgNumber: true } }),
-    loadZoneOfVenue({ context }),
-    loadExportSources({ context }),
+    loadExportSources({ context, period }),
+    context.db.accountingExport.count({
+      where: { periodStart: { lt: end }, periodEnd: { gt: start } },
+    }),
   ]);
-  const timeZone = zoneOf({ venue: null });
   const accountOf = revenueAccountResolver({ settings });
   const pending = await pendingEvents({ context, sources, timeZone, accountOf });
   const accounts = toAccountMap({ settings });
-  return { settings, profile, timeZone, pending, accounts };
+  return ok({
+    value: { settings, profile, timeZone, period, earlierExports, pending, accounts },
+  });
 }
 
-export type ExportPlan = Awaited<ReturnType<typeof planExport>>;
+export type ExportPlan = Extract<Awaited<ReturnType<typeof planExport>>, { ok: true }>["value"];
 
-/** Why the export cannot be created yet; empty when it can (ADR 0077). */
+/** Why the export cannot be created; empty when it can (ADR 0077). */
 export function exportBlockers({ plan }: { plan: ExportPlan }): ExportBlocker[] {
   const events = plan.pending.map((pending) => pending.event);
   const missing = missingVatRates({ accounts: plan.accounts, events });
@@ -58,6 +76,7 @@ export function previewOf({ plan }: { plan: ExportPlan }): AccountingExportPrevi
     counts,
     firstDate: dates[0] ?? null,
     lastDate: dates.at(-1) ?? null,
+    earlierExports: plan.earlierExports,
     blockers: exportBlockers({ plan }),
   };
 }

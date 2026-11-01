@@ -20,7 +20,11 @@ export const FinanceOverviewWireSchema = FinanceOverviewSchema.extend({
 export type FinanceOverviewWire = z.infer<typeof FinanceOverviewWireSchema>;
 
 /** JSON form of an export as tool results carry it (dates = ISO strings). */
-export const AccountingExportWireSchema = AccountingExportSchema.extend({ createdAt: z.string() });
+export const AccountingExportWireSchema = AccountingExportSchema.extend({
+  periodStart: z.string().nullable(),
+  periodEnd: z.string().nullable(),
+  createdAt: z.string(),
+});
 
 export type AccountingExportWire = z.infer<typeof AccountingExportWireSchema>;
 export type AccountingExportPreviewWire = z.infer<typeof AccountingExportPreviewSchema>;

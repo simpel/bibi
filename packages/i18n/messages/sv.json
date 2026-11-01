@@ -300,7 +300,7 @@
     "export": {
       "button": "Exportera SIE",
       "title": "Exportera SIE",
-      "description": "Skapar en SIE-fil med allt som inte exporterats ännu, för ditt bokföringsprogram.",
+      "description": "Välj perioden som ska rapporteras. Filen innehåller alla verifikationer med datum i perioden, även sådana som redan exporterats, så en period kan exporteras flera gånger.",
       "confirm": "Exportera och ladda ner",
       "created": "Exporten har skapats.",
       "downloading": "Förbereder filen…",
@@ -324,14 +324,17 @@
       "blockers": {
         "ORG_NUMBER_MISSING": "Organisationsnummer saknas",
         "VAT_ACCOUNT_MISSING": "Momskonto saknas för {detail}",
-        "NOTHING_TO_EXPORT": "Inget nytt att exportera"
+        "NOTHING_TO_EXPORT": "Inget har datum i den här perioden"
       },
       "columns": {
         "number": "Nummer",
         "date": "Skapad",
         "vouchers": "Verifikationer",
-        "fileName": "Filnamn"
-      }
+        "fileName": "Filnamn",
+        "range": "Period"
+      },
+      "earlierExports": "{count, plural, one {# tidigare export överlappar perioden. Importeras båda dupliceras verifikationerna.} other {# tidigare exporter överlappar perioden. Importeras de tillsammans dupliceras verifikationerna.}}",
+      "previewFailed": "Perioden kunde inte läsas."
     },
     "kpi": {
       "invoiced": "Fakturerat",

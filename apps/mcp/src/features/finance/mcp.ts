@@ -11,7 +11,7 @@ export const financeMcpTools = [
   mcpTool({ operation: "accountingExport.preview" }),
   mcpTool({
     operation: "accountingExport.create",
-    summary: () => "Create the next SIE export of everything not exported yet",
+    summary: () => "Create an SIE export of a date range (the same range can be exported again)",
   }),
   mcpTool({ operation: "accountingExport.list" }),
   mcpTool({ operation: "accountingExport.get" }),

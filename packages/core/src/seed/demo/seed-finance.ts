@@ -3,6 +3,7 @@ import { createAccountingExport } from "../../features/finance/export-operations
 import { updateAccountingSettings } from "../../features/finance/settings-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import { demoExportRange } from "./finance-range";
 import { missing } from "./seed-fields";
 import type { DemoOrg } from "./types";
 
@@ -10,7 +11,7 @@ export type SeedDemoFinanceInput = { context: ExecuteContext; org: DemoOrg };
 
 /**
  * ADR 0077: the organization's revenue accounts per item type (BAS defaults otherwise) and its
- * first SIE export of the invoices and payments seeded with the tickets.
+ * first SIE export (the last 12 months) of the invoices and payments seeded with the tickets.
  */
 export async function seedDemoFinance({
   context,
@@ -30,6 +31,10 @@ export async function seedDemoFinance({
   const input = { revenueAccounts };
   const saved = await execute({ operation: updateAccountingSettings, input, context });
   if (!saved.ok) return saved;
-  const exported = await execute({ operation: createAccountingExport, input: {}, context });
+  const exported = await execute({
+    operation: createAccountingExport,
+    input: demoExportRange(),
+    context,
+  });
   return exported.ok ? ok({ value: true }) : exported;
 }

@@ -21,6 +21,7 @@ export function useAccountingExportColumns({
         accessorFn: (row) => row.createdAt,
         cell: ({ row }) => row.original.dateText,
       },
+      { id: "range", header: t("range"), accessorFn: (row) => row.rangeText },
       { id: "vouchers", header: t("vouchers"), accessorFn: (row) => row.voucherCount },
       { id: "fileName", header: t("fileName"), accessorFn: (row) => row.fileName },
       ...(canDownload

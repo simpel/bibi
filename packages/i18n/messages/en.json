@@ -300,7 +300,7 @@
     "export": {
       "button": "Export SIE",
       "title": "Export SIE",
-      "description": "Creates a SIE file of everything not exported yet, for your accounting program.",
+      "description": "Choose the range to report. The file holds every voucher dated in it, also those exported before, so a range can be exported again.",
       "confirm": "Export and download",
       "created": "The export has been created.",
       "downloading": "Preparing the file…",
@@ -324,14 +324,17 @@
       "blockers": {
         "ORG_NUMBER_MISSING": "Organization number is missing",
         "VAT_ACCOUNT_MISSING": "VAT account is missing for {detail}",
-        "NOTHING_TO_EXPORT": "Nothing new to export"
+        "NOTHING_TO_EXPORT": "Nothing dated in this range"
       },
       "columns": {
         "number": "Number",
         "date": "Created",
         "vouchers": "Vouchers",
-        "fileName": "File name"
-      }
+        "fileName": "File name",
+        "range": "Range"
+      },
+      "earlierExports": "{count, plural, one {# earlier export overlaps this range. Importing both duplicates the vouchers.} other {# earlier exports overlap this range. Importing them together duplicates the vouchers.}}",
+      "previewFailed": "The range could not be read."
     },
     "kpi": {
       "invoiced": "Invoiced",

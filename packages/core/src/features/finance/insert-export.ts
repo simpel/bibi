@@ -7,6 +7,8 @@ export const EXPORT_SELECT = {
   number: true,
   fileName: true,
   voucherCount: true,
+  periodStart: true,
+  periodEnd: true,
   createdAt: true,
   createdBy: true,
 } as const;
@@ -18,8 +20,8 @@ export type InsertExportInput = {
 };
 
 /**
- * Writes the export and one entry per event it contains (ADR 0077). A concurrent export of the
- * same events hits the entries' unique keys, and its whole command is refused with CONFLICT.
+ * Writes the export, its range and one entry per event it contains (ADR 0077). Two exports at once
+ * would take the same number; the unique key refuses the second, whole, with CONFLICT.
  */
 export async function insertExport({
   context,
@@ -36,6 +38,8 @@ export async function insertExport({
       fileName: `bibi-sie-${String(number).padStart(4, "0")}.si`,
       fileBytes: Uint8Array.from(bytes),
       voucherCount: plan.pending.length,
+      periodStart: plan.period.start,
+      periodEnd: plan.period.end,
     },
     select: EXPORT_SELECT,
   });
