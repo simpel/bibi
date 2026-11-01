@@ -1,8 +1,6 @@
 import type { DemoTicket } from "../../ticket-types";
-import { lindholmenClosedTickets } from "./closed-tickets";
 import { lindholmenHistoryTickets } from "./history-tickets";
 import { l4Lines, l11Choices } from "./ticket-choices";
-import { lindholmenYearTickets } from "./year-tickets";
 
 const hisingen = "Hisingen Energi AB";
 const kvarnby = "Kvarnby Design AB";
@@ -25,7 +23,6 @@ const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
  */
 export const lindholmenTickets: readonly DemoTicket[] = [
   ...lindholmenHistoryTickets,
-  ...lindholmenYearTickets,
   {
     ...{ ...quoted, estimatesKr: [60_000, 85_000] },
     ...{ ref: "L3", customer: "Västra Sjukvårdsregionen", type: "Conference", day: 3 },
@@ -144,6 +141,4 @@ export const lindholmenTickets: readonly DemoTicket[] = [
     fields: { Purpose: "Team day" },
     lines: [{ item: "Hönö", name: "Team day", from: "09:00", to: "16:00" }],
   },
-  // Last, so the fixtures keep their reference numbers.
-  ...lindholmenClosedTickets,
 ];

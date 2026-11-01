@@ -3,9 +3,9 @@
 import NumberFlow, { type Format, NumberFlowGroup, type NumberFlowProps } from "@number-flow/react";
 import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
+import { FlowMemory, type RememberedValueInput } from "./flow-memory";
 
-export { FlowMemory, type RememberedValueInput } from "./flow-memory";
-export { NumberFlow, NumberFlowGroup, type NumberFlowProps };
+export { FlowMemory, NumberFlow, NumberFlowGroup, type NumberFlowProps, type RememberedValueInput };
 
 export type HeroNumberSize = "sm" | "md" | "lg" | "xl";
 

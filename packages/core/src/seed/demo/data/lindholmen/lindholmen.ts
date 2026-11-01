@@ -6,6 +6,7 @@ import { lindholmenActivities } from "./activities";
 import { lindholmenAlternativeTickets } from "./alternative-tickets";
 import { lindholmenBundleTickets } from "./bundle-tickets";
 import { conferenceDayBundle, lindholmenBundles } from "./bundles";
+import { lindholmenClosedTickets } from "./closed-tickets";
 import { lindholmenLists } from "./config";
 import { lindholmenCustomers } from "./customers";
 import { lindholmenDensity } from "./density";
@@ -19,11 +20,15 @@ import { lindholmenStaff, lindholmenStaffTypes } from "./staff";
 import { lindholmenTemplates } from "./templates";
 import { lindholmenTickets } from "./tickets";
 import { lindholmenTypes } from "./types";
+import { lindholmenYearTickets } from "./year-tickets";
 
 const fixtures = [
   ...lindholmenTickets,
   ...lindholmenAlternativeTickets,
   ...lindholmenBundleTickets,
+  // Last, so the fixtures (L1–L15, F2, F3, F6) keep their reference numbers.
+  ...lindholmenClosedTickets,
+  ...lindholmenYearTickets,
 ];
 // Parts come after the items they contain.
 const items = [

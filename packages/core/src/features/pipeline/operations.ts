@@ -18,6 +18,7 @@ import {
   BoardPhaseUpdateInputSchema,
   BoardSchema,
 } from "../board/schema";
+import { dashboardOperations, dashboardSummary } from "../dashboard/operations";
 import { pipelineBoardHandler } from "./board-view";
 import { PipelineBoardInputSchema, PipelineBoardSchema } from "./schema";
 
@@ -116,4 +117,4 @@ export const pipelineOperations = [
 ];
 
 // The dashboard view reaches the package index through here (its size limit).
-export { dashboardOperations, dashboardSummary } from "../dashboard/operations";
+export { dashboardOperations, dashboardSummary };
