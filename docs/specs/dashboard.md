@@ -1,6 +1,6 @@
-# Dashboard
+# Dashboards
 
-Spec for `/dashboard/{tab}/{from}/{to}` (ADR 0041, 0079, 0080, 0086). One page: a header with the title, a preamble and the one range picker, then a white section with two tabs, **Financials** and **Workload**. The range is in the path (ADR 0064) and both tabs keep it when switching. `/dashboard`, `/dashboard/{tab}` and the old `/financials/...` redirect to a tab on this month. Financials needs `finance:read`; without it only Workload shows.
+Spec for `/data/{dashboard}/{from}/{to}` (ADR 0041, 0079, 0080, 0086). One page, **Dashboards**: a header with the title, a preamble, the one range picker and two dashboards as tabs, **Financials** and **Workload**; the open dashboard fills the white section below. The dashboard and range are in the path (ADR 0064) and switching dashboard keeps the range. The header lives in the layout, so a change reloads only the content: it stays on screen, dimmed, until the next is ready, then the figures count from their last values and the lines draw in. `/data`, `/data/{dashboard}`, the old `/dashboard/...` and `/financials/...` redirect to a dashboard on this month. Financials needs `finance:read`; without it only Workload shows.
 
 ## Range
 - Presets: last 7 days, last 30 days, this month (the default), last 3 months, last 12 months, next 28 days, or two picked days; at most 24 months. No previous or next buttons.

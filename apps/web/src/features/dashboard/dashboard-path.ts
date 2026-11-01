@@ -2,15 +2,26 @@ import "server-only";
 import { defaultFinancePeriod } from "@/features/finance/finance-path";
 import { periodHref } from "@/features/finance/lib/finance-href";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
-import { type DashboardTab, tabBase } from "./lib/dashboard-tabs";
+import { DASHBOARDS, type DashboardKey, dashboardBase } from "./lib/dashboards";
 
-/** Financials when the caller may read money, else Workload (ADR 0086). */
-export async function defaultDashboardTab(): Promise<DashboardTab> {
+/** The dashboards the caller may read: Financials needs `finance:read` (ADR 0086). */
+export async function visibleDashboards(): Promise<DashboardKey[]> {
   const abilities = await getCallerAbilities();
-  return can({ abilities, permission: "finance:read" }) ? "financials" : "workload";
+  return DASHBOARDS.filter(
+    (dashboard) => dashboard !== "financials" || can({ abilities, permission: "finance:read" }),
+  );
 }
 
-/** A tab on its default range, this month. */
-export async function defaultTabHref({ tab }: { tab: DashboardTab }): Promise<string> {
-  return periodHref({ ...(await defaultFinancePeriod()), base: tabBase({ tab }) });
+/** The first dashboard the caller may read. */
+export async function defaultDashboard(): Promise<DashboardKey> {
+  return (await visibleDashboards())[0] ?? "workload";
+}
+
+/** A dashboard on its default range, this month. */
+export async function defaultDashboardHref({
+  dashboard,
+}: {
+  dashboard: DashboardKey;
+}): Promise<string> {
+  return periodHref({ ...(await defaultFinancePeriod()), base: dashboardBase({ dashboard }) });
 }

@@ -37,8 +37,12 @@ export function FinanceStatCards({ overview, dates, numbers }: FinanceStatCardsP
     value: ({ value }) => numbers.money({ minor: value, currency }),
   });
   const flow = numbers.moneyFlow({ currency });
-  const amountOf = ({ trend }: { trend: Trend | undefined }) =>
-    trend ? <MoneyNumberFlow value={trend.current / 100} flow={flow} /> : common("noAccessShort");
+  const amountOf = ({ key, trend }: { key: Key; trend: Trend | undefined }) =>
+    trend ? (
+      <MoneyNumberFlow value={trend.current / 100} flow={flow} memoryKey={`finance-stat:${key}`} />
+    ) : (
+      common("noAccessShort")
+    );
   return (
     <StatCards data-slot="finance-stat-cards">
       {CARDS.map(({ key, polarity, tone }) => {
@@ -49,7 +53,7 @@ export function FinanceStatCards({ overview, dates, numbers }: FinanceStatCardsP
             key={key}
             label={t(key)}
             tone={key === "overdue" && !trend?.current ? "neutral" : tone}
-            value={amountOf({ trend })}
+            value={amountOf({ key, trend })}
             {...(hint ? { hint: t(hint) } : {})}
             {...(trend ? { series: statSeries({ trend, texts }) } : {})}
             trend={trend ? statTrend({ trend, polarity, texts }) : null}

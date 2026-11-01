@@ -142,5 +142,6 @@ export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs/tabs
 export { Textarea, type TextareaProps } from "./components/textarea/textarea";
 export { Toaster, type ToasterProps, toast } from "./components/toast/toast";
 export * from "./components/tooltip/tooltip";
+export * from "./components/view-switcher/view-switcher";
 export * from "./components/wordmark/wordmark";
 export { cn } from "./lib/cn";

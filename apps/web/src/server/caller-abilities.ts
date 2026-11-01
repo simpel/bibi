@@ -8,6 +8,7 @@ import {
   type PermissionSet,
 } from "@bibi/core";
 import { headers } from "next/headers";
+import { cache } from "react";
 import { canPermission, type RowAccess } from "@/lib/can";
 
 export type CallerAbilities = {
@@ -29,8 +30,9 @@ const NONE: CallerAbilities = {
  * What the signed-in user's effective permissions allow (preset + overrides, ADR 0050), for
  * hiding buttons and pages that would only fail (the operations still enforce everything). Uses
  * the same resolver as `runOperation`. `permissions` also answers view questions (`canView`).
+ * Cached per request: a page, its layout and its tabs resolve the session once.
  */
-export async function getCallerAbilities(): Promise<CallerAbilities> {
+export const getCallerAbilities = cache(async (): Promise<CallerAbilities> => {
   const context = await resolveExecuteContext({ headers: await headers() });
   if (!context.ok) return NONE;
   const { permissions, roles, actor } = context.value;
@@ -39,7 +41,7 @@ export async function getCallerAbilities(): Promise<CallerAbilities> {
     role: highestRole({ roles }),
     userId: actor.userId,
   };
-}
+});
 
 export type CanInput = { abilities: Pick<CallerAbilities, "permissions">; permission: Permission };
 

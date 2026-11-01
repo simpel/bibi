@@ -50,7 +50,10 @@ const seriesBars = ({ series, stacked }: BarsInput) =>
       fill={chartSeriesColor({ index })}
       {...(stacked ? { stackId: "stack" } : {})}
       radius={4}
-      isAnimationActive={false}
+      // Grows in when a range is picked; "auto" keeps it still for reduced motion.
+      isAnimationActive="auto"
+      animationDuration={600}
+      animationEasing="ease-out"
     />
   ));
 

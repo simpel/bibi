@@ -2,7 +2,7 @@ export const ROUTES = {
   home: "/",
   chats: "/chats",
   pipeline: "/pipeline",
-  dashboard: "/dashboard",
+  dashboard: "/data",
   login: "/login",
   signUp: "/sign-up",
   venues: "/venues",
@@ -26,8 +26,8 @@ export const ROUTES = {
   customers: "/customers",
   tickets: "/tickets",
   calendar: "/calendar",
-  financials: "/dashboard/financials", // a dashboard tab (ADR 0086)
-  workload: "/dashboard/workload",
+  financials: "/data/financials", // one of the dashboards (ADR 0086)
+  workload: "/data/workload",
   quotes: "/quotes",
   settings: "/settings",
   settingsOrganization: "/settings/organization",

@@ -1,9 +1,12 @@
 import type { DashboardSummary, DateTimeFormat, NumberFormat } from "@bibi/core/schemas";
-import { StatCard, StatCards } from "@bibi/ui";
+import { MoneyNumberFlow, StatCard, StatCards } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { statSeries, statTrend } from "../lib/stat-trend";
 import { statusHint } from "../lib/status-hint";
 import { useStatTexts } from "../lib/use-stat-texts";
+
+/** A count in the number format's separators, animated like the money figures. */
+const WHOLE = { minimumFractionDigits: 0, maximumFractionDigits: 0 };
 
 export type StatusStatCardsProps = {
   summary: Pick<DashboardSummary, "statuses" | "bucketSize" | "timeZone" | "currency">;
@@ -23,12 +26,9 @@ export function StatusStatCards({ summary, dates, numbers }: StatusStatCardsProp
     ...{ size: bucketSize, timeZone, dates, numbers },
     value: ({ value: count }) => t("tickets", { count }),
   });
-  const labels = {
-    confirmed: value("confirmedLabel"),
-    estimated: value("estimatedLabel"),
-    none: t("noValue"),
-  };
+  const labels = { confirmed: value("confirmedLabel"), estimated: value("estimatedLabel") };
   const money = ({ minor }: { minor: number }) => numbers.money({ minor, currency });
+  const countFlow = { ...numbers.moneyFlow({ currency }), prefix: "", suffix: "" };
   if (statuses.length === 0) return <p className="text-sm text-muted-foreground">{t("empty")}</p>;
   return (
     <StatCards data-slot="status-stat-cards">
@@ -38,8 +38,15 @@ export function StatusStatCards({ summary, dates, numbers }: StatusStatCardsProp
           <StatCard
             key={status.statusId}
             label={status.name}
-            value={numbers.number({ value: status.tickets })}
-            hint={statusHint({ ...status, money, labels })}
+            value={
+              <MoneyNumberFlow
+                value={status.tickets}
+                flow={countFlow}
+                format={WHOLE}
+                memoryKey={`status-stat:${status.statusId}`}
+              />
+            }
+            hint={statusHint({ ...status, money, labels: { ...labels, none: t("noValue") } })}
             series={statSeries({ trend: status.trend, texts })}
             trend={trend && { ...trend, tone: "neutral" }}
           />

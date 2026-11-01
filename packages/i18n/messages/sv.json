@@ -244,12 +244,16 @@
     "moveTo": "Flytta till"
   },
   "dashboard": {
-    "title": "Översikt",
+    "title": "Översikter",
     "description": "Ekonomi och arbetsbelastning för perioden du väljer.",
     "tabs": {
-      "label": "Översiktens vyer",
+      "label": "Översikter",
       "financials": "Ekonomi",
-      "workload": "Arbetsbelastning"
+      "workload": "Arbetsbelastning",
+      "descriptions": {
+        "financials": "Fakturerat, inbetalt och öppna belopp",
+        "workload": "Pipeline, bokningar och beläggning"
+      }
     },
     "trend": {
       "weekOf": "Veckan från {date}",
@@ -454,7 +458,7 @@
     }
   },
   "nav": {
-    "dashboard": "Översikt",
+    "dashboard": "Data",
     "pipeline": "Pipeline",
     "venues": "Anläggningar",
     "items": "Artiklar",

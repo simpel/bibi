@@ -244,12 +244,16 @@
     "moveTo": "Move to"
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Dashboards",
     "description": "Money and workload for the range you pick.",
     "tabs": {
-      "label": "Dashboard views",
+      "label": "Dashboards",
       "financials": "Financials",
-      "workload": "Workload"
+      "workload": "Workload",
+      "descriptions": {
+        "financials": "Invoiced, received and open money",
+        "workload": "Pipeline, bookings and utilisation"
+      }
     },
     "trend": {
       "weekOf": "Week of {date}",
@@ -454,7 +458,7 @@
     }
   },
   "nav": {
-    "dashboard": "Dashboard",
+    "dashboard": "Data",
     "pipeline": "Pipeline",
     "venues": "Venues",
     "items": "Items",

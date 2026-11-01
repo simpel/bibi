@@ -44,6 +44,18 @@ function StatCardHover({ point, active }: StatCardHoverProps) {
   );
 }
 
+/** The fill under the line: the line's colour fading to nothing. */
+function StatLineGradient({ id }: { id: string }) {
+  return (
+    <defs>
+      <linearGradient id={id} x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stopColor="currentColor" stopOpacity="0.28" />
+        <stop offset="1" stopColor="currentColor" stopOpacity="0" />
+      </linearGradient>
+    </defs>
+  );
+}
+
 /** The trend line with a gradient under it. Decorative: the data is in the sr-only list. */
 export function StatCardLine({ series, tone }: Omit<StatCardLineProps, "activeIndex">) {
   const gradientId = useId();
@@ -61,19 +73,21 @@ export function StatCardLine({ series, tone }: Omit<StatCardLineProps, "activeIn
         preserveAspectRatio="none"
         className="size-full overflow-visible"
       >
-        <defs>
-          <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="currentColor" stopOpacity="0.28" />
-            <stop offset="1" stopColor="currentColor" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path d={area} fill={`url(#${gradientId})`} />
+        <StatLineGradient id={gradientId} />
+        <path
+          d={area}
+          fill={`url(#${gradientId})`}
+          className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-700"
+        />
         <path
           d={line}
           fill="none"
           stroke="currentColor"
           strokeWidth="1.5"
           vectorEffect="non-scaling-stroke"
+          pathLength={1}
+          strokeDasharray={1}
+          className="motion-safe:animate-[stat-line-draw_700ms_ease-out]"
         />
       </svg>
     </div>

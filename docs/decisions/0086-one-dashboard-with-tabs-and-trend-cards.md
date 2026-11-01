@@ -30,3 +30,8 @@
 - **Keep two pages and give both the same picker.** Rejected by the user: one header and tabs reads as one place.
 - **Store daily snapshots for trends.** Rejected: a second copy of facts the invoices, payments and status history already hold (ADR 0051). Revisit only if deriving is too slow.
 - **Trend from the first to the last bucket in the range.** Rejected: the previous equal range is the comparison people expect from a percentage.
+
+## Addendum 2026-11-01 – Dashboards, header in a layout
+- The page's heading is **Dashboards** and each tab is a dashboard. The menu entry and the URLs are called **Data**: `/data/{dashboard}/{from}/{to}`, `dashboard` = `financials` or `workload`. `/dashboard/...` redirects to the same dashboard and range.
+- The dashboards are switched with a prominent switcher in the header (not plain tabs), which sits with the title, preamble and range picker. The header lives in the `/data` layout and reads the dashboard and range from the URL, so a tab or range change reloads only the content below it. The change is a transition: the current content stays on screen, dimmed, until the next is ready; the stat figures then count from their last values and the lines draw in.
+

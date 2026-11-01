@@ -67,6 +67,8 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 - A headline figure is a `StatCard` (`@bibi/ui`) in `StatCards`: its line, tooltip texts and trend are prepared on the server (`features/dashboard/lib/stat-trend.ts`, `use-stat-texts.ts`) from a core `Trend`; never compute a trend in the client.
 - A row holds cards of one kind: charts with charts, tables full width. Charts and tables never share a row.
 - A date range is the one range picker (`PeriodRange`); no previous or next buttons.
+- Switching between whole views of one page (the dashboards) is a `ViewSwitcher` (`@bibi/ui`) in the header, not `Tabs`; `Tabs` are for parts of a view.
+- A page whose tabs or range are in the path keeps its header (title, picker, tabs) in a layout above those segments, reading them with `useParams`. A tab or range change is one transition: the current content stays, dimmed and `aria-busy`, until the next is ready, and figures count from their last values (`MoneyNumberFlow` `memoryKey` in a `FlowMemory`). No `loading.tsx` there: it would blank the content. See `features/dashboard/ui/dashboards-shell.tsx`, `dashboards-pending.tsx`.
 
 ## The assistant (ADR 0007, 0008)
 - `features/assistant/`: `AssistantProvider` in the shell holds ONE `useChat` for the home page and ⌘K. The assistant exists only on `/` (ADR 0035); `ask` and `prefill` start a conversation and navigate there.

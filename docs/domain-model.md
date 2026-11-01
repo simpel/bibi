@@ -1090,7 +1090,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 - trends of invoiced and received (sums) and outstanding and overdue (rebuilt at each bucket's end from invoices, payments and refunds), each with the previous range of equal length ([ADR 0086](decisions/0086-one-dashboard-with-tabs-and-trend-cards.md))
 
-> Operation: `finance.overview({ from, to, customerId? })` (`finance:read`; at most 24 months). Invoiced, received, aging, revenue and trends need `payment:read`, won and lost `quote:read`; a part the caller may not read is null. Web: the Financials tab of `/dashboard/{tab}/{from}/{to}` (ADR 0086).
+> Operation: `finance.overview({ from, to, customerId? })` (`finance:read`; at most 24 months). Invoiced, received, aging, revenue and trends need `payment:read`, won and lost `quote:read`; a part the caller may not read is null. Web: the Financials dashboard, `/data/{dashboard}/{from}/{to}` (ADR 0086).
 
 ### Dashboard (`dashboard.summary`)
 
@@ -1098,7 +1098,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 > **Ownership:** derived throughout.
 
-> Operation: `dashboard.summary({ from, to })` (`ticket:read`; at most 24 months). Unsent sheets need `sheet:read`, overdue `finance:read` and `payment:read`, utilisation `item:read`, booked ahead `quote:read`, customer names `customer:read`; a part the caller may not read is null. Web: the Workload tab of `/dashboard/{tab}/{from}/{to}`.
+> Operation: `dashboard.summary({ from, to })` (`ticket:read`; at most 24 months). Unsent sheets need `sheet:read`, overdue `finance:read` and `payment:read`, utilisation `item:read`, booked ahead `quote:read`, customer names `customer:read`; a part the caller may not read is null. Web: the Workload dashboard, `/data/{dashboard}/{from}/{to}`.
 
 ## Operations & system
 
