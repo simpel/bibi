@@ -5,8 +5,8 @@ import { updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
+import { runTicketCreate } from "./create-ticket";
 import { recordEstimate } from "./estimate-history";
-import { insertTicket } from "./insert-ticket";
 import { TicketCreateInputSchema, TicketSchema, TicketUpdateInputSchema } from "./schema";
 import { loadTicket, TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
 import { checkTicketDetails } from "./update-rules";
@@ -15,15 +15,20 @@ export const createTicket = defineOperation({
   name: "ticket.create",
   kind: "command",
   description:
-    "Create a ticket of one of the organization's ticket types for a customer (ADR 0043). It " +
-    "gets the next reference number and starts in the organization's entry status. Nothing but " +
-    "the type, the customer and a contact who works at the customer is required (ADR 0081). " +
-    "`note` holds notes for the whole booking. `assigneeId` (a member) becomes the main " +
-    "assignee. `fields` must match the type's own fields.",
+    "Create a ticket of one of the organization's ticket types for a customer (ADR 0043), with " +
+    "its lines in one step (ADR 0081): all of it is created, or nothing. It gets the next " +
+    "reference number and starts in the organization's entry status, and each line in the " +
+    "state the status grid gives its item type there. Nothing but the type, the customer and a " +
+    "contact who works at the customer is required. `note` holds notes for the whole booking. " +
+    "`assigneeId` (a member) becomes the main assignee. `fields` must match the type's own " +
+    "fields. `lines` carry their chosen options and needs; a line whose hard start state would " +
+    "clash is refused with CONFLICT at lines.<index> naming the blocking ticket, while a soft " +
+    "overlap is prebooked. `templateId` records the package the lines came from. Repeating a " +
+    "call with the same `intakeKey` returns the first ticket and creates nothing.",
   input: TicketCreateInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
-  handler: async ({ input, context }) => insertTicket({ context, input }),
+  handler: async ({ input, context }) => runTicketCreate({ context, input }),
 });
 
 export const updateTicket = defineOperation({

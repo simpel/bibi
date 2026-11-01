@@ -4,7 +4,7 @@ import { blockedPeriod, blocks, loadOccupancy, type OccupancyRow } from "./occup
 import { loadPlanSources } from "./plan-sources";
 import { overlaps, type Period, type PlannedLine } from "./planned-line";
 
-export type TemplateCollisionsInput = {
+export type HardCollisionsInput = {
   context: Pick<OperationContext, "db">;
   statusId: string;
   lines: readonly PlannedLine[];
@@ -41,11 +41,11 @@ function issuesOf({ hard, rows }: IssuesOfInput): AppErrorIssue[] {
  * hard hold, hard buffer or manual block in the period it would block with its buffers. Issues
  * are at `lines.<index>`. The database's exclusion constraint stays the guarantee.
  */
-export async function templateCollisions({
+export async function hardCollisions({
   context,
   statusId,
   lines,
-}: TemplateCollisionsInput): Promise<AppErrorIssue[]> {
+}: HardCollisionsInput): Promise<AppErrorIssue[]> {
   const sources = await loadPlanSources({ context, statusId, lines });
   const hard: Hard[] = lines.flatMap((line, index) => {
     const item = line.itemId ? sources.items.get(line.itemId) : undefined;

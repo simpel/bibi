@@ -47,6 +47,12 @@ export const RequirementCreateInputSchema = z.object({
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
 });
 
+/** A need on a line that does not exist yet (`ticket.create` lines, ADR 0081): no ticket or line. */
+export const LineRequirementInputSchema = RequirementCreateInputSchema.omit({
+  ticketId: true,
+  lineId: true,
+});
+
 export const RequirementUpdateInputSchema = z.object({
   id: z.string().min(1),
   quantity: QuantitySchema.optional(),
@@ -71,4 +77,5 @@ export const RequirementListOutputSchema = z.object({
 
 export type RequirementDto = z.infer<typeof RequirementSchema>;
 export type RequirementCreateInput = z.infer<typeof RequirementCreateInputSchema>;
+export type LineRequirementInput = z.infer<typeof LineRequirementInputSchema>;
 export type RequirementUpdateInput = z.infer<typeof RequirementUpdateInputSchema>;

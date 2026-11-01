@@ -23,7 +23,7 @@ Staff create a ticket in one page: customer, when and how many, then a package o
 
 ## What exists (verified)
 - `ticket.create` creates a ticket only; `contactId` optional; no note column (`packages/core/src/features/ticket/schema.ts:50-90`, `packages/db/prisma/schema/ticket.prisma`).
-- `ticket.createFromTemplate` plans lines (`plan-template-lines.ts`, pure), pre-checks hard-hold collisions on a generic `PlannedLine[]` (`template-collisions.ts:43-70`), then `insertTicket` + `insertLine` in one transaction. Reusable for arbitrary draft lines. It does not catch two planned lines colliding with each other (the DB trigger does) or pre-check mandatory demands.
+- `ticket.createFromTemplate` plans lines (`plan-template-lines.ts`, pure), pre-checks hard-hold collisions on a generic `PlannedLine[]` (`template-collisions.ts:43-70`, now `plan/hard-collisions.ts`), then `insertTicket` + `insertLine` in one transaction. Reusable for arbitrary draft lines. It does not catch two planned lines colliding with each other (the DB trigger does) or pre-check mandatory demands.
 - Line warnings are derived on read: only unfilled optional demand and outside item/venue hours (`line/warning-schema.ts`). Soft overlap, setup capacity and stock are never reported. `ItemSetup.capacity` is stored but unchecked.
 - `item.freeUnits` answers pool availability (hard holds only); `calendar.range` is the view read model for blocks and per-day values (no `itemIds` filter; max 62 days); `occupancy.list` gives raw rows.
 - Choices: `line.chooseOptions` stores option lines with `parentLineId`, quantity = parent's, at most once per option (`choose-options-schema.ts:4-15`).

@@ -47,6 +47,16 @@ async function recordFirstHistory({ context, ticketId, statusId, ...rest }: Firs
 }
 
 /**
+ * The input stored as it is on the ticket row. The type, fields, assignee and estimate are written
+ * on their own; the template is provenance (the trigger) and lines are the caller's (ADR 0081).
+ */
+function ownColumns({ input }: { input: TicketCreateInput }) {
+  const { entityTypeId: _type, fields: _fields, assigneeId: _assignee, ...rest } = input;
+  const { estimatedValueMinor: _estimate, templateId: _template, lines: _lines, ...data } = rest;
+  return data;
+}
+
+/**
  * Creates a ticket in the start status (default: the organization's entry status) with the next reference number and records
  * the change, with its main assignment when an assignee is given (ADR 0043).
  */
@@ -58,7 +68,8 @@ export async function insertTicket({
 }: InsertTicketInput): Promise<Result<TicketDto>> {
   const checked = await checkNewTicket({ context, input });
   if (!checked.ok) return checked;
-  const { entityTypeId, fields: _fields, assigneeId, estimatedValueMinor, ...data } = input;
+  const { entityTypeId, assigneeId, estimatedValueMinor } = input;
+  const data = ownColumns({ input });
   const statusId = await loadStartStatus({ context, statusId: startStatusId });
   if (!statusId.ok) return statusId;
   const reference = await nextReference({ context });

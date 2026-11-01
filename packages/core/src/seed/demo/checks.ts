@@ -20,6 +20,7 @@ import { checkDemoFinance } from "./finance-checks";
 import { checkDemoGrid } from "./grid-checks";
 import { checkDemoHolds } from "./hold-checks";
 import { checkDemoHours } from "./hours-checks";
+import { checkDemoIntakeCreate } from "./intake-create-checks";
 import { checkDemoMemberProfiles } from "./member-profile-checks";
 import { checkDemoOptionQuantities } from "./option-quantity-checks";
 import { checkDemoPayments } from "./payment-checks";
@@ -57,6 +58,7 @@ const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoFactGuards,
   checkDemoGrid,
   checkDemoPreview,
+  checkDemoIntakeCreate,
   checkDemoPrices,
   checkDemoBundles,
   checkDemoOptionQuantities,

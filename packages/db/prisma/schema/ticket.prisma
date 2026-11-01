@@ -32,6 +32,10 @@ model Ticket {
   fields              Json                 @default("{}")
   /// Booking-level notes for the whole ticket (owned, at most 4000 characters, ADR 0081).
   note                String?
+  /// The client's idempotency key of the create that made the ticket (owned, 1–100 characters,
+  /// ADR 0081): `ticket.create` with the same key returns this ticket instead of a second one.
+  /// Unique per organization; null for tickets created without one. Not on the ticket DTO.
+  intakeKey           String?
   status              RecordStatus         @default(ACTIVE)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
@@ -56,6 +60,7 @@ model Ticket {
 
   @@unique([id, organizationId])
   @@unique([organizationId, reference])
+  @@unique([organizationId, intakeKey])
   @@index([organizationId, status, desiredStartsAt])
   @@index([organizationId, customerId])
   @@index([organizationId, statusId])

@@ -1,13 +1,11 @@
 import { ok } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
-import { createRecord } from "../../records/create-record";
 import type { LinkValue } from "../../records/record-links";
 import { archiveRecords, updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
-import { loadTypeOfBase } from "../entity-type/load-type-of-base";
 import { mergeFields, validateFields } from "../field-definition/field-values";
-import { checkFree, checkLevel, checkValue } from "./requirement-rules";
+import { insertRequirement } from "./insert-requirement";
 import {
   RequirementCreateInputSchema,
   RequirementIdInputSchema,
@@ -27,42 +25,7 @@ export const createRequirement = defineOperation({
   input: RequirementCreateInputSchema,
   output: RequirementSchema,
   permission: "program:write",
-  handler: async ({ input: { entityTypeId, fields, ...data }, context }) => {
-    const level = { ticketId: data.ticketId, lineId: data.lineId ?? null };
-    const { vocabularyValueId } = data;
-    for (const check of [
-      await loadTypeOfBase({ context, entityTypeId, base: "REQUIREMENT" }),
-      await checkLevel({ context, ...level }),
-      await checkValue({ context, vocabularyValueId }),
-      await checkFree({ context, ...level, vocabularyValueId }),
-    ]) {
-      if (!check.ok) return check;
-    }
-    const checked = await validateFields({ context, entityTypeId, values: fields ?? {} });
-    if (!checked.ok) return checked;
-    const row = await createRecord({
-      context,
-      base: "REQUIREMENT",
-      entityTypeId,
-      fields: checked.value.fields,
-      links: checked.value.links,
-      insert: ({ id }) =>
-        context.db.requirement.create({
-          data: {
-            id,
-            ...data,
-            ...level,
-            entityTypeId,
-            fields: toJson({ value: checked.value.fields }) ?? {},
-            organizationId: context.organizationId,
-          },
-          include: REQUIREMENT_INCLUDE,
-        }),
-    });
-    const requirement = toRequirementDto({ row });
-    context.recordChange({ entityId: row.id, after: requirement });
-    return ok({ value: requirement });
-  },
+  handler: ({ input, context }) => insertRequirement({ context, input }),
 });
 
 export const updateRequirement = defineOperation({

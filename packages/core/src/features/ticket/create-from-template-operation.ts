@@ -2,14 +2,12 @@ import { ok, type Result } from "../../errors/result";
 import { defineOperation } from "../../operations/define-operation";
 import type { OperationContext } from "../../operations/types";
 import { conflict, notFound } from "../../shared/errors";
-import { insertLine } from "../line/insert-line";
 import { loadTicketTemplate } from "../ticket-template/load-ticket-template";
 import type { TicketTemplateDto } from "../ticket-template/schema";
 import type { TicketCreateFromTemplateInput } from "./create-from-template-schema";
 import { TicketCreateFromTemplateInputSchema } from "./create-from-template-schema";
-import { insertTicket } from "./insert-ticket";
+import { createWithLines } from "./create-with-lines";
 import { planTemplateLines } from "./plan/plan-template-lines";
-import { templateCollisions } from "./plan/template-collisions";
 import { type TicketDto, TicketSchema } from "./schema";
 import { checkReadable } from "./ticket-rules";
 
@@ -29,24 +27,18 @@ async function checkStartStatus({ context, template }: Omit<CreateInput, "input"
   return conflict({ message, issues: [{ path: "templateId", message }] });
 }
 
+/** The template's lines planned from the start, through the one path `ticket.create` uses. */
 async function create({ context, template, input }: CreateInput): Promise<Result<TicketDto>> {
   const { startsAt, headcount, customerId, contactId, assigneeId } = input;
   const plan = planTemplateLines({ template, startsAt });
   const statusd = await checkStartStatus({ context, template });
   if (!statusd.ok) return statusd;
-  const blockers = await templateCollisions({
-    context,
-    statusId: template.statusId,
-    lines: plan.lines,
-  });
-  if (blockers.length > 0) {
-    const message = `Cannot create a ticket from "${template.name}": ${blockers.length} line(s) are blocked`;
-    return conflict({ message, issues: blockers });
-  }
-  const ticket = await insertTicket({
+  return createWithLines({
     context,
     statusId: template.statusId,
     trigger: "TEMPLATE",
+    subject: `a ticket from "${template.name}"`,
+    lines: plan.lines,
     input: {
       ...{ entityTypeId: template.entityTypeId, customerId, contactId, assigneeId },
       fields: template.fields,
@@ -54,15 +46,6 @@ async function create({ context, template, input }: CreateInput): Promise<Result
       ...{ desiredStartsAt: startsAt, desiredEndsAt: plan.endsAt },
     },
   });
-  if (!ticket.ok) return ticket;
-  for (const line of plan.lines) {
-    const made = await insertLine({
-      context,
-      input: { ...line, ticketId: ticket.value.id },
-    });
-    if (!made.ok) return made;
-  }
-  return ticket;
 }
 
 export const createTicketFromTemplate = defineOperation({

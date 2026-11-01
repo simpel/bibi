@@ -1,20 +1,7 @@
 import { z } from "zod";
 import { LineEffectiveShape } from "../line/effective-schema";
-import { LineCreateInputSchema } from "../line/schema";
+import { PreviewDraftLineSchema } from "./draft-line-schema";
 import { PlanGroupSchema, PlanIssueSchema, PlanLineIssueSchema } from "./plan/issue-schema";
-
-/** A draft line: what `line.create` would get, without its ticket (ADR 0081 decision 6). */
-export const PreviewDraftLineSchema = LineCreateInputSchema.pick({
-  entityTypeId: true,
-  name: true,
-  itemId: true,
-  setupId: true,
-  startsAt: true,
-  endsAt: true,
-  quantity: true,
-  unitPriceMinor: true,
-  discountPercent: true,
-});
 
 export const TicketPreviewLinesInputSchema = z.object({
   customerId: z
@@ -103,4 +90,3 @@ export type TicketPreviewLinesInput = z.infer<typeof TicketPreviewLinesInputSche
 export type TicketPreviewLines = z.infer<typeof TicketPreviewLinesOutputSchema>;
 export type PreviewEntry = z.infer<typeof PreviewEntrySchema>;
 export type PreviewLine = z.infer<typeof PreviewLineSchema>;
-export type PreviewDraftLine = z.infer<typeof PreviewDraftLineSchema>;

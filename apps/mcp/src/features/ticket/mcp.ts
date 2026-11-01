@@ -9,7 +9,11 @@ export const ticketMcpTools = [
   mcpTool({ operation: "ticket.previewLines" }),
   mcpTool({
     operation: "ticket.create",
-    summary: ({ input }) => `Create a ticket for customer ${text({ value: input.customerId })}`,
+    summary: ({ input }) => {
+      const lines = Array.isArray(input.lines) ? input.lines.length : 0;
+      const withLines = lines > 0 ? ` with ${lines} line(s)` : "";
+      return `Create a ticket for customer ${text({ value: input.customerId })}${withLines}`;
+    },
   }),
   mcpTool({
     operation: "ticket.createFromTemplate",

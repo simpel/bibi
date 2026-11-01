@@ -2,6 +2,7 @@ import { z } from "zod";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import { LineSchema } from "../line/schema";
+import { TicketIntakeShape } from "./create-intake-schema";
 import { EstimatedValueSchema } from "./estimate-history-schema";
 
 export const TicketSchema = z.object({
@@ -95,6 +96,7 @@ export const TicketCreateInputSchema = z.object({
     .nullish()
     .describe("User id of the main assignee; must be a member (member.list userId)"),
   fields: FieldValuesSchema.optional().describe("Values of the type's own fields, by field key"),
+  ...TicketIntakeShape,
 });
 
 /** Status and assignee are not here: they change only through their own commands. */

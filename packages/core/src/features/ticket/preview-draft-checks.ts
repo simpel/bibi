@@ -2,7 +2,7 @@ import type { AppErrorIssue } from "../../errors/app-error";
 import { ok, type Result } from "../../errors/result";
 import type { OperationContext } from "../../operations/types";
 import { invalid } from "../../shared/errors";
-import type { PreviewDraftLine } from "./preview-lines-schema";
+import type { PreviewDraftLine } from "./draft-line-schema";
 
 type Db = { context: Pick<OperationContext, "db"> };
 
