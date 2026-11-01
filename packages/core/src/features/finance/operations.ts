@@ -13,13 +13,8 @@ import {
   listAccountingExports,
   previewAccountingExport,
 } from "./export-operations";
-import { forwardBooked } from "./forward-booked";
-import {
-  loadCashInPeriod,
-  loadForwardBooked,
-  loadInvoicedInPeriod,
-  loadOpenInvoices,
-} from "./load-facts";
+import { loadCashInPeriod, loadInvoicedInPeriod, loadOpenInvoices } from "./load-facts";
+import { outcomes } from "./outcomes";
 import { resolvePeriod } from "./period";
 import { FinanceOverviewInputSchema, FinanceOverviewSchema } from "./schema";
 import { getAccountingSettings, updateAccountingSettings } from "./settings-operations";
@@ -28,14 +23,15 @@ const sum = ({ values }: { values: readonly number[] }) => values.reduce((a, b) 
 
 /**
  * The organization's money for a period (ADR 0077): invoiced, received, outstanding, aging,
- * forward-booked value, revenue per item type and VAT per rate. A view read model (ADR 0071):
- * invoices and payments need `payment:read`, quotes `quote:read`; nothing is stored.
+ * revenue per item type, VAT per rate and won and lost tickets (ADR 0080). A view read model
+ * (ADR 0071): invoices and payments need `payment:read`, outcomes `quote:read`; nothing is stored.
  */
 export const financeOverview = defineOperation({
   name: "finance.overview",
   kind: "query",
   description:
-    "The organization's money for a period: invoiced and received per month, open and overdue invoices, accepted quotes not invoiced yet, revenue per item type and VAT per rate.",
+    "The organization's money for a period: invoiced and received per month, open and overdue invoices, revenue per item type, VAT per rate, " +
+    "and tickets won (closed with an accepted quote or a sent invoice) and lost per month. Accepted quotes not invoiced yet are in dashboard.summary.",
   input: FinanceOverviewInputSchema,
   output: FinanceOverviewSchema,
   permission: "finance:read",
@@ -50,7 +46,7 @@ export const financeOverview = defineOperation({
       money ? loadInvoicedInPeriod({ context, period, customerId }) : [],
       money ? loadCashInPeriod({ context, period, customerId }) : { payments: [], refunds: [] },
       money ? loadOpenInvoices({ context, customerId }) : [],
-      quotes ? loadForwardBooked({ context, customerId }) : [],
+      quotes ? outcomes({ context, period, customerId }) : null,
     ]);
     const months = monthly({ ...period, invoiced, cash });
     const referenceOf = ({ reference }: { reference: number }) =>
@@ -72,11 +68,7 @@ export const financeOverview = defineOperation({
         overdueMinor: gate({ value: overdueMinor }),
         monthly: gate({ value: months }),
         aging: gate({ value: late }),
-        forwardBooked: visibleTo({
-          context,
-          feature: "quote",
-          value: forwardBooked({ quotes: won, monthOf: period.monthOf }),
-        }),
+        outcomes: won,
         revenueByType: gate({ value: revenueByType({ invoiced }) }),
         vatByRate: gate({ value: vatByRate({ invoiced }) }),
       },

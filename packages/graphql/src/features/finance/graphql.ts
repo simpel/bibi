@@ -6,10 +6,10 @@ import {
   type FinanceMonth,
   FinanceMonthSchema,
   type FinanceOverviewDto,
-  type ForwardBookedMonth,
-  ForwardBookedMonthSchema,
   financeOverview,
   getAccountingSettings,
+  type OutcomeMonth,
+  OutcomeMonthSchema,
   OverdueInvoiceSchema,
   type RevenueAccountDto,
   RevenueAccountSchema,
@@ -46,10 +46,10 @@ const AgingRef = builder.objectRef<FinanceAging>("FinanceAging").implement({
     overdue: t.field({ type: [OverdueRef], resolve: (aging) => aging.overdue }),
   }),
 });
-const ForwardRef = objectFromSchema<ForwardBookedMonth>({
-  name: "ForwardBookedMonth",
-  schema: ForwardBookedMonthSchema,
-  description: "Accepted quotes not invoiced yet, by the event's month.",
+const OutcomeRef = objectFromSchema<OutcomeMonth>({
+  name: "FinanceOutcomeMonth",
+  schema: OutcomeMonthSchema,
+  description: "Tickets won and lost in one month.",
 });
 const RevenueRef = objectFromSchema<RevenueByType>({
   name: "RevenueByType",
@@ -76,9 +76,9 @@ const FinanceOverviewRef = builder.objectRef<FinanceOverviewDto>("FinanceOvervie
     overdueMinor: t.exposeInt("overdueMinor", { nullable: true }),
     monthly: t.field({ type: [MonthRef], nullable: true, resolve: (o) => o.monthly }),
     aging: t.field({ type: AgingRef, nullable: true, resolve: (o) => o.aging }),
-    forwardBooked: t.field({ type: [ForwardRef], nullable: true, resolve: (o) => o.forwardBooked }),
     revenueByType: t.field({ type: [RevenueRef], nullable: true, resolve: (o) => o.revenueByType }),
     vatByRate: t.field({ type: [VatRef], nullable: true, resolve: (o) => o.vatByRate }),
+    outcomes: t.field({ type: [OutcomeRef], nullable: true, resolve: (o) => o.outcomes }),
   }),
 });
 

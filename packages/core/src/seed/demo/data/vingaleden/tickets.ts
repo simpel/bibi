@@ -7,7 +7,8 @@ const people = { assignee: "Per Vinga", followers: ["Stina Holm"] };
 /**
  * Vingaleden's tickets (`docs/demo-seed.md`, Customers and tickets). Per Vinga is assigned and
  * Stina Holm, who sells, follows (ADR 0034). The statuses are Vingaleden's own (`pipeline.ts`):
- * V2 is called off for weather, V3 is past its second weather check and V4 waits in Weather hold.
+ * V2 is called off for weather, V3 is past its second weather check, V4 waits in Weather hold and
+ * V5's soft hold on RIB Snabben runs out at D+4.
  */
 export const vingaledenTickets: readonly DemoTicket[] = [
   {
@@ -28,7 +29,9 @@ export const vingaledenTickets: readonly DemoTicket[] = [
   },
   {
     ...{ ref: "V5", customer: "Familjen Rask", type: "Round trip", day: 16, from: "10:00" },
-    ...{ to: "11:30", headcount: 12, estimatesKr: [9_000], ...people },
+    ...{ to: "11:30", headcount: 12, estimatesKr: [9_000], holdsUntilDay: 4, ...people },
+    // A soft hold that runs out within the week: the dashboard's attention list (ADR 0080).
+    lines: [{ item: "RIB Snabben", name: "Round trip", from: "10:00", to: "11:30" }],
   },
   {
     ...{ ref: "V6", customer: "Kvarnby Design AB", type: "Charter", day: 21, from: "17:00" },

@@ -6,7 +6,7 @@ import { seedQuoteBasis } from "./seed-quote-basis";
 const period = { from: "2026-01-01", to: "2026-12-31" };
 
 describe("cross-organization isolation: financials", () => {
-  it("never counts one organization's money in another's overview", async () => {
+  it("never counts one organization's money in another's overview or dashboard", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
     const secret = await seedQuoteBasis({ client: a });
@@ -17,14 +17,18 @@ describe("cross-organization isolation: financials", () => {
       expect(moved.isError, JSON.stringify(moved.data)).toBe(false);
     }
 
-    const own = await call({ client: a, name: "finance_overview", args: period });
+    const own = await call({ client: a, name: "dashboard_summary", args: {} });
     expect(own.isError, JSON.stringify(own.data)).toBe(false);
-    expect(own.data.forwardBooked).toEqual([expect.objectContaining({ tickets: 1 })]);
+    expect(own.data.bookedAhead).toEqual([expect.objectContaining({ tickets: 1 })]);
 
+    const ahead = await call({ client: b, name: "dashboard_summary", args: {} });
+    expect(ahead.data.bookedAhead).toEqual([]);
     const theirs = await call({ client: b, name: "finance_overview", args: period });
     expect(theirs.isError, JSON.stringify(theirs.data)).toBe(false);
-    expect(theirs.data.forwardBooked).toEqual([]);
     expect([theirs.data.invoicedExclVatMinor, theirs.data.outstandingMinor]).toEqual([0, 0]);
+    for (const row of theirs.data.outcomes ?? []) {
+      expect([row.wonTickets, row.lostTickets]).toEqual([0, 0]);
+    }
   });
 
   it("refuses another organization's item types and items as revenue account targets", async () => {

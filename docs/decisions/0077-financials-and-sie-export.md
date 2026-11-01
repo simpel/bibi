@@ -63,3 +63,7 @@ Supersedes decision 6 and the rejected "Regenerate by period" alternative, at th
 
 ## Addendum 2026-11-01 – money on the dashboard (ADR 0079)
 - "Money on the dashboard" is no longer rejected: the dashboard shows a panel from `finance.overview`, gated by `finance:read`. Financials stays the full view and the only home of the export.
+
+## Addendum 2026-11-01 – the dashboard looks ahead (ADR 0080)
+- "Money on the dashboard" is rejected again, as first decided: the money panel of ADR 0079 is gone. The dashboard shows only the overdue count and total, linking here.
+- Forward-booked value moved to `dashboard.summary` as "booked ahead". Won and lost tickets per month moved here from the dashboard as a part of `finance.overview` (`quote:read`).

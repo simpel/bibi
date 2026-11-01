@@ -1,53 +1,40 @@
-import type {
-  DashboardSummary,
-  DateTimeFormat,
-  FinanceOverviewDto,
-  NumberFormat,
-  PlainDate,
-} from "@bibi/core/schemas";
+import type { DashboardSummary, DateTimeFormat, NumberFormat } from "@bibi/core/schemas";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/components/states/page-header";
-import { PeriodSwitcher } from "@/features/finance/ui/period-switcher";
-import { ROUTES } from "@/lib/routes";
 import { plainDayText } from "@/lib/time/plain-day";
-import { EconomyPanel } from "./economy-panel";
-import { OutcomesPanel } from "./outcomes-panel";
+import { AttentionPanel } from "./attention-panel";
+import { BookedAheadCard } from "./booked-ahead-card";
+import { ComingUpPanel } from "./coming-up-panel";
 import { PipelineTiles } from "./pipeline-tiles";
 import { UtilisationPanel } from "./utilisation-panel";
 
 export type DashboardViewProps = {
   summary: DashboardSummary;
-  /** `null` without `finance:read`: the economy panel is left out. */
-  overview: FinanceOverviewDto | null;
-  today: PlainDate;
   dates: DateTimeFormat;
   numbers: NumberFormat;
 };
 
-/** The pipeline now, then the period's outcomes, money and utilisation; a part without access is absent. */
-export function DashboardView({ summary, overview, today, dates, numbers }: DashboardViewProps) {
+/** Today and the next four weeks (ADR 0080): the pipeline, what to act on and what is ahead. */
+export function DashboardView({ summary, dates, numbers }: DashboardViewProps) {
   const t = useTranslations("dashboard");
   const finance = useTranslations("finance");
   const { from, to, currency, timeZone } = summary;
   const day = ({ value }: { value: string }) => plainDayText({ day: value, timeZone, dates });
+  const range = finance("period.range", { from: day({ value: from }), to: day({ value: to }) });
   return (
     <div className="grid gap-6">
-      <PageHeader
-        title={t("title")}
-        description={t("description")}
-        actions={<PeriodSwitcher period={{ from, to }} today={today} base={ROUTES.dashboard} />}
-      />
+      <PageHeader title={t("title")} description={t("description", { range })} />
       <PipelineTiles statuses={summary.statuses} currency={currency} numbers={numbers} />
-      <p className="text-sm text-muted-foreground">
-        {finance("period.range", { from: day({ value: from }), to: day({ value: to }) })}
-      </p>
-      {summary.outcomes ? (
-        <OutcomesPanel outcomes={summary.outcomes} currency={currency} numbers={numbers} />
-      ) : null}
-      {overview ? <EconomyPanel overview={overview} numbers={numbers} /> : null}
-      {summary.utilisation ? (
-        <UtilisationPanel utilisation={summary.utilisation} numbers={numbers} />
-      ) : null}
+      <div className="grid gap-4 md:grid-cols-2">
+        <AttentionPanel summary={summary} dates={dates} numbers={numbers} />
+        <ComingUpPanel summary={summary} dates={dates} />
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        {summary.utilisation ? (
+          <UtilisationPanel utilisation={summary.utilisation} numbers={numbers} />
+        ) : null}
+        {summary.bookedAhead ? <BookedAheadCard summary={summary} numbers={numbers} /> : null}
+      </div>
     </div>
   );
 }

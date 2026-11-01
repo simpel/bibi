@@ -6,7 +6,7 @@ import { canView } from "../../shared/can-view";
 import { loadZoneOfVenue } from "../../shared/time-zones";
 import { parseIsoDate } from "../../time/plain-date";
 import { daysOf, OFFICE_HOURS } from "../calendar/load-values";
-import type { DashboardSummaryInput } from "./schema";
+import type { DashboardWindow } from "./schema";
 
 type Context = Pick<OperationContext, "db" | "permissions">;
 
@@ -19,7 +19,7 @@ export type UtilisedItem = {
 };
 
 /**
- * Active bookable items with their open intervals over the period: own hours, else the venue's,
+ * Active bookable items with their open intervals over the window: own hours, else the venue's,
  * else the calendar's office day, evaluated per local day in the item's zone (ADR 0064).
  */
 export async function loadUtilisedItems({
@@ -27,7 +27,7 @@ export async function loadUtilisedItems({
   period,
 }: {
   context: Context;
-  period: DashboardSummaryInput;
+  period: DashboardWindow;
 }): Promise<UtilisedItem[]> {
   const items = await context.db.item.findMany({
     where: { status: "ACTIVE", entityType: { capabilities: { has: "BOOKABLE" } } },

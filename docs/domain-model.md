@@ -1064,7 +1064,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 ### Financials overview (`finance.overview`)
 
-*MVP* · The organization's money for a period, as a read model ([ADR 0077](decisions/0077-financials-and-sie-export.md)). Nothing is stored; every figure is derived on read from invoices, payments, refunds and quotes.
+*MVP* · The organization's money for a period, as a read model ([ADR 0077](decisions/0077-financials-and-sie-export.md)). Nothing is stored; every figure is derived on read from invoices, payments, refunds, quotes and status changes.
 
 > **Ownership:** derived throughout.
 
@@ -1072,10 +1072,18 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - invoiced excl. VAT per month (sent invoices, by send date)
 - received per month (settled payments by paid date, minus refunds by refund date)
 - outstanding and overdue today, aging (not due, 1 to 30, 31 to 60, more than 60 days overdue) and the most overdue invoices
-- forward-booked value: accepted quotes on tickets not invoiced yet, by event month
+- won and lost tickets per month: a ticket's outcome month is when it entered a closing status; won = it has an accepted quote or a sent invoice ([ADR 0079](decisions/0079-dashboard-summary-and-utilisation.md), moved here by [ADR 0080](decisions/0080-dashboard-ahead-financials-behind.md))
 - revenue per item type and VAT per rate
 
-> Operation: `finance.overview({ from, to })` (`finance:read`; at most 24 months). Invoiced, received, aging and revenue need `payment:read`, forward-booked value `quote:read`; a part the caller may not read is null. Web: `/financials/{from}/{to}`, the primary menu entry Financials (ADR 0036). Money is not on the dashboard (ADR 0041).
+> Operation: `finance.overview({ from, to, customerId? })` (`finance:read`; at most 24 months). Invoiced, received, aging and revenue need `payment:read`, won and lost `quote:read`; a part the caller may not read is null. Web: `/financials/{from}/{to}`, the primary menu entry Financials (ADR 0036).
+
+### Dashboard (`dashboard.summary`)
+
+*MVP* · Today and the next 28 days, as a read model ([ADR 0080](decisions/0080-dashboard-ahead-financials-behind.md)): open tickets and their value per open status, what needs attention (holds expiring within 7 days, unsent sheets for upcoming tickets, overdue invoices as a count and total), tickets coming up, utilisation per bookable item type and accepted quotes not invoiced yet per event month. Nothing is stored. Spec: `docs/specs/dashboard.md`.
+
+> **Ownership:** derived throughout.
+
+> Operation: `dashboard.summary()` (`ticket:read`, no input). Unsent sheets need `sheet:read`, overdue `finance:read` and `payment:read`, utilisation `item:read`, booked ahead `quote:read`, customer names `customer:read`; a part the caller may not read is null. Web: `/dashboard`.
 
 ## Operations & system
 

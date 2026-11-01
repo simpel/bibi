@@ -1,15 +1,12 @@
-import type { NumberFormat, OutcomeMonthSchema } from "@bibi/core/schemas";
+import type { NumberFormat, OutcomeMonth } from "@bibi/core/schemas";
 import type { ChartRow } from "@bibi/ui";
-import type { z } from "zod";
-
-type OutcomeMonth = z.infer<typeof OutcomeMonthSchema>;
 
 export type OutcomeRowsInput = {
   outcomes: readonly OutcomeMonth[];
   numbers: NumberFormat;
   currency: string;
   monthLabel: (input: { month: string }) => string;
-  /** `dashboard.outcomes.text`: the count and the value of one bar. */
+  /** `finance.outcomes.text`: the count and the value of one bar. */
   text: (values: { count: number; amount: string }) => string;
   money: (input: { numbers: NumberFormat; minor: number; currency: string }) => string;
 };

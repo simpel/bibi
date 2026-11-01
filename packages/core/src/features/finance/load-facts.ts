@@ -76,26 +76,3 @@ export async function loadOpenInvoices({ context, customerId }: Db) {
 }
 
 export type OpenInvoice = Awaited<ReturnType<typeof loadOpenInvoices>>[number];
-
-/** ACCEPTED quotes on active tickets that have no SENT invoice yet: won, not billed. */
-export function loadForwardBooked({ context, customerId }: Db) {
-  return context.db.quote.findMany({
-    where: {
-      quoteStatus: "ACCEPTED",
-      ticket: {
-        status: "ACTIVE",
-        invoices: { none: { status: "SENT" } },
-        ...(customerId ? { customerId } : {}),
-      },
-    },
-    select: {
-      ticketId: true,
-      version: true,
-      acceptedAt: true,
-      totalExclVatMinor: true,
-      lines: { select: { line: { select: { startsAt: true } } } },
-    },
-  });
-}
-
-export type ForwardBookedQuote = Awaited<ReturnType<typeof loadForwardBooked>>[number];

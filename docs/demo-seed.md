@@ -39,7 +39,7 @@ The script ends with checks that make CI fail if the demo does not show what it 
 19. Financials (ADR 0077, `finance-checks.ts`): each organization has one SENT invoice per `money.invoice` ticket, and the paid one is paid in full (Lindholmen: L1 and ten of L16–L28 paid; L2, L23, L25 and L28 open). Lindholmen has its four revenue accounts and exactly one SIE export, with no voucher pending. Vingaleden has no accounts and no export.
 
 The checks that run today:
-- **Dashboard (ADR 0079):** `checkDemoDashboard` (`dashboard-checks.ts`, see Dashboard data): open status tiles, won and lost tickets and utilisation of `dashboard.summary` over the last six months.
+- **Dashboard (ADR 0079, 0080):** `checkDemoDashboard` (`dashboard-checks.ts`, see Dashboard data): open status tiles, what needs attention, tickets coming up, utilisation and booked-ahead value of `dashboard.summary`, and won and lost tickets of `finance.overview` over the last six months.
 - **Part 1 (roles):** the members per organization, and that every user has their fixed role (ADR 0034) according to the tables.
 - **Permission overrides (ADR 0050):** `checkDemoPermissions` (`permission-checks.ts`) asserts that every documented override is stored for its member (via `permission.get`). Lindholmen has two: Maria Holm (`manager`) has `payment:read` denied, so she handles bookings but does not see money; Peter Sjoberg (`member`) has `item:write` and `item:write` allowed, so he reads everything and also keeps the catalogue up to date. Seeded with `permission.update` in `seed-roles.ts` from the `overrides` of the user in `data/lindholmen/lindholmen.ts`.
 - **Part 2 (configuration):**
@@ -344,14 +344,16 @@ So the calendar's week and month views look like a real season, both organizatio
 
 About 40 Lindholmen tickets with 90 room lines and about 57 Vingaleden tickets with 190 boat and skipper lines; the exact numbers depend on the weekday of the run.
 
-## Dashboard data (ADR 0079, `dashboard-checks.ts`)
-`dashboard.summary` needs closed tickets, estimates on open ones and holds, all made through core operations as SYSTEM.
+## Dashboard data (ADR 0079, 0080, `dashboard-checks.ts`)
+`dashboard.summary` (today and the next 28 days) and the won and lost tickets of `finance.overview` need closed tickets, estimates on open ones and holds, all made through core operations as SYSTEM.
 
 - **Won and lost.** `DemoTicket.won` makes the ticket's quote (`quote` item, `quote.send`) and accepts it, then moves the ticket to its `status` with `ticket.changeStatus` (Completed; for L13 "Final count locked", which needs an accepted quote). Lindholmen (`data/lindholmen/closed-tickets.ts`): W1, W2, W3 won (Conference lunch quote on a room line, past days D-40, D-75, D-110), X1 Lost ("Went to a competitor", estimate 72 000 then 64 000 kr) and X2 Cancelled (Budget, 28 000 kr) lost. Vingaleden (`data/vingaleden/closed-tickets.ts`): VW1 and VW2 won (a Coffee on board line is quoted; Vingaleden has no quote event statuses, so the quote is the only fact that makes them won), VX1 Cancelled and VX2 "Called off – weather" lost. Lost tickets have estimates. The existing L1, L2 and V1 (Completed without a quote) and L6 (Lost) also count as lost.
 - **Open statuses.** Every open status has a ticket with an estimate or a priced line: Lindholmen L9, L11, L12 and L13 (Final count locked) got estimates beside L3, F2 and F3; Vingaleden V5 (Request), V6 (Confirmed), V3 and V4 got estimates.
-- **Holds.** The busy calendar's blocks (hard and soft holds from D-7) give every bookable type utilisation above 0 in the last six months. Closed tickets release their lines, so the closed tickets add none.
+- **Holds.** The busy calendar's blocks (hard and soft holds from D-7) give every bookable type utilisation above 0 in the next 28 days. Closed tickets release their lines, so the closed tickets add none. Expiring holds: Lindholmen's F2 and F3 (`holdsUntil` D+5) and Vingaleden's V5 (a soft hold on RIB Snabben on D+16, `holdsUntil` D+4).
+- **Overdue.** Lindholmen's open invoices past due (L2, L23, L25) give the attention list its overdue row; Vingaleden has no invoices, so it has none.
+- **Sheets.** The seed generates no sheets yet, so the unsent-sheets list is empty in both organizations.
 - **Dates.** A past ticket (`day` on or before today) reaches its closing status at its own day through the context clock (`seed-clock.ts`, ADR 0064): `recordStatusChange` stamps `TicketStatusChange.changedAt` with `nowOf`, so closings spread over the last year, as the invoices do. Won also counts a sent invoice (L16–L28 and the other invoiced past events), so those are won; tickets without a quote or invoice are lost.
-- **Check.** `checkDemoDashboard` runs `dashboard.summary` for the last 182 days in each organization and asserts: every open status tile has tickets and an estimated or agreed value, at least the data files' won tickets, won tickets in at least 2 months and lost tickets in at least 2 months, and utilisation above 0 for at least one type. The board check reads closed tickets of the last year (`closedWithinDays: 365`).
+- **Check.** `checkDemoDashboard` runs `dashboard.summary` in each organization and asserts: every open status tile has tickets and an estimated or agreed value, at least one expiring hold, an overdue row where the organization has a finance block, tickets coming up, utilisation above 0 for at least one type and some value booked ahead. It then runs `finance.overview` for the last 182 days and asserts at least the data files' won tickets, won tickets in at least 2 months and lost tickets in at least 2 months. The board check reads closed tickets of the last year (`closedWithinDays: 365`).
 
 ## Scaled Lindholmen (accepted, not built yet)
 

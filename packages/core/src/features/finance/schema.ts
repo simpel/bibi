@@ -43,10 +43,15 @@ export const FinanceAgingSchema = z.object({
   overdue: z.array(OverdueInvoiceSchema).describe("The most overdue invoices, at most 10"),
 });
 
-export const ForwardBookedMonthSchema = z.object({
-  month: MonthSchema.describe("Month of the event's first line, else of the acceptance"),
-  valueExclVatMinor: minor({ what: "Accepted quotes on tickets not invoiced yet, excluding VAT" }),
-  tickets: z.number().int().describe("How many tickets"),
+export const OutcomeMonthSchema = z.object({
+  month: MonthSchema,
+  wonTickets: z
+    .number()
+    .int()
+    .describe("Tickets that closed with an accepted quote or a sent invoice"),
+  wonValueMinor: minor({ what: "Their accepted quote totals excl. VAT, else their estimates" }),
+  lostTickets: z.number().int().describe("Tickets that closed with neither"),
+  lostValueMinor: minor({ what: "Their estimates excl. VAT" }),
 });
 
 export const RevenueByTypeSchema = z.object({
@@ -63,8 +68,8 @@ export const VatByRateSchema = z.object({
 
 /**
  * The organization's money for a period (ADR 0077, a view read model, ADR 0071): everything is
- * derived on read. Invoices and payments need `payment:read`, forward-booked quotes `quote:read`;
- * a part the caller may not read is null.
+ * derived on read. Invoices and payments need `payment:read`, won and lost tickets `quote:read`;
+ * a part the caller may not read is null. What is booked ahead is `dashboard.summary` (ADR 0080).
  */
 export const FinanceOverviewSchema = z.object({
   from: z.string(),
@@ -77,7 +82,10 @@ export const FinanceOverviewSchema = z.object({
   overdueMinor: minor({ what: "Open on sent invoices past their due date today" }).nullable(),
   monthly: z.array(FinanceMonthSchema).nullable(),
   aging: FinanceAgingSchema.nullable(),
-  forwardBooked: z.array(ForwardBookedMonthSchema).nullable(),
+  outcomes: z
+    .array(OutcomeMonthSchema)
+    .nullable()
+    .describe("Tickets won and lost per month; needs quote:read"),
   revenueByType: z.array(RevenueByTypeSchema).nullable(),
   vatByRate: z.array(VatByRateSchema).nullable(),
 });
@@ -86,6 +94,6 @@ export type FinanceOverviewInput = z.infer<typeof FinanceOverviewInputSchema>;
 export type FinanceOverviewDto = z.infer<typeof FinanceOverviewSchema>;
 export type FinanceMonth = z.infer<typeof FinanceMonthSchema>;
 export type FinanceAging = z.infer<typeof FinanceAgingSchema>;
-export type ForwardBookedMonth = z.infer<typeof ForwardBookedMonthSchema>;
+export type OutcomeMonth = z.infer<typeof OutcomeMonthSchema>;
 export type RevenueByType = z.infer<typeof RevenueByTypeSchema>;
 export type VatByRate = z.infer<typeof VatByRateSchema>;

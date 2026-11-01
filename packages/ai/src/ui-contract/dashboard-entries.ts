@@ -1,16 +1,30 @@
-import { DashboardSummarySchema } from "@bibi/core/schemas";
-import type { z } from "zod";
+import {
+  AttentionSchema,
+  ComingUpSchema,
+  DashboardSummarySchema,
+  ExpiringHoldSchema,
+  UnsentSheetSchema,
+} from "@bibi/core/schemas";
+import { z } from "zod";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 
-/** The summary has no dates, so its tool result is already the wire form. */
-export type DashboardSummaryWire = z.infer<typeof DashboardSummarySchema>;
+/** JSON form of the dashboard as tool results carry it (dates = ISO strings). */
+export const DashboardSummaryWireSchema = DashboardSummarySchema.extend({
+  attention: AttentionSchema.extend({
+    expiringHolds: z.array(ExpiringHoldSchema.extend({ holdsUntil: z.string() })),
+    unsentSheets: z.array(UnsentSheetSchema.extend({ startsAt: z.string() })).nullable(),
+  }),
+  comingUp: z.array(ComingUpSchema.extend({ startsAt: z.string() })),
+});
 
-/** Tool → component for the dashboard (ADR 0079). */
+export type DashboardSummaryWire = z.infer<typeof DashboardSummaryWireSchema>;
+
+/** Tool → component for the dashboard (ADR 0079, 0080). */
 export const DASHBOARD_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   dashboard_summary: uiEntry({
     component: "dashboard-summary",
-    schema: DashboardSummarySchema,
+    schema: DashboardSummaryWireSchema,
     toProps: ({ value }) => ({ summary: value }),
   }),
 };

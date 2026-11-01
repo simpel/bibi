@@ -1,7 +1,7 @@
 # 0079 – Dashboard summary, won/lost outcomes and utilisation
 
 - **Date:** 2026-11-01
-- **Status:** Accepted (scope and choices approved by the user on 2026-11-01)
+- **Status:** Accepted (scope and choices approved by the user on 2026-11-01); decisions 5 and 6 superseded by ADR 0080
 - **Related:** 0041 (three views, amends), 0077 (financials, amends), 0071 (view read models), 0054 (domain history), 0053 (holds), 0064 (time), 0074 (estimates), 0021 (configurable domain)
 
 ## Context
@@ -25,3 +25,7 @@
 - **A `WON | LOST` flag on `TicketStatus` now.** Rejected for now: needs an ADR and migration of every organization's statuses, and the quote proxy answers the same question.
 - **Money inside `dashboard.summary`.** Rejected: it would duplicate `finance.overview` and its `finance:read` gate.
 - **Staff load as the allocation rate.** Rejected for the first version: utilisation answers "how full are we" for rooms and staff alike, since staff are items of a type (ADR 0059).
+
+## Addendum 2026-11-01 – the dashboard looks ahead (ADR 0080)
+- Decisions 5 and 6 are superseded: the dashboard has no period and no money panel. It shows today and the next 28 days (`/dashboard`; the old path redirects), and its only money figure is the overdue count and total in "Needs attention".
+- Won and lost (decision 3) moved to `finance.overview` and Financials, unchanged in definition. Utilisation (decision 4) now covers the 28-day horizon.

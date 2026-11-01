@@ -1,7 +1,7 @@
 import type {
+  BookedAheadMonth,
   FinanceAging,
   FinanceMonth,
-  ForwardBookedMonth,
   NumberFormat,
   RevenueByType,
 } from "@bibi/core/schemas";
@@ -52,10 +52,10 @@ export function agingRows({ aging, labels, ...format }: AgingInput) {
   ].map(({ label, minor }) => ({ label, point: point({ ...format, minor }) }));
 }
 
-export type ForwardInput = { forwardBooked: ForwardBookedMonth[] } & ChartFormat;
+export type BookedAheadInput = { bookedAhead: BookedAheadMonth[] } & ChartFormat;
 
-export function forwardRows({ forwardBooked, monthLabel, ...format }: ForwardInput) {
-  return forwardBooked.map((row) => ({
+export function bookedAheadRows({ bookedAhead, monthLabel, ...format }: BookedAheadInput) {
+  return bookedAhead.map((row) => ({
     label: monthLabel({ month: row.month }),
     point: point({ ...format, minor: row.valueExclVatMinor }),
   }));

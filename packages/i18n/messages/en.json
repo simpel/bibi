@@ -242,32 +242,38 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "description": "The current state of your business.",
+    "description": "Today and the next four weeks, {range}.",
+    "ticket": "#{reference}",
+    "ticketCustomer": "#{reference} · {customer}",
     "pipeline": {
       "title": "Open tickets by status",
       "tickets": "{count, plural, one {# ticket} other {# tickets}}",
       "noValue": "No value yet",
       "empty": "No open statuses."
     },
-    "outcomes": {
-      "title": "Won and lost tickets",
-      "month": "Month",
-      "won": "Won",
-      "lost": "Lost",
-      "winRate": "Win rate {rate} ({won} of {total})",
-      "text": "{count} · {amount}",
-      "empty": "No tickets were closed in this period."
+    "attention": {
+      "title": "Needs attention",
+      "empty": "Nothing needs attention right now.",
+      "overdue": "{count, plural, one {# overdue invoice} other {# overdue invoices}}",
+      "expiring": "{count, plural, one {# hold runs} other {# holds run}} out {date}",
+      "unsent": "{sheet} version {version} not sent, starts {date}"
     },
-    "economy": {
-      "title": "Economy"
+    "comingUp": {
+      "title": "Coming up",
+      "empty": "Nothing starts in the next four weeks.",
+      "detail": "{date} · {status} · {count, plural, one {# line} other {# lines}}"
     },
     "utilisation": {
       "title": "Utilisation",
       "type": "Item type",
       "rate": "Utilisation",
       "text": "{rate} · {booked} h booked of {open} h open",
-      "closed": "Closed in this period",
+      "closed": "Closed in the next four weeks",
       "empty": "No bookable items."
+    },
+    "bookedAhead": {
+      "title": "Booked, not yet invoiced",
+      "value": "Value excluding VAT"
     }
   },
   "finance": {
@@ -392,10 +398,6 @@
         "overdue31to60": "31–60 days overdue",
         "overdue61Plus": "Over 60 days overdue"
       },
-      "forward": {
-        "title": "Booked, not yet invoiced",
-        "value": "Value excluding VAT"
-      },
       "revenue": {
         "title": "Invoiced by type",
         "type": "Type",
@@ -428,7 +430,16 @@
     },
     "now": {
       "title": "Right now",
-      "description": "Open and overdue money, what is booked ahead and the SIE exports. Not tied to the period above."
+      "description": "Open and overdue money and the SIE exports. Not tied to the period above."
+    },
+    "outcomes": {
+      "title": "Won and lost tickets",
+      "month": "Month",
+      "won": "Won",
+      "lost": "Lost",
+      "winRate": "Win rate {rate} ({won} of {total})",
+      "text": "{count} · {amount}",
+      "empty": "No tickets were closed in this period."
     }
   },
   "nav": {

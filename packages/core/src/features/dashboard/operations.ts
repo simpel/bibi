@@ -2,46 +2,55 @@ import { ok } from "../../errors/result";
 import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import { defineOperation } from "../../operations/define-operation";
 import { canView } from "../../shared/can-view";
-import { resolvePeriod } from "../finance/period";
-import { outcomes } from "./outcomes";
+import { attention } from "./attention";
+import { bookedAhead } from "./booked-ahead";
+import { comingUp } from "./coming-up";
+import { resolveHorizon } from "./horizon";
 import { DashboardSummaryInputSchema, DashboardSummarySchema } from "./schema";
 import { statusTiles } from "./status-tiles";
 import { utilisation } from "./utilisation";
 
 /**
- * The dashboard (ADR 0079): open tickets per status now with their value, won and lost tickets per
- * month, and utilisation per bookable item type. A view read model (ADR 0071): outcomes need
- * `quote:read`, utilisation `item:read`. Money is `finance.overview`.
+ * The dashboard (ADR 0079, 0080): open tickets per status now with their value, what needs
+ * attention, what is coming up, utilisation per bookable item type and accepted quotes not
+ * invoiced, over today and the next 28 days. A view read model (ADR 0071): each part from
+ * another feature needs that feature's `read`. The past is `finance.overview`.
  */
 export const dashboardSummary = defineOperation({
   name: "dashboard.summary",
   kind: "query",
   description:
-    "The dashboard for a period: open tickets and their estimated and confirmed value per ticket status now, " +
-    "tickets won (closed with an accepted quote or a sent invoice) and lost per month, and utilisation (booked over open hours) " +
-    "per bookable item type. Outcomes are null without quote:read, utilisation without item:read.",
+    "The dashboard for today and the next 28 days: open tickets and their estimated and confirmed value per ticket status, " +
+    "what needs attention (holds expiring within 7 days, unsent sheets for upcoming tickets, overdue invoices), tickets coming up, " +
+    "utilisation (booked over open hours) per bookable item type, and accepted quotes not invoiced yet per event month. " +
+    "Unsent sheets are null without sheet:read, overdue without finance:read and payment:read, utilisation without item:read, " +
+    "booked ahead without quote:read. Past periods (invoiced, received, won and lost) are finance.overview.",
   input: DashboardSummaryInputSchema,
   output: DashboardSummarySchema,
   permission: "ticket:read",
   entityType: "ticket",
-  handler: async ({ input, context }) => {
-    const resolved = await resolvePeriod({ context, input });
-    if (!resolved.ok) return resolved;
-    const period = resolved.value;
-    const [statuses, won, used] = await Promise.all([
+  handler: async ({ context }) => {
+    const horizon = await resolveHorizon({ context });
+    const window = { from: horizon.from, to: horizon.to };
+    const [statuses, needs, upcoming, used, ahead] = await Promise.all([
       statusTiles({ context }),
-      canView({ context, feature: "quote" }) ? outcomes({ context, period }) : null,
-      canView({ context, feature: "item" }) ? utilisation({ context, period: input }) : null,
+      attention({ context, horizon }),
+      comingUp({ context, horizon }),
+      canView({ context, feature: "item" }) ? utilisation({ context, period: window }) : null,
+      canView({ context, feature: "quote" })
+        ? bookedAhead({ context, monthOf: horizon.monthOf })
+        : null,
     ]);
     return ok({
       value: {
-        from: input.from,
-        to: input.to,
+        ...window,
         currency: DEFAULT_CURRENCY,
-        timeZone: period.timeZone,
+        timeZone: horizon.timeZone,
         statuses,
-        outcomes: won,
+        attention: needs,
+        comingUp: upcoming,
         utilisation: used,
+        bookedAhead: ahead,
       },
     });
   },

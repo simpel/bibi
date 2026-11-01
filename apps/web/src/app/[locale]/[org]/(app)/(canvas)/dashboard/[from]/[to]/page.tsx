@@ -1,22 +1,13 @@
 import { resolveLocale } from "@bibi/i18n";
-import { setRequestLocale } from "next-intl/server";
-import { defaultDashboardPeriod } from "@/features/dashboard/dashboard-path";
-import { dashboardHref } from "@/features/dashboard/lib/dashboard-href";
-import { DashboardPage } from "@/features/dashboard/ui/dashboard-page";
-import { isValidPeriod } from "@/features/finance/lib/finance-period";
 import { redirect } from "@/lib/navigation";
+import { ROUTES } from "@/lib/routes";
 
-type DashboardRouteProps = {
+type OldDashboardRouteProps = {
   params: Promise<{ locale: string; org: string; from: string; to: string }>;
 };
 
-/** The dashboard for `{from}` to `{to}`, inclusive, at most 24 months (ADR 0079). */
-export default async function DashboardRoute({ params }: DashboardRouteProps) {
-  const { org, from, to, ...rest } = await params;
-  const locale = resolveLocale({ value: rest.locale });
-  setRequestLocale(locale);
-  if (!isValidPeriod({ from, to })) {
-    redirect({ href: dashboardHref(await defaultDashboardPeriod()), locale, org });
-  }
-  return <DashboardPage locale={locale} from={from} to={to} />;
+/** The old `/dashboard/{from}/{to}` (ADR 0079): the dashboard has no period since ADR 0080. */
+export default async function OldDashboardRoute({ params }: OldDashboardRouteProps) {
+  const { locale, org } = await params;
+  redirect({ href: ROUTES.dashboard, locale: resolveLocale({ value: locale }), org });
 }

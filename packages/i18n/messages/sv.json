@@ -242,32 +242,38 @@
   },
   "dashboard": {
     "title": "Översikt",
-    "description": "Aktuellt läge i verksamheten.",
+    "description": "Idag och fyra veckor framåt, {range}.",
+    "ticket": "#{reference}",
+    "ticketCustomer": "#{reference} · {customer}",
     "pipeline": {
       "title": "Öppna ärenden per ärendestatus",
       "tickets": "{count, plural, one {# ärende} other {# ärenden}}",
       "noValue": "Inget värde ännu",
       "empty": "Inga öppna ärendestatusar."
     },
-    "outcomes": {
-      "title": "Vunna och förlorade ärenden",
-      "month": "Månad",
-      "won": "Vunna",
-      "lost": "Förlorade",
-      "winRate": "Vinstandel {rate} ({won} av {total})",
-      "text": "{count} · {amount}",
-      "empty": "Inga ärenden stängdes under perioden."
+    "attention": {
+      "title": "Behöver åtgärdas",
+      "empty": "Inget behöver åtgärdas just nu.",
+      "overdue": "{count, plural, one {# förfallen faktura} other {# förfallna fakturor}}",
+      "expiring": "{count, plural, one {# reservation går} other {# reservationer går}} ut {date}",
+      "unsent": "{sheet} version {version} inte skickad, börjar {date}"
     },
-    "economy": {
-      "title": "Ekonomi"
+    "comingUp": {
+      "title": "På gång",
+      "empty": "Inget börjar de kommande fyra veckorna.",
+      "detail": "{date} · {status} · {count, plural, one {# rad} other {# rader}}"
     },
     "utilisation": {
       "title": "Beläggning",
       "type": "Objekttyp",
       "rate": "Beläggning",
       "text": "{rate} · {booked} h bokade av {open} h öppet",
-      "closed": "Stängt under perioden",
+      "closed": "Stängt de kommande fyra veckorna",
       "empty": "Inga bokningsbara objekt."
+    },
+    "bookedAhead": {
+      "title": "Bokat, ännu inte fakturerat",
+      "value": "Värde exklusive moms"
     }
   },
   "finance": {
@@ -392,10 +398,6 @@
         "overdue31to60": "31–60 dagar försenade",
         "overdue61Plus": "Över 60 dagar försenade"
       },
-      "forward": {
-        "title": "Bokat, ännu inte fakturerat",
-        "value": "Värde exklusive moms"
-      },
       "revenue": {
         "title": "Fakturerat per typ",
         "type": "Typ",
@@ -428,7 +430,16 @@
     },
     "now": {
       "title": "Just nu",
-      "description": "Öppna och förfallna belopp, det som är bokat framåt och SIE-exporterna. Gäller oavsett perioden ovan."
+      "description": "Öppna och förfallna belopp och SIE-exporterna. Gäller oavsett perioden ovan."
+    },
+    "outcomes": {
+      "title": "Vunna och förlorade ärenden",
+      "month": "Månad",
+      "won": "Vunna",
+      "lost": "Förlorade",
+      "winRate": "Vinstandel {rate} ({won} av {total})",
+      "text": "{count} · {amount}",
+      "empty": "Inga ärenden stängdes under perioden."
     }
   },
   "nav": {

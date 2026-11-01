@@ -63,6 +63,7 @@ const OUTPUT_EXCEPTIONS: Readonly<Record<string, string>> = {
   "organizationProfile:contactPhone": "the organization's own contact details (ADR 0061)",
   "sheet:itemName": "sheet rows are a snapshot copied with item:read at generate time",
   "sheet:programItemName": "sheet rows are a snapshot copied with program:read at generate time",
+  "dashboard:customerName": "a view read model (ADR 0071, 0080), null without customer:read",
 };
 
 describe("feature scope guard (ADR 0050)", () => {

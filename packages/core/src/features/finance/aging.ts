@@ -12,7 +12,7 @@ export type AgingInput = {
 };
 
 /** Whole days past the due date; 0 or less when not due (no due date counts as not due). */
-const daysOverdue = ({ dueDate, now }: { dueDate: Date | null; now: Date }) =>
+export const daysOverdue = ({ dueDate, now }: { dueDate: Date | null; now: Date }) =>
   dueDate ? Math.floor((now.getTime() - dueDate.getTime()) / DAY_MS) : 0;
 
 /** What is open today, bucketed by how late it is, with the most overdue invoices listed. */

@@ -1,24 +1,24 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
-  createInvoice,
-  createPayment,
   type ExecuteContext,
   execute,
   financeOverview,
   grantAll,
-  sendInvoice,
   setPaymentProvider,
   setStripeConnectGateway,
+  updateTicket,
 } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
-import { makeInvoiceable, markSucceeded, moneySetup, sentTestQuote } from "./receivable-helpers";
+import { halfPaidLateInvoice } from "./late-invoice-helpers";
+import { moneySetup, sentTestQuote } from "./receivable-helpers";
+import { createTestTicket, placeInStatus } from "./ticket-helpers";
+import { statuses } from "./ticket-status-helpers";
 
 afterEach(() => {
   setPaymentProvider({ provider: undefined });
   setStripeConnectGateway({ gateway: undefined });
 });
 
-const DAY_MS = 86_400_000;
 const thisYear = () => {
   const year = new Date().getUTCFullYear();
   return { from: `${year}-01-01`, to: `${year}-12-31` };
@@ -26,35 +26,6 @@ const thisYear = () => {
 
 const overview = ({ context }: { context: ExecuteContext }) =>
   execute({ operation: financeOverview, input: thisYear(), context });
-
-/** A sent, half-paid invoice of 5 600 kr incl. 12 % VAT, due 40 days ago, 1 000 kr refunded. */
-async function halfPaidLateInvoice() {
-  const setup = await moneySetup();
-  const { context, ticket } = setup;
-  await makeInvoiceable({ context, statusId: ticket.statusId });
-  const draft = unwrap({
-    result: await execute({ operation: createInvoice, input: { ticketId: ticket.id }, context }),
-  });
-  const input = { id: draft.id };
-  unwrap({ result: await execute({ operation: sendInvoice, input, context }) });
-  const pay = { invoiceId: draft.id, method: "CARD" as const, amountMinor: 280_000 };
-  const payment = unwrap({
-    result: await execute({ operation: createPayment, input: pay, context }),
-  });
-  await markSucceeded({ context, paymentId: payment.id, refundedMinor: 100_000 });
-  await context.db.paymentRefund.create({
-    data: {
-      organizationId: context.organizationId,
-      paymentId: payment.id,
-      amountMinor: 100_000,
-      refundedTotalMinor: 100_000,
-      refundedAt: new Date(),
-    },
-  });
-  const dueDate = new Date(Date.now() - 40 * DAY_MS);
-  await context.db.invoice.update({ where: input, data: { dueDate } });
-  return setup;
-}
 
 describe("finance.overview derives the organization's money (ADR 0077)", () => {
   it("adds up invoiced, received, open and overdue money", async () => {
@@ -73,13 +44,31 @@ describe("finance.overview derives the organization's money (ADR 0077)", () => {
     expect(value.revenueByType?.[0]?.invoicedExclVatMinor).toBe(500_000);
   });
 
-  it("counts an accepted quote as forward-booked until the ticket is invoiced", async () => {
-    const { context, ticket } = await moneySetup();
+  it("splits closed tickets into won (accepted quote) and lost, by month and value", async () => {
+    const { context, ticket, customer } = await moneySetup();
+    const closing = (await statuses({ context })).find((status) => status.closes);
+    if (!closing) throw new Error("No closing status");
     await sentTestQuote({ context, ticketId: ticket.id, accept: true });
-    const value = unwrap({ result: await overview({ context }) });
-    expect(value.forwardBooked).toEqual([
-      expect.objectContaining({ valueExclVatMinor: 500_000, tickets: 1 }),
-    ]);
+    const entityTypeId = ticket.entityTypeId;
+    const lost = await createTestTicket({ context, entityTypeId, customerId: customer.id });
+    const estimate = { id: lost.id, estimatedValueMinor: 300_000 };
+    unwrap({ result: await execute({ operation: updateTicket, input: estimate, context }) });
+    const current = await context.db.ticket.findFirstOrThrow({ where: { id: ticket.id } });
+    await placeInStatus({ ticket: current, statusId: closing.id });
+    await placeInStatus({ ticket: lost, statusId: closing.id });
+    const { outcomes } = unwrap({ result: await overview({ context }) });
+    const total = ({
+      key,
+    }: {
+      key: "wonTickets" | "wonValueMinor" | "lostTickets" | "lostValueMinor";
+    }) => (outcomes ?? []).reduce((sum, row) => sum + row[key], 0);
+    expect(outcomes).toHaveLength(12);
+    expect([
+      total({ key: "wonTickets" }),
+      total({ key: "lostTickets" }),
+      total({ key: "lostValueMinor" }),
+    ]).toEqual([1, 1, 300_000]);
+    expect(total({ key: "wonValueMinor" })).toBeGreaterThan(0);
   });
 
   it("hides the parts the caller may not read and stays in its organization", async () => {
@@ -87,7 +76,7 @@ describe("finance.overview derives the organization's money (ADR 0077)", () => {
     const permissions = { ...grantAll({}), payment: [], quote: [] };
     const blind = testContext({ organizationId: context.organizationId, permissions });
     const hidden = unwrap({ result: await overview({ context: blind }) });
-    expect([hidden.monthly, hidden.aging, hidden.forwardBooked, hidden.receivedMinor]).toEqual([
+    expect([hidden.monthly, hidden.aging, hidden.outcomes, hidden.receivedMinor]).toEqual([
       null,
       null,
       null,

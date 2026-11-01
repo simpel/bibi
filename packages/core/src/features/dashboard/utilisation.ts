@@ -1,14 +1,14 @@
 import type { z } from "zod";
 import type { OperationContext } from "../../operations/types";
 import { freeTime } from "../calendar/free-time";
-import type { DashboardSummaryInput, UtilisationSchema } from "./schema";
+import type { DashboardWindow, UtilisationSchema } from "./schema";
 import { loadUtilisedItems, type UtilisedItem } from "./utilisation-inputs";
 
 type Utilisation = z.infer<typeof UtilisationSchema>;
 type Context = Pick<OperationContext, "db" | "permissions">;
 const MINUTE = 60_000;
 
-export type UtilisationInput = { context: Context; period: DashboardSummaryInput };
+export type UtilisationInput = { context: Context; period: DashboardWindow };
 
 type Hold = { itemId: string; startsAt: Date; endsAt: Date };
 

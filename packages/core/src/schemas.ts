@@ -17,6 +17,7 @@ export * from "./features/configuration/schema";
 export * from "./features/contact/schema";
 export * from "./features/conversation/schema";
 export * from "./features/customer/schema";
+export * from "./features/dashboard/attention-schema";
 export * from "./features/dashboard/schema";
 export * from "./features/deposit/schema";
 export * from "./features/entity-type/capability-kinds";

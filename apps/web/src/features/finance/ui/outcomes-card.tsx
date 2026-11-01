@@ -1,24 +1,25 @@
-import type { DashboardSummary, NumberFormat } from "@bibi/core/schemas";
+import type { FinanceOverviewDto, NumberFormat } from "@bibi/core/schemas";
 import { StackedBarChart } from "@bibi/ui";
 import { useTranslations } from "next-intl";
-import { monthLabelOf } from "@/features/finance/lib/month-label";
-import { FinanceSection } from "@/features/finance/ui/finance-section";
 import { wholeMoney } from "@/lib/number/whole-money";
+import { monthLabelOf } from "../lib/month-label";
 import { outcomeRows, winRate } from "../lib/outcome-rows";
+import { FinanceSection } from "./finance-section";
 
-export type OutcomesPanelProps = {
-  outcomes: NonNullable<DashboardSummary["outcomes"]>;
-  currency: string;
+export type OutcomesCardProps = {
+  overview: Pick<FinanceOverviewDto, "currency" | "outcomes">;
   numbers: NumberFormat;
 };
 
-/** Won against lost tickets per month, the win rate and the numbers beside the chart. */
-export function OutcomesPanel({ outcomes, currency, numbers }: OutcomesPanelProps) {
-  const t = useTranslations("dashboard.outcomes");
+/** Won against lost tickets per month in the period, with the win rate (ADR 0080). */
+export function OutcomesCard({ overview, numbers }: OutcomesCardProps) {
+  const t = useTranslations("finance.outcomes");
   const finance = useTranslations("finance");
-  const share = winRate({ outcomes });
+  const { outcomes, currency } = overview;
+  const share = outcomes ? winRate({ outcomes }) : null;
+  const data = outcomes === null ? null : share ? outcomes : [];
   return (
-    <FinanceSection title={t("title")} data={share ? outcomes : []} emptyText={t("empty")}>
+    <FinanceSection title={t("title")} data={data} emptyText={t("empty")}>
       {share ? (
         <p className="mb-3 text-sm text-muted-foreground">
           {t("winRate", {
@@ -33,7 +34,7 @@ export function OutcomesPanel({ outcomes, currency, numbers }: OutcomesPanelProp
         categoryLabel={t("month")}
         series={[{ label: t("won") }, { label: t("lost") }]}
         rows={outcomeRows({
-          outcomes,
+          outcomes: outcomes ?? [],
           numbers,
           currency,
           money: wholeMoney,
