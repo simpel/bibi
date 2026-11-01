@@ -123,3 +123,14 @@ export type ClientContact = { name: string; phone?: string; email?: string };
 
 /** A time window in minutes since midnight. */
 export type CalendarWindow = { from: number; to: number };
+
+/**
+ * The user's date formatter: the shape of core's `DateTimeFormat["date"]`, so the app passes
+ * `useDateTimeFormat().date` as is and every date follows the user's own format (#481).
+ */
+export type FormatDate = (input: {
+  instant: Date;
+  timeZone?: string;
+  year?: boolean;
+  weekday?: "short" | "long";
+}) => string;

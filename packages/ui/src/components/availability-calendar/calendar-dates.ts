@@ -3,6 +3,10 @@
  * UTC midnights so a key never shifts with the browser's zone; the venue's zone made the key.
  */
 
+import type { FormatDate } from "./calendar-types";
+
+export type { FormatDate };
+
 const DAY_MS = 86_400_000;
 
 const toUtc = ({ date }: { date: string }) => Date.parse(`${date}T00:00:00Z`);
@@ -52,17 +56,6 @@ export function formatDate({
 }): string {
   return new Intl.DateTimeFormat(locale, { ...options, timeZone: "UTC" }).format(toUtc({ date }));
 }
-
-/**
- * The user's date formatter: the shape of core's `DateTimeFormat["date"]`, so the app passes
- * `useDateTimeFormat().date` as is and every date follows the user's own format (#481).
- */
-export type FormatDate = (input: {
-  instant: Date;
-  timeZone?: string;
-  year?: boolean;
-  weekday?: "short" | "long";
-}) => string;
 
 /** A day key as an instant the formatter can read: noon UTC, rendered in UTC, never shifts. */
 export function formatDay({
