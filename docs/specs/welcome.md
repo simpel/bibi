@@ -68,27 +68,74 @@ Locale prefix (`/sv`, `/en`) omitted.
 
 ## Setup (per organization)
 - **`organization`:** legal name, org number, street address, postal code, city, country (default SE), website, contact email and phone. The checkbox "This address is also our first venue" is on by default and creates a venue.
-- **`kind`:** a 3×3 grid of venue kinds, plus a "Start empty" link that skips to review.
+- **`kind`:** a grid of the 8 venue kinds, plus a "Start empty" link that skips to review.
 - **`bookable` / `sellable`:** the kind's item types as checkboxes, with "+ Add another". A note says more can be added later in Settings → Types.
-- **`review`:** the chosen types and the status path, then Activate (`pipelineSetup.activate`, `actor=user`). This sets the setup status to `COMPLETED`.
-- **Skip for now** (on every setup page) sets the status to `SKIPPED`. Setup can still be changed later in Settings and through the assistant.
+- **`review`:** a short "You're all set" summary (organization name, the chosen kind and how many types), then Activate (`pipelineSetup.activate`, `actor=user`). It shows no statuses, states or grid: the kind's flow sets them silently. Activate sets the setup status to `COMPLETED`.
+- **Skip for now** (on every setup page) sets the status to `SKIPPED`. The organization keeps flow C, which it got at creation. Setup can still be changed later in Settings and through the assistant.
 - The draft lives in the `setup` layout and is copied to `sessionStorage`. A step without a draft goes back to `kind`.
 
 ## Venue kinds
-Full = the `conference-estate` statuses; Simple = the `default` statuses.
+Not built yet: the flows, state sets and responsibilities below replace the `conference-estate` and `default` templates the presets use today.
 
-| Kind | Bookable | Sellable | Statuses |
+| Kind | Bookable (Hold) | Sellable (Order) | Flow |
 |---|---|---|---|
-| Conference estate | Conference room, Breakout room, Equipment | Coffee break, Lunch, Dinner, Drink, Activity | Full |
-| Manor house | Banquet hall, Meeting room, Garden | Dinner menu, Drink package, Coffee break, Activity | Full |
-| Experience centre | Hall, Guide | Tour, Workshop, Meal, Drink | Full |
-| Museum | Event space, Guide | Guided tour, Coffee break, Meal | Simple |
-| Restaurant with private rooms | Private room | Set menu, Dish, Drink, Wine package | Simple |
-| Event & congress hall | Hall, Meeting room, Exhibition stand, Equipment | Catering, Coffee break, Drink | Full |
-| Arena hospitality | Lodge, Lounge | Match-day package, Meal, Drink | Simple |
-| Theatre & concert hall | Foyer, Rehearsal room | Pre-show dinner, Drink, Interval package | Simple |
-| Meeting space | Meeting room, Equipment | Coffee break, Lunch | Simple |
-| Start empty | – | – | Simple |
+| Conference estate | Conference room, Breakout room, Equipment | Coffee break, Lunch, Dinner, Drink, Activity | A |
+| Event & congress hall | Hall, Meeting room, Exhibition stand, Equipment | Catering, Coffee break, Drink | A |
+| Experience centre | Hall, Guide | Tour, Workshop, Meal, Drink | A |
+| Museum | Event space, Guide | Guided tour, Coffee break, Meal | B |
+| Restaurant with private rooms | Private room | Set menu, Dish, Drink, Wine package | B |
+| Arena hospitality | Lodge, Lounge | Match-day package, Meal, Drink | B |
+| Theatre & concert hall | Foyer, Rehearsal room | Pre-show dinner, Drink, Interval package | B |
+| Meeting space | Meeting room, Equipment | Coffee break, Lunch | C |
+| Start empty, Skip for now | – | – | C |
 
 - Presets live in `packages/core/src/templates/setup-presets`.
 - Type names are i18n keys (`welcome.types.*`), so they are created in the language of the member doing the setup.
+
+## Flows
+Every booking follows the same arc: enquiry, a provisional hold that lapses, confirmation, final numbers before the event, then the event. The flows differ in whether a written proposal comes first and whether numbers are locked separately.
+
+| Flow | For | Ticket statuses (closing ones last) |
+|---|---|---|
+| A. Quoted event | Conference and event business, priced per enquiry | Enquiry → Proposal sent → Confirmed → Final numbers → Completed · Lost · Cancelled |
+| B. Package booking | Predefined packages, usually without a proposal | Enquiry → Confirmed → Final numbers → Completed · Lost · Cancelled |
+| C. Simple | A room is booked or not | Lead → Confirmed → Completed · Lost |
+
+- Transitions are the forward default (ADR 0043): any later status, or any closing status.
+- Confirmed, Final numbers and Completed require an assignee. Final numbers in A requires an accepted quote. Completed is invoiceable. Lost and Cancelled require a reason.
+- Proposal sent fires `QUOTE_SENT`; Confirmed in A fires `QUOTE_ACCEPTED`.
+- There is no site-visit status: most tickets never have one, so it would only be clicked past.
+
+## State sets
+Each item type gets one set from its capability. Food is a part of a booking (lunch with a conference room), not a restaurant order.
+
+| Set | Types | States (initial first) |
+|---|---|---|
+| Hold | `BOOKABLE` types: rooms, halls, lodges, guides, equipment | Prebooked (soft hold, expires) → Booked (hard hold, in sheets) → Released |
+| Order | Every other type: food, drink, menus, tours, workshops, activities | Estimated → Ordered → Locked (in sheets) → Released |
+
+- Released is the expiry state of both sets.
+- A type added later in Settings gets the set of its capability.
+
+## Grid
+Cells per open status; closing statuses release every line.
+
+| Status | Hold | Order |
+|---|---|---|
+| Enquiry, Proposal sent, Lead | Prebooked | Estimated |
+| Confirmed | Booked | Ordered (C: Locked, since C has no Final numbers) |
+| Final numbers | Booked | Locked |
+
+## Responsibilities
+Created with the flow, each with the member who activates the setup as default assignee (ADR 0034). Names are i18n keys like the types.
+
+| Flow | Responsibility | Types |
+|---|---|---|
+| A | Sales | the ticket itself |
+| A | Coordinator | Hold types and Order types that are not food or drink |
+| A | Kitchen | Order types that are food or drink |
+| B | Bookings | Hold types and Order types that are not food or drink |
+| B | Kitchen | Order types that are food or drink |
+| C | – | – |
+
+- Whether a preset type is food or drink is part of the preset data.
