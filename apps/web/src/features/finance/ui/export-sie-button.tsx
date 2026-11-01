@@ -14,7 +14,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import type { Period } from "../lib/finance-period";
 import { RangeStatus } from "./export-range-status";
-import { PeriodRangeFields } from "./period-range-fields";
+import { PeriodCalendar } from "./period-calendar";
 import { useCreateExport } from "./use-create-export";
 import { useExportPreview } from "./use-export-preview";
 
@@ -38,12 +38,12 @@ export function ExportSieButton({ period }: ExportSieButtonProps) {
         {t("button")}
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-xl">
           <DialogHeader>
             <DialogTitle>{t("title")}</DialogTitle>
             <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
-          <PeriodRangeFields draft={range} onChange={setRange} idPrefix="finance-export" />
+          <PeriodCalendar draft={range} onChange={setRange} />
           <RangeStatus range={range} valid={valid} failed={failed} preview={preview} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setOpen(false)}>
