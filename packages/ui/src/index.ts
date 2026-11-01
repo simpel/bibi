@@ -122,13 +122,7 @@ export {
   SheetTrigger,
   sheetVariants,
 } from "./components/sheet/sheet";
-export {
-  Sidebar,
-  SidebarInset,
-  type SidebarProps,
-  SidebarRail,
-  SidebarTrigger,
-} from "./components/sidebar/sidebar";
+export * from "./components/sidebar/sidebar";
 export {
   SidebarProvider,
   type SidebarProviderProps,
