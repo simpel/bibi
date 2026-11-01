@@ -5,6 +5,7 @@ import { PipelineToolbar } from "@/features/board/ui/pipeline-toolbar";
 import { UnmappedBanner } from "@/features/board/ui/unmapped-banner";
 import { handleLoadError } from "@/server/load-error";
 import { loadPipelineData } from "../load-pipeline-data";
+import { BoardTotals } from "./board-totals";
 import { PipelineBoardView } from "./pipeline-board-view";
 
 export type PipelinePageProps = {
@@ -28,7 +29,12 @@ export async function PipelinePage({ locale, boardId, customize }: PipelinePageP
   }
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-3 p-3">
-      <PipelineToolbar boards={boards} boardId={board.boardId} canConfigure={access.write} />
+      <PipelineToolbar
+        boards={boards}
+        boardId={board.boardId}
+        canConfigure={access.write}
+        totals={<BoardTotals board={board} />}
+      />
       {access.write && board.unmappedCount > 0 ? (
         <UnmappedBanner count={board.unmappedCount} boardId={board.boardId} />
       ) : null}

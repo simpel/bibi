@@ -1,9 +1,9 @@
+import type { PipelineCard } from "@bibi/core";
 import { MoneyNumberFlow } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useNumberFormat } from "@/lib/number/use-number-format";
-import type { BoardCard } from "../lib/kanban-model";
 
-export type PhaseValueProps = { cards: readonly BoardCard[]; currency: string };
+export type PhaseValueProps = { cards: readonly PipelineCard[]; currency: string };
 
 /** Whole currency units: a phase total is an overview, not an amount to the öre. */
 const WHOLE = { minimumFractionDigits: 0, maximumFractionDigits: 0 };
@@ -11,7 +11,7 @@ const WHOLE = { minimumFractionDigits: 0, maximumFractionDigits: 0 };
 type Sums = { confirmed: number | null; estimated: number | null };
 
 /** Confirmed: accepted quotes. Estimated: the cards without one (ADR 0074). Null when none. */
-function phaseSums({ cards }: { cards: readonly BoardCard[] }): Sums {
+function phaseSums({ cards }: { cards: readonly PipelineCard[] }): Sums {
   let confirmed: number | null = null;
   let estimated: number | null = null;
   for (const card of cards) {
