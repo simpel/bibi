@@ -37,3 +37,7 @@
 - **A selectable horizon (7, 28 or 90 days).** Rejected for now: a picker on the dashboard brings back the shared period model this decision removes. It can be added if 28 days proves wrong for some venues.
 - **One page with tabs.** Rejected: staff lose a starting page that answers "what do I do today".
 - **Keep `forwardBooked` in `finance.overview` and call it from the dashboard too.** Rejected: the dashboard would need a period again, and one figure would have two homes.
+
+## Addendum 2026-11-01 – one page with tabs (ADR 0086)
+- The page split and the fixed 28-day window are superseded: Financials and Workload are two tabs of one dashboard with one range picker. "Needs attention" keeps its 28-day look ahead for unsent sheets.
+- The ownership moves in point 5 stay: won and lost are `finance.overview`, booked ahead is `dashboard.summary` (now limited to months in the range).

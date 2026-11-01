@@ -12,6 +12,7 @@ export function ExportHistoryTable({ rows, canDownload }: ExportHistoryTableProp
   const t = useTranslations("finance.export");
   return (
     <PersistedDataTable
+      flush
       tableId="finance.exports"
       columns={useAccountingExportColumns({ canDownload })}
       data={rows}

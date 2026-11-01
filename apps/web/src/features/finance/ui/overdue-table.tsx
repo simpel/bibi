@@ -12,6 +12,7 @@ export function OverdueTable({ rows }: OverdueTableProps) {
   const t = useTranslations("finance.overdue");
   return (
     <PersistedDataTable
+      flush
       tableId="finance.overdue"
       columns={useOverdueColumns()}
       data={rows}

@@ -1,8 +1,8 @@
 import {
   AttentionSchema,
-  ComingUpSchema,
   DashboardSummarySchema,
   ExpiringHoldSchema,
+  ScheduledSchema,
   UnsentSheetSchema,
 } from "@bibi/core/schemas";
 import { z } from "zod";
@@ -15,12 +15,12 @@ export const DashboardSummaryWireSchema = DashboardSummarySchema.extend({
     expiringHolds: z.array(ExpiringHoldSchema.extend({ holdsUntil: z.string() })),
     unsentSheets: z.array(UnsentSheetSchema.extend({ startsAt: z.string() })).nullable(),
   }),
-  comingUp: z.array(ComingUpSchema.extend({ startsAt: z.string() })),
+  scheduled: z.array(ScheduledSchema.extend({ startsAt: z.string() })),
 });
 
 export type DashboardSummaryWire = z.infer<typeof DashboardSummaryWireSchema>;
 
-/** Tool → component for the dashboard (ADR 0079, 0080). */
+/** Tool → component for the dashboard (ADR 0079, 0080, 0086). */
 export const DASHBOARD_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   dashboard_summary: uiEntry({
     component: "dashboard-summary",

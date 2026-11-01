@@ -58,16 +58,3 @@ export function yearPeriod({ today }: { today: PlainDate }): Period {
     to: { year: today.year, month: 12, day: 31 },
   });
 }
-
-export type ShiftPeriodInput = { period: Period; direction: -1 | 1 };
-
-/** The same number of whole months, one period earlier or later. */
-export function shiftPeriod({ period, direction }: ShiftPeriodInput): Period {
-  const months = periodMonths(period) * direction;
-  return periodOf({
-    from: addMonths({ date: parseIsoDate({ value: period.from }), months }),
-    to: lastDayOfMonth({
-      date: addMonths({ date: parseIsoDate({ value: period.to }), months }),
-    }),
-  });
-}

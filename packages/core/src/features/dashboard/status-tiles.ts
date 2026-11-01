@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { OperationContext } from "../../operations/types";
+import type { Trend } from "../../trend/trend-schema";
 import { cardValues } from "../pipeline/card-values";
 import type { StatusTileSchema } from "./schema";
 
@@ -11,8 +12,14 @@ const sum = ({ values }: { values: readonly (number | null)[] }) => {
   return known.length === 0 ? null : known.reduce((a, b) => a + b, 0);
 };
 
-/** Open tickets per open status now, with their estimated and confirmed value (ADR 0079). */
-export async function statusTiles({ context }: { context: Context }): Promise<StatusTile[]> {
+export type StatusTilesInput = {
+  context: Context;
+  /** The status's count over the range (ADR 0086). */
+  trendOf: (input: { statusId: string }) => Trend;
+};
+
+/** Open tickets per open status now, with their value (ADR 0079) and trend (ADR 0086). */
+export async function statusTiles({ context, trendOf }: StatusTilesInput): Promise<StatusTile[]> {
   const [statuses, tickets] = await Promise.all([
     context.db.ticketStatus.findMany({
       where: { status: "ACTIVE", closes: false },
@@ -40,6 +47,7 @@ export async function statusTiles({ context }: { context: Context }): Promise<St
         ),
       }),
       confirmedValueMinor: sum({ values: values.map((value) => value.confirmedValueMinor) }),
+      trend: trendOf({ statusId: id }),
     };
   });
 }

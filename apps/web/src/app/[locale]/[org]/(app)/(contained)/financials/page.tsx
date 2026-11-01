@@ -1,16 +1,12 @@
 import { resolveLocale } from "@bibi/i18n";
-import { defaultFinancePeriod } from "@/features/finance/finance-path";
-import { financialsHref } from "@/features/finance/lib/finance-href";
+import { defaultTabHref } from "@/features/dashboard/dashboard-path";
 import { redirect } from "@/lib/navigation";
 
-type FinancialsStartProps = { params: Promise<{ locale: string; org: string }> };
+type OldFinancialsStartProps = { params: Promise<{ locale: string; org: string }> };
 
-/** Bare `/financials`: the default preset (`DEFAULT_PRESET`), in the organization's zone. */
-export default async function FinancialsStart({ params }: FinancialsStartProps) {
+/** The old `/financials` (ADR 0077): Financials is a dashboard tab since ADR 0086. */
+export default async function OldFinancialsStart({ params }: OldFinancialsStartProps) {
   const { locale, org } = await params;
-  redirect({
-    href: financialsHref(await defaultFinancePeriod()),
-    locale: resolveLocale({ value: locale }),
-    org,
-  });
+  const href = await defaultTabHref({ tab: "financials" });
+  redirect({ href, locale: resolveLocale({ value: locale }), org });
 }

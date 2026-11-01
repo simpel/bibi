@@ -62,8 +62,11 @@
       "presets": {
         "last7Days": "Last 7 days",
         "last30Days": "Last 30 days",
+        "thisMonth": "This month",
         "last3Months": "Last 3 months",
-        "last6Months": "Last 6 months"
+        "last6Months": "Last 6 months",
+        "last12Months": "Last 12 months",
+        "next28Days": "Next 28 days"
       }
     }
   },
@@ -242,7 +245,17 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "description": "Today and the next four weeks, {range}.",
+    "description": "Money and workload for the range you pick.",
+    "tabs": {
+      "label": "Dashboard views",
+      "financials": "Financials",
+      "workload": "Workload"
+    },
+    "trend": {
+      "weekOf": "Week of {date}",
+      "percent": "{sign}{value} %",
+      "vsPrevious": "vs. the previous period of the same length"
+    },
     "ticket": "#{reference}",
     "ticketCustomer": "#{reference} · {customer}",
     "pipeline": {
@@ -258,9 +271,9 @@
       "expiring": "{count, plural, one {# hold runs} other {# holds run}} out {date}",
       "unsent": "{sheet} version {version} not sent, starts {date}"
     },
-    "comingUp": {
-      "title": "Coming up",
-      "empty": "Nothing starts in the next four weeks.",
+    "scheduled": {
+      "title": "Scheduled in the range",
+      "empty": "Nothing is scheduled in this range.",
       "detail": "{date} · {status} · {count, plural, one {# line} other {# lines}}"
     },
     "utilisation": {
@@ -268,7 +281,7 @@
       "type": "Item type",
       "rate": "Utilisation",
       "text": "{rate} · {booked} h booked of {open} h open",
-      "closed": "Closed in the next four weeks",
+      "closed": "Closed in this range",
       "empty": "No bookable items."
     },
     "bookedAhead": {
@@ -373,8 +386,6 @@
     },
     "period": {
       "label": "Period",
-      "previous": "Previous period",
-      "next": "Next period",
       "range": "{from} – {to}",
       "invalid": "Pick two days in order, at most {months} months apart."
     },

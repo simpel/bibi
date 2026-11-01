@@ -119,3 +119,4 @@ export * from "./time/plain-date";
 export * from "./time/plain-date-schema";
 export * from "./time/time-zone";
 export * from "./time/zoned-time";
+export * from "./trend/trend-schema";

@@ -29,7 +29,7 @@ export function DataTable<TData, TValue>(props: DataTableProps<TData, TValue>) {
           {props.bulkActions(selected)}
         </DataTableToolbar>
       ) : null}
-      <div className="rounded-md border">
+      <div className={props.flush ? "border-t" : "rounded-md border"}>
         <DataTableDnd order={order} titles={titles} labels={textLabels} onOrderChange={setOrder}>
           <Table>
             <DataTableHeader groups={table.getHeaderGroups()} titles={titles} labels={textLabels} />

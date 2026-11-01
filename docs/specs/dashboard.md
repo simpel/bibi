@@ -1,31 +1,37 @@
 # Dashboard
 
-Spec for `/dashboard` (ADR 0041, 0079, 0080). The dashboard has no period: it always shows today and the next 28 days in the organization's zone (ADR 0064). `/dashboard/{from}/{to}` redirects to `/dashboard`. One read model, `dashboard.summary()`, answers the whole page on web, GraphQL, REST and MCP. What has already happened (invoiced, received, won and lost) is on Financials (`finance.overview`, ADR 0077).
+Spec for `/dashboard/{tab}/{from}/{to}` (ADR 0041, 0079, 0080, 0086). One page: a header with the title, a preamble and the one range picker, then a white section with two tabs, **Financials** and **Workload**. The range is in the path (ADR 0064) and both tabs keep it when switching. `/dashboard`, `/dashboard/{tab}` and the old `/financials/...` redirect to a tab on this month. Financials needs `finance:read`; without it only Workload shows.
 
-## Panels
-| Panel | Source | Needs | Covers |
+## Range
+- Presets: last 7 days, last 30 days, this month (the default), last 3 months, last 12 months, next 28 days, or two picked days; at most 24 months. No previous or next buttons.
+- **Buckets** of a trend line: days up to 31 days, weeks (from the range's first day) up to 6 months, calendar months beyond.
+- **Trend**: every stat card compares with the previous range of equal length. A sum compares sums; a snapshot compares its value at the range's end (capped at now) with its value at the range's start. No previous value, or a previous value of 0, shows no percentage. Green or red follows the figure's polarity.
+
+## Financials tab (`finance.overview`)
+| Part | Source | Needs |
+| --- | --- | --- |
+| Stat cards: invoiced and received (sums), outstanding and overdue (snapshots) | `trends` | `payment:read` |
+| Invoiced and received per month; won and lost per month | `monthly`, `outcomes` | `payment:read`, `quote:read` |
+| Invoiced per type; open invoices by age (today) | `revenueByType`, `aging` | `payment:read` |
+| VAT per rate, the most overdue invoices, the SIE exports (tables) | `vatByRate`, `aging.overdue`, `accountingExport.list` | `payment:read`, `finance:read` |
+
+Polarity: invoiced and received up is good; outstanding and overdue down is good. Outstanding at an instant = what was open then on invoices sent by then (payments by `paidAt`, refunds by `refundedAt`); overdue = the same, a whole day past the due date.
+
+## Workload tab (`dashboard.summary`)
+| Part | Source | Needs | Covers |
 | --- | --- | --- | --- |
-| Pipeline: open tickets, estimated and confirmed value per open status | `statuses` | `ticket:read` | now |
-| Needs attention: holds expiring within 7 days | `attention.expiringHolds` | `ticket:read` | next 7 days |
-| Needs attention: unsent sheets for upcoming tickets | `attention.unsentSheets` | `sheet:read` | horizon |
-| Needs attention: overdue invoices, count and total (links to Financials) | `attention.overdue` | `finance:read` and `payment:read` | today |
-| Coming up: tickets with lines starting in the horizon | `comingUp` | `ticket:read` | horizon |
-| Utilisation per bookable item type | `utilisation` | `item:read` | horizon |
-| Booked, not yet invoiced: accepted quotes per event month | `bookedAhead` | `quote:read` | all |
+| Stat card per open status: open tickets now, their value, the count's line | `statuses` | `ticket:read` | now, line over the range |
+| Needs attention: holds expiring within 7 days, unsent sheets for tickets in the next 28 days, overdue invoices | `attention` | `ticket:read`, `sheet:read`, `finance:read` and `payment:read` | now |
+| Scheduled: tickets with lines starting in the range | `scheduled` | `ticket:read` | range |
+| Utilisation per bookable item type | `utilisation` | `item:read` | range |
+| Booked, not yet invoiced: accepted quotes per event month | `bookedAhead` | `quote:read` | months in the range |
 
-A panel the caller may not read is not drawn, or says so (ADR 0071); a panel with no data shows an empty state. Customer names in the lists need `customer:read`, else the row shows only the ticket reference.
+A status's open tickets at an instant are replayed from `TicketStatusChange` (ADR 0054) for the tickets active today; more open tickets is neither good nor bad, so its trend is neutral.
 
 ## Definitions
-- **Horizon**: `from` = today in the organization's zone (the context clock, ADR 0064), `to` = today + 27 days, both inclusive; instants `[start of from, start of to + 1 day)`.
-- **Open status**: `closes = false`, in position order. Counts and values group by status id, never by name (ADR 0021).
-- **Value**: estimated = the ticket's own estimate, else its priced lines (needs `program:read`), summed over tickets without an accepted quote; confirmed = the accepted quotes' totals (needs `quote:read`), as on the board. Excl. VAT, minor units (ADR 0074).
-- **Expiring hold**: an active ticket in an open status whose `holdsUntil` falls from the start of today to the start of the day 7 days ahead, with at least one active line in an `expires` state (what `ticket.expireHolds` acts on, ADR 0044). Soonest first.
-- **Unsent sheet**: the newest version of a ticket's sheet per definition, when its `sentAt` is null, for an active ticket in an open status with a line starting in the horizon. Soonest event first.
-- **Overdue**: sent invoices with money open and at least one whole day past their due date, as on Financials' aging.
-- **Coming up**: active tickets in an open status with active lines starting in the horizon, by their first start; at most 50.
-- **Utilisation**: per bookable item type (capability `BOOKABLE`), `bookedMinutes / openMinutes` over the horizon. Open = each active item's own hours, else its venue's, else the office day 08–18 (as the calendar draws), per local day in the item's zone. Booked = merged `Occupancy` of the item (any type) inside those hours.
-- **Booked ahead**: the newest accepted quote of each active ticket with no sent invoice, by the month of the event's first line (else the acceptance).
+- **Open status**: `closes = false`, in position order, grouped by id (ADR 0021). **Value**: estimated and confirmed excl. VAT as on the board (ADR 0074).
+- **Expiring hold**, **unsent sheet**, **overdue**, **utilisation** and **booked ahead**: as in ADR 0080 and 0079.
 
-## Limits
-- The horizon is fixed at 28 days; a picker was rejected (ADR 0080). Everything is derived on read; nothing is stored.
-- No staff-load view yet.
+## Layout
+- Stat cards first, then rows of cards of one kind: charts with charts, tables full width. A table in a card runs edge to edge under the padded heading.
+- Everything is derived on read; nothing is stored (ADR 0051).

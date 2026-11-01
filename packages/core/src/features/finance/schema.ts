@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { PlainDateStringSchema } from "../../time/plain-date-schema";
+import { BucketSizeSchema, TrendSchema } from "../../trend/trend-schema";
 
 /** The longest period one overview covers, in months (ADR 0077). */
 export const MAX_FINANCE_MONTHS = 24;
@@ -66,6 +67,15 @@ export const VatByRateSchema = z.object({
   vatMinor: minor({ what: "Output VAT at this rate" }),
 });
 
+/** The headline figures as trends over the range (ADR 0086); needs `payment:read`. */
+export const FinanceTrendsSchema = z.object({
+  bucketSize: BucketSizeSchema,
+  invoiced: TrendSchema.describe("Invoiced excl. VAT, a sum per bucket"),
+  received: TrendSchema.describe("Received, refunds subtracted, a sum per bucket"),
+  outstanding: TrendSchema.describe("Open on sent invoices at each bucket's end"),
+  overdue: TrendSchema.describe("Open and past due at each bucket's end"),
+});
+
 /**
  * The organization's money for a period (ADR 0077, a view read model, ADR 0071): everything is
  * derived on read. Invoices and payments need `payment:read`, won and lost tickets `quote:read`;
@@ -88,6 +98,7 @@ export const FinanceOverviewSchema = z.object({
     .describe("Tickets won and lost per month; needs quote:read"),
   revenueByType: z.array(RevenueByTypeSchema).nullable(),
   vatByRate: z.array(VatByRateSchema).nullable(),
+  trends: FinanceTrendsSchema.nullable().describe("Needs payment:read"),
 });
 
 export type FinanceOverviewInput = z.infer<typeof FinanceOverviewInputSchema>;
@@ -95,5 +106,6 @@ export type FinanceOverviewDto = z.infer<typeof FinanceOverviewSchema>;
 export type FinanceMonth = z.infer<typeof FinanceMonthSchema>;
 export type FinanceAging = z.infer<typeof FinanceAgingSchema>;
 export type OutcomeMonth = z.infer<typeof OutcomeMonthSchema>;
+export type FinanceTrends = z.infer<typeof FinanceTrendsSchema>;
 export type RevenueByType = z.infer<typeof RevenueByTypeSchema>;
 export type VatByRate = z.infer<typeof VatByRateSchema>;

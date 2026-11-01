@@ -6,19 +6,19 @@ import { ticketLabel } from "../lib/ticket-label";
 import { AttentionRow } from "./attention-row";
 import type { DashboardWireish } from "./dashboard-wireish";
 
-export type ComingUpPanelProps = {
-  summary: Pick<DashboardWireish, "comingUp" | "timeZone">;
+export type ScheduledPanelProps = {
+  summary: Pick<DashboardWireish, "scheduled" | "timeZone">;
   dates: DateTimeFormat;
 };
 
-/** Open tickets with lines starting in the next four weeks, soonest first (ADR 0080). */
-export function ComingUpPanel({ summary, dates }: ComingUpPanelProps) {
+/** Open tickets with lines starting in the range, soonest first (ADR 0080, 0086). */
+export function ScheduledPanel({ summary, dates }: ScheduledPanelProps) {
   const t = useTranslations("dashboard");
-  const { comingUp, timeZone } = summary;
+  const { scheduled, timeZone } = summary;
   return (
-    <FinanceSection title={t("comingUp.title")} data={comingUp} emptyText={t("comingUp.empty")}>
+    <FinanceSection title={t("scheduled.title")} data={scheduled} emptyText={t("scheduled.empty")}>
       <ul className="grid divide-y">
-        {comingUp.map((row) => (
+        {scheduled.map((row) => (
           <AttentionRow
             key={row.ticketId}
             href={ticketRoute({ id: row.ticketId })}
@@ -27,7 +27,7 @@ export function ComingUpPanel({ summary, dates }: ComingUpPanelProps) {
               label: (values) => t("ticket", values),
               withCustomer: (values) => t("ticketCustomer", values),
             })}
-            detail={t("comingUp.detail", {
+            detail={t("scheduled.detail", {
               date: dates.dateTime({ instant: new Date(row.startsAt), timeZone }),
               status: row.statusName,
               count: row.lines,

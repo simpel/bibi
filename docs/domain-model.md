@@ -1085,15 +1085,17 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - won and lost tickets per month: a ticket's outcome month is when it entered a closing status; won = it has an accepted quote or a sent invoice ([ADR 0079](decisions/0079-dashboard-summary-and-utilisation.md), moved here by [ADR 0080](decisions/0080-dashboard-ahead-financials-behind.md))
 - revenue per item type and VAT per rate
 
-> Operation: `finance.overview({ from, to, customerId? })` (`finance:read`; at most 24 months). Invoiced, received, aging and revenue need `payment:read`, won and lost `quote:read`; a part the caller may not read is null. Web: `/financials/{from}/{to}`, the primary menu entry Financials (ADR 0036).
+- trends of invoiced and received (sums) and outstanding and overdue (rebuilt at each bucket's end from invoices, payments and refunds), each with the previous range of equal length ([ADR 0086](decisions/0086-one-dashboard-with-tabs-and-trend-cards.md))
+
+> Operation: `finance.overview({ from, to, customerId? })` (`finance:read`; at most 24 months). Invoiced, received, aging, revenue and trends need `payment:read`, won and lost `quote:read`; a part the caller may not read is null. Web: the Financials tab of `/dashboard/{tab}/{from}/{to}` (ADR 0086).
 
 ### Dashboard (`dashboard.summary`)
 
-*MVP* · Today and the next 28 days, as a read model ([ADR 0080](decisions/0080-dashboard-ahead-financials-behind.md)): open tickets and their value per open status, what needs attention (holds expiring within 7 days, unsent sheets for upcoming tickets, overdue invoices as a count and total), tickets coming up, utilisation per bookable item type and accepted quotes not invoiced yet per event month. Nothing is stored. Spec: `docs/specs/dashboard.md`.
+*MVP* · The Workload tab of the dashboard for a range, as a read model ([ADR 0086](decisions/0086-one-dashboard-with-tabs-and-trend-cards.md)): open tickets and their value per open status now with the count's trend over the range (replayed from `TicketStatusChange`), what needs attention now (holds expiring within 7 days, unsent sheets for tickets in the next 28 days, overdue invoices), tickets scheduled in the range, utilisation per bookable item type over the range and accepted quotes not invoiced per event month in the range. Nothing is stored. Spec: `docs/specs/dashboard.md`.
 
 > **Ownership:** derived throughout.
 
-> Operation: `dashboard.summary()` (`ticket:read`, no input). Unsent sheets need `sheet:read`, overdue `finance:read` and `payment:read`, utilisation `item:read`, booked ahead `quote:read`, customer names `customer:read`; a part the caller may not read is null. Web: `/dashboard`.
+> Operation: `dashboard.summary({ from, to })` (`ticket:read`; at most 24 months). Unsent sheets need `sheet:read`, overdue `finance:read` and `payment:read`, utilisation `item:read`, booked ahead `quote:read`, customer names `customer:read`; a part the caller may not read is null. Web: the Workload tab of `/dashboard/{tab}/{from}/{to}`.
 
 ## Operations & system
 

@@ -1,59 +1,51 @@
 import { financeOverview, listCustomers } from "@bibi/core";
+import type { PlainDate } from "@bibi/core/schemas";
 import type { Locale } from "@bibi/i18n";
-import { SimplePage } from "@bibi/ui";
 import { ErrorState } from "@/components/states/error-state";
 import { can, getCallerAbilities } from "@/server/caller-abilities";
 import { getDateTimeFormat } from "@/server/date-time-format";
 import { handleLoadError } from "@/server/load-error";
 import { getNumberFormat } from "@/server/number-format";
 import { runOperation } from "@/server/run-operation";
-import { financeToday } from "../finance-path";
+import type { Period } from "../lib/finance-period";
 import { loadExportData } from "../lib/load-export-data";
 import { FinancialsView } from "./financials-view";
 
-export type FinancialsPageProps = {
+export type FinancialsTabProps = {
   locale: Locale;
-  from: string;
-  to: string;
+  period: Period;
+  today: PlainDate;
   customerId?: string | undefined;
 };
 
 const CUSTOMER_LIMIT = 100;
 
-/** `/financials/{from}/{to}`: KPIs, charts, overdue invoices, VAT and the SIE export (ADR 0077). */
-export async function FinancialsPage({ locale, from, to, customerId }: FinancialsPageProps) {
+/** The Financials tab (ADR 0077, 0086): its stat cards, charts, tables and the SIE export. */
+export async function FinancialsTab({ locale, period, today, customerId }: FinancialsTabProps) {
   const abilities = await getCallerAbilities();
-  const canListCustomers = can({ abilities, permission: "customer:read" });
-  const [numbers, dates, today, overview, customers, exports] = await Promise.all([
+  const [numbers, dates, overview, customers, exports] = await Promise.all([
     getNumberFormat(),
     getDateTimeFormat(),
-    financeToday(),
     runOperation({
       operation: financeOverview,
-      input: { from, to, ...(customerId ? { customerId } : {}) },
+      input: { ...period, ...(customerId ? { customerId } : {}) },
     }),
-    canListCustomers
+    can({ abilities, permission: "customer:read" })
       ? runOperation({ operation: listCustomers, input: { limit: CUSTOMER_LIMIT } })
       : null,
     loadExportData(),
   ]);
-  const fail = ({ error }: { error: Parameters<typeof handleLoadError>[0]["error"] }) => (
-    <SimplePage>
-      <ErrorState errorKey={handleLoadError({ error, locale })} />
-    </SimplePage>
-  );
-  if (!overview.ok) return fail({ error: overview.error });
-  if (!exports.ok) return fail({ error: exports.error });
+  if (!overview.ok)
+    return <ErrorState errorKey={handleLoadError({ error: overview.error, locale })} />;
+  if (!exports.ok)
+    return <ErrorState errorKey={handleLoadError({ error: exports.error, locale })} />;
   return (
     <FinancialsView
+      {...{ today, dates, numbers, customerId }}
       overview={overview.value}
       exports={exports.value.items}
-      today={today}
-      dates={dates}
-      numbers={numbers}
       canWrite={can({ abilities, permission: "finance:write" })}
       customers={customers?.ok ? customers.value.items.map(({ id, name }) => ({ id, name })) : []}
-      customerId={customerId}
     />
   );
 }

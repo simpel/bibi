@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  isValidPeriod,
-  lastMonthsPeriod,
-  periodMonths,
-  shiftPeriod,
-  yearPeriod,
-} from "./finance-period";
+import { isValidPeriod, lastMonthsPeriod, periodMonths, yearPeriod } from "./finance-period";
 
 const today = { year: 2026, month: 3, day: 14 };
 
@@ -24,15 +18,6 @@ describe("finance period", () => {
   it("counts the months a period touches", () => {
     expect(periodMonths({ from: "2025-04-01", to: "2026-03-31" })).toBe(12);
     expect(periodMonths({ from: "2026-01-20", to: "2026-01-25" })).toBe(1);
-  });
-
-  it("shifts by its own length, to whole months", () => {
-    const period = { from: "2025-04-01", to: "2026-03-31" };
-    expect(shiftPeriod({ period, direction: -1 })).toEqual({
-      from: "2024-04-01",
-      to: "2025-03-31",
-    });
-    expect(shiftPeriod({ period, direction: 1 })).toEqual({ from: "2026-04-01", to: "2027-03-31" });
   });
 
   it("accepts only ordered valid days within 24 months", () => {

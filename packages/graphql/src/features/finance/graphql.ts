@@ -6,6 +6,7 @@ import {
   type FinanceMonth,
   FinanceMonthSchema,
   type FinanceOverviewDto,
+  type FinanceTrends,
   financeOverview,
   getAccountingSettings,
   type OutcomeMonth,
@@ -23,6 +24,7 @@ import type { z } from "zod";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation, mutationFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
+import { TrendRef } from "../../schema/trend";
 
 type OverdueInvoice = z.infer<typeof OverdueInvoiceSchema>;
 
@@ -62,6 +64,17 @@ const VatRef = objectFromSchema<VatByRate>({
   description: "Invoiced money and output VAT at one rate.",
 });
 
+const TrendsRef = builder.objectRef<FinanceTrends>("FinanceTrends").implement({
+  description: "Financials' headline figures as trends over the range (ADR 0086).",
+  fields: (t) => ({
+    bucketSize: t.exposeString("bucketSize"),
+    invoiced: t.field({ type: TrendRef, resolve: (trends) => trends.invoiced }),
+    received: t.field({ type: TrendRef, resolve: (trends) => trends.received }),
+    outstanding: t.field({ type: TrendRef, resolve: (trends) => trends.outstanding }),
+    overdue: t.field({ type: TrendRef, resolve: (trends) => trends.overdue }),
+  }),
+});
+
 const FinanceOverviewRef = builder.objectRef<FinanceOverviewDto>("FinanceOverview").implement({
   description:
     "The organization's money for a period (ADR 0077). Parts the caller may not read are null.",
@@ -79,6 +92,7 @@ const FinanceOverviewRef = builder.objectRef<FinanceOverviewDto>("FinanceOvervie
     revenueByType: t.field({ type: [RevenueRef], nullable: true, resolve: (o) => o.revenueByType }),
     vatByRate: t.field({ type: [VatRef], nullable: true, resolve: (o) => o.vatByRate }),
     outcomes: t.field({ type: [OutcomeRef], nullable: true, resolve: (o) => o.outcomes }),
+    trends: t.field({ type: TrendsRef, nullable: true, resolve: (o) => o.trends }),
   }),
 });
 

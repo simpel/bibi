@@ -2,14 +2,14 @@ import {
   type Attention,
   type BookedAheadMonth,
   BookedAheadMonthSchema,
-  type ComingUp,
-  ComingUpSchema,
   type DashboardSummary,
   dashboardSummary,
   type ExpiringHold,
   ExpiringHoldSchema,
   OverdueSchema,
-  StatusTileSchema,
+  type Scheduled,
+  ScheduledSchema,
+  type StatusTileSchema,
   type UnsentSheet,
   UnsentSheetSchema,
   UtilisationSchema,
@@ -18,15 +18,23 @@ import type { z } from "zod";
 import { builder } from "../../schema/builder";
 import { fieldFromOperation } from "../../schema/from-operation";
 import { objectFromSchema } from "../../schema/object-from-schema";
+import { TrendRef } from "../../schema/trend";
 
 type StatusTile = z.infer<typeof StatusTileSchema>;
 type Utilisation = z.infer<typeof UtilisationSchema>;
 type Overdue = z.infer<typeof OverdueSchema>;
 
-const StatusTileRef = objectFromSchema<StatusTile>({
-  name: "DashboardStatusTile",
-  schema: StatusTileSchema,
-  description: "Open tickets in one status now, with their value.",
+const StatusTileRef = builder.objectRef<StatusTile>("DashboardStatusTile").implement({
+  description: "Open tickets in one status now, with their value and trend over the range.",
+  fields: (t) => ({
+    statusId: t.exposeString("statusId"),
+    name: t.exposeString("name"),
+    color: t.exposeString("color"),
+    tickets: t.exposeInt("tickets"),
+    estimatedValueMinor: t.exposeInt("estimatedValueMinor", { nullable: true }),
+    confirmedValueMinor: t.exposeInt("confirmedValueMinor", { nullable: true }),
+    trend: t.field({ type: TrendRef, resolve: (tile) => tile.trend }),
+  }),
 });
 const ExpiringHoldRef = objectFromSchema<ExpiringHold>({
   name: "DashboardExpiringHold",
@@ -43,10 +51,10 @@ const OverdueRef = objectFromSchema<Overdue>({
   schema: OverdueSchema,
   description: "Sent invoices past their due date with money open.",
 });
-const ComingUpRef = objectFromSchema<ComingUp>({
-  name: "DashboardComingUp",
-  schema: ComingUpSchema,
-  description: "An open ticket with lines starting within the horizon.",
+const ScheduledRef = objectFromSchema<Scheduled>({
+  name: "DashboardScheduled",
+  schema: ScheduledSchema,
+  description: "An open ticket with lines starting within the range.",
 });
 const UtilisationRef = objectFromSchema<Utilisation>({
   name: "DashboardUtilisation",
@@ -74,15 +82,16 @@ const AttentionRef = builder.objectRef<Attention>("DashboardAttention").implemen
 
 const DashboardSummaryRef = builder.objectRef<DashboardSummary>("DashboardSummary").implement({
   description:
-    "The dashboard for today and the next 28 days (ADR 0080). Parts the caller may not read are null.",
+    "The Workload tab of the dashboard for a range (ADR 0086). Parts the caller may not read are null.",
   fields: (t) => ({
     from: t.exposeString("from"),
     to: t.exposeString("to"),
     currency: t.exposeString("currency"),
     timeZone: t.exposeString("timeZone"),
+    bucketSize: t.exposeString("bucketSize"),
     statuses: t.field({ type: [StatusTileRef], resolve: (s) => s.statuses }),
     attention: t.field({ type: AttentionRef, resolve: (s) => s.attention }),
-    comingUp: t.field({ type: [ComingUpRef], resolve: (s) => s.comingUp }),
+    scheduled: t.field({ type: [ScheduledRef], resolve: (s) => s.scheduled }),
     utilisation: t.field({
       type: [UtilisationRef],
       nullable: true,

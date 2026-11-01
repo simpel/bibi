@@ -1,19 +1,18 @@
 import type { OperationContext } from "../../operations/types";
 import { visibleTo } from "../../shared/visible-to";
-import type { ComingUp } from "./attention-schema";
-import type { DashboardHorizon } from "./horizon";
-import { COMING_UP_LIMIT } from "./schema";
+import type { Scheduled } from "./attention-schema";
+import { SCHEDULED_LIMIT } from "./schema";
 
 type Context = Pick<OperationContext, "db" | "permissions">;
 
-type Input = { context: Context; horizon: DashboardHorizon };
+type Input = { context: Context; period: { start: Date; end: Date } };
 
-/** Active lines of open tickets starting inside the horizon, soonest first. */
-const loadStarting = ({ context, horizon }: Input) =>
+/** Active lines of open tickets starting inside the range, soonest first. */
+const loadStarting = ({ context, period }: Input) =>
   context.db.line.findMany({
     where: {
       status: "ACTIVE",
-      startsAt: { gte: horizon.start, lt: horizon.end },
+      startsAt: { gte: period.start, lt: period.end },
       ticket: { status: "ACTIVE", ticketStatus: { closes: false } },
     },
     orderBy: [{ startsAt: "asc" }, { id: "asc" }],
@@ -30,17 +29,17 @@ const loadStarting = ({ context, horizon }: Input) =>
     },
   });
 
-/** Open tickets with lines starting inside the horizon, by their first start (ADR 0080). */
-export async function comingUp({ context, horizon }: Input): Promise<ComingUp[]> {
-  const lines = await loadStarting({ context, horizon });
-  const byTicket = new Map<string, ComingUp>();
+/** Open tickets with lines starting inside the range, by their first start (ADR 0080, 0086). */
+export async function scheduled({ context, period }: Input): Promise<Scheduled[]> {
+  const lines = await loadStarting({ context, period });
+  const byTicket = new Map<string, Scheduled>();
   for (const { ticketId, startsAt, ticket } of lines) {
     const seen = byTicket.get(ticketId);
     if (seen) {
       seen.lines += 1;
       continue;
     }
-    if (!startsAt || byTicket.size >= COMING_UP_LIMIT) continue;
+    if (!startsAt || byTicket.size >= SCHEDULED_LIMIT) continue;
     byTicket.set(ticketId, {
       ticketId,
       reference: ticket.reference,

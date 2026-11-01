@@ -5,13 +5,15 @@ import type {
   NumberFormat,
   PlainDate,
 } from "@bibi/core/schemas";
-import { PageContainer, PageSection } from "@bibi/ui";
-import { ROUTES } from "@/lib/routes";
-import { CustomerFilter } from "./customer-filter";
-import { FinanceOpenSection } from "./finance-open-section";
-import { FinancePeriodSection } from "./finance-period-section";
-import { FinancialsHeader } from "./financials-header";
-import { PeriodSwitcher } from "./period-switcher";
+import { AgingCard } from "./aging-card";
+import { ExportHistory } from "./export-history";
+import { FinanceStatCards } from "./finance-stat-cards";
+import { FinancialsToolbar } from "./financials-toolbar";
+import { MonthlyChartCard } from "./monthly-chart-card";
+import { OutcomesCard } from "./outcomes-card";
+import { OverdueCard } from "./overdue-card";
+import { RevenueTypeCard } from "./revenue-type-card";
+import { VatCard } from "./vat-card";
 
 export type FinancialsViewProps = {
   overview: FinanceOverviewDto;
@@ -25,37 +27,29 @@ export type FinancialsViewProps = {
   customerId: string | undefined;
 };
 
-/** The page body once everything is loaded: the period's money on top, today's below. */
+/**
+ * The Financials tab once loaded (ADR 0086): the toolbar, the stat cards, then rows of charts and
+ * full-width tables. A row holds cards of one kind; charts and tables never share one.
+ */
 export function FinancialsView(props: FinancialsViewProps) {
-  const { overview, exports, today, dates, numbers, canWrite } = props;
-  const { customers, customerId } = props;
+  const { overview, exports, today, dates, numbers, canWrite, customers, customerId } = props;
   const period = { from: overview.from, to: overview.to };
   return (
-    <>
-      <PageSection>
-        <PageContainer className="grid gap-6 pb-10 sm:pb-12">
-          <FinancialsHeader exportPeriod={canWrite ? period : null} today={today} />
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <PeriodSwitcher
-              period={period}
-              today={today}
-              base={ROUTES.financials}
-              customerId={customerId}
-            />
-            {customers.length > 0 ? (
-              <CustomerFilter period={period} customers={customers} customerId={customerId} />
-            ) : null}
-          </div>
-          <FinancePeriodSection overview={overview} numbers={numbers} />
-        </PageContainer>
-      </PageSection>
-      <FinanceOpenSection
-        overview={overview}
-        exports={exports}
-        dates={dates}
-        numbers={numbers}
-        canDownload={canWrite}
+    <div data-slot="financials" className="grid gap-6">
+      <FinancialsToolbar
+        {...{ period, today, customers, customerId }}
+        exportPeriod={canWrite ? period : null}
       />
-    </>
+      <FinanceStatCards overview={overview} dates={dates} numbers={numbers} />
+      <div className="grid gap-4 md:grid-cols-2">
+        <MonthlyChartCard overview={overview} numbers={numbers} />
+        <OutcomesCard overview={overview} numbers={numbers} />
+        <RevenueTypeCard overview={overview} numbers={numbers} />
+        <AgingCard aging={overview.aging} numbers={numbers} currency={overview.currency} />
+      </div>
+      <VatCard overview={overview} numbers={numbers} />
+      <OverdueCard overview={overview} dates={dates} numbers={numbers} />
+      <ExportHistory exports={exports} dates={dates} canDownload={canWrite} />
+    </div>
   );
 }

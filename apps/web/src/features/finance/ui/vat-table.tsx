@@ -12,6 +12,7 @@ export function VatTable({ rows }: VatTableProps) {
   const t = useTranslations("finance.vat");
   return (
     <PersistedDataTable
+      flush
       tableId="finance.vat"
       columns={useVatColumns()}
       data={rows}

@@ -18,16 +18,21 @@ describe("dashboard.summary (ADR 0079, 0080)", () => {
     expect(tiles.every((candidate) => candidate.tickets === 0 || candidate === tile)).toBe(true);
   });
 
-  it("covers today and the next 27 days in the organization's zone", async () => {
-    const { context } = await calendarSetup();
+  it("traces each status's open tickets over the range, against the range before", async () => {
+    const { context, line } = await calendarSetup();
+    const ticket = await context.db.ticket.findFirstOrThrow({ where: { id: line.ticketId } });
     const value = unwrap({ result: await summaryAt({ context }) });
-    expect([value.from, value.to]).toEqual(["2037-11-01", "2037-11-28"]);
+    const tile = value.statuses.find((candidate) => candidate.statusId === ticket.statusId);
+    // Created today, before the clock: only the first bucket (today) is known.
+    expect(value.bucketSize).toBe("DAY");
+    expect(tile?.trend.series).toHaveLength(1);
+    expect(tile?.trend.current).toBe(1);
   });
 
-  it("lists the tickets coming up and measures utilisation over the horizon", async () => {
+  it("lists the tickets scheduled and measures utilisation over the range", async () => {
     const { context, line } = await calendarSetup();
-    const { comingUp, utilisation } = unwrap({ result: await summaryAt({ context }) });
-    expect(comingUp).toEqual([
+    const { scheduled, utilisation } = unwrap({ result: await summaryAt({ context }) });
+    expect(scheduled).toEqual([
       expect.objectContaining({ ticketId: line.ticketId, lines: 1, startsAt: line.startsAt }),
     ]);
     // The office day is 08–18 local (07–17 UTC): holds 09–11 and 13–14 UTC are 180 minutes.
@@ -37,6 +42,7 @@ describe("dashboard.summary (ADR 0079, 0080)", () => {
 
   it("counts an accepted quote as booked ahead until the ticket is invoiced", async () => {
     const { context, ticket } = await moneySetup();
+    // Untimed lines: the event month is the acceptance month, this one.
     const { bookedAhead: before } = unwrap({ result: await summary({ context }) });
     expect(before).toEqual([]);
     await sentTestQuote({ context, ticketId: ticket.id, accept: true });
@@ -57,7 +63,7 @@ describe("dashboard.summary (ADR 0079, 0080)", () => {
     expect(value.bookedAhead).toBeNull();
     expect(value.attention.unsentSheets).toBeNull();
     expect(value.attention.overdue).toBeNull();
-    expect(value.comingUp[0]?.customerName).toBeNull();
+    expect(value.scheduled[0]?.customerName).toBeNull();
     const nobody = testContext({ organizationId: context.organizationId, permissions: {} });
     expect(errorCode({ result: await summary({ context: nobody }) })).toBe("FORBIDDEN");
   });

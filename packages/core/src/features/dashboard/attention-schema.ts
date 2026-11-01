@@ -42,16 +42,16 @@ export const AttentionSchema = z.object({
   overdue: OverdueSchema.nullable().describe("Needs finance:read and payment:read"),
 });
 
-export const ComingUpSchema = z.object({
+export const ScheduledSchema = z.object({
   ticketId: z.string().describe("ticket.get"),
   reference: z.number().int(),
   customerName,
   statusName: z.string().describe("The ticket's status"),
-  startsAt: z.date().describe("The first line start inside the horizon"),
-  lines: z.number().int().describe("Lines starting inside the horizon"),
+  startsAt: z.date().describe("The first line start inside the range"),
+  lines: z.number().int().describe("Lines starting inside the range"),
 });
 
 export type Attention = z.infer<typeof AttentionSchema>;
 export type ExpiringHold = z.infer<typeof ExpiringHoldSchema>;
 export type UnsentSheet = z.infer<typeof UnsentSheetSchema>;
-export type ComingUp = z.infer<typeof ComingUpSchema>;
+export type Scheduled = z.infer<typeof ScheduledSchema>;

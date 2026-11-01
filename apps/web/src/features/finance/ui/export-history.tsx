@@ -14,7 +14,7 @@ export type ExportHistoryProps = {
 export function ExportHistory({ exports, dates, canDownload }: ExportHistoryProps) {
   const t = useTranslations("finance.export");
   return (
-    <FinanceSection title={t("history")} data={exports} emptyText={t("historyEmpty")}>
+    <FinanceSection title={t("history")} data={exports} emptyText={t("historyEmpty")} flush>
       <ExportHistoryTable rows={exportRows({ exports, dates })} canDownload={canDownload} />
     </FinanceSection>
   );

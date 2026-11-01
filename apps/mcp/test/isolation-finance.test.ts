@@ -2,6 +2,7 @@ import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { describe, expect, it } from "vitest";
 import { call, connect, testContext } from "./helpers";
 import { seedQuoteBasis } from "./seed-quote-basis";
+import { thisMonth } from "./this-month";
 
 const period = { from: "2026-01-01", to: "2026-12-31" };
 
@@ -17,11 +18,11 @@ describe("cross-organization isolation: financials", () => {
       expect(moved.isError, JSON.stringify(moved.data)).toBe(false);
     }
 
-    const own = await call({ client: a, name: "dashboard_summary", args: {} });
+    const own = await call({ client: a, name: "dashboard_summary", args: thisMonth() });
     expect(own.isError, JSON.stringify(own.data)).toBe(false);
     expect(own.data.bookedAhead).toEqual([expect.objectContaining({ tickets: 1 })]);
 
-    const ahead = await call({ client: b, name: "dashboard_summary", args: {} });
+    const ahead = await call({ client: b, name: "dashboard_summary", args: thisMonth() });
     expect(ahead.data.bookedAhead).toEqual([]);
     const theirs = await call({ client: b, name: "finance_overview", args: period });
     expect(theirs.isError, JSON.stringify(theirs.data)).toBe(false);

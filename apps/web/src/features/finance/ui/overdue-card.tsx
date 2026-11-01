@@ -15,7 +15,7 @@ export function OverdueCard({ overview, dates, numbers }: OverdueCardProps) {
   const t = useTranslations("finance");
   const { aging, currency, timeZone } = overview;
   return (
-    <FinanceSection title={t("overdue.title")} data={aging?.overdue ?? null}>
+    <FinanceSection title={t("overdue.title")} data={aging?.overdue ?? null} flush>
       <OverdueTable
         rows={overdueRows({
           overdue: aging?.overdue ?? [],

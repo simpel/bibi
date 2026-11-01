@@ -127,11 +127,7 @@ export {
   sheetVariants,
 } from "./components/sheet/sheet";
 export * from "./components/sidebar/sidebar";
-export {
-  SidebarProvider,
-  type SidebarProviderProps,
-  useSidebar,
-} from "./components/sidebar/sidebar-context";
+export * from "./components/sidebar/sidebar-context";
 export * from "./components/sidebar/sidebar-group";
 export * from "./components/sidebar/sidebar-layout";
 export { SidebarMenu, SidebarMenuBadge, SidebarMenuItem } from "./components/sidebar/sidebar-menu";
@@ -139,6 +135,7 @@ export * from "./components/sidebar/sidebar-menu-button";
 export { SidebarMenuAction, SidebarMenuSkeleton } from "./components/sidebar/sidebar-menu-extras";
 export * from "./components/sidebar/sidebar-menu-sub";
 export { Skeleton, type SkeletonProps } from "./components/skeleton/skeleton";
+export * from "./components/stat-card/stat-card";
 export { Switch, type SwitchProps } from "./components/switch/switch";
 export * from "./components/table/table";
 export { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/tabs/tabs";

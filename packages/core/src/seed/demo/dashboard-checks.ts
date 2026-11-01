@@ -11,19 +11,28 @@ export type CheckDemoDashboardInput = { context: ExecuteContext; org: DemoOrg };
 const PERIOD_DAYS = 182;
 
 /**
- * ADR 0080: `dashboard.summary` has something to show for today and the next 28 days: every open
- * status has tickets and a value, holds expire soon, an organization with invoices has overdue
- * ones, tickets are coming up, some type is utilised and accepted quotes wait to be invoiced.
- * The seed generates no sheets yet, so unsent sheets are only required to be readable (not null).
+ * ADR 0080, 0086: the Workload tab has something to show from the start of this month to four
+ * weeks ahead: every open status has tickets, a value and a trend against the month's start,
+ * holds expire soon, an organization with invoices has overdue ones, tickets are scheduled, some
+ * type is utilised and accepted quotes wait to be invoiced. The seed generates no sheets yet, so
+ * unsent sheets are only required to be readable (not null).
  */
 async function checkAhead({ context, org }: CheckDemoDashboardInput): Promise<string[]> {
-  const result = await execute({ operation: dashboardSummary, input: {}, context });
+  const today = toZonedParts({ instant: new Date(), timeZone: org.timeZone }).date;
+  const input = {
+    from: toIsoDate({ date: { ...today, day: 1 } }),
+    to: toIsoDate({ date: addDays({ date: today, days: 27 }) }),
+  };
+  const result = await execute({ operation: dashboardSummary, input, context });
   if (!result.ok) return [`${org.slug}: dashboard.summary failed: ${result.error.message}`];
-  const { statuses, attention, comingUp, utilisation, bookedAhead } = result.value;
+  const { statuses, attention, scheduled, utilisation, bookedAhead } = result.value;
   const failures: string[] = [];
   for (const tile of statuses) {
     if (tile.tickets === 0 || !(tile.estimatedValueMinor || tile.confirmedValueMinor)) {
       failures.push(`${org.slug}: dashboard status ${tile.name} has no tickets or value`);
+    }
+    if (tile.trend.series.length === 0 || tile.trend.previous === null) {
+      failures.push(`${org.slug}: dashboard status ${tile.name} has no trend`);
     }
   }
   const empty = ({ what }: { what: string }) =>
@@ -31,7 +40,7 @@ async function checkAhead({ context, org }: CheckDemoDashboardInput): Promise<st
   if (attention.expiringHolds.length === 0) empty({ what: "expiring holds" });
   if (attention.unsentSheets === null) empty({ what: "unsent sheets list" });
   if (org.finance && !attention.overdue?.invoices) empty({ what: "overdue invoices" });
-  if (comingUp.length === 0) empty({ what: "tickets coming up" });
+  if (scheduled.length === 0) empty({ what: "tickets scheduled" });
   if (!(utilisation ?? []).some((row) => (row.rate ?? 0) > 0))
     empty({ what: "utilisation above 0" });
   if ((bookedAhead ?? []).length === 0) empty({ what: "value booked ahead" });
@@ -52,6 +61,10 @@ async function checkOutcomes({ context, org }: CheckDemoDashboardInput): Promise
   if (!result.ok) return [`${org.slug}: finance.overview failed: ${result.error.message}`];
   const outcomes = result.value.outcomes ?? [];
   const failures: string[] = [];
+  const { trends } = result.value;
+  if (org.finance && !(trends?.invoiced.current && trends.received.current)) {
+    failures.push(`${org.slug}: no invoiced or received trend over the last six months`);
+  }
   const monthsWith = ({ key }: { key: "wonTickets" | "lostTickets" }) =>
     outcomes.filter((month) => month[key] > 0).length;
   const wantedWon = org.tickets.filter(

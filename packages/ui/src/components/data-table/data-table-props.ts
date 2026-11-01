@@ -45,5 +45,10 @@ export type DataTableProps<TData, TValue> = {
   onSelectionChange?: (rows: TData[]) => void;
   /** Rendered in a toolbar above the table while at least one row is selected. */
   bulkActions?: (rows: TData[]) => ReactNode;
+  /**
+   * Inside a card: edge to edge with no frame of its own, only a rule above it, so there is no
+   * box in a box. The card's heading keeps its padding (ADR 0086).
+   */
+  flush?: boolean;
   className?: string;
 };

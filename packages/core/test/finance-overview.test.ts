@@ -44,6 +44,16 @@ describe("finance.overview derives the organization's money (ADR 0077)", () => {
     expect(value.revenueByType?.[0]?.invoicedExclVatMinor).toBe(500_000);
   });
 
+  it("traces outstanding and overdue money over the range from invoices and payments", async () => {
+    const { context } = await halfPaidLateInvoice();
+    const { trends } = unwrap({ result: await overview({ context }) });
+    expect(trends?.bucketSize).toBe("MONTH");
+    expect(trends?.outstanding.current).toBe(380_000);
+    expect(trends?.overdue.current).toBe(380_000);
+    expect(trends?.invoiced.current).toBe(500_000);
+    expect(trends?.received.previous).toBe(0);
+  });
+
   it("splits closed tickets into won (accepted quote) and lost, by month and value", async () => {
     const { context, ticket, customer } = await moneySetup();
     const closing = (await statuses({ context })).find((status) => status.closes);
@@ -76,7 +86,7 @@ describe("finance.overview derives the organization's money (ADR 0077)", () => {
     const permissions = { ...grantAll({}), payment: [], quote: [] };
     const blind = testContext({ organizationId: context.organizationId, permissions });
     const hidden = unwrap({ result: await overview({ context: blind }) });
-    expect([hidden.monthly, hidden.aging, hidden.outcomes, hidden.receivedMinor]).toEqual([
+    expect([hidden.monthly, hidden.aging, hidden.outcomes, hidden.trends]).toEqual([
       null,
       null,
       null,

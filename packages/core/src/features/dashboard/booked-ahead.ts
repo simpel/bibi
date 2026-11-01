@@ -31,15 +31,18 @@ function eventInstant({ quote }: { quote: AcceptedQuote }): Date | null {
   return starts.length > 0 ? new Date(Math.min(...starts)) : quote.acceptedAt;
 }
 
-export type BookedAheadInput = { context: Context; monthOf: FinancePeriod["monthOf"] };
+export type BookedAheadInput = {
+  context: Context;
+  period: Pick<FinancePeriod, "monthOf" | "months">;
+};
 
 /**
- * Won but not billed, per event month (ADR 0080, from Financials); the newest accepted version
+ * Won but not billed, per event month in the range (ADR 0080, 0086); the newest accepted version
  * counts once per ticket.
  */
 export async function bookedAhead({
   context,
-  monthOf,
+  period,
 }: BookedAheadInput): Promise<BookedAheadMonth[]> {
   const newest = new Map<string, AcceptedQuote>();
   for (const quote of await loadAcceptedNotInvoiced({ context })) {
@@ -50,7 +53,8 @@ export async function bookedAhead({
   for (const quote of newest.values()) {
     const instant = eventInstant({ quote });
     if (!instant) continue;
-    const month = monthOf({ instant });
+    const month = period.monthOf({ instant });
+    if (!period.months.includes(month)) continue;
     const entry = byMonth.get(month) ?? { month, valueExclVatMinor: 0, tickets: 0 };
     entry.valueExclVatMinor += quote.totalExclVatMinor;
     entry.tickets += 1;

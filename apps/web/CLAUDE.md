@@ -61,6 +61,12 @@ Next.js 16 (App Router, Turbopack), React 19, next-intl 4, Better Auth client, `
 ## `"use client"`
 - Set only at the client boundary: components that a server component renders and that themselves have state, context or browser events. Children and hooks inherit the boundary.
 - Never add `"use client"` to make a hook work. What a page renders on the server is prepared on the server: dates and amounts come from `getDateTimeFormat()` / `getNumberFormat()` and go down as props (`dates`, `numbers`); a component shared with an assistant card takes them as props and the card passes its hook's. `pnpm check:structure` flags client-only hooks reachable from a page through server files (`tools/lib/server-render-rules.mjs`).
+- A table inside a card runs edge to edge: `flush` on the table (`FinanceSection flush` for the card), the card's heading and text keep their padding. Never a bordered table in a card (no box in a box). Why: ADR 0086.
+
+## Cards and stat figures (ADR 0086)
+- A headline figure is a `StatCard` (`@bibi/ui`) in `StatCards`: its line, tooltip texts and trend are prepared on the server (`features/dashboard/lib/stat-trend.ts`, `use-stat-texts.ts`) from a core `Trend`; never compute a trend in the client.
+- A row holds cards of one kind: charts with charts, tables full width. Charts and tables never share a row.
+- A date range is the one range picker (`PeriodRange`); no previous or next buttons.
 
 ## The assistant (ADR 0007, 0008)
 - `features/assistant/`: `AssistantProvider` in the shell holds ONE `useChat` for the home page and ⌘K. The assistant exists only on `/` (ADR 0035); `ask` and `prefill` start a conversation and navigate there.

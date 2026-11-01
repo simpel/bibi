@@ -62,8 +62,11 @@
       "presets": {
         "last7Days": "Senaste 7 dagarna",
         "last30Days": "Senaste 30 dagarna",
+        "thisMonth": "Den här månaden",
         "last3Months": "Senaste 3 månaderna",
-        "last6Months": "Senaste 6 månaderna"
+        "last6Months": "Senaste 6 månaderna",
+        "last12Months": "Senaste 12 månaderna",
+        "next28Days": "Kommande 28 dagarna"
       }
     }
   },
@@ -242,7 +245,17 @@
   },
   "dashboard": {
     "title": "Översikt",
-    "description": "Idag och fyra veckor framåt, {range}.",
+    "description": "Ekonomi och arbetsbelastning för perioden du väljer.",
+    "tabs": {
+      "label": "Översiktens vyer",
+      "financials": "Ekonomi",
+      "workload": "Arbetsbelastning"
+    },
+    "trend": {
+      "weekOf": "Veckan från {date}",
+      "percent": "{sign}{value} %",
+      "vsPrevious": "jämfört med föregående lika lång period"
+    },
     "ticket": "#{reference}",
     "ticketCustomer": "#{reference} · {customer}",
     "pipeline": {
@@ -258,9 +271,9 @@
       "expiring": "{count, plural, one {# reservation går} other {# reservationer går}} ut {date}",
       "unsent": "{sheet} version {version} inte skickad, börjar {date}"
     },
-    "comingUp": {
-      "title": "På gång",
-      "empty": "Inget börjar de kommande fyra veckorna.",
+    "scheduled": {
+      "title": "Inplanerat under perioden",
+      "empty": "Inget är inplanerat under perioden.",
       "detail": "{date} · {status} · {count, plural, one {# rad} other {# rader}}"
     },
     "utilisation": {
@@ -268,7 +281,7 @@
       "type": "Objekttyp",
       "rate": "Beläggning",
       "text": "{rate} · {booked} h bokade av {open} h öppet",
-      "closed": "Stängt de kommande fyra veckorna",
+      "closed": "Stängt under perioden",
       "empty": "Inga bokningsbara objekt."
     },
     "bookedAhead": {
@@ -373,8 +386,6 @@
     },
     "period": {
       "label": "Period",
-      "previous": "Föregående period",
-      "next": "Nästa period",
       "range": "{from} – {to}",
       "invalid": "Välj två dagar i ordning, högst {months} månader isär."
     },

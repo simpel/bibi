@@ -14,7 +14,7 @@ export function VatCard({ overview, numbers }: VatCardProps) {
   const t = useTranslations("finance");
   const { vatByRate, currency } = overview;
   return (
-    <FinanceSection title={t("vat.title")} data={vatByRate}>
+    <FinanceSection title={t("vat.title")} data={vatByRate} flush>
       <VatTable rows={vatRows({ vatByRate: vatByRate ?? [], currency, numbers })} />
     </FinanceSection>
   );
