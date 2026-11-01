@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "turbo run dev",
+    "dev:kill": "lsof -ti tcp:3330,3331,3332 -sTCP:LISTEN | xargs kill 2>/dev/null || true; rm -rf apps/web/.next",
     "docker:up": "docker compose up -d",
     "docker:down": "docker compose down",
     "build": "turbo run build",
@@ -21,6 +22,7 @@
     "seed:skills": "turbo run seed:skills --filter=@bibi/core",
     "seed:demo": "turbo run seed:demo --filter=@bibi/core",
     "gen": "node tools/gen.mjs",
+    "coolify": "tools/server/coolify-tunnel.sh",
     "wt:new": "tools/worktree/new.sh",
     "wt:rm": "tools/worktree/rm.sh",
     "wt:list": "tools/worktree/list.sh"
