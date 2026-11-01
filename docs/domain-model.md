@@ -324,6 +324,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A ticket the organization has prepared, so a small repeatable request is created in one step ([ADR 0043](decisions/0043-ticket-and-configurable-statuses.md)).
 
+> **Target ([ADR 0081](decisions/0081-ticket-intake.md)):** called "package" in the UI; owned guest range `minGuests`, `maxGuests` (optional). The intake groups packages by availability and range and never uses the package's start status (it starts in the entry status); `ticket.createFromTemplate` keeps it.
+
 **Attributes**
 - name (unique among the organization's active templates), ticket type, start status (`statusId`), default own-field values
 - lines (`TicketTemplateLine`, replaced as a set): line type (base `LINE`), name, optional general item and setup, offset and duration in minutes from the ticket start, quantity (null = the ticket's headcount, ADR 0052)
@@ -401,6 +403,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · Orderer, invoice recipient or organizer at a customer.
 
+> **Target ([ADR 0081](decisions/0081-ticket-intake.md)):** `customer.create` can create the first contact in the same command (`contact`); `customer.findSimilar({ name?, email? })` suggests customers with a similar normalised name or a contact on the same non-public email domain; `customer.list` gains `recent`.
+
 **Attributes**
 - type (base `CONTACT`) and custom fields (`fields` as JSON), e.g. the person's role (orderer / invoice recipient) as a choice field
 - name
@@ -417,6 +421,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 ### Ticket ★
 
 *MVP* · One customer request from first contact to the delivered event ([ADR 0043](decisions/0043-ticket-and-configurable-statuses.md)). It lives in the organization's statuses and never turns into another record. Lines, quotes, requirements, sheets, payments and mail attach to it.
+
+> **Target ([ADR 0081](decisions/0081-ticket-intake.md)):** the contact is required for every new ticket and cannot be cleared; owned booking-level `note` (≤ 4000). `ticket.create` takes `lines[]` (with options and requirements), `note`, `templateId`, `inboundEmailId` ([ADR 0083](decisions/0083-organization-inbox.md)) and `intakeKey`, all or nothing, starting in the entry status. New query `ticket.previewLines` plans lines without writing and returns their issues. Spec: `docs/specs/ticket-intake.md`.
 
 > **Ownership (ADR 0054, done):** projection `statusId` (from the newest `TicketStatusChange`, by trigger; check `ticket statuses`); derived `statusChangedAt` and `statusReason` (read from the newest change, not stored).
 
@@ -752,6 +758,8 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 ### ItemCustomisationGroup (`ItemCustomisationGroup`)
 
 *MVP* · Selectable options on an item, e.g. "Installation": self-install or installed by staff. Hangs on any item whose type has `CUSTOMISATIONS` (ADR 0059).
+
+> **Target ([ADR 0082](decisions/0082-option-quantities.md)):** owned `split` (default false). In a split group each chosen option line carries its own quantity (10 fish, 4 vegetarian); `line.chooseOptions` takes `options[{ itemId, quantity? }]`; a sum different from the parent's quantity is the derived warning `OPTION_SPLIT_MISMATCH`; a split `REPLACES` option leaves the parent counting only the uncovered quantity.
 
 > **Done (ADR 0059):** groups hang on any item, not only bundles, and each option has a price effect (`ItemCustomisationOption`).
 
@@ -1317,6 +1325,8 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 
 *MVP* · A mail received on a ticket's own inbound address, `ticket-<ticketId>@<MAIL_INBOUND_DOMAIN>` (a customer reply, [ADR 0012](decisions/0012-email-provider.md)). Append-only. Stored only by the inbound webhook, as SYSTEM, in the ticket's organization.
 
+> **Target ([ADR 0083](decisions/0083-organization-inbox.md)):** mail to the organization's inbox address `<slug>@<MAIL_INBOUND_DOMAIN>` is stored with `ticketId` null; owned `ticketId` (set once by `inboundEmail.attachToTicket` or `ticket.create`), `dismissedAt`, `dismissedBy`; `inboundEmail.listInbox|attachToTicket|dismiss|restore`, feature `inbox`. [ADR 0084](decisions/0084-ticket-draft-from-a-message.md): `ticketDraft.fromMessage` reads a draft from a mail or pasted text and writes nothing.
+
 **Attributes**
 - provider email id (unique per organization: a redelivered webhook is stored once)
 - Message-ID
@@ -1395,7 +1405,7 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 *MVP* · Platform data. Which model each AI function uses, chosen by a superadmin. No default models: without a choice the function does not work.
 
 **Attributes**
-- AI function (`assistant.chat`, `search.embedding`)
+- AI function (`assistant.chat`, `search.embedding`; target: `ticket.intakeDraft`, [ADR 0084](decisions/0084-ticket-draft-from-a-message.md))
 - model (from Vercel AI Gateway, must be possible for the function)
 - changed by, changed
 
