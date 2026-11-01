@@ -51,7 +51,15 @@ async function seedTemplate({ context, refs, template }: TemplateInput): Promise
     if (!input.ok) return input;
     lines.push(input.value);
   }
-  const input = { name: template.name, entityTypeId: type.id, statusId: ticketStatus.id, lines };
+  const { name, minGuests, maxGuests } = template;
+  const input = {
+    name,
+    minGuests,
+    maxGuests,
+    entityTypeId: type.id,
+    statusId: ticketStatus.id,
+    lines,
+  };
   const created = await execute({ operation: createTicketTemplate, input, context });
   return created.ok ? ok({ value: true }) : created;
 }

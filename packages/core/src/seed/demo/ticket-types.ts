@@ -58,6 +58,8 @@ export type DemoTicket = {
   reason?: string;
   /** The main assignee (ADR 0034), by user name. */
   assignee?: string;
+  /** Booking-level notes (ADR 0081). The contact is the customer's first contact. */
+  note?: string;
   /** Members who follow the ticket, by user name. */
   followers?: readonly string[];
   /** Explicit choices that differ from the responsibilities' defaults (ADR 0055). */

@@ -23,6 +23,7 @@ const ticket = (): ParityEntity => ({
       args: {
         entityTypeId: type.id,
         customerId: made.customer.id,
+        contactId: made.contact.id,
         desiredStartsAt: "2026-11-03T08:00:00.000Z",
         desiredEndsAt: "2026-11-03T16:00:00.000Z",
         estimatedHeadcount: 12,

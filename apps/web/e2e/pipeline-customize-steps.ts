@@ -16,36 +16,42 @@ export async function api({
   return (await response.json()) as Record<string, unknown> & { id: string };
 }
 
-/**
- * A customer and a ticket assigned to the signed-in user (Completed requires a main assignee);
- * it starts in the entry status, Lead. Returns the ticket id.
- */
-export async function createTicket({ page }: PageInput): Promise<string> {
-  const members = await api({ page, method: "get", path: "/members" });
-  const assigneeId = (members.items as { userId: string }[])[0]?.userId;
-  const customerType = await api({
-    page,
-    method: "post",
-    path: "/entity-types",
-    data: { base: "CUSTOMER", name: "Company" },
-  });
-  const ticketType = await api({
-    page,
-    method: "post",
-    path: "/entity-types",
-    data: { base: "TICKET", name: "Conference" },
-  });
+const entityType = ({ page, base, name }: PageInput & { base: string; name: string }) =>
+  api({ page, method: "post", path: "/entity-types", data: { base, name } });
+
+/** A customer and a contact person who works there (a ticket needs one, ADR 0081). */
+async function createCustomerWithContact({ page }: PageInput) {
+  const customerType = await entityType({ page, base: "CUSTOMER", name: "Company" });
+  const contactType = await entityType({ page, base: "CONTACT", name: "Person" });
   const customer = await api({
     page,
     method: "post",
     path: "/customers",
     data: { entityTypeId: customerType.id, name: "Nordkust AB" },
   });
+  const contact = await api({
+    page,
+    method: "post",
+    path: "/contacts",
+    data: { customerId: customer.id, entityTypeId: contactType.id, name: "Elin Berg" },
+  });
+  return { customerId: customer.id, contactId: contact.id };
+}
+
+/**
+ * A customer, a contact there and a ticket assigned to the signed-in user (Completed requires a
+ * main assignee); it starts in the entry status, Lead. Returns the ticket id.
+ */
+export async function createTicket({ page }: PageInput): Promise<string> {
+  const members = await api({ page, method: "get", path: "/members" });
+  const assigneeId = (members.items as { userId: string }[])[0]?.userId;
+  const ticketType = await entityType({ page, base: "TICKET", name: "Conference" });
+  const people = await createCustomerWithContact({ page });
   const ticket = await api({
     page,
     method: "post",
     path: "/tickets",
-    data: { entityTypeId: ticketType.id, customerId: customer.id, assigneeId },
+    data: { entityTypeId: ticketType.id, ...people, assigneeId },
   });
   return ticket.id;
 }

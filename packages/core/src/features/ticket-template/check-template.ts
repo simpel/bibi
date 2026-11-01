@@ -13,8 +13,19 @@ export type CheckTemplateInput = {
   entityTypeId: string;
   statusId: string;
   fields?: Record<string, unknown> | undefined;
+  minGuests?: number | null | undefined;
+  maxGuests?: number | null | undefined;
   lines: readonly TicketTemplateLineInput[];
 };
+
+type RangeInput = Pick<CheckTemplateInput, "minGuests" | "maxGuests">;
+
+/** The guest range holds together: the lower limit is not above the upper one (ADR 0081). */
+function checkGuestRange({ minGuests, maxGuests }: RangeInput): Result<true> {
+  if (minGuests == null || maxGuests == null || minGuests <= maxGuests) return ok({ value: true });
+  const message = "The fewest guests cannot be more than the most guests";
+  return invalid({ message, issues: [{ path: "minGuests", message }] });
+}
 
 type StatusInput = Pick<CheckTemplateInput, "context" | "statusId">;
 
@@ -34,7 +45,8 @@ async function checkStartStatus({ context, statusId }: StatusInput): Promise<Res
 /**
  * The checks a template passes on create and on every change: referenced records are readable by
  * the caller (`pipeline:read`, `item:read`), the type is a `TICKET` type, the start status can
- * receive tickets, default field values match the type and the lines point at fitting records.
+ * receive tickets, the guest range holds together, default field values match the type and the
+ * lines point at fitting records.
  * Returns the validated default field values.
  */
 export async function checkTemplate({
@@ -43,9 +55,11 @@ export async function checkTemplate({
   statusId,
   fields,
   lines,
+  ...range
 }: CheckTemplateInput): Promise<Result<CheckedFields>> {
   const hasItems = lines.some((line) => line.itemId);
   for (const check of [
+    checkGuestRange(range),
     checkReadable({ context, permission: "pipeline:read", path: "statusId" }),
     hasItems
       ? checkReadable({ context, permission: "item:read", path: "lines" })

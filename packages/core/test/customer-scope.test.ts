@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { applyOverrides, archiveCustomer, execute, getCustomer } from "../src/index";
+import { archiveContactsOf } from "./contact-archive-helpers";
 import { unwrap } from "./helpers";
 import { createTestTicket, ticketSetup } from "./ticket-helpers";
 
@@ -25,6 +26,7 @@ describe("customer feature scope (ADR 0050)", () => {
   it("says only that the customer is in use when its tickets are hidden", async () => {
     const { context, type, customer } = await ticketSetup();
     await createTestTicket({ context, entityTypeId: type.id, customerId: customer.id });
+    await archiveContactsOf({ customerId: customer.id });
     const input = { id: customer.id };
     const detailed = await execute({ operation: archiveCustomer, input, context });
     expect(detailed).toMatchObject({ ok: false, error: { code: "CONFLICT" } });

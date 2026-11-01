@@ -1,7 +1,6 @@
 import type { EntityTypeDto, TicketDto, TicketUpdateInput, VocabularyDto } from "@bibi/core";
 import { buildFieldsSchema, TicketCreateInputSchema } from "@bibi/core/schemas";
 import type { z } from "zod";
-import { NONE } from "@/components/form/option-select-field";
 import { specsOf } from "@/components/typed-fields/field-specs";
 import { fieldsPatch, fieldsToInput } from "@/components/typed-fields/raw-fields";
 import { minorOrNull, numberOrNull } from "@/lib/blank";
@@ -29,7 +28,7 @@ export function ticketFormSchema({ type, vocabularies, timeZone }: TicketSchemaI
     toInput: ({ values }: { values: TicketFormValues }) => ({
       entityTypeId: values.entityTypeId,
       customerId: values.customerId,
-      contactId: values.contactId === NONE || values.contactId === "" ? null : values.contactId,
+      contactId: values.contactId,
       desiredStartsAt: instant({ value: values.desiredStartsAt }),
       desiredEndsAt: instant({ value: values.desiredEndsAt }),
       estimatedHeadcount: numberOrNull({ value: values.estimatedHeadcount }),
@@ -37,6 +36,7 @@ export function ticketFormSchema({ type, vocabularies, timeZone }: TicketSchemaI
       budgetMinor: minorOrNull({ value: values.budget }),
       estimatedValueMinor: minorOrNull({ value: values.estimatedValue }),
       holdsUntil: instant({ value: values.holdsUntil }),
+      note: values.note.trim() === "" ? null : values.note,
       fields: fieldsToInput({ values, specs }),
     }),
   });

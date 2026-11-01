@@ -1,6 +1,7 @@
 import { provisionOrganization } from "@bibi/core";
 import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
+import { graphContact } from "./graph-contact";
 import { createClient, testContext } from "./helpers";
 
 const TYPE = `mutation($i: EntityTypeCreateInput!) { entityTypeCreate(input: $i) { id } }`;
@@ -27,6 +28,7 @@ async function ticketWithList({ gql }: { gql: Gql }) {
       i: {
         entityTypeId: await type({ base: "TICKET" }),
         customerId: customer.body.data.customerCreate.id,
+        contactId: await graphContact({ gql, customerId: customer.body.data.customerCreate.id }),
         desiredStartsAt: "2026-11-03T08:00:00.000Z",
         desiredEndsAt: "2026-11-03T16:00:00.000Z",
       },

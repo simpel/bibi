@@ -30,7 +30,7 @@ async function checkStartStatus({ context, template }: Omit<CreateInput, "input"
 }
 
 async function create({ context, template, input }: CreateInput): Promise<Result<TicketDto>> {
-  const { startsAt, headcount, customerId, assigneeId } = input;
+  const { startsAt, headcount, customerId, contactId, assigneeId } = input;
   const plan = planTemplateLines({ template, startsAt });
   const statusd = await checkStartStatus({ context, template });
   if (!statusd.ok) return statusd;
@@ -48,7 +48,8 @@ async function create({ context, template, input }: CreateInput): Promise<Result
     statusId: template.statusId,
     trigger: "TEMPLATE",
     input: {
-      ...{ entityTypeId: template.entityTypeId, customerId, assigneeId, fields: template.fields },
+      ...{ entityTypeId: template.entityTypeId, customerId, contactId, assigneeId },
+      fields: template.fields,
       estimatedHeadcount: headcount,
       ...{ desiredStartsAt: startsAt, desiredEndsAt: plan.endsAt },
     },
@@ -69,7 +70,8 @@ export const createTicketFromTemplate = defineOperation({
   kind: "command",
   description:
     "Create a ticket from one of the organization's predefined tickets in one step (ADR 0043): " +
-    "the template's ticket type, default fields and start status, for a customer, starting at " +
+    "the template's ticket type, default fields and start status, for a customer and one of its " +
+    "contacts (required, ADR 0081), starting at " +
     "`startsAt` with `headcount` as the estimated headcount. Its lines are created timed from " +
     "the start (a line without a quantity counts the headcount), " +
     "in the states the status grid gives for the start status. If any line's hard hold would " +

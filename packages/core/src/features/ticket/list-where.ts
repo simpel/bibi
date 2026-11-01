@@ -1,6 +1,6 @@
 import type { Prisma } from "@bibi/db";
 import type { z } from "zod";
-import type { TicketListInputSchema } from "./schema";
+import type { TicketListInputSchema } from "./list-schema";
 
 export type TicketListWhereInput = { input: z.infer<typeof TicketListInputSchema> };
 

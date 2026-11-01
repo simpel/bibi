@@ -10,7 +10,7 @@ import {
 import { assignTo, followAs, ticketSubject } from "./assignment-helpers";
 import { errorCode, unwrap } from "./helpers";
 import { testOrg } from "./org-helpers";
-import { createTestTicket, memberUser, ticketSetup } from "./ticket-helpers";
+import { contactAt, createTestTicket, memberUser, ticketSetup } from "./ticket-helpers";
 import { statusByName } from "./ticket-status-helpers";
 
 async function setup() {
@@ -74,6 +74,7 @@ describe("assignment.assign/follow/unfollow (ADR 0034)", () => {
       input: {
         entityTypeId: type.id,
         customerId: customer.id,
+        contactId: (await contactAt({ context, customerId: customer.id })).id,
         assigneeId: "user_unknown",
       },
       context,

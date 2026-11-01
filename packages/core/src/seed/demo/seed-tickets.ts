@@ -12,6 +12,7 @@ import { seedDemoLines } from "./seed-lines";
 import { seedTicketMoney } from "./seed-money";
 import { seedTicketChoices } from "./seed-ticket-choices";
 import { createDemoTicketFromTemplate } from "./seed-ticket-from-template";
+import { loadParty } from "./seed-ticket-party";
 import { moveStatus } from "./seed-ticket-status";
 import type { DemoTicket } from "./ticket-types";
 import type { DemoUserIds } from "./users";
@@ -85,8 +86,9 @@ type TicketInput = Omit<SeedTicketsInput, "tickets" | "now"> & {
 async function seedTicket({ context, refs, userIds, zones, ticket, now }: TicketInput) {
   const type = refs.ticketTypes.get(ticket.type);
   if (!type) return missing({ what: `ticket type ${ticket.type}` });
-  const customer = await context.db.customer.findFirst({ where: { name: ticket.customer } });
-  if (!customer) return missing({ what: `customer ${ticket.customer}` });
+  const found = await loadParty({ context, customer: ticket.customer });
+  if (!found.ok) return found;
+  const party = found.value;
   const people = resolvePeople({ userIds, ticket });
   if (!people.ok) return people;
   const fields = await resolveDemoFields({ context, fields: ticket.fields, type });
@@ -96,14 +98,14 @@ async function seedTicket({ context, refs, userIds, zones, ticket, now }: Ticket
     at({ now, day: ticket.day, time, timeZone: zones.lines });
   const created = ticket.template
     ? await createDemoTicketFromTemplate({
-        ...{ context, template: ticket.template, customerId: customer.id },
+        ...{ context, template: ticket.template, ...party },
         ...{ startsAt: lineAt({ time: ticket.from }) },
         ...{ headcount: ticket.headcount, assigneeId: people.value.assigneeId },
       })
     : await execute({
         operation: createTicket,
         input: {
-          ...{ entityTypeId: type.id, customerId: customer.id },
+          ...{ entityTypeId: type.id, ...party, note: ticket.note },
           ...periodOf({ ticket, now, timeZone: zones.ticket }),
           ...{ estimatedHeadcount: ticket.headcount, assigneeId: people.value.assigneeId },
           fields: fields.value,

@@ -47,17 +47,39 @@ export type CreateTestTicketInput = {
   estimatedHeadcount?: number;
 };
 
-/** A ticket desired tomorrow, three hours long, unless a period is given. */
+/**
+ * A ticket desired tomorrow, three hours long, unless a period is given. Every new ticket needs a
+ * contact (ADR 0081): without one, the customer's first contact is used or one is created.
+ */
 export async function createTestTicket({ context, ...input }: CreateTestTicketInput) {
   const desiredStartsAt = new Date(Date.now() + 86_400_000);
   const desiredEndsAt = new Date(desiredStartsAt.getTime() + 3 * 3_600_000);
+  const contactId =
+    input.contactId ?? (await contactAt({ context, customerId: input.customerId })).id;
   return unwrap({
     result: await execute({
       operation: createTicket,
-      input: { desiredStartsAt, desiredEndsAt, ...input },
+      input: { desiredStartsAt, desiredEndsAt, ...input, contactId },
       context,
     }),
   });
+}
+
+export type PartyOfInput = { ticket: { customerId: string; contactId: string | null } };
+
+/** A ticket's customer and contact, to create another ticket for the same party (ADR 0081). */
+export function partyOf({ ticket }: PartyOfInput) {
+  if (!ticket.contactId) throw new Error("The ticket has no contact");
+  return { customerId: ticket.customerId, contactId: ticket.contactId };
+}
+
+/** The customer's first active contact, or a new one (`createTestContact`). */
+export async function contactAt({ context, customerId }: CreateTestContactInput) {
+  const existing = await getDb().contact.findFirst({
+    where: { organizationId: context.organizationId, customerId, status: "ACTIVE" },
+    orderBy: { createdAt: "asc" },
+  });
+  return existing ?? (await createTestContact({ context, customerId }));
 }
 
 export type CreateTestContactInput = { context: ExecuteContext; customerId: string };

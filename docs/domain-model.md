@@ -324,10 +324,11 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · A ticket the organization has prepared, so a small repeatable request is created in one step ([ADR 0043](decisions/0043-ticket-and-configurable-statuses.md)).
 
-> **Target ([ADR 0081](decisions/0081-ticket-intake.md)):** called "package" in the UI; owned guest range `minGuests`, `maxGuests` (optional). The intake groups packages by availability and range and never uses the package's start status (it starts in the entry status); `ticket.createFromTemplate` keeps it.
+> **Done ([ADR 0081](decisions/0081-ticket-intake.md)):** called "package" in the UI; owned guest range `minGuests`, `maxGuests` (optional, 1–100000, a lower limit above the upper is `VALIDATION` on `minGuests`). **Target:** the intake groups packages by availability and range and never uses the package's start status (it starts in the entry status); `ticket.createFromTemplate` keeps it.
 
 **Attributes**
 - name (unique among the organization's active templates), ticket type, start status (`statusId`), default own-field values
+- guest range (`minGuests`, `maxGuests`, optional; the package is made for that many guests, ADR 0081)
 - lines (`TicketTemplateLine`, replaced as a set): line type (base `LINE`), name, optional general item and setup, offset and duration in minutes from the ticket start, quantity (null = the ticket's headcount, ADR 0052)
 - status (active / archived)
 
@@ -422,14 +423,15 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 *MVP* · One customer request from first contact to the delivered event ([ADR 0043](decisions/0043-ticket-and-configurable-statuses.md)). It lives in the organization's statuses and never turns into another record. Lines, quotes, requirements, sheets, payments and mail attach to it.
 
-> **Target ([ADR 0081](decisions/0081-ticket-intake.md)):** the contact is required for every new ticket and cannot be cleared; owned booking-level `note` (≤ 4000). `ticket.create` takes `lines[]` (with options and requirements), `note`, `templateId`, `inboundEmailId` ([ADR 0083](decisions/0083-organization-inbox.md)) and `intakeKey`, all or nothing, starting in the entry status. New query `ticket.previewLines` plans lines without writing and returns their issues. Spec: `docs/specs/ticket-intake.md`.
+> **Done ([ADR 0081](decisions/0081-ticket-intake.md)):** the contact is required for every new ticket (`ticket.create`, `ticket.createFromTemplate`) and `ticket.update` cannot clear it (null is `VALIDATION`); owned booking-level `note` (≤ 4000, null clears). **Target:** `ticket.create` takes `lines[]` (with options and requirements), `note`, `templateId`, `inboundEmailId` ([ADR 0083](decisions/0083-organization-inbox.md)) and `intakeKey`, all or nothing, starting in the entry status. New query `ticket.previewLines` plans lines without writing and returns their issues. Spec: `docs/specs/ticket-intake.md`.
 
 > **Ownership (ADR 0054, done):** projection `statusId` (from the newest `TicketStatusChange`, by trigger; check `ticket statuses`); derived `statusChangedAt` and `statusReason` (read from the newest change, not stored).
 
 **Attributes**
 - reference number (`reference`, sequential per organization)
 - type (the organization's own, base `TICKET`) and custom fields
-- customer and contact person (optional; must work at the customer)
+- customer and contact person (the contact must work at the customer; required for new tickets and never cleared, ADR 0081; older tickets may have none)
+- booking note (`note`, optional, ≤ 4000 characters): notes for the whole booking (ADR 0081)
 - desired period (`desiredStartsAt`, `desiredEndsAt`, optional) – what the customer asked for; each line has its own time
 - holds until (`holdsUntil`, optional): one date for the whole ticket ("we hold this until 28 Feb"). When it passes, every line in an `expires` state falls to its type's expiry state; other lines and the status are unchanged ([ADR 0044](decisions/0044-line-states-and-the-status-grid.md))
 - estimated and guaranteed headcount (`estimatedHeadcount`, `guaranteedHeadcount`): the ticket's one headcount; a line without its own quantity counts the guaranteed one if set, else the estimate ([ADR 0052](decisions/0052-the-line-is-the-booking.md)); budget (`budgetMinor`, minor units)

@@ -1,5 +1,6 @@
 import {
   type AnyOperation,
+  createContact,
   createCustomer,
   createEntityType,
   createExecuteContext,
@@ -67,9 +68,18 @@ export async function expiredTicket() {
     operation: createCustomer,
     input: { entityTypeId: customerType.id, name: "Hisingen Energi AB" },
   });
+  const contactType = await typeOf({ base: "CONTACT" });
+  const contact = await run({
+    context,
+    operation: createContact,
+    input: { entityTypeId: contactType.id, customerId: customer.id, name: "Anna Berg" },
+  });
   const ticketType = await typeOf({ base: "TICKET" });
   const holdsUntil = new Date(Date.now() - 60_000);
-  const ticketInput = { entityTypeId: ticketType.id, customerId: customer.id, holdsUntil };
+  const ticketInput = {
+    ...{ entityTypeId: ticketType.id, customerId: customer.id, contactId: contact.id },
+    holdsUntil,
+  };
   const ticket = await run({ context, operation: createTicket, input: ticketInput });
   const lineType = await typeOf({ base: "LINE" });
   const item = await run({

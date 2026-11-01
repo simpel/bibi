@@ -17,6 +17,12 @@ export const CalendarRangeInputSchema = z.object({
     .optional()
     .describe("Only items of this venue; the days are then in the venue's time zone"),
   typeId: z.string().min(1).optional().describe("Only items of this item type"),
+  itemIds: z
+    .array(z.string().min(1))
+    .min(1)
+    .max(50)
+    .optional()
+    .describe("Only these items (item.list ids), e.g. the resources of a draft booking"),
   stateId: z.string().min(1).optional().describe("Only blocks whose line is in this item state"),
   statusId: z
     .string()

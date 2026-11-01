@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import { LineSchema } from "../line/schema";
@@ -29,6 +28,8 @@ export const TicketSchema = z.object({
   /** The reason given with the last status change (newest `TicketStatusChange`). */
   statusReason: z.string().nullable(),
   fields: FieldValuesSchema,
+  /** Booking-level notes for the whole ticket (ADR 0081); line notes stay on lines. */
+  note: z.string().nullable(),
   /**
    * Derived, not stored (ADR 0012, 0043): `ticket-<id>@<MAIL_INBOUND_DOMAIN>`, the reply-to of
    * ticket mail. Null when inbound mail is not configured.
@@ -52,8 +53,9 @@ const TicketDetailsShape = {
   contactId: z
     .string()
     .min(1)
-    .nullish()
-    .describe("Id of a contact person at the customer (contact.list)"),
+    .describe(
+      "Id of the contact person at the customer (contact.list); required and never cleared (ADR 0081)",
+    ),
   desiredStartsAt: z.coerce.date().nullish().describe("Desired start, ISO 8601"),
   desiredEndsAt: z.coerce.date().nullish().describe("Desired end (after the start), ISO 8601"),
   estimatedHeadcount: CountSchema.nullish().describe(
@@ -76,6 +78,12 @@ const TicketDetailsShape = {
       "We hold the ticket's soft holds until this date, ISO 8601. Lines in an expiring state " +
         "fall to their type's expiry state after it (ticket.expireHolds); null: nothing expires",
     ),
+  note: z
+    .string()
+    .trim()
+    .max(4000)
+    .nullish()
+    .describe("Notes for the whole booking, shown on the ticket and its sheets; null clears"),
 };
 
 export const TicketCreateInputSchema = z.object({
@@ -123,22 +131,6 @@ export const TicketExpireHoldsOutputSchema = z.object({
 });
 
 export const TicketIdInputSchema = z.object({ id: z.string().min(1) });
-
-export const TicketListInputSchema = z.object({
-  customerId: z.string().optional().describe("Only tickets of this customer"),
-  entityTypeId: z.string().optional().describe("Only tickets of this type"),
-  statusId: z.string().optional().describe("Only tickets in this status"),
-  assigneeId: z.string().optional().describe("Only tickets this user is assigned to"),
-  followerId: z.string().optional().describe("Only tickets this user follows"),
-  from: z.coerce.date().optional().describe("Only tickets whose desired period ends after this"),
-  to: z.coerce.date().optional().describe("Only tickets whose desired period starts before this"),
-  ...PageInputShape,
-});
-
-export const TicketListOutputSchema = z.object({
-  items: z.array(TicketSchema),
-  nextCursor: z.string().nullable(),
-});
 
 export type TicketDto = z.infer<typeof TicketSchema>;
 export type TicketCreateInput = z.infer<typeof TicketCreateInputSchema>;

@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
 import { DateTimeField } from "@/components/date-picker/date-time-field";
 import type { NamedOption } from "@/components/form/named-option";
-import { NONE, OptionSelectField } from "@/components/form/option-select-field";
+import { OptionSelectField } from "@/components/form/option-select-field";
 import { TextField } from "@/components/form/text-field";
 import type { ContactOption } from "./ticket-form-data";
 import type { TicketFormOutput } from "./ticket-form-schema";
@@ -33,7 +33,7 @@ function CustomerFields({ form, data }: TicketCoreFieldsProps) {
         label={t("customer")}
         options={customers}
         hidden={hidden}
-        onChange={() => form.setValue("contactId", NONE)}
+        onChange={() => form.setValue("contactId", "")}
       />
       <OptionSelectField
         control={form.control}
@@ -41,7 +41,6 @@ function CustomerFields({ form, data }: TicketCoreFieldsProps) {
         label={t("contact")}
         options={ofCustomer}
         hidden={hidden}
-        noneLabel={t("noContact")}
       />
     </>
   );
@@ -86,6 +85,7 @@ function DetailFields({ form }: { form: Form }) {
       <div className="grid gap-4 sm:grid-cols-2">
         <DateTimeField form={form} name="holdsUntil" label={t("holdsUntil")} />
       </div>
+      <TextField form={form} name="note" label={t("note")} multiline rows={4} />
     </>
   );
 }

@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import {
+  createContact,
   createCustomer,
   createEntityType,
   createExecuteContext,
@@ -46,7 +47,21 @@ export async function ticketFixture(): Promise<{ context: ExecuteContext; ticket
       context,
     }),
   });
-  const input = { entityTypeId: ticketType.id, customerId: customer.id };
+  const contactType = value({
+    result: await execute({
+      operation: createEntityType,
+      input: { base: "CONTACT", name: "CONTACT type" },
+      context,
+    }),
+  });
+  const contact = value({
+    result: await execute({
+      operation: createContact,
+      input: { entityTypeId: contactType.id, customerId: customer.id, name: "Anna Berg" },
+      context,
+    }),
+  });
+  const input = { entityTypeId: ticketType.id, customerId: customer.id, contactId: contact.id };
   const ticket = value({ result: await execute({ operation: createTicket, input, context }) });
   return { context, ticketId: ticket.id };
 }

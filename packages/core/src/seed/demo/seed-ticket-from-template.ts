@@ -8,6 +8,7 @@ export type DemoTicketFromTemplateInput = {
   /** The predefined ticket's name. */
   template: string;
   customerId: string;
+  contactId: string;
   startsAt: Date;
   headcount: number;
   assigneeId: string | null;

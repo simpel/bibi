@@ -2,22 +2,27 @@ import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { createId } from "@paralleldrive/cuid2";
 import { expect } from "vitest";
 import { call, connect, testContext } from "./helpers";
+import { seedContact } from "./seed-contact";
 
 type AddTicketInput = { client: Client; entityTypeId: string; customerId: string };
 
 /** One ticket of the customer, created by `client`. */
 export async function addArchiveTicket({ client, entityTypeId, customerId }: AddTicketInput) {
+  const contactId = await seedContact({ client, customerId });
   const ticket = await call({
     client,
     name: "ticket_create",
     args: {
       entityTypeId,
       customerId,
+      contactId,
       desiredStartsAt: "2026-11-03T08:00:00.000Z",
       desiredEndsAt: "2026-11-03T16:00:00.000Z",
     },
   });
   expect(ticket.isError, JSON.stringify(ticket.data)).toBe(false);
+  // A customer with active contacts cannot be archived, so the contact is archived at once.
+  await call({ client, name: "contact_archive", args: { id: contactId } });
   return ticket.data.id as string;
 }
 

@@ -7,6 +7,7 @@ import {
   execute,
   listRequirements,
 } from "../src/index";
+import { archiveContactsOf } from "./contact-archive-helpers";
 import { createTestCustomer } from "./customer-helpers";
 import { errorCode, unwrap } from "./helpers";
 import { createTestLine, programSetup } from "./line-helpers";
@@ -50,6 +51,7 @@ describe("archive cascades keep requirements consistent (#215)", () => {
         quantity: 1,
       }),
     });
+    await archiveContactsOf({ customerId: ticket.customerId });
     const input = { id: ticket.customerId, archiveTickets: true };
     unwrap({ result: await execute({ operation: archiveCustomer, input, context }) });
     const archived = await context.db.requirement.findMany({

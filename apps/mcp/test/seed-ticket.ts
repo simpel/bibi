@@ -1,10 +1,24 @@
 import type { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { expect } from "vitest";
 import { call } from "./helpers";
+import { seedContact } from "./seed-contact";
 
-export type SeededTicket = { id: string; entityTypeId: string; customerId: string };
+export type SeededTicket = {
+  id: string;
+  entityTypeId: string;
+  customerId: string;
+  contactId: string;
+};
 
 export type SeedTicketInput = { client: Client };
+
+/** A customer of its own customer type. */
+async function seedCustomer({ client }: SeedTicketInput) {
+  const args = { base: "CUSTOMER", name: "Secret company" };
+  const customerType = await call({ client, name: "entityType_create", args });
+  const customer = { entityTypeId: customerType.data.id, name: "Secret AB" };
+  return call({ client, name: "customer_create", args: customer });
+}
 
 /** A ticket with its own type, customer and entry status in the client's organization. */
 export async function seedTicket({ client }: SeedTicketInput): Promise<SeededTicket> {
@@ -13,16 +27,8 @@ export async function seedTicket({ client }: SeedTicketInput): Promise<SeededTic
     name: "entityType_create",
     args: { base: "TICKET", name: "Secret conference" },
   });
-  const customerType = await call({
-    client,
-    name: "entityType_create",
-    args: { base: "CUSTOMER", name: "Secret company" },
-  });
-  const customer = await call({
-    client,
-    name: "customer_create",
-    args: { entityTypeId: customerType.data.id, name: "Secret AB" },
-  });
+  const customer = await seedCustomer({ client });
+  const contactId = await seedContact({ client, customerId: customer.data.id });
   const status = await call({
     client,
     name: "ticketStatus_create",
@@ -35,11 +41,17 @@ export async function seedTicket({ client }: SeedTicketInput): Promise<SeededTic
     args: {
       entityTypeId: type.data.id,
       customerId: customer.data.id,
+      contactId,
       desiredStartsAt: "2026-11-03T08:00:00.000Z",
       desiredEndsAt: "2026-11-03T16:00:00.000Z",
       estimatedHeadcount: 12,
     },
   });
   expect(ticket.isError, JSON.stringify(ticket.data)).toBe(false);
-  return { id: ticket.data.id, entityTypeId: type.data.id, customerId: customer.data.id };
+  return {
+    id: ticket.data.id,
+    entityTypeId: type.data.id,
+    customerId: customer.data.id,
+    contactId,
+  };
 }

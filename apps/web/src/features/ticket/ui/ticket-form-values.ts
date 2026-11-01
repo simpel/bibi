@@ -1,5 +1,4 @@
 import type { EntityTypeDto, TicketDto } from "@bibi/core";
-import { NONE } from "@/components/form/option-select-field";
 import { type RawFieldValue, rawFields } from "@/components/typed-fields/raw-fields";
 import { toLocalInputValue } from "../../occupancy/ui/local-date-time";
 
@@ -7,7 +6,7 @@ import { toLocalInputValue } from "../../occupancy/ui/local-date-time";
 export type TicketFormValues = {
   entityTypeId: string;
   customerId: string;
-  /** A contact id, or `NONE`. */
+  /** A contact id; required (empty until picked). */
   contactId: string;
   desiredStartsAt: string;
   desiredEndsAt: string;
@@ -19,6 +18,8 @@ export type TicketFormValues = {
   estimatedValue: string;
   /** Soft holds expire after this time (ADR 0044); empty: they never do. */
   holdsUntil: string;
+  /** Booking-level notes; empty: none. */
+  note: string;
   fields: Record<string, RawFieldValue>;
 };
 
@@ -44,7 +45,7 @@ export function ticketFormDefaults({
   return {
     entityTypeId: type?.id ?? "",
     customerId: ticket?.customerId ?? "",
-    contactId: ticket?.contactId ?? NONE,
+    contactId: ticket?.contactId ?? "",
     desiredStartsAt: local({ date: ticket?.desiredStartsAt }),
     desiredEndsAt: local({ date: ticket?.desiredEndsAt }),
     estimatedHeadcount: text({ value: ticket?.estimatedHeadcount }),
@@ -54,6 +55,7 @@ export function ticketFormDefaults({
       value: estimate === null || estimate === undefined ? estimate : estimate / 100,
     }),
     holdsUntil: local({ date: ticket?.holdsUntil }),
+    note: ticket?.note ?? "",
     fields: rawFields({ type, stored: ticket?.fields ?? {} }),
   };
 }

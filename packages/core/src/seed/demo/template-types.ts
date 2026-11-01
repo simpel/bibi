@@ -19,5 +19,8 @@ export type DemoTicketTemplate = {
   name: string;
   type: string;
   status: string;
+  /** The guest range the package is made for (ADR 0081). */
+  minGuests?: number;
+  maxGuests?: number;
   lines: readonly DemoTemplateLine[];
 };

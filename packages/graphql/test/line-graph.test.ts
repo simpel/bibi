@@ -1,6 +1,7 @@
 import { provisionOrganization } from "@bibi/core";
 import { FALLBACK_TIME_ZONE } from "@bibi/core/schemas";
 import { describe, expect, it } from "vitest";
+import { graphContact } from "./graph-contact";
 import { createClient, testContext } from "./helpers";
 
 const TYPE = `mutation($i: EntityTypeCreateInput!) { entityTypeCreate(input: $i) { id } }`;
@@ -41,6 +42,7 @@ describe("line graph (ADR 0022)", () => {
         i: {
           entityTypeId: await type({ base: "TICKET" }),
           customerId: customer.body.data.customerCreate.id,
+          contactId: await graphContact({ gql, customerId: customer.body.data.customerCreate.id }),
           ...period,
         },
       },

@@ -38,7 +38,12 @@ describe("cross-organization isolation: ticket creation", () => {
     const created = await call({
       client: b,
       name: "ticket_create",
-      args: { entityTypeId: ticketType, customerId: secret.customerId, ...times },
+      args: {
+        entityTypeId: ticketType,
+        customerId: secret.customerId,
+        contactId: secretContact,
+        ...times,
+      },
     });
     expect(["NOT_FOUND", "VALIDATION"]).toContain(created.data.code);
     const own = await seedTicket({ client: b });

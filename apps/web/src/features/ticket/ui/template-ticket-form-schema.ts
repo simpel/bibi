@@ -4,10 +4,12 @@ import { numberOrNull } from "@/lib/blank";
 import { formSchema } from "@/lib/form-schema";
 import { fromLocalInputValue } from "../../occupancy/ui/local-date-time";
 
-/** Raw values of the short create form: template, customer, start, headcount and assignee. */
+/** Raw values of the short create form: template, customer, contact, start, headcount and assignee. */
 export type TemplateTicketFormValues = {
   templateId: string;
   customerId: string;
+  /** A contact at the customer; required. */
+  contactId: string;
   startsAt: string;
   headcount: string;
   assigneeId: string;
@@ -20,6 +22,7 @@ export const templateTicketFormSchema = ({ timeZone }: { timeZone: string }) =>
     toInput: ({ values }: { values: TemplateTicketFormValues }) => ({
       templateId: values.templateId,
       customerId: values.customerId,
+      contactId: values.contactId,
       startsAt: fromLocalInputValue({ value: values.startsAt, timeZone }),
       headcount: numberOrNull({ value: values.headcount }),
       assigneeId: values.assigneeId === NONE || values.assigneeId === "" ? null : values.assigneeId,
@@ -29,6 +32,7 @@ export const templateTicketFormSchema = ({ timeZone }: { timeZone: string }) =>
 export const templateTicketDefaults: TemplateTicketFormValues = {
   templateId: "",
   customerId: "",
+  contactId: "",
   startsAt: "",
   headcount: "",
   assigneeId: NONE,

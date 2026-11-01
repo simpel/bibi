@@ -487,7 +487,7 @@
     },
     "integrations": "Integrationer",
     "itemStates": "Artikelstatusar",
-    "ticketTemplates": "Fördefinierade ärenden",
+    "ticketTemplates": "Paket",
     "apiKeys": "API-nycklar",
     "permissions": "Behörigheter"
   },
@@ -783,7 +783,7 @@
       "type": "Typ",
       "customer": "Kund",
       "contact": "Kontaktperson",
-      "noContact": "Ingen kontaktperson",
+      "note": "Anteckning för bokningen",
       "desiredStartsAt": "Önskad start",
       "desiredEndsAt": "Önskat slut",
       "when": "Önskade datum",
@@ -795,7 +795,7 @@
       "newStatus": "Ny ärendestatus",
       "statusReason": "Anledning",
       "holdsUntil": "Håll till",
-      "template": "Fördefinierat ärende",
+      "template": "Paket",
       "startsAt": "Startar",
       "headcount": "Antal gäster",
       "assignee": "Ansvarig"
@@ -812,9 +812,9 @@
     "expireHoldsConfirm": "Flytta alla rader i ett läge som förfaller, på ärenden vars håll-datum har passerat, till sitt utgångsläge? Det sker också automatiskt var 15:e minut.",
     "holdsExpired": "Förfallna reservationer släppta",
     "createFromTemplate": "Skapa ärende",
-    "createFromTemplateDescription": "Välj ett fördefinierat ärende, kunden, starttid och antal gäster. Raderna skapas åt dig.",
+    "createFromTemplateDescription": "Välj ett paket, kunden, starttid och antal gäster. Raderna skapas åt dig.",
     "buildStepByStep": "Bygg det steg för steg",
-    "useTemplate": "Använd ett fördefinierat ärende i stället",
+    "useTemplate": "Använd ett paket i stället",
     "templateBlocked": "{count, plural, one {# rad är blockerad: en reservation krockar.} other {# rader är blockerade: reservationer krockar.}}",
     "noAssignee": "Ingen ännu",
     "estimateHistory": {
@@ -1839,7 +1839,7 @@
         "stateId": "Läge (id)",
         "holdsUntil": "Håll till",
         "expiryStateId": "Utgångsläge (id)",
-        "templateId": "Fördefinierat ärende (id)",
+        "templateId": "Paket (id)",
         "lines": "Rader",
         "startsAt": "Startar",
         "itemTypes": "Artikeltyper",
@@ -1963,10 +1963,10 @@
         "alternativeGroup_archive": "Lös upp alternativ",
         "alternativeGroup_choose": "Välj ett alternativ",
         "ticket_expireHolds": "Släpp förfallna reservationer",
-        "ticket_createFromTemplate": "Skapa ärende från fördefinierat ärende",
-        "ticketTemplate_create": "Skapa fördefinierat ärende",
-        "ticketTemplate_update": "Uppdatera fördefinierat ärende",
-        "ticketTemplate_archive": "Arkivera fördefinierat ärende",
+        "ticket_createFromTemplate": "Skapa ärende från paket",
+        "ticketTemplate_create": "Skapa paket",
+        "ticketTemplate_update": "Uppdatera paket",
+        "ticketTemplate_archive": "Arkivera paket",
         "pipelineSetup_activate": "Sätt upp pipelinen",
         "deposit_create": "Skapa förskott",
         "deposit_send": "Markera förskott som skickat",
@@ -2364,9 +2364,9 @@
         }
       },
       "ticketTemplate": {
-        "singular": "Fördefinierat ärende",
-        "empty": "Inga fördefinierade ärenden hittades.",
-        "open": "Öppna de fördefinierade ärendena",
+        "singular": "Paket",
+        "empty": "Inga paket hittades.",
+        "open": "Öppna paketen",
         "archived": "Arkiverat",
         "lines": "{count, plural, =0 {Inga rader} one {# rad} other {# rader}}",
         "columns": {
@@ -3044,7 +3044,7 @@
         "tickets": {
           "title": "Ärenden",
           "lead": "Ett ärende är en kundförfrågan, från första kontakt till genomfört event. Här ser du hur du skapar ett och för det genom era ärendestatusar.",
-          "body": "# Skapa ett ärende\n\n1. Öppna **Ärenden** och välj **Skapa ärende**.\n2. Välj typ och kund. Resten kan vänta: kontaktperson, önskade datum, antal, gästantal och budget kan läggas till nu eller senare.\n3. Spara. Ärendet får nästa nummer och startar i er startstatus, till exempel **Lead**.\n\n# Ärendesidan\n\n- **Offerter**: versioner av offerten till kunden.\n- **Program**: ärendets rader. Välj **Lägg till programpunkt** och ange namn, tid, lokal, uppställning och antal. En lokal hålls under den tiden, och uppställningens ställtid blockeras precis före.\n- **Behov**: antal per listvärde. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Blad**: versioner som du kan skapa och skicka.\n- **Betalningar**: betalningsbegäranden för ärendet. Se [Betalningar](/docs/guide/payments).\n- **Mottagen e-post**: svar från kunden, när er organisation har inkommande e-post.\n- **Exportera**: laddar ner ärendet som en json-fil till någon utanför Bibi.\n\n# För det genom era ärendestatusar\n\nEra administratörer bestämmer ärendestatusarna, deras namn och ordning under **Inställningar, Ärendestatusar**. Välj **Byt ärendestatus** på ärendesidan, eller dra kortet på tavlan **Pipeline**.\n\nVad en ärendestatus gör ställs in med några flaggor:\n\n- **Nya ärenden startar här**: startstatusen.\n- **Kräver en anledning**: du måste ange varför, till exempel när ett ärende är förlorat.\n- **Kräver en ansvarig**: ärendet måste ha en ansvarig först.\n- **Avslutar ärendet**: inget lämnar ärendestatusen, och ärendets lokaler och resurser frigörs.\n- **Kan faktureras**: betalningar kan fortfarande begäras.\n\nVilka flyttar som är tillåtna från varje ärendestatus bestämmer också era administratörer. Nekas en flytt visar Bibi alla skäl på en gång och inget ändras. Använd **Byt ansvarig** för att välja vem som ansvarar för ärendet och **Följ** för att hållas informerad.\n\n# Kommer senare\n\nRadstatusar (preliminärt, bokat, beställt), färdiga ärenden för små möten och signering med BankID är beslutade men inte byggda än."
+          "body": "# Skapa ett ärende\n\n1. Öppna **Ärenden** och välj **Skapa ärende**.\n2. Välj typ, kund och en kontaktperson hos kunden. Resten kan vänta: önskade datum, antal, gästantal, budget och en anteckning för bokningen kan läggas till nu eller senare. För ett litet möte, välj **Använd ett paket i stället**: ett paket skapar ett ärende med sina rader i ett steg.\n3. Spara. Ärendet får nästa nummer och startar i er startstatus, till exempel **Lead**.\n\n# Ärendesidan\n\n- **Offerter**: versioner av offerten till kunden.\n- **Program**: ärendets rader. Välj **Lägg till programpunkt** och ange namn, tid, lokal, uppställning och antal. En lokal hålls under den tiden, och uppställningens ställtid blockeras precis före.\n- **Behov**: antal per listvärde. Se [Behov och blad](/docs/guide/needs-and-sheets).\n- **Blad**: versioner som du kan skapa och skicka.\n- **Betalningar**: betalningsbegäranden för ärendet. Se [Betalningar](/docs/guide/payments).\n- **Mottagen e-post**: svar från kunden, när er organisation har inkommande e-post.\n- **Exportera**: laddar ner ärendet som en json-fil till någon utanför Bibi.\n\n# För det genom era ärendestatusar\n\nEra administratörer bestämmer ärendestatusarna, deras namn och ordning under **Inställningar, Ärendestatusar**. Välj **Byt ärendestatus** på ärendesidan, eller dra kortet på tavlan **Pipeline**.\n\nVad en ärendestatus gör ställs in med några flaggor:\n\n- **Nya ärenden startar här**: startstatusen.\n- **Kräver en anledning**: du måste ange varför, till exempel när ett ärende är förlorat.\n- **Kräver en ansvarig**: ärendet måste ha en ansvarig först.\n- **Avslutar ärendet**: inget lämnar ärendestatusen, och ärendets lokaler och resurser frigörs.\n- **Kan faktureras**: betalningar kan fortfarande begäras.\n\nVilka flyttar som är tillåtna från varje ärendestatus bestämmer också era administratörer. Nekas en flytt visar Bibi alla skäl på en gång och inget ändras. Använd **Byt ansvarig** för att välja vem som ansvarar för ärendet och **Följ** för att hållas informerad.\n\n# Kommer senare\n\nRadstatusar (preliminärt, bokat, beställt) och signering med BankID är beslutade men inte byggda än."
         },
         "items-and-venues": {
           "title": "Artiklar och anläggningar",
@@ -3334,19 +3334,19 @@
     "cellKeeps": "Rader av {type} behåller sin status."
   },
   "ticketTemplate": {
-    "singular": "Fördefinierat ärende",
-    "plural": "Fördefinierade ärenden",
+    "singular": "Paket",
+    "plural": "Paket",
     "listDescription": "Färdiga ärenden: personalen skapar ett ärende med sina rader i ett steg.",
-    "create": "Nytt fördefinierat ärende",
-    "edit": "Redigera fördefinierat ärende",
+    "create": "Nytt paket",
+    "edit": "Redigera paket",
     "createDescription": "Ge det ett namn, välj ärendetyp och startstatus och lägg sedan till raderna.",
-    "editDescription": "Ändra det fördefinierade ärendet. Ärenden som redan skapats från det ändras inte.",
+    "editDescription": "Ändra paketet. Ärenden som redan skapats från det ändras inte.",
     "archive": "Arkivera",
     "archiveConfirm": "Arkivera \"{name}\"? Ärenden som redan skapats från det ändras inte.",
-    "archived": "Fördefinierat ärende arkiverat",
-    "created": "Fördefinierat ärende skapat",
-    "updated": "Fördefinierat ärende sparat",
-    "empty": "Inga fördefinierade ärenden hittades.",
+    "archived": "Paket arkiverat",
+    "created": "Paket skapat",
+    "updated": "Paket sparat",
+    "empty": "Inga paket hittades.",
     "emptyDescription": "Skapa ett så att personalen kan göra små ärenden i ett steg.",
     "saving": "Sparar…",
     "lines": "Rader",
@@ -3358,6 +3358,8 @@
       "name": "Namn",
       "ticketType": "Ärendetyp",
       "status": "Startar i ärendestatus",
+      "minGuests": "Minsta antal gäster",
+      "maxGuests": "Största antal gäster",
       "lineName": "Namn",
       "lineType": "Radtyp",
       "item": "Artikel",
@@ -3369,6 +3371,7 @@
       "name": "Namn",
       "ticketType": "Ärendetyp",
       "status": "Startar i",
+      "guests": "Gäster",
       "lines": "Rader"
     }
   },
@@ -3833,7 +3836,7 @@
     "footer": "© Bibi",
     "features": {
       "tickets": {
-        "title": "Färdiga biljetter",
+        "title": "Paket",
         "body": "Skapa en biljett för ett mindre möte utan offert. Kunden betalar med kort eller mot faktura via en länk, och behöver aldrig använda appen."
       },
       "needs": {

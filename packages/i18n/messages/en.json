@@ -487,7 +487,7 @@
     },
     "integrations": "Integrations",
     "itemStates": "Item states",
-    "ticketTemplates": "Predefined tickets",
+    "ticketTemplates": "Packages",
     "apiKeys": "API keys",
     "permissions": "Permissions"
   },
@@ -783,7 +783,7 @@
       "type": "Type",
       "customer": "Customer",
       "contact": "Contact person",
-      "noContact": "No contact person",
+      "note": "Booking note",
       "desiredStartsAt": "Desired start",
       "desiredEndsAt": "Desired end",
       "when": "Desired dates",
@@ -795,7 +795,7 @@
       "newStatus": "New status",
       "statusReason": "Reason",
       "holdsUntil": "Hold until",
-      "template": "Predefined ticket",
+      "template": "Package",
       "startsAt": "Starts",
       "headcount": "Headcount",
       "assignee": "Assigned to"
@@ -812,9 +812,9 @@
     "expireHoldsConfirm": "Move every line in an expiring state, on tickets whose hold date has passed, to its expiry state? This also runs automatically every 15 minutes.",
     "holdsExpired": "Overdue holds expired",
     "createFromTemplate": "Create ticket",
-    "createFromTemplateDescription": "Choose a predefined ticket, the customer, the start and the headcount. The lines are created for you.",
+    "createFromTemplateDescription": "Choose a package, the customer, the start and the headcount. The lines are created for you.",
     "buildStepByStep": "Build it step by step",
-    "useTemplate": "Use a predefined ticket instead",
+    "useTemplate": "Use a package instead",
     "templateBlocked": "{count, plural, one {# line is blocked: a hold collides.} other {# lines are blocked: a hold collides.}}",
     "noAssignee": "No one yet",
     "estimateHistory": {
@@ -831,7 +831,7 @@
       "trigger": {
         "MANUAL": "By hand",
         "QUOTE_EVENT": "By a quote event",
-        "TEMPLATE": "From a predefined ticket",
+        "TEMPLATE": "From a package",
         "SYSTEM": "By the system"
       },
       "warnings": {
@@ -1839,7 +1839,7 @@
         "stateId": "State (id)",
         "holdsUntil": "Hold until",
         "expiryStateId": "Expiry state (id)",
-        "templateId": "Predefined ticket (id)",
+        "templateId": "Package (id)",
         "lines": "Lines",
         "startsAt": "Starts",
         "itemTypes": "Item types",
@@ -1963,10 +1963,10 @@
         "alternativeGroup_archive": "Dissolve alternatives",
         "alternativeGroup_choose": "Choose an alternative",
         "ticket_expireHolds": "Expire overdue holds",
-        "ticket_createFromTemplate": "Create ticket from a predefined ticket",
-        "ticketTemplate_create": "Create predefined ticket",
-        "ticketTemplate_update": "Update predefined ticket",
-        "ticketTemplate_archive": "Archive predefined ticket",
+        "ticket_createFromTemplate": "Create ticket from a package",
+        "ticketTemplate_create": "Create package",
+        "ticketTemplate_update": "Update package",
+        "ticketTemplate_archive": "Archive package",
         "pipelineSetup_activate": "Set up the pipeline",
         "deposit_create": "Create deposit request",
         "deposit_send": "Mark deposit request as sent",
@@ -2364,9 +2364,9 @@
         }
       },
       "ticketTemplate": {
-        "singular": "Predefined ticket",
-        "empty": "No predefined tickets found.",
-        "open": "Open the predefined tickets",
+        "singular": "Package",
+        "empty": "No packages found.",
+        "open": "Open the packages",
         "archived": "Archived",
         "lines": "{count, plural, =0 {No lines} one {# line} other {# lines}}",
         "columns": {
@@ -3044,7 +3044,7 @@
         "tickets": {
           "title": "Tickets",
           "lead": "A ticket is one customer request, from the first contact to the finished event. This page shows how to create one and move it through your statuses.",
-          "body": "# Create a ticket\n\n1. Open **Tickets** and choose **Create ticket**.\n2. Pick a type and the customer. Everything else can wait: a contact person, the desired dates, the quantity, the headcount and a budget can be added now or later.\n3. Save. The ticket gets the next reference number and starts in your entry status, for example **Lead**.\n\n# The ticket page\n\n- **Quotes**: versions of the quote to the customer.\n- **Program**: the lines of the ticket. Choose **Add line** and give a name, time, room, setup and quantity. A room is held for that time, and the setup's changeover time is blocked right before it.\n- **Requirements**: counts per list value. See [Needs and sheets](/docs/guide/needs-and-sheets).\n- **Sheets**: versions you can generate and send.\n- **Payments**: payment requests for this ticket. See [Payments](/docs/guide/payments).\n- **Received email**: replies from the customer, when your organization has inbound email set up.\n- **Export**: downloads the ticket as a json file for someone outside Bibi.\n\n# Move it through your statuses\n\nYour administrators decide the statuses, their names and their order under **Settings, Statuses**. Choose **Change status** on the ticket page, or drag the card on the **Pipeline** board.\n\nWhat a status does is set with a few flags:\n\n- **New tickets start here**: the entry status.\n- **Needs a reason**: you must say why, for example when a ticket is lost.\n- **Needs an assignee**: the ticket must have an assignee first.\n- **Ends the ticket**: nothing leaves it, and the ticket's rooms and resources are released.\n- **Can be invoiced**: payments can still be requested.\n\nWhich moves are allowed from each status is also set by your administrators. If a move is refused, Bibi tells you every reason at once and nothing changes. Use **Change assignee** to set who answers for the ticket, and **Follow** to stay informed.\n\n# Coming later\n\nLine states (prebooked, booked, ordered), predefined tickets for small meetings and signing by BankID are decided but not built yet."
+          "body": "# Create a ticket\n\n1. Open **Tickets** and choose **Create ticket**.\n2. Pick a type, the customer and a contact person at the customer. Everything else can wait: the desired dates, the quantity, the headcount, a budget and a note for the booking can be added now or later. For a small meeting, choose **Use a package instead**: a package creates a ticket with its lines in one step.\n3. Save. The ticket gets the next reference number and starts in your entry status, for example **Lead**.\n\n# The ticket page\n\n- **Quotes**: versions of the quote to the customer.\n- **Program**: the lines of the ticket. Choose **Add line** and give a name, time, room, setup and quantity. A room is held for that time, and the setup's changeover time is blocked right before it.\n- **Requirements**: counts per list value. See [Needs and sheets](/docs/guide/needs-and-sheets).\n- **Sheets**: versions you can generate and send.\n- **Payments**: payment requests for this ticket. See [Payments](/docs/guide/payments).\n- **Received email**: replies from the customer, when your organization has inbound email set up.\n- **Export**: downloads the ticket as a json file for someone outside Bibi.\n\n# Move it through your statuses\n\nYour administrators decide the statuses, their names and their order under **Settings, Statuses**. Choose **Change status** on the ticket page, or drag the card on the **Pipeline** board.\n\nWhat a status does is set with a few flags:\n\n- **New tickets start here**: the entry status.\n- **Needs a reason**: you must say why, for example when a ticket is lost.\n- **Needs an assignee**: the ticket must have an assignee first.\n- **Ends the ticket**: nothing leaves it, and the ticket's rooms and resources are released.\n- **Can be invoiced**: payments can still be requested.\n\nWhich moves are allowed from each status is also set by your administrators. If a move is refused, Bibi tells you every reason at once and nothing changes. Use **Change assignee** to set who answers for the ticket, and **Follow** to stay informed.\n\n# Coming later\n\nLine states (prebooked, booked, ordered) and signing by BankID are decided but not built yet."
         },
         "items-and-venues": {
           "title": "Items and venues",
@@ -3334,19 +3334,19 @@
     "cellKeeps": "Lines of {type} keep their state."
   },
   "ticketTemplate": {
-    "singular": "Predefined ticket",
-    "plural": "Predefined tickets",
+    "singular": "Package",
+    "plural": "Packages",
     "listDescription": "Ready-made tickets: staff create a ticket with its lines in one step.",
-    "create": "New predefined ticket",
-    "edit": "Edit predefined ticket",
+    "create": "New package",
+    "edit": "Edit package",
     "createDescription": "Name it, choose the ticket type and start status, then add its lines.",
-    "editDescription": "Change the predefined ticket. Tickets already made from it are not changed.",
+    "editDescription": "Change the package. Tickets already made from it are not changed.",
     "archive": "Archive",
     "archiveConfirm": "Archive \"{name}\"? Tickets already made from it are not changed.",
-    "archived": "Predefined ticket archived",
-    "created": "Predefined ticket created",
-    "updated": "Predefined ticket saved",
-    "empty": "No predefined tickets found.",
+    "archived": "Package archived",
+    "created": "Package created",
+    "updated": "Package saved",
+    "empty": "No packages found.",
     "emptyDescription": "Create one to let staff make small tickets in one step.",
     "saving": "Saving…",
     "lines": "Lines",
@@ -3358,6 +3358,8 @@
       "name": "Name",
       "ticketType": "Ticket type",
       "status": "Starts in status",
+      "minGuests": "Fewest guests",
+      "maxGuests": "Most guests",
       "lineName": "Name",
       "lineType": "Line type",
       "item": "Item",
@@ -3369,6 +3371,7 @@
       "name": "Name",
       "ticketType": "Ticket type",
       "status": "Starts in",
+      "guests": "Guests",
       "lines": "Lines"
     }
   },
@@ -3833,7 +3836,7 @@
     "footer": "© Bibi",
     "features": {
       "tickets": {
-        "title": "Predefined tickets",
+        "title": "Packages",
         "body": "Create a ticket for a smaller meeting without a quote. The customer pays by card or on invoice through a link and never has to use the app."
       },
       "needs": {

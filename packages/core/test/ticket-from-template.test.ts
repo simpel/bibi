@@ -3,7 +3,7 @@ import { createTicketFromTemplate, execute } from "../src/index";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
 import { addLine } from "./status-grid-helpers";
-import { memberUser } from "./ticket-helpers";
+import { memberUser, partyOf } from "./ticket-helpers";
 import { makeTemplate, templateSetup } from "./ticket-template-helpers";
 
 const startsAt = new Date(Date.UTC(2037, 10, 1, 9));
@@ -13,12 +13,13 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
     const setup = await templateSetup();
     const { context, room, roomState, food } = setup;
     const template = unwrap({ result: await makeTemplate({ context, setup }) });
-    const customerId = (await setup.newTicket()).customerId;
+    const party = partyOf({ ticket: await setup.newTicket() });
+    const { customerId } = party;
     const assigneeId = await memberUser({ context, name: "Eva Lind" });
     const ticket = unwrap({
       result: await execute({
         operation: createTicketFromTemplate,
-        input: { templateId: template.id, customerId, startsAt, headcount: 8, assigneeId },
+        input: { templateId: template.id, ...party, startsAt, headcount: 8, assigneeId },
         context,
       }),
     });
@@ -53,7 +54,7 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
       operation: createTicketFromTemplate,
       input: {
         templateId: template.id,
-        customerId: other.customerId,
+        ...partyOf({ ticket: other }),
         startsAt,
         headcount: 8,
         assigneeId,
@@ -71,11 +72,12 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
     const setup = await templateSetup();
     const { context } = setup;
     const template = unwrap({ result: await makeTemplate({ context, setup }) });
-    const customerId = (await setup.newTicket()).customerId;
+    const party = partyOf({ ticket: await setup.newTicket() });
+    const { customerId } = party;
     const before = await context.db.ticket.count();
     const created = await execute({
       operation: createTicketFromTemplate,
-      input: { templateId: template.id, customerId, startsAt, headcount: 8 },
+      input: { templateId: template.id, ...party, startsAt, headcount: 8 },
       context,
     });
     expect(created.ok).toBe(true);
@@ -86,14 +88,15 @@ describe("ticket.createFromTemplate (ADR 0043)", () => {
     const setup = await templateSetup();
     const { context } = setup;
     const template = unwrap({ result: await makeTemplate({ context, setup }) });
-    const customerId = (await setup.newTicket()).customerId;
+    const party = partyOf({ ticket: await setup.newTicket() });
+    const { customerId } = party;
     const writer = testContext({
       organizationId: context.organizationId,
       permissions: { ticket: ["read", "write", "delete"], customer: ["read"] },
     });
     const refused = await execute({
       operation: createTicketFromTemplate,
-      input: { templateId: template.id, customerId, startsAt, headcount: 8 },
+      input: { templateId: template.id, ...party, startsAt, headcount: 8 },
       context: writer,
     });
     expect(errorCode({ result: refused })).toBe("VALIDATION");

@@ -24,7 +24,7 @@ const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
 export const lindholmenTickets: readonly DemoTicket[] = [
   ...lindholmenHistoryTickets,
   {
-    ...{ ...quoted, estimatesKr: [60_000, 85_000] },
+    ...{ ...quoted, estimatesKr: [60_000, 85_000], note: "North entrance, invoice ref VSR-2291." },
     ...{ ref: "L3", customer: "Västra Sjukvårdsregionen", type: "Conference", day: 3 },
     money: { deposit: { description: "Advance at confirmation", amountKr: 5_000 } },
     ...{

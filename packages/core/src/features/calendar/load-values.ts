@@ -68,6 +68,7 @@ async function loadPricedItems({
       entityType: { capabilities: { has: "BOOKABLE" } },
       ...(input.venueId ? { venueId: input.venueId } : {}),
       ...(input.typeId ? { entityTypeId: input.typeId } : {}),
+      ...(input.itemIds ? { id: { in: input.itemIds } } : {}),
     },
     select: { id: true, priceMinor: true, venueId: true, venue: { select: { timeZone: true } } },
   });

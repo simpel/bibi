@@ -13,7 +13,8 @@ model Ticket {
   reference           Int
   entityTypeId        String
   customerId          String
-  /// A contact person at the customer (optional).
+  /// A contact person at the customer. Required for new tickets and never cleared (core, ADR 0081);
+  /// nullable because older tickets may have none.
   contactId           String?
   statusId            String
   /// The period the customer asked for; each line has its own time.
@@ -29,6 +30,8 @@ model Ticket {
   holdsUntil          DateTime?
   /// Values of the type's own fields, keyed by `FieldDefinition.key`.
   fields              Json                 @default("{}")
+  /// Booking-level notes for the whole ticket (owned, at most 4000 characters, ADR 0081).
+  note                String?
   status              RecordStatus         @default(ACTIVE)
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt

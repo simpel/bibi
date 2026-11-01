@@ -1,6 +1,7 @@
 import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { archiveCustomer, type ExecuteContext, execute, getTicket, grantAll } from "../src/index";
+import { archiveContactsOf } from "./contact-archive-helpers";
 import { errorCode, testContext, unwrap } from "./helpers";
 import { createTestTicket, placeInStatus, ticketSetup } from "./ticket-helpers";
 import { statuses } from "./ticket-status-helpers";
@@ -23,6 +24,7 @@ async function setupWithTickets() {
   const setup = await ticketSetup();
   const { context, type, customer } = setup;
   const ids = await ticketPerStatus({ context, entityTypeId: type.id, customerId: customer.id });
+  await archiveContactsOf({ customerId: customer.id });
   return { ...setup, ids };
 }
 

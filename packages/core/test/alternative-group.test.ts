@@ -7,6 +7,7 @@ import {
   updateAlternativeGroup,
 } from "../src/index";
 import { choose, groupLines, roomAlternatives } from "./alternative-group-helpers";
+import { archiveContactsOf } from "./contact-archive-helpers";
 import { errorCode, peer, unwrap } from "./helpers";
 import { toState } from "./item-state-helpers";
 import { activeOccupancies } from "./line-helpers";
@@ -105,6 +106,7 @@ describe("alternative groups (ADR 0052)", () => {
 
   it("archives the group with its ticket", async () => {
     const { context, ticket, group } = await roomAlternatives();
+    await archiveContactsOf({ customerId: ticket.customerId });
     const input = { id: ticket.customerId, archiveTickets: true };
     unwrap({ result: await execute({ operation: archiveCustomer, input, context }) });
     const row = await context.db.alternativeGroup.findFirst({

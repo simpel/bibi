@@ -17,7 +17,7 @@ type FormProps = {
   data: TicketTemplateFormData;
 };
 
-/** Name, ticket type and the status tickets start in. */
+/** Name, ticket type, the status tickets start in and the guest range. */
 function DetailFields({ form, data }: FormProps) {
   const t = useTranslations("ticketTemplate.fields");
   return (
@@ -36,6 +36,10 @@ function DetailFields({ form, data }: FormProps) {
           label={t("status")}
           options={data.statuses}
         />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <TextField form={form} name="minGuests" label={t("minGuests")} type="number" />
+        <TextField form={form} name="maxGuests" label={t("maxGuests")} type="number" />
       </div>
     </>
   );

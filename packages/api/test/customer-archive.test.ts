@@ -3,6 +3,28 @@ import { call, newOrgId } from "./helpers";
 
 type SeedInput = { org: string };
 
+/** An entry status "Lead": a new status is a name and a colour, the entry flag is an update. */
+async function seedEntryStatus({ org }: SeedInput) {
+  const body = { name: "Lead", color: "#22c55e" };
+  const lead = await call({ method: "POST", path: "/ticket-statuses", org, body });
+  await call({
+    method: "PATCH",
+    path: `/ticket-statuses/${lead.json.id}`,
+    org,
+    body: { entry: true },
+  });
+}
+
+type ContactInput = SeedInput & { customerId: string };
+
+/** A contact at the customer: every new ticket needs one (ADR 0081). */
+async function seedContact({ org, customerId }: ContactInput) {
+  const body = { base: "CONTACT", name: "Contact" };
+  const type = await call({ method: "POST", path: "/entity-types", org, body });
+  const contact = { entityTypeId: type.json.id, customerId, name: "Anna Berg" };
+  return call({ method: "POST", path: "/contacts", org, body: contact });
+}
+
 /** A customer with one ticket; returns the customer id. */
 async function seed({ org }: SeedInput): Promise<string> {
   const post = ({ path, body }: { path: string; body: unknown }) =>
@@ -15,14 +37,7 @@ async function seed({ org }: SeedInput): Promise<string> {
     path: "/entity-types",
     body: { base: "TICKET", name: "Conference" },
   });
-  // A new status is a name and a colour; the entry flag is set with an update.
-  const lead = await post({ path: "/ticket-statuses", body: { name: "Lead", color: "#22c55e" } });
-  await call({
-    method: "PATCH",
-    path: `/ticket-statuses/${lead.json.id}`,
-    org,
-    body: { entry: true },
-  });
+  await seedEntryStatus({ org });
   const customer = await post({
     path: "/customers",
     body: {
@@ -30,16 +45,20 @@ async function seed({ org }: SeedInput): Promise<string> {
       name: "Kvarnby Design AB",
     },
   });
+  const contact = await seedContact({ org, customerId: customer.json.id });
   const ticket = await post({
     path: "/tickets",
     body: {
       entityTypeId: ticketType.json.id,
       customerId: customer.json.id,
+      contactId: contact.json.id,
       desiredStartsAt: "2026-11-03T08:00:00.000Z",
       desiredEndsAt: "2026-11-03T16:00:00.000Z",
     },
   });
   expect(ticket.status, JSON.stringify(ticket.json)).toBe(201);
+  // A customer with active contacts cannot be archived, so the contact is archived at once.
+  await call({ method: "DELETE", path: `/contacts/${contact.json.id}`, org });
   return customer.json.id;
 }
 

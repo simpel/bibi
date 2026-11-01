@@ -3,6 +3,10 @@ import { z } from "zod";
 export const TicketCreateFromTemplateInputSchema = z.object({
   templateId: z.string().min(1).describe("Id of the predefined ticket (ticketTemplate.list)"),
   customerId: z.string().min(1).describe("Id of the customer who asks (customer.list)"),
+  contactId: z
+    .string()
+    .min(1)
+    .describe("Id of the contact person at the customer (contact.list); required (ADR 0081)"),
   startsAt: z.coerce
     .date()
     .describe("When the ticket starts, ISO 8601; each line is timed from here"),

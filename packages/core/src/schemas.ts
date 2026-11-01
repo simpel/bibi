@@ -75,6 +75,7 @@ export * from "./features/status-grid/schema";
 export * from "./features/ticket/create-from-template-schema";
 export * from "./features/ticket/estimate-history-schema";
 export * from "./features/ticket/export-schema";
+export * from "./features/ticket/list-schema";
 export * from "./features/ticket/schema";
 export * from "./features/ticket/status-history-schema";
 export * from "./features/ticket-status/gate-schema";

@@ -1,6 +1,7 @@
 import { getDb } from "@bibi/db";
 import { describe, expect, it } from "vitest";
 import { archiveCustomer, execute } from "../src/index";
+import { archiveContactsOf } from "./contact-archive-helpers";
 import { errorCode } from "./helpers";
 import { createTestTicket, ticketSetup } from "./ticket-helpers";
 
@@ -19,6 +20,7 @@ describe("customer.archive expectedTicketCount (#144)", () => {
   it("refuses with CONFLICT when tickets were added after the approval", async () => {
     const { context, type, customer } = await setupWithTickets({ count: 2 });
     await createTestTicket({ context, entityTypeId: type.id, customerId: customer.id });
+    await archiveContactsOf({ customerId: customer.id });
     const refused = await execute({
       operation: archiveCustomer,
       input: { id: customer.id, archiveTickets: true, expectedTicketCount: 2 },
@@ -34,6 +36,7 @@ describe("customer.archive expectedTicketCount (#144)", () => {
 
   it("archives when the count matches what was approved", async () => {
     const { context, customer } = await setupWithTickets({ count: 2 });
+    await archiveContactsOf({ customerId: customer.id });
     const archived = await execute({
       operation: archiveCustomer,
       input: { id: customer.id, archiveTickets: true, expectedTicketCount: 2 },

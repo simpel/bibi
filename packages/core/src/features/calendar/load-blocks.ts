@@ -96,6 +96,7 @@ export async function loadBlocks({
       item: {
         ...(filters.venueId ? { venueId: filters.venueId } : {}),
         ...(filters.typeId ? { entityTypeId: filters.typeId } : {}),
+        ...(filters.itemIds ? { id: { in: filters.itemIds } } : {}),
       },
       ...(line ? { line } : {}),
     },

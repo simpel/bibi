@@ -21,6 +21,9 @@ export type TicketTemplateFormValues = {
   name: string;
   entityTypeId: string;
   statusId: string;
+  /** Fewest and most guests the package is made for; empty: no limit. */
+  minGuests: string;
+  maxGuests: string;
   lines: TemplateLineValues[];
 };
 
@@ -32,6 +35,8 @@ export const ticketTemplateFormSchema = formSchema({
   toInput: ({ values }: { values: TicketTemplateFormValues }) => ({
     ...values,
     name: values.name.trim(),
+    minGuests: numberOrNull({ value: values.minGuests }),
+    maxGuests: numberOrNull({ value: values.maxGuests }),
     lines: values.lines.map((line) => ({
       ...line,
       name: line.name.trim(),
@@ -67,6 +72,8 @@ export function ticketTemplateFormDefaults({
     name: template?.name ?? "",
     entityTypeId: template?.entityTypeId ?? firstTypes.ticketType,
     statusId: template?.statusId ?? firstTypes.ticketStatus,
+    minGuests: template?.minGuests == null ? "" : String(template.minGuests),
+    maxGuests: template?.maxGuests == null ? "" : String(template.maxGuests),
     lines: (template?.lines ?? []).map((line) => ({
       name: line.name,
       entityTypeId: line.entityTypeId,

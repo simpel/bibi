@@ -81,7 +81,8 @@ describe("tickets (ADR 0043)", () => {
 
   it("refuses an unknown customer, a type of another base and unknown fields", async () => {
     const { context, type, customer } = await ticketSetup();
-    const base = { entityTypeId: type.id, customerId: customer.id };
+    const contact = await createTestContact({ context, customerId: customer.id });
+    const base = { entityTypeId: type.id, customerId: customer.id, contactId: contact.id };
     const issue = async ({ input }: { input: Record<string, unknown> }) => {
       const result = await execute({ operation: createTicket, input, context });
       return result.ok ? null : result.error.issues[0]?.path;

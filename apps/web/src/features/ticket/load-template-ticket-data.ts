@@ -1,18 +1,25 @@
 import "server-only";
-import { listCustomers, listMembers, listTicketTemplates, type Result } from "@bibi/core";
+import {
+  listContacts,
+  listCustomers,
+  listMembers,
+  listTicketTemplates,
+  type Result,
+} from "@bibi/core";
 import { runOperation } from "@/server/run-operation";
 import type { TemplateTicketFormData } from "./ui/template-ticket-form-data";
 
 const LIMIT = 100;
 
 /**
- * What the short create form picks from: predefined tickets, customers (hidden without `customer:read`) and (optionally, without
+ * What the short create form picks from: packages, customers (hidden without `customer:read`), their contacts and (optionally, without
  * read access the list is empty) the members who can be assigned.
  */
 export async function loadTemplateTicketData(): Promise<Result<TemplateTicketFormData>> {
-  const [templates, customers, members] = await Promise.all([
+  const [templates, customers, contacts, members] = await Promise.all([
     runOperation({ operation: listTicketTemplates, input: { limit: LIMIT } }),
     runOperation({ operation: listCustomers, input: { limit: LIMIT } }),
+    runOperation({ operation: listContacts, input: { limit: LIMIT } }),
     runOperation({ operation: listMembers, input: { limit: LIMIT } }),
   ]);
   if (!templates.ok) return templates;
@@ -24,6 +31,9 @@ export async function loadTemplateTicketData(): Promise<Result<TemplateTicketFor
       templates: templates.value.items.map(named),
       customers: customers.ok ? customers.value.items.map(named) : [],
       customersHidden: !customers.ok,
+      contacts: contacts.ok
+        ? contacts.value.items.map(({ id, name, customerId }) => ({ id, name, customerId }))
+        : [],
       members: members.ok
         ? members.value.items.map(({ userId, name }) => ({ id: userId, name }))
         : [],

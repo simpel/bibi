@@ -7,6 +7,7 @@ import type { DemoTicketTemplate } from "../../template-types";
 export const vingaledenTemplates: readonly DemoTicketTemplate[] = [
   {
     ...{ name: "Lighthouse tour with blankets", type: "Round trip", status: "Request" },
+    ...{ minGuests: 1, maxGuests: 12 },
     lines: [
       {
         ...{ item: "Lighthouse tour to Vinga", name: "Lighthouse tour" },

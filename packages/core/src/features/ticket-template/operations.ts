@@ -61,8 +61,9 @@ export const createTicketTemplate = defineOperation({
   name: "ticketTemplate.create",
   kind: "command",
   description:
-    "Create a predefined ticket: a name, a ticket type, the (non-closing) status tickets start " +
-    `in, default own-field values and lines. ${LINE_NOTE}`,
+    "Create a predefined ticket (a package in the UI): a name, a ticket type, the (non-closing) " +
+    "status tickets start in, an optional guest range (minGuests, maxGuests), default own-field " +
+    `values and lines. ${LINE_NOTE}`,
   input: TicketTemplateCreateInputSchema,
   output: TicketTemplateSchema,
   permission: "template:write",
@@ -100,6 +101,8 @@ export const updateTicketTemplate = defineOperation({
       entityTypeId: data.entityTypeId ?? before.entityTypeId,
       statusId: data.statusId ?? before.statusId,
       fields: fields ?? before.fields,
+      minGuests: data.minGuests === undefined ? before.minGuests : data.minGuests,
+      maxGuests: data.maxGuests === undefined ? before.maxGuests : data.maxGuests,
       lines: lines ?? before.lines,
     });
     if (!checked.ok) return checked;

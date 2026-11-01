@@ -24,6 +24,9 @@ export const TicketTemplateSchema = z.object({
   /** The status tickets made from the template start in. */
   statusId: z.string(),
   fields: FieldValuesSchema,
+  /** The guest range the package is made for (ADR 0081); null = no limit on that side. */
+  minGuests: z.number().int().nullable(),
+  maxGuests: z.number().int().nullable(),
   lines: z.array(TicketTemplateLineSchema),
   status: RecordStatusSchema,
   createdAt: z.date(),
@@ -32,6 +35,8 @@ export const TicketTemplateSchema = z.object({
 });
 
 const MinutesSchema = z.number().int().min(0).max(525_600);
+
+const GuestsSchema = z.number().int().min(1).max(100_000);
 
 export const TicketTemplateLineInputSchema = z.object({
   entityTypeId: z
@@ -65,6 +70,12 @@ const DetailsShape = {
     .describe("Id of the status tickets start in (ticketStatus.list); not a closing status"),
   fields: FieldValuesSchema.optional().describe(
     "Default values of the ticket type's own fields, by field key",
+  ),
+  minGuests: GuestsSchema.nullish().describe(
+    "Fewest guests the package is made for; null = no lower limit (at most maxGuests)",
+  ),
+  maxGuests: GuestsSchema.nullish().describe(
+    "Most guests the package is made for; null = no upper limit",
   ),
   lines: z.array(TicketTemplateLineInputSchema).max(100).describe("The lines, in order"),
 };

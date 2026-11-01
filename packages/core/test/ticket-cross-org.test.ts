@@ -1,8 +1,22 @@
 import { describe, expect, it } from "vitest";
-import { createTicket, type ExecuteContext, execute, grantAll, updateTicket } from "../src/index";
+import {
+  createContact,
+  createTicket,
+  type ExecuteContext,
+  execute,
+  grantAll,
+  updateTicket,
+} from "../src/index";
 import { createTestCustomer } from "./customer-helpers";
+import { unwrap } from "./helpers";
 import { testOrg } from "./org-helpers";
-import { createTestContact, createTestTicket, memberUser, ticketSetup } from "./ticket-helpers";
+import {
+  contactAt,
+  createTestContact,
+  createTestTicket,
+  memberUser,
+  ticketSetup,
+} from "./ticket-helpers";
 
 type PathsInput = {
   context: ExecuteContext;
@@ -28,7 +42,8 @@ describe("ticket referenced ids (ADR 0004)", () => {
       customerId: foreignCustomer.id,
     });
     const foreignUser = await memberUser({ context: foreign, name: "Outsider" });
-    const base = { entityTypeId: type.id, customerId: customer.id };
+    const contactId = (await contactAt({ context, customerId: customer.id })).id;
+    const base = { entityTypeId: type.id, customerId: customer.id, contactId };
     const ticket = await createTestTicket({ context, ...base });
     for (const input of [{ customerId: foreignCustomer.id }, { contactId: foreignContact.id }]) {
       const path = Object.keys(input)[0];
@@ -46,7 +61,7 @@ describe("ticket referenced ids (ADR 0004)", () => {
   it("needs read access to the customer and contact it refers to", async () => {
     const { context, type, customer } = await ticketSetup();
     const contact = await createTestContact({ context, customerId: customer.id });
-    const base = { entityTypeId: type.id, customerId: customer.id };
+    const base = { entityTypeId: type.id, customerId: customer.id, contactId: contact.id };
     const all = grantAll({});
     // Contacts are part of the customer feature (ADR 0050).
     const noCustomer = { ...context, permissions: { ...all, customer: [] } };
@@ -55,9 +70,16 @@ describe("ticket referenced ids (ADR 0004)", () => {
       path: "customerId",
     });
     const ticket = await createTestTicket({ context, ...base });
+    const second = unwrap({
+      result: await execute({
+        operation: createContact,
+        input: { customerId: customer.id, entityTypeId: contact.entityTypeId, name: "Per Holm" },
+        context,
+      }),
+    });
     const update = await refusal({
       context: noCustomer,
-      input: { contactId: contact.id },
+      input: { contactId: second.id },
       ticketId: ticket.id,
     });
     expect(update).toMatchObject({ code: "VALIDATION", path: "contactId" });

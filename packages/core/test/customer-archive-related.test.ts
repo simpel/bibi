@@ -7,6 +7,7 @@ import {
   execute,
   saveItemAsBundle,
 } from "../src/index";
+import { archiveContactsOf } from "./contact-archive-helpers";
 import { errorCode, unwrap } from "./helpers";
 import { createMealSetup } from "./item-customisation-group-helpers";
 import { createTestLine, programSetup } from "./line-helpers";
@@ -62,6 +63,7 @@ describe("archiving tickets releases lines and rooms (#166, #145)", () => {
     const clash = await createTestLine({ ...base, ticketId: other.id, from: 10, to: 12 });
     expect(errorCode({ result: clash })).toBe("CONFLICT");
 
+    await archiveContactsOf({ customerId: ticket.customerId });
     unwrap({
       result: await archive({ context: context, id: ticket.customerId, archiveTickets: true }),
     });

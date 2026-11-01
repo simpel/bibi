@@ -7,6 +7,13 @@ import { nameOf } from "@/components/form/named-option";
 import type { RowAccess } from "@/lib/can";
 import { TicketTemplateRowActions } from "./ticket-template-row-actions";
 
+const guestRange = ({ min, max }: { min: number | null; max: number | null }) => {
+  if (min === null && max === null) return "–";
+  if (min === null) return `≤ ${max}`;
+  if (max === null) return `≥ ${min}`;
+  return min === max ? String(min) : `${min}–${max}`;
+};
+
 type Column = ColumnDef<TicketTemplateDto>;
 
 export type TemplateColumnsInput = {
@@ -15,7 +22,7 @@ export type TemplateColumnsInput = {
   access: RowAccess;
 };
 
-/** Name, ticket type, start status and line count; admins also get the row actions. */
+/** Name, ticket type, start status, guest range and line count; admins also get the row actions. */
 export function useTemplateColumns({ statuses, types, access }: TemplateColumnsInput): Column[] {
   const t = useTranslations("ticketTemplate");
   const common = useTranslations("common");
@@ -31,6 +38,11 @@ export function useTemplateColumns({ statuses, types, access }: TemplateColumnsI
         id: "status",
         header: t("columns.status"),
         accessorFn: (row) => nameOf({ options: statuses, id: row.statusId }),
+      },
+      {
+        id: "guests",
+        header: t("columns.guests"),
+        accessorFn: (row) => guestRange({ min: row.minGuests, max: row.maxGuests }),
       },
       {
         id: "lines",
