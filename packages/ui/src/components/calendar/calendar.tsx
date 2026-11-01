@@ -1,3 +1,5 @@
+"use client";
+
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { type ComponentProps, useEffect, useRef } from "react";
 import { type DayButton, DayPicker } from "react-day-picker";
