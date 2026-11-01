@@ -2,6 +2,7 @@ import { Button } from "@bibi/ui";
 import { Trash2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
+import { CheckField } from "@/components/form/check-field";
 import { TextField } from "@/components/form/text-field";
 import { CustomisationOptionsField } from "./customisation-options-field";
 import type { ItemFormData } from "./item-form-data";
@@ -16,7 +17,10 @@ export type CustomisationGroupRowProps = {
   onRemove: () => void;
 };
 
-/** One customisation group: name, how many to pick, and which items are the options. */
+/**
+ * One customisation group: name, how many to pick, whether the choice is split between guests
+ * (ADR 0082), and which items are the options.
+ */
 export function CustomisationGroupRow(props: CustomisationGroupRowProps) {
   const { form, index, items, onRemove } = props;
   const t = useTranslations("item.customisationGroups");
@@ -26,6 +30,9 @@ export function CustomisationGroupRow(props: CustomisationGroupRowProps) {
       <TextField form={form} name={`${name}.name`} label={t("name")} />
       <TextField form={form} name={`${name}.minPick`} label={t("minPick")} type="number" />
       <TextField form={form} name={`${name}.maxPick`} label={t("maxPick")} type="number" />
+      <div className="sm:col-span-3">
+        <CheckField form={form} name={`${name}.split`} label={t("split")} />
+      </div>
       <CustomisationOptionsField form={form} groupIndex={index} items={items} />
       <RemoveButton label={t("remove")} onRemove={onRemove} />
     </div>

@@ -100,9 +100,17 @@ export type DemoInvoice = {
  * (`line.changeState`) right after it is created. `quantity` and `unitPriceKr` are the line's own
  * values; left out, the line counts the ticket's headcount and inherits the price.
  */
+/**
+ * A customisation option chosen on a line (ADR 0059), by item name; `quantity` in a split group
+ * (ADR 0082). `unitPriceKr` is the option line's own price, set after the choice (`line.update`).
+ */
+export type DemoLineOption = { name: string; quantity?: number; unitPriceKr?: number };
+
 export type DemoLine = {
   item: string;
   name: string;
+  /** The line's chosen options (`line.chooseOptions`, ADR 0059, 0082), every group's. */
+  options?: readonly DemoLineOption[];
   from?: string;
   to?: string;
   state?: string;

@@ -75,9 +75,14 @@ export const mainCourse = ({
   options: itemIds.map((itemId) => ({ itemId, priceEffect })),
 });
 
-/** Groups with sorted options, to compare sets. */
-export const sortedGroups = ({ groups }: { groups: ItemCustomisationGroupInput[] }) =>
-  groups.map((group) => ({
+/** Groups with sorted options and without their ids (a group read has one), to compare sets. */
+export const sortedGroups = ({
+  groups,
+}: {
+  groups: (ItemCustomisationGroupInput & { id?: string })[];
+}) =>
+  groups.map(({ id: _id, ...group }) => ({
     ...group,
+    split: group.split ?? false,
     options: [...group.options].sort((a, b) => a.itemId.localeCompare(b.itemId)),
   }));

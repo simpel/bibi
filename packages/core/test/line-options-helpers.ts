@@ -39,14 +39,14 @@ export async function optionsSetup() {
   const roomType = await createType({ context, customisations: true });
   const customisationGroups = [
     {
-      ...{ name: "Installation", minPick: 1, maxPick: 1 },
+      ...{ name: "Installation", minPick: 1, maxPick: 1, split: false },
       options: [
         { itemId: technician.id, priceEffect: "EXTRA" as const },
         { itemId: selfInstall.id, priceEffect: "INCLUDED" as const },
       ],
     },
     {
-      ...{ name: "Furniture", minPick: 0, maxPick: 1 },
+      ...{ name: "Furniture", minPick: 0, maxPick: 1, split: false },
       options: [{ itemId: lounge.id, priceEffect: "REPLACES" as const }],
     },
   ];
@@ -64,7 +64,14 @@ export async function optionsSetup() {
   return { ...setup, room, technician, selfInstall, lounge, lineId: line?.id ?? "" };
 }
 
-export type ChooseInput = Ctx & { lineId: string; optionItemIds: string[] };
+/** A chosen option: its item id, with a quantity in a split group (ADR 0082). */
+export type TestOption = { itemId: string; quantity?: number };
 
-export const choose = ({ context, lineId, optionItemIds }: ChooseInput) =>
-  execute({ operation: chooseLineOptions, input: { lineId, optionItemIds }, context });
+export type ChooseInput = Ctx & { lineId: string; options: TestOption[] };
+
+export const choose = ({ context, lineId, options }: ChooseInput) =>
+  execute({ operation: chooseLineOptions, input: { lineId, options }, context });
+
+/** Options of normal groups: the item ids alone. */
+export const picks = ({ ids }: { ids: string[] }): TestOption[] =>
+  ids.map((itemId) => ({ itemId }));

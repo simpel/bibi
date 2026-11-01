@@ -10,8 +10,8 @@ type ToCustomisableInput = { item: ItemDto; names: ReadonlyMap<string, string> }
 function toCustomisable({ item, names }: ToCustomisableInput): CustomisableItem {
   return {
     itemId: item.id,
-    groups: item.customisationGroups.map(({ name, minPick, maxPick, options }) => ({
-      ...{ name, minPick, maxPick },
+    groups: item.customisationGroups.map(({ name, minPick, maxPick, split, options }) => ({
+      ...{ name, minPick, maxPick, split },
       options: options.map(({ itemId, priceEffect }) => ({
         ...{ itemId, priceEffect },
         name: names.get(itemId) ?? "–",

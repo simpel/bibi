@@ -1,12 +1,15 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { ChooseOptionsForm } from "./choose-options-form";
+import type { ChosenOption } from "./choose-options-schema";
 import type { CustomisableItem } from "./program-form-data";
 
 export type ChooseOptionsDialogProps = {
   lineId: string;
   item: CustomisableItem;
-  chosen: readonly string[];
+  chosen: readonly ChosenOption[];
+  /** The line's effective quantity, which a split group's quantities should add up to. */
+  quantity: number | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };

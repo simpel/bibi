@@ -12,8 +12,9 @@ import {
 } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import type { UseFormReturn } from "react-hook-form";
-import type { ChooseOptionsFormValues } from "./choose-options-schema";
+import type { ChooseOptionsFormValues, ChosenOption } from "./choose-options-schema";
 import type { CustomisableItem } from "./program-form-data";
+import { SplitGroupField } from "./split-group-field";
 import { useChooseOptionsForm } from "./use-choose-options-form";
 
 type GroupFieldProps = {
@@ -22,7 +23,7 @@ type GroupFieldProps = {
   group: CustomisableItem["groups"][number];
 };
 
-/** The options of one group as checkboxes, each labelled with its price effect. */
+/** The options of a normal group as checkboxes, each labelled with its price effect. */
 function GroupField({ form, index, group }: GroupFieldProps) {
   const t = useTranslations("line");
   const effects = useTranslations("priceEffect");
@@ -34,7 +35,7 @@ function GroupField({ form, index, group }: GroupFieldProps) {
   return (
     <FormController
       control={form.control}
-      name={`groups.${index}`}
+      name={`groups.${index}.picked`}
       render={({ field }) => (
         <FormItem>
           <FormLabel>{t("optionGroup", { name, min, max, same: String(min === max) })}</FormLabel>
@@ -51,20 +52,30 @@ function GroupField({ form, index, group }: GroupFieldProps) {
 export type ChooseOptionsFormProps = {
   lineId: string;
   item: CustomisableItem;
-  chosen: readonly string[];
+  chosen: readonly ChosenOption[];
+  /** The line's effective quantity, which a split group's quantities should add up to. */
+  quantity: number | null;
   onDone: () => void;
 };
 
-/** One choice list per customisation group of the line's item: `line.chooseOptions` (ADR 0059). */
-export function ChooseOptionsForm({ lineId, item, chosen, onDone }: ChooseOptionsFormProps) {
+/**
+ * One choice list per customisation group of the line's item: `line.chooseOptions` (ADR 0059), a
+ * quantity per option in a split group (ADR 0082).
+ */
+export function ChooseOptionsForm(props: ChooseOptionsFormProps) {
+  const { lineId, item, chosen, quantity, onDone } = props;
   const common = useTranslations("common");
   const { form, submit, pending } = useChooseOptionsForm({ lineId, item, chosen, onDone });
   return (
     <Form {...form}>
       <form onSubmit={submit} noValidate className="grid gap-4">
-        {item.groups.map((group, index) => (
-          <GroupField key={group.name} form={form} index={index} group={group} />
-        ))}
+        {item.groups.map((group, index) =>
+          group.split ? (
+            <SplitGroupField key={group.name} {...{ form, index, group, quantity }} />
+          ) : (
+            <GroupField key={group.name} form={form} index={index} group={group} />
+          ),
+        )}
         <DialogFooter>
           <Button type="button" variant="outline" onClick={onDone}>
             {common("cancel")}

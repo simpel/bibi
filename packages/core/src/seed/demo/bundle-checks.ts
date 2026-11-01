@@ -50,7 +50,8 @@ async function checkParts({ context, line }: LineInput): Promise<string[]> {
 export async function checkDemoBundles({ context, org }: CheckDemoBundlesInput) {
   const expected = org.tickets.flatMap((ticket) => ticket.bundles ?? []).length;
   const lines = await context.db.line.findMany({
-    where: { partLines: { some: { status: "ACTIVE" } } },
+    // Option lines (a price effect, ADR 0059) hang under their line too; they are not parts.
+    where: { partLines: { some: { status: "ACTIVE", priceEffect: null } } },
     select: { id: true, name: true, itemId: true },
   });
   const failures: string[] = [];

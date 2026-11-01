@@ -49,6 +49,7 @@ type Group = {
   name: string;
   minPick: number;
   maxPick: number;
+  split: boolean;
   options: { itemId: string; priceEffect: PriceEffect }[];
 };
 type GroupsInput = { item: DemoItem; seeded: ReadonlyMap<string, string> };
@@ -64,7 +65,14 @@ function resolveGroups({ item, seeded }: GroupsInput): Result<Group[]> {
       options.push({ itemId, priceEffect: option.priceEffect ?? "INCLUDED" });
     }
     const pick = group.pick ?? 1;
-    groups.push({ name: group.name, minPick: group.minPick ?? pick, maxPick: pick, options });
+    const split = group.split ?? false;
+    groups.push({
+      name: group.name,
+      minPick: group.minPick ?? pick,
+      maxPick: pick,
+      split,
+      options,
+    });
   }
   return ok({ value: groups });
 }

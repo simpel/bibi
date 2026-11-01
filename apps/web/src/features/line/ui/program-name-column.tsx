@@ -30,7 +30,10 @@ export function nameColumn({ t, effects }: NameColumnInput): ColumnDef<LineDto> 
         ) : null}
         {original.warnings.map((warning) => (
           <Badge key={warning.id} variant="warning">
-            {t(`warnings.${warning.kind}`)}
+            {t(`warnings.${warning.kind}`, {
+              sum: warning.sum ?? 0,
+              expected: warning.expected ?? 0,
+            })}
           </Badge>
         ))}
       </span>

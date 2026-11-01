@@ -16,6 +16,8 @@ export type CustomisableItem = {
     name: string;
     minPick: number;
     maxPick: number;
+    /** Split between guests (ADR 0082): each chosen option gets its own quantity. */
+    split: boolean;
     options: { itemId: string; name: string; priceEffect: PriceEffect }[];
   }[];
 };

@@ -8,7 +8,7 @@ import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import {
   CustomisationGroupsInputSchema,
-  ItemCustomisationGroupSchema,
+  ItemCustomisationGroupDtoSchema,
 } from "./customisation-group-schema";
 
 export const PRICE_UNITS = ["PER_PERSON", "PER_UNIT", "PER_HOUR", "FLAT"] as const;
@@ -68,7 +68,7 @@ export const ItemSchema = z.object({
     ),
   setups: z.array(ItemSetupSchema),
   parts: z.array(ItemPartSchema),
-  customisationGroups: z.array(ItemCustomisationGroupSchema),
+  customisationGroups: z.array(ItemCustomisationGroupDtoSchema),
   status: RecordStatusSchema,
   createdAt: z.date(),
   updatedAt: z.date(),

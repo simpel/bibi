@@ -124,6 +124,8 @@ model ItemPart {
 /// Item customisation group – pick between `minPick` and `maxPick` of its options (CUSTOMISATIONS,
 /// ADR 0021, 0059). Hangs on any item of a type with CUSTOMISATIONS. Replaced as a set by `item.*`;
 /// core enforces `0 <= minPick <= maxPick <= number of options`.
+/// `split` (owned, ADR 0082): each chosen option line carries its own quantity, how many of the
+/// line's quantity get it (10 fish, 4 vegetarian); false = a chosen option applies to the whole line.
 model ItemCustomisationGroup {
   id             String                    @id @default(cuid(2))
   organizationId String
@@ -131,6 +133,7 @@ model ItemCustomisationGroup {
   name           String
   minPick        Int
   maxPick        Int
+  split          Boolean                   @default(false)
   /// Order of the groups on the item, from 0.
   position       Int
   createdAt      DateTime                  @default(now())

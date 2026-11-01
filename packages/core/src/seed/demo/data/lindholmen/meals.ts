@@ -72,7 +72,8 @@ export const lindholmenMeals: readonly DemoItem[] = [
         }),
       },
       {
-        name: "Main course",
+        // ADR 0082: split between guests, one or two different main courses (10 + 4 on L9).
+        ...{ name: "Main course", pick: 2, minPick: 1, split: true },
         options: named({
           names: [
             "Venison fillet, celeriac purée",

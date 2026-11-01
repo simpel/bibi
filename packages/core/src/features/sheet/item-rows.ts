@@ -17,7 +17,8 @@ export type ItemRowsInput = {
  * One row per line of the ticket that uses an item of an included type and is in a state
  * with `inSheets` (ADR 0044), part lines included and their bundle line not (ADR 0059), with
  * the included fields of that item's type, earliest first
- * (untimed lines last). A line without a quantity counts the ticket's headcount (ADR 0052).
+ * (untimed lines last). A line without a quantity counts the ticket's headcount (ADR 0052), an
+ * option line its parent's (so a split choice lists 10 of one and 4 of another, ADR 0082).
  */
 export async function itemRows({
   context,
@@ -32,13 +33,18 @@ export async function itemRows({
     }),
     context.db.line.findMany({
       where: sheetLinesWhere({ ticketId, entityTypeIds: definition.entityTypeIds }),
-      include: { item: { include: WITH_RECORD_LINKS } },
+      include: {
+        item: { include: WITH_RECORD_LINKS },
+        parentLine: { select: { quantity: true } },
+      },
       orderBy: [{ startsAt: "asc" }, { id: "asc" }],
     }),
     context.db.ticket.findFirst({ where: { id: ticketId }, select: HEADCOUNT }),
   ]);
   const headcount = ticket ?? { estimatedHeadcount: null, guaranteedHeadcount: null };
-  return lines.map(({ item, ...row }) => {
+  return lines.map(({ item, parentLine, ...row }) => {
+    // An option line without its own quantity counts its parent's (ADR 0082).
+    const parent = row.priceEffect === null ? null : parentLine;
     const own = item ? recordFields({ row: item }) : {};
     const keys = fields.filter((field) => field.entityTypeId === item?.entityTypeId);
     return {
@@ -47,7 +53,7 @@ export async function itemRows({
       parentKey: null,
       label: row.name,
       itemName: item?.name ?? null,
-      quantity: effectiveQuantity({ quantity: row.quantity, ticket: headcount }).value,
+      quantity: effectiveQuantity({ quantity: row.quantity, ticket: headcount, parent }).value,
       startsAt: row.startsAt?.toISOString() ?? null,
       endsAt: row.endsAt?.toISOString() ?? null,
       values: Object.fromEntries(keys.map(({ key }) => [key, own[key] ?? null])),

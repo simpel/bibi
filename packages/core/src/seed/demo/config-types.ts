@@ -61,12 +61,14 @@ export type DemoOption = { name: string; priceEffect?: (typeof PRICE_EFFECTS)[nu
 
 /**
  * A customisation group (CUSTOMISATIONS, on any item, ADR 0059): pick `pick` (default 1) of the
- * options; `minPick` (default `pick`) 0 makes the group skippable.
+ * options; `minPick` (default `pick`) 0 makes the group skippable. `split` (ADR 0082) gives each
+ * chosen option its own quantity.
  */
 export type DemoCustomisationGroup = {
   name: string;
   pick?: number;
   minPick?: number;
+  split?: boolean;
   options: readonly DemoOption[];
 };
 

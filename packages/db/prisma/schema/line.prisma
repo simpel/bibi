@@ -26,7 +26,9 @@ model Line {
   /// Buffers before and after, in minutes (ADR 0059, owned); null = the item's, else its type's.
   setupMinutes       Int?
   teardownMinutes    Int?
-  /// How many; null = the ticket's headcount (guaranteed if set, else estimated).
+  /// How many; null = the ticket's headcount (guaranteed if set, else estimated). On an option line
+  /// null = its parent line's quantity; core allows a quantity there only when the option's group
+  /// is split (ADR 0082).
   quantity           Int?
   /// Override of the unit price in minor units (1/100 kr); null = inherit.
   unitPriceMinor     Int?

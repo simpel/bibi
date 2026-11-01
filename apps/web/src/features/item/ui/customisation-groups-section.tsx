@@ -17,6 +17,7 @@ const EMPTY = {
   name: "",
   minPick: "1",
   maxPick: "1",
+  split: false,
   options: [{ itemId: "", priceEffect: "INCLUDED" as const }],
 };
 

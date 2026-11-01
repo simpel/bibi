@@ -1,7 +1,15 @@
 import { z } from "zod";
 
-/** Where a line's quantity comes from (ADR 0052): its own, else the ticket's headcount. */
-export const QuantitySourceSchema = z.enum(["LINE", "GUARANTEED_HEADCOUNT", "ESTIMATED_HEADCOUNT"]);
+/**
+ * Where a line's quantity comes from (ADR 0052): its own, else the ticket's headcount. An option
+ * line without its own quantity has its parent line's (ADR 0082).
+ */
+export const QuantitySourceSchema = z.enum([
+  "LINE",
+  "PARENT_LINE",
+  "GUARANTEED_HEADCOUNT",
+  "ESTIMATED_HEADCOUNT",
+]);
 /** Where a line's unit price comes from: its override, the customer's price list, the item. */
 export const PriceSourceSchema = z.enum(["LINE", "PRICE_LIST", "ITEM"]);
 /** Where a line's discount comes from: its override or the customer's price list. */
@@ -20,7 +28,10 @@ export const LineEffectiveShape = {
     .number()
     .int()
     .nullable()
-    .describe("The quantity in effect: the line's own, else the ticket's headcount"),
+    .describe(
+      "The quantity in effect: the line's own, else (an option line) its parent line's, else " +
+        "the ticket's headcount",
+    ),
   quantitySource: QuantitySourceSchema.nullable().describe(inherited),
   effectiveUnitPriceMinor: z
     .number()

@@ -6,6 +6,7 @@ import { execute } from "../../operations/execute";
 import { seedDemoAlternatives } from "./seed-alternatives";
 import { seedDemoBundleLines } from "./seed-bundle-lines";
 import { missing } from "./seed-fields";
+import { seedLineOptions } from "./seed-line-options";
 import type { DemoLine, DemoTicket } from "./ticket-types";
 
 export type SeedLinesInput = {
@@ -40,7 +41,8 @@ async function overrideState({ context, line, lineId, item }: OverrideInput) {
  * type: each starts in the entry status's cell of the status grid (else its type's initial state), so a room
  * line is a soft hold, and a line with `state` is then overridden to it. A line without times is
  * untimed and holds nothing; its own quantity and price are set only when the data gives them.
- * Lines named in `alternatives` are then grouped (ADR 0052). Bundles are expanded first.
+ * A line's `options` are chosen right after it (ADR 0059, 0082). Lines named in `alternatives` are
+ * then grouped (ADR 0052). Bundles are expanded first.
  */
 export async function seedDemoLines({
   context,
@@ -70,6 +72,9 @@ export async function seedDemoLines({
     if (!created.ok) return created;
     const state = await overrideState({ context, line, lineId: created.value.id, item });
     if (!state.ok) return state;
+    const lineId = created.value.id;
+    const chosen = await seedLineOptions({ context, lineId, options: line.options });
+    if (!chosen.ok) return chosen;
   }
   const alternatives = ticket.alternatives ?? [];
   return seedDemoAlternatives({ context, ticketId, alternatives });

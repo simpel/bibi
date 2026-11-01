@@ -653,7 +653,8 @@
       "addOption": "Lägg till tillval",
       "removeOption": "Ta bort tillval",
       "option": "Artikel",
-      "priceEffect": "Prispåverkan"
+      "priceEffect": "Prispåverkan",
+      "split": "Fördela mellan gästerna"
     },
     "customisationGroupValue": "{name}: välj {min, number}{same, select, true {} other {–{max, number}}} av {options, number}",
     "resolution": {
@@ -1103,7 +1104,8 @@
     "warnings": {
       "UNFILLED_OPTIONAL_DEMAND": "Ett valfritt behov saknar enhet",
       "OUTSIDE_ITEM_HOURS": "Raden ligger utanför resursens arbetstider",
-      "OUTSIDE_VENUE_HOURS": "Raden ligger utanför lokalens öppettider"
+      "OUTSIDE_VENUE_HOURS": "Raden ligger utanför lokalens öppettider",
+      "OPTION_SPLIT_MISMATCH": "De fördelade tillvalen blir {sum, number}, inte {expected, number}"
     },
     "expandBundle": "Lägg till paket",
     "expandBundleDescription": "Lägg till ett paket som en rad som bär priset, plus en rad per del med delens tid räknat från paketets start. Delarna visar sina egna priser men räknas inte i summan; offerten visar moms per sats. Lämna tiderna tomma för rader utan tid.",
@@ -1117,6 +1119,7 @@
     "optionsChosen": "Tillvalen har sparats.",
     "optionGroup": "{name} (välj {min, number}{same, select, true {} other {–{max, number}}})",
     "optionChoice": "{name} · {effect}",
+    "optionSplitHint": "Fördela mellan gästerna: ange hur många av {quantity, number} som får varje tillval. Lämna 0 för att inte välja tillvalet.",
     "units": "Enheter"
   },
   "priceEffect": {

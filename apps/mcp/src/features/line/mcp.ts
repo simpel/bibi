@@ -1,5 +1,12 @@
 import { mcpTool, text } from "../../tools/meta";
 
+/** One chosen option in an approval summary: its item id, with "× n" in a split group. */
+const optionText = ({ option }: { option: unknown }) => {
+  const { itemId, quantity } = (option ?? {}) as { itemId?: unknown; quantity?: unknown };
+  const amount = typeof quantity === "number" ? ` × ${quantity}` : "";
+  return `${text({ value: itemId })}${amount}`;
+};
+
 export const lineMcpTools = [
   mcpTool({ operation: "line.list" }),
   mcpTool({ operation: "line.get" }),
@@ -23,8 +30,8 @@ export const lineMcpTools = [
     idempotent: true,
     summary: ({ input }) =>
       `Set the options of line ${text({ value: input.lineId })} to ` +
-      (Array.isArray(input.optionItemIds) && input.optionItemIds.length > 0
-        ? input.optionItemIds.map((value: unknown) => text({ value })).join(", ")
+      (Array.isArray(input.options) && input.options.length > 0
+        ? input.options.map((option: unknown) => optionText({ option })).join(", ")
         : "none"),
   }),
   mcpTool({

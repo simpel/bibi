@@ -6,6 +6,7 @@ import { loadZoneOfVenue } from "../../shared/time-zones";
 import { loadPriceTerms } from "../price-list/customer-price-terms";
 import { effectiveOf } from "./effective-values";
 import { loadLineWarnings } from "./line-warnings";
+import { loadOptionParents, loadSplitSums, splitWarnings } from "./option-split";
 import type { LineDto, LineRecord } from "./schema";
 
 type Db = { context: Pick<OperationContext, "db" | "permissions"> };
@@ -80,16 +81,19 @@ async function loadSources({ context, lines }: WithEffectiveInput) {
 const NO_HEADCOUNT = { estimatedHeadcount: null, guaranteedHeadcount: null };
 
 /**
- * The lines with their effective quantity, price, discount and VAT (ADR 0052) and warnings (ADR 0059), derived from the
- * ticket's headcount, the customer's price list valid on the line's day (else the ticket's desired
- * start, else today), the item and its venue. A fixed number of queries for any number of lines.
+ * The lines with their effective quantity, price, discount and VAT (ADR 0052) and warnings (ADR
+ * 0059, 0082), derived from the ticket's headcount (an option line: its parent's quantity), the
+ * customer's price list valid on the line's day (else the ticket's desired start, else today),
+ * the item and its venue. A fixed number of queries for any number of lines.
  */
 export async function withEffective({ context, lines }: WithEffectiveInput): Promise<LineDto[]> {
   if (lines.length === 0) return [];
-  const [sources, warnings, outsideHours] = await Promise.all([
+  const [sources, warnings, outsideHours, parents, splitSums] = await Promise.all([
     loadSources({ context, lines }),
     loadLineWarnings({ context, lineIds: lines.map((line) => line.id) }),
     loadHoursWarnings({ context, lines }),
+    loadOptionParents({ context, lines }),
+    loadSplitSums({ context, lines }),
   ]);
   const { tickets, items, changeovers, terms, organizationZone } = sources;
   return lines.map((line) => {
@@ -99,18 +103,18 @@ export async function withEffective({ context, lines }: WithEffectiveInput): Pro
     const priceTerms = ticket ? terms({ customerId: ticket.customerId, on }) : null;
     const headcount = ticket ?? NO_HEADCOUNT;
     const changeoverMinutes = line.setupId ? (changeovers.get(line.setupId) ?? null) : null;
-    const buffers = effectiveBuffers({
-      line,
-      item,
-      type: item?.entityType ?? null,
-      changeoverMinutes,
-    });
+    const type = item?.entityType ?? null;
+    const buffers = effectiveBuffers({ line, item, type, changeoverMinutes });
     const outside = outsideHours.get(line.id);
+    const parent = parents.get(line.id) ?? null;
+    const effective = effectiveOf({ line, ticket: headcount, parent, item, terms: priceTerms });
+    const expected = effective.effectiveQuantity;
+    const split = splitWarnings({ sums: splitSums.get(line.id), expected });
     return {
       ...line,
-      ...effectiveOf({ line, ticket: headcount, item, terms: priceTerms }),
+      ...effective,
       ...buffers,
-      warnings: [...(warnings.get(line.id) ?? []), ...(outside ? [outside] : [])],
+      warnings: [...(warnings.get(line.id) ?? []), ...(outside ? [outside] : []), ...split],
       timeZone: item?.timeZone ?? organizationZone,
     };
   });

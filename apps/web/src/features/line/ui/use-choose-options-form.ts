@@ -24,7 +24,8 @@ export function useChooseOptionsForm({ lineId, onDone, ...defaults }: UseChooseO
   const t = useTranslations("line");
   const common = useTranslations("common");
   const router = useRouter();
-  const schema = useMemo(() => chooseOptionsSchema({ lineId }), [lineId]);
+  const { item } = defaults;
+  const schema = useMemo(() => chooseOptionsSchema({ lineId, item }), [lineId, item]);
   const form = useForm<ChooseOptionsFormValues, unknown, LineChooseOptionsInput>({
     resolver: zodResolver(schema, useZodMessages()),
     defaultValues: chooseOptionsDefaults(defaults),

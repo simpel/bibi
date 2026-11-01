@@ -32,6 +32,13 @@ export const ItemCustomisationGroupSchema = z.object({
     .min(1)
     .max(MAX_OPTIONS)
     .describe("Most options to pick; at least minPick and at most the number of options"),
+  split: z
+    .boolean()
+    .describe(
+      "Split between guests (ADR 0082): each chosen option gets its own quantity, how many of " +
+        "the line's quantity get it (10 fish, 4 vegetarian). false = a chosen option applies to " +
+        "the whole line. minPick and maxPick count distinct options in both kinds.",
+    ),
   options: z
     .array(ItemCustomisationOptionSchema)
     .min(1)
@@ -42,8 +49,17 @@ export const ItemCustomisationGroupSchema = z.object({
     ),
 });
 
+/** A group as item reads return it: with its id, which line warnings name (ADR 0082). */
+export const ItemCustomisationGroupDtoSchema = ItemCustomisationGroupSchema.extend({
+  id: z.string().describe("Id of the group; a new one each time the item's groups are replaced"),
+});
+
+const CustomisationGroupInputSchema = ItemCustomisationGroupSchema.extend({
+  split: ItemCustomisationGroupSchema.shape.split.default(false),
+});
+
 export const CustomisationGroupsInputSchema = z
-  .array(ItemCustomisationGroupSchema)
+  .array(CustomisationGroupInputSchema)
   .max(50)
   .describe(
     "CUSTOMISATIONS: the item's customisation groups (on any item, not only bundles). Replaces " +
@@ -51,4 +67,6 @@ export const CustomisationGroupsInputSchema = z
   );
 
 export type PriceEffect = z.infer<typeof PriceEffectSchema>;
-export type ItemCustomisationGroupInput = z.infer<typeof ItemCustomisationGroupSchema>;
+/** A group as `item.create`/`item.update` take it: `split` may be left out (false). */
+export type ItemCustomisationGroupInput = z.input<typeof CustomisationGroupInputSchema>;
+export type ItemCustomisationGroupDto = z.infer<typeof ItemCustomisationGroupDtoSchema>;

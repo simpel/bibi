@@ -1,18 +1,42 @@
 import type { LineDto } from "../line/schema";
 import type { DerivedLine } from "./derive-lines";
+import { lineAmounts } from "./line-totals";
 
 export type ApplyPriceEffectsInput = {
-  /** The tickets' priced lines as order lines, after alternatives and bundles. */
+  /** The tickets' priced lines as order lines, after alternatives. */
   derived: readonly DerivedLine[];
   /** Every active line of the same tickets, priced or not. */
   lines: readonly LineDto[];
 };
 
 /**
- * ADR 0059: an option line counts as its price effect says. INCLUDED never counts (it is in the
- * parent's price); EXTRA counts at its own price; REPLACES counts and its parent line does not.
- * An option of a line left out as an unchosen alternative (ADR 0052) is left out with it.
- * Changes the lines in place.
+ * ADR 0082: a parent whose REPLACES options cover only part of its quantity counts the rest at
+ * its own price; covered in full (any option of a normal group covers the whole line), it does
+ * not count.
+ */
+function countRemainder({ entry, covered }: { entry: DerivedLine; covered: number }) {
+  const remainder = Math.max(0, entry.line.quantity - covered);
+  if (remainder === 0) {
+    entry.line.inTotal = false;
+    return;
+  }
+  const { unitPriceMinor, discountPercent, vatRatePercent } = entry.line;
+  const amounts = lineAmounts({
+    quantity: remainder,
+    unitPriceMinor,
+    discountPercent,
+    vatRatePercent,
+  });
+  Object.assign(entry.line, { quantity: remainder, ...amounts });
+  entry.line.vatRows = [{ vatRatePercent, ...amounts }];
+}
+
+/**
+ * ADR 0059, 0082: an option line counts as its price effect says. INCLUDED never counts (it is in
+ * the parent's price); EXTRA counts at its own price and quantity; REPLACES counts and its parent
+ * line counts only the quantity no REPLACES option covers. An option of a line left out as an
+ * unchosen alternative (ADR 0052) is left out with it. Changes the lines in place; run before the
+ * bundles' VAT split, which reads the parent's total.
  */
 export function applyPriceEffects({ derived, lines }: ApplyPriceEffectsInput) {
   const byId = new Map(lines.map((line) => [line.id, line]));
@@ -24,18 +48,19 @@ export function applyPriceEffects({ derived, lines }: ApplyPriceEffectsInput) {
     if (entry?.line.alternativeGroupId && !entry.line.inTotal) return true;
     return line.priceEffect !== null && leftOut({ id: line.parentLineId });
   };
-  const replaced: string[] = [];
+  const covered = new Map<string, number>();
   for (const entry of derived) {
     const line = byId.get(entry.line.lineId);
     if (!line?.priceEffect) continue;
     const counts = line.priceEffect !== "INCLUDED" && !leftOut({ id: line.id });
     entry.line.inTotal = counts;
     if (counts && line.priceEffect === "REPLACES" && line.parentLineId) {
-      replaced.push(line.parentLineId);
+      const before = covered.get(line.parentLineId) ?? 0;
+      covered.set(line.parentLineId, before + entry.line.quantity);
     }
   }
-  for (const id of replaced) {
+  for (const [id, quantity] of covered) {
     const parent = entryOf.get(id);
-    if (parent) parent.line.inTotal = false;
+    if (parent) countRemainder({ entry: parent, covered: quantity });
   }
 }

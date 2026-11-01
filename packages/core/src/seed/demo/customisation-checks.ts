@@ -4,12 +4,15 @@ import type { DemoOrg } from "./types";
 
 export type CheckDemoCustomisationsInput = { context: ExecuteContext; org: DemoOrg };
 
-/** A group as the data files describe it: `name min..max: option=EFFECT, ...`. */
+const splitMark = ({ split }: { split?: boolean | undefined }) => (split ? " split" : "");
+
+/** A group as the data files describe it: `name min..max[ split]: option=EFFECT, ...`. */
 const describeData = ({ item }: { item: DemoItem }) =>
   (item.customisations ?? []).map((group) => {
     const max = group.pick ?? 1;
     const options = group.options.map((o) => `${o.name}=${o.priceEffect ?? "INCLUDED"}`);
-    return `${group.name} ${group.minPick ?? max}..${max}: ${options.join(", ")}`;
+    const range = `${group.minPick ?? max}..${max}${splitMark(group)}`;
+    return `${group.name} ${range}: ${options.join(", ")}`;
   });
 
 type StoredInput = { context: ExecuteContext; name: string };
@@ -23,14 +26,16 @@ async function describeStored({ context, name }: StoredInput) {
   });
   return groups.map((group) => {
     const options = group.options.map((o) => `${o.item.name}=${o.priceEffect}`);
-    return `${group.name} ${group.minPick}..${group.maxPick}: ${options.join(", ")}`;
+    const range = `${group.minPick}..${group.maxPick}${splitMark(group)}`;
+    return `${group.name} ${range}: ${options.join(", ")}`;
   });
 }
 
 /**
  * ADR 0059: every catalog item's customisation groups hang on it as the data files say, each
  * option an item with its price effect (e.g. the Projector's Installation: Our technician as a
- * priced extra, or Self-install, so opting out is choosing the other option).
+ * priced extra, or Self-install, so opting out is choosing the other option), split groups
+ * included (ADR 0082).
  */
 export async function checkDemoCustomisations({ context, org }: CheckDemoCustomisationsInput) {
   const failures: string[] = [];

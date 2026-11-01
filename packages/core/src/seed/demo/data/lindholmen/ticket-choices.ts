@@ -1,6 +1,24 @@
 import type { DemoChoice, DemoLine } from "../../ticket-types";
 
 /**
+ * L9's team dinner for 14 (ADR 0082): the main course is split between the guests, 10 venison and
+ * 4 celeriac steak, with one starter and one dessert for everyone. The two main courses get a
+ * price of 0 kr on the line, so the quote lists them (included, not counted) and freezes both.
+ */
+export const l9Lines: readonly DemoLine[] = [
+  {
+    ...{ item: "Three-course dinner", name: "Team dinner", from: "17:00", to: "20:00" },
+    quantity: 14,
+    options: [
+      { name: "Beetroot carpaccio with chèvre" },
+      { name: "Venison fillet, celeriac purée", quantity: 10, unitPriceKr: 0 },
+      { name: "Celeriac steak, mustard vinaigrette", quantity: 4, unitPriceKr: 0 },
+      { name: "Cloudberry parfait" },
+    ],
+  },
+];
+
+/**
  * ADR 0055: the only stored responsibility choices of Lindholmen's tickets (on L11). Head of
  * kitchen answers as Johan instead of the default Ali, and Maria leaves Coordinator's default
  * followers. Every other ticket follows the defaults.

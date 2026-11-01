@@ -8,6 +8,7 @@ import type { RowAccess } from "@/lib/can";
 import { LineAllocationsDialog } from "../../line-allocation/ui/line-allocations-dialog";
 import { ArchiveLineDialog } from "./archive-line-dialog";
 import { ChooseOptionsDialog } from "./choose-options-dialog";
+import type { ChosenOption } from "./choose-options-schema";
 import { LineDialog } from "./line-dialog";
 import { LineStateMenu } from "./line-state-menu";
 import type { ProgramFormData } from "./program-form-data";
@@ -22,8 +23,8 @@ export type ProgramRowActionsProps = {
   line: LineDto;
   data: ProgramFormData;
   access: ProgramAccess;
-  /** The item ids of the line's current option lines. */
-  chosen: readonly string[];
+  /** The line's current option lines as chosen options. */
+  chosen: readonly ChosenOption[];
 };
 
 type Dialogs = "edit" | "options" | "units" | "archive" | null;
@@ -99,6 +100,7 @@ export function ProgramRowActions({ line, data, access, chosen }: ProgramRowActi
           lineId={line.id}
           item={customisable}
           chosen={chosen}
+          quantity={line.effectiveQuantity}
           {...bind({ ...state, name: "options" })}
         />
       ) : null}

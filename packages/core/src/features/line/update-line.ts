@@ -11,6 +11,7 @@ import { moveWithState } from "./item-state-move";
 import { checkBundleItem, moveParts } from "./line-parts";
 import { checkLinePeriod, checkPlace } from "./line-rules";
 import { stateAfterMove } from "./line-state";
+import { checkOptionQuantity } from "./option-quantity-rule";
 import type { LineRecord, LineUpdateInput } from "./schema";
 import { loadLine, toLineRecord } from "./to-line-record";
 
@@ -59,6 +60,7 @@ export async function updateLineRow({
     checkLinePeriod(after),
     await checkPlace({ context, ticketId: before.ticketId, ...after }),
     await checkBundleItem({ context, lineId: id, before, itemId: after.itemId }),
+    await checkOptionQuantity({ context, before, quantity: data.quantity }),
   ]) {
     if (!check.ok) return check;
   }

@@ -4,7 +4,7 @@ import { invalid, notFound } from "../../shared/errors";
 import type { LineChooseOptionsInput } from "./choose-options-schema";
 import { insertLine } from "./insert-line";
 import { archiveLineRow, archiveParts } from "./line-parts";
-import { type ChoosableOption, checkChoice, loadOptionGroups } from "./option-groups";
+import { type ChosenLineOption, checkChoice, loadOptionGroups } from "./option-groups";
 import type { LineRecord } from "./schema";
 import { LINE_INCLUDE, loadLine, toLineRecord } from "./to-line-record";
 
@@ -30,23 +30,37 @@ async function optionLinesOf({ context, lineId }: { context: Context; lineId: st
   return rows.map((row) => toLineRecord({ row }));
 }
 
-type AddInput = { context: Context; line: LineRecord; option: ChoosableOption };
+type AddInput = { context: Context; line: LineRecord; option: ChosenLineOption };
 
-/** One option line under the line: same ticket, type, fields, time and quantity. */
+/**
+ * One option line under the line: same ticket, type, fields and time. Its quantity is the
+ * option's in a split group, else null: the parent's (ADR 0082).
+ */
 const addOptionLine = ({ context, line, option }: AddInput) =>
   insertLine({
     context,
     input: {
       ...{ ticketId: line.ticketId, entityTypeId: line.entityTypeId, fields: line.fields },
       ...{ name: option.name, itemId: option.itemId, priceEffect: option.priceEffect },
-      ...{ startsAt: line.startsAt, endsAt: line.endsAt, quantity: line.quantity },
+      ...{ startsAt: line.startsAt, endsAt: line.endsAt, quantity: option.quantity },
       parentLineId: line.id,
     },
   });
 
+type KeepInput = { context: Context; kept: LineRecord; option: ChosenLineOption };
+
+/** A still chosen option line, with the quantity of the new choice (ADR 0082). */
+async function keepOptionLine({ context, kept, option }: KeepInput) {
+  if (kept.quantity === option.quantity) return kept;
+  await context.db.line.update({ where: { id: kept.id }, data: { quantity: option.quantity } });
+  const after = (await loadLine({ context, id: kept.id })) ?? kept;
+  context.recordChange({ entityId: kept.id, before: kept, after });
+  return after;
+}
+
 /**
- * `line.chooseOptions` (ADR 0059): archives the option lines no longer chosen and adds the newly
- * chosen ones. Returns the line's option lines in group order.
+ * `line.chooseOptions` (ADR 0059, 0082): archives the option lines no longer chosen, adds the newly
+ * chosen ones and sets the kept ones' quantities. Returns the line's option lines in group order.
  */
 export async function chooseOptions({
   context,
@@ -59,17 +73,20 @@ export async function chooseOptions({
     return invalid({ message, issues: [{ path: "lineId", message }] });
   }
   const groups = await loadOptionGroups({ context, itemId: line.itemId });
-  const chosen = checkChoice({ groups, optionItemIds: input.optionItemIds });
+  const chosen = checkChoice({ groups, options: input.options });
   if (!chosen.ok) return chosen;
+  const chosenIds = chosen.value.map((option) => option.itemId);
   const existing = await optionLinesOf({ context, lineId: line.id });
-  for (const before of existing.filter((row) => !input.optionItemIds.includes(row.itemId ?? ""))) {
+  for (const before of existing.filter((row) => !chosenIds.includes(row.itemId ?? ""))) {
     await archiveParts({ context, before });
     await archiveLineRow({ context, before });
   }
   const lines: LineRecord[] = [];
   for (const option of chosen.value) {
     const kept = existing.find((row) => row.itemId === option.itemId);
-    const added = kept ? ok({ value: kept }) : await addOptionLine({ context, line, option });
+    const added = kept
+      ? ok({ value: await keepOptionLine({ context, kept, option }) })
+      : await addOptionLine({ context, line, option });
     if (!added.ok) return added;
     lines.push(added.value);
   }

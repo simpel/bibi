@@ -46,7 +46,7 @@ async function seedOptions({ client }: { client: Client }) {
   return { lineId: line.id as string, optionId: option.id as string };
 }
 
-describe("cross-organization isolation: line options (ADR 0059)", () => {
+describe("cross-organization isolation: line options (ADR 0059, 0082)", () => {
   it("refuses another organization's line and its options", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
@@ -55,13 +55,13 @@ describe("cross-organization isolation: line options (ADR 0059)", () => {
     const foreignLine = await call({
       client: b,
       name: "line_chooseOptions",
-      args: { lineId: secret.lineId, optionItemIds: [secret.optionId] },
+      args: { lineId: secret.lineId, options: [{ itemId: secret.optionId }] },
     });
     expect(foreignLine.data.code).toBe("NOT_FOUND");
     const foreignOption = await call({
       client: b,
       name: "line_chooseOptions",
-      args: { lineId: own.lineId, optionItemIds: [secret.optionId] },
+      args: { lineId: own.lineId, options: [{ itemId: secret.optionId }] },
     });
     expect(["NOT_FOUND", "VALIDATION"]).toContain(foreignOption.data.code);
     const untouched = await call({

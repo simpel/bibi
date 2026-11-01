@@ -74,17 +74,19 @@ export const chooseLineOptions = defineOperation({
   kind: "command",
   description:
     "Choose the customisation options of a line whose item has customisation groups (ADR " +
-    "0059). Replaces the line's choices: each chosen option becomes an option line under the " +
-    "line (same time, quantity and type) and a dropped one is removed. Each group needs between " +
-    "its minPick and maxPick options; a group with minPick 0 can be skipped, and opting out is " +
-    "choosing the other option. The option's price effect decides the totals: INCLUDED does not " +
-    "count, EXTRA counts at its own price, REPLACES counts instead of the line. A chosen " +
-    "option's own needs apply as for any line. Needs item:read (the options are items).",
+    "0059, 0082). Replaces the line's choices: each chosen option becomes an option line under " +
+    "the line (same time and type) and a dropped one is removed. Each group needs between its " +
+    "minPick and maxPick distinct options; a group with minPick 0 can be skipped, and opting out " +
+    "is choosing the other option. An option of a split group carries its own quantity (how " +
+    "many of the line get it); any other option applies to the whole line. The option's price " +
+    "effect decides the totals: INCLUDED does not count, EXTRA counts at its own price and " +
+    "quantity, REPLACES counts instead of the line for its quantity. A chosen option's own needs " +
+    "apply as for any line. Needs item:read (the options are items).",
   input: LineChooseOptionsInputSchema,
   output: LineChooseOptionsOutputSchema,
   permission: "program:write",
   handler: async ({ input, context }) => {
-    const readable = checkReadable({ context, permission: "item:read", path: "optionItemIds" });
+    const readable = checkReadable({ context, permission: "item:read", path: "options" });
     if (!readable.ok) return readable;
     const lines = await chooseOptions({ context, input });
     if (!lines.ok) return lines;

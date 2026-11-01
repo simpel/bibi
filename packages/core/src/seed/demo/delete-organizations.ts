@@ -34,8 +34,9 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   // Allocations point at their lines, demands and each other (ADR 0059); their holds cascade.
   db.lineAllocation.updateMany({ where, data: { parentAllocationId: null } }),
   db.lineAllocation.deleteMany({ where }),
-  // A part line points at its bundle line (ADR 0059): cut that link before deleting either.
-  db.line.updateMany({ where, data: { parentLineId: null } }),
+  // A part or option line points at its line (ADR 0059): cut that link before deleting either
+  // (an option line's price effect needs its parent, so it goes too).
+  db.line.updateMany({ where, data: { parentLineId: null, priceEffect: null } }),
   db.line.deleteMany({ where }),
   db.alternativeGroup.deleteMany({ where }),
   db.ticketTemplateLine.deleteMany({ where }),

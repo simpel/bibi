@@ -653,7 +653,8 @@
       "addOption": "Add option",
       "removeOption": "Remove option",
       "option": "Item",
-      "priceEffect": "Price effect"
+      "priceEffect": "Price effect",
+      "split": "Split between guests"
     },
     "customisationGroupValue": "{name}: choose {min, number}{same, select, true {} other {–{max, number}}} of {options, number}",
     "resolution": {
@@ -1103,7 +1104,8 @@
     "warnings": {
       "UNFILLED_OPTIONAL_DEMAND": "An optional need has no unit",
       "OUTSIDE_ITEM_HOURS": "The line is outside the item's working hours",
-      "OUTSIDE_VENUE_HOURS": "The line is outside the venue's opening hours"
+      "OUTSIDE_VENUE_HOURS": "The line is outside the venue's opening hours",
+      "OPTION_SPLIT_MISMATCH": "The split options add up to {sum, number}, not {expected, number}"
     },
     "expandBundle": "Add bundle",
     "expandBundleDescription": "Add a bundle as one line that carries its price, plus one line per part with the part's time from the bundle's start. The parts show their own prices but do not count in the total; the quote shows VAT per rate. Leave the times empty for lines without time.",
@@ -1117,6 +1119,7 @@
     "optionsChosen": "The options have been saved.",
     "optionGroup": "{name} (choose {min, number}{same, select, true {} other {–{max, number}}})",
     "optionChoice": "{name} · {effect}",
+    "optionSplitHint": "Split between guests: give each chosen option how many of {quantity, number} get it. Leave an option at 0 to not choose it.",
     "units": "Units"
   },
   "priceEffect": {

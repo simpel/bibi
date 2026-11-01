@@ -26,7 +26,9 @@ async function customisationGroupsOf({ context, ids }: { context: Db; ids: reado
   return ({ itemId }: { itemId: string }) =>
     groups
       .filter((group) => group.itemId === itemId)
-      .map(({ name, minPick, maxPick, options }) => ({ name, minPick, maxPick, options }));
+      .map(({ id, name, minPick, maxPick, split, options }) => ({
+        ...{ id, name, minPick, maxPick, split, options },
+      }));
 }
 
 export type ToItemDtosInput = { context: Db; rows: readonly Item[] };

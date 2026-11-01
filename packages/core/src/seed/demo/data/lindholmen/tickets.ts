@@ -1,6 +1,6 @@
 import type { DemoTicket } from "../../ticket-types";
 import { lindholmenHistoryTickets } from "./history-tickets";
-import { l4Lines, l11Choices } from "./ticket-choices";
+import { l4Lines, l9Lines, l11Choices } from "./ticket-choices";
 
 const hisingen = "Hisingen Energi AB";
 const kvarnby = "Kvarnby Design AB";
@@ -81,8 +81,9 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   },
   {
     ...quoted,
-    ...{ ref: "L9", customer: kvarnby, type: "Conference", day: 8, from: "09:00", to: "16:00" },
+    ...{ ref: "L9", customer: kvarnby, type: "Conference", day: 8, from: "09:00", to: "20:00" },
     estimatesKr: [48_000],
+    lines: l9Lines,
     ...{ status: "Confirmed", headcount: 18, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
   },
   {
