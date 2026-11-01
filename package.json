@@ -18,6 +18,8 @@
     "db:migrate": "pnpm --filter @bibi/db migrate",
     "test:db": "pnpm --filter @bibi/db migrate:test",
     "db:generate": "pnpm --filter @bibi/db generate",
+    "seed:skills": "turbo run seed:skills --filter=@bibi/core",
+    "seed:demo": "turbo run seed:demo --filter=@bibi/core",
     "gen": "node tools/gen.mjs",
     "wt:new": "tools/worktree/new.sh",
     "wt:rm": "tools/worktree/rm.sh",

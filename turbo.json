@@ -22,6 +22,17 @@
     },
     "migrate:test": {
       "cache": false
+    },
+    "migrate": {
+      "cache": false
+    },
+    "seed:skills": {
+      "dependsOn": ["@bibi/db#generate", "@bibi/db#migrate"],
+      "cache": false
+    },
+    "seed:demo": {
+      "dependsOn": ["@bibi/db#generate", "@bibi/db#migrate"],
+      "cache": false
     }
   },
   "globalPassThroughEnv": [
