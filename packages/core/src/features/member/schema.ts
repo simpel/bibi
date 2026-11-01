@@ -52,13 +52,13 @@ export const InvitationSchema = z.object({
   code: z
     .string()
     .nullable()
-    .describe("Invite code from the invitation mail, typed in on /welcome/join (ADR 0076)"),
+    .describe("Invite code from the invitation mail, typed in on /welcome/join (ADR 0078)"),
   inviterId: z.string(),
   expiresAt: z.date(),
   createdAt: z.date(),
 });
 
-/** What `/welcome/join` asks for (ADR 0076): the code from an invitation mail. */
+/** What `/welcome/join` asks for (ADR 0078): the code from an invitation mail. */
 export const InviteCodeInputSchema = z.object({
   code: z.string().trim().min(6).max(20).describe("Invite code from the invitation mail"),
 });

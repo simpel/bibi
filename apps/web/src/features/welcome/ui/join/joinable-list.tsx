@@ -65,7 +65,7 @@ function JoinableRows({ joinable }: JoinableProps) {
 }
 
 /**
- * `/welcome/organizations` (ADR 0076): the organizations the user belongs to (ticked), the ones
+ * `/welcome/organizations` (ADR 0078): the organizations the user belongs to (ticked), the ones
  * they can join by domain or invitation, then the primary organization and Continue.
  */
 export function JoinableList({ joinable }: JoinableProps) {

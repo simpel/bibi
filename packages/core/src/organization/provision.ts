@@ -22,7 +22,7 @@ export type ProvisionOrganizationInput = {
   pipeline?: "default" | "none";
   /** The first setup status of its profile (ADR 0061); default `PENDING`, the demo seed is set up. */
   setupStatus?: SetupStatus;
-  /** Who created it (Better Auth); their verified work domain starts domain join (ADR 0076). */
+  /** Who created it (Better Auth); their verified work domain starts domain join (ADR 0078). */
   creator?: OrganizationCreator;
 };
 
@@ -31,7 +31,7 @@ export type ProvisionOrganizationInput = {
  * (audited and logged like any command): its profile with the chosen time zone (ADR 0064) and
  * the first setup `PENDING` (ADR 0061), and the default ticket statuses (ADR 0043) with their status
  * grid (ADR 0044), so tickets work immediately, and domain join with the creator's domain (ADR
- * 0076). Called by Better Auth's `afterCreateOrganization`
+ * 0078). Called by Better Auth's `afterCreateOrganization`
  * and the demo seed.
  */
 export async function provisionOrganization({

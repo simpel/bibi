@@ -9,7 +9,7 @@ type WelcomeRouteProps = { params: Promise<{ locale: string }> };
 
 /**
  * Pick an organization, accept an invitation or create a new organization. A user whose work
- * domain is claimed is offered that organization first (ADR 0076).
+ * domain is claimed is offered that organization first (ADR 0078).
  */
 export default async function WelcomeRoute({ params }: WelcomeRouteProps) {
   const locale = resolveLocale({ value: (await params).locale });

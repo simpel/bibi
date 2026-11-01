@@ -18,7 +18,7 @@ export type JoinableOrganizations = {
 export type LoadJoinableOrganizationsInput = { userId: string; email: string; db?: Db };
 
 /**
- * Everything `/welcome` offers a user (ADR 0076): organizations claiming their verified domain,
+ * Everything `/welcome` offers a user (ADR 0078): organizations claiming their verified domain,
  * their pending invitations, and the organizations they already belong to.
  */
 export async function loadJoinableOrganizations({

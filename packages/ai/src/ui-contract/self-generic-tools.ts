@@ -19,5 +19,5 @@ export const SELF_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   organizationProfile_get: "organization details are edited in the welcome flow (#418); JSON",
   organizationProfile_update: "organization details are edited in the welcome flow (#418); JSON",
   organizationProfile_setSetupStatus: "first setup bookkeeping (ADR 0061), not a tool card",
-  organizationProfile_setDomainJoin: "an organization setting (ADR 0076), edited in settings; JSON",
+  organizationProfile_setDomainJoin: "an organization setting (ADR 0078), edited in settings; JSON",
 };

@@ -15,7 +15,7 @@ Better Auth 1.7.7 (Prisma adapter) + plugins: email/password, magic link, email 
 - Web client: `createAuthClient({})` from `@bibi/auth/client` (imports no server code).
 - `Organization.id` = `organizationId` on all business rows. No FK (Better Auth owns the tables).
 
-## Domain join, invite codes and the primary organization (ADR 0076)
+## Domain join, invite codes and the primary organization (ADR 0078)
 - Nothing joins on sign-in. `/welcome` reads `loadJoinableOrganizations({ userId, email })`: core `domainOffers` (organizations claiming the user's verified domain with `domainJoin` on, minus `KnownMember`s, members and invitees), pending invitations and memberships. `joinOffer` joins one on click (core `joinDomainOffer` re-checks the claim; member preset, `KnownMember` row, SYSTEM audit row).
 - `findInvitationByCode({ code, email })`: pending, unexpired, and only for the invited email; the web action then accepts it with `auth.api.acceptInvitation`, so hooks and role match the mailed link. The invitation mail prints the code.
 - `setPrimaryOrganization` sets `Member.primary` (one per user, cleared first in one transaction); `defaultActiveOrganization` starts there, else in the oldest membership.

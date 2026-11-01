@@ -35,7 +35,7 @@ const activeOrganization = async ({ headers }: { headers: Headers }) =>
 
 const venueDomain = () => `venue-${createId().slice(0, 8)}.test`;
 
-describe("domain offers (ADR 0076)", () => {
+describe("domain offers (ADR 0078)", () => {
   it("claims the creator's domain and offers it, joining only on Join", async () => {
     const domain = venueDomain();
     const creator = await signUpAt({ email: `admin@${domain}`, verified: true });
@@ -78,7 +78,7 @@ describe("domain offers (ADR 0076)", () => {
   });
 });
 
-describe("primary organization (ADR 0076)", () => {
+describe("primary organization (ADR 0078)", () => {
   it("starts new sessions in the primary organization", async () => {
     const user = await signUpAt({ email: `p-${createId()}@${venueDomain()}`, verified: true });
     const first = await createOrg({ headers: user.headers });
@@ -94,7 +94,7 @@ describe("primary organization (ADR 0076)", () => {
   });
 });
 
-describe("invite codes (ADR 0076)", () => {
+describe("invite codes (ADR 0078)", () => {
   it("finds a pending invitation by its code only for the invited email", async () => {
     const admin = await signUpAt({ email: `admin@${venueDomain()}`, verified: true });
     const organizationId = await createOrg({ headers: admin.headers });

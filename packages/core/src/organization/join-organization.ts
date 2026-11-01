@@ -43,7 +43,7 @@ export async function mayJoin({
 }
 
 /**
- * Adds a user to an organization that claims their email domain (ADR 0076), as `member`, with
+ * Adds a user to an organization that claims their email domain (ADR 0078), as `member`, with
  * its `KnownMember` row and a SYSTEM audit row in one transaction; true when they joined. Only
  * `joinDomainOffer` calls it, after checking the domain and the switch.
  */

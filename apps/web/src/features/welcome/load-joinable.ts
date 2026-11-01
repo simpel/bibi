@@ -2,7 +2,7 @@ import "server-only";
 import type { AuthSession } from "@bibi/auth";
 import { type JoinableOrganizations, loadJoinableOrganizations } from "@bibi/auth";
 
-/** What `/welcome` and `/welcome/organizations` offer the signed-in user (ADR 0076). */
+/** What `/welcome` and `/welcome/organizations` offer the signed-in user (ADR 0078). */
 export async function loadJoinable({
   session,
 }: {

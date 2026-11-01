@@ -11,7 +11,7 @@ import { TimeZoneForm } from "./time-zone-form";
 
 export type OrganizationSettingsProps = { locale: Locale };
 
-/** `/settings/organization`: the organization's time zone (ADR 0064) and domain join (ADR 0076). */
+/** `/settings/organization`: the organization's time zone (ADR 0064) and domain join (ADR 0078). */
 export async function OrganizationSettings({ locale }: OrganizationSettingsProps) {
   const t = await getTranslations("organizationSettings");
   const abilities = await getCallerAbilities();

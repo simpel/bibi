@@ -1,8 +1,9 @@
-# 0076 – Domain join, invite codes and a primary organization
+# 0078 – Domain join, invite codes and a primary organization
 
 - **Date:** 2026-11-01
 - **Status:** Accepted
 - **Related:** 0004 (organizations), 0050 (permissions), 0061 (welcome flow), 0072 (member contact)
+- **Renumbered:** from 0076, which ADR 0076 (free status movement) also took. The `domain_join` migration's comments and commit d7eeeb52 still say 0076.
 
 ## Context
 - Today a person gets into an organization only by invitation, or by creating one (ADR 0061). At a venue with twenty staff, the first admin invites nineteen people one by one.

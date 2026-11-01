@@ -4,7 +4,7 @@ import { emailDomainOf } from "../../organization/email-domain";
 export type CallerEmailDomainInput = { context: Pick<OperationContext, "db" | "actor"> };
 
 /**
- * The domain of the calling member's own verified email (ADR 0076), or `null` for an API key, the
+ * The domain of the calling member's own verified email (ADR 0078), or `null` for an API key, the
  * system, an unverified address or a public provider: a domain is only ever claimed by someone
  * who has proved they have an address there.
  */

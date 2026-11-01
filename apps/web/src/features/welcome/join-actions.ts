@@ -21,7 +21,7 @@ const signedIn = async () => {
   return state.status === "anonymous" ? null : state.session.user;
 };
 
-/** "Join <organization>" on a domain offer (ADR 0076). */
+/** "Join <organization>" on a domain offer (ADR 0078). */
 export async function joinOfferAction({
   input,
 }: {
@@ -52,7 +52,7 @@ export async function redeemInviteCodeAction({
   return { ok: true, value: true };
 }
 
-/** `/welcome/organizations` → Continue: the primary organization, made active (ADR 0076). */
+/** `/welcome/organizations` → Continue: the primary organization, made active (ADR 0078). */
 export async function finishJoiningAction({
   input,
 }: {

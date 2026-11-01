@@ -10,12 +10,12 @@ export type DomainJoinFormProps = {
   /** The claimed domain, or null when none is claimed yet. */
   emailDomain: string | null;
   enabled: boolean;
-  /** `member:write`: admins only (ADR 0076). */
+  /** `member:write`: admins only (ADR 0078). */
   canEdit: boolean;
 };
 
 /**
- * Domain join (ADR 0076): colleagues with a verified email at the organization's domain join as
+ * Domain join (ADR 0078): colleagues with a verified email at the organization's domain join as
  * members when they sign in. It is only on in practice while a domain is claimed.
  */
 export function DomainJoinForm({ emailDomain, enabled, canEdit }: DomainJoinFormProps) {

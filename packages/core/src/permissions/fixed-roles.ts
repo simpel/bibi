@@ -10,7 +10,7 @@ export type FixedRole = (typeof FIXED_ROLES)[number];
 /** The organization role with every permission. Every organization keeps at least one. */
 export const ADMIN_ROLE = "admin" satisfies FixedRole;
 
-/** The weakest role: what someone who joins by email domain gets (ADR 0076). */
+/** The weakest role: what someone who joins by email domain gets (ADR 0078). */
 export const MEMBER_ROLE = "member" satisfies FixedRole;
 
 /**

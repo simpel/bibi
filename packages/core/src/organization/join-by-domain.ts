@@ -28,7 +28,7 @@ async function verifiedUser({
 }
 
 /**
- * The organizations a user is offered by their verified work domain (ADR 0076): those claiming it
+ * The organizations a user is offered by their verified work domain (ADR 0078): those claiming it
  * with domain join on, minus any they belong to, have belonged to or are invited to. The only
  * cross-organization read is which organizations claim the domain; each check is scoped.
  */

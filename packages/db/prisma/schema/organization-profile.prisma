@@ -25,11 +25,11 @@ model OrganizationProfile {
   /// Read only through core's `effectiveTimeZone`. The default backfills existing rows and keeps
   /// the previous release's inserts working (expand/contract, ADR 0013); core validates every write.
   timeZone       String       @default("Europe/Stockholm")
-  /// Owned (ADR 0076): the email domain whose verified users join as members when they sign in.
+  /// Owned (ADR 0078): the email domain whose verified users join as members when they sign in.
   /// Lowercase; taken from the creator's email at creation, or from the admin who turns domain
   /// join on. Never typed in, so nobody can claim a domain they have no address at.
   emailDomain    String?
-  /// Owned (ADR 0076): domain join on or off, set by an admin. On by default.
+  /// Owned (ADR 0078): domain join on or off, set by an admin. On by default.
   domainJoin     Boolean      @default(true)
   status         RecordStatus @default(ACTIVE)
   createdAt      DateTime     @default(now())
@@ -39,7 +39,7 @@ model OrganizationProfile {
   @@index([emailDomain])
 }
 
-/// A user who has been a member of the organization (ADR 0076). Domain join never adds them
+/// A user who has been a member of the organization (ADR 0078). Domain join never adds them
 /// again, so someone removed or who left stays out until invited. Append-only and owned: written
 /// when a user joins (Better Auth's member hooks, domain join) and by domain join when it finds an
 /// existing member; existing members were backfilled.

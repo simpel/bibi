@@ -33,7 +33,7 @@ describe("organization profile isolation (ADR 0061)", () => {
     });
   });
 
-  it("turns domain join off only in the caller's organization (ADR 0076)", async () => {
+  it("turns domain join off only in the caller's organization (ADR 0078)", async () => {
     const a = await connect({ context: testContext() });
     const b = await connect({ context: testContext() });
     await call({ client: a, name: "organizationProfile_update", args: { legalName: "A AB" } });

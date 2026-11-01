@@ -28,10 +28,10 @@ export const OrganizationProfileSchema = z.object({
   emailDomain: z
     .string()
     .nullable()
-    .describe("Email domain whose verified users are offered to join as members (ADR 0076)"),
+    .describe("Email domain whose verified users are offered to join as members (ADR 0078)"),
   domainJoin: z
     .boolean()
-    .describe("Domain join on: takes effect only while emailDomain is set (ADR 0076)"),
+    .describe("Domain join on: takes effect only while emailDomain is set (ADR 0078)"),
 });
 
 export const OrganizationProfileGetInputSchema = z.object({});

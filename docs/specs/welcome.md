@@ -25,7 +25,7 @@ Locale prefix (`/sv`, `/en`) omitted.
 - Step pages show "Step n of m" and have Back and Continue.
 - The app layout runs the same check as the router, so a member with an open step always lands back in the flow.
 
-## Joining (ADR 0076)
+## Joining (ADR 0078)
 ```
 /welcome                          a verified work domain claimed by an organization?
 ├─ yes ─► "Join <organization>"   [Join <organization>] → /welcome/organizations

@@ -6,7 +6,7 @@ import { joinOrganizationByDomain } from "../src/organization/join-organization"
 import { createUser, domain, orgWithAdmin, turn } from "./domain-join-helpers";
 import { errorCode, testContext, unwrap } from "./helpers";
 
-describe("email domains (ADR 0076)", () => {
+describe("email domains (ADR 0078)", () => {
   it("lowercases work domains and refuses public and malformed ones", () => {
     expect(emailDomainOf({ email: "Anna@Venue.SE" })).toBe("venue.se");
     expect(emailDomainOf({ email: "anna@gmail.com" })).toBeNull();
@@ -15,7 +15,7 @@ describe("email domains (ADR 0076)", () => {
   });
 });
 
-describe("organizationProfile.setDomainJoin (ADR 0076)", () => {
+describe("organizationProfile.setDomainJoin (ADR 0078)", () => {
   it("claims the admin's own verified domain and keeps it when turned off", async () => {
     const own = domain();
     const context = await orgWithAdmin({ email: `admin@${own}` });
@@ -45,7 +45,7 @@ describe("organizationProfile.setDomainJoin (ADR 0076)", () => {
   });
 });
 
-describe("joinOrganizationByDomain (ADR 0076)", () => {
+describe("joinOrganizationByDomain (ADR 0078)", () => {
   it("joins once as member, audited, and never again after a removal", async () => {
     const own = domain();
     const context = await orgWithAdmin({ email: `admin@${own}` });

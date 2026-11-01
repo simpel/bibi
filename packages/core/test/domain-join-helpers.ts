@@ -13,7 +13,7 @@ export const createUser = async ({ email, verified = true }: DomainUserInput) =>
   return id;
 };
 
-/** An organization whose admin (the caller) signed in with `email` (ADR 0076). */
+/** An organization whose admin (the caller) signed in with `email` (ADR 0078). */
 export const orgWithAdmin = async ({
   email,
   verified,

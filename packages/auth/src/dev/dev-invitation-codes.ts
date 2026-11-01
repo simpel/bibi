@@ -6,7 +6,7 @@ export type DevInvitationCode = { organization: string; code: string };
 export type ListDevInvitationCodesInput = { email: string };
 
 /**
- * The invite codes waiting for `email` (ADR 0076), so `/welcome/join` can show them in `next dev`
+ * The invite codes waiting for `email` (ADR 0078), so `/welcome/join` can show them in `next dev`
  * where the invitation mail is out of reach. Empty outside development: a code is a credential.
  */
 export async function listDevInvitationCodes({

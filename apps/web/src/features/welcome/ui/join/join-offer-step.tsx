@@ -7,7 +7,7 @@ import { WelcomeStepFrame } from "../welcome-step-frame";
 import { JoinOfferButton } from "./join-offer-button";
 
 /**
- * `/welcome` when the user's work domain is claimed (ADR 0076): "Join <organization>", with a
+ * `/welcome` when the user's work domain is claimed (ADR 0078): "Join <organization>", with a
  * ghost button for another organization (an invite code) under it.
  */
 export function JoinOfferStep({ offer }: { offer: DomainOffer }) {

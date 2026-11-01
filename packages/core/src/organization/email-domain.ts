@@ -1,5 +1,5 @@
 /**
- * Public mail providers (ADR 0076): an address there says nothing about where someone works, so
+ * Public mail providers (ADR 0078): an address there says nothing about where someone works, so
  * no organization can claim the domain. Mirrored in the `domain_join` migration's backfill.
  */
 export const PUBLIC_EMAIL_DOMAINS: ReadonlySet<string> = new Set([
@@ -62,7 +62,7 @@ export const PUBLIC_EMAIL_DOMAINS: ReadonlySet<string> = new Set([
 
 export type EmailDomainOfInput = { email: string };
 
-/** The lowercase domain of an address, or `null` for a malformed or public one (ADR 0076). */
+/** The lowercase domain of an address, or `null` for a malformed or public one (ADR 0078). */
 export function emailDomainOf({ email }: EmailDomainOfInput): string | null {
   const at = email.lastIndexOf("@");
   const domain =

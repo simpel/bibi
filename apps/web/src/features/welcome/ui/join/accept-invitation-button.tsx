@@ -6,7 +6,7 @@ import { useAuthFormAction } from "@/features/auth/ui/use-auth-form-action";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "@/lib/navigation";
 
-/** Join through a pending invitation (Better Auth), staying on the list (ADR 0076). */
+/** Join through a pending invitation (Better Auth), staying on the list (ADR 0078). */
 export function AcceptInvitationButton({
   invitationId,
   name,

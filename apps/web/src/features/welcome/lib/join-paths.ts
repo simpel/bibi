@@ -1,6 +1,6 @@
 import { welcomePath } from "./welcome-step";
 
-/** The welcome pages before an organization is chosen (ADR 0061, 0076); never org-scoped. */
+/** The welcome pages before an organization is chosen (ADR 0061, 0078); never org-scoped. */
 export const JOIN_PATHS = {
   /** Invite code from an invitation mail. */
   code: `${welcomePath()}/join`,

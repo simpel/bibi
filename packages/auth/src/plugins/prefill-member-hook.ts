@@ -7,7 +7,7 @@ export type PrefillHookInput = { user: { id: string }; organization: { id: strin
 /**
  * `afterAddMember` and `afterAcceptInvitation`: the new member's profile here starts from their
  * own phone and photo (ADR 0072), and they are known here, so domain join never re-adds them after
- * a removal (ADR 0076). Idempotent; a failure is logged, never the joining user's error.
+ * a removal (ADR 0078). Idempotent; a failure is logged, never the joining user's error.
  */
 export async function prefillMemberHook({ user, organization }: PrefillHookInput): Promise<void> {
   await recordKnownMember({ organizationId: organization.id, userId: user.id }).catch(

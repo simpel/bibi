@@ -15,7 +15,7 @@ export type JoinOfferButtonProps = {
   variant?: "default" | "outline";
 };
 
-/** Joins a domain offer (ADR 0076), then shows every organization the user can join. */
+/** Joins a domain offer (ADR 0078), then shows every organization the user can join. */
 export function JoinOfferButton({ organizationId, name, stay, variant }: JoinOfferButtonProps) {
   const t = useTranslations("welcome.join");
   const router = useRouter();

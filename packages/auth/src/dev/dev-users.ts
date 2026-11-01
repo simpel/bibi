@@ -21,7 +21,7 @@ export function isDevEnvironment(): boolean {
 
 /**
  * Seeded dev users of the demo organizations (`DEMO_ORGS`), grouped by organization, oldest
- * membership first, then the users they have invited (role `invited`, ADR 0076), who belong
+ * membership first, then the users they have invited (role `invited`, ADR 0078), who belong
  * nowhere yet. Copies that test runs leave in the dev database (same names, suffixed slugs) are
  * left out. Empty outside dev.
  */

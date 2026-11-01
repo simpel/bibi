@@ -12,7 +12,7 @@ export type SeedAcrossOrganizationsInput = {
 
 /**
  * People who span the demo organizations, seeded once every organization exists: Lena Strand in
- * both (#449) and Nora Vik, invited to Vingaleden with a Lindholmen address (ADR 0076).
+ * both (#449) and Nora Vik, invited to Vingaleden with a Lindholmen address (ADR 0078).
  */
 export async function seedAcrossOrganizations({
   db,

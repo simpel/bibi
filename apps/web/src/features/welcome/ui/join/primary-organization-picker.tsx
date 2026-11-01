@@ -19,7 +19,7 @@ import { finishJoiningAction } from "../../join-actions";
 
 type Memberships = JoinableOrganizations["memberships"];
 
-/** The primary organization, where new sessions start (ADR 0076), then on into it. */
+/** The primary organization, where new sessions start (ADR 0078), then on into it. */
 export function PrimaryOrganizationPicker({ memberships }: { memberships: Memberships }) {
   const t = useTranslations("welcome.join");
   const router = useRouter();

@@ -6,7 +6,7 @@ import { requireAnySession } from "@/server/auth-pages";
 
 type JoinRouteProps = { params: Promise<{ locale: string; code?: string[] }> };
 
-/** `/welcome/join[/<code>]`: join through an invite code, prefilled from the mailed link (ADR 0076). */
+/** `/welcome/join[/<code>]`: join through an invite code, prefilled from the mailed link (ADR 0078). */
 export default async function JoinRoute({ params }: JoinRouteProps) {
   const { locale: value, code } = await params;
   const locale = resolveLocale({ value });

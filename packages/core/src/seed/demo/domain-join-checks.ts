@@ -6,7 +6,7 @@ import { demoEmailDomain } from "./users";
 
 export type CheckDemoDomainJoinInput = { context: ExecuteContext; org: DemoOrg };
 
-/** ADR 0076: the first admin claimed the demo domain at creation and domain join is on. */
+/** ADR 0078: the first admin claimed the demo domain at creation and domain join is on. */
 export async function checkDemoDomainJoin({
   context,
   org,

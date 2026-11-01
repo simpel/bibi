@@ -62,7 +62,7 @@ export async function bootstrapDemoOrg({ db, org }: BootstrapDemoOrgInput) {
 
 export type DemoCreatorInput = { org: DemoOrg; userIds: DemoUserIds };
 
-/** The first admin, standing in for whoever signed up and created the organization (ADR 0076). */
+/** The first admin, standing in for whoever signed up and created the organization (ADR 0078). */
 export function demoCreator({ org, userIds }: DemoCreatorInput): OrganizationCreator | undefined {
   const admin = org.users.find((user) => user.role === ADMIN_ROLE);
   const userId = admin ? userIds.get(admin.name) : undefined;

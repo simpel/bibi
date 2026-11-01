@@ -7,7 +7,7 @@ import { createUser, domain, orgWithAdmin, turn } from "./domain-join-helpers";
 import { unwrap } from "./helpers";
 import { invite, withInviter } from "./invitation-helpers";
 
-describe("domain offers (ADR 0076)", () => {
+describe("domain offers (ADR 0078)", () => {
   it("offers a claimed organization until joined, and never again after a removal", async () => {
     const own = domain();
     const context = await orgWithAdmin({ email: `admin@${own}` });
@@ -33,7 +33,7 @@ describe("domain offers (ADR 0076)", () => {
   });
 });
 
-describe("invite codes (ADR 0076)", () => {
+describe("invite codes (ADR 0078)", () => {
   it("gives every invitation a readable code", async () => {
     const context = await withInviter();
     const email = `invitee-${createId()}@example.test`;

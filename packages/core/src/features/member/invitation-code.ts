@@ -1,6 +1,6 @@
 import { randomInt } from "node:crypto";
 
-/** No 0/O, 1/I/L: the code is read from an email and typed in by hand (ADR 0076). */
+/** No 0/O, 1/I/L: the code is read from an email and typed in by hand (ADR 0078). */
 const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 const LENGTH = 8;
 

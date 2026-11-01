@@ -7,7 +7,7 @@ import { saveOrganizationProfile } from "./save-organization-profile";
 import { OrganizationProfileSchema, OrganizationProfileSetDomainJoinInputSchema } from "./schema";
 
 /**
- * Domain join (ADR 0076). Admin-only (`member:write` is locked): it decides who becomes a member.
+ * Domain join (ADR 0078). Admin-only (`member:write` is locked): it decides who becomes a member.
  * Turning it on claims the caller's own verified domain, else keeps the stored one.
  */
 export const setOrganizationDomainJoin = defineOperation({

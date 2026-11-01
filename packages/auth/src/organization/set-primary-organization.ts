@@ -4,7 +4,7 @@ import { getLogger } from "@bibi/logger";
 export type SetPrimaryOrganizationInput = { userId: string; organizationId: string; db?: Db };
 
 /**
- * Makes one of the user's memberships their primary organization (ADR 0076), where new sessions
+ * Makes one of the user's memberships their primary organization (ADR 0078), where new sessions
  * start. False when they are not a member there. The old primary is cleared in the same
  * transaction, so the partial unique index never sees two.
  */

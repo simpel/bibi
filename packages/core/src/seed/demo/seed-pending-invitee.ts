@@ -10,7 +10,7 @@ import { demoEmail } from "./users";
 
 /**
  * Nora Vik has a Lindholmen address but belongs nowhere yet, and Vingaleden has invited her
- * (ADR 0076). Signing in as her walks the whole welcome flow: the Lindholmen domain offer, then
+ * (ADR 0078). Signing in as her walks the whole welcome flow: the Lindholmen domain offer, then
  * her invite code for Vingaleden, then the list and the primary organization.
  */
 export const PENDING_INVITEE = {

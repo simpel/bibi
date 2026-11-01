@@ -6,7 +6,7 @@ import { requireAnySession } from "@/server/auth-pages";
 
 type OrganizationsRouteProps = { params: Promise<{ locale: string }> };
 
-/** Every organization the user can join, and their primary one (ADR 0076). */
+/** Every organization the user can join, and their primary one (ADR 0078). */
 export default async function OrganizationsRoute({ params }: OrganizationsRouteProps) {
   const locale = resolveLocale({ value: (await params).locale });
   setRequestLocale(locale);

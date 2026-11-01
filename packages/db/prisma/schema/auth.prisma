@@ -108,7 +108,7 @@ model Member {
   user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   role           String         @default("member")
   createdAt      DateTime
-  /// Owned (ADR 0076, hand-written like the admin plugin's fields): the user's primary organization,
+  /// Owned (ADR 0078, hand-written like the admin plugin's fields): the user's primary organization,
   /// where a new session starts. At most one per user (partial unique index in `domain_join`).
   primary        Boolean        @default(false)
   profile        MemberProfile?
@@ -126,7 +126,7 @@ model Invitation {
   email          String
   role           String?
   status         String       @default("pending")
-  /// Owned (ADR 0076, hand-written): short code printed in the invitation mail, set by core
+  /// Owned (ADR 0078, hand-written): short code printed in the invitation mail, set by core
   /// `member.invite`; accepted only for the invited email. Null on invitations from before.
   code           String?      @unique
   expiresAt      DateTime

@@ -7,7 +7,7 @@ import { InviteCodeForm } from "./invite-code-form";
 /** `/welcome/join`: "Join a different organization" with the code from its invitation mail. */
 export type InviteCodeStepProps = {
   code: string;
-  /** Pending codes for this email, only in development (ADR 0076). */
+  /** Pending codes for this email, only in development (ADR 0078). */
   devCodes: DevInvitationCode[];
 };
 

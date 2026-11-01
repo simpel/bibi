@@ -16,7 +16,7 @@ export type ClaimCreatorDomainInput = {
 };
 
 /**
- * Domain join starts on with the creator's own domain (ADR 0076), run as the creator (already the
+ * Domain join starts on with the creator's own domain (ADR 0078), run as the creator (already the
  * admin here) so the audit row says who claimed it. An unverified or public address claims
  * nothing: the switch stays on with no domain until an admin with a work email turns it on.
  */

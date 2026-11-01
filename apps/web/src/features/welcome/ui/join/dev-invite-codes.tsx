@@ -5,7 +5,7 @@ import { JOIN_PATHS } from "../../lib/join-paths";
 
 /**
  * Development only: the invite codes waiting for this email, each a link that fills in the form,
- * so the flow can be tried without the invitation mail (ADR 0076). Renders nothing when empty.
+ * so the flow can be tried without the invitation mail (ADR 0078). Renders nothing when empty.
  */
 export function DevInviteCodes({ codes }: { codes: DevInvitationCode[] }) {
   const t = useTranslations("dev");
