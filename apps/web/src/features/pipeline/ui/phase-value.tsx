@@ -49,7 +49,7 @@ export function PhaseValue({ cards, currency, size }: PhaseValueProps) {
       label: t("estimatedLabel"),
       description: t("estimated"),
       minor: estimated,
-      estimate: true,
+      tone: "estimate",
     });
   }
   return <MoneyTotals items={items} flow={flow} size={size} />;

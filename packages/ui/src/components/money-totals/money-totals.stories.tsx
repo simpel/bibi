@@ -15,7 +15,7 @@ const meta = {
     flow,
     items: [
       { key: "confirmed", label: "Agreed", minor: 29_751_050 },
-      { key: "estimated", label: "Estimated", minor: 37_921_975, estimate: true },
+      { key: "estimated", label: "Estimated", minor: 37_921_975, tone: "estimate" },
     ],
   },
 } satisfies Meta<typeof MoneyTotals>;
@@ -30,5 +30,18 @@ export const Medium: Story = {};
 export const Small: Story = { args: { size: "sm" } };
 
 export const EstimateOnly: Story = {
-  args: { items: [{ key: "estimated", label: "Estimated", minor: 4_430_000, estimate: true }] },
+  args: { items: [{ key: "estimated", label: "Estimated", minor: 4_430_000, tone: "estimate" }] },
+};
+
+/** A page's headline figures: one tile each, with a hint and a warning tone. */
+export const Large: Story = {
+  args: {
+    size: "lg",
+    items: [
+      { key: "invoiced", label: "Invoiced", minor: 5_740_000, hint: "Excl. VAT" },
+      { key: "received", label: "Received", minor: 2_097_600, hint: "Net of refunds" },
+      { key: "outstanding", label: "Outstanding", minor: null, fallback: "No access" },
+      { key: "overdue", label: "Overdue", minor: 5_331_200, hint: "Today", tone: "destructive" },
+    ],
+  },
 };

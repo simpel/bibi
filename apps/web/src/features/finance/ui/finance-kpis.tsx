@@ -1,5 +1,5 @@
 import type { FinanceOverviewDto, NumberFormat } from "@bibi/core/schemas";
-import { StatTile } from "@bibi/ui";
+import { MoneyTotals } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 
 export type FinanceKpisProps = {
@@ -14,33 +14,43 @@ export type FinanceKpisProps = {
 export function FinanceKpis({ overview, numbers }: FinanceKpisProps) {
   const t = useTranslations("finance.kpi");
   const common = useTranslations("finance");
-  const text = ({ minor }: { minor: number | null }) =>
-    minor === null
-      ? common("noAccessShort")
-      : numbers.money({ minor, currency: overview.currency });
+  const fallback = common("noAccessShort");
   return (
-    <div data-slot="finance-kpis" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-      <StatTile
-        label={t("invoiced")}
-        value={text({ minor: overview.invoicedExclVatMinor })}
-        hint={t("exclVat")}
-      />
-      <StatTile
-        label={t("received")}
-        value={text({ minor: overview.receivedMinor })}
-        hint={t("netOfRefunds")}
-      />
-      <StatTile
-        label={t("outstanding")}
-        value={text({ minor: overview.outstandingMinor })}
-        hint={t("today")}
-      />
-      <StatTile
-        label={t("overdue")}
-        value={text({ minor: overview.overdueMinor })}
-        hint={t("today")}
-        tone={overview.overdueMinor ? "destructive" : "default"}
-      />
-    </div>
+    <MoneyTotals
+      data-slot="finance-kpis"
+      size="lg"
+      flow={numbers.moneyFlow({ currency: overview.currency })}
+      items={[
+        {
+          key: "invoiced",
+          label: t("invoiced"),
+          minor: overview.invoicedExclVatMinor,
+          fallback,
+          hint: t("exclVat"),
+        },
+        {
+          key: "received",
+          label: t("received"),
+          minor: overview.receivedMinor,
+          fallback,
+          hint: t("netOfRefunds"),
+        },
+        {
+          key: "outstanding",
+          label: t("outstanding"),
+          minor: overview.outstandingMinor,
+          fallback,
+          hint: t("today"),
+        },
+        {
+          key: "overdue",
+          label: t("overdue"),
+          minor: overview.overdueMinor,
+          fallback,
+          hint: t("today"),
+          tone: overview.overdueMinor ? "destructive" : "default",
+        },
+      ]}
+    />
   );
 }
