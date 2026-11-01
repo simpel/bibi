@@ -27,6 +27,7 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   ["PaymentRefund", ["updatedAt", "createdBy"]],
   // Append-only (ADR 0077): which events an export contained; its export records who made it.
   ["AccountingExportEntry", ["updatedAt", "createdBy"]],
+  ["TicketEstimate", ["createdAt", "updatedAt", "createdBy"]],
   // Derived search index, rebuilt from its entity; not authored by anyone.
   ["Embedding", ["createdBy"]],
   // Better Auth tables (shape owned by Better Auth); `inviterId` records the inviter.

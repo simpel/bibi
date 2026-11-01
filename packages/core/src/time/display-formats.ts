@@ -1,12 +1,13 @@
 import type { NumberFormats } from "../number/number-format";
 
-/** How a user wants dates written (ADR 0046): D day, MMM/MMMM month name, MM month, YYYY year. */
+/** How a user wants dates written (ADR 0046): D day, MMM/MMMM month name, MM/M month, YYYY year. */
 export const DATE_FORMATS = [
   "D_MMM_YYYY",
   "D_MMMM_YYYY",
   "YYYY_MM_DD",
   "DD_MM_YYYY",
   "MM_DD_YYYY",
+  "D_M_YYYY",
 ] as const;
 
 /** 24 hour (`14:30`) or 12 hour (`2:30 PM`) clock. */

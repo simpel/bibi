@@ -21,6 +21,7 @@ export async function TicketFacts({ ticket, data }: TicketFactsProps) {
   const type = data.types.find(({ id }) => id === ticket.entityTypeId);
   const ticketStatus = data.statuses.find(({ id }) => id === ticket.statusId);
   const budget = ticket.budgetMinor;
+  const estimate = ticket.estimatedValueMinor;
   const hidden = data.customersHidden ? common("hidden") : undefined;
   const facts = [
     { label: t("type"), value: type?.name ?? "–" },
@@ -38,6 +39,7 @@ export async function TicketFacts({ ticket, data }: TicketFactsProps) {
     { label: t("estimatedHeadcount"), value: count({ value: ticket.estimatedHeadcount }) },
     { label: t("guaranteedHeadcount"), value: count({ value: ticket.guaranteedHeadcount }) },
     { label: t("budget"), value: budget === null ? "–" : money({ minor: budget }) },
+    { label: t("estimatedValue"), value: estimate === null ? "–" : money({ minor: estimate }) },
     ...(ticket.holdsUntil
       ? [{ label: t("holdsUntil"), value: format.dateTime({ instant: ticket.holdsUntil }) }]
       : []),

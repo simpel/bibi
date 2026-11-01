@@ -1,4 +1,5 @@
 import { ok } from "../../errors/result";
+import { DEFAULT_CURRENCY } from "../../number/number-formats";
 import type { HandlerInput } from "../../operations/types";
 import { notFound } from "../../shared/errors";
 import { loadBoard, loadDefaultBoard } from "../board/load-board";
@@ -8,7 +9,10 @@ import type { PipelineBoardInput } from "./schema";
 
 const DAY_MS = 86_400_000;
 
-const EMPTY = { boardId: null, boardName: null, columns: [], cards: [], unmappedCount: 0 };
+const EMPTY = {
+  ...{ boardId: null, boardName: null, columns: [], cards: [] },
+  ...{ currency: DEFAULT_CURRENCY, unmappedCount: 0 },
+};
 
 /** `pipeline.board`: the board's phases as columns and its tickets as cards (ADR 0067). */
 export async function pipelineBoardHandler({ input, context }: HandlerInput<PipelineBoardInput>) {
@@ -30,5 +34,6 @@ export async function pipelineBoardHandler({ input, context }: HandlerInput<Pipe
   const load = { context, input: filter, since };
   const cards = await loadTicketCards({ ...load, statusIds: { in: mapped } });
   const unmappedCount = await countTickets({ ...load, statusIds: { notIn: mapped } });
-  return ok({ value: { ...boardColumns({ board, statuses, cards }), unmappedCount } });
+  const layout = boardColumns({ board, statuses, cards });
+  return ok({ value: { ...layout, currency: DEFAULT_CURRENCY, unmappedCount } });
 }

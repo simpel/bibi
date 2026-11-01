@@ -36,6 +36,10 @@ Nothing outside `tokens.css` may contain hardcoded colors (hex/rgb/oklch), radii
 7. Export from `src/index.ts`.
 8. Helper functions (non-components) take a single typed object: `fn({ a, b }: FnInput)`. The only exception is `cn(...inputs)`.
 
+## Title rows
+- Title (and description) left, actions right on the title row: `CardHeader` + `CardAction`, actions as `HeaderActions`. Never actions in the card body or footer for the card's own commands.
+- Below `md` the actions go under the title. One action stays a button; several fold into one menu, and an action with its own choices (`items`) becomes a submenu.
+
 ## Commands
 - `pnpm --filter @bibi/ui typecheck` (`build` runs the same typecheck)
 - `pnpm --filter @bibi/ui storybook` / `build-storybook` – dark mode is toggled in the toolbar.

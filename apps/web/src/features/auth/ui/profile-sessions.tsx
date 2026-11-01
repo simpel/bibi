@@ -1,29 +1,28 @@
 "use client";
 
-import { Badge, Button } from "@bibi/ui";
+import { Button } from "@bibi/ui";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
+import { PersistedDataTable } from "@/components/data-table/persisted-data-table";
 import { InlineLoadError } from "@/components/states/inline-load-error";
 import { authClient } from "@/lib/auth-client";
-import { useDateTimeFormat } from "@/lib/time/use-date-time-format";
+import { SessionNotFresh } from "./session-not-fresh";
+import type { SessionRow } from "./session-row";
 import { useAuthFormAction } from "./use-auth-form-action";
-
-type SessionRow = {
-  id: string;
-  token: string;
-  userAgent?: string | null;
-  createdAt: Date | string;
-};
+import { useSessionColumns } from "./use-session-columns";
 
 function useSessions() {
   const t = useTranslations("profile");
   const [rows, setRows] = useState<SessionRow[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const [stale, setStale] = useState(false);
   const { pending, run } = useAuthFormAction();
   const load = useCallback(async () => {
     try {
       const { data, error } = await authClient.listSessions();
-      setFailed(Boolean(error));
+      // Better Auth lists sessions only for a sign-in younger than its fresh age (a day).
+      setStale(error?.code === "SESSION_NOT_FRESH");
+      setFailed(Boolean(error) && error?.code !== "SESSION_NOT_FRESH");
       if (data) setRows(data as SessionRow[]);
     } catch {
       setFailed(true);
@@ -38,30 +37,27 @@ function useSessions() {
       messages: { pending: t("signingOutOthers"), success: t("signedOutOthers") },
       onSuccess: load,
     });
-  return { rows: rows ?? [], failed, pending, signOutOthers };
+  return { rows: rows ?? [], failed, stale, pending, signOutOthers };
 }
 
 /** Active sessions of the signed-in user, with "sign out of all others". */
 export function ProfileSessions() {
   const t = useTranslations("profile");
-  const format = useDateTimeFormat();
   const current = authClient.useSession().data?.session.id;
-  const { rows, failed, pending, signOutOthers } = useSessions();
+  const { rows, failed, stale, pending, signOutOthers } = useSessions();
+  const columns = useSessionColumns({ current });
+  if (stale) return <SessionNotFresh />;
   const others = rows.filter((row) => row.id !== current);
   return (
     <div className="grid gap-4">
       <InlineLoadError errorKey={failed ? "generic" : null} />
-      <ul className="grid gap-2">
-        {rows.map((row) => (
-          <li key={row.id} className="flex items-center justify-between gap-3 text-sm">
-            <span className="truncate">{row.userAgent || t("unknownDevice")}</span>
-            <span className="flex items-center gap-2 text-muted-foreground">
-              {format.dateTime({ instant: row.createdAt })}
-              {row.id === current ? <Badge>{t("thisSession")}</Badge> : null}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <PersistedDataTable
+        tableId="profile.sessions"
+        columns={columns}
+        data={rows}
+        getRowId={(row) => row.id}
+        emptyText={t("sessionsEmpty")}
+      />
       <Button
         type="button"
         variant="outline"

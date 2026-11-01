@@ -15,12 +15,12 @@ const formatsOf = ({ org, member }: { org: DemoOrg; member: Member }) => {
 };
 
 type Formats = Partial<
-  Record<"dateFormat" | "clockFormat" | "numberFormat" | "currencyDisplay", string | null>
+  Record<"dateFormat" | "clockFormat" | "numberFormat" | "moneyFormat", string | null>
 >;
 
-/** `date/clock/number/currency`, `null` for a default. */
+/** `date/clock/number/money`, `null` for a default. */
 const keyOf = ({ formats }: { formats: Formats }) =>
-  [formats.dateFormat, formats.clockFormat, formats.numberFormat, formats.currencyDisplay]
+  [formats.dateFormat, formats.clockFormat, formats.numberFormat, formats.moneyFormat]
     .map((value) => value ?? null)
     .join("/");
 

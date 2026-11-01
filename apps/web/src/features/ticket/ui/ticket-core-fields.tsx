@@ -74,6 +74,15 @@ function DetailFields({ form }: { form: Form }) {
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField form={form} name="budget" label={t("budget")} type="number" step="0.01" />
+        <TextField
+          form={form}
+          name="estimatedValue"
+          label={t("estimatedValue")}
+          type="number"
+          step="0.01"
+        />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
         {field({ name: "holdsUntil", type: "datetime-local" })}
       </div>
     </>

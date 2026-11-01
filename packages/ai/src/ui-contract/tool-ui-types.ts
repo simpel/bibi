@@ -25,7 +25,7 @@ import type { ResponsibilityWire } from "./responsibility-entries";
 import type { SheetDefinitionWire } from "./sheet-definition-entries";
 import type { SheetWire } from "./sheet-entries";
 import type { StatusGridCellWire } from "./status-grid-entries";
-import type { TicketStatusHistoryWire, TicketWire } from "./ticket-entries";
+import type { TicketToolUiProps } from "./ticket-entries";
 import type { TicketStatusWire } from "./ticket-status-entries";
 import type { TicketTemplateWire } from "./ticket-template-entries";
 import type {
@@ -51,7 +51,8 @@ import type {
  * component; this package only decides which key and validated props a tool result gets.
  */
 export type ToolUiProps = BoardUiProps &
-  FinanceUiProps & {
+  FinanceUiProps &
+  TicketToolUiProps & {
     "venue-table": { items: VenueWire[]; nextCursor: string | null };
     "venue-card": { venue: VenueWire };
     "item-table": { items: ItemWire[]; nextCursor: string | null };
@@ -73,9 +74,6 @@ export type ToolUiProps = BoardUiProps &
     "item-state-table": { items: ItemStateWire[]; nextCursor: string | null };
     "item-state-card": { state: ItemStateWire };
     "status-grid-table": { cells: StatusGridCellWire[] };
-    "ticket-table": { items: TicketWire[]; nextCursor: string | null };
-    "ticket-card": { ticket: TicketWire };
-    "ticket-status-history": { history: TicketStatusHistoryWire };
     "line-table": { items: LineWire[]; nextCursor: string | null };
     "line-card": { line: LineWire };
     "alternative-group-table": { items: AlternativeGroupWire[]; nextCursor: string | null };

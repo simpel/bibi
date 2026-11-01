@@ -34,8 +34,8 @@ export function DisplayFormatFields({ control }: DisplayFormatFieldsProps) {
       />
       <FormatSelectField
         control={control}
-        name="currencyDisplay"
-        label={t("currencyDisplay")}
+        name="moneyFormat"
+        label={t("moneyFormat")}
         options={currencies}
       />
     </>

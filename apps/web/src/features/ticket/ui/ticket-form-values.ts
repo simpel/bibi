@@ -15,6 +15,8 @@ export type TicketFormValues = {
   guaranteedHeadcount: string;
   /** The budget in whole currency units (stored in minor units). */
   budget: string;
+  /** The estimated value in whole currency units (stored in minor units, with history). */
+  estimatedValue: string;
   /** Soft holds expire after this time (ADR 0044); empty: they never do. */
   holdsUntil: string;
   fields: Record<string, RawFieldValue>;
@@ -36,6 +38,7 @@ export function ticketFormDefaults({
   timeZone,
 }: TicketDefaultsInput): TicketFormValues {
   const budget = ticket?.budgetMinor;
+  const estimate = ticket?.estimatedValueMinor;
   const local = ({ date }: { date: Date | null | undefined }) =>
     date ? toLocalInputValue({ date, timeZone }) : "";
   return {
@@ -47,6 +50,9 @@ export function ticketFormDefaults({
     estimatedHeadcount: text({ value: ticket?.estimatedHeadcount }),
     guaranteedHeadcount: text({ value: ticket?.guaranteedHeadcount }),
     budget: text({ value: budget === null || budget === undefined ? budget : budget / 100 }),
+    estimatedValue: text({
+      value: estimate === null || estimate === undefined ? estimate : estimate / 100,
+    }),
     holdsUntil: local({ date: ticket?.holdsUntil }),
     fields: rawFields({ type, stored: ticket?.fields ?? {} }),
   };

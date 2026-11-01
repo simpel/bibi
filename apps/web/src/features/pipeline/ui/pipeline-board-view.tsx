@@ -4,6 +4,7 @@ import type { PipelineBoard } from "@bibi/core";
 import type { TransitionGate } from "@bibi/core/schemas";
 import { KanbanBoard } from "@bibi/ui";
 import { findDrop, kanbanCards, kanbanColumns } from "../lib/kanban-model";
+import { PhaseValue } from "./phase-value";
 import { PipelineCardContent } from "./pipeline-card";
 import { useMoveCard } from "./use-move-card";
 import { usePipelineLabels } from "./use-pipeline-labels";
@@ -33,6 +34,7 @@ export function PipelineBoardView(props: PipelineBoardViewProps) {
         cards={kanbanCards({ board, customerNames })}
         labels={labels}
         renderCard={(card) => <PipelineCardContent card={card} />}
+        renderSummary={({ cards }) => <PhaseValue cards={cards} currency={board.currency} />}
         canDrop={(move) => {
           const found = findDrop({ board, move, transitions });
           // Another phase is always a drop (with a message when nothing may move there); inside

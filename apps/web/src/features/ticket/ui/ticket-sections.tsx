@@ -7,6 +7,7 @@ import { TicketQuotes } from "@/features/quote/ui/ticket-quotes";
 import { RequirementSection } from "@/features/requirement/ui/requirement-section";
 import { SheetSection } from "@/features/sheet/ui/sheet-section";
 import { type CallerAbilities, can } from "@/server/caller-abilities";
+import { TicketEstimateHistory } from "./ticket-estimate-history";
 import { TicketStatusHistory } from "./ticket-status-history";
 
 export type TicketSectionsProps = {
@@ -28,6 +29,7 @@ export function TicketSections({ locale, ticket, statuses, abilities }: TicketSe
         <TicketQuotes locale={locale} ticket={ticket} statuses={statuses} />
       ) : null}
       <TicketStatusHistory locale={locale} ticketId={ticket.id} statuses={statuses} />
+      <TicketEstimateHistory locale={locale} ticketId={ticket.id} />
       {allowed({ permission: "payment:read" }) ? (
         <TicketPayments
           locale={locale}

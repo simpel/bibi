@@ -1,4 +1,6 @@
 import {
+  TicketEstimateHistoryOutputSchema,
+  TicketEstimateSchema,
   TicketSchema,
   TicketStatusChangeSchema,
   TicketStatusHistoryOutputSchema,
@@ -30,6 +32,21 @@ export const TicketStatusHistoryWireSchema = TicketStatusHistoryOutputSchema.ext
 
 export type TicketStatusHistoryWire = z.infer<typeof TicketStatusHistoryWireSchema>;
 
+/** JSON form of a ticket's estimate history (ADR 0074). */
+export const TicketEstimateHistoryWireSchema = TicketEstimateHistoryOutputSchema.extend({
+  items: z.array(TicketEstimateSchema.extend({ changedAt: z.string() })),
+});
+
+export type TicketEstimateHistoryWire = z.infer<typeof TicketEstimateHistoryWireSchema>;
+
+/** The props of the ticket components, part of `ToolUiProps`. */
+export type TicketToolUiProps = {
+  "ticket-table": { items: TicketWire[]; nextCursor: string | null };
+  "ticket-card": { ticket: TicketWire };
+  "ticket-status-history": { history: TicketStatusHistoryWire };
+  "ticket-estimate-history": { history: TicketEstimateHistoryWire };
+};
+
 const ticketTable = uiEntry({
   component: "ticket-table",
   schema: TicketListWireSchema,
@@ -52,6 +69,11 @@ export const TICKET_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
   ticket_statusHistory: uiEntry({
     component: "ticket-status-history",
     schema: TicketStatusHistoryWireSchema,
+    toProps: ({ value }) => ({ history: value }),
+  }),
+  ticket_estimateHistory: uiEntry({
+    component: "ticket-estimate-history",
+    schema: TicketEstimateHistoryWireSchema,
     toProps: ({ value }) => ({ history: value }),
   }),
 };

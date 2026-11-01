@@ -12,11 +12,11 @@ export async function saveUserSettings({
   dateFormat,
   clockFormat,
   numberFormat,
-  currencyDisplay,
+  moneyFormat,
 }: SaveUserSettingsInput): Promise<ActionResult<UserSettingsDto>> {
   const result = await runOperation({
     operation: updateUserSettings,
-    input: { dateFormat, clockFormat, numberFormat, currencyDisplay },
+    input: { dateFormat, clockFormat, numberFormat, moneyFormat },
   });
   return toActionResult({ result });
 }

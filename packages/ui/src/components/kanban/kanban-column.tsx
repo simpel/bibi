@@ -19,6 +19,8 @@ export type KanbanColumnProps = {
    */
   zones?: readonly { zone: KanbanZoneData; accepting: boolean }[];
   emptyLabel: string;
+  /** Shown under the title, e.g. the lane's total value. */
+  summary?: ReactNode;
   children: ReactNode;
 };
 
@@ -54,6 +56,7 @@ export function KanbanColumn({
   accepting,
   zones = [],
   emptyLabel,
+  summary,
   children,
 }: KanbanColumnProps) {
   const zoned = zones.length > 0;
@@ -68,7 +71,7 @@ export function KanbanColumn({
       aria-label={column.title}
       className={kanbanColumnVariants({ drop: dropState({ accepting, isOver }) })}
     >
-      <KanbanColumnHeader column={column} count={count} />
+      <KanbanColumnHeader column={column} count={count} summary={summary} />
       <div className={cn(BODY, zoned && "min-h-32")}>
         {count === 0 ? (
           <p className="px-1 py-3 text-center text-xs text-muted-foreground">{emptyLabel}</p>

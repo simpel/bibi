@@ -4,7 +4,7 @@ import type { LoadedCard } from "./load-cards";
 import type { PipelineBoard, PipelineColumn } from "./schema";
 
 /** The board without `unmappedCount`, which the operation counts in the database. */
-export type BoardLayout = Omit<PipelineBoard, "unmappedCount">;
+export type BoardLayout = Omit<PipelineBoard, "unmappedCount" | "currency">;
 
 export type BoardColumnsInput = {
   board: BoardDto;

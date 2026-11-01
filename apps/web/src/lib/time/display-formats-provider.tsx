@@ -8,7 +8,7 @@ export const DisplayFormatsContext = createContext<DisplayFormats>({
   dateFormat: null,
   clockFormat: null,
   numberFormat: null,
-  currencyDisplay: null,
+  moneyFormat: null,
 });
 
 export type DisplayFormatsProviderProps = { formats: DisplayFormats; children: ReactNode };

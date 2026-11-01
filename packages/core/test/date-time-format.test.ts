@@ -26,6 +26,7 @@ describe("createDateTimeFormat (#481)", () => {
     expect(date({ dateFormat: "YYYY_MM_DD" })).toBe("2026-08-27");
     expect(date({ dateFormat: "DD_MM_YYYY" })).toBe("27/08/2026");
     expect(date({ dateFormat: "MM_DD_YYYY" })).toBe("08/27/2026");
+    expect(date({ dateFormat: "D_M_YYYY" })).toBe("27/8 2026");
   });
 
   it("uses a 12 hour clock and numeric dates without a comma", () => {

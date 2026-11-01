@@ -13,11 +13,29 @@ export function Card({ className, ...props }: CardProps) {
   );
 }
 
+/**
+ * Title and description on the left; a `CardAction` sits on the right of the title row from
+ * `md` up and under the description on smaller screens (the header rule in `CLAUDE.md`).
+ */
 export function CardHeader({ className, ...props }: CardProps) {
   return (
     <div
       data-slot="card-header"
-      className={cn("flex flex-col gap-1.5 p-6", className)}
+      className={cn(
+        "grid auto-rows-min items-start gap-1.5 p-6 md:has-data-[slot=card-action]:grid-cols-[1fr_auto]",
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+/** The header's actions, usually `HeaderActions`. */
+export function CardAction({ className, ...props }: CardProps) {
+  return (
+    <div
+      data-slot="card-action"
+      className={cn("mt-2 md:col-start-2 md:row-span-2 md:row-start-1 md:mt-0", className)}
       {...props}
     />
   );

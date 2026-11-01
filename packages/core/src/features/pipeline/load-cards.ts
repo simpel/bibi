@@ -2,6 +2,7 @@ import type { OperationContext } from "../../operations/types";
 import { canView } from "../../shared/can-view";
 import { subjectIdFilter } from "../assignment/subject-filter";
 import { LATEST_STATUS_CHANGE } from "../ticket/status-history";
+import { cardValues } from "./card-values";
 import type { PipelineBoardInput, PipelineCard } from "./schema";
 
 /** A card before it is placed in a column of the board. */
@@ -85,10 +86,14 @@ export async function loadTicketCards({
     orderBy: [{ reference: "desc" }, { id: "desc" }],
     take: CARD_LIMIT,
   });
-  const owners = await mainAssignees({ context, ids: rows.map((row) => row.id) });
+  const ids = rows.map((row) => row.id);
+  const [owners, valuesOf] = await Promise.all([
+    mainAssignees({ context, ids }),
+    cardValues({ context, ticketIds: ids }),
+  ]);
   // Line states belong to the program: counted only for a caller who may view it (ADR 0050).
   const counted = canView({ context, feature: "program" });
-  const lines = counted ? await lineCounts({ context, ids: rows.map((row) => row.id) }) : null;
+  const lines = counted ? await lineCounts({ context, ids }) : null;
   const none = counted ? { heldLines: 0, bookedLines: 0 } : { heldLines: null, bookedLines: null };
   return rows.map((row) => ({
     ...(lines?.get(row.id) ?? none),
@@ -102,5 +107,6 @@ export async function loadTicketCards({
     quantity: row.guaranteedHeadcount ?? row.estimatedHeadcount,
     statusChangedAt: row.statusChanges[0]?.changedAt ?? row.createdAt,
     assigneeId: owners.get(row.id) ?? null,
+    ...valuesOf({ ticketId: row.id }),
   }));
 }

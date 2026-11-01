@@ -49,7 +49,7 @@ export type CalendarLabels = {
   clock: (input: { minutes: number }) => string;
   /** A whole hour on an axis: `14` or `2 PM`. */
   hour: (input: { hour: number }) => string;
-  /** An amount in the user's number format and currency display. */
+  /** An amount in the user's money format. */
   money: (money: Money) => string;
   exclVat: (input: { amount: string }) => string;
   /** The same amount for an animated number (NumberFlow), in the user's number format. */

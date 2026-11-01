@@ -11,6 +11,7 @@ import type {
   KanbanLabels,
   KanbanMove,
   KanbanRenderCard,
+  KanbanRenderSummary,
 } from "./kanban-types";
 import { type KanbanColumnDropState, useKanbanDrop } from "./use-kanban-drop";
 
@@ -25,6 +26,8 @@ export type KanbanBoardProps<TCard extends KanbanCardData> = {
   canDrop?: KanbanCanDrop;
   /** Called after a permitted drop. The caller runs the command and refreshes `cards`. */
   onMove: (move: KanbanMove) => void;
+  /** A line under each lane's title from its cards, e.g. their total value. */
+  renderSummary?: KanbanRenderSummary<TCard>;
 };
 
 const ALWAYS: KanbanCanDrop = () => true;
@@ -35,10 +38,11 @@ type KanbanLaneProps<TCard extends KanbanCardData> = {
   state: KanbanColumnDropState;
   emptyLabel: string;
   renderCard: KanbanRenderCard<TCard>;
+  renderSummary?: KanbanRenderSummary<TCard> | undefined;
 };
 
 function KanbanLane<TCard extends KanbanCardData>(props: KanbanLaneProps<TCard>) {
-  const { column, cards, state, emptyLabel, renderCard } = props;
+  const { column, cards, state, emptyLabel, renderCard, renderSummary } = props;
   return (
     <KanbanColumn
       column={column}
@@ -46,6 +50,7 @@ function KanbanLane<TCard extends KanbanCardData>(props: KanbanLaneProps<TCard>)
       accepting={state.accepting}
       zones={state.zones}
       emptyLabel={emptyLabel}
+      summary={renderSummary?.({ column, cards })}
     >
       {cards.map((card) => (
         <KanbanCard key={card.id} id={card.id}>
@@ -53,6 +58,25 @@ function KanbanLane<TCard extends KanbanCardData>(props: KanbanLaneProps<TCard>)
         </KanbanCard>
       ))}
     </KanbanColumn>
+  );
+}
+
+type KanbanOverlayProps<TCard extends KanbanCardData> = {
+  active: TCard | undefined;
+  renderCard: KanbanRenderCard<TCard>;
+};
+
+/** The card under the pointer while it is dragged. */
+function KanbanOverlay<TCard extends KanbanCardData>({
+  active,
+  renderCard,
+}: KanbanOverlayProps<TCard>) {
+  return (
+    <DragOverlay>
+      {active ? (
+        <div className="rounded-lg border bg-card p-3 shadow-lg">{renderCard(active)}</div>
+      ) : null}
+    </DragOverlay>
   );
 }
 
@@ -67,6 +91,7 @@ export function KanbanBoard<TCard extends KanbanCardData>({
   labels,
   canDrop = ALWAYS,
   onMove,
+  renderSummary,
 }: KanbanBoardProps<TCard>) {
   const drop = useKanbanDrop({ cards, columns, canDrop, onMove });
   return (
@@ -88,14 +113,11 @@ export function KanbanBoard<TCard extends KanbanCardData>({
             state={drop.columnState({ column })}
             emptyLabel={labels.emptyColumn}
             renderCard={renderCard}
+            renderSummary={renderSummary}
           />
         ))}
       </div>
-      <DragOverlay>
-        {drop.active ? (
-          <div className="rounded-lg border bg-card p-3 shadow-lg">{renderCard(drop.active)}</div>
-        ) : null}
-      </DragOverlay>
+      <KanbanOverlay active={drop.active} renderCard={renderCard} />
     </DndContext>
   );
 }

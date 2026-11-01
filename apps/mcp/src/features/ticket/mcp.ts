@@ -5,6 +5,7 @@ export const ticketMcpTools = [
   mcpTool({ operation: "ticket.get" }),
   mcpTool({ operation: "ticket.export" }),
   mcpTool({ operation: "ticket.statusHistory" }),
+  mcpTool({ operation: "ticket.estimateHistory" }),
   mcpTool({
     operation: "ticket.create",
     summary: ({ input }) => `Create a ticket for customer ${text({ value: input.customerId })}`,

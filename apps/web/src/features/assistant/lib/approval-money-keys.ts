@@ -21,6 +21,7 @@ export const MONEY_FIELD_KEYS = [
   "vat6Account",
   "fiscalYearStartMonth",
   "revenueAccounts",
+  "estimatedValueMinor",
 ] as const;
 
 /** Money operations with a localized label in `assistant.approval.operations`. */

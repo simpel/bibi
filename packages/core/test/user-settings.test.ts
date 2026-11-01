@@ -29,17 +29,17 @@ describe("user settings (ADR 0046)", () => {
     expect(await read({ context: a })).toMatchObject({ dateFormat: null, clockFormat: "H12" });
     expect(await read({ context: b })).toMatchObject({ id: null, clockFormat: null });
     unwrap({
-      result: await update({ input: { numberFormat: "COMMA_DOT", currencyDisplay: "CODE" } }),
+      result: await update({ input: { numberFormat: "COMMA_DOT", moneyFormat: "CODE_COMMA" } }),
     });
     expect(await read({ context: a })).toMatchObject({
       clockFormat: "H12",
       numberFormat: "COMMA_DOT",
-      currencyDisplay: "CODE",
+      moneyFormat: "CODE_COMMA",
     });
-    unwrap({ result: await update({ input: { currencyDisplay: null } }) });
+    unwrap({ result: await update({ input: { moneyFormat: null } }) });
     expect(await read({ context: a })).toMatchObject({
       numberFormat: "COMMA_DOT",
-      currencyDisplay: null,
+      moneyFormat: null,
     });
   });
 

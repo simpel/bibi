@@ -117,10 +117,18 @@
     "consentAllowing": "Granting access…",
     "consentAllowed": "Access has been granted.",
     "consentDenying": "Denying access…",
-    "consentDenied": "Access has been denied."
+    "consentDenied": "Access has been denied.",
+    "consentOrganization": "Access to {organization}.",
+    "consentPickOrganization": "Organization to give access to",
+    "consentNoOrganization": "You are not a member of any organization, so there is nothing to give access to.",
+    "consentRedirect": "Access is sent to {host}. Only allow if you started this from there."
   },
   "pipeline": {
     "title": "Pipeline",
+    "phaseValue": {
+      "confirmed": "Agreed value excl. VAT (accepted quotes)",
+      "estimated": "Estimated value excl. VAT of the tickets without an accepted quote"
+    },
     "clash": "Time clash",
     "noDate": "No date",
     "quantity": "{count, plural, one {# person} other {# people}}",
@@ -717,6 +725,7 @@
       "estimatedHeadcount": "Estimated headcount",
       "guaranteedHeadcount": "Guaranteed headcount",
       "budget": "Budget (SEK)",
+      "estimatedValue": "Estimated value (SEK)",
       "status": "Status",
       "newStatus": "New status",
       "statusReason": "Reason",
@@ -743,6 +752,12 @@
     "useTemplate": "Use a predefined ticket instead",
     "templateBlocked": "{count, plural, one {# line is blocked: a hold collides.} other {# lines are blocked: a hold collides.}}",
     "noAssignee": "No one yet",
+    "estimateHistory": {
+      "title": "Estimate history",
+      "empty": "No estimate yet.",
+      "cleared": "Cleared",
+      "sinceFirst": "{change} since the first estimate"
+    },
     "statusHistory": {
       "title": "Status history",
       "empty": "No status changes yet.",
@@ -1683,7 +1698,7 @@
         "dateFormat": "Date format",
         "clockFormat": "Clock format",
         "numberFormat": "Number format",
-        "currencyDisplay": "Currency display",
+        "moneyFormat": "Money format",
         "capabilities": "Capabilities",
         "fields": "Fields",
         "priceMinor": "Price (minor units)",
@@ -1736,6 +1751,7 @@
         "unitPriceMinor": "Unit price (minor units)",
         "discountPercent": "Discount (%)",
         "budgetMinor": "Budget (minor units)",
+        "estimatedValueMinor": "Estimated value (minor units)",
         "ticketId": "Ticket (id)",
         "statusId": "Status (id)",
         "reason": "Reason",
@@ -2446,7 +2462,7 @@
     "tooBig": "The value is too large.",
     "invalid": "The value is invalid.",
     "invitationInvalid": "The invitation is invalid or has expired.",
-    "loadFailed": "The information could not be loaded.",
+    "loadFailed": "We couldn't load this right now",
     "oauthQueryMissing": "The request is missing information. Start again from the application that asked for access.",
     "textTooShort": "The text is too short.",
     "approvalUsed": "This proposal has already been used.",
@@ -2552,31 +2568,15 @@
     "dateFormat": "Date format",
     "clockFormat": "Clock",
     "numberFormat": "Number format",
-    "currencyDisplay": "Currency display",
-    "withDefault": "{label} (default)",
     "saved": "Your display formats have been saved.",
     "numberFormats": {
-      "LANGUAGE": "Same as the language ({example})",
-      "SPACE_COMMA": "{example} (space, comma)",
-      "COMMA_DOT": "{example} (comma, dot)",
-      "DOT_COMMA": "{example} (dot, comma)",
-      "SPACE_DOT": "{example} (space, dot)"
-    },
-    "currencyDisplays": {
-      "SYMBOL": "{example} (symbol)",
-      "CODE": "{example} (currency code)"
-    },
-    "dateFormats": {
-      "D_MMM_YYYY": "{example}",
-      "D_MMMM_YYYY": "{example} (full month)",
-      "YYYY_MM_DD": "{example} (ISO)",
-      "DD_MM_YYYY": "{example} (day first)",
-      "MM_DD_YYYY": "{example} (month first)"
+      "LANGUAGE": "Same as the language"
     },
     "clockFormats": {
-      "H24": "{example} (24 hour)",
-      "H12": "{example} (12 hour)"
-    }
+      "H24": "24h",
+      "H12": "12h"
+    },
+    "moneyFormat": "Money format"
   },
   "timeZone": {
     "placeholder": "Choose a time zone",
@@ -3072,7 +3072,18 @@
     "unknownDevice": "Unknown device",
     "signOutOthers": "Sign out of other sessions",
     "signingOutOthers": "Signing out…",
-    "signedOutOthers": "You have been signed out of your other sessions."
+    "signedOutOthers": "You have been signed out of your other sessions.",
+    "sectionsNav": "On this page",
+    "appsTitle": "Connected apps",
+    "sessionsNotFresh": "For your security, you can only see and manage your sessions within a day of signing in. Sign in again to continue.",
+    "signInAgain": "Sign in again",
+    "device": "{browser} on {os}",
+    "sessionColumns": {
+      "device": "Device",
+      "signedIn": "Signed in",
+      "lastActive": "Last active"
+    },
+    "sessionsEmpty": "No active sessions."
   },
   "assignment": {
     "title": "Assignee and followers",
@@ -3155,6 +3166,20 @@
         "client": "App",
         "scopes": "Access",
         "connected": "Connected"
+      },
+      "add": "Add connection",
+      "mcp": {
+        "name": "MCP",
+        "dialogTitle": "Connect over MCP",
+        "description": "Let an AI app such as Claude use Bibi as you.",
+        "urlLabel": "MCP address",
+        "copy": "Copy address",
+        "copied": "Address copied.",
+        "copyFailed": "Could not copy. Select the text and copy it by hand.",
+        "copyPrompt": "Copy prompt",
+        "promptCopied": "Prompt copied. Paste it into your AI app.",
+        "local": "Only reachable from this computer.",
+        "prompt": "Help me connect {name} to you as an MCP connector, so you can work in {name} for me. Explain each step in plain language and wait for me between steps.\n\nName: {name}\nAddress: {url}\n\nWhen I connect, {name} asks me to sign in and choose Allow."
       }
     }
   },

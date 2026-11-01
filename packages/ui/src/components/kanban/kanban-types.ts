@@ -49,3 +49,8 @@ export type KanbanLabels = {
 };
 
 export type KanbanRenderCard<TCard extends KanbanCardData> = (card: TCard) => ReactNode;
+
+export type KanbanRenderSummary<TCard extends KanbanCardData> = (lane: {
+  column: KanbanColumnData;
+  cards: readonly TCard[];
+}) => ReactNode;

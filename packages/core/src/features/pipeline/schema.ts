@@ -44,6 +44,22 @@ export const PipelineCardSchema = z.object({
     .int()
     .nullable()
     .describe("Lines in a hard-hold state (blocking their item); null without program:read"),
+  estimatedValueMinor: z
+    .number()
+    .int()
+    .nullable()
+    .describe(
+      "Estimated value excl. VAT in minor units of `currency`: the ticket's own estimate " +
+        "(ticket.estimateHistory), else what its priced lines total (only with program:read)",
+    ),
+  confirmedValueMinor: z
+    .number()
+    .int()
+    .nullable()
+    .describe(
+      "Agreed value excl. VAT in minor units of `currency`: the accepted quote's total; null " +
+        "without an accepted quote or quote:read",
+    ),
 });
 
 export const PipelineBoardInputSchema = z.object({
@@ -70,6 +86,7 @@ export const PipelineBoardSchema = z.object({
   boardName: z.string().nullable(),
   columns: z.array(PipelineColumnSchema),
   cards: z.array(PipelineCardSchema),
+  currency: z.string().describe("ISO 4217 code of the cards' values"),
   unmappedCount: z
     .number()
     .int()

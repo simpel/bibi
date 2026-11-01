@@ -4,6 +4,7 @@ import { createRecord } from "../../records/create-record";
 import { toJson } from "../../shared/to-json";
 import { assignOnCreate } from "../assignment/assign-on-create";
 import { checkNewTicket } from "./check-new-ticket";
+import { recordEstimate } from "./estimate-history";
 import type { TicketCreateInput, TicketDto } from "./schema";
 import { recordStatusChange } from "./status-history";
 import { entryStatusId, nextReference } from "./ticket-defaults";
@@ -27,6 +28,24 @@ type EntryInput = { context: OperationContext; statusId: string | undefined };
 const loadStartStatus = async ({ context, statusId }: EntryInput): Promise<Result<string>> =>
   statusId ? ok({ value: statusId }) : await entryStatusId({ context });
 
+type FirstHistoryInput = {
+  context: OperationContext;
+  ticketId: string;
+  statusId: string;
+  trigger: "MANUAL" | "TEMPLATE";
+  estimatedValueMinor: number | null | undefined;
+};
+
+/**
+ * The first entry of the status history (ADR 0054), which confirms the status the ticket was
+ * inserted with, and its first estimate when one is given (ADR 0074).
+ */
+async function recordFirstHistory({ context, ticketId, statusId, ...rest }: FirstHistoryInput) {
+  const first = { fromStatusId: null, toStatusId: statusId, trigger: rest.trigger } as const;
+  await recordStatusChange({ context, ticketId, ...first });
+  await recordEstimate({ context, ticketId, current: null, valueMinor: rest.estimatedValueMinor });
+}
+
 /**
  * Creates a ticket in the start status (default: the organization's entry status) with the next reference number and records
  * the change, with its main assignment when an assignee is given (ADR 0043).
@@ -39,7 +58,7 @@ export async function insertTicket({
 }: InsertTicketInput): Promise<Result<TicketDto>> {
   const checked = await checkNewTicket({ context, input });
   if (!checked.ok) return checked;
-  const { entityTypeId, fields: _fields, assigneeId, ...data } = input;
+  const { entityTypeId, fields: _fields, assigneeId, estimatedValueMinor, ...data } = input;
   const statusId = await loadStartStatus({ context, statusId: startStatusId });
   if (!statusId.ok) return statusId;
   const reference = await nextReference({ context });
@@ -63,9 +82,8 @@ export async function insertTicket({
         include: TICKET_INCLUDE,
       }),
   });
-  // The first entry of the status history (ADR 0054); it confirms the status inserted above.
-  const first = { fromStatusId: null, toStatusId: statusId.value, trigger } as const;
-  await recordStatusChange({ context, ticketId: row.id, ...first });
+  const history = { statusId: statusId.value, trigger, estimatedValueMinor };
+  await recordFirstHistory({ context, ticketId: row.id, ...history });
   const ticket = (await loadTicket({ context, id: row.id })) ?? toTicketDto({ row });
   context.recordChange({ entityId: row.id, after: ticket });
   await assignOnCreate({ context, subjectType: "TICKET", subjectId: row.id, assigneeId });

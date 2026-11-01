@@ -9,15 +9,22 @@ import { DisplayFormatForm } from "@/features/user-settings/ui/display-format-fo
 import { runOperation } from "@/server/run-operation";
 import { ProfileNameForm } from "./profile-name-form";
 import { ProfilePasswordForm } from "./profile-password-form";
+import { ProfileSectionNav } from "./profile-section-nav";
+import type { ProfileSectionId } from "./profile-sections";
 import { ProfileSessions } from "./profile-sessions";
 
 export type ProfileViewProps = { name: string; email: string; locale: Locale };
 
-type ProfileCardProps = { title: string; description?: string; children: ReactNode };
+type ProfileCardProps = {
+  id: ProfileSectionId;
+  title: string;
+  description?: string;
+  children: ReactNode;
+};
 
-function ProfileCard({ title, description, children }: ProfileCardProps) {
+function ProfileCard({ id, title, description, children }: ProfileCardProps) {
   return (
-    <Card>
+    <Card id={id} className="scroll-mt-6">
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         {description ? <CardDescription>{description}</CardDescription> : null}
@@ -31,29 +38,42 @@ const NO_FORMATS = {
   dateFormat: null,
   clockFormat: null,
   numberFormat: null,
-  currencyDisplay: null,
+  moneyFormat: null,
 };
 
-/** Profile page body: name, email (read-only), date and clock format, password, active sessions and connected apps. */
+/** Profile page body: name, email (read-only), formats, password, sessions and connected apps, with an in-page nav. */
 export async function ProfileView({ name, email, locale }: ProfileViewProps) {
   const t = await getTranslations("profile");
   const settings = await runOperation({ operation: getUserSettings, input: {} });
   return (
-    <div className="grid max-w-2xl gap-6">
-      <PageHeader title={t("title")} description={t("description")} />
-      <ProfileCard title={t("details")}>
-        <ProfileNameForm name={name} email={email} />
-      </ProfileCard>
-      <ProfileCard title={t("displayTitle")} description={t("displayDescription")}>
-        <DisplayFormatForm formats={settings.ok ? settings.value : NO_FORMATS} />
-      </ProfileCard>
-      <ProfileCard title={t("passwordTitle")} description={t("passwordDescription")}>
-        <ProfilePasswordForm />
-      </ProfileCard>
-      <ProfileCard title={t("sessionsTitle")} description={t("sessionsDescription")}>
-        <ProfileSessions />
-      </ProfileCard>
-      <OauthGrantSection locale={locale} />
+    <div className="grid max-w-4xl grid-cols-[minmax(0,1fr)] gap-6 md:grid-cols-[10rem_minmax(0,1fr)] md:items-start">
+      <div className="md:col-span-2">
+        <PageHeader title={t("title")} description={t("description")} />
+      </div>
+      <ProfileSectionNav />
+      <div className="grid min-w-0 gap-6">
+        <ProfileCard id="details" title={t("details")}>
+          <ProfileNameForm name={name} email={email} />
+        </ProfileCard>
+        <ProfileCard id="display" title={t("displayTitle")} description={t("displayDescription")}>
+          <DisplayFormatForm formats={settings.ok ? settings.value : NO_FORMATS} />
+        </ProfileCard>
+        <ProfileCard
+          id="password"
+          title={t("passwordTitle")}
+          description={t("passwordDescription")}
+        >
+          <ProfilePasswordForm />
+        </ProfileCard>
+        <ProfileCard
+          id="sessions"
+          title={t("sessionsTitle")}
+          description={t("sessionsDescription")}
+        >
+          <ProfileSessions />
+        </ProfileCard>
+        <OauthGrantSection id="apps" locale={locale} />
+      </div>
     </div>
   );
 }

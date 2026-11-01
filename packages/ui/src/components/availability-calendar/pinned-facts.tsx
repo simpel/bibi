@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { cn } from "../../lib/cn";
-import { NumberFlow } from "../hero-number/hero-number";
+import { MoneyNumberFlow } from "../hero-number/money-number-flow";
 import { ContactName } from "../person-contact/contact-name";
 import type { FormatDate } from "./calendar-dates";
 import { formatDay } from "./calendar-dates";
@@ -21,9 +21,9 @@ export function PinnedValue({
   if (!booking.value) return null;
   const { amount, currency } = booking.value;
   return (
-    <NumberFlow
+    <MoneyNumberFlow
       value={amount}
-      {...labels.moneyFlow({ currency })}
+      flow={labels.moneyFlow({ currency })}
       className={cn("tabular-nums", className)}
     />
   );

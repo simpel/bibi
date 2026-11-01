@@ -9,7 +9,7 @@ export const PEOPLE_FIELD_KEYS = [
   "dateFormat",
   "clockFormat",
   "numberFormat",
-  "currencyDisplay",
+  "moneyFormat",
   "days",
   "exceptions",
   "enabled",

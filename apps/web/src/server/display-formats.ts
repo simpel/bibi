@@ -9,7 +9,7 @@ const DEFAULTS: DisplayFormats = {
   dateFormat: null,
   clockFormat: null,
   numberFormat: null,
-  currencyDisplay: null,
+  moneyFormat: null,
 };
 
 /**
@@ -21,8 +21,8 @@ export const loadDisplayFormats = cache(async (): Promise<DisplayFormats> => {
   try {
     const result = await runOperation({ operation: getUserSettings, input: {} });
     if (!result.ok) return DEFAULTS;
-    const { dateFormat, clockFormat, numberFormat, currencyDisplay } = result.value;
-    return { dateFormat, clockFormat, numberFormat, currencyDisplay };
+    const { dateFormat, clockFormat, numberFormat, moneyFormat } = result.value;
+    return { dateFormat, clockFormat, numberFormat, moneyFormat };
   } catch (error) {
     unstable_rethrow(error);
     getLogger().warn({ event: "userSettings.loadFailed", err: error });

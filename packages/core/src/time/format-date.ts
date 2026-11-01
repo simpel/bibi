@@ -11,12 +11,13 @@ export type FormatDateInput = DateParts & {
   weekday?: "short" | "long";
 };
 
-const MONTH_STYLE: Record<DateFormat, "short" | "long" | "2-digit"> = {
+const MONTH_STYLE: Record<DateFormat, "short" | "long" | "2-digit" | "numeric"> = {
   D_MMM_YYYY: "short",
   D_MMMM_YYYY: "long",
   YYYY_MM_DD: "2-digit",
   DD_MM_YYYY: "2-digit",
   MM_DD_YYYY: "2-digit",
+  D_M_YYYY: "numeric",
 };
 
 type Fields = { day: string; month: string; year: string | null };
@@ -27,22 +28,22 @@ const PATTERNS: Record<DateFormat, (fields: Fields) => string> = {
   YYYY_MM_DD: ({ day, month, year }) => [year, month, day].filter(Boolean).join("-"),
   DD_MM_YYYY: ({ day, month, year }) => [day, month, year].filter(Boolean).join("/"),
   MM_DD_YYYY: ({ day, month, year }) => [month, day, year].filter(Boolean).join("/"),
+  D_M_YYYY: ({ day, month, year }) => [`${day}/${month}`, year].filter(Boolean).join(" "),
 };
 
 /** True for the patterns that spell the month out (`27 Aug 2026`), false for numeric ones. */
 export const namesMonth = ({ dateFormat }: { dateFormat: DateFormat }): boolean =>
-  MONTH_STYLE[dateFormat] !== "2-digit";
+  MONTH_STYLE[dateFormat] === "short" || MONTH_STYLE[dateFormat] === "long";
 
 /**
  * `instant` as a date in `timeZone`, in the user's pattern with the locale's month and weekday
  * names. Built from `formatToParts`, because Intl alone cannot give `27 Aug 2026` in English.
  */
 export function formatDate({ dateFormat, year = true, weekday, ...at }: FormatDateInput): string {
-  const numeric = !namesMonth({ dateFormat });
   const parts = intlParts({
     ...at,
     options: {
-      day: numeric ? "2-digit" : "numeric",
+      day: MONTH_STYLE[dateFormat] === "2-digit" ? "2-digit" : "numeric",
       month: MONTH_STYLE[dateFormat],
       year: "numeric",
       ...(weekday ? { weekday } : {}),

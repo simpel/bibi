@@ -66,7 +66,7 @@ export function createAuth({ db, withoutDatabase = false }: CreateAuthInput) {
       apiKeyPlugin(),
       devSwitchUserPlugin(),
       ...emailLoginPlugins(),
-      ...mcpPlugins(),
+      ...mcpPlugins({ db }),
       nextCookies(),
     ],
   });

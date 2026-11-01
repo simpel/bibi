@@ -9,6 +9,7 @@ export const SALES_SURFACES: readonly WebSurface[] = [
   { operation: "inboundEmail.list", route: "/tickets/[id]" },
   // The status history and the facts that contradict the status (ADR 0054).
   { operation: "ticket.statusHistory", route: "/tickets/[id]" },
+  { operation: "ticket.estimateHistory", route: "/tickets/[id]" },
   // Overdue soft holds (ADR 0044) are expired by hand from the ticket list.
   { operation: "ticket.expireHolds", route: "/tickets" },
   // A bundle is added from the run schedule as a bundle line with its part lines (ADR 0059).

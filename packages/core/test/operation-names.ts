@@ -5,6 +5,7 @@ const NAMES = [
   "ticket.changeStatus",
   "ticket.create",
   "ticket.createFromTemplate",
+  "ticket.estimateHistory",
   "ticket.export",
   "ticket.get",
   "ticket.list",

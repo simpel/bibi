@@ -5,13 +5,13 @@ import { cache } from "react";
 import { loadDisplayFormats } from "./display-formats";
 
 /**
- * How a server component writes numbers and amounts (#482): the user's number format and
- * currency display on top of the UI language's style.
+ * How a server component writes numbers and amounts (#482): the user's number format on top of
+ * the UI language's style, and their money format for every amount.
  */
 export const getNumberFormat = cache(async (): Promise<NumberFormat> => {
-  const [locale, { numberFormat, currencyDisplay }] = await Promise.all([
+  const [locale, { numberFormat, moneyFormat }] = await Promise.all([
     getLocale(),
     loadDisplayFormats(),
   ]);
-  return createNumberFormat({ locale, formats: { numberFormat, currencyDisplay } });
+  return createNumberFormat({ locale, formats: { numberFormat, moneyFormat } });
 });

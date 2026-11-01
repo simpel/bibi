@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { useState } from "react";
+import { NumberFlow } from "../hero-number/hero-number";
 import { KanbanBoard } from "./kanban-board";
 import type { KanbanCardData, KanbanLabels } from "./kanban-types";
 
-type StoryCard = KanbanCardData & { subtitle: string };
+type StoryCard = KanbanCardData & { subtitle: string; value: number };
 
 const labels: KanbanLabels = {
   dragInstructions: "Press space to lift the card, arrow keys to move it, space to drop.",
@@ -29,14 +30,21 @@ const columns = [
 ];
 
 const initial: StoryCard[] = [
-  { id: "1", columnId: "new", title: "Annual meeting", subtitle: "Nordkust AB" },
-  { id: "2", columnId: "qualified", title: "Product launch", subtitle: "Vingaleden" },
+  { id: "1", columnId: "new", title: "Annual meeting", subtitle: "Nordkust AB", value: 48_000 },
+  {
+    id: "2",
+    columnId: "qualified",
+    title: "Product launch",
+    subtitle: "Vingaleden",
+    value: 125_500,
+  },
   {
     id: "3",
     columnId: "confirmed",
     zoneId: "confirmed",
     title: "Board dinner",
     subtitle: "Lindholmen",
+    value: 32_750,
   },
 ];
 
@@ -56,6 +64,13 @@ function Demo() {
             ),
           )
         }
+        renderSummary={({ cards: lane }) => (
+          <NumberFlow
+            value={lane.reduce((sum, card) => sum + card.value, 0)}
+            locales="sv-SE"
+            suffix=" kr"
+          />
+        )}
         renderCard={(card) => (
           <div className="grid gap-0.5">
             <span className="text-sm font-medium">{card.title}</span>
@@ -74,6 +89,7 @@ type Story = StoryObj<typeof meta>;
 
 /**
  * Completed refuses drops: it stays un-highlighted while a card is dragged. Won has two zones
- * (Confirmed, Final count locked): dragging a card over it shows one target per zone.
+ * (Confirmed, Final count locked): dragging a card over it shows one target per zone. Each lane's
+ * count and total value animate as a card moves.
  */
 export const Default: Story = {};

@@ -16,7 +16,7 @@ Ticket (moves through the organization's statuses) → Lines with states (preboo
 
 | Kind | Meaning | Examples in the target model |
 |---|---|---|
-| Owned | The fact itself, in one place | `Line` price overrides, `TicketStatusChange`, manual `Occupancy` blocks, explicit `Assignment` |
+| Owned | The fact itself, in one place | `Line` price overrides, `TicketStatusChange`, `TicketEstimate`, manual `Occupancy` blocks, explicit `Assignment` |
 | Derived | Computed on read, never stored | a draft quote, balances, which responsibilities apply, effective price and VAT |
 | Projection | Stored for a constraint or index, written only by the database | line holds and allocation holds in `Occupancy` (ADR 0053, 0059), `Ticket.statusId` and `Line.stateId` (ADR 0054) |
 | Snapshot | Frozen copy at a moment that matters | sent quote lines, invoices, sent sheets and their recipients |
@@ -427,6 +427,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - desired period (`desiredStartsAt`, `desiredEndsAt`, optional) – what the customer asked for; each line has its own time
 - holds until (`holdsUntil`, optional): one date for the whole ticket ("we hold this until 28 Feb"). When it passes, every line in an `expires` state falls to its type's expiry state; other lines and the status are unchanged ([ADR 0044](decisions/0044-line-states-and-the-status-grid.md))
 - estimated and guaranteed headcount (`estimatedHeadcount`, `guaranteedHeadcount`): the ticket's one headcount; a line without its own quantity counts the guaranteed one if set, else the estimate ([ADR 0052](decisions/0052-the-line-is-the-booking.md)); budget (`budgetMinor`, minor units)
+- estimated value (`estimatedValueMinor`, excl. VAT, minor units): read from the newest `TicketEstimate`, not stored on the ticket ([ADR 0074](decisions/0074-ticket-value-estimates.md)). The agreed value is the accepted quote's total
 - status (`statusId`, projected from the status history), when it entered the status (`statusChangedAt`) and the reason of the last status change (`statusReason`, required by moves into a status with a `REASON` gate), both read from the newest `TicketStatusChange`
 - main assignment and responsibility assignments (see Assignment; the main assignee is required by moves into a status with an `ASSIGNEE` gate)
 - inbound address (`inboundAddress`, derived: `ticket-<id>@<MAIL_INBOUND_DOMAIN>`, null when inbound mail is not configured)
@@ -437,6 +438,7 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 - `N:1` Contact is contact for this
 - `N:1` is in → TicketStatus
 - `1:N` has → TicketStatusChange (its status history)
+- `1:N` has → TicketEstimate (its value estimates)
 - `1:N` has → Quote, Line, Requirement, Sheet, Payment, Deposit, Invoice
 - `1:N` InboundEmail is a reply on this
 - `1:N` is answered for by → Assignment
@@ -445,7 +447,18 @@ A new organization starts with the fixed access roles (`member`, `manager`, `adm
 
 > ★ A pipeline the organization draws itself, with line states that follow it. Status changes only through `ticket.changeStatus({ ticketId, statusId, reason? })`, never through `update`; `quote.send` and `quote.accept` move the ticket into the status with the matching `event`; payments and invoices never move a ticket.
 
-> Operations (`ticket:write` to change, `ticket:read` to read): `ticket.list|get|create|createFromTemplate|update|changeStatus|export|expireHolds|statusHistory`. `ticket.expireHolds` runs every 15 minutes in the worker (and by hand from the ticket list): lines in an `expires` state on tickets whose `holdsUntil` has passed move to their type's expiry state, each audited. `create` gives the next reference number and puts the ticket in the default `entry` status; `createFromTemplate` creates it in the predefined ticket's status with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` gives json, pdf or csv ([ADR 0024](decisions/0024-ticket-export-instead-of-partner.md)); today it gives a versioned json document with the ticket and its status, the full schema and csv follow (#63). Every change is audited. Status history comes from `TicketStatusChange`, never from `AuditLog`: `ticket.statusHistory({ ticketId })` (`ticket:read`) lists it oldest first with the derived `warnings` (an accepted quote while the ticket is in an open status before the acceptance status, shown only to callers with `quote:read`), on the ticket page and in the assistant.
+> Operations (`ticket:write` to change, `ticket:read` to read): `ticket.list|get|create|createFromTemplate|update|changeStatus|export|expireHolds|statusHistory|estimateHistory`. `ticket.expireHolds` runs every 15 minutes in the worker (and by hand from the ticket list): lines in an `expires` state on tickets whose `holdsUntil` has passed move to their type's expiry state, each audited. `create` gives the next reference number and puts the ticket in the default `entry` status; `createFromTemplate` creates it in the predefined ticket's status with its lines in one step (the customer pays through a Swish or card link or against invoice; the customer never uses the app). `ticket.export` gives json, pdf or csv ([ADR 0024](decisions/0024-ticket-export-instead-of-partner.md)); today it gives a versioned json document with the ticket and its status, the full schema and csv follow (#63). Every change is audited. Status history comes from `TicketStatusChange`, never from `AuditLog`: `ticket.statusHistory({ ticketId })` (`ticket:read`) lists it oldest first with the derived `warnings` (an accepted quote while the ticket is in an open status before the acceptance status, shown only to callers with `quote:read`), on the ticket page and in the assistant. `ticket.estimateHistory({ ticketId })` (`ticket:read`) lists the value estimates oldest first (ADR 0074).
+
+### TicketEstimate (`TicketEstimate`) – value estimates
+
+*MVP* · One estimate of a ticket's value excl. VAT ([ADR 0074](decisions/0074-ticket-value-estimates.md)). Append-only, owned by core. The newest row is the current estimate, and `Ticket` has no column for it. The first row against the accepted quote's total shows how far off the first estimate was. Written by `ticket.create` and `ticket.update` (`estimatedValueMinor`) only when the value changes. Read with `ticket.estimateHistory`.
+
+**Attributes**
+- ticket, value (`valueMinor`, minor units; null clears the estimate)
+- changed at, changed by (user id, null for the system), insertion order (`seq`)
+
+**Relations**
+- `N:1` Ticket has this
 
 ### TicketStatusChange (`TicketStatusChange`) – status history
 
@@ -1206,15 +1219,16 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 *MVP* · How one user wants the app to behave, as typed columns ([ADR 0046](decisions/0046-user-settings.md)): today the date and clock format every date and time in the UI is written in. User-scoped like `UserPreference`; no row means the defaults.
 
 **Attributes**
-- dateFormat (owned, nullable = default `D_MMM_YYYY`): `D_MMM_YYYY` (27 Aug 2026), `D_MMMM_YYYY` (27 August 2026), `YYYY_MM_DD` (2026-08-27), `DD_MM_YYYY` (27/08/2026), `MM_DD_YYYY` (08/27/2026); month names follow the UI language
+- dateFormat (owned, nullable = default `D_MMM_YYYY`): `D_MMM_YYYY` (27 Aug 2026), `D_MMMM_YYYY` (27 August 2026), `YYYY_MM_DD` (2026-08-27), `DD_MM_YYYY` (27/08/2026), `MM_DD_YYYY` (08/27/2026), `D_M_YYYY` (27/8 2026); month names follow the UI language
 - clockFormat (owned, nullable = default `H24`): `H24` (14:30) or `H12` (2:30 PM)
 - numberFormat (owned, nullable = the UI language's style, #482): `SPACE_COMMA` (1 234,50), `COMMA_DOT` (1,234.50), `DOT_COMMA` (1.234,50), `SPACE_DOT` (1 234.50)
-- currencyDisplay (owned, nullable = `SYMBOL`): `SYMBOL` (kr) or `CODE` (SEK)
+- moneyFormat (owned, nullable = `SPACE_SYMBOL`): `CODE_COMMA` (SEK 1,234.50), `COMMA_SYMBOL` (1,234.50 kr), `SPACE_SYMBOL` (1 234,50 kr), `SPACE_CODE` (1 234,50 SEK); separate from numberFormat, it sets both the separators and the currency of every amount
+- currencyDisplay (legacy, written alongside moneyFormat for the previous release, read by nothing; dropped in a later release)
 
 **Relations**
 - `1:1` belongs to → User
 
-> Operations (`self:read|write`): `userSettings.get` and `userSettings.update({ dateFormat?, clockFormat?, numberFormat?, currencyDisplay? })` (omitted keeps, null resets). Set on `/profile`. The web app renders every date and time through `createDateTimeFormat` (core `time/`) with these, the UI language and the zone from `effectiveTimeZone`, and every number and amount through `createNumberFormat` (core `number/`).
+> Operations (`self:read|write`): `userSettings.get` and `userSettings.update({ dateFormat?, clockFormat?, numberFormat?, moneyFormat? })` (omitted keeps, null resets). Set on `/profile`. The web app renders every date and time through `createDateTimeFormat` (core `time/`) with these, the UI language and the zone from `effectiveTimeZone`, and every number and amount through `createNumberFormat` (core `number/`).
 
 ### MemberProfile (`MemberProfile`)
 

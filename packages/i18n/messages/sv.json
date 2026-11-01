@@ -117,10 +117,18 @@
     "consentAllowing": "Ger åtkomst…",
     "consentAllowed": "Åtkomst har getts.",
     "consentDenying": "Nekar åtkomst…",
-    "consentDenied": "Åtkomst har nekats."
+    "consentDenied": "Åtkomst har nekats.",
+    "consentOrganization": "Åtkomst till {organization}.",
+    "consentPickOrganization": "Organisation att ge åtkomst till",
+    "consentNoOrganization": "Du är inte medlem i någon organisation, så det finns inget att ge åtkomst till.",
+    "consentRedirect": "Åtkomsten skickas till {host}. Tillåt bara om du startade det därifrån."
   },
   "pipeline": {
     "title": "Pipeline",
+    "phaseValue": {
+      "confirmed": "Överenskommet värde exkl. moms (accepterade offerter)",
+      "estimated": "Uppskattat värde exkl. moms för ärenden utan accepterad offert"
+    },
     "clash": "Tidskrock",
     "noDate": "Inget datum",
     "quantity": "{count, plural, one {# person} other {# personer}}",
@@ -717,6 +725,7 @@
       "estimatedHeadcount": "Beräknat antal",
       "guaranteedHeadcount": "Garanterat antal",
       "budget": "Budget (kr)",
+      "estimatedValue": "Uppskattat värde (kr)",
       "status": "Ärendestatus",
       "newStatus": "Ny ärendestatus",
       "statusReason": "Anledning",
@@ -743,6 +752,12 @@
     "useTemplate": "Använd ett fördefinierat ärende i stället",
     "templateBlocked": "{count, plural, one {# rad är blockerad: en reservation krockar.} other {# rader är blockerade: reservationer krockar.}}",
     "noAssignee": "Ingen ännu",
+    "estimateHistory": {
+      "title": "Värdehistorik",
+      "empty": "Inget uppskattat värde ännu.",
+      "cleared": "Rensat",
+      "sinceFirst": "{change} sedan första uppskattningen"
+    },
     "statusHistory": {
       "title": "Statushistorik",
       "empty": "Inga statusbyten ännu.",
@@ -1683,7 +1698,7 @@
         "dateFormat": "Datumformat",
         "clockFormat": "Klockformat",
         "numberFormat": "Talformat",
-        "currencyDisplay": "Valuta",
+        "moneyFormat": "Beloppsformat",
         "capabilities": "Förmågor",
         "fields": "Fält",
         "priceMinor": "Pris (öre)",
@@ -1736,6 +1751,7 @@
         "unitPriceMinor": "Styckpris (öre)",
         "discountPercent": "Rabatt (%)",
         "budgetMinor": "Budget (ören)",
+        "estimatedValueMinor": "Uppskattat värde (ören)",
         "ticketId": "Ärende (id)",
         "statusId": "Ärendestatus (id)",
         "reason": "Anledning",
@@ -2446,7 +2462,7 @@
     "tooBig": "Värdet är för stort.",
     "invalid": "Värdet är ogiltigt.",
     "invitationInvalid": "Inbjudan är ogiltig eller har gått ut.",
-    "loadFailed": "Det gick inte att hämta informationen.",
+    "loadFailed": "Vi kunde inte hämta det här just nu",
     "oauthQueryMissing": "Begäran saknar information. Starta om från programmet som bad om åtkomst.",
     "textTooShort": "Texten är för kort.",
     "approvalUsed": "Förslaget har redan använts.",
@@ -2552,31 +2568,15 @@
     "dateFormat": "Datumformat",
     "clockFormat": "Klocka",
     "numberFormat": "Talformat",
-    "currencyDisplay": "Valuta",
-    "withDefault": "{label} (standard)",
     "saved": "Dina visningsformat har sparats.",
     "numberFormats": {
-      "LANGUAGE": "Samma som språket ({example})",
-      "SPACE_COMMA": "{example} (mellanslag, komma)",
-      "COMMA_DOT": "{example} (komma, punkt)",
-      "DOT_COMMA": "{example} (punkt, komma)",
-      "SPACE_DOT": "{example} (mellanslag, punkt)"
-    },
-    "currencyDisplays": {
-      "SYMBOL": "{example} (symbol)",
-      "CODE": "{example} (valutakod)"
-    },
-    "dateFormats": {
-      "D_MMM_YYYY": "{example}",
-      "D_MMMM_YYYY": "{example} (hel månad)",
-      "YYYY_MM_DD": "{example} (ISO)",
-      "DD_MM_YYYY": "{example} (dag först)",
-      "MM_DD_YYYY": "{example} (månad först)"
+      "LANGUAGE": "Samma som språket"
     },
     "clockFormats": {
-      "H24": "{example} (24 timmar)",
-      "H12": "{example} (12 timmar)"
-    }
+      "H24": "24h",
+      "H12": "12h"
+    },
+    "moneyFormat": "Beloppsformat"
   },
   "timeZone": {
     "placeholder": "Välj tidszon",
@@ -3072,7 +3072,18 @@
     "unknownDevice": "Okänd enhet",
     "signOutOthers": "Logga ut från andra sessioner",
     "signingOutOthers": "Loggar ut…",
-    "signedOutOthers": "Du har loggats ut från dina andra sessioner."
+    "signedOutOthers": "Du har loggats ut från dina andra sessioner.",
+    "sectionsNav": "På den här sidan",
+    "appsTitle": "Anslutna appar",
+    "sessionsNotFresh": "Av säkerhetsskäl kan du bara se och hantera dina sessioner inom ett dygn efter att du loggat in. Logga in igen för att fortsätta.",
+    "signInAgain": "Logga in igen",
+    "device": "{browser} på {os}",
+    "sessionColumns": {
+      "device": "Enhet",
+      "signedIn": "Inloggad",
+      "lastActive": "Senast aktiv"
+    },
+    "sessionsEmpty": "Inga aktiva sessioner."
   },
   "assignment": {
     "title": "Ansvarig och följare",
@@ -3155,6 +3166,20 @@
         "client": "App",
         "scopes": "Åtkomst",
         "connected": "Ansluten"
+      },
+      "add": "Lägg till koppling",
+      "mcp": {
+        "name": "MCP",
+        "dialogTitle": "Anslut via MCP",
+        "description": "Låt en AI-app som Claude använda Bibi som du.",
+        "urlLabel": "MCP-adress",
+        "copy": "Kopiera adressen",
+        "copied": "Adressen har kopierats.",
+        "copyFailed": "Det gick inte att kopiera. Markera texten och kopiera den för hand.",
+        "copyPrompt": "Kopiera prompt",
+        "promptCopied": "Prompten har kopierats. Klistra in den i din AI-app.",
+        "local": "Nås bara från den här datorn.",
+        "prompt": "Hjälp mig att koppla {name} till dig som en MCP-koppling, så att du kan arbeta i {name} åt mig. Förklara varje steg på enkel svenska och vänta på mig mellan stegen.\n\nNamn: {name}\nAdress: {url}\n\nNär jag ansluter ber {name} mig logga in och välja Tillåt."
       }
     }
   },

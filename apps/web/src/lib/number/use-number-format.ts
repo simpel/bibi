@@ -4,14 +4,14 @@ import { useContext, useMemo } from "react";
 import { DisplayFormatsContext } from "../time/display-formats-provider";
 
 /**
- * How a client component writes numbers and amounts (#482): the user's number format and
- * currency display on top of the UI language's style.
+ * How a client component writes numbers and amounts (#482): the user's number format on top of
+ * the UI language's style, and their money format for every amount.
  */
 export function useNumberFormat(): NumberFormat {
   const locale = useLocale();
-  const { numberFormat, currencyDisplay } = useContext(DisplayFormatsContext);
+  const { numberFormat, moneyFormat } = useContext(DisplayFormatsContext);
   return useMemo(
-    () => createNumberFormat({ locale, formats: { numberFormat, currencyDisplay } }),
-    [locale, numberFormat, currencyDisplay],
+    () => createNumberFormat({ locale, formats: { numberFormat, moneyFormat } }),
+    [locale, numberFormat, moneyFormat],
   );
 }

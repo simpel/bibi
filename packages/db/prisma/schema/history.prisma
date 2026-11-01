@@ -79,3 +79,23 @@ model LineStateChange {
   @@index([organizationId, lineId, seq])
   @@index([organizationId, toStateId, changedAt])
 }
+
+/// Ticket estimate – one entry of a ticket's value estimates, append-only (ADR 0074). The newest
+/// row (`seq`) is the current estimate; there is no column on `Ticket`. The first row against the
+/// accepted quote's total shows how far off the first estimate was.
+model TicketEstimate {
+  id             String   @id @default(cuid(2))
+  organizationId String
+  /// Insertion order; the newest row is the current estimate.
+  seq            Int      @default(autoincrement())
+  ticketId       String
+  /// Estimated value excl. VAT in minor units (1/100 kr); null clears the estimate.
+  valueMinor     Int?
+  changedAt      DateTime @default(now())
+  /// User who made the change; null for the system.
+  changedBy      String?
+  ticket         Ticket   @relation(fields: [ticketId, organizationId], references: [id, organizationId])
+
+  @@unique([seq])
+  @@index([organizationId, ticketId, seq])
+}

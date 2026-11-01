@@ -45,6 +45,7 @@ model Ticket {
   alternativeGroups   AlternativeGroup[]
   quotes              Quote[]
   statusChanges       TicketStatusChange[]
+  estimates           TicketEstimate[]
   requirements        Requirement[]
   sheets              Sheet[]
   /// The supertable row this record extends (ADR 0056).

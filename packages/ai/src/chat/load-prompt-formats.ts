@@ -10,7 +10,7 @@ import type { UserContext } from "../server/resolve-user";
 
 const DEFAULTS: DisplayFormats = {
   ...{ dateFormat: null, clockFormat: null },
-  ...{ numberFormat: null, currencyDisplay: null },
+  ...{ numberFormat: null, moneyFormat: null },
 };
 
 export type LoadPromptFormatsInput = { user: UserContext; locale: string };
@@ -33,7 +33,7 @@ export async function loadPromptFormats({
         ...{ dateFormat: settings.value.dateFormat, clockFormat: settings.value.clockFormat },
         ...{
           numberFormat: settings.value.numberFormat,
-          currencyDisplay: settings.value.currencyDisplay,
+          moneyFormat: settings.value.moneyFormat,
         },
       }
     : DEFAULTS;

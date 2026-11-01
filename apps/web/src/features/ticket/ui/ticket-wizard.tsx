@@ -29,6 +29,7 @@ export function TicketWizard({ data }: TicketWizardProps) {
         "estimatedHeadcount",
         "guaranteedHeadcount",
         "budget",
+        "estimatedValue",
       ]}
       typeLabel={t("type")}
       typeChosen={false}

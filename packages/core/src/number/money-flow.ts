@@ -17,41 +17,19 @@ export type MoneyFlow = {
   locales: string;
   /** Two decimals, like `money`. */
   format: { minimumFractionDigits: number; maximumFractionDigits: number };
-  /** The currency and its spacing, where the UI language puts it: `SEK ` or ` kr`. */
+  /** The currency and its spacing, where the money format puts it: `SEK ` or ` kr`. */
   prefix: string;
   suffix: string;
 };
 
-export type MoneyFlowInput = {
-  locale: string;
-  style: NumberFormatStyle | null;
-  currency: string;
-  currencyDisplay: "code" | "symbol";
-};
+export type MoneyFlowInput = { style: NumberFormatStyle; prefix: string; suffix: string };
 
-/** Digits in the user's separators, currency text and place from the UI language. */
-export function moneyFlowOf({
-  locale,
-  style,
-  currency,
-  currencyDisplay,
-}: MoneyFlowInput): MoneyFlow {
-  const digits = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
-  const parts = new Intl.NumberFormat(locale, {
-    style: "currency",
-    currency,
-    currencyDisplay,
-    ...digits,
-  }).formatToParts(1);
-  const number = new Set(["integer", "group", "decimal", "fraction"]);
-  const first = parts.findIndex((part) => number.has(part.type));
-  const last = parts.findLastIndex((part) => number.has(part.type));
-  const text = ({ list }: { list: Intl.NumberFormatPart[] }) =>
-    list.map((part) => part.value).join("");
+/** Digits in the money format's separators, with its currency text around them. */
+export function moneyFlowOf({ style, prefix, suffix }: MoneyFlowInput): MoneyFlow {
   return {
-    locales: style ? STYLE_LOCALES[style] : locale,
-    format: digits,
-    prefix: text({ list: parts.slice(0, first) }),
-    suffix: text({ list: parts.slice(last + 1) }),
+    locales: STYLE_LOCALES[style],
+    format: { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+    prefix,
+    suffix,
   };
 }

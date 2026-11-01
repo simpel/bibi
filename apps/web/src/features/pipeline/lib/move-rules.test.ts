@@ -16,6 +16,8 @@ const card = ({ overrides = {} }: { overrides?: Partial<PipelineCard> } = {}): P
   assigneeId: null,
   heldLines: 0,
   bookedLines: 0,
+  estimatedValueMinor: null,
+  confirmedValueMinor: null,
   ...overrides,
 });
 

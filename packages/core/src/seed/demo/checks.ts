@@ -13,6 +13,7 @@ import { checkDemoConfig } from "./config-checks";
 import { checkDemoCustomisations } from "./customisation-checks";
 import { checkDemoDensity } from "./density-checks";
 import { checkDemoDomainJoin } from "./domain-join-checks";
+import { checkDemoEstimates } from "./estimate-checks";
 import { checkDemoFactGuards } from "./fact-guard-checks";
 import { checkDemoFinance } from "./finance-checks";
 import { checkDemoGrid } from "./grid-checks";
@@ -49,6 +50,7 @@ const PIPELINE_CHECKS: readonly OrgCheck[] = [
   checkDemoAlternatives,
   checkDemoArchive,
   checkDemoQuoteEvents,
+  checkDemoEstimates,
   checkDemoFactGuards,
   checkDemoGrid,
   checkDemoPrices,

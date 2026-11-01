@@ -8,6 +8,7 @@ import {
 } from "../../features/payment-account/write-operations";
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
+import { seedTicketEstimates } from "./seed-estimates";
 import { missing } from "./seed-fields";
 import { seedInvoice } from "./seed-invoice";
 import type { DemoTicket } from "./ticket-types";
@@ -66,6 +67,8 @@ export async function seedTicketMoney({
   ticket,
   ticketId,
 }: TicketMoneyInput): Promise<Result<true>> {
+  const estimated = await seedTicketEstimates({ context, ticket, ticketId });
+  if (!estimated.ok) return estimated;
   const deposit = await seedDeposit({ context, ticket, ticketId });
   if (!deposit.ok) return deposit;
   const paid = await seedPartialPayment({ context, ticket, ticketId });

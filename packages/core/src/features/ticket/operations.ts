@@ -6,6 +6,7 @@ import { paginate } from "../../shared/paginate";
 import { subjectIdFilter } from "../assignment/subject-filter";
 import { changeTicketStatus } from "./change-status-operation";
 import { createTicketFromTemplate } from "./create-from-template-operation";
+import { ticketEstimateHistory } from "./estimate-history-operation";
 import { expireTicketHolds } from "./expire-holds-operation";
 import { exportTicket } from "./export-operation";
 import { ticketListWhere } from "./list-where";
@@ -69,4 +70,7 @@ export const ticketOperations = [
   exportTicket,
   expireTicketHolds,
   ticketStatusHistory,
+  ticketEstimateHistory,
 ];
+
+export { ticketEstimateHistory };

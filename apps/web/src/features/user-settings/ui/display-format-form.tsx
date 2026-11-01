@@ -2,11 +2,12 @@
 
 import {
   ClockFormatSchema,
-  CurrencyDisplaySchema,
   DateFormatSchema,
   DEFAULT_CLOCK_FORMAT,
   DEFAULT_DATE_FORMAT,
+  DEFAULT_MONEY_FORMAT,
   type DisplayFormats,
+  MoneyFormatSchema,
   NumberFormatSchema,
 } from "@bibi/core/schemas";
 import { Button, Form } from "@bibi/ui";
@@ -19,13 +20,13 @@ import { useFormAction } from "@/lib/use-form-action";
 import { useZodMessages } from "@/lib/use-zod-messages";
 import { saveUserSettings } from "../actions";
 import { DisplayFormatFields } from "./display-format-fields";
-import { DEFAULT_CURRENCY_DISPLAY, LANGUAGE_NUMBER_FORMAT } from "./number-format-options";
+import { LANGUAGE_NUMBER_FORMAT } from "./number-format-options";
 
 export const DisplayFormatSchema = z.object({
   dateFormat: DateFormatSchema,
   clockFormat: ClockFormatSchema,
   numberFormat: z.union([NumberFormatSchema, z.literal(LANGUAGE_NUMBER_FORMAT)]),
-  currencyDisplay: CurrencyDisplaySchema,
+  moneyFormat: MoneyFormatSchema,
 });
 
 export type DisplayFormatValues = z.infer<typeof DisplayFormatSchema>;
@@ -46,7 +47,7 @@ export function DisplayFormatForm({ formats }: DisplayFormatFormProps) {
       dateFormat: formats.dateFormat ?? DEFAULT_DATE_FORMAT,
       clockFormat: formats.clockFormat ?? DEFAULT_CLOCK_FORMAT,
       numberFormat: formats.numberFormat ?? LANGUAGE_NUMBER_FORMAT,
-      currencyDisplay: formats.currencyDisplay ?? DEFAULT_CURRENCY_DISPLAY,
+      moneyFormat: formats.moneyFormat ?? DEFAULT_MONEY_FORMAT,
     },
   });
   const { submit, pending } = useFormAction({
@@ -56,8 +57,7 @@ export function DisplayFormatForm({ formats }: DisplayFormatFormProps) {
         dateFormat: values.dateFormat === DEFAULT_DATE_FORMAT ? null : values.dateFormat,
         clockFormat: values.clockFormat === DEFAULT_CLOCK_FORMAT ? null : values.clockFormat,
         numberFormat: values.numberFormat === LANGUAGE_NUMBER_FORMAT ? null : values.numberFormat,
-        currencyDisplay:
-          values.currencyDisplay === DEFAULT_CURRENCY_DISPLAY ? null : values.currencyDisplay,
+        moneyFormat: values.moneyFormat === DEFAULT_MONEY_FORMAT ? null : values.moneyFormat,
       }),
     messages: { pending: common("saving"), success: t("saved") },
     onSuccess: () => router.refresh(),

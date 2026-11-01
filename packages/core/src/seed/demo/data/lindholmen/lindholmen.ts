@@ -47,13 +47,13 @@ export const lindholmen: DemoOrg = {
   timeZone: "Europe/Stockholm",
   users: [
     { name: "Anna Berg", role: "admin" },
-    // Reads dates as 2026-08-27, a 12 hour clock (ADR 0046) and amounts as 1,234.50 SEK (#482).
+    // Reads dates as 2026-08-27, a 12 hour clock (ADR 0046) and amounts as SEK 1,234.50 (#482).
     {
       name: "Erik Lund",
       role: "manager",
       displayFormats: {
         ...{ dateFormat: "YYYY_MM_DD", clockFormat: "H12" },
-        ...{ numberFormat: "COMMA_DOT", currencyDisplay: "CODE" },
+        ...{ numberFormat: "COMMA_DOT", moneyFormat: "CODE_COMMA" },
       },
     },
     { name: "Sara Nilsson", role: "manager" },

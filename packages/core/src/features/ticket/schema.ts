@@ -3,6 +3,7 @@ import { PageInputShape } from "../../shared/page-input";
 import { RecordStatusSchema } from "../../shared/record-status";
 import { FieldValuesSchema } from "../field-definition/field-values-schema";
 import { LineSchema } from "../line/schema";
+import { EstimatedValueSchema } from "./estimate-history-schema";
 
 export const TicketSchema = z.object({
   id: z.string(),
@@ -19,6 +20,8 @@ export const TicketSchema = z.object({
   estimatedHeadcount: z.number().int().nullable(),
   guaranteedHeadcount: z.number().int().nullable(),
   budgetMinor: z.number().int().nullable(),
+  /** The newest entry of its estimate history (ADR 0074); null when never estimated or cleared. */
+  estimatedValueMinor: z.number().int().nullable(),
   /** Lines in an expiring state fall to their type's expiry state after this date (ADR 0044). */
   holdsUntil: z.date().nullable(),
   /** When the ticket entered its status (time in status): its newest `TicketStatusChange`. */
@@ -65,6 +68,7 @@ const TicketDetailsShape = {
     .min(0)
     .nullish()
     .describe("Budget in minor units (1/100 of the currency)"),
+  estimatedValueMinor: EstimatedValueSchema.nullish(),
   holdsUntil: z.coerce
     .date()
     .nullish()

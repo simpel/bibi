@@ -19,12 +19,12 @@ const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
  * statuses move them (ADR 0043, 0052). L4's lunch changes after its quote was accepted. L4's
  * Styrsö and sound lines are Booked by the grid when L4 is confirmed. L11 waits in Quote sent with its lunch
  * overridden to Locked; L12 soft-holds Styrsö inside L4's booking, so its move to Confirmed is
- * blocked (both used by `checkDemoGrid`).
+ * blocked (both used by `checkDemoGrid`). L3, F2 and F3 have value estimates (ADR 0074).
  */
 export const lindholmenTickets: readonly DemoTicket[] = [
   ...lindholmenHistoryTickets,
   {
-    ...quoted,
+    ...{ ...quoted, estimatesKr: [60_000, 85_000] },
     ...{ ref: "L3", customer: "Västra Sjukvårdsregionen", type: "Conference", day: 3 },
     money: { deposit: { description: "Advance at confirmation", amountKr: 5_000 } },
     ...{
@@ -122,13 +122,13 @@ export const lindholmenTickets: readonly DemoTicket[] = [
   },
   {
     ...{ ref: "F2", customer: hisingen, type: "Conference", day: 45, from: "09:00", to: "17:00" },
-    ...{ headcount: 100, assignee: "Erik Lund", holdsUntilDay: 5 },
+    ...{ headcount: 100, assignee: "Erik Lund", holdsUntilDay: 5, estimatesKr: [150_000, 120_000] },
     fields: { Purpose: "Kickoff" },
     lines: [{ ...vinga, name: "Kickoff" }],
   },
   {
     ...{ ref: "F3", customer: kvarnby, type: "Conference", day: 45, from: "09:00", to: "17:00" },
-    ...{ headcount: 80, assignee: "Sara Nilsson", holdsUntilDay: 5 },
+    ...{ headcount: 80, assignee: "Sara Nilsson", holdsUntilDay: 5, estimatesKr: [95_000] },
     fields: { Purpose: "Product launch" },
     lines: [{ ...vinga, name: "Product launch" }],
   },

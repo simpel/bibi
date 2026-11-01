@@ -45,6 +45,8 @@ export type DemoTicket = {
     /** ADR 0077: an invoice of the priced lines, sent; paid in full or due `dueDay` (offset). */
     invoice?: { paid: boolean; dueDay: number };
   };
+  /** Estimated values in kr excl. VAT, in order: the first estimate, then re-estimates (ADR 0074). */
+  estimatesKr?: readonly number[];
   /** A line (by name) whose quantity changes after the quote, so it differs from it (ADR 0052). */
   changeAfterQuote?: { line: string; quantity: number };
   /** The reason of that move, for statuses that require one. */

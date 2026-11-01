@@ -59,11 +59,9 @@ import { SheetTableView } from "./sheet-table-view";
 import { SkillCardView } from "./skill-card-view";
 import { SkillTableView } from "./skill-table-view";
 import { StatusGridTableView } from "./status-grid-table-view";
-import { TicketCardView } from "./ticket-card-view";
+import { TICKET_COMPONENTS } from "./ticket-components";
 import { TicketStatusCardView } from "./ticket-status-card-view";
-import { TicketStatusHistoryView } from "./ticket-status-history-view";
 import { TicketStatusTableView } from "./ticket-status-table-view";
-import { TicketTableView } from "./ticket-table-view";
 import { TicketTemplateCardView } from "./ticket-template-card-view";
 import { TicketTemplateTableView } from "./ticket-template-table-view";
 import { VenueCardView } from "./venue-card-view";
@@ -101,9 +99,6 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "pipeline-preview": PipelinePreviewView,
   "pipeline-draft-card": PipelineDraftCardView,
   questionnaire: QuestionnaireView,
-  "ticket-table": TicketTableView,
-  "ticket-card": TicketCardView,
-  "ticket-status-history": TicketStatusHistoryView,
   "line-table": LineTableView,
   "line-card": LineCardView,
   "alternative-group-table": AlternativeGroupTableView,
@@ -111,6 +106,7 @@ export const GENERATIVE_COMPONENTS: { [K in UiComponent]: ComponentType<Generati
   "requirement-table": RequirementTableView,
   "requirement-card": RequirementCardView,
   ...BOARD_COMPONENTS,
+  ...TICKET_COMPONENTS,
   "quote-card": QuoteCardView,
   "quote-table": QuoteTableView,
   "inbound-email-table": InboundEmailTableView,

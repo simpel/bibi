@@ -1,15 +1,18 @@
 import { type MoneyFlow, moneyFlowOf } from "./money-flow";
+import { currencyAffix } from "./money-style";
 import {
-  type CurrencyDisplay,
   DEFAULT_CURRENCY,
+  DEFAULT_MONEY_FORMAT,
+  MONEY_STYLES,
+  type MoneyFormat,
   type NumberFormatStyle,
   SEPARATORS,
 } from "./number-formats";
 
-/** A user's number choices; `null` = the UI language's style, with a currency symbol. */
+/** A user's number choices; `null` = the UI language's style, and `SPACE_SYMBOL` for money. */
 export type NumberFormats = {
   numberFormat: NumberFormatStyle | null;
-  currencyDisplay: CurrencyDisplay | null;
+  moneyFormat: MoneyFormat | null;
 };
 
 export type CreateNumberFormatInput = { locale: string; formats: NumberFormats };
@@ -25,9 +28,9 @@ type MoneyInput = { minor: number; currency?: string | null };
 export type NumberFormat = {
   /** `1 234,5`; at most two decimals unless told otherwise. */
   number: (input: NumberInput) => string;
-  /** Minor units with their currency, always two decimals: `1 234,50 kr`, `SEK 1,234.50`. */
+  /** Minor units in the money format, always two decimals: `1 234,50 kr`, `SEK 1,234.50`. */
   money: (input: MoneyInput) => string;
-  /** Minor units without a currency, always two decimals: `1 234,50`. */
+  /** Minor units in the money format's separators, no currency, two decimals: `1 234,50`. */
   amount: (input: Omit<MoneyInput, "currency">) => string;
   /** Settings for an animated amount (NumberFlow) that reads as `money` does. */
   moneyFlow: (input: Pick<MoneyInput, "currency">) => MoneyFlow;
@@ -55,28 +58,31 @@ function formatter({ locale, style, options }: PartsInput) {
 
 const TWO = { minimumFractionDigits: 2, maximumFractionDigits: 2 } as const;
 
-/** The formatter for one user: their separators and currency display, the locale's elsewhere. */
+/** The formatter for one user: their number and money formats, the locale's elsewhere. */
 export function createNumberFormat({ locale, formats }: CreateNumberFormatInput): NumberFormat {
   const style = formats.numberFormat;
-  const currencyDisplay = formats.currencyDisplay === "CODE" ? "code" : "symbol";
+  const { moneyFormat } = formats;
+  const amount = formatter({
+    locale,
+    style: MONEY_STYLES[moneyFormat ?? DEFAULT_MONEY_FORMAT].style,
+    options: TWO,
+  });
+  const affix = ({ currency }: Pick<MoneyInput, "currency">) =>
+    currencyAffix({ locale, currency: currency ?? DEFAULT_CURRENCY, moneyFormat });
   return {
     number: ({ value, maximumFractionDigits = 2, minimumFractionDigits = 0 }) =>
       formatter({ locale, style, options: { maximumFractionDigits, minimumFractionDigits } })(
         value,
       ),
-    money: ({ minor, currency }) =>
-      formatter({
-        locale,
-        style,
-        options: {
-          style: "currency",
-          currency: currency ?? DEFAULT_CURRENCY,
-          currencyDisplay,
-          ...TWO,
-        },
-      })(minor / 100),
-    amount: ({ minor }) => formatter({ locale, style, options: TWO })(minor / 100),
+    money: ({ minor, currency }) => {
+      const { prefix, suffix } = affix({ currency });
+      return `${prefix}${amount(minor / 100)}${suffix}`;
+    },
+    amount: ({ minor }) => amount(minor / 100),
     moneyFlow: ({ currency }) =>
-      moneyFlowOf({ locale, style, currency: currency ?? DEFAULT_CURRENCY, currencyDisplay }),
+      moneyFlowOf({
+        style: MONEY_STYLES[moneyFormat ?? DEFAULT_MONEY_FORMAT].style,
+        ...affix({ currency }),
+      }),
   };
 }

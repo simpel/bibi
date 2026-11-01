@@ -4,7 +4,7 @@ const LABELS = {
   dateFormat: "date format",
   clockFormat: "clock",
   numberFormat: "number format",
-  currencyDisplay: "currency display",
+  moneyFormat: "money format",
 } as const;
 
 type Input = Partial<Record<keyof typeof LABELS, string | null>>;

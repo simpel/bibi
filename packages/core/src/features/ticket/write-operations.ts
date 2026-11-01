@@ -5,6 +5,7 @@ import { updateRecord } from "../../records/update-record";
 import { notFound } from "../../shared/errors";
 import { toJson } from "../../shared/to-json";
 import { mergeFields, validateFields } from "../field-definition/field-values";
+import { recordEstimate } from "./estimate-history";
 import { insertTicket } from "./insert-ticket";
 import { TicketCreateInputSchema, TicketSchema, TicketUpdateInputSchema } from "./schema";
 import { loadTicket, TICKET_INCLUDE, toTicketDto } from "./to-ticket-dto";
@@ -28,7 +29,8 @@ export const updateTicket = defineOperation({
   name: "ticket.update",
   kind: "command",
   description:
-    "Update a ticket's customer, contact, desired period, headcount, budget, " +
+    "Update a ticket's customer, contact, desired period, headcount, budget, estimated value " +
+    "(each change is kept: ticket.estimateHistory), " +
     "holdsUntil (when its soft holds expire) or own " +
     "fields. Omitted properties are unchanged; `fields` is merged by key (null clears a value). " +
     "The type cannot be changed, the status changes only with ticket.changeStatus and the " +
@@ -36,7 +38,7 @@ export const updateTicket = defineOperation({
   input: TicketUpdateInputSchema,
   output: TicketSchema,
   permission: "ticket:write",
-  handler: async ({ input: { id, fields: patch, ...data }, context }) => {
+  handler: async ({ input: { id, fields: patch, estimatedValueMinor, ...data }, context }) => {
     const before = await loadTicket({ context, id });
     if (!before) return notFound({ entity: "Ticket" });
     const details = await checkTicketDetails({ context, before, change: data });
@@ -51,6 +53,8 @@ export const updateTicket = defineOperation({
       links = checked.value.links;
     }
     await updateRecord({ context, id, change: { fields: json, links } });
+    const current = before.estimatedValueMinor;
+    await recordEstimate({ context, ticketId: id, current, valueMinor: estimatedValueMinor });
     const row = await context.db.ticket.update({
       where: { id },
       data: { ...data, ...(json ? { fields: json } : {}) },

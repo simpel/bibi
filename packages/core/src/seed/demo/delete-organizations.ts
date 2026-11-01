@@ -27,9 +27,10 @@ const ticketChildren = ({ db, where }: ScopeInput) => [
   db.quote.deleteMany({ where }),
   // A chosen alternative points at its line and the lines at their group (ADR 0052).
   db.alternativeGroup.updateMany({ where, data: { chosenLineId: null } }),
-  // The status and state history (ADR 0054) points at the lines, tickets, statuses and states.
+  // The status, state and estimate history (ADR 0054, 0074) points at lines, tickets and states.
   db.lineStateChange.deleteMany({ where }),
   db.ticketStatusChange.deleteMany({ where }),
+  db.ticketEstimate.deleteMany({ where }),
   // Allocations point at their lines, demands and each other (ADR 0059); their holds cascade.
   db.lineAllocation.updateMany({ where, data: { parentAllocationId: null } }),
   db.lineAllocation.deleteMany({ where }),

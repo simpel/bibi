@@ -6,11 +6,14 @@ import {
   getTicket,
   listTickets,
   type TicketDto,
+  type TicketEstimateHistory,
+  TicketEstimateHistoryOutputSchema,
   type TicketExport,
   TicketExportOutputSchema,
   TicketSchema,
   type TicketStatusHistory,
   TicketStatusHistoryOutputSchema,
+  ticketEstimateHistory,
   ticketStatusHistory,
   updateTicket,
 } from "@bibi/core";
@@ -54,6 +57,16 @@ fieldFromOperation({
   operation: ticketStatusHistory,
   type: TicketStatusHistoryRef,
   name: "ticketStatusHistory",
+});
+const TicketEstimateHistoryRef = objectFromSchema<TicketEstimateHistory>({
+  name: "TicketEstimateHistory",
+  schema: TicketEstimateHistoryOutputSchema,
+  description: "A ticket's value estimates, oldest first (ADR 0074).",
+});
+fieldFromOperation({
+  operation: ticketEstimateHistory,
+  type: TicketEstimateHistoryRef,
+  name: "ticketEstimateHistory",
 });
 mutationFromOperation({ operation: createTicket, type: TicketRef });
 mutationFromOperation({ operation: createTicketFromTemplate, type: TicketRef });
