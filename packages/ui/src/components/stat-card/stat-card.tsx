@@ -4,7 +4,7 @@ import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "../../lib/cn";
 import { Card } from "../card/card";
-import { StatCardLine } from "./stat-card-line";
+import { StatCardHoverLayer, StatCardLine } from "./stat-card-line";
 import {
   statCardDotVariants,
   statCardLabelVariants,
@@ -100,9 +100,7 @@ export function StatCard({
       {...handlers}
       {...props}
     >
-      {hasLine ? (
-        <StatCardLine series={series} tone={trend?.tone ?? "primary"} activeIndex={index} />
-      ) : null}
+      {hasLine ? <StatCardLine series={series} tone={trend?.tone ?? "primary"} /> : null}
       <div className={statCardLabelVariants()}>
         <span aria-hidden className={statCardDotVariants({ tone })} />
         <span className="truncate">{label}</span>
@@ -111,6 +109,9 @@ export function StatCard({
         {value}
       </div>
       <StatCardFooter hint={hint} trend={trend} />
+      {hasLine ? (
+        <StatCardHoverLayer series={series} tone={trend?.tone ?? "primary"} activeIndex={index} />
+      ) : null}
       {hasLine ? <StatCardSummary series={series} /> : null}
     </Card>
   );

@@ -44,17 +44,15 @@ function StatCardHover({ point, active }: StatCardHoverProps) {
   );
 }
 
-/** The trend line with a gradient under it, plus the hover dot and tooltip. Decorative: the data is in the sr-only list. */
-export function StatCardLine({ series, tone, activeIndex }: StatCardLineProps) {
+/** The trend line with a gradient under it. Decorative: the data is in the sr-only list. */
+export function StatCardLine({ series, tone }: Omit<StatCardLineProps, "activeIndex">) {
   const gradientId = useId();
-  const { points, line, area } = statLinePath({
+  const { line, area } = statLinePath({
     values: series.map((point) => point.value),
     width: WIDTH,
     height: HEIGHT,
     padY: 6,
   });
-  const point = activeIndex === null ? undefined : points[activeIndex];
-  const active = activeIndex === null ? undefined : series[activeIndex];
   return (
     <div data-slot="stat-card-line" aria-hidden className={statCardLineVariants({ tone })}>
       <svg
@@ -78,7 +76,29 @@ export function StatCardLine({ series, tone, activeIndex }: StatCardLineProps) {
           vectorEffect="non-scaling-stroke"
         />
       </svg>
-      {point && active ? <StatCardHover point={point} active={active} /> : null}
+    </div>
+  );
+}
+
+export type StatCardHoverLayerProps = Pick<StatCardLineProps, "series" | "tone" | "activeIndex">;
+
+/**
+ * The hover dot and tooltip in their own layer over the line's box, above the card's text: the
+ * line's layer sits under the text, so nothing inside it can rise above it.
+ */
+export function StatCardHoverLayer({ series, tone, activeIndex }: StatCardHoverLayerProps) {
+  const { points } = statLinePath({
+    values: series.map((point) => point.value),
+    width: WIDTH,
+    height: HEIGHT,
+    padY: 6,
+  });
+  const point = activeIndex === null ? undefined : points[activeIndex];
+  const active = activeIndex === null ? undefined : series[activeIndex];
+  if (!point || !active) return null;
+  return (
+    <div aria-hidden className={cn(statCardLineVariants({ tone }), "z-20")}>
+      <StatCardHover point={point} active={active} />
     </div>
   );
 }
