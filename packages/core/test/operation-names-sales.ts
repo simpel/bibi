@@ -52,4 +52,12 @@ export const MONEY_NAMES = [
   "invoice.send",
   "invoice.void",
   "payment.balance",
+  "finance.overview",
+  "accountingSettings.get",
+  "accountingSettings.update",
+  "accountingExport.preview",
+  "accountingExport.create",
+  "accountingExport.list",
+  "accountingExport.get",
+  "accountingExport.download",
 ];

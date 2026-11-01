@@ -21,3 +21,7 @@
 - The sidebar gets a `primary` group in `nav-items.ts`, between the assistant zone and Work (ADR 0036).
 - `@bibi/ui` has a kanban component (on the `@dnd-kit` packages already used by data tables) and a chart component.
 - Revenue reporting needs its own decision (payments, accepted quotes or ticket totals) before the dashboard shows money.
+
+## Addendum 2026-11-01 – financials (ADR 0077)
+- Money stays off the dashboard. Invoiced, received, outstanding and overdue figures live on Financials (`/financials/{from}/{to}`), behind their own permission `finance:read`.
+- The revenue question is answered in [ADR 0077](0077-financials-and-sie-export.md): invoices count by send date, payments by paid date, refunds by refund date. Nothing is stored; the figures are derived on read.

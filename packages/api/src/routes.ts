@@ -13,6 +13,7 @@ import { depositRoutes } from "./features/deposit/rest";
 import { entityTypeRoutes } from "./features/entity-type/rest";
 import { fieldDefinitionRoutes } from "./features/field-definition/rest";
 import { fileRoutes } from "./features/file/rest";
+import { financeRoutes } from "./features/finance/rest";
 import { inboundEmailRoutes } from "./features/inbound-email/rest";
 import { invoiceRoutes } from "./features/invoice/rest";
 import { itemRoutes } from "./features/item/rest";
@@ -52,8 +53,14 @@ import type { RestRoute } from "./rest-route";
 import { searchRoutes } from "./search-rest";
 
 const accessRoutes = [...memberRoutes, ...apiKeyRoutes, ...permissionRoutes];
-/** The read models staff work from: the pipeline board and the calendar. */
-const boardRoutes = [...pipelineRoutes, ...calendarRoutes, ...boardCrudRoutes, ...boardPhaseRoutes];
+/** The read models staff work from: the pipeline board, the calendar and the financials. */
+const boardRoutes = [
+  ...pipelineRoutes,
+  ...calendarRoutes,
+  ...financeRoutes,
+  ...boardCrudRoutes,
+  ...boardPhaseRoutes,
+];
 const gridAndSetupRoutes = [...statusGridRoutes, ...pipelineSetupRoutes, ...changeSetRoutes];
 const lineAndGroupRoutes = [...lineRoutes, ...lineAllocationRoutes, ...alternativeGroupRoutes];
 const selfRoutes = [

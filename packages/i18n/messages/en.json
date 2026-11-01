@@ -227,6 +227,148 @@
     "byStatus": "Tickets by status",
     "empty": "No tickets yet."
   },
+  "finance": {
+    "title": "Financials",
+    "description": "Invoiced, received and outstanding money, what is booked ahead and the VAT to report.",
+    "noAccess": "You do not have access to this part.",
+    "noAccessShort": "No access",
+    "noData": "Nothing to show for this period.",
+    "monthLabel": "{month, select, 1 {jan} 2 {feb} 3 {mar} 4 {apr} 5 {may} 6 {jun} 7 {jul} 8 {aug} 9 {sep} 10 {oct} 11 {nov} 12 {dec} other {}} {year}",
+    "accountingSettings": "Accounting settings",
+    "openFinancials": "Open financials",
+    "accounting": {
+      "title": "Accounting",
+      "description": "The accounts the SIE export books to. Every account has a BAS default.",
+      "saved": "The accounting settings have been saved.",
+      "default": "Default {account}",
+      "usesDefault": "Empty uses the default revenue account ({account})",
+      "noTypes": "There are no item types yet.",
+      "revenueByTypeHint": "Revenue account per item type. Leave empty to use the default revenue account.",
+      "readOnly": "You can view these settings but not change them.",
+      "groups": {
+        "accounts": "Accounts",
+        "vat": "Output VAT",
+        "fiscalYear": "Fiscal year",
+        "revenueByType": "Revenue per item type"
+      },
+      "fields": {
+        "receivableAccount": "Receivables",
+        "clearingAccount": "Payments on their way",
+        "advancesAccount": "Customer advances",
+        "feesAccount": "Payment fees",
+        "roundingAccount": "Rounding",
+        "revenueAccount": "Revenue (default)",
+        "vat25Account": "Output VAT 25 %",
+        "vat12Account": "Output VAT 12 %",
+        "vat6Account": "Output VAT 6 %",
+        "fiscalYearStartMonth": "First month of the fiscal year"
+      },
+      "monthName": "{month, select, 1 {January} 2 {February} 3 {March} 4 {April} 5 {May} 6 {June} 7 {July} 8 {August} 9 {September} 10 {October} 11 {November} 12 {December} other {}}"
+    },
+    "export": {
+      "button": "Export SIE",
+      "title": "Export SIE",
+      "description": "Creates a SIE file of everything not exported yet, for your accounting program.",
+      "confirm": "Export and download",
+      "created": "The export has been created.",
+      "downloading": "Preparing the file…",
+      "downloaded": "The file is ready.",
+      "download": "Download",
+      "history": "Export history",
+      "historyEmpty": "No exports yet.",
+      "exportNumber": "Export {number}",
+      "openToDownload": "Open financials to download",
+      "fileSize": "{bytes} bytes",
+      "vouchers": "{count, plural, one {# voucher} other {# vouchers}}",
+      "fixOrganization": "Open organization settings",
+      "fixAccounting": "Open accounting settings",
+      "kinds": {
+        "INVOICE_SENT": "Invoices sent",
+        "INVOICE_VOID": "Invoices voided",
+        "PAYMENT": "Payments",
+        "FEE": "Fees",
+        "REFUND": "Refunds"
+      },
+      "blockers": {
+        "ORG_NUMBER_MISSING": "Organization number is missing",
+        "VAT_ACCOUNT_MISSING": "VAT account is missing for {detail}",
+        "NOTHING_TO_EXPORT": "Nothing new to export"
+      },
+      "columns": {
+        "number": "Number",
+        "date": "Created",
+        "vouchers": "Vouchers",
+        "fileName": "File name"
+      }
+    },
+    "kpi": {
+      "invoiced": "Invoiced",
+      "received": "Received",
+      "outstanding": "Outstanding",
+      "overdue": "Overdue",
+      "exclVat": "Excluding VAT",
+      "netOfRefunds": "Refunds subtracted",
+      "today": "Today"
+    },
+    "period": {
+      "label": "Period",
+      "previous": "Previous period",
+      "next": "Next period",
+      "thisYear": "This year",
+      "last12": "Last 12 months",
+      "range": "{from} – {to}"
+    },
+    "charts": {
+      "month": "Month",
+      "monthly": {
+        "title": "Invoiced and received per month",
+        "invoiced": "Invoiced",
+        "received": "Received"
+      },
+      "aging": {
+        "title": "Open invoices by age",
+        "bucket": "Age",
+        "open": "Open",
+        "notDue": "Not due",
+        "overdue1to30": "1–30 days overdue",
+        "overdue31to60": "31–60 days overdue",
+        "overdue61Plus": "Over 60 days overdue"
+      },
+      "forward": {
+        "title": "Booked, not yet invoiced",
+        "value": "Value excluding VAT"
+      },
+      "revenue": {
+        "title": "Invoiced by type",
+        "type": "Type",
+        "invoiced": "Invoiced excluding VAT",
+        "withoutType": "Without type"
+      }
+    },
+    "overdue": {
+      "title": "Overdue invoices",
+      "empty": "No overdue invoices.",
+      "invoiceNumber": "Invoice {number}",
+      "ticketReference": "Ticket #{reference}",
+      "ticket": "Ticket",
+      "columns": {
+        "invoice": "Invoice",
+        "ticket": "Ticket",
+        "dueDate": "Due date",
+        "daysOverdue": "Days overdue",
+        "open": "Open"
+      }
+    },
+    "vat": {
+      "title": "VAT per rate",
+      "empty": "No invoices in this period.",
+      "columns": {
+        "rate": "VAT rate",
+        "base": "Invoiced excluding VAT",
+        "vat": "VAT"
+      }
+    }
+  },
   "nav": {
     "dashboard": "Dashboard",
     "pipeline": "Pipeline",
@@ -239,6 +381,7 @@
     "responsibilities": "Responsibilities",
     "sheets": "Sheets",
     "calendar": "Calendar",
+    "financials": "Financials",
     "tickets": "Tickets",
     "skills": "Skills",
     "settings": "Settings",
@@ -247,6 +390,7 @@
     "members": "Members",
     "ticketStatuses": "Statuses",
     "payments": "Payments",
+    "accounting": "Accounting",
     "organization": "Organization",
     "priceLists": "Price lists",
     "assistant": "Assistant",
@@ -1649,7 +1793,18 @@
         "boardId": "Board",
         "phaseId": "Column",
         "statusIds": "Statuses",
-        "assigneeId": "Assignee"
+        "assigneeId": "Assignee",
+        "receivableAccount": "Receivables account",
+        "clearingAccount": "Payment clearing account",
+        "advancesAccount": "Customer advances account",
+        "feesAccount": "Payment fees account",
+        "roundingAccount": "Rounding account",
+        "revenueAccount": "Default revenue account",
+        "vat25Account": "Output VAT 25 % account",
+        "vat12Account": "Output VAT 12 % account",
+        "vat6Account": "Output VAT 6 % account",
+        "fiscalYearStartMonth": "First month of the fiscal year",
+        "revenueAccounts": "Revenue accounts per item type or item"
       },
       "operations": {
         "venue_create": "Create venue",
@@ -1756,7 +1911,9 @@
         "boardPhase_update": "Update board column",
         "boardPhase_archive": "Remove board column",
         "boardPhase_reorder": "Reorder board columns",
-        "boardPhase_moveStatus": "Move status between board columns"
+        "boardPhase_moveStatus": "Move status between board columns",
+        "accountingSettings_update": "Change accounting settings",
+        "accountingExport_create": "Create SIE export"
       },
       "setup": {
         "title": "Create my first version",
@@ -2370,6 +2527,7 @@
       "ticketStatuses": "The statuses a ticket moves through.",
       "members": "Who has access and with which role.",
       "payments": "Stripe account for card payments and invoices.",
+      "accounting": "Accounts, VAT and fiscal year for the accounting export.",
       "skills": "Reusable instructions for the assistant.",
       "integrations": "API keys for other systems that use the REST API.",
       "itemStates": "The states a line can be in, per item type.",

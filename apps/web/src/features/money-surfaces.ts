@@ -1,3 +1,4 @@
+import { FINANCE_SURFACES } from "./finance-surfaces";
 import type { WebSurface } from "./web-surfaces";
 
 /**
@@ -16,4 +17,5 @@ export const MONEY_SURFACES: readonly WebSurface[] = [
   { operation: "invoice.create", route: "/tickets/[id]" },
   { operation: "invoice.send", route: "/tickets/[id]" },
   { operation: "invoice.void", route: "/tickets/[id]" },
+  ...FINANCE_SURFACES,
 ];

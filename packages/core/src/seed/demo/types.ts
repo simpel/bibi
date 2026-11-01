@@ -91,4 +91,11 @@ export type DemoOrg = {
   tickets: readonly DemoTicket[];
   /** How the generated tickets fill the calendar (#488), for the density check. */
   density?: DemoDensity;
+  /** ADR 0077: the org number, revenue accounts per item type (by name) and one SIE export. */
+  finance?: DemoFinance;
+};
+
+export type DemoFinance = {
+  orgNumber: string;
+  revenueAccounts: readonly { type: string; account: string }[];
 };

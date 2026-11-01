@@ -1,0 +1,46 @@
+import type { OperationContext } from "../../operations/types";
+import type { AccountingExportDto } from "./export-schema";
+import type { ExportPlan } from "./plan-export";
+
+export const EXPORT_SELECT = {
+  id: true,
+  number: true,
+  fileName: true,
+  voucherCount: true,
+  createdAt: true,
+  createdBy: true,
+} as const;
+
+export type InsertExportInput = {
+  context: Pick<OperationContext, "db" | "organizationId">;
+  plan: ExportPlan;
+  bytes: Uint8Array;
+};
+
+/**
+ * Writes the export and one entry per event it contains (ADR 0077). A concurrent export of the
+ * same events hits the entries' unique keys, and its whole command is refused with CONFLICT.
+ */
+export async function insertExport({
+  context,
+  plan,
+  bytes,
+}: InsertExportInput): Promise<AccountingExportDto> {
+  const { organizationId } = context;
+  const last = await context.db.accountingExport.aggregate({ _max: { number: true } });
+  const number = (last._max.number ?? 0) + 1;
+  const row = await context.db.accountingExport.create({
+    data: {
+      organizationId,
+      number,
+      fileName: `bibi-sie-${String(number).padStart(4, "0")}.si`,
+      fileBytes: Uint8Array.from(bytes),
+      voucherCount: plan.pending.length,
+    },
+    select: EXPORT_SELECT,
+  });
+  await context.db.accountingExportEntry.createMany({
+    data: plan.pending.map(({ entry }) => ({ ...entry, organizationId, exportId: row.id })),
+  });
+  return row;
+}

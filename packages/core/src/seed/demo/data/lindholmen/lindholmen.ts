@@ -93,4 +93,13 @@ export const lindholmen: DemoOrg = {
   templates: lindholmenTemplates,
   tickets: [...fixtures, ...densityTickets({ density: lindholmenDensity, reserved })],
   density: lindholmenDensity,
+  finance: {
+    orgNumber: "556677-8899",
+    revenueAccounts: [
+      { type: "Conference room", account: "3010" },
+      { type: "Meal", account: "3051" },
+      { type: "Dish", account: "3051" },
+      { type: "Drink", account: "3052" },
+    ],
+  },
 };

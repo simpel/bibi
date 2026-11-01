@@ -4,10 +4,10 @@ import type { DemoOrg } from "./types";
 
 export type CheckDemoPaymentsInput = { context: ExecuteContext; org: DemoOrg };
 
-/** SUCCEEDED payments minus refunds per ticket, summed straight from the rows. */
+/** SUCCEEDED payments against quotes minus refunds per ticket, summed straight from the rows. */
 async function succeededByTicket({ context }: Pick<CheckDemoPaymentsInput, "context">) {
   const rows = await context.db.payment.findMany({
-    where: { status: { in: ["SUCCEEDED", "REFUNDED"] } },
+    where: { status: { in: ["SUCCEEDED", "REFUNDED"] }, quoteId: { not: null } },
     select: { ticketId: true, amountMinor: true, refundedMinor: true },
   });
   const paid = new Map<string, number>();
@@ -25,7 +25,10 @@ async function succeededByTicket({ context }: Pick<CheckDemoPaymentsInput, "cont
 export async function checkDemoPayments({ context, org }: CheckDemoPaymentsInput) {
   const failures: string[] = [];
   const paid = await succeededByTicket({ context });
-  const accepted = await context.db.quote.findMany({ where: { quoteStatus: "ACCEPTED" } });
+  // A ticket invoiced (ADR 0077) is billed from its invoices instead (`checkDemoFinance`).
+  const accepted = await context.db.quote.findMany({
+    where: { quoteStatus: "ACCEPTED", ticket: { invoices: { none: { status: "SENT" } } } },
+  });
   for (const quote of accepted) {
     const balance = await ticketBalance({ context, ticketId: quote.ticketId, withQuotes: true });
     const expected = quote.totalInclVatMinor - (paid.get(quote.ticketId) ?? 0);

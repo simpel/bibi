@@ -64,14 +64,22 @@ function checkOverlaps({ loaded }: { loaded: Loaded }) {
  * Checks 5 and 6 of `docs/demo-seed.md` (ADR 0044): every seeded line of a lead without an
  * override starts in its type's initial state, overlapping lines are soft holds ordered by when they were held (state history), and after
  * `ticket.expireHolds` the lines of tickets whose holdsUntil has passed are released while the
- * others keep their state. Returns failure messages.
+ * others keep their state; lines of a ticket in a closing status are released. Returns failure
+ * messages.
  */
 export async function checkDemoHolds({ context, org }: CheckDemoHoldsInput): Promise<string[]> {
+  // A closing status (Completed, ADR 0043) released every line of its ticket on entry.
+  const closing = new Set(
+    org.pipeline.statuses.statuses.filter((s) => s.closes).map((s) => s.name),
+  );
   const lines = org.tickets.flatMap((ticket) =>
     (ticket.lines ?? []).map((line) => ({
       ...line,
       day: ticket.day,
-      expired: (ticket.holdsUntilDay ?? 0) < 0 || pickedAway({ ticket, line }),
+      expired:
+        (ticket.holdsUntilDay ?? 0) < 0 ||
+        pickedAway({ ticket, line }) ||
+        closing.has(ticket.status ?? ""),
       initial: !ticket.status && !line.state,
     })),
   );

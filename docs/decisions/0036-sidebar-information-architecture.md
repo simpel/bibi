@@ -24,6 +24,10 @@ The sidebar has three zones, ordered by how often staff use them.
 - Payments and invoices get no menu entry of their own: they are reached from the ticket and from Settings → Payments.
 - Menu entries are data (`nav-items.ts`), grouped by zone. A new entity adds its entry to the right group, not to the end of a flat list.
 
+## Addendum 2026-11-01 – financials (ADR 0077)
+- Financials is a `primary` menu entry (`/financials`), shown to callers with `finance:read`: managers and admins by default, members not. It is the one exception to "no menu entry for money".
+- It holds the money overview and the SIE export. The account mapping is under Settings → Accounting. Payments and invoices still get no entry of their own.
+
 ## Consequences
 - Skills move out of the main menu: organization skills are under Settings and personal skills under the user menu. Both open `/skills`.
 - The shell decides whether to show Settings from `configurationWrite` in the web app's `getCallerAbilities`, the same check that hides create buttons today. Only two booleans reach the client.

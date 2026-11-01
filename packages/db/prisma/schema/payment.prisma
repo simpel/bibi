@@ -44,6 +44,7 @@ model Payment {
   deposit             Deposit?      @relation(fields: [depositId, organizationId], references: [id, organizationId])
   invoice             Invoice?      @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
   refunds             PaymentRefund[]
+  exportEntries       AccountingExportEntry[]
 
   @@unique([id, organizationId])
   @@unique([providerReference])
@@ -90,6 +91,7 @@ model PaymentRefund {
   refundedAt         DateTime
   createdAt          DateTime @default(now())
   payment            Payment  @relation(fields: [paymentId, organizationId], references: [id, organizationId])
+  exportEntries      AccountingExportEntry[]
 
   @@unique([id, organizationId])
   @@unique([paymentId, refundedTotalMinor])

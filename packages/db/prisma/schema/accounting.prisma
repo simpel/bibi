@@ -1,0 +1,109 @@
+/// The organization's accounts for the SIE export (ADR 0077). One row per organization, created by
+/// the first `accountingSettings.update`; until then reads return the BAS defaults below. Owned.
+/// `status` is the soft-delete flag (ADR 0006); the row is never archived.
+model AccountingSettings {
+  id                   String       @id @default(cuid(2))
+  organizationId       String       @unique
+  /// Customer receivables.
+  receivableAccount    String       @default("1510")
+  /// Payments on their way from the payment provider.
+  clearingAccount      String       @default("1580")
+  /// Customer advances: paid deposits until invoiced.
+  advancesAccount      String       @default("2420")
+  /// The payment provider's fees.
+  feesAccount          String       @default("6570")
+  /// Rounding differences up to one krona.
+  roundingAccount      String       @default("3740")
+  /// Revenue when neither the item nor its type names an account (`RevenueAccount`).
+  revenueAccount       String       @default("3001")
+  /// Output VAT per Swedish rate.
+  vat25Account         String       @default("2611")
+  vat12Account         String       @default("2621")
+  vat6Account          String       @default("2631")
+  /// First month of the fiscal year, 1–12 (`#RAR` in the file).
+  fiscalYearStartMonth Int          @default(1)
+  status               RecordStatus @default(ACTIVE)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  createdBy            String?
+
+  @@unique([id, organizationId])
+}
+
+/// RevenueAccount – the revenue account of one item type or one item (ADR 0077): exactly one of
+/// `entityTypeId` and `itemId` (check constraint). An item's row wins over its type's, which wins
+/// over `AccountingSettings.revenueAccount` (null = inherit, ADR 0051: no row, no copy). Owned by
+/// the finance feature, replaced as a set by `accountingSettings.update` and audited there.
+model RevenueAccount {
+  id             String      @id @default(cuid(2))
+  organizationId String
+  entityTypeId   String?
+  itemId         String?
+  account        String
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  createdBy      String?
+  entityType     EntityType? @relation(fields: [entityTypeId, organizationId], references: [id, organizationId])
+  item           Item?       @relation(fields: [itemId, organizationId], references: [id, organizationId])
+
+  @@unique([organizationId, entityTypeId])
+  @@unique([organizationId, itemId])
+}
+
+/// What an accounting event was (ADR 0077): each becomes one voucher, exported once.
+enum AccountingSourceKind {
+  /// An invoice sent: receivables against revenue and VAT (`invoiceId`).
+  INVOICE_SENT
+  /// An exported invoice voided: the reversal (`invoiceId`).
+  INVOICE_VOID
+  /// A settled payment (`paymentId`).
+  PAYMENT
+  /// The application fee on a settled payment (`paymentId`).
+  FEE
+  /// One refund (`refundId`).
+  REFUND
+}
+
+/// AccountingExport – one SIE 4I file handed to the accounting program (ADR 0077). A snapshot:
+/// the exact bytes are kept so a re-download is identical. Numbered per organization
+/// (highest + 1). Never deleted.
+model AccountingExport {
+  id             String                  @id @default(cuid(2))
+  organizationId String
+  number         Int
+  fileName       String
+  /// The file as written, codepage 437.
+  fileBytes      Bytes
+  voucherCount   Int
+  status         RecordStatus            @default(ACTIVE)
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  createdBy      String?
+  entries        AccountingExportEntry[]
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, number])
+}
+
+/// AccountingExportEntry – one event an export contained (ADR 0077), append-only. Exactly one of
+/// `invoiceId`, `paymentId`, `refundId` is set, as `kind` says (check constraint). Unique per kind
+/// and source, so an event is never exported twice, also by two exports running at once.
+model AccountingExportEntry {
+  id             String               @id @default(cuid(2))
+  organizationId String
+  exportId       String
+  kind           AccountingSourceKind
+  invoiceId      String?
+  paymentId      String?
+  refundId       String?
+  createdAt      DateTime             @default(now())
+  export         AccountingExport     @relation(fields: [exportId, organizationId], references: [id, organizationId])
+  invoice        Invoice?             @relation(fields: [invoiceId, organizationId], references: [id, organizationId])
+  payment        Payment?             @relation(fields: [paymentId, organizationId], references: [id, organizationId])
+  refund         PaymentRefund?       @relation(fields: [refundId, organizationId], references: [id, organizationId])
+
+  @@unique([kind, invoiceId])
+  @@unique([kind, paymentId])
+  @@unique([kind, refundId])
+  @@index([organizationId, exportId])
+}

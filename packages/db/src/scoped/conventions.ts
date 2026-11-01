@@ -25,6 +25,8 @@ export const COLUMN_EXCEPTIONS: ReadonlyMap<string, readonly ConventionColumn[]>
   ["KnownMember", ["updatedAt", "createdBy"]],
   // Append-only (ADR 0077): a refund Stripe reported, written by SYSTEM through the webhook.
   ["PaymentRefund", ["updatedAt", "createdBy"]],
+  // Append-only (ADR 0077): which events an export contained; its export records who made it.
+  ["AccountingExportEntry", ["updatedAt", "createdBy"]],
   // Derived search index, rebuilt from its entity; not authored by anyone.
   ["Embedding", ["createdBy"]],
   // Better Auth tables (shape owned by Better Auth); `inviterId` records the inviter.
@@ -96,6 +98,9 @@ export const CREATED_BY_MODELS = new Set<string>([
   "Deposit",
   "OrganizationProfile",
   "Invoice",
+  "AccountingSettings",
+  "RevenueAccount",
+  "AccountingExport",
   "Conversation",
   "Message",
   "Skill",

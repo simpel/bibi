@@ -6,6 +6,7 @@ import {
   CalendarRangeIcon,
   ContactIcon,
   KanbanIcon,
+  LandmarkIcon,
   LayoutDashboardIcon,
   type LucideIcon,
   ShieldCheckIcon,
@@ -16,6 +17,7 @@ export type NavLabelKey =
   | "dashboard"
   | "pipeline"
   | "calendar"
+  | "financials"
   | "tickets"
   | "customers"
   | "items"
@@ -58,6 +60,13 @@ export const NAV_GROUPS: Record<NavGroupId, readonly NavItem[]> = {
       icon: LayoutDashboardIcon,
       audience: "everyone",
       permission: "ticket:read",
+    },
+    {
+      href: ROUTES.financials,
+      labelKey: "financials",
+      icon: LandmarkIcon,
+      audience: "everyone",
+      permission: "finance:read",
     },
   ],
   work: [

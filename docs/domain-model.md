@@ -112,6 +112,13 @@ erDiagram
   Invoice ||--o{ Payment : "is settled with"
   Invoice ||--o{ OrderLine : "invoices"
   Invoice ||--o{ Deposit : "offsets"
+  Payment ||--o{ PaymentRefund : "is refunded with"
+  AccountingExport ||--o{ AccountingExportEntry : "contains"
+  Invoice |o--o{ AccountingExportEntry : "is exported as"
+  Payment |o--o{ AccountingExportEntry : "is exported as"
+  PaymentRefund |o--o{ AccountingExportEntry : "is exported as"
+  EntityType |o--o| RevenueAccount : "maps revenue via"
+  Item |o--o| RevenueAccount : "maps revenue via"
   Ticket }o--|| TicketStatus : "is in"
   TicketStatus ||--o{ TicketStatusTransition : "from"
   TicketStatus ||--o{ TicketStatusTransition : "to"
@@ -963,6 +970,98 @@ Replaced as a set by `priceList.setItems`; refused while the list has a general 
 - `1:N` offsets → Deposit – *later*
 
 > Operations (`payment:read` to read, `payment:write` to change): `invoice.list` (per ticket, newest first), `invoice.get`, `invoice.create({ ticketId, dueDate? })` (needs `program:read`, since it copies the lines; an `invoiceable` status; at least one priced line with quantity and VAT; and no other invoice of the ticket that is not VOID, held by a partial unique index so a concurrent second create is `CONFLICT`), `invoice.send` and `invoice.void` (as for a deposit; voiding lets the ticket be invoiced again). On every surface; web on the ticket page.
+
+### PaymentRefund (`PaymentRefund`)
+
+*MVP* · One refund of a payment, append-only ([ADR 0077](decisions/0077-financials-and-sie-export.md)). A repeated signal from Stripe adds nothing.
+
+> **Ownership:** owned `amountMinor` (this refund), `refundedTotalMinor` (the total on the payment after it) and `refundedAt` (when the signal was applied, the date of its reversal voucher). The payment's `refundedMinor` mirrors the newest total (reconciliation check `payment refunds`).
+
+**Relations**
+- `N:1` Payment is refunded with this
+- `N:0..1` AccountingExportEntry is exported as a REFUND
+
+> Written only by `payment.applySignal` (SYSTEM) when Stripe reports a higher refunded total. No operation of its own; a refund shows on the payment and in the SIE export.
+
+### AccountingSettings (`AccountingSettings`)
+
+*MVP* · The organization's accounts for the SIE export ([ADR 0077](decisions/0077-financials-and-sie-export.md)). One row per organization, created by the first save; until then the BAS defaults apply.
+
+> **Ownership:** owned every account number and `fiscalYearStartMonth`; nothing derived.
+
+**Attributes**
+- receivables (1510), payment clearing (1580), customer advances (2420), payment provider fees (6570), rounding (3740) and default revenue (3001)
+- output VAT per rate: 25 % (2611), 12 % (2621) and 6 % (2631)
+- first month of the fiscal year (1 to 12)
+
+**Relations**
+- `1:1` Organization has one (`organizationId`, unique)
+- falls back to → RevenueAccount, which names an account per item type or item
+
+> Operations (`finance:read` to read, `finance:write` to change): `accountingSettings.get` (the BAS defaults until saved) and `accountingSettings.update` (omitted fields keep their value; `revenueAccounts`, when given, replaces every mapping). Web: Settings, Accounting.
+
+### RevenueAccount (`RevenueAccount`)
+
+*MVP* · The revenue account of one item type or one item. An item's row wins over its type's, which wins over `AccountingSettings.revenueAccount`. No row means inherit: nothing is copied ([ADR 0051](decisions/0051-single-source-of-truth.md)).
+
+> **Ownership:** owned `account`. The inheritance is derived on read.
+
+**Attributes**
+- account number
+- item type or item: exactly one of them (check constraint)
+
+**Relations**
+- `N:0..1` EntityType maps revenue through this
+- `N:0..1` Item maps revenue through this
+
+> Built as its own table; ADR 0077 first named columns on item type and item (see its addendum). Replaced as a set by `accountingSettings.update`.
+
+### AccountingExport (`AccountingExport`)
+
+*MVP* · One SIE 4I file handed to the accounting program ([ADR 0077](decisions/0077-financials-and-sie-export.md)). A snapshot: the bytes are kept as written (codepage 437), so a re-download is identical. Never deleted.
+
+> **Ownership:** owned `number`, `fileName`, `fileBytes` and `voucherCount`. The events it contains are its `AccountingExportEntry` rows.
+
+**Attributes**
+- number (per organization, highest + 1) and file name (`bibi-sie-NNNN.si`)
+- voucher count
+- created at and by
+
+**Relations**
+- `1:N` contains → AccountingExportEntry
+
+> Operations: `accountingExport.preview` and `list|get` (`finance:read`); `accountingExport.create` and `download` (`finance:write`). `preview` shows what the next export would contain and its blockers (`ORG_NUMBER_MISSING`, `VAT_ACCOUNT_MISSING`, `NOTHING_TO_EXPORT`). `create` writes one voucher per invoice sent or voided, payment, fee and refund not exported before, with the file. `download` returns the file as base64. Web: Export SIE on the Financials page, with the export history.
+
+### AccountingExportEntry (`AccountingExportEntry`)
+
+*MVP* · One accounting event that an export contained, append-only. Each event is exported once: unique per kind and source, also when two exports run at once.
+
+> **Ownership:** owned `kind` and the one source it points to. Nothing else.
+
+**Attributes**
+- kind: `INVOICE_SENT`, `INVOICE_VOID` (the reversal), `PAYMENT`, `FEE` or `REFUND`
+- source: exactly one invoice, payment or refund, as the kind says (check constraint)
+
+**Relations**
+- `N:1` AccountingExport contains this
+- `N:0..1` refers to → Invoice, Payment or PaymentRefund
+
+> Written by `accountingExport.create` with its export. No operation of its own.
+
+### Financials overview (`finance.overview`)
+
+*MVP* · The organization's money for a period, as a read model ([ADR 0077](decisions/0077-financials-and-sie-export.md)). Nothing is stored; every figure is derived on read from invoices, payments, refunds and quotes.
+
+> **Ownership:** derived throughout.
+
+**Figures**
+- invoiced excl. VAT per month (sent invoices, by send date)
+- received per month (settled payments by paid date, minus refunds by refund date)
+- outstanding and overdue today, aging (not due, 1 to 30, 31 to 60, more than 60 days overdue) and the most overdue invoices
+- forward-booked value: accepted quotes on tickets not invoiced yet, by event month
+- revenue per item type and VAT per rate
+
+> Operation: `finance.overview({ from, to })` (`finance:read`; at most 24 months). Invoiced, received, aging and revenue need `payment:read`, forward-booked value `quote:read`; a part the caller may not read is null. Web: `/financials/{from}/{to}`, the primary menu entry Financials (ADR 0036). Money is not on the dashboard (ADR 0041).
 
 ## Operations & system
 

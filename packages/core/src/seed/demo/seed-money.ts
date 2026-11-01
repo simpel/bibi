@@ -9,6 +9,7 @@ import {
 import type { ExecuteContext } from "../../operations/context";
 import { execute } from "../../operations/execute";
 import { missing } from "./seed-fields";
+import { seedInvoice } from "./seed-invoice";
 import type { DemoTicket } from "./ticket-types";
 import type { DemoOrg } from "./types";
 
@@ -59,7 +60,7 @@ async function seedPartialPayment({ context, ticket, ticketId }: TicketMoneyInpu
   return paid.ok ? ok({ value: true as const }) : paid;
 }
 
-/** The ticket's demo money (`ticket.money`): a deposit request and a partial payment. */
+/** The ticket's demo money (`ticket.money`): a deposit request, a partial payment, an invoice. */
 export async function seedTicketMoney({
   context,
   ticket,
@@ -67,5 +68,7 @@ export async function seedTicketMoney({
 }: TicketMoneyInput): Promise<Result<true>> {
   const deposit = await seedDeposit({ context, ticket, ticketId });
   if (!deposit.ok) return deposit;
-  return seedPartialPayment({ context, ticket, ticketId });
+  const paid = await seedPartialPayment({ context, ticket, ticketId });
+  if (!paid.ok) return paid;
+  return seedInvoice({ context, ticket, ticketId, now: new Date() });
 }

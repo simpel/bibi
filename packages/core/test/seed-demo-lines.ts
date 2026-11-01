@@ -13,8 +13,11 @@ export const LINDHOLMEN_LINE_STATES = [
   ["Conference day", "Active", false],
   ...Array.from({ length: 3 }, () => ["Conference lunch", "Estimated", false]),
   ...Array.from({ length: 6 }, () => ["Conference lunch", "Ordered", false]),
+  // L2 and L1, Completed and invoiced (ADR 0077): a closing status released their lines.
+  ["Dinner", "Released", false],
   ["Half-day conference", "Booked", false],
   ["Kickoff", "Prebooked", false],
+  ["Lunch", "Released", false],
   ["Morning break", "Estimated", false],
   ["Planning in Hönö", "Booked", false],
   ["Planning in Styrsö", "Released", true],

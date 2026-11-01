@@ -1,5 +1,6 @@
 /**
- * Approval label keys of payments and the receivables they settle (ADR 0057), kept apart so
+ * Approval label keys of payments, the receivables they settle (ADR 0057) and the accounting
+ * settings (ADR 0077), kept apart so
  * `approval-labels.ts` stays within the size limit.
  */
 export const MONEY_FIELD_KEYS = [
@@ -9,6 +10,17 @@ export const MONEY_FIELD_KEYS = [
   "quoteId",
   "depositId",
   "invoiceId",
+  "receivableAccount",
+  "clearingAccount",
+  "advancesAccount",
+  "feesAccount",
+  "roundingAccount",
+  "revenueAccount",
+  "vat25Account",
+  "vat12Account",
+  "vat6Account",
+  "fiscalYearStartMonth",
+  "revenueAccounts",
 ] as const;
 
 /** Money operations with a localized label in `assistant.approval.operations`. */
@@ -20,4 +32,6 @@ export const MONEY_OPERATION_KEYS = [
   "invoice_send",
   "invoice_void",
   "payment_create",
+  "accountingSettings_update",
+  "accountingExport_create",
 ] as const;

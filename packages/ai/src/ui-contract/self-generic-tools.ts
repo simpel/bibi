@@ -12,6 +12,10 @@ export const SELF_GENERIC_UI_TOOLS: Readonly<Record<string, string>> = {
   profile_get: "the profile is edited in the welcome flow and on /profile (#418), not a tool card",
   profile_update:
     "the profile is edited in the welcome flow and on /profile (#418), not a tool card",
+  accountingExport_list: "the export history is on the Financials page; shown as JSON",
+  accountingSettings_get: "accounting settings are edited on /settings/accounting (ADR 0077); JSON",
+  accountingSettings_update:
+    "accounting settings are edited on /settings/accounting (ADR 0077); JSON",
   workingHours_get: "working hours are edited in the welcome flow (#418); shown as JSON",
   workingHours_set: "working hours are edited in the welcome flow (#418); shown as JSON",
   file_upload: "returns only a storage key; the avatar is shown by the profile UI",

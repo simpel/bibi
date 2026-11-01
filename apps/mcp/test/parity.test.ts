@@ -80,11 +80,11 @@ function withoutOrg({ value }: { value: Json }): Json {
 }
 
 /**
- * Read-only views over other entities, the guided pipeline setup (a preview and a batch of other
+ * Read-only views over other entities (search, the pipeline board, the financials), the guided pipeline setup (a preview and a batch of other
  * entities' commands) and change sets (a batch of other commands, ADR 0049): no rows of their own
  * to create and read back through each surface.
  */
-const VIEWS = new Set(["search", "pipeline", "pipelineSetup", "changeSet"]);
+const VIEWS = new Set(["search", "pipeline", "finance", "pipelineSetup", "changeSet"]);
 
 function coreEntityTypes(): string[] {
   return [

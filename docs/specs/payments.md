@@ -23,6 +23,10 @@ Current behaviour. Why: ADR 0028 (provider and Connect), 0029 (invoicing), 0057 
 - Shows organization name, ticket reference, amount, status and the Stripe-hosted checkout link; no customer or ticket details. A `PENDING` payment past `expiresAt` shows as expired without a pay link. Stripe returns with `?checkout=success`; while the status is still `PENDING` the page shows a "processing" state that refreshes every 3 seconds up to 20 times.
 - A Next page is not a `Request` handler, so the request context is opened with `runWithLogContext` (surface `web`).
 
+## Refunds and dates (ADR 0077)
+- A refund signal (`charge.refunded`) appends one `PaymentRefund` row through `payment.applySignal`: the step, the refunded total after it and `refundedAt`, the time the signal was applied. A repeated signal with the same total adds no row. `Payment.refundedMinor` stays the Stripe mirror; the `payment refunds` reconciliation checks that the rows sum to it.
+- `Invoice` and `Deposit` keep `sentAt` (set by send) and `voidedAt` (set by void). A void keeps `sentAt`. These dates are the accounting dates of the SIE vouchers.
+
 ## Not built
 - Swish for customers (needs per-venue bank onboarding). Update the differentiators in `CLAUDE.md` when it is added.
 - Open: the application fee amount, Stripe's EU data handling, the exact Accounts v2 responsibilities for fees and losses.

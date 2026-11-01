@@ -69,6 +69,7 @@ model Invoice {
   ticket            Ticket           @relation(fields: [ticketId, organizationId], references: [id, organizationId])
   lines             OrderLine[]
   payments          Payment[]
+  exportEntries     AccountingExportEntry[]
 
   @@unique([id, organizationId])
   @@unique([organizationId, number])

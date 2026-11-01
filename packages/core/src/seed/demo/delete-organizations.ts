@@ -10,6 +10,12 @@ type ScopeInput = { db: Db; where: { organizationId: { in: string[] } } };
  */
 const ticketChildren = ({ db, where }: ScopeInput) => [
   db.inboundEmail.deleteMany({ where }),
+  // SIE exports point at invoices, payments and refunds (ADR 0077); refunds at their payment.
+  db.accountingExportEntry.deleteMany({ where }),
+  db.accountingExport.deleteMany({ where }),
+  db.revenueAccount.deleteMany({ where }),
+  db.accountingSettings.deleteMany({ where }),
+  db.paymentRefund.deleteMany({ where }),
   // Payments settle quotes, deposits and invoices (ADR 0057): before all three.
   db.payment.deleteMany({ where }),
   db.deposit.deleteMany({ where }),

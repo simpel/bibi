@@ -1,5 +1,6 @@
 import type { ExecuteContext } from "../../operations/context";
 import type { DemoRefs } from "./demo-refs";
+import { seedDemoFinance } from "./seed-finance";
 import type { DemoCatalog } from "./seed-items";
 import { seedDemoPipeline } from "./seed-pipeline";
 import { seedDemoSales } from "./seed-sales";
@@ -15,7 +16,10 @@ export type PipelineAndSalesInput = {
   catalog: DemoCatalog;
 };
 
-/** The pipeline, then customers and tickets; without a pipeline (ADR 0044) only customers. */
+/**
+ * The pipeline, then customers and tickets with their money, then the accounts and the first
+ * SIE export (ADR 0077); without a pipeline (ADR 0044) only customers.
+ */
 export async function seedPipelineAndSales({ skipPipeline, ...input }: PipelineAndSalesInput) {
   if (!skipPipeline) {
     const pipeline = await seedDemoPipeline({
@@ -24,5 +28,7 @@ export async function seedPipelineAndSales({ skipPipeline, ...input }: PipelineA
     });
     if (!pipeline.ok) return pipeline;
   }
-  return seedDemoSales({ ...input, skipPipeline });
+  const sales = await seedDemoSales({ ...input, skipPipeline });
+  if (!sales.ok || skipPipeline) return sales;
+  return seedDemoFinance({ context: input.context, org: input.org });
 }

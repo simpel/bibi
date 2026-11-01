@@ -43,3 +43,8 @@
 - **Snapshot the revenue account on each order line.** Rejected for now: the mapping is resolved once, at export, and the batch freezes it.
 - **Gate on `payment:read`.** Rejected: financial totals for the whole organization are broader than one ticket's payments.
 - **Money on the dashboard.** Rejected: the dashboard is the operational state (ADR 0041); finance has its own audience and permission.
+
+## Addendum 2026-11-01 – as built
+- Revenue accounts are a finance-owned `RevenueAccount` table (one row per item type or per item, exactly one set), not columns on item type and item as Consequences says. Inheritance is unchanged: item, then item type, then `AccountingSettings.revenueAccount`.
+- The demo seed has two invoices (Lindholmen L1 paid, L2 overdue) and one export, but no refund yet; refunds are covered by tests.
+- A payment against a quote is booked as a sale; if the same ticket is later invoiced, the revenue counts twice. Card-paid predefined tickets are the case it is built for; invoicing a quote-paid ticket needs a follow-up decision.

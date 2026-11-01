@@ -73,10 +73,53 @@ export function paymentEntity(): ParityEntity {
   };
 }
 
+/** The accounts of the SIE export (ADR 0077), with one item type mapped to its own account. */
+export const accountingSettingsEntity: ParityEntity = {
+  name: "accountingSettings",
+  create: async ({ mcp }) => {
+    const type = await tool({
+      mcp,
+      name: "entityType_create",
+      args: { base: "ITEM", name: "Parity rooms", capabilities: ["PRICED"] },
+    });
+    const revenueAccounts = [{ entityTypeId: type.id, itemId: null, account: "3041" }];
+    const args = { revenueAccount: "3002", fiscalYearStartMonth: 7, revenueAccounts };
+    return tool({ mcp, name: "accountingSettings_update", args });
+  },
+  viaMcp: ({ mcp }) => tool({ mcp, name: "accountingSettings_get", args: {} }),
+  viaRest: ({ context }) => createRestClient({ context }).get({ path: "/accounting-settings" }),
+  viaGraph: async ({ context, keys }) => {
+    const fields = keys.map((key) =>
+      key === "revenueAccounts" ? "revenueAccounts { entityTypeId itemId account }" : key,
+    );
+    const query = `query { accountingSettings { ${fields.join(" ")} } }`;
+    return (await gqlQuery({ context, query, variables: {} })).accountingSettings;
+  },
+};
+
+/** An SIE export (ADR 0077) of the invoice once sent; needs the organization's number. */
+export const accountingExportEntity = (): ParityEntity => ({
+  ...byId({
+    name: "accountingExport",
+    field: "accountingExport",
+    list: "accounting-exports",
+    createTool: "",
+    args: {},
+  }),
+  create: async ({ mcp, made }) => {
+    const profile = { orgNumber: "556000-0000", legalName: "Parity AB" };
+    await tool({ mcp, name: "organizationProfile_update", args: profile });
+    await tool({ mcp, name: "invoice_send", args: { id: made.invoice.id } });
+    return tool({ mcp, name: "accountingExport_create", args: {} });
+  },
+});
+
 /** Money entities in creation order: account, receivables, then a payment against one. */
 export const moneyEntities = (): ParityEntity[] => [
   paymentAccountEntity,
   depositEntity(),
   invoiceEntity(),
   paymentEntity(),
+  accountingSettingsEntity,
+  accountingExportEntity(),
 ];

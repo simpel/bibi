@@ -1,4 +1,5 @@
 import type { DemoTicket } from "../../ticket-types";
+import { lindholmenHistoryTickets } from "./history-tickets";
 import { l4Lines, l11Choices } from "./ticket-choices";
 
 const hisingen = "Hisingen Energi AB";
@@ -21,16 +22,7 @@ const vinga = { item: "Vinga (auditorium)", from: "09:00", to: "17:00" };
  * blocked (both used by `checkDemoGrid`).
  */
 export const lindholmenTickets: readonly DemoTicket[] = [
-  {
-    ...{ ref: "L1", customer: hisingen, type: "Conference", day: -21, from: "08:30", to: "17:00" },
-    ...{ status: "Completed", headcount: 40, assignee: "Johan Ek", followers: ["Erik Lund"] },
-    fields: { Purpose: "Kickoff", Host: "Mats Olsson" },
-  },
-  {
-    ...{ ref: "L2", customer: kvarnby, type: "Event", day: -10, from: "17:00", to: "23:00" },
-    ...{ status: "Completed", headcount: 80, assignee: "Maria Holm", followers: ["Sara Nilsson"] },
-    fields: { Dresscode: "Blazer" },
-  },
+  ...lindholmenHistoryTickets,
   {
     ...quoted,
     ...{ ref: "L3", customer: "Västra Sjukvårdsregionen", type: "Conference", day: 3 },

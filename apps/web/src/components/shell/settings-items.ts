@@ -11,6 +11,7 @@ import {
   ListIcon,
   type LucideIcon,
   PlugIcon,
+  ReceiptTextIcon,
   ShapesIcon,
   TagIcon,
   UserCheckIcon,
@@ -32,6 +33,7 @@ export type SettingsKey =
   | "ticketTemplates"
   | "members"
   | "payments"
+  | "accounting"
   | "integrations"
   | "skills";
 
@@ -101,6 +103,12 @@ export const SETTINGS_ITEMS: readonly SettingsItem[] = [
     key: "payments",
     icon: CreditCardIcon,
     permission: "paymentAccount:read",
+  },
+  {
+    href: ROUTES.settingsAccounting,
+    key: "accounting",
+    icon: ReceiptTextIcon,
+    permission: "finance:read",
   },
   {
     href: ROUTES.settingsIntegrations,

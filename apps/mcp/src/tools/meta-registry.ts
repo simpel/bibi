@@ -13,6 +13,7 @@ import { depositMcpTools } from "../features/deposit/mcp";
 import { entityTypeMcpTools } from "../features/entity-type/mcp";
 import { fieldDefinitionMcpTools } from "../features/field-definition/mcp";
 import { fileMcpTools } from "../features/file/mcp";
+import { financeMcpTools } from "../features/finance/mcp";
 import { inboundEmailMcpTools } from "../features/inbound-email/mcp";
 import { invoiceMcpTools } from "../features/invoice/mcp";
 import { itemMcpTools } from "../features/item/mcp";
@@ -62,10 +63,11 @@ const lineAndGroupMcpTools = [
   ...lineAllocationMcpTools,
   ...alternativeGroupMcpTools,
 ];
-/** The read models staff work from: the pipeline board and the calendar. */
+/** The read models staff work from: the pipeline board, the calendar and the financials. */
 const boardMcpTools = [
   ...pipelineMcpTools,
   ...calendarMcpTools,
+  ...financeMcpTools,
   ...boardCrudMcpTools,
   ...boardPhaseMcpTools,
 ];

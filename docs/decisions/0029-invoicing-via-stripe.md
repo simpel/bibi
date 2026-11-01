@@ -21,3 +21,8 @@
 - An invoice snapshots the ticket's lines at invoicing, like a sent quote, and is never edited afterwards.
 - `Invoice.status` and `Deposit.status` keep only their own lifecycle (`DRAFT`, `SENT`, `VOID`). Payment progress is derived from the payments that settle them.
 - An invoice raised in Stripe is owned by Stripe; our row mirrors its number and status.
+
+## Addendum 2026-11-01 – financials (ADR 0077)
+- The SIE 4I file ([ADR 0077](0077-financials-and-sie-export.md)) is how invoices and payments reach an accounting program. One file covers Fortnox, Visma and other Swedish systems, so the deferred accounting integration is covered by it until a direct one is needed.
+- Fortnox and Visma stay deferred. A direct adapter can later post the same vouchers, behind the same export.
+- Invoicing stays on Stripe. The dates the export needs (`sentAt`, `voidedAt`) and refunds are Bibi's own rows, not Stripe's.

@@ -39,10 +39,30 @@ export async function paidByReceivable({
   context,
   ticketIds,
 }: PaidByReceivableInput): Promise<Map<string, number>> {
+  if (ticketIds.length === 0) return new Map();
+  return sumPaid({ context, where: { ticketId: { in: [...ticketIds] } } });
+}
+
+export type PaidForInvoicesInput = Db & { invoiceIds: readonly string[] };
+
+/** Net paid per invoice id, for invoices across the organization (ADR 0077), in one query. */
+export async function paidForInvoices({
+  context,
+  invoiceIds,
+}: PaidForInvoicesInput): Promise<Map<string, number>> {
+  if (invoiceIds.length === 0) return new Map();
+  return sumPaid({ context, where: { invoiceId: { in: [...invoiceIds] } } });
+}
+
+type SumPaidInput = Db & {
+  where: { ticketId: { in: string[] } } | { invoiceId: { in: string[] } };
+};
+
+/** Settled payments matching `where`, summed per receivable id, refunds subtracted. */
+async function sumPaid({ context, where }: SumPaidInput): Promise<Map<string, number>> {
   const paid = new Map<string, number>();
-  if (ticketIds.length === 0) return paid;
   const rows: PaymentFacts[] = await context.db.payment.findMany({
-    where: { ticketId: { in: [...ticketIds] }, status: { in: [...SETTLED_STATUSES] } },
+    where: { ...where, status: { in: [...SETTLED_STATUSES] } },
     select: {
       quoteId: true,
       depositId: true,

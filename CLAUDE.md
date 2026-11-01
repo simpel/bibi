@@ -11,7 +11,7 @@
 - Versioned sheets (e.g. kitchen order) sent to a responsibility (e.g. head of kitchen), plus export (json, pdf, csv) for handover outside the system.
 - Configurable domain: each organization sets up its own types, fields, lists, statuses and responsibilities (ADR 0021, 0034). Access uses three fixed roles as presets (member, manager, admin) of `<feature>:<action>` permissions, which admins fine-tune per member or API key with allow/deny overrides (ADR 0034, 0050).
 - A ticket moves through the organization's own statuses, and each line (room, food, activity) has a state per status set in a grid: soft holds with a held-since date and one expiry date per ticket, hard holds that block (ADR 0043, 0044). A ticket may move to any status unless a status restricts its next move; gates sit on the target status, and the flow is admin-only (`pipeline:write`) while boards use `board:*` (ADR 0076).
-- Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Fortnox, Visma and Peppol deferred, ADR 0028 and 0029).
+- Swedish integrations: Fortnox, Visma, Swish, BankID, Peppol/e-invoicing (Swish, Fortnox, Visma and Peppol deferred, ADR 0028 and 0029). Accounting systems are reached through the SIE 4I export (ADR 0077) until a direct Fortnox or Visma integration is needed.
 - Bibi's own prices are published and venues can sign up without talking to sales.
 
 ## Domain model

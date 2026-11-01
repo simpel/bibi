@@ -1,5 +1,6 @@
 import { PaymentSchema, TicketBalanceSchema } from "@bibi/core/schemas";
 import { z } from "zod";
+import { FINANCE_UI_ENTRIES } from "./finance-entries";
 import type { ToolUiEntry } from "./tool-ui-types";
 import { uiEntry } from "./ui-entry";
 
@@ -26,6 +27,7 @@ const paymentCard = uiEntry({
 
 /** Tool → component for payments requested from customers (ADR 0028, 0029). */
 export const PAYMENT_UI_ENTRIES: Readonly<Record<string, ToolUiEntry>> = {
+  ...FINANCE_UI_ENTRIES,
   payment_list: uiEntry({
     component: "payment-table",
     schema: PaymentListWireSchema,

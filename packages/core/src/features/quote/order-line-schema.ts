@@ -69,3 +69,7 @@ export const OrderLineSchema = z.object({
 export type OrderLineTag = z.infer<typeof OrderLineTagSchema>;
 export type VatRow = z.infer<typeof VatRowSchema>;
 export type OrderLineDto = z.infer<typeof OrderLineSchema>;
+
+/** An order line's stored `vatRows` JSON as rows (written only by the freeze, ADR 0059). */
+export const asVatRows = ({ value }: { value: unknown }): VatRow[] =>
+  Array.isArray(value) ? (value as VatRow[]) : [];

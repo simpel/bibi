@@ -227,6 +227,148 @@
     "byStatus": "Ärenden per ärendestatus",
     "empty": "Inga ärenden ännu."
   },
+  "finance": {
+    "title": "Ekonomi",
+    "description": "Fakturerat, inbetalt och utestående, vad som är bokat framåt och momsen att redovisa.",
+    "noAccess": "Du har inte behörighet till den här delen.",
+    "noAccessShort": "Ingen åtkomst",
+    "noData": "Inget att visa för perioden.",
+    "monthLabel": "{month, select, 1 {jan} 2 {feb} 3 {mar} 4 {apr} 5 {maj} 6 {jun} 7 {jul} 8 {aug} 9 {sep} 10 {okt} 11 {nov} 12 {dec} other {}} {year}",
+    "accountingSettings": "Bokföringsinställningar",
+    "openFinancials": "Öppna ekonomi",
+    "accounting": {
+      "title": "Bokföring",
+      "description": "Konton som SIE-exporten bokför mot. Alla konton har ett standardvärde enligt BAS.",
+      "saved": "Bokföringsinställningarna har sparats.",
+      "default": "Standard {account}",
+      "usesDefault": "Tomt använder standardkontot för försäljning ({account})",
+      "noTypes": "Det finns inga artikeltyper ännu.",
+      "revenueByTypeHint": "Intäktskonto per artikeltyp. Lämna tomt för att använda standardkontot för försäljning.",
+      "readOnly": "Du kan se de här inställningarna men inte ändra dem.",
+      "groups": {
+        "accounts": "Konton",
+        "vat": "Utgående moms",
+        "fiscalYear": "Räkenskapsår",
+        "revenueByType": "Intäktskonto per artikeltyp"
+      },
+      "fields": {
+        "receivableAccount": "Kundfordringar",
+        "clearingAccount": "Betalningar på väg",
+        "advancesAccount": "Förskott från kunder",
+        "feesAccount": "Betalavgifter",
+        "roundingAccount": "Öresavrundning",
+        "revenueAccount": "Försäljning (standard)",
+        "vat25Account": "Utgående moms 25 %",
+        "vat12Account": "Utgående moms 12 %",
+        "vat6Account": "Utgående moms 6 %",
+        "fiscalYearStartMonth": "Räkenskapsårets första månad"
+      },
+      "monthName": "{month, select, 1 {januari} 2 {februari} 3 {mars} 4 {april} 5 {maj} 6 {juni} 7 {juli} 8 {augusti} 9 {september} 10 {oktober} 11 {november} 12 {december} other {}}"
+    },
+    "export": {
+      "button": "Exportera SIE",
+      "title": "Exportera SIE",
+      "description": "Skapar en SIE-fil med allt som inte exporterats ännu, för ditt bokföringsprogram.",
+      "confirm": "Exportera och ladda ner",
+      "created": "Exporten har skapats.",
+      "downloading": "Förbereder filen…",
+      "downloaded": "Filen är klar.",
+      "download": "Ladda ner",
+      "history": "Exporthistorik",
+      "historyEmpty": "Inga exporter ännu.",
+      "exportNumber": "Export {number}",
+      "openToDownload": "Öppna ekonomi för att ladda ner",
+      "fileSize": "{bytes} byte",
+      "vouchers": "{count, plural, one {# verifikation} other {# verifikationer}}",
+      "fixOrganization": "Öppna organisationsinställningar",
+      "fixAccounting": "Öppna bokföringsinställningar",
+      "kinds": {
+        "INVOICE_SENT": "Fakturor skickade",
+        "INVOICE_VOID": "Fakturor makulerade",
+        "PAYMENT": "Betalningar",
+        "FEE": "Avgifter",
+        "REFUND": "Återbetalningar"
+      },
+      "blockers": {
+        "ORG_NUMBER_MISSING": "Organisationsnummer saknas",
+        "VAT_ACCOUNT_MISSING": "Momskonto saknas för {detail}",
+        "NOTHING_TO_EXPORT": "Inget nytt att exportera"
+      },
+      "columns": {
+        "number": "Nummer",
+        "date": "Skapad",
+        "vouchers": "Verifikationer",
+        "fileName": "Filnamn"
+      }
+    },
+    "kpi": {
+      "invoiced": "Fakturerat",
+      "received": "Inbetalt",
+      "outstanding": "Utestående",
+      "overdue": "Förfallet",
+      "exclVat": "Exklusive moms",
+      "netOfRefunds": "Efter återbetalningar",
+      "today": "I dag"
+    },
+    "period": {
+      "label": "Period",
+      "previous": "Föregående period",
+      "next": "Nästa period",
+      "thisYear": "I år",
+      "last12": "Senaste 12 månaderna",
+      "range": "{from} – {to}"
+    },
+    "charts": {
+      "month": "Månad",
+      "monthly": {
+        "title": "Fakturerat och inbetalt per månad",
+        "invoiced": "Fakturerat",
+        "received": "Inbetalt"
+      },
+      "aging": {
+        "title": "Öppna fakturor efter ålder",
+        "bucket": "Ålder",
+        "open": "Öppet",
+        "notDue": "Ej förfallna",
+        "overdue1to30": "1–30 dagar försenade",
+        "overdue31to60": "31–60 dagar försenade",
+        "overdue61Plus": "Över 60 dagar försenade"
+      },
+      "forward": {
+        "title": "Bokat, ännu inte fakturerat",
+        "value": "Värde exklusive moms"
+      },
+      "revenue": {
+        "title": "Fakturerat per typ",
+        "type": "Typ",
+        "invoiced": "Fakturerat exklusive moms",
+        "withoutType": "Utan typ"
+      }
+    },
+    "overdue": {
+      "title": "Förfallna fakturor",
+      "empty": "Inga förfallna fakturor.",
+      "invoiceNumber": "Faktura {number}",
+      "ticketReference": "Ärende #{reference}",
+      "ticket": "Ärende",
+      "columns": {
+        "invoice": "Faktura",
+        "ticket": "Ärende",
+        "dueDate": "Förfallodatum",
+        "daysOverdue": "Dagar försenad",
+        "open": "Öppet belopp"
+      }
+    },
+    "vat": {
+      "title": "Moms per momssats",
+      "empty": "Inga fakturor under perioden.",
+      "columns": {
+        "rate": "Momssats",
+        "base": "Fakturerat exklusive moms",
+        "vat": "Moms"
+      }
+    }
+  },
   "nav": {
     "dashboard": "Översikt",
     "pipeline": "Pipeline",
@@ -239,6 +381,7 @@
     "responsibilities": "Ansvar",
     "sheets": "Blad",
     "calendar": "Kalender",
+    "financials": "Ekonomi",
     "tickets": "Ärenden",
     "skills": "Färdigheter",
     "settings": "Inställningar",
@@ -246,6 +389,7 @@
     "commandBar": "Kommandofält",
     "members": "Medlemmar",
     "payments": "Betalningar",
+    "accounting": "Bokföring",
     "organization": "Organisation",
     "ticketStatuses": "Ärendestatusar",
     "priceLists": "Prislistor",
@@ -1649,7 +1793,18 @@
         "boardId": "Tavla",
         "phaseId": "Kolumn",
         "statusIds": "Ärendestatusar",
-        "assigneeId": "Ansvarig"
+        "assigneeId": "Ansvarig",
+        "receivableAccount": "Konto för kundfordringar",
+        "clearingAccount": "Konto för betalningar på väg",
+        "advancesAccount": "Konto för förskott från kunder",
+        "feesAccount": "Konto för betalavgifter",
+        "roundingAccount": "Konto för öresavrundning",
+        "revenueAccount": "Standardkonto för intäkter",
+        "vat25Account": "Konto för utgående moms 25 %",
+        "vat12Account": "Konto för utgående moms 12 %",
+        "vat6Account": "Konto för utgående moms 6 %",
+        "fiscalYearStartMonth": "Räkenskapsårets första månad",
+        "revenueAccounts": "Intäktskonton per artikeltyp eller artikel"
       },
       "operations": {
         "venue_create": "Skapa anläggning",
@@ -1756,7 +1911,9 @@
         "boardPhase_update": "Ändra kolumn på tavla",
         "boardPhase_archive": "Ta bort kolumn från tavla",
         "boardPhase_reorder": "Ändra ordning på kolumner",
-        "boardPhase_moveStatus": "Flytta ärendestatus mellan kolumner"
+        "boardPhase_moveStatus": "Flytta ärendestatus mellan kolumner",
+        "accountingSettings_update": "Ändra bokföringsinställningar",
+        "accountingExport_create": "Skapa SIE-export"
       },
       "setup": {
         "title": "Skapa min första version",
@@ -2370,6 +2527,7 @@
       "ticketStatuses": "De ärendestatusar ett ärende går igenom.",
       "members": "Vem som har åtkomst och med vilken roll.",
       "payments": "Stripe-konto för kortbetalningar och fakturor.",
+      "accounting": "Konton, moms och räkenskapsår för bokföringsexporten.",
       "skills": "Återanvändbara instruktioner för assistenten.",
       "integrations": "API-nycklar för andra system som använder REST-API:t.",
       "itemStates": "De statusar en rad kan ha, per artikeltyp.",

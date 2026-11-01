@@ -1,16 +1,13 @@
 import type { OrderLine, Quote } from "@bibi/db";
 import { markLineChanges } from "./line-changes";
 import { quoteTotals, totalIsFrom } from "./line-totals";
-import type { OrderLineDto, OrderLineTag, VatRow } from "./order-line-schema";
+import { asVatRows, type OrderLineDto, type OrderLineTag } from "./order-line-schema";
 import type { QuoteDto, QuoteLineDto } from "./schema";
 
 export type QuoteRow = Quote & { lines: OrderLine[] };
 
 const asTags = ({ value }: { value: unknown }): OrderLineTag[] =>
   Array.isArray(value) ? (value as OrderLineTag[]) : [];
-
-const asVatRows = ({ value }: { value: unknown }): VatRow[] =>
-  Array.isArray(value) ? (value as VatRow[]) : [];
 
 export const toOrderLineDto = ({ row }: { row: OrderLine }): OrderLineDto => ({
   id: row.id,

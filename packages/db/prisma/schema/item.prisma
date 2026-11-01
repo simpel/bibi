@@ -61,6 +61,7 @@ model Item {
   templateLines          TicketTemplateLine[]
   /// Agreed prices on price lists (ADR 0023).
   priceListItems         PriceListItem[]
+  revenueAccounts        RevenueAccount[]
   /// Order lines that copied this item (snapshot).
   orderLines             OrderLine[]
   hoursDays              HoursDay[]

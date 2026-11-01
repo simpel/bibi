@@ -18,6 +18,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   pipeline: "pipeline",
   dashboard: "dashboard",
   calendar: "calendar",
+  financials: "financials",
   tickets: "tickets",
   customers: "customers",
   items: "items",
@@ -39,6 +40,7 @@ const SEGMENT_KEYS: Record<string, CrumbLabelKey> = {
   "api-keys": "apiKeys",
   permissions: "permissions",
   payments: "payments",
+  accounting: "accounting",
   "item-states": "itemStates",
   "ticket-templates": "ticketTemplates",
   new: "new",
@@ -63,8 +65,8 @@ const NEW_PARENTS: Record<string, string> = {
   "ticket-template": "settings/ticket-templates",
 };
 
-/** Pages whose later segments are a period, not a page (`/calendar/{from}/{to}`, ADR 0064). */
-const PERIOD_PAGES = new Set(["calendar"]);
+/** Pages whose later segments are a period, not a page (`/calendar/{from}/{to}`, `/financials/{from}/{to}`, ADR 0064). */
+const PERIOD_PAGES = new Set(["calendar", "financials"]);
 
 export type Crumb = { href: string; labelKey: CrumbLabelKey };
 
